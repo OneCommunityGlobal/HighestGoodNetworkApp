@@ -54,6 +54,7 @@ import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import OrdersPage from './components/KitchenInventory/Orders/OrdersPage';
 import GardenManagementPage from './components/KitchenInventory/GardenManagement/GardenManagementPage';
 import OrchardManagementPage from './components/KitchenandInventory/OrchardManagement/OrchardManagementPage';
+import KIDashboard from './components/KitchenandInventory/KIDashboard/KIDashboard';
 import AddTool from './components/BMDashboard/Tools/AddTool';
 import ToolDetailPage from './components/BMDashboard/Tools/ToolDetailPage';
 import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
@@ -713,6 +714,7 @@ export default (
         <Route path="/kitchenandinventory/orders" component={OrdersPage} />
         <Route path="/kitchenandinventory/gardenmanagement" component={GardenManagementPage} />
         <Route path="/kitchenandinventory/orchardmanagement" component={OrchardManagementPage} />
+        <Route path="/kitchenandinventory/dashboard" component={KIDashboard} />
         <ProtectedRoute path="/jobformbuilder" fallback component={JobFormBuilder} />
         <Route path="/suggestedjobslist" component={SuggestedJobsList} />
         <ProtectedRoute path="/infoCollections" component={EditableInfoModal} />

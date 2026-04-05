@@ -61,6 +61,57 @@ const ordersData = [
   },
 ];
 
+const suppliersData = [
+  {
+    id: 'SUP-001',
+    name: 'Green Valley Farms',
+    contact: 'Sarah Martinez',
+    email: 'sarah@greenvalley.com',
+    phone: '(555) 123-4567',
+    avgDelivery: '2 days',
+    totalOrders: 145,
+    reliability: 98,
+    specialties: ['Organic Produce', 'Seasonal Vegetables', 'Herbs'],
+    website: 'https://greenvalleyfarms.com',
+  },
+  {
+    id: 'SUP-002',
+    name: 'Wholesome Grains Co.',
+    contact: 'Michael Chen',
+    email: 'michael@wholesomegrains.com',
+    phone: '(555) 234-5678',
+    avgDelivery: '3 days',
+    totalOrders: 89,
+    reliability: 95,
+    specialties: ['Grains', 'Legumes', 'Flour', 'Rice'],
+    website: 'https://wholesomegrains.com',
+  },
+  {
+    id: 'SUP-003',
+    name: 'Local Dairy Collective',
+    contact: 'Emma Thompson',
+    email: 'emma@localdairy.com',
+    phone: '(555) 345-6789',
+    avgDelivery: '1 day',
+    totalOrders: 203,
+    reliability: 99,
+    specialties: ['Dairy Products', 'Eggs', 'Butter', 'Cheese'],
+    website: 'https://localdairy.com',
+  },
+  {
+    id: 'SUP-004',
+    name: 'Sustainable Oils & More',
+    contact: 'David Rodriguez',
+    email: 'david@sustainableoils.com',
+    phone: '(555) 456-7890',
+    avgDelivery: '4 days',
+    totalOrders: 67,
+    reliability: 92,
+    specialties: ['Olive Oil', 'Condiments', 'Vinegars', 'Spices'],
+    website: 'https://sustainableoils.com',
+  },
+];
+
 const StatusBadge = ({ status }) => {
   const badgeClass = `${styles.badge} ${
     status === 'ordered'
@@ -83,6 +134,68 @@ const StatCard = ({ label, value, bgColor, icon }) => (
     </div>
   </div>
 );
+
+const SupplierCard = ({ supplier }) => {
+  const handleNewOrder = () => {
+    window.open(supplier.website, '_blank');
+  };
+
+  return (
+    <div className={styles.supplierCard}>
+      <div className={styles.supplierHeader}>
+        <div className={styles.supplierName}>
+          <span>🏢</span>
+          {supplier.name}
+        </div>
+        <span className={styles.reliabilityBadge}>{supplier.reliability}% reliable</span>
+      </div>
+
+      <div className={styles.supplierContact}>Contact: {supplier.contact}</div>
+
+      <div className={styles.supplierDetails}>
+        <div className={styles.detailRow}>
+          <span className={styles.detailLabel}>Email</span>
+          <span className={styles.detailValue}>{supplier.email}</span>
+        </div>
+        <div className={styles.detailRow}>
+          <span className={styles.detailLabel}>Phone</span>
+          <span className={styles.detailValue}>{supplier.phone}</span>
+        </div>
+        <div className={styles.detailRow}>
+          <span className={styles.detailLabel}>📦 Avg Delivery</span>
+          <span className={styles.detailValue}>{supplier.avgDelivery}</span>
+        </div>
+        <div className={styles.detailRow}>
+          <span className={styles.detailLabel}>🛒 Total Orders</span>
+          <span className={styles.detailValue}>{supplier.totalOrders}</span>
+        </div>
+      </div>
+
+      <div className={styles.specialties}>
+        <p className={styles.specialtiesLabel}>Specialties</p>
+        <div className={styles.specialtyTags}>
+          {supplier.specialties.map((specialty, idx) => (
+            <span key={idx} className={styles.specialtyTag}>
+              {specialty}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <div className={styles.supplierActions}>
+        <button type="button" className={styles.btnOutline}>
+          View Pricing History
+        </button>
+        <button type="button" className={styles.btnOutline}>
+          Edit Supplier Info
+        </button>
+        <button type="button" className={styles.btnPrimary} onClick={handleNewOrder}>
+          New Order
+        </button>
+      </div>
+    </div>
+  );
+};
 
 const OrderCard = ({ order, onStatusChange }) => {
   const getActionButton = () => {
@@ -305,8 +418,10 @@ function OrdersPage() {
         )}
 
         {activeTab === 'suppliers' && (
-          <div className={`${styles.orderCard} ${styles.emptyState}`}>
-            Suppliers section - Coming soon
+          <div className={styles.suppliersGrid}>
+            {suppliersData.map(supplier => (
+              <SupplierCard key={supplier.id} supplier={supplier} />
+            ))}
           </div>
         )}
 
