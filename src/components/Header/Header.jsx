@@ -251,11 +251,12 @@ export function Header(props) {
     if (roles.length === 0 && isAuthenticated) {
       props.getAllRoles();
     }
-    // Fetch unread notification
-    if (isAuthenticated && displayUserId) {
-      dispatch(getUnreadUserNotifications(displayUserId));
+    // Fetch unread notification - always use the logged-in user's ID,
+    // not displayUserId, which may be a viewed user (causing a 403 error)
+    if (isAuthenticated && user.userid) {
+      dispatch(getUnreadUserNotifications(user.userid));
     }
-  }, [isAuthenticated, displayUserId, roles.length]);
+  }, [isAuthenticated, user.userid, roles.length]);
 
   useEffect(() => {
     if (props.notification?.error) {
