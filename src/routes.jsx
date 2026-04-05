@@ -264,7 +264,7 @@ const PermissionsManagement = lazy(() =>
 );
 const UserRoleTab = lazy(() => import('./components/PermissionsManagement/UserRoleTab'));
 const Teams = lazy(() => import('./components/Teams/Teams'));
-const JobFormBuilder = lazy(() => import('./components/Collaboration/JobFormbuilder'));
+const JobFormBuilder = lazy(() => import('./components/JobFormManagement/EnhancedJobFormBuilder'));
 const PopularityTimelineChart = lazy(() =>
   import('./components/PopularityTimelineAnalytics/PopularityTimelineChart'),
 );
@@ -920,7 +920,13 @@ export default (
         <Route path="/unsubscribe" component={UnsubscribePage} />
         <Route path="/collaboration" component={Collaboration} />
         <Route path="/suggestedjobslist" component={SuggestedJobsList} />
-        <ProtectedRoute path="/jobformbuilder" fallback component={JobFormBuilder} />
+        <ProtectedRoute
+          path="/jobformbuilder"
+          fallback
+          component={JobFormBuilder}
+          allowedRoles={[UserRole.Owner]}
+          routePermissions={RoutePermissions.jobFormManagement}
+        />
         <ProtectedRoute path="/materials/mostwastedmaterials" component={MostWastedMaterials} />
         <ProtectedRoute path="/infoCollections" component={EditableInfoModal} />
         <ProtectedRoute path="/userprofile/:userId" fallback component={UserProfile} />
