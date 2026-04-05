@@ -7,7 +7,7 @@ import { getFontColor } from '../../../../styles';
 function LeftSection() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const profileData = useSelector(state => state.userSkills.profileData);
-  const darkMode = useSelector(state => state?.theme?.darkMode);
+ 
 
   return (
     <div className={`${styles.leftSection} ${darkMode ? 'dark-mode' : ''}`}>
