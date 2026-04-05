@@ -25,7 +25,7 @@ import IssueCharts from '../Issues/openIssueCharts';
 import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords.jsx';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
-import MaterialStockOutRiskIndicator from './MaterialStockOutRiskIndicator/MaterialStockOutRiskIndicator';
+import FinancialStatButtons from './Financials/FinancialStatButtons';
 
 const projectStatusButtons = [
   {
@@ -125,6 +125,43 @@ const projectStatusButtons = [
     textColor: '#328D1B',
   },
 ];
+
+const financialData = [
+  {
+    id: uuidv4(),
+    title: 'Total Project Cost',
+    value: '-',
+    bgColor: '#E0F2FE',
+    textColor: '#0369A1',
+  },
+  {
+    id: uuidv4(),
+    title: 'Total Material Cost',
+    value: '-',
+    bgColor: '#F3E8FF',
+    textColor: '#6D28D9',
+  },
+  {
+    id: uuidv4(),
+    title: 'Total Labor Cost',
+    value: '-',
+    bgColor: '#FEE2E2',
+    textColor: '#B91C1C',
+  },
+  {
+    id: uuidv4(),
+    title: 'Total Equipment Cost',
+    value: '-',
+    bgColor: '#DCFCE7',
+    textColor: '#15803D',
+  },
+];
+
+export function WeeklyProjectSummaryContent() {
+  const dispatch = useDispatch();
+  const materials = useSelector(state => state.materials?.materialslist || []);
+  const [openSections, setOpenSections] = useState({});
+}
 
 function WeeklyProjectSummary() {
   const dispatch = useDispatch();
@@ -282,14 +319,13 @@ function WeeklyProjectSummary() {
         key: 'Financials',
         className: 'large',
         content: (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
-            <div className="weekly-project-summary-card financial-small">📊 Card</div>
+          <div className={`${styles.financialGrid}`}>
             <div className="weekly-project-summary-card financial-small financial-chart">
-              <ExpenseBarChart />
+              <FinancialStatButtons darkMode={darkMode} />
             </div>
-            <div className="weekly-project-summary-card financial-small">📊 Card</div>
-            <div className="weekly-project-summary-card financial-small">📊 Card</div>
-            <div className="weekly-project-summary-card financial-big">📊 Big Card</div>
+            <div className="weekly-project-summary-card financial-small financial-chart">
+              <ExpenseBarChart darkMode={darkMode} />
+            </div>
           </div>
         ),
       },
