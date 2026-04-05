@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+
 import { useSelector } from 'react-redux';
 import Banner from '../questionpages/Banner';
 import Progress from '../questionpages/Progress';
