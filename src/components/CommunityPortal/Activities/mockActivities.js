@@ -112,4 +112,32 @@ export const mockActivities = [
     date: '2024-01-10',
     location: 'Tech Hub',
   },
+  {
+    id: 17,
+    name: 'HIIT Workout Class',
+    type: 'Fitness',
+    date: '2026-02-15',
+    location: 'Community Gym',
+  },
+  {
+    id: 18,
+    name: 'GenAI for Beginners',
+    type: 'Educational',
+    date: '2026-09-10',
+    location: 'Tech Hub',
+  },
+  {
+    id: 19,
+    name: 'Book Club - March',
+    type: 'Social',
+    date: '2026-03-21',
+    location: 'Library',
+  },
+  {
+    id: 20,
+    name: 'Movie Night! Genre: Horror',
+    type: 'Social',
+    date: '2026-02-28',
+    location: 'Community Center',
+  },
 ];
