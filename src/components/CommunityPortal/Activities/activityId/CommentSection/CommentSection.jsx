@@ -1,21 +1,37 @@
 import styles from './CommentSection.module.css';
+import { useSelector } from 'react-redux';
+
+const getAvatarColorClass = (name = '', index = 0, stylesRef) => {
+  let hash = 0;
+  for (let i = 0; i < name.length; i += 1) {
+    hash = (hash << 5) - hash + name.charCodeAt(i);
+    hash |= 0;
+  }
+  const isPurple = (hash + index) % 2 === 0;
+  return isPurple ? stylesRef.purple : stylesRef.blue;
+};
 
 function CommentSection({ comments }) {
+  const darkMode = useSelector(state => state.theme?.darkMode);
   return (
-    <div>
-      <div className={styles.commentsSection}>
-        {comments.map(comment => (
-          <div key={comment.id} className={styles.comment}>
-            <div className={styles.commentUser}>
+    <div className={darkMode ? styles.darkMode : ''}>
+      <div className={styles.activityCommentsSection}>
+        {comments.map((comment, index) => (
+          <div key={comment.id} className={styles.activityComment}>
+            <div className={styles.activityCommentUser}>
               <span
-                className={`${styles.icon} ${comment.id % 2 === 0 ? styles.purple : styles.blue}`}
+                className={`${styles.activityIcon} ${getAvatarColorClass(
+                  comment.name,
+                  index,
+                  styles,
+                )}`}
               >
                 {comment.name[0]}
               </span>
             </div>
-            <div className={styles.commentText}>
+            <div className={styles.activityCommentText}>
               {comment.comment}
-              <div className={styles.commentFooter}>
+              <div className={styles.activityCommentFooter}>
                 <span>{comment.name} - </span>
                 <span>{comment.time}</span>
               </div>
