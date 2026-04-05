@@ -68,7 +68,7 @@ function CenterLabel({ viewBox, total, darkMode, showPct, onToggle }) {
         >
           <label className={styles['switch']}>
             {/* Accessible text for the label */}
-            <span className={styles['sr-only']}>Show percentage</span>
+            {/* <span className={styles['sr-only']}>Show percentage</span> */}
 
             {/* The control associated with the label */}
             <input

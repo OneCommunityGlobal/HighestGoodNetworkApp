@@ -15,6 +15,13 @@
   padding-bottom: 24px;
 }
 
+/* ================= DARK MODE – BASE ================= */
+
+.dark .userCollaborationContainer {
+  background-color: #0f172a; /* deep slate */
+  color: #e5e7eb;
+}
+
 /* ======================================================
    HEADER
    ====================================================== */
@@ -36,6 +43,7 @@
    ====================================================== */
 
 .navbar {
+  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -44,57 +52,85 @@
   gap: 12px;
 }
 
-.navbarLeft,
-.jobNavbarRight {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
 .searchForm {
   display: flex;
   gap: 8px;
 }
 
+/* ================= DARK MODE – NAVBAR ================= */
+
+.dark .navbar {
+  background-color: #1e293b;
+}
+
+.dark .searchForm input {
+  background-color: #0f172a;
+  color: #e5e7eb;
+  border: 1px solid #334155;
+}
+
+.dark .searchForm input::placeholder {
+  color: #94a3b8;
+}
+
 /* ======================================================
-   CATEGORY SELECT (LIGHT MODE)
+   CATEGORY DROPDOWN
    ====================================================== */
 
 .jobSelect {
+  position: absolute;
+  top: 100%;
+  right: 12px;
+  margin-top: 6px;
+  background-color: #ffffff;
   padding: 8px 12px;
   border-radius: 6px;
   border: 1px solid #ccc;
-  background-color: #ffffff;
-  color: #333333;
+  z-index: 1500;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  animation: fadeInDropdown 0.12s ease-in-out;
+}
+
+@keyframes fadeInDropdown {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 4px;
+  cursor: pointer;
   font-size: 14px;
+  color: #333;
+  border-radius: 4px;
 }
 
-/* ======================================================
-   CATEGORY SELECT (DARK MODE – FIXED)
-   ====================================================== */
-
-.jobSelectDark {
-  background-color: #1c1c1c;
-  color: #f1f1f1;
-  border: 1px solid #444;
+.dropdownItem:hover {
+  background-color: #f0f0f0;
 }
 
-/* dropdown options */
-.jobSelectDark option {
-  background-color: #1c1c1c;
-  color: #f1f1f1;
+/* ================= DARK MODE – DROPDOWN ================= */
+
+.dark .jobSelect {
+  background-color: #020617;
+  color: #e5e7eb;
+  border: 1px solid #334155;
 }
 
-/* selected option visibility (Chrome / Safari fix) */
-.jobSelectDark option:checked {
-  background-color: #2a2a2a;
-  color: #ffffff;
+.dark .dropdownItem {
+  color: #e5e7eb;
 }
 
-/* focus */
-.jobSelectDark:focus {
-  outline: none;
-  border-color: #9c0;
+.dark .dropdownItem:hover {
+  background-color: #1e293b;
 }
 
 /* ======================================================
@@ -111,15 +147,20 @@
   font-weight: 800;
 }
 
+/* ================= DARK MODE – HEADINGS ================= */
+
+.dark .jobHead {
+  color: #e5e7eb;
+}
+
 /* ======================================================
-   JOB GRID (6 × 3 GUARANTEED)
+   JOB GRID
    ====================================================== */
 
 .jobList {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   gap: 20px;
-  width: 100%;
   padding: 20px;
 }
 
@@ -129,17 +170,17 @@
   border: 1px solid #ddd;
   padding: 14px;
   text-align: center;
+  cursor: pointer;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .jobAd:hover {
   transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
 .jobAd img {
   width: 100%;
-  border-bottom: 1px solid #ddd;
 }
 
 .jobAd h3 {
@@ -147,6 +188,17 @@
   font-size: 1.05rem;
   font-weight: 700;
   color: #183a9b;
+}
+
+/* ================= DARK MODE – JOB GRID ================= */
+
+.dark .jobAd {
+  background-color: #020617;
+  border: 1px solid #334155;
+}
+
+.dark .jobAd h3 {
+  color: #93c5fd;
 }
 
 /* ======================================================
@@ -160,8 +212,75 @@
   margin: 20px 0;
 }
 
+.paginationButton {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #ffffff;
+  cursor: pointer;
+}
+
+.paginationButtonActive {
+  background-color: #9c0;
+  border-color: #9c0;
+  font-weight: 700;
+}
+
+/* ================= DARK MODE – PAGINATION ================= */
+
+.dark .paginationButton {
+  background-color: #020617;
+  color: #e5e7eb;
+  border: 1px solid #334155;
+}
+
+.dark .paginationButtonActive {
+  background-color: #65a30d;
+  border-color: #65a30d;
+  color: #020617;
+}
+
 /* ======================================================
-   DARK MODE ROOT
+   SELECTED FILTER CHIPS
+   ====================================================== */
+
+.jobQueries {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.chip {
+  background-color: #9c0;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.clearAllButton {
+  border: 1px solid #333;
+  background: transparent;
+  padding: 6px 12px;
+  border-radius: 16px;
+  cursor: pointer;
+}
+
+/* ================= DARK MODE – CHIPS ================= */
+
+.dark .chip {
+  background-color: #65a30d;
+  color: #020617;
+}
+
+.dark .clearAllButton {
+  border-color: #94a3b8;
+  color: #e5e7eb;
+}
+
+/* ======================================================
+   MODAL
    ====================================================== */
 
 .dark {
@@ -173,9 +292,27 @@
   background-color: #1b2a41;
 }
 
-.dark .navbar {
-  background-color: #1c2541;
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
 }
+
+.modal {
+  position: relative;
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 28px;
+  max-width: 520px;
+  width: 90%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+/* ================= DARK MODE – MODAL ================= */
 
 .dark .jobAd {
   background: linear-gradient(135deg, #23272a, #181a1b);
@@ -187,96 +324,40 @@
 }
 
 /* ======================================================
-   RESPONSIVE
+   MODAL – CLOSE BUTTON
    ====================================================== */
 
-@media (max-width: 1200px) {
-  .jobList {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-@media (max-width: 900px) {
-  .jobList {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (max-width: 600px) {
-  .jobList {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .navbar {
-    flex-direction: column;
-  }
-}
-/* ======================================================
-   DARK MODE – SEARCH INPUT FIX
-   ====================================================== */
-
-.dark .searchForm input {
-  background-color: #1c1c1c;
-  color: #f1f1f1;
-  border: 1px solid #444;
-}
-
-/* Placeholder text */
-.dark .searchForm input::placeholder {
-  color: #b0b0b0;
-}
-
-/* Focus state */
-.dark .searchForm input:focus {
-  outline: none;
-  border-color: #9c0;
-}
-/* =========================
-   PAGINATION BUTTONS
-   ========================= */
-
-.paginationButton {
-  padding: 6px 12px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  background-color: #ffffff;
-  color: #333333;
+.closeButton {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: transparent;
+  border: none;
+  font-size: 22px;
   cursor: pointer;
-  font-weight: 600;
+  line-height: 1;
+  color: #333;
 }
 
-.paginationButton:hover {
-  background-color: #f0f0f0;
+.closeButton:hover {
+  opacity: 0.75;
 }
 
-/* ACTIVE PAGE (LIGHT MODE) */
-.paginationButtonActive {
-  padding: 6px 12px;
-  border-radius: 6px;
-  border: 1px solid #9c0;
-  background-color: #9c0;
-  color: #000000;
-  font-weight: 700;
+.dark .closeButton {
+  color: #e5e7eb;
 }
 
-/* =========================
-   DARK MODE PAGINATION
-   ========================= */
+/* ======================================================
+   MODAL – ACTIONS
+   ====================================================== */
 
-.dark .paginationButton {
-  background-color: #1c1c1c;
-  border: 1px solid #444;
-  color: #dddddd;
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 28px;
 }
 
-.dark .paginationButton:hover {
-  background-color: #2a2a2a;
-}
-
-/* ACTIVE PAGE (DARK MODE) */
-.dark .paginationButtonActive {
-  background-color: #9c0;
-  border: 1px solid #9c0;
-  color: #000000;
-  font-weight: 700;
+.modalActions button {
+  min-width: 120px;
 }
