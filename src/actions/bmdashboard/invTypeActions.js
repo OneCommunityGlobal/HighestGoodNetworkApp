@@ -15,6 +15,12 @@ import GET_MATERIAL_TYPES, {
   GET_CONSUMABLE_TYPES,
   GET_REUSABLE_TYPES,
   GET_EQUIPMENT_TYPES,
+  ADD_INVENTORY_TYPE_SUCCESS,
+  ADD_INVENTORY_TYPE_ERROR,
+  UPDATE_INVENTORY_TYPE_SUCCESS,
+  UPDATE_INVENTORY_TYPE_ERROR,
+  DELETE_INVENTORY_TYPE_SUCCESS,
+  DELETE_INVENTORY_TYPE_ERROR,
 } from '../../constants/bmdashboard/inventoryTypeConstants';
 import {
   POST_TOOLS_LOG,
@@ -350,17 +356,42 @@ export const addInvType = (type, payload) => {
       endpoint = ENDPOINTS.BM_MATERIAL_TYPE;
   }
 
-  return async dispatch => {
+  return async (dispatch, getState) => {
     const toastId = `add-${type}-${Date.now()}`;
-    
+    const { auth } = getState();
+    const requestorId = auth.user?.userid;
+
+    const body = { ...payload, requestor: { requestorId } };
+
+    if (type === 'Equipments') {
+      body.desc = body.description;
+      body.fuel = body.fuel || 'Diesel';
+    }
+
     try {
-      const response = await axios.post(endpoint, payload);
-      // Refresh the data after successful addition
+      await axios.post(endpoint, body);
       dispatch(fetchInvTypeByType(type));
       toast.success(`${type.slice(0, -1)} added successfully!`, { toastId });
     } catch (err) {
       const errorMessage = err.response?.data?.error || err.response?.data?.message || 'Failed to add item. Please try again.';
       toast.error(errorMessage, { toastId: `add-error-${type}-${Date.now()}` });
+    }
+  };
+};
+
+/**
+ * Delete an inventory type by ID and category.
+ * Used by DeleteInvTypeModal (param order: typeId, category).
+ */
+export const deleteInventoryType = (invtypeId, category) => {
+  return async dispatch => {
+    try {
+      await axios.delete(`${ENDPOINTS.BM_INVTYPE_TYPE(category)}/${invtypeId}`);
+      dispatch(fetchInvTypeByType(category));
+      return { success: true };
+    } catch (err) {
+      const errorMessage = err.response?.data?.error || err.response?.data?.message || 'Failed to delete item.';
+      return { success: false, error: errorMessage };
     }
   };
 };

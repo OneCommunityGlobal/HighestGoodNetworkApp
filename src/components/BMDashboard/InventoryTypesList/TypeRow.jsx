@@ -24,10 +24,8 @@ function TypeRow(props) {
 
   const handleSave = () => {
     if (editType.name.trim() && (!requiresUnit || editType.unit.trim())) {
-      // Only include unit if it's required for this category
       let payload;
       if (category === 'Equipments') {
-        // Equipment needs description and fuel fields
         payload = {
           name: editType.name,
           description: editType.description,

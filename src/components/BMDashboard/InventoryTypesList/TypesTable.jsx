@@ -10,7 +10,6 @@ export function TypesTable(props) {
   const [isAdding, setIsAdding] = useState(false);
   const [newType, setNewType] = useState({ name: '', description: '', unit: '', fuel: '' });
 
-  // Check if unit field is required for this category
   const requiresUnit = category === 'Materials' || category === 'Consumables';
 
   const handleAdd = () => {
@@ -19,14 +18,12 @@ export function TypesTable(props) {
 
   const handleSave = () => {
     if (newType.name.trim() && (!requiresUnit || newType.unit.trim())) {
-      // Only include unit if it's required for this category
       let payload;
       if (category === 'Equipments') {
-        // Equipment needs description and fuel fields
         payload = {
           name: newType.name,
           description: newType.description,
-          fuel: newType.fuel, // Default fuel type if not provided
+          fuel: newType.fuel,
         };
       } else if (requiresUnit) {
         payload = newType;

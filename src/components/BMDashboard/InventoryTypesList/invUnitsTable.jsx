@@ -10,6 +10,7 @@ import styles from './TypesList.module.css';
 function UnitsTable(props) {
   const { invUnits, dispatch } = props;
   const [newUnit, setNewUnit] = useState('');
+  const [isAdding, setIsAdding] = useState(false);
 
   const handleDelete = unit => {
     dispatch(deleteInvUnit(unit.unit));
@@ -17,8 +18,10 @@ function UnitsTable(props) {
 
   const handleAdd = () => {
     if (newUnit.trim()) {
+      setIsAdding(true);
       dispatch(postBuildingInventoryUnit({ unit: newUnit.trim() }));
       setNewUnit('');
+      setIsAdding(false);
     }
   };
 
@@ -28,6 +31,7 @@ function UnitsTable(props) {
 
   const handleKeyPress = e => {
     if (e.key === 'Enter') {
+      e.preventDefault();
       handleAdd();
     }
   };
@@ -43,7 +47,7 @@ function UnitsTable(props) {
         </thead>
         <tbody>
           {invUnits?.map(unit => (
-            <tr key={`invUnit-${unit.unit}`}>
+            <tr key={`invUnit-${unit._id || unit.unit}`}>
               <td>{unit.unit}</td>
               <td>
                 <Button
@@ -58,7 +62,7 @@ function UnitsTable(props) {
           ))}
         </tbody>
       </Table>
-      <div>
+      <div className={styles.addUnitContainer}>
         <input
           id="input-measurement"
           type="text"
@@ -66,9 +70,10 @@ function UnitsTable(props) {
           value={newUnit}
           onChange={handleInputChange}
           onKeyPress={handleKeyPress}
+          disabled={isAdding}
         />
-        <Button size="sm" className={`${styles.btnTypes}`} onClick={handleAdd}>
-          Add
+        <Button size="sm" className={`${styles.btnTypes}`} onClick={handleAdd} disabled={isAdding}>
+          {isAdding ? 'Adding...' : 'Add'}
         </Button>
       </div>
     </div>
