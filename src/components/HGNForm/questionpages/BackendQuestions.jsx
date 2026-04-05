@@ -22,7 +22,7 @@ function BackendQuestions() {
   const [loading, setLoading] = useState(true);
   const location = useLocation();
   const { isOwner } = location.state;
-  const darkMode = useSelector(state => state.theme.darkMode);
+
   // Fetch questions from database
   useEffect(() => {
     const fetchQuestions = async () => {
