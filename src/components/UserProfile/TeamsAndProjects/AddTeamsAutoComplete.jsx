@@ -1,15 +1,21 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Dropdown, Input } from 'reactstrap';
 import './TeamsAndProjects.css';
 import { useSelector } from 'react-redux';
+const TEAM_NAME_MAX_LENGTH = 100;
 
 // eslint-disable-next-line react/display-name
 const AddTeamsAutoComplete = React.memo((props) => {
   const { teamsData, searchText, setSearchText, setInputs, onCreateNewTeam } = props;
   const [isOpen, setIsOpen] = React.useState(false);
   const darkMode = useSelector((state) => state.theme.darkMode);
+  const inputRef = useRef(null);
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
 
-  console.log("Teams data", teamsData)
 
   // Accept both shapes: { allTeams: [...] } OR just [...]
   const allTeamsRaw = teamsData?.allTeams ?? teamsData ?? [];
@@ -47,18 +53,26 @@ const AddTeamsAutoComplete = React.memo((props) => {
       <Input
         type="text"
         value={searchText}
-        autoFocus
+        innerRef={inputRef}
+        //autoFocus // eslint-disable-line jsx-a11y/no-autofocus
         onFocus={() => setIsOpen(true)}
         onBlur={() => setTimeout(() => setIsOpen(false), 120)}
         onChange={(e) => {
           setSearchText(e.target.value);
           setIsOpen(true);
         }}
+        maxLength={TEAM_NAME_MAX_LENGTH}
         className={darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}
         placeholder="Search or select a team..."
         aria-label="Add to Team"
       />
-
+      <small 
+        className={darkMode ? 'text-light' : 'text-muted'} 
+        style={{ display: 'block', marginTop: '0.25rem', fontSize: '0.875rem' }}
+      >
+        {searchText.length}/{TEAM_NAME_MAX_LENGTH} characters
+      </small>
+      
       {isOpen && (
         <div
           tabIndex="-1"
@@ -74,6 +88,7 @@ const AddTeamsAutoComplete = React.memo((props) => {
             </div>
           ) : (
             suggestions.slice(0, 100).map((item) => (
+               // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
               <div
                 key={item._id}
                 className="team-auto-complete"
@@ -86,6 +101,7 @@ const AddTeamsAutoComplete = React.memo((props) => {
           )}
 
           {showCreateNew && (
+            // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
             <div
               className="team-auto-complete"
               onMouseDown={(e) => e.preventDefault()}
