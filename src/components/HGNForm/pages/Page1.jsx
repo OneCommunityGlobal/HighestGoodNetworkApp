@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { getUserProfileBasicInfo } from '~/actions/userManagement';
 import httpService from '~/services/httpService';
@@ -8,31 +8,26 @@ import Banner from '../questionpages/Banner';
 import QuestionnaireInfo from '../questionpages/QuestionnaireInfo';
 import InfoForm from '../questionpages/InfoForm';
 import Progress from '../questionpages/Progress';
-import styles from '../styles/hgnform.module.css';
+import containerStyles from '../styles/hgnform.module.css';
+import useScrollTop from '~/hooks/useScrollTop';
 
 export default function Page1() {
-  const dispatch = useDispatch();
-  const authUser = useSelector(state => state.auth.user);
   const darkMode = useSelector(state => state.theme.darkMode);
+  const authUser = useSelector(state => state.auth.user);
+  const dispatch = useDispatch();
   const history = useHistory();
   const [checkingExisting, setCheckingExisting] = useState(true);
 
-  // Fetch basic profile info on mount
+  useScrollTop();
+
   useEffect(() => {
     if (authUser?.userid) {
       dispatch(getUserProfileBasicInfo({ userId: authUser.userid }));
     }
   }, [dispatch, authUser?.userid]);
 
-  // Scroll to top on mount
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-
-  // Check if user has already submitted skills
   useEffect(() => {
     let mounted = true;
-
     async function checkExistingResponse() {
       try {
         const userId = authUser?.userid;
@@ -40,45 +35,27 @@ export default function Page1() {
           if (mounted) setCheckingExisting(false);
           return;
         }
-
         const res = await httpService.get(ENDPOINTS.SKILLS_PROFILE(userId));
-        const data = res?.data;
-
-        if (mounted && res?.status === 200 && data?.skillInfo) {
+        if (mounted && res?.status === 200 && res?.data?.skillInfo) {
           history.replace('/hgn/profile/skills');
-          return;
         }
-      } catch {
-        // No skills data or error → continue to show form
-      } finally {
-        if (mounted) setCheckingExisting(false);
-      }
+      } catch {}
+      finally { if (mounted) setCheckingExisting(false); }
     }
-
     checkExistingResponse();
-    return () => {
-      mounted = false;
-    };
+    return () => { mounted = false; };
   }, [authUser?.userid, history]);
 
   if (checkingExisting) {
     return (
-      <div
-        className={`${styles['container-hgnform-wrapper']} ${darkMode ? 'bg-oxford-blue' : ''}`}
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          minHeight: '50vh',
-        }}
-      >
+      <div className={`${containerStyles.hgnform} ${darkMode ? containerStyles.bgOxfordBlue : ''}`} style={{ display:'flex', justifyContent:'center', alignItems:'center', minHeight:'50vh' }}>
         <p>Checking your previous response…</p>
       </div>
     );
   }
 
   return (
-    <div className={`${styles['container-hgnform-wrapper']} ${darkMode ? 'bg-oxford-blue' : ''}`}>
+    <div className={`${containerStyles.hgnform} ${darkMode ? containerStyles.bgOxfordBlue : ''}`}>
       <Banner />
       <QuestionnaireInfo />
       <InfoForm />
