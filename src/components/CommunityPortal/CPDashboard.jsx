@@ -1,11 +1,23 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import { Container, Row, Col, Card, CardBody, Button, Input, FormGroup, Label } from 'reactstrap';
+import {
+  Container,
+  Row,
+  Alert,
+  Col,
+  Card,
+  CardBody,
+  Button,
+  Input,
+  FormGroup,
+  Label,
+} from 'reactstrap';
 import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt, FaSearch, FaTimes } from 'react-icons/fa';
 import styles from './CPDashboard.module.css';
 import { ENDPOINTS } from '../../utils/URL';
 import axios from 'axios';
 import { el } from 'date-fns/locale';
+import { fuzzySearch } from '../../utils/fuzzySearch';
 
 const FixedRatioImage = ({ src, alt, fallback }) => (
   <div
@@ -21,7 +33,9 @@ const FixedRatioImage = ({ src, alt, fallback }) => (
       alt={alt}
       loading="lazy"
       onError={e => {
-        if (e.currentTarget.src !== fallback) e.currentTarget.src = fallback;
+        if (e.currentTarget.src !== fallback) {
+          e.currentTarget.src = fallback;
+        }
       }}
       style={{
         width: '100%',
@@ -33,6 +47,33 @@ const FixedRatioImage = ({ src, alt, fallback }) => (
   </div>
 );
 
+function isTomorrow(dateString) {
+  const input = new Date(dateString);
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+
+  return input >= tomorrow && input < new Date(tomorrow.getTime() + 24 * 60 * 60 * 1000);
+}
+
+function isComingWeekend(dateString) {
+  const input = new Date(dateString);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const day = today.getDay();
+  const daysUntilSaturday = (6 - day + 7) % 7 || 7;
+  const saturday = new Date(today);
+  saturday.setDate(today.getDate() + daysUntilSaturday);
+  const sunday = new Date(saturday);
+  sunday.setDate(saturday.getDate() + 1);
+  sunday.setHours(23, 59, 59, 999);
+
+  return input >= saturday && input <= sunday;
+}
+
 export function CPDashboard() {
   const [events, setEvents] = useState([]);
   const [searchInput, setSearchInput] = useState('');
@@ -42,6 +83,7 @@ export function CPDashboard() {
   const [isLoading, setIsLoading] = useState(false);
   const [dateFilter, setDateFilter] = useState('');
   const [error, setError] = useState(null);
+  const [failedLogos, setFailedLogos] = useState(new Set());
   const darkMode = useSelector(state => state.theme.darkMode);
   const [pagination, setPagination] = useState({
     currentPage: 1,
@@ -52,6 +94,16 @@ export function CPDashboard() {
 
   const FALLBACK_IMG =
     'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=600&q=60';
+
+  const normalizeOrganizer = organizer => {
+    if (!organizer || typeof organizer !== 'string') return null;
+    const trimmed = organizer.trim();
+    return trimmed.length > 0 ? trimmed : null;
+  };
+
+  const handleLogoError = eventId => {
+    setFailedLogos(prev => new Set([...prev, eventId]));
+  };
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -65,6 +117,7 @@ export function CPDashboard() {
           total: response.data.events?.length || 0,
         }));
       } catch (err) {
+        console.error('Failed to fetch events', err);
         setError('Failed to load events');
       } finally {
         setIsLoading(false);
@@ -74,14 +127,37 @@ export function CPDashboard() {
     fetchEvents();
   }, []);
 
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setSearchQuery(searchInput.trim());
+      setPagination(prev => ({ ...prev, currentPage: 1 }));
+    }, 300);
+
+    return () => clearTimeout(handler);
+  }, [searchInput]);
+
   const handleSearchClick = () => {
     const trimmed = searchInput.trim();
     setSearchQuery(trimmed);
     setPagination(prev => ({ ...prev, currentPage: 1 }));
   };
 
+  const BASE_HEIGHT = 36;
+
+  const autoGrow = el => {
+    if (!el) return;
+    el.style.height = `${BASE_HEIGHT}px`;
+    el.style.height = `${Math.min(el.scrollHeight, 120)}px`;
+  };
+
+  const searchRef = useRef(null);
+  useEffect(() => {
+    autoGrow(searchRef.current);
+  }, [searchInput]);
+
   const handleSearchKeyDown = e => {
     if (e.key === 'Enter') {
+      e.preventDefault();
       const trimmed = searchInput.trim();
       setSearchQuery(trimmed);
       setPagination(prev => ({ ...prev, currentPage: 1 }));
@@ -89,23 +165,25 @@ export function CPDashboard() {
   };
 
   const formatDate = dateStr => {
-    if (!dateStr) return 'Date TBD';
+    if (!dateStr) {
+      return 'Date TBD';
+    }
+
     const date = new Date(dateStr);
     return date.toLocaleString('en-US', {
       weekday: 'long',
       month: 'long',
       day: 'numeric',
+      year: 'numeric',
       hour: 'numeric',
       minute: '2-digit',
     });
   };
 
-  // Helper function to extract date in YYYY-MM-DD format from event date
   const parseEventDate = dateString => {
     if (!dateString) return null;
 
     try {
-      // Try to parse as ISO date string or standard date
       const parsedDate = new Date(dateString);
       if (!isNaN(parsedDate.getTime())) {
         const year = parsedDate.getFullYear();
@@ -113,71 +191,39 @@ export function CPDashboard() {
         const day = String(parsedDate.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
       }
-    } catch (error) {
-      console.error('Error parsing date:', error);
+    } catch (err) {
+      console.error('Error parsing date:', err);
     }
     return null;
   };
 
-  function isTomorrow(dateString) {
-    const input = new Date(dateString);
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const tomorrow = new Date(today);
-    tomorrow.setDate(today.getDate() + 1);
-
-    return input >= tomorrow && input < new Date(tomorrow.getTime() + 24 * 60 * 60 * 1000);
-  }
-
-  function isComingWeekend(dateString) {
-    const input = new Date(dateString);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const day = today.getDay();
-    const daysUntilSaturday = (6 - day + 7) % 7 || 7;
-    const saturday = new Date(today);
-    saturday.setDate(today.getDate() + daysUntilSaturday);
-    const sunday = new Date(saturday);
-    sunday.setDate(saturday.getDate() + 1);
-    sunday.setHours(23, 59, 59, 999);
-
-    return input >= saturday && input <= sunday;
-  }
-
   const filteredEvents = events.filter(event => {
-    // Filter by online only if checkbox is checked
     if (onlineOnly) {
       const isOnlineEvent = event.location?.toLowerCase() === 'virtual';
       if (!isOnlineEvent) return false;
     }
 
-    // Filter by date filter (Tomorrow / Weekend)
     if (dateFilter === 'tomorrow') {
       if (!isTomorrow(event.date)) return false;
     } else if (dateFilter === 'weekend') {
       if (!isComingWeekend(event.date)) return false;
     }
 
-    // Filter by specific date (if selected)
     const eventDate = event.date ? parseEventDate(event.date) : null;
     if (selectedDate && eventDate !== selectedDate) {
       return false;
     }
 
-    // Filter by search query if provided
     if (!searchQuery) return true;
     const term = searchQuery.toLowerCase();
 
     return (
-      event.title?.toLowerCase().includes(term) ||
-      event.location?.toLowerCase().includes(term) ||
-      event.organizer?.toLowerCase().includes(term)
+      fuzzySearch(event.title, term, 0.6) ||
+      fuzzySearch(event.location, term, 0.6) ||
+      fuzzySearch(event.organizer, term, 0.6)
     );
   });
 
-  // Reset pagination to page 1 when filters change
   useEffect(() => {
     setPagination(prev => ({ ...prev, currentPage: 1 }));
   }, [searchQuery, selectedDate, onlineOnly, dateFilter]);
@@ -189,8 +235,24 @@ export function CPDashboard() {
     pagination.currentPage * pagination.limit,
   );
 
+  const isFiltered = Boolean(searchQuery);
+  const totalFilteredCount = filteredEvents.length;
+
+  let eventCountText = 'Showing all events';
+
+  if (isFiltered) {
+    if (totalFilteredCount > 0) {
+      eventCountText = `Showing ${totalFilteredCount} event${totalFilteredCount !== 1 ? 's' : ''}`;
+    } else {
+      eventCountText = 'No events found';
+    }
+  }
+
   const goToPage = newPage => {
-    if (newPage < 1 || newPage > totalPages) return;
+    if (newPage < 1 || newPage > totalPages) {
+      return;
+    }
+
     setPagination(prev => ({ ...prev, currentPage: newPage }));
   };
 
@@ -210,52 +272,104 @@ export function CPDashboard() {
     );
   }
 
+  let eventsContent;
+
+  if (displayedEvents.length > 0) {
+    eventsContent = displayedEvents.map(event => (
+      <Col md={4} key={event.id} className={styles.eventCardCol}>
+        <Card className={styles.eventCard}>
+          <div className={styles.eventCardImgContainer}>
+            <FixedRatioImage src={event.image} alt={event.title} fallback={FALLBACK_IMG} />
+          </div>
+          <CardBody>
+            <h5 className={styles.eventTitle}>{event.title}</h5>
+            <p className={styles.eventDate}>
+              <FaCalendarAlt className={styles.eventIcon} /> {formatDate(event.date)}
+            </p>
+            <p className={styles.eventLocation}>
+              <FaMapMarkerAlt className={styles.eventIcon} /> {event.location || 'Location TBD'}
+            </p>
+            <p className={styles.eventOrganizer}>
+              {event.organizerLogo && !failedLogos.has(event._id) ? (
+                <img
+                  src={event.organizerLogo}
+                  alt={normalizeOrganizer(event.organizer) || 'Organizer'}
+                  className={styles.organizerLogo}
+                  onError={() => handleLogoError(event._id)}
+                  loading="lazy"
+                />
+              ) : (
+                <FaUserAlt className={styles.eventIcon} aria-hidden="true" />
+              )}{' '}
+              <span>{normalizeOrganizer(event.organizer) || 'Organizer TBD'}</span>
+            </p>
+          </CardBody>
+        </Card>
+      </Col>
+    ));
+  } else {
+    eventsContent = <div className={styles.noEvents}>No events available</div>;
+  }
+
   return (
     <Container className={styles.dashboardContainer}>
       <header className={`${styles.dashboardHeader} ${darkMode ? styles.darkHeader : ''}`}>
         <h1>All Events</h1>
         <div>
-          <div className={styles.dashboardSearchContainer}>
-            <Input
-              id="search"
-              type="search"
+          <div
+            className={`${styles.dashboardSearchContainer} ${
+              darkMode ? styles.darkSearchContainer : ''
+            }`}
+          >
+            <textarea
+              ref={searchRef}
+              rows={1}
+              maxLength={100}
               placeholder="Search events..."
               value={searchInput}
               onChange={e => setSearchInput(e.target.value)}
               onKeyDown={handleSearchKeyDown}
-              className={styles.dashboardSearchInput}
+              className={`${styles.dashboardSearchTextarea} ${
+                darkMode ? styles.darkSearchTextarea : ''
+              }`}
             />
 
-            {searchInput && (
+            <div className={styles.dashboardSearchButtons}>
+              {searchInput && (
+                <button
+                  type="button"
+                  className={styles.dashboardClearBtn}
+                  onClick={() => {
+                    setSearchInput('');
+                    setSearchQuery('');
+                    setPagination(prev => ({ ...prev, currentPage: 1 }));
+                  }}
+                >
+                  <FaTimes />
+                </button>
+              )}
+
               <button
                 type="button"
-                className={styles.dashboardClearBtn}
-                onClick={() => {
-                  setSearchInput('');
-                  setSearchQuery('');
-                  setPagination(prev => ({ ...prev, currentPage: 1 }));
-                }}
+                className={styles.dashboardSearchIconBtn}
+                onClick={handleSearchClick}
+                aria-label="Search events"
               >
-                <FaTimes />
+                <FaSearch />
               </button>
-            )}
-
-            <button
-              type="button"
-              className={styles.dashboardSearchIconBtn}
-              onClick={handleSearchClick}
-              aria-label="Search events"
-            >
-              <FaSearch />
-            </button>
+            </div>
           </div>
+          {searchInput.length >= 100 && (
+            <Alert className={styles.charCountWarning}>Max 100 characters</Alert>
+          )}
         </div>
       </header>
 
-      <Row className={styles.centeredRow}>
+      <Row>
         <Col md={3} className={`${styles.dashboardSidebar} ${darkMode ? styles.darkSidebar : ''}`}>
           <div className={styles.filterSection}>
             <h4>Search Filters</h4>
+
             <div className={styles.filterSectionDivider}>
               <div className={styles.filterItem}>
                 <label htmlFor="date-tomorrow"> Dates</label>
@@ -277,6 +391,7 @@ export function CPDashboard() {
                       Tomorrow
                     </Label>
                   </FormGroup>
+
                   <FormGroup check className={styles.radioGroup + ' d-flex align-items-center'}>
                     <Input
                       id="date-weekend"
@@ -295,17 +410,18 @@ export function CPDashboard() {
                     </Label>
                   </FormGroup>
                 </div>
-                <div className={styles.dashboardActions}>
-                  <Button
-                    color="primary"
-                    onClick={() => {
-                      setDateFilter('');
-                      setSelectedDate('');
-                    }}
-                  >
-                    Clear date filter
-                  </Button>
-                </div>
+
+                <Button
+                  color="primary"
+                  size="sm"
+                  onClick={() => {
+                    setDateFilter('');
+                    setSelectedDate('');
+                  }}
+                >
+                  Clear date filter
+                </Button>
+
                 <Input
                   type="date"
                   placeholder="Select Date"
@@ -334,21 +450,21 @@ export function CPDashboard() {
 
               <div className={styles.filterItem}>
                 <label htmlFor="branches">Branches</label>
-                <Input type="select">
+                <Input id="branches" type="select">
                   <option>Select branches</option>
                 </Input>
               </div>
 
               <div className={styles.filterItem}>
                 <label htmlFor="themes">Themes</label>
-                <Input type="select">
+                <Input id="themes" type="select">
                   <option>Select themes</option>
                 </Input>
               </div>
 
               <div className={styles.filterItem}>
                 <label htmlFor="categories">Categories</label>
-                <Input type="select">
+                <Input id="categories" type="select">
                   <option>Select categories</option>
                 </Input>
               </div>
@@ -357,47 +473,23 @@ export function CPDashboard() {
         </Col>
 
         <Col md={9} className={`${styles.dashboardMain} ${darkMode ? styles.darkMain : ''}`}>
-          <h2 className={styles.sectionTitle}>Events</h2>
+          <div className={styles.eventsHeader}>
+            <h2 className={styles.sectionTitle}>Events</h2>
+            <Button color="primary" className={styles.showPastEventsBtn}>
+              Show Past Events
+            </Button>
+          </div>
 
-          <Row>
-            {isLoading ? (
-              <div className={styles.noEvents}>Loading events...</div>
-            ) : error ? (
-              <div className={styles.noEvents}>{error}</div>
-            ) : displayedEvents.length > 0 ? (
-              displayedEvents.map(event => (
-                <Col md={4} key={event.id} className={styles.eventCardCol}>
-                  <Card className={styles.eventCard}>
-                    <div className={styles.eventCardImgContainer}>
-                      <FixedRatioImage
-                        src={event.image}
-                        alt={event.title}
-                        fallback={FALLBACK_IMG}
-                      />
-                    </div>
-                    <CardBody>
-                      <h5 className={styles.eventTitle}>{event.title}</h5>
-                      <p className={styles.eventDate}>
-                        <FaCalendarAlt className={styles.eventIcon} /> {formatDate(event.date)}
-                      </p>
-                      <p className={styles.eventLocation}>
-                        <FaMapMarkerAlt className={styles.eventIcon} />{' '}
-                        {event.location || 'Location TBD'}
-                      </p>
-                      <p className={styles.eventOrganizer}>
-                        <FaUserAlt className={styles.eventIcon} />{' '}
-                        {event.organizer || 'Organizer TBD'}
-                      </p>
-                    </CardBody>
-                  </Card>
-                </Col>
-              ))
-            ) : (
-              <div className={styles.noEvents}>No events available</div>
-            )}
-          </Row>
+          <p className={styles['event-count-text']}>
+            {isFiltered
+              ? totalFilteredCount > 0
+                ? `Showing ${totalFilteredCount} event${totalFilteredCount !== 1 ? 's' : ''}`
+                : 'No events found'
+              : 'Showing all events'}
+          </p>
 
-          {/* Simple pagination controls if needed */}
+          <Row>{eventsContent}</Row>
+
           {totalPages > 1 && (
             <div className={styles.paginationContainer}>
               <Button
@@ -419,10 +511,6 @@ export function CPDashboard() {
               </Button>
             </div>
           )}
-
-          <div className={styles.dashboardActions}>
-            <Button color="primary">Show Past Events</Button>
-          </div>
         </Col>
       </Row>
     </Container>

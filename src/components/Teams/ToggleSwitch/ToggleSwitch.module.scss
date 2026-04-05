@@ -33,8 +33,7 @@
       background: dodgerblue;
   
       &:after {
-        transform: translatex(15px);
-  
+        transform: translatex(15px);  
       }
     }
     &:not(:checked) {

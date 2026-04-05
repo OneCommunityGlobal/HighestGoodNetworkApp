@@ -1,0 +1,185 @@
+/* SupplierPerformanceGraph.module.css */
+
+/* Main Card Component */
+.supplier-performance-card {
+  background-color: var(--card-bg, #ffffff);
+  border-radius: 8px;
+  padding: 16px;
+  height: 100%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease;
+  min-height: 420px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.supplier-performance-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Dark Mode Overrides for Card */
+.supplier-performance-card.supplier-performance-dark-mode {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  /* Background relies on global var(--card-bg) */
+}
+
+/* Title */
+.supplier-performance-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  color: var(--text-color, #333);
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.supplier-performance-dark-mode .supplier-performance-title {
+  color: #ffffff;
+}
+
+/* Content Area */
+.supplier-performance-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  margin-top: 10px;
+}
+
+/* Filters Styling */
+.supplier-performance-filters {
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  margin-bottom: 12px;
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.supplier-performance-dark-mode .supplier-performance-filters {
+  border-bottom-color: rgba(255, 255, 255, 0.2);
+}
+
+.supplier-performance-filter-group {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 140px;
+}
+
+.supplier-performance-filter-group label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 4px;
+  color: var(--label-color, #555);
+}
+
+.supplier-performance-dark-mode .supplier-performance-filter-group label {
+  color: #e0e0e0;
+}
+
+/* SELECT INPUT STYLING 
+   This styles the "closed" box.
+*/
+.supplier-performance-select {
+  width: 100%;
+  padding: 6px 10px;
+  font-size: 12px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  color: #333;
+  outline: none;
+  height: 38px;
+  cursor: pointer;
+}
+
+.supplier-performance-select:focus {
+  border-color: #2196f3;
+  box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+}
+
+/* DARK MODE INPUTS - EXACT COLOR MATCH 
+   1. Target the Select Box (.supplier-performance-select)
+   2. Target the Options inside (option)
+   Using !important to ensure we beat Bootstrap/User Agent styles.
+*/
+
+/* The Box itself */
+.supplier-performance-dark-mode .supplier-performance-select {
+  background-color: #2c3344 !important; /* The specific Slate Blue from Tools */
+  border-color: #364156 !important; /* The specific Border from Tools */
+  color: #e0e0e0 !important; /* The specific Text from Tools */
+}
+
+/* The Dropdown Menu Items */
+.supplier-performance-dark-mode .supplier-performance-select option {
+  background-color: #2c3344 !important;
+  color: #e0e0e0 !important;
+}
+
+/* Focus State in Dark Mode */
+.supplier-performance-dark-mode .supplier-performance-select:focus {
+  border-color: #2196f3 !important;
+  box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2) !important;
+}
+
+/* Tooltip Styling */
+.supplier-performance-tooltip {
+  background-color: rgba(255, 255, 255, 0.95);
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  max-width: 200px;
+  z-index: 1000;
+}
+
+.supplier-performance-tooltip-label {
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  color: #333;
+}
+
+.supplier-performance-dark-mode .supplier-performance-tooltip {
+  background-color: rgba(45, 45, 45, 0.95);
+  border-color: #555;
+}
+
+.supplier-performance-dark-mode .supplier-performance-tooltip-label {
+  color: #e0e0e0;
+}
+
+/* Loading/Empty States */
+.supplier-performance-loading,
+.supplier-performance-empty,
+.supplier-performance-error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  min-height: 200px;
+  font-size: 14px;
+  color: #666;
+  opacity: 0.7;
+}
+
+.supplier-performance-dark-mode .supplier-performance-loading,
+.supplier-performance-dark-mode .supplier-performance-empty {
+  color: #a0a0a0;
+}
+
+.supplier-performance-error {
+  color: #f44336;
+}
+
+@media (max-width: 768px) {
+  .supplier-performance-filters {
+    flex-direction: column;
+    gap: 12px;
+  }
+}
