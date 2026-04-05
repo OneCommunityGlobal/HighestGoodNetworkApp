@@ -49,3 +49,21 @@
 
 
 }
+.basic-info-tab-desktop {
+  width: 100%;
+}
+
+
+.basic-info-tab-desktop:not(.dark) :global(.form-control){
+  background-color: transparent;
+}
+
+.dark-label-col {
+  background-color: #1c2541 !important;
+}
+.dark-label-col:hover {
+  background-color: #1c2541 !important;
+}
+:global(.bg-yinmn-blue) .dark-label-col {
+  background-color: #1c2541 !important;
+}
