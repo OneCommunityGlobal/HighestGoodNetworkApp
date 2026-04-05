@@ -118,11 +118,8 @@ function AdditionalInfo() {
 
   if (loading) return <div>Loading...</div>;
   return (
-<<<<<<< HEAD
     <div className={`${styles.AdditionalInfoBox} ${darkMode ? 'dark-mode' : ''}`}>
-=======
     <div className={styles.additionalInfoBox}>
->>>>>>> 5113d38dc (convert css to module css and add dark mode styling to component)
       <div className={styles.workExpInfoBox}>
         <h3> Work Experience and Additional Info: </h3>
         <button type="button" className={styles.editButton} onClick={handleEditSave}>
@@ -137,15 +134,12 @@ function AdditionalInfo() {
           .map((question, index) => {
             const field = fields[index];
             return (
-<<<<<<< HEAD
               <div className={styles['question-and-response-box']} key={field.key}>
                 <div className={styles['question-box']}>
                   <p>{question.text}</p>
-=======
               <div className={styles.questionAndResponseBox} key={field.key}>
                 <div className={styles.questionBox}>
                   <p className={getFontColor(darkMode)}>{question.text}</p>
->>>>>>> 5113d38dc (convert css to module css and add dark mode styling to component)
                 </div>
                 {field.type === 'textarea' ? (
                   <textarea

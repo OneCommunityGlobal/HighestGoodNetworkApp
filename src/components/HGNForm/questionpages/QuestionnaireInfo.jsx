@@ -5,7 +5,6 @@ import { getBoxStyling, getFontColor } from '../../../styles';
 
 function QuestionnaireInfo() {
   const darkMode = useSelector(state => state.theme.darkMode);
-<<<<<<< HEAD
   const containerClass = `${styles.questionnaireInfo} ${darkMode ? styles.darkContainer : ''}`;
   const stripClass = `${styles.blueStrip} ${darkMode ? styles.darkStrip : ''}`;
 
@@ -14,7 +13,6 @@ function QuestionnaireInfo() {
       <div className={stripClass} />
       <h1>HGN Development Team Questionnaire</h1>
       <p>
-=======
   return (
     <div
       className={`${styles.questionnaireInfo} ${darkMode ? 'bg-space-cadet' : ''}`}
@@ -23,7 +21,6 @@ function QuestionnaireInfo() {
       <div className={`${styles.blueStrip}`} />
       <h1 className={`${getFontColor(darkMode)}`}>HGN Development Team Questionnaire</h1>
       <p className={`${getFontColor(darkMode)}`}>
->>>>>>> a2dce1bdb (add dark mode for questionnaire)
         Your answers to this questionnaire are used for team collaboration and placing you on a
         Development Team based on your interests and strengths.
       </p>

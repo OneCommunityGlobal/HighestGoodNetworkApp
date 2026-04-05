@@ -1,6 +1,5 @@
 /* ===========================
    PAGE LAYOUT
-=========================== */
 .pageLayout {
   display: flex;
   flex-direction: row;
@@ -22,7 +21,6 @@
 
 /* ===========================
    HEADER SECTION
-=========================== */
 .header {
   margin-bottom: 1rem;
 }
@@ -48,7 +46,6 @@
 
 /* ===========================
    MAIN SECTION
-=========================== */
 .mainSection {
   display: flex;
   justify-content: space-between;
@@ -58,7 +55,6 @@
 
 /* ===========================
    CHART SECTION
-=========================== */
 .chartSection {
   flex: 1;
   display: flex;
@@ -74,7 +70,6 @@
 
 /* ===========================
    PROGRESS SECTION
-=========================== */
 .progressSection {
   width: 280px;
   background: #ffffff;
@@ -125,7 +120,6 @@
 
 /* ===========================
    BOTTOM SECTION
-=========================== */
 .bottomSection {
   margin-top: 2.5rem;
   display: flex;
@@ -188,7 +182,6 @@
 
 /* ===========================
    RESPONSIVENESS
-=========================== */
 @media (max-width: 1024px) {
   .mainSection {
     flex-direction: column;

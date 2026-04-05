@@ -4,10 +4,6 @@
   border: 1px solid #c0c0c0;
   border-radius: 15px;
   background-color: #fff;
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
   box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
 }
 
@@ -16,18 +12,10 @@
   background-color: #1c2541;
   border-color: #3a506b;
   color: #fff;
-=======
   /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
->>>>>>> a2dce1bdb (add dark mode for questionnaire)
-=======
  
->>>>>>> a09e974eb (Remove box-shadow comment from QuestionnaireInfo styles)
-=======
  /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
->>>>>>> 428f1c16f (Comment out box-shadow in QuestionnaireInfo styles)
-=======
 
->>>>>>> cb80f72d8 (Remove commented box-shadow from QuestionnaireInfo styles)
 }
 
 .questionnaireInfo h1 {

@@ -1,11 +1,8 @@
 import { useSelector } from 'react-redux';
 import styles from '../styles/SkillsSection.module.css';
-<<<<<<< HEAD
 import { getColorClass } from '../utils/skillUtils';
-=======
 import { useSelector } from 'react-redux';
 import { getFontColor } from '../../../../styles';
->>>>>>> f5fbe5ae2 (add dark mode styling to BackendSkills component)
 
 function BackendSkills({ profileData }) {
   const darkMode = useSelector(state => state.theme.darkMode);

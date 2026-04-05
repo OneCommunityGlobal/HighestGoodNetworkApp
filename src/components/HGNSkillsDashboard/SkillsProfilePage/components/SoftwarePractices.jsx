@@ -1,11 +1,8 @@
 import { useSelector } from 'react-redux';
 import styles from '../styles/SkillsSection.module.css';
-<<<<<<< HEAD
 import { getColorClass } from '../utils/skillUtils';
-=======
 import { useSelector } from 'react-redux';
 import { getFontColor } from '../../../../styles';
->>>>>>> 775c562df (add dark mode styling to SoftwarePractices component)
 
 function SoftwarePractices({ profileData }) {
   const darkMode = useSelector(state => state.theme.darkMode);

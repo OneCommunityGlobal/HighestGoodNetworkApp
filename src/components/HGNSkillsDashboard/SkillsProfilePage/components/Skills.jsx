@@ -9,13 +9,10 @@ function Skills({ selectedSkill, onSkillClick }) {
   const darkMode = useSelector(state => state?.theme?.darkMode);
 
   return (
-<<<<<<< HEAD
     <div className={`${styles.skills} ${darkMode ? styles.darkMode : ''}`}>
       <h3>Skills</h3>
-=======
     <div className={`${styles.skills}`}>
       <h3 className={getFontColor(darkMode)}>Skills</h3>
->>>>>>> b850b0ee5 (add dark mode styling to Skills component)
       {skills.map(skill => (
         <button
           key={skill}

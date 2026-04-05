@@ -258,18 +258,15 @@ function FollowupQuestions() {
   }
 
   return (
-<<<<<<< HEAD
     <div className={`${styles.followupQuestions} ${darkMode ? styles.darkContainer : ''}`}>
       <h3 className={`${styles.blueStrip} ${darkMode ? styles.darkStrip : ''}`}>
         Follow-up Questions
       </h3>
-=======
     <div
       className={`${styles.followupQuestions} ${darkMode ? 'bg-space-cadet' : ''}`}
       style={getBoxStyling(darkMode)}
     >
       <h3 className={`${styles.blueStrip}`}>Follow-up Questions</h3>
->>>>>>> 9e2264a47 (add dark mode styling to page 5)
       <form onSubmit={handleFormSubmission}>
         {questions.map((question, index) => {
           // Dynamically map formData field names to questions

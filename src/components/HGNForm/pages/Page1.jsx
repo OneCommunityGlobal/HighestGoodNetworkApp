@@ -1,12 +1,4 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
 import { useEffect, useState } from 'react';
-=======
-import { use, useEffect } from 'react';
->>>>>>> a2dce1bdb (add dark mode for questionnaire)
-=======
-import { useEffect } from 'react';
->>>>>>> 47c2f6ce9 (fix accidental code additions)
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { getUserProfileBasicInfo } from '~/actions/userManagement';
@@ -18,30 +10,26 @@ import InfoForm from '../questionpages/InfoForm';
 import Progress from '../questionpages/Progress';
 import styles from '../styles/hgnform.module.css';
 
-<<<<<<< HEAD
 export default function Page1() {
-=======
-function Page1() {
-  const user = useSelector(state => state.auth.user);
-  const darkMode = useSelector(state => state.theme.darkMode);
->>>>>>> a2dce1bdb (add dark mode for questionnaire)
   const dispatch = useDispatch();
-  const darkMode = useSelector(state => state.theme.darkMode);
   const authUser = useSelector(state => state.auth.user);
+  const darkMode = useSelector(state => state.theme.darkMode);
   const history = useHistory();
   const [checkingExisting, setCheckingExisting] = useState(true);
 
+  // Fetch basic profile info on mount
   useEffect(() => {
     if (authUser?.userid) {
       dispatch(getUserProfileBasicInfo({ userId: authUser.userid }));
     }
   }, [dispatch, authUser?.userid]);
 
+  // Scroll to top on mount
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-<<<<<<< HEAD
+  // Check if user has already submitted skills
   useEffect(() => {
     let mounted = true;
 
@@ -56,13 +44,12 @@ function Page1() {
         const res = await httpService.get(ENDPOINTS.SKILLS_PROFILE(userId));
         const data = res?.data;
 
-        // Response has skillInfo (not skills) — check if it exists
         if (mounted && res?.status === 200 && data?.skillInfo) {
           history.replace('/hgn/profile/skills');
           return;
         }
       } catch {
-        // 404 or error means no skills data → user hasn't submitted → show form
+        // No skills data or error → continue to show form
       } finally {
         if (mounted) setCheckingExisting(false);
       }
@@ -91,17 +78,7 @@ function Page1() {
   }
 
   return (
-<<<<<<< HEAD
     <div className={`${styles['container-hgnform-wrapper']} ${darkMode ? 'bg-oxford-blue' : ''}`}>
-=======
-    <div className={`${styles.hgnform} ${darkMode ? 'bg-oxford-blue' : ''}`}>
->>>>>>> a2dce1bdb (add dark mode for questionnaire)
-=======
-  const darkClass = darkMode ? styles.bgOxfordBlue : '';
-
-  return (
-    <div className={`${styles.hgnform} ${darkClass}`}>
->>>>>>> 8517600dd (Refactor dark mode class assignment in Page1.jsx)
       <Banner />
       <QuestionnaireInfo />
       <InfoForm />

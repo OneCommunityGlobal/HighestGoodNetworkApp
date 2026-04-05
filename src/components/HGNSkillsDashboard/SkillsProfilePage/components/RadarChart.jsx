@@ -1,15 +1,6 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 import { Chart, Radar } from 'react-chartjs-2';
->>>>>>> ae1908b9d (add dark mode styling to RadarChart component)
-=======
 import { Radar } from 'react-chartjs-2';
-<<<<<<< HEAD
->>>>>>> 47c2f6ce9 (fix accidental code additions)
-=======
 import PropTypes from 'prop-types';
->>>>>>> d0531d57c (Add PropTypes and defaultProps to RadarChart component)
 import {
   Chart as ChartJS,
   Filler,
@@ -171,7 +162,6 @@ const SKILL_MAPPINGS = [
   },
 ];
 
-<<<<<<< HEAD
 function RadarChart({ profileData, compact = true, onSkillsDataReady }) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [isLoading, setIsLoading] = useState(true);
@@ -246,7 +236,6 @@ function RadarChart({ profileData, compact = true, onSkillsDataReady }) {
   }
 
   const { general = {}, frontend = {}, backend = {} } = profileData?.skillInfo || {};
-=======
 function RadarChart({ profileData }) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const safeProfileData = profileData || {};
@@ -254,19 +243,14 @@ function RadarChart({ profileData }) {
   const general = skillInfo.general || {};
   const frontend = skillInfo.frontend || {};
   const backend = skillInfo.backend || {};
->>>>>>> ae1908b9d (add dark mode styling to RadarChart component)
 
-<<<<<<< HEAD
-=======
 
   // Generate chart data dynamically
->>>>>>> d0531d57c (Add PropTypes and defaultProps to RadarChart component)
   const chartData = {
     labels: skillsData.map(skill => (compact ? skill.shortLabel || skill.label : skill.label)),
     datasets: [
       {
         label: 'Skills',
-<<<<<<< HEAD
         data: skillsData.map(skill => skill.score),
         backgroundColor: darkMode
           ? 'rgba(133,146,226,0.25)'
@@ -284,7 +268,6 @@ function RadarChart({ profileData }) {
         pointBorderWidth: 1.5,
         pointHoverBorderWidth: 2,
         fill: true,
-=======
         data: SKILL_MAPPINGS.map(skill => {
           const source = skill.value(general) ?? skill.value(frontend) ?? skill.value(backend) ?? 0;
           return source;
@@ -292,12 +275,10 @@ function RadarChart({ profileData }) {
         backgroundColor: darkMode ? 'rgba(37, 98, 240, 0.2)' : 'rgba(255, 99, 132, 0.2)',
         borderColor: darkMode ? 'rgba(37, 98, 240, 1)' : 'rgba(255, 99, 132, 1)',
         borderWidth: 2,
->>>>>>> ae1908b9d (add dark mode styling to RadarChart component)
       },
     ],
   };
 
-<<<<<<< HEAD
   const customTooltipPlugin = {
     id: 'customTooltip',
     afterDraw: chart => {
@@ -305,7 +286,6 @@ function RadarChart({ profileData }) {
       if (tooltip && tooltip.opacity === 0) {
         return;
       }
-=======
   const chartOptions = {
     scales: {
       r: {
@@ -325,7 +305,6 @@ function RadarChart({ profileData }) {
         display: false,
         position: 'bottom',
       },
->>>>>>> ae1908b9d (add dark mode styling to RadarChart component)
     },
   };
 
@@ -431,7 +410,6 @@ function RadarChart({ profileData }) {
   );
 }
 
-<<<<<<< HEAD
 RadarChart.propTypes = {
   profileData: PropTypes.shape({
     skillInfo: PropTypes.shape({
@@ -441,7 +419,6 @@ RadarChart.propTypes = {
     }),
   }),
   compact: PropTypes.bool,
-=======
 RadarChart.propTypes ={
   profileData :PropTypes.shape({
   skillInfo: PropTypes.shape({
@@ -454,7 +431,6 @@ RadarChart.propTypes ={
 
 RadarChart.defaultProps={
 profileData:{},
->>>>>>> d0531d57c (Add PropTypes and defaultProps to RadarChart component)
 };
 
 export default RadarChart;

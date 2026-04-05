@@ -1,6 +1,5 @@
 import styles from '../styles/QuestionnaireInfo.module.css';
 import { useSelector } from 'react-redux';
-<<<<<<< HEAD
 
 function ThankYou() {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -11,7 +10,6 @@ function ThankYou() {
       <div className={stripClass} />
       <h1 style={{ marginBottom: '40px' }}>HGN Development Team Questionnaire</h1>
       <p style={{ marginBottom: '30px', fontSize: '16px', fontWeight: 'bold' }}>
-=======
 import { getBoxStyling, getFontColor } from '../../../styles';
 
 function ThankYou() {
@@ -30,7 +28,6 @@ function ThankYou() {
         className={`${getFontColor(darkMode)}`}
         style={{ marginBottom: '30px', fontSize: '16px', fontWeight: 'bold' }}
       >
->>>>>>> 8b0d5c684 (add dark mode styling to page6)
         Thank you for your response! Your answers have been successfully recorded.
       </p>
       <p className={`${getFontColor(darkMode)}`} style={{ marginBottom: '30px', fontSize: '14px' }}>

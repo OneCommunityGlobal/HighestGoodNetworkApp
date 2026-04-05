@@ -273,18 +273,15 @@ function GeneralQuestions() {
   }
 
   return (
-<<<<<<< HEAD
     <div className={`${styles.generalQuestions} ${darkMode ? styles.darkContainer : ''}`}>
       <h3 className={`${styles.blueStrip} ${darkMode ? styles.darkStrip : ''}`}>
         General Questions
       </h3>
-=======
     <div
       className={`${styles.generalQuestions} ${darkMode ? 'bg-space-cadet' : ''}`}
       style={getBoxStyling(darkMode)}
     >
       <h3 className={`${styles.blueStrip}`}>General Questions</h3>
->>>>>>> d9c2c36e0 (add dark mode styling to page2)
       <form onSubmit={handleNext}>
         <div className={`${styles.hours}`}>
           {renderEditableQuestion(0)}

@@ -117,18 +117,15 @@ function BackendQuestions() {
   }
 
   return (
-<<<<<<< HEAD
     <div className={`${styles.frontendBackendQuestions} ${darkMode ? styles.darkContainer : ''}`}>
       <h3 className={`${styles.blueStrip} ${darkMode ? styles.darkStrip : ''}`}>
         Backend Questions
       </h3>
-=======
     <div
       className={`${styles.frontendBackendQuestions} ${darkMode ? 'bg-space-cadet' : ''}`}
       style={getBoxStyling(darkMode)}
     >
       <h3 className={`${styles.blueStrip}`}>Backend Questions</h3>
->>>>>>> 85f9e9e48 (add dark mode styling to page 4)
       <form onSubmit={handleNext}>
         {questions.map((question, index) => {
           const fieldName = fieldNameMap[index] || `backend_Question_${index}`;

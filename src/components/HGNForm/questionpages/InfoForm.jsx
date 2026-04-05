@@ -149,14 +149,11 @@ function InfoForm() {
   };
 
   return !loading ? (
-<<<<<<< HEAD
     <div className={`${styles.infoFormContainer} ${darkMode ? styles.dark : ''}`}>
-=======
     <div
       className={`${styles.infoFormContainer} ${darkMode ? 'bg-space-cadet' : ''}`}
       style={getBoxStyling(darkMode)}
     >
->>>>>>> f4bb365f3 (add dark mode to infoForm.jsx)
       <form onSubmit={handleNext}>
         <div className={`${styles.formInputs}`}>
           <label htmlFor="name" className={`${getFontColor(darkMode)}`}>
@@ -206,11 +203,8 @@ function InfoForm() {
           />
         </div>
         <div className={`${styles.formInputs}`}>
-<<<<<<< HEAD
           <label htmlFor="github" className={`${styles.labelInline}`}>
-=======
           <label htmlFor="github" className={`${getFontColor(darkMode)}`}>
->>>>>>> f4bb365f3 (add dark mode to infoForm.jsx)
             GitHub <span style={{ color: 'red' }}>*</span>
           </label>
           <input
@@ -229,11 +223,8 @@ function InfoForm() {
           />
         </div>
         <div className={`${styles.formInputs}`}>
-<<<<<<< HEAD
           <label htmlFor="slack" className={`${styles.labelInline}`}>
-=======
           <label htmlFor="slack" className={`${getFontColor(darkMode)}`}>
->>>>>>> f4bb365f3 (add dark mode to infoForm.jsx)
             Slack <span style={{ color: 'red' }}>*</span>
           </label>
           <input
@@ -269,39 +260,30 @@ function InfoForm() {
           />
 
           <label
-<<<<<<< HEAD
             style={{ color: darkMode ? '#78a5c4' : '#2f5061', margin: '0 5px' }}
             htmlFor="sameAsName"
-=======
             style={{ color: '#2f5061', margin: '0 5px' }}
             htmlFor="sameAsName"
-<<<<<<< HEAD
             className={`${getFontColor(darkMode)}`}
->>>>>>> f4bb365f3 (add dark mode to infoForm.jsx)
-=======
             className={`${styles.slackLabel}${getFontColor(darkMode)}`}
->>>>>>> ab102efe7 (Update Slack label class for styling consistency)
           >
             Yes, my Slack handle is my first and last name <span style={{ color: 'red' }}>*</span>
           </label>
         </div>
 
         <span
-<<<<<<< HEAD
           className={`${styles.errorMessage}`}
           style={{ color: darkMode ? '#b5bac5' : '#2e5163', margin: '20px 20px' }}
         >
           <strong style={{ color: darkMode ? '#78a5c4' : '#2f5061' }}>NOTE:</strong> Your name and
           email need to match what is on your DropBox and Google Doc. Please edit them on your
           Profile Page if they don’t.{' '}
-=======
           className={`${styles.errorMessage} ${getFontColor(darkMode)}`}
           style={{ color: '#2e5163', margin: '20px 20px' }}
         >
           <strong className={`${getFontColor(darkMode)}`}>NOTE:</strong> Your name and email need to
           match what is on your DropBox and Google Doc. Please edit them on your Profile Page if
           they don’t.{' '}
->>>>>>> f4bb365f3 (add dark mode to infoForm.jsx)
         </span>
 
         <div className={`${styles.buttonContainer}`}>

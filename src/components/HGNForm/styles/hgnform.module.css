@@ -9,19 +9,14 @@
   margin: 0;
   box-sizing: border-box;
 }
-<<<<<<< HEAD
 
 .container-hgnform-wrapper.bg-oxford-blue {
   color: #ffffff;
-=======
 body{
     background-color: #e7f4f9;
 } 
 .hgnform {
     height: 100%;
-<<<<<<< HEAD
->>>>>>> a2dce1bdb (add dark mode for questionnaire)
-=======
     padding: 0;
     margin: 0;
 }
@@ -30,5 +25,4 @@ body{
 }
 .bgSpaceCadet {
     background-color: #1d2b44;
->>>>>>> 130a6aae2 (Refactor HGNForm styles for improved layout)
 }
