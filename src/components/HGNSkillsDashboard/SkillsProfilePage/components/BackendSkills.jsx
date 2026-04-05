@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
 import styles from '../styles/SkillsSection.module.css';
 import { getColorClass } from '../utils/skillUtils';
-import { useSelector } from 'react-redux';
+
 import { getFontColor } from '../../../../styles';
 
 function BackendSkills({ profileData }) {
