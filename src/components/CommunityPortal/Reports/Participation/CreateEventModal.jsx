@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment-timezone';
@@ -30,6 +30,12 @@ function CreateEventModal({ isOpen, toggle }) {
     coverImage: '',
   });
 
+  useEffect(() => {
+    if (isOpen && !loading) {
+      resetForm();
+    }
+  }, [isOpen]);
+
   const resetForm = () => {
     setFormData({
       title: '',
@@ -55,9 +61,11 @@ function CreateEventModal({ isOpen, toggle }) {
 
   const handleToggle = () => {
     if (!loading) {
-      toggle();
-      if (!isOpen) {
+      if (isOpen) {
+        toggle();
+      } else {
         resetForm();
+        toggle();
       }
     }
   };
