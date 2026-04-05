@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
 import styles from '../styles/SkillsSection.module.css';
 import { getColorClass } from '../utils/skillUtils';
-import { useSelector } from 'react-redux';
+
 import { getFontColor } from '../../../../styles';
 
 function DeploymentSkills({ profileData }) {
@@ -9,7 +9,7 @@ function DeploymentSkills({ profileData }) {
   const safeProfileData = profileData || {};
   const skillInfo = safeProfileData.skillInfo || {};
   const backend = skillInfo.backend || {};
-  const darkMode = useSelector(state => state.theme.darkMode);
+ 
 
   const skills = [
     { value: backend.Deployment, label: 'Deployment (Azure, Docker, etc)' },
