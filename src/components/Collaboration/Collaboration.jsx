@@ -19,7 +19,9 @@ function Collaboration() {
   const [categories, setCategories] = useState([]);
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [summaries, setSummaries] = useState(null);
-
+  const [showReorderModal, setShowReorderModal] = useState(false);
+  const [reorderJobs, setReorderJobs] = useState([]);
+  const [isSaving, setIsSaving] = useState(false);
   // Modal
   const [selectedJob, setSelectedJob] = useState(null);
 
@@ -42,6 +44,7 @@ function Collaboration() {
 
       const res = await fetch(url);
       const data = await res.json();
+      console.log('Fetched jobs:', data.jobs);
       const jobs = data.jobs || [];
 
       setAllJobs(jobs);
@@ -114,7 +117,37 @@ function Collaboration() {
   };
 
   const handleReorderJobs = () => {
-    toast.info('Reorder functionality coming soon!');
+    setReorderJobs([...allJobs]);
+    setShowReorderModal(true);
+  };
+
+  const moveJob = (fromIndex, toIndex) => {
+    const updated = [...reorderJobs];
+    const [moved] = updated.splice(fromIndex, 1);
+    updated.splice(toIndex, 0, moved);
+    setReorderJobs(updated);
+  };
+
+  const handleSaveReorder = async () => {
+    try {
+      setIsSaving(true);
+
+      const jobIds = reorderJobs.map(job => job._id);
+
+      await fetch(`${ApiEndpoint}/jobs/reorder`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jobIds }),
+      });
+
+      toast.success('Jobs reordered successfully!');
+      setShowReorderModal(false);
+      fetchJobs();
+    } catch {
+      toast.error('Failed to reorder jobs');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   /* ================= SUMMARIES VIEW ================= */
@@ -171,8 +204,12 @@ function Collaboration() {
               onChange={e => setQuery(e.target.value)}
             />
             <button className="btn btn-secondary">Go</button>
-            <button className="btn btn-secondary" onClick={handleReorderJobs}>
-              Reorder Jobs
+            <button
+              className="btn btn-secondary"
+              onClick={handleReorderJobs}
+              disabled={!allJobs.length}
+            >
+              Edit to Reorder
             </button>
           </form>
 
@@ -256,7 +293,9 @@ function Collaboration() {
                 }
                 alt={ad.title}
               />
-              <h3>{ad.title}</h3>
+              <h3>
+                {ad.title} - {ad.category}
+              </h3>
             </button>
           ))}
         </div>
@@ -307,6 +346,60 @@ function Collaboration() {
               </a>
               <button className="btn btn-primary" disabled>
                 Apply Now
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showReorderModal && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.reorderModal}>
+            <h2>Reorder Job Listings</h2>
+            <p className={styles.subText}>Drag and drop to rearrange featured job postings.</p>
+
+            <div className={styles.reorderList}>
+              {reorderJobs.map((job, index) => (
+                <div
+                  key={job._id}
+                  className={styles.reorderItem}
+                  draggable
+                  onDragStart={e => {
+                    e.dataTransfer.setData('dragIndex', index.toString());
+                  }}
+                  onDragOver={e => e.preventDefault()}
+                  onDrop={e => {
+                    const fromIndex = Number(e.dataTransfer.getData('dragIndex'));
+                    moveJob(fromIndex, index);
+                  }}
+                >
+                  {/* LEFT NUMBER BADGE */}
+                  <div className={styles.badge}>{index + 1}</div>
+
+                  {/* JOB INFO */}
+                  <div className={styles.jobInfo}>
+                    <h4>{job.title}</h4>
+                    <div className={styles.meta}>
+                      <span className={styles.category}>{job.category}</span>
+                      {job.createdAt && (
+                        <span className={styles.date}>
+                          📅 {new Date(job.createdAt).toLocaleDateString()}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* ACTION BUTTONS */}
+            <div className={styles.modalActions}>
+              <button className="btn btn-secondary" onClick={() => setShowReorderModal(false)}>
+                Cancel
+              </button>
+
+              <button className="btn btn-primary" onClick={handleSaveReorder} disabled={isSaving}>
+                {isSaving ? 'Saving...' : 'Save Order'}
               </button>
             </div>
           </div>

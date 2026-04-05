@@ -10,15 +10,20 @@
 .userCollaborationContainer {
   width: 90%;
   margin: 0 auto;
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 10px;
   padding-bottom: 24px;
 }
 
-/* ================= DARK MODE – BASE ================= */
+/* ================= DARK MODE ================= */
+
+.dark {
+  background-color: #1b2a41;
+  color: #f1f1f1;
+}
 
 .dark .userCollaborationContainer {
-  background-color: #0f172a; /* deep slate */
+  background-color: #0f172a;
   color: #e5e7eb;
 }
 
@@ -57,8 +62,6 @@
   gap: 8px;
 }
 
-/* ================= DARK MODE – NAVBAR ================= */
-
 .dark .navbar {
   background-color: #1e293b;
 }
@@ -74,7 +77,7 @@
 }
 
 /* ======================================================
-   CATEGORY DROPDOWN
+   DROPDOWN
    ====================================================== */
 
 .jobSelect {
@@ -82,25 +85,27 @@
   top: 100%;
   right: 12px;
   margin-top: 6px;
-  background-color: #ffffff;
+  background-color: #fff;
   padding: 8px 12px;
   border-radius: 6px;
   border: 1px solid #ccc;
   z-index: 1500;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-  animation: fadeInDropdown 0.12s ease-in-out;
+  box-shadow: 0 4px 10px rgb(0 0 0 / 15%);
+  animation: fade-in-dropdown 0.12s ease-in-out;
 }
 
-@keyframes fadeInDropdown {
+@keyframes fade-in-dropdown {
   from {
     opacity: 0;
     transform: translateY(-3px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
+
 
 .dropdownItem {
   display: flex;
@@ -117,11 +122,8 @@
   background-color: #f0f0f0;
 }
 
-/* ================= DARK MODE – DROPDOWN ================= */
-
 .dark .jobSelect {
   background-color: #020617;
-  color: #e5e7eb;
   border: 1px solid #334155;
 }
 
@@ -147,8 +149,6 @@
   font-weight: 800;
 }
 
-/* ================= DARK MODE – HEADINGS ================= */
-
 .dark .jobHead {
   color: #e5e7eb;
 }
@@ -165,7 +165,7 @@
 }
 
 .jobAd {
-  background: #ffffff;
+  background: #fff;
   border-radius: 12px;
   border: 1px solid #ddd;
   padding: 14px;
@@ -176,7 +176,7 @@
 
 .jobAd:hover {
   transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 6px 12px rgb(0 0 0 / 20%);
 }
 
 .jobAd img {
@@ -189,8 +189,6 @@
   font-weight: 700;
   color: #183a9b;
 }
-
-/* ================= DARK MODE – JOB GRID ================= */
 
 .dark .jobAd {
   background-color: #020617;
@@ -216,7 +214,7 @@
   padding: 6px 12px;
   border-radius: 6px;
   border: 1px solid #ccc;
-  background-color: #ffffff;
+  background-color: #fff;
   cursor: pointer;
 }
 
@@ -225,8 +223,6 @@
   border-color: #9c0;
   font-weight: 700;
 }
-
-/* ================= DARK MODE – PAGINATION ================= */
 
 .dark .paginationButton {
   background-color: #020617;
@@ -241,7 +237,7 @@
 }
 
 /* ======================================================
-   SELECTED FILTER CHIPS
+   FILTER CHIPS
    ====================================================== */
 
 .jobQueries {
@@ -267,8 +263,6 @@
   cursor: pointer;
 }
 
-/* ================= DARK MODE – CHIPS ================= */
-
 .dark .chip {
   background-color: #65a30d;
   color: #020617;
@@ -283,19 +277,10 @@
    MODAL
    ====================================================== */
 
-.dark {
-  background-color: #1b2a41;
-  color: #f1f1f1;
-}
-
-.dark .userCollaborationContainer {
-  background-color: #1b2a41;
-}
-
 .modalOverlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgb(0 0 0 / 55%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -304,60 +289,117 @@
 
 .modal {
   position: relative;
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 10px;
   padding: 28px;
   max-width: 520px;
   width: 90%;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-}
-
-/* ================= DARK MODE – MODAL ================= */
-
-.dark .jobAd {
-  background: linear-gradient(135deg, #23272a, #181a1b);
-  border-color: #333;
-}
-
-.dark .jobAd h3 {
-  color: #e0e0e0;
+  box-shadow: 0 10px 30px rgb(0 0 0 / 35%);
 }
 
 /* ======================================================
-   MODAL – CLOSE BUTTON
+   REORDER MODAL
    ====================================================== */
 
-.closeButton {
-  position: absolute;
-  top: 14px;
-  right: 16px;
-  background: transparent;
-  border: none;
-  font-size: 22px;
-  cursor: pointer;
-  line-height: 1;
-  color: #333;
+.reorderModal {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
-.closeButton:hover {
-  opacity: 0.75;
-}
-
-.dark .closeButton {
+.dark .reorderModal {
+  background: #020617;
   color: #e5e7eb;
 }
 
-/* ======================================================
-   MODAL – ACTIONS
-   ====================================================== */
-
-.modalActions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 16px;
-  margin-top: 28px;
+.subText {
+  font-size: 14px;
+  margin-bottom: 16px;
+  color: #666;
 }
 
-.modalActions button {
-  min-width: 120px;
+.dark .subText {
+  color: #94a3b8;
+}
+
+.reorderList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.reorderItem {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  cursor: grab;
+  background: #f9fafb;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.reorderItem:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgb(0 0 0 / 10%);
+}
+
+.dark .reorderItem {
+  background: #020617;
+  border: 1px solid #334155;
+}
+
+.reorderItem:active {
+  cursor: grabbing;
+  opacity: 0.8;
+}
+
+.badge {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #84cc16;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.dark .badge {
+  background-color: #65a30d;
+}
+
+.jobInfo h4 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.meta {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+  font-size: 13px;
+}
+
+.category {
+  background: #e5e7eb;
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+.dark .category {
+  background: #334155;
+}
+
+.date {
+  color: #666;
+}
+
+.dark .date {
+  color: #94a3b8;
 }
