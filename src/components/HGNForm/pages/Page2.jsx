@@ -8,7 +8,7 @@ import containerStyles from '../styles/hgnform.module.css';
 
 export default function Page2() {
   const darkMode = useSelector(state => state.theme.darkMode);
-  const headerRef = useRef(null);
+ 
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'auto' });
