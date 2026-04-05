@@ -167,6 +167,7 @@
   flex-direction: column;
 }
 
+
 .dropdownItem {
   width: 100%;
   text-align: left;
@@ -186,8 +187,6 @@
 .dropdownItem:hover {
   background-color: #f3f4f6;
 }
-
-/* ================= DARK MODE – DROPDOWN ================= */
 
 .dark .jobSelect {
   background-color: var(--bg-card);
@@ -257,8 +256,6 @@
   color: #183a9b;
 }
 
-/* ================= DARK MODE – JOB GRID ================= */
-
 .dark .jobAd {
   background-color: var(--bg-card);
   border: 1px solid var(--border);
@@ -292,8 +289,6 @@
   border-color: #9c0;
   font-weight: 700;
 }
-
-/* ================= DARK MODE – PAGINATION ================= */
 
 .dark .paginationButton {
   background-color: var(--bg-card);
@@ -333,8 +328,6 @@
   border-radius: 16px;
   cursor: pointer;
 }
-
-/* ================= DARK MODE – CHIPS ================= */
 
 .dark .chip {
   background-color: var(--accent);
@@ -382,23 +375,16 @@
 }
 
 /* ======================================================
-   MODAL – CLOSE BUTTON
+   REORDER MODAL
    ====================================================== */
 
-.closeButton {
-  position: absolute;
-  top: 14px;
-  right: 16px;
-  background: transparent;
-  border: none;
-  font-size: 22px;
-  cursor: pointer;
-  line-height: 1;
-  color: #333;
-}
-
-.closeButton:hover {
-  opacity: 0.75;
+.reorderModal {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
 .dark .closeButton {
