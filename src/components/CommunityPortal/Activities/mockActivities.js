@@ -67,7 +67,7 @@ export const mockActivities = [
     id: 9,
     name: 'Marathon Training',
     type: 'Fitness',
-    date: '2024-02-01',
+    date: '2029-02-01',
     location: 'Stadium',
   },
   {
@@ -130,14 +130,14 @@ export const mockActivities = [
     id: 19,
     name: 'Book Club - March',
     type: 'Social',
-    date: '2026-03-21',
+    date: '2026-10-21',
     location: 'Library',
   },
   {
     id: 20,
     name: 'Movie Night! Genre: Horror',
     type: 'Social',
-    date: '2026-02-28',
+    date: '2026-12-28',
     location: 'Community Center',
   },
 ];
