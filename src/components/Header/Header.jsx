@@ -407,6 +407,7 @@ export function Header(props) {
   return (
     <div className={`${styles.headerWrapper}`} data-testid="header">
       <Navbar className={`py-3 ${styles.navbar}`} color="dark" dark expand="xl"> {/* Added by Shreya */}
+        <NavbarToggler onClick={toggle} innerRef={toggleRef} />  {/* Added by Shreya */}
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
         {showPromotionsPopup && <DisplayBox onClose={() => setShowPromotionsPopup(false)} />}
   
@@ -419,7 +420,8 @@ export function Header(props) {
               {isAuthenticated && <OwnerMessage />}
             </div>
             <div className={styles.rightSection}>
-            <Collapse isOpen={true} navbar ref={collapseRef}> {/* Added by Shreya */}
+            <Collapse isOpen={isOpen} navbar ref={collapseRef}>
+            {/* <Collapse isOpen={true} navbar ref={collapseRef}> Added by Shreya */}
             <Nav className={`ml-auto ${styles.menuContainer} mr-3`} navbar>
                 <NavItem className={styles.showInMobile}>
                   <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
