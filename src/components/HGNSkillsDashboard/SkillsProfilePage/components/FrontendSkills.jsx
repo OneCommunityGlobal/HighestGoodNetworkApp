@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
 import styles from '../styles/SkillsSection.module.css';
 import { getColorClass } from '../utils/skillUtils';
-import { useSelector } from 'react-redux';
+
 import { getFontColor } from '../../../../styles';
 
 function FrontendSkills({ profileData }) {
@@ -9,7 +9,7 @@ function FrontendSkills({ profileData }) {
   const safeProfileData = profileData || {};
   const skillInfo = safeProfileData.skillInfo || {};
   const frontend = skillInfo.frontend || {};
-  const darkMode = useSelector(state => state.theme.darkMode);
+
 
   const skills = [
     { value: frontend.overall, label: 'Overall Frontend' },
