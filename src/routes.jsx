@@ -51,7 +51,7 @@ import IssueDashboard from './components/BMDashboard/Issues/IssueDashboard';
 import IssueChart from './components/BMDashboard/Issues/issueCharts';
 import BMTimeLogger from './components/BMDashboard/BMTimeLogger/BMTimeLogger';
 import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember';
-import AnalyticsDashboard from './components/JobCCDashboard/JobAnalytics/JobAnalytics';
+import AnalyticsDashboard from './components/JobCCDashboard/JobAnalytics/JobAnalytics.jsx';
 import FaqSearch from './components/Faq/FaqSearch';
 import FaqManagement from './components/Faq/FaqManagement';
 import FaqHistory from './components/Faq/FaqHistory';
@@ -518,6 +518,12 @@ export default (
           fallback
         />
         <ProtectedRoute
+          path="/application/analytics"
+          exact
+          component={AnalyticsDashboard}
+          fallback
+        />
+        <ProtectedRoute
           path="/application-analytics"
           exact
           component={ApplicationAnalyticsContainer}
@@ -634,13 +640,6 @@ export default (
             UserRole.Organizer,
             UserRole.Facilitator,
           ]}
-        />
-        <ProtectedRoute
-          path="/application/analytics"
-          exact
-          component={AnalyticsDashboard}
-          fallback
-          allowedRoles={[UserRole.Administrator, UserRole.Owner]}
         />
         {/* ----- BEGIN BM Dashboard Routing ----- */}
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
