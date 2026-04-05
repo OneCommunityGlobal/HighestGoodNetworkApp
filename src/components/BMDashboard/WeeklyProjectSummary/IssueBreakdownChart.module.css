@@ -69,12 +69,447 @@
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
+.filtersRow {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+  margin-bottom: 20px;
+  width: 100%;
+  align-items: flex-start;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  min-width: 250px;
+  flex: 1 1 350px;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Ensure react-select doesn't overflow */
+.filterGroup :global(.customSelect__control) {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.filterLabel {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text-color, #333);
+}
+
+.datePickerGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.datePicker {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 6px;
+  font-size: 14px;
+  background: var(--section-bg, #fff);
+  color: var(--text-color, #333);
+  min-height: 38px;
+  min-width: 0;
+  max-width: 100%;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+  /* Force light calendar popup and icon in light mode */
+  color-scheme: light;
+}
+
+/* Dark mode specific styling for better visibility */
+:global(.dark-mode) .datePicker {
+  background-color: #2c3344 !important;
+  border-color: #364156 !important;
+  color: #e0e0e0 !important;
+  color-scheme: dark;
+}
+
+/* Icon color is handled automatically by color-scheme (light/dark).
+   No filter needed — browser renders dark icon in light mode, white in dark mode. */
+.datePicker::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 1;
+}
+
+.datePicker::-webkit-calendar-picker-indicator:hover {
+  opacity: 0.75;
+}
+
+/* Ensure the date text is visible */
+.datePicker::-webkit-datetime-edit {
+  color: inherit;
+}
+
+.datePicker::-webkit-datetime-edit-fields-wrapper {
+  color: inherit;
+}
+
+.datePicker::-webkit-datetime-edit-text {
+  color: inherit;
+  padding: 0 0.3em;
+}
+
+.datePicker::-webkit-datetime-edit-month-field,
+.datePicker::-webkit-datetime-edit-day-field,
+.datePicker::-webkit-datetime-edit-year-field {
+  color: inherit;
+}
+
+.datePicker:hover {
+  border-color: var(--border-color-hover, #bbb);
+}
+
+:global(.dark-mode) .datePicker:hover {
+  border-color: #4a5568 !important;
+}
+
+.datePicker:focus {
+  outline: none;
+  border-color: var(--primary-color, #0d55b3);
+  box-shadow: 0 0 0 2px rgba(13, 85, 179, 0.1);
+}
+
+:global(.dark-mode) .datePicker:focus {
+  border-color: #0d55b3 !important;
+  box-shadow: 0 0 0 2px rgba(13, 85, 179, 0.3) !important;
+}
+
+.dateSeparator {
+  color: var(--text-color, #666);
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+:global(.dark-mode) .dateSeparator {
+  color: #e0e0e0 !important;
+}
+
+.resetButtonContainer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+  margin-bottom: 8px;
+  width: 100%;
+}
+
+.resetButton {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.resetButton:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+}
+
+.resetButton:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.resetButton:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(244, 67, 54, 0.3);
+}
+
+.errorMessage {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  margin-top: 16px;
+  background: rgba(244, 67, 54, 0.1);
+  border: 1px solid rgba(244, 67, 54, 0.3);
+  border-radius: 6px;
+  color: #f44336;
+  font-size: 14px;
+  width: 100%;
+}
+
+:global(.dark-mode) .errorMessage {
+  background: rgba(244, 67, 54, 0.15);
+  border: 1px solid rgba(244, 67, 54, 0.4);
+  color: #ff6b6b;
+}
+
+.errorMessage i {
+  font-size: 16px;
+}
+
 .chartContainer {
   width: 100%;
   height: 500px;
   margin-top: 20px;
-  background: var(--section-bg, transparent);
+  background: var(--section-bg, #ffffff);
   border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+:global(.dark-mode) .chartContainer {
+  background: #253342;
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+  height: 100%;
+  padding: 40px;
+}
+
+.loadingText {
+  color: var(--text-color, #666);
+  font-size: 16px;
+  font-weight: 500;
+}
+
+:global(.dark-mode) .loadingText {
+  color: #d1d5db;
+}
+
+.errorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  height: 100%;
+  padding: 40px;
+  text-align: center;
+}
+
+.errorContainer i {
+  font-size: 48px;
+  color: #f44336;
+  opacity: 0.7;
+}
+
+:global(.dark-mode) .errorContainer i {
+  color: #ff6b6b;
+  opacity: 0.8;
+}
+
+.errorText {
+  color: var(--text-color, #333);
+  font-size: 16px;
+  font-weight: 500;
+}
+
+:global(.dark-mode) .errorText {
+  color: #ffffff;
+}
+
+.emptyContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  height: 100%;
+  padding: 40px;
+  text-align: center;
+}
+
+.emptyContainer i {
+  font-size: 48px;
+  color: var(--text-color, #999);
+  opacity: 0.5;
+}
+
+:global(.dark-mode) .emptyContainer i {
+  color: #d1d5db;
+  opacity: 0.7;
+}
+
+.emptyText {
+  color: var(--text-color, #666);
+  font-size: 18px;
+  font-weight: 500;
+}
+
+:global(.dark-mode) .emptyText {
+  color: #ffffff;
+}
+
+.emptySubtext {
+  color: var(--text-color, #999);
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+:global(.dark-mode) .emptySubtext {
+  color: #d1d5db;
+}
+
+/* ===================== RESPONSIVE DESIGN ===================== */
+
+/* At 1155px, force issue type filter to wrap to next line */
+@media (max-width: 1155px) {
+  .filterGroup {
+    /* Increase flex-basis to force wrapping */
+    flex: 1 1 370px;
+  }
+}
+
+/* Tablet screens - reduce size for better fit */
+@media (max-width: 1024px) {
+  .filtersRow {
+    gap: 16px;
+  }
+
+  .filterGroup {
+    min-width: 220px;
+    flex: 1 1 300px;
+  }
+}
+
+/* Transition to vertical layout at 900px to prevent overflow */
+@media (max-width: 900px) {
+  .filterGroup {
+    min-width: 0;
+    flex: 1 1 calc(50% - 8px);
+  }
+}
+
+/* Mobile and smaller tablets - single column layout */
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+
+  .inner {
+    width: 100%;
+  }
+
+  .heading {
+    font-size: 28px;
+  }
+
+  .filtersRow {
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 20px;
+    margin-bottom: 16px;
+  }
+
+  .filterGroup {
+    min-width: 0;
+    width: 100%;
+    flex: 1 1 auto;
+  }
+
+  .datePickerGroup {
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+  }
+
+  .datePicker {
+    min-width: 0;
+    width: auto;
+    flex: 1;
+  }
+
+  .dateSeparator {
+    flex-shrink: 0;
+  }
+
+  .resetButtonContainer {
+    justify-content: center;
+    margin-top: 12px;
+  }
+
+  .resetButton {
+    width: 100%;
+    max-width: 200px;
+  }
+
+  .chartContainer {
+    height: 400px;
+    margin-top: 16px;
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+  .container {
+    padding: 12px;
+  }
+
+  .heading {
+    font-size: 24px;
+    margin-bottom: 12px;
+  }
+
+  .legend {
+    gap: 12px;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .legendLabel {
+    font-size: 16px;
+  }
+
+  .filtersRow {
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .filterGroup {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .filterLabel {
+    font-size: 13px;
+  }
+
+  .datePickerGroup {
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .datePicker {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .dateSeparator {
+    width: auto;
+    text-align: center;
+    margin: 0;
+  }
+
+  .chartContainer {
+    height: 350px;
+  }
 }
 
 /* ===========================

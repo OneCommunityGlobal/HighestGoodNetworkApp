@@ -275,6 +275,16 @@ function WeeklyProjectSummary() {
         ),
       },
       {
+        title: 'Issues Breakdown',
+        key: 'Issues Breakdown',
+        className: 'full',
+        content: (
+          <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+            <IssuesBreakdownChart />
+          </div>
+        ),
+      },
+      {
         title: 'Tools and Equipment Tracking',
         key: 'Tools and Equipment Tracking',
         className: 'half',
