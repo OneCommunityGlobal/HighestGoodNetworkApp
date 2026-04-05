@@ -16,6 +16,8 @@ import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt, FaSearch, FaTimes } from 'rea
 import styles from './CPDashboard.module.css';
 import { ENDPOINTS } from '../../utils/URL';
 import axios from 'axios';
+import { el } from 'date-fns/locale';
+import { fuzzySearch } from '../../utils/fuzzySearch';
 
 const FixedRatioImage = ({ src, alt, fallback }) => (
   <div
@@ -31,7 +33,9 @@ const FixedRatioImage = ({ src, alt, fallback }) => (
       alt={alt}
       loading="lazy"
       onError={e => {
-        if (e.currentTarget.src !== fallback) e.currentTarget.src = fallback;
+        if (e.currentTarget.src !== fallback) {
+          e.currentTarget.src = fallback;
+        }
       }}
       style={{
         width: '100%',
@@ -113,6 +117,7 @@ export function CPDashboard() {
           total: response.data.events?.length || 0,
         }));
       } catch (err) {
+        console.error('Failed to fetch events', err);
         setError('Failed to load events');
       } finally {
         setIsLoading(false);
@@ -160,12 +165,16 @@ export function CPDashboard() {
   };
 
   const formatDate = dateStr => {
-    if (!dateStr) return 'Date TBD';
+    if (!dateStr) {
+      return 'Date TBD';
+    }
+
     const date = new Date(dateStr);
     return date.toLocaleString('en-US', {
       weekday: 'long',
       month: 'long',
       day: 'numeric',
+      year: 'numeric',
       hour: 'numeric',
       minute: '2-digit',
     });
@@ -209,9 +218,9 @@ export function CPDashboard() {
     const term = searchQuery.toLowerCase();
 
     return (
-      event.title?.toLowerCase().includes(term) ||
-      event.location?.toLowerCase().includes(term) ||
-      event.organizer?.toLowerCase().includes(term)
+      fuzzySearch(event.title, term, 0.6) ||
+      fuzzySearch(event.location, term, 0.6) ||
+      fuzzySearch(event.organizer, term, 0.6)
     );
   });
 
@@ -226,8 +235,24 @@ export function CPDashboard() {
     pagination.currentPage * pagination.limit,
   );
 
+  const isFiltered = Boolean(searchQuery);
+  const totalFilteredCount = filteredEvents.length;
+
+  let eventCountText = 'Showing all events';
+
+  if (isFiltered) {
+    if (totalFilteredCount > 0) {
+      eventCountText = `Showing ${totalFilteredCount} event${totalFilteredCount !== 1 ? 's' : ''}`;
+    } else {
+      eventCountText = 'No events found';
+    }
+  }
+
   const goToPage = newPage => {
-    if (newPage < 1 || newPage > totalPages) return;
+    if (newPage < 1 || newPage > totalPages) {
+      return;
+    }
+
     setPagination(prev => ({ ...prev, currentPage: newPage }));
   };
 
@@ -344,6 +369,7 @@ export function CPDashboard() {
         <Col md={3} className={`${styles.dashboardSidebar} ${darkMode ? styles.darkSidebar : ''}`}>
           <div className={styles.filterSection}>
             <h4>Search Filters</h4>
+
             <div className={styles.filterSectionDivider}>
               <div className={styles.filterItem}>
                 <label htmlFor="date-tomorrow"> Dates</label>
@@ -365,6 +391,7 @@ export function CPDashboard() {
                       Tomorrow
                     </Label>
                   </FormGroup>
+
                   <FormGroup check className={styles.radioGroup + ' d-flex align-items-center'}>
                     <Input
                       id="date-weekend"
@@ -383,6 +410,7 @@ export function CPDashboard() {
                     </Label>
                   </FormGroup>
                 </div>
+
                 <Button
                   color="primary"
                   size="sm"
@@ -393,6 +421,7 @@ export function CPDashboard() {
                 >
                   Clear date filter
                 </Button>
+
                 <Input
                   type="date"
                   placeholder="Select Date"
@@ -421,21 +450,21 @@ export function CPDashboard() {
 
               <div className={styles.filterItem}>
                 <label htmlFor="branches">Branches</label>
-                <Input type="select">
+                <Input id="branches" type="select">
                   <option>Select branches</option>
                 </Input>
               </div>
 
               <div className={styles.filterItem}>
                 <label htmlFor="themes">Themes</label>
-                <Input type="select">
+                <Input id="themes" type="select">
                   <option>Select themes</option>
                 </Input>
               </div>
 
               <div className={styles.filterItem}>
                 <label htmlFor="categories">Categories</label>
-                <Input type="select">
+                <Input id="categories" type="select">
                   <option>Select categories</option>
                 </Input>
               </div>
@@ -450,6 +479,14 @@ export function CPDashboard() {
               Show Past Events
             </Button>
           </div>
+
+          <p className={styles['event-count-text']}>
+            {isFiltered
+              ? totalFilteredCount > 0
+                ? `Showing ${totalFilteredCount} event${totalFilteredCount !== 1 ? 's' : ''}`
+                : 'No events found'
+              : 'Showing all events'}
+          </p>
 
           <Row>{eventsContent}</Row>
 

@@ -31,6 +31,6 @@ export function isTeamMembersResolved(teamId) {
 }
 
 export function clearCachedTeamMembers(teamId) {
-  resolved.delete(teamId);
-  pending.delete(teamId);
+  resolved.delete(String(teamId));
+  pending.delete(String(teamId));
 }
