@@ -12,6 +12,7 @@ import {
   FaPauseCircle,
   FaStopCircle,
   FaUndoAlt,
+  FaSyncAlt,
 } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import cs from 'classnames';
@@ -36,14 +37,25 @@ function Timer({ authUser, darkMode, isPopout }) {
    *  to CLOSED, and the user will be notified to refresh the page to reconnect to the server.
    * */
   const [customReadyState, setCustomReadyState] = useState(ReadyState.CONNECTING);
+  const [wsUrl, setWsUrl] = useState(ENDPOINTS.TIMER_SERVICE);
+  const [isReconnecting, setIsReconnecting] = useState(false);
   const WSoptions = {
     share: false,
     protocols: localStorage.getItem(config.tokenKey),
-    onOpen: () => setCustomReadyState(ReadyState.OPEN),
-    onClose: () => setCustomReadyState(ReadyState.CLOSED),
-    onError: () => {
-      setCustomReadyState(ReadyState.CLOSED);
+    onOpen: () => {
+      setCustomReadyState(ReadyState.OPEN);
+      setIsReconnecting(false);
     },
+    onClose: () => {
+      setCustomReadyState(ReadyState.CLOSED);
+      setIsReconnecting(false);
+    },
+    onError: error => {
+      setCustomReadyState(ReadyState.CLOSED);
+      setIsReconnecting(false);
+      console.error('WebSocket Error:', error);
+    },
+    shouldReconnect: () => false,
   };
 
   /**
@@ -60,7 +72,7 @@ function Timer({ authUser, darkMode, isPopout }) {
    */
 
   const { sendMessage, sendJsonMessage, lastJsonMessage, getWebSocket } = useWebSocket(
-    ENDPOINTS.TIMER_SERVICE,
+    wsUrl,
     WSoptions,
   );
 
@@ -397,6 +409,23 @@ function Timer({ authUser, darkMode, isPopout }) {
     }
   };
 
+  const handleManualReconnect = useCallback(() => {
+    if (isReconnecting || customReadyState === ReadyState.OPEN) return;
+    try {
+      setIsReconnecting(true);
+      isWSOpenRef.current = 0;
+      // proactively close any lingering socket (safe to call even if already closed)
+      try {
+        getWebSocket()?.close();
+      } catch (_) {}
+      setCustomReadyState(ReadyState.CONNECTING);
+      // change URL to force a new WS instance; no full page reload
+      const bump = Date.now();
+      setWsUrl(`${ENDPOINTS.TIMER_SERVICE}?r=${bump}`);
+    } catch (e) {
+      setIsReconnecting(false);
+    }
+  }, [isReconnecting, customReadyState, getWebSocket]);
   const checkBtnAvail = useCallback(
     addition => {
       const remainingDuration = moment.duration(remaining);
@@ -874,6 +903,8 @@ function Timer({ authUser, darkMode, isPopout }) {
               readyState={customReadyState}
               message={message}
               toggleTimer={() => window.close()}
+              handleManualReconnect={handleManualReconnect}
+              isReconnecting={isReconnecting}
             />
           )}
         </div>
@@ -916,7 +947,38 @@ function Timer({ authUser, darkMode, isPopout }) {
             {moment.utc(remaining).format('HH:mm:ss')}
           </button>
         ) : (
-          <div className={css.disconnected}>Disconnected</div>
+          <div
+            className={css.disconnectedInline}
+            onClick={!isButtonDisabled ? toggleTimer : undefined}
+            onKeyDown={!isButtonDisabled ? e => e.key === 'Enter' && toggleTimer() : undefined}
+            role={!isButtonDisabled ? 'button' : undefined}
+            tabIndex={!isButtonDisabled ? 0 : undefined}
+            style={!isButtonDisabled ? { cursor: 'pointer' } : undefined}
+            title={!isButtonDisabled ? 'Open timer dropdown' : undefined}
+          >
+            <div className={css.disconnectedText}>Disconnected</div>
+            <div
+              title={isReconnecting ? 'Reconnecting...' : 'Reconnect'}
+              style={{
+                display: 'inline-block',
+                cursor: isReconnecting ? 'not-allowed' : 'pointer',
+              }}
+            >
+              <button
+                type="button"
+                className={cs(css.reconnectInlineBtn, isReconnecting && css.reconnectBtnDisabled)}
+                onClick={e => {
+                  e.stopPropagation();
+                  handleManualReconnect();
+                }}
+                disabled={isReconnecting}
+                aria-label={isReconnecting ? 'Reconnecting...' : 'Reconnect'}
+                title={isReconnecting ? 'Reconnecting...' : 'Reconnect'}
+              >
+                <FaSyncAlt className={cs(css.reconnectIcon, isReconnecting && css.spin)} />
+              </button>
+            </div>
+          </div>
         )}
       </div>
       {customReadyState === ReadyState.OPEN && (
@@ -1069,6 +1131,8 @@ function Timer({ authUser, darkMode, isPopout }) {
                 readyState={customReadyState}
                 message={message}
                 toggleTimer={toggleTimer}
+                handleManualReconnect={handleManualReconnect}
+                isReconnecting={isReconnecting}
               />
             )}
           </div>
