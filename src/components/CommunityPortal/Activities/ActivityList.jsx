@@ -111,10 +111,14 @@ function ActivityList() {
     });
 
   return (
-    <div className={`${styles.activityListContainer} ${darkMode ? 'bg-oxford-blue' : ''}`}>
+    <div
+      className={`${styles.activityListContainer} ${
+        darkMode ? styles.activityListContainerDark : ''
+      }`}
+    >
       <h1 className={`${styles.heading} ${darkMode ? 'text-light' : ''}`}>Activity List</h1>
 
-      <div className={`${styles.filters} ${darkMode ? styles.darkModeFilters : ''}`}>
+      <div className={`${darkMode ? styles.darkModeFilters : styles.filters}`}>
         <label className={darkMode ? 'text-light' : ''}>
           Type:
           <input
@@ -203,7 +207,9 @@ function ActivityList() {
             type="button"
             onClick={handleClearFilters}
             disabled={!filter.type && !filter.date && !filter.location}
-            className={`${styles.clearFiltersButton} ${darkMode ? styles.clearFiltersButtonDark : ''}`}
+            className={`${styles.clearFiltersButton} ${
+              darkMode ? styles.clearFiltersButtonDark : ''
+            }`}
           >
             Clear All
           </button>
