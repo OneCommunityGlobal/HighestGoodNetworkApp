@@ -16,6 +16,19 @@
   font-weight: 600;
 }
 
+/* Dark mode heading */
+.activityListContainer:global(.bg-oxford-blue) .heading {
+  color: #ffffff !important;
+}
+
+/* Body background helper */
+:global(.activity-list-dark-body),
+:global(.activity-list-dark-body #root),
+:global(.activity-list-dark-body .App) {
+  background-color: #1b2a41 !important;
+  color: #ffffff !important;
+}
+
 .filters {
   display: flex;
   justify-content: center;

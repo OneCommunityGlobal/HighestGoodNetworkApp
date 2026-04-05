@@ -1,0 +1,115 @@
+.prdashcontainer {
+  padding: 2rem;
+  text-align: center;
+  font-weight: 600;
+}
+
+.dashboardWrapper {
+  padding: 1rem 2rem 2rem;
+}
+
+.dashboardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.dashboardCard {
+  background: #fff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  min-height: 260px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 8%);
+  display: flex;
+  flex-direction: column;
+}
+
+.cardHeader {
+  margin-bottom: 10px;
+}
+
+.cardHeader h2 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #2c6ed5;
+}
+
+.cardBody {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.placeholderGraph {
+  flex: 1;
+  border: 2px dashed #d0d7de;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+  background-color: #fafafa;
+}
+
+.placeholderContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.placeholderTitle {
+  color: #777;
+  font-size: 0.9rem;
+}
+
+.placeholderSubtext {
+  font-size: 0.75rem;
+  color: #aaa;
+}
+
+.cardDescription {
+  font-size: 0.85rem;
+  color: #555;
+}
+
+/* ===== DARK MODE ===== */
+
+.dashboardWrapper.dark-mode {
+  background-color: #1b2a41;
+}
+
+.prdashcontainer.dark-mode {
+  color: #fff;
+}
+
+.dashboardCard.dark-mode {
+  background-color: #1b2a41;
+  box-shadow: 0 2px 8px rgb(255 255 255 / 10%);
+}
+
+.cardHeader.dark-mode h2 {
+  color: #e8a71c;
+}
+
+.cardBody.dark-mode {
+  color: #fff;
+}
+
+.placeholderGraph.dark-mode {
+  background-color: #2d4059;
+  border-color: #4a5a77;
+}
+
+.placeholderTitle.dark-mode {
+  color: #fff;
+}
+
+.placeholderSubtext.dark-mode {
+  color: #9ab0cc;
+}
+
+.cardDescription.dark-mode {
+  color: #9ab0cc;
+}
