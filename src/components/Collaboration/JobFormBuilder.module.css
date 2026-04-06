@@ -15,6 +15,15 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+.darkContainer {
+  background-color: #1a2332;
+  color: #e8e8e8;
+  max-width: 100%;
+  margin: 0;
+  box-shadow: none;
+  border-radius: 0;
+}
+
 .customForm {
   background-color: #d9d9d9;
   padding: 10px;
@@ -23,30 +32,63 @@
   border: 1px solid #d9d9d9;
 }
 
+.darkContainer .customForm {
+  background-color: #1e2a3a;
+  border-color: #3a4a5c;
+}
+
 .jobformNavbar {
-  display: flex;
-  flex-wrap: wrap;
-  padding: 0 10px;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  padding: 20px;
+  gap: 20px;
   background-color: #97ca02;
   border-radius: 5px;
   border: 1px solid #97ca02;
   margin-bottom: 3%;
-  align-items: center;
+  align-items: start;
+}
+
+.darkNavbar {
+  background-color: #243447;
+  border-color: #243447;
+}
+
+.navbarSection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 15px;
+  border-radius: 5px;
+}
+
+.navbarSectionTitle {
+  font-weight: bold;
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.darkContainer .navbarSection {
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.darkContainer .navbarSectionTitle {
+  color: #e8e8e8;
 }
 
 .jobformNavbar input {
-  margin: 8px 0;
+  margin: 4px 0;
+  max-width: 100%;
 }
 
 .jobformNavbar select {
-  margin: 8px 0;
+  margin: 4px 0;
   width: 100%;
-}
-
-.jobformNavbar div {
-  display: flex;
-  padding: 2px;
 }
 
 .jobformNavbar button {
@@ -61,7 +103,73 @@
   transition: background-color 0.3s;
 }
 
+.darkContainer input,
+.darkContainer select,
+.darkContainer textarea {
+  background-color: #1e2a3a;
+  color: #e8e8e8;
+  border-color: #3a4a5c;
+}
+
+.darkContainer .goButton,
+.darkContainer .jobformNavbar button {
+  background-color: #3d4f62;
+  color: #e8e8e8;
+}
+
+.darkContainer .goButton:hover,
+.darkContainer .jobformNavbar button:hover {
+  background-color: #4a5f75;
+}
+
+.darkContainer .addFieldButton,
+.darkContainer .addOptionButton {
+  background-color: #3d7a40;
+}
+
+.darkContainer .addFieldButton:hover,
+.darkContainer .addOptionButton:hover {
+  background-color: #2f5f33;
+}
+
+.darkContainer .jobSubmitButton {
+  background-color: #3d7a40;
+}
+
+.darkContainer .jobSubmitButton:hover {
+  background-color: #2f5f33;
+}
+
 .jobformNavbar button:hover {
+  background-color: grey;
+}
+
+.buttonRow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.goButton {
+  padding: 11px 20px;
+  border: none;
+  background-color: #cccccc;
+  color: white;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  white-space: nowrap;
+}
+
+.goButton:hover {
   background-color: grey;
 }
 
@@ -73,6 +181,14 @@
   text-align: center;
   color: black;
   font-weight: bold;
+}
+
+.darkContainer .jobformTitle,
+.darkContainer .jobformDesc,
+.darkContainer .jbformLabel,
+.darkContainer label,
+.darkContainer .fieldLabel {
+  color: #f5f5f5;
 }
 
 .jbformLabel {
@@ -93,6 +209,14 @@
   background-color: white;
 }
 
+.darkContainer .jobformInput,
+.darkContainer .jobformTextarea,
+.darkContainer .jobformSelect {
+  background-color: #1e2a3a;
+  color: #e8e8e8;
+  border-color: #3a4a5c;
+}
+
 .jobformTextarea {
   height: 80px;
   resize: vertical;
@@ -101,6 +225,10 @@
 .newFieldSection {
   background-color: #d9d9d9;
   padding: 20px;
+}
+
+.darkContainer .newFieldSection {
+  background-color: #1e2a3a;
 }
 
 /* General Container for Each Question */
@@ -224,26 +352,38 @@
   .formBuilderContainer {
     width: 98%;
     max-width: 100%;
+    margin: 1% 1% 0;
     padding: 10px;
   }
+  
   .jobformNavbar {
+    grid-template-columns: 1fr;
+    padding: 15px;
+    gap: 15px;
+  }
+
+  .navbarSection {
+    padding: 12px;
+  }
+
+  .buttonRow {
     flex-direction: column;
-    padding: 8px;
     align-items: stretch;
   }
 
-  .jobformNavbar > div {
-    flex-direction: column;
-    align-items: stretch;
-    min-width: 0;
-    width: 100%;
+  .jobformNavbar input[type="text"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 4px 0 !important;
   }
 
   .jobformInput,
   .jobformTextarea,
   .jobformSelect,
   .goButton {
-    width: 100%;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 4px 0 !important;
   }
 
   .formDiv {

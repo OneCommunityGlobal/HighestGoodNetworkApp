@@ -332,69 +332,24 @@ function JobFormBuilder() {
     }
   };
 
+  const darkMode = useSelector(state => state.theme?.darkMode);
+
   return (
-    <div className={styles.formBuilderContainer}>
+    <div
+      className={`${styles.formBuilderContainer} ${darkMode ? 'bg-oxford-blue' : ''} ${
+        darkMode ? styles.darkContainer : ''
+      }`}
+    >
       <img
         src={OneCommunityImage}
         alt="One Community Logo"
         id="onecommunity-image"
         className={styles.oneCommunityGlobalImg}
       />
-      <div className={styles.jobformNavbar}>
-        {/* Referral Link Generator UI */}
-        <div style={{ marginTop: 10 }}>
-          <div style={{ marginTop: 10 }}>
-            <label htmlFor="referralSource" className={styles.jbformLabel}>
-              Source Identifier (e.g., LN, FB):
-            </label>
-            <input
-              id="referralSource"
-              type="text"
-              value={referralSource}
-              onChange={e => setReferralSource(e.target.value)}
-              className={styles.jobformInput}
-              placeholder="Enter source"
-              style={{ width: 120, marginLeft: 8 }}
-              maxLength={10}
-            />
-          </div>
-
-          {referralLink && (
-            <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
-              <input
-                type="text"
-                value={referralLink}
-                readOnly
-                ref={referralInputRef}
-                className={styles.jobformInput}
-                style={{
-                  width: 250,
-                  marginRight: 8,
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                  background: '#fff',
-                  cursor: 'pointer',
-                }}
-                title={referralLink} // Tooltip for full link
-              />
-              <button type="button" onClick={handleCopyReferralLink} className={styles.goButton}>
-                Copy Link
-              </button>
-            </div>
-          )}
-        </div>
-        <div>
-          <input
-            placeholder="Enter Job Title"
-            className={styles.jobformInput}
-            style={{ width: '120px', minWidth: '0', padding: '8px' }}
-          />
-          <button type="button" className={styles.goButton}>
-            Go
-          </button>
-        </div>
-        <div>
+      <div className={`${styles.jobformNavbar} ${darkMode ? styles.darkNavbar : ''}`}>
+        {/* Job Position Selection Section */}
+        <div className={styles.navbarSection}>
+          <div className={styles.navbarSectionTitle}>Select Job Position</div>
           <select
             value={jobTitle}
             onChange={q => setJobTitle(q.target.value)}
@@ -407,6 +362,66 @@ function JobFormBuilder() {
               </option>
             ))}
           </select>
+        </div>
+
+        {/* Job Search Section */}
+        <div className={styles.navbarSection}>
+          <div className={styles.navbarSectionTitle}>Search Job Title</div>
+          <div className={styles.buttonRow}>
+            <input
+              placeholder="Enter Job Title"
+              className={styles.jobformInput}
+              style={{ flex: 1, minWidth: '150px', padding: '8px' }}
+            />
+            <button type="button" className={styles.goButton}>
+              Go
+            </button>
+          </div>
+        </div>
+
+        {/* Referral Link Generator Section */}
+        <div className={styles.navbarSection}>
+          <div className={styles.navbarSectionTitle}>Referral Link Generator</div>
+          <div className={styles.inputGroup}>
+            <div>
+              <label htmlFor="referralSource" style={{ fontSize: '14px', fontWeight: 'normal' }}>
+                Source Identifier (e.g., LN, FB):
+              </label>
+              <input
+                id="referralSource"
+                type="text"
+                value={referralSource}
+                onChange={e => setReferralSource(e.target.value)}
+                className={styles.jobformInput}
+                placeholder="Enter source"
+                maxLength={10}
+              />
+            </div>
+
+            {referralLink && (
+              <div className={styles.buttonRow}>
+                <input
+                  type="text"
+                  value={referralLink}
+                  readOnly
+                  ref={referralInputRef}
+                  className={styles.jobformInput}
+                  style={{
+                    flex: '1',
+                    minWidth: '150px',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    cursor: 'pointer',
+                  }}
+                  title={referralLink}
+                />
+                <button type="button" onClick={handleCopyReferralLink} className={styles.goButton}>
+                  Copy Link
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
       <h1 className={styles.jobformTitle}>FORM CREATION</h1>
@@ -422,6 +437,7 @@ function JobFormBuilder() {
             formFields={formFields}
             setFormFields={setFormFields}
             onImportQuestions={importQuestions}
+            darkMode={darkMode}
           />
           <form>
             {formFields.map((field, index) => (
@@ -561,6 +577,7 @@ function JobFormBuilder() {
               question={editingQuestion}
               onSave={handleSaveEditedQuestion}
               onCancel={handleCancelEdit}
+              darkMode={darkMode}
             />
           )}
         </div>
