@@ -27,7 +27,6 @@ import LostTimeHistory from './LostTime/LostTimeHistory';
 import PeopleTable from './PeopleTable';
 import ProjectTable from './ProjectTable';
 import ReportFilter from './ReportFilter/ReportFilter';
-import './reportsPage.css';
 import TeamTable from './TeamTable';
 import TotalContributorsReport from './TotalReport/TotalContributorsReport';
 import TotalPeopleReport from './TotalReport/TotalPeopleReport';
