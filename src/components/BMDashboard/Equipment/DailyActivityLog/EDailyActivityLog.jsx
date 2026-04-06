@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { connect, useDispatch, useSelector } from 'react-redux';
-import { Button, ButtonGroup, Table } from 'reactstrap';
+import { Button, Table, UncontrolledTooltip } from 'reactstrap';
 import Select from 'react-select';
 
 import { fetchBMProjects } from '~/actions/bmdashboard/projectActions';
@@ -10,6 +10,9 @@ import {
 } from '~/actions/bmdashboard/equipmentActions';
 import { getHeaderData } from '~/actions/authActions';
 import { getUserProfile } from '~/actions/userProfile';
+import { toast } from 'react-toastify';
+
+import styles from './EDailyActivityLog.module.css';
 
 // Helper function to get today's date in YYYY-MM-DD format
 const getToday = () => {
@@ -42,7 +45,7 @@ const buildRows = list =>
       .filter(l => l.type === 'Check Out')
       .reduce((s, l) => s + (l.quantity || 1), 0);
 
-    const usingQty = Math.max(checkInQty - checkOutQty, 0);
+    const usingQty = Math.max(checkOutQty - checkInQty, 0);
     const availableQty = Math.max(total - usingQty, 0);
 
     const allNumbers = buildToolNumbers(e.itemType?.name, total);
@@ -61,43 +64,110 @@ const buildRows = list =>
     };
   });
 
+const getSelectStyles = (darkMode, isTableSelect = false) => ({
+  container: base => ({
+    ...base,
+    width: isTableSelect ? 300 : '100%',
+    minWidth: isTableSelect ? 300 : 'auto',
+    maxWidth: isTableSelect ? 300 : 'none',
+  }),
+  control: base => ({
+    ...base,
+    backgroundColor: darkMode ? '#2a3f5f' : '#fff',
+    borderColor: darkMode ? '#3a506b' : '#ced4da',
+    color: darkMode ? '#ffffff' : '#000', // Changed to pure white
+  }),
+  singleValue: base => ({
+    ...base,
+    color: darkMode ? '#ffffff' : '#000', // Changed to pure white
+  }),
+  input: base => ({
+    ...base,
+    color: darkMode ? '#ffffff' : '#000', // Changed to pure white
+  }),
+  menu: base => ({
+    ...base,
+    backgroundColor: darkMode ? '#2a3f5f' : '#fff',
+    zIndex: 9999,
+  }),
+  option: (base, state) => ({
+    ...base,
+    backgroundColor: state.isFocused
+      ? darkMode
+        ? '#3a506b'
+        : '#e9ecef'
+      : darkMode
+      ? '#2a3f5f'
+      : '#fff',
+    color: darkMode ? '#ffffff' : '#000', // Changed to pure white
+    cursor: 'pointer',
+  }),
+  placeholder: base => ({
+    ...base,
+    color: darkMode ? '#ffffff' : '#6c757d', // Changed to pure white
+    opacity: 0.7, // Kept the opacity so it still looks like a placeholder
+  }),
+  multiValue: base => ({
+    ...base,
+    backgroundColor: darkMode ? '#3a506b' : '#e9ecef',
+  }),
+  multiValueLabel: base => ({
+    ...base,
+    color: darkMode ? '#ffffff' : '#000', // Changed to pure white
+  }),
+  multiValueRemove: base => ({
+    ...base,
+    color: darkMode ? '#ffffff' : '#000', // Changed to pure white
+    ':hover': {
+      backgroundColor: 'red',
+      color: 'white',
+    },
+  }),
+});
+
 function EDailyActivityLog(props) {
   const dispatch = useDispatch();
 
-  /* redux slices */
   const bmProjects = useSelector(s => s.bmProjects || []);
   const equipments = useSelector(s => s.bmEquipments?.equipmentslist || []);
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const { user } = props.auth;
 
-  /* local state */
   const [selectedProject, setSelectedProject] = useState(null);
   const [date, setDate] = useState(getToday());
   const [logType, setLogType] = useState('check-in'); // 'check-in' | 'check-out'
 
   const [rows, setRows] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+
+  // Deriving validation states
+  const isMissingProject = !selectedProject;
+  const isInvalidDate = !date || isNaN(Date.parse(date));
+  const hasNoEquipments = isMissingProject || rows.length === 0;
+  const noEquipmentSelected = rows.length === 0 || rows.every(r => r.selectedNumbers.length === 0);
+  const isSubmitDisabled = isMissingProject || isInvalidDate || noEquipmentSelected;
 
   useEffect(() => {
     dispatch(fetchBMProjects());
   }, [dispatch]);
 
-  /* fetch equipments whenever project changes */
   useEffect(() => {
     if (selectedProject?.value) {
-      dispatch(fetchAllEquipments(selectedProject.value));
+      setIsLoading(true);
+      dispatch(fetchAllEquipments(selectedProject.value)).finally(() => setIsLoading(false));
     }
   }, [selectedProject, dispatch]);
 
-  /* build rows whenever equipments slice updates */
   const derived = useMemo(() => buildRows(equipments), [equipments]);
   useEffect(() => setRows(derived), [derived]);
 
   const onToolSelect = (rowIdx, selected) => {
     setRows(prev => {
       const row = prev[rowIdx];
-      const valid = logType === 'check-in' ? row.availableNumbers : row.inUseNumbers;
-      const limit = logType === 'check-in' ? row.availableQty : row.usingQty;
+      const valid = logType === 'check-in' ? row.inUseNumbers : row.availableNumbers;
+      const limit = logType === 'check-in' ? row.usingQty : row.availableQty;
 
       const clean = selected
         .map(o => o.value)
@@ -112,8 +182,8 @@ function EDailyActivityLog(props) {
     setLogType(newType);
     setRows(prev =>
       prev.map(r => {
-        const valid = newType === 'check-in' ? r.availableNumbers : r.inUseNumbers;
-        const limit = newType === 'check-in' ? r.availableQty : r.usingQty;
+        const valid = newType === 'check-in' ? r.inUseNumbers : r.availableNumbers;
+        const limit = newType === 'check-in' ? r.usingQty : r.availableQty;
         return {
           ...r,
           selectedNumbers: r.selectedNumbers.filter(n => valid.includes(n)).slice(0, limit),
@@ -130,6 +200,10 @@ function EDailyActivityLog(props) {
   };
 
   const handleSubmit = () => {
+    if (isSubmitDisabled) return;
+    setShowConfirm(true);
+  };
+  const confirmSubmit = () => {
     const payload = rows.flatMap(r =>
       r.selectedNumbers.map(() => ({
         equipmentId: r.id,
@@ -143,14 +217,23 @@ function EDailyActivityLog(props) {
     );
 
     dispatch(updateMultipleEquipmentLogs(selectedProject.value, payload));
+    setShowConfirm(false);
+    toast.success(
+      logType === 'check-in'
+        ? 'Equipment checked in successfully'
+        : 'Equipment checked out successfully',
+    );
+
+    // Clear selections immediately so UI responds while backend async request finishes
+    setRows(prev => prev.map(r => ({ ...r, selectedNumbers: [] })));
   };
 
+  const projectSelectStyles = getSelectStyles(darkMode, false);
+  const tableSelectStyles = getSelectStyles(darkMode, true);
+
   return (
-    <div
-      className={`container-fluid ${darkMode ? 'bg-oxford-blue text-light' : ''}`}
-      style={{ height: '100%' }}
-    >
-      {/* Custom dark mode table row and header hover style: dark background, light text */}
+    <div className={`container-fluid ${styles.mainContainer} ${darkMode ? styles.darkMode : ''}`}>
+      {/* Custom dark mode styling for native date pickers and specific table hovers */}
       {darkMode && (
         <style>{`
           .dark-table-row:hover,
@@ -161,7 +244,6 @@ function EDailyActivityLog(props) {
             transition: background-color 0.2s;
           }
           
-          /* Comprehensive dark mode date picker styling */
           .dark-date-input {
             background-color: #343a40 !important;
             color: #f8f9fa !important;
@@ -171,39 +253,24 @@ function EDailyActivityLog(props) {
           .dark-date-input::-webkit-calendar-picker-indicator {
             filter: invert(1);
             cursor: pointer;
+            background-color: #495057;
+            border-radius: 4px;
+            padding: 4px;
           }
           
-          .dark-date-input::-webkit-datetime-edit {
-            color: #f8f9fa;
-          }
-          
-          .dark-date-input::-webkit-datetime-edit-fields-wrapper {
-            color: #f8f9fa;
-          }
-          
-          .dark-date-input::-webkit-datetime-edit-text {
-            color: #f8f9fa;
-          }
-          
+          .dark-date-input::-webkit-datetime-edit,
+          .dark-date-input::-webkit-datetime-edit-fields-wrapper,
+          .dark-date-input::-webkit-datetime-edit-text,
           .dark-date-input::-webkit-datetime-edit-month-field,
           .dark-date-input::-webkit-datetime-edit-day-field,
           .dark-date-input::-webkit-datetime-edit-year-field {
             color: #f8f9fa;
           }
           
-          /* For Firefox */
           .dark-date-input[type="date"] {
             color-scheme: dark;
           }
           
-          /* For calendar dropdown - limited browser support */
-          .dark-date-input::-webkit-calendar-picker-indicator {
-            background-color: #495057;
-            border-radius: 4px;
-            padding: 4px;
-          }
-          
-          /* Make the calendar dropdown dark - this is limited to browsers that support it */
           @supports (-webkit-appearance: none) or (-moz-appearance: none) {
             .dark-date-input {
               color-scheme: dark;
@@ -212,7 +279,6 @@ function EDailyActivityLog(props) {
         `}</style>
       )}
 
-      {/* Also add light mode styles */}
       {!darkMode && (
         <style>{`
           .light-date-input {
@@ -232,13 +298,42 @@ function EDailyActivityLog(props) {
       )}
 
       <div className="container">
-        <h4 className="mb-4">Daily Equipment Log</h4>
+        <h4 className="mb-4 pt-3">Daily Equipment Log</h4>
+        {showConfirm && (
+          <div
+            className="alert alert-warning d-flex justify-content-between align-items-center"
+            style={
+              darkMode
+                ? {
+                    backgroundColor: 'rgba(255, 193, 7, 0.18)',
+                    borderColor: 'rgba(255, 193, 7, 0.35)',
+                    color: '#f8f9fa',
+                  }
+                : undefined
+            }
+          >
+            <span>Are you sure? This will update equipment availability.</span>
+            <div className="d-flex">
+              <Button
+                size="sm"
+                color="secondary"
+                className="mr-2"
+                onClick={() => setShowConfirm(false)}
+              >
+                Cancel
+              </Button>
+              <Button size="sm" color="danger" onClick={confirmSubmit}>
+                Confirm
+              </Button>
+            </div>
+          </div>
+        )}
 
-        {/* header */}
-        <div className="row mb-3">
+        {/* Header Row */}
+        <div className="row mb-3 align-items-start">
           <div className="col-md-3">
             <label
-              className={`form-label fw-bold${darkMode ? ' text-light' : ''}`}
+              className={`form-label fw-bold ${darkMode ? 'text-light' : 'text-dark'}`}
               htmlFor="date"
               style={darkMode ? { color: '#f8f9fa' } : {}}
             >
@@ -261,6 +356,9 @@ function EDailyActivityLog(props) {
                   : {}
               }
             />
+            {isInvalidDate && (
+              <small className="text-danger mt-1 d-block">Please select a valid date.</small>
+            )}
             {darkMode && (
               <small className="text-muted mt-1 d-block">
                 Note: Calendar appearance depends on your browser and OS.
@@ -270,135 +368,113 @@ function EDailyActivityLog(props) {
 
           <div className="col-md-5">
             <label
-              className={`form-label fw-bold${darkMode ? ' text-light' : ''}`}
+              className={`form-label fw-bold ${darkMode ? 'text-light' : 'text-dark'}`}
               htmlFor="project-select"
               style={darkMode ? { color: '#f8f9fa' } : {}}
             >
               Project
             </label>
             <Select
-              inputId="project-select" // associate label via inputId for react-select
+              inputId="project-select"
               value={selectedProject}
               onChange={setSelectedProject}
               options={bmProjects.map(p => ({ label: p.name, value: p._id }))}
               placeholder="Select project…"
               isClearable
-              styles={{
-                maxWidth: '150px',
-                control: base => ({
-                  ...base,
-                  backgroundColor: darkMode ? '#343a40' : '#fff',
-                  borderColor: darkMode ? '#495057' : '#ced4da',
-                  color: darkMode ? '#fff' : '#000',
-                  minHeight: 38,
-                  boxShadow: 'none',
-                }),
-                singleValue: base => ({
-                  ...base,
-                  color: darkMode ? '#fff' : '#000',
-                }),
-                input: base => ({
-                  ...base,
-                  color: darkMode ? '#fff' : '#000',
-                }),
-                placeholder: base => ({
-                  ...base,
-                  color: darkMode ? '#adb5bd' : '#6c757d',
-                }),
-                menu: base => ({
-                  ...base,
-                  backgroundColor: darkMode ? '#343a40' : '#fff',
-                  border: darkMode ? '1px solid #495057' : '1px solid #ced4da',
-                  zIndex: 10001,
-                  borderRadius: 8,
-                  marginTop: 2,
-                }),
-                menuList: base => ({
-                  ...base,
-                  maxHeight: 400,
-                  overflowY: 'auto',
-                  backgroundColor: darkMode ? '#343a40' : '#fff',
-                  color: darkMode ? '#fff' : '#000',
-                  padding: 0,
-                }),
-                option: (base, state) => ({
-                  ...base,
-                  backgroundColor: state.isSelected
-                    ? '#0d55b3'
-                    : state.isFocused
-                    ? darkMode
-                      ? '#495057'
-                      : '#f8f9fa'
-                    : darkMode
-                    ? '#343a40'
-                    : '#fff',
-                  color: state.isSelected ? '#fff' : darkMode ? '#fff' : '#000',
-                  fontSize: 13,
-                  padding: '10px 16px',
-                  cursor: 'pointer',
-                  '&:hover': {
-                    backgroundColor: state.isSelected
-                      ? '#0d55b3'
-                      : darkMode
-                      ? '#495057'
-                      : '#c4c8cbff',
-                    color: state.isSelected ? '#c4c8cbff' : darkMode ? '#fff' : '#000',
-                  },
-                }),
-              }}
+              styles={projectSelectStyles}
             />
+            {isMissingProject && (
+              <small className="text-danger mt-1 d-block">Project selection is required.</small>
+            )}
           </div>
 
           <div className="col-md-4">
-            <p
-              className={`form-label fw-bold${darkMode ? ' text-light' : ''}`}
+            <div
+              className={`form-label fw-bold ${darkMode ? 'text-light' : 'text-dark'}`}
               id="log-type-label"
               style={darkMode ? { color: '#f8f9fa' } : {}}
             >
               Log Type
-            </p>
-            <ButtonGroup className="d-block" aria-labelledby="log-type-label">
+            </div>
+
+            <div className="d-flex" role="group" aria-labelledby="log-type-label">
               <Button
                 color={logType === 'check-in' ? 'primary' : 'secondary'}
-                onClick={() => flipLogType('check-in')}
+                onClick={() => !hasNoEquipments && flipLogType('check-in')}
+                className={styles.checkInBtn}
+                disabled={hasNoEquipments}
+                style={hasNoEquipments ? { opacity: 0.65, cursor: 'not-allowed' } : {}}
               >
                 Check In
               </Button>
               <Button
                 color={logType === 'check-out' ? 'primary' : 'secondary'}
-                onClick={() => flipLogType('check-out')}
+                onClick={() => !hasNoEquipments && flipLogType('check-out')}
+                className={styles.checkOutBtn}
+                disabled={hasNoEquipments}
+                style={hasNoEquipments ? { opacity: 0.65, cursor: 'not-allowed' } : {}}
               >
                 Check Out
               </Button>
-            </ButtonGroup>
+            </div>
+            <small
+              className={`mt-2 d-block ${styles.helperText} ${
+                darkMode ? 'text-light' : 'text-muted'
+              }`}
+            >
+              <strong>Check In:</strong> Report equipment as returned and available.
+              <br />
+              <strong>Check Out:</strong> Assign equipment for current use.
+            </small>
           </div>
         </div>
 
-        {/* table */}
+        {/* Table */}
         <Table bordered responsive>
-          <thead className={`${darkMode ? 'table-dark' : 'table-light'} align-middle`}>
-            <tr className={`${darkMode ? 'text-light' : 'text-dark'} `}>
+          <thead className={`${darkMode ? styles.tableDark : 'table-light'} align-middle`}>
+            <tr>
               <th>Name</th>
-              <th>Working</th>
-              <th>Available</th>
-              <th>Using</th>
-              <th>Tool / Equipment&nbsp;#</th>
+              <th>
+                Working
+                <i className={`fa fa-info-circle ${styles.infoIcon}`} id="tooltip-working"></i>
+                <UncontrolledTooltip placement="top" target="tooltip-working">
+                  Total number of units operational today
+                </UncontrolledTooltip>
+              </th>
+              <th>
+                Available
+                <i className={`fa fa-info-circle ${styles.infoIcon}`} id="tooltip-available"></i>
+                <UncontrolledTooltip placement="top" target="tooltip-available">
+                  Number of units currently not in use
+                </UncontrolledTooltip>
+              </th>
+              <th>
+                Using
+                <i className={`fa fa-info-circle ${styles.infoIcon}`} id="tooltip-using"></i>
+                <UncontrolledTooltip placement="top" target="tooltip-using">
+                  Quantity being checked in/out
+                </UncontrolledTooltip>
+              </th>
+              <th>
+                Tool / Equipment #
+                <i className={`fa fa-info-circle ${styles.infoIcon}`} id="tooltip-toolnum"></i>
+                <UncontrolledTooltip placement="top" target="tooltip-toolnum">
+                  Select the specific tool identifier
+                </UncontrolledTooltip>
+              </th>
             </tr>
           </thead>
           <tbody>
             {!selectedProject && (
-              <tr className={darkMode ? 'select-project-row dark-mode' : ''}>
-                <td
-                  colSpan={5}
-                  className={`text-center py-3 ${darkMode ? 'text-light' : 'text-dark'} `}
-                >
+              <tr className={darkMode ? `select-project-row dark-mode ${styles.darkMode}` : ''}>
+                <td colSpan={5} className={`text-center py-3 ${darkMode ? 'text-light' : ''}`}>
                   Select a project to load equipments.
                 </td>
               </tr>
             )}
 
             {selectedProject && rows.length === 0 && (
-              <tr className={`${darkMode ? 'text-light' : 'text-dark'} `}>
+              <tr className={`${darkMode ? styles.darkMode : ''}`}>
                 <td colSpan={5} className="text-center py-3">
                   No equipments found for this project.
                 </td>
@@ -408,11 +484,14 @@ function EDailyActivityLog(props) {
             {selectedProject &&
               rows.length > 0 &&
               rows.map((r, idx) => {
-                const validList = logType === 'check-in' ? r.availableNumbers : r.inUseNumbers;
-                const limit = logType === 'check-in' ? r.availableQty : r.usingQty;
+                const validList = logType === 'check-in' ? r.inUseNumbers : r.availableNumbers;
+                const limit = logType === 'check-in' ? r.usingQty : r.availableQty;
 
                 return (
-                  <tr key={r.id} className={darkMode ? 'dark-table-row text-light' : 'text-dark'}>
+                  <tr
+                    key={r.id}
+                    className={darkMode ? `dark-table-row text-light ${styles.darkMode}` : ''}
+                  >
                     <td>{r.name}</td>
                     <td>{r.workingQty}</td>
                     <td>{r.availableQty}</td>
@@ -426,106 +505,7 @@ function EDailyActivityLog(props) {
                         onChange={sel => onToolSelect(idx, sel)}
                         placeholder={`Pick up to ${limit}…`}
                         menuPortalTarget={document.body}
-                        styles={{
-                          container: base => ({
-                            ...base,
-                            width: 300, // lock it to 300px
-                            minWidth: 300,
-                            maxWidth: 300,
-                          }),
-                          control: base => ({
-                            ...base,
-                            width: '100%', // fill the container
-                            overflow: 'hidden',
-                            whiteSpace: 'nowrap',
-                            backgroundColor: darkMode ? '#343a40' : '#fff',
-                            borderColor: darkMode ? '#495057' : '#ced4da',
-                            color: darkMode ? '#fff' : '#000',
-                          }),
-                          placeholder: base => ({
-                            ...base,
-                            color: darkMode ? '#adb5bd' : '#6c757d',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                          }),
-                          singleValue: base => ({
-                            ...base,
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                            color: darkMode ? '#fff' : '#000',
-                          }),
-                          multiValue: base => ({
-                            ...base,
-                            maxWidth: '60%',
-                            overflow: 'hidden',
-                            backgroundColor: darkMode ? '#495057' : '#e9ecef',
-                          }),
-                          multiValueLabel: base => ({
-                            ...base,
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                            color: darkMode ? '#fff' : '#000',
-                          }),
-                          multiValueRemove: base => ({
-                            ...base,
-                            color: darkMode ? '#fff' : '#000',
-                            '&:hover': {
-                              backgroundColor: darkMode ? '#6c757d' : '#dee2e6',
-                              color: darkMode ? '#fff' : '#000',
-                            },
-                          }),
-                          indicatorsContainer: base => ({
-                            ...base,
-                            flexWrap: 'nowrap',
-                          }),
-                          menu: base => ({
-                            ...base,
-                            width: 300,
-                            minWidth: 300,
-                            maxWidth: 300,
-                            zIndex: 9999,
-                            backgroundColor: darkMode ? '#343a40' : '#fff',
-                            border: darkMode ? '1px solid #495057' : '1px solid #ced4da',
-                            borderRadius: 8,
-                            marginTop: 2,
-                          }),
-                          menuList: base => ({
-                            ...base,
-                            maxHeight: 400,
-                            overflowY: 'auto',
-                            backgroundColor: darkMode ? '#343a40' : '#fff',
-                            color: darkMode ? '#fff' : '#000',
-                            padding: 0,
-                          }),
-                          option: (base, state) => ({
-                            ...base,
-                            backgroundColor: state.isSelected
-                              ? '#0d55b3'
-                              : state.isFocused
-                              ? darkMode
-                                ? '#495057'
-                                : '#f0f0f0'
-                              : darkMode
-                              ? '#343a40'
-                              : '#fff',
-                            color: state.isSelected ? '#fff' : darkMode ? '#fff' : '#000',
-                            fontSize: 13,
-                            padding: '10px 16px',
-                            cursor: 'pointer',
-                            '&:hover': {
-                              backgroundColor: state.isSelected
-                                ? '#0d55b3'
-                                : darkMode
-                                ? '#495057'
-                                : '#c4c8cbff',
-                              color: darkMode ? '#fff' : '#000',
-                            },
-                          }),
-                          menuPortal: base => ({ ...base, zIndex: 9999 }),
-                        }}
+                        styles={tableSelectStyles}
                       />
                     </td>
                   </tr>
@@ -534,12 +514,16 @@ function EDailyActivityLog(props) {
           </tbody>
         </Table>
 
-        {/* actions */}
-        <div className="d-flex justify-content-end gap-2">
+        <div className={styles.actionContainer}>
           <Button color="secondary" onClick={handleCancel}>
             Cancel
           </Button>
-          <Button color="primary" onClick={handleSubmit}>
+          <Button
+            color="primary"
+            onClick={handleSubmit}
+            disabled={isSubmitDisabled}
+            style={isSubmitDisabled ? { cursor: 'not-allowed', opacity: 0.65 } : {}}
+          >
             Submit
           </Button>
         </div>
