@@ -141,7 +141,7 @@ import UtilizationChart from './components/BMDashboard/UtilizationChart/Utilizat
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
 import InjuriesDonutChart from './components/InjuriesAnalytics/InjuriesDonutChart';
 //import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChart';
-
+import InteractiveMap from './components/BMDashboard/InteractiveMap/InteractiveMap';
 import RentalChart from './components/BMDashboard/RentalChart/RentalChart';
 import ReturnedLateChart from './components/BMDashboard/RentalChart/ReturnedLateChart';
 import CreateNewTeam from './components/BMDashboard/Team/CreateNewTeam/CreateNewTeam';
