@@ -1,9 +1,36 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer, Label } from 'recharts';
-import axios from 'axios';
+import { fetchProjectStatusSummary } from '../../../services/projectStatusService';
 import styles from './ProjectStatusDonutChart.module.css';
 
-const COLORS = ['#B39DDB', '#80DEEA', '#FFABAB']; // Active, Completed, Delayed
+const COLORS = ['#B39DDB', '#80DEEA', '#FFABAB'];
+
+function CustomTooltip({ active, payload, darkMode }) {
+  if (!active || !payload?.length) return null;
+  const { name, value } = payload[0];
+  const total = payload[0]?.payload?.total || 0;
+  const pct = total ? Number(((value / total) * 100).toFixed(1)) : 0;
+
+  return (
+    <div
+      className={styles.tooltip}
+      style={
+        darkMode
+          ? { backgroundColor: '#1b2a41', color: '#fff', border: '1px solid #4a6a8a' }
+          : { backgroundColor: '#fff', color: '#333', border: '1px solid #d1d5db' }
+      }
+    >
+      <p className={styles.tooltipName}>{name}</p>
+      <p className={styles.tooltipValue}>
+        Count: <strong>{value}</strong>
+      </p>
+      <p className={styles.tooltipValue}>
+        Share: <strong>{pct}%</strong>
+      </p>
+    </div>
+  );
+}
 
 export default function ProjectStatusDonutChart() {
   const [loading, setLoading] = useState(true);
@@ -12,37 +39,18 @@ export default function ProjectStatusDonutChart() {
 
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const darkMode = useSelector(state => state.theme?.darkMode || false);
 
   const fetchStatus = async () => {
     try {
       setLoading(true);
       setError(null);
-
-      // Build query string
-      const query = [];
-      if (startDate) query.push(`startDate=${startDate}`);
-      if (endDate) query.push(`endDate=${endDate}`);
-      const queryString = query.length ? `?${query.join('&')}` : '';
-
-      // Get token from localStorage (Dev Admin session)
-      const token = localStorage.getItem('token');
-
-      const res = await axios.get(`http://localhost:4500/api/projects/status${queryString}`, {
-        headers: { Authorization: token },
+      const data = await fetchProjectStatusSummary({
+        startDate: startDate || undefined,
+        endDate: endDate || undefined,
       });
-
-      // TEMPORARY MOCK DATA - for testing purposes
-      /*setStatusData({
-        totalProjects: 50,
-        activeProjects: 20,
-        completedProjects: 20,
-        delayedProjects: 10,
-      });
-      return;*/
-
-      setStatusData(res.data);
+      setStatusData(data);
     } catch (err) {
-      // console.error(err);
       setError('Unable to load project status.');
     } finally {
       setLoading(false);
@@ -57,10 +65,11 @@ export default function ProjectStatusDonutChart() {
   if (error) return <p>{error}</p>;
   if (!statusData) return <p>No data available.</p>;
 
+  const total = statusData.activeProjects + statusData.completedProjects + statusData.delayedProjects;
   const pieData = [
-    { name: 'Active Projects', value: statusData.activeProjects },
-    { name: 'Completed Projects', value: statusData.completedProjects },
-    { name: 'Delayed Projects', value: statusData.delayedProjects },
+    { name: 'Active Projects', value: statusData.activeProjects, total },
+    { name: 'Completed Projects', value: statusData.completedProjects, total },
+    { name: 'Delayed Projects', value: statusData.delayedProjects, total },
   ];
 
   // SHOW MESSAGE WHEN THERE IS NO DATA
@@ -142,7 +151,7 @@ export default function ProjectStatusDonutChart() {
                 />
               </Pie>
 
-              <Tooltip />
+              <Tooltip content={<CustomTooltip darkMode={darkMode} />} />
               <Legend verticalAlign="bottom" align="center" />
             </PieChart>
           </ResponsiveContainer>

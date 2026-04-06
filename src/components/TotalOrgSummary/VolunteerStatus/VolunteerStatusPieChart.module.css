@@ -40,12 +40,7 @@
 
 .volunteer-status-center .volunteer-count {
   color: #6c6c6c;
-  font-size: 2rem;
   font-weight: bolder;
-  /* Scale font-size based on chart container width (not viewport width) */
-  /* At 280px container: 1.35rem, At 320px container: 1.8rem */
-  /* Uses container query width units (cqw): 1cqw = 1% of container width */
-  /* Percentage-based scaling: ~7.71-9% of container width */
   font-size: clamp(1.35rem, 8.36cqw, 1.8rem);
 }
 

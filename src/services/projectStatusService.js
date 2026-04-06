@@ -4,11 +4,7 @@ import dayjs from 'dayjs';
 
 const ApiUri = `${ApiEndpoint}/project-status`;
 
-export const fetchProjectStatusSummary = async ({ startDate, endDate, token } = {}) => {
-  if (!token) {
-    throw new Error('Authentication token is required');
-  }
-
+export const fetchProjectStatusSummary = async ({ startDate, endDate } = {}) => {
   const params = new URLSearchParams();
   if (startDate) params.set('startDate', dayjs(startDate).format('YYYY-MM-DD'));
   if (endDate) params.set('endDate', dayjs(endDate).format('YYYY-MM-DD'));
@@ -19,7 +15,6 @@ export const fetchProjectStatusSummary = async ({ startDate, endDate, token } = 
     const res = await httpService.get(url);
     return res.data;
   } catch (error) {
-    console.error('Failed to fetch project status summary:', error);
     throw new Error(error.response?.data?.message || 'Failed to fetch project status data');
   }
 };

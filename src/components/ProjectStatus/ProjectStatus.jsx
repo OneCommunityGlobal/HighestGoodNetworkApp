@@ -4,11 +4,11 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import dayjs from 'dayjs';
 import { Doughnut } from 'react-chartjs-2';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend, Title } from 'chart.js';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import styles from './ProjectStatus.module.css';
 import { fetchProjectStatusSummary } from '../../services/projectStatusService';
 
-ChartJS.register(ArcElement, Tooltip, Legend, Title);
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 // custom center text plugin with dark mode support
 const centerTextPlugin = {
@@ -48,25 +48,11 @@ export default function ProjectStatus() {
   const [error, setError] = useState('');
   const [dateError, setDateError] = useState('');
 
-  // Secure token retrieval with error handling
-  const getToken = () => {
-    try {
-      return localStorage.getItem('token') || null;
-    } catch (e) {
-      console.warn('Failed to retrieve token from localStorage:', e);
-      return null;
-    }
-  };
-
   const load = async (opts = {}) => {
     setPending(true);
     setError('');
     try {
-      const token = getToken();
-      if (!token) {
-        throw new Error('Authentication token not found. Please log in again.');
-      }
-      const res = await fetchProjectStatusSummary({ ...opts, token });
+      const res = await fetchProjectStatusSummary(opts);
       setData(res);
     } catch (e) {
       setError(e.message || 'Failed to load project status data');
@@ -114,23 +100,15 @@ export default function ProjectStatus() {
               const label = ctx.label || '';
               const value = ctx.formattedValue || '0';
 
-              // use percentages from API
               const pctMap = data?.percentages || {};
-              let pct = 0;
-              if (ctx.dataIndex === 0) pct = pctMap.active;
-              else if (ctx.dataIndex === 1) pct = pctMap.completed;
-              else if (ctx.dataIndex === 2) pct = pctMap.delayed;
+              const keys = ['active', 'completed', 'delayed'];
+              const pct = Number(pctMap[keys[ctx.dataIndex]] ?? 0);
 
-              return `${label}: ${value} (${pct?.toFixed(1) ?? 0}%)`;
+              return `${label}: ${value} (${pct.toFixed(1)}%)`;
             },
           },
         },
-        title: {
-          display: true,
-          text: 'PROJECT STATUS',
-          font: { size: 18, weight: '800' },
-          color: darkMode ? '#ffffff' : '#000000',
-        },
+        title: { display: false },
         centerText: {
           total: data?.totalProjects ?? 0,
           darkMode,
