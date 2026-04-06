@@ -362,7 +362,7 @@ const WeeklyUpdateComposer = ({ onClose }) => {
     <!-- Main Content -->
     <div class="content">
       <!-- Intro Paragraph -->
-      <p>${introParagraph.replace(/\n/g, '<br>')}</p>
+      <p>${introParagraph.replaceAll(/\n/g, '<br>')}</p>
       
     <!-- Video Section -->
     <div class="video-section">
@@ -381,7 +381,7 @@ const WeeklyUpdateComposer = ({ onClose }) => {
     </div>
       
       <!-- Closing Paragraph -->
-      <p>${closingParagraph.replace(/\n/g, '<br>')}</p>
+      <p>${closingParagraph.replaceAll(/\n/g, '<br>')}</p>
       
       <!-- Love What We're Doing Section -->
       <div class="love-section">

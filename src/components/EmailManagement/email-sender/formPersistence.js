@@ -44,7 +44,7 @@ export const loadDraft = () => {
     }
 
     // Check if draft is too old
-    const age = Date.now() - parseInt(timestamp, 10);
+    const age = Date.now() - Number.parseInt(timestamp, 10);
     if (age > MAX_DRAFT_AGE_MS) {
       clearDraft();
       return null;
@@ -85,7 +85,7 @@ export const hasDraft = () => {
     }
 
     // Check if draft is too old
-    const age = Date.now() - parseInt(timestamp, 10);
+    const age = Date.now() - Number.parseInt(timestamp, 10);
     if (age > MAX_DRAFT_AGE_MS) {
       clearDraft();
       return false;
@@ -106,7 +106,7 @@ export const getDraftAge = () => {
     const timestamp = localStorage.getItem(STORAGE_TIMESTAMP_KEY);
     if (!timestamp) return null;
 
-    const ageMs = Date.now() - parseInt(timestamp, 10);
+    const ageMs = Date.now() - Number.parseInt(timestamp, 10);
     return Math.floor(ageMs / (1000 * 60)); // Convert to minutes
   } catch (error) {
     return null;

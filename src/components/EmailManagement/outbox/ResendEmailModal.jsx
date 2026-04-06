@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { FaInfoCircle, FaPaperPlane } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
@@ -184,6 +185,16 @@ const ResendEmailModal = ({ isOpen, toggle, email, onResend }) => {
       </form>
     </Modal>
   );
+};
+ResendEmailModal.propTypes = {
+  isOpen: PropTypes.bool,
+  toggle: PropTypes.func,
+  email: PropTypes.shape({
+    trim: PropTypes.func,
+    length: PropTypes.number,
+    subject: PropTypes.string,
+  }),
+  onResend: PropTypes.func,
 };
 
 export default ResendEmailModal;

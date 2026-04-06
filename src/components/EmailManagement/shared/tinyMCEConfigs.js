@@ -48,12 +48,12 @@ export const getTemplateEditorConfig = (darkMode, formData) => ({
   // Comprehensive toolbar with all features
   toolbar: [
     'undo redo | blocks fontfamily fontsize | lineheight | ' +
-      'forecolor backcolor | ' +
-      'bold italic underline strikethrough | ' +
-      'alignleft aligncenter alignright alignjustify | ' +
-      'bullist numlist outdent indent | blockquote | ' +
-      'link image media table | insertvariable | ' +
-      'removeformat | code | preview | fullscreen | help',
+    'forecolor backcolor | ' +
+    'bold italic underline strikethrough | ' +
+    'alignleft aligncenter alignright alignjustify | ' +
+    'bullist numlist outdent indent | blockquote | ' +
+    'link image media table | insertvariable | ' +
+    'removeformat | code | preview | fullscreen | help',
   ],
 
   // Extended font family options
@@ -80,9 +80,9 @@ export const getTemplateEditorConfig = (darkMode, formData) => ({
     '0.5 0.6 0.7 0.8 0.9 1 1.1 1.2 1.3 1.4 1.5 1.6 1.7 1.8 1.9 2 2.1 2.2 2.3 2.4 2.5 2.6 2.7 2.8 2.9 3 3.5 4 4.5 5',
 
   // Setup function for additional customizations
-  setup: function(editor) {
+  setup: function (editor) {
     // Initialize with light mode styling
-    editor.on('init', function() {
+    editor.on('init', function () {
       const body = editor.getBody();
       body.style.backgroundColor = darkMode ? '#2d3748' : '#ffffff';
       body.style.color = darkMode ? '#e2e8f0' : '#212529';
@@ -92,7 +92,7 @@ export const getTemplateEditorConfig = (darkMode, formData) => ({
     editor.ui.registry.addButton('insertvariable', {
       text: 'Variable',
       tooltip: 'Insert Template Variable',
-      onAction: function() {
+      onAction: function () {
         const variables = formData?.variables || [];
         if (variables.length === 0) {
           editor.notificationManager.open({
@@ -131,7 +131,7 @@ export const getTemplateEditorConfig = (darkMode, formData) => ({
               primary: true,
             },
           ],
-          onSubmit: function(api) {
+          onSubmit: function (api) {
             const data = api.getData();
             if (data.variable) {
               editor.insertContent(data.variable);
@@ -154,21 +154,21 @@ export const getTemplateEditorConfig = (darkMode, formData) => ({
   automatic_uploads: true,
   file_picker_types: 'image',
   paste_block_drop: false,
-  images_upload_handler: function(blobInfo, success, failure, progress) {
+  images_upload_handler: function (blobInfo, success, failure, progress) {
     // Return a Promise for proper async handling
     return new Promise((resolve, reject) => {
       try {
         const reader = new FileReader();
 
-        reader.onloadend = function() {
+        reader.onloadend = function () {
           resolve(reader.result);
           success(reader.result);
         };
 
-        reader.onerror = function() {
-          const error = 'Failed to read image file';
+        reader.onerror = function () {
+          const error = new Error('Failed to read image file');
           reject(error);
-          failure(error);
+          failure(error.message);
         };
 
         reader.readAsDataURL(blobInfo.blob());
@@ -210,11 +210,11 @@ export const getEmailSenderConfig = darkMode => ({
   plugins: ['lists', 'link', 'autolink', 'paste', 'fontsize', 'lineheight', 'textcolor', 'image'],
   toolbar: [
     'undo redo | blocks fontfamily fontsize | lineheight | ' +
-      'forecolor backcolor | ' +
-      'bold italic underline strikethrough | ' +
-      'alignleft aligncenter alignright alignjustify | ' +
-      'bullist numlist outdent indent | blockquote | ' +
-      'removeformat | link | image ',
+    'forecolor backcolor | ' +
+    'bold italic underline strikethrough | ' +
+    'alignleft aligncenter alignright alignjustify | ' +
+    'bullist numlist outdent indent | blockquote | ' +
+    'removeformat | link | image ',
   ],
   statusbar: false,
   resize: false,
@@ -237,34 +237,34 @@ export const getEmailSenderConfig = darkMode => ({
   extended_valid_elements: 'img[*]',
   verify_html: false,
 
-  images_upload_handler: function(blobInfo, success, failure, progress) {
+  images_upload_handler: function (blobInfo, success, failure, progress) {
     // Handle both pasted images and URL images
     return new Promise((resolve, reject) => {
       try {
         const reader = new FileReader();
 
-        reader.onloadend = function() {
+        reader.onloadend = function () {
           resolve(reader.result);
           success(reader.result);
         };
 
-        reader.onerror = function() {
-          const error = 'Failed to read image file';
+        reader.onerror = function () {
+          const error = new Error('Failed to read image file');
           reject(error);
-          failure(error);
+          failure(error.message);
         };
 
         reader.readAsDataURL(blobInfo.blob());
       } catch (error) {
-        const errorMsg = 'Image processing failed: ' + error.message;
+        const errorMsg = new Error('Image processing failed: ' + error.message);
         reject(errorMsg);
-        failure(errorMsg);
+        failure(errorMsg.message);
       }
     });
   },
 
-  setup: function(editor) {
-    editor.on('init', function() {
+  setup: function (editor) {
+    editor.on('init', function () {
       const body = editor.getBody();
       const doc = body.ownerDocument;
 
@@ -291,7 +291,7 @@ export const getEmailSenderConfig = darkMode => ({
       // Handle drop
       body.addEventListener(
         'drop',
-        function(e) {
+        function (e) {
           e.preventDefault();
           e.stopPropagation();
 
@@ -304,7 +304,7 @@ export const getEmailSenderConfig = darkMode => ({
               if (file.type.match('image.*')) {
                 const reader = new FileReader();
 
-                reader.onload = function(readerEvent) {
+                reader.onload = function (readerEvent) {
                   const img = `<p><img src="${readerEvent.target.result}" alt="${file.name}" style="max-width: 600px; height: auto;" /></p>`;
                   editor.insertContent(img);
                 };

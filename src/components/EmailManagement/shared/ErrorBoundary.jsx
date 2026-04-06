@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { Alert } from 'reactstrap';
 
@@ -64,5 +65,9 @@ class ErrorBoundary extends React.Component {
     return this.props.children;
   }
 }
+ErrorBoundary.propTypes = {
+  resetKey: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  children: PropTypes.node,
+};
 
 export default ErrorBoundary;

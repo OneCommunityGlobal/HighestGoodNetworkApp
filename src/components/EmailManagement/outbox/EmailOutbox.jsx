@@ -1,4 +1,5 @@
 import DOMPurify from 'dompurify';
+import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   FaCalendar,
@@ -1145,7 +1146,6 @@ const EmailOutbox = ({ isActive = true }) => {
                       style={{
                         display: 'block',
                         color: darkMode ? '#4299e1' : '#007bff',
-                        filter: darkMode ? 'none' : 'none',
                       }}
                       color={darkMode ? '#4299e1' : '#007bff'}
                     />
@@ -1499,6 +1499,9 @@ const EmailOutbox = ({ isActive = true }) => {
       />
     </>
   );
+};
+EmailOutbox.propTypes = {
+  isActive: PropTypes.bool,
 };
 
 export default EmailOutbox;

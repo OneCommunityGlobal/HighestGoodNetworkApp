@@ -1,10 +1,10 @@
+import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import CharacterCounter from '../../CharacterCounter';
 import ConfirmationModal from '../../ConfirmationModal';
 import './SocialMediaComposer.module.css';
-
 const PREFS_KEY = 'mastodon_composer_prefs';
 
 export default function SocialMediaComposer({ platform }) {
@@ -904,3 +904,6 @@ export default function SocialMediaComposer({ platform }) {
     </div>
   );
 }
+SocialMediaComposer.propTypes = {
+  platform: PropTypes.string,
+};
