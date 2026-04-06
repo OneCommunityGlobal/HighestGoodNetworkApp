@@ -16,6 +16,8 @@ import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt, FaSearch, FaTimes } from 'rea
 import styles from './CPDashboard.module.css';
 import { ENDPOINTS } from '../../utils/URL';
 import axios from 'axios';
+import { el } from 'date-fns/locale';
+import { fuzzySearch } from '../../utils/fuzzySearch';
 
 const FixedRatioImage = ({ src, alt, fallback }) => (
   <div
@@ -172,6 +174,7 @@ export function CPDashboard() {
       weekday: 'long',
       month: 'long',
       day: 'numeric',
+      year: 'numeric',
       hour: 'numeric',
       minute: '2-digit',
     });
@@ -215,9 +218,9 @@ export function CPDashboard() {
     const term = searchQuery.toLowerCase();
 
     return (
-      event.title?.toLowerCase().includes(term) ||
-      event.location?.toLowerCase().includes(term) ||
-      event.organizer?.toLowerCase().includes(term)
+      fuzzySearch(event.title, term, 0.6) ||
+      fuzzySearch(event.location, term, 0.6) ||
+      fuzzySearch(event.organizer, term, 0.6)
     );
   });
 

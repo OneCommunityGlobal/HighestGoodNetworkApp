@@ -139,6 +139,8 @@ import CheckTypes from './components/BMDashboard/shared/CheckTypes';
 import ToolDetailPage from './components/BMDashboard/Tools/ToolDetailPage';
 import UtilizationChart from './components/BMDashboard/UtilizationChart/UtilizationChart';
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
+import InjuriesDonutChart from './components/InjuriesAnalytics/InjuriesDonutChart';
+//import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChart';
 
 import RentalChart from './components/BMDashboard/RentalChart/RentalChart';
 import ReturnedLateChart from './components/BMDashboard/RentalChart/ReturnedLateChart';
@@ -764,6 +766,7 @@ export default (
           fallback
         />
         <ProtectedRoute path="/analytics/months-pledged" component={MonthsPledgedChart} fallback />
+        <ProtectedRoute path="/analytics/injuries" component={InjuriesDonutChart} fallback />
         <ProtectedRoute
           path="/jobanalytics"
           exact
@@ -900,6 +903,7 @@ export default (
         <BMProtectedRoute path="/bmdashboard/issuechart" component={IssueChart} />
         <BMProtectedRoute path="/bmdashboard/timelog/" component={BMTimeLogger} />
         <BMProtectedRoute path="/bmdashboard/issues/" component={IssueDashboard} />
+        <BMProtectedRoute path="/bmdashboard/InteractiveMap" component={InteractiveMap} />
         <BMProtectedRoute
           path="/bmdashboard/timelog/:projectId"
           fallback
