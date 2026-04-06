@@ -1,29 +1,29 @@
-import React, { useState, useCallback } from 'react';
-import { useSelector } from 'react-redux';
-import { toast } from 'react-toastify';
 import axios from 'axios';
-import { ENDPOINTS } from '~/utils/URL';
+import PropTypes from 'prop-types';
+import { useCallback, useState } from 'react';
 import {
-  Form,
-  FormGroup,
-  Label,
-  Input,
-  Button,
-  Alert,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-} from 'reactstrap';
-import {
+  FaExclamationTriangle,
+  FaEye,
+  FaImage,
   FaPaperPlane,
   FaTimes,
-  FaEye,
-  FaExclamationTriangle,
   FaUpload,
-  FaImage,
 } from 'react-icons/fa';
-import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
+import {
+  Alert,
+  Button,
+  Form,
+  FormGroup,
+  Input,
+  Label,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+} from 'reactstrap';
+import { ENDPOINTS } from '~/utils/URL';
 
 // Email template CSS - kept as string constant for inline email use
 const EMAIL_TEMPLATE_STYLES = `
@@ -170,7 +170,7 @@ const WeeklyUpdateComposer = ({ onClose }) => {
 
   // Email validation
   const validateEmail = useCallback(email => {
-    return /\S+@\S+\.\S+/.test(email);
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }, []);
 
   // Parse recipients

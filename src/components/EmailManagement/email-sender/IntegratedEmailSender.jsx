@@ -579,7 +579,7 @@ const IntegratedEmailSender = ({
             type: 'SET_LOADING_PROGRESS',
             payload: prev => {
               if (prev >= 90) return prev;
-              return prev + Math.random() * 15;
+              return prev + (crypto.getRandomValues(new Uint32Array(1))[0] / 0xFFFFFFFF) * 15;
             },
           });
         }, 200);
@@ -754,7 +754,7 @@ const IntegratedEmailSender = ({
           type: 'SET_LOADING_PROGRESS',
           payload: prev => {
             if (prev >= 90) return prev;
-            return prev + Math.random() * 10;
+            return prev + (crypto.getRandomValues(new Uint32Array(1))[0] / 0xFFFFFFFF) * 10;
           },
         });
       }, 150);
