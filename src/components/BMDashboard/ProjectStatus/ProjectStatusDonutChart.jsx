@@ -65,7 +65,8 @@ export default function ProjectStatusDonutChart() {
   if (error) return <p>{error}</p>;
   if (!statusData) return <p>No data available.</p>;
 
-  const total = statusData.activeProjects + statusData.completedProjects + statusData.delayedProjects;
+  const total =
+    statusData.activeProjects + statusData.completedProjects + statusData.delayedProjects;
   const pieData = [
     { name: 'Active Projects', value: statusData.activeProjects, total },
     { name: 'Completed Projects', value: statusData.completedProjects, total },
