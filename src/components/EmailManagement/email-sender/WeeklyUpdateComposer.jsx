@@ -170,12 +170,12 @@ const WeeklyUpdateComposer = ({ onClose }) => {
 
   // Email validation
   const validateEmail = useCallback(email => {
-  if (!email || typeof email !== 'string') return false;
-  const atIndex = email.indexOf('@');
-  if (atIndex <= 0) return false;
-  const dotIndex = email.lastIndexOf('.');
-  return dotIndex > atIndex + 1 && dotIndex < email.length - 1;
-}, []);
+    if (!email || typeof email !== 'string') return false;
+    const atIndex = email.indexOf('@');
+    if (atIndex <= 0) return false;
+    const dotIndex = email.lastIndexOf('.');
+    return dotIndex > atIndex + 1 && dotIndex < email.length - 1;
+  }, []);
 
   // Parse recipients
   const parseRecipients = useCallback(recipientText => {
