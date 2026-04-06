@@ -16,6 +16,9 @@
   font-weight: 500;
   color: #111827;
   cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
 }
 
 .prsReviewedInput {
@@ -30,7 +33,7 @@
 .prsReviewedInput:focus {
   outline: none;
   border-color: #2563eb;
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.5);
+  box-shadow: 0 0 0 2px rgb(37 99 235 / 50%);
 }
 
 .prsNeeded {
@@ -50,17 +53,17 @@
   border: none;
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 5%);
 }
 
 .addButton:hover {
   background-color: #1d4ed8;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 10%);
 }
 
 .addButton:focus {
   outline: none;
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.5), 0 0 0 4px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 2px rgb(37 99 235 / 50%), 0 0 0 4px rgb(37 99 235 / 10%);
 }
 
 .addButtonIcon {
@@ -90,7 +93,7 @@
 
 :global(.dark-mode) .prsReviewedInput:focus {
   border-color: #3b82f6;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+  box-shadow: 0 0 0 2px rgb(59 130 246 / 50%);
 }
 
 :global(.dark-mode) .addButton {
@@ -103,6 +106,5 @@
 }
 
 :global(.dark-mode) .addButton:focus {
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.5), 0 0 0 4px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 2px rgb(37 99 235 / 50%), 0 0 0 4px rgb(37 99 235 / 10%);
 }
-

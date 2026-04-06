@@ -36,6 +36,18 @@
   white-space: nowrap;
 }
 
+.value {
+  color: #111827;
+  display: inline-block;
+  font-family: Arial, sans-serif;
+}
+
+strong {
+  /* color: #fffdfd; */
+  font-weight: 600;
+  font-size: 1rem;
+}
+
 .teamInfo strong,
 .contactsInfo strong {
   color: #0f2f4a;
@@ -46,24 +58,12 @@
   font-weight: bold;
 }
 
-.value {
-  color: #111827;
-  display: inline-block;
-  font-family: 'Arial', sans-serif;
-}
-
-strong {
-  /* color: #fffdfd; */
-  font-weight: 600;
-  font-size: 1rem;
-}
-
 .githubLink {
   color: #1a73e8;
   text-decoration: none;
   font-weight: 500;
   font-size: 1rem;
-  padding: 2px 2px;
+  padding: 2px;
   border-radius: 10px;
   transition: background-color 0.2s ease, color 0.2s ease; /* Smooth hover effect */
 }
@@ -75,16 +75,17 @@ strong {
 }
 
 /* Responsive adjustments */
-@media (max-width: 600px) {
+@media (width <= 600px) {
   .githubLink {
     padding: 1px 4px;
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .profileDetails {
     width: 100%;
   }
+
   .teamInfo,
   .contactsInfo {
     flex-direction: column;

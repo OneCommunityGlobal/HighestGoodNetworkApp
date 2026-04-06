@@ -410,21 +410,15 @@
   -webkit-appearance: none;
   appearance: none;
 }
-
-.darkSearchContainer {
-  background: #1b2a41;
-  border-color: #4da3ff;
+.noEvents{
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+  font-size: 1.25rem;
+  font-style: italic;
+  color:#6b7280;
 }
-
-.darkSearchTextarea {
-  color: #ffffff;
-}
-
-.darkSearchTextarea::placeholder {
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.darkSearchContainer .dashboardClearBtn,
-.darkSearchContainer .dashboardSearchIconBtn {
-  color: #ffffff;
+.darkMain .noEvents {
+  color: #9ca3af;
 }
