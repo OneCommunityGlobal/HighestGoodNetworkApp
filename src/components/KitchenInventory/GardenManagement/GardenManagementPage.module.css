@@ -1,0 +1,788 @@
+/* Container */
+.container {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.containerDark {
+  background-color: #1a1a2e;
+  color: #e0e0e0;
+}
+
+/* Header */
+.header {
+  background-color: #fff;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.containerDark .header {
+  background-color: #16213e;
+  border-bottom-color: #2a2a4a;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logoIcon {
+  width: 36px;
+  height: 36px;
+  background-color: #2e7d32;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.logoText {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.containerDark .logoText {
+  color: #e0e0e0;
+}
+
+.logoSubtext {
+  margin: 0;
+  font-size: 11px;
+  color: #666;
+}
+
+.containerDark .logoSubtext {
+  color: #aaa;
+}
+
+.nav {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.navLink {
+  color: #666;
+  text-decoration: none;
+  font-size: 14px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.navLink:hover {
+  color: #2e7d32;
+}
+
+.containerDark .navLink {
+  color: #aaa;
+}
+
+.darkModeToggle {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.containerDark .darkModeToggle {
+  background: #2a2a4a;
+  border-color: #3a3a5a;
+  color: #e0e0e0;
+}
+
+/* Main */
+.main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.pageTitle {
+  font-size: 28px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 8px 0;
+}
+
+.containerDark .pageTitle {
+  color: #e0e0e0;
+}
+
+.pageSubtitle {
+  color: #666;
+  margin: 0 0 24px 0;
+  font-size: 14px;
+}
+
+.containerDark .pageSubtitle {
+  color: #aaa;
+}
+
+/* Stats Grid */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 1024px) {
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.statCard {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.containerDark .statCard {
+  background-color: #16213e;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.statLabel {
+  color: #666;
+  font-size: 13px;
+  margin: 0 0 6px 0;
+}
+
+.containerDark .statLabel {
+  color: #aaa;
+}
+
+.statValue {
+  font-size: 28px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.containerDark .statValue {
+  color: #e0e0e0;
+}
+
+.statIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 8px;
+  border-bottom: 2px solid #e0e0e0;
+  margin-bottom: 24px;
+  overflow-x: auto;
+}
+
+.containerDark .tabs {
+  border-bottom-color: #2a2a4a;
+}
+
+.tab {
+  padding: 12px 20px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: #666;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  white-space: nowrap;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.tab:hover {
+  color: #2e7d32;
+}
+
+.containerDark .tab {
+  color: #aaa;
+}
+
+.tabActive {
+  color: #2e7d32;
+  border-bottom-color: #2e7d32;
+  font-weight: 600;
+}
+
+/* Calendars Grid */
+.calendarsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+@media (max-width: 900px) {
+  .calendarsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Calendar Card */
+.calendarCard {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 24px;
+  border-top: 4px solid #2e7d32;
+}
+
+.containerDark .calendarCard {
+  background-color: #16213e;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  border-top-color: #4caf50;
+}
+
+.calendarHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 12px;
+}
+
+.calendarTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.containerDark .calendarTitle {
+  color: #e0e0e0;
+}
+
+.addButton {
+  padding: 8px 16px;
+  background-color: #2e7d32;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  white-space: nowrap;
+}
+
+.addButton:hover {
+  background-color: #1b5e20;
+}
+
+.calendarSubtitle {
+  color: #999;
+  font-size: 13px;
+  margin: 0 0 20px 0;
+}
+
+.containerDark .calendarSubtitle {
+  color: #aaa;
+}
+
+/* Events Container */
+.eventsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Event Card */
+.eventCard {
+  background-color: #f9fafb;
+  border-radius: 8px;
+  padding: 16px;
+  border-left: 4px solid #2e7d32;
+  transition: all 0.2s;
+}
+
+.eventCard:hover {
+  background-color: #f1f3f4;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.containerDark .eventCard {
+  background-color: #1a2744;
+  border-left-color: #4caf50;
+}
+
+.containerDark .eventCard:hover {
+  background-color: #1e2d4a;
+}
+
+.eventHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.eventName {
+  font-weight: 600;
+  color: #333;
+  font-size: 15px;
+}
+
+.containerDark .eventName {
+  color: #e0e0e0;
+}
+
+/* Status Badges */
+.statusBadge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: lowercase;
+}
+
+.statusActive {
+  background-color: #1a1a1a;
+  color: #fff;
+}
+
+.statusUpcoming {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.statusGrowing {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.containerDark .statusActive {
+  background-color: #333;
+  color: #fff;
+}
+
+.containerDark .statusUpcoming,
+.containerDark .statusGrowing {
+  background-color: #1b4332;
+  color: #81c784;
+}
+
+/* Event Details */
+.eventDetails {
+  color: #666;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.containerDark .eventDetails {
+  color: #aaa;
+}
+
+.eventDetails p {
+  margin: 4px 0;
+}
+
+/* Empty State */
+.emptyState {
+  text-align: center;
+  padding: 80px 20px;
+  color: #999;
+  background-color: #fff;
+  border-radius: 12px;
+  margin-top: 20px;
+  font-size: 15px;
+}
+
+.containerDark .emptyState {
+  background-color: #16213e;
+  color: #aaa;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header {
+    padding: 12px 16px;
+  }
+  
+  .nav {
+    gap: 12px;
+    font-size: 13px;
+  }
+  
+  .main {
+    padding: 16px;
+  }
+  
+  .pageTitle {
+    font-size: 22px;
+  }
+  
+  .calendarHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .addButton {
+    width: 100%;
+  }
+  
+  .statCard {
+    padding: 16px;
+  }
+  
+  .statValue {
+    font-size: 24px;
+  }
+  
+  .statIcon {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+}
+/* ========== SEED INVENTORY SECTION ========== */
+
+.seedInventorySection {
+  margin-top: 20px;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.sectionTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 4px 0;
+}
+
+.containerDark .sectionTitle {
+  color: #e0e0e0;
+}
+
+.sectionSubtitle {
+  color: #999;
+  font-size: 14px;
+  margin: 0;
+}
+
+.containerDark .sectionSubtitle {
+  color: #aaa;
+}
+
+.addSeedsButton {
+  padding: 10px 20px;
+  background-color: #2e7d32;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.addSeedsButton:hover {
+  background-color: #1b5e20;
+}
+
+.seedsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.seedCard {
+  background-color: #f0f7f0;
+  border-radius: 8px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: all 0.2s;
+  border: 1px solid #e0e0e0;
+}
+
+.seedCard:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transform: translateY(-1px);
+}
+
+.containerDark .seedCard {
+  background-color: #1a2744;
+  border-color: #2a2a4a;
+}
+
+.containerDark .seedCard:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.seedIcon {
+  width: 48px;
+  height: 48px;
+  background-color: #e8f5e9;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.containerDark .seedIcon {
+  background-color: #1b4332;
+}
+
+.seedInfo {
+  flex: 1;
+}
+
+.seedName {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.containerDark .seedName {
+  color: #e0e0e0;
+}
+
+.seedDate {
+  font-size: 13px;
+  color: #999;
+}
+
+.containerDark .seedDate {
+  color: #aaa;
+}
+
+.seedStats {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.seedQuantity {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+}
+
+.containerDark .seedQuantity {
+  color: #e0e0e0;
+}
+
+.viabilityBadge {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.containerDark .viabilityBadge {
+  background-color: #1b4332;
+  color: #81c784;
+}
+
+@media (max-width: 768px) {
+  .sectionHeader {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .addSeedsButton {
+    width: 100%;
+  }
+  
+  .seedCard {
+    flex-wrap: wrap;
+  }
+  
+  .seedStats {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+/* ========== SEED ORDERS SECTION ========== */
+.seedOrdersSection { margin-top: 20px; }
+
+.orderGroupTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #555;
+  margin: 20px 0 12px 0;
+}
+.containerDark .orderGroupTitle { color: #aaa; }
+
+.ordersList { display: flex; flex-direction: column; gap: 14px; }
+
+.orderCard {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 18px 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  border: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.containerDark .orderCard { background-color: #16213e; border-color: #2a2a4a; }
+
+.orderHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.orderId { font-size: 12px; color: #999; margin-right: 10px; font-weight: 500; }
+.containerDark .orderId { color: #aaa; }
+
+.orderSupplier { font-size: 16px; font-weight: 600; color: #333; }
+.containerDark .orderSupplier { color: #e0e0e0; }
+
+.orderStatusBadge {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.statusPending { background-color: #fff3e0; color: #e65100; }
+.statusReceived { background-color: #e8f5e9; color: #2e7d32; }
+.containerDark .statusPending { background-color: #3e2000; color: #ffb74d; }
+.containerDark .statusReceived { background-color: #1b4332; color: #81c784; }
+
+.orderItems { display: flex; flex-wrap: wrap; gap: 8px; }
+.orderItemTag {
+  background-color: #f1f8e9;
+  color: #33691e;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.containerDark .orderItemTag { background-color: #1b3320; color: #a5d6a7; }
+
+.orderDates { display: flex; gap: 20px; font-size: 13px; color: #666; flex-wrap: wrap; }
+.containerDark .orderDates { color: #aaa; }
+
+.orderActions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.viewDetailsBtn {
+  padding: 8px 16px;
+  background-color: transparent;
+  border: 1px solid #2e7d32;
+  color: #2e7d32;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+.viewDetailsBtn:hover { background-color: #2e7d32; color: #fff; }
+
+.markReceivedBtn {
+  padding: 8px 16px;
+  background-color: #2e7d32;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+.markReceivedBtn:hover { background-color: #1b5e20; }
+
+/* ========== ONLINE TOOLS SECTION ========== */
+.onlineToolsSection { margin-top: 20px; }
+
+.toolsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+@media (max-width: 768px) { .toolsGrid { grid-template-columns: 1fr; } }
+
+.toolCard {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  border: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: box-shadow 0.2s;
+}
+.toolCard:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+.containerDark .toolCard { background-color: #16213e; border-color: #2a2a4a; }
+
+.toolIcon { font-size: 32px; }
+
+.toolName { font-size: 16px; font-weight: 600; color: #333; margin: 0 0 6px 0; }
+.containerDark .toolName { color: #e0e0e0; }
+
+.toolDescription { font-size: 13px; color: #666; margin: 0 0 10px 0; line-height: 1.5; }
+.containerDark .toolDescription { color: #aaa; }
+
+.toolFeatures { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 4px; }
+.toolFeatures li { font-size: 12px; color: #2e7d32; font-weight: 500; }
+.containerDark .toolFeatures li { color: #81c784; }
+
+.toolLink {
+  display: inline-block;
+  padding: 8px 16px;
+  background-color: #2e7d32;
+  color: #fff;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+  transition: background-color 0.2s;
+}
+.toolLink:hover { background-color: #1b5e20; }
