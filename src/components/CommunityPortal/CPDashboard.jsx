@@ -15,6 +15,9 @@ import {
 import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt, FaSearch, FaTimes } from 'react-icons/fa';
 import styles from './CPDashboard.module.css';
 import { ENDPOINTS } from '../../utils/URL';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { toast } from 'react-toastify';
 import axios from 'axios';
 import { el } from 'date-fns/locale';
 import { fuzzySearch } from '../../utils/fuzzySearch';
@@ -91,6 +94,18 @@ export function CPDashboard() {
     total: 0,
     limit: 6,
   });
+
+  const handleDateChange = date => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // midnight today
+
+    if (date < today) {
+      toast.error('Past dates are not supported. Please select a future date.');
+      setSelectedDate('');
+      return;
+    }
+    setSelectedDate(date);
+  };
 
   const FALLBACK_IMG =
     'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=600&q=60';
@@ -410,26 +425,31 @@ export function CPDashboard() {
                     </Label>
                   </FormGroup>
                 </div>
-
-                <Button
-                  color="primary"
-                  size="sm"
-                  onClick={() => {
-                    setDateFilter('');
-                    setSelectedDate('');
-                  }}
-                >
-                  Clear date filter
-                </Button>
-
-                <Input
-                  type="date"
-                  placeholder="Select Date"
-                  className={styles.dateFilter}
-                  value={selectedDate}
-                  onChange={e => setSelectedDate(e.target.value)}
-                  style={{ marginTop: '10px' }}
-                />
+                <div className={styles.dashboardActions}>
+                  <Button
+                    color="primary"
+                    onClick={() => {
+                      setDateFilter('');
+                      setSelectedDate('');
+                    }}
+                  >
+                    Clear date filter
+                  </Button>
+                </div>
+                <div className={styles.filterItem}>
+                  <div className={styles.dateFilterContainer}>
+                    <DatePicker
+                      type="date"
+                      selected={selectedDate ? new Date(selectedDate) : null}
+                      onChange={handleDateChange}
+                      placeholderText="Ending After"
+                      id="ending-after"
+                      className={styles.dateFilter}
+                      dateFormat="yyyy-MM-dd"
+                      isClearable
+                    />
+                  </div>
+                </div>
               </div>
 
               <div className={styles.filterItem}>
