@@ -588,8 +588,18 @@ const EmailOutbox = ({ isActive = true }) => {
                 className="stat-card"
                 style={{
                   cursor: 'pointer',
-                  border: statusFilter === null ? '2px solid #007bff' : '1px solid #e9ecef',
-                  backgroundColor: statusFilter === null ? '#f8f9fa' : 'white',
+                  border:
+                    statusFilter === null
+                      ? `2px solid ${darkMode ? '#63b3ed' : '#007bff'}`
+                      : `1px solid ${darkMode ? '#4a5568' : '#e9ecef'}`,
+                  backgroundColor:
+                    statusFilter === null
+                      ? darkMode
+                        ? '#374151'
+                        : '#f8f9fa'
+                      : darkMode
+                      ? '#2d3748'
+                      : 'white',
                 }}
                 onClick={() => handleFilterClick(null)}
               >
@@ -612,7 +622,15 @@ const EmailOutbox = ({ isActive = true }) => {
                         justifyContent: 'center',
                       }}
                     >
-                      <FaEnvelope size={32} className="text-primary" style={{ display: 'block' }} />
+                      <span
+                        style={{
+                          color: darkMode ? '#4299e1' : '#007bff',
+                          fontSize: '2rem',
+                          lineHeight: 1,
+                        }}
+                      >
+                        <FaEnvelope size={32} />
+                      </span>
                     </div>
                     <div
                       style={{
@@ -629,6 +647,7 @@ const EmailOutbox = ({ isActive = true }) => {
                           lineHeight: '1.2',
                           marginBottom: '2px',
                           marginTop: 0,
+                          color: darkMode ? '#e2e8f0' : '#212529',
                         }}
                       >
                         {emails?.length || 0}
@@ -638,7 +657,7 @@ const EmailOutbox = ({ isActive = true }) => {
                           fontSize: '0.875rem',
                           fontWeight: '500',
                           lineHeight: '1.2',
-                          color: '#6c757d',
+                          color: darkMode ? '#a0aec0' : '#6c757d',
                           marginTop: 0,
                           marginBottom: 0,
                         }}
@@ -655,8 +674,18 @@ const EmailOutbox = ({ isActive = true }) => {
                 className="stat-card"
                 style={{
                   cursor: 'pointer',
-                  border: statusFilter === 'SENT' ? '2px solid #28a745' : '1px solid #e9ecef',
-                  backgroundColor: statusFilter === 'SENT' ? '#f8f9fa' : 'white',
+                  border:
+                    statusFilter === 'SENT'
+                      ? `2px solid ${darkMode ? '#68d391' : '#28a745'}`
+                      : `1px solid ${darkMode ? '#4a5568' : '#e9ecef'}`,
+                  backgroundColor:
+                    statusFilter === 'SENT'
+                      ? darkMode
+                        ? '#374151'
+                        : '#f8f9fa'
+                      : darkMode
+                      ? '#2d3748'
+                      : 'white',
                 }}
                 onClick={() => handleFilterClick('SENT')}
               >
@@ -679,11 +708,15 @@ const EmailOutbox = ({ isActive = true }) => {
                         justifyContent: 'center',
                       }}
                     >
-                      <FaCheckCircle
-                        size={32}
-                        className="text-success"
-                        style={{ display: 'block' }}
-                      />
+                      <span
+                        style={{
+                          color: darkMode ? '#48bb78' : '#28a745',
+                          fontSize: '2rem',
+                          lineHeight: 1,
+                        }}
+                      >
+                        <FaCheckCircle size={32} />
+                      </span>
                     </div>
                     <div
                       style={{
@@ -700,6 +733,7 @@ const EmailOutbox = ({ isActive = true }) => {
                           lineHeight: '1.2',
                           marginBottom: '2px',
                           marginTop: 0,
+                          color: darkMode ? '#e2e8f0' : '#212529',
                         }}
                       >
                         {emails?.filter(e => e.status === 'SENT').length || 0}
@@ -709,7 +743,7 @@ const EmailOutbox = ({ isActive = true }) => {
                           fontSize: '0.875rem',
                           fontWeight: '500',
                           lineHeight: '1.2',
-                          color: '#6c757d',
+                          color: darkMode ? '#a0aec0' : '#6c757d',
                           marginTop: 0,
                           marginBottom: 0,
                         }}
@@ -726,8 +760,18 @@ const EmailOutbox = ({ isActive = true }) => {
                 className="stat-card"
                 style={{
                   cursor: 'pointer',
-                  border: statusFilter === 'PENDING' ? '2px solid #ffc107' : '1px solid #e9ecef',
-                  backgroundColor: statusFilter === 'PENDING' ? '#f8f9fa' : 'white',
+                  border:
+                    statusFilter === 'PENDING'
+                      ? `2px solid ${darkMode ? '#f6e05e' : '#ffc107'}`
+                      : `1px solid ${darkMode ? '#4a5568' : '#e9ecef'}`,
+                  backgroundColor:
+                    statusFilter === 'PENDING'
+                      ? darkMode
+                        ? '#374151'
+                        : '#f8f9fa'
+                      : darkMode
+                      ? '#2d3748'
+                      : 'white',
                 }}
                 onClick={() => handleFilterClick('PENDING')}
               >
@@ -750,7 +794,15 @@ const EmailOutbox = ({ isActive = true }) => {
                         justifyContent: 'center',
                       }}
                     >
-                      <FaClock size={32} className="text-warning" style={{ display: 'block' }} />
+                      <span
+                        style={{
+                          color: darkMode ? '#ecc94b' : '#ffc107',
+                          fontSize: '2rem',
+                          lineHeight: 1,
+                        }}
+                      >
+                        <FaClock size={32} />
+                      </span>
                     </div>
                     <div
                       style={{
@@ -767,6 +819,7 @@ const EmailOutbox = ({ isActive = true }) => {
                           lineHeight: '1.2',
                           marginBottom: '2px',
                           marginTop: 0,
+                          color: darkMode ? '#e2e8f0' : '#212529',
                         }}
                       >
                         {emails?.filter(e => e.status === 'PENDING').length || 0}
@@ -776,7 +829,7 @@ const EmailOutbox = ({ isActive = true }) => {
                           fontSize: '0.875rem',
                           fontWeight: '500',
                           lineHeight: '1.2',
-                          color: '#6c757d',
+                          color: darkMode ? '#a0aec0' : '#6c757d',
                           marginTop: 0,
                           marginBottom: 0,
                         }}
@@ -793,8 +846,18 @@ const EmailOutbox = ({ isActive = true }) => {
                 className="stat-card"
                 style={{
                   cursor: 'pointer',
-                  border: statusFilter === 'FAILED' ? '2px solid #dc3545' : '1px solid #e9ecef',
-                  backgroundColor: statusFilter === 'FAILED' ? '#f8f9fa' : 'white',
+                  border:
+                    statusFilter === 'FAILED'
+                      ? `2px solid ${darkMode ? '#fc8181' : '#dc3545'}`
+                      : `1px solid ${darkMode ? '#4a5568' : '#e9ecef'}`,
+                  backgroundColor:
+                    statusFilter === 'FAILED'
+                      ? darkMode
+                        ? '#374151'
+                        : '#f8f9fa'
+                      : darkMode
+                      ? '#2d3748'
+                      : 'white',
                 }}
                 onClick={() => handleFilterClick('FAILED')}
               >
@@ -817,11 +880,15 @@ const EmailOutbox = ({ isActive = true }) => {
                         justifyContent: 'center',
                       }}
                     >
-                      <FaExclamationTriangle
-                        size={32}
-                        className="text-danger"
-                        style={{ display: 'block' }}
-                      />
+                      <span
+                        style={{
+                          color: darkMode ? '#fc8181' : '#dc3545',
+                          fontSize: '2rem',
+                          lineHeight: 1,
+                        }}
+                      >
+                        <FaExclamationTriangle size={32} />
+                      </span>
                     </div>
                     <div
                       style={{
@@ -838,6 +905,7 @@ const EmailOutbox = ({ isActive = true }) => {
                           lineHeight: '1.2',
                           marginBottom: '2px',
                           marginTop: 0,
+                          color: darkMode ? '#e2e8f0' : '#212529',
                         }}
                       >
                         {emails?.filter(e => e.status === 'FAILED').length || 0}
@@ -847,7 +915,7 @@ const EmailOutbox = ({ isActive = true }) => {
                           fontSize: '0.875rem',
                           fontWeight: '500',
                           lineHeight: '1.2',
-                          color: '#6c757d',
+                          color: darkMode ? '#a0aec0' : '#6c757d',
                           marginTop: 0,
                           marginBottom: 0,
                         }}
@@ -862,19 +930,28 @@ const EmailOutbox = ({ isActive = true }) => {
           </Row>
 
           {/* Emails Table */}
-          <Card>
-            <CardHeader className="bg-light">
+          <Card
+            style={{
+              backgroundColor: darkMode ? '#1f2937' : 'white',
+              borderColor: darkMode ? '#4a5568' : '#dee2e6',
+            }}
+          >
+            <CardHeader
+              style={{
+                backgroundColor: darkMode ? '#2d3748' : '#f8f9fa',
+                borderColor: darkMode ? '#4a5568' : '#dee2e6',
+              }}
+            >
               <div className="d-flex justify-content-between align-items-center">
-                <h5 className="mb-0 d-flex align-items-center" style={{ gap: '8px' }}>
+                <h5
+                  className="mb-0 d-flex align-items-center"
+                  style={{ gap: '8px', color: darkMode ? '#e2e8f0' : '#212529' }}
+                >
                   <span>Email List</span>
                   {statusFilter && (
                     <Badge
                       color="info"
-                      style={{
-                        fontSize: '0.75rem',
-                        padding: '4px 8px',
-                        fontWeight: '500',
-                      }}
+                      style={{ fontSize: '0.75rem', padding: '4px 8px', fontWeight: '500' }}
                     >
                       Filtered by: {statusFilter}
                     </Badge>
@@ -885,10 +962,7 @@ const EmailOutbox = ({ isActive = true }) => {
                     size="sm"
                     color="link"
                     onClick={() => setStatusFilter(null)}
-                    style={{
-                      textDecoration: 'none',
-                      fontSize: '0.875rem',
-                    }}
+                    style={{ textDecoration: 'none', fontSize: '0.875rem' }}
                   >
                     Clear Filter
                   </Button>
@@ -899,18 +973,65 @@ const EmailOutbox = ({ isActive = true }) => {
               {filteredEmails && filteredEmails.length > 0 ? (
                 <div className="table-responsive">
                   <Table striped hover className="mb-0">
-                    <thead className={darkMode ? 'table-dark' : ''}>
+                    <thead
+                      style={{
+                        backgroundColor: darkMode ? '#2d3748' : '#f8f9fa',
+                      }}
+                    >
                       <tr>
-                        <th className="border-0 py-3 px-3">Email Info</th>
-                        <th className="border-0 py-3 px-3">Status</th>
-                        <th className="border-0 py-3 px-3 d-none d-md-table-cell">Recipients</th>
-                        <th className="border-0 py-3 px-3 d-none d-lg-table-cell">Timing</th>
-                        <th className="border-0 py-3 px-3">Actions</th>
+                        <th
+                          className="border-0 py-3 px-3"
+                          style={{
+                            backgroundColor: darkMode ? '#2d3748' : '#f8f9fa',
+                            color: darkMode ? '#e2e8f0' : '#333',
+                          }}
+                        >
+                          Email Info
+                        </th>
+                        <th
+                          className="border-0 py-3 px-3"
+                          style={{
+                            backgroundColor: darkMode ? '#2d3748' : '#f8f9fa',
+                            color: darkMode ? '#e2e8f0' : '#333',
+                          }}
+                        >
+                          Status
+                        </th>
+                        <th
+                          className="border-0 py-3 px-3 d-none d-md-table-cell"
+                          style={{
+                            backgroundColor: darkMode ? '#2d3748' : '#f8f9fa',
+                            color: darkMode ? '#e2e8f0' : '#333',
+                          }}
+                        >
+                          Recipients
+                        </th>
+                        <th
+                          className="border-0 py-3 px-3 d-none d-lg-table-cell"
+                          style={{
+                            backgroundColor: darkMode ? '#2d3748' : '#f8f9fa',
+                            color: darkMode ? '#e2e8f0' : '#333',
+                          }}
+                        >
+                          Timing
+                        </th>
+                        <th
+                          className="border-0 py-3 px-3"
+                          style={{
+                            backgroundColor: darkMode ? '#2d3748' : '#f8f9fa',
+                            color: darkMode ? '#e2e8f0' : '#333',
+                          }}
+                        >
+                          Actions
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
                       {filteredEmails.map((email, index) => (
-                        <tr key={email._id || index}>
+                        <tr
+                          key={email._id || index}
+                          style={{ backgroundColor: darkMode ? '#1f2937' : 'white' }}
+                        >
                           <td className="py-3 px-3">
                             <div>
                               <strong className="text-primary d-block">{email.subject}</strong>
@@ -1019,7 +1140,15 @@ const EmailOutbox = ({ isActive = true }) => {
                       gap: '16px',
                     }}
                   >
-                    <FaEnvelope size={48} className="text-muted" style={{ opacity: 0.5 }} />
+                    <FaEnvelope
+                      size={32}
+                      style={{
+                        display: 'block',
+                        color: darkMode ? '#4299e1' : '#007bff',
+                        filter: darkMode ? 'none' : 'none',
+                      }}
+                      color={darkMode ? '#4299e1' : '#007bff'}
+                    />
                     <p className="text-muted mb-0" style={{ fontSize: '1rem' }}>
                       {statusFilter
                         ? `No ${statusFilter.toLowerCase()} emails found.`
@@ -1055,9 +1184,22 @@ const EmailOutbox = ({ isActive = true }) => {
             Email Details: {selectedEmail.subject}
           </ModalHeader>
           <ModalBody className="p-4">
-            <Card className="mb-3">
-              <CardHeader className="bg-light">
-                <h6 className="mb-0">Email Information</h6>
+            <Card
+              className="mb-3"
+              style={{
+                backgroundColor: darkMode ? '#1f2937' : 'white',
+                borderColor: darkMode ? '#4a5568' : '#dee2e6',
+              }}
+            >
+              <CardHeader
+                style={{
+                  backgroundColor: darkMode ? '#2d3748' : '#f8f9fa',
+                  borderColor: darkMode ? '#4a5568' : '#dee2e6',
+                }}
+              >
+                <h6 className="mb-0" style={{ color: darkMode ? '#e2e8f0' : '#212529' }}>
+                  Email Information
+                </h6>
               </CardHeader>
               <CardBody>
                 {(() => {
@@ -1176,8 +1318,16 @@ const EmailOutbox = ({ isActive = true }) => {
             <hr />
 
             <Card className="mt-3">
-              <CardHeader className="bg-light">
-                <h6 className="mb-0">Email Batches ({emailBatches.length})</h6>
+              <CardHeader
+                style={{
+                  backgroundColor: darkMode ? '#2d3748' : '#f8f9fa',
+                  borderColor: darkMode ? '#4a5568' : '#dee2e6',
+                  color: darkMode ? '#e2e8f0' : '#212529',
+                }}
+              >
+                <h6 className="mb-0" style={{ color: darkMode ? '#e2e8f0' : '#212529' }}>
+                  Email Batches ({emailBatches.length})
+                </h6>
               </CardHeader>
               <CardBody className="p-0">
                 {loadingItems ? (

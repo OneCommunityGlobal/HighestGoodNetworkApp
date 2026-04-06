@@ -1744,7 +1744,7 @@ const IntegratedEmailSender = ({
                   Content *
                 </Label>
                 <div className="editor-container">
-                  {!isEditorLoaded && !editorError && (
+                  {!isEditorLoaded && !editorError && emailMode === 'custom' && (
                     <div
                       style={{
                         display: 'flex',
@@ -1797,7 +1797,9 @@ const IntegratedEmailSender = ({
                         onEditorChange={content =>
                           dispatch({ type: 'SET_CUSTOM_CONTENT', payload: content })
                         }
-                        onInit={() => dispatch({ type: 'SET_EDITOR_LOADED', payload: true })} // ADD THIS LINE
+                        onInit={(_evt, _editor) =>
+                          dispatch({ type: 'SET_EDITOR_LOADED', payload: true })
+                        }
                         init={TINY_MCE_INIT_OPTIONS}
                       />
                     )}

@@ -374,3 +374,104 @@ body.dark-mode .tox-promotion a {
   color: #ffffff !important;
   background-color: #374151 !important;
 }
+body.dark-mode.bm-dashboard-dark > #root > .bg-oxford-blue {
+  background-color: #1a1d23 !important;
+}
+
+/* Fix orange/beige side panels */
+body.dark-mode.bm-dashboard-dark {
+  background-color: #1a1d23 !important;
+}
+
+body.dark-mode.bm-dashboard-dark > #root {
+  background-color: #1a1d23 !important;
+}
+/* Fix tab-pane side background */
+body.dark-mode .tab-pane.active {
+  background-color: #1a1d23 !important;
+}
+
+body:not(.dark-mode) .tab-pane.active {
+  background-color: #f8f9fa !important;
+}
+
+/* ===== EMAIL TEMPLATES PAGE FIXES ===== */
+
+/* Fix beige thead */
+body.dark-mode .email-template-list table thead tr th {
+  background-color: #374151 !important;
+  background: #374151 !important;
+  color: #e9ecef !important;
+  border-color: #4a5568 !important;
+}
+
+/* Fix action buttons - all 3 on one row */
+body.dark-mode .email-template-list .action-buttons,
+body:not(.dark-mode) .email-template-list .action-buttons {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+body.dark-mode .email-template-list .action-buttons .btn,
+body:not(.dark-mode) .email-template-list .action-buttons .btn {
+  width: 30px !important;
+  height: 30px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+}
+/* Fix search icon inside search box */
+body .email-template-list .search-container {
+  position: relative !important;
+}
+
+body .email-template-list .search-container svg {
+  position: absolute !important;
+  left: 0.65rem !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  z-index: 5 !important;
+  pointer-events: none !important;
+}
+
+body .email-template-list .search-container input {
+  padding-left: 2.25rem !important;
+}
+
+/* Fix info button - purple */
+body .email-template-list .action-btn.info-btn {
+  background-color: #6f42c1 !important;
+  color: #ffffff !important;
+  border-color: #6f42c1 !important;
+}
+
+/* Fix edit button - orange */
+body .email-template-list .action-btn.edit-btn {
+  background-color: #fd7e14 !important;
+  color: #ffffff !important;
+  border-color: #fd7e14 !important;
+}
+
+/* Fix delete button - red */
+body .email-template-list .action-btn.delete-btn {
+  background-color: #dc3545 !important;
+  color: #ffffff !important;
+  border-color: #dc3545 !important;
+}
+
+/* Fix alert-warning dark mode globally */
+body.dark-mode .modal .alert-warning {
+  background-color: #92400e !important;
+  border-color: #d97706 !important;
+  color: #fef3c7 !important;
+}
+
+body.dark-mode .modal .alert-warning * {
+  color: #fef3c7 !important;
+}

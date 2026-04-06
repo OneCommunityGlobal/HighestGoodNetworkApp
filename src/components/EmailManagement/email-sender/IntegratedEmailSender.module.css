@@ -1,14 +1,14 @@
 /* Enhanced Email Sender Styles */
 
-/* Main Email Sender Container - Add padding and ensure centering */
+/* Main Container */
 .email-sender {
-  padding: 0 2rem;
   max-width: 1400px;
   margin: 0 auto;
+  padding: 0 2rem;
   width: 100%;
+  overflow-x: hidden;
 }
 
-/* Page Title - Better styling */
 .email-sender .page-title-container {
   margin-bottom: 1.5rem;
   padding-left: 0;
@@ -21,22 +21,12 @@
   margin: 0;
 }
 
-/* DARK MODE - Page Title */
-.dark-mode .email-sender .page-title {
-  color: #f8f9fa !important;
-}
-
-/* Email Controls Container - FIXED: Better spacing and separator */
 .email-controls-container {
   width: 100%;
   margin-bottom: 2rem;
   padding: 0;
   padding-bottom: 1.25rem;
   border-bottom: 1px solid #e9ecef;
-}
-
-.dark-mode .email-controls-container {
-  border-bottom-color: #4a5568;
 }
 
 .email-controls-row {
@@ -49,10 +39,16 @@
   margin-bottom: 0;
 }
 
-/* Mode Buttons (Templates/Custom/Weekly Update) - FIXED: Adjusted gap */
+/* ─── FIX 1: shared .btn base rules grouped first, pseudo-states after ────────
+   no-descending-specificity requires that for any selector S, all rules
+   matching S appear before rules matching S + pseudo (e.g. S:hover, S:active).
+   Because .mode-buttons .btn and .action-buttons .btn have equal specificity,
+   both base rules must appear before either component's :hover / :active. */
+
+/* Mode Buttons */
 .mode-buttons {
   display: flex;
-  gap: 0.75rem;
+  gap: 1rem;
   flex-shrink: 0;
   align-items: center;
 }
@@ -69,15 +65,36 @@
   padding: 0.5rem 0.9rem;
 }
 
-.mode-buttons .btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-shrink: 0;
+  align-items: center;
 }
 
-.mode-buttons .btn:active {
+.action-buttons .btn {
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+  min-width: 110px;
+  padding: 0.5rem 1rem;
+}
+
+/* Pseudo-states after both base rules */
+.mode-buttons .btn:active,
+.action-buttons .btn:active {
   transform: translateY(0);
 }
 
+.mode-buttons .btn:hover,
+.action-buttons .btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgb(0 0 0 / 15%);
+}
+
+/* Mode button variants */
 .mode-buttons .btn-primary {
   background: #007bff;
   border-color: #007bff;
@@ -112,7 +129,6 @@
   color: white;
 }
 
-/* Weekly Update Button Styles */
 .mode-buttons .btn-info {
   background: #17a2b8;
   border-color: #17a2b8;
@@ -130,44 +146,18 @@
   color: white;
 }
 
-/* Dark Mode - Mode Buttons */
-.dark-mode .mode-buttons .btn-outline-primary {
-  background: #2d3748;
-  color: #63b3ed;
-  border-color: #4a5568;
+/* Action button variants */
+.action-buttons .btn-outline-danger {
+  border-color: #dc3545;
+  color: #dc3545;
 }
 
-.dark-mode .mode-buttons .btn-outline-primary:hover {
-  background: #3182ce;
-  color: white;
-  border-color: #3182ce;
+.action-buttons .btn-outline-danger:hover {
+  background-color: #dc3545;
+  color: #fff;
 }
 
-.dark-mode .mode-buttons .btn-outline-success {
-  background: #2d3748;
-  color: #68d391;
-  border-color: #4a5568;
-}
-
-.dark-mode .mode-buttons .btn-outline-success:hover {
-  background: #38a169;
-  color: white;
-  border-color: #38a169;
-}
-
-.dark-mode .mode-buttons .btn-outline-info {
-  background: #2d3748;
-  color: #63b3ed;
-  border-color: #4a5568;
-}
-
-.dark-mode .mode-buttons .btn-outline-info:hover {
-  background: #17a2b8;
-  color: white;
-  border-color: #17a2b8;
-}
-
-/* Email Distribution Radio Buttons - Compact */
+/* Distribution Options */
 .distribution-options {
   display: flex;
   gap: 1.5rem;
@@ -188,18 +178,11 @@
   position: relative;
 }
 
-.distribution-option:hover {
-  border-color: #007bff;
-  background: #f8f9fa;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-}
-
 .distribution-option.selected {
   border-color: #007bff;
   background: #e7f3ff;
   color: #007bff;
-  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.15);
+  box-shadow: 0 2px 8px rgb(0 123 255 / 15%);
 }
 
 .distribution-option input[type="radio"] {
@@ -215,100 +198,12 @@
   margin-left: 0.5rem;
 }
 
-/* Dark Mode - Distribution Options */
-.dark-mode .distribution-option {
-  background: #2d3748;
-  border-color: #4a5568;
-  color: #e2e8f0;
-}
-
-.dark-mode .distribution-option:hover {
-  border-color: #63b3ed;
-  background: #374151;
-}
-
-.dark-mode .distribution-option.selected {
-  border-color: #63b3ed;
-  background: #2b6cb0;
-  color: #e2e8f0;
-}
-
-/* Action Buttons - FIXED: Proper gap */
-.action-buttons {
-  display: flex;
-  gap: 0.75rem;
-  flex-shrink: 0;
-  align-items: center;
-}
-
-.action-buttons .btn {
-  border-radius: 6px;
-  font-weight: 500;
-  font-size: 0.85rem;
-  transition: all 0.2s ease;
-  min-width: 110px;
-  padding: 0.5rem 1rem;
-}
-
-.action-buttons .btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
-.action-buttons .btn:active {
-  transform: translateY(0);
-}
-
-/* Dark Mode - Action Buttons */
-.dark-mode .action-buttons .btn-outline-secondary {
-  background: #2d3748;
-  color: #e2e8f0;
-  border-color: #4a5568;
-}
-
-.dark-mode .action-buttons .btn-outline-secondary:hover {
-  background: #4a5568;
-  color: #e2e8f0;
-  border-color: #718096;
-}
-
-.dark-mode .action-buttons .btn-primary {
-  background: #3182ce;
-  border-color: #3182ce;
-  color: white;
-}
-
-.dark-mode .action-buttons .btn-primary:hover {
-  background: #2c5aa0;
-  border-color: #2c5aa0;
-  color: white;
-}
-
-.dark-mode .action-buttons .btn-primary:disabled {
-  background: #4a5568;
-  border-color: #4a5568;
-  color: #a0aec0;
-  opacity: 0.7;
-}
-
-.dark-mode .action-buttons .btn-outline-danger {
-  background: #2d3748;
-  color: #fc8181;
-  border-color: #742a2a;
-}
-
-.dark-mode .action-buttons .btn-outline-danger:hover {
-  background: #742a2a;
-  color: #fff;
-  border-color: #9b2c2c;
-}
-
 .sending-email-btn {
   opacity: 0.7;
   cursor: not-allowed;
 }
 
-/* Email Sending Progress */
+/* Progress */
 .email-sending-progress {
   margin-top: 1rem;
   padding: 1rem;
@@ -356,6 +251,7 @@
   0%, 100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.7;
   }
@@ -384,7 +280,7 @@
 
 .template-select:focus {
   border-color: #007bff;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  box-shadow: 0 0 0 0.2rem rgb(0 123 255 / 25%);
 }
 
 .template-select-disabled {
@@ -441,27 +337,6 @@
   cursor: not-allowed;
 }
 
-/* Dark Mode - Template Selection */
-.dark-mode .template-select {
-  background: #2d3748;
-  border-color: #4a5568;
-  color: #e2e8f0;
-}
-
-.dark-mode .template-select:focus {
-  border-color: #63b3ed;
-  box-shadow: 0 0 0 0.2rem rgba(99, 179, 237, 0.25);
-}
-
-.dark-mode .template-select option {
-  background: #2d3748;
-  color: #e2e8f0;
-}
-
-.dark-mode .template-info {
-  color: #a0aec0;
-}
-
 /* Template Variables */
 .template-variables {
   margin-top: 1.5rem;
@@ -485,7 +360,6 @@
   margin: 0;
 }
 
-/* Table Improvements */
 .template-variables .table {
   margin-bottom: 0;
   background: white;
@@ -518,7 +392,15 @@
   border-color: #e9ecef;
 }
 
-/* Empty Variables State */
+.template-variables .badge {
+  padding: 0.35rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
 .empty-variables-state {
   background: #f8f9fa;
   border-radius: 6px;
@@ -548,12 +430,8 @@
 
 .variable-input:focus {
   border-color: #007bff;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.15);
+  box-shadow: 0 0 0 0.2rem rgb(0 123 255 / 15%);
   outline: none;
-}
-
-.variable-input:hover:not(:focus) {
-  border-color: #adb5bd;
 }
 
 .variable-textarea {
@@ -562,96 +440,7 @@
   font-family: inherit;
 }
 
-/* Dark Mode - Template Variables */
-.dark-mode .template-variables {
-  background: #1a1d23 !important;
-  border-color: #2d3748;
-}
-.dark-mode .variables-header {
-  border-bottom-color: #4a5568;
-}
-
-.dark-mode .variables-header h6 {
-  color: #e2e8f0;
-}
-
-.dark-mode .template-variables .table {
-  background: #2d3748;
-}
-
-.dark-mode .template-variables .table thead th {
-  background: #4a5568;
-  color: #e2e8f0;
-  border-color: #718096;
-}
-
-.dark-mode .template-variables .table tbody tr:hover {
-  background-color: #374151;
-}
-
-.dark-mode .template-variables .table tbody td {
-  background: #2d3748;
-  color: #e2e8f0;
-  border-color: #4a5568;
-}
-
-.dark-mode .template-variables .variable-input {
-  background: #374151;
-  border-color: #4a5568;
-  color: #e2e8f0;
-}
-
-.dark-mode .template-variables .variable-input:focus {
-  border-color: #63b3ed;
-  box-shadow: 0 0 0 0.2rem rgba(99, 179, 237, 0.15);
-}
-
-.dark-mode .template-variables .variable-input:hover:not(:focus) {
-  border-color: #718096;
-}
-
-.dark-mode .template-variables .form-control {
-  background: #4a5568;
-  border-color: #718096;
-  color: #e2e8f0;
-}
-
-.dark-mode .template-variables .form-select {
-  background: #4a5568;
-  border-color: #718096;
-  color: #e2e8f0;
-}
-
-.dark-mode .template-variables .variable-label {
-  color: #e2e8f0;
-}
-
-.dark-mode .template-variables .badge {
-  background: #4a5568;
-  color: #e2e8f0;
-}
-
-.dark-mode .empty-variables-state {
-  background: #4a5568;
-  border-color: #718096;
-  color: #e2e8f0;
-}
-
-.dark-mode .invalid-feedback {
-  color: #f8d7da !important;
-}
-
-/* Template Variables Badge Styling */
-.template-variables .badge {
-  padding: 0.35rem 0.65rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  border-radius: 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-}
-
-/* Editor Container */
+/* Editor */
 .editor-container {
   position: relative;
   border: none;
@@ -680,7 +469,7 @@
   color: #856404;
 }
 
-/* Shimmer Loading */
+/* Shimmer */
 .template-shimmer-container {
   margin-bottom: 1rem;
 }
@@ -722,12 +511,12 @@
   0% {
     background-position: -200% 0;
   }
+
   100% {
     background-position: 200% 0;
   }
 }
 
-/* Skeleton Loader */
 .skeleton-loader {
   background: #e9ecef;
   border-radius: 4px;
@@ -753,7 +542,6 @@
   background: white;
 }
 
-/* Empty content message */
 .empty-content-message {
   display: flex;
   align-items: center;
@@ -773,11 +561,11 @@
   color: #17a2b8;
 }
 
-/* Simple Modal Styles - Component Scoped */
+/* Modal */
 .email-sender .modal-content {
   border: none;
   border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 20%);
 }
 
 .email-sender .modal-header {
@@ -795,7 +583,7 @@
 
 .email-sender .modal-body {
   padding: 1.5rem;
-  background: #ffffff;
+  background: #fff;
 }
 
 .email-sender .modal-footer {
@@ -805,69 +593,17 @@
   padding: 1rem 1.5rem;
 }
 
-/* Dark Mode - Simple and Bulletproof */
-.email-sender.dark-mode .modal-content {
-  background: #2d3748 !important;
-  border: 1px solid #4a5568 !important;
-  color: #e2e8f0 !important;
-}
-
-.email-sender.dark-mode .modal-header {
-  background: #3182ce !important;
-  color: #e2e8f0 !important;
-  border-bottom: 1px solid #4a5568 !important;
-}
-
-.email-sender.dark-mode .modal-body {
-  background: #2d3748 !important;
-  color: #e2e8f0 !important;
-}
-
-.email-sender.dark-mode .modal-footer {
-  background: #4a5568 !important;
-  border-top: 1px solid #718096 !important;
-}
-
-/* Dark Mode Buttons */
-.email-sender.dark-mode .btn-secondary {
-  background: #4a5568 !important;
-  border-color: #718096 !important;
-  color: #e2e8f0 !important;
-}
-
-.email-sender.dark-mode .btn-secondary:hover {
-  background: #718096 !important;
-  border-color: #a0aec0 !important;
-  color: #e2e8f0 !important;
-}
-
-.email-sender.dark-mode .btn-primary {
-  background: #3182ce !important;
-  border-color: #3182ce !important;
-  color: white !important;
-}
-
-.email-sender.dark-mode .btn-primary:hover {
-  background: #2c5aa0 !important;
-  border-color: #2c5aa0 !important;
-  color: white !important;
-}
-
-/* IMPROVED FORM STYLING */
-
-/* Main Form Container - Add consistent padding */
+/* Form */
 .email-sender form {
   padding: 0;
   margin-top: 1.5rem;
 }
 
-/* Form Groups - Better spacing */
 .email-sender .form-group {
   margin-bottom: 1.75rem;
   padding: 0;
 }
 
-/* Form Labels - Better typography and spacing */
 .email-sender .form-label,
 .email-sender label {
   font-weight: 600;
@@ -878,13 +614,6 @@
   padding-left: 0.25rem;
 }
 
-/* Dark Mode - Form Labels */
-.dark-mode .email-sender .form-label,
-.dark-mode .email-sender label {
-  color: #f8f9fa !important;
-}
-
-/* Select Template Dropdown - Enhanced */
 .email-sender .template-select {
   font-size: 0.95rem;
   padding: 0.75rem 2.5rem 0.75rem 1rem;
@@ -913,27 +642,16 @@
   padding: 0.5rem;
 }
 
-.email-sender .template-select:hover:not(:disabled) {
-  border-color: #adb5bd;
-}
-
-/* Template Selection Container - Add padding */
 .email-sender .template-selection-container {
   padding: 0;
 }
 
-/* FIXED: Add spacing before Email Distribution section */
 .email-sender .form-group:has(.distribution-options) {
   margin-top: 2rem;
   padding-top: 1.25rem;
   border-top: 1px solid #e9ecef;
 }
 
-.dark-mode .email-sender .form-group:has(.distribution-options) {
-  border-top-color: #4a5568;
-}
-
-/* Email Distribution Section - Enhanced with padding */
 .email-sender .distribution-options {
   padding-left: 0;
   margin-top: 0.75rem;
@@ -947,20 +665,12 @@
   font-weight: 500;
 }
 
-.email-sender .distribution-option:hover {
-  border-color: #007bff;
-  background: #f8f9fa;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-}
-
 .email-sender .distribution-option.selected {
   border-color: #007bff;
   background: #e7f3ff;
-  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.15);
+  box-shadow: 0 2px 8px rgb(0 123 255 / 15%);
 }
 
-/* Recipients Textarea - Enhanced with more padding */
 .email-sender textarea.form-control {
   border: 1.5px solid #ced4da;
   border-radius: 6px;
@@ -972,13 +682,9 @@
   min-height: 120px;
 }
 
-.email-sender textarea.form-control:hover:not(:focus) {
-  border-color: #adb5bd;
-}
-
 .email-sender textarea.form-control:focus {
   border-color: #007bff;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.15);
+  box-shadow: 0 0 0 0.2rem rgb(0 123 255 / 15%);
 }
 
 .email-sender textarea.form-control::placeholder {
@@ -986,7 +692,6 @@
   font-size: 0.875rem;
 }
 
-/* Form Section Titles - Better styling */
 .email-sender h6,
 .email-sender .section-title {
   font-size: 1.05rem;
@@ -995,130 +700,7 @@
   margin-bottom: 0.75rem;
 }
 
-/* Dark Mode for Form Improvements */
-.email-sender.dark-mode .template-select {
-  background: #2d3748;
-  border-color: #4a5568;
-  color: #e2e8f0;
-}
-
-.email-sender.dark-mode .template-select option {
-  background: #2d3748;
-  color: #e2e8f0;
-}
-
-.email-sender.dark-mode .template-select:hover:not(:disabled) {
-  border-color: #718096;
-}
-
-.email-sender.dark-mode textarea.form-control {
-  background: #2d3748;
-  border-color: #4a5568;
-  color: #e2e8f0;
-}
-
-.email-sender.dark-mode textarea.form-control:hover:not(:focus) {
-  border-color: #718096;
-}
-
-.email-sender.dark-mode textarea.form-control::placeholder {
-  color: #a0aec0;
-}
-
-.email-sender.dark-mode .distribution-option {
-  border-color: #4a5568;
-}
-
-.email-sender.dark-mode .distribution-option.selected {
-  background: #2b6cb0;
-  border-color: #63b3ed;
-}
-
-/* Draft notification animation */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.draft-notification {
-  animation: fadeIn 0.3s ease-in;
-}
-
-/* Alert button gaps */
-.alert .gap-2 {
-  gap: 0.5rem !important;
-}
-
-.alert .d-flex.gap-2 > * {
-  margin-left: 0 !important;
-}
-
-/* Offline warning styling */
-.alert-warning {
-  border-left: 4px solid #ffc107;
-}
-
-.alert-info {
-  border-left: 4px solid #17a2b8;
-}
-
-/* Draft notification responsive */
-@media (max-width: 768px) {
-  .draft-notification {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-  }
-  
-  .draft-notification .d-flex.gap-2 {
-    margin-top: 0.75rem;
-    width: 100%;
-  }
-  
-  .draft-notification .d-flex.gap-2 button {
-    flex: 1;
-  }
-}
-
-/* Clear Draft button styling */
-.action-buttons .btn-outline-danger {
-  border-color: #dc3545;
-  color: #dc3545;
-}
-
-.action-buttons .btn-outline-danger:hover {
-  background-color: #dc3545;
-  color: #ffffff;
-}
-
-/* Dark mode adjustments for alerts */
-[data-theme="dark"] .alert-info,
-.dark-mode .alert-info {
-  background-color: rgba(23, 162, 184, 0.2);
-  border-color: #17a2b8;
-  color: #ffffff;
-}
-
-[data-theme="dark"] .alert-warning,
-.dark-mode .alert-warning {
-  background-color: rgba(255, 193, 7, 0.2);
-  border-color: #ffc107;
-  color: #ffffff;
-}
-
-[data-theme="dark"] .alert-info small,
-[data-theme="dark"] .alert-warning small,
-.dark-mode .alert-info small,
-.dark-mode .alert-warning small {
-  color: rgba(255, 255, 255, 0.8);
-}
-
-/* Email preview content - constrain images for better readability */
+/* Email preview */
 .email-preview-content img {
   max-width: 100% !important;
   height: auto !important;
@@ -1127,23 +709,419 @@
   object-fit: contain;
 }
 
-/* Ensure text content after images is visible */
 .email-preview-content {
-  word-wrap: break-word;
   overflow-wrap: break-word;
 }
 
-/* Better spacing for preview content */
 .email-preview-content p {
   margin-bottom: 0.5rem;
 }
 
+/* Must come BEFORE .alert selectors */
 .email-preview-content > *:last-child {
   margin-bottom: 0;
 }
 
-/* Responsive Design */
-@media (max-width: 992px) and (min-width: 769px) {
+/* body.dark-mode wildcard - must come BEFORE .alert .d-flex.gap-2 > * */
+body.dark-mode .alert-warning * {
+  color: #fef3c7 !important;
+}
+
+/* Alert */
+.alert-info {
+  border-left: 4px solid #17a2b8;
+}
+
+.alert-warning {
+  border-left: 4px solid #ffc107;
+}
+
+.alert .gap-2 {
+  gap: 0.5rem !important;
+}
+
+.alert .d-flex.gap-2 > * {
+  margin-left: 0 !important;
+}
+
+/* Draft notification */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.draft-notification {
+  animation: fade-in 0.3s ease-in;
+}
+
+/* ===================== DARK MODE ===================== */
+
+/* email-sender.dark-mode table base - MUST come before .dark-mode .template-variables */
+.email-sender.dark-mode table {
+  background-color: #2d3748 !important;
+  color: #e2e8f0 !important;
+}
+
+.email-sender.dark-mode table th {
+  background-color: #374151 !important;
+  color: #e2e8f0 !important;
+  border-color: #4a5568 !important;
+}
+
+.email-sender.dark-mode table td {
+  background-color: #2d3748 !important;
+  color: #e2e8f0 !important;
+  border-color: #4a5568 !important;
+}
+
+/* dark-mode template variables tbody td - MUST come before table tr:hover td */
+.dark-mode .template-variables .table tbody td {
+  background: #2d3748;
+  color: #e2e8f0;
+  border-color: #4a5568;
+}
+
+/* email-sender.dark-mode table tr:hover td - after tbody td */
+.email-sender.dark-mode table tr:hover td {
+  background-color: #374151 !important;
+}
+
+/* dark-mode template variables */
+.dark-mode .template-variables {
+  background: #1a1d23 !important;
+  border-color: #2d3748;
+}
+
+.dark-mode .variables-header {
+  border-bottom-color: #4a5568;
+}
+
+.dark-mode .variables-header h6 {
+  color: #e2e8f0;
+}
+
+.dark-mode .template-variables .table {
+  background: #2d3748;
+}
+
+.dark-mode .template-variables .table thead th {
+  background: #4a5568;
+  color: #e2e8f0;
+  border-color: #718096;
+}
+
+.dark-mode .template-variables .table tbody tr:hover {
+  background-color: #374151;
+}
+
+.dark-mode .template-variables .variable-input {
+  background: #374151;
+  border-color: #4a5568;
+  color: #e2e8f0;
+}
+
+.dark-mode .template-variables .variable-input:focus {
+  border-color: #63b3ed;
+  box-shadow: 0 0 0 0.2rem rgb(99 179 237 / 15%);
+}
+
+.dark-mode .template-variables .form-control {
+  background: #4a5568;
+  border-color: #718096;
+  color: #e2e8f0;
+}
+
+.dark-mode .template-variables .form-select {
+  background: #4a5568;
+  border-color: #718096;
+  color: #e2e8f0;
+}
+
+.dark-mode .template-variables .variable-label {
+  color: #e2e8f0;
+}
+
+.dark-mode .template-variables .badge {
+  background: #4a5568;
+  color: #e2e8f0;
+}
+
+.dark-mode .empty-variables-state {
+  background: #4a5568;
+  border-color: #718096;
+  color: #e2e8f0;
+}
+
+.dark-mode .invalid-feedback {
+  color: #f8d7da !important;
+}
+
+.dark-mode .template-info {
+  color: #a0aec0;
+}
+
+.dark-mode .template-select {
+  background: #2d3748;
+  border-color: #4a5568;
+  color: #e2e8f0;
+}
+
+.dark-mode .template-select option {
+  background: #2d3748;
+  color: #e2e8f0;
+}
+
+.dark-mode .template-select:focus {
+  border-color: #63b3ed;
+  box-shadow: 0 0 0 0.2rem rgb(99 179 237 / 25%);
+}
+
+.dark-mode .distribution-option {
+  background: #2d3748;
+  border-color: #4a5568;
+  color: #e2e8f0;
+}
+
+.dark-mode .distribution-option.selected {
+  border-color: #63b3ed;
+  background: #2b6cb0;
+  color: #e2e8f0;
+}
+
+.dark-mode .email-controls-container {
+  border-bottom-color: #4a5568;
+}
+
+.dark-mode .mode-buttons .btn-outline-primary {
+  background: #2d3748;
+  color: #63b3ed;
+  border-color: #4a5568;
+}
+
+.dark-mode .mode-buttons .btn-outline-primary:hover {
+  background: #3182ce;
+  color: white;
+  border-color: #3182ce;
+}
+
+.dark-mode .mode-buttons .btn-outline-success {
+  background: #2d3748;
+  color: #68d391;
+  border-color: #4a5568;
+}
+
+.dark-mode .mode-buttons .btn-outline-success:hover {
+  background: #38a169;
+  color: white;
+  border-color: #38a169;
+}
+
+.dark-mode .mode-buttons .btn-outline-info {
+  background: #2d3748;
+  color: #63b3ed;
+  border-color: #4a5568;
+}
+
+.dark-mode .mode-buttons .btn-outline-info:hover {
+  background: #17a2b8;
+  color: white;
+  border-color: #17a2b8;
+}
+
+.dark-mode .action-buttons .btn-outline-secondary {
+  background: #2d3748;
+  color: #e2e8f0;
+  border-color: #4a5568;
+}
+
+.dark-mode .action-buttons .btn-outline-secondary:hover {
+  background: #4a5568;
+  color: #e2e8f0;
+  border-color: #718096;
+}
+
+.dark-mode .action-buttons .btn-outline-danger {
+  background: #2d3748;
+  color: #fc8181;
+  border-color: #742a2a;
+}
+
+.dark-mode .action-buttons .btn-outline-danger:hover {
+  background: #742a2a;
+  color: #fff;
+  border-color: #9b2c2c;
+}
+
+.dark-mode .alert-info {
+  background-color: rgb(23 162 184 / 20%);
+  border-color: #17a2b8;
+  color: #fff;
+}
+
+.dark-mode .alert-warning {
+  background-color: #92400e !important;
+  border-color: #d97706 !important;
+  color: #fef3c7 !important;
+}
+
+.dark-mode .alert-info small,
+.dark-mode .alert-warning small {
+  color: rgb(255 255 255 / 80%);
+}
+
+.dark-mode .email-sender .page-title {
+  color: #f8f9fa !important;
+}
+
+.dark-mode .email-sender .form-label,
+.dark-mode .email-sender label {
+  color: #f8f9fa !important;
+}
+
+.dark-mode .email-sender .form-group:has(.distribution-options) {
+  border-top-color: #4a5568;
+}
+
+.dark-mode .email-sender .distribution-option {
+  border-color: #4a5568;
+}
+
+.dark-mode .email-sender .distribution-option.selected {
+  background: #2b6cb0;
+  border-color: #63b3ed;
+}
+
+.dark-mode .email-sender .template-select {
+  background: #2d3748;
+  border-color: #4a5568;
+  color: #e2e8f0;
+}
+
+.dark-mode .email-sender .template-select option {
+  background: #2d3748;
+  color: #e2e8f0;
+}
+
+.dark-mode .email-sender .template-select:focus {
+  border-color: #63b3ed;
+  box-shadow: 0 0 0 0.2rem rgb(99 179 237 / 25%);
+}
+
+/* ─── FIX 2: merge both .btn-primary base rules before any :hover / :disabled ─
+   .email-sender.dark-mode .btn-primary and .dark-mode .action-buttons
+   .btn-primary share the same element; both bases must precede pseudo-states. */
+
+.dark-mode .action-buttons .btn-primary,
+.email-sender.dark-mode .btn-primary {
+  background: #3182ce !important;
+  border-color: #3182ce !important;
+  color: white !important;
+}
+
+/* Pseudo-states after both base rules */
+.dark-mode .action-buttons .btn-primary:hover,
+.email-sender.dark-mode .btn-primary:hover {
+  background: #2c5aa0 !important;
+  border-color: #2c5aa0 !important;
+  color: white !important;
+}
+
+.dark-mode .action-buttons .btn-primary:disabled {
+  background: #4a5568 !important;
+  border-color: #4a5568 !important;
+  color: #a0aec0 !important;
+  opacity: 0.7;
+}
+
+/* email-sender.dark-mode modal */
+.email-sender.dark-mode .modal-content {
+  background: #2d3748 !important;
+  border: 1px solid #4a5568 !important;
+  color: #e2e8f0 !important;
+}
+
+.email-sender.dark-mode .modal-header {
+  background: #3182ce !important;
+  color: #e2e8f0 !important;
+  border-bottom: 1px solid #4a5568 !important;
+}
+
+.email-sender.dark-mode .modal-body {
+  background: #2d3748 !important;
+  color: #e2e8f0 !important;
+}
+
+.email-sender.dark-mode .modal-footer {
+  background: #4a5568 !important;
+  border-top: 1px solid #718096 !important;
+}
+
+.email-sender.dark-mode .btn-secondary {
+  background: #4a5568 !important;
+  border-color: #718096 !important;
+  color: #e2e8f0 !important;
+}
+
+.email-sender.dark-mode .btn-secondary:hover {
+  background: #718096 !important;
+  border-color: #a0aec0 !important;
+  color: #e2e8f0 !important;
+}
+
+.email-sender.dark-mode .badge {
+  background-color: #4a5568 !important;
+  color: #e2e8f0 !important;
+}
+
+.email-sender.dark-mode label,
+.email-sender.dark-mode .form-label {
+  color: #f8f9fa !important;
+}
+
+/* form-control base BEFORE :focus */
+.email-sender.dark-mode .form-control,
+.email-sender.dark-mode input.form-control,
+.email-sender.dark-mode select.form-control,
+.email-sender.dark-mode textarea.form-control {
+  background-color: #2d3748 !important;
+  border-color: #4a5568 !important;
+  color: #e2e8f0 !important;
+}
+
+.email-sender.dark-mode .form-control:focus {
+  background-color: #374151 !important;
+  border-color: #63b3ed !important;
+  color: #e2e8f0 !important;
+}
+
+.email-sender.dark-mode .form-control::placeholder {
+  color: #a0aec0 !important;
+}
+
+/* dark-mode email-sender textarea base BEFORE :focus */
+.dark-mode .email-sender textarea.form-control {
+  background: #2d3748;
+  border-color: #4a5568;
+  color: #e2e8f0;
+}
+
+.dark-mode .email-sender textarea.form-control:focus {
+  border-color: #63b3ed;
+}
+
+.dark-mode .email-sender textarea.form-control::placeholder {
+  color: #a0aec0;
+}
+
+/* Responsive */
+@media (width <= 992px) and (width >= 769px) {
   .email-sender {
     padding: 0 1.5rem;
   }
@@ -1160,7 +1138,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .email-sender {
     padding: 0 1rem;
   }
@@ -1185,72 +1163,18 @@
   .distribution-option {
     justify-content: center;
   }
-}
-/* CRITICAL: Dark mode for ALL Reactstrap form elements */
-.email-sender.dark-mode .form-control,
-.email-sender.dark-mode input.form-control,
-.email-sender.dark-mode select.form-control,
-.email-sender.dark-mode textarea.form-control {
-  background-color: #2d3748 !important;
-  border-color: #4a5568 !important;
-  color: #e2e8f0 !important;
-}
 
-.email-sender.dark-mode .form-control:focus {
-  background-color: #374151 !important;
-  border-color: #63b3ed !important;
-  color: #e2e8f0 !important;
-}
+  .draft-notification {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
 
-.email-sender.dark-mode .form-control::placeholder {
-  color: #a0aec0 !important;
-}
+  .draft-notification .d-flex.gap-2 {
+    margin-top: 0.75rem;
+    width: 100%;
+  }
 
-/* Dark mode for ALL labels */
-.email-sender.dark-mode label,
-.email-sender.dark-mode .form-label {
-  color: #f8f9fa !important;
-}
-
-/* Dark mode for badges */
-.email-sender.dark-mode .badge {
-  background-color: #4a5568 !important;
-  color: #e2e8f0 !important;
-}
-
-/* Dark mode for table */
-.email-sender.dark-mode table {
-  background-color: #2d3748 !important;
-  color: #e2e8f0 !important;
-}
-
-.email-sender.dark-mode table th {
-  background-color: #374151 !important;
-  color: #e2e8f0 !important;
-  border-color: #4a5568 !important;
-}
-
-.email-sender.dark-mode table td {
-  background-color: #2d3748 !important;
-  color: #e2e8f0 !important;
-  border-color: #4a5568 !important;
-}
-
-.email-sender.dark-mode table tr:hover td {
-  background-color: #374151 !important;
-}
-
-/* Remove horizontal scroll */
-.email-sender {
-  overflow-x: hidden !important;
-  max-width: 1400px;
-}
-
-/* Fix button spacing */
-.mode-buttons {
-  gap: 1rem !important;
-}
-
-.action-buttons {
-  gap: 1rem !important;
+  .draft-notification .d-flex.gap-2 button {
+    flex: 1;
+  }
 }

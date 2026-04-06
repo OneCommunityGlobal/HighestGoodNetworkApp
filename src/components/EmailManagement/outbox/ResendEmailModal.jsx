@@ -1,20 +1,22 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { FaInfoCircle, FaPaperPlane } from 'react-icons/fa';
+import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import {
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
+  Alert,
   Button,
   FormGroup,
-  Label,
   Input,
-  Alert,
+  Label,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
 } from 'reactstrap';
-import { FaPaperPlane, FaInfoCircle } from 'react-icons/fa';
 import './ResendEmailModal.module.css';
 
 const ResendEmailModal = ({ isOpen, toggle, email, onResend }) => {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [recipientOption, setRecipientOption] = useState('same');
   const [specificRecipients, setSpecificRecipients] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -81,7 +83,14 @@ const ResendEmailModal = ({ isOpen, toggle, email, onResend }) => {
 
       <form onSubmit={handleSubmit}>
         <ModalBody>
-          <Alert color="info" className="mb-4">
+          <Alert
+            color="info"
+            style={{
+              backgroundColor: darkMode ? '#1e3a5f' : '#d1ecf1',
+              borderColor: darkMode ? '#2d6a9f' : '#bee5eb',
+              color: darkMode ? '#ffffff' : '#0c5460',
+            }}
+          >
             <FaInfoCircle className="me-2" />
             This will create a copy of the email and send it immediately to the selected recipients.
             Processing will start as soon as the email is created.
