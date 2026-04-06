@@ -10,8 +10,11 @@ export function parseRecipients(recipientText) {
 
 export function validateEmail(email) {
   if (!email || typeof email !== 'string') return false;
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email.trim());
+  const trimmed = email.trim();
+  const atIndex = trimmed.indexOf('@');
+  if (atIndex <= 0) return false;
+  const dotIndex = trimmed.lastIndexOf('.');
+  return dotIndex > atIndex + 1 && dotIndex < trimmed.length - 1;
 }
 
 export function buildRenderedEmailFromTemplate(templateData, variableValues) {
