@@ -1,41 +1,32 @@
 import { useState } from 'react';
-import PropTypes from 'prop-types';
-import { useDispatch } from 'react-redux';
 import { Table, Button } from 'react-bootstrap';
-import { toast } from 'react-toastify';
-import { addInventoryUnit } from '~/actions/bmdashboard/invUnitActions';
-import DeleteInvTypeModal from './DeleteInvTypeModal';
+import { connect } from 'react-redux';
+import {
+  deleteInvUnit,
+  postBuildingInventoryUnit,
+} from '../../../actions/bmdashboard/invUnitActions';
 import styles from './TypesList.module.css';
 
-export default function UnitsTable({ invUnits = [] }) {
-  const dispatch = useDispatch();
-
+function UnitsTable(props) {
+  const { invUnits, dispatch } = props;
   const [newUnit, setNewUnit] = useState('');
   const [isAdding, setIsAdding] = useState(false);
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [selectedUnit, setSelectedUnit] = useState(null);
 
-  const handleAdd = async () => {
-    if (!newUnit.trim()) {
-      toast.warning('Please enter a unit name');
-      return;
-    }
+  const handleDelete = unit => {
+    dispatch(deleteInvUnit(unit.unit));
+  };
 
-    setIsAdding(true);
-    const result = await dispatch(addInventoryUnit({ unit: newUnit.trim() }));
-    setIsAdding(false);
-
-    if (result.success) {
-      toast.success('Unit added successfully!');
+  const handleAdd = () => {
+    if (newUnit.trim()) {
+      setIsAdding(true);
+      dispatch(postBuildingInventoryUnit({ unit: newUnit.trim() }));
       setNewUnit('');
-    } else {
-      toast.error(result.error || 'Failed to add unit');
+      setIsAdding(false);
     }
   };
 
-  const handleDelete = unit => {
-    setSelectedUnit(unit);
-    setDeleteModalOpen(true);
+  const handleInputChange = e => {
+    setNewUnit(e.target.value);
   };
 
   const handleKeyPress = e => {
@@ -77,7 +68,7 @@ export default function UnitsTable({ invUnits = [] }) {
           type="text"
           placeholder="Enter a new measurement"
           value={newUnit}
-          onChange={e => setNewUnit(e.target.value)}
+          onChange={handleInputChange}
           onKeyPress={handleKeyPress}
           disabled={isAdding}
         />
@@ -85,23 +76,12 @@ export default function UnitsTable({ invUnits = [] }) {
           {isAdding ? 'Adding...' : 'Add'}
         </Button>
       </div>
-
-      {/* Delete Confirmation Modal */}
-      <DeleteInvTypeModal
-        isOpen={deleteModalOpen}
-        toggle={() => setDeleteModalOpen(false)}
-        itemType={selectedUnit}
-        isUnit
-      />
     </div>
   );
 }
 
-UnitsTable.propTypes = {
-  invUnits: PropTypes.arrayOf(
-    PropTypes.shape({
-      _id: PropTypes.string,
-      unit: PropTypes.string,
-    }),
-  ),
-};
+const mapStateToProps = state => ({
+  invUnits: state.bmInvUnits.list,
+});
+
+export default connect(mapStateToProps)(UnitsTable);

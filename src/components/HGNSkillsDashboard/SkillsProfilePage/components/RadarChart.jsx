@@ -1,15 +1,16 @@
-import { Radar } from 'react-chartjs-2';
-import { useSelector } from 'react-redux';
 import {
   Chart as ChartJS,
-  RadialLinearScale,
-  PointElement,
-  LineElement,
   Filler,
-  Tooltip,
   Legend,
+  LineElement,
+  PointElement,
+  RadialLinearScale,
+  Tooltip,
 } from 'chart.js';
-import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { useEffect, useState } from 'react';
+import { Radar } from 'react-chartjs-2';
+import { useSelector } from 'react-redux';
 import styles from '../styles/RadarChart.module.css';
 
 ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
@@ -131,7 +132,7 @@ const SKILL_MAPPINGS = [
   {
     label: 'Agile',
     value: (general, frontend, backend) => backend?.AgileDevelopment || 0,
-    description: 'Agile development methodologies (Scrum, Kanban)',
+    description: 'Agile development methodologies',
   },
   {
     label: 'Mongo DB',
@@ -148,16 +149,16 @@ const SKILL_MAPPINGS = [
   {
     label: 'Documentation',
     value: (general, frontend, backend) => frontend?.Documentation || 0,
-    description: 'Technical documentation and API documentation',
+    description: 'Technical documentation',
   },
   {
     label: 'Markdown & Graphs',
     value: (general, frontend, backend) => frontend?.Documentation || general?.markdown_graphs || 0,
-    description: 'Markdown writing and data visualization with graphs',
+    description: 'Markdown writing and data visualization',
   },
 ];
 
-function RadarChart({ profileData, compact = true }) {
+function RadarChart({ profileData, compact = true, onSkillsDataReady }) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
@@ -194,6 +195,12 @@ function RadarChart({ profileData, compact = true }) {
       });
 
       setSkillsData(processedData);
+
+      // Send data to summary cards
+      if (onSkillsDataReady) {
+        onSkillsDataReady(processedData);
+      }
+
       setIsLoading(false);
     } catch (error) {
       setHasError(true);
@@ -224,16 +231,22 @@ function RadarChart({ profileData, compact = true }) {
     );
   }
 
+  const { general = {}, frontend = {}, backend = {} } = profileData?.skillInfo || {};
+
   const chartData = {
     labels: skillsData.map(skill => (compact ? skill.shortLabel || skill.label : skill.label)),
     datasets: [
       {
         label: 'Skills',
         data: skillsData.map(skill => skill.score),
-        backgroundColor: compact ? 'rgba(133, 146, 226, 0.35)' : 'rgba(62, 160, 203, 0.2)',
-        borderColor: compact ? 'rgba(110, 125, 215, 0.9)' : 'rgba(62, 160, 203, 1)',
+        backgroundColor: darkMode
+          ? 'rgba(133,146,226,0.25)'
+          : compact
+          ? 'rgba(133,146,226,0.35)'
+          : 'rgba(62,160,203,0.2)',
+        borderColor: compact ? 'rgba(110,125,215,0.9)' : 'rgba(62,160,203,1)',
         borderWidth: compact ? 2 : 3,
-        pointBackgroundColor: compact ? 'rgba(110, 125, 215, 0.95)' : 'rgba(62, 160, 203, 1)',
+        pointBackgroundColor: compact ? 'rgba(110,125,215,0.95)' : 'rgba(62,160,203,1)',
         pointBorderColor: '#fff',
         pointHoverBackgroundColor: '#fff',
         pointHoverBorderColor: compact ? 'rgba(110,125,215,1)' : 'rgba(62,160,203,1)',
@@ -262,18 +275,34 @@ function RadarChart({ profileData, compact = true }) {
     aspectRatio: 1,
     scales: {
       r: {
+        suggestedMin: 0,
+        suggestedMax: 10,
+
         angleLines: {
           display: true,
-          color: compact ? 'rgba(0,0,0,0.08)' : 'rgba(0, 0, 0, 0.1)',
+          color: darkMode
+            ? compact
+              ? 'rgba(255,255,255,0.12)'
+              : 'rgba(255,255,255,0.16)'
+            : compact
+            ? 'rgba(0,0,0,0.08)'
+            : 'rgba(0,0,0,0.10)',
         },
+
         grid: {
-          color: compact ? 'rgba(0,0,0,0.08)' : 'rgba(0, 0, 0, 0.1)',
+          color: darkMode
+            ? compact
+              ? 'rgba(255,255,255,0.12)'
+              : 'rgba(255,255,255,0.16)'
+            : compact
+            ? 'rgba(0,0,0,0.08)'
+            : 'rgba(0,0,0,0.10)',
         },
+
         pointLabels: {
           font: {
             size: function(context) {
               const w = context.chart.width;
-              // Slightly smaller sizes to fit reduced chart
               if (w < 340) return 8;
               if (w < 480) return 9;
               if (w < 640) return 10;
@@ -281,25 +310,22 @@ function RadarChart({ profileData, compact = true }) {
             },
             weight: '500',
           },
-          color: compact ? '#555' : '#333',
+          color: darkMode ? '#e6e6e6' : compact ? '#555' : '#333',
           padding: compact ? 10 : 15,
-          callback: function(value, index) {
-            // Truncate long labels on small screens
+          callback: function(value) {
             if (window.innerWidth < 600 && value.length > 15) {
               return value.substring(0, 12) + '...';
             }
             return value;
           },
         },
-        suggestedMin: 0,
-        suggestedMax: 10,
         ticks: {
           stepSize: 2,
           display: compact ? false : true,
-          color: '#666',
-          font: {
-            size: 10,
-          },
+          color: darkMode ? '#dcdcdc' : '#666',
+          font: { size: 10 },
+          backdropColor: darkMode ? '#1f1f1f' : '#ffffff',
+          showLabelBackdrop: true,
         },
       },
     },
@@ -307,20 +333,15 @@ function RadarChart({ profileData, compact = true }) {
       legend: { display: false },
       tooltip: {
         enabled: true,
-        backgroundColor: 'rgba(0, 0, 0, 0.9)',
-        titleColor: '#fff',
-        bodyColor: '#fff',
-        borderColor: 'rgba(62, 160, 203, 1)',
+        backgroundColor: darkMode ? 'rgba(29, 31, 34, 0.95)' : '#ffffff',
+        titleColor: darkMode ? '#e6e6e6' : '#333',
+        bodyColor: darkMode ? '#e6e6e6' : '#333',
+        borderColor: darkMode ? 'rgba(100, 149, 237, 0.8)' : 'rgba(62, 160, 203, 1)',
         borderWidth: 2,
         cornerRadius: 8,
         displayColors: false,
-        titleFont: {
-          size: 14,
-          weight: 'bold',
-        },
-        bodyFont: {
-          size: 12,
-        },
+        titleFont: { size: 14, weight: 'bold' },
+        bodyFont: { size: 12 },
         padding: 12,
         callbacks: {
           title: function(context) {
@@ -339,21 +360,26 @@ function RadarChart({ profileData, compact = true }) {
         },
       },
     },
-    interaction: {
-      intersect: false,
-      mode: 'point',
-    },
-    animation: {
-      duration: 1000,
-      easing: 'easeInOutQuart',
-    },
+    interaction: { intersect: false, mode: 'point' },
+    animation: { duration: 1000, easing: 'easeInOutQuart' },
   };
 
   return (
-    <div className={`${styles.radarChart} ${darkMode ? 'dark-mode' : ''}`}>
+    <div className={`${styles.radarChart} ${darkMode ? styles.dark : ''}`}>
       <Radar data={chartData} options={chartOptions} />
     </div>
   );
 }
+
+RadarChart.propTypes = {
+  profileData: PropTypes.shape({
+    skillInfo: PropTypes.shape({
+      general: PropTypes.object,
+      frontend: PropTypes.object,
+      backend: PropTypes.object,
+    }),
+  }),
+  compact: PropTypes.bool,
+};
 
 export default RadarChart;
