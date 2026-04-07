@@ -33,9 +33,7 @@ function JobApplicationForm() {
   const validateEmail = email => {
     if (!email.trim()) return 'Email is required.';
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!emailRegex.test(email)) {
+    if (!email.includes('@') || !email.includes('.')) {
       return 'Please enter a valid email address.';
     }
 
