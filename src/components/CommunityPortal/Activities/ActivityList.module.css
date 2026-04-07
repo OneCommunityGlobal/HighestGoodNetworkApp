@@ -1,14 +1,10 @@
-/* ===== ORIGINAL STYLES (UNCHANGED) ===== */
-
-/* Activity List Container */
 .activityListContainer {
   padding: 20px;
   min-height: calc(100vh - 140px);
 }
 
-/* Dark mode follows Dashboard pattern using bg-oxford-blue */
-.activityListContainer:global(.bg-oxford-blue) {
-  color: #ffffff;
+.activityListContainerDark {
+  color: #fff;
   padding-bottom: 40px;
 }
 
@@ -20,19 +16,6 @@
   font-weight: 600;
 }
 
-/* Dark mode heading */
-.activityListContainer:global(.bg-oxford-blue) .heading {
-  color: #ffffff !important;
-}
-
-/* Body background helper */
-:global(.activity-list-dark-body),
-:global(.activity-list-dark-body #root),
-:global(.activity-list-dark-body .App) {
-  background-color: #1b2a41 !important;
-  color: #ffffff !important;
-}
-
 .filters {
   display: flex;
   justify-content: center;
@@ -42,17 +25,24 @@
   padding: 10px;
   background: #fff;
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgb(0 0 0 / 10%);
 }
 
 .darkModeFilters {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 30px;
+  margin: 30px 0;
+  padding: 10px;
   background: #1e2a3a;
   box-shadow: none;
   border: 1px solid #3a4a5c;
   border-radius: 0;
 }
 
-.filters label {
+.filters label,
+.darkModeFilters label {
   display: flex;
   flex-direction: column;
   font-weight: 500;
@@ -60,20 +50,22 @@
 }
 
 .filters input,
-.filters select {
+.filters select,
+.darkModeFilters input,
+.darkModeFilters select {
   padding: 10px;
   border: 1px solid #d1d5db;
   border-radius: 6px;
   margin-top: 5px;
   font-size: 1rem;
   transition: all 0.3s ease;
-  background-color: #ffffff;
+  background-color: #fff;
   color: #333;
 }
 
 .darkModeInput {
   background-color: #1e2a3a !important;
-  color: #ffffff !important;
+  color: #fff !important;
   border: 1px solid #3a4a5c !important;
   color-scheme: dark;
 }
@@ -86,49 +78,29 @@
 .filters input:focus {
   outline: none;
   border-color: #3b82f6;
-  box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 0 8px rgb(59 130 246 / 30%);
 }
 
 .darkModeInput:focus {
   border-color: #5c9ce6 !important;
-  box-shadow: 0 0 8px rgba(92, 156, 230, 0.5) !important;
+  box-shadow: 0 0 8px rgb(92 156 230 / 50%) !important;
 }
 
 .darkModeInput::placeholder {
   color: #a0a0a0;
 }
 
-/* Clear button */
-.clearButton {
-  padding: 10px 20px;
-  background-color: #ef4444;
-  color: #ffffff;
-  border: none;
-  border-radius: 6px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.clearButton:hover:not(:disabled) {
-  background-color: #dc2626;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
-}
-
-.clearButton:disabled {
-  background-color: #9ca3af;
-  cursor: not-allowed;
-  opacity: 0.6;
+.darkFilters input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
 }
 
 .activityList {
   max-width: 900px;
   margin: 0 auto;
-  background: #ffffff;
+  background: #fff;
   padding: 30px;
   border-radius: 12px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 12px rgb(0 0 0 / 10%);
 }
 
 .darkModeList {
@@ -158,13 +130,13 @@
 .darkModeItem {
   background-color: #1e2a3a !important;
   border: 1px solid #3a4a5c !important;
-  color: #ffffff !important;
+  color: #fff !important;
   border-radius: 0;
 }
 
 .activityList li:hover {
   transform: translateY(-3px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
 }
 
 .darkModeItem:hover {
@@ -196,19 +168,63 @@
   margin: 20px 0;
 }
 
+.clearButtonWrapper{
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.clearFiltersButton {
+  padding: 10px 14px;
+  border: 1px solid #000;
+  border-radius: 6px;
+  background: #f9fafb;
+  color: #1f2937;
+  font-family: Poppins, sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.clearFiltersButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.clearFiltersButton:hover:not(:disabled) {
+  transform: scale(1.05);
+  background-color: #f9fafb;
+}
+
+
+.clearFiltersButtonDark {
+  border: 1px solid #fff;
+  background: #0f172a;
+  color: #f1f5f9;
+}
+
+.clearFiltersButtonDark:hover:not(:disabled) {
+  background: #111c33;
+}
+
+
 /* Suggestions */
 .suggestions {
   position: absolute;
   top: 100%;
   left: 0;
   right: 0;
-  background: #ffffff;
+  background: #fff;
   border: 1px solid #d1d5db;
   border-radius: 6px;
   margin-top: 4px;
   max-height: 250px;
   overflow-y: auto;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgb(0 0 0 / 10%);
   z-index: 1000;
 }
 
@@ -236,8 +252,41 @@
   background-color: #334155;
 }
 
+.showPastToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  color: #1f2937;
+  border-radius: 6px;
+  margin-top: 5px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.showPastToggle input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  cursor: pointer;
+  accent-color: #3b82f6;
+}
+
+.showPastToggle input[type="checkbox"]:focus-visible {
+  outline: none;
+  border-radius: 4px;
+}
+
+.darkShowPastToggle {
+  color: #f1f5f9;
+}
+
+.darkShowPastToggle input[type="checkbox"] {
+  accent-color: #60a5fa;
+}
+
 /* Responsive */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .filters {
     flex-direction: column;
     align-items: center;

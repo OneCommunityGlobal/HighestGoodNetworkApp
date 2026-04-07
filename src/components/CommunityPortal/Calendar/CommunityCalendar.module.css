@@ -145,6 +145,20 @@
   box-sizing: border-box; 
 }
 
+.reactCalendar :global(.react-calendar__month-view__days__day--neighboringMonth) {
+  background: transparent !important;
+  color: #cbd5e0 !important;
+  opacity: 0.6;
+  pointer-events: auto;
+  border: 1px solid #dee2e6 !important;
+}
+
+.reactCalendarDarkMode :global(.react-calendar__month-view__days__day--neighboringMonth) {
+  background: transparent !important;
+  color: #4a5568 !important;
+  opacity: 0.4;
+}
+
 .reactCalendar :global(.react-calendar__navigation) {
   background-color: #f9f9f9;
   border-bottom: 1px solid #ddd;
@@ -1298,6 +1312,19 @@
   display: block;
 }
 
+.metaItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+}
+
+.metaIcon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  opacity: 0.85;
+}
 /* Week Grid Styles */
 .weekGridContainer {
   display: flex;
