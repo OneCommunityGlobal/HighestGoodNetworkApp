@@ -38,7 +38,6 @@ export default function CommunityCalendar() {
         setEvents(response.data.events || []);
       } catch (err) {
         setError('Failed to load events');
-        console.error('Error fetching calendar events:', err);
       } finally {
         setIsLoading(false);
       }
@@ -60,6 +59,7 @@ export default function CommunityCalendar() {
         description: event.description || `Join us for ${event.title}`,
         // Ensure location is present or default
         location: event.location || 'Online',
+        isOver: eventDate < new Date(),
       };
     });
   }, [events]);
@@ -659,7 +659,6 @@ export default function CommunityCalendar() {
                   {selectedEvent.status}
                 </span>
               </div>
-
               <div className={styles.eventDetailsGrid}>
                 {[
                   ['Type', selectedEvent.type],
@@ -681,12 +680,21 @@ export default function CommunityCalendar() {
             </div>
 
             <div className={styles.modalActions}>
-              <button type="button" className={styles.btnPrimary}>
-                Register for Event
-              </button>
-              <button type="button" className={styles.btnSecondary}>
-                Add to Calendar
-              </button>
+              {selectedEvent.isOver ? (
+                <button type="button" className={styles.btnDisabled} disabled>
+                  Completed
+                </button>
+              ) : (
+                <>
+                  <button type="button" className={styles.btnPrimary}>
+                    Register for Event
+                  </button>
+
+                  <button type="button" className={styles.btnSecondary}>
+                    Add to Calendar
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
