@@ -7,6 +7,8 @@ import { ENDPOINTS } from '../../../utils/URL';
 import { useSelector } from 'react-redux';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { parsePhoneNumberFromString } from 'libphonenumber-js/max';
+import moment from 'moment-timezone';
 
 function JobApplicationForm() {
   const [forms, setForms] = useState([]);
@@ -17,7 +19,9 @@ function JobApplicationForm() {
   const [showDescription, setShowDescription] = useState(false);
   const [applicantName, setApplicantName] = useState('');
   const [applicantEmail, setApplicantEmail] = useState('');
-  const [locationTimezone, setLocationTimezone] = useState('');
+  const [location, setLocation] = useState('');
+  const [timeZone, setTimeZone] = useState('');
+  const [errors, setErrors] = useState({});
   const [phone, setPhone] = useState('');
   const [companyPosition, setCompanyPosition] = useState('');
   const [websiteSocial, setWebsiteSocial] = useState('');
@@ -25,6 +29,64 @@ function JobApplicationForm() {
   const resumeInputRef = useRef(null);
 
   const darkMode = useSelector(state => state.theme?.darkMode);
+
+  const validateEmail = email => {
+    if (!email.trim()) return 'Email is required.';
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return 'Please enter a valid email address.';
+    }
+    return '';
+  };
+
+  const validatePhone = phone => {
+    if (!phone.trim()) return 'Phone number is required.';
+    try {
+      const phoneNumber = parsePhoneNumberFromString(phone);
+      if (!phoneNumber || !phoneNumber.isPossible()) {
+        return 'Please enter a valid phone number format (e.g., +1 213-456-7890).';
+      }
+    } catch {
+      return 'Invalid phone number format.';
+    }
+    return '';
+  };
+
+  const validateLocation = location => {
+    if (!location.trim()) return 'Location is required.';
+    if (!/^[a-zA-Z\s,.-]{3,}$/.test(location)) {
+      return 'Please enter a valid location (e.g., City, Country).';
+    }
+    return '';
+  };
+
+  const validateTimeZone = tz => {
+    if (!tz) return 'Time zone is required.';
+    return '';
+  };
+
+  const validateAllFields = () => {
+    const newErrors = {};
+
+    if (!applicantName.trim()) {
+      newErrors.name = 'Name is required.';
+    }
+
+    const emailError = validateEmail(applicantEmail);
+    if (emailError) newErrors.email = emailError;
+
+    const phoneError = validatePhone(phone);
+    if (phoneError) newErrors.phone = phoneError;
+
+    const locationError = validateLocation(location);
+    if (locationError) newErrors.location = locationError;
+
+    const tzError = validateTimeZone(timeZone);
+    if (tzError) newErrors.timeZone = tzError;
+
+    return newErrors;
+  };
+
+  const isFormValid = () => Object.keys(validateAllFields()).length === 0;
 
   useEffect(() => {
     async function fetchForms() {
@@ -101,6 +163,9 @@ function JobApplicationForm() {
     const missing = [];
     if (!applicantName.trim()) missing.push('Name');
     if (!applicantEmail.trim()) missing.push('Email');
+    if (!phone.trim()) missing.push('Phone Number');
+    if (!location.trim()) missing.push('Location');
+    if (!timeZone.trim()) missing.push('Time Zone');
 
     if (filteredForm?.questions?.length) {
       for (const [idx, q] of filteredForm.questions.entries()) {
@@ -117,23 +182,50 @@ function JobApplicationForm() {
   const handleSubmit = async e => {
     e.preventDefault();
 
+    const newErrors = validateAllFields();
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+
+      const errorMessages = Object.values(newErrors).filter(Boolean);
+
+      errorMessages.forEach((msg, index) => {
+        setTimeout(() => {
+          toast.error(msg, { autoClose: 4000 });
+        }, index * 1200); // 👈 controls spacing between toasts
+      });
+
+      return;
+    }
+
     const missing = validateBeforeSubmit();
     if (missing.length > 0) {
-      toast.error(`Please complete required fields: ${missing.join(', ')}`, { autoClose: 7000 });
+      toast.error(
+        <div>
+          <div>Please complete required fields:</div>
+          {missing.map((field, index) => (
+            <div key={index}>• {field}</div>
+          ))}
+        </div>,
+        { autoClose: 7000 },
+      );
       return;
     }
 
     toast.success('Application submitted. A copy will be sent to your email.');
 
+    // reset (unchanged)
     setApplicantName('');
     setApplicantEmail('');
-    setLocationTimezone('');
+    setLocation('');
+    setTimeZone('');
     setPhone('');
     setCompanyPosition('');
     setWebsiteSocial('');
     setResumeFile(null);
     if (resumeInputRef.current) resumeInputRef.current.value = '';
     setAnswers(new Array((filteredForm?.questions ?? []).length).fill(''));
+    setErrors({});
   };
 
   return (
@@ -218,11 +310,23 @@ function JobApplicationForm() {
                 />
                 <input
                   type="text"
-                  placeholder="Location & Timezone"
+                  placeholder="Location"
                   className={styles.inputField}
-                  value={locationTimezone}
-                  onChange={e => setLocationTimezone(e.target.value)}
+                  value={location}
+                  onChange={e => setLocation(e.target.value)}
                 />
+                <select
+                  className={styles.inputField}
+                  value={timeZone}
+                  onChange={e => setTimeZone(e.target.value)}
+                >
+                  <option value="">Select Time Zone</option>
+                  {moment.tz.names().map(tz => (
+                    <option key={tz} value={tz}>
+                      {tz}
+                    </option>
+                  ))}
+                </select>
                 <input
                   type="text"
                   placeholder="Phone Number"
