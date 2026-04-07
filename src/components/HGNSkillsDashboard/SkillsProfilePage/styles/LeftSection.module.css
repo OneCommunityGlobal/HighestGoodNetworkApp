@@ -39,10 +39,16 @@
   .leftSection h1, .leftSection h3 { text-align: left; }
 }
 
-:global(.dark-mode) .leftSection h1 {
-  color: #fff;
+/* Dark mode */
+.leftSection:global(.dark-mode) {
+  background: linear-gradient(135deg, #1c2541 0%, #0b132b 100%);
+  border-color: #3a506b;
 }
 
-:global(.dark-mode) .leftSection h3 {
-  color: #ccc;
+.leftSection:global(.dark-mode) h1 {
+  color: #ffffff;
+}
+
+.leftSection:global(.dark-mode) h3 {
+  color: #cccccc;
 }

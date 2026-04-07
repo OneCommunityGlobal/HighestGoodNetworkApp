@@ -1,9 +1,11 @@
 .AdditionalInfoBox {
   display: flex;
   flex-direction: column;
-  border: 2px solid black;
+  border: 1px solid #c0c0c0;
   margin: 20px;
   padding: 20px;
+  background-color: #ffffff;
+  border-radius: 10px;
 }
 .workExpInfoBox {
   display: flex;
@@ -24,7 +26,9 @@
 .question-and-response-box textarea {
   height: 150px;
   margin: 5px 10px;
-  background-color: #e6f5f3;
+  background-color: #f5f7fa;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 .question-and-response-box input[type='text'] {
   width: 40%;
@@ -32,7 +36,7 @@
   border: 1px solid #ccc;
   border-radius: 4px;
   margin: 5px 10px;
-  background-color: #e6f5f3;
+  background-color: #f5f7fa;
 }
 
 .question-and-response-box p {
@@ -70,18 +74,24 @@
   }
 }
 
-:global(.dark-mode) .AdditionalInfoBox {
-  border-color: #fff;
-  color: #fff;
+/* Dark mode */
+.AdditionalInfoBox:global(.dark-mode) {
+  background-color: #1c2541;
+  border-color: #3a506b;
+  color: #ffffff;
 }
 
-:global(.dark-mode) .question-box p {
-  color: #fff;
+.AdditionalInfoBox:global(.dark-mode) .question-box {
+  color: #93c5fd;
 }
 
-:global(.dark-mode) .question-and-response-box textarea,
-:global(.dark-mode) .question-and-response-box input[type='text'] {
-  background-color: #333;
-  color: #fff;
-  border-color: #555;
+.AdditionalInfoBox:global(.dark-mode) .question-box p {
+  color: #ffffff;
+}
+
+.AdditionalInfoBox:global(.dark-mode) .question-and-response-box textarea,
+.AdditionalInfoBox:global(.dark-mode) .question-and-response-box input[type='text'] {
+  background-color: #2a3a5c;
+  color: #ffffff;
+  border-color: #3a506b;
 }
