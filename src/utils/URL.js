@@ -366,7 +366,8 @@ export const ENDPOINTS = {
   BM_EQUIPMENTS: `${APIEndpoint}/bm/equipments`,
   BM_INVTYPE_TYPE: type => `${APIEndpoint}/bm/invtypes/${type}`,
   BM_ISSUE_CHART: `${APIEndpoint}/bm/issue/issue-chart`,
-
+  BM_EQUIPMENT_INVTYPE: `${APIEndpoint}/bm/invtypes/equipment`,
+  BM_REUSABLES_INVTYPE: `${APIEndpoint}/bm/invtypes/reusables`,
   BM_ISSUE_FORM: `${APIEndpoint}/bm/issue/add`,
   BM_INJURY_CATEGORY_BREAKDOWN: `${APIEndpoint}/bm/injuries/category-breakdown`,
   BM_INJURY_SEVERITIES: `${APIEndpoint}/bm/injuries/injury-severities`,
@@ -445,6 +446,7 @@ export const ENDPOINTS = {
   USER_STATE_CATALOG_ITEM: key => `${APIEndpoint}/userstate/catalog/${key}`,
   USER_STATE_SELECTION: userId => `${APIEndpoint}/userstate/selection/${userId}`,
   USER_STATE_SELECTIONS_BATCH: `${APIEndpoint}/userstate/selections/batch`,
+  USER_STATE_CATALOG_USAGE: key => `${APIEndpoint}/userstate/catalog/${key}/usage`,
 
   CREATE_JOB_FORM: `${APIEndpoint}/jobforms`,
   UPDATE_JOB_FORM: `${APIEndpoint}/jobforms`,
@@ -595,6 +597,15 @@ export const ENDPOINTS = {
   HGN_FORM_RESPONSES: () => `${APIEndpoint}/hgnform`,
   // Kitchen and Inventory Management endpoints
   KI_CALENDAR_EVENTS: (month, year) => `${APIEndpoint}/kitchenandinventory/calendar?month=${month}&year=${year}`,
+
+  // application time analytics
+  APPLICATION_TIME_DATA: (startDate, endDate, roles) => {
+    let url = `${APIEndpoint}/analytics/application-time?`;
+    if (startDate) url += `startDate=${encodeURIComponent(startDate)}&`;
+    if (endDate) url += `endDate=${encodeURIComponent(endDate)}&`;
+    if (roles && roles.length > 0) url += `roles=${encodeURIComponent(roles.join(','))}&`;
+    return url.slice(0, -1);
+  },
 
 };
 
