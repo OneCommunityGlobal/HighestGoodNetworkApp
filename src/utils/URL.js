@@ -446,6 +446,7 @@ export const ENDPOINTS = {
   USER_STATE_CATALOG_ITEM: key => `${APIEndpoint}/userstate/catalog/${key}`,
   USER_STATE_SELECTION: userId => `${APIEndpoint}/userstate/selection/${userId}`,
   USER_STATE_SELECTIONS_BATCH: `${APIEndpoint}/userstate/selections/batch`,
+  USER_STATE_CATALOG_USAGE: key => `${APIEndpoint}/userstate/catalog/${key}/usage`,
 
   CREATE_JOB_FORM: `${APIEndpoint}/jobforms`,
   UPDATE_JOB_FORM: `${APIEndpoint}/jobforms`,
