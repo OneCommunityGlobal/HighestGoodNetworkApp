@@ -229,6 +229,8 @@
   color: #ffffff;
 }
 
+
+
 .reactCalendar .eventItem {
   display: block;
   position: relative;
@@ -269,6 +271,30 @@
   padding: 3px 5px;
   font-weight: 500;
 }
+
+
+.reactCalendarDarkMode :global(.react-calendar__tile) .eventItem {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.reactCalendarDarkMode :global(.react-calendar__tile) .eventItem.statusNew {
+  background-color: #065666;
+  color: #e6fffa;
+}
+.reactCalendarDarkMode :global(.react-calendar__tile) .eventItem.statusNeedsAttendees {
+  background-color: #6a1b9a;
+  color: #f3e5f5;
+}
+.reactCalendarDarkMode :global(.react-calendar__tile) .eventItem.statusFillingFast {
+  background-color: #856404;
+  color: #fff9e6;
+}
+.reactCalendarDarkMode :global(.react-calendar__tile) .eventItem.statusFull {
+  background-color: #721c24;
+  color: #fce7e7;
+}
+
 
 .eventDetails {
   margin-top: 20px;
@@ -699,13 +725,80 @@
   text-align: center;
 }
 
+/* Base Style: The Pill */
 .statusBadge {
-  padding: 6px 12px;
-  border-radius: 16px;
-  font-size: 0.8rem;
-  font-weight: 600;
+  padding: 4px 14px;
+  border-radius: 50px; 
+  font-size: 13px;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid;
+}
+
+/* Green: Full */
+.Full {
+  background-color: #E6FFFA; 
+  border-color: #138c78;
+  color: #234E52; 
+}
+
+/* Orange: Filling Fast */
+.FillingFast {
+  background-color: #FFF5E6; 
+  border-color: #FFD580;
+  color: #C05621;
+}
+
+/* Red: New */
+.New {
+  background-color: #FFF5F5;
+  border-color: #FED7D7;
+  color: #9B2C2C;
+}
+
+/* Blue: Needs Attendees */
+.NeedsAttendees {
+  background-color: #EBF8FF;
+  border-color: #90CDF4;
+  color: #2C5282;
+}
+
+/* --- Base Dark Mode Badge --- */
+.darkModeStatusBadge {
+  background-color: #1a1a1a; 
+  border-width: 1.5px;      
+}
+
+/* --- Dark Mode Specific Statuses --- */
+
+/* Full - Deep Emerald */
+.darkModeStatusBadge.Full {
+  background-color: rgba(6, 78, 59, 0.4); 
+  border-color: #10b981;                
+  color: #d1fae5;                       
+}
+
+/* Filling Fast - Deep Burnt Orange */
+.darkModeStatusBadge.FillingFast {
+  background-color: rgba(124, 45, 18, 0.4); 
+  border-color: #f97316;                    
+  color: #ffedd5;                           
+}
+
+/* New - Deep Crimson */
+.darkModeStatusBadge.New {
+  background-color: rgba(127, 29, 29, 0.4); 
+  border-color: #ef4444;                    
+  color: #fee2e2;                           
+}
+
+/* Needs Attendees - Deep Royal Blue */
+.darkModeStatusBadge.NeedsAttendees {
+  background-color: rgba(30, 58, 138, 0.4); 
+  border-color: #3b82f6;                    
+  color: #dbeafe;                          
 }
 
 .eventDetailsGrid {

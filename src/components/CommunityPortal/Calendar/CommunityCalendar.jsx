@@ -89,12 +89,21 @@ function CommunityCalendar() {
     const count = event.registeredCount;
     const capacity = event.capacity;
 
-    if (count >= capacity) return 'Full';
+    if (count >= capacity) return 'Full'; // max capacity
     if (count >= capacity * 0.7) return 'Filling Fast'; // 70% threshold
     if (capacity * 0.1 < count && count <= capacity * 0.2) return 'Needs Attendees'; // between 10% and 20% of capacity
 
     return 'New';
   }, []);
+
+  const getDerivedStatusClassNames = event => {
+    const status = getDerivedStatus(event);
+    if (status === 'Full') return 'Full';
+    if (status === 'Filling Fast') return 'FillingFast';
+    if (status === 'Needs Attendees') return 'NeedsAttendees';
+    if (status === 'New') return 'New';
+    return '';
+  };
 
   // Function to determine the CSS class based on the derived status
   const getEventStatusClass = useCallback(dynamicStatus => {
@@ -131,6 +140,12 @@ function CommunityCalendar() {
         ...eventToRegister,
         registeredCount: (eventToRegister.registeredCount || 0) + 1,
       };
+
+      // Changing event status to "Full" when capacity is reached and Event Title to match it
+      if (updatedEvent.registeredCount === updatedEvent.capacity) {
+        updatedEvent.status = 'Full';
+        updatedEvent.title = updatedEvent.title + ' (Full)';
+      }
 
       setEvents(prevEvents =>
         prevEvents.map(ev => (ev.id === eventToRegister.id ? updatedEvent : ev)),
@@ -186,6 +201,23 @@ function CommunityCalendar() {
 
     return { types, locations, statuses };
   }, [events]);
+
+  //Need to implement. When user uses TAB to navigate to the button.
+  const handleEventKeyPress = event => {
+    return null;
+  };
+
+  const handleFilterChange = useCallback(
+    filterType => e => {
+      setFilter(prev => ({
+        ...prev,
+        [filterType]: e.target.value,
+      }));
+    },
+    [],
+  );
+
+  const [overflowDate, setOverflowDate] = useState(false);
 
   // Memoized helper function to get events for a specific date
   const getEventsForDate = useCallback(
@@ -296,7 +328,7 @@ function CommunityCalendar() {
       if (view === 'month') {
         const eventsForTile = getEventsForDate(date).map(event => {
           const statusClass = getEventStatusClass(getDerivedStatus(event));
-
+          console.log(event);
           return (
             <div
               key={event.id}
@@ -580,24 +612,13 @@ function CommunityCalendar() {
             </div>
 
             <div className={styles.modalContent}>
-              <div className={styles.eventStatus}>
-                <span
-                  className={`${styles.statusBadge} ${styles[statusMap[selectedEvent.status]] ||
-                    ''}`}
-                >
-                  {selectedEvent.status}
-                </span>
-              </div>
-
               <div className={styles.modalContent}>
                 <div className={styles.eventStatus}>
                   <span
-                    className={`${styles.statusBadge} ${getEventStatusClass(
-                      getDerivedStatus(selectedEvent),
-                      selectedEvent.status,
-                    )}`}
+                    className={`${styles.statusBadge} ${
+                      styles[getDerivedStatusClassNames(selectedEvent)]
+                    } ${darkMode ? styles.darkModeStatusBadge : ''}`}
                   >
-                    {/* Display Dynamic Status */}
                     {getDerivedStatus(selectedEvent)}
                   </span>
                 </div>
@@ -635,25 +656,21 @@ function CommunityCalendar() {
               </div>
 
               <div className={styles.modalActions}>
-                {/* Attach the handler and disable if full */}
                 <button
                   className={styles.btnPrimary}
+                  // Call the handler with the selected event
                   onClick={() => handleRegister(selectedEvent)}
+                  // Disable if the derived status is 'Full'
                   disabled={getDerivedStatus(selectedEvent) === 'Full'}
+                  style={{
+                    cursor: getDerivedStatus(selectedEvent) === 'Full' ? 'not-allowed' : 'pointer',
+                    opacity: getDerivedStatus(selectedEvent) === 'Full' ? 0.6 : 1,
+                  }}
                 >
                   {getDerivedStatus(selectedEvent) === 'Full' ? 'Event Full' : 'Register for Event'}
                 </button>
                 <button className={styles.btnSecondary}>Add to Calendar</button>
               </div>
-            </div>
-
-            <div className={styles.modalActions}>
-              <button type="button" className={styles.btnPrimary}>
-                Register for Event
-              </button>
-              <button type="button" className={styles.btnSecondary}>
-                Add to Calendar
-              </button>
             </div>
           </div>
         </div>
