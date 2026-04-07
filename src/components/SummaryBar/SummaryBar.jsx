@@ -434,9 +434,14 @@ const SummaryBar = React.forwardRef((props, ref) => {
     if (!isCompleted) {
       return (
         <div
-          className={`border border-danger col-4 ${
+          role="button"
+          tabIndex={0}
+          className={`${styles['summary-incomplete']} border border-danger col-4 ${
             darkMode ? 'bg-yinmn-blue' : 'bg-white'
           } d-flex flex-column justify-content-center`}
+          onClick={props.toggleSubmitForm}
+          onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && props.toggleSubmitForm()}
+          aria-label="Submit weekly summary"
         >
           <div className="py-1" />
           <div className="d-flex justify-content-center">

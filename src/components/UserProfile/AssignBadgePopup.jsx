@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Table, Button, UncontrolledTooltip } from 'reactstrap';
+import { Table, Button, UncontrolledTooltip , Spinner } from 'reactstrap';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import AssignTableRow from '../Badge/AssignTableRow';
@@ -12,7 +12,7 @@ import { ENDPOINTS } from '~/utils/URL';
 import { boxStyle, boxStyleDark } from '../../styles';
 import { toast } from 'react-toastify';
 import { PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from '~/utils/constants';
-import { Spinner } from 'reactstrap';
+
 
 function AssignBadgePopup(props) {
   const { darkMode } = props;

@@ -1,23 +1,10 @@
 .leaderboard {
   font-size: 1rem;
-} /*1rem = 16px*/
+}
 
 .my-custom-scrollbar {
   overflow-y: auto;
   margin-bottom: 1rem;
-}
-
-.leaderboard thead th {
-  top: 0;
-  border-top: 10px solid #dee2e6;
-  border-top-width: 1px;
-  border-top-style: solid;
-  border-top-color: rgb(222, 226, 230);
-}
-
-.leaderboard tbody tr td, 
-.leaderboard thead tr th {
-  text-align: left !important;
 }
 
 .dark-leaderboard-row {
@@ -29,6 +16,7 @@
   background-color: #3a506b;
   color: white;
 }
+
 .dark-leaderboard-row:hover {
   background-color: #111831;
 }
@@ -38,6 +26,7 @@
   color: black;
   display: table-row;
 }
+
 .light-leaderboard-row th {
   background-color: white;
   color: black;
@@ -47,50 +36,61 @@
   background-color: #f0f8ff;
 }
 
-
-/* Small devices (landscape phones, 544px and up) */
-@media (max-width: 544px) {
-  .leaderboard {
-    font-size: 0.7rem;
-  } /*1rem = 16px*/
-
-  .my-custom-scrollbar {
-    max-height: 500px;
-    overflow: scroll;
-    margin-bottom: 1rem;
-  }
-
-  .leaderboard thead th {
-    top: 0;
-    border-top: 10px solid #dee2e6;
-    border-top-width: 1px;
-    border-top-style: solid;
-    border-top-color: rgb(222, 226, 230);
-  }
-}
-.row {
-  width: 97%;
-}
-
 .table-fixed tbody td {
   white-space: normal; /* Allow text wrapping within cells */
 }
 
 .table-fixed {
   font-size: 0.93rem;
-  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
-.animation {
-  animation: l-animation 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+.leaderboard thead th {
+  top: 0;
+  border-top: 1px solid rgb(222 226 230);
 }
+
+.leaderboard tbody tr td, 
+.leaderboard thead tr th {
+  text-align: left !important;
+}
+
+
+/* Small devices (landscape phones, 544px and up) */
+@media (545px <= width <= 1119px) {
+  .leaderboard {
+    font-size: 0.7rem;
+  }
+
+  .my-custom-scrollbar {
+    max-height: 500px;
+    overflow: auto;
+    margin-bottom: 1rem;
+  }
+
+  .leaderboard thead th {
+    white-space: nowrap; 
+    top: 0;
+    border-top: 1px solid rgb(222 226 230);
+  }
+}
+
+.row {
+  width: 97%;
+}
+
 @keyframes l-animation {
   0% {
     transform: rotate(0deg);
   }
+  
   100% {
     transform: rotate(360deg);
   }
+}
+
+.animation {
+  animation: l-animation 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
 }
 
 .leaderboardTotalsTitle {
@@ -103,12 +103,11 @@
   flex-direction: column;
 }
 
-@media screen and (max-width: 544px) {
+@media (width <= 980px) {
   .responsive-font-size {
-    font-size: 0.75rem !important;
+    font-size: 0.5rem !important;
   }
 }
-
 
 .leaderboard.abbreviated-mode thead th {
   font-size: 0.75rem;
@@ -120,6 +119,7 @@
   padding: 0.5rem 0.3rem;
   vertical-align: middle;
 }
+
 .trophyTextWhite {
   color: #fff;
 }

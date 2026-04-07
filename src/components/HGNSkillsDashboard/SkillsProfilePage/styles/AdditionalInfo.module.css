@@ -7,6 +7,7 @@
   background-color: #ffffff;
   border-radius: 10px;
 }
+
 .workExpInfoBox {
   display: flex;
   flex-direction: row;
@@ -23,6 +24,7 @@
   color: #2f5061;
   font-size: 1.1em;
 }
+
 .question-and-response-box textarea {
   height: 150px;
   margin: 5px 10px;
@@ -30,6 +32,7 @@
   border: 1px solid #ccc;
   border-radius: 4px;
 }
+
 .question-and-response-box input[type='text'] {
   width: 40%;
   padding: 10px;
@@ -46,8 +49,9 @@
   margin-right: 30px;
   margin-bottom: 0;
 }
+
 .outlined-box {
-  border: rgb(28, 36, 36);
+  border: rgb(28 36 36);
   display: flex;
   flex-direction: column;
 }
@@ -56,19 +60,20 @@
   list-style-type: none;
   padding-left: 0%;
 }
-.custom-list li:before {
+
+.custom-list li::before {
   content: '-';
-  margin-right: 0rem;
+  margin-right: 0;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .followup-questions {
     width: 80%;
     margin: 10px auto;
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .followup-backend-questions {
     width: 90%;
   }
