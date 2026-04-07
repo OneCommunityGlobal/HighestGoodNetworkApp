@@ -12,6 +12,7 @@ function QuestionSetManager({
   formFields,
   setFormFields,
   onImportQuestions,
+  onTemplateSaved,
   darkMode,
   templateName,
   setTemplateName,
@@ -118,7 +119,8 @@ function QuestionSetManager({
 
         setTemplates(prev => prev.map(t => (t._id === updatedTemplate._id ? updatedTemplate : t)));
 
-        safeAlert(`Template "${templateName}" updated.`);
+        safeAlert(`Template "${templateName}" updated successfully!`);
+        if (onTemplateSaved) onTemplateSaved();
       } else {
         const newTemplate = await api.createTemplate({
           name: templateName,
@@ -136,7 +138,8 @@ function QuestionSetManager({
         setTemplates(updated);
 
         localStorage.setItem('jobFormTemplates', JSON.stringify(updated));
-        safeAlert(`Template "${templateName}" created.`);
+        safeAlert(`Template "${templateName}" created successfully!`);
+        if (onTemplateSaved) onTemplateSaved();
       }
 
       setTemplateName('');
@@ -161,8 +164,11 @@ function QuestionSetManager({
           setTemplates(newTemplates);
           localStorage.setItem('jobFormTemplates', JSON.stringify(newTemplates));
         }
-      } catch (fallbackErr) {
-        console.error('Local save failed:', fallbackErr);
+        safeAlert(`Template "${templateName}" saved locally.`);
+        if (onTemplateSaved) onTemplateSaved();
+      } catch (localError) {
+        console.error('Failed to save local template:', localError);
+        safeAlert('Failed to save template. Please try again.');
       }
     } finally {
       setIsLoading(false);
@@ -351,8 +357,13 @@ function QuestionSetManager({
             onClick={loadTemplate}
             className={styles.loadTemplateButton}
             disabled={isLoading || !selectedTemplate}
+            style={{ position: 'relative' }}
           >
             {isLoading ? 'Loading...' : 'Clone with Template'}
+            {/* tooltip for clone */}
+            <span className={styles.tooltip}>
+              Create a copy of this template to modify without changing the original
+            </span>
           </button>
 
           <button
@@ -360,8 +371,11 @@ function QuestionSetManager({
             onClick={appendTemplate}
             className={styles.appendTemplateButton}
             disabled={isLoading || !selectedTemplate}
+            style={{ position: 'relative' }}
           >
             {isLoading ? 'Appending...' : 'Append Template'}
+            {/* Tooltip for append */}
+            <span className={styles.tooltip}>Add additional fields to this existing template.</span>
           </button>
 
           <button
@@ -369,8 +383,11 @@ function QuestionSetManager({
             onClick={deleteTemplate}
             className={styles.deleteTemplateButton}
             disabled={isLoading || !selectedTemplate}
+            style={{ position: 'relative' }}
           >
             {isLoading ? 'Deleting...' : 'Delete Template'}
+            {/* Tooltip for delete */}
+            <span className={styles.tooltip}>Permanently remove this template.</span>
           </button>
         </div>
       </div>
@@ -406,11 +423,21 @@ QuestionSetManager.propTypes = {
   ).isRequired,
   setFormFields: PropTypes.func.isRequired,
   onImportQuestions: PropTypes.func.isRequired,
-  darkMode: PropTypes.bool.isRequired,
-  templateName: PropTypes.string.isRequired,
-  setTemplateName: PropTypes.func.isRequired,
-  selectedTemplate: PropTypes.string.isRequired,
-  setSelectedTemplate: PropTypes.func.isRequired,
+  onTemplateSaved: PropTypes.func,
+  darkMode: PropTypes.bool,
+  templateName: PropTypes.string,
+  setTemplateName: PropTypes.func,
+  selectedTemplate: PropTypes.string,
+  setSelectedTemplate: PropTypes.func,
+};
+
+QuestionSetManager.defaultProps = {
+  darkMode: false,
+  onTemplateSaved: null,
+  templateName: '',
+  setTemplateName: () => {},
+  selectedTemplate: '',
+  setSelectedTemplate: () => {},
 };
 
 export default QuestionSetManager;
