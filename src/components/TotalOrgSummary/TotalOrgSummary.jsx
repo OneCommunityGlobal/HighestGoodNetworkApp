@@ -1,50 +1,50 @@
 /* eslint-disable testing-library/no-node-access */
-import { connect } from 'react-redux';
-import { useEffect, useState, useRef } from 'react';
-import {
-  Alert,
-  Col,
-  Container,
-  Row,
-  Dropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Button,
-} from 'reactstrap';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import 'moment-timezone';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
+import 'moment-timezone';
+import { useEffect, useRef, useState } from 'react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { connect } from 'react-redux';
+import {
+  Alert,
+  Button,
+  Col,
+  Container,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  Row,
+} from 'reactstrap';
 
 import hasPermission from '~/utils/permissions';
 
 // actions
-import { getTotalOrgSummary } from '~/actions/totalOrgSummary';
+import { getTaskAndProjectStats, getTotalOrgSummary } from '~/actions/totalOrgSummary';
 
-import '../Header/DarkMode.css';
-import styles from './TotalOrgSummary.module.css';
 import { clsx } from 'clsx';
-import VolunteerHoursDistribution from './VolunteerHoursDistribution/VolunteerHoursDistribution';
+import '../Header/index.css';
 import AccordianWrapper from './AccordianWrapper/AccordianWrapper';
-import VolunteerStatus from './VolunteerStatus/VolunteerStatus';
-import VolunteerActivities from './VolunteerActivities/VolunteerActivities';
-import VolunteerStatusChart from './VolunteerStatus/VolunteerStatusChart';
+import AnniversaryCelebrated from './AnniversaryCelebrated/AnniversaryCelebrated';
 import BlueSquareStats from './BlueSquareStats/BlueSquareStats';
-import TeamStats from './TeamStats/TeamStats';
+import GlobalVolunteerMap from './GlobalVolunteerMap/GlobalVolunteerMap';
 import HoursCompletedBarChart from './HoursCompleted/HoursCompletedBarChart';
 import NumbersVolunteerWorked from './NumbersVolunteerWorked/NumbersVolunteerWorked';
-import AnniversaryCelebrated from './AnniversaryCelebrated/AnniversaryCelebrated';
+import TaskCompletedBarChart from './TaskCompleted/TaskCompletedBarChart';
+import TeamStats from './TeamStats/TeamStats';
+import styles from './TotalOrgSummary.module.css';
+import VolunteerActivities from './VolunteerActivities/VolunteerActivities';
+import VolunteerHoursDistribution from './VolunteerHoursDistribution/VolunteerHoursDistribution';
 import RoleDistributionPieChart from './VolunteerRolesTeamDynamics/RoleDistributionPieChart';
 import WorkDistributionBarChart from './VolunteerRolesTeamDynamics/WorkDistributionBarChart';
+import VolunteerStatus from './VolunteerStatus/VolunteerStatus';
+import VolunteerStatusChart from './VolunteerStatus/VolunteerStatusChart';
 import VolunteerTrendsLineChart from './VolunteerTrendsLineChart/VolunteerTrendsLineChart';
-import GlobalVolunteerMap from './GlobalVolunteerMap/GlobalVolunteerMap';
-import TaskCompletedBarChart from './TaskCompleted/TaskCompletedBarChart';
 
 function calculateStartDate() {
   // returns a string date in YYYY-MM-DD format of the start of the previous week
@@ -117,7 +117,7 @@ function TotalOrgSummary(props) {
   const [isLoading, setIsLoading] = useState(true);
   const [dateRangeDropdownOpen, setDateRangeDropdownOpen] = useState(false);
   const [comparisonDropdownOpen, setComparisonDropdownOpen] = useState(false);
-  const [selectedDateRange, setSelectedDateRange] = useState('Current Week');
+  const [selectedDateRange, setSelectedDateRange] = useState('Previous Week');
   const [selectedComparison, setSelectedComparison] = useState('No Comparison');
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [startDate, setStartDate] = useState(null);
@@ -125,32 +125,62 @@ function TotalOrgSummary(props) {
   const [currentFromDate, setCurrentFromDate] = useState(fromDate);
   const [currentToDate, setCurrentToDate] = useState(toDate);
   const rootRef = useRef(null);
+  const cacheRef = useRef({});
 
   useEffect(() => {
+    let cancelled = false;
+
     const fetchVolunteerStats = async () => {
       try {
         setIsLoading(true);
+
         const { comparisonStartDate, comparisonEndDate } = calculateComparisonDates(
           selectedComparison,
           currentFromDate,
           currentToDate,
         );
 
-        const volunteerStatsResponse = await props.getTotalOrgSummary(
-          currentFromDate,
-          currentToDate,
-          comparisonStartDate,
-          comparisonEndDate,
-        );
-        setVolunteerStats(volunteerStatsResponse.data);
-        await props.hasPermission('');
-        setIsLoading(false);
+        const cacheKey = `${currentFromDate}_${currentToDate}_${selectedComparison}`;
+
+        if (cacheRef.current[cacheKey]) {
+          if (!cancelled) {
+            setVolunteerStats(cacheRef.current[cacheKey]);
+            setIsLoading(false);
+          }
+          return;
+        }
+
+        const [volunteerStatsResponse, taskAndProjectStatsResponse] = await Promise.all([
+          props.getTotalOrgSummary(
+            currentFromDate,
+            currentToDate,
+            comparisonStartDate,
+            comparisonEndDate,
+          ),
+          props.getTaskAndProjectStats(currentFromDate, currentToDate),
+        ]);
+
+        if (!cancelled) {
+          const merged = {
+            ...volunteerStatsResponse.data,
+            taskAndProjectStats: taskAndProjectStatsResponse,
+          };
+          cacheRef.current[cacheKey] = merged;
+          setVolunteerStats(merged);
+          setIsLoading(false);
+        }
       } catch (catchFetchError) {
-        setIsVolunteerFetchingError(true);
+        if (!cancelled) setIsVolunteerFetchingError(true);
       }
     };
 
-    fetchVolunteerStats();
+    const debounceTimer = setTimeout(fetchVolunteerStats, 300);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(debounceTimer);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentFromDate, currentToDate, selectedComparison]);
 
   const handleSaveAsPDF = async () => {
@@ -177,7 +207,9 @@ function TotalOrgSummary(props) {
       await new Promise(resolve => setTimeout(resolve, 5000));
 
       // 3. Replace Chart.js canvas elements with images in the live DOM.
-      const chartCanvases = document.querySelectorAll('.volunteer-status-chart canvas');
+      const chartCanvases = document.querySelectorAll(
+        '[data-chart="volunteer-status"] canvas, [data-chart="mentor-status"] canvas',
+      );
       const originalCanvases = [];
       chartCanvases.forEach(canvasElem => {
         try {
@@ -673,7 +705,11 @@ ${
             </Col>
             <Col lg={{ size: 6 }}>
               <div
-                className={clsx(styles.componentContainer, styles.componentBorder)}
+                className={clsx(
+                  styles.componentContainer,
+                  styles.componentBorder,
+                  styles.componentBorderLoose,
+                )}
                 data-pdf-block
               >
                 <div
@@ -688,6 +724,7 @@ ${
                 <VolunteerStatusChart
                   isLoading={isLoading}
                   volunteerNumberStats={volunteerStats?.volunteerNumberStats}
+                  mentorNumberStats={volunteerStats?.mentorNumberStats}
                   comparisonType={selectedComparison}
                 />
               </div>
@@ -823,7 +860,7 @@ ${
             </Col>
           </Row>
         </AccordianWrapper>
-        <AccordianWrapper title="Volunteer Roles and Team Dynamics">
+        <AccordianWrapper title="Volunteer Work and Role Distribution">
           <Row>
             <Col lg={{ size: 7 }}>
               <div
@@ -870,7 +907,7 @@ ${
             </Col>
           </Row>
         </AccordianWrapper>
-        <AccordianWrapper title="Volunteer Roles and Team Dynamics">
+        <AccordianWrapper title="Teams and Blue Squares">
           <Row>
             <Col lg={{ size: 6 }}>
               <div
@@ -935,6 +972,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   getTotalOrgSummary: (startDate, endDate, comparisonStartDate, comparisonEndDate) =>
     dispatch(getTotalOrgSummary(startDate, endDate, comparisonStartDate, comparisonEndDate)),
+  getTaskAndProjectStats: (startDate, endDate) =>
+    dispatch(getTaskAndProjectStats(startDate, endDate)),
   hasPermission: permission => dispatch(hasPermission(permission)),
 });
 

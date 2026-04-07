@@ -1,4 +1,4 @@
-import './ActivityAgenda.css';
+import styles from './ActivityAgenda.module.css';
 import { useSelector } from 'react-redux';
 import ActivityImg from '../../../assets/images/yoga-img.png';
 
@@ -19,11 +19,11 @@ function ActivityAgenda() {
 
   return (
     <div className={`activity-agenda-page ${darkMode ? 'activity-agenda-dark-mode' : ''}`}>
-      <div className="activity-agenda-container">
-        <div className="activity-agenda-image">
+      <div className={`${styles.activityAgendaContainer}`}>
+        <div className={`${styles.activityAgendaImage}`}>
           <img src={eventData.image} alt="Activity" />
         </div>
-        <div className="activity-agenda-content">
+        <div className={`${styles.activityAgendaContent}`}>
           <h1>{eventData.activityName}</h1>
           <p>{eventData.description}</p>
           <h1>Schedule of the day</h1>

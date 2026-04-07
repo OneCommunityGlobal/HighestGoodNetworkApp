@@ -1,5 +1,5 @@
 /* eslint-disable import/no-unresolved */
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import html2canvas from 'html2canvas';
@@ -17,11 +17,15 @@ import ToolsHorizontalBarChart from './Tools/ToolsHorizontalBarChart';
 import ExpenseBarChart from './Financials/ExpenseBarChart';
 import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
+import FinancialsTrackingCard from './ExpenditureChart/FinancialsTrackingCard';
 import EmbedInteractiveMap from '../InteractiveMap/EmbedInteractiveMap';
+import InteractiveMap from '../InteractiveMap/InteractiveMap';
 import styles from './WeeklyProjectSummary.module.css';
 import IssueCharts from '../Issues/openIssueCharts';
-import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
+import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
+import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords.jsx';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
+import FinancialStatButtons from './Financials/FinancialStatButtons';
 
 const projectStatusButtons = [
   {
@@ -122,56 +126,48 @@ const projectStatusButtons = [
   },
 ];
 
+const financialData = [
+  {
+    id: uuidv4(),
+    title: 'Total Project Cost',
+    value: '-',
+    bgColor: '#E0F2FE',
+    textColor: '#0369A1',
+  },
+  {
+    id: uuidv4(),
+    title: 'Total Material Cost',
+    value: '-',
+    bgColor: '#F3E8FF',
+    textColor: '#6D28D9',
+  },
+  {
+    id: uuidv4(),
+    title: 'Total Labor Cost',
+    value: '-',
+    bgColor: '#FEE2E2',
+    textColor: '#B91C1C',
+  },
+  {
+    id: uuidv4(),
+    title: 'Total Equipment Cost',
+    value: '-',
+    bgColor: '#DCFCE7',
+    textColor: '#15803D',
+  },
+];
+
 export function WeeklyProjectSummaryContent() {
   const dispatch = useDispatch();
   const materials = useSelector(state => state.materials?.materialslist || []);
   const [openSections, setOpenSections] = useState({});
-
-  const getColorScheme = percentage => {
-    if (percentage === '-') return 'neutral';
-    if (percentage > 0) return 'positive';
-    if (percentage < 0) return 'negative';
-    return 'neutral';
-  };
-
-  const colorScheme = getColorScheme(monthOverMonth);
-
-  const titleClass = title.replace(/\s+/g, '-').toLowerCase();
-
-  return (
-    <div
-      className={`financial-card ${colorScheme} custom-box-shadow financial-card-background-${titleClass}`}
-      onMouseEnter={() => setShowTooltip(true)}
-      onMouseLeave={() => setShowTooltip(false)}
-    >
-      <div className="financial-card-title">{title}</div>
-      <div className={`financial-card-ellipse financial-card-ellipse-${titleClass}`} />
-      <div className="financial-card-value">{value === '-' ? '-' : value.toLocaleString()}</div>
-      <div className={`financial-card-month-over-month ${colorScheme}`}>
-        {monthOverMonth === '-'
-          ? '-'
-          : `${monthOverMonth > 0 ? '+' : ''}${monthOverMonth}% month over month`}
-      </div>
-
-      {/* Tooltip for Additional Info */}
-      {showTooltip && Object.keys(additionalInfo).length > 0 && (
-        <div className="financial-card-tooltip">
-          {Object.entries(additionalInfo).map(([key]) => (
-            <div key={key} className="financial-card-tooltip-item">
-              <span className="tooltip-key">{key}:</span>
-              <span className="tooltip-value">{value}</span>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
 }
 
 function WeeklyProjectSummary() {
   const dispatch = useDispatch();
   const materials = useSelector(state => state.materials?.materialslist || []);
   const [openSections, setOpenSections] = useState({});
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
   useEffect(() => {
     if (materials.length === 0) {
@@ -185,12 +181,12 @@ function WeeklyProjectSummary() {
     return uniqueMaterials;
   }, [materials]);
 
-  const toggleSection = category => {
+  const toggleSection = useCallback(category => {
     setOpenSections(prev => ({
       ...prev,
       [category]: !prev[category],
     }));
-  };
+  }, []);
 
   const sections = useMemo(
     () => [
@@ -247,7 +243,7 @@ function WeeklyProjectSummary() {
       {
         title: 'Material Consumption',
         key: 'Material Consumption',
-        className: 'large',
+        className: 'full',
         content: [1, 2, 3].map((_, index) => {
           let content;
           if (index === 1) {
@@ -275,6 +271,16 @@ function WeeklyProjectSummary() {
         content: (
           <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
             <IssueCharts />
+          </div>
+        ),
+      },
+      {
+        title: 'Issues Breakdown',
+        key: 'Issues Breakdown',
+        className: 'full',
+        content: (
+          <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+            <IssuesBreakdownChart />
           </div>
         ),
       },
@@ -313,14 +319,13 @@ function WeeklyProjectSummary() {
         key: 'Financials',
         className: 'large',
         content: (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
-            <div className="weekly-project-summary-card financial-small">📊 Card</div>
+          <div className={`${styles.financialGrid}`}>
             <div className="weekly-project-summary-card financial-small financial-chart">
-              <ExpenseBarChart />
+              <FinancialStatButtons darkMode={darkMode} />
             </div>
-            <div className="weekly-project-summary-card financial-small">📊 Card</div>
-            <div className="weekly-project-summary-card financial-small">📊 Card</div>
-            <div className="weekly-project-summary-card financial-big">📊 Big Card</div>
+            <div className="weekly-project-summary-card financial-small financial-chart">
+              <ExpenseBarChart darkMode={darkMode} />
+            </div>
           </div>
         ),
       },
@@ -365,40 +370,41 @@ function WeeklyProjectSummary() {
         title: 'Financials Tracking',
         key: 'Financials Tracking',
         className: 'full',
-        content: [1, 2, 3, 4].map((_, index) => {
-          const uniqueId = uuidv4();
-          return (
-            <div
-              key={uniqueId}
-              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
-            >
-              {(() => {
-                if (index === 2) return <CostPredictionChart projectId={1} />;
-                if (index === 3) return <ActualVsPlannedCost />;
-                return '📊 Card';
-              })()}
+        content: (
+          <div className={styles.financialsTrackingGrid}>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <FinancialsTrackingCard />
             </div>
-          );
-        }),
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>📊 Card</div>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <CostPredictionChart projectId={1} />
+            </div>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <ActualVsPlannedCost />
+            </div>
+          </div>
+        ),
       },
     ],
     [quantityOfMaterialsUsedData, darkMode],
   );
 
-  const handleSaveAsPDF = async () => {
+  const handleSaveAsPDF = useCallback(async () => {
     const currentOpenSections = { ...openSections };
+    setIsGeneratingPDF(true);
 
     try {
+      // Open all sections for PDF capture
       const allSectionsOpen = {};
       sections.forEach(section => {
         allSectionsOpen[section.key] = true;
       });
       setOpenSections(allSectionsOpen);
 
-      // eslint-disable-next-line no-promise-executor-return
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Wait for sections to open and re-render
+      await new Promise(resolve => setTimeout(resolve, 800));
 
-      const contentElement = document.querySelector('.weekly-project-summary-container');
+      const contentElement = document.querySelector(`.${styles.weeklyProjectSummaryContainer}`);
       if (!contentElement) throw new Error('Weekly project summary container not found.');
 
       const pdfContainer = document.createElement('div');
@@ -409,23 +415,28 @@ function WeeklyProjectSummary() {
         backgroundColor: '#fff',
         position: 'absolute',
         left: '-9999px',
+        top: '0',
         boxSizing: 'border-box',
+        zIndex: '-9999',
       });
 
       const clonedContent = contentElement.cloneNode(true);
 
-      // Remove buttons and controls not needed in PDF
+      // Remove interactive elements for PDF
       clonedContent
-        .querySelectorAll(
-          'button, .weekly-project-summary-dropdown-icon, .no-print, .weekly-summary-header-controls',
-        )
+        .querySelectorAll('button, .weekly-project-summary-dropdown-icon, .no-print, iframe')
         .forEach(el => el.parentNode?.removeChild(el));
 
+      // Ensure charts are visible
       const styleElem = document.createElement('style');
       styleElem.textContent = `
-          img, svg {
+        img, svg, canvas {
+          max-width: 100% !important;
           height: auto !important;
           page-break-inside: avoid !important;
+        }
+        .${styles.weeklyProjectSummaryDashboardCategoryContent} {
+          display: block !important;
         }
       `;
 
@@ -436,24 +447,36 @@ function WeeklyProjectSummary() {
       const canvas = await html2canvas(pdfContainer, {
         scale: 2,
         useCORS: true,
-        backgroundColor: '#fff',
+        allowTaint: false,
+        backgroundColor: '#ffffff',
         windowWidth: pdfContainer.scrollWidth,
         windowHeight: pdfContainer.scrollHeight,
         logging: false,
+        onclone: clonedDoc => {
+          // Ensure all sections are visible in the cloned document
+          const sections = clonedDoc.querySelectorAll(
+            `.${styles.weeklyProjectSummaryDashboardCategoryContent}`,
+          );
+          sections.forEach(section => {
+            section.style.display = 'block';
+          });
+        },
       });
 
       if (!canvas) throw new Error('Failed to capture content as image.');
 
       const imgData = canvas.toDataURL('image/jpeg', 0.95);
 
-      const pdfWidth = 210;
+      const pdfWidth = 210; // A4 width in mm
       const imgHeight = (canvas.height * pdfWidth) / canvas.width;
 
-      // eslint-disable-next-line new-cap
+      // FIXED: Using Math.max() instead of ternary for better readability
+      const pdfHeight = Math.max(imgHeight, 297); // Min A4 height
+
       const pdf = new jsPDF({
-        orientation: 'portrait',
+        orientation: imgHeight > pdfWidth ? 'portrait' : 'landscape',
         unit: 'mm',
-        format: [pdfWidth, imgHeight],
+        format: [pdfWidth, pdfHeight],
       });
 
       pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, imgHeight);
@@ -461,21 +484,48 @@ function WeeklyProjectSummary() {
       const now = new Date();
       const fileName = `weekly-project-summary-${now.toISOString().slice(0, 10)}.pdf`;
 
-      // Save the PDF
       pdf.save(fileName);
 
       document.body.removeChild(pdfContainer);
     } catch (err) {
-      // eslint-disable-next-line no-console
       console.error('PDF generation failed:', err);
+      alert('Failed to generate PDF. Please try again.');
     } finally {
       setOpenSections(currentOpenSections);
+      setIsGeneratingPDF(false);
     }
-  };
+  }, [openSections, sections, styles]);
 
   return (
-    <div className={`weekly-project-summary-container ${darkMode ? 'dark-mode' : ''}`}>
-      <WeeklyProjectSummaryHeader handleSaveAsPDF={handleSaveAsPDF} />
+    <div className={`${styles.weeklyProjectSummaryContainer} ${darkMode ? styles.darkMode : ''}`}>
+      {/* Header Section - Now inline instead of seperate component */}
+      <div className={styles.weeklySummaryHeaderWrapper}>
+        <div className={styles.weeklySummaryHeaderContainer}>
+          <h1 className={styles.weeklySummaryHeaderTitle}>
+            Weekly Project Summary
+            <span className={styles.weeklySummaryHeaderSubtitle}>One Community</span>
+          </h1>
+          <div className={styles.weeklySummaryHeaderControls}>
+            <select aria-label="Select project">
+              <option value="">Select Project</option>
+              <option value="project1">Project Alpha</option>
+              <option value="project2">Project Beta</option>
+              <option value="project3">Project Gamma</option>
+              <option value="project4">Project Delta</option>
+            </select>
+            <button
+              className={styles.weeklySummaryShareBtn}
+              onClick={handleSaveAsPDF}
+              disabled={isGeneratingPDF}
+              type="button"
+            >
+              {isGeneratingPDF ? 'Generating PDF...' : 'Share PDF'}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Dashboard Content */}
       <div className={`${styles.weeklyProjectSummaryDashboardContainer}`}>
         <div className={`${styles.weeklyProjectSummaryDashboardGrid}`}>
           {sections.map(({ title, key, className, content }) => (
@@ -487,8 +537,11 @@ function WeeklyProjectSummary() {
                 type="button"
                 className={styles.weeklyProjectSummaryDashboardCategoryTitle}
                 onClick={() => toggleSection(key)}
+                aria-expanded={openSections[key]}
               >
-                {title} <span>{openSections[key] ? '∧' : '∨'}</span>
+                {title}
+                {/* FIXED: Added proper spacing with a space before the span */}
+                <span aria-hidden="true"> {openSections[key] ? '∧' : '∨'}</span>
               </button>
               {openSections[key] && (
                 <div className={`${styles.weeklyProjectSummaryDashboardCategoryContent}`}>
