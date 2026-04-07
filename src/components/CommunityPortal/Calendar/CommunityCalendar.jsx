@@ -334,7 +334,7 @@ function CommunityCalendar() {
               key={event.id}
               className={`${styles.eventItem} ${styles.clickable} ${statusClass}`}
               onClick={() => handleEventClick(event)}
-              onKeyDown={e => handleEventKeyPress(e, event)}
+              onKeyDown={e => handleEventKeyPress(event)}
               role="button"
               tabIndex={0}
               aria-label={`Click to view details for ${event.title}`}
