@@ -4,6 +4,8 @@ import ReactCalendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import CalendarActivitySection from './CalendarActivitySection';
 import styles from './CommunityCalendar.module.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faClock, faLocationDot, faTag, faCircleCheck } from '@fortawesome/free-solid-svg-icons';
 
 const STATUSES = ['New', 'Needs Attendees', 'Filling Fast', 'Full Event'];
 const EVENT_TYPES = ['Workshop', 'Webinar', 'Meeting', 'Social Gathering'];
