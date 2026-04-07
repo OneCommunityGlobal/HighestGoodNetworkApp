@@ -4,6 +4,7 @@ import ReactCalendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import CalendarActivitySection from './CalendarActivitySection';
 import styles from './CommunityCalendar.module.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const mockEvents = [
   {
