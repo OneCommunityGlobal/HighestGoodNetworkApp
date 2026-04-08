@@ -137,7 +137,7 @@ const SubstituteIngredientModal = ({ ingredient, recipeId, onConfirm, onClose })
                   placeholder="Search ingredients..."
                   value={searchTerm}
                   onChange={e => setSearchTerm(e.target.value)}
-                                // eslint-disable-next-line jsx-a11y/no-autofocus
+                  // eslint-disable-next-line jsx-a11y/no-autofocus
                   autoFocus
                 />
                 <div className={styles.dropdownList}>

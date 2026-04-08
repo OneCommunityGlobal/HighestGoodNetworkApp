@@ -212,7 +212,7 @@ function WeeklyProjectSummary() {
       }),
       option: (base, state) => ({
         ...base,
-        backgroundColor: getOptionBackground(state, darkMode),
+        backgroundColor: getOptionBackground(state),
         color: state.isSelected ? '#fff' : darkMode ? '#fff' : '#232323',
         fontSize: 13,
         padding: '10px 16px',
