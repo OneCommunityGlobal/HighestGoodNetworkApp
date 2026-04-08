@@ -4,13 +4,10 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 20px;
-  background: linear-gradient(145deg, #fff 0%, #f8f9fa 100%);
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgb(0 0 0 / 8%);
-  border: 1px solid rgb(62 160 203 / 10%);
-  min-height: 500px;
-  position: relative;
+  padding: 10px 0;
+  margin: 0 auto;
+  max-width: 720px;
+  width: 100%;
 }
 
 .radarChart.compact {
@@ -126,58 +123,17 @@
 /* Responsive breakpoints */
 @media (width <= 768px) {
   .radarChart {
-    padding: 15px;
-    min-height: 450px;
+    padding: 10px 0;
   }
 
-  .chartTitle h4 {
-    font-size: 20px;
-  }
-
-  .chartTitle p {
-    font-size: 13px;
-  }
-
-  .chartContainer {
-    max-width: clamp(280px, 58vw, 500px);
-  }
-
-  .legendItem {
-    font-size: 13px;
+  .radarChart canvas {
+    max-height: 460px;
   }
 }
 
 @media (width <= 480px) {
-  .radarChart {
-    padding: 10px;
-    min-height: 400px;
-  }
-
-  .chartTitle h4 {
-    font-size: 18px;
-  }
-
-  .chartTitle p {
-    font-size: 12px;
-  }
-
-  .chartContainer {
-    max-width: clamp(240px, 78vw, 420px);
-  }
-
-  .chartLegend {
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 15px;
-  }
-
-  .legendItem {
-    font-size: 12px;
-  }
-
-  .legendColor {
-    width: 16px;
-    height: 16px;
+  .radarChart canvas {
+    max-height: 380px;
   }
 }
 
