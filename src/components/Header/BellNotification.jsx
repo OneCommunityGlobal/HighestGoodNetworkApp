@@ -387,8 +387,8 @@ export default function BellNotification({ userId }) {
 
     // Clear any message notifications if needed
     try {
-      dispatch(clearNotifications());
-      dispatch(clearDBNotifications());
+      // dispatch(clearNotifications());
+      // dispatch(clearDBNotifications());
     } catch (e) {
       console.error('Error clearing notifications:', e);
     }
@@ -402,8 +402,8 @@ export default function BellNotification({ userId }) {
     setShowNotification(false);
     setHasMessageNotification(false);
     try {
-      dispatch(clearNotifications());
-      dispatch(clearDBNotifications());
+      // dispatch(clearNotifications());
+      // dispatch(clearDBNotifications());
     } catch (e) {
       console.error('Error clearing notifications:', e);
     }
