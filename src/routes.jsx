@@ -202,6 +202,7 @@ import SupportLogin from './components/SupportPortal/SupportLogin';
 import SupportDashboard from './components/SupportPortal/SupportDashboard';
 import SupportLogViewer from './components/SupportPortal/SupportLogViewer';
 import MaterialUtilizationChart from './components/MaterialUtilization/MaterialUtilizationChart';
+import Chatbot from './components/Chatbot/Chatbot';
 import DocumentUploadPage from './components/DocumentUpload/DocumentUploadPage';
 
 // Social Architecture
@@ -342,6 +343,7 @@ export default (
 
       <AutoUpdate />
       <ToastContainer />
+      <Chatbot />
       <Switch>
         <ProtectedRoute path="/weekly-summary" exact component={WeeklySummaryPage} />
         <ProtectedRoute
