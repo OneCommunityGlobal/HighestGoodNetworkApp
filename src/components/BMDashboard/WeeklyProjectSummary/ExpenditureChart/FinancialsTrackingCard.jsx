@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+// import httpService from '../../../../services/httpService';
 import ExpenditureChart from './ExpenditureChart';
+import { getProjectIds } from './mockExpenditureData';
+import styles from './FinancialsTrackingCard.module.css';
 
 function FinancialsTrackingCard() {
   const [projectList, setProjectList] = useState([]);
@@ -12,17 +14,25 @@ function FinancialsTrackingCard() {
     const fetchProjects = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`${process.env.REACT_APP_APIENDPOINT}/bm/expenditure/projects`);
-        const labeledProjects = res.data.map((id, index) => ({
+        // Using mock data instead of API call
+        const projectIds = getProjectIds();
+        const labeledProjects = projectIds.map((id, index) => ({
           id,
           name: `Project ${String.fromCharCode(65 + index)}`,
         }));
+        // Original API call (commented out for mock data)
+        // const res = await httpService.get(
+        //   `${process.env.REACT_APP_APIENDPOINT}/bm/expenditure/projects`,
+        // );
+        // const labeledProjects = res.data.map((id, index) => ({
+        //   id,
+        //   name: `Project ${String.fromCharCode(65 + index)}`,
+        // }));
         setProjectList(labeledProjects);
         if (labeledProjects.length > 0) {
           setSelectedProject(labeledProjects[0].id);
         }
       } catch (err) {
-        // console.error('Error fetching project IDs:', err);
         setError('Failed to load projects');
       } finally {
         setLoading(false);
@@ -35,8 +45,8 @@ function FinancialsTrackingCard() {
   if (error) return <div>{error}</div>;
 
   return (
-    <div className="financials-tracking-card">
-      <div className="project-dropdown">
+    <div className={styles.financialsTrackingCard}>
+      <div className={styles.projectDropdown}>
         <label htmlFor="project-select">Select Project:</label>
         <select
           id="project-select"
