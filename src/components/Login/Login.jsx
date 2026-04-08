@@ -43,7 +43,7 @@ export class Login extends Form {
         }
       }
     }
-    if (prevProps.errors !== this.props.errors) {
+    if (prevProps.errors.email !== this.props.errors.email) {
       this.setState({ errors: this.props.errors });
     }
   }

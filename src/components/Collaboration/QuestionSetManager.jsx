@@ -26,6 +26,7 @@ function QuestionSetManager({
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState(null);
   const [editingIndex, setEditingIndex] = useState(null);
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
 
   const api = {
     getTemplates: async () => {
@@ -292,6 +293,13 @@ function QuestionSetManager({
     }
   };
 
+  // Clear all template fields
+  const handleClearTemplate = () => {
+    setFormFields([]);
+    setShowClearConfirm(false);
+    safeAlert('Template cleared successfully!');
+  };
+
   // Save edited question
   const handleSaveEditedQuestion = edited => {
     if (editingIndex !== null) {
@@ -366,6 +374,24 @@ function QuestionSetManager({
             </span>
           </button>
 
+          <button
+            type="button"
+            onClick={() => {
+              if (formFields.length > 0) {
+                const confirmClear = window.confirm(
+                  'Are you sure you want to clear all the fields in this template? This action cannot be undone.',
+                );
+                if (confirmClear) {
+                  handleClearTemplate();
+                }
+              }
+            }}
+            className={styles.clearTemplateButton}
+            disabled={formFields.length === 0}
+            title="Remove all fields and reset the template to a clean state"
+          >
+            Clear Template
+          </button>
           <button
             type="button"
             onClick={appendTemplate}

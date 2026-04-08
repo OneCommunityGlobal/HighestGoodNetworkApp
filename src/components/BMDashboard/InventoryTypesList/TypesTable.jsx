@@ -1,36 +1,49 @@
 import { useState } from 'react';
-import PropTypes from 'prop-types';
-import { Table, Button } from 'react-bootstrap';
+import { Table, Button, Form } from 'react-bootstrap';
 import { connect } from 'react-redux';
+import { addInvType } from '../../../actions/bmdashboard/invTypeActions';
 import TypeRow from './TypeRow';
-import AddEditInvTypeFullModal from './AddEditInvTypeFullModal';
-import DeleteInvTypeModal from './DeleteInvTypeModal';
 import styles from './TypesList.module.css';
 
 export function TypesTable(props) {
-  const { itemTypes, category } = props;
+  const { itemTypes, category, dispatch } = props;
+  const [isAdding, setIsAdding] = useState(false);
+  const [newType, setNewType] = useState({ name: '', description: '', unit: '', fuel: '' });
 
-  // Modal states
-  const [modalOpen, setModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState('add');
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [selectedType, setSelectedType] = useState(null);
+  const requiresUnit = category === 'Materials' || category === 'Consumables';
 
   const handleAdd = () => {
-    setModalMode('add');
-    setSelectedType(null);
-    setModalOpen(true);
+    setIsAdding(true);
   };
 
-  const handleEdit = itemType => {
-    setModalMode('edit');
-    setSelectedType(itemType);
-    setModalOpen(true);
+  const handleSave = () => {
+    if (newType.name.trim() && (!requiresUnit || newType.unit.trim())) {
+      let payload;
+      if (category === 'Equipments') {
+        payload = {
+          name: newType.name,
+          description: newType.description,
+          fuel: newType.fuel,
+        };
+      } else if (requiresUnit) {
+        payload = newType;
+      } else {
+        payload = { name: newType.name, description: newType.description };
+      }
+      dispatch(addInvType(category, payload));
+      setNewType({ name: '', description: '', unit: '', fuel: '' });
+      setIsAdding(false);
+    }
   };
 
-  const handleDelete = itemType => {
-    setSelectedType(itemType);
-    setDeleteModalOpen(true);
+  const handleCancel = () => {
+    setNewType({ name: '', description: '', unit: '', fuel: '' });
+    setIsAdding(false);
+  };
+
+  const handleInputChange = e => {
+    const { name, value } = e.target;
+    setNewType(prev => ({ ...prev, [name]: value }));
   };
 
   return (
@@ -41,6 +54,8 @@ export function TypesTable(props) {
             <th>ID</th>
             <th>Name</th>
             <th>Description</th>
+            {requiresUnit && <th>Unit</th>}
+            {category === 'Equipments' && <th>Fuel Type</th>}
             <th>Edit</th>
             <th>Delete</th>
           </tr>
@@ -51,50 +66,79 @@ export function TypesTable(props) {
               key={type._id}
               itemType={type}
               id={index + 1}
-              onEdit={() => handleEdit(type)}
-              onDelete={() => handleDelete(type)}
+              category={category}
+              requiresUnit={requiresUnit}
             />
           ))}
+
+          {isAdding && (
+            <tr>
+              <td>{itemTypes?.length + 1}</td>
+              <td>
+                <Form.Control
+                  type="text"
+                  name="name"
+                  value={newType.name}
+                  onChange={handleInputChange}
+                  placeholder={`Enter ${category.slice(0, -1).toLowerCase()} name`}
+                  size="sm"
+                />
+              </td>
+              <td>
+                <Form.Control
+                  as="textarea"
+                  name="description"
+                  value={newType.description}
+                  onChange={handleInputChange}
+                  placeholder={`Enter ${category.slice(0, -1).toLowerCase()} description`}
+                  size="sm"
+                  rows={2}
+                />
+              </td>
+              {requiresUnit && (
+                <td>
+                  <Form.Control
+                    type="text"
+                    name="unit"
+                    value={newType.unit}
+                    onChange={handleInputChange}
+                    placeholder="Enter unit"
+                    size="sm"
+                  />
+                </td>
+              )}
+              {category === 'Equipments' && (
+                <td>
+                  <Form.Control
+                    type="text"
+                    name="fuel"
+                    value={newType.fuel}
+                    onChange={handleInputChange}
+                    placeholder="Enter fuel type"
+                    size="sm"
+                  />
+                </td>
+              )}
+              <td>
+                <Button size="sm" variant="success" onClick={handleSave}>
+                  Save
+                </Button>
+              </td>
+              <td>
+                <Button size="sm" variant="secondary" onClick={handleCancel}>
+                  Cancel
+                </Button>
+              </td>
+            </tr>
+          )}
         </tbody>
       </Table>
       <Button size="sm" className={`${styles.btnTypes}`} onClick={handleAdd}>
         Add
       </Button>
-
-      {/* Full Add/Edit Modal with all fields */}
-      <AddEditInvTypeFullModal
-        isOpen={modalOpen}
-        toggle={() => setModalOpen(false)}
-        category={category}
-        mode={modalMode}
-        itemType={selectedType}
-      />
-
-      {/* Delete Confirmation Modal */}
-      <DeleteInvTypeModal
-        isOpen={deleteModalOpen}
-        toggle={() => setDeleteModalOpen(false)}
-        itemType={selectedType}
-        category={category}
-      />
     </div>
   );
 }
-
-TypesTable.propTypes = {
-  itemTypes: PropTypes.arrayOf(
-    PropTypes.shape({
-      _id: PropTypes.string,
-      name: PropTypes.string,
-      description: PropTypes.string,
-    }),
-  ),
-  category: PropTypes.string.isRequired,
-};
-
-TypesTable.defaultProps = {
-  itemTypes: [],
-};
 
 const mapStateToProps = (state, ownProps) => ({
   itemTypes: state.bmInvTypes.invTypeList[ownProps?.category],

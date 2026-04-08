@@ -286,6 +286,7 @@ const WeeklySummariesReport = props => {
   const weekDates = getWeekDates();
   const [state, setState] = useState(initialState);
   const [permissionState, setPermissionState] = useState(intialPermissionState);
+  const [isTeamCodeFocused, setIsTeamCodeFocused] = useState(false);
 
   const [createFilterModalOpen, setCreateFilterModalOpen] = useState(false);
   const [updateFilterModalOpen, setUpdateFilterModalOpen] = useState(false);
@@ -1759,10 +1760,9 @@ const WeeklySummariesReport = props => {
         <style>
           {`
             .custom-select__input-container {
-              grid-template-columns: auto !important;
-            }
-            .list-group-item.bg-yinmn-blue {
-              background-color: #3d5a80 !important;
+              display: inline-block !important;
+              margin: 0 !important;
+              padding: 0 !important;
             }
           `}
         </style>
@@ -1966,7 +1966,9 @@ const WeeklySummariesReport = props => {
                   }
                   onSaveFilter={() => setCreateFilterModalOpen(true)}
                   onClearSelection={() => handleSelectCodeChange([])}
-                  placeholder="Search and select team codes..."
+                  placeholder={isTeamCodeFocused ? '' : 'Search and select team codes...'}
+                  onFocus={() => setIsTeamCodeFocused(true)}
+                  onBlur={() => setIsTeamCodeFocused(false)}
                   classNamePrefix="custom-select"
                   className={`custom-select-container ${darkMode ? 'dark-mode' : ''} ${
                     state.teamCodeWarningUsers.length > 0 ? 'warning-border' : ''
@@ -2128,7 +2130,7 @@ const WeeklySummariesReport = props => {
         </Col>
       </Row>
       <Row className={styles['mx-max-sm-0']}>
-        <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 12 }}>
+        <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 12 }} className="mb-3">
           <div>Select Extra Members</div>
           <MultiSelect
             className={`${styles['report-multi-select-filter']} ${styles.textDark} 
