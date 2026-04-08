@@ -83,6 +83,7 @@
   gap: 1rem;
   justify-content: center;
   margin-bottom: 1.5rem;
+  align-items: center;
 }
 
 .select,
@@ -181,6 +182,41 @@
   color: var(--button-text, #fff);
 }
 
+/* ============ DOWNLOAD DROPDOWN ============ */
+.downloadWrapper {
+  position: relative;
+}
+
+.downloadMenu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background-color: var(--input-bg, #fff);
+  border: 1px solid var(--border-color, #ccc);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 12%);
+  z-index: 100;
+  min-width: 150px;
+  overflow: hidden;
+}
+
+.downloadMenuItem {
+  display: block;
+  width: 100%;
+  padding: 0.6rem 1rem;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 0.95rem;
+  color: var(--text-color, #333);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.downloadMenuItem:hover {
+  background-color: var(--hover-bg, #f0f0f0);
+}
+
 /* Comparison hint note */
 .comparisonNote {
   text-align: center;
@@ -221,6 +257,7 @@
   --error-color: #ff6b6b;
   --card-bg: #243b55;
   --label-color: #a0b4c8;
+  --hover-bg: #4a5a77;
 }
 
 .utilizationChartContainer.darkMode .datepickerWrapper::placeholder {
@@ -234,6 +271,10 @@
 .utilizationChartContainer.darkMode .summaryCard {
   border-color: #4a5a77;
   box-shadow: 0 1px 4px rgb(0 0 0 / 20%);
+}
+
+.utilizationChartContainer.darkMode .downloadMenu {
+  box-shadow: 0 4px 12px rgb(0 0 0 / 40%);
 }
 
 /* React-DatePicker Dark Mode Dropdown Styling */
