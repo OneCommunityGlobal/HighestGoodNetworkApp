@@ -127,24 +127,11 @@
 /* Responsive breakpoints */
 @media (width <= 768px) {
   .radarChart {
-    padding: 15px;
-    min-height: 450px;
+    padding: 10px 0;
   }
 
-  .chartTitle h4 {
-    font-size: 20px;
-  }
-
-  .chartTitle p {
-    font-size: 13px;
-  }
-
-  .chartContainer {
-    max-width: clamp(280px, 58vw, 500px);
-  }
-
-  .legendItem {
-    font-size: 13px;
+  .radarChart canvas {
+    max-height: 460px;
   }
 }
 

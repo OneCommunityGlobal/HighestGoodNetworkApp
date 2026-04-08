@@ -179,6 +179,7 @@
   display: flex;
   align-items: center;
   font-size: 0.7em;
+  margin-bottom: 8px;
 }
 
 .marginRight {
@@ -617,7 +618,6 @@
 
 .filterGroupLabel {
   margin: 0;
-  font-size: 18px;
   font-weight: 400;
   line-height: 1.2;
   white-space: nowrap;

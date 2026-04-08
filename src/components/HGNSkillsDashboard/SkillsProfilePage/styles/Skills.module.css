@@ -92,6 +92,5 @@
 }
 
 :global(.dark-mode) .skills button.selected {
-  color: #3ea0cb;
-  font-weight: 600;
+  color: #8ab4f8;
 }

@@ -36,16 +36,6 @@
   white-space: nowrap;
 }
 
-.teamInfo strong,
-.contactsInfo strong {
-  color: #0f2f4a;
-}
-
-.teamInfo .value,
-.contactsInfo .value {
-  font-weight: bold;
-}
-
 .value {
   color: #111827;
   display: inline-block;
@@ -56,6 +46,16 @@ strong {
   /* color: #fffdfd; */
   font-weight: 600;
   font-size: 1rem;
+}
+
+.teamInfo strong,
+.contactsInfo strong {
+  color: #0f2f4a;
+}
+
+.teamInfo .value,
+.contactsInfo .value {
+  font-weight: bold;
 }
 
 .githubLink {
