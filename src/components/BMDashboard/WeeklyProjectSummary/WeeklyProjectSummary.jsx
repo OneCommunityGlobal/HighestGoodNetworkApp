@@ -170,7 +170,7 @@ function WeeklyProjectSummary() {
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const getOptionBackground = (state) => {
+  const getOptionBackground = state => {
     if (state.isSelected) return '#0d55b3';
     if (state.isFocused) return '#0d55b3';
     return darkMode ? '#22272e' : '#fff';
@@ -291,10 +291,7 @@ function WeeklyProjectSummary() {
                   >
                     <span className={`${styles.weeklyStatusValue}`}>{button.value}</span>
                   </div>
-                  <div
-                    className="weekly-status-change"
-                    style={{ color: button.textColor }}
-                  >
+                  <div className="weekly-status-change" style={{ color: button.textColor }}>
                     {button.change}
                   </div>
                 </div>

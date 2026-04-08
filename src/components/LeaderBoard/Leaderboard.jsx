@@ -179,7 +179,7 @@ function LeaderBoard({
       setIsAbbreviatedView(isAbbrev);
     };
 
-let timer;
+    let timer;
     const debouncedCheck = () => {
       clearTimeout(timer);
       timer = setTimeout(checkAbbreviatedView, 200);

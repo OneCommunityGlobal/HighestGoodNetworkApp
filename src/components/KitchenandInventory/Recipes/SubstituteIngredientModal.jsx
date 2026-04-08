@@ -26,7 +26,7 @@ const SubstituteIngredientModal = ({ ingredient, recipeId, onConfirm, onClose })
   const dropdownRef = useRef(null);
 
   useEffect(() => {
-    const handleEscape = (e) => {
+    const handleEscape = e => {
       if (e.key === 'Escape') onClose();
     };
     document.addEventListener('keydown', handleEscape);
@@ -34,7 +34,7 @@ const SubstituteIngredientModal = ({ ingredient, recipeId, onConfirm, onClose })
   }, [onClose]);
 
   useEffect(() => {
-    const handleClickOutside = (e) => {
+    const handleClickOutside = e => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setIsDropdownOpen(false);
       }
@@ -44,12 +44,12 @@ const SubstituteIngredientModal = ({ ingredient, recipeId, onConfirm, onClose })
   }, []);
 
   const filteredItems = mockInventoryItems.filter(
-    (item) =>
+    item =>
       item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.category.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
-  const selectedInventoryItem = mockInventoryItems.find((item) => item.id === selectedItem);
+  const selectedInventoryItem = mockInventoryItems.find(item => item.id === selectedItem);
 
   const handleConfirm = async () => {
     if (!selectedItem || !quantity) return;
@@ -70,7 +70,7 @@ const SubstituteIngredientModal = ({ ingredient, recipeId, onConfirm, onClose })
     }
   };
 
-  const handleSelectItem = (itemId) => {
+  const handleSelectItem = itemId => {
     setSelectedItem(itemId);
     setIsDropdownOpen(false);
     setSearchTerm('');
@@ -136,12 +136,13 @@ const SubstituteIngredientModal = ({ ingredient, recipeId, onConfirm, onClose })
                   className={styles.searchInput}
                   placeholder="Search ingredients..."
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={e => setSearchTerm(e.target.value)}
+                                // eslint-disable-next-line jsx-a11y/no-autofocus
                   autoFocus
                 />
                 <div className={styles.dropdownList}>
                   {filteredItems.length > 0 ? (
-                    filteredItems.map((item) => (
+                    filteredItems.map(item => (
                       <button
                         type="button"
                         key={item.id}
@@ -175,7 +176,7 @@ const SubstituteIngredientModal = ({ ingredient, recipeId, onConfirm, onClose })
             className={styles.quantityInput}
             placeholder="e.g. 2 cups, 500g, 1 tablespoon"
             value={quantity}
-            onChange={(e) => setQuantity(e.target.value)}
+            onChange={e => setQuantity(e.target.value)}
           />
         </div>
 
