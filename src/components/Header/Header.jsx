@@ -417,7 +417,7 @@ export function Header(props) {
               {isAuthenticated && <OwnerMessage />}
             </div>
             <div className={styles.rightSection}>
-            <Collapse isOpen={isOpen} navbar ref={collapseRef}>
+            {/* <Collapse isOpen={isOpen} navbar ref={collapseRef}> */}
             <Nav className={`ml-auto ${styles.menuContainer} mr-3`} navbar>
                 <NavItem className={styles.showInMobile}>
                   <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
@@ -832,7 +832,7 @@ export function Header(props) {
                   </DropdownMenu>
                 </UncontrolledDropdown>
               </Nav>
-            </Collapse>
+            {/* </Collapse> */}
           </div>
         </div>
       </Navbar>
