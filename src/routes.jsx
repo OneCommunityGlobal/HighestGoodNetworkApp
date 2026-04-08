@@ -282,6 +282,8 @@ const JobAnalyticsPage = lazy(() =>
 );
 
 const SuggestedJobsListBuilder = lazy(() => import('./components/Collaboration/SuggestedJobsList'));
+import TrackerLogin from './components/MaterialEquipmentToolTracker/Login/Login';
+
 export default (
   <Switch>
     {/* ----- LB Dashboard Routing Starts----- */}
@@ -1027,6 +1029,7 @@ export default (
           component={PRDashboardTopReviewedPRs}
         />
         <ProtectedRoute path="/pr-dashboard/details" exact component={PRDashboardDetails} />
+        <ProtectedRoute path="/tracker/login" exact component={TrackerLogin} />
         <Route path="*" component={NotFoundPage} />
       </Switch>
     </>
