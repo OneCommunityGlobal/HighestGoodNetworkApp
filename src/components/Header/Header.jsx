@@ -1002,3 +1002,4 @@ export default connect(mapStateToProps, {
   getWeeklySummaries,
   getUserProfile,
 })(Header);
+
