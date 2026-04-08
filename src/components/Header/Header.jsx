@@ -1,74 +1,73 @@
-import { useState, useEffect, useMemo, React, useRef } from 'react';
-import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
-import { getWeeklySummaries } from '~/actions/weeklySummaries';
-import { Link, useLocation, useHistory } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { connect, useDispatch } from 'react-redux';
+import { Link, useHistory, useLocation } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import {
-  Collapse,
-  Navbar,
-  NavbarToggler,
-  Nav,
-  NavItem,
-  NavLink,
-  UncontrolledDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
   Button,
   Card,
+  Collapse,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  Nav,
+  Navbar,
+  NavItem,
+  NavLink,
+  UncontrolledDropdown
 } from 'reactstrap';
+import { getWeeklySummaries } from '~/actions/weeklySummaries';
 import PopUpBar from '~/components/PopUpBar';
 import { fetchTaskEditSuggestions } from '~/components/TaskEditSuggestions/thunks';
-import { toast } from 'react-toastify';
+import { ENDPOINTS } from '~/utils/URL';
 import { getHeaderData } from '../../actions/authActions';
-import { getAllRoles } from '../../actions/role';
-import Timer from '../Timer/Timer';
-import OwnerMessage from '../OwnerMessage/OwnerMessage';
-import {
-  DASHBOARD,
-  TIMELOG,
-  REPORTS,
-  WEEKLY_SUMMARIES_REPORT,
-  TEAM_LOCATIONS,
-  OTHER_LINKS,
-  USER_MANAGEMENT,
-  BADGE_MANAGEMENT,
-  PROJECTS,
-  TEAMS,
-  WELCOME,
-  VIEW_PROFILE,
-  UPDATE_PASSWORD,
-  LOGOUT,
-  PERMISSIONS_MANAGEMENT,
-  SEND_EMAILS,
-  TOTAL_ORG_SUMMARY,
-  TOTAL_ORG_SUMMARY_EMAIL,
-  TOTAL_CONSTRUCTION_SUMMARY,
-  PR_PROMOTIONS,
-  ACTUAL_COST_BREAKDOWN,
-  BLUE_SQUARE_EMAIL_MANAGEMENT,
-  JOB_ANALYTICS_REPORT,
-} from '../../languages/en/ui';
-import Logout from '../Logout/Logout';
-import '../../App.module.css';
-import styles from './Header.module.css';
-import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import {
   getUnreadUserNotifications,
   resetNotificationError,
 } from '../../actions/notificationAction';
-import NotificationCard from '../Notification/notificationCard';
-import DarkModeButton from './DarkModeButton';
-import BellNotification from './BellNotification';
+import { getAllRoles } from '../../actions/role';
 import { getUserProfile } from '../../actions/userProfile';
+import '../../App.module.css';
+import {
+  ACTUAL_COST_BREAKDOWN,
+  BADGE_MANAGEMENT,
+  BLUE_SQUARE_EMAIL_MANAGEMENT,
+  DASHBOARD,
+  JOB_ANALYTICS_REPORT,
+  LOGOUT,
+  OTHER_LINKS,
+  PERMISSIONS_MANAGEMENT,
+  PR_PROMOTIONS,
+  PROJECTS,
+  REPORTS,
+  SEND_EMAILS,
+  TEAM_LOCATIONS,
+  TEAMS,
+  TIMELOG,
+  TOTAL_CONSTRUCTION_SUMMARY,
+  TOTAL_ORG_SUMMARY,
+  TOTAL_ORG_SUMMARY_EMAIL,
+  UPDATE_PASSWORD,
+  USER_MANAGEMENT,
+  VIEW_PROFILE,
+  WEEKLY_SUMMARIES_REPORT,
+  WELCOME,
+} from '../../languages/en/ui';
+import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import PermissionWatcher from '../Auth/PermissionWatcher';
+import Logout from '../Logout/Logout';
+import NotificationCard from '../Notification/notificationCard';
+import OwnerMessage from '../OwnerMessage/OwnerMessage';
 import DisplayBox from '../PRPromotions/DisplayBox';
-import PropTypes from 'prop-types';
+import Timer from '../Timer/Timer';
+import BellNotification from './BellNotification';
+import DarkModeButton from './DarkModeButton';
+import styles from './Header.module.css';
 
 export function Header(props) {
   const location = useLocation();
@@ -157,6 +156,9 @@ export function Header(props) {
   
   // Blue Square Email Management
   const canAccessBlueSquareEmailManagement = props.hasPermission('resendBlueSquareAndSummaryEmails', !isAuthUser);
+  // PR Dashboard
+  const canAccessPRDashboard = props.hasPermission('accessPRTeamDashboard', !isAuthUser);
+
 
   const userId = user.userid;
   const [isModalVisible, setModalVisible] = useState(false);
@@ -443,6 +445,7 @@ export function Header(props) {
                       darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
                     }`}
                   >
+                      
                     <DropdownItem
                       tag={Link}
                       to={`/userprofile/${displayUserId}`}
@@ -757,7 +760,39 @@ export function Header(props) {
                           </DropdownItem>
                         </>
                       )}
-                      <DropdownItem divider className={styles.hideInMobile} />
+                      {canAccessBlueSquareEmailManagement && (
+                        <DropdownItem
+                          tag={Link}
+                          to="/bluesquare-email-management"
+                          className={fontColor}
+                          disabled={headerDisabled}
+                        >
+                          {BLUE_SQUARE_EMAIL_MANAGEMENT}
+                        </DropdownItem>
+                      )}
+                    </DropdownMenu>
+                  </UncontrolledDropdown>
+                )}
+
+                {canAccessPRDashboard && (
+                  <UncontrolledDropdown nav inNavbar>
+                    <DropdownToggle nav caret>
+                      <span>PR Dashboard</span>
+                    </DropdownToggle>
+                    <DropdownMenu
+                      className={`${styles.noMaxHeight} ${
+                        darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
+                      }`}
+                    >
+                      <DropdownItem
+                        tag={Link}
+                        to="/pr-dashboard"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        PR Team Analysis Dashboard
+                      </DropdownItem>
+                      <DropdownItem divider />
                       <DropdownItem
                         tag={Link}
                         to="/pr-dashboard/overview"
@@ -774,23 +809,39 @@ export function Header(props) {
                       >
                         PR Analytics
                       </DropdownItem>
-                      {canAccessBlueSquareEmailManagement && (
-                        <DropdownItem
-                          tag={Link}
-                          to="/bluesquare-email-management"
-                          className={fontColor}
-                          disabled={headerDisabled}
-                        >
-                          {BLUE_SQUARE_EMAIL_MANAGEMENT}
-                        </DropdownItem>
-                      )}
+                      <DropdownItem
+                        tag={Link}
+                        to="/pr-dashboard/promotion-eligibility"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        Promotion Eligibility
+                      </DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/pr-dashboard/top-reviewed-prs"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        Top Reviewed PRs
+                      </DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/pr-dashboard/details"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        PR Details
+                      </DropdownItem>
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 )}
-  
+
                 <NavItem className={styles.hideInMobile}>
                   <BellNotification userId={displayUserId} />
                 </NavItem>
+  
+                
   
                 <NavItem className={styles.hideInMobile}>
                   <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
