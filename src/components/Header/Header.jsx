@@ -157,6 +157,9 @@ export function Header(props) {
   
   // Blue Square Email Management
   const canAccessBlueSquareEmailManagement = props.hasPermission('resendBlueSquareAndSummaryEmails', !isAuthUser);
+  const canAccessDocumentIndexing = ['Owner', 'Administrator', 'Manager'].includes(
+    props.auth?.user?.role,
+  );
 
   const userId = user.userid;
   const [isModalVisible, setModalVisible] = useState(false);
@@ -757,7 +760,19 @@ export function Header(props) {
                           </DropdownItem>
                         </>
                       )}
-                      <DropdownItem divider className={styles.hideInMobile} />
+                      {canAccessDocumentIndexing && (
+                        <>
+                          <DropdownItem divider className={styles.hideInMobile} />
+                          <DropdownItem
+                            tag={Link}
+                            to="/chatbot/documents"
+                            className={fontColor}
+                            disabled={headerDisabled}
+                          >
+                            Document Indexing
+                          </DropdownItem>
+                        </>
+                      )}
                       <DropdownItem
                         tag={Link}
                         to="/pr-dashboard/overview"
