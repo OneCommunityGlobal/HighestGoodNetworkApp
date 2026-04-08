@@ -2,16 +2,17 @@
     background-color: #3d4160;
     padding: 2em;
 }
+
 .pageTtile{
     font-size: x-large;
     text-align: center;
     color: #fff;
 }
+
 .formContainer{
     background-color: #fff;
     text-align: center;
     padding: 2em;
-    margin-top: 1em;
     width: 60%;
-    margin: 0 auto;
+    margin: 1em auto;
 }
