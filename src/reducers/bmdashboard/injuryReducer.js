@@ -11,6 +11,7 @@ import {
   FETCH_BM_INJURY_SEVERITIES,
   FETCH_BM_INJURY_TYPES,
   FETCH_BM_INJURY_PROJECTS,
+  FETCH_BM_INJURY_TREND_SUCCESS,
   RESET_BM_INJURY_DATA,
   GET_INJURY_SEVERITY,
 } from '../../actions/bmdashboard/injuryActions';
@@ -21,6 +22,7 @@ const byValue = (a, b) => String(a).localeCompare(String(b));
 const initialState = {
   loading: false,
   data: [],
+  trend: { months: [], serious: [], medium: [], low: [] },
   error: null,
   severities: [],
   injuryTypes: [],
@@ -86,7 +88,29 @@ function bmInjuryReducer(state = initialState, action) {
     }
 
     case RESET_BM_INJURY_DATA:
-      return { ...state, data: [], error: null, loading: false };
+      return {
+        ...state,
+        data: [],
+        trend: { months: [], serious: [], medium: [], low: [] },
+        error: null,
+        loading: false,
+      };
+
+    case FETCH_BM_INJURY_TREND_SUCCESS: {
+      const t = action.payload || {};
+      const coerceArr = v => (Array.isArray(v) ? v : []);
+      return {
+        ...state,
+        loading: false,
+        error: null,
+        trend: {
+          months: coerceArr(t.months),
+          serious: coerceArr(t.serious),
+          medium: coerceArr(t.medium),
+          low: coerceArr(t.low),
+        },
+      };
+    }
 
     // Legacy action for backward compatibility
     case GET_INJURY_SEVERITY:
