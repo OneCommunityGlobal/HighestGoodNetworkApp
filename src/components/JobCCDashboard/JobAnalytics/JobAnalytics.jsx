@@ -417,8 +417,24 @@ function DateRangeSelector({ dateRange, setDateRange, comparisonPeriod, setCompa
 // ======================== MAIN ========================
 function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
   // Theme attribute for global CSS
+  // Sync with Global App Theme (body classes) and Local Component Theme (data-theme)
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light');
+    const root = document.documentElement;
+    const body = document.body;
+
+    if (darkMode) {
+      // 1. Set the attribute for your JobAnalytics.module.css
+      root.setAttribute('data-theme', 'dark');
+
+      // 2. Add the classes required by the global CSS you found
+      body.classList.add('dark-mode');
+      body.classList.add('bm-dashboard-dark');
+    } else {
+      // 3. Clean up when switching back to light mode
+      root.setAttribute('data-theme', 'light');
+      body.classList.remove('dark-mode');
+      body.classList.remove('bm-dashboard-dark');
+    }
   }, [darkMode]);
 
   const canViewAnalytics = hasPerm('getJobReports');
@@ -530,7 +546,14 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
                   <CartesianGrid strokeDasharray="3 3" className={styles.gridStroke} />
                   <XAxis dataKey="displayDate" tick={{ fontSize: 12 }} />
                   <YAxis tick={{ fontSize: 12 }} domain={['dataMin - 100', 'dataMax + 100']} />
-                  <Tooltip />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: darkMode ? '#1f2937' : '#ffffff',
+                      borderColor: darkMode ? '#374151' : '#e5e7eb',
+                      color: darkMode ? '#f9fafb' : '#111827',
+                    }}
+                    itemStyle={{ color: darkMode ? '#f9fafb' : '#111827' }}
+                  />
                   <Legend />
                   <Line
                     type="monotone"
@@ -569,7 +592,14 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
                   <CartesianGrid strokeDasharray="3 3" className={styles.gridStroke} />
                   <XAxis dataKey="displayDate" tick={{ fontSize: 12 }} />
                   <YAxis tick={{ fontSize: 12 }} domain={['dataMin - 500', 'dataMax + 500']} />
-                  <Tooltip />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: darkMode ? '#1f2937' : '#ffffff',
+                      borderColor: darkMode ? '#374151' : '#e5e7eb',
+                      color: darkMode ? '#f9fafb' : '#111827',
+                    }}
+                    itemStyle={{ color: darkMode ? '#f9fafb' : '#111827' }}
+                  />
                   <Legend />
                   <Area
                     type="monotone"
@@ -598,7 +628,17 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
                     height={60}
                   />
                   <YAxis tick={{ fontSize: 12 }} domain={[0, 'dataMax + 500']} />
-                  <Tooltip />
+                  <Tooltip
+                    cursor={{
+                      fill: darkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)',
+                    }}
+                    contentStyle={{
+                      backgroundColor: darkMode ? '#1f2937' : '#ffffff',
+                      borderColor: darkMode ? '#374151' : '#e5e7eb',
+                      color: darkMode ? '#f9fafb' : '#111827',
+                    }}
+                    itemStyle={{ color: darkMode ? '#f9fafb' : '#111827' }}
+                  />
                   <Legend />
                   <Bar
                     dataKey="current"
@@ -638,7 +678,16 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
                       />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'var(--card)',
+                      borderColor: 'var(--card-border)',
+                      color: 'var(--fg)',
+                      borderRadius: '8px',
+                      boxShadow: 'var(--shadow)',
+                    }}
+                    itemStyle={{ color: 'var(--fg)' }}
+                  />
                 </PieChart>
               </ResponsiveContainer>
             </ChartCard>
@@ -666,7 +715,15 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
                     tick={{ fontSize: 12 }}
                     domain={[0, 100]}
                   />
-                  <Tooltip />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'var(--card)',
+                      borderColor: 'var(--card-border)',
+                      color: 'var(--fg)',
+                      borderRadius: '8px',
+                    }}
+                    itemStyle={{ color: 'var(--fg)' }}
+                  />
                   <Legend />
                   <Line
                     yAxisId="left"
