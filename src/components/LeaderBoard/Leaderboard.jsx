@@ -175,14 +175,22 @@ function LeaderBoard({
 
   useEffect(() => {
     const checkAbbreviatedView = () => {
-      const isAbbrev = window.innerWidth < window.screen.width * 0.75;
+      const isAbbrev = window.innerWidth < 1500;
       setIsAbbreviatedView(isAbbrev);
     };
 
-    checkAbbreviatedView();
-    window.addEventListener('resize', checkAbbreviatedView);
+let timer;
+    const debouncedCheck = () => {
+      clearTimeout(timer);
+      timer = setTimeout(checkAbbreviatedView, 200);
+    };
 
-    return () => window.removeEventListener('resize', checkAbbreviatedView);
+    checkAbbreviatedView();
+    window.addEventListener('resize', debouncedCheck);
+    return () => {
+      window.removeEventListener('resize', debouncedCheck);
+      clearTimeout(timer);
+    };
   }, []);
 
   const updateOrganizationData = (usersTaks, contUsers) => {
@@ -662,7 +670,7 @@ function LeaderBoard({
               className={`leaderboard table-fixed ${
                 darkMode ? 'text-light dark-mode bg-yinmn-blue' : ''
               } ${isAbbreviatedView ? 'abbreviated-mode' : ''}`}
-              style={{ minWidth: '500px' }}
+              style={{ width: '100%', tableLayout: isAbbreviatedView ? 'fixed' : 'auto' }}
             >
               <thead className="responsive-font-size">
                 <tr className={darkMode ? 'bg-space-cadet' : ''} style={darkModeStyle}>
@@ -672,12 +680,18 @@ function LeaderBoard({
                   <th style={darkModeStyle}>
                     <div className="d-flex align-items-center">
                       <span className="mr-2">{isAbbreviatedView ? 'Name' : 'Name'}</span>
-                      <span style={{ position: 'relative', top: '2px' }}>
+                      <span
+                        style={{
+                          position: 'relative',
+                          top: isAbbreviatedView ? '-13px' : '2px',
+                          left: isAbbreviatedView ? '10px' : '0px',
+                        }}
+                      >
                         <EditableInfoModal
                           areaName="Leaderboard"
                           areaTitle="Team Members Navigation"
                           role={loggedInUser.role}
-                          fontSize={18}
+                          fontSize={isAbbreviatedView ? 13 : 18}
                           isPermissionPage
                           darkMode={darkMode}
                           className="p-2"

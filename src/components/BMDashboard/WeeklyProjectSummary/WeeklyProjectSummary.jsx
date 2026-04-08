@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
+import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
 import CostPredictionChart from './CostPredictionChart';
 import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
@@ -16,13 +17,15 @@ import ToolsHorizontalBarChart from './Tools/ToolsHorizontalBarChart';
 import ExpenseBarChart from './Financials/ExpenseBarChart';
 import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
+import FinancialsTrackingCard from './ExpenditureChart/FinancialsTrackingCard';
+import EmbedInteractiveMap from '../InteractiveMap/EmbedInteractiveMap';
 import InteractiveMap from '../InteractiveMap/InteractiveMap';
 import styles from './WeeklyProjectSummary.module.css';
 import IssueCharts from '../Issues/openIssueCharts';
 import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords.jsx';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
-import { get } from 'lodash';
+import FinancialStatButtons from './Financials/FinancialStatButtons';
 
 const projectStatusButtons = [
   {
@@ -123,6 +126,43 @@ const projectStatusButtons = [
   },
 ];
 
+const financialData = [
+  {
+    id: uuidv4(),
+    title: 'Total Project Cost',
+    value: '-',
+    bgColor: '#E0F2FE',
+    textColor: '#0369A1',
+  },
+  {
+    id: uuidv4(),
+    title: 'Total Material Cost',
+    value: '-',
+    bgColor: '#F3E8FF',
+    textColor: '#6D28D9',
+  },
+  {
+    id: uuidv4(),
+    title: 'Total Labor Cost',
+    value: '-',
+    bgColor: '#FEE2E2',
+    textColor: '#B91C1C',
+  },
+  {
+    id: uuidv4(),
+    title: 'Total Equipment Cost',
+    value: '-',
+    bgColor: '#DCFCE7',
+    textColor: '#15803D',
+  },
+];
+
+export function WeeklyProjectSummaryContent() {
+  const dispatch = useDispatch();
+  const materials = useSelector(state => state.materials?.materialslist || []);
+  const [openSections, setOpenSections] = useState({});
+}
+
 function WeeklyProjectSummary() {
   const dispatch = useDispatch();
   const materials = useSelector(state => state.materials?.materialslist || []);
@@ -130,7 +170,7 @@ function WeeklyProjectSummary() {
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const getOptionBackground = (state, darkMode) => {
+  const getOptionBackground = (state) => {
     if (state.isSelected) return '#0d55b3';
     if (state.isFocused) return '#0d55b3';
     return darkMode ? '#22272e' : '#fff';
@@ -251,7 +291,10 @@ function WeeklyProjectSummary() {
                   >
                     <span className={`${styles.weeklyStatusValue}`}>{button.value}</span>
                   </div>
-                  <div className="weekly-status-change" style={{ color: button.textColor }}>
+                  <div
+                    className="weekly-status-change"
+                    style={{ color: button.textColor }}
+                  >
                     {button.change}
                   </div>
                 </div>
@@ -347,21 +390,12 @@ function WeeklyProjectSummary() {
         key: 'Financials',
         className: 'large',
         content: (
-          <div className={`${styles.financialsGrid}`}>
-            <div className={`${styles.weeklyProjectSummaryCard} ${styles.financialSmall}`}>
-              📊 Card
+          <div className={`${styles.financialGrid}`}>
+            <div className="weekly-project-summary-card financial-small financial-chart">
+              <FinancialStatButtons darkMode={darkMode} />
             </div>
-            <div className={`${styles.weeklyProjectSummaryCard} ${styles.financialSmall}`}>
+            <div className="weekly-project-summary-card financial-small financial-chart">
               <ExpenseBarChart darkMode={darkMode} />
-            </div>
-            <div className={`${styles.weeklyProjectSummaryCard} ${styles.financialSmall}`}>
-              📊 Card
-            </div>
-            <div className={`${styles.weeklyProjectSummaryCard} ${styles.financialSmall}`}>
-              📊 Card
-            </div>
-            <div className={`${styles.weeklyProjectSummaryCard} ${styles.financialBig}`}>
-              📊 Big Card
             </div>
           </div>
         ),
@@ -383,7 +417,7 @@ function WeeklyProjectSummary() {
             className={`${styles.weeklyProjectSummaryCard} ${styles.mapCard}`}
             style={{ height: '500px', padding: '0' }}
           >
-            <InteractiveMap />
+            <EmbedInteractiveMap />
           </div>
         ),
       },
@@ -391,39 +425,34 @@ function WeeklyProjectSummary() {
         title: 'Labor and Time Tracking',
         key: 'Labor and Time Tracking',
         className: 'half',
-        content: (
-          <div className={`${styles.laborTimeGrid}`}>
-            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
-              <DistributionLaborHours />
+        content: [1, 2].map((_, index) => {
+          const uniqueId = uuidv4();
+          return (
+            <div
+              key={uniqueId}
+              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+            >
+              {index === 1 ? <PaidLaborCost /> : <DistributionLaborHours />}
             </div>
-            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
-              <PaidLaborCost />
-            </div>
-          </div>
-        ),
+          );
+        }),
       },
       {
         title: 'Financials Tracking',
         key: 'Financials Tracking',
         className: 'full',
         content: (
-          <div className={`${styles.financialsTrackingGrid}`}>
-            {[1, 2, 3, 4].map((_, index) => {
-              const uniqueId = uuidv4();
-              return (
-                <div
-                  key={uniqueId}
-                  className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
-                >
-                  {(() => {
-                    if (index === 2)
-                      return <CostPredictionChart projectId={1} darkMode={darkMode} />;
-                    if (index === 3) return <ActualVsPlannedCost />;
-                    return '📊 Card';
-                  })()}
-                </div>
-              );
-            })}
+          <div className={styles.financialsTrackingGrid}>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <FinancialsTrackingCard />
+            </div>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>📊 Card</div>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <CostPredictionChart projectId={1} darkMode={darkMode} />
+            </div>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <ActualVsPlannedCost />
+            </div>
           </div>
         ),
       },
@@ -436,14 +465,12 @@ function WeeklyProjectSummary() {
     setIsGeneratingPDF(true);
 
     try {
-      // Open all sections for PDF capture
       const allSectionsOpen = {};
       sections.forEach(section => {
         allSectionsOpen[section.key] = true;
       });
       setOpenSections(allSectionsOpen);
 
-      // Wait for sections to open and re-render
       await new Promise(resolve => setTimeout(resolve, 800));
 
       const contentElement = document.querySelector(`.${styles.weeklyProjectSummaryContainer}`);
@@ -464,12 +491,10 @@ function WeeklyProjectSummary() {
 
       const clonedContent = contentElement.cloneNode(true);
 
-      // Remove interactive elements for PDF
       clonedContent
         .querySelectorAll('button, .weekly-project-summary-dropdown-icon, .no-print, iframe')
         .forEach(el => el.parentNode?.removeChild(el));
 
-      // Ensure charts are visible
       const styleElem = document.createElement('style');
       styleElem.textContent = `
         img, svg, canvas {
@@ -495,7 +520,6 @@ function WeeklyProjectSummary() {
         windowHeight: pdfContainer.scrollHeight,
         logging: false,
         onclone: clonedDoc => {
-          // Ensure all sections are visible in the cloned document
           const sections = clonedDoc.querySelectorAll(
             `.${styles.weeklyProjectSummaryDashboardCategoryContent}`,
           );
@@ -509,11 +533,9 @@ function WeeklyProjectSummary() {
 
       const imgData = canvas.toDataURL('image/jpeg', 0.95);
 
-      const pdfWidth = 210; // A4 width in mm
+      const pdfWidth = 210;
       const imgHeight = (canvas.height * pdfWidth) / canvas.width;
-
-      // FIXED: Using Math.max() instead of ternary for better readability
-      const pdfHeight = Math.max(imgHeight, 297); // Min A4 height
+      const pdfHeight = Math.max(imgHeight, 297);
 
       const pdf = new jsPDF({
         orientation: imgHeight > pdfWidth ? 'portrait' : 'landscape',
@@ -540,7 +562,6 @@ function WeeklyProjectSummary() {
 
   return (
     <div className={`${styles.weeklyProjectSummaryContainer} ${darkMode ? styles.darkMode : ''}`}>
-      {/* Header Section - Now inline instead of separate component */}
       <div className={styles.weeklySummaryHeaderWrapper}>
         <div className={styles.weeklySummaryHeaderContainer}>
           <h1 className={styles.weeklySummaryHeaderTitle}>
@@ -567,7 +588,6 @@ function WeeklyProjectSummary() {
         </div>
       </div>
 
-      {/* Dashboard Content */}
       <div
         className={`${styles.weeklyProjectSummaryDashboardContainer} ${
           darkMode ? 'bg-space-cadet' : ''
@@ -590,7 +610,6 @@ function WeeklyProjectSummary() {
                 aria-expanded={openSections[key]}
               >
                 {title}
-                {/* FIXED: Added proper spacing with a space before the span */}
                 <span aria-hidden="true"> {openSections[key] ? '∧' : '∨'}</span>
               </button>
               {openSections[key] && (
