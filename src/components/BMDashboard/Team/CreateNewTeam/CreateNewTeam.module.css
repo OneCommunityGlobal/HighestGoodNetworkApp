@@ -1,174 +1,442 @@
-  .addTeamForm Label{
-  font-size: .8em;
-  }
+/* Container */
+/* stylelint-disable no-descending-specificity */
+.addTeamContainer {
+  width: 100%;
+  max-width: 720px;
+  margin: 2rem auto;
+  padding: 2rem 2.5rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 6px rgb(0 0 0 / 8%);
+}
 
-  .addTeamButtons {
-    display: flex;
-    gap: 1rem;
-    margin: 1rem auto 2rem;
-  }
-  
-  .addTeamButtons button {
-    flex: 1; /* Ensure buttons share equal width */
-  }
-  
-  @media screen and (max-width: 800px) {
-    .addTeamButtons {
-      gap: 0.5rem; /* Reduce gap for smaller screens */
-    }
-  }
+.addTeamHeader h2 {
+  font-size: 1.6rem;
+  color: #f49441;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+}
 
-  .addTeamButtons button#submit-button {
-    background-color: #4CAF50; 
-    border-color: #4CAF50;
-    color: white;
-  }
-  
-  .addTeamButtons button#submit-button:hover {
-    background-color: #45a049;
-    border-color: #45a049;
-  }
-  
-  .addTeamButtons button:hover {
-    background-color: #e7e7e7;
-  }
-  
-  .addTeamButtons Button:active {
-    background-color: #e7e7e7;
-  }
-  
-  .addTeamButtons Button.outline {
-    background-color: transparent;
-    border-color: #ccc; 
-    color: #333; 
-  }
-  
-  .addTeamButtons Button.outline:hover {
-    background-color: #f1f1f1; 
-    border-color: #bbb;
-  }
-  
-  .addTeamButtons button#cancel-button {
-    background-color: #f44336; 
-    border-color: #f44336; 
-    color: white; 
-  }
-  
-  .addTeamButtons button#cancel-button:hover {
-    background-color: #e53935; 
-    border-color: #e53935;
-  }
-  
-  .teamFormError {
-    font-weight: 500;
-    font-size: 11px !important;
-    color: red;
-    display: flex;
-    justify-content: flex-start;
-  }
-  
-  .fieldRequired{
-    color: red;
-  }
-  
-  .addTeamContainer{
-    width: 100%;
-    max-width: 800px;
-    margin: 1rem auto;
-    padding: 1rem 2rem;
-    border: 1px solid #ccc;
-    border-radius: 20px;
-  }
-  
-  .addTeamHeader h2{
-   font-size: clamp(1.5rem, 2.5vw, 2.5rem);
-   margin-left: 1rem;
-   color:#f49441;
-   text-align: center;
+/* Form */
+.addTeamForm label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.3rem;
+}
+
+.addTeamForm input,
+.addTeamForm select,
+.addTeamForm textarea {
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d0d0d0;
+  font-size: 0.9rem;
+  width: 100%;
+}
+
+.addTeamForm input:focus,
+.addTeamForm select:focus,
+.addTeamForm textarea:focus {
+  border-color: #f49441;
+  box-shadow: 0 0 0 2px rgb(244 148 65 / 12%);
+  outline: none;
+}
+
+/* Sections */
+.formSection {
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.formSection:last-of-type {
+  border-bottom: none;
+  margin-bottom: 0.5rem;
+}
+
+.sectionTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #f49441;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 2px solid #f49441;
+  display: inline-block;
+}
+
+/* Required indicator */
+.fieldRequired {
+  color: #e74c3c;
+  margin-left: 2px;
+}
+
+/* Tooltip icon */
+.tooltipIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  margin-left: 5px;
+  font-size: 9px;
+  font-weight: 700;
+  color: #fff;
+  background-color: #bbb;
+  border-radius: 50%;
+  cursor: help;
+  vertical-align: middle;
+}
+
+.tooltipIcon:hover {
+  background-color: #f49441;
+}
+
+/* Helper text */
+.helperText {
+  display: block;
+  font-size: 0.75rem;
+  color: #999;
+  margin-top: 0.25rem;
+}
+
+/* Error messages */
+.teamFormError {
+  font-size: 0.8rem;
+  color: #e74c3c;
+  margin-top: 0.3rem;
+  font-weight: 500;
+}
+
+/* Dropdown + Add button row */
+.selectContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.selectContainer select {
+  flex: 1;
+}
+
+/* Add button */
+.addBtn {
+  flex-shrink: 0;
+  padding: 0.45rem 1.2rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #fff;
+  background-color: #f49441;
+  border: 1px solid #f49441;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  width: auto !important;
+}
+
+.addBtn:hover {
+  background-color: #e0832e;
+}
+
+/* General button base in container */
+.addTeamContainer button {
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+/* Assigned items block */
+.assignedBlock {
+  margin-top: 0.5rem;
+}
+
+.assignedHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.4rem;
+}
+
+.assignedLabel {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #555;
+}
+
+/* Badge container */
+.badgeContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.assignedBadge {
+  display: inline-flex;
+  align-items: center;
+  background-color: #fef0db !important;
+  color: #333 !important;
+  border: 1px solid #f0c876;
+  border-radius: 20px;
+  padding: 0.25rem 0.65rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.badgeRemove {
+  margin-left: 6px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #c0392b;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.badgeRemove:hover {
+  color: #e74c3c;
+}
+
+.badgeSelected {
+  outline: 2px solid #dc3545;
+  outline-offset: 1px;
+  opacity: 0.75;
+}
+
+/* Bulk remove button */
+.bulkRemoveBtn {
+  background-color: #dc3545 !important;
+  border-color: #dc3545 !important;
+  color: #fff !important;
+  font-size: 0.72rem !important;
+  padding: 0.15rem 0.5rem !important;
+  width: auto !important;
+  border-radius: 4px !important;
+}
+
+.bulkRemoveBtn:hover:not(:disabled) {
+  background-color: #c82333 !important;
+}
+
+.bulkRemoveBtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Submit / Cancel buttons */
+.addTeamButtons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.addTeamButtons button {
+  flex: 1;
+  padding: 0.55rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: 8px;
+  width: auto !important;
+}
+
+.addTeamButtons button#submit-button {
+  background-color: #4CAF50;
+  border-color: #4CAF50;
+  color: #fff;
+}
+
+.addTeamButtons button#submit-button:disabled {
+  background-color: #a5d6a7;
+  border-color: #a5d6a7;
+  color: #fff;
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.addTeamButtons button#submit-button:hover:not(:disabled) {
+  background-color: #43a047;
+}
+
+.addTeamButtons button#cancel-button {
+  background-color: #f44336;
+  border-color: #f44336;
+  color: #fff;
+}
+
+.addTeamButtons button#cancel-button:hover {
+  background-color: #e53935;
+}
+
+/* Responsive */
+@media screen and (width <= 600px) {
+  .addTeamContainer {
+    margin: 1rem;
+    padding: 1.25rem 1rem;
   }
 
   .selectContainer {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  
-  @media screen and (max-width: 800px) {
-    .selectContainer {
-      flex-direction: column; /* Stack items vertically on small screens */
-      align-items: stretch; /* Make items take full width */
-    }
-  
-    .selectContainer .memberDropdown,
-    .selectContainer Button {
-      width: 100%; /* Full width for dropdown and button */
-    }
-
-    .selectContainer Button {
-      max-width: 300px; /* Prevent it from growing too large */
-      min-width: 150px; /* Prevent it from shrinking too small */
-    }
-  }
-  
-  .addTeamContainer Button{
-    flex-shrink: 0;
-    padding: 8px 12px;
-    font-size: 1rem;
-    cursor: pointer;
-    color: white;
-    background-color: #f49441;
-    border: none;
-    border-radius: 4px;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    border-radius: 10px; 
-    padding: 0.5rem; 
-    border: 1px solid #ccc;
-    width: 15%;
-  }
-  
-  .addTeamContainer Button:hover {
-    background-color: #d97a32;
-    transform: scale(1.05);
-  }
-  
-  .addTeamContainer Button:disabled {
-    background-color: #ccc;
-    color: #666;
-    cursor: not-allowed;
+    flex-direction: column;
+    align-items: stretch;
   }
 
-  .addTeamForm input,
-  .addTeamForm select,
-  .addTeamForm textarea,
-  .addTeamForm button {
-    border-radius: 10px; 
-    padding: 0.5rem; 
-    border: 1px solid #ccc; 
+  .addBtn {
+    width: 100% !important;
   }
 
-  @media screen and (max-width: 800px) {
-    .addTeamContainer {
-      width: 95%;
-    }
+  .addTeamButtons {
+    gap: 0.5rem;
   }
+}
 
-  .badgeContainer {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 0;
-  }
-  
-  .badgeContainer .badge {
-    background-color: #f9d29c; 
-    color: black; 
-    border-radius: 6px; 
-    padding: 0.5rem 1rem; 
-    line-height: 1.5rem;
-  }
+/* ========== Dark Mode ========== */
+:global(body.dark-mode) .addTeamContainer,
+:global(body.bm-dashboard-dark) .addTeamContainer {
+  background-color: #243447 !important;
+  border-color: #3a506b;
+  box-shadow: 0 2px 10px rgb(0 0 0 / 30%);
+}
 
-  .badgeContainer span {
-    cursor: pointer;
-    padding-left: 5px;
-  }
+:global(body.dark-mode) .addTeamHeader h2,
+:global(body.bm-dashboard-dark) .addTeamHeader h2 {
+  color: #f4a460 !important;
+}
 
+:global(body.dark-mode) .sectionTitle,
+:global(body.bm-dashboard-dark) .sectionTitle {
+  color: #f4a460 !important;
+  border-bottom-color: #f4a460;
+}
+
+:global(body.dark-mode) .addTeamForm label,
+:global(body.bm-dashboard-dark) .addTeamForm label {
+  color: #e0e0e0 !important;
+}
+
+:global(body.dark-mode) .formSection,
+:global(body.bm-dashboard-dark) .formSection {
+  border-bottom-color: #3a506b;
+}
+
+:global(body.dark-mode) .addTeamForm input,
+:global(body.dark-mode) .addTeamForm select,
+:global(body.dark-mode) .addTeamForm textarea,
+:global(body.bm-dashboard-dark) .addTeamForm input,
+:global(body.bm-dashboard-dark) .addTeamForm select,
+:global(body.bm-dashboard-dark) .addTeamForm textarea {
+  background-color: #2e5061 !important;
+  border-color: #3a506b !important;
+  color: #fff !important;
+}
+
+:global(body.dark-mode) .addTeamForm input::placeholder,
+:global(body.dark-mode) .addTeamForm select::placeholder,
+:global(body.dark-mode) .addTeamForm textarea::placeholder,
+:global(body.bm-dashboard-dark) .addTeamForm input::placeholder,
+:global(body.bm-dashboard-dark) .addTeamForm select::placeholder,
+:global(body.bm-dashboard-dark) .addTeamForm textarea::placeholder {
+  color: #b8c5d1 !important;
+}
+
+:global(body.dark-mode) .addTeamForm input:focus,
+:global(body.dark-mode) .addTeamForm select:focus,
+:global(body.dark-mode) .addTeamForm textarea:focus,
+:global(body.bm-dashboard-dark) .addTeamForm input:focus,
+:global(body.bm-dashboard-dark) .addTeamForm select:focus,
+:global(body.bm-dashboard-dark) .addTeamForm textarea:focus {
+  border-color: #f4a460 !important;
+  box-shadow: 0 0 0 2px rgb(244 164 96 / 20%) !important;
+  background-color: #2e5061 !important;
+}
+
+:global(body.dark-mode) .addTeamForm select option,
+:global(body.bm-dashboard-dark) .addTeamForm select option {
+  background-color: #2e5061;
+  color: #fff;
+}
+
+:global(body.dark-mode) .helperText,
+:global(body.bm-dashboard-dark) .helperText {
+  color: #89a !important;
+}
+
+:global(body.dark-mode) .teamFormError,
+:global(body.bm-dashboard-dark) .teamFormError {
+  color: #ff6b6b !important;
+}
+
+:global(body.dark-mode) .fieldRequired,
+:global(body.bm-dashboard-dark) .fieldRequired {
+  color: #ff6b6b !important;
+}
+
+:global(body.dark-mode) .tooltipIcon,
+:global(body.bm-dashboard-dark) .tooltipIcon {
+  background-color: #5a7a8a;
+  color: #fff !important;
+}
+
+:global(body.dark-mode) .tooltipIcon:hover,
+:global(body.bm-dashboard-dark) .tooltipIcon:hover {
+  background-color: #f4a460;
+}
+
+:global(body.dark-mode) .addBtn,
+:global(body.bm-dashboard-dark) .addBtn {
+  background-color: #f49441 !important;
+  border-color: #f49441 !important;
+  color: #fff !important;
+}
+
+:global(body.dark-mode) .addBtn:hover,
+:global(body.bm-dashboard-dark) .addBtn:hover {
+  background-color: #e0832e !important;
+}
+
+:global(body.dark-mode) .assignedLabel,
+:global(body.bm-dashboard-dark) .assignedLabel {
+  color: #c0d0dd !important;
+}
+
+:global(body.dark-mode) .assignedBadge,
+:global(body.bm-dashboard-dark) .assignedBadge {
+  background-color: #3a506b !important;
+  color: #f0e0c8 !important;
+  border-color: #4a6072 !important;
+}
+
+:global(body.dark-mode) .badgeRemove,
+:global(body.bm-dashboard-dark) .badgeRemove {
+  color: #ff6b6b !important;
+}
+
+:global(body.dark-mode) .badgeRemove:hover,
+:global(body.bm-dashboard-dark) .badgeRemove:hover {
+  color: #f44 !important;
+}
+
+:global(body.dark-mode) .addTeamButtons button#submit-button,
+:global(body.bm-dashboard-dark) .addTeamButtons button#submit-button {
+  background-color: #4CAF50 !important;
+  border-color: #4CAF50 !important;
+  color: #fff !important;
+}
+
+:global(body.dark-mode) .addTeamButtons button#submit-button:disabled,
+:global(body.bm-dashboard-dark) .addTeamButtons button#submit-button:disabled {
+  background-color: #2e6631 !important;
+  border-color: #2e6631 !important;
+  color: #8a8 !important;
+  opacity: 0.7;
+}
+
+:global(body.dark-mode) .addTeamButtons button#cancel-button,
+:global(body.bm-dashboard-dark) .addTeamButtons button#cancel-button {
+  background-color: #f44336 !important;
+  border-color: #f44336 !important;
+  color: #fff !important;
+}
+
+:global(body.dark-mode) .bulkRemoveBtn,
+:global(body.bm-dashboard-dark) .bulkRemoveBtn {
+  background-color: #dc3545 !important;
+  color: #fff !important;
+}
