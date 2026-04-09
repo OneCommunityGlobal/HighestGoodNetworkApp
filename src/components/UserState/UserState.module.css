@@ -1,0 +1,431 @@
+/* ─── Theme variables ─────────────────────────────────────────────────────── */
+
+.light {
+  --us-panel-border: #dee2e6;
+  --us-row-bg: #f8f9fa;
+  --us-edit-form-bg: #f0f4ff;
+  --us-add-form-bg: #f8f9fa;
+  --us-delete-confirm-bg: #fff5f5;
+  --us-emoji-picker-bg: #fff;
+  --us-unselected-toggle-bg: #e8f0fe;
+  --us-unselected-toggle-color: #1a3a6b;
+  --us-divider-color: #dee2e6;
+  --us-action-btn-color: #3498db;
+}
+
+.dark {
+  --us-panel-border: #4a6a9c;
+  --us-row-bg: #2a3a5c;
+  --us-edit-form-bg: #1e2d4a;
+  --us-add-form-bg: #2a3a5c;
+  --us-delete-confirm-bg: #2a1a1a;
+  --us-emoji-picker-bg: #1e2d4a;
+  --us-unselected-toggle-bg: #2a3a5c;
+  --us-unselected-toggle-color: #cdd9f5;
+  --us-divider-color: #4a6a9c;
+  --us-action-btn-color: #5dade2;
+}
+
+/* ─── Glossy shared mixin ─────────────────────────────────────────────────── */
+
+.glossy {
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 3px rgb(0 0 0 / 40%);
+  border: 1px solid rgb(255 255 255 / 30%);
+  box-shadow:
+    0 4px 12px rgb(0 0 0 / 40%),
+    0 1px 3px rgb(0 0 0 / 30%),
+    inset 0 2px 4px rgb(255 255 255 / 80%),
+    inset 0 -2px 4px rgb(255 255 255 / 40%),
+    inset 0 8px 12px rgb(0 0 0 / 25%),
+    inset 0 -8px 12px rgb(0 0 0 / 25%);
+  background-image:
+    linear-gradient(
+      to right,
+      rgb(0 0 0 / 20%) 0%,
+      rgb(255 255 255 / 15%) 20%,
+      rgb(255 255 255 / 0%) 50%,
+      rgb(255 255 255 / 15%) 80%,
+      rgb(0 0 0 / 20%) 100%
+    ),
+    linear-gradient(
+      to bottom,
+      rgb(255 255 255 / 30%) 0%,
+      rgb(0 0 0 / 20%) 50%,
+      rgb(255 255 255 / 20%) 100%
+    );
+}
+
+/* ─── Layout ─────────────────────────────────────────────────────────────── */
+
+.userStateWrapper {
+  margin-top: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  max-width: 100%;
+  justify-content: center;
+}
+
+.setStateBtn {
+  cursor: pointer;
+  font-size: 11px;
+  color: var(--us-action-btn-color);
+  background: none;
+  border: none;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.setMoreBtn {
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--us-action-btn-color);
+  background: none;
+  border: none;
+  padding: 5px 2px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ─── Badge ───────────────────────────────────────────────────────────────── */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 14px 6px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  text-shadow: 0 1px 3px rgb(0 0 0 / 40%);
+  border: 1px solid rgb(255 255 255 / 30%);
+  box-shadow:
+    0 4px 12px rgb(0 0 0 / 40%),
+    0 1px 3px rgb(0 0 0 / 30%),
+    inset 0 2px 4px rgb(255 255 255 / 80%),
+    inset 0 -2px 4px rgb(255 255 255 / 40%),
+    inset 0 8px 12px rgb(0 0 0 / 25%),
+    inset 0 -8px 12px rgb(0 0 0 / 25%);
+  background-image:
+    linear-gradient(
+      to right,
+      rgb(0 0 0 / 8%) 0%,
+      rgb(255 255 255 / 20%) 20%,
+      rgb(255 255 255 / 0%) 50%,
+      rgb(255 255 255 / 20%) 80%,
+      rgb(0 0 0 / 8%) 100%
+    ),
+    linear-gradient(
+      to bottom,
+      rgb(255 255 255 / 40%) 0%,
+      rgb(0 0 0 / 20%) 50%,
+      rgb(255 255 255 / 25%) 100%
+    );
+}
+
+.badgeRemoveBtn {
+  font-size: 11px;
+  font-weight: bold;
+  opacity: 0.8;
+  cursor: pointer;
+  line-height: 1;
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+}
+
+/* ─── ColorPicker ─────────────────────────────────────────────────────────── */
+
+.colorPickerWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.colorPickerLabel {
+  font-size: 12px;
+  color: #666;
+}
+
+.colorSwatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  cursor: pointer;
+  padding: 0;
+}
+
+/* ─── EmojiPicker ─────────────────────────────────────────────────────────── */
+
+.emojiPickerGrid {
+  padding: 6px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 4px;
+  width: 204px;
+  background: var(--us-emoji-picker-bg);
+  border: 1px solid var(--us-panel-border);
+}
+
+.emojiBtn {
+  font-size: 18px;
+  padding: 4px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-radius: 4px;
+  line-height: 1;
+}
+
+.emojiBtn:hover {
+  background: var(--us-unselected-toggle-bg);
+}
+
+.emojiTriggerBtn {
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  font-size: 20px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.emojiPickerDropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1100;
+  margin-top: 4px;
+}
+
+/* ─── ManageStatesModal / UserStateModal shared ───────────────────────────── */
+
+.catalogRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--us-row-bg);
+  border: 1px solid var(--us-panel-border);
+}
+
+.catalogRowEditing {
+  border-radius: 8px 8px 0 0;
+  border-bottom: none !important;
+}
+
+.catalogRowActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reorderBtns {
+  display: flex;
+  gap: 4px;
+}
+
+.inlineEditForm {
+  padding: 16px;
+  border-radius: 0 0 8px 8px;
+  border-top: none;
+  background: var(--us-edit-form-bg);
+  border: 1px solid var(--us-panel-border);
+}
+
+.addNewForm {
+  padding: 16px;
+  border-radius: 8px;
+  background: var(--us-add-form-bg);
+  border: 1px solid var(--us-panel-border);
+}
+
+.labelInputRow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  position: relative;
+}
+
+.previewBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 3px rgb(0 0 0 / 40%);
+  border: 1px solid rgb(255 255 255 / 30%);
+  box-shadow:
+    0 4px 12px rgb(0 0 0 / 40%),
+    0 1px 3px rgb(0 0 0 / 30%),
+    inset 0 2px 4px rgb(255 255 255 / 80%),
+    inset 0 -2px 4px rgb(255 255 255 / 40%),
+    inset 0 8px 12px rgb(0 0 0 / 25%),
+    inset 0 -8px 12px rgb(0 0 0 / 25%);
+  background-image:
+    linear-gradient(
+      to right,
+      rgb(0 0 0 / 8%) 0%,
+      rgb(255 255 255 / 20%) 20%,
+      rgb(255 255 255 / 0%) 50%,
+      rgb(255 255 255 / 20%) 80%,
+      rgb(0 0 0 / 8%) 100%
+    ),
+    linear-gradient(
+      to bottom,
+      rgb(255 255 255 / 40%) 0%,
+      rgb(0 0 0 / 20%) 50%,
+      rgb(255 255 255 / 25%) 100%
+    );
+}
+
+.formActionBtns {
+  display: flex;
+  gap: 8px;
+}
+
+.deleteConfirmBox {
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #e74c3c;
+  background: var(--us-delete-confirm-bg);
+}
+
+.footerLeft {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* ─── UserStateModal catalog buttons ─────────────────────────────────────── */
+
+.stateToggleBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 3px rgb(0 0 0 / 40%);
+  border: 1px solid rgb(255 255 255 / 30%);
+  box-shadow:
+    0 4px 12px rgb(0 0 0 / 40%),
+    0 1px 3px rgb(0 0 0 / 30%),
+    inset 0 2px 4px rgb(255 255 255 / 80%),
+    inset 0 -2px 4px rgb(255 255 255 / 40%),
+    inset 0 8px 12px rgb(0 0 0 / 25%),
+    inset 0 -8px 12px rgb(0 0 0 / 25%);
+  background-image:
+    linear-gradient(
+      to right,
+      rgb(0 0 0 / 8%) 0%,
+      rgb(255 255 255 / 20%) 20%,
+      rgb(255 255 255 / 0%) 50%,
+      rgb(255 255 255 / 20%) 80%,
+      rgb(0 0 0 / 8%) 100%
+    ),
+    linear-gradient(
+      to bottom,
+      rgb(255 255 255 / 40%) 0%,
+      rgb(0 0 0 / 20%) 50%,
+      rgb(255 255 255 / 25%) 100%
+    );
+}
+
+.currentlySelectedRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.currentlySelectedBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 3px rgb(0 0 0 / 40%);
+  border: 1px solid rgb(255 255 255 / 30%);
+  box-shadow:
+    0 4px 12px rgb(0 0 0 / 40%),
+    0 1px 3px rgb(0 0 0 / 30%),
+    inset 0 2px 4px rgb(255 255 255 / 80%),
+    inset 0 -2px 4px rgb(255 255 255 / 40%),
+    inset 0 8px 12px rgb(0 0 0 / 25%),
+    inset 0 -8px 12px rgb(0 0 0 / 25%);
+  background-image:
+    linear-gradient(
+      to right,
+      rgb(0 0 0 / 8%) 0%,
+      rgb(255 255 255 / 20%) 20%,
+      rgb(255 255 255 / 0%) 50%,
+      rgb(255 255 255 / 20%) 80%,
+      rgb(0 0 0 / 8%) 100%
+    ),
+    linear-gradient(
+      to bottom,
+      rgb(255 255 255 / 40%) 0%,
+      rgb(0 0 0 / 20%) 50%,
+      rgb(255 255 255 / 25%) 100%
+    );
+}
+
+.currentlySelectedRemoveBtn {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 0;
+  font-size: 12px;
+  font-weight: bold;
+  opacity: 0.8;
+}
+
+.stateToggleGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.currentlySelectedSection {
+  padding-top: 16px;
+  margin-top: 8px;
+  border-top: 1px solid var(--us-divider-color);
+}
+
+.existingStatesList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.unselectedToggle {
+  background: var(--us-unselected-toggle-bg) !important;
+  color: var(--us-unselected-toggle-color) !important;
+}
