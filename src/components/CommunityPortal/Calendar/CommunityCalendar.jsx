@@ -204,7 +204,7 @@ function CommunityCalendar() {
   }, [events]);
 
   //Need to implement. When user uses TAB to navigate to the button.
-  const handleEventKeyPress = event => {
+  const handleEventKeyPress = (event, eventDetails) => {
     return null;
   };
 
@@ -345,7 +345,7 @@ function CommunityCalendar() {
               key={event.id}
               className={`${styles.eventItem} ${styles.clickable} ${statusClass}`}
               onClick={() => handleEventClick(event)}
-              onKeyDown={e => handleEventKeyPress(event)}
+              onKeyDown={e => handleEventKeyPress(e,event)}
               role="button"
               tabIndex={0}
               aria-label={`Click to view details for ${event.title}`}
