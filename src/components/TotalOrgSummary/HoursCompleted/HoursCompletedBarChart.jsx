@@ -112,7 +112,7 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
           x={x + width / 2}
           y={y - 40}
           style={{ fontSize: numFontSize, fontWeight: 'bold' }}
-          fill={darkMode ? 'white' : 'dark'}
+          fill={darkMode ? 'white' : '#333'}
           textAnchor="middle"
           dominantBaseline="middle"
         >
@@ -122,7 +122,7 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
           x={x + width / 2}
           y={y - 25}
           style={{ fontSize: perFontSize, fontWeight: 'bold' }}
-          fill={darkMode ? 'white' : 'dark'}
+          fill={darkMode ? 'white' : '#444'}
           textAnchor="middle"
           dominantBaseline="middle"
         >
@@ -143,121 +143,140 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
   };
 
   return (
-    <div
-      style={{
-        height: '380px',
-        minHeight: '300px',
-        maxHeight: '548px',
-        display: 'flex',
-        flexDirection: 'column',
-        position: 'relative',
-      }}
-    >
-      {/* Projects box positioned in the right side middle area */}
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       <div
         style={{
-          position: 'absolute',
-          top: '40%',
-          left: '65%',
-          transform: 'translateY(-50%)',
-          zIndex: 10,
-          background: 'white',
-          borderRadius: 4,
-          padding: 8,
-          boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
-          border: '1px solid #eee',
-          minWidth: 130,
-          minHeight: 65,
-          display: 'grid',
-          justifyItems: 'center',
-          gap: 2,
+          height: '380px',
+          minHeight: '300px',
+          maxHeight: '548px',
+          display: 'flex',
+          flexDirection: 'column',
+          position: 'relative',
         }}
       >
-        <div style={{ color: '#444', fontWeight: 'bold', fontSize: 15 }}>Projects</div>
-        <div style={{ color: '#222', fontWeight: 'bold', fontSize: 14 }}>
-          {projectBarInfo.amount}
-        </div>
-        <div style={{ color: '#666', fontSize: 10 }}>({projectBarInfo.percentage})</div>
-        {projectBarInfo.ifcompare && (
-          <div style={{ color: projectBarInfo.fontcolor, fontSize: 10, fontWeight: 'bold' }}>
-            {projectBarInfo.change}
-          </div>
-        )}
-      </div>
-
-      <div style={{ textAlign: 'center', marginBottom: 0 }}>
+        {/* Projects box positioned in the right side middle area */}
         <div
           style={{
-            fontSize: '13px',
-            fontWeight: 500,
-            color: darkMode ? 'white' : '#222',
+            position: 'absolute',
+            top: '40%',
+            left: '65%',
+            transform: 'translateY(-50%)',
+            zIndex: 10,
+            background: 'white',
+            borderRadius: 4,
+            padding: 8,
+            boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+            border: '1px solid #eee',
+            minWidth: 130,
+            minHeight: 65,
             display: 'grid',
             justifyItems: 'center',
+            gap: 2,
           }}
         >
-          {(() => {
-            const raw = data.hoursSubmittedToTasksPercentage ?? 0;
-            const normalized = raw > 1 ? raw : raw * 100;
-            const formatted = `${normalized.toFixed(1)}%`;
-            return `${formatted} of Total Tangible Hours Submitted to Tasks`;
-          })()}
-          {(() => {
-            const raw = data.hoursSubmittedToTasksComparisonPercentage;
-            if (raw === undefined || raw === null) {
-              // No comparison → hide metrics
-              return null;
-            }
-            const normalized = raw > 1 ? raw : raw * 100;
-            const isPositive = normalized >= 0;
-            let color;
-            if (isPositive) {
-              color = darkMode ? 'lightgreen' : 'green';
-            } else {
-              color = 'red';
-            }
-            const formatted = isPositive
-              ? `+${normalized.toFixed(0)}%`
-              : `${normalized.toFixed(0)}%`;
-            return <span style={{ color, marginLeft: 8, fontSize: '12px' }}>{formatted}</span>;
-          })()}
+          <div style={{ color: '#444', fontWeight: 'bold', fontSize: 15 }}>Projects</div>
+          <div style={{ color: '#222', fontWeight: 'bold', fontSize: 14 }}>
+            {projectBarInfo.amount}
+          </div>
+          <div style={{ color: '#666', fontSize: 10 }}>({projectBarInfo.percentage})</div>
+          {projectBarInfo.ifcompare && (
+            <div style={{ color: projectBarInfo.fontcolor, fontSize: 10, fontWeight: 'bold' }}>
+              {projectBarInfo.change}
+            </div>
+          )}
+        </div>
+
+        <div style={{ textAlign: 'center', marginBottom: 0 }}>
+          <div
+            style={{
+              fontSize: '13px',
+              fontWeight: 500,
+              color: darkMode ? 'white' : '#222',
+              display: 'grid',
+              justifyItems: 'center',
+            }}
+          >
+            {(() => {
+              const raw = data.hoursSubmittedToTasksPercentage ?? 0;
+              const normalized = raw > 1 ? raw : raw * 100;
+              const formatted = `${normalized.toFixed(1)}%`;
+              return `${formatted} of Total Tangible Hours Submitted to Tasks`;
+            })()}
+            {(() => {
+              const raw = data.hoursSubmittedToTasksComparisonPercentage;
+              if (raw === undefined || raw === null) {
+                // No comparison → hide metrics
+                return null;
+              }
+              const normalized = raw > 1 ? raw : raw * 100;
+              const isPositive = normalized >= 0;
+              let color;
+              if (isPositive) {
+                color = darkMode ? 'lightgreen' : 'green';
+              } else {
+                color = 'red';
+              }
+              const formatted = isPositive
+                ? `+${normalized.toFixed(0)}%`
+                : `${normalized.toFixed(0)}%`;
+              return <span style={{ color, marginLeft: 8, fontSize: '12px' }}>{formatted}</span>;
+            })()}
+          </div>
+        </div>
+        <div style={{ flex: 1, minHeight: 0 }}>
+          <TinyBarChart
+            chartData={chartData.filter(item => item.name === 'Tasks')}
+            maxY={maxY}
+            tickInterval={tickInterval}
+            renderCustomizedLabel={renderCustomizedLabel}
+            darkMode={darkMode}
+            yAxisLabel="Hours"
+          />
         </div>
       </div>
-      <div style={{ flex: 1, minHeight: 0 }}>
-        <TinyBarChart
-          chartData={chartData.filter(item => item.name === 'Tasks')}
-          maxY={maxY}
-          tickInterval={tickInterval}
-          // renderCustomizedLabel={renderCustomizedLabel}
-          darkMode={darkMode}
-          yAxisLabel="Hours"
-        />
-      </div>
 
-      {/* Distribution Label */}
-      <div style={{ textAlign: 'center', marginTop: 12, marginBottom: 8 }}>
-        <div
-          style={{
-            fontSize: '12px',
-            fontWeight: 600,
-            color: darkMode ? '#e0e0e0' : '#333',
-            letterSpacing: '0.3px',
-          }}
-        >
-          {(() => {
-            const taskCount = taskHours.count || 0;
-            const projectCount = projectHours.count || 0;
-            const totalCount = taskCount + projectCount;
+      {/* Distribution Label — outside the fixed-height area so it never gets clipped */}
+      <div style={{ textAlign: 'center', padding: '8px 12px 4px' }}>
+        {(() => {
+          const taskCount = taskHours.count || 0;
+          const projectCount = projectHours.count || 0;
+          const totalCount = taskCount + projectCount;
 
-            if (totalCount === 0) {
-              return 'No data available';
-            }
+          if (totalCount === 0) {
+            return (
+              <div style={{ fontSize: '12px', color: darkMode ? '#ffffff' : '#555' }}>
+                No data available
+              </div>
+            );
+          }
 
-            const taskPercent = ((taskCount / totalCount) * 100).toFixed(1);
-            const projectPercent = ((projectCount / totalCount) * 100).toFixed(1);
+          const taskPercent = ((taskCount / totalCount) * 100).toFixed(1);
+          const projectPercent = ((projectCount / totalCount) * 100).toFixed(1);
 
-            return `${taskPercent}% Tasks (${taskCount}) | ${projectPercent}% Projects (${projectCount}) (Total = 100%)`;
-          })()}
-        </div>
+          return (
+            <>
+              <div
+                style={{
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  color: darkMode ? '#ffffff' : '#333',
+                  letterSpacing: '0.3px',
+                }}
+              >
+                {taskPercent}% Tasks ({taskCount}) | {projectPercent}% Projects ({projectCount})
+              </div>
+              <div
+                style={{
+                  fontSize: '11px',
+                  fontWeight: 500,
+                  color: darkMode ? '#cccccc' : '#555',
+                }}
+              >
+                (Total = 100%)
+              </div>
+            </>
+          );
+        })()}
       </div>
     </div>
   );
