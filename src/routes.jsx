@@ -132,7 +132,10 @@ import EquipmentDetail from './components/BMDashboard/Equipment/Detail/Equipment
 import UpdateEquipment from './components/BMDashboard/Equipment/Update/UpdateEquipment';
 import ToolDetailPage from './components/BMDashboard/Tools/ToolDetailPage';
 import CheckTypes from './components/BMDashboard/shared/CheckTypes';
-import AttendanceNoShow from './components/AttendanceSystem/AttendanceNoShowCharts.jsx';
+import AttendanceNoShow from './components/AttendanceSystem/AttendanceNoShowCharts';
+
+//job analytics
+
 import LessonsLearntChart from './components/BMDashboard/LessonsLearnt/LessonsLearntChart';
 import UtilizationChart from './components/BMDashboard/UtilizationChart/UtilizationChart';
 import InjuriesDonutChart from './components/InjuriesAnalytics/InjuriesDonutChart';
@@ -195,6 +198,11 @@ import ReviewersStackedBarChart from './components/HGNPRDashboard/ReviewersStack
 import PRGradingDashboard from './components/PRGradingDashboard/PRGradingDashboard';
 import PRGradingScreen from './components/PRGradingScreen';
 import PRGradingTest from './components/PRGradingScreen/PRGradingTest'; //temporary route for testing - delete after testing
+// import IssueDashboard from './components/BMDashboard/Issues/IssueDashboard';
+
+//project status
+const ProjectStatus = lazy(() => import('./components/ProjectStatus/ProjectStatus'));
+
 import ProtectedRoute from './components/common/ProtectedRoute';
 import { UserRole } from './utils/enums';
 import WriteTaskUpload from './components/EductionPortal/Tasks/WriteTaskUpload';
@@ -368,6 +376,7 @@ export default (
         <ProtectedRoute path="/projectreport/:projectId" component={ProjectReport} fallback />
         <ProtectedRoute path="/teamreport/:teamId" component={TeamReport} fallback />
         <ProtectedRoute path="/taskeditsuggestions" component={TaskEditSuggestions} />
+        <ProtectedRoute path="/projectstatus" exact component={ProjectStatus} fallback />
         <ProtectedRoute
           path="/job-analytics-competitive-roles"
           exact

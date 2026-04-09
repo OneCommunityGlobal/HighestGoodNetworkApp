@@ -84,9 +84,9 @@
 }
 
 .lbMessagingContact img {
-  border-radius: 50%;
   width: 40px;
   height: 40px;
+  border-radius: 50%;
   margin-right: 10px;
 }
 
@@ -434,6 +434,6 @@
 }
 
 .lbMessagingContactName {
-  font-size: 15px;
   font-weight: 500;
+  color: #333;
 }

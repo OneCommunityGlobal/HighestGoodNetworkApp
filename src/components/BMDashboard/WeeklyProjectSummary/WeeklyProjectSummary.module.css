@@ -479,6 +479,7 @@
   color: var(--text-color);
 }
 
+
 .darkMode .weeklySummaryShareBtn {
   background-color: var(--button-bg) !important;
 }
