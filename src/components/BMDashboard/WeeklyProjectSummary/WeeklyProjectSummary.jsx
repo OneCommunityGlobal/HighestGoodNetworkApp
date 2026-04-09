@@ -24,6 +24,7 @@ import styles from './WeeklyProjectSummary.module.css';
 import IssueCharts from '../Issues/openIssueCharts';
 import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords.jsx';
+import LessonsLearntChart from '../LessonsLearnt/LessonsLearntChart';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
 import FinancialStatButtons from './Financials/FinancialStatButtons';
 
@@ -309,8 +310,17 @@ function WeeklyProjectSummary() {
         className: 'half',
         content: [
           <MostFrequentKeywords key="frequent-tags-card" />,
-          <div key="injury-chart" className="weekly-project-summary-card normal-card">
+          <div
+            key="injury-chart"
+            className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+          >
             <InjuryCategoryBarChart />
+          </div>,
+          <div
+            key="lessons-learnt-chart"
+            className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+          >
+            <LessonsLearntChart darkMode={darkMode} />
           </div>,
         ],
       },
