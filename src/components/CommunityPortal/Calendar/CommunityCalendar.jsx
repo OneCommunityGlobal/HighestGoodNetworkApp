@@ -267,6 +267,16 @@ function CommunityCalendar() {
     setShowEventModal(true);
   }, []);
 
+  const handleEventKeyPress = useCallback(
+    (e, event) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        handleEventClick(event);
+      }
+    },
+    [handleEventClick],
+  );
+
   const closeEventModal = useCallback(() => {
     setShowEventModal(false);
     setSelectedEvent(null);
@@ -428,7 +438,9 @@ function CommunityCalendar() {
               background: #1a2332 !important;
               color: #ffffff !important;
             }
+
             /* Force white text on dark background */
+
             .react-calendar__tile.selectedDate abbr,
             .react-calendar__tile.selectedDate abbr[title],
             .react-calendar__tile.selectedDate > abbr,
@@ -456,6 +468,28 @@ function CommunityCalendar() {
             /* But preserve event item colors */
             .react-calendar__tile.selectedDate .eventItem {
               color: inherit !important;
+            }
+              /* 1. Target the button and any text inside it */
+            .react-calendar__navigation button:enabled:hover,
+            .react-calendar__navigation button:enabled:hover *,
+            .react-calendar__navigation button:enabled:focus,
+            .react-calendar__navigation button:enabled:focus * {
+              background-color: #e6e6e6 !important;
+              color: #000000 !important;
+              /* This handles cases where they use text-shadows or strokes */
+              text-shadow: none !important;
+              -webkit-text-stroke: 0px transparent !important;
+            }
+
+            /* 2. Target the specific arrows (the << < > >> symbols) */
+            .react-calendar__navigation__arrow:enabled:hover {
+              color: #000000 !important;
+            }
+
+            /* 3. If they are using pseudo-elements (common in some versions) */
+            .react-calendar__navigation button:enabled:hover::before,
+            .react-calendar__navigation button:enabled:hover::after {
+              color: #000000 !important;
             }
           `}
         </style>

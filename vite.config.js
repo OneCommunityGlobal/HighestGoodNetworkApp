@@ -41,7 +41,13 @@ export default defineConfig(({ mode }) => {
       }),
     ],
     optimizeDeps: {
-      include: ['react-popper', 'react-datepicker', 'react-tooltip', 'react-bootstrap'],
+      include: [
+        'react-popper',
+        'react-datepicker',
+        'react-tooltip',
+        'react-bootstrap',
+        'libphonenumber-js/max',
+      ],
       force: true, // force re-bundle after cache issues; set to false once deps load
     },
   };
