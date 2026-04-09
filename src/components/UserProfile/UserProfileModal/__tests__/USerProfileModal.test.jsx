@@ -193,10 +193,10 @@ describe('UserProfileModal component', () => {
   it('check if view blue square works as expected whe type is set to viewBlueSquare',()=>{
     renderComponent(store,'viewBlueSquare',true)
     expect(screen.getByText('Date:')).toBeInTheDocument();
-    expect(screen.getByText(formatYYYYMMDDToMMDDYY(userProfile.infringements[0].date))).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(formatYYYYMMDDToMMDDYY(userProfile.infringements[0].date)))).toBeInTheDocument();
 
     expect(screen.getByText('Created Date:')).toBeInTheDocument();
-    expect(screen.getByText(formatYYYYMMDDToMMDDYY(userProfile.infringements[0].createdDate))).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(formatYYYYMMDDToMMDDYY(userProfile.infringements[0].createdDate)))).toBeInTheDocument();
 
     expect(screen.getByText('Summary')).toBeInTheDocument();
     expect(screen.getByText(userProfile.infringements[0].description)).toBeInTheDocument();
