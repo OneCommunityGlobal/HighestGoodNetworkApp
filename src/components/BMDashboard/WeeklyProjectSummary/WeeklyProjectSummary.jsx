@@ -15,6 +15,8 @@ import IssuesBreakdownChart from './IssuesBreakdownChart';
 import InjuryCategoryBarChart from './GroupedBarGraphInjurySeverity/InjuryCategoryBarChart';
 import ToolsHorizontalBarChart from './Tools/ToolsHorizontalBarChart';
 import ExpenseBarChart from './Financials/ExpenseBarChart';
+import FinancialStatButtons from './Financials/FinancialStatButtons';
+import FinancialsTrackingSection from './ExpenditureChart/FinancialsTrackingSection';
 import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
 import FinancialsTrackingCard from './ExpenditureChart/FinancialsTrackingCard';
@@ -371,6 +373,8 @@ function WeeklyProjectSummary() {
         key: 'Financials Tracking',
         className: 'full',
         content: (
+          <div style={{ gridColumn: '1 / -1', width: '100%' }}>
+            <FinancialsTrackingSection />
           <div className={styles.financialsTrackingGrid}>
             <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
               <FinancialsTrackingCard />
@@ -424,8 +428,12 @@ function WeeklyProjectSummary() {
 
       // Remove interactive elements for PDF
       clonedContent
-        .querySelectorAll('button, .weekly-project-summary-dropdown-icon, .no-print, iframe')
-        .forEach(el => el.parentNode?.removeChild(el));
+        .querySelectorAll(
+          'button, .weekly-project-summary-dropdown-icon, .no-print, .weekly-summary-header-controls',
+        )
+        .forEach(el => {
+          el.parentNode?.removeChild(el);
+        });
 
       // Ensure charts are visible
       const styleElem = document.createElement('style');

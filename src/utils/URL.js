@@ -343,6 +343,8 @@ export const ENDPOINTS = {
   BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`,
   BM_UPDATE_MATERIAL_STATUS: `${APIEndpoint}/bm/updateMaterialStatus`,
   BM_MATERIAL_STOCK_OUT_RISK: `${APIEndpoint}/bm/materials/stock-out-risk`,
+  BM_EXPENDITURE_PROJECTS: `${APIEndpoint}/bm/expenditure/projects`,
+  BM_EXPENDITURE_PIE: projectId => `${APIEndpoint}/bm/expenditure/${projectId}/pie`,
   BM_UPDATE_REUSABLE: `${APIEndpoint}/bm/updateReusableRecord`,
   BM_UPDATE_REUSABLE_BULK: `${APIEndpoint}/bm/updateReusableRecordBulk`,
   BM_TOOL_TYPES: `${APIEndpoint}/bm/invtypes/tools`,

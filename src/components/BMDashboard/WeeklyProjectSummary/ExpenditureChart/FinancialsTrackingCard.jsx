@@ -1,3 +1,7 @@
+import ExpenditureCard from './ExpenditureCard';
+
+function FinancialsTrackingCard() {
+  return <ExpenditureCard mode="comparison" />;
 import { useEffect, useState } from 'react';
 // import httpService from '../../../../services/httpService';
 import ExpenditureChart from './ExpenditureChart';
