@@ -41,6 +41,15 @@
   height: 38px;
 }
 
+.filterSelect :global(.ant-select-selection-placeholder){
+  color: rgba(0, 0, 0, 0.7) !important;
+}
+
+/* Light mode RangePicker placeholder color */
+.filterSelect :global(.ant-picker-input input::placeholder) {
+  color: rgba(0, 0, 0, 0.7) !important;
+}
+
 /* Dark Mode Styles for Select */
 .wrapperDark .filterSelect :global(.ant-select-selector) {
   background-color: #0f172a !important;

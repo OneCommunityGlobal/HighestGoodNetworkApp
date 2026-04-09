@@ -200,7 +200,7 @@ export const fetchInjuriesOverTime = (filters = {}) => {
         params.departments = filters.departments.join(',');
       }
       if (filters.severities?.length) {
-        params.departments = filters.departments.join(',');
+        params.severities = filters.severities.join(',');
       }
 
       const res = await axios.get(ENDPOINTS.BM_INJURY_OVER_TIME, { params });

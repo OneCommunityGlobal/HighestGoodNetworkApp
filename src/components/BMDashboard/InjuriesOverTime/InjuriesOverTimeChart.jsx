@@ -56,6 +56,7 @@ function InjuriesOverTimeLine({ darkMode = false }) {
   const rawData = useSelector(state => state.bmInjury?.injuryOverTimeData || []);
 
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const [selProjects, setSelProjects] = useState([]);
   const [dateRange, setDateRange] = useState([null, null]);
@@ -65,15 +66,21 @@ function InjuriesOverTimeLine({ darkMode = false }) {
 
   useEffect(() => {
     setLoading(true);
-    dispatch(
-      fetchInjuriesOverTime({
-        projectId: selProjects,
-        date: dateRange,
-        injuryType: selInjTypes,
-        department: selDepts,
-        severity: selSeverities,
-      }),
-    ).finally(() => setLoading(false));
+    setError(null);
+    Promise.resolve(
+      dispatch(
+        fetchInjuriesOverTime({
+          projectIds: selProjects,
+          startDate: dateRange?.[0] ? dayjs(dateRange[0]).format('YYYY-MM-DD') : undefined,
+          endDate: dateRange?.[1] ? dayjs(dateRange[1]).format('YYYY-MM-DD') : undefined,
+          types: selInjTypes,
+          departments: selDepts,
+          severities: selSeverities,
+        })
+      )
+    )
+      .catch(err => setError(err?.message || 'Failed to load data'))
+      .finally(() => setLoading(false));
   }, [dispatch, selProjects, selInjTypes, selDepts, dateRange, selSeverities]);
 
   const allProjects = useMemo(() => {
@@ -263,6 +270,9 @@ function InjuriesOverTimeLine({ darkMode = false }) {
         </Select>
       </div>
 
+      {error && (
+        <div style={{ color: 'red', textAlign: 'center', margin: '16px 0' }}>{error}</div>
+      )}
       {loading ? (
         <div style={{ textAlign: 'center', padding: 50 }}>
           <Spin size="large" />
