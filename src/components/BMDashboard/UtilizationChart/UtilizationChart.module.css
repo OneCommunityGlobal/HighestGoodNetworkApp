@@ -107,7 +107,6 @@
   border-color: var(--focus-border-color, #3b82f6);
 }
 
-/* Force light dropdown in light mode */
 .utilizationChartContainer:not(.darkMode) .select {
   background-color: #fff !important;
   color: #000 !important;
@@ -123,7 +122,6 @@
   color: #999;
 }
 
-/* Force light calendar when app is in light mode */
 :global(body:not(.dark-mode)) :global(.react-datepicker) {
   background-color: #fff;
   color: #333;
@@ -165,7 +163,6 @@
   background-color: var(--button-hover, #333);
 }
 
-/* Compare toggle - ON state */
 .activeButton {
   background-color: #4caf50 !important;
   color: #fff !important;
@@ -176,7 +173,6 @@
   background-color: #43a047 !important;
 }
 
-/* Compare toggle - OFF state */
 .inactiveButton {
   background-color: var(--button-bg, #000);
   color: var(--button-text, #fff);
@@ -277,7 +273,6 @@
   box-shadow: 0 4px 12px rgb(0 0 0 / 40%);
 }
 
-/* React-DatePicker Dark Mode Dropdown Styling */
 .utilizationChartContainer.darkMode :global(.react-datepicker) {
   background-color: #333;
   color: #e0e0e0;

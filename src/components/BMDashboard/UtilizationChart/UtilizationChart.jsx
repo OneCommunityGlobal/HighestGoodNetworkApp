@@ -26,6 +26,7 @@ function UtilizationChart() {
   const [toolTypes, setToolTypes] = useState([]);
   const [projects, setProjects] = useState([]);
   const [comparisonMode, setComparisonMode] = useState(false);
+  const [showIncreasedOnly, setShowIncreasedOnly] = useState(false);
   const [downloadMenuOpen, setDownloadMenuOpen] = useState(false);
   const downloadMenuRef = useRef(null);
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -96,6 +97,7 @@ function UtilizationChart() {
         setPreviousToolsData(getMockPreviousData(response.data));
       } else {
         setPreviousToolsData([]);
+        setShowIncreasedOnly(false); // reset filter when comparison is off
       }
     } catch (err) {
       setError('Failed to load utilization data.');
@@ -132,13 +134,32 @@ function UtilizationChart() {
   const handleComparisonToggle = () => {
     const newMode = !comparisonMode;
     setComparisonMode(newMode);
+    // Reset increased filter when turning comparison off
+    if (!newMode) setShowIncreasedOnly(false);
     fetchChartData(newMode);
   };
+
+  // Filtered data based on showIncreasedOnly toggle
+  const filteredToolsData = useMemo(() => {
+    if (!showIncreasedOnly || !comparisonMode || !previousToolsData.length) return toolsData;
+    return toolsData.filter(tool => {
+      const prev = previousToolsData.find(p => p.name === tool.name);
+      return prev ? tool.utilizationRate > prev.utilizationRate : false;
+    });
+  }, [toolsData, previousToolsData, showIncreasedOnly, comparisonMode]);
+
+  const filteredPreviousToolsData = useMemo(() => {
+    if (!showIncreasedOnly || !comparisonMode || !previousToolsData.length)
+      return previousToolsData;
+    return previousToolsData.filter(prev =>
+      filteredToolsData.some(tool => tool.name === prev.name),
+    );
+  }, [previousToolsData, filteredToolsData, showIncreasedOnly, comparisonMode]);
 
   // --- CSV Download ---
   const downloadCSV = () => {
     const headers = ['Tool Name', 'Utilization Rate (%)', 'Downtime (hrs)', 'Count'];
-    const rows = toolsData.map(tool => [
+    const rows = filteredToolsData.map(tool => [
       tool.name,
       tool.utilizationRate,
       tool.downtime,
@@ -183,7 +204,7 @@ function UtilizationChart() {
     autoTable(doc, {
       startY: 36,
       head: [['Tool Name', 'Utilization Rate (%)', 'Downtime (hrs)', 'Count']],
-      body: toolsData.map(tool => [
+      body: filteredToolsData.map(tool => [
         tool.name,
         `${tool.utilizationRate}%`,
         tool.downtime.toLocaleString(),
@@ -198,34 +219,37 @@ function UtilizationChart() {
     setDownloadMenuOpen(false);
   };
 
-  // Summary banner computed values
+  // Summary banner computed from filteredToolsData
   const summary = useMemo(() => {
-    if (!toolsData.length) return null;
+    if (!filteredToolsData.length) return null;
 
-    const totalTools = toolsData.reduce((sum, t) => sum + (t.count || 0), 0);
+    const totalTools = filteredToolsData.reduce((sum, t) => sum + (t.count || 0), 0);
     const avgUtilization =
       Math.round(
-        (toolsData.reduce((sum, t) => sum + t.utilizationRate, 0) / toolsData.length) * 10,
+        (filteredToolsData.reduce((sum, t) => sum + t.utilizationRate, 0) /
+          filteredToolsData.length) *
+          10,
       ) / 10;
-    const mostUtilized = toolsData[0];
-    const totalDowntime = toolsData.reduce((sum, t) => sum + t.downtime, 0);
+    const mostUtilized = filteredToolsData[0];
+    const totalDowntime = filteredToolsData.reduce((sum, t) => sum + t.downtime, 0);
 
     let avgUtilizationChange = null;
-    if (comparisonMode && previousToolsData.length) {
+    if (comparisonMode && filteredPreviousToolsData.length) {
       const prevAvg =
-        previousToolsData.reduce((sum, t) => sum + t.utilizationRate, 0) / previousToolsData.length;
+        filteredPreviousToolsData.reduce((sum, t) => sum + t.utilizationRate, 0) /
+        filteredPreviousToolsData.length;
       avgUtilizationChange = Math.round((avgUtilization - prevAvg) * 10) / 10;
     }
 
     return { totalTools, avgUtilization, mostUtilized, totalDowntime, avgUtilizationChange };
-  }, [toolsData, previousToolsData, comparisonMode]);
+  }, [filteredToolsData, filteredPreviousToolsData, comparisonMode]);
 
   const chartData = {
-    labels: toolsData.map(tool => tool.name),
+    labels: filteredToolsData.map(tool => tool.name),
     datasets: [
       {
         label: 'Utilization (%)',
-        data: toolsData.map(tool => tool.utilizationRate),
+        data: filteredToolsData.map(tool => tool.utilizationRate),
         backgroundColor: darkMode ? '#007bff' : '#a0e7e5',
         borderRadius: 6,
       },
@@ -241,11 +265,11 @@ function UtilizationChart() {
       },
       datalabels: {
         color: context => {
-          if (!comparisonMode || !previousToolsData.length) {
+          if (!comparisonMode || !filteredPreviousToolsData.length) {
             return darkMode ? '#ffffff' : '#333';
           }
-          const tool = toolsData[context.dataIndex];
-          const prev = previousToolsData.find(p => p.name === tool.name);
+          const tool = filteredToolsData[context.dataIndex];
+          const prev = filteredPreviousToolsData.find(p => p.name === tool.name);
           if (!prev) return darkMode ? '#ffffff' : '#333';
           return tool.utilizationRate >= prev.utilizationRate ? '#4caf50' : '#f44336';
         },
@@ -253,10 +277,10 @@ function UtilizationChart() {
         align: 'end',
         font: { size: 12 },
         formatter: (_, context) => {
-          const tool = toolsData[context.dataIndex];
+          const tool = filteredToolsData[context.dataIndex];
           const baseLabel = `${tool.downtime} hrs`;
-          if (!comparisonMode || !previousToolsData.length) return baseLabel;
-          const prev = previousToolsData.find(p => p.name === tool.name);
+          if (!comparisonMode || !filteredPreviousToolsData.length) return baseLabel;
+          const prev = filteredPreviousToolsData.find(p => p.name === tool.name);
           if (!prev) return baseLabel;
           const delta = tool.utilizationRate - prev.utilizationRate;
           const arrow = delta >= 0 ? '↑' : '↓';
@@ -266,18 +290,18 @@ function UtilizationChart() {
       tooltip: {
         callbacks: {
           title: context => {
-            const tool = toolsData[context[0].dataIndex];
+            const tool = filteredToolsData[context[0].dataIndex];
             return tool.name;
           },
           label: context => {
-            const tool = toolsData[context.dataIndex];
+            const tool = filteredToolsData[context.dataIndex];
             const lines = [
               `Utilization: ${tool.utilizationRate}%`,
               `Downtime: ${tool.downtime} hrs`,
               `Count: ${tool.count ?? 'N/A'} tool(s)`,
             ];
-            if (comparisonMode && previousToolsData.length) {
-              const prev = previousToolsData.find(p => p.name === tool.name);
+            if (comparisonMode && filteredPreviousToolsData.length) {
+              const prev = filteredPreviousToolsData.find(p => p.name === tool.name);
               if (prev) {
                 const delta = tool.utilizationRate - prev.utilizationRate;
                 const arrow = delta >= 0 ? '↑' : '↓';
@@ -422,6 +446,18 @@ function UtilizationChart() {
             >
               Compare: {comparisonMode ? 'ON' : 'OFF'}
             </button>
+
+            {/* Show only increased usage — visible only when comparison is ON */}
+            {comparisonMode && (
+              <button
+                onClick={() => setShowIncreasedOnly(prev => !prev)}
+                className={`${styles.button} ${
+                  showIncreasedOnly ? styles.activeButton : styles.inactiveButton
+                }`}
+              >
+                Increased Only: {showIncreasedOnly ? 'ON' : 'OFF'}
+              </button>
+            )}
 
             {/* Download Dropdown */}
             <div className={styles.downloadWrapper} ref={downloadMenuRef}>
