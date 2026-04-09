@@ -313,8 +313,8 @@ export default function PaidLaborCost() {
   };
 
   return (
-    <div className={styles.paidLaborCostContainer}>
-      <h4 className={styles.paidLaborCostTitle}>Paid Labor Cost</h4>
+    <div className={`${styles.paidLaborCostContainer} ${darkMode ? styles.darkMode : ''}`}>
+      <h4 className={`${styles.paidLaborCostTitle}`}>Paid Labor Cost</h4>
 
       {/* Loading indicator */}
       {loading ? (

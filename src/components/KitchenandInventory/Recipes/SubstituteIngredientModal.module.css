@@ -1,0 +1,458 @@
+/* ===== MODAL OVERLAY ===== */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+  animation: fadeIn 0.2s ease;
+}
+
+.modalBackdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: none;
+  cursor: default;
+  padding: 0;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* ===== MODAL ===== */
+.modal {
+  position: relative;
+  width: 90%;
+  max-width: 480px;
+  background-color: #fafaf5;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+  animation: scaleIn 0.2s ease;
+  z-index: 1101;
+}
+
+/* ===== CLOSE BUTTON ===== */
+.closeButton {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+  color: #555;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.closeButton:hover {
+  background-color: #e0e0e0;
+  color: #222;
+}
+
+/* ===== TITLE ===== */
+.modalTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #2d5016;
+  margin: 0 0 1.25rem 0;
+}
+
+/* ===== CURRENT INGREDIENT ===== */
+.currentIngredient {
+  background-color: #fbe9e7;
+  border: 1px solid #ffccbc;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.currentLabel {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #c62828;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.currentInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.25rem;
+}
+
+.currentName {
+  font-weight: 600;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.currentQty {
+  font-size: 0.85rem;
+  color: #888;
+}
+
+/* ===== FORM GROUP ===== */
+.formGroup {
+  margin-bottom: 1.25rem;
+}
+
+.label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #3a3a3a;
+  margin-bottom: 0.4rem;
+}
+
+/* ===== DROPDOWN ===== */
+.dropdownWrapper {
+  position: relative;
+}
+
+.dropdownTrigger {
+  width: 100%;
+  padding: 0.65rem 1rem;
+  background-color: #fff;
+  border: 1px solid #d4cfbb;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+  text-align: left;
+  transition: border-color 0.2s;
+}
+
+.dropdownTrigger:hover {
+  border-color: #2d5016;
+}
+
+.selectedText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.selectedMeta {
+  font-size: 0.75rem;
+  color: #888;
+}
+
+.placeholder {
+  color: #999;
+}
+
+.chevron {
+  font-size: 0.65rem;
+  color: #888;
+  margin-left: 0.5rem;
+  flex-shrink: 0;
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background-color: #fff;
+  border: 1px solid #d4cfbb;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  overflow: hidden;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 0.6rem 1rem;
+  border: none;
+  border-bottom: 1px solid #e0ddd3;
+  font-size: 0.85rem;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.searchInput::placeholder {
+  color: #aaa;
+}
+
+.dropdownList {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.dropdownItem {
+  width: 100%;
+  padding: 0.6rem 1rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  transition: background-color 0.15s;
+}
+
+.dropdownItem:hover {
+  background-color: #f0ede6;
+}
+
+.dropdownItemSelected {
+  background-color: #e8f5e9;
+}
+
+.itemName {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.itemMeta {
+  font-size: 0.75rem;
+  color: #888;
+}
+
+.noResults {
+  padding: 1rem;
+  text-align: center;
+  color: #999;
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+/* ===== QUANTITY INPUT ===== */
+.quantityInput {
+  width: 100%;
+  padding: 0.65rem 1rem;
+  border: 1px solid #d4cfbb;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+  background-color: #fff;
+}
+
+.quantityInput:focus {
+  border-color: #2d5016;
+}
+
+.quantityInput::placeholder {
+  color: #aaa;
+}
+
+/* ===== MODAL ACTIONS ===== */
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.cancelBtn,
+.confirmBtn {
+  padding: 0.6rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.2s, opacity 0.2s;
+}
+
+.cancelBtn {
+  background-color: #f0ede6;
+  color: #555;
+}
+
+.cancelBtn:hover {
+  background-color: #e0ddd3;
+}
+
+.confirmBtn {
+  background-color: #2d5016;
+  color: #fff;
+}
+
+.confirmBtn:hover {
+  background-color: #3a6b1e;
+}
+
+.confirmBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 480px) {
+  .modal {
+    width: 95%;
+    padding: 1.25rem;
+  }
+
+  .modalActions {
+    flex-direction: column;
+  }
+
+  .cancelBtn,
+  .confirmBtn {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* ===== DARK MODE ===== */
+:global(.dark-mode) .modal {
+  background-color: #1e1e1e;
+}
+
+:global(.dark-mode) .closeButton {
+  color: #ccc;
+}
+
+:global(.dark-mode) .closeButton:hover {
+  background-color: #3a3a3a;
+  color: #fff;
+}
+
+:global(.dark-mode) .modalTitle {
+  color: #8ba888;
+}
+
+:global(.dark-mode) .currentIngredient {
+  background-color: #3d1e1e;
+  border-color: #5a2a2a;
+}
+
+:global(.dark-mode) .currentLabel {
+  color: #ef9a9a;
+}
+
+:global(.dark-mode) .currentName {
+  color: #ddd;
+}
+
+:global(.dark-mode) .currentQty {
+  color: #999;
+}
+
+:global(.dark-mode) .label {
+  color: #ccc;
+}
+
+:global(.dark-mode) .dropdownTrigger {
+  background-color: #2a2a2a;
+  border-color: #444;
+  color: #ddd;
+}
+
+:global(.dark-mode) .dropdownTrigger:hover {
+  border-color: #8ba888;
+}
+
+:global(.dark-mode) .selectedMeta {
+  color: #999;
+}
+
+:global(.dark-mode) .placeholder {
+  color: #777;
+}
+
+:global(.dark-mode) .chevron {
+  color: #999;
+}
+
+:global(.dark-mode) .dropdownMenu {
+  background-color: #2a2a2a;
+  border-color: #444;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+:global(.dark-mode) .searchInput {
+  background-color: #2a2a2a;
+  color: #ddd;
+  border-bottom-color: #444;
+}
+
+:global(.dark-mode) .searchInput::placeholder {
+  color: #777;
+}
+
+:global(.dark-mode) .dropdownItem:hover {
+  background-color: #333;
+}
+
+:global(.dark-mode) .dropdownItemSelected {
+  background-color: #2a3a2a;
+}
+
+:global(.dark-mode) .itemName {
+  color: #ddd;
+}
+
+:global(.dark-mode) .itemMeta {
+  color: #999;
+}
+
+:global(.dark-mode) .noResults {
+  color: #777;
+}
+
+:global(.dark-mode) .quantityInput {
+  background-color: #2a2a2a;
+  border-color: #444;
+  color: #ddd;
+}
+
+:global(.dark-mode) .quantityInput:focus {
+  border-color: #8ba888;
+}
+
+:global(.dark-mode) .quantityInput::placeholder {
+  color: #777;
+}
+
+:global(.dark-mode) .cancelBtn {
+  background-color: #333;
+  color: #ccc;
+}
+
+:global(.dark-mode) .cancelBtn:hover {
+  background-color: #444;
+}
+
+:global(.dark-mode) .confirmBtn {
+  background-color: #4a7a3a;
+}
+
+:global(.dark-mode) .confirmBtn:hover {
+  background-color: #5a8a4a;
+}

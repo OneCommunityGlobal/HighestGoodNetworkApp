@@ -169,11 +169,85 @@ function WeeklyProjectSummary() {
   const [openSections, setOpenSections] = useState({});
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
+
+  const getOptionBackground = state => {
+    if (state.isSelected) return '#0d55b3';
+    if (state.isFocused) return '#0d55b3';
+    return darkMode ? '#22272e' : '#fff';
+  };
+
   useEffect(() => {
     if (materials.length === 0) {
       dispatch(fetchAllMaterials());
     }
   }, [dispatch, materials.length]);
+
+  const selectStyles = useMemo(
+    () => ({
+      control: base => ({
+        ...base,
+        backgroundColor: darkMode ? '#22272e' : '#fff',
+        borderColor: darkMode ? '#375071' : '#ccc',
+        color: darkMode ? '#fff' : '#232323',
+        minHeight: 38,
+        boxShadow: 'none',
+        borderRadius: 8,
+      }),
+      menu: base => ({
+        ...base,
+        backgroundColor: darkMode ? '#22272e' : '#fff',
+        fontSize: 12,
+        zIndex: 10001,
+        borderRadius: 8,
+        marginTop: 2,
+        color: darkMode ? '#fff' : '#232323',
+      }),
+      menuList: base => ({
+        ...base,
+        maxHeight: 400,
+        overflowY: 'auto',
+        backgroundColor: darkMode ? '#22272e' : '#fff',
+        color: darkMode ? '#fff' : '#232323',
+        padding: 0,
+      }),
+      option: (base, state) => ({
+        ...base,
+        backgroundColor: getOptionBackground(state),
+        color: state.isSelected ? '#fff' : darkMode ? '#fff' : '#232323',
+        fontSize: 13,
+        padding: '10px 16px',
+        cursor: 'pointer',
+      }),
+      singleValue: base => ({
+        ...base,
+        color: darkMode ? '#fff' : '#232323',
+      }),
+      multiValue: base => ({
+        ...base,
+        backgroundColor: darkMode ? '#375071' : '#e2e7ee',
+        borderRadius: 6,
+        fontSize: 12,
+        marginRight: 4,
+      }),
+      multiValueLabel: base => ({
+        ...base,
+        color: darkMode ? '#fff' : '#333',
+        fontSize: 12,
+        padding: '2px 6px',
+      }),
+      multiValueRemove: base => ({
+        ...base,
+        color: darkMode ? '#fff' : '#333',
+        ':hover': {
+          backgroundColor: darkMode ? '#0d55b3' : '#e2e7ee',
+          color: '#fff',
+        },
+        borderRadius: 4,
+        padding: 2,
+      }),
+    }),
+    [darkMode],
+  );
 
   const quantityOfMaterialsUsedData = useMemo(() => {
     if (!materials.length) return [];
@@ -194,7 +268,7 @@ function WeeklyProjectSummary() {
         title: 'Risk profile for projects',
         key: 'Risk profile for projects',
         className: 'full',
-        content: <ProjectRiskProfileOverview />,
+        content: <ProjectRiskProfileOverview selectStyles={selectStyles} />,
       },
       {
         title: 'Project Status',
@@ -208,19 +282,16 @@ function WeeklyProjectSummary() {
                 <div
                   key={uniqueId}
                   className={`${styles.weeklyProjectSummaryCard} ${styles.statusCard}`}
-                  style={{ backgroundColor: button.bgColor }} // Dynamic Background
+                  style={{ backgroundColor: button.bgColor }}
                 >
                   <div className={`${styles.weeklyCardTitle}`}>{button.title}</div>
                   <div
                     className={`${styles.weeklyStatusButton}`}
-                    style={{ backgroundColor: button.buttonColor }} // Dynamic Oval Color
+                    style={{ backgroundColor: button.buttonColor }}
                   >
                     <span className={`${styles.weeklyStatusValue}`}>{button.value}</span>
                   </div>
-                  <div
-                    className="weekly-status-change"
-                    style={{ color: button.textColor }} // Dynamic Change Color
-                  >
+                  <div className="weekly-status-change" style={{ color: button.textColor }}>
                     {button.change}
                   </div>
                 </div>
@@ -229,7 +300,6 @@ function WeeklyProjectSummary() {
           </div>
         ),
       },
-      // New Issues Breakdown card
       {
         title: 'Issues Breakdown',
         key: 'Issues Breakdown',
@@ -247,9 +317,14 @@ function WeeklyProjectSummary() {
         content: [1, 2, 3].map((_, index) => {
           let content;
           if (index === 1) {
-            content = <QuantityOfMaterialsUsed data={quantityOfMaterialsUsedData} />;
+            content = (
+              <QuantityOfMaterialsUsed
+                data={quantityOfMaterialsUsedData}
+                selectStyles={selectStyles}
+              />
+            );
           } else if (index === 2) {
-            content = <TotalMaterialCostPerProject />;
+            content = <TotalMaterialCostPerProject selectStyles={selectStyles} />;
           } else {
             content = <p>📊 Card</p>;
           }
@@ -270,49 +345,42 @@ function WeeklyProjectSummary() {
         className: 'full',
         content: (
           <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
-            <IssueCharts />
-          </div>
-        ),
-      },
-      {
-        title: 'Issues Breakdown',
-        key: 'Issues Breakdown',
-        className: 'full',
-        content: (
-          <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
-            <IssuesBreakdownChart />
+            <IssueCharts darkMode={darkMode} />
           </div>
         ),
       },
       {
         title: 'Tools and Equipment Tracking',
         key: 'Tools and Equipment Tracking',
-        className: 'half',
-        content: [
-          <div
-            key="donut-chart"
-            className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
-          >
-            <ToolStatusDonutChart />
-          </div>,
-          <div
-            key="bar-chart"
-            className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
-          >
-            <ToolsHorizontalBarChart darkMode={darkMode} />
-          </div>,
-        ],
+        className: 'full',
+        content: (
+          <div className={`${styles.toolsTrackingLayout}`}>
+            <div className={`${styles.toolsDonutWrap}`}>
+              <ToolStatusDonutChart />
+            </div>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <ToolsHorizontalBarChart darkMode={darkMode} />
+            </div>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <SupplierPerformanceGraph />
+            </div>
+          </div>
+        ),
       },
       {
         title: 'Lessons Learned',
         key: 'Lessons Learned',
-        className: 'half',
-        content: [
-          <MostFrequentKeywords key="frequent-tags-card" />,
-          <div key="injury-chart" className="weekly-project-summary-card normal-card">
-            <InjuryCategoryBarChart />
-          </div>,
-        ],
+        className: 'full',
+        content: (
+          <div className={`${styles.lessonsLearnedGrid}`}>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.lessonsCard}`}>
+              <MostFrequentKeywords darkMode={darkMode} />
+            </div>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.lessonsCard}`}>
+              <InjuryCategoryBarChart />
+            </div>
+          </div>
+        ),
       },
       {
         title: 'Financials',
@@ -377,7 +445,7 @@ function WeeklyProjectSummary() {
             </div>
             <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>📊 Card</div>
             <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
-              <CostPredictionChart projectId={1} />
+              <CostPredictionChart projectId={1} darkMode={darkMode} />
             </div>
             <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
               <ActualVsPlannedCost />
@@ -394,14 +462,12 @@ function WeeklyProjectSummary() {
     setIsGeneratingPDF(true);
 
     try {
-      // Open all sections for PDF capture
       const allSectionsOpen = {};
       sections.forEach(section => {
         allSectionsOpen[section.key] = true;
       });
       setOpenSections(allSectionsOpen);
 
-      // Wait for sections to open and re-render
       await new Promise(resolve => setTimeout(resolve, 800));
 
       const contentElement = document.querySelector(`.${styles.weeklyProjectSummaryContainer}`);
@@ -422,12 +488,10 @@ function WeeklyProjectSummary() {
 
       const clonedContent = contentElement.cloneNode(true);
 
-      // Remove interactive elements for PDF
       clonedContent
         .querySelectorAll('button, .weekly-project-summary-dropdown-icon, .no-print, iframe')
         .forEach(el => el.parentNode?.removeChild(el));
 
-      // Ensure charts are visible
       const styleElem = document.createElement('style');
       styleElem.textContent = `
         img, svg, canvas {
@@ -453,7 +517,6 @@ function WeeklyProjectSummary() {
         windowHeight: pdfContainer.scrollHeight,
         logging: false,
         onclone: clonedDoc => {
-          // Ensure all sections are visible in the cloned document
           const sections = clonedDoc.querySelectorAll(
             `.${styles.weeklyProjectSummaryDashboardCategoryContent}`,
           );
@@ -467,11 +530,9 @@ function WeeklyProjectSummary() {
 
       const imgData = canvas.toDataURL('image/jpeg', 0.95);
 
-      const pdfWidth = 210; // A4 width in mm
+      const pdfWidth = 210;
       const imgHeight = (canvas.height * pdfWidth) / canvas.width;
-
-      // FIXED: Using Math.max() instead of ternary for better readability
-      const pdfHeight = Math.max(imgHeight, 297); // Min A4 height
+      const pdfHeight = Math.max(imgHeight, 297);
 
       const pdf = new jsPDF({
         orientation: imgHeight > pdfWidth ? 'portrait' : 'landscape',
@@ -498,7 +559,6 @@ function WeeklyProjectSummary() {
 
   return (
     <div className={`${styles.weeklyProjectSummaryContainer} ${darkMode ? styles.darkMode : ''}`}>
-      {/* Header Section - Now inline instead of seperate component */}
       <div className={styles.weeklySummaryHeaderWrapper}>
         <div className={styles.weeklySummaryHeaderContainer}>
           <h1 className={styles.weeklySummaryHeaderTitle}>
@@ -525,26 +585,36 @@ function WeeklyProjectSummary() {
         </div>
       </div>
 
-      {/* Dashboard Content */}
-      <div className={`${styles.weeklyProjectSummaryDashboardContainer}`}>
+      <div
+        className={`${styles.weeklyProjectSummaryDashboardContainer} ${
+          darkMode ? 'bg-space-cadet' : ''
+        }`}
+      >
         <div className={`${styles.weeklyProjectSummaryDashboardGrid}`}>
           {sections.map(({ title, key, className, content }) => (
             <div
               key={key}
-              className={`${styles.weeklyProjectSummaryDashboardSection} ${styles[className]}`}
+              className={`${styles.weeklyProjectSummaryDashboardSection} ${styles[className]} ${
+                darkMode ? 'bg-yinmn-blue' : ''
+              }`}
             >
               <button
                 type="button"
-                className={styles.weeklyProjectSummaryDashboardCategoryTitle}
+                className={`${styles.weeklyProjectSummaryDashboardCategoryTitle} ${
+                  darkMode ? 'bg-space-cadet' : ''
+                }`}
                 onClick={() => toggleSection(key)}
                 aria-expanded={openSections[key]}
               >
                 {title}
-                {/* FIXED: Added proper spacing with a space before the span */}
                 <span aria-hidden="true"> {openSections[key] ? '∧' : '∨'}</span>
               </button>
               {openSections[key] && (
-                <div className={`${styles.weeklyProjectSummaryDashboardCategoryContent}`}>
+                <div
+                  className={`${styles.weeklyProjectSummaryDashboardCategoryContent} ${
+                    darkMode ? 'bg-yinmn-blue' : ''
+                  }`}
+                >
                   {content}
                 </div>
               )}

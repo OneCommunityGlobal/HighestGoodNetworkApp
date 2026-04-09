@@ -1,6 +1,6 @@
 /* ---------------- PAGE CONTAINER ---------------- */
 .weeklyProjectSummaryContainer {
-  min-height: 100vh;
+  min-height: 100%;
   background-color: var(--bg-color);
   color: var(--text-color);
   transition: background-color 0.3s ease, color 0.3s ease;
@@ -118,7 +118,6 @@
 
 /* Share PDF Button - Fixed */
 .weeklySummaryShareBtn {
-  background-color: var(--button-bg) !important;
   color: white;
   font-family: inherit;
   white-space: nowrap;
@@ -134,6 +133,7 @@
   min-width: 100px;
   font-size: 14px;
   line-height: 1.5;
+  background-color: var(--button-bg) !important;
 }
 
 .weeklySummaryShareBtn:hover {
@@ -175,6 +175,18 @@
 }
 
 /* ---------------- CARDS ---------------- */
+.projectStatusGrid {
+  display: grid;
+  grid-template-rows: repeat(2, auto);
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 1600px;
+  margin: auto;
+}
+
 .weeklyProjectSummaryCard {
   padding: 10px;
   border-radius: 6px;
@@ -560,18 +572,6 @@
   transition: all 0.3s ease;
 }
 
-/* ---------------- RESPONSIVE GRID LAYOUT ---------------- */
-.projectStatusGrid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 20px;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  max-width: 1600px;
-  margin: auto;
-}
-
 /* ---------------- OVAL STATUS BUTTON ---------------- */
 .weeklyStatusButton {
   width: 130px;
@@ -827,9 +827,9 @@
   border-radius: 16px;
   background: #fff;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-  width: 220px;   /* fixed width like Project Status */
-  height: auto;   /* shrink to fit content */
-  margin: 0 auto; /* center inside grid cell */
+  width: 220px;
+  height: auto;
+  margin: 0 auto;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -853,7 +853,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #f0f0f0; /* overridden dynamically */
+  background-color: #f0f0f0;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
   margin: 12px 0;
 }
@@ -861,7 +861,7 @@
 .financialCardValue {
   font-size: 36px;
   font-weight: 600;
-  color: #000; /* overridden dynamically */
+  color: #000;
 }
 
 .financialGrid {

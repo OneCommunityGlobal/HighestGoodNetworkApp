@@ -76,6 +76,9 @@ export default function DistributionLaborHours() {
             type="date"
             value={dateRange.from}
             onChange={e => setDateRange({ ...dateRange, from: e.target.value })}
+            className={`${styles.toolsHorizontalBarChartDatePicker} ${
+              darkMode ? styles.darkDate : ''
+            }`}
           />
         </label>
         <label>
@@ -84,19 +87,30 @@ export default function DistributionLaborHours() {
             type="date"
             value={dateRange.to}
             onChange={e => setDateRange({ ...dateRange, to: e.target.value })}
+            className={`${styles.toolsHorizontalBarChartDatePicker} ${
+              darkMode ? styles.darkDate : ''
+            }`}
           />
         </label>
-        <label>
-          Project:
-          <select onChange={e => setProjectFilter(e.target.value)} value={projectFilter}>
+        <label style={{ color: darkMode ? '#ffffff' : '#000000' }}>
+          Project:{' '}
+          <select
+            onChange={e => setProjectFilter(e.target.value)}
+            value={projectFilter}
+            className={darkMode ? styles.selectDarkMode : styles.selectLightMode}
+          >
             <option value="">All</option>
             <option value="Project A">Project A</option>
             <option value="Project B">Project B</option>
           </select>
         </label>
-        <label>
-          Member:
-          <select onChange={e => setMemberFilter(e.target.value)} value={memberFilter}>
+        <label style={{ color: darkMode ? '#ffffff' : '#000000' }}>
+          Member:{' '}
+          <select
+            onChange={e => setMemberFilter(e.target.value)}
+            value={memberFilter}
+            className={darkMode ? styles.selectDarkMode : styles.selectLightMode}
+          >
             <option value="">All</option>
             <option value="Member 1">Member 1</option>
             <option value="Member 2">Member 2</option>

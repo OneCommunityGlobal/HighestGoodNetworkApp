@@ -1,5 +1,6 @@
 import { BarChart, Bar, XAxis, YAxis, LabelList, ResponsiveContainer } from 'recharts';
 import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 
 const categories = ['Plumbing', 'Electrical', 'Structural', 'Mechanical'];
 const projects = ['Project A', 'Project B', 'Project C'];
@@ -237,3 +238,7 @@ export default function ExpenseBarChart({ darkMode }) {
     </div>
   );
 }
+
+ExpenseBarChart.propTypes = {
+  darkMode: PropTypes.bool.isRequired,
+};

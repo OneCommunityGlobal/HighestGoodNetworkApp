@@ -17,8 +17,8 @@
   box-shadow: 0 1px 0 rgb(0 0 0 / 4%), 0 12px 30px rgb(2 6 23 / 8%);
   display: flex;
   flex-direction: column;
-  align-items: center; /* center children horizontally */
-  text-align: center; /* center text by default */
+  align-items: center;
+  text-align: center;
 }
 
 .experience-chart-container::before {
@@ -65,8 +65,8 @@
 .filter-row {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center !important; /* center items in the row */
-  align-items: center; /* equal vertical alignment */
+  justify-content: center !important;
+  align-items: center;
   gap: 1rem;
   width: 100%;
   margin: 0 auto;
@@ -75,10 +75,10 @@
 
 .filter-group,
 .filter-actions {
-  flex: 1 1 220px; /* grow/shrink; base width ~220px */
-  max-width: 320px; /* avoid overly wide inputs */
-  min-width: 200px; /* don’t get too tiny */
-  text-align: left; /* labels/inputs left-aligned inside */
+  flex: 1 1 220px;
+  max-width: 320px;
+  min-width: 200px;
+  text-align: left;
 }
 
 .filter-label {
@@ -94,7 +94,7 @@
 .filter-select,
 .filter-group select {
   width: 100%;
-  height: 44px; /* consistent control height */
+  height: 44px;
   line-height: 44px;
   padding: 0 0.9rem;
   border: 2px solid #d1d5db;
@@ -137,7 +137,7 @@
   font-weight: 700;
   cursor: pointer;
   transition: transform 0.12s, box-shadow 0.2s, background-color 0.2s;
-  height: 44px; /* same height as inputs */
+  height: 44px;
 }
 
 .btn:disabled {
@@ -199,10 +199,10 @@
 .chart-area {
   width: 100%;
   min-width: 0;
-  display: flex; /* ← was commented out; enable flex centering */
+  display: flex;
   flex-direction: column;
-  align-items: center; /* center horizontally */
-  justify-content: center; /* center vertically within area */
+  align-items: center;
+  justify-content: center;
   text-align: center;
   padding-right: 100px !important;
 }
@@ -210,11 +210,11 @@
 .chart-canvas {
   display: flex;
   align-items: center;
-  justify-content: center; /* center the inner wrapper */
+  justify-content: center;
   width: 100%;
   max-width: 520px;
-  aspect-ratio: 1 / 1; /* keeps donut perfectly square */
-  min-height: 240px; /* fallback for older browsers */
+  aspect-ratio: 1 / 1;
+  min-height: 240px;
   margin: 0 auto;
 }
 
@@ -235,14 +235,12 @@
 
 /* ===================== Details (below donut) ===================== */
 .chart-details {
-  max-width: 960px; /* match .experience-chart-container */
+  max-width: 960px;
   width: 100%;
   margin: 1rem auto 0;
   padding-inline: 0.5rem;
   display: grid;
   gap: 0.8rem;
-
-  /* single strategy: fluid columns that never force overflow */
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   place-items: stretch stretch;
   overflow-x: hidden; /* safety net */
@@ -251,11 +249,11 @@
 /* 2) Let cards fill the grid cell on desktop (remove narrow cap) */
 .detail-item {
   display: grid;
-  grid-template-columns: 12px 1fr auto auto; /* dot | name | count | pct */
+  grid-template-columns: 12px 1fr auto auto;
   column-gap: 8px;
   align-items: center;
   width: 100%;
-  max-width: none; /* fill grid column, don't cap */
+  max-width: none;
   padding: 0.6rem 0.75rem;
 
   /* text-align: left; */
@@ -297,7 +295,7 @@
 
 .detail-sep {
   display: none;
-} /* we don’t need the bullet in a grid layout */
+}
 .detail-count {
   grid-column: 3;
   font-weight: 800;
@@ -306,7 +304,7 @@
 
 .detail-sub {
   display: none;
-} /* optional: hide to keep cards compact; show if you prefer */
+}
 .detail-pct {
   grid-column: 4;
   margin-left: 0;
@@ -314,20 +312,10 @@
   color: #2563eb;
 }
 
-/* .detail-item:hover,
-.detail-item.active {
-  background: #111827;
-  border-color: #0b1220;
-  box-shadow: 0 8px 18px rgba(2,6,23,.12);
-  transform: translateY(-1px);
-} */
-
-/* .detail-item:hover span,
-.detail-item.active span { color: #ffffff !important; } */
 .detail-item:hover .detail-pct,
 .detail-item.active .detail-pct {
   color: #93c5fd !important;
-} /* keep contrast on hover */
+}
 
 @media (width <= 640px) {
   .chart-details {
@@ -335,7 +323,7 @@
   }
 
   .detail-item {
-    display: flex; /* simpler on mobile */
+    display: flex;
     flex-wrap: wrap;
     justify-content: center;
     text-align: center;
@@ -468,8 +456,6 @@
   filter: brightness(1.05);
 }
 
-/* .detail-item { text-align: center; justify-content: center; } */
-
 /* ===================== Responsive tweaks ===================== */
 @media (width <= 640px) {
   .filter-group,
@@ -485,7 +471,7 @@
 
   .chart-details {
     grid-template-columns: 1fr;
-  } /* single column for clarity */
+  }
 }
 
 /* ===================== Print & Accessibility ===================== */
@@ -545,7 +531,7 @@
 
 /* --- Ensure detail cards always show a visible background --- */
 .chart-details .detail-item {
-  background-color: #f1f5f9; /* stronger than #f8fafc, more visible */
+  background-color: #f1f5f9;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
   box-shadow: 0 2px 8px rgb(2 6 23 / 6%);
@@ -562,8 +548,6 @@
   box-shadow: 0 8px 18px rgb(2 6 23 / 12%);
 }
 
-/* If your app has global card or utility classes that might strip bg,
-   this raises specificity a bit further without !important. */
 .experience-chart-container .chart-details .detail-item {
   background-color: #f1f5f9;
 }
@@ -577,21 +561,15 @@
 
 /* --- Make chart-driven active state win over base card styles --- */
 .chart-details .detail-item.active {
-  background-color: #111827 !important; /* win against base bg */
+  background-color: #111827 !important;
   border-color: #0b1220 !important;
   box-shadow: 0 8px 18px rgb(2 6 23 / 12%);
   color: #fff;
 }
 
 .chart-details .detail-item.active span {
-  color: #fff !important; /* keep text readable */
+  color: #fff !important;
 }
-
-/* Optional: smooth the state change */
-
-/* .chart-details .detail-item {
-  transition: background-color .15s ease, border-color .15s ease, box-shadow .2s ease, transform .15s ease;
-} */
 
 /* ===================== DARK MODE (scoped to wrapper) ===================== */
 
@@ -623,7 +601,7 @@
 
 /* Title & header */
 .experience-donut-chart-dark-mode .chart-title {
-  color: #fff !important; /* “Applicants by Experience” */
+  color: #fff !important;
 }
 
 .experience-donut-chart-dark-mode .chart-header {
