@@ -43,7 +43,7 @@
 
 .chartContainer {
   width: 100%;
-  max-width: clamp(300px, 42vw, 520px); /* reduced overall footprint */
+  max-width: clamp(300px, 42vw, 520px);
   aspect-ratio: 1 / 1;
   height: auto;
   position: relative;
@@ -144,27 +144,21 @@
   }
 }
 
-/* Dark theme support (optional) */
-.dark {
-  background: #1f1f1f;
-  border-color: #2a2a2a;
-  box-shadow: none;
+/* Dark mode support */
+.radarChart:global(.dark-mode) {
+  background: linear-gradient(145deg, #1c2541 0%, #1a202c 100%);
+  border-color: rgba(62, 160, 203, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
-.dark .chartTitle h4 {
-  color: #e6e6e6;
+.radarChart:global(.dark-mode) .chartTitle h4 {
+  color: #63b3ed;
 }
 
-.dark .chartTitle p {
-  color: #bfbfbf;
+.radarChart:global(.dark-mode) .chartTitle p {
+  color: #a0aec0;
 }
 
-.dark .legendItem {
+.radarChart:global(.dark-mode) .legendItem {
   color: #e2e8f0;
-}
-
-:global(.dark-mode) .radarChart {
-  background: linear-gradient(145deg, #2a2f3e 0%, #1e2330 100%);
-  border-color: rgb(62 160 203 / 30%);
-  box-shadow: 0 4px 20px rgb(0 0 0 / 30%);
 }
