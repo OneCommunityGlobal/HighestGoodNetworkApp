@@ -66,7 +66,7 @@ export class Login extends Form {
     const { darkMode } = this.props;
     return (
       <div
-        className={`pt-5 h-100 container-fluid d-flex flex-column align-items-center ${
+        className={`pt-5 min-vh-100 container-fluid d-flex flex-column align-items-center ${
           darkMode ? 'bg-oxford-blue' : ''
         }`}
       >
@@ -80,7 +80,13 @@ export class Login extends Form {
             darkMode,
           })}
           <div>
-            {this.renderButton({ label: 'Submit', darkMode })}
+            {this.renderButton({
+              name: 'submit',
+              id: 'submit',
+              label: 'Submit',
+              type: 'submit',
+              darkMode,
+            })}
             <Link to="forgotpassword">
               <span
                 style={{
@@ -96,7 +102,7 @@ export class Login extends Form {
             </Link>
           </div>
         </form>
-        <footer>
+        <footer className="mt-5">
           <NetlifyPoweredLink />
         </footer>
       </div>
