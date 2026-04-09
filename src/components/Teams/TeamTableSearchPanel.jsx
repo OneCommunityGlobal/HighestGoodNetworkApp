@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import { boxStyle, boxStyleDark } from '~/styles';
 import hasPermission from '~/utils/permissions';
 import { SEARCH, CREATE_NEW_TEAM } from '../../languages/en/ui';
+import styles from './TeamTableSearchPanel.module.css';
 
 /**
  * The search panel stateless component for  Teams grid
@@ -18,10 +19,26 @@ export function TeamTableSearchPanelBase(props) {
   }, []);
   return (
     <div className="input-group" id="new_team">
+      <div className="input-group-prepend" style={{ marginLeft: '10px' }}>
+        <span className={`input-group-text ${darkMode ? styles.searchLabelDark : ''}`}>
+          {SEARCH}
+        </span>
+      </div>
+      <input
+        ref={inputRef}
+        type="text"
+        className={`form-control ${darkMode ? styles.searchInputDark : ''}`}
+        aria-label="Search"
+        placeholder="Search Text"
+        id="team-profiles-wild-card-search"
+        onChange={e => {
+          props.onSearch(e.target.value);
+        }}
+      />
       {canPostTeam && (
         <button
           type="button"
-          className="btn btn-info"
+          className="btn btn-info ml-2"
           onClick={() => {
             props.onCreateNewTeamClick();
           }}
@@ -30,23 +47,6 @@ export function TeamTableSearchPanelBase(props) {
           {CREATE_NEW_TEAM}
         </button>
       )}
-      <div className="input-group-prepend" style={{ marginLeft: '10px' }}>
-        <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
-          {SEARCH}
-        </span>
-      </div>
-
-      <input
-        ref={inputRef}
-        type="text"
-        className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
-        aria-label="Search"
-        placeholder="Search Text"
-        id="team-profiles-wild-card-search"
-        onChange={e => {
-          props.onSearch(e.target.value);
-        }}
-      />
     </div>
   );
 }

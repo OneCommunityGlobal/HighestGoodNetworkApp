@@ -1,51 +1,8 @@
-/* ==========================================
-   1) Light Mode (Default Variables)
-   ========================================== */
-.resourceManagementPage {
-  --bg-color: #ffffff;
-  --text-color: #000000;
-  --heading-color: #000000;
-  --card-bg: #ffffff;
-  --border-color: #dddddd;
-  --separator-color: #dddddd;
-  --input-bg: #ffffff;
-  --input-border: #cccccc;
-  --search-bar-bg: #f0f0f0;
-  --button-bg: #d3d3d3;
-  --button-hover: #b3b3b3;
-  --pagination-bg: #f1f1f1;
-  --table-header-color: #555555;
-  --table-text-color: #333333;
-
-  min-height: 100vh;
-  background-color: var(--bg-color);
+/* Light Mode (Default) */
+.resourceManagementDashboard {
   padding: 20px;
-  font-family: Arial, sans-serif;
 }
 
-/* ==========================================
-   2) Dark Mode Override
-   ========================================== */
-.resourceManagementDarkMode {
-  --bg-color: #0f172a; /* Deep slate background */
-  --text-color: #e5e7eb; /* Light gray text */
-  --heading-color: #f8fafc; /* Almost white headings */
-  --card-bg: #020617; /* Darker card background */
-  --border-color: #1e293b; /* Dark border */
-  --separator-color: #1e293b; /* Dark separator lines */
-  --input-bg: #0f172a; /* Dark input background */
-  --input-border: #334155; /* Dark input border */
-  --search-bar-bg: #1e293b; /* Dark search bar */
-  --button-bg: #334155; /* Dark button background */
-  --button-hover: #475569; /* Dark button hover */
-  --pagination-bg: #1e293b; /* Dark pagination */
-  --table-header-color: #94a3b8; /* Muted header text */
-  --table-text-color: #e5e7eb; /* Light table text */
-}
-
-/* ==========================================
-   3) Layout Components
-   ========================================== */
 .dashboardTitle {
   display: flex;
   align-items: center;
@@ -56,35 +13,29 @@
 .dashboardTitle h2 {
   font-size: 1.5em;
   font-weight: bold;
-  color: var(--heading-color) !important;
-  margin: 0;
+  color: black;
 }
 
 .addLogButton {
-  background-color: var(--button-bg);
-  color: var(--text-color) !important;
+  background-color: #d3d3d3;
+  color: black;
   border: none;
   padding: 10px 20px;
   border-radius: 5px;
   cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.2s ease;
 }
 
 .addLogButton:hover {
-  background-color: var(--button-hover);
+  background-color: #b3b3b3;
 }
 
-/* ==========================================
-   4) Search Bar
-   ========================================== */
 .searchBarContainer {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
-  background-color: var(--search-bar-bg);
-  border: 1px solid var(--border-color);
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
   border-radius: 5px;
   padding: 10px;
 }
@@ -94,7 +45,6 @@
   gap: 10px;
   align-items: center;
   font-size: 1.2em;
-  color: var(--table-text-color) !important;
 }
 
 .searchBarContainerRight {
@@ -103,20 +53,16 @@
 }
 
 .searchInput {
-  padding: 5px 10px;
-  border: 1px solid var(--input-border);
+  padding: 5px;
+  border: 1px solid #ccc;
   border-radius: 5px;
-  background-color: var(--input-bg);
-  color: var(--text-color) !important;
-}
-
-.searchInput::placeholder {
-  color: var(--table-header-color);
+  background-color: white;
+  color: black;
 }
 
 .searchButton {
-  background-color: #006FE6;
-  color: white !important;
+  background-color: #007bff;
+  color: white;
   border: none;
   padding: 5px 10px;
   border-radius: 5px;
@@ -127,12 +73,9 @@
   background-color: #0056b3;
 }
 
-/* ==========================================
-   5) Resource List / Table
-   ========================================== */
 .resourceList {
-  background-color: var(--card-bg);
-  border: 1px solid var(--border-color);
+  background-color: white;
+  border: 1px solid #ddd;
   border-radius: 5px;
   padding: 10px;
 }
@@ -150,63 +93,317 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 0;
+  padding: 10px 0;
 }
 
 .resourceHeadingItem {
   flex: 1;
   text-align: left;
-  color: var(--table-header-color) !important;
+  color: #555;
   font-weight: bold;
 }
 
 .resourceItemDetail {
   flex: 1;
   text-align: left;
-  color: var(--table-text-color) !important;
+  color: #333;
 }
 
 .calendarIcon {
-  margin-right: 6px;
-  opacity: 0.9;
+  margin-right: 5px;
 }
 
 .lineSperator {
   border: none;
-  border-top: 1px solid var(--separator-color);
-  margin: 0;
+  border-top: 1px solid #ddd;
 }
 
-/* ==========================================
-   6) Pagination
-   ========================================== */
-.pagination {
+.rmPagination {
   display: flex;
   gap: 10px;
   justify-content: flex-end;
   margin-top: 20px;
-  align-items: center;
 }
 
-.pagination button {
-  background-color: var(--pagination-bg);
-  border: 1px solid var(--border-color);
+.rmPagination button {
+  background-color: #f1f1f1;
+  border: 1px solid #ddd;
   padding: 5px 10px;
   cursor: pointer;
-  color: var(--text-color) !important;
-  border-radius: 4px;
-  min-width: 32px;
-  transition: all 0.2s ease;
+  color: #333;
 }
 
-.pagination button:hover {
-  background-color: #006FE6;
-  border-color: #006FE6;
-  color: white !important;
+.rmPagination button:hover {
+  background-color: #007bff;
+  color: white;
 }
 
 .arrowButton {
   font-weight: bold;
-  padding: 5px 15px !important;
-  font-size: 16px;
+  padding: 5px 15px;
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.modalHeader h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.errorMessage {
+  background-color: #fee;
+  border: 1px solid #fcc;
+  color: #c33;
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #666;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.closeButton:hover {
+  color: #333;
+}
+
+.formGroup {
+  margin-bottom: 1.25rem;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.formGroup input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  background-color: white;
+  color: #333;
+}
+
+.formGroup input:focus {
+  outline: none;
+  border-color: #4caf50;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.cancelButton,
+.submitButton {
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.cancelButton {
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+.cancelButton:hover {
+  background-color: #e0e0e0;
+}
+
+.submitButton {
+  background-color: #4caf50;
+  color: white;
+}
+
+.submitButton:hover {
+  background-color: #45a049;
+}
+
+/* Dark Mode Styles */
+.darkMode .dashboardTitle h2 {
+  color: #e0e0e0;
+}
+
+.darkMode .addLogButton {
+  background-color: #3a3a3a;
+  color: #e0e0e0;
+}
+
+.darkMode .addLogButton:hover {
+  background-color: #505050;
+}
+
+.darkMode .searchBarContainer {
+  background-color: #2a2a2a;
+  border: 1px solid #444;
+}
+
+.darkMode .searchBarContainerLeft {
+  color: #e0e0e0;
+}
+
+.darkMode .searchInput {
+  background-color: #1a1a1a;
+  color: #e0e0e0;
+  border: 1px solid #444;
+}
+
+.darkMode .searchInput::placeholder {
+  color: #888;
+}
+
+.darkMode .searchButton {
+  background-color: #0d6efd;
+  color: white;
+}
+
+.darkMode .searchButton:hover {
+  background-color: #0a58ca;
+}
+
+.darkMode .resourceList {
+  background-color: #1a1a1a;
+  border: 1px solid #444;
+}
+
+.darkMode .resourceHeadingItem {
+  color: #b0b0b0;
+}
+
+.darkMode .resourceItemDetail {
+  color: #e0e0e0;
+}
+
+.darkMode .lineSperator {
+  border-top: 1px solid #444;
+}
+
+.darkMode .rmPagination button {
+  background-color: #2a2a2a;
+  border: 1px solid #444;
+  color: #e0e0e0;
+}
+
+.darkMode .rmPagination button:hover {
+  background-color: #0d6efd;
+  color: white;
+}
+
+.darkMode .modalOverlay {
+  background-color: rgba(0, 0, 0, 0.75);
+}
+
+.darkMode .modalContent {
+  background: #1a1a1a;
+  border: 1px solid #444;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+}
+
+.darkMode .modalHeader h3 {
+  color: #e0e0e0;
+}
+
+.darkMode .errorMessage {
+  background-color: #4a2020;
+  border: 1px solid #8a3030;
+  color: #ffb3b3;
+}
+
+.darkMode .closeButton {
+  color: #b0b0b0;
+}
+
+.darkMode .closeButton:hover {
+  color: #e0e0e0;
+}
+
+.darkMode .formGroup label {
+  color: #e0e0e0;
+}
+
+.darkMode .formGroup input {
+  background-color: #2a2a2a;
+  color: #e0e0e0;
+  border: 1px solid #444;
+}
+
+.darkMode .formGroup input::placeholder {
+  color: #888;
+}
+
+.darkMode .formGroup input:focus {
+  border-color: #4caf50;
+}
+
+.darkMode .cancelButton {
+  background-color: #2a2a2a;
+  color: #e0e0e0;
+}
+
+.darkMode .cancelButton:hover {
+  background-color: #3a3a3a;
+}
+
+.darkMode .submitButton {
+  background-color: #4caf50;
+  color: white;
+}
+
+.darkMode .submitButton:hover {
+  background-color: #45a049;
+}
+
+/* Checkbox styling for dark mode */
+.darkMode input[type='checkbox'] {
+  filter: invert(1) hue-rotate(180deg);
 }
