@@ -18,6 +18,8 @@ import { getUserProfileBasicInfo } from '../../actions/userManagement';
 import Loading from '../common/Loading';
 import '../Header/index.css';
 import peopleImage from './images/People.svg';
+import './reportsPage.module.css';
+
 import projectsImage from './images/Projects.svg';
 import teamsImage from './images/Teams.svg';
 import AddLostTime from './LostTime/AddLostTime';
@@ -25,7 +27,6 @@ import LostTimeHistory from './LostTime/LostTimeHistory';
 import PeopleTable from './PeopleTable';
 import ProjectTable from './ProjectTable';
 import ReportFilter from './ReportFilter/ReportFilter';
-import './reportsPage.css';
 import TeamTable from './TeamTable';
 import TotalContributorsReport from './TotalReport/TotalContributorsReport';
 import TotalPeopleReport from './TotalReport/TotalPeopleReport';
