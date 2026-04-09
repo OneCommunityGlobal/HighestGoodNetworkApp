@@ -157,19 +157,23 @@
 }
 
 .reactCalendarDarkMode :global(.react-calendar__navigation button) {
-  color: #ffffff;
+  color: #ffffff !important;
+  background: none !important;
+  min-width: 44px;
+  transition: all 0.2s ease;
 }
+
 
 .reactCalendar :global(.react-calendar__tile) {
   display: grid;
   height: 100px;
-  background: #fff;
   border: 1px solid #dee2e6 !important;
   box-sizing: border-box;
-  transition: background 0.3s, border-color 0.3s ease;
   overflow: hidden;
   padding: 4px;
   color: #1a202c;
+  background: none !important;
+  transition: background 0.2s ease;
 }
 
 .reactCalendarDarkMode :global(.react-calendar__tile) {
@@ -935,15 +939,19 @@
 }
 
 .reactCalendarDarkMode :global(.react-calendar__tile--active) {
-  background: #444;
-  color: #fff;
+  background-color: #2563eb !important;
+  color: #ffffff !important;
 }
 .reactCalendarDarkMode :global(.react-calendar__tile--now) {
-  background: #666;
-  color: #fff;
+  background-color: #4a5568 !important; 
+  border: 2px solid #60a5fa !important;
+  border-radius: 8px;
 }
 .reactCalendarDarkMode :global(.react-calendar__navigation__label) {
-  color: #fff;
+  background-color: #1e293b; /* Dark Blue-Gray */
+  border: 1px solid #334155;
+  font-family: Arial, Helvetica, sans-serif;
+  padding: 8px;
 }
 
 .overflowPopupDark {
@@ -992,4 +1000,52 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
   display: block;
+}
+
+
+/* Dark mode for react-calendar */
+
+/* Arrow Buttons - Hover & Focus (White Highlight) */
+.reactCalendarDarkMode :global(.react-calendar__navigation__prev2-button:enabled:hover),
+.reactCalendarDarkMode :global(.react-calendar__navigation__prev-button:enabled:hover),
+.reactCalendarDarkMode :global(.react-calendar__navigation__next-button:enabled:hover),
+.reactCalendarDarkMode :global(.react-calendar__navigation__next2-button:enabled:hover),
+.reactCalendarDarkMode :global(.react-calendar__navigation__prev2-button:enabled:focus),
+.reactCalendarDarkMode :global(.react-calendar__navigation__prev-button:enabled:focus),
+.reactCalendarDarkMode :global(.react-calendar__navigation__next-button:enabled:focus),
+.reactCalendarDarkMode :global(.react-calendar__navigation__next2-button:enabled:focus) {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+}
+
+/* Month/Year Label - Hover, Focus & Active (Blue Highlight) */
+.reactCalendarDarkMode :global(.react-calendar__navigation__label:enabled:hover),
+.reactCalendarDarkMode :global(.react-calendar__navigation__label:enabled:focus),
+.reactCalendarDarkMode :global(.react-calendar__navigation__label:enabled:active) {
+  background-color: #3a506b !important;
+  color: #60a5fa !important;
+}
+
+/* Calendar Tiles - Hover & Focus */
+.reactCalendarDarkMode :global(.react-calendar__tile:enabled:hover),
+.reactCalendarDarkMode :global(.react-calendar__tile:enabled:focus) {
+  background-color: #3a506b !important;
+  color: #ffffff !important;
+}
+
+.reactCalendarDarkMode :global(.react-calendar__tile--now abbr) {
+  color: #60a5fa !important;
+  font-weight: 900 !important;
+  text-decoration: underline;
+}
+
+/* Neighboring Months & View Consistency */
+.reactCalendarDarkMode :global(.react-calendar__month-view__days__day--neighboringMonth) {
+  color: #5a6b82 !important;
+}
+
+.reactCalendarDarkMode :global(.react-calendar__year-view .react-calendar__tile),
+.reactCalendarDarkMode :global(.react-calendar__decade-view .react-calendar__tile),
+.reactCalendarDarkMode :global(.react-calendar__century-view .react-calendar__tile) {
+  color: #ffffff !important;
 }
