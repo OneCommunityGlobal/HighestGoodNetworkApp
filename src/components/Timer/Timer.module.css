@@ -34,8 +34,10 @@
   background-color: rgb(82 92 102 / 100%);
   color: white;
   border-radius: 0 0 0.5rem 0.5rem;
-  border-color: rgb(82 92 102 / 100%);
+  border: none;
   padding: 0.25rem;
+  box-shadow: none;
+  appearance: none;
 }
 
 .btns {
@@ -82,6 +84,13 @@
 
 .btn:hover {
   color: #ed688a;
+}
+
+.preview:focus,
+.preview:active,
+.preview:focus-visible {
+  outline: none;
+  box-shadow: none;
 }
 
 .btnDisabled {

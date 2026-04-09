@@ -806,32 +806,53 @@
   .projectStatusGrid {
     grid-template-columns: repeat(1, 1fr);
   }
-  
-  .weeklyProjectSummaryCard :global(.chartContainer) {
-    min-height: 220px;
-  }
-  
-  .normalCard {
-    min-height: 260px;
-  }
 }
 
-/* Dark mode fixes */
-.darkMode .weeklyProjectSummaryContainer {
-  background-color: var(--bg-color);
-  color: var(--text-color);
+/* ---------------- FINANCIAL CARD ---------------- */
+.financialCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  width: 220px;   /* fixed width like Project Status */
+  height: auto;   /* shrink to fit content */
+  margin: 0 auto; /* center inside grid cell */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.darkMode .weeklyProjectSummaryDashboardContainer {
-  background-color: var(--bg-color);
+.financialCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
 }
 
-.darkMode .weeklyProjectSummaryDashboardSection {
-  background: var(--section-bg);
+.financialCardTitle {
+  color: #000;
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  text-align: center;
 }
 
-.darkMode * {
-  color: inherit;
+.financialCardOval {
+  width: 130px;
+  height: 65px;
+  border-radius: 50px / 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f0f0; /* overridden dynamically */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  margin: 12px 0;
+}
+
+.financialCardValue {
+  font-size: 36px;
+  font-weight: 600;
+  color: #000; /* overridden dynamically */
 }
 
 .darkMode .lessonsCard {
@@ -860,5 +881,15 @@
   .weeklySummaryShareBtn,
   .weeklySummaryHeaderControls select {
     display: none;
+.financialGrid {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+@media (max-width: 1024px) {
+  .financialGrid {
+    flex-direction: column;
   }
 }

@@ -49,21 +49,31 @@ table td {
 }
 
 .selectInput {
-  display: grid;
-  grid-template-columns: auto 1fr auto 1fr auto 1fr;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   align-items: center;
-  gap: 15px;
+  gap: 30px;
   width: 100%;
   max-width: 1200px;
-  margin: 0 auto 10px auto;
+  margin: 0 auto 20px auto;
   overflow: visible;
+}
+
+.filterGroup,
+.filterGroup > div,
+.filterGroup > form {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 10px !important;
 }
 
 .selectInput label {
   font-weight: bold;
   text-align: center;
   white-space: nowrap;
-  margin-bottom: 8px;
+  margin-bottom: 0 !important;
 }
 
 .selectInput input,
@@ -75,12 +85,11 @@ table td {
   padding: 5px;
   border: 1px solid #ccc;
   border-radius: 4px;
-  margin-bottom: 8px;
+  margin-bottom: 0 !important;
 }
 
 .selectInput input[type='text'] {
   padding: 5px;
-  margin-bottom: 8px;
 }
 .btnPrimary {
   background-color: #468ef9;

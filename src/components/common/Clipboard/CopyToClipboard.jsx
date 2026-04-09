@@ -19,7 +19,7 @@ const CopyToClipboard = ({ writeText, message }) => {
       icon={faCopy}
       onClick={handleCopyToClipboard}
       color={darkMode ? 'lightgrey' : ''}
-      size="lg"
+      style={{ fontSize: '16px' }}
     />
   );
 };

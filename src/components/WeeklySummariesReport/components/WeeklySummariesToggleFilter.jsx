@@ -26,7 +26,7 @@ export default function WeeklySummariesToggleFilter({
     toggleField(setState, 'selectedOverTime');
   };
 
-  const textColorClass = darkMode ? 'text-light' : '';
+  const textColorClass = darkMode ? `${styles.filterLabel} text-light` : styles.filterLabel;
 
   return (
     <div className={`${styles.filterContainer}`}>
