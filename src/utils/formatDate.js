@@ -87,12 +87,13 @@ export const CREATED_DATE_CRITERIA = '2022-01-01';
 
 /**
  * carlos: converts YYYY-MM-DD to MM/DD/YY
- * @param {String} dateStr date string in YYYY-MM-DD format
+ * @param {String} dateStr date string in YYYY-MM-DD or ISO format
  * @returns {String} formatted date in MM/DD/YY
  */
 export const formatYYYYMMDDToMMDDYY = dateStr => {
   if (!dateStr) return '';
-  const [year, month, day] = dateStr.split("-");
+  const dateOnly = dateStr.split('T')[0];
+  const [year, month, day] = dateOnly.split("-");
   const shortYear = year.slice(-2);
   return `${month}/${day}/${shortYear}`;
 };
