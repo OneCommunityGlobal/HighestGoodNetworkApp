@@ -305,12 +305,17 @@ export function LBDashboard() {
     };
   }, []);
 
-  const dateRange = [
-    moment()
-      .subtract(1, 'year')
-      .startOf('month'),
-    moment().endOf('month'),
-  ];
+  // Stable reference so opening metric dropdowns does not retrigger DemandOverTime's effect
+  // (which would regenerate random series and make the line charts appear to "jump").
+  const dateRange = useMemo(
+    () => [
+      moment()
+        .subtract(1, 'year')
+        .startOf('month'),
+      moment().endOf('month'),
+    ],
+    [],
+  );
 
   const getMetricLabel = () => {
     const all = Object.values(METRIC_OPTIONS).flat();
