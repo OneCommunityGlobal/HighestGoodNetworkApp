@@ -1,19 +1,15 @@
-import { screen, waitFor } from '@testing-library/react';
+import { screen, waitFor , render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import PauseAndResumeButton from '../PauseAndResumeButton';
 import { PAUSE, RESUME } from '../../../languages/en/ui';
 import { userProfileMock } from '../../../__tests__/mockStates';
-import { renderWithProvider } from '../../../__tests__/utils';
 import { vi } from 'vitest';
+import { Provider } from 'react-redux';
 
-import {
-  pauseUserAction,
-  activateUserAction,
-} from '../../../actions/userLifecycleActions';
+import { updateUserPauseStatus } from '../../../actions/userManagement';
 
-vi.mock('../../../actions/userLifecycleActions', () => ({
-  pauseUserAction: vi.fn(() => Promise.resolve()),
-  activateUserAction: vi.fn(() => Promise.resolve()),
+vi.mock('../../../actions/userManagement', () => ({
+  updateUserPauseStatus: vi.fn(() => async () => Promise.resolve()),
 }));
 
 vi.mock('react-toastify', () => ({
@@ -23,11 +19,43 @@ vi.mock('react-toastify', () => ({
   },
 }));
 
+const createThunkStore = () => ({
+  getState: () => ({
+    theme: {
+      darkMode: false,
+    },
+    auth: {
+      user: {
+        userid: userProfileMock._id,
+        role: 'Administrator',
+        permissions: ['interactWithPauseUserButton'],
+        email: 'test@example.com',
+      },
+    },
+  }),
+  dispatch: action =>
+    typeof action === 'function'
+      ? action(() => {}, () => ({}))
+      : action,
+  subscribe: () => () => {},
+});
+
 describe('PauseAndResumeButton', () => {
   const loadUserProfile = vi.fn(() => Promise.resolve());
 
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  const renderPauseButton = ui =>
+    render(ui, {
+      wrapper: ({ children }) => (
+        <Provider store={createThunkStore()}>{children}</Provider>
+      ),
+    });
+
   it('renders pause button when user is active', () => {
-    renderWithProvider(
+    renderPauseButton(
       <PauseAndResumeButton
         isBigBtn
         userProfile={{ ...userProfileMock, isActive: true }}
@@ -42,7 +70,7 @@ describe('PauseAndResumeButton', () => {
   });
 
   it('opens activation date popup when clicking pause', async () => {
-    renderWithProvider(
+    renderPauseButton(
       <PauseAndResumeButton
         isBigBtn
         userProfile={{ ...userProfileMock, isActive: true }}
@@ -61,7 +89,7 @@ describe('PauseAndResumeButton', () => {
   });
 
   it('pauses user and switches button to RESUME', async () => {
-    renderWithProvider(
+    renderPauseButton(
       <PauseAndResumeButton
         isBigBtn
         userProfile={{ ...userProfileMock, isActive: true }}
@@ -85,15 +113,20 @@ describe('PauseAndResumeButton', () => {
     );
 
     await waitFor(() => {
-      expect(pauseUserAction).toHaveBeenCalledTimes(1);
+      expect(updateUserPauseStatus).toHaveBeenCalled();
       expect(
         screen.getByRole('button', { name: RESUME })
       ).toBeInTheDocument();
-    });
+    })
+    expect(updateUserPauseStatus).toHaveBeenCalledWith(
+        expect.objectContaining({ _id: userProfileMock._id }),
+        'Inactive',
+        expect.anything()
+      );;
   });
 
   it('resumes user and switches button back to PAUSE', async () => {
-    renderWithProvider(
+    renderPauseButton(
       <PauseAndResumeButton
         isBigBtn
         userProfile={{ ...userProfileMock, isActive: false }}
@@ -107,23 +140,28 @@ describe('PauseAndResumeButton', () => {
     );
 
     await waitFor(() => {
-      expect(activateUserAction).toHaveBeenCalledTimes(1);
+      expect(updateUserPauseStatus).toHaveBeenCalled();
       expect(
         screen.getByRole('button', { name: PAUSE })
       ).toBeInTheDocument();
-    });
+    })
+    expect(updateUserPauseStatus).toHaveBeenCalledWith(
+        expect.objectContaining({ _id: userProfileMock._id }),
+        'Active',
+        expect.any(Number)
+      );;
   });
   it('does not render when user lacks interactWithPauseUserButton permission', () => {
-  renderWithProvider(
-    <PauseAndResumeButton
-      isBigBtn
-      userProfile={{ ...userProfileMock, isActive: true }}
-      loadUserProfile={loadUserProfile}
-      hasPermission={() => false}
-    />
-  );
+    renderPauseButton(
+      <PauseAndResumeButton
+        isBigBtn
+        userProfile={{ ...userProfileMock, isActive: true }}
+        loadUserProfile={loadUserProfile}
+        hasPermission={() => false}
+      />
+    );
 
-  expect(screen.queryByRole('button', { name: PAUSE })).not.toBeInTheDocument();
-  expect(screen.queryByRole('button', { name: RESUME })).not.toBeInTheDocument(); 
+    expect(screen.queryByRole('button', { name: PAUSE })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: RESUME })).not.toBeInTheDocument();
   });
 });

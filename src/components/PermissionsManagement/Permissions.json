@@ -146,11 +146,6 @@
         "description": "Gives the user permission to change the user status of rehireable or not."
       },
       {
-        "label": "Pause User Activity",
-        "key": "pauseUserActivity",
-        "description": "Gives the user permission to use the \"Pause\" button to pause user activity on their profile page."
-      },
-      {
         "label": "Set Final Day",
         "key": "setFinalDay",
         "description": "Gives the user permission to use the set the final working day."

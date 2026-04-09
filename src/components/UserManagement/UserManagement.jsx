@@ -21,6 +21,7 @@ import {
   deleteUser,
   enableEditUserInfo,
   disableEditUserInfo,
+  updateUserPauseStatus,
 } from '../../actions/userManagement';
 import UserTableHeader from './UserTableHeader';
 import UserTableData from './UserTableData';
@@ -41,8 +42,6 @@ import SetupNewUserPopup from './setupNewUserPopup';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 import {
   scheduleDeactivationAction,
-  activateUserAction,
-  pauseUserAction,
   deactivateImmediatelyAction,
 } from '../../actions/userLifecycleActions';
 
@@ -217,12 +216,8 @@ class UserManagement extends React.PureComponent {
               activeInactivePopupOpen: false,
             });
           }}
-          onCancelScheduledDeactivation={() =>
-            activateUserAction(this.props.dispatch, this.state.selectedUser, this.props.getAllUserProfile)
-          }
-          onReactivateUser={() =>
-            activateUserAction(this.props.dispatch, this.state.selectedUser, this.props.getAllUserProfile)
-          }
+          onCancelScheduledDeactivation={this.reactivateUser}
+          onReactivateUser={this.reactivateUser}
         />
         <SetUpFinalDayPopUp
           open={this.state.finalDayPopupOpen}
@@ -407,8 +402,13 @@ class UserManagement extends React.PureComponent {
     if (status === UserStatus.Inactive) {
       this.setState({ activationDateOpen: true });
     } else {
-      await activateUserAction(this.props.dispatch, user, this.props.getAllUserProfile);
+      await this.reactivateUser(user);
     }
+  };
+
+  reactivateUser = async (user = this.state.selectedUser) => {
+    await this.props.dispatch(updateUserPauseStatus(user, UserStatus.Active, Date.now()));
+    await this.props.getAllUserProfile();
   };
 
   onUserUpdate = (updatedUser) => {
@@ -466,7 +466,7 @@ class UserManagement extends React.PureComponent {
       return;
     }
     if (status === FinalDay.RemoveFinalDay) {
-      await activateUserAction(this.props.dispatch, user, this.props.getAllUserProfile);
+      await this.reactivateUser(user);
     } else {
       this.setState({
         finalDayDateOpen: true,
@@ -494,14 +494,10 @@ class UserManagement extends React.PureComponent {
   };
 
   pauseUser = async (reactivationDate) => {
-    // eslint-disable-next-line no-console
-    console.log('Pausing user with reactivation date:', reactivationDate);
-    await pauseUserAction(
-      this.props.dispatch,
-      this.state.selectedUser,
-      reactivationDate,
-      this.props.getAllUserProfile,
+    await this.props.dispatch(
+      updateUserPauseStatus(this.state.selectedUser, UserStatus.Inactive, reactivationDate),
     );
+    await this.props.getAllUserProfile();
 
     this.setState({
       activationDateOpen: false,

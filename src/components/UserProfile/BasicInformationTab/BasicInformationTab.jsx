@@ -496,8 +496,7 @@ const BasicInformationTab = props => {
   const [errorOccurred, setErrorOccurred] = useState(false);
   const dispatch = useDispatch();
   const rolesAllowedToEditStatusFinalDay = ['Administrator', 'Owner'];
-  const canEditStatus =
-  rolesAllowedToEditStatusFinalDay.includes(role) || dispatch(hasPermission('pauseUserActivity'));
+  const canEditStatus = props.hasPermission?.('interactWithPauseUserButton');
 
   const canEditEndDate =
   rolesAllowedToEditStatusFinalDay.includes(role) || dispatch(hasPermission('setFinalDay'));
@@ -878,7 +877,6 @@ const BasicInformationTab = props => {
       />
     </>
   );
-
   const statusComponent = (
     <>
       <Col md={desktopDisplay ? '5' : ''}>
