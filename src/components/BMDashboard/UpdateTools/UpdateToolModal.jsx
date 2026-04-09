@@ -14,7 +14,7 @@ import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
 import { updateTool, fetchTools } from '../../../actions/bmdashboard/toolActions';
 
-function UpdateToolModal({ modal, setModal, record }) {
+function UpdateToolModal({ modal, setModal, record, styles }) {
   const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     name: '',
@@ -58,8 +58,15 @@ function UpdateToolModal({ modal, setModal, record }) {
   };
 
   return (
-    <Modal isOpen={modal} toggle={() => setModal(false)}>
-      <ModalHeader>Update Tool: {formData.name}</ModalHeader>
+    <Modal
+      isOpen={modal}
+      toggle={() => setModal(false)}
+      size="lg"
+      className={styles?.darkBlueModal}
+      contentClassName={styles?.darkBlueModalContent}
+      backdropClassName={styles?.darkBlueBackdrop}
+    >
+      <ModalHeader toggle={() => setModal(false)}>Update Tool: {formData.name}</ModalHeader>
       <Form onSubmit={handleSubmit}>
         <ModalBody>
           <FormGroup>
