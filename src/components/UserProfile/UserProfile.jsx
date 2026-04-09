@@ -50,13 +50,6 @@ import { getAllTeamCode , getAllUserTeams } from '../../actions/allTeamsAction';
 import TimeEntryEditHistory from './TimeEntryEditHistory';
 import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
 
-import {
-  updateUserStatus,
-  updateRehireableStatus,
-  toggleVisibility,
-} from '../../actions/userManagement';
-import { updateUserProfile } from '../../actions/userProfile';
-
 import { updateRehireableStatus, toggleVisibility } from '../../actions/userManagement';
 import { updateUserProfile } from "../../actions/userProfile";
 import BlueSquareLayout from './BlueSquareLayout';
