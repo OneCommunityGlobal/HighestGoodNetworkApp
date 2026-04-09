@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Container, Row, Col, Card, Button } from 'react-bootstrap';
+import { useState } from 'react';
+import { Button, Card, Col, Container, Row } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import styles from './PRGradingScreen.module.css';
@@ -12,7 +12,7 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
   const [inputValue, setInputValue] = useState('');
   const [inputError, setInputError] = useState('');
   const [showGradingModal, setShowGradingModal] = useState(null);
-  const [isFinalized, setIsFinalized] = useState(false); // ✅ FREEZE STATE
+  const [isFinalized, setIsFinalized] = useState(false);
 
   if (!teamData || !reviewers) {
     return <div>Error: Missing required props</div>;
@@ -40,14 +40,14 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
   /* ---------------- ADD PR ---------------- */
 
   const handleAddNewClick = reviewerId => {
-    if (isFinalized) return; // 🔒 prevent action
+    if (isFinalized) return;
     setActiveInput(reviewerId);
     setInputValue('');
     setInputError('');
   };
 
   const handleInputSubmit = reviewerId => {
-    if (isFinalized) return; // 🔒 prevent action
+    if (isFinalized) return;
 
     const validation = validatePRNumber(inputValue);
     if (!validation.isValid) {
@@ -55,9 +55,25 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
       return;
     }
 
+    const trimmed = inputValue.trim();
+
+    // Duplicate check
+    const normalize = str => str.replace(/\s/g, '').toLowerCase();
+    const reviewer = reviewerData.find(r => r.id === reviewerId);
+    const isDuplicate = reviewer?.gradedPrs.some(
+      pr => normalize(pr.prNumbers) === normalize(trimmed),
+    );
+
+    if (isDuplicate) {
+      setInputError(
+        'This PR already exists for this reviewer. Please enter a different PR number.',
+      );
+      return;
+    }
+
     const newPREntry = {
       id: uuidv4(),
-      prNumbers: inputValue.trim(),
+      prNumbers: trimmed,
       grade: 'Okay',
     };
 
@@ -88,12 +104,12 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
   /* ---------------- MODAL ---------------- */
 
   const handlePRNumberClick = reviewerId => {
-    if (isFinalized) return; // 🔒 prevent modal open
+    if (isFinalized) return;
     setShowGradingModal(reviewerId);
   };
 
   const handleGradeChange = (reviewerId, prId, newGrade) => {
-    if (isFinalized) return; // 🔒 prevent grade change
+    if (isFinalized) return;
 
     setReviewerData(prev =>
       prev.map(r =>
@@ -112,7 +128,7 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
   };
 
   const handleFinalize = () => {
-    setIsFinalized(true); // 🔒 Freeze everything
+    setIsFinalized(true);
   };
 
   /* ---------------- RENDER ---------------- */
@@ -232,8 +248,13 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                             <input
                               type="text"
                               value={inputValue}
-                              onChange={e => setInputValue(e.target.value)}
-                              className={styles['pr-grading-screen-pr-number-input']}
+                              onChange={e => {
+                                setInputValue(e.target.value);
+                                setInputError('');
+                              }}
+                              className={`${styles['pr-grading-screen-pr-number-input']} ${
+                                inputError ? styles['pr-grading-screen-input-error'] : ''
+                              } ${darkMode ? styles['dark-mode'] : ''}`}
                               placeholder="1070 or 1070 + 1256"
                             />
 
@@ -248,6 +269,16 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                             <Button variant="secondary" size="sm" onClick={handleCancel}>
                               Cancel
                             </Button>
+
+                            {inputError && (
+                              <div
+                                className={`${styles['pr-grading-screen-error-message']} ${
+                                  darkMode ? styles['dark-mode'] : ''
+                                }`}
+                              >
+                                {inputError}
+                              </div>
+                            )}
                           </div>
                         )}
                       </td>
