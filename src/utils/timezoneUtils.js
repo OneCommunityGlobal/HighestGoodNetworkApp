@@ -128,21 +128,45 @@ export const formatDateTimeWithTimezone = (dateString, userTimezone) => {
 /**
  * Builds a full datetime from event date and startTime so that time-only strings
  * are interpreted in the context of the event date (consistent conversion across events).
- * @param {string|Date} eventDate - Event date
- * @param {string} startTime - Event start time (full ISO string or time-only)
- * @returns {string} ISO string suitable for formatDateTimeWithTimezone
+ *
+ * IMPORTANT: We build the combined datetime in UTC to avoid double-conversion bugs.
+ * Using moment(eventDate) would apply the local machine timezone offset, and when
+ * formatDateTimeWithTimezone later calls .tz(userTimezone), it re-converts an already-
+ * offset value — producing different results on different machines.
+ * By using moment.utc(), we treat the date+time as a neutral point in time and let
+ * the single .tz() call in formatDateTimeWithTimezone do the only conversion.
+ *
+ * @param {string|Date} eventDate - Event date (ISO string from the DB, e.g. "2025-03-01T00:00:00.000Z")
+ * @param {string} startTime - Event start time (full ISO string or time-only, e.g. "17:00" or "5:00 PM")
+ * @returns {string|null} UTC ISO string suitable for formatDateTimeWithTimezone, or null on failure
  */
 function toFullEventDatetime(eventDate, startTime) {
   if (!startTime) return null;
   const s = String(startTime).trim();
-  const looksLikeFullDatetime = s.includes('T') || (s.includes('-') && s.length > 12);
+
+  // Only treat as a full datetime if it contains 'T' (strict ISO 8601 datetime delimiter).
+  // Avoid matching time-only strings with timezone offsets like "17:00-05:00" which
+  // contain '-' and might exceed 12 chars but are NOT full datetimes.
+  const looksLikeFullDatetime = s.includes('T');
   if (looksLikeFullDatetime) return startTime;
-  const dateM = moment(eventDate);
+
+  // Build the date part in UTC so we don't inherit the machine's local offset.
+  const dateM = moment.utc(eventDate);
   if (!dateM.isValid()) return startTime;
+
   const timeM = moment(s, ['HH:mm:ss', 'H:mm:ss', 'h:mm A', 'h:mm a', 'HH:mm', 'H:mm'], true);
   if (!timeM.isValid()) return startTime;
-  dateM.set({ hour: timeM.hours(), minute: timeM.minutes(), second: timeM.seconds(), millisecond: 0 });
-  return dateM.format();
+
+  // Apply the time components to the UTC date, keeping everything in UTC.
+  dateM.set({
+    hour: timeM.hours(),
+    minute: timeM.minutes(),
+    second: timeM.seconds(),
+    millisecond: 0,
+  });
+
+  // Return as a UTC ISO string — downstream .tz() does the single correct conversion.
+  return dateM.toISOString();
 }
 
 /**

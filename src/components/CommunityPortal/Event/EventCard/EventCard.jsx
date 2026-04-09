@@ -81,6 +81,12 @@ function EventCard(props) {
       if (!timeString) {
         return 'Time not set';
       }
+      // eventDate is required to correctly anchor a time-only string (e.g. "5:00 PM")
+      // to a UTC datetime before conversion. Without it, toFullEventDatetime falls back
+      // to parsing in the local machine timezone, producing inconsistent results.
+      if (!eventDate) {
+        return 'Date not set';
+      }
       const userTimezone = getUserTimezone();
       return formatEventTimeWithTimezone(eventDate, timeString, userTimezone);
     } catch (error) {
