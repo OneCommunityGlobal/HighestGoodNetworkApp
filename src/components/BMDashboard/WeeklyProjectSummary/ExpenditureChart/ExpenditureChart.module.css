@@ -15,10 +15,11 @@
   width: 100%;
 }
 
-/* ── Stacked mode: individual pie card ─────────────────────── */
-.expenditure-chart-card {
-  flex: 1 1 260px;
-  max-width: 520px;
+.expenditureChartCard {
+  flex: 1 1 220px;
+  max-width: 280px;
+  padding: 12px 10px;
+  min-height: 350px;
   background: var(--card-bg);
   border-radius: 10px;
   padding: 16px 14px 12px;
@@ -129,6 +130,12 @@
   align-items: center;
   height: 200px;
   font-size: 14px;
+.dark-mode .expenditureChartCard {
+  background: var(--card-bg);
+  box-shadow: 0 2px 5px rgb(255 255 255 / 8%);
+}
+
+.dark-mode .expenditureChartTitle {
   color: var(--text-color);
   text-align: center;
   opacity: 0.7;
@@ -223,5 +230,45 @@
 
   .chart-pane--compact .chart-pane__container {
     height: 220px;
+  }
+}
+
+.expenditureChartLoading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  color: var(--text-color);
+}
+
+.expenditureChartError {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  color: var(--error-color, #ff4d4f);
+}
+
+/* Responsive design for tablets and smaller screens */
+@media (width <= 768px) {
+  .expenditureChartCard {
+    max-width: 100%;
+    flex: 1 1 100%;
+  }
+
+  .expenditureChartWrapper {
+    gap: 12px;
+  }
+}
+
+/* Responsive design for mobile */
+@media (width <= 480px) {
+  .expenditureChartCard {
+    padding: 8px;
+    min-height: 260px;
+  }
+
+  .expenditureChartTitle {
+    font-size: 1rem;
   }
 }

@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
+import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
 import CostPredictionChart from './CostPredictionChart';
 import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
@@ -18,12 +19,15 @@ import FinancialStatButtons from './Financials/FinancialStatButtons';
 import FinancialsTrackingSection from './ExpenditureChart/FinancialsTrackingSection';
 import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
+import FinancialsTrackingCard from './ExpenditureChart/FinancialsTrackingCard';
+import EmbedInteractiveMap from '../InteractiveMap/EmbedInteractiveMap';
 import InteractiveMap from '../InteractiveMap/InteractiveMap';
 import styles from './WeeklyProjectSummary.module.css';
 import IssueCharts from '../Issues/openIssueCharts';
 import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords.jsx';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
+import FinancialStatButtons from './Financials/FinancialStatButtons';
 
 const projectStatusButtons = [
   {
@@ -124,13 +128,49 @@ const projectStatusButtons = [
   },
 ];
 
+const financialData = [
+  {
+    id: uuidv4(),
+    title: 'Total Project Cost',
+    value: '-',
+    bgColor: '#E0F2FE',
+    textColor: '#0369A1',
+  },
+  {
+    id: uuidv4(),
+    title: 'Total Material Cost',
+    value: '-',
+    bgColor: '#F3E8FF',
+    textColor: '#6D28D9',
+  },
+  {
+    id: uuidv4(),
+    title: 'Total Labor Cost',
+    value: '-',
+    bgColor: '#FEE2E2',
+    textColor: '#B91C1C',
+  },
+  {
+    id: uuidv4(),
+    title: 'Total Equipment Cost',
+    value: '-',
+    bgColor: '#DCFCE7',
+    textColor: '#15803D',
+  },
+];
+
+export function WeeklyProjectSummaryContent() {
+  const dispatch = useDispatch();
+  const materials = useSelector(state => state.materials?.materialslist || []);
+  const [openSections, setOpenSections] = useState({});
+}
+
 function WeeklyProjectSummary() {
   const dispatch = useDispatch();
   const materials = useSelector(state => state.materials?.materialslist || []);
   const [openSections, setOpenSections] = useState({});
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
-
   useEffect(() => {
     if (materials.length === 0) {
       dispatch(fetchAllMaterials());
@@ -170,16 +210,19 @@ function WeeklyProjectSummary() {
                 <div
                   key={uniqueId}
                   className={`${styles.weeklyProjectSummaryCard} ${styles.statusCard}`}
-                  style={{ backgroundColor: button.bgColor }}
+                  style={{ backgroundColor: button.bgColor }} // Dynamic Background
                 >
                   <div className={`${styles.weeklyCardTitle}`}>{button.title}</div>
                   <div
                     className={`${styles.weeklyStatusButton}`}
-                    style={{ backgroundColor: button.buttonColor }}
+                    style={{ backgroundColor: button.buttonColor }} // Dynamic Oval Color
                   >
                     <span className={`${styles.weeklyStatusValue}`}>{button.value}</span>
                   </div>
-                  <div className="weekly-status-change" style={{ color: button.textColor }}>
+                  <div
+                    className="weekly-status-change"
+                    style={{ color: button.textColor }} // Dynamic Change Color
+                  >
                     {button.change}
                   </div>
                 </div>
@@ -188,6 +231,7 @@ function WeeklyProjectSummary() {
           </div>
         ),
       },
+      // New Issues Breakdown card
       {
         title: 'Issues Breakdown',
         key: 'Issues Breakdown',
@@ -233,58 +277,56 @@ function WeeklyProjectSummary() {
         ),
       },
       {
-        title: 'Tools and Equipment Tracking',
-        key: 'Tools and Equipment Tracking',
+        title: 'Issues Breakdown',
+        key: 'Issues Breakdown',
         className: 'full',
         content: (
-          <div className={`${styles.toolsTrackingLayout}`}>
-            <div className={`${styles.toolsDonutWrap}`}>
-              <ToolStatusDonutChart />
-            </div>
-            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
-              <ToolsHorizontalBarChart darkMode={darkMode} />
-            </div>
-            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
-              <SupplierPerformanceGraph />
-            </div>
+          <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+            <IssuesBreakdownChart />
           </div>
         ),
       },
       {
+        title: 'Tools and Equipment Tracking',
+        key: 'Tools and Equipment Tracking',
+        className: 'half',
+        content: [
+          <div
+            key="donut-chart"
+            className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+          >
+            <ToolStatusDonutChart />
+          </div>,
+          <div
+            key="bar-chart"
+            className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+          >
+            <ToolsHorizontalBarChart darkMode={darkMode} />
+          </div>,
+        ],
+      },
+      {
         title: 'Lessons Learned',
         key: 'Lessons Learned',
-        className: 'full',
-        content: (
-          <div className={`${styles.lessonsLearnedGrid}`}>
-            <div className={`${styles.weeklyProjectSummaryCard} ${styles.lessonsCard}`}>
-              <MostFrequentKeywords darkMode={darkMode} />
-            </div>
-            <div className={`${styles.weeklyProjectSummaryCard} ${styles.lessonsCard}`}>
-              <InjuryCategoryBarChart />
-            </div>
-          </div>
-        ),
+        className: 'half',
+        content: [
+          <MostFrequentKeywords key="frequent-tags-card" />,
+          <div key="injury-chart" className="weekly-project-summary-card normal-card">
+            <InjuryCategoryBarChart />
+          </div>,
+        ],
       },
       {
         title: 'Financials',
         key: 'Financials',
         className: 'large',
         content: (
-          <div className={`${styles.financialsGrid}`}>
-            <div className={`${styles.weeklyProjectSummaryCard} ${styles.financialSmall}`}>
-              📊 Card
+          <div className={`${styles.financialGrid}`}>
+            <div className="weekly-project-summary-card financial-small financial-chart">
+              <FinancialStatButtons darkMode={darkMode} />
             </div>
-            <div className={`${styles.weeklyProjectSummaryCard} ${styles.financialSmall}`}>
-              <ExpenseBarChart />
-            </div>
-            <div className={`${styles.weeklyProjectSummaryCard} ${styles.financialSmall}`}>
-              📊 Card
-            </div>
-            <div className={`${styles.weeklyProjectSummaryCard} ${styles.financialSmall}`}>
-              📊 Card
-            </div>
-            <div className={`${styles.weeklyProjectSummaryCard} ${styles.financialBig}`}>
-              📊 Big Card
+            <div className="weekly-project-summary-card financial-small financial-chart">
+              <ExpenseBarChart darkMode={darkMode} />
             </div>
           </div>
         ),
@@ -306,7 +348,7 @@ function WeeklyProjectSummary() {
             className={`${styles.weeklyProjectSummaryCard} ${styles.mapCard}`}
             style={{ height: '500px', padding: '0' }}
           >
-            <InteractiveMap />
+            <EmbedInteractiveMap />
           </div>
         ),
       },
@@ -314,16 +356,17 @@ function WeeklyProjectSummary() {
         title: 'Labor and Time Tracking',
         key: 'Labor and Time Tracking',
         className: 'half',
-        content: (
-          <div className={`${styles.laborTimeGrid}`}>
-            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
-              <DistributionLaborHours />
+        content: [1, 2].map((_, index) => {
+          const uniqueId = uuidv4();
+          return (
+            <div
+              key={uniqueId}
+              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+            >
+              {index === 1 ? <PaidLaborCost /> : <DistributionLaborHours />}
             </div>
-            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
-              <PaidLaborCost />
-            </div>
-          </div>
-        ),
+          );
+        }),
       },
       {
         title: 'Financials Tracking',
@@ -332,6 +375,17 @@ function WeeklyProjectSummary() {
         content: (
           <div style={{ gridColumn: '1 / -1', width: '100%' }}>
             <FinancialsTrackingSection />
+          <div className={styles.financialsTrackingGrid}>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <FinancialsTrackingCard />
+            </div>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>📊 Card</div>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <CostPredictionChart projectId={1} />
+            </div>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <ActualVsPlannedCost />
+            </div>
           </div>
         ),
       },
@@ -452,7 +506,7 @@ function WeeklyProjectSummary() {
 
   return (
     <div className={`${styles.weeklyProjectSummaryContainer} ${darkMode ? styles.darkMode : ''}`}>
-      {/* Header Section - Now inline instead of separate component */}
+      {/* Header Section - Now inline instead of seperate component */}
       <div className={styles.weeklySummaryHeaderWrapper}>
         <div className={styles.weeklySummaryHeaderContainer}>
           <h1 className={styles.weeklySummaryHeaderTitle}>

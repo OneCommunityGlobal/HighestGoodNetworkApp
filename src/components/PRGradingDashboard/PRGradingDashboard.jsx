@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import GradingTable from './GradingTable';
-import SummaryList from './SummaryList';
-import ConfirmationModal from './ConfirmationModal';
 import AddReviewerModal from './AddReviewerModal';
+import ConfirmationModal from './ConfirmationModal';
+import GradingTable from './GradingTable';
 import styles from './PRGradingDashboard.module.css';
 import { SelectionProvider } from './SelectionContext';
+import SummaryList from './SummaryList';
 
 const TEAM_CODE = 'TeamA';
 const TEAM_NAME = 'Team Alpha';
@@ -34,6 +35,7 @@ const mockData = [
 ];
 
 function PRGradingDashboard() {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [gradings, setGradings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -267,6 +269,7 @@ function PRGradingDashboard() {
               onAddPRClick={setOpenAddModal}
               openAddModal={openAddModal}
               onAddGradedPR={requestAddGradedPR}
+              darkMode={darkMode}
             />
           </div>
 

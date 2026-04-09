@@ -3,7 +3,10 @@ import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 import { ENDPOINTS } from '../../../../utils/URL';
+import { getProjectExpenditure } from './mockExpenditureData';
+import PropTypes from 'prop-types';
 import styles from './ExpenditureChart.module.css';
+import { getTooltipStyles } from '../../../../utils/bmChartStyles';
 
 // Category → colour mapping (Labour=blue, Equipment=green, Materials=yellow)
 const COLORS = ['#6777EF', '#A0CD61', '#F5CD4B'];
@@ -201,6 +204,8 @@ function PieChartPanel({ data, title, darkMode, compact }) {
 function ExpenditureChart({ projectId, viewMode, pieType }) {
   const darkMode = useSelector(state => state.theme.darkMode);
 
+function ExpenditureChart({ projectId }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [actual, setActual] = useState([]);
   const [planned, setPlanned] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -351,5 +356,9 @@ function ExpenditureChart({ projectId, viewMode, pieType }) {
     </div>
   );
 }
+
+ExpenditureChart.propTypes = {
+  projectId: PropTypes.string.isRequired,
+};
 
 export default ExpenditureChart;
