@@ -203,11 +203,6 @@ function CommunityCalendar() {
     return { types, locations, statuses };
   }, [events]);
 
-  //Need to implement. When user uses TAB to navigate to the button.
-  const handleEventKeyPress = (event, eventDetails) => {
-    return null;
-  };
-
   const handleFilterChange = useCallback(
     filterType => e => {
       setFilter(prev => ({
