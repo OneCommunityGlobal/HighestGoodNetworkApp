@@ -18,5 +18,8 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: [resolve(__dirname, 'src/setupTests.js')],
+    deps: {
+      inline: ['libphonenumber-js'],
+    },
   },
 });

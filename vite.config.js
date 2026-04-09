@@ -5,6 +5,7 @@ import react from '@vitejs/plugin-react';
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   return {
+    base: '/',
     resolve: {
       alias: {
         '~': resolve('src/'),
@@ -40,7 +41,14 @@ export default defineConfig(({ mode }) => {
       }),
     ],
     optimizeDeps: {
-      include: ['react-popper'], // helps with old reactstrap dependency
+      include: [
+        'react-popper',
+        'react-datepicker',
+        'react-tooltip',
+        'react-bootstrap',
+        'libphonenumber-js/max',
+      ],
+      force: true, // force re-bundle after cache issues; set to false once deps load
     },
   };
 });
