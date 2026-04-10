@@ -236,37 +236,37 @@ export function CPDashboard() {
     return null;
   };
 
-const filteredEvents = events.filter(event => {
-  // 🔹 Online filter
-  if (onlineOnly) {
-    const isOnlineEvent = (event.location || '').toLowerCase() === 'virtual';
-    if (!isOnlineEvent) return false;
-  }
+  const filteredEvents = events.filter(event => {
+    // 🔹 Online filter
+    if (onlineOnly) {
+      const isOnlineEvent = (event.location || '').toLowerCase() === 'virtual';
+      if (!isOnlineEvent) return false;
+    }
 
-  // 🔹 Date filters
-  if (dateFilter === 'tomorrow') {
-    if (!isTomorrow(event.date)) return false;
-  } else if (dateFilter === 'weekend') {
-    if (!isComingWeekend(event.date)) return false;
-  }
+    // 🔹 Date filters
+    if (dateFilter === 'tomorrow') {
+      if (!isTomorrow(event.date)) return false;
+    } else if (dateFilter === 'weekend') {
+      if (!isComingWeekend(event.date)) return false;
+    }
 
-  // 🔹 Specific selected date
-  const eventDate = event.date ? parseEventDate(event.date) : null;
-  if (selectedDate && eventDate !== selectedDate) {
-    return false;
-  }
+    // 🔹 Specific selected date
+    const eventDate = event.date ? parseEventDate(event.date) : null;
+    if (selectedDate && eventDate !== selectedDate) {
+      return false;
+    }
 
-  // 🔹 Search
-  if (!searchQuery) return true;
+    // 🔹 Search
+    if (!searchQuery) return true;
 
-  const term = searchQuery.toLowerCase();
+    const term = searchQuery.toLowerCase();
 
-  return (
-    fuzzySearch(event.title || '', term, 0.6) ||
-    fuzzySearch(event.location || '', term, 0.6) ||
-    fuzzySearch(event.organizer || '', term, 0.6)
-  );
-});
+    return (
+      fuzzySearch(event.title || '', term, 0.6) ||
+      fuzzySearch(event.location || '', term, 0.6) ||
+      fuzzySearch(event.organizer || '', term, 0.6)
+    );
+  });
 
   useEffect(() => {
     setPagination(prev => ({ ...prev, currentPage: 1 }));
@@ -416,127 +416,134 @@ const filteredEvents = events.filter(event => {
       </header>
 
       <Row>
+        <Col md={3} className={`${styles.dashboardSidebar} ${darkMode ? styles.darkSidebar : ''}`}>
+          <div className={styles.filterSection}>
+            <h4>Search Filters</h4>
 
-      <Col md={3} className={`${styles.dashboardSidebar} ${darkMode ? styles.darkSidebar : ''}`}>
-        <div className={styles.filterSection}>
-          <h4>Search Filters</h4>
-
-          <div className={`${styles.filterItem} ${styles.searchFilter}`}>
-            <label htmlFor="search-events">Search Events</label>
-            <div className={styles.inputGroup}>
-              <span className={styles.inputGroupText}>
-                <FaSearch />
-              </span>
-              <input
-                type="text"
-                id="search-events"
-                placeholder="Search events..."
-                value={searchInput}
-                onChange={e => setSearchInput(e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div className={styles.filterSectionDivider}>
-            <div className={styles.filterItem}>
-              <label htmlFor="date-tomorrow"> Dates</label>
-              <div className={styles.radioRow}>
-                <FormGroup check className={styles.radioGroup + ' d-flex align-items-center'}>
-                  <Input
-                    id="date-tomorrow"
-                    type="radio"
-                    name="dates"
-                    checked={dateFilter === 'tomorrow'}
-                    onChange={() => setDateFilter('tomorrow')}
-                    className={styles.radioInput}
-                  />
-                  <Label htmlFor="date-tomorrow" check className={styles.radioLabel + ' ms-2 mb-0'}>
-                    Tomorrow
-                  </Label>
-                </FormGroup>
-
-                <FormGroup check className={styles.radioGroup + ' d-flex align-items-center'}>
-                  <Input
-                    id="date-weekend"
-                    type="radio"
-                    name="dates"
-                    checked={dateFilter === 'weekend'}
-                    onChange={() => setDateFilter('weekend')}
-                    className={styles.radioInput}
-                  />
-                  <Label htmlFor="date-weekend" check className={styles.radioLabel + ' ms-2 mb-0'}>
-                    This Weekend
-                  </Label>
-                </FormGroup>
+            <div className={`${styles.filterItem} ${styles.searchFilter}`}>
+              <label htmlFor="search-events">Search Events</label>
+              <div className={styles.inputGroup}>
+                <span className={styles.inputGroupText}>
+                  <FaSearch />
+                </span>
+                <input
+                  type="text"
+                  id="search-events"
+                  placeholder="Search events..."
+                  value={searchInput}
+                  onChange={e => setSearchInput(e.target.value)}
+                />
               </div>
+            </div>
 
-              <div className={styles.dashboardActions}>
-                <Button
-                  color="primary"
-                  onClick={() => {
-                    setDateFilter('');
-                    setSelectedDate('');
-                  }}
-                >
-                  Clear date filter
-                </Button>
+            <div className={styles.filterSectionDivider}>
+              <div className={styles.filterItem}>
+                <label htmlFor="date-tomorrow"> Dates</label>
+                <div className={styles.radioRow}>
+                  <FormGroup check className={styles.radioGroup + ' d-flex align-items-center'}>
+                    <Input
+                      id="date-tomorrow"
+                      type="radio"
+                      name="dates"
+                      checked={dateFilter === 'tomorrow'}
+                      onChange={() => setDateFilter('tomorrow')}
+                      className={styles.radioInput}
+                    />
+                    <Label
+                      htmlFor="date-tomorrow"
+                      check
+                      className={styles.radioLabel + ' ms-2 mb-0'}
+                    >
+                      Tomorrow
+                    </Label>
+                  </FormGroup>
+
+                  <FormGroup check className={styles.radioGroup + ' d-flex align-items-center'}>
+                    <Input
+                      id="date-weekend"
+                      type="radio"
+                      name="dates"
+                      checked={dateFilter === 'weekend'}
+                      onChange={() => setDateFilter('weekend')}
+                      className={styles.radioInput}
+                    />
+                    <Label
+                      htmlFor="date-weekend"
+                      check
+                      className={styles.radioLabel + ' ms-2 mb-0'}
+                    >
+                      This Weekend
+                    </Label>
+                  </FormGroup>
+                </div>
+
+                <div className={styles.dashboardActions}>
+                  <Button
+                    color="primary"
+                    onClick={() => {
+                      setDateFilter('');
+                      setSelectedDate('');
+                    }}
+                  >
+                    Clear date filter
+                  </Button>
+                </div>
+
+                <div className={styles.filterItem}>
+                  <div className={styles.dateFilterContainer}>
+                    <DatePicker
+                      type="date"
+                      selected={selectedDate ? new Date(selectedDate) : null}
+                      onChange={handleDateChange}
+                      placeholderText="Ending After"
+                      id="ending-after"
+                      className={styles.dateFilter}
+                      dateFormat="yyyy-MM-dd"
+                      isClearable
+                    />
+                  </div>
+                </div>
               </div>
 
               <div className={styles.filterItem}>
-                <div className={styles.dateFilterContainer}>
-                  <DatePicker
-                    type="date"
-                    selected={selectedDate ? new Date(selectedDate) : null}
-                    onChange={handleDateChange}
-                    placeholderText="Ending After"
-                    id="ending-after"
-                    className={styles.dateFilter}
-                    dateFormat="yyyy-MM-dd"
-                    isClearable
-                  />
+                <label htmlFor="online-only">Online</label>
+                <div>
+                  <Input
+                    type="checkbox"
+                    id="online-only"
+                    checked={onlineOnly}
+                    onChange={e => {
+                      setOnlineOnly(e.target.checked);
+                      setPagination(prev => ({ ...prev, currentPage: 1 }));
+                    }}
+                  />{' '}
+                  Online Only
                 </div>
               </div>
-            </div>
 
-            <div className={styles.filterItem}>
-              <label htmlFor="online-only">Online</label>
-              <div>
-                <Input
-                  type="checkbox"
-                  id="online-only"
-                  checked={onlineOnly}
-                  onChange={e => {
-                    setOnlineOnly(e.target.checked);
-                    setPagination(prev => ({ ...prev, currentPage: 1 }));
-                  }}
-                />{' '}
-                Online Only
+              <div className={styles.filterItem}>
+                <label htmlFor="branches">Branches</label>
+                <Input id="branches" type="select">
+                  <option>Select branches</option>
+                </Input>
+              </div>
+
+              <div className={styles.filterItem}>
+                <label htmlFor="themes">Themes</label>
+                <Input id="themes" type="select">
+                  <option>Select themes</option>
+                </Input>
+              </div>
+
+              <div className={styles.filterItem}>
+                <label htmlFor="categories">Categories</label>
+                <Input id="categories" type="select">
+                  <option>Select categories</option>
+                </Input>
               </div>
             </div>
-
-            <div className={styles.filterItem}>
-              <label htmlFor="branches">Branches</label>
-              <Input id="branches" type="select">
-                <option>Select branches</option>
-              </Input>
-            </div>
-
-            <div className={styles.filterItem}>
-              <label htmlFor="themes">Themes</label>
-              <Input id="themes" type="select">
-                <option>Select themes</option>
-              </Input>
-            </div>
-
-            <div className={styles.filterItem}>
-              <label htmlFor="categories">Categories</label>
-              <Input id="categories" type="select">
-                <option>Select categories</option>
-              </Input>
-            </div>
           </div>
-        </div>
-      </Col>
+        </Col>
 
         <Col md={9} className={`${styles.dashboardMain} ${darkMode ? styles.darkMain : ''}`}>
           <div className={styles.eventsHeader}>
