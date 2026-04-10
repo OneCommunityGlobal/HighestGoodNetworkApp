@@ -253,10 +253,6 @@
   margin-bottom: 8px;
 }
 
-.dateFilter {
-  margin-top: 10px;
-}
-
 .dateFilter:focus {
   border-color: #2c3e50;
   box-shadow: 0 0 5px rgba(44, 62, 80, 0.4);
@@ -396,6 +392,50 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
+.dateFilter {
+  padding-left: 10px;
+  margin-top: 15px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+
+.dateFilterContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 6px 10px 20px;
+}
+.dateFilterContainer :global(.react-datepicker-wrapper) input {
+  border: 2px solid #1b3c55; 
+  border-radius: 8px;
+  padding: 8px 12px;
+  width: 100%;
+  outline: none;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.darkSidebar :global(.react-datepicker__input-container input) {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border: 2px solid #4da3ff !important;
+}
+
+.darkSidebar :global(.react-datepicker__input-container input::placeholder) {
+  color: #ffffff !important;
+}
+
+.dateFilterContainer :global(.react-datepicker-wrapper) input:focus {
+  border-color: #34495e;
+  box-shadow: 0 0 5px rgba(44, 62, 80, 0.4);
+}
+
+.dateErrorMessage {
+  color: red;
+  margin-top: 5px;
+}
+
+
 .paginationContainer {
   margin-top: 20px;
   display: flex;
@@ -410,31 +450,15 @@
   -webkit-appearance: none;
   appearance: none;
 }
-
-.darkSearchContainer {
-  background: #1b2a41;
-  border-color: #4da3ff;
-}
-
-.darkSearchTextarea {
-  color: #ffffff;
-}
-
-.darkSearchTextarea::placeholder {
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.darkSearchContainer .dashboardClearBtn,
-.darkSearchContainer .dashboardSearchIconBtn {
-  color: #ffffff;
-
-}
-
-/*event count text */
-.event-count-text {
+.noEvents{
+  display: flex;
+  justify-content: center;
   text-align: center;
-  font-size: 0.95rem;
-  color: #6c757d;
-  margin-top: -10px;
-  margin-bottom: 20px;
+  width: 100%;
+  font-size: 1.25rem;
+  font-style: italic;
+  color:#6b7280;
+}
+.darkMain .noEvents {
+  color: #9ca3af;
 }

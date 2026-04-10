@@ -204,7 +204,7 @@
 .jobSubmitButton {
   display: block;
   width: 100%;
-  padding: 16px;
+  padding: 10px;
   text-align: center;
   margin-top: 20px;
   margin-left: auto;
@@ -220,6 +220,13 @@
 
 .jobSubmitButton:hover {
   background-color: #45a049;
+}
+
+.saveSection {
+  display: flex;
+  justify-content: center;
+  margin-top: 15px;
+  margin-bottom: 20px;
 }
 
 /* Dark mode styles */
