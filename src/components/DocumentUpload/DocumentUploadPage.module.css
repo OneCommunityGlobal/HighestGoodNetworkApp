@@ -1,0 +1,105 @@
+.wrapper {
+  padding: 24px 0 48px;
+}
+
+.hero {
+  margin-bottom: 20px;
+  padding: 20px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f4f9ff 0%, #e7fff7 100%);
+  border: 1px solid #d7ecff;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: #183153;
+}
+
+.subtitle {
+  margin: 8px 0 0;
+  color: #2c4e71;
+  max-width: 780px;
+}
+
+.controlRow {
+  display: grid;
+  grid-template-columns: 110px 1fr auto;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.label {
+  margin: 0;
+  font-weight: 600;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid #e4ebf3;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.tableCard {
+  background: #fff;
+  border: 1px solid #e4ebf3;
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 16px;
+}
+
+.cardTitle {
+  margin-bottom: 14px;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.tableHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.countBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #edf4ff;
+  color: #1d4e89;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.hashCell {
+  max-width: 240px;
+  font-family: Menlo, Monaco, Consolas, 'Courier New', monospace;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.emptyState {
+  margin: 0;
+  color: #4d6379;
+}
+
+@media (width <= 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .controlRow {
+    grid-template-columns: 1fr;
+  }
+}

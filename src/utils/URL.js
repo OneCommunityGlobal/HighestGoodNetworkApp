@@ -260,6 +260,13 @@ export const ENDPOINTS = {
   AI_PROMPT: () => `${APIEndpoint}/dashboard/aiPrompt`,
   COPIED_AI_PROMPT: userId => `${APIEndpoint}/dashboard/aiPrompt/copied/${userId}`,
   INTERACT_WITH_GPT: `${APIEndpoint}/interactWithGPT`,
+  CHATBOT_QUERY: `${APIEndpoint}/chatbot/query`,
+  PINECONE_DOCUMENTS: namespace =>
+    `${APIEndpoint}/chatbot/documents${
+      namespace ? `?namespace=${encodeURIComponent(namespace)}` : ''
+    }`,
+  PINECONE_DOCUMENT_UPLOAD: () => `${APIEndpoint}/chatbot/documents/upload`,
+  PINECONE_REINDEX_BY_HASH: () => `${APIEndpoint}/chatbot/documents/reindex`,
   SETUP_NEW_USER: () => `${APIEndpoint}/getInitialSetuptoken`,
   VALIDATE_TOKEN: () => `${APIEndpoint}/validateToken`,
   SETUP_NEW_USER_PROFILE: () => `${APIEndpoint}/ProfileInitialSetup`,
