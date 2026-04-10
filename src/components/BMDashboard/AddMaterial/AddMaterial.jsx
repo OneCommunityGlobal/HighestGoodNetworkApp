@@ -453,6 +453,7 @@ export default function AddMaterialForm() {
               <Label for="currency">Currency</Label>
               <Input
                 id="currency"
+                className={styles.currency}
                 type="select"
                 name="currency"
                 value={formData.currency}
