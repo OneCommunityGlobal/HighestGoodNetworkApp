@@ -13,6 +13,7 @@ import DeleteModal from './DeleteModal';
 import { editTimeEntry, getTimeEntriesForWeek } from '../../actions/timeEntries';
 import { editTeamMemberTimeEntry } from '../../actions/task';
 import { updateIndividualTaskTime } from '../TeamMemberTasks/actions';
+import { useServerTime } from '~/context/ServerTimeContext';
 import styles from './Timelog.module.css';
 
 /**
@@ -32,6 +33,7 @@ function TimeEntry(props) {
   const { from, data, displayYear, timeEntryUserProfile, tab, darkMode } = props;
   // props from store
   const { authUser } = props;
+  const { getServerDateMoment } = useServerTime();
 
   const { _id: timeEntryUserId } = timeEntryUserProfile;
   const { _id: timeEntryId } = data;
@@ -55,10 +57,7 @@ function TimeEntry(props) {
   const toggle = () => setTimeEntryFormModal(modal => !modal);
 
   const isAuthUser = timeEntryUserId === authUser.userid;
-  const isSameDay =
-    moment()
-      .tz('America/Los_Angeles')
-      .format('YYYY-MM-DD') === dateOfWork;
+  const isSameDay = getServerDateMoment().format('YYYY-MM-DD') === dateOfWork;
 
   // default permission: auth use can edit own sameday timelog entry, but not tangibility
   const isAuthUserAndSameDayEntry = isAuthUser && isSameDay;
@@ -108,7 +107,7 @@ function TimeEntry(props) {
 
   const editFilteredColor = () => {
     try {
-      const daysPast = moment().diff(dateOfWork, 'days');
+      const daysPast = getServerDateMoment().diff(dateOfWork, 'days');
       const choosenColor = hrsFilterBtnColorMap[daysPast + 1] || hrsFilterBtnColorMap[7];
       setFilteredColor(choosenColor);
     } catch (error) {
@@ -163,7 +162,7 @@ function TimeEntry(props) {
 >
   {projectName}
   <br />
-  {taskName && `\u2003 ↳ ${taskName}`}
+  {taskName && `\u2003 鈫?${taskName}`}
 </p>
 
             <div className="mb-3">

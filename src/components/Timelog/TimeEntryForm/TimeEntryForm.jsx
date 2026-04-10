@@ -27,6 +27,7 @@ import { toast } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
 import axios from 'axios';
 import { getUserProfile } from '~/actions/userProfile';
+import { useServerTime } from '~/context/ServerTimeContext';
 import hasPermission from '~/utils/permissions';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { postTimeEntry, editTimeEntry, getTimeEntriesForWeek } from '../../../actions/timeEntries';
@@ -88,15 +89,15 @@ function TimeEntryForm(props) {
   // props from store
   const { authUser } = props;
   const dispatch = useDispatch();
+  const { fetchServerTime, getServerDateMoment } = useServerTime();
+
+  const getCurrentServerDateOfWork = () => getServerDateMoment().format('YYYY-MM-DD');
 
   const viewingUser = JSON.parse(sessionStorage.getItem('viewingUser') ?? '{}');
-  const userTimeZone = userProfile?.timeZone || 'America/Los_Angeles';
   const [actualDate, setActualDate] = useState('');
 
   const initialFormValues = {
-    dateOfWork: moment()
-      .tz('America/Los_Angeles')
-      .format('YYYY-MM-DD'),
+    dateOfWork: edit ? data?.dateOfWork || '' : getCurrentServerDateOfWork(),
     personId: viewingUser.userId ?? authUser.userid,
     projectId: '',
     wbsId: '',
@@ -241,14 +242,14 @@ function TimeEntryForm(props) {
 
     if (name === 'hours' || name === 'minutes') {
       const numValue = +value;
-    
+
       const isValid =
         name === 'hours' ? numValue >= 0 && numValue <= 1000 : numValue >= 0 && numValue <= 59;
-    
+
       if (isValid) {
         updateFormValues(name, numValue);
       }
-    
+
       return;
     } else if (name === 'isTangible') {
       updateFormValues(name, checked);
@@ -256,7 +257,7 @@ function TimeEntryForm(props) {
       updateFormValues(name, value);
     }
   };
-  
+
   const handleProjectOrTaskChange = event => {
     const optionValue = event.target.value;
     const ids = optionValue.split('/');
@@ -311,8 +312,8 @@ function TimeEntryForm(props) {
       errorObj.notes = 'Description and reference link are required';
     } else if (!reminder.hasLink && reminder.hasDropboxLink) {
       remindObj.remind =
-        'Halt, Link Wrangler! You’ve tried to share a DropBox link by just copying the DropBox URL from your browser, creating a link like a locked door with no key. Use the DropBox “Share” option to create a link that is guest-friendly!';
-      errorObj.notes = 'A valid Dropbox link from the “Share” option is required';
+        'Halt, Link Wrangler! You鈥檝e tried to share a DropBox link by just copying the DropBox URL from your browser, creating a link like a locked door with no key. Use the DropBox 鈥淪hare鈥?option to create a link that is guest-friendly!';
+      errorObj.notes = 'A valid Dropbox link from the 鈥淪hare鈥?option is required';
     }
 
     setErrors(errorObj);
@@ -344,7 +345,14 @@ function TimeEntryForm(props) {
    * @param {*} closed If true, the form closes after being cleared.
    */
   const clearForm = closed => {
-    setFormValues(initialFormValues);
+    const resetValues = edit
+      ? initialFormValues
+      : {
+          ...initialFormValues,
+          dateOfWork: getCurrentServerDateOfWork(),
+        };
+
+    setFormValues(resetValues);
     setReminder({ ...initialReminder });
     setErrors({});
     setProjectOrTaskId('defaultProject');
@@ -369,7 +377,14 @@ function TimeEntryForm(props) {
     }
 
     const handleFormReset = () => {
-      setFormValues(initialFormValues);
+      const resetValues = edit
+        ? initialFormValues
+        : {
+            ...initialFormValues,
+            dateOfWork: getCurrentServerDateOfWork(),
+          };
+
+      setFormValues(resetValues);
       setReminder(initialReminder);
       if (isOpen) toggle();
       setSubmitting(false);
@@ -412,7 +427,7 @@ function TimeEntryForm(props) {
           break;
         case 'TimeLog': {
           const date = moment(formValues.dateOfWork);
-          const today = moment().tz('America/Los_Angeles');
+          const today = getServerDateMoment();
           const offset = today.week() - date.week();
           props.getTimeEntriesForWeek(timeEntryUserId, Math.min(offset, 3));
           clearForm();
@@ -465,34 +480,34 @@ function TimeEntryForm(props) {
       event.preventDefault();
     }
     setSubmitting(true);
-  
+
     if (edit && isEqual(formValues, initialFormValues)) {
       toast.info(`Nothing is changed for this time entry`);
       setSubmitting(false);
       return;
     }
-  
+
     const maxHours = maxHoursPerEntry || 40;
     const totalHours =
       Number(formValues.hours || 0) + Number(formValues.minutes || 0) / 60;
 
     if (from === 'TimeLog' && maxHoursPerEntry && totalHours > maxHours) {
       toast.warning(
-        `Hold up, workhorse! You’ve hit the ${maxHours}-hour limit for a single entry. You can pop in a new time log for any additional hours.`
+        `Hold up, workhorse! You鈥檝e hit the ${maxHours}-hour limit for a single entry. You can pop in a new time log for any additional hours.`
       );
       setSubmitting(false);
       return;
     }
-  
+
     if (!edit && !formValues.isTangible) {
       setTimelogConfirmationModalVisible(true);
       setSubmitting(false);
       return;
     }
-  
+
     await submitTimeEntry();
   };
-  
+
 
   const handleTangibleTimelogConfirm = async () => {
     setTimelogConfirmationModalVisible(false);
@@ -579,7 +594,7 @@ function TimeEntryForm(props) {
               // Add task option
               options.push(
                 <option value={`${projectId}/${wbsId}/${taskId}`} key={`TimeEntryForm_${taskId}`}>
-                  {`\u2003\u2003 ↳ ${taskName}`}
+                  {`\u2003\u2003 鈫?${taskName}`}
                 </option>,
               );
             });
@@ -623,12 +638,10 @@ function TimeEntryForm(props) {
     }
   };
 
-  const getActualDate = () => {
+  const getActualDate = async () => {
     try {
-      const now = moment()
-        .tz(userTimeZone)
-        .toISOString();
-      setActualDate(now);
+      const syncedServerTime = await fetchServerTime();
+      setActualDate(new Date(syncedServerTime).toISOString());
     } catch (error) {
       setActualDate(null);
       toast.error('Failed to fetch the actual date. Please refresh and try logging time again');
@@ -653,7 +666,7 @@ function TimeEntryForm(props) {
   useEffect(() => {
     if (isOpen) {
       setActualDate(null);
-      getActualDate();
+      getActualDate().catch(() => {});
     }
   }, [isOpen]);
 

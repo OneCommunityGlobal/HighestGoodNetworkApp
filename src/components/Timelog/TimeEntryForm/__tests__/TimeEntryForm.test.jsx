@@ -11,6 +11,7 @@ import {
   rolesMock,
 } from '../../../../__tests__/mockStates';
 import { renderWithProvider } from '../../../../__tests__/utils';
+import { ServerTimeProvider } from '../../../../context/ServerTimeContext';
 import TimeEntryForm from '../TimeEntryForm';
 
 vi.mock('../../../../actions/timeEntries', async () => {
@@ -28,6 +29,9 @@ vi.mock('axios', async () => {
     __esModule: true,
     ...actual,
     get: vi.fn(url => {
+      if (url.includes('/server/date')) {
+        return Promise.resolve({ data: { currentTime: '2026-04-09T12:00:00.000Z' } });
+      }
       if (url.includes('/userProjects')) {
         return Promise.resolve({ data: userProjectMock.projects });
       }
@@ -67,7 +71,9 @@ describe('<TimeEntryForm edit/>', () => {
 
   const renderForm = () =>
     renderWithProvider(
-      <TimeEntryForm userId={data.personId} data={data} edit toggle={toggle} isOpen />,
+      <ServerTimeProvider>
+        <TimeEntryForm userId={data.personId} data={data} edit toggle={toggle} isOpen />
+      </ServerTimeProvider>,
       { store },
     );
 
@@ -148,7 +154,7 @@ it('should change Project with user input', async () => {
   const toSelect = userProjectMock.projects[1];
   await userEvent.selectOptions(select, toSelect.projectId);
 
-  // 4) Assert that both the <select>’s value and the displayed text updated
+  // 4) Assert that both the <select>鈥檚 value and the displayed text updated
   expect(select).toHaveValue(toSelect.projectId);
   expect(select).toHaveDisplayValue(toSelect.projectName);
 });
