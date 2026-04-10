@@ -179,9 +179,9 @@ function InjuryChartForm({ dark }) {
       {/* Chart Display with Toggle */}
       {!error && chartData && chartData.length > 0 && (
         <div
-          className={`${styles.injuryChartContainer} ${
-            dark ? styles.wrapperDark : styles.lightBackground
-          } p-4 rounded shadow-sm`}
+          className={`${
+            styles.injuryChartContainer
+          } ${dark ? styles.wrapperDark : styles.lightBackground} p-4 rounded shadow-sm`}
         >
           <div className="d-flex justify-content-end mb-2">
             <button
