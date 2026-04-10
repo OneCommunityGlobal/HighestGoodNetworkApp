@@ -115,6 +115,7 @@ export function CPDashboard() {
           total: response.data.events?.length || 0,
         }));
       } catch (err) {
+        console.error('Failed to load events:', err);
         setError('Failed to load events');
       } finally {
         setIsLoading(false);
@@ -170,8 +171,8 @@ export function CPDashboard() {
       }
       // Format: "Saturday, February 15"
       return format(date, 'EEEE, MMMM d');
-    } catch (error) {
-      console.error('Error formatting date:', error);
+    } catch (err) {
+      console.error('Error formatting date:', err);
       return 'Date TBD';
     }
   };
@@ -181,8 +182,8 @@ export function CPDashboard() {
     try {
       const userTimezone = getUserTimezone();
       return formatEventTimeWithTimezone(eventDate, timeStr, userTimezone);
-    } catch (error) {
-      console.error('Error formatting time:', error);
+    } catch (err) {
+      console.error('Error formatting time:', err);
       return 'Time TBD';
     }
   };
@@ -210,7 +211,7 @@ export function CPDashboard() {
         return `${year}-${month}-${day}`;
       }
     } catch (err) {
-      console.error('Error parsing date:', err);
+      console.error('Error parsing event date:', err);
     }
     return null;
   };
