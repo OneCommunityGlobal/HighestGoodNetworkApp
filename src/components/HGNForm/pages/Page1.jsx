@@ -5,9 +5,9 @@ import { getUserProfileBasicInfo } from '~/actions/userManagement';
 import httpService from '~/services/httpService';
 import { ENDPOINTS } from '~/utils/URL';
 import Banner from '../questionpages/Banner';
-import QuestionnaireInfo from '../questionpages/QuestionnaireInfo';
 import InfoForm from '../questionpages/InfoForm';
 import Progress from '../questionpages/Progress';
+import QuestionnaireInfo from '../questionpages/QuestionnaireInfo';
 import styles from '../styles/hgnform.module.css';
 
 export default function Page1() {
