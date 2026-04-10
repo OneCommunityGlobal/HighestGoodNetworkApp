@@ -154,7 +154,7 @@ it('should change Project with user input', async () => {
   const toSelect = userProjectMock.projects[1];
   await userEvent.selectOptions(select, toSelect.projectId);
 
-  // 4) Assert that both the <select>鈥檚 value and the displayed text updated
+  // 4) Assert that both the <select>'s value and the displayed text updated
   expect(select).toHaveValue(toSelect.projectId);
   expect(select).toHaveDisplayValue(toSelect.projectName);
 });

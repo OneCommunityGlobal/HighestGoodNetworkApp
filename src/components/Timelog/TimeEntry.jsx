@@ -162,7 +162,7 @@ function TimeEntry(props) {
 >
   {projectName}
   <br />
-  {taskName && `\u2003 鈫?${taskName}`}
+  {taskName && `\u2003 ↳ ${taskName}`}
 </p>
 
             <div className="mb-3">

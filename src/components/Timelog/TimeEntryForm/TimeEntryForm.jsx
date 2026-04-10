@@ -312,8 +312,8 @@ function TimeEntryForm(props) {
       errorObj.notes = 'Description and reference link are required';
     } else if (!reminder.hasLink && reminder.hasDropboxLink) {
       remindObj.remind =
-        'Halt, Link Wrangler! You鈥檝e tried to share a DropBox link by just copying the DropBox URL from your browser, creating a link like a locked door with no key. Use the DropBox 鈥淪hare鈥?option to create a link that is guest-friendly!';
-      errorObj.notes = 'A valid Dropbox link from the 鈥淪hare鈥?option is required';
+        "Halt, Link Wrangler! You've tried to share a DropBox link by just copying the DropBox URL from your browser, creating a link like a locked door with no key. Use the DropBox 'Share' option to create a link that is guest-friendly!";
+      errorObj.notes = "A valid Dropbox link from the 'Share' option is required";
     }
 
     setErrors(errorObj);
@@ -493,7 +493,7 @@ function TimeEntryForm(props) {
 
     if (from === 'TimeLog' && maxHoursPerEntry && totalHours > maxHours) {
       toast.warning(
-        `Hold up, workhorse! You鈥檝e hit the ${maxHours}-hour limit for a single entry. You can pop in a new time log for any additional hours.`
+        `Hold up, workhorse! You've hit the ${maxHours}-hour limit for a single entry. You can pop in a new time log for any additional hours.`
       );
       setSubmitting(false);
       return;
@@ -594,7 +594,7 @@ function TimeEntryForm(props) {
               // Add task option
               options.push(
                 <option value={`${projectId}/${wbsId}/${taskId}`} key={`TimeEntryForm_${taskId}`}>
-                  {`\u2003\u2003 鈫?${taskName}`}
+                  {`\u2003\u2003 ↳ ${taskName}`}
                 </option>,
               );
             });
