@@ -11,6 +11,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
   margin-bottom: 30px;
   padding: 20px;
   background: linear-gradient(120deg, #fff, #f8f9fa);
@@ -167,13 +168,30 @@
 
 .dashboardControls {
   display: flex;
+  align-items: flex-end;
   align-items: center;
   gap: 15px;
 }
 
+.dashboardSearchContainer {
+  flex: 1;
+  width:260px;
+  max-width: 600px;
+}
+
+.dashboardSearch {
+  border: 1px solid #d1d5db; 
+  border-radius: 25px !important; 
+  padding: 10px 16px;
+  font-size: 0.95rem;
+  width: 100%;
+  background-color: #fff;
+  transition: all 0.2s ease;
+}
+
 .dashboardSearch:focus {
-  border-color: #34495e;
-  box-shadow: 0 0 8px rgba(52, 73, 94, 0.3);
+  border-color: #2c3e50;
+  box-shadow: 0 0 4px rgba(44, 62, 80, 0.2);
   outline: none;
 }
 

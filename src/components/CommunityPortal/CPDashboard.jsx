@@ -236,32 +236,37 @@ export function CPDashboard() {
     return null;
   };
 
-  const filteredEvents = events.filter(event => {
-    if (onlineOnly) {
-      const isOnlineEvent = event.location?.toLowerCase() === 'virtual';
-      if (!isOnlineEvent) return false;
-    }
+const filteredEvents = events.filter(event => {
+  // 🔹 Online filter
+  if (onlineOnly) {
+    const isOnlineEvent = (event.location || '').toLowerCase() === 'virtual';
+    if (!isOnlineEvent) return false;
+  }
 
-    if (dateFilter === 'tomorrow') {
-      if (!isTomorrow(event.date)) return false;
-    } else if (dateFilter === 'weekend') {
-      if (!isComingWeekend(event.date)) return false;
-    }
+  // 🔹 Date filters
+  if (dateFilter === 'tomorrow') {
+    if (!isTomorrow(event.date)) return false;
+  } else if (dateFilter === 'weekend') {
+    if (!isComingWeekend(event.date)) return false;
+  }
 
-    const eventDate = event.date ? parseEventDate(event.date) : null;
-    if (selectedDate && eventDate !== selectedDate) {
-      return false;
-    }
+  // 🔹 Specific selected date
+  const eventDate = event.date ? parseEventDate(event.date) : null;
+  if (selectedDate && eventDate !== selectedDate) {
+    return false;
+  }
 
-    if (!searchQuery) return true;
-    const term = searchQuery.toLowerCase();
+  // 🔹 Search
+  if (!searchQuery) return true;
 
-    return (
-      fuzzySearch(event.title, term, 0.6) ||
-      fuzzySearch(event.location, term, 0.6) ||
-      fuzzySearch(event.organizer, term, 0.6)
-    );
-  });
+  const term = searchQuery.toLowerCase();
+
+  return (
+    fuzzySearch(event.title || '', term, 0.6) ||
+    fuzzySearch(event.location || '', term, 0.6) ||
+    fuzzySearch(event.organizer || '', term, 0.6)
+  );
+});
 
   useEffect(() => {
     setPagination(prev => ({ ...prev, currentPage: 1 }));
