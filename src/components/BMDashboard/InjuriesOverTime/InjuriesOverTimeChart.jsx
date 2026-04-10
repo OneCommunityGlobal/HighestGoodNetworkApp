@@ -76,8 +76,8 @@ function InjuriesOverTimeLine({ darkMode = false }) {
           types: selInjTypes,
           departments: selDepts,
           severities: selSeverities,
-        })
-      )
+        }),
+      ),
     )
       .catch(err => setError(err?.message || 'Failed to load data'))
       .finally(() => setLoading(false));
@@ -270,9 +270,7 @@ function InjuriesOverTimeLine({ darkMode = false }) {
         </Select>
       </div>
 
-      {error && (
-        <div style={{ color: 'red', textAlign: 'center', margin: '16px 0' }}>{error}</div>
-      )}
+      {error && <div style={{ color: 'red', textAlign: 'center', margin: '16px 0' }}>{error}</div>}
       {loading ? (
         <div style={{ textAlign: 'center', padding: 50 }}>
           <Spin size="large" />
