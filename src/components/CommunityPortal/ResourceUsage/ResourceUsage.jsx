@@ -173,7 +173,7 @@ export default function ResourceUsage() {
           </div>
 
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data} margin={{ top: 20, right: 30, left: 30, bottom: 80 }}>
+            <BarChart data={data} margin={{ top: 5, right: 30, left: 30, bottom: 80 }}>
               <CartesianGrid
                 strokeDasharray="3 3"
                 stroke={darkMode ? '#3A506B' : '#eee'}
@@ -209,8 +209,25 @@ export default function ResourceUsage() {
                 iconType="circle"
                 iconSize={8}
                 wrapperStyle={{
+                  top: 0,
+                  right: 0,
+                  paddingBottom: '4px',
                   color: darkMode ? '#ffffff' : '#666',
+                  fontSize: '0.875rem',
+                  lineHeight: '1.5',
                 }}
+                formatter={value => (
+                  <span
+                    style={{
+                      color: darkMode ? '#ffffff' : '#666',
+                      marginLeft: '1px',
+                      marginRight: '0px',
+                      fontSize: '0.875rem',
+                    }}
+                  >
+                    {value.charAt(0).toUpperCase() + value.slice(1)}
+                  </span>
+                )}
               />
 
               <Bar dataKey="returned" stackId="a" fill="#22c55e" radius={[4, 4, 0, 0]} />
