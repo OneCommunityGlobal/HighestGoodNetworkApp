@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   clearDBNotifications,
   clearNotifications,
-} from '../../actions/lbDashboard/messagingActions';
+} from '../../actions/lbdashboard/messagingActions';
 import { getMessagingSocket } from '../../utils/messagingSocket';
 import { ENDPOINTS } from '../../utils/URL';
 
@@ -248,7 +248,10 @@ export default function BellNotification({ userId }) {
     };
   }, [messageNotifications]);
 
-  const allNotifications = [...(dbNotifications || []), ...messageNotifications];
+  const allNotifications = [
+  ...(Array.isArray(dbNotifications) ? dbNotifications : []),
+  ...(Array.isArray(messageNotifications) ? messageNotifications : []),
+];
 
   // Ready after first mount
   useEffect(() => setIsDataReady(true), []);
