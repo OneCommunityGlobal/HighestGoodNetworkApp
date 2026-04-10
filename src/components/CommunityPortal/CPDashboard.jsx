@@ -96,15 +96,22 @@ export function CPDashboard() {
   });
 
   const handleDateChange = date => {
+    if (!date) {
+      setSelectedDate('');
+      return;
+    }
+
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // midnight today
+    today.setHours(0, 0, 0, 0);
 
     if (date < today) {
       toast.error('Past dates are not supported. Please select a future date.');
       setSelectedDate('');
       return;
     }
-    setSelectedDate(date);
+
+    const formatted = date.toISOString().split('T')[0];
+    setSelectedDate(formatted);
   };
 
   const FALLBACK_IMG =
