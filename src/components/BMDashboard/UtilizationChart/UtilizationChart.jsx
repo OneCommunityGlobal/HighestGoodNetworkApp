@@ -105,7 +105,8 @@ function UtilizationChart() {
         },
       },
       tooltip: {
-        bodyColor: darkMode ? '#ffffff' : '#333333',
+        titleColor: '#ffffff',
+        bodyColor: '#ffffff',
         callbacks: {
           label: context => {
             const tool = toolsData[context.dataIndex];
