@@ -27,7 +27,7 @@ export const rootReducers = combineReducers({
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['theme', 'role'], // Only persist theme settings
+  whitelist: ['theme', 'role', 'form'], // Persist theme settings and form builder draft
   blacklist: ['auth', 'errors', ...Object.keys(sessionReducers)],
   timeout: 0, // No timeout
   writeFailHandler: (err) => {
