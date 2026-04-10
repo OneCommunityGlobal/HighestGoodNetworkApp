@@ -148,13 +148,13 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
       ? { top: '30%', right: '8%' }
       : { top: '30%', right: '6%' };
 
-  const projectsTextStyle = darkMode
-    ? { color: '#fff', mixBlendMode: 'difference' }
-    : { color: '#222' };
+  const projectsTextStyle = {
+    color: darkMode ? '#ffffff' : '#222222',
+  };
 
-  const projectsMutedTextStyle = darkMode
-    ? { color: '#fff', mixBlendMode: 'difference' }
-    : { color: '#666' };
+  const projectsMutedTextStyle = {
+    color: darkMode ? '#d1d5db' : '#666666',
+  };
 
   return (
     <div
@@ -175,11 +175,11 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
           left: 'auto',
           transform: 'translateY(-50%)',
           zIndex: 10,
-          background: 'white',
+          background: darkMode ? '#1f2937' : '#ffffff',
           borderRadius: 4,
           padding: 4,
-          boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
-          border: '1px solid #eee',
+          boxShadow: darkMode ? '0 2px 6px rgba(0,0,0,0.35)' : '0 2px 6px rgba(0,0,0,0.15)',
+          border: darkMode ? '1px solid rgba(255,255,255,0.15)' : '1px solid #eee',
           minWidth: 105,
           minHeight: 45,
           display: 'grid',
