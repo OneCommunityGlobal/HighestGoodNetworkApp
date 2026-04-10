@@ -5,6 +5,10 @@ import Select from 'react-select';
 import ProjectSummary from './ProjectSummary';
 import styles from '../BMDashboard.module.css';
 
+/**
+ * ProjectsList Component
+ * Renders a filterable list of project summaries based on user selection.
+ */
 function ProjectsList() {
   const projects = useSelector(state => state.bmProjects) || [];
   const darkMode = useSelector(state => state.theme?.darkMode || false);
