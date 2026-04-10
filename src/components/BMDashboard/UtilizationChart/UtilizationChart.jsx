@@ -1,8 +1,18 @@
 /* eslint-disable */
 /* prettier-ignore */
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Title } from 'chart.js';
-import { Bar } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Tooltip,
+  Title,
+  LineElement,
+  PointElement,
+  Legend,
+} from 'chart.js';
+import { Bar, Line } from 'react-chartjs-2';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import axios from 'axios';
@@ -13,11 +23,34 @@ import { useSelector } from 'react-redux';
 import { ENDPOINTS } from '../../../utils/URL';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
-ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Title, ChartDataLabels);
+ChartJS.register(
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Tooltip,
+  Title,
+  LineElement,
+  PointElement,
+  Legend,
+  ChartDataLabels,
+);
+
+// Linear regression helper to compute trend line points
+const computeTrendLine = values => {
+  const n = values.length;
+  const xMean = (n - 1) / 2;
+  const yMean = values.reduce((a, b) => a + b, 0) / n;
+  const slope =
+    values.reduce((sum, y, x) => sum + (x - xMean) * (y - yMean), 0) /
+    values.reduce((sum, _, x) => sum + (x - xMean) ** 2, 0);
+  const intercept = yMean - slope * xMean;
+  return values.map((_, x) => Math.round((slope * x + intercept) * 10) / 10);
+};
 
 function UtilizationChart() {
   const [toolsData, setToolsData] = useState([]);
   const [previousToolsData, setPreviousToolsData] = useState([]);
+  const [trendData, setTrendData] = useState([]);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [toolFilter, setToolFilter] = useState('ALL');
@@ -42,7 +75,7 @@ function UtilizationChart() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Mock data to test compare functionality
+  // Mock previous data for comparison testing
   const getMockPreviousData = data => {
     return data.map(tool => ({
       ...tool,
@@ -51,7 +84,26 @@ function UtilizationChart() {
     }));
   };
 
-  // Compute previous period date range based on current selection
+  // Mock trend data for last 4 weeks
+  // TODO: replace with real API calls when BE is ready
+  const getMockTrendData = currentAvg => {
+    const now = new Date();
+    return Array.from({ length: 4 }, (_, i) => {
+      const weekStart = new Date(now);
+      weekStart.setDate(now.getDate() - (3 - i) * 7);
+      const label = `Week of ${weekStart.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+      })}`;
+      const avgUtilization = Math.max(
+        0,
+        Math.min(100, currentAvg + Math.floor(Math.random() * 30) - 15),
+      );
+      return { week: label, avgUtilization };
+    });
+  };
+
+  // Compute previous period date range
   const getPreviousPeriod = () => {
     const end = endDate ? new Date(endDate) : new Date();
     const start = startDate ? new Date(startDate) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
@@ -65,17 +117,20 @@ function UtilizationChart() {
   const fetchChartData = async (currentComparisonMode = comparisonMode) => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_APIENDPOINT}/tools/utilization`, {
-        params: {
-          startDate,
-          endDate,
-          tool: toolFilter,
-          project: projectFilter,
-        },
-        headers: {
-          Authorization: localStorage.getItem('token'),
-        },
+        params: { startDate, endDate, tool: toolFilter, project: projectFilter },
+        headers: { Authorization: localStorage.getItem('token') },
       });
-      setToolsData(response.data);
+      const data = response.data;
+      setToolsData(data);
+
+      // Compute current avg utilization to seed mock trend data
+      const currentAvg =
+        data.length > 0
+          ? Math.round(data.reduce((sum, t) => sum + t.utilizationRate, 0) / data.length)
+          : 0;
+
+      // TODO: replace getMockTrendData with 4 real API calls for weekly ranges
+      setTrendData(getMockTrendData(currentAvg));
 
       if (currentComparisonMode) {
         const { prevStart, prevEnd } = getPreviousPeriod();
@@ -88,16 +143,14 @@ function UtilizationChart() {
               tool: toolFilter,
               project: projectFilter,
             },
-            headers: {
-              Authorization: localStorage.getItem('token'),
-            },
+            headers: { Authorization: localStorage.getItem('token') },
           },
         );
         // setPreviousToolsData(prevResponse.data);
-        setPreviousToolsData(getMockPreviousData(response.data));
+        setPreviousToolsData(getMockPreviousData(data));
       } else {
         setPreviousToolsData([]);
-        setShowIncreasedOnly(false); // reset filter when comparison is off
+        setShowIncreasedOnly(false);
       }
     } catch (err) {
       setError('Failed to load utilization data.');
@@ -130,16 +183,14 @@ function UtilizationChart() {
     fetchChartData();
   };
 
-  // Auto-fetch when comparison mode is toggled
   const handleComparisonToggle = () => {
     const newMode = !comparisonMode;
     setComparisonMode(newMode);
-    // Reset increased filter when turning comparison off
     if (!newMode) setShowIncreasedOnly(false);
     fetchChartData(newMode);
   };
 
-  // Filtered data based on showIncreasedOnly toggle
+  // Filtered data for "increased only" toggle
   const filteredToolsData = useMemo(() => {
     if (!showIncreasedOnly || !comparisonMode || !previousToolsData.length) return toolsData;
     return toolsData.filter(tool => {
@@ -165,11 +216,9 @@ function UtilizationChart() {
       tool.downtime,
       tool.count ?? 'N/A',
     ]);
-
     const csvContent = [headers, ...rows]
       .map(row => row.map(val => `"${val}"`).join(','))
       .join('\n');
-
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -188,10 +237,8 @@ function UtilizationChart() {
   // --- PDF Download ---
   const downloadPDF = () => {
     const doc = new jsPDF();
-
     doc.setFontSize(16);
     doc.text('Tool Utilization Report', 14, 16);
-
     doc.setFontSize(10);
     doc.setTextColor(120);
     const dateRange =
@@ -200,7 +247,6 @@ function UtilizationChart() {
         : 'Last 30 days (default)';
     doc.text(`Date Range: ${dateRange}`, 14, 24);
     doc.text(`Generated: ${new Date().toLocaleDateString()}`, 14, 30);
-
     autoTable(doc, {
       startY: 36,
       head: [['Tool Name', 'Utilization Rate (%)', 'Downtime (hrs)', 'Count']],
@@ -214,15 +260,13 @@ function UtilizationChart() {
       alternateRowStyles: { fillColor: [245, 245, 245] },
       styles: { fontSize: 10 },
     });
-
     doc.save(`utilization_report_${new Date().toISOString().slice(0, 10)}.pdf`);
     setDownloadMenuOpen(false);
   };
 
-  // Summary banner computed from filteredToolsData
+  // Summary banner
   const summary = useMemo(() => {
     if (!filteredToolsData.length) return null;
-
     const totalTools = filteredToolsData.reduce((sum, t) => sum + (t.count || 0), 0);
     const avgUtilization =
       Math.round(
@@ -232,7 +276,6 @@ function UtilizationChart() {
       ) / 10;
     const mostUtilized = filteredToolsData[0];
     const totalDowntime = filteredToolsData.reduce((sum, t) => sum + t.downtime, 0);
-
     let avgUtilizationChange = null;
     if (comparisonMode && filteredPreviousToolsData.length) {
       const prevAvg =
@@ -240,10 +283,10 @@ function UtilizationChart() {
         filteredPreviousToolsData.length;
       avgUtilizationChange = Math.round((avgUtilization - prevAvg) * 10) / 10;
     }
-
     return { totalTools, avgUtilization, mostUtilized, totalDowntime, avgUtilizationChange };
   }, [filteredToolsData, filteredPreviousToolsData, comparisonMode]);
 
+  // Bar chart data
   const chartData = {
     labels: filteredToolsData.map(tool => tool.name),
     datasets: [
@@ -256,13 +299,42 @@ function UtilizationChart() {
     ],
   };
 
-  const options = {
+  // Trend line chart data
+  const trendValues = trendData.map(d => d.avgUtilization);
+  const trendLineValues = trendValues.length >= 2 ? computeTrendLine(trendValues) : trendValues;
+
+  const trendChartData = {
+    labels: trendData.map(d => d.week),
+    datasets: [
+      {
+        label: 'Avg Utilization (%)',
+        data: trendValues,
+        borderColor: darkMode ? '#a0e7e5' : '#007bff',
+        backgroundColor: darkMode ? 'rgba(160,231,229,0.15)' : 'rgba(0,123,255,0.1)',
+        pointBackgroundColor: darkMode ? '#a0e7e5' : '#007bff',
+        tension: 0.3,
+        fill: true,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+      },
+      {
+        label: 'Trend',
+        data: trendLineValues,
+        borderColor: darkMode ? '#e8a71c' : '#f44336',
+        borderDash: [6, 4],
+        pointRadius: 0,
+        tension: 0,
+        fill: false,
+        borderWidth: 2,
+      },
+    ],
+  };
+
+  const barOptions = {
     indexAxis: 'y',
     responsive: true,
     plugins: {
-      legend: {
-        labels: { color: darkMode ? '#ffffff' : '#333' },
-      },
+      legend: { labels: { color: darkMode ? '#ffffff' : '#333' } },
       datalabels: {
         color: context => {
           if (!comparisonMode || !filteredPreviousToolsData.length) {
@@ -289,10 +361,7 @@ function UtilizationChart() {
       },
       tooltip: {
         callbacks: {
-          title: context => {
-            const tool = filteredToolsData[context[0].dataIndex];
-            return tool.name;
-          },
+          title: context => filteredToolsData[context[0].dataIndex]?.name,
           label: context => {
             const tool = filteredToolsData[context.dataIndex];
             const lines = [
@@ -313,25 +382,45 @@ function UtilizationChart() {
             return lines;
           },
         },
-        footerColor: 'white',
       },
     },
     scales: {
       x: {
         max: 100,
-        title: {
-          display: true,
-          text: 'Time (%)',
-          color: darkMode ? '#ffffff' : '#333',
-        },
+        title: { display: true, text: 'Time (%)', color: darkMode ? '#ffffff' : '#333' },
         ticks: { color: darkMode ? '#ffffff' : '#333' },
         grid: { color: darkMode ? '#c7c7c7ff' : '#bebebeff' },
       },
       y: {
-        ticks: {
-          autoSkip: false,
-          color: darkMode ? '#ffffff' : '#333',
+        ticks: { autoSkip: false, color: darkMode ? '#ffffff' : '#333' },
+        grid: { color: darkMode ? '#c7c7c7ff' : '#bebebeff' },
+      },
+    },
+  };
+
+  const trendOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        labels: { color: darkMode ? '#ffffff' : '#333' },
+      },
+      datalabels: { display: false },
+      tooltip: {
+        callbacks: {
+          label: context => `${context.dataset.label}: ${context.parsed.y}%`,
         },
+      },
+    },
+    scales: {
+      x: {
+        ticks: { color: darkMode ? '#ffffff' : '#333' },
+        grid: { color: darkMode ? '#c7c7c7ff' : '#bebebeff' },
+      },
+      y: {
+        min: 0,
+        max: 100,
+        title: { display: true, text: 'Avg Utilization (%)', color: darkMode ? '#ffffff' : '#333' },
+        ticks: { color: darkMode ? '#ffffff' : '#333' },
         grid: { color: darkMode ? '#c7c7c7ff' : '#bebebeff' },
       },
     },
@@ -352,7 +441,6 @@ function UtilizationChart() {
                 <span className={styles.summaryLabel}>Total Tools</span>
                 <span className={styles.summaryValue}>{summary.totalTools}</span>
               </div>
-
               <div className={styles.summaryCard}>
                 <span className={styles.summaryLabel}>Avg Utilization</span>
                 <span className={styles.summaryValue}>{summary.avgUtilization}%</span>
@@ -369,7 +457,6 @@ function UtilizationChart() {
                   </span>
                 )}
               </div>
-
               <div className={styles.summaryCard}>
                 <span className={styles.summaryLabel}>Top Tool</span>
                 <span className={`${styles.summaryValue} ${styles.summaryTopTool}`}>
@@ -379,7 +466,6 @@ function UtilizationChart() {
                   {summary.mostUtilized?.utilizationRate ?? 0}% utilized
                 </span>
               </div>
-
               <div className={styles.summaryCard}>
                 <span className={styles.summaryLabel}>Total Downtime</span>
                 <span className={styles.summaryValue}>
@@ -447,7 +533,6 @@ function UtilizationChart() {
               Compare: {comparisonMode ? 'ON' : 'OFF'}
             </button>
 
-            {/* Show only increased usage — visible only when comparison is ON */}
             {comparisonMode && (
               <button
                 onClick={() => setShowIncreasedOnly(prev => !prev)}
@@ -459,7 +544,6 @@ function UtilizationChart() {
               </button>
             )}
 
-            {/* Download Dropdown */}
             <div className={styles.downloadWrapper} ref={downloadMenuRef}>
               <button className={styles.button} onClick={() => setDownloadMenuOpen(prev => !prev)}>
                 Download ▾
@@ -486,7 +570,16 @@ function UtilizationChart() {
             </p>
           )}
 
-          <Bar data={chartData} options={options} />
+          {/* Main Bar Chart */}
+          <Bar data={chartData} options={barOptions} />
+
+          {/* Trend Line Chart */}
+          {trendData.length > 0 && (
+            <div className={styles.trendSection}>
+              <h3 className={styles.trendTitle}>4-Week Utilization Trend</h3>
+              <Line data={trendChartData} options={trendOptions} />
+            </div>
+          )}
         </>
       )}
     </div>

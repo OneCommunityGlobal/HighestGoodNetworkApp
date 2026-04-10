@@ -213,7 +213,7 @@
   background-color: var(--hover-bg, #f0f0f0);
 }
 
-/* Comparison hint note */
+/* ============ COMPARISON NOTE ============ */
 .comparisonNote {
   text-align: center;
   font-size: 0.85rem;
@@ -231,6 +231,21 @@
   color: #f44336;
   font-weight: 600;
   margin-left: 0.5rem;
+}
+
+/* ============ TREND SECTION ============ */
+.trendSection {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-color, #e0e0e0);
+}
+
+.trendTitle {
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--title-color, #333);
 }
 
 .utilizationChartError {
@@ -271,6 +286,10 @@
 
 .utilizationChartContainer.darkMode .downloadMenu {
   box-shadow: 0 4px 12px rgb(0 0 0 / 40%);
+}
+
+.utilizationChartContainer.darkMode .trendSection {
+  border-top-color: #4a5a77;
 }
 
 .utilizationChartContainer.darkMode :global(.react-datepicker) {
