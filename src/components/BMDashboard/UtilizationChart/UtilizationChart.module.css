@@ -90,13 +90,8 @@
 }
 
 .button {
-<<<<<<< HEAD
   background-color: #2563eb;
-  color: #ffffff;
-=======
-  background-color: var(--button-bg, #000);
   color: var(--button-text, #fff);
->>>>>>> development
   border: none;
   cursor: pointer;
   transition: background-color 0.3s ease;
@@ -104,11 +99,7 @@
 }
 
 .button:hover {
-<<<<<<< HEAD
   background-color: #1d4ed8;
-=======
-  background-color: var(--button-hover, #333);
->>>>>>> development
 }
 
 .utilizationChartError {
@@ -131,20 +122,6 @@
   --error-color: #ff6b6b;
 }
 
-<<<<<<< HEAD
-/* Ensure bar value labels are visible in dark mode (SVG text fix) */
-.utilizationChartContainer.darkMode svg text,
-.utilizationChartContainer.darkMode svg tspan {
-  fill: #ffffff !important;
-}
-
-.utilizationChartContainer.darkMode .recharts-text {
-  fill: #ffffff !important;
-}
-
-.utilizationChartContainer.darkMode .recharts-cartesian-axis-tick-value {
-  fill: #ffffff !important;
-=======
 .utilizationChartContainer.darkMode .datepickerWrapper::placeholder {
   color: #fff;
 }
@@ -176,5 +153,4 @@
 .utilizationChartContainer.darkMode :global(.react-datepicker__day--in-range) {
   background-color: #e8a71c;
   color: #000;
->>>>>>> development
 }
