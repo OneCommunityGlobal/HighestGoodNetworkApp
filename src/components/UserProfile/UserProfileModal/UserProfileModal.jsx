@@ -77,13 +77,10 @@ const UserProfileModal = props => {
     return today.toLocaleDateString('en-CA').split('T')[0];
   };
 
-<<<<<<< carlos_update_blue_square_description
   function getLastInitial(lastName) {
     return lastName != "System" ? lastName.charAt(0).toUpperCase() : lastName;
   }
 
-=======
->>>>>>> development
   if (blueSquare.length === 0) {
     blueSquare = [
       {
@@ -216,7 +213,6 @@ const UserProfileModal = props => {
   const handleSubmitWarning = (warningData = warningSelections) => {
     setShowWarningSpinner(true);
     handleLogWarning(warningData);
-<<<<<<< carlos_update_blue_square_description
     modifyBlueSquares(id, dateStamp, summary, '', '', 'delete');
   };
 
@@ -243,34 +239,6 @@ const UserProfileModal = props => {
     handleSubmitWarning(finalSelections);
   };
 
-=======
-    modifyBlueSquares(id, dateStamp, summary, 'delete');
-  };
-
-  const handleLoggingBothWarnings = () => {
-    const updatedSelections = specialWarnings.reduce((acc, specialWarning) => {
-      acc[specialWarning.title] = { warn: 'Log Warning', color: 'blue' };
-      return acc;
-    }, {});
-
-    updatedSelections.bothTriggered = true;
-
-    const issueBlueSquare = Object.entries(updatedSelections)
-      .filter(([key]) => key !== 'bothTriggered' && key !== 'issueBlueSquare')
-      .reduce((acc, [warningTitle, selection]) => {
-        acc[warningTitle] = selection?.warn === 'Issue Blue Square';
-        return acc;
-      }, {});
-
-    const finalSelections = {
-      ...updatedSelections,
-      issueBlueSquare,
-    };
-
-    handleSubmitWarning(finalSelections);
-  };
-
->>>>>>> development
   const handleToggleLogWarning = warningData => {
     if (warningData === 'both') {
       if (specialWarnings[0].warnings.length <= 1 && specialWarnings[1].warnings.length <= 1) {
@@ -304,11 +272,7 @@ const UserProfileModal = props => {
     setShowWarningSpinner(true);
     setWarningType('');
     handleLogWarning(warningData);
-<<<<<<< carlos_update_blue_square_description
     modifyBlueSquares(id, dateStamp, summary, '', '', 'delete');
-=======
-    modifyBlueSquares(id, dateStamp, summary, 'delete');
->>>>>>> development
   };
 
   function checkFields(field1, field2) {
@@ -326,11 +290,8 @@ const UserProfileModal = props => {
 
   const boxStyling = darkMode ? boxStyleDark : boxStyle;
   const fontColor = darkMode ? 'text-light' : '';
-<<<<<<< carlos_update_blue_square_description
   const darkInputStyle = darkMode ? { backgroundColor: '#2d3748', borderColor: '#4a5568', color: '#fff' } : {};
   const darkDateStyle = darkMode ? { ...darkInputStyle, colorScheme: 'dark' } : {};
-=======
->>>>>>> development
 
   const [ccModalOpen, setCcModalOpen] = useState(false);
   const allUsers = useSelector(state => state.allUserProfiles?.userProfiles) || [];
@@ -564,18 +525,13 @@ const UserProfileModal = props => {
                 <Label className={fontColor} for="date">
                   Date
                 </Label>
-<<<<<<< carlos_update_blue_square_description
                 <Input type="date" name="date" id="date" value={dateStamp} onChange={handleChange} style={darkDateStyle} />
-=======
-                <Input type="date" name="date" id="date" value={dateStamp} onChange={handleChange} />
->>>>>>> development
               </FormGroup>
 
               <FormGroup hidden={summaryFieldView}>
                 <Label className={fontColor} for="report">
                   Summary
                 </Label>
-<<<<<<< carlos_update_blue_square_description
                 {/* carlos: show who is assigning the blue square */}
                 <Input
                   id="asignment"
@@ -584,18 +540,12 @@ const UserProfileModal = props => {
                   value={`Assigned by ${firstName} ${getLastInitial(lastName)} ${formatYYYYMMDDToMMDDYY(dateStamp)}:`}
                   style={darkInputStyle}
                 />
-=======
->>>>>>> development
                 <Input
                   type="textarea"
                   id="summary"
                   onChange={handleChange}
                   value={summary}
-<<<<<<< carlos_update_blue_square_description
                   style={{ minHeight: '200px', overflow: 'hidden', ...darkInputStyle }}
-=======
-                  style={{ minHeight: '200px', overflow: 'hidden' }}
->>>>>>> development
                   onInput={e => adjustTextareaHeight(e.target)}
                 />
               </FormGroup>
@@ -609,16 +559,12 @@ const UserProfileModal = props => {
                   Date:
                 </Label>
                 {canEditInfringements ? (
-<<<<<<< carlos_update_blue_square_description
                   <Input
                     type="date"
                     onChange={e => setDateStamp(e.target.value)}
                     value={dateStamp}
                     style={darkDateStyle}
                   />
-=======
-                  <Input type="date" onChange={e => setDateStamp(e.target.value)} value={dateStamp} />
->>>>>>> development
                 ) : (
                   <span> {blueSquare[0]?.date}</span>
                 )}
@@ -649,11 +595,7 @@ const UserProfileModal = props => {
                     id="summary"
                     onChange={handleChange}
                     value={summary}
-<<<<<<< carlos_update_blue_square_description
                     style={{ minHeight: '200px', overflow: 'hidden', ...darkInputStyle }}
-=======
-                    style={{ minHeight: '200px', overflow: 'hidden' }}
->>>>>>> development
                     onInput={e => adjustTextareaHeight(e.target)}
                   />
                 ) : (
