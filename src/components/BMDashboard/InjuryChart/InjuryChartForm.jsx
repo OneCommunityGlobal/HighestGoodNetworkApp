@@ -30,7 +30,11 @@ function InjuryChartForm({ dark }) {
   const bmProjects = useSelector(state => state.bmProjects || []);
   // Form state
   const [projectId, setProjectId] = useState('all');
-  const [startDate, setStartDate] = useState(moment().subtract(6, 'months').toDate());
+  const [startDate, setStartDate] = useState(
+    moment()
+      .subtract(6, 'months')
+      .toDate(),
+  );
   const [endDate, setEndDate] = useState(new Date());
 
   // Chart state
