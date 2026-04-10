@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Joi from 'joi';
 import { toast } from 'react-toastify';
 import Select from 'react-select';
+import PropTypes from 'prop-types';
 import { fetchInvUnits } from '../../../actions/bmdashboard/invUnitActions';
 import {
   fetchConsumableTypes,
@@ -13,7 +14,7 @@ import {
 } from '../../../actions/bmdashboard/invTypeActions';
 import styles from './AddConsumable.module.css';
 
-function AddConsumable() {
+function AddConsumable({ toggle }) {
   const [newConsumable, setNewConsumable] = useState({
     consumableName: '',
     consumableDescription: '',
@@ -29,6 +30,7 @@ function AddConsumable() {
   const buildingInventoryUnits = useSelector(state => state.bmInvUnits.list);
   const postBuildingInventoryResult = useSelector(state => state.bmInvTypes.postedResult);
   const selectInputRef = useRef();
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
     dispatch(fetchInvUnits());
@@ -143,27 +145,28 @@ function AddConsumable() {
         size: newConsumable.consumableSize,
       };
       dispatch(postBuildingConsumableType(postObj));
+      toggle();
     }
   }
 
   return (
     <Container fluid className={`${styles.consumableContainer}`}>
-      <div className={`${styles.consumablePage}`}>
-        <div className={`${styles.consumable}`}>
+      <div className={`${styles.consumablePage} ${darkMode ? styles.darkBg : ''}`}>
+        <div className={`${styles.consumable} ${darkMode ? styles.lightBg : ''}`}>
           <div className={`${styles.consumableTitle}`}>ADD CONSUMABLES FORM</div>
           <Card>
             <CardBody>
               <Form id="AddConsumableForm">
-                <FormGroup row className="align-items-center justify-content-start">
-                  <Label for="" lg={2} sm={4} className={`${styles.consumableFormLabel}`}>
+                <FormGroup row className=" justify-content-start">
+                  <Label for="" lg={4} sm={4} className={`${styles.consumableFormLabel}`}>
                     Item Type
                   </Label>
                   <Col lg={8} sm={8} className={`${styles.consumableFormValue}`}>
                     <Input name="consumable" type="text" value="Consumable" disabled />
                   </Col>
                 </FormGroup>
-                <FormGroup row className="align-items-center justify-content-start">
-                  <Label for="name" lg={2} sm={4} className={`${styles.consumableFormLabel}`}>
+                <FormGroup row className=" justify-content-start">
+                  <Label for="name" lg={4} sm={4} className={`${styles.consumableFormLabel}`}>
                     Consumable Name
                   </Label>
                   <Col lg={8} sm={8} className={`${styles.consumableFormValue}`}>
@@ -188,8 +191,8 @@ function AddConsumable() {
                   )}
                 </FormGroup>
 
-                <FormGroup row className="align-items-center justify-content-start">
-                  <Label for="name" lg={2} sm={4} className={`${styles.consumableFormLabel}`}>
+                <FormGroup row className=" justify-content-start">
+                  <Label for="name" lg={4} sm={4} className={`${styles.consumableFormLabel}`}>
                     Description
                   </Label>
                   <Col lg={8} sm={8} className={`${styles.consumableFormValue}`}>
@@ -214,8 +217,8 @@ function AddConsumable() {
                   )}
                 </FormGroup>
 
-                <FormGroup row className="align-items-center justify-content-start">
-                  <Label for="name" lg={2} sm={4} className={`${styles.consumableFormLabel}`}>
+                <FormGroup row className=" justify-content-start">
+                  <Label for="name" lg={4} sm={4} className={`${styles.consumableFormLabel}`}>
                     Size (optional)
                   </Label>
                   <Col lg={8} sm={8} className={`${styles.consumableFormValue}`}>
@@ -240,14 +243,16 @@ function AddConsumable() {
                   )}
                 </FormGroup>
 
-                <FormGroup row className="align-items-center justify-content-start">
-                  <Label for="unit" lg={2} sm={4} className={`${styles.consumableFormLabel}`}>
+                <FormGroup row className=" justify-content-start">
+                  <Label for="unit" lg={4} sm={4} className={`${styles.consumableFormLabel}`}>
                     Measurement
                   </Label>
                   <Col lg={8} sm={8}>
                     <Select
                       id="unit"
                       name="unit"
+                      className={darkMode ? styles.select : ''}
+                      classNamePrefix="rs"
                       onChange={event => unitSelectHandler(event)}
                       ref={selectInputRef}
                       options={formattedUnits}
@@ -270,8 +275,8 @@ function AddConsumable() {
                 </FormGroup>
 
                 {allowNewMeasurement && (
-                  <FormGroup row className="align-items-center justify-content-start">
-                    <Label for="name" lg={2} sm={4} className={`${styles.consumableFormLabel}`}>
+                  <FormGroup row className=" justify-content-start">
+                    <Label for="name" lg={4} sm={4} className={`${styles.consumableFormLabel}`}>
                       New Measurement Unit
                     </Label>
                     <Col lg={8} sm={8} className={`${styles.consumableFormValue}`}>
@@ -288,7 +293,7 @@ function AddConsumable() {
                 )}
                 <FormGroup row className="d-flex justify-content-right">
                   <Button
-                    onClick={event => submitHandler(event)}
+                    onClick={submitHandler}
                     className={`${styles.consumableButtonBg}`}
                     disabled={disableSubmit}
                   >
@@ -303,5 +308,7 @@ function AddConsumable() {
     </Container>
   );
 }
-
+AddConsumable.propTypes = {
+  toggle: PropTypes.func.isRequired,
+};
 export default AddConsumable;
