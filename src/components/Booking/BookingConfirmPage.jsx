@@ -1,7 +1,7 @@
 import { useLocation, useHistory } from 'react-router-dom';
 import { Container, Button, Card, CardBody } from 'reactstrap';
 import logo from '../../assets/images/logo2.png';
-import './booking.css';
+import styles from './booking.module.css';
 
 export default function BookingConfirmPage() {
   const { state } = useLocation();
@@ -20,8 +20,8 @@ export default function BookingConfirmPage() {
   }
 
   return (
-    <div className="booking-bg">
-      <div className="top-logo">
+    <div className={styles.bookingBg}>
+      <div className={styles.topLogo}>
         <img src={logo} alt="One Community" />
       </div>
 

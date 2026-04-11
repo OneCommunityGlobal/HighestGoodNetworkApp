@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import { Container, Row, Col, Button, Input, Label, Alert, Spinner } from 'reactstrap';
 import { FaComment, FaBell, FaUser } from 'react-icons/fa';
 import logo from '../../assets/images/logo2.png';
-import './booking.css';
+import styles from './booking.module.css';
 
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -150,14 +150,14 @@ export default function BookingPage() {
   };
 
   return (
-    <div className={`booking-bg ${darkMode ? 'dark-mode' : ''}`}>
-      <div className="top-logo">
+    <div className={`${styles.bookingBg} ${darkMode ? styles.darkMode : ''}`}>
+      <div className={styles.topLogo}>
         <img src={logo} alt="One Community" />
       </div>
 
-      <div className="green-bar">
-        <div className="bar-inner">
-          <div className="village-select">
+      <div className={styles.greenBar}>
+        <div className={styles.barInner}>
+          <div className={styles.villageSelect}>
             <select value={village} onChange={e => setVillage(e.target.value)}>
               <option>Choose your Village</option>
               <option>Earthbag Village</option>
@@ -166,21 +166,21 @@ export default function BookingPage() {
               <option>Cob Village</option>
               <option>Tree House Village</option>
             </select>
-            <Button className="go-btn">Go</Button>
+            <Button className={styles.goBtn}>Go</Button>
           </div>
 
-          <div className="bar-right">
-            <span className="welcome">WELCOME, {userName}</span>
-            <div className="icons">
-              <span className="icon">
+          <div className={styles.barRight}>
+            <span className={styles.welcome}>WELCOME, {userName}</span>
+            <div className={styles.icons}>
+              <span className={styles.icon}>
                 <FaComment />
-                <span className="badge">1</span>
+                <span className={styles.badge}>1</span>
               </span>
-              <span className="icon">
+              <span className={styles.icon}>
                 <FaBell />
-                <span className="badge">1</span>
+                <span className={styles.badge}>1</span>
               </span>
-              <span className="icon">
+              <span className={styles.icon}>
                 <FaUser />
               </span>
             </div>
@@ -188,19 +188,19 @@ export default function BookingPage() {
         </div>
       </div>
 
-      <Container className="booking-shell">
+      <Container className={styles.bookingShell}>
         <Row>
           <Col>
-            <div className="booking-content">
+            <div className={styles.bookingContent}>
               <Row>
                 <Col md={12} className="text-center mb-3">
                   <div>
                     <img
-                      className="listing-photo"
+                      className={styles.listingPhoto}
                       src="https://images.unsplash.com/photo-1570793005386-840846445fed?w=900&auto=format&fit=crop"
                       alt="Unit 405"
                     />
-                    <div className="photo-caption">
+                    <div className={styles.photoCaption}>
                       Unit 405, Earthbag Village –{' '}
                       <button href="#" onClick={e => e.preventDefault()}>
                         More photos
@@ -212,33 +212,33 @@ export default function BookingPage() {
 
               <Row className="pt-2">
                 <Col md={7}>
-                  <h5 className="section-title">Booking Details</h5>
-                  <div className="dates-subtitle">
+                  <h5 className={styles.sectionTitle}>Booking Details</h5>
+                  <div className={styles.datesSubtitle}>
                     Dates: {start && end ? `${start} - ${end}` : 'Select dates'}
                   </div>
                   <Row className="g-3 mt-2">
                     <Col md={6}>
-                      <Label className="field-label">Name</Label>
+                      <Label className={styles.fieldLabel}>Name</Label>
                       <Input value={name} onChange={e => setName(e.target.value)} />
                     </Col>
                     <Col md={6}>
-                      <Label className="field-label">Email</Label>
+                      <Label className={styles.fieldLabel}>Email</Label>
                       <Input type="email" value={email} onChange={e => setEmail(e.target.value)} />
                     </Col>
                     <Col md={12}>
-                      <Label className="field-label">Card #</Label>
+                      <Label className={styles.fieldLabel}>Card #</Label>
                       <Input value={card} onChange={e => setCard(e.target.value)} />
                     </Col>
                     <Col md={6}>
-                      <Label className="field-label">CVV</Label>
+                      <Label className={styles.fieldLabel}>CVV</Label>
                       <Input value={cvv} onChange={e => setCvv(e.target.value)} />
                     </Col>
                     <Col md={6}>
-                      <Label className="field-label">Exp</Label>
+                      <Label className={styles.fieldLabel}>Exp</Label>
                       <Input value={exp} onChange={e => setExp(e.target.value)} />
                     </Col>
                     <Col md={6}>
-                      <Label className="field-label">Check-in</Label>
+                      <Label className={styles.fieldLabel}>Check-in</Label>
                       <DatePicker
                         selected={start ? new Date(start) : null}
                         onChange={date => setStart(date ? date.toISOString().split('T')[0] : '')}
@@ -253,7 +253,7 @@ export default function BookingPage() {
                       />
                     </Col>
                     <Col md={6}>
-                      <Label className="field-label">Check-out</Label>
+                      <Label className={styles.fieldLabel}>Check-out</Label>
                       <DatePicker
                         selected={end ? new Date(end) : null}
                         onChange={date => setEnd(date ? date.toISOString().split('T')[0] : '')}
@@ -271,30 +271,30 @@ export default function BookingPage() {
                 </Col>
 
                 <Col md={5}>
-                  <Label className="field-label">Phone</Label>
+                  <Label className={styles.fieldLabel}>Phone</Label>
                   <Input value={phone} onChange={e => setPhone(e.target.value)} />
-                  <div className="price-box mt-4">
+                  <div className={`${styles.priceBox} mt-4`}>
                     {village !== 'Choose your Village' ? (
                       <>
                         {price?.error && <Alert color="danger">{price.error}</Alert>}
                         {!price && <Alert color="info">Select dates to see pricing</Alert>}
                         {price && !price.error && (
                           <>
-                            <div className="price-row">
+                            <div className={styles.priceRow}>
                               <span>
                                 {price.nights} × ${NIGHTLY_RATE}
                               </span>
                               <span>${price.subtotal.toFixed(2)}</span>
                             </div>
-                            <div className="price-row">
+                            <div className={styles.priceRow}>
                               <span>Taxes</span>
                               <span>${price.taxes.toFixed(2)}</span>
                             </div>
-                            <div className="price-row">
+                            <div className={styles.priceRow}>
                               <span>Fees</span>
                               <span>${price.fees.toFixed(2)}</span>
                             </div>
-                            <div className="price-row total">
+                            <div className={`${styles.priceRow} ${styles.total}`}>
                               <span>Total</span>
                               <span>${price.total.toFixed(2)}</span>
                             </div>
@@ -308,7 +308,7 @@ export default function BookingPage() {
                   <div className="mt-4 text-end">
                     <Button
                       color="success"
-                      className="proceed-btn"
+                      className={styles.proceedBtn}
                       onClick={proceed}
                       disabled={loading}
                     >
@@ -376,28 +376,28 @@ export default function BookingPage() {
         background-color: #e9ecef;
       }
 
-      .dark-mode .react-datepicker {
+      .${styles.darkMode} .react-datepicker {
         background-color: #1e1e1e;
         border-color: #333;
       }
 
-      .dark-mode .react-datepicker__header {
+      .${styles.darkMode} .react-datepicker__header {
         background-color: #2a2a2a;
         border-bottom-color: #333;
       }
 
-      .dark-mode .react-datepicker__day,
-      .dark-mode .react-datepicker__day-name,
-      .dark-mode .react-datepicker__current-month {
+      .${styles.darkMode} .react-datepicker__day,
+      .${styles.darkMode} .react-datepicker__day-name,
+      .${styles.darkMode} .react-datepicker__current-month {
         color: #eaeaea;
       }
 
-      .dark-mode .react-datepicker__day--selected {
+      .${styles.darkMode} .react-datepicker__day--selected {
         background-color: #2ecc71;
         color: #000;
       }
 
-      .dark-mode .react-datepicker__day:hover {
+      .${styles.darkMode} .react-datepicker__day:hover {
         background-color: #333;
       }
       .react-datepicker__month-container {

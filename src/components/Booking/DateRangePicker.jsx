@@ -1,6 +1,6 @@
 import React from 'react';
 import { toISO, eachDay } from './bookingApi';
-import './booking.css';
+import styles from './booking.module.css';
 
 export default function DateRangePicker({ checkIn, checkOut, onChange, minDate, maxDate, error }) {
   const todayISO = toISO(new Date());
@@ -9,10 +9,10 @@ export default function DateRangePicker({ checkIn, checkOut, onChange, minDate, 
   const conflict = checkIn && checkOut && eachDay(checkIn, checkOut).some(d => UNAVAILABLE.has(d));
 
   return (
-    <div className="booking-card">
-      <h3 className="booking-h3">Select Dates</h3>
-      <div className="date-grid">
-        <label className="date-field">
+    <div className={styles.bookingCard}>
+      <h3 className={styles.bookingH3}>Select Dates</h3>
+      <div className={styles.dateGrid}>
+        <label className={styles.dateField}>
           <span>Check-in</span>
           <input
             type="date"
@@ -23,7 +23,7 @@ export default function DateRangePicker({ checkIn, checkOut, onChange, minDate, 
           />
         </label>
 
-        <label className="date-field">
+        <label className={styles.dateField}>
           <span>Check-out</span>
           <input
             type="date"
@@ -35,10 +35,12 @@ export default function DateRangePicker({ checkIn, checkOut, onChange, minDate, 
         </label>
       </div>
 
-      <div className="muted">Unavailable: {Array.from(UNAVAILABLE).join(', ')}</div>
+      <div className={styles.muted}>Unavailable: {Array.from(UNAVAILABLE).join(', ')}</div>
 
       {(error || conflict) && (
-        <div className="error-text">{error || 'Your date range includes an unavailable day.'}</div>
+        <div className={styles.errorText}>
+          {error || 'Your date range includes an unavailable day.'}
+        </div>
       )}
     </div>
   );

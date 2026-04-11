@@ -1,27 +1,27 @@
 import React from 'react';
-import './booking.css';
+import styles from './booking.module.css';
 
 const money = n => `$${(n || 0).toFixed(2)}`;
 
 export default function PriceBreakdown({ nightly, nights, subtotal, tax, fees, total }) {
   return (
-    <div className="booking-card">
-      <h3 className="booking-h3">Price</h3>
-      <div className="price-row">
+    <div className={styles.bookingCard}>
+      <h3 className={styles.bookingH3}>Price</h3>
+      <div className={styles.priceRow}>
         <span>
           {money(nightly)} × {nights} night{nights === 1 ? '' : 's'}
         </span>
         <span>{money(subtotal)}</span>
       </div>
-      <div className="price-row">
+      <div className={styles.priceRow}>
         <span>Taxes</span>
         <span>{money(tax)}</span>
       </div>
-      <div className="price-row">
+      <div className={styles.priceRow}>
         <span>Fees</span>
         <span>{money(fees)}</span>
       </div>
-      <div className="price-total">
+      <div className={styles.priceTotal}>
         <span>Total</span>
         <span>{money(total)}</span>
       </div>
