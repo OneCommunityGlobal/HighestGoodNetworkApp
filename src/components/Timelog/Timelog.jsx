@@ -820,7 +820,7 @@ return (
                     : timeLog.cardHeaderShadow
                   }
                 >
-                  <Row className="d-flex flex-nowrap align-items-start w-100 gx-0">
+                  <Row className="d-flex flex-nowrap align-items-center w-100 gx-0">
                   {/* LEFT: title/subtitle takes remaining space */}
                   <Col className="px-0 flex-grow-1" style={{ minWidth: 0 }}>
                   <CardTitle tag="h4" className="mb-0 d-flex align-items-center h-100">
@@ -839,18 +839,27 @@ return (
                         />
 
                         <span className="mr-2" style={{ color: '#7cfc00', padding: '1px' }}>
-                          <ActiveCell
+                        <ActiveCell
                             isActive={displayUserProfile.isActive}
+                            endDate={displayUserProfile.endDate}
+                            reactivationDate={displayUserProfile.reactivationDate}
+                            canChange={canPutUserProfileImportantInfo} // or whatever permission should control this
                             user={displayUserProfile}
-                            onClick={() => {
-                              props.updateUserProfile({
-                                ...displayUserProfile,
-                                isActive: !displayUserProfile.isActive,
-                                endDate:
-                                  !displayUserProfile.isActive === false
-                                    ? moment(new Date()).format('YYYY-MM-DD')
-                                    : undefined,
-                              });
+                            onClick={async () => {
+                              const newIsActive = !displayUserProfile.isActive;
+
+                              try {
+                                await props.updateUserProfile({
+                                  ...displayUserProfile,
+                                  isActive: newIsActive,
+                                  endDate: newIsActive ? undefined : moment().format('YYYY-MM-DD'),
+                                });
+
+                                await props.getUserProfile(displayUserId);
+                              } catch (e) {
+                                console.log(e);
+                                alert('Failed to update active status. Please try again.');
+                              }
                             }}
                           />
                         </span>

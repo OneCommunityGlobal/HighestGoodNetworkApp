@@ -293,7 +293,7 @@ function AddConsumable({ toggle }) {
                 )}
                 <FormGroup row className="d-flex justify-content-right">
                   <Button
-                    onClick={event => submitHandler(event)}
+                    onClick={submitHandler}
                     className={`${styles.consumableButtonBg}`}
                     disabled={disableSubmit}
                   >
