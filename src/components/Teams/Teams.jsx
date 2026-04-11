@@ -383,6 +383,16 @@ class Teams extends React.PureComponent {
     toast.success('Member removed successfully!');
   };
 
+  onDeleteTeamPopupShow = (teamName, teamId, isActive, teamCode) => {
+    this.setState({
+      deleteTeamPopupOpen: true,
+      selectedTeam: teamName,
+      selectedTeamId: teamId,
+      selectedTeamCode: teamCode,
+      isActive,
+    });
+  };
+
   onDeleteTeamPopupClose = () => {
     this.setState({
       selectedTeamId: undefined,
