@@ -315,7 +315,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: fadeIn 0.25s ease-in;
+  animation: scaleIn 0.25s ease-in-out;
   z-index: 1000;
 }
 
