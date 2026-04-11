@@ -169,8 +169,8 @@ function ResourceManagement() {
     materials: '',
     date: '',
   });
-
-const [resources, setResources] = useState([
+  const [errors, setErrors] = useState({});
+  const [resources, setResources] = useState([
     {
       id: 1,
       user: 'First Last',
@@ -260,6 +260,34 @@ const handleChange = e => {
   setFormData(prev => ({ ...prev, [name]: value }));
 };
 
+const validateForm = () => {
+  const newErrors = {};
+
+  if (!formData.user.trim()) {
+    newErrors.user = 'User is required';
+  }
+
+  const timeRegex = /^([0-1]\d|2[0-3]):([0-5]\d):([0-5]\d)$/;
+  if (!timeRegex.test(formData.timeDuration)) {
+    newErrors.timeDuration = 'Enter valid time (HH:MM:SS)';
+  }
+
+  if (!formData.facilities.trim()) {
+    newErrors.facilities = 'Facilities required';
+  }
+
+  if (!formData.materials.trim()) {
+    newErrors.materials = 'Materials required';
+  }
+
+  if (isNaN(Date.parse(formData.date))) {
+    newErrors.date = 'Enter valid date';
+  }
+
+  setErrors(newErrors);
+  return Object.keys(newErrors).length === 0;
+};
+
 const handleSubmit = e => {
   e.preventDefault();
 
@@ -284,6 +312,8 @@ const handleSubmit = e => {
     materials: '',
     date: '',
   });
+
+  setErrors({});
 };
 
 const filteredResources = resources.filter(resource => {

@@ -268,11 +268,10 @@
   position: fixed;
   inset: 0;
   background-color: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: fadeIn 0.25s ease-in;
+  animation: scaleIn 0.25s ease-in-out;
   z-index: 1000;
 }
 
@@ -704,4 +703,14 @@
 /* Checkbox styling for dark mode */
 .darkMode input[type='checkbox'] {
   filter: invert(1) hue-rotate(180deg);
+}
+
+.errorText {
+  color: #ff4d4f;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.resourceManagementDashboardDark .errorText {
+  color: #ff7a7a;
 }
