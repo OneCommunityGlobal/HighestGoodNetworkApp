@@ -82,76 +82,66 @@ function AddLogModal({ isOpen, onClose, onAdd }) {
   if (!isOpen) return null;
 
   return (
-    <div
-      className={styles.modalOverlay}
-      onClick={onClose}
-      role="button"
-      tabIndex={0}
-    >
-      <div
-        className={`${styles.modalContent} ${darkMode ? styles.modalContentDark : ''}`}
-        onClick={e => e.stopPropagation()}
-      >
+    <div className={styles.modalOverlay} aria-hidden="true">
+      <div className={`${styles.modalContent} ${darkMode ? styles.modalContentDark : ''}`}>
         <h3>Add New Log</h3>
 
-        {validationError && (
-          <div className={styles.errorMessage}>{validationError}</div>
-        )}
+        {validationError && <div className={styles.errorMessage}>{validationError}</div>}
 
-       <form onSubmit={handleSubmit} className={styles.formContainer}>
-  <div className={styles.formGroup}>
-    <label>User</label>
-    <input
-      name="user"
-      value={formData.user}
-      onChange={handleChange}
-      placeholder="Enter user"
-    />
-  </div>
+        <form onSubmit={handleSubmit} className={styles.formContainer}>
+          <div className={styles.formGroup}>
+            <label htmlFor="user">User</label>
+            <input
+              id="user"
+              name="user"
+              value={formData.user}
+              onChange={handleChange}
+              placeholder="Enter user"
+            />
+          </div>
 
-  <div className={styles.formGroup}>
-    <label>Time/Duration</label>
-    <input
-      name="timeDuration"
-      value={formData.timeDuration}
-      onChange={handleChange}
-      placeholder="Enter time"
-    />
-  </div>
+          <div className={styles.formGroup}>
+            <label htmlFor="timeDuration">Time/Duration</label>
+            <input
+              id="timeDuration"
+              name="timeDuration"
+              value={formData.timeDuration}
+              onChange={handleChange}
+              placeholder="Enter time"
+            />
+          </div>
 
-  <div className={styles.formGroup}>
-    <label>Facilities</label>
-    <input
-      name="facilities"
-      value={formData.facilities}
-      onChange={handleChange}
-      placeholder="Enter facilities"
-    />
-  </div>
+          <div className={styles.formGroup}>
+            <label htmlFor="facilities">Facilities</label>
+            <input
+              id="facilities"
+              name="facilities"
+              value={formData.facilities}
+              onChange={handleChange}
+              placeholder="Enter facilities"
+            />
+          </div>
 
-  <div className={styles.formGroup}>
-    <label>Materials</label>
-    <input
-      name="materials"
-      value={formData.materials}
-      onChange={handleChange}
-      placeholder="Enter materials"
-    />
-  </div>
+          <div className={styles.formGroup}>
+            <label htmlFor="materials">Materials</label>
+            <input
+              id="materials"
+              name="materials"
+              value={formData.materials}
+              onChange={handleChange}
+              placeholder="Enter materials"
+            />
+          </div>
 
-  <div className={styles.modalActions}>
-    <button type="submit" className={styles.submitButton}>
-      Save Log
-    </button>
-    <button
-      type="button"
-      onClick={onClose}
-      className={styles.cancelButton}
-    >
-      Cancel
-    </button>
-  </div>
-</form>
+          <div className={styles.modalActions}>
+            <button type="submit" className={styles.submitButton}>
+              Save Log
+            </button>
+            <button type="button" onClick={onClose} className={styles.cancelButton}>
+              Cancel
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
@@ -253,113 +243,100 @@ function ResourceManagement() {
     },
   ]);
 
-const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
 
-const handleChange = e => {
-  const { name, value } = e.target;
-  setFormData(prev => ({ ...prev, [name]: value }));
-};
-
-const validateForm = () => {
-  const newErrors = {};
-
-  if (!formData.user.trim()) {
-    newErrors.user = 'User is required';
-  }
-
-  const timeRegex = /^([0-1]\d|2[0-3]):([0-5]\d):([0-5]\d)$/;
-  if (!timeRegex.test(formData.timeDuration)) {
-    newErrors.timeDuration = 'Enter valid time (HH:MM:SS)';
-  }
-
-  if (!formData.facilities.trim()) {
-    newErrors.facilities = 'Facilities required';
-  }
-
-  if (!formData.materials.trim()) {
-    newErrors.materials = 'Materials required';
-  }
-
-  if (isNaN(Date.parse(formData.date))) {
-    newErrors.date = 'Enter valid date';
-  }
-
-  setErrors(newErrors);
-  return Object.keys(newErrors).length === 0;
-};
-
-const handleSubmit = e => {
-  e.preventDefault();
-
-  if (!validateForm()) return;
-
-  const newResource = {
-    id: resources.length + 1,
-    ...formData,
-    date: 'Just now',
+  const handleChange = e => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  setResources(prev => [newResource, ...prev]);
+  const validateForm = () => {
+    const newErrors = {};
 
-  setShowModal(false);
-  setShowToast(true);
-  setTimeout(() => setShowToast(false), 4000);
+    if (!formData.user.trim()) {
+      newErrors.user = 'User is required';
+    }
 
-  setFormData({
-    user: '',
-    timeDuration: '',
-    facilities: '',
-    materials: '',
-    date: '',
+    const timeRegex = /^([0-1]\d|2[0-3]):([0-5]\d):([0-5]\d)$/;
+    if (!timeRegex.test(formData.timeDuration)) {
+      newErrors.timeDuration = 'Enter valid time (HH:MM:SS)';
+    }
+
+    if (!formData.facilities.trim()) {
+      newErrors.facilities = 'Facilities required';
+    }
+
+    if (!formData.materials.trim()) {
+      newErrors.materials = 'Materials required';
+    }
+
+    if (isNaN(Date.parse(formData.date))) {
+      newErrors.date = 'Enter valid date';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = e => {
+    e.preventDefault();
+
+    if (!validateForm()) return;
+
+    const newResource = {
+      id: resources.length + 1,
+      ...formData,
+      date: 'Just now',
+    };
+
+    setResources(prev => [newResource, ...prev]);
+
+    setShowModal(false);
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 4000);
+
+    setFormData({
+      user: '',
+      timeDuration: '',
+      facilities: '',
+      materials: '',
+      date: '',
+    });
+
+    setErrors({});
+  };
+
+  const filteredResources = resources.filter(resource => {
+    const term = searchTerm.toLowerCase();
+
+    return (
+      resource.user.toLowerCase().includes(term) ||
+      resource.facilities.toLowerCase().includes(term) ||
+      resource.materials.toLowerCase().includes(term) ||
+      resource.date.toLowerCase().includes(term)
+    );
   });
 
-  setErrors({});
-};
-
-const filteredResources = resources.filter(resource => {
-  const term = searchTerm.toLowerCase();
-
   return (
-    resource.user.toLowerCase().includes(term) ||
-    resource.facilities.toLowerCase().includes(term) ||
-    resource.materials.toLowerCase().includes(term) ||
-    resource.date.toLowerCase().includes(term)
-  );
-});
-
-return (
-  <div
-    className={`${styles.resourceManagementDashboard} ${
-      darkMode ? styles.resourceManagementDashboardDark : ''
-    }`}
-  >
-    <div className={styles.dashboardTitle}>
-      <h2 className={`${darkMode ? styles.dashboardTitleDark : ''}`}>
-        Used Resources
-      </h2>
-      <button
-        type="button"
-        onClick={() => setShowModal(true)}
-        className={`${styles.addLogButton} ${
-          darkMode ? styles.addLogButtonDark : ''
-        }`}
-      >
-        + Add New Log
-      </button>
-    </div>
-
-    <SearchBar
-      darkMode={darkMode}
-      searchTerm={searchTerm}
-      setSearchTerm={setSearchTerm}
-    />
-
     <div
-      className={`${styles.resourceList} ${
-        darkMode ? styles.resourceListDark : ''
+      className={`${styles.resourceManagementDashboard} ${
+        darkMode ? styles.resourceManagementDashboardDark : ''
       }`}
     >
+      <div className={styles.dashboardTitle}>
+        <h2 className={`${darkMode ? styles.dashboardTitleDark : ''}`}>Used Resources</h2>
+        <button
+          type="button"
+          onClick={() => setShowModal(true)}
+          className={`${styles.addLogButton} ${darkMode ? styles.addLogButtonDark : ''}`}
+        >
+          + Add New Log
+        </button>
+      </div>
 
+      <SearchBar darkMode={darkMode} searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+
+      <div className={`${styles.resourceList} ${darkMode ? styles.resourceListDark : ''}`}>
         <div className={styles.resourceHeading}>
           <div className={styles.checkboxContainer}>
             <input type="checkbox" className={styles.customCheckbox} />
@@ -390,43 +367,43 @@ return (
         ))}
       </div>
 
-    <div className={styles.rmPagination}>
-      <button
-        type="button"
-        className={`${styles.pageButton} ${darkMode ? styles.pageButtonDark : ''}`}
-      >
-        ←
-      </button>
-      {[1, 2, 3, 4, 5].map(num => (
+      <div className={styles.rmPagination}>
         <button
-          key={num}
           type="button"
           className={`${styles.pageButton} ${darkMode ? styles.pageButtonDark : ''}`}
         >
-          {num}
+          ←
         </button>
-      ))}
-      <button
-        type="button"
-        className={`${styles.pageButton} ${darkMode ? styles.pageButtonDark : ''}`}
-      >
-        →
-      </button>
-    </div>
+        {[1, 2, 3, 4, 5].map(num => (
+          <button
+            key={num}
+            type="button"
+            className={`${styles.pageButton} ${darkMode ? styles.pageButtonDark : ''}`}
+          >
+            {num}
+          </button>
+        ))}
+        <button
+          type="button"
+          className={`${styles.pageButton} ${darkMode ? styles.pageButtonDark : ''}`}
+        >
+          →
+        </button>
+      </div>
 
-    {/* KEEP MODAL */}
-    <AddLogModal
-      isOpen={showModal}
-      onClose={() => setShowModal(false)}
-      onAdd={(newLog) => {
-        const newResource = {
-          id: resources.length + 1,
-          ...newLog,
-          date: 'Just now',
-        };
-        setResources(prev => [newResource, ...prev]);
-      }}
-    />
+      {/* KEEP MODAL */}
+      <AddLogModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onAdd={newLog => {
+          const newResource = {
+            id: resources.length + 1,
+            ...newLog,
+            date: 'Just now',
+          };
+          setResources(prev => [newResource, ...prev]);
+        }}
+      />
 
       {showToast && (
         <div className={`${styles.toast} ${darkMode ? styles.toastDark : ''}`}>
