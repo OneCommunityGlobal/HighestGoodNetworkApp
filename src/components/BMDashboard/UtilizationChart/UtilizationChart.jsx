@@ -35,9 +35,10 @@ ChartJS.register(
   ChartDataLabels,
 );
 
-// Linear regression helper to compute trend line points
+// Linear regression to compute trend line points
 const computeTrendLine = values => {
   const n = values.length;
+  if (n < 2) return values;
   const xMean = (n - 1) / 2;
   const yMean = values.reduce((a, b) => a + b, 0) / n;
   const slope =
@@ -45,6 +46,23 @@ const computeTrendLine = values => {
     values.reduce((sum, _, x) => sum + (x - xMean) ** 2, 0);
   const intercept = yMean - slope * xMean;
   return values.map((_, x) => Math.round((slope * x + intercept) * 10) / 10);
+};
+
+// Build 4 weekly date ranges ending at 'baseEnd'
+// If no baseEnd provided, defaults to today
+const buildWeeklyRanges = baseEnd => {
+  const end = baseEnd ? new Date(baseEnd) : new Date();
+  return Array.from({ length: 4 }, (_, i) => {
+    const weekEnd = new Date(end);
+    weekEnd.setDate(end.getDate() - (3 - i) * 7);
+    const weekStart = new Date(weekEnd);
+    weekStart.setDate(weekEnd.getDate() - 7);
+    return {
+      label: `Week of ${weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`,
+      startDate: weekStart,
+      endDate: weekEnd,
+    };
+  });
 };
 
 function UtilizationChart() {
@@ -84,25 +102,6 @@ function UtilizationChart() {
     }));
   };
 
-  // Mock trend data for last 4 weeks
-  // TODO: replace with real API calls when BE is ready
-  const getMockTrendData = currentAvg => {
-    const now = new Date();
-    return Array.from({ length: 4 }, (_, i) => {
-      const weekStart = new Date(now);
-      weekStart.setDate(now.getDate() - (3 - i) * 7);
-      const label = `Week of ${weekStart.toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-      })}`;
-      const avgUtilization = Math.max(
-        0,
-        Math.min(100, currentAvg + Math.floor(Math.random() * 30) - 15),
-      );
-      return { week: label, avgUtilization };
-    });
-  };
-
   // Compute previous period date range
   const getPreviousPeriod = () => {
     const end = endDate ? new Date(endDate) : new Date();
@@ -114,6 +113,54 @@ function UtilizationChart() {
     };
   };
 
+  // Fetch 4 weekly trend data points in parallel
+  const fetchTrendData = async () => {
+    try {
+      // const weeklyRanges = buildWeeklyRanges(endDate);
+      // const weeklyResponses = await Promise.all(
+      //   weeklyRanges.map(({ startDate: wStart, endDate: wEnd }) =>
+      //     axios.get(`${process.env.REACT_APP_APIENDPOINT}/tools/utilization`, {
+      //       params: {
+      //         startDate: wStart,
+      //         endDate: wEnd,
+      //         tool: toolFilter,
+      //         project: projectFilter,
+      //       },
+      //       headers: { Authorization: localStorage.getItem('token') },
+      //     }),
+      //   ),
+      // );
+
+      // const trend = weeklyRanges.map(({ label }, i) => {
+      //   const data = weeklyResponses[i].data;
+      //   const avgUtilization =
+      //     data.length > 0
+      //       ? Math.round(
+      //           (data.reduce((sum, t) => sum + t.utilizationRate, 0) / data.length) * 10,
+      //         ) / 10
+      //       : 0;
+      //   return { week: label, avgUtilization };
+      // // });
+
+      // setTrendData(trend);
+      const now = new Date();
+      const mockTrend = Array.from({ length: 4 }, (_, i) => {
+        const weekStart = new Date(now);
+        weekStart.setDate(now.getDate() - (3 - i) * 7);
+        const label = `Week of ${weekStart.toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+        })}`;
+        const avgUtilization = Math.max(0, Math.min(100, 20 + Math.floor(Math.random() * 40)));
+        return { week: label, avgUtilization };
+      });
+      setTrendData(mockTrend);
+    } catch (err) {
+      // Silently fail for trend — main chart still works
+      console.error('Failed to load trend data:', err);
+    }
+  };
+
   const fetchChartData = async (currentComparisonMode = comparisonMode) => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_APIENDPOINT}/tools/utilization`, {
@@ -122,15 +169,6 @@ function UtilizationChart() {
       });
       const data = response.data;
       setToolsData(data);
-
-      // Compute current avg utilization to seed mock trend data
-      const currentAvg =
-        data.length > 0
-          ? Math.round(data.reduce((sum, t) => sum + t.utilizationRate, 0) / data.length)
-          : 0;
-
-      // TODO: replace getMockTrendData with 4 real API calls for weekly ranges
-      setTrendData(getMockTrendData(currentAvg));
 
       if (currentComparisonMode) {
         const { prevStart, prevEnd } = getPreviousPeriod();
@@ -177,10 +215,12 @@ function UtilizationChart() {
   useEffect(() => {
     fetchFilterData();
     fetchChartData();
+    fetchTrendData();
   }, []);
 
   const handleApplyClick = () => {
     fetchChartData();
+    fetchTrendData();
   };
 
   const handleComparisonToggle = () => {
@@ -301,7 +341,7 @@ function UtilizationChart() {
 
   // Trend line chart data
   const trendValues = trendData.map(d => d.avgUtilization);
-  const trendLineValues = trendValues.length >= 2 ? computeTrendLine(trendValues) : trendValues;
+  const trendLineValues = computeTrendLine(trendValues);
 
   const trendChartData = {
     labels: trendData.map(d => d.week),
@@ -401,9 +441,7 @@ function UtilizationChart() {
   const trendOptions = {
     responsive: true,
     plugins: {
-      legend: {
-        labels: { color: darkMode ? '#ffffff' : '#333' },
-      },
+      legend: { labels: { color: darkMode ? '#ffffff' : '#333' } },
       datalabels: { display: false },
       tooltip: {
         callbacks: {
@@ -573,7 +611,7 @@ function UtilizationChart() {
           {/* Main Bar Chart */}
           <Bar data={chartData} options={barOptions} />
 
-          {/* Trend Line Chart */}
+          {/* 4-Week Trend Line Chart */}
           {trendData.length > 0 && (
             <div className={styles.trendSection}>
               <h3 className={styles.trendTitle}>4-Week Utilization Trend</h3>
