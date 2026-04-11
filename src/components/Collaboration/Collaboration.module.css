@@ -408,7 +408,7 @@
 /* ======================================================
    REORDER MODAL
    ====================================================== */
-   .reorderModal {
+.reorderModal {
   background: #fff;
   border-radius: 16px;
   padding: 24px;
@@ -475,4 +475,29 @@
 
 .dragIcon:active {
   cursor: grabbing;
+}
+
+/* ================= DARK MODE – REORDER MODAL ================= */
+
+.dark .reorderModal {
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+}
+
+.dark .reorderItem {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border);
+}
+
+.dark .badge {
+  background-color: var(--accent);
+  color: #020617;
+}
+
+.dark .meta {
+  color: var(--text-secondary);
+}
+
+.dark .dragIcon {
+  color: var(--text-secondary);
 }

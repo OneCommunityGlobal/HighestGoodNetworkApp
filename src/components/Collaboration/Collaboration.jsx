@@ -204,20 +204,28 @@ function Collaboration() {
   const handleSaveReorder = async () => {
     try {
       setIsSaving(true);
-
       const jobIds = reorderJobs.map(job => job._id);
 
-      await fetch(`${ApiEndpoint}/jobs/reorder`, {
+      const token = localStorage.getItem('token');
+
+      const res = await fetch(`${ApiEndpoint}/jobs/reorder`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: token,
+        },
         body: JSON.stringify({ jobIds }),
       });
 
-      setAllJobs([...reorderJobs]);
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.error || 'Reorder failed');
+
+      await fetchJobs();
       setCurrentPage(1);
       toast.success('Jobs reordered successfully!');
       setShowReorderModal(false);
-    } catch {
+    } catch (err) {
       toast.error('Failed to reorder jobs');
     } finally {
       setIsSaving(false);
@@ -410,7 +418,9 @@ function Collaboration() {
                 }
                 alt={ad.title}
               />
-              <h3>{ad.title}</h3>
+              <h3>
+                {ad.title} - {ad.category}
+              </h3>
             </button>
           ))}
         </div>
@@ -471,7 +481,18 @@ function Collaboration() {
       {showReorderModal && (
         <div className={styles.modalOverlay}>
           <div className={styles.reorderModal}>
-            <h2>Reorder Job Listings</h2>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h2>Reorder Job Listings</h2>
+              <button
+                type="button"
+                className={styles.closeButton}
+                aria-label="Close reorder modal"
+                onClick={() => setShowReorderModal(false)}
+                style={{ position: 'static' }}
+              >
+                ×
+              </button>
+            </div>
 
             <div className={styles.reorderList}>
               {reorderJobs.map((job, index) => (
