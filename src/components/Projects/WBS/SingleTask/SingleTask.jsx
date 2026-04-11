@@ -5,6 +5,7 @@ import { connect, useSelector } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import axios from 'axios';
 import { NavItem, Button, Modal, ModalBody } from 'reactstrap';
+import styles from './SingleTask.module.css';
 
 import { Editor } from '@tinymce/tinymce-react';
 import { Link, useHistory } from 'react-router-dom';
@@ -150,45 +151,46 @@ function SingleTask(props) {
               </thead>
               <tbody className={darkMode ? 'bg-yinmn-blue' : ''}>
                 <tr style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                  <th scope="row">
-                    <div className="d-flex flex-column align-items-center">
-                      <EditTaskModal
-                        key={`editTask_${task._id}`}
-                        parentNum={task.num}
-                        taskId={task._id}
-                        wbsId={task.wbsId}
-                        parentId1={task.parentId1}
-                        parentId2={task.parentId2}
-                        parentId3={task.parentId3}
-                        mother={task.mother}
-                        level={task.level}
-                        setTask={setTask}
-                      />
-                      {canDeleteTask && (
-                        <>
-                          <Button
-                            type="button"
-                            size="sm"
-                            className="btn btn-danger mt-1 ml-2"
-                            onClick={() => showUpDeleteModal()}
-                          >
-                            Delete
-                          </Button>
-                          <ModalDelete
-                            isOpen={modalDelete}
-                            closeModal={() => setModalDelete(false)}
-                            confirmModal={() => deleteTask(task._id, task.mother)}
-                            modalMessage={
-                              props.popupEditor.currPopup.popupContent || 'DELETE THIS TASK ?'
-                            }
-                            modalTitle={Message.CONFIRM_DELETION}
-                            darkMode={darkMode}
-                          />
-                        </>
-                      )}
-                    </div>
-                  </th>
+                <th scope="row">
+                  <div className={styles.actionButtonsContainer}>
+                    <EditTaskModal
+                      key={`editTask_${task._id}`}
+                      parentNum={task.num}
+                      taskId={task._id}
+                      wbsId={task.wbsId}
+                      parentId1={task.parentId1}
+                      parentId2={task.parentId2}
+                      parentId3={task.parentId3}
+                      mother={task.mother}
+                      level={task.level}
+                      setTask={setTask}
+                    />
 
+                    {canDeleteTask && (
+                      <>
+                        <Button
+                          type="button"
+                          size="sm"
+                          className={`btn btn-danger ${styles.actionButton}`}
+                          onClick={() => showUpDeleteModal()}
+                        >
+                          Delete
+                        </Button>
+
+                        <ModalDelete
+                          isOpen={modalDelete}
+                          closeModal={() => setModalDelete(false)}
+                          confirmModal={() => deleteTask(task._id, task.mother)}
+                          modalMessage={
+                            props.popupEditor.currPopup.popupContent || 'DELETE THIS TASK ?'
+                          }
+                          modalTitle={Message.CONFIRM_DELETION}
+                          darkMode={darkMode}
+                        />
+                      </>
+                    )}
+                  </div>
+                </th>
                   <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                     {task.num}
                   </td>

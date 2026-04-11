@@ -237,6 +237,20 @@ export const ENDPOINTS = {
     return url;
   },
 
+  INJURIES_DISTRIBUTION: (projectId, startDate, endDate, groupBy = 'severity') => {
+    let url = `${APIEndpoint}/injuries/distribution`;
+    const params = new URLSearchParams();
+    if (projectId && projectId !== 'all') params.append('projectId', projectId);
+    if (startDate) params.append('startDate', startDate);
+    if (endDate) params.append('endDate', endDate);
+    if (groupBy) params.append('groupBy', groupBy);
+    
+    const queryString = params.toString();
+    return queryString ? `${url}?${queryString}` : url;
+  },
+  
+  INJURY_PROJECTS: () => `${APIEndpoint}/injuries/projects`,
+
   PRESETS: () => `${APIEndpoint}/rolePreset`,
   PRESETS_BY_ID: roleNameOrPresetId => `${APIEndpoint}/rolePreset/${roleNameOrPresetId}`,
 
@@ -352,7 +366,8 @@ export const ENDPOINTS = {
   BM_EQUIPMENTS: `${APIEndpoint}/bm/equipments`,
   BM_INVTYPE_TYPE: type => `${APIEndpoint}/bm/invtypes/${type}`,
   BM_ISSUE_CHART: `${APIEndpoint}/bm/issue/issue-chart`,
-
+  BM_EQUIPMENT_INVTYPE: `${APIEndpoint}/bm/invtypes/equipment`,
+  BM_REUSABLES_INVTYPE: `${APIEndpoint}/bm/invtypes/reusables`,
   BM_ISSUE_FORM: `${APIEndpoint}/bm/issue/add`,
   BM_INJURY_CATEGORY_BREAKDOWN: `${APIEndpoint}/bm/injuries/category-breakdown`,
   BM_INJURY_SEVERITIES: `${APIEndpoint}/bm/injuries/injury-severities`,
@@ -389,6 +404,8 @@ export const ENDPOINTS = {
   BM_ORGS_WITH_LOCATION: `${APIEndpoint}/bm/orgLocation`,
   ORG_DETAILS: projectId => `${APIEndpoint}/bm/orgLocation/${projectId}`,
   BM_PROJECT_MEMBERS: projectId => `${APIEndpoint}/bm/project/${projectId}/users`,
+  BM_UPDATE_NAME_AND_UNIT :invtypeId => `${APIEndpoint}/bm/invtypes/material/${invtypeId}`,
+  BM_ITEM_UPDATE_HISTORY: invtypeId =>`${APIEndpoint}/bm/invtypes/${invtypeId}/history`,
 
   PROJECT_GLOBAL_DISTRIBUTION: `${APIEndpoint}/projectglobaldistribution`,
 
@@ -431,6 +448,7 @@ export const ENDPOINTS = {
   USER_STATE_CATALOG_ITEM: key => `${APIEndpoint}/userstate/catalog/${key}`,
   USER_STATE_SELECTION: userId => `${APIEndpoint}/userstate/selection/${userId}`,
   USER_STATE_SELECTIONS_BATCH: `${APIEndpoint}/userstate/selections/batch`,
+  USER_STATE_CATALOG_USAGE: key => `${APIEndpoint}/userstate/catalog/${key}/usage`,
 
   CREATE_JOB_FORM: `${APIEndpoint}/jobforms`,
   UPDATE_JOB_FORM: `${APIEndpoint}/jobforms`,
@@ -517,6 +535,7 @@ export const ENDPOINTS = {
 
   // job analytics
   HOURS_PLEDGED: `${APIEndpoint}/analytics/hours-pledged`,
+  JOB_HITS_AND_APPLICATIONS: `${APIEndpoint}/analytics/job-hits-and-applications`,
 
   // Saved Filters endpoints
   SAVED_FILTERS: () => `${APIEndpoint}/savedFilters`,
@@ -578,6 +597,7 @@ export const ENDPOINTS = {
     return url;
   },
 
+  HGN_FORM_RESPONSES: () => `${APIEndpoint}/hgnform`,
   // Kitchen and Inventory Management endpoints
   KI_CALENDAR_EVENTS: (month, year) => `${APIEndpoint}/kitchenandinventory/calendar?month=${month}&year=${year}`,
 
@@ -586,6 +606,14 @@ HGN_FORM_RANKED: `${APIEndpoint}/hgnform/ranked`,
 HELP_REQUEST_CHECK_MODAL: userId => `${APIEndpoint}/helprequest/check-modal/${userId}`,
 FEEDBACK_CLOSE_PERMANENTLY: `${APIEndpoint}/feedback/close-permanently`,
 FEEDBACK_SUBMIT: `${APIEndpoint}/feedback/submit`,
+  // application time analytics
+  APPLICATION_TIME_DATA: (startDate, endDate, roles) => {
+    let url = `${APIEndpoint}/analytics/application-time?`;
+    if (startDate) url += `startDate=${encodeURIComponent(startDate)}&`;
+    if (endDate) url += `endDate=${encodeURIComponent(endDate)}&`;
+    if (roles && roles.length > 0) url += `roles=${encodeURIComponent(roles.join(','))}&`;
+    return url.slice(0, -1);
+  },
 
 };
 
