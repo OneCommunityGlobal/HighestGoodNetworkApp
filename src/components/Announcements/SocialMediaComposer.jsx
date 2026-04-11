@@ -122,7 +122,9 @@ export default function SocialMediaComposer({ platform }) {
     cursor: 'pointer',
     border: 'none',
     borderBottom:
-      activeSubTab === tabId ? `3px solid ${darkMode ? '#60a5fa' : '#007bff'}` : '3px solid transparent',
+      activeSubTab === tabId
+        ? `3px solid ${darkMode ? '#60a5fa' : '#007bff'}`
+        : '3px solid transparent',
     backgroundColor:
       activeSubTab === tabId
         ? darkMode
@@ -726,7 +728,11 @@ export default function SocialMediaComposer({ platform }) {
             type="button"
             onClick={handlePost}
             disabled={isPosting || (platform === 'facebook' && !isConnected)}
-            style={{ ...btnPrimary, marginTop: '1rem', opacity: (isPosting || (platform === 'facebook' && !isConnected)) ? 0.6 : 1 }}
+            style={{
+              ...btnPrimary,
+              marginTop: '1rem',
+              opacity: isPosting || (platform === 'facebook' && !isConnected) ? 0.6 : 1,
+            }}
           >
             {isPosting ? 'Posting...' : `Post to ${platform}`}
           </button>
@@ -921,7 +927,10 @@ export default function SocialMediaComposer({ platform }) {
               type="button"
               onClick={handleSchedule}
               disabled={isScheduling || (platform === 'facebook' && !isConnected)}
-              style={{ ...btnSuccess, opacity: (isScheduling || (platform === 'facebook' && !isConnected)) ? 0.6 : 1 }}
+              style={{
+                ...btnSuccess,
+                opacity: isScheduling || (platform === 'facebook' && !isConnected) ? 0.6 : 1,
+              }}
             >
               {isScheduling ? 'Scheduling...' : 'Schedule Post'}
             </button>
