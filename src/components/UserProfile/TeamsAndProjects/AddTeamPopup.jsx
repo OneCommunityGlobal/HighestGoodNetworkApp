@@ -218,7 +218,6 @@ const AddTeamPopup = React.memo((props) => {
       isOpen={props.open}
       toggle={closePopup}
       centered
-      size="lg"
       className={darkMode ? 'text-light dark-mode' : ''}
     >
       <ModalHeader className={darkMode ? 'bg-space-cadet text-light' : ''} toggle={closePopup}>
