@@ -51,10 +51,12 @@ export function nightsBetween(a, b) {
 }
 
 export function eachDay(a, b) {
-  const days = [];
-  const end = new Date(b);
-  for (let cur = new Date(a); cur < end; cur.setDate(cur.getDate() + 1)) {
-    days.push(toISO(cur));
-  }
-  return days;
+  const start = new Date(a);
+  const dayCount = nightsBetween(a, b);
+
+  return Array.from({ length: dayCount }, (_, index) => {
+    const cur = new Date(start);
+    cur.setDate(start.getDate() + index);
+    return toISO(cur);
+  });
 }
