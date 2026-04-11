@@ -2,11 +2,11 @@
 
 /* Main Card Component */
 .supplier-performance-card {
-  background-color: var(--card-bg, #ffffff);
+  background-color: var(--card-bg, #fff);
   border-radius: 8px;
   padding: 16px;
   height: 100%;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
   display: flex;
   flex-direction: column;
   transition: transform 0.2s ease;
@@ -16,12 +16,13 @@
 
 .supplier-performance-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 8px rgb(0 0 0 / 15%);
 }
 
 /* Dark Mode Overrides for Card */
 .supplier-performance-card.supplier-performance-dark-mode {
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 30%);
+
   /* Background relies on global var(--card-bg) */
 }
 
@@ -29,14 +30,14 @@
 .supplier-performance-title {
   font-size: 16px;
   font-weight: 600;
-  margin: 0 0 16px 0;
+  margin: 0 0 16px;
   color: var(--text-color, #333);
   text-align: center;
   flex-shrink: 0;
 }
 
 .supplier-performance-dark-mode .supplier-performance-title {
-  color: #ffffff;
+  color: #fff;
 }
 
 /* Content Area */
@@ -51,7 +52,7 @@
 /* Filters Styling */
 .supplier-performance-filters {
   padding: 12px 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgb(0 0 0 / 10%);
   margin-bottom: 12px;
   display: flex;
   gap: 16px;
@@ -59,7 +60,7 @@
 }
 
 .supplier-performance-dark-mode .supplier-performance-filters {
-  border-bottom-color: rgba(255, 255, 255, 0.2);
+  border-bottom-color: rgb(255 255 255 / 20%);
 }
 
 .supplier-performance-filter-group {
@@ -99,7 +100,7 @@
 
 .supplier-performance-select:focus {
   border-color: #2196f3;
-  box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+  box-shadow: 0 0 0 2px rgb(33 150 243 / 20%);
 }
 
 /* DARK MODE INPUTS - EXACT COLOR MATCH 
@@ -124,29 +125,29 @@
 /* Focus State in Dark Mode */
 .supplier-performance-dark-mode .supplier-performance-select:focus {
   border-color: #2196f3 !important;
-  box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2) !important;
+  box-shadow: 0 0 0 2px rgb(33 150 243 / 20%) !important;
 }
 
 /* Tooltip Styling */
 .supplier-performance-tooltip {
-  background-color: rgba(255, 255, 255, 0.95);
+  background-color: rgb(255 255 255 / 95%);
   border: 1px solid #ccc;
   border-radius: 4px;
   padding: 8px 12px;
   font-size: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
   max-width: 200px;
   z-index: 1000;
 }
 
 .supplier-performance-tooltip-label {
   font-weight: 600;
-  margin: 0 0 4px 0;
+  margin: 0 0 4px;
   color: #333;
 }
 
 .supplier-performance-dark-mode .supplier-performance-tooltip {
-  background-color: rgba(45, 45, 45, 0.95);
+  background-color: rgb(45 45 45 / 95%);
   border-color: #555;
 }
 
@@ -177,7 +178,7 @@
   color: #f44336;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .supplier-performance-filters {
     flex-direction: column;
     gap: 12px;

@@ -28,7 +28,7 @@
   font-size: 2rem;
   font-weight: 600;
   color: #2c3e50;
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.5rem;
 }
 
 .subtitle {
@@ -54,5 +54,5 @@
 
 .assignAtomsButton:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+  box-shadow: 0 4px 12px rgb(0 123 255 / 30%);
 }

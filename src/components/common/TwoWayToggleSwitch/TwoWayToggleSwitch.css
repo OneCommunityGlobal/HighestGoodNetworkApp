@@ -27,8 +27,8 @@
   transition: margin 0.3s ease-in 0s;
 }
 
-.toggle-switch-inner:before,
-.toggle-switch-inner:after {
+.toggle-switch-inner::before,
+.toggle-switch-inner::after {
   display: block;
   float: left;
   width: 50%;
@@ -41,7 +41,7 @@
   box-sizing: border-box;
 }
 
-.toggle-switch-inner:before {
+.toggle-switch-inner::before {
   content: "All";
   padding-left: 2px;
   background-color: #2FCCFF;
@@ -49,7 +49,7 @@
   text-align: center;
 }
 
-.toggle-switch-inner:after {
+.toggle-switch-inner::after {
   content: "Select";
   padding-left: 10px;
   background-color: #FF3B3F;
@@ -62,7 +62,7 @@
   width: 15px;
   top: 4px;
   bottom: 12px;
-  margin: 0px 5px;
+  margin: 0 5px;
   background: #fff;
   position: absolute;
   right: 65px;
@@ -76,5 +76,5 @@
 }
 
 .toggle-switch-checkbox:checked + .toggle-switch-label .toggle-switch-switch {
-  right: 0px;
+  right: 0;
 }

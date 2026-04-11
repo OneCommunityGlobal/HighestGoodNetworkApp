@@ -25,14 +25,14 @@
   height: auto;
   padding: 0.8rem;
   box-sizing: border-box;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 5%);
   border: 1px solid #e0e0e0;
   margin: 0.5rem;
 }
 
 /* Light mode (default) */
 .statisticsTitle {
-  color: #000000;
+  color: #000;
   font-size: larger;
   text-align: center;
 }
@@ -45,7 +45,9 @@
 }
 
 /* Override white text in dark mode - keep statistics card text black for contrast with light card backgrounds */
+
 /* This needs to be more specific than the rule in TotalOrgSummary.module.css line 17 */
+
 /* Using .statisticsTabHolder to increase specificity and target only the card content */
 :global(.bg-oxford-blue) .statisticsTabHolder .statisticsTitle,
 :global(.bg-oxford-blue) .statisticsTabHolder .statisticsNumber,
@@ -57,6 +59,7 @@
 }
 
 /* Section headers above the boxes remain white in dark mode for contrast */
+
 /* Note: volunteerStatusGrid and componentContainer are from TotalOrgSummary.module.css, so they need :global() */
 :global(.bg-oxford-blue) :global(.volunteerStatusGrid) h3,
 :global(.bg-oxford-blue) :global(.componentContainer) h3,
@@ -74,7 +77,7 @@
 }
 
 .statisticsNumber {
-  color: #000000;
+  color: #000;
 }
 
 .statisticsPercentage {
@@ -122,14 +125,14 @@
   background-color: var(--color-total-hours-worked-shape-bg);
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .statisticsTabHolder {
     width: 48%;
     margin: 1%;
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .statisticsTabHolder {
     width: 100%;
     margin: 0.5rem 0;

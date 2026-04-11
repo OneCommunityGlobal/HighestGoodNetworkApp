@@ -61,7 +61,7 @@
   border: 1px solid #d1d5db;
   border-radius: 6px;
   font-size: 14px;
-  background-color: #ffffff;
+  background-color: #fff;
   color: #374151;
   min-width: 140px;
   transition: all 0.2s ease;
@@ -70,7 +70,7 @@
 .date-picker:focus {
   outline: none;
   border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 10%);
 }
 
 .date-picker:hover {
@@ -86,7 +86,7 @@
 
 .tools-availability-page.dark-mode .date-picker:focus {
   border-color: #4589ff;
-  box-shadow: 0 0 0 3px rgba(69, 137, 255, 0.1);
+  box-shadow: 0 0 0 3px rgb(69 137 255 / 10%);
 }
 
 .tools-availability-page.dark-mode .date-picker:hover {
@@ -158,7 +158,7 @@
 
 .project-select .select__control--is-focused {
   border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 10%);
 }
 
 /* Loading and error states */
@@ -196,7 +196,7 @@
 }
 
 /* Responsive design */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .tools-chart-filters {
     flex-direction: column;
     gap: 24px;
@@ -221,7 +221,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .tools-availability-page {
     padding: 16px;
   }

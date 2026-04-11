@@ -23,14 +23,13 @@
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-
   width: 440px;
   max-width: 95vw;
   max-height: 90vh;
   overflow: auto;
   padding: 15px;
   border-radius: 6px;
-  box-shadow: 0 8px 24px rgba(0,0,0,.35);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 35%);
   background: #2d3748;
   color: #fff;
   transition: opacity 120ms ease;
@@ -51,6 +50,7 @@
   visibility: visible;
   pointer-events: auto;
 }
+
 /* keep it open when the mouse is over the tooltip itself */
 .tooltip:hover {
   display: block;
@@ -72,8 +72,7 @@
 .tooltip,
 .tooltip.tooltipWide {
   max-height: calc(100vh - 140px); /* keeps ~70px margin above/below */
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
   scrollbar-gutter: stable both-edges;

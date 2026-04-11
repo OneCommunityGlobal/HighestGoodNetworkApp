@@ -2,10 +2,12 @@
   font-weight: normal;
   width: 75px;
 }
+
 .hours-input {
   width: 20%;
   padding: 3px 6px !important;
 }
+
 .form-date {
   width: 30%;
 }
@@ -61,13 +63,14 @@
 }
 
 .confirmBackdropDark {
-  background-color: rgba(2, 6, 23, 0.85);
+  background-color: rgb(2 6 23 / 85%);
 }
 
 .btnOutlineDangerDark {
   color: #fca5a5;
   border-color: #ef4444;
 }
+
 .btnOutlineDangerDark:hover {
   background-color: #7f1d1d;
   border-color: #ef4444;

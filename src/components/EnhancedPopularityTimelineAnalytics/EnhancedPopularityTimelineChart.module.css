@@ -16,9 +16,9 @@
 /* Main container */
 .ept-container {
   padding: 20px;
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 8px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 12px rgb(0 0 0 / 8%);
   margin: 20px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   transition: background-color 0.3s, color 0.3s, border-color 0.3s;
@@ -27,7 +27,7 @@
 .dark-theme {
   background-color: #1a202c;
   border: 1px solid #2d3748;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 2px 12px rgb(0 0 0 / 40%);
   color: #e2e8f0;
 }
 
@@ -95,7 +95,7 @@
   padding: 10px 12px;
   border: 1px solid #dcdfe6;
   border-radius: 4px;
-  background-color: #ffffff;
+  background-color: #fff;
   font-size: 0.9rem;
   color: #2c3e50;
   transition: border-color 0.2s, background-color 0.2s;
@@ -110,7 +110,7 @@
 .ept-select:focus {
   border-color: #3498db;
   outline: none;
-  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+  box-shadow: 0 0 0 2px rgb(52 152 219 / 20%);
 }
 
 /* Multi-select styles */
@@ -209,13 +209,12 @@
 }
 
 .ept-chart-wrapper {
-  background-color: #ffffff;
+  background-color: #fff;
   padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 5px rgb(0 0 0 / 5%);
   border: 1px solid #eee;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: auto hidden;
   -webkit-overflow-scrolling: touch;
   position: relative;
 }
@@ -247,7 +246,7 @@
 .dark-theme .ept-chart-wrapper {
   background-color: #1a202c;
   border-color: #2d3748;
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 1px 5px rgb(0 0 0 / 25%);
 }
 
 /* Enhanced Tooltip (Consolidated Styles) */
@@ -256,7 +255,7 @@
   border: 1px solid #ccc;
   border-radius: 6px;
   padding: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
   max-width: 380px;
   min-width: 300px;
   z-index: 1000;
@@ -344,7 +343,7 @@
 
 .ept-tooltip-role:hover {
   transform: translateX(2px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
 }
 
 .dark-theme .ept-tooltip-role {
@@ -412,13 +411,13 @@
 }
 
 .ept-legend-item:hover {
-  background-color: rgba(52, 152, 219, 0.1);
+  background-color: rgb(52 152 219 / 10%);
 }
 
 .ept-legend-item-highlighted {
   background-color: white;
   border-color: #3498db;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
 }
 
 .dark-theme .ept-legend-item-highlighted {
@@ -482,9 +481,9 @@
 
 .ept-summary-card {
   padding: 15px;
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 6px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
   border-left: 4px solid;
   cursor: pointer;
   transition: all 0.2s;
@@ -496,13 +495,13 @@
 
 .ept-summary-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 8px rgb(0 0 0 / 15%);
 }
 
 .ept-summary-card-highlighted {
   background-color: #e3f2fd !important;
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+  box-shadow: 0 4px 8px rgb(52 152 219 / 30%);
 }
 
 .dark-theme .ept-summary-card-highlighted {
@@ -545,7 +544,7 @@
 .ept-no-data {
   padding: 25px;
   text-align: center;
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 8px;
   margin: 20px 0;
   border: 1px solid #eee;
@@ -570,7 +569,7 @@
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .ept-controls {
     flex-direction: column;
     align-items: stretch;

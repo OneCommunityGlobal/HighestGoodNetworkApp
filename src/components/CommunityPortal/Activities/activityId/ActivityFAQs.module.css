@@ -58,7 +58,7 @@
 
 .searchInput:focus {
   border-color: #1976d2;
-  box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.1);
+  box-shadow: 0 0 0 2px rgb(25 118 210 / 10%);
 }
 
 .filterSection {
@@ -127,7 +127,7 @@
 }
 
 .faqItem:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
 }
 
 .faqQuestionButton {
@@ -164,7 +164,7 @@
 }
 
 .faqAnswer {
-  padding: 0 20px 16px 20px;
+  padding: 0 20px 16px;
   font-size: 1rem;
   color: #666;
   line-height: 1.6;
@@ -177,6 +177,7 @@
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -219,7 +220,7 @@
   text-decoration: underline;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .container {
     padding: 15px;
   }
@@ -250,7 +251,7 @@
   }
 
   .faqAnswer {
-    padding: 0 16px 12px 16px;
+    padding: 0 16px 12px;
     font-size: 0.9rem;
   }
 }
@@ -306,7 +307,7 @@
 }
 
 :global(body.dark-mode) .faqItem:hover {
-  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.08);
+  box-shadow: 0 2px 8px rgb(255 255 255 / 8%);
 }
 
 :global(body.dark-mode) .faqQuestionButton:hover {

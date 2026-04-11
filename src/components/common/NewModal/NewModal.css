@@ -62,7 +62,7 @@
 
 .popup-close-button:active {
   border-color: #ca50db;
-  box-shadow: 0px 0px 3px 0 #ca50db;
+  box-shadow: 0 0 3px 0 #ca50db;
 }
 
 .close-icon {
@@ -125,7 +125,7 @@
 
 .popup-modal-dark .popup-close-button:active {
   border-color: #ca50db;
-  box-shadow: 0px 0px 3px 0 #ca50db;
+  box-shadow: 0 0 3px 0 #ca50db;
 }
 
 .popup-content-dark .rectangle {

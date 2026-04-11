@@ -29,7 +29,7 @@
 
 
 
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
   .basic-info-tab-desktop {
     display: none;
 

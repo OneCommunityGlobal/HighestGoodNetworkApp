@@ -7,7 +7,7 @@
 
 .jobAnalyticsDarkMode {
   background-color: #1b2a41;
-  color: #ffffff;
+  color: #fff;
 }
 
 .jobAnalyticsDarkMode .jobAnalytics {
@@ -29,7 +29,7 @@
   flex: 1;
   border: 2px solid #4285f4;
   border-radius: 8px;
-  background-color: #ffffff;
+  background-color: #fff;
   padding: 20px;
   min-width: 800px;
 }
@@ -38,26 +38,20 @@
   font-size: 24px;
   font-weight: 400;
   color: #5f6368;
-  margin: 0 0 30px 0;
+  margin: 0 0 30px;
   text-align: center;
 }
 
 .chartArea {
   min-height: 400px;
   position: relative;
-  padding-left: 170px;
-  padding-right: 40px;
-  padding-top: 20px;
-  padding-bottom: 60px;
+  padding: 20px 40px 60px 170px;
   width: 100%;
 }
 
 .gridLines {
   position: absolute;
-  left: 170px;
-  right: 40px;
-  top: 20px;
-  bottom: 60px;
+  inset: 20px 40px 60px 170px;
   background-image: linear-gradient(to right, #e0e0e0 1px, transparent 1px),
     linear-gradient(to bottom, #e0e0e0 1px, transparent 1px);
   background-size: calc(100% / var(--x-grid-divisions, 10)) 25%;
@@ -123,10 +117,7 @@
 
 .barsContainer {
   position: absolute;
-  left: 170px;
-  right: 40px;
-  top: 20px;
-  bottom: 60px;
+  inset: 20px 40px 60px 170px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -181,7 +172,7 @@
   font-weight: bold;
   white-space: nowrap;
   z-index: 1000;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 30%);
   border: 2px solid #1a73e8;
 }
 
@@ -261,7 +252,7 @@
   border: 1px solid #dadce0;
   border-radius: 4px;
   font-size: 14px;
-  background-color: #ffffff;
+  background-color: #fff;
   color: #3c4043;
   cursor: pointer;
   height: 32px !important;
@@ -278,7 +269,7 @@
 
 /* Dark Mode Support */
 .jobAnalyticsContainerDarkMode .jobAnalyticsContainer {
-  color: #ffffff;
+  color: #fff;
 }
 
 .jobAnalyticsContainerDarkMode .chartContainer {
@@ -300,7 +291,7 @@
 
 .jobAnalyticsContainerDarkMode .filtersPanel select {
   background-color: #2d2d2d;
-  color: #ffffff;
+  color: #fff;
   border-color: #5f6368;
 }
 
@@ -318,8 +309,8 @@
 }
 
 .jobAnalyticsContainerDarkMode .gridLines {
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  background-image: linear-gradient(to right, rgb(255 255 255 / 8%) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 255 255 / 8%) 1px, transparent 1px);
   opacity: 0.3; /* softer look */
 }
 
@@ -328,17 +319,17 @@
 }
 
 .jobAnalyticsContainerDarkMode .tooltip strong {
-  color: #ffffff;
+  color: #fff;
 }
 
 /* Responsive Design */
-@media (max-width: 1200px) {
+@media (width <= 1200px) {
   .chartContainer {
     min-width: 700px;
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .jobAnalyticsContainer {
     flex-direction: column;
     padding: 10px;
@@ -384,7 +375,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .chartArea {
     padding-left: 100px;
     padding-right: 10px;

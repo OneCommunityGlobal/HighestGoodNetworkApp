@@ -2,7 +2,8 @@
   background-color: #c9d6c6 !important;
   border-color: #285739 !important;
   color: #285739 !important;
-  /*Spacing between buttons*/
+
+  /* Spacing between buttons */
   margin-right: 10px;
 }
 
@@ -30,6 +31,7 @@
   height: 25px;
   width: 25px;
 }
+
 .badge_featured_count {
   padding-top: 4px;
   border-radius: 50%;
@@ -90,10 +92,12 @@
 
 .badge_featured_container {
   display: flex;
-  /*Wrap on overflow*/
+
+  /* Wrap on overflow */
   flex-wrap: wrap;
   overflow-y: hidden;
-  /*center align content*/
+
+  /* center align content */
   justify-content: space-around;
 }
 
@@ -135,26 +139,27 @@
   text-align: left;
 }
 
-/*Aligns the title and the buttons*/
+/* Aligns the title and the buttons */
+
 /* .badge-header {
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
 } */
 
-/*Title to occupy more width than buttons*/
+/* Title to occupy more width than buttons */
 .badge-header-title {
   flex: 3;
 }
 
-/*To match width of iphone 12 Pro*/
+/* To match width of iphone 12 Pro */
 #badgeCard {
   min-width: 320px;
   background-color: #f6f6f3;
   margin: 20px 0;
 }
 
-@media screen and (max-width: 1199px) {
+@media screen and (width <= 1199px) {
   .badge_featured_container {
     overflow-x: scroll;
   }
@@ -174,7 +179,7 @@
   gap: 5px;
 }
 
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
   .badge-header {
     flex-direction: column;
     align-items: center; /* This will center the buttons below the title */

@@ -14,7 +14,7 @@
   flex: 1;
   border: 2px solid #4285f4;
   border-radius: 8px;
-  background-color: #ffffff;
+  background-color: #fff;
   padding: 20px;
 }
 
@@ -22,25 +22,19 @@
   font-size: 20px;
   font-weight: 400;
   color: #5f6368;
-  margin: 0 0 30px 0;
+  margin: 0 0 30px;
   font-family: Arial, sans-serif;
 }
 
 .chartArea {
   min-height: 400px;
   position: relative;
-  padding-left: 140px;
-  padding-right: 60px;
-  padding-top: 20px;
-  padding-bottom: 40px;
+  padding: 20px 60px 40px 140px;
 }
 
 .grid {
   position: absolute;
-  left: 140px;
-  right: 60px;
-  top: 20px;
-  bottom: 40px;
+  inset: 20px 60px 40px 140px;
   background-image: linear-gradient(to right, #e0e0e0 1px, transparent 1px),
     linear-gradient(to bottom, #e0e0e0 1px, transparent 1px);
   opacity: 0.5;
@@ -81,10 +75,7 @@
 
 .bars {
   position: absolute;
-  left: 140px;
-  right: 60px;
-  top: 20px;
-  bottom: 40px;
+  inset: 20px 60px 40px 140px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -155,7 +146,7 @@
   border: 1px solid #dadce0;
   border-radius: 4px;
   padding: 12px;
-  background-color: #ffffff;
+  background-color: #fff;
 }
 
 .filterTitle {
@@ -171,6 +162,6 @@
   border: 1px solid #dadce0;
   border-radius: 4px;
   font-size: 14px;
-  background-color: #ffffff;
+  background-color: #fff;
   color: #3c4043;
 }

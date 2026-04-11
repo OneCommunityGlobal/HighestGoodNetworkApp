@@ -8,7 +8,7 @@
   font-size: 1.5em;
   text-align: center;
   margin-top: 2em;
-  color:#ffffff
+  color:#fff
 }
 
 .darkBmDashboardMain{
@@ -17,7 +17,7 @@
 
 /* Light Mode Text Visibility - Ensure Dark Text */
 .bm-dashboard-container:not(.bm-dashboard-dark) * {
-  color: #333333 !important;
+  color: #333 !important;
 }
 
 .bm-dashboard-container:not(.bm-dashboard-dark) h1,
@@ -26,7 +26,7 @@
 .bm-dashboard-container:not(.bm-dashboard-dark) h4,
 .bm-dashboard-container:not(.bm-dashboard-dark) h5,
 .bm-dashboard-container:not(.bm-dashboard-dark) h6 {
-  color: #333333 !important;
+  color: #333 !important;
   text-shadow: none !important;
   font-weight: 600 !important;
 }
@@ -41,16 +41,16 @@
 .bm-dashboard-container:not(.bm-dashboard-dark) th,
 .bm-dashboard-container:not(.bm-dashboard-dark) button,
 .bm-dashboard-container:not(.bm-dashboard-dark) .btn {
-  color: #333333 !important;
+  color: #333 !important;
   text-shadow: none !important;
 }
 
 /* Enhanced text visibility for all BMDashboard dark mode elements - NUCLEAR LEVEL */
 .bm-dashboard-dark *,
-.bm-dashboard-dark *:before,
-.bm-dashboard-dark *:after {
-  color: #ffffff !important;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8) !important;
+.bm-dashboard-dark *::before,
+.bm-dashboard-dark *::after {
+  color: #fff !important;
+  text-shadow: 0 1px 3px rgb(0 0 0 / 80%) !important;
 }
 
 .bm-dashboard-dark h1,
@@ -59,8 +59,8 @@
 .bm-dashboard-dark h4,
 .bm-dashboard-dark h5,
 .bm-dashboard-dark h6 {
-  color: #ffffff !important;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8) !important;
+  color: #fff !important;
+  text-shadow: 0 2px 4px rgb(0 0 0 / 80%) !important;
   font-weight: 600 !important;
 }
 
@@ -74,33 +74,33 @@
 .bm-dashboard-dark th,
 .bm-dashboard-dark button,
 .bm-dashboard-dark .btn {
-  color: #ffffff !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6) !important;
+  color: #fff !important;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 60%) !important;
 }
 
 .bm-dashboard-dark .text-muted,
 .bm-dashboard-dark .text-secondary,
 .bm-dashboard-dark .text-light {
-  color: #ffffff !important;
+  color: #fff !important;
   opacity: 0.9 !important;
 }
 
 .bm-dashboard-dark .form-control {
   background-color: #2e5061 !important;
   border-color: #3a506b !important;
-  color: #ffffff !important;
+  color: #fff !important;
   text-shadow: none !important;
 }
 
 .bm-dashboard-dark .form-control::placeholder {
-  color: #ffffff !important;
+  color: #fff !important;
   opacity: 0.7 !important;
 }
 
 /* Button Styles */
 .bm-dashboard__button.btn.btn-secondary {
   background-color: #6c757d;
-  color: #ffffff;
+  color: #fff;
   border-color: #6c757d;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
@@ -112,18 +112,19 @@
 
 .bm-dashboard-dark .bm-dashboard__button.btn.btn-secondary {
   background-color: #3a506b;
-  color: #ffffff;
+  color: #fff;
   border: 1px solid #5a7a9b;
 }
 
 .bm-dashboard-dark .bm-dashboard__button.btn.btn-secondary:hover {
   background-color: #4a607b;
   border-color: #6a8aab;
+
 .bmDashboardButton {
   background-color: #2e5061;
 }
 
-@media (min-width: 650px) {
+@media (width >= 650px) {
   .bmDashboardButton {
     padding-left: 0;
     padding-right: 0;
@@ -162,13 +163,12 @@
   max-width: 1200px;
   list-style-type: none;
   max-height: 80vh;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: hidden auto;
   padding: 0;
   margin: 1em auto;
   border: 1px solid #ccc;
   border-radius: 5px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 5px rgb(0 0 0 / 10%);
 }
 
 .darkProjectsList {
@@ -217,7 +217,7 @@
 .invForm input,
 .invForm select,
 .invForm textarea {
-  background-color: rgb(249, 249, 249);
+  background-color: rgb(249 249 249);
 }
 
 .invFormBtnGroup {
@@ -235,13 +235,13 @@
   color: red;
 }
 
-@media screen and (max-width: 800px) {
+@media screen and (width <= 800px) {
   .invFormPageContainer {
     width: 95%;
   }
 }
 
-@media screen and (max-width: 480px) {
+@media screen and (width <= 480px) {
   .invFormPageContainer h2 {
     font-size: 1.7rem;
   }
@@ -328,8 +328,8 @@
 .bm-dashboard-dark header *,
 .bm-dashboard-dark main,
 .bm-dashboard-dark main * {
-  color: #ffffff !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7) !important;
+  color: #fff !important;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 70%) !important;
 }
 
 /* Force background colors for better contrast */
@@ -339,7 +339,7 @@
 .bm-dashboard-dark .inv-form-page-container,
 .bm-dashboard-dark .bm-error-page {
   background-color: #1b2a41 !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 /* Override any Bootstrap or other framework styles */
@@ -353,7 +353,7 @@
 .bm-dashboard-dark .text-dark,
 .bm-dashboard-dark .text-body,
 .bm-dashboard-dark .text-muted {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 /* Force all buttons and interactive elements */
@@ -370,14 +370,14 @@
 .bm-dashboard-dark .btn-outline-primary,
 .bm-dashboard-dark .btn-outline-secondary {
   background-color: #3a506b !important;
-  color: #ffffff !important;
+  color: #fff !important;
   border-color: #5a7a9b !important;
 }
 
 .bm-dashboard-dark button:hover,
 .bm-dashboard-dark .btn:hover {
   background-color: #4a607b !important;
-  color: #ffffff !important;
+  color: #fff !important;
   border-color: #6a8aab !important;
 }
 
@@ -385,30 +385,30 @@
 .bm-dashboard-dark .log-bar,
 .bm-dashboard-dark .log-bar-dark {
   background-color: #1b2a41 !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .bm-dashboard-dark .log-bar h2,
 .bm-dashboard-dark .log-bar-dark h2,
 .bm-dashboard-dark .log-bar__section h2 {
-  color: #ffffff !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7) !important;
+  color: #fff !important;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 70%) !important;
 }
 
 .bm-dashboard-dark .log-bar .button.btn,
 .bm-dashboard-dark .log-bar-dark .button.btn {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 /* Light mode LogBar overrides */
 .bm-dashboard-container:not(.bm-dashboard-dark) .log-bar h2,
 .bm-dashboard-container:not(.bm-dashboard-dark) .log-bar__section h2 {
-  color: #333333 !important;
+  color: #333 !important;
   text-shadow: none !important;
 }
 
 .bm-dashboard-container:not(.bm-dashboard-dark) .log-bar .button.btn {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 /* Image clarity improvements for BMDashboard */
@@ -416,7 +416,7 @@
 .bm-dashboard-dark img,
 .bm-dashboard-light img {
   image-rendering: auto !important;
-  -webkit-filter: none !important;
+  filter: none !important;
   filter: none !important;
   backface-visibility: hidden !important;
   transform: translateZ(0) !important;

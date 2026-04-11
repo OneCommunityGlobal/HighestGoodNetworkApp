@@ -2,14 +2,14 @@
   max-width: 400px;
   background-color: #d1ecf1;
   border: 1px solid black;
-  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  box-shadow: rgb(0 0 0 / 35%) 0 5px 15px;
   font-size: 1rem;
   opacity: 1;
 }
 
 #country-rep-info {
   color: black;
-  margin-bottom: 0px;
+  margin-bottom: 0;
   border: none;
 }
 
@@ -21,8 +21,8 @@
 #requirement-checkbox {
   position: relative;
   top: 0.2rem;
-  margin-top: 0px;
-  margin-left: 0px;
+  margin-top: 0;
+  margin-left: 0;
 }
 
 #profile-picture {
@@ -33,35 +33,40 @@
   padding: 4px;
   border: 3px solid #d1ecf1;
 }
+
 #add-profile-picture-col {
   box-sizing: border-box;
   display: flex;
   padding-bottom: 1rem;
 }
+
 #add-profile-picture-btn {
   align-self: center;
 }
+
 .profile-setup-user-entry-container {
   display: grid;
   grid-template-rows: 10vh 1fr;
 }
+
 .profile-setup-user-entry-header {
   height: 100%;
   width: 100%;
   background-color: #343a40;
   display: grid;
-  align-items: center;
-  justify-items: center;
+  place-items: center center;
 }
+
 .profile-setup-user-entry-logo {
   height: 7vh;
   width: auto;
 }
+
 #profile-setup-user-entry-form-container {
   box-sizing: border-box;
   margin-top: 5vh;
   width: 100vw;
-  padding: 0px;
+  padding: 0;
   display: grid;
   justify-items: center;
 }
@@ -70,20 +75,23 @@
   max-width: 100%;
   background-color: red;
 }
+
 #profile-setup-user-entry-form {
   max-width: 2000px;
   width: 95%;
 }
+
 .tooltip.show {
   opacity: 1 !important; /* Your desired opacity value */
 }
 
 #collaboration-suggestion-dd {
   width: 100%;
-  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  box-shadow: rgb(0 0 0 / 24%) 0 3px 8px;
   max-height: 200px;
   overflow-y: scroll;
 }
+
 #collaboration-suggestion-dd::-webkit-scrollbar {
   width: 12px;
 }
@@ -92,7 +100,7 @@
   border-radius: 8px;
   background-color: #e7e7e7;
   border: 1px solid #cacaca;
-  box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+  box-shadow: inset 0 0 6px rgb(0 0 0 / 30%);
 }
 
 #collaboration-suggestion-dd::-webkit-scrollbar-thumb {
@@ -113,7 +121,7 @@
 }
 
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   #password-input-group {
     margin-bottom: 1rem;
   }

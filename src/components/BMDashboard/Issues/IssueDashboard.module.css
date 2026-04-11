@@ -6,7 +6,7 @@
 
 .issuesTableResponsive:global(.bg-oxford-blue) :global(.text-end),
 .issuesTableResponsive:global(.bg-oxford-blue) :global(th) {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 /* Improved positioning for the action menu */
@@ -18,9 +18,9 @@
   min-width: 10rem;
   z-index: 1050;
   padding: 0.5rem 0;
-  border: 1px solid rgba(0, 0, 0, 0.15);
+  border: 1px solid rgb(0 0 0 / 15%);
   border-radius: 0.25rem;
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 15%);
   white-space: nowrap;
   background-color: white;
 }
@@ -28,7 +28,7 @@
 .actionMenuDark {
   background-color: #1c2541;
   border-color: #3a506b;
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 50%);
 }
 
 .issueDashboardDropdownItem {
@@ -49,7 +49,7 @@
 }
 
 .issueDashboardDropdownItemDark {
-  color: #ffffff;
+  color: #fff;
 }
 
 .issueDashboardDropdownItemDark:hover {
@@ -62,13 +62,13 @@
 }
 
 .exportDropdownItemDark {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .exportDropdownItemDark:hover,
 .exportDropdownItemDark:focus {
   background-color: #2d3b66 !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .issueDashboardDropdownItemDark.textDanger {
@@ -88,7 +88,7 @@
 
 .badge :global(.bg-info-dark) {
   background-color: #3a506b !important;
-  color: #ffffff !important;
+  color: #fff !important;
   font-weight: 500;
 }
 
@@ -110,17 +110,16 @@
 }
 
 .issueDashboardDropdownDark :global(.btn-link) {
-  color: #ffffff;
+  color: #fff;
 }
 
 .issueDashboardDropdownDark :global(.btn-link:hover) {
-  color: #ffffff;
+  color: #fff;
 }
 
 /* Fixed table responsiveness */
 .issuesTableResponsive {
-  overflow-x: visible !important; /* Prevent horizontal scrollbar */
-  overflow-y: visible !important; /* Ensure dropdowns aren't clipped */
+  overflow: visible !important; /* Prevent horizontal scrollbar */ /* Ensure dropdowns aren't clipped */
   position: relative;
   width: 100%;
   table-layout: fixed;
@@ -171,7 +170,7 @@
   left: 0 !important;
   width: 100% !important;
   height: 100% !important;
-  background-color: rgba(0, 0, 0, 0.3) !important;
+  background-color: rgb(0 0 0 / 30%) !important;
   z-index: 1050 !important;
   display: flex !important;
   align-items: center !important;
@@ -191,14 +190,14 @@
 
 .issuesModalBackdropDark :global(.modal-content) {
   background-color: #1c2541;
-  color: #ffffff;
+  color: #fff;
   border: 1px solid #3a506b;
 }
 
 .issuesModalBackdropDark :global(.modal-content input) {
   background-color: #1b2a41;
   border-color: #3a506b;
-  color: #ffffff;
+  color: #fff;
 }
 
 .issuesModalBackdropDark :global(.modal-content input::placeholder) {
@@ -208,19 +207,19 @@
 .issuesModalBackdropDark :global(.modal-content input:focus) {
   background-color: #1b2a41;
   border-color: #4a5f7a;
-  color: #ffffff;
+  color: #fff;
 }
 
 .issuesModalBackdropDark :global(.modal-content h5) {
-  color: #ffffff;
+  color: #fff;
 }
 
 .issuesModalBackdropDark :global(.modal-content p) {
-  color: #ffffff;
+  color: #fff;
 }
 
 .issuesModalBackdropDark :global(.modal-content strong) {
-  color: #ffffff;
+  color: #fff;
 }
 
 :global(.table-dark thead tr:hover) {
@@ -228,11 +227,11 @@
 }
 
 :global(.table-dark thead tr th) {
-  color: #ffffff;
+  color: #fff;
 }
 
 :global(.table-dark tbody tr) {
-  color: #ffffff;
+  color: #fff;
 }
 
 :global(.table-dark tbody tr:hover) {

@@ -46,7 +46,7 @@
 .titleSectionDark {
   display: flex;
   align-items: center;
-  color: #ffffff;
+  color: #fff;
   font-size: 36px;
   font-weight: 600;
   margin: 0;
@@ -56,7 +56,7 @@
   font-size: 36px;
   font-weight: 600;
   margin: 0;
-  color: #000000;
+  color: #000;
 }
 
 .sectionDark {
@@ -81,7 +81,7 @@
   padding: 6px;
   display: flex;
   align-items: center;
-  background-color: #eeeeee;
+  background-color: #eee;
   border-radius: 8px;
   transition: background-color 0.2s;
 }
@@ -92,7 +92,7 @@
 
 .moreButtonDark {
   background-color: #3a506b;
-  color: #ffffff;
+  color: #fff;
 }
 
 .moreButtonDark:hover {
@@ -117,7 +117,7 @@
 
 .backButtonDark {
   background-color: #3a506b;
-  color: #ffffff;
+  color: #fff;
 }
 
 .backButtonDark:hover {
@@ -174,7 +174,7 @@
   display: inline-flex;
   background-color: #f3f4f6;
   border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
   padding: 6px;
 }
 
@@ -182,7 +182,7 @@
   display: inline-flex;
   background-color: #1c2541;
   border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 30%);
   padding: 6px;
 }
 
@@ -199,7 +199,7 @@
 }
 
 .projectTab .tabItem:global(.active) {
-  background-color: #ffffff;
+  background-color: #fff;
   color: #1c1e1c;
 }
 
@@ -208,12 +208,12 @@
 }
 
 .tabItemDark {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .projectTabDark .tabItemDark:global(.active) {
   background-color: #3a506b;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .projectTabDark .tabItemDark:not(:global(.active)):hover {
@@ -245,7 +245,7 @@
 }
 
 .searchIconDark {
-  color: #ffffff;
+  color: #fff;
   position: absolute;
   left: 12px;
   top: 50%;
@@ -264,7 +264,7 @@
   font-size: 16px;
   width: 100%;
   box-sizing: border-box;
-  background-color: #ffffff;
+  background-color: #fff;
   color: #1c1e1c;
   transition: border-color 0.2s;
   outline: none;
@@ -289,7 +289,7 @@
   width: 100%;
   box-sizing: border-box;
   background-color: #1c2541;
-  color: #ffffff;
+  color: #fff;
   transition: border-color 0.2s;
   outline: none;
   box-shadow: none;
@@ -313,7 +313,7 @@
   right: 0;
   background-color: white;
   border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 16px rgb(0 0 0 / 10%);
   overflow: hidden;
   z-index: 1000;
   border: 1px solid #eaeaea;
@@ -328,7 +328,7 @@
   right: 0;
   background-color: #1c2541;
   border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 16px rgb(0 0 0 / 50%);
   overflow: hidden;
   z-index: 1000;
   border: 1px solid #3a506b;
@@ -341,6 +341,7 @@
     opacity: 0;
     transform: translateY(-5px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -389,14 +390,14 @@
 .resultName {
   font-size: 14px;
   font-weight: 500;
-  color: #333333;
+  color: #333;
   margin-bottom: 2px;
 }
 
 .resultNameDark {
   font-size: 14px;
   font-weight: 500;
-  color: #ffffff;
+  color: #fff;
   margin-bottom: 2px;
 }
 
