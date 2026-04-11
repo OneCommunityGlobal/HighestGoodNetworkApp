@@ -1,5 +1,5 @@
-// ...existing code...
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 import styles from './JobApplicationForm.module.css';
 import OneCommunityImage from '../../../assets/images/logo2.png';
 import axios from 'axios';
@@ -7,6 +7,42 @@ import { ENDPOINTS } from '../../../utils/URL';
 import { useSelector } from 'react-redux';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
+/** Match a job listing title to a saved application form (titles may differ slightly). */
+function findFormForJobTitle(formsArr, jobTitle) {
+  if (!jobTitle || !formsArr?.length) return null;
+  const t = String(jobTitle)
+    .trim()
+    .toLowerCase();
+  let m = formsArr.find(f => (f.title || '').trim().toLowerCase() === t);
+  if (m) return m;
+  m = formsArr.find(f => {
+    const ft = (f.title || '').trim().toLowerCase();
+    return ft && (t.includes(ft) || ft.includes(t));
+  });
+  return m || null;
+}
+
+function pickInitialForm(formsArr, navState) {
+  if (!formsArr?.length) return null;
+  if (navState?.jobTitle) {
+    const matched = findFormForJobTitle(formsArr, navState.jobTitle);
+    if (matched) return matched;
+  }
+  return formsArr.find(f => f.questions?.length) || formsArr[0];
+}
+
+function getQuestionType(q) {
+  return String(q.questionType || q.type || '').toLowerCase();
+}
+
+function getQuestionLabel(q, idx) {
+  return (q.label || q.questionText || `Question ${idx + 1}`).trim();
+}
+
+function isQuestionRequired(q) {
+  return q.isRequired === true || q.required === true;
+}
 
 /** Shown for every role when API text is missing or only a placeholder (e.g. "desc …"). */
 const GENERIC_ROLE_DESCRIPTION = `One Community is a nonprofit focused on sustainability and open collaboration. Volunteers work remotely with teammates in different time zones, contribute to shared goals, and stay aligned using tools like Slack and Zoom.
@@ -35,6 +71,7 @@ function getJobDescriptionForModal(form) {
 }
 
 function JobApplicationForm() {
+  const location = useLocation();
   const [forms, setForms] = useState([]);
   const [selectedJob, setSelectedJob] = useState('');
   const [answers, setAnswers] = useState([]);
@@ -52,38 +89,64 @@ function JobApplicationForm() {
 
   const darkMode = useSelector(state => state.theme?.darkMode);
 
+  const visibleQuestions = useMemo(
+    () => (filteredForm?.questions ?? []).filter(q => q.visible !== false),
+    [filteredForm],
+  );
+
   useEffect(() => {
+    let cancelled = false;
+
     async function fetchForms() {
       try {
         const res = await axios.get(ENDPOINTS.GET_ALL_JOB_FORMS);
+        if (cancelled) return;
         const formsArr = Array.isArray(res.data.forms) ? res.data.forms : [];
         setForms(formsArr);
-        const firstWithQuestions = formsArr.find(f => f.questions && f.questions.length > 0);
-        if (firstWithQuestions) {
-          setSelectedJob(firstWithQuestions.title);
-          setFilteredForm(firstWithQuestions);
-          setAnswers(new Array((firstWithQuestions.questions ?? []).length).fill(''));
-        } else if (formsArr.length > 0) {
-          setSelectedJob(formsArr[0].title);
-          setFilteredForm(formsArr[0]);
-          setAnswers(new Array((formsArr[0].questions ?? []).length).fill(''));
+
+        const chosen = pickInitialForm(formsArr, location.state);
+        if (location.state?.jobTitle && !findFormForJobTitle(formsArr, location.state.jobTitle)) {
+          toast.warn(
+            `No application form matched "${location.state.jobTitle}". Pick the correct role from the dropdown or enter the exact form title.`,
+            { autoClose: 8000 },
+          );
+        }
+        if (chosen) {
+          setSelectedJob(chosen.title);
+          setFilteredForm(chosen);
+          if (location.state?.jobTitle) {
+            setJobTitleInput(String(location.state.jobTitle).trim());
+          }
+          const n = (chosen.questions ?? []).filter(q => q.visible !== false).length;
+          setAnswers(new Array(n).fill(''));
+        } else {
+          setSelectedJob('');
+          setFilteredForm(null);
+          setAnswers([]);
         }
       } catch (err) {
-        setForms([]);
-        setSelectedJob('');
-        setFilteredForm(null);
-        setAnswers([]);
-        toast.error('Failed to load job forms.');
+        if (!cancelled) {
+          setForms([]);
+          setSelectedJob('');
+          setFilteredForm(null);
+          setAnswers([]);
+          toast.error('Failed to load job forms.');
+        }
       }
     }
+
     fetchForms();
-  }, []);
+    return () => {
+      cancelled = true;
+    };
+  }, [location.key]);
 
   useEffect(() => {
     if (!selectedJob) return;
     const form = forms.find(f => f.title === selectedJob);
     setFilteredForm(form);
-    setAnswers(new Array((form?.questions ?? []).length).fill(''));
+    const n = (form?.questions ?? []).filter(q => q.visible !== false).length;
+    setAnswers(new Array(n).fill(''));
   }, [selectedJob, forms]);
 
   const handleJobChange = e => {
@@ -95,7 +158,13 @@ function JobApplicationForm() {
   };
 
   const handleGoClick = () => {
-    const form = forms.find(f => f.title?.toLowerCase() === jobTitleInput.trim().toLowerCase());
+    const raw = jobTitleInput.trim();
+    if (!raw) {
+      toast.info('Enter a job title.');
+      return;
+    }
+    let form = forms.find(f => f.title?.toLowerCase() === raw.toLowerCase());
+    if (!form) form = findFormForJobTitle(forms, raw);
     if (form) {
       setSelectedJob(form.title);
     } else {
@@ -138,11 +207,10 @@ function JobApplicationForm() {
     if (!applicantName.trim()) missing.push('Name');
     if (!applicantEmail.trim()) missing.push('Email');
 
-    if (filteredForm?.questions?.length) {
-      for (const [idx, q] of filteredForm.questions.entries()) {
-        const required = q.required ?? false;
-        if (required && !String(answers[idx] ?? '').trim()) {
-          missing.push(q.label || q.questionText || `Question ${idx + 1}`);
+    if (visibleQuestions.length) {
+      for (const [idx, q] of visibleQuestions.entries()) {
+        if (isQuestionRequired(q) && !String(answers[idx] ?? '').trim()) {
+          missing.push(getQuestionLabel(q, idx));
         }
       }
     }
@@ -169,7 +237,7 @@ function JobApplicationForm() {
     setWebsiteSocial('');
     setResumeFile(null);
     if (resumeInputRef.current) resumeInputRef.current.value = '';
-    setAnswers(new Array((filteredForm?.questions ?? []).length).fill(''));
+    setAnswers(new Array(visibleQuestions.length).fill(''));
   };
 
   return (
@@ -313,85 +381,49 @@ function JobApplicationForm() {
                   />
                 </label>
               </div>
-              <div className={styles.formGroup}>
-                <h2>1. How did you hear about One Community?</h2>
-                <input type="text" placeholder="Type your response here" />
-              </div>
-              <div className={styles.formGroup}>
-                <h2>2. Are you applying as an individual or organization?</h2>
-                <input type="text" placeholder="Type your response here" />
-              </div>
-              <div className={styles.formGroup}>
-                <h2>3. Why are you wanting to volunteer/work/collaborate with us?</h2>
-                <input type="text" placeholder="Type your response here" />
-              </div>
-              <div className={styles.formGroup}>
-                <h2>4. What skills/experience do you possess?</h2>
-                <input type="text" placeholder="Type your response here" />
-              </div>
-              <div className={styles.formGroup}>
-                <h2>5. How many volunteer hours per week are you willing to commit to?</h2>
-                <input type="text" placeholder="Type your response here" />
-              </div>
-              <div className={styles.formGroup}>
-                <h2>6. For how long do you wish to volunteer with us?</h2>
-                <input type="text" placeholder="Type your response here" />
-              </div>
-              <div className={styles.formGroup}>
-                <h2>7. What is your desired start date?</h2>
-                <input type="date" className={styles.dateInput} />
-              </div>
-              <div className={styles.formGroup}>
-                <h2>8. Will your volunteer time require documentation of your hours?</h2>
-                <select className={styles.selectField}>
-                  <option value="">Select an appropriate option</option>
-                  <option value="Yes, I'm volunteering just because I want to">
-                    Yes, I&apos;m volunteering just because I want to
-                  </option>
-                  <option value="Yes, I'm on OPT and don't yet have my EAD Card">
-                    Yes, I&apos;m on OPT and don&apos;t yet have my EAD Card
-                  </option>
-                  <option value="Yes, I'm on OPT and this time is for CPT, Co-op, or similar">
-                    Yes, I&apos;m on OPT and this time is for CPT, Co-op, or similar
-                  </option>
-                  <option value="STEM OPT: Sorry, we are 100% volunteer and don't qualify">
-                    STEM OPT: Sorry, we are 100% volunteer and don&apos;t qualify
-                  </option>
-                </select>
-              </div>
-              {filteredForm &&
-                (filteredForm.questions || []).map((q, idx) => (
-                  <div className={styles.formGroup} key={q._id?.$oid || q._id || idx}>
-                    <h2>{q.label || q.questionText}</h2>
-                    {q.type === 'text' || q.questionType === 'textbox' ? (
+              {visibleQuestions.map((q, idx) => {
+                const qt = getQuestionType(q);
+                const label = getQuestionLabel(q, idx);
+                const formKey = filteredForm?._id
+                  ? `${filteredForm._id}-q-${idx}`
+                  : `q-${idx}-${label.slice(0, 24)}`;
+
+                return (
+                  <div className={styles.formGroup} key={formKey}>
+                    <h2>
+                      {idx + 1}. {label}
+                    </h2>
+                    {['textbox', 'text'].includes(qt) && (
                       <input
                         type="text"
-                        placeholder="Type your response here"
+                        placeholder={q.placeholder || 'Type your response here'}
                         value={answers[idx] || ''}
                         onChange={e => handleAnswerChange(idx, e.target.value)}
                       />
-                    ) : null}
-                    {q.type === 'textarea' || q.questionType === 'textarea' ? (
+                    )}
+                    {qt === 'textarea' && (
                       <textarea
-                        placeholder="Type your response here"
+                        placeholder={q.placeholder || 'Type your response here'}
                         value={answers[idx] || ''}
                         onChange={e => handleAnswerChange(idx, e.target.value)}
+                        rows={5}
                       />
-                    ) : null}
-                    {q.type === 'date' || q.questionType === 'date' ? (
+                    )}
+                    {qt === 'date' && (
                       <input
                         type="date"
+                        className={styles.dateInput}
                         value={answers[idx] || ''}
                         onChange={e => handleAnswerChange(idx, e.target.value)}
                       />
-                    ) : null}
-                    {['checkbox', 'radio'].includes(q.type || q.questionType) && q.options && (
+                    )}
+                    {['checkbox', 'radio'].includes(qt) && q.options && q.options.length > 0 && (
                       <div>
                         {q.options.map(opt => (
                           <label key={opt}>
                             <input
-                              type={q.type || q.questionType}
-                              name={`question-${idx}`}
+                              type={qt === 'checkbox' ? 'checkbox' : 'radio'}
+                              name={`question-${formKey}`}
                               value={opt}
                               checked={answers[idx] === opt}
                               onChange={() => handleAnswerChange(idx, opt)}
@@ -401,22 +433,39 @@ function JobApplicationForm() {
                         ))}
                       </div>
                     )}
-                    {q.type === 'dropdown' || q.questionType === 'dropdown' ? (
+                    {qt === 'dropdown' && (
                       <select
+                        className={styles.selectField}
                         value={answers[idx] || ''}
                         onChange={e => handleAnswerChange(idx, e.target.value)}
                       >
                         <option value="">Select an option</option>
-                        {q.options &&
-                          q.options.map(opt => (
-                            <option key={opt} value={opt}>
-                              {opt}
-                            </option>
-                          ))}
+                        {(q.options || []).map(opt => (
+                          <option key={opt} value={opt}>
+                            {opt}
+                          </option>
+                        ))}
                       </select>
-                    ) : null}
+                    )}
+                    {![
+                      'textbox',
+                      'text',
+                      'textarea',
+                      'date',
+                      'checkbox',
+                      'radio',
+                      'dropdown',
+                    ].includes(qt) && (
+                      <input
+                        type="text"
+                        placeholder="Type your response here"
+                        value={answers[idx] || ''}
+                        onChange={e => handleAnswerChange(idx, e.target.value)}
+                      />
+                    )}
                   </div>
-                ))}
+                );
+              })}
               <button type="submit" className={styles.submitButton}>
                 Proceed to submit with details
               </button>

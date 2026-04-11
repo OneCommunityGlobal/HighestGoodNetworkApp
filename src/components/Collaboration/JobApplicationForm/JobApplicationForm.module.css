@@ -76,7 +76,7 @@
   cursor: pointer;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .headerContent {
     flex-direction: column;
     align-items: stretch;
@@ -102,7 +102,7 @@
   width: 100%;
   max-width: 1100px;
   margin: 0 auto;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 10px rgb(0 0 0 / 10%);
 }
 
 .formTitle {
@@ -170,6 +170,23 @@
   border-radius: 5px;
 }
 
+.formGroup textarea {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 100px;
+  resize: vertical;
+}
+
+.dateInput,
+.selectField {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
 .submitButton {
   background-color: #4caf50;
   color: white;
@@ -182,11 +199,8 @@
 
 .popupOverlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(30, 41, 65, 0.7);
+  inset: 0;
+  background: rgb(30 41 65 / 70%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -202,7 +216,7 @@
   max-width: 860px;
   width: min(860px, calc(100vw - 48px));
   min-width: 320px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.32);
+  box-shadow: 0 8px 32px rgb(0 0 0 / 32%);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -354,7 +368,7 @@
   cursor: pointer;
   padding: 8px 12px;
   border-radius: 8px;
-  background: #ffffff;
+  background: #fff;
   border: 1px solid #cfcfcf;
   color: #222;
   font-size: 14px;
@@ -365,7 +379,7 @@
 
 .resumeLabel:hover {
   background: #f6f6f6;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 6px 18px rgb(0 0 0 / 4%);
   transform: translateY(-1px);
 }
 
@@ -391,7 +405,7 @@
 .darkMode .formContainer {
   background: #1c2541;
   color: #e0e0e0;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 70%);
   transition: background 0.3s, color 0.3s;
 }
 
@@ -430,7 +444,7 @@
 .darkMode .btn {
   background: #225163;
   color: #f1f1f1;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 18%);
   transition: background 0.3s, color 0.3s;
 }
 
@@ -446,13 +460,13 @@
 }
 
 .darkMode .popupOverlay {
-  background: rgba(30, 41, 65, 0.85);
+  background: rgb(30 41 65 / 85%);
 }
 
 .darkMode .popupContent {
   background: #0b1324;
   color: #e5e7eb;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 8px 32px rgb(0 0 0 / 70%);
 }
 
 .darkMode .popupCloseBtn {
@@ -486,20 +500,20 @@
 }
 
 .darkMode .tagPill {
-  border-color: rgba(148, 163, 184, 0.35);
-  background: rgba(148, 163, 184, 0.12);
+  border-color: rgb(148 163 184 / 35%);
+  background: rgb(148 163 184 / 12%);
   color: #e2e8f0;
 }
 
 .darkMode .tagPillStrong {
-  border-color: rgba(56, 189, 248, 0.35);
-  background: rgba(56, 189, 248, 0.14);
+  border-color: rgb(56 189 248 / 35%);
+  background: rgb(56 189 248 / 14%);
   color: #e0f2fe;
 }
 
 .darkMode .gotItBtn {
   background: #1a73e8;
-  color: #ffffff;
+  color: #fff;
 }
 
 .darkMode .gotItBtn:hover {
@@ -531,11 +545,11 @@
 
 .darkMode .resumeLabel:hover {
   background: #22364e;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 6px 18px rgb(0 0 0 / 35%);
 }
 
 .darkMode .resumeLabel .fileName {
-  background: rgba(255, 255, 255, 0.04);
+  background: rgb(255 255 255 / 4%);
   color: #cfe7ff;
-  border-color: rgba(255, 255, 255, 0.05);
+  border-color: rgb(255 255 255 / 5%);
 }
