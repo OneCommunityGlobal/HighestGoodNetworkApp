@@ -14,9 +14,19 @@ import FormPreviewModal from './FormPreviewModal';
 
 function JobFormBuilder() {
   const { role } = useSelector(state => state.auth.user);
-  const [formFields, setFormFields] = useState([]);
   const darkMode = useSelector(state => state.theme.darkMode);
+  const [formFields, setFormFields] = useState([]);
+  const [initialFormFields, setInitialFormFields] = useState([]);
+  const [templateName, setTemplateName] = useState('');
+  const [selectedTemplate, setSelectedTemplate] = useState('');
+  const [currentFormId, setCurrentFormId] = useState(null);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
+  const [newField, setNewField] = useState({
+    questionText: '',
+    questionType: 'textbox',
+    options: [],
+    visible: true,
+  });
 
   const initialNewField = {
     questionText: '',
@@ -24,11 +34,6 @@ function JobFormBuilder() {
     options: [],
     visible: true,
   };
-
-  const [newField, setNewField] = useState(initialNewField);
-
-  // Dynamic Form ID Management
-  const [currentFormId, setCurrentFormId] = useState(null);
 
   const [jobTitle, setJobTitle] = useState('Please Choose an option');
   const jobPositions = [
@@ -78,15 +83,23 @@ function JobFormBuilder() {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState(null);
   const [editingIndex, setEditingIndex] = useState(null);
-
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [initialFormFields, setInitialFormFields] = useState([]);
-  const [templateName, setTemplateName] = useState('');
-  const [selectedTemplate, setSelectedTemplate] = useState('');
 
   const markAsSaved = fields => {
     setInitialFormFields(structuredClone(fields));
     setHasUnsavedChanges(false);
+  };
+
+  // Reset builder after template is saved
+  const resetBuilderState = () => {
+    setFormFields([]);
+    setNewField({
+      questionText: '',
+      questionType: 'textbox',
+      options: [],
+      visible: true,
+    });
+    setNewOption('');
   };
 
   // Auto-load existing form on component mount
@@ -380,8 +393,13 @@ function JobFormBuilder() {
               }}
               onTemplateSaved={() => {
                 markAsSaved(formFields);
+                resetBuilderState();
               }}
               darkMode={darkMode}
+              templateName={templateName}
+              setTemplateName={setTemplateName}
+              selectedTemplate={selectedTemplate}
+              setSelectedTemplate={setSelectedTemplate}
             />
             <form>
               {formFields.map((field, index) => (

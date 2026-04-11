@@ -9,12 +9,14 @@ describe('ActivityList', () => {
 
   test('renders activities from mock data', () => {
     render(<ActivityList />);
+    fireEvent.click(screen.getByLabelText(/Show Past Events:/i));
     expect(screen.getByText('Yoga Class')).toBeInTheDocument();
     expect(screen.getByText('Book Club')).toBeInTheDocument();
   });
 
   test('filters activities by type', () => {
     render(<ActivityList />);
+    fireEvent.click(screen.getByLabelText(/Show Past Events:/i));
 
     fireEvent.change(screen.getByPlaceholderText('Enter type'), {
       target: { value: 'Fitness' },
@@ -26,6 +28,7 @@ describe('ActivityList', () => {
 
   test('filters activities by date', () => {
     render(<ActivityList />);
+    fireEvent.click(screen.getByLabelText(/Show Past Events:/i));
 
     fireEvent.change(screen.getByLabelText(/Date:/i), {
       target: { value: '2024-01-10' },
