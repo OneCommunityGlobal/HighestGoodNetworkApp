@@ -1,11 +1,12 @@
-.leftSection {
-  width: 30%;
-  padding: 20px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
+.leftSection h1 {
+  margin: 5px 0;
+  color: #111827;
+}
+
+.leftSection h3 {
+  margin: 0;
+  font-size: 20px;
+  color: #1f2933;
 }
 
 .profilePic {
@@ -16,28 +17,83 @@
   margin-bottom: 15px;
 }
 
-.leftSection h1 {
+/* Username */
+.userName {
   margin: 5px 0;
-  color: #333;
+  font-weight: 600;
+  color: #1f2937 !important;
+  text-shadow: none !important;
+  filter: none !important;
+  overflow-wrap: break-word;
+  word-break: break-all;
+  max-width: 100%;
+  hyphens: auto;
 }
 
-.leftSection h3 {
+/* Job title */
+.jobTitle {
   margin: 0;
   font-size: 20px;
-  color: #666;
+  color: #4b5563 !important;
+  text-shadow: none !important;
+  filter: none !important;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .leftSection {
     width: 100%;
-    padding: 20px 0;
+    padding: 16px 10px 12px;
+    flex-flow: row wrap;
+    gap: 20px;
+    justify-content: center;
   }
+
+  .userName,
+  .jobTitle {
+    text-align: left;
+  }
+}
+
+@media (width <= 480px) {
+  .leftSection {
+    flex-direction: column;
+    padding: 12px 8px;
+    gap: 10px;
+  }
+
+  .userName {
+    font-size: 1.2rem;
+  }
+
+  .jobTitle {
+    font-size: 0.9rem;
+  }
+
+  .profilePic {
+    width: 80px;
+    height: 80px;
+  }
+}
+
+:global(.dark-mode) .leftSection {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-color: #303030;
+  color: #e6e6e6;
 }
 
 :global(.dark-mode) .leftSection h1 {
   color: #fff;
 }
 
-:global(.dark-mode) .leftSection h3 {
-  color: #ccc;
+:global(.dark-mode) .leftSection .userName {
+  color: #f9fafb !important;
+}
+
+:global(.dark-mode) .leftSection .jobTitle {
+  color: #f9fafb !important;
+}
+
+
+:global(.dark-mode) .leftSection a {
+  color: #9ecbff;
 }
