@@ -67,3 +67,6 @@ export const formatSkillName = key => {
       return formatted;
   }
 };
+export const toggleItem = (item, selectedArray, setSelectedArray) => {
+  setSelectedArray(prev => (prev.includes(item) ? prev.filter(i => i !== item) : [...prev, item]));
+};
