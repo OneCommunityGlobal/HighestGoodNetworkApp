@@ -30,7 +30,7 @@
 .skillLabel {
   font-size: 0.9rem;
   text-align: center;
-  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .red {
@@ -45,7 +45,7 @@
   color: #0f9110;
 }
 
-@media (max-width: 600px) {
+@media (width <= 600px) {
   .skillSection {
     max-width: 100%;
     padding: 10px;
@@ -63,7 +63,7 @@
   }
 }
 
-@media (min-width: 601px) and (max-width: 900px) {
+@media (601px <= width <= 900px) {
   .skillSection {
     max-width: 85%;
     padding: 15px;
@@ -81,22 +81,18 @@
   }
 }
 
-:global(.dark-mode) .skillValue {
-  color: #fff; 
-}
-
 :global(.dark-mode) .skillLabel {
   color: #d0d0d0;
 }
 
-:global(.dark-mode) .red {
-  color: #ff6b6b;
+:global(body.dark-mode) .skillValue.red {
+  color: #ff6b6b !important;
 }
 
-:global(.dark-mode) .orange {
-  color: #ffb74d;
+:global(body.dark-mode) .skillValue.orange {
+  color: #ffb74d !important;
 }
 
-:global(.dark-mode) .green {
-  color: #69f0ae;
+:global(body.dark-mode) .skillValue.green {
+  color: #69f0ae !important;
 }

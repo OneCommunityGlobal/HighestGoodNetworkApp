@@ -151,25 +151,25 @@
     flex-direction: column;
     border-bottom: none;
   }
-  
+
   .tabButton {
     border-bottom: 1px solid #e5e7eb;
     border-radius: 0;
   }
-  
+
   .tabButtonDark {
     border-bottom-color: #4b5563;
   }
-  
+
   .tabButton:last-child {
     border-bottom: none;
   }
-  
+
   .tabButtonActive {
     border-bottom: 3px solid #2563eb;
     border-left: 4px solid #2563eb;
   }
-  
+
   .tabButtonActiveDark {
     border-bottom-color: #60a5fa;
     border-left-color: #60a5fa;
@@ -180,12 +180,12 @@
   .descriptionSection {
     padding: 15px;
   }
-  
+
   .tabButton {
     padding: 12px 8px;
     font-size: 14px;
   }
-  
+
   .descriptionParagraph {
     font-size: 14px;
   }

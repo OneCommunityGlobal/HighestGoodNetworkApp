@@ -1,5 +1,7 @@
 import { Form, FormGroup, Label, Input } from 'reactstrap';
+import { useSelector } from 'react-redux';
 import styles from './ItemListView.module.css';
+import PropTypes from 'prop-types';
 
 export default function SelectItem({
   items,
@@ -11,9 +13,21 @@ export default function SelectItem({
   selectedCondition,
   setSelectedCondition,
   label,
+  isDarkMode,
 }) {
   let itemSet = [];
+  const darkMode = useSelector(state => state.theme.darkMode);
   if (items?.length) {
+    if (label === 'Materials' || label === 'Consumables') {
+      if (selectedItem === 'all') {
+        itemSet = [...new Set(items.filter(m => m?.name).map(m => m.name))];
+      } else {
+        itemSet = [
+          ...new Set(items.filter(mat => mat?.name === selectedItem && mat?.name).map(m => m.name)),
+        ];
+      }
+    }
+
     if (label === 'Tool') {
       if (selectedProject === 'all') {
         itemSet = [...new Set(items.filter(m => m.itemType?.name).map(m => m.itemType.name))];
@@ -43,15 +57,19 @@ export default function SelectItem({
     }
   }
 
+  const darkStyle = isDarkMode
+    ? { backgroundColor: '#1e293b', color: '#e5e7eb', borderColor: '#334155' }
+    : undefined;
+
   return (
     <Form>
-      <FormGroup className={styles.selectInput}>
-        <Label htmlFor="select-material">{label ? `${label}:` : 'Material:'}</Label>
+      <FormGroup className={`${styles.selectInput} ${darkMode ? styles.darkBg : ''}`}>
+        <Label htmlFor="select-item">{label}:</Label>
 
-        <Input
+        <select
           id="select-item"
           name="select-item"
-          type="select"
+          className={styles.filterSelect}
           value={
             label === 'Condition'
               ? selectedCondition
@@ -61,13 +79,9 @@ export default function SelectItem({
           }
           onChange={e => {
             const val = e.target.value;
-            if (label === 'Tool Status') {
-              setSelectedToolStatus(val);
-            } else if (label === 'Condition') {
-              setSelectedCondition(val);
-            } else {
-              setSelectedItem(val);
-            }
+            if (label === 'Tool Status') setSelectedToolStatus(val);
+            else if (label === 'Condition') setSelectedCondition(val);
+            else setSelectedItem(val);
           }}
           disabled={!itemSet.length}
         >
@@ -85,8 +99,11 @@ export default function SelectItem({
           ) : (
             <option key="no-data">No data</option>
           )}
-        </Input>
+        </select>
       </FormGroup>
     </Form>
   );
 }
+SelectItem.propTypes = {
+  items: PropTypes.array,
+};
