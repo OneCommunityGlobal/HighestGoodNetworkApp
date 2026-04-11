@@ -8,6 +8,30 @@ import { useSelector } from 'react-redux';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+function normalizeTitleKey(s) {
+  return String(s || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/** Heuristic: job board title vs saved form title (spacing, punctuation, singular/plural). */
+function titlesLikelyMatch(jobTitle, formTitle) {
+  const a = normalizeTitleKey(jobTitle);
+  const b = normalizeTitleKey(formTitle);
+  if (!a || !b) return false;
+  if (a === b) return true;
+  if (a.includes(b) || b.includes(a)) return true;
+  const stripTrailingS = x =>
+    x.length > 3 && x.endsWith('s') && !x.endsWith('ss') ? x.slice(0, -1) : x;
+  const sa = stripTrailingS(a);
+  const sb = stripTrailingS(b);
+  if (sa === sb) return true;
+  if (sa.includes(sb) || sb.includes(sa)) return true;
+  return false;
+}
+
 /** Match a job listing title to a saved application form (titles may differ slightly). */
 function findFormForJobTitle(formsArr, jobTitle) {
   if (!jobTitle || !formsArr?.length) return null;
@@ -20,7 +44,19 @@ function findFormForJobTitle(formsArr, jobTitle) {
     const ft = (f.title || '').trim().toLowerCase();
     return ft && (t.includes(ft) || ft.includes(t));
   });
+  if (m) return m;
+  m = formsArr.find(f => titlesLikelyMatch(jobTitle, f.title));
   return m || null;
+}
+
+/** Role clicked on the job board: React Router state and/or ?jobTitle= query (reliable across redirects). */
+function getJobTitleFromNavigation(location) {
+  const fromState = location.state?.jobTitle;
+  if (fromState != null && String(fromState).trim()) return String(fromState).trim();
+  const q = new URLSearchParams(location.search || '');
+  const fromQuery = q.get('jobTitle') || q.get('role');
+  if (fromQuery != null && String(fromQuery).trim()) return String(fromQuery).trim();
+  return '';
 }
 
 function pickInitialForm(formsArr, navState) {
@@ -86,6 +122,8 @@ function JobApplicationForm() {
   const [websiteSocial, setWebsiteSocial] = useState('');
   const [resumeFile, setResumeFile] = useState(null);
   const resumeInputRef = useRef(null);
+  /** Shown in the page title — the role the user clicked, not only the matched DB form name. */
+  const [bannerJobTitle, setBannerJobTitle] = useState('');
 
   const darkMode = useSelector(state => state.theme?.darkMode);
 
@@ -104,18 +142,23 @@ function JobApplicationForm() {
         const formsArr = Array.isArray(res.data.forms) ? res.data.forms : [];
         setForms(formsArr);
 
-        const chosen = pickInitialForm(formsArr, location.state);
-        if (location.state?.jobTitle && !findFormForJobTitle(formsArr, location.state.jobTitle)) {
+        const navTitle = getJobTitleFromNavigation(location);
+        const navState = { ...location.state, jobTitle: navTitle || location.state?.jobTitle };
+        const chosen = pickInitialForm(formsArr, navState);
+        if (navTitle && !findFormForJobTitle(formsArr, navTitle)) {
           toast.warn(
-            `No application form matched "${location.state.jobTitle}". Pick the correct role from the dropdown or enter the exact form title.`,
+            `No application form matched "${navTitle}". Pick the correct role from the dropdown or enter the exact form title.`,
             { autoClose: 8000 },
           );
         }
         if (chosen) {
           setSelectedJob(chosen.title);
           setFilteredForm(chosen);
-          if (location.state?.jobTitle) {
-            setJobTitleInput(String(location.state.jobTitle).trim());
+          if (navTitle) {
+            setJobTitleInput(navTitle);
+            setBannerJobTitle(navTitle);
+          } else {
+            setBannerJobTitle(chosen.title);
           }
           const n = (chosen.questions ?? []).filter(q => q.visible !== false).length;
           setAnswers(new Array(n).fill(''));
@@ -123,6 +166,7 @@ function JobApplicationForm() {
           setSelectedJob('');
           setFilteredForm(null);
           setAnswers([]);
+          setBannerJobTitle('');
         }
       } catch (err) {
         if (!cancelled) {
@@ -150,7 +194,9 @@ function JobApplicationForm() {
   }, [selectedJob, forms]);
 
   const handleJobChange = e => {
-    setSelectedJob(e.target.value);
+    const next = e.target.value;
+    setSelectedJob(next);
+    setBannerJobTitle(next);
   };
 
   const handleJobTitleInputChange = e => {
@@ -167,6 +213,7 @@ function JobApplicationForm() {
     if (!form) form = findFormForJobTitle(forms, raw);
     if (form) {
       setSelectedJob(form.title);
+      setBannerJobTitle(form.title);
     } else {
       toast.info('No form matches that job title.');
     }
@@ -277,7 +324,9 @@ function JobApplicationForm() {
           </div>
         </section>
         <section className={styles.formContainer}>
-          <h1 className={styles.formTitle}>FORM FOR {selectedJob?.toUpperCase()} POSITION</h1>
+          <h1 className={styles.formTitle}>
+            FORM FOR {(bannerJobTitle || selectedJob || '').toUpperCase()} POSITION
+          </h1>
           <p className={styles.formSubtitle}>
             <a href="#learnMore" onClick={handleShowDescription}>
               Click to know more about this position
@@ -295,10 +344,10 @@ function JobApplicationForm() {
                   &times;
                 </button>
                 <div className={styles.jobDescHeader}>
-                  <div className={styles.jobDescTitle}>{filteredForm.title}</div>
+                  <div className={styles.jobDescTitle}>{bannerJobTitle || filteredForm.title}</div>
                   <div className={styles.jobDescTags}>
                     <span className={`${styles.tagPill} ${styles.tagPillStrong}`}>
-                      {getCategoryFromRole(filteredForm.title)}
+                      {getCategoryFromRole(bannerJobTitle || filteredForm.title)}
                     </span>
                     <span className={styles.tagPill}>Remote</span>
                   </div>

@@ -153,12 +153,18 @@ function Collaboration() {
   };
 
   const handleJobClick = ad => {
-    history.push('/job-application', {
-      jobId: ad._id,
-      jobTitle: ad.title,
-      jobDescription: ad.description || '',
-      requirements: ad.requirements || [],
-      category: ad.category || 'General',
+    const title = ad.title || '';
+    const search = title ? `?jobTitle=${encodeURIComponent(title)}` : '';
+    history.push({
+      pathname: '/job-application',
+      search,
+      state: {
+        jobId: ad._id,
+        jobTitle: title,
+        jobDescription: ad.description || '',
+        requirements: ad.requirements || [],
+        category: ad.category || 'General',
+      },
     });
   };
 
