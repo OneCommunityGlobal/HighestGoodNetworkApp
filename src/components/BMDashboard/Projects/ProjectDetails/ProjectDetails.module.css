@@ -321,6 +321,16 @@
   }
 }
 
+ul.log-bar__btn-group {
+  padding: 0px;
+}
+
+.dark-table-header th {
+  background-color: #1b2a41 !important;
+  color: #ffffff !important;
+  border-bottom: 1px solid #4f5f76;
+}
+
 .log-bar__section ul,
 .log-bar-dark ul {
   list-style: none !important;

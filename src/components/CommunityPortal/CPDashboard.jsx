@@ -13,9 +13,16 @@ import {
   Label,
 } from 'reactstrap';
 import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt, FaSearch, FaTimes } from 'react-icons/fa';
+import { format } from 'date-fns';
+import { getUserTimezone, formatEventTimeWithTimezone } from '../../utils/timezoneUtils';
 import styles from './CPDashboard.module.css';
 import { ENDPOINTS } from '../../utils/URL';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { toast } from 'react-toastify';
 import axios from 'axios';
+import { el } from 'date-fns/locale';
+import { fuzzySearch } from '../../utils/fuzzySearch';
 
 const FixedRatioImage = ({ src, alt, fallback }) => (
   <div
@@ -31,7 +38,9 @@ const FixedRatioImage = ({ src, alt, fallback }) => (
       alt={alt}
       loading="lazy"
       onError={e => {
-        if (e.currentTarget.src !== fallback) e.currentTarget.src = fallback;
+        if (e.currentTarget.src !== fallback) {
+          e.currentTarget.src = fallback;
+        }
       }}
       style={{
         width: '100%',
@@ -88,6 +97,18 @@ export function CPDashboard() {
     limit: 6,
   });
 
+  const handleDateChange = date => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // midnight today
+
+    if (date < today) {
+      toast.error('Past dates are not supported. Please select a future date.');
+      setSelectedDate('');
+      return;
+    }
+    setSelectedDate(date);
+  };
+
   const FALLBACK_IMG =
     'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=600&q=60';
 
@@ -113,6 +134,7 @@ export function CPDashboard() {
           total: response.data.events?.length || 0,
         }));
       } catch (err) {
+        console.error('Failed to load events:', err);
         setError('Failed to load events');
       } finally {
         setIsLoading(false);
@@ -161,14 +183,39 @@ export function CPDashboard() {
 
   const formatDate = dateStr => {
     if (!dateStr) return 'Date TBD';
-    const date = new Date(dateStr);
-    return date.toLocaleString('en-US', {
-      weekday: 'long',
-      month: 'long',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-    });
+    try {
+      const date = new Date(dateStr);
+      if (Number.isNaN(date.getTime())) {
+        return 'Invalid date';
+      }
+      // Format: "Saturday, February 15"
+      return format(date, 'EEEE, MMMM d');
+    } catch (err) {
+      console.error('Error formatting date:', err);
+      return 'Date TBD';
+    }
+  };
+
+  const formatTime = (eventDate, timeStr) => {
+    if (!timeStr) return 'Time TBD';
+    try {
+      const userTimezone = getUserTimezone();
+      return formatEventTimeWithTimezone(eventDate, timeStr, userTimezone);
+    } catch (err) {
+      console.error('Error formatting time:', err);
+      return 'Time TBD';
+    }
+  };
+
+  const getDisplayLocation = location => {
+    if (
+      location == null ||
+      String(location).trim() === '' ||
+      String(location).toLowerCase() === 'tbd'
+    ) {
+      return 'Location TBD';
+    }
+    return location;
   };
 
   const parseEventDate = dateString => {
@@ -176,14 +223,14 @@ export function CPDashboard() {
 
     try {
       const parsedDate = new Date(dateString);
-      if (!isNaN(parsedDate.getTime())) {
+      if (!Number.isNaN(parsedDate.getTime())) {
         const year = parsedDate.getFullYear();
         const month = String(parsedDate.getMonth() + 1).padStart(2, '0');
         const day = String(parsedDate.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
       }
     } catch (err) {
-      console.error('Error parsing date:', err);
+      console.error('Error parsing event date:', err);
     }
     return null;
   };
@@ -209,9 +256,9 @@ export function CPDashboard() {
     const term = searchQuery.toLowerCase();
 
     return (
-      event.title?.toLowerCase().includes(term) ||
-      event.location?.toLowerCase().includes(term) ||
-      event.organizer?.toLowerCase().includes(term)
+      fuzzySearch(event.title, term, 0.6) ||
+      fuzzySearch(event.location, term, 0.6) ||
+      fuzzySearch(event.organizer, term, 0.6)
     );
   });
 
@@ -226,8 +273,24 @@ export function CPDashboard() {
     pagination.currentPage * pagination.limit,
   );
 
+  const isFiltered = Boolean(searchQuery);
+  const totalFilteredCount = filteredEvents.length;
+
+  let eventCountText = 'Showing all events';
+
+  if (isFiltered) {
+    if (totalFilteredCount > 0) {
+      eventCountText = `Showing ${totalFilteredCount} event${totalFilteredCount !== 1 ? 's' : ''}`;
+    } else {
+      eventCountText = 'No events found';
+    }
+  }
+
   const goToPage = newPage => {
-    if (newPage < 1 || newPage > totalPages) return;
+    if (newPage < 1 || newPage > totalPages) {
+      return;
+    }
+
     setPagination(prev => ({ ...prev, currentPage: newPage }));
   };
 
@@ -258,11 +321,17 @@ export function CPDashboard() {
           </div>
           <CardBody>
             <h5 className={styles.eventTitle}>{event.title}</h5>
-            <p className={styles.eventDate}>
-              <FaCalendarAlt className={styles.eventIcon} /> {formatDate(event.date)}
-            </p>
+            <div className={styles.eventDate}>
+              <FaCalendarAlt className={styles.eventIcon} />
+              <div>
+                <div>{formatDate(event.date)}</div>
+                {event.startTime && (
+                  <div className={styles.eventTime}>{formatTime(event.date, event.startTime)}</div>
+                )}
+              </div>
+            </div>
             <p className={styles.eventLocation}>
-              <FaMapMarkerAlt className={styles.eventIcon} /> {event.location || 'Location TBD'}
+              <FaMapMarkerAlt className={styles.eventIcon} /> {getDisplayLocation(event.location)}
             </p>
             <p className={styles.eventOrganizer}>
               {event.organizerLogo && !failedLogos.has(event._id) ? (
@@ -344,6 +413,7 @@ export function CPDashboard() {
         <Col md={3} className={`${styles.dashboardSidebar} ${darkMode ? styles.darkSidebar : ''}`}>
           <div className={styles.filterSection}>
             <h4>Search Filters</h4>
+
             <div className={styles.filterSectionDivider}>
               <div className={styles.filterItem}>
                 <div className={styles.filterSectionHeader}>Dates</div>
@@ -361,6 +431,7 @@ export function CPDashboard() {
                       Tomorrow
                     </Label>
                   </FormGroup>
+
                   <FormGroup check className={styles.radioGroup + ' d-flex align-items-center'}>
                     <Input
                       id="date-weekend"
@@ -375,24 +446,31 @@ export function CPDashboard() {
                     </Label>
                   </FormGroup>
                 </div>
-                <Button
-                  color="primary"
-                  size="sm"
-                  onClick={() => {
-                    setDateFilter('');
-                    setSelectedDate('');
-                  }}
-                >
-                  Clear date filter
-                </Button>
-                <Input
-                  type="date"
-                  placeholder="Select Date"
-                  className={styles.dateFilter}
-                  value={selectedDate}
-                  onChange={e => setSelectedDate(e.target.value)}
-                  style={{ marginTop: '10px' }}
-                />
+                <div className={styles.dashboardActions}>
+                  <Button
+                    color="primary"
+                    onClick={() => {
+                      setDateFilter('');
+                      setSelectedDate('');
+                    }}
+                  >
+                    Clear date filter
+                  </Button>
+                </div>
+                <div className={styles.filterItem}>
+                  <div className={styles.dateFilterContainer}>
+                    <DatePicker
+                      type="date"
+                      selected={selectedDate ? new Date(selectedDate) : null}
+                      onChange={handleDateChange}
+                      placeholderText="Ending After"
+                      id="ending-after"
+                      className={styles.dateFilter}
+                      dateFormat="yyyy-MM-dd"
+                      isClearable
+                    />
+                  </div>
+                </div>
               </div>
 
               <div className={styles.filterItem}>
@@ -416,21 +494,21 @@ export function CPDashboard() {
 
               <div className={styles.filterItem}>
                 <label htmlFor="branches">Branches</label>
-                <Input type="select">
+                <Input id="branches" type="select">
                   <option>Select branches</option>
                 </Input>
               </div>
 
               <div className={styles.filterItem}>
                 <label htmlFor="themes">Themes</label>
-                <Input type="select">
+                <Input id="themes" type="select">
                   <option>Select themes</option>
                 </Input>
               </div>
 
               <div className={styles.filterItem}>
                 <label htmlFor="categories">Categories</label>
-                <Input type="select">
+                <Input id="categories" type="select">
                   <option>Select categories</option>
                 </Input>
               </div>
@@ -445,6 +523,14 @@ export function CPDashboard() {
               Show Past Events
             </Button>
           </div>
+
+          <p className={styles['event-count-text']}>
+            {isFiltered
+              ? totalFilteredCount > 0
+                ? `Showing ${totalFilteredCount} event${totalFilteredCount !== 1 ? 's' : ''}`
+                : 'No events found'
+              : 'Showing all events'}
+          </p>
 
           <Row>{eventsContent}</Row>
 
