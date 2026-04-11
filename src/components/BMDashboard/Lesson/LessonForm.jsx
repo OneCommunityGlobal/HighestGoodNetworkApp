@@ -422,7 +422,9 @@ function LessonForm() {
                       addTag(e);
                     }
                   }}
-                  className={`${styles.formControl} ${darkMode ? styles.darkModeInput : ''}`}
+                  className={`${styles.formControl}`}
+                  style={{ color: 'black', WebkitTextFillColor: 'black', /* fallback for Safari */ }}
+                  ref={el => { if (el) el.style.setProperty('color', 'black', 'important'); }}
                 />
                 {showDropdown && filteredTags.length > 0 && (
                   <div
@@ -434,6 +436,8 @@ function LessonForm() {
                         className={`${styles.tagOption} ${darkMode ? 'text-light' : ''}`}
                         onClick={() => handleTagSelection(tag)}
                         type="button"
+                        style={{ color: 'black', WebkitTextFillColor: 'black', /* fallback for Safari */ }}
+                        ref={el => { if (el) el.style.setProperty('color', 'black', 'important'); }}
                       >
                         {tag}
                       </button>
