@@ -1,5 +1,7 @@
 import { Form, FormGroup, Label, Input } from 'reactstrap';
+import { useSelector } from 'react-redux';
 import styles from './ItemListView.module.css';
+import PropTypes from 'prop-types';
 
 export default function SelectItem({
   items,
@@ -14,7 +16,18 @@ export default function SelectItem({
   isDarkMode,
 }) {
   let itemSet = [];
+  const darkMode = useSelector(state => state.theme.darkMode);
   if (items?.length) {
+    if (label === 'Materials' || label === 'Consumables') {
+      if (selectedItem === 'all') {
+        itemSet = [...new Set(items.filter(m => m?.name).map(m => m.name))];
+      } else {
+        itemSet = [
+          ...new Set(items.filter(mat => mat?.name === selectedItem && mat?.name).map(m => m.name)),
+        ];
+      }
+    }
+
     if (label === 'Tool') {
       if (selectedProject === 'all') {
         itemSet = [...new Set(items.filter(m => m.itemType?.name).map(m => m.itemType.name))];
@@ -24,22 +37,6 @@ export default function SelectItem({
             items
               .filter(mat => mat.project?.name === selectedProject && mat.itemType?.name)
               .map(m => m.itemType.name),
-          ),
-        ];
-      }
-    } else if (label === 'Consumables') {
-      // --- FIX: Added logic for Consumables ---
-      if (selectedProject === 'all') {
-        // Uses the 'name' field we flattened in the parent component
-        itemSet = [...new Set(items.filter(m => m.name && m.name !== 'N/A').map(m => m.name))];
-      } else {
-        itemSet = [
-          ...new Set(
-            items
-              .filter(
-                mat => mat.project?.name === selectedProject && mat.name && mat.name !== 'N/A',
-              )
-              .map(m => m.name),
           ),
         ];
       }
@@ -66,7 +63,7 @@ export default function SelectItem({
 
   return (
     <Form>
-      <FormGroup className={styles.selectInput}>
+      <FormGroup className={`${styles.selectInput} ${darkMode ? styles.darkBg : ''}`}>
         <Label htmlFor="select-item">{label}:</Label>
 
         <select
@@ -107,3 +104,6 @@ export default function SelectItem({
     </Form>
   );
 }
+SelectItem.propTypes = {
+  items: PropTypes.array,
+};
