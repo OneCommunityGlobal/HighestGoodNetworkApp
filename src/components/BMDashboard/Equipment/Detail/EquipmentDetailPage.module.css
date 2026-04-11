@@ -224,9 +224,7 @@ button.descriptionItem_button:hover {
 
 /* Single arrow in dark mode - white chevron for visibility */
 :global(body.dark-mode) .editableField select,
-:global(body.bm-dashboard-dark) .editableField select,
-:global(body.dark-mode) .editableFieldInput,
-:global(body.bm-dashboard-dark) .editableFieldInput {
+:global(body.bm-dashboard-dark) .editableField select {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;

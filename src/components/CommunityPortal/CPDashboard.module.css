@@ -253,10 +253,6 @@
   margin-bottom: 8px;
 }
 
-.dateFilter {
-  margin-top: 10px;
-}
-
 .dateFilter:focus {
   border-color: #2c3e50;
   box-shadow: 0 0 5px rgba(44, 62, 80, 0.4);
@@ -349,9 +345,39 @@
   font-size: 1rem;
   color: #555;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 8px;
-  margin: 5px 0;
+  margin: 8px 0;
+  line-height: 1.5;
+}
+
+.eventDate > svg,
+.eventLocation > svg,
+.eventOrganizer > svg {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  margin-top: 3px;
+  align-self: flex-start;
+}
+
+.eventDate > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.eventDate > div > div:first-child {
+  line-height: 1.4;
+}
+
+.eventTime {
+  font-size: 0.9rem;
+  color: #777;
+  font-weight: 500;
+  line-height: 1.4;
 }
 
 .organizerLogo {
@@ -369,6 +395,22 @@
   margin-top: 2px;
   flex-shrink: 0;
   font-size: 1rem;
+}
+
+/* Dark mode: ensure date, time, location and organizer are readable */
+.darkMain .eventDate,
+.darkMain .eventDate .eventTime,
+.darkMain .eventLocation,
+.darkMain .eventOrganizer {
+  color: #e4e6eb;
+}
+
+.darkMain .eventTime {
+  color: #b0b3b8;
+}
+
+.darkMain .eventIcon {
+  color: #e4e6eb;
 }
 
 .noEvents {
@@ -395,6 +437,50 @@
   background-color: #34495e;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
+
+.dateFilter {
+  padding-left: 10px;
+  margin-top: 15px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+
+.dateFilterContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 6px 10px 20px;
+}
+.dateFilterContainer :global(.react-datepicker-wrapper) input {
+  border: 2px solid #1b3c55; 
+  border-radius: 8px;
+  padding: 8px 12px;
+  width: 100%;
+  outline: none;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.darkSidebar :global(.react-datepicker__input-container input) {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border: 2px solid #4da3ff !important;
+}
+
+.darkSidebar :global(.react-datepicker__input-container input::placeholder) {
+  color: #ffffff !important;
+}
+
+.dateFilterContainer :global(.react-datepicker-wrapper) input:focus {
+  border-color: #34495e;
+  box-shadow: 0 0 5px rgba(44, 62, 80, 0.4);
+}
+
+.dateErrorMessage {
+  color: red;
+  margin-top: 5px;
+}
+
 
 .paginationContainer {
   margin-top: 20px;
