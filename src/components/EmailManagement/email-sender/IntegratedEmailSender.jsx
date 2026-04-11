@@ -54,7 +54,7 @@ import {
   EMAIL_MODES,
   YOUTUBE_THUMBNAIL_QUALITIES,
 } from './constants/emailConstants';
-import { clearDraft, getDraftAge, hasDraft, loadDraft, saveDraft } from './formPersistence';
+import { clearDraft, hasDraft, loadDraft, saveDraft } from './formPersistence';
 import './IntegratedEmailSender.module.css';
 import {
   buildRenderedEmailFromTemplate,
@@ -198,17 +198,37 @@ const VariableRow = React.memo(
                 </div>
               )}
             </div>
+          ) : variable.type === 'url' ? (
+            <div>
+              <Input
+                type="url"
+                value={value}
+                onChange={e => onVariableChange(variable.name, e.target.value)}
+                placeholder="https://example.com"
+                invalid={!!error}
+                className="variable-input"
+              />
+              {value && (
+                <div className="mt-2">
+                  <small className="text-muted d-block mb-1">URL Preview:</small>
+                  <a
+                    href={value}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ fontSize: '0.85rem', wordBreak: 'break-all' }}
+                  >
+                    {value}
+                  </a>
+                </div>
+              )}
+            </div>
           ) : (
             <Input
-              type={variable.type === 'url' ? 'url' : variable.type}
+              type={variable.type}
               value={value}
               onChange={e => onVariableChange(variable.name, e.target.value)}
               placeholder={
-                variable.type === 'url'
-                  ? 'https://example.com'
-                  : variable.type === 'number'
-                  ? 'Enter number'
-                  : `Enter ${variable.name.toLowerCase()}`
+                variable.type === 'number' ? 'Enter number' : `Enter ${variable.name.toLowerCase()}`
               }
               invalid={!!error}
               className="variable-input"
@@ -388,6 +408,7 @@ const IntegratedEmailSender = ({
   });
 
   const [state, dispatch] = useReducer(emailReducer, initialEmailState);
+  useEffect(() => {}, []);
 
   const {
     selectedTemplate,
@@ -575,13 +596,7 @@ const IntegratedEmailSender = ({
         dispatch({ type: 'SET_SHOW_RETRY_OPTIONS', payload: false });
 
         const progressInterval = setInterval(() => {
-          dispatch({
-            type: 'SET_LOADING_PROGRESS',
-            payload: prev => {
-              if (prev >= 90) return prev;
-              return prev + (crypto.getRandomValues(new Uint32Array(1))[0] / 0xffffffff) * 15;
-            },
-          });
+          dispatch({ type: 'SET_LOADING_PROGRESS', payload: Math.min(90, loadingProgress + 15) });
         }, 200);
 
         progressIntervalRef.current = progressInterval;
@@ -653,12 +668,36 @@ const IntegratedEmailSender = ({
   }, [resetAllStates]);
 
   useEffect(() => {
-    if (hasDraft()) {
-      const age = getDraftAge();
-      dispatch({ type: 'SET_DRAFT_AGE', payload: age });
-      dispatch({ type: 'SET_SHOW_DRAFT_NOTIFICATION', payload: true });
+    if (!templates || templates.length === 0) return;
+    const SESSION_KEY = 'emailSender_pendingRestore';
+    try {
+      const saved = sessionStorage.getItem(SESSION_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        sessionStorage.removeItem(SESSION_KEY);
+        if (parsed.recipients) dispatch({ type: 'SET_RECIPIENTS', payload: parsed.recipients });
+        if (parsed.customSubject)
+          dispatch({ type: 'SET_CUSTOM_SUBJECT', payload: parsed.customSubject });
+        if (parsed.customContent)
+          dispatch({ type: 'SET_CUSTOM_CONTENT', payload: parsed.customContent });
+        if (parsed.emailDistribution)
+          dispatch({ type: 'SET_EMAIL_DISTRIBUTION', payload: parsed.emailDistribution });
+        if (parsed.variableValues)
+          dispatch({ type: 'SET_VARIABLE_VALUES', payload: parsed.variableValues });
+        if (parsed.selectedTemplate?._id) {
+          const match = templates.find(t => t._id === parsed.selectedTemplate._id);
+          if (match) handleTemplateSelect(match);
+          else if (parsed.selectedTemplate) {
+            dispatch({ type: 'SET_SELECTED_TEMPLATE', payload: parsed.selectedTemplate });
+            dispatch({ type: 'SET_FULL_TEMPLATE_CONTENT', payload: parsed.selectedTemplate });
+          }
+        }
+        toast.info('Your work was restored after theme change.', { autoClose: 2000 });
+      }
+    } catch (e) {
+      /* ignore */
     }
-  }, []);
+  }, [templates]);
 
   useEffect(() => {
     let offlineToastId = null;
@@ -703,6 +742,25 @@ const IntegratedEmailSender = ({
       Object.keys(variableValues).length === 0
     ) {
       return;
+    }
+
+    // Save to sessionStorage immediately (for theme toggle recovery)
+    const SESSION_KEY = 'emailSender_sessionState';
+    try {
+      sessionStorage.setItem(
+        SESSION_KEY,
+        JSON.stringify({
+          selectedTemplate,
+          variableValues,
+          recipients,
+          customSubject,
+          customContent,
+          emailDistribution,
+          emailMode,
+        }),
+      );
+    } catch (e) {
+      /* ignore */
     }
 
     const timeoutId = setTimeout(() => {
@@ -750,13 +808,7 @@ const IntegratedEmailSender = ({
       abortControllerRef.current = new AbortController();
 
       const progressInterval = setInterval(() => {
-        dispatch({
-          type: 'SET_LOADING_PROGRESS',
-          payload: prev => {
-            if (prev >= 90) return prev;
-            return prev + (crypto.getRandomValues(new Uint32Array(1))[0] / 0xffffffff) * 10;
-          },
-        });
+        dispatch({ type: 'SET_LOADING_PROGRESS', payload: Math.min(90, loadingProgress + 10) });
       }, 150);
 
       progressIntervalRef.current = progressInterval;
@@ -1304,7 +1356,8 @@ const IntegratedEmailSender = ({
     }
   }, []);
 
-  const TINY_MCE_INIT_OPTIONS = useMemo(() => getEmailSenderConfig(darkMode), [darkMode]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const TINY_MCE_INIT_OPTIONS = useMemo(() => getEmailSenderConfig(darkMode), []);
 
   useEffect(() => {
     dispatch({ type: 'SET_BACKEND_PREVIEW_DATA', payload: null });
@@ -1791,7 +1844,6 @@ const IntegratedEmailSender = ({
                   >
                     {!editorError && (
                       <LazyEditor
-                        key={`custom-editor-${darkMode ? 'dark' : 'light'}`}
                         tinymceScriptSrc="/tinymce/tinymce.min.js"
                         value={customContent}
                         onEditorChange={content =>
@@ -2199,7 +2251,7 @@ const IntegratedEmailSender = ({
                 </div>
               )}
 
-              <Alert color="warning" className="mb-0">
+              <Alert color={darkMode ? 'danger' : 'warning'} className="mb-0">
                 <FaExclamationTriangle className="me-2" />
                 <strong>Please review carefully.</strong> Once sent, this cannot be undone.
               </Alert>

@@ -598,10 +598,26 @@ const EmailTemplateEditor = ({
     }
   }, [templateId, createdTemplateId, formData, previewEmailTemplate, getClientSidePreview]);
 
-  const tinyMCEConfig = useMemo(() => getTemplateEditorConfig(darkMode, formData), [
-    darkMode,
-    formData,
-  ]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const tinyMCEConfig = useMemo(() => getTemplateEditorConfig(darkMode, formData), []);
+
+  useEffect(() => {
+    if (!formData.html_content && !formData.name && !formData.subject) return;
+    try {
+      sessionStorage.setItem('templateEditor_state', JSON.stringify(formData));
+    } catch (e) {}
+  }, [formData]);
+
+  useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem('templateEditor_state');
+      if (saved && !templateId) {
+        const parsed = JSON.parse(saved);
+        setFormData(parsed);
+        sessionStorage.removeItem('templateEditor_state');
+      }
+    } catch (e) {}
+  }, []);
 
   if (initialLoading && templateId) {
     return (
@@ -1166,7 +1182,6 @@ const EmailTemplateEditor = ({
               HTML Content *
             </Label>
             <Editor
-              key={`template-editor-${darkMode ? 'dark' : 'light'}-v2`}
               tinymceScriptSrc="/tinymce/tinymce.min.js"
               value={formData.html_content}
               onEditorChange={content => handleInputChange('html_content', content)}

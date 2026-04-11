@@ -49,7 +49,7 @@ const ResendEmailModal = ({ isOpen, toggle, email, onResend }) => {
       toggle();
 
       // Show feedback that email is being processed
-      toast.info('Email created for resend successfully! Processing will start shortly.', {
+      toast.success('Email created for resend successfully! Processing will start shortly.', {
         autoClose: 3000,
       });
 

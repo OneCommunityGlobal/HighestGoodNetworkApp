@@ -414,7 +414,7 @@ const EmailOutbox = ({ isActive = true }) => {
       const specificRecipients = resendData.recipients || [];
 
       await dispatch(resendEmail(emailToResend._id, recipientOption, specificRecipients));
-      toast.success('Email resend initiated successfully!');
+
       setShowResendModal(false);
       setEmailToResend(null);
 

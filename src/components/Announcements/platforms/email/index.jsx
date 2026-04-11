@@ -335,11 +335,7 @@ export default function EmailPanel({ title, initialEmail }) {
         aria-live="polite"
       >
         <ErrorBoundary>
-          <IntegratedEmailSender
-            key="sender"
-            initialContent={initialEmail || ''}
-            initialSubject={title || ''}
-          />
+          <IntegratedEmailSender initialContent={initialEmail || ''} initialSubject={title || ''} />
         </ErrorBoundary>
       </div>
     </div>
