@@ -18,6 +18,50 @@ import PaidLaborCostDatePicker from './PaidLaborCostDatePicker';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
+const barValueLabelPlugin = {
+  id: 'barValueLabelPlugin',
+  afterDatasetsDraw(chart, _args, pluginOptions) {
+    const { ctx, chartArea } = chart;
+    if (!chartArea) return;
+
+    const { darkMode } = pluginOptions;
+
+    ctx.save();
+    ctx.font = '600 11px Arial';
+    ctx.textAlign = 'center';
+
+    chart.data.datasets.forEach((dataset, datasetIndex) => {
+      const meta = chart.getDatasetMeta(datasetIndex);
+      if (meta.hidden) return;
+
+      meta.data.forEach((bar, index) => {
+        const value = dataset.data[index];
+        if (!value) return;
+
+        const label = `$${(value * 1000).toLocaleString()}`;
+        const { x, y, base } = bar.getProps(['x', 'y', 'base'], true);
+
+        const barHeight = Math.abs(base - y);
+        const isSmallBar = barHeight < 28;
+
+        const insideColor = darkMode ? '#ffffff' : '#111111';
+        const outsideColor = darkMode ? '#f5f5f5' : '#666666';
+
+        ctx.fillStyle = isSmallBar ? outsideColor : insideColor;
+
+        const textY = isSmallBar ? y - 8 : y + 8;
+        ctx.textBaseline = isSmallBar ? 'bottom' : 'top';
+
+        ctx.fillText(label, x, textY);
+      });
+    });
+
+    ctx.restore();
+  },
+};
+
+ChartJS.register(barValueLabelPlugin);
+
 // Sample data (cost in dollars) - Used as fallback when API is unavailable
 const mockData = [
   { project: 'Project A', task: 'Task 1', date: '2025-04-01', cost: 5000 },
@@ -79,13 +123,11 @@ function aggregateData(data, taskFilter, projectFilter, dateMode, startDate, end
   if (projectFilter === 'All Projects') {
     const label = 'All Projects';
     const aggregation = { [label]: { totalCost: 0 } };
-    // Get unique tasks from filtered data
     const tasks = [...new Set(filtered.map(d => d.task))];
     tasks.forEach(task => {
       aggregation[label][task] = 0;
     });
 
-    // Sum up totals
     filtered.forEach(item => {
       aggregation[label].totalCost += item.cost;
       if (aggregation[label][item.task] !== undefined) {
@@ -95,7 +137,6 @@ function aggregateData(data, taskFilter, projectFilter, dateMode, startDate, end
 
     let tasksToInclude;
     if (taskFilter === 'ALL') {
-      // Pick the two most expensive tasks by cost
       tasksToInclude = tasks
         .sort((a, b) => aggregation[label][b] - aggregation[label][a])
         .slice(0, 2);
@@ -105,7 +146,6 @@ function aggregateData(data, taskFilter, projectFilter, dateMode, startDate, end
     return { labels: [label], aggregation, tasksToInclude };
   }
 
-  // Specific project selected – display that project name along x-axis.
   const projectsToInclude = [projectFilter];
   const distinctTasks = [
     ...new Set(filtered.filter(d => d.project === projectFilter).map(d => d.task)),
@@ -137,7 +177,11 @@ export default function PaidLaborCost() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const darkMode = useSelector(state => state.theme.darkMode);
-  const textColor = darkMode ? '#ffffff' : '#666';
+
+  const axisTextColor = darkMode ? '#F5F7FA' : '#666';
+  const legendTextColor = darkMode ? '#F5F7FA' : '#666';
+  const gridColor = darkMode ? 'rgba(255,255,255,0.18)' : '#ccc';
+
   // Filter States
   const [taskFilter, setTaskFilter] = useState('ALL');
   const [projectFilter, setProjectFilter] = useState('All Projects');
@@ -182,7 +226,6 @@ export default function PaidLaborCost() {
         setData(apiData);
       } catch (error) {
         toast.info('Error fetching data:', error);
-        // Fall back to mock data if API is unavailable
         toast.info('Using mock data as fallback');
         setData(mockData);
       } finally {
@@ -193,17 +236,14 @@ export default function PaidLaborCost() {
     fetchData();
   }, [projectFilter, taskFilter, dateMode, dateRange.startDate, dateRange.endDate]);
 
-  // Use mock data initially until API data is loaded
   const currentData = data.length > 0 ? data : mockData;
 
-  // Derive unique filter values from current data
   const distinctProjects = useMemo(() => [...new Set(currentData.map(d => d.project))], [
     currentData,
   ]);
 
   const distinctTasks = useMemo(() => [...new Set(currentData.map(d => d.task))], [currentData]);
 
-  // Aggregate data based on filters
   const { labels, aggregation, tasksToInclude } = aggregateData(
     currentData,
     taskFilter,
@@ -213,7 +253,6 @@ export default function PaidLaborCost() {
     dateRange.endDate,
   );
 
-  // Build stable option lists for selects
   const taskOptions = useMemo(
     () =>
       distinctTasks.map(task => ({
@@ -240,13 +279,10 @@ export default function PaidLaborCost() {
     [],
   );
 
-  // Handle date range changes
   const handleDateRangeChange = ({ startDate, endDate }) => {
     setDateRange({ startDate, endDate });
   };
 
-  // Build Chart.js datasets
-  // Always include the Total Cost dataset
   const totalCostDataset = {
     label: 'Total Cost',
     backgroundColor: '#00A3A1',
@@ -254,11 +290,8 @@ export default function PaidLaborCost() {
     data: labels.map(label => Math.round(aggregation[label].totalCost / 1000)),
   };
 
-  // Generate one distinct HSL color per task
   const taskDatasets = tasksToInclude.map((task, idx) => {
-    // spread hues evenly around the 360° color wheel
     const hue = Math.round((idx * 360) / tasksToInclude.length);
-    // keep saturation moderate, and lightness high so bars pop in dark mode
     const saturation = 65;
     const lightness = darkMode ? 70 : 50;
     return {
@@ -274,16 +307,28 @@ export default function PaidLaborCost() {
     datasets: [totalCostDataset, ...taskDatasets],
   };
 
-  // Chart options: grid lines, responsive layout, and tooltip callback for interactivity.
   const options = {
     responsive: true,
     maintainAspectRatio: false,
+    layout: {
+      padding: {
+        top: 25,
+      },
+    },
     plugins: {
       legend: {
         position: 'top',
-        labels: { font: { size: 12 }, color: textColor },
+        labels: {
+          font: { size: 12, weight: '600' },
+          color: legendTextColor,
+        },
       },
       tooltip: {
+        backgroundColor: darkMode ? '#1f2937' : '#fff',
+        titleColor: darkMode ? '#fff' : '#111',
+        bodyColor: darkMode ? '#f3f4f6' : '#333',
+        borderColor: darkMode ? 'rgba(255,255,255,0.15)' : '#ddd',
+        borderWidth: 1,
         callbacks: {
           label(context) {
             const project = context.chart.data.labels[context.dataIndex];
@@ -293,21 +338,33 @@ export default function PaidLaborCost() {
           },
         },
       },
+      datalabels: {
+        display: false,
+      },
+      barValueLabelPlugin: {
+        darkMode,
+      },
     },
     scales: {
       x: {
         grid: { display: false },
-        ticks: { font: { size: 12 }, color: textColor },
+        ticks: {
+          font: { size: 12 },
+          color: axisTextColor,
+        },
       },
       y: {
-        grid: { color: '#ccc' },
+        grid: { color: gridColor },
         title: {
           display: true,
           text: 'Cost (000s)',
           font: { size: 12 },
-          color: textColor,
+          color: axisTextColor,
         },
-        ticks: { font: { size: 12 }, color: textColor },
+        ticks: {
+          font: { size: 12 },
+          color: axisTextColor,
+        },
       },
     },
   };
@@ -316,14 +373,11 @@ export default function PaidLaborCost() {
     <div className={styles.paidLaborCostContainer}>
       <h4 className={styles.paidLaborCostTitle}>Paid Labor Cost</h4>
 
-      {/* Loading indicator */}
       {loading ? (
         <div className={styles.paidLaborCostLoading}>Loading data...</div>
       ) : (
         <>
-          {/* Filter Row */}
           <div className={styles.paidLaborCostFilters}>
-            {/* Task Filter */}
             <div className={styles.paidLaborCostFilterGroup}>
               <label className={styles.paidLaborCostFilterLabel} htmlFor="task-filter">
                 Tasks
@@ -343,7 +397,6 @@ export default function PaidLaborCost() {
               </select>
             </div>
 
-            {/* Project Filter */}
             <div className={styles.paidLaborCostFilterGroup}>
               <label className={styles.paidLaborCostFilterLabel} htmlFor="project-filter">
                 Project
@@ -363,7 +416,6 @@ export default function PaidLaborCost() {
               </select>
             </div>
 
-            {/* Date Filter */}
             <div className={styles.paidLaborCostFilterGroup}>
               <label className={styles.paidLaborCostFilterLabel} htmlFor="date-filter">
                 Dates
@@ -373,7 +425,6 @@ export default function PaidLaborCost() {
                 value={dateMode}
                 onChange={e => {
                   setDateMode(e.target.value);
-                  // Reset date range when the date filter changes
                   setDateRange({ startDate: null, endDate: null });
                 }}
                 className={styles.paidLaborCostFilterSelect}
@@ -387,7 +438,6 @@ export default function PaidLaborCost() {
             </div>
           </div>
 
-          {/* Our Custom DateRangePicker shown in CUSTOM mode - replacing Airbnb DateRangePicker */}
           {dateMode === 'CUSTOM' && (
             <div className={styles.paidLaborCostDaterangeRow}>
               <PaidLaborCostDatePicker
@@ -400,7 +450,6 @@ export default function PaidLaborCost() {
             </div>
           )}
 
-          {/* Chart Container */}
           <div className={styles.paidLaborCostChartScrollWrapper}>
             <div
               style={{
