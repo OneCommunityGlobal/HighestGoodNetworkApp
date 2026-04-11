@@ -158,7 +158,7 @@
   border-radius: 8px;
   border: 1px solid #ccc;
   z-index: 2000;
-  box-shadow: 0 8px 20px rgb(0 0 0 / 20%);
+  box-shadow: 0 6px 14px rgb(0 0 0 / 15%);
 }
 
 .dropdownWrapper {
@@ -166,7 +166,6 @@
   display: inline-flex;
   flex-direction: column;
 }
-
 
 .dropdownItem {
   width: 100%;
@@ -187,6 +186,8 @@
 .dropdownItem:hover {
   background-color: #f3f4f6;
 }
+
+/* ================= DARK MODE – DROPDOWN ================= */
 
 .dark .jobSelect {
   background-color: var(--bg-card);
@@ -256,6 +257,8 @@
   color: #183a9b;
 }
 
+/* ================= DARK MODE – JOB GRID ================= */
+
 .dark .jobAd {
   background-color: var(--bg-card);
   border: 1px solid var(--border);
@@ -289,6 +292,8 @@
   border-color: #9c0;
   font-weight: 700;
 }
+
+/* ================= DARK MODE – PAGINATION ================= */
 
 .dark .paginationButton {
   background-color: var(--bg-card);
@@ -328,6 +333,8 @@
   border-radius: 16px;
   cursor: pointer;
 }
+
+/* ================= DARK MODE – CHIPS ================= */
 
 .dark .chip {
   background-color: var(--accent);
@@ -375,19 +382,97 @@
 }
 
 /* ======================================================
-   REORDER MODAL
+   MODAL – CLOSE BUTTON
    ====================================================== */
 
-.reorderModal {
-  background: #fff;
-  border-radius: 12px;
-  padding: 24px;
-  width: 600px;
-  max-height: 80vh;
-  overflow-y: auto;
+.closeButton {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  line-height: 1;
+  color: #333;
+}
+
+.closeButton:hover {
+  opacity: 0.75;
 }
 
 .dark .closeButton {
   color: var(--text-primary);
 }
 
+/* ======================================================
+   REORDER MODAL
+   ====================================================== */
+   .reorderModal {
+  background: #fff;
+  border-radius: 16px;
+  padding: 24px;
+  width: 700px;
+  max-width: 95%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.reorderList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.reorderItem {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  background: #fff;
+  cursor: grab;
+  transition: all 0.2s ease;
+}
+
+.reorderItem:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgb(0 0 0 / 15%);
+}
+
+.dragging {
+  opacity: 0.5;
+  transform: scale(0.98);
+}
+
+.badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #9c0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.jobInfo {
+  flex: 1;
+}
+
+.meta {
+  font-size: 13px;
+  color: #555;
+}
+
+.dragIcon {
+  font-size: 18px;
+  cursor: grab;
+  color: #888;
+}
+
+.dragIcon:active {
+  cursor: grabbing;
+}

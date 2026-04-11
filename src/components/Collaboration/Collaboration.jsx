@@ -19,6 +19,10 @@ function Collaboration() {
   const [categories, setCategories] = useState([]);
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [showPositionDropdown, setShowPositionDropdown] = useState(false);
+  const [showReorderModal, setShowReorderModal] = useState(false);
+  const [reorderJobs, setReorderJobs] = useState([]);
+  const [isSaving, setIsSaving] = useState(false);
+  const [dragIndex, setDragIndex] = useState(null);
   const [summaries, setSummaries] = useState(null);
   // const [positions, setPositions] = useState([]);
   const [selectedPosition, setSelectedPosition] = useState('');
@@ -143,6 +147,23 @@ function Collaboration() {
     };
   }, []);
 
+  /* ================= DRAG LOGIC ================= */
+
+  const handleDragStart = index => setDragIndex(index);
+
+  const handleDrop = index => {
+    if (dragIndex === null || dragIndex === index) return;
+
+    const updated = [...reorderJobs];
+    const [moved] = updated.splice(dragIndex, 1);
+    updated.splice(index, 0, moved);
+
+    setReorderJobs(updated);
+    setDragIndex(null);
+  };
+
+  const handleDragEnd = () => setDragIndex(null);
+
   /* ================= HANDLERS ================= */
   const handleSubmit = e => {
     e.preventDefault();
@@ -168,16 +189,16 @@ function Collaboration() {
     }
   };
 
-  const handleReorderJobs = () => {
-    setReorderJobs([...allJobs]);
-    setShowReorderModal(true);
-  };
-
   const moveJob = (fromIndex, toIndex) => {
     const updated = [...reorderJobs];
     const [moved] = updated.splice(fromIndex, 1);
     updated.splice(toIndex, 0, moved);
     setReorderJobs(updated);
+  };
+
+  const handleReorderJobs = () => {
+    setReorderJobs([...allJobs]);
+    setShowReorderModal(true);
   };
 
   const handleSaveReorder = async () => {
@@ -192,9 +213,10 @@ function Collaboration() {
         body: JSON.stringify({ jobIds }),
       });
 
+      setAllJobs([...reorderJobs]);
+      setCurrentPage(1);
       toast.success('Jobs reordered successfully!');
       setShowReorderModal(false);
-      fetchJobs();
     } catch {
       toast.error('Failed to reorder jobs');
     } finally {
@@ -388,9 +410,7 @@ function Collaboration() {
                 }
                 alt={ad.title}
               />
-              <h3>
-                {ad.title} - {ad.category}
-              </h3>
+              <h3>{ad.title}</h3>
             </button>
           ))}
         </div>
@@ -447,53 +467,51 @@ function Collaboration() {
         </div>
       )}
 
+      {/* Reorder Modal */}
       {showReorderModal && (
         <div className={styles.modalOverlay}>
           <div className={styles.reorderModal}>
             <h2>Reorder Job Listings</h2>
-            <p className={styles.subText}>Drag and drop to rearrange featured job postings.</p>
 
             <div className={styles.reorderList}>
               {reorderJobs.map((job, index) => (
                 <div
                   key={job._id}
-                  className={styles.reorderItem}
+                  className={`${styles.reorderItem} ${dragIndex === index ? styles.dragging : ''}`}
                   draggable
-                  onDragStart={e => {
-                    e.dataTransfer.setData('dragIndex', index.toString());
-                  }}
+                  onDragStart={() => handleDragStart(index)}
                   onDragOver={e => e.preventDefault()}
-                  onDrop={e => {
-                    const fromIndex = Number(e.dataTransfer.getData('dragIndex'));
-                    moveJob(fromIndex, index);
-                  }}
+                  onDrop={() => handleDrop(index)}
+                  onDragEnd={handleDragEnd}
                 >
-                  {/* LEFT NUMBER BADGE */}
                   <div className={styles.badge}>{index + 1}</div>
 
-                  {/* JOB INFO */}
                   <div className={styles.jobInfo}>
                     <h4>{job.title}</h4>
                     <div className={styles.meta}>
-                      <span className={styles.category}>{job.category}</span>
-                      {job.createdAt && (
-                        <span className={styles.date}>
-                          📅 {new Date(job.createdAt).toLocaleDateString()}
-                        </span>
-                      )}
+                      <span>{job.category}</span>
                     </div>
                   </div>
+
+                  <div className={styles.dragIcon}>⋮⋮</div>
                 </div>
               ))}
             </div>
 
-            {/* ACTION BUTTONS */}
             <div className={styles.modalActions}>
-              <button className="btn btn-secondary" onClick={() => setShowReorderModal(false)}>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => setShowReorderModal(false)}
+              >
                 Cancel
               </button>
-
-              <button className="btn btn-primary" onClick={handleSaveReorder} disabled={isSaving}>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={handleSaveReorder}
+                disabled={isSaving}
+              >
                 {isSaving ? 'Saving...' : 'Save Order'}
               </button>
             </div>
