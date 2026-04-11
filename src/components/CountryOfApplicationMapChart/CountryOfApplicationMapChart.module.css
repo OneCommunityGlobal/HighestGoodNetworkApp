@@ -2,15 +2,15 @@
 
 .container {
   padding: 20px;
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 10px rgb(0 0 0 / 10%);
   transition: all 0.3s ease;
 }
 
 .container.darkMode {
   background-color: #0d1b2a;
-  color: #ffffff;
+  color: #fff;
 }
 
 .title {
@@ -22,7 +22,7 @@
 }
 
 .container.darkMode .title {
-  color: #ffffff;
+  color: #fff;
 }
 
 .filters {
@@ -60,7 +60,7 @@
   border: 1px solid #e2e8f0;
   border-radius: 4px;
   font-size: 14px;
-  background-color: #ffffff;
+  background-color: #fff;
   color: #2d3748;
   transition: all 0.3s ease;
 }
@@ -73,19 +73,35 @@
 
 .container.darkMode .datePicker:focus {
   border-color: #68d391;
-  box-shadow: 0 0 0 3px rgba(104, 211, 145, 0.1);
+  box-shadow: 0 0 0 3px rgb(104 211 145 / 10%);
 }
 
 .mapContainer {
   width: 100%;
   height: auto;
-  min-height: 500px;
-  margin: 20px 0;
+  min-height: 0;
+  margin: 16px 0 10px;
   border-radius: 8px;
   overflow: visible;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 15px rgb(0 0 0 / 10%);
   background-color: #f7fafc;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mapSvgWrap {
+  width: 100%;
+  max-width: 100%;
+  line-height: 0;
+}
+
+.mapSvgWrap :global(svg) {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
 }
 
 .container.darkMode .mapContainer {
@@ -96,11 +112,12 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 20px;
+  margin-top: 0;
   padding: 15px;
   background-color: #f7fafc;
   border-radius: 8px;
   border: 1px solid #e2e8f0;
+  flex-shrink: 0;
 }
 
 .container.darkMode .legend {
@@ -116,7 +133,7 @@
 }
 
 .container.darkMode .legendTitle {
-  color: #ffffff;
+  color: #fff;
 }
 
 .legendScale {
@@ -187,11 +204,11 @@
 
 /* Custom Tooltip styles */
 .customTooltip {
-  background-color: #ffffff;
+  background-color: #fff;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
   padding: 12px 14px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 20px rgb(0 0 0 / 20%);
   font-size: 13px;
   max-width: 250px;
   z-index: 9999;
@@ -204,11 +221,11 @@
   background-color: #2d3748;
   border-color: #4a5568;
   color: #e2e8f0;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 20px rgb(0 0 0 / 50%);
 }
 
 /* Responsive design */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .container {
     padding: 15px;
   }
@@ -227,7 +244,15 @@
   }
   
   .mapContainer {
-    height: 300px;
+    margin: 10px 0 6px;
+    gap: 8px;
+  }
+
+  .summaryStats {
+    margin-top: 8px;
+    padding: 12px;
+    gap: 10px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   
   .legendScale {
@@ -240,7 +265,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .container {
     padding: 10px;
   }
@@ -249,8 +274,8 @@
     font-size: 18px;
   }
   
-  .mapContainer {
-    height: 250px;
+  .summaryStats {
+    grid-template-columns: 1fr;
   }
   
   .legendScale {
@@ -258,79 +283,106 @@
   }
 }
 
-/* React-select custom styles */
-.custom-select__control {
+/* React-select: classNamePrefix is a literal DOM class — use :global so CSS modules do not hash selectors */
+:global(.custom-select__control) {
   border-radius: 4px !important;
   border: 1px solid #e2e8f0 !important;
   box-shadow: none !important;
   transition: all 0.3s ease !important;
 }
 
-.container.darkMode .custom-select__control {
-  border-color: #4a5568 !important;
-  background-color: #3a506b !important;
-}
-
-.custom-select__control:hover {
+:global(.custom-select__control:hover) {
   border-color: #cbd5e0 !important;
 }
 
-.container.darkMode .custom-select__control:hover {
-  border-color: #68d391 !important;
-}
-
-.custom-select__control--is-focused {
-  border-color: #68d391 !important;
-  box-shadow: 0 0 0 3px rgba(104, 211, 145, 0.1) !important;
-}
-
-.custom-select__menu {
-  border-radius: 6px !important;
-  border: 1px solid #e2e8f0 !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-}
-
-.container.darkMode .custom-select__menu {
+.container.darkMode :global(.custom-select__control) {
   border-color: #4a5568 !important;
   background-color: #3a506b !important;
 }
 
-.custom-select__option--is-focused {
+.container.darkMode :global(.custom-select__control:hover) {
+  border-color: #68d391 !important;
+}
+
+:global(.custom-select__control--is-focused) {
+  border-color: #68d391 !important;
+  box-shadow: 0 0 0 3px rgb(104 211 145 / 10%) !important;
+}
+
+:global(.custom-select__menu) {
+  border-radius: 6px !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%) !important;
+}
+
+.container.darkMode :global(.custom-select__menu) {
+  border-color: #4a5568 !important;
+  background-color: #3a506b !important;
+}
+
+/* Menu is portaled to body — outside .container.darkMode; follow ThemeManager html/body .dark-mode */
+:global(html.dark-mode) :global(.custom-select__menu),
+:global(body.dark-mode) :global(.custom-select__menu) {
+  background-color: #2d3748 !important;
+  border-color: #4a5568 !important;
+  color: #e2e8f0 !important;
+}
+
+/* Light mode only: unscoped :global(.option--is-focused) was winning over inline styles for portaled menus */
+:global(html:not(.dark-mode)) :global(.custom-select__option--is-focused) {
   background-color: #f7fafc !important;
 }
 
-.container.darkMode .custom-select__option--is-focused {
+.container.darkMode :global(.custom-select__option--is-focused) {
   background-color: #4a5568 !important;
 }
 
-.custom-select__option--is-selected {
-  background-color: #68d391 !important;
-  color: #ffffff !important;
+:global(html.dark-mode) :global(.custom-select__option),
+:global(body.dark-mode) :global(.custom-select__option) {
+  background-color: transparent !important;
+  color: #e2e8f0 !important;
 }
 
-.custom-select__multi-value {
+:global(html.dark-mode) :global(.custom-select__option--is-focused),
+:global(body.dark-mode) :global(.custom-select__option--is-focused) {
+  background-color: #4a5568 !important;
+  color: #e2e8f0 !important;
+}
+
+:global(.custom-select__option--is-selected) {
+  background-color: #68d391 !important;
+  color: #fff !important;
+}
+
+:global(html.dark-mode) :global(.custom-select__option--is-selected),
+:global(body.dark-mode) :global(.custom-select__option--is-selected) {
+  background-color: #48bb78 !important;
+  color: #fff !important;
+}
+
+:global(.custom-select__multi-value) {
   background-color: #68d391 !important;
   border-radius: 4px !important;
 }
 
-.container.darkMode .custom-select__multi-value {
+.container.darkMode :global(.custom-select__multi-value) {
   background-color: #4a5568 !important;
 }
 
-.custom-select__multi-value__label {
-  color: #ffffff !important;
+:global(.custom-select__multi-value__label) {
+  color: #fff !important;
   font-size: 12px !important;
 }
 
-.custom-select__multi-value__remove {
-  color: #ffffff !important;
+:global(.custom-select__multi-value__remove) {
+  color: #fff !important;
 }
 
-.custom-select__multi-value__remove:hover {
+:global(.custom-select__multi-value__remove:hover) {
   background-color: #48bb78 !important;
 }
 
-.container.darkMode .custom-select__multi-value__remove:hover {
+.container.darkMode :global(.custom-select__multi-value__remove:hover) {
   background-color: #68d391 !important;
 }
 
@@ -357,12 +409,23 @@
   flex-wrap: wrap;
 }
 
+.filterGroupWide {
+  flex: 1 1 220px;
+  min-width: min(100%, 220px);
+  max-width: 100%;
+}
+
+.roleSelect {
+  min-width: 0;
+  width: 100%;
+}
+
 .filterSelect {
   padding: 8px 12px;
   border: 1px solid #e2e8f0;
   border-radius: 6px;
   font-size: 14px;
-  background-color: #ffffff;
+  background-color: #fff;
   color: #2d3748;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -376,7 +439,7 @@
 .filterSelect:focus {
   outline: none;
   border-color: #48bb78;
-  box-shadow: 0 0 0 3px rgba(72, 187, 120, 0.1);
+  box-shadow: 0 0 0 3px rgb(72 187 120 / 10%);
 }
 
 .container.darkMode .filterSelect {
@@ -407,7 +470,7 @@
   border: 1px solid #e2e8f0;
   border-radius: 6px;
   font-size: 14px;
-  background-color: #ffffff;
+  background-color: #fff;
   color: #2d3748;
   cursor: pointer;
 }
@@ -475,7 +538,7 @@
 
 .datePickerCalendarDark :global(.react-datepicker__day--in-range),
 .datePickerCalendarDark :global(.react-datepicker__day--in-selecting-range) {
-  background-color: rgba(104, 211, 145, 0.25) !important;
+  background-color: rgb(104 211 145 / 25%) !important;
   color: #e2e8f0 !important;
 }
 
@@ -507,20 +570,28 @@
 /* Tooltip Styles */
 .tooltip {
   position: fixed;
-  background-color: #ffffff;
+  background-color: #fff;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
   padding: 12px 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 20px rgb(0 0 0 / 15%);
   z-index: 999999;
   pointer-events: none;
   max-width: 280px;
 }
 
+/* Lower specificity first (stylelint): document dark class from ThemeManager */
+:global(html.dark-mode) .tooltip,
+:global(body.dark-mode) .tooltip {
+  background-color: #2d3748 !important;
+  border-color: #4a5568 !important;
+  box-shadow: 0 4px 20px rgb(0 0 0 / 50%);
+}
+
 .container.darkMode .tooltip {
   background-color: #2d3748;
   border-color: #4a5568;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 20px rgb(0 0 0 / 50%);
 }
 
 .tooltipTitle {
@@ -528,6 +599,11 @@
   font-weight: 600;
   color: #2d3748;
   margin-bottom: 8px;
+}
+
+:global(html.dark-mode) .tooltipTitle,
+:global(body.dark-mode) .tooltipTitle {
+  color: #e2e8f0 !important;
 }
 
 .container.darkMode .tooltipTitle {
@@ -545,12 +621,23 @@
   color: #4a5568;
 }
 
+:global(html.dark-mode) .tooltipStat,
+:global(body.dark-mode) .tooltipStat {
+  color: #e2e8f0 !important;
+}
+
 .container.darkMode .tooltipStat {
   color: #e2e8f0;
 }
 
 .tooltipStat strong {
   color: #2d3748;
+  font-weight: 600;
+}
+
+:global(html.dark-mode) .tooltipStat strong,
+:global(body.dark-mode) .tooltipStat strong {
+  color: #f7fafc !important;
   font-weight: 600;
 }
 
@@ -567,6 +654,12 @@
   background-color: #f7fafc;
   color: #48bb78;
   margin-top: 4px;
+}
+
+:global(html.dark-mode) .tooltipComparison,
+:global(body.dark-mode) .tooltipComparison {
+  background-color: #1a202c !important;
+  color: #68d391 !important;
 }
 
 .container.darkMode .tooltipComparison {
@@ -612,7 +705,7 @@
 .retryButton {
   padding: 10px 20px;
   background-color: #48bb78;
-  color: #ffffff;
+  color: #fff;
   border: none;
   border-radius: 6px;
   font-size: 14px;
@@ -636,9 +729,9 @@
 /* Summary Statistics */
 .summaryStats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr));
   gap: 16px;
-  margin-top: 24px;
+  margin-top: 16px;
   padding: 20px;
   background-color: #f7fafc;
   border-radius: 8px;
@@ -655,9 +748,9 @@
   flex-direction: column;
   align-items: center;
   padding: 16px;
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 6px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 5%);
 }
 
 .container.darkMode .statItem {

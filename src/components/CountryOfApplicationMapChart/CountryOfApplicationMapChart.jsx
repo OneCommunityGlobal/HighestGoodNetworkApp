@@ -1,7 +1,8 @@
 /* eslint-disable */
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import Select from 'react-select';
 import { ComposableMap, Geographies, Geography } from 'react-simple-maps';
 import { useSelector } from 'react-redux';
 import countryApplicationService from '../../services/countryApplicationService';
@@ -25,12 +26,56 @@ const countryNameMap = {
   'South Africa': ['RSA'],
 };
 
+function formatApplicationCount(n) {
+  const num = Number(n);
+  if (!Number.isFinite(num)) return '—';
+  return num.toLocaleString(undefined, { maximumFractionDigits: 0 });
+}
+
+/** Linear RGB interpolation for map fill (0–1). */
+function lerpRgb(from, to, t) {
+  const u = Math.min(1, Math.max(0, t));
+  const r = Math.round(from[0] + (to[0] - from[0]) * u);
+  const g = Math.round(from[1] + (to[1] - from[1]) * u);
+  const b = Math.round(from[2] + (to[2] - from[2]) * u);
+  return `rgb(${r}, ${g}, ${b})`;
+}
+
+/** Tooltip comparison copy — `preset` must be current WEEK | MONTH | YEAR (never default to "year"). */
+function getMapTooltipComparisonLine(country, preset) {
+  if (!country || preset === 'CUSTOM' || preset === 'ALL') return null;
+  let periodWord;
+  if (preset === 'WEEK') periodWord = 'week';
+  else if (preset === 'MONTH') periodWord = 'month';
+  else if (preset === 'YEAR') periodWord = 'year';
+  else return null;
+
+  let pct = country.percentageChange;
+  if (pct == null || Number.isNaN(Number(pct))) {
+    const prevRaw = country.previousPeriod;
+    const prev = prevRaw != null ? Number(prevRaw) : 0;
+    const curr = Number(country.applications) || 0;
+    if (prevRaw == null && curr === 0) return null;
+    if (prev === 0 && curr === 0) return null;
+    pct = prev > 0 ? ((curr - prev) / prev) * 100 : curr > 0 ? 100 : 0;
+  } else {
+    pct = Number(pct);
+  }
+
+  if (Math.abs(pct) < 0.5) return `Same as last ${periodWord}`;
+  const rounded = Math.round(Math.abs(pct));
+  return pct > 0
+    ? `${rounded}% more than last ${periodWord}`
+    : `${rounded}% fewer than last ${periodWord}`;
+}
+
 function CountryOfApplicationMapChart() {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   // State management
   const [dateFilter, setDateFilter] = useState('ALL');
-  const [selectedRole, setSelectedRole] = useState('ALL');
+  /** Empty array = all roles; otherwise list of role names sent to the API. */
+  const [selectedRoles, setSelectedRoles] = useState([]);
   const [customStartDate, setCustomStartDate] = useState(null);
   const [customEndDate, setCustomEndDate] = useState(null);
   const [hoveredCountry, setHoveredCountry] = useState(null);
@@ -40,25 +85,100 @@ function CountryOfApplicationMapChart() {
   const [availableRoles, setAvailableRoles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [lastFetchTime, setLastFetchTime] = useState(null);
+  const mapWrapRef = useRef(null);
+  const [mapDims, setMapDims] = useState({ w: 960, h: 480 });
+
+  useEffect(() => {
+    const el = mapWrapRef.current;
+    if (!el || typeof ResizeObserver === 'undefined') return undefined;
+    const sync = () => {
+      const w = Math.floor(el.getBoundingClientRect().width);
+      const safeW = Math.max(280, Math.min(1200, w));
+      const h = Math.max(220, Math.round(safeW * 0.5));
+      setMapDims({ w: safeW, h });
+    };
+    sync();
+    const ro = new ResizeObserver(() => sync());
+    ro.observe(el);
+    window.addEventListener('resize', sync);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', sync);
+    };
+  }, []);
+
+  const roleOptions = useMemo(() => availableRoles.map(r => ({ value: r, label: r })), [
+    availableRoles,
+  ]);
+
+  const roleSelectStyles = useMemo(
+    () => ({
+      control: (base, state) => ({
+        ...base,
+        minHeight: 40,
+        backgroundColor: darkMode ? '#2d3748' : '#fff',
+        borderColor: state.isFocused ? '#48bb78' : darkMode ? '#4a5568' : '#e2e8f0',
+        boxShadow: state.isFocused ? '0 0 0 1px #48bb78' : 'none',
+      }),
+      menu: base => ({
+        ...base,
+        zIndex: 100010,
+        backgroundColor: darkMode ? '#2d3748' : '#fff',
+        border: `1px solid ${darkMode ? '#4a5568' : '#e2e8f0'}`,
+      }),
+      menuPortal: base => ({ ...base, zIndex: 100010 }),
+      option: (base, st) => ({
+        ...base,
+        backgroundColor: st.isSelected
+          ? '#48bb78'
+          : st.isFocused
+          ? darkMode
+            ? '#4a5568'
+            : '#f7fafc'
+          : 'transparent',
+        color: st.isSelected ? '#fff' : darkMode ? '#e2e8f0' : '#2d3748',
+      }),
+      multiValue: base => ({
+        ...base,
+        backgroundColor: darkMode ? '#4a5568' : '#c6f6d5',
+      }),
+      multiValueLabel: base => ({
+        ...base,
+        color: darkMode ? '#f7fafc' : '#22543d',
+      }),
+      multiValueRemove: (base, st) => ({
+        ...base,
+        color: st.isSelected ? '#fff' : darkMode ? '#e2e8f0' : '#2d3748',
+        ':hover': {
+          backgroundColor: darkMode ? '#68d391' : '#9ae6b4',
+          color: '#1a202c',
+        },
+      }),
+      placeholder: base => ({ ...base, color: darkMode ? '#a0aec0' : '#718096' }),
+      input: base => ({ ...base, color: darkMode ? '#e2e8f0' : '#2d3748' }),
+    }),
+    [darkMode],
+  );
 
   // Fetch data on component mount and when filters change
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
+        setHoveredCountry(null);
         setMapError(null);
 
         // Try to fetch from backend API first
         try {
           console.log('🔄 Fetching from backend API with filters:', {
             timeFrame: dateFilter,
-            selectedRole: selectedRole,
+            selectedRoles,
             customStartDate,
             customEndDate,
           });
 
           const params = {
-            roles: selectedRole !== 'ALL' ? [selectedRole] : [],
+            roles: selectedRoles.length > 0 ? selectedRoles : [],
           };
 
           if (dateFilter === 'ALL') {
@@ -92,18 +212,37 @@ function CountryOfApplicationMapChart() {
             response.data?.reduce((sum, c) => sum + (c.count || 0), 0) || 0,
           );
 
-          // Backend returns data directly in the array, not nested under 'countries'
+          // Backend: { success, data: [...], meta } or legacy array
           const countriesData = Array.isArray(response)
             ? response
-            : response.countries || response.data || [];
+            : Array.isArray(response?.data)
+            ? response.data
+            : response.countries || [];
 
           // Transform API data to match component format
-          const transformedData = countriesData.map(country => ({
-            country: country.countryName,
-            applications: country.count || 0,
-            previousPeriod: country.previousCount || 0,
-            percentageChange: country.percentageChange || 0,
-          }));
+          const transformedData = countriesData.map(country => {
+            const applications = country.count || 0;
+            const previousPeriod =
+              country.previousCount != null && !Number.isNaN(Number(country.previousCount))
+                ? Number(country.previousCount)
+                : null;
+            let percentageChange =
+              country.percentageChange != null && !Number.isNaN(Number(country.percentageChange))
+                ? Number(country.percentageChange)
+                : null;
+            if (percentageChange == null && previousPeriod != null) {
+              if (previousPeriod > 0)
+                percentageChange = ((applications - previousPeriod) / previousPeriod) * 100;
+              else if (applications > 0) percentageChange = 100;
+              else percentageChange = 0;
+            }
+            return {
+              country: country.countryName || country.country,
+              applications,
+              previousPeriod,
+              percentageChange,
+            };
+          });
 
           setApplicationData(transformedData);
 
@@ -125,7 +264,7 @@ function CountryOfApplicationMapChart() {
           console.log('✅ Summary Statistics:', stats);
           console.log('🔍 Applied Filters:', {
             timeFrame: dateFilter,
-            role: selectedRole,
+            roles: selectedRoles,
             dates:
               dateFilter === 'CUSTOM'
                 ? `${toYyyyMmDd(customStartDate)} to ${toYyyyMmDd(customEndDate)}`
@@ -134,7 +273,7 @@ function CountryOfApplicationMapChart() {
 
           setLastFetchTime(new Date().toLocaleTimeString());
 
-          const rolesFromApi = rolesPayload?.data;
+          const rolesFromApi = rolesPayload?.roles || rolesPayload?.data;
           if (Array.isArray(rolesFromApi) && rolesFromApi.length > 0) {
             setAvailableRoles(rolesFromApi);
           } else if (response.availableRoles) {
@@ -158,11 +297,22 @@ function CountryOfApplicationMapChart() {
           console.warn('⚠️ Backend API unavailable, using mock data:', apiError.message);
 
           const mockData = countryApplicationService.getMockData();
-          const transformedData = mockData.countries.map(country => ({
-            country: country.countryName,
-            applications: country.applicationCount || 0,
-            previousPeriod: country.previousCount || 0,
-          }));
+          const transformedData = mockData.countries.map(country => {
+            const applications = country.applicationCount || 0;
+            const previousPeriod = country.previousCount ?? 0;
+            const percentageChange =
+              previousPeriod > 0
+                ? ((applications - previousPeriod) / previousPeriod) * 100
+                : applications > 0
+                ? 100
+                : 0;
+            return {
+              country: country.countryName,
+              applications,
+              previousPeriod,
+              percentageChange,
+            };
+          });
 
           setApplicationData(transformedData);
           setAvailableRoles([
@@ -186,53 +336,58 @@ function CountryOfApplicationMapChart() {
     };
 
     fetchData();
-  }, [dateFilter, selectedRole, customStartDate, customEndDate]);
+  }, [dateFilter, selectedRoles, customStartDate, customEndDate]);
 
   // Role and time filters are applied server-side; no client-side random scaling
   const processedData = useMemo(() => applicationData, [applicationData]);
 
-  // Calculate color scale with softer pastel greens
+  // Log-scaled color ramp so mid/low counts spread apart when one country dominates (req: easier differences)
   const colorScale = useCallback(
     applications => {
       if (!applications || applications === 0) {
         return darkMode ? '#2d3748' : '#f7fafc';
       }
 
-      const maxApplications = Math.max(...processedData.map(d => d.applications));
-      const minApplications = Math.min(
-        ...processedData.filter(d => d.applications > 0).map(d => d.applications),
-      );
+      const counts = processedData.map(d => d.applications);
+      const maxApplications = Math.max(...counts, 0);
+      if (maxApplications <= 0) {
+        return darkMode ? '#2d3748' : '#f7fafc';
+      }
 
-      const intensity =
-        maxApplications === minApplications
-          ? 1
-          : (applications - minApplications) / (maxApplications - minApplications);
+      const positive = processedData.filter(d => d.applications > 0).map(d => d.applications);
+      const minApplications = positive.length ? Math.min(...positive) : 1;
+
+      let intensity;
+      if (maxApplications === minApplications) {
+        intensity = 1;
+      } else {
+        const log = Math.log1p;
+        const lo = log(minApplications);
+        const hi = log(maxApplications);
+        const t = (log(applications) - lo) / (hi - lo);
+        intensity = Math.min(1, Math.max(0, t));
+        // Slight curve: lift mid-range so neighbors differ more when the range is huge
+        intensity = Math.pow(intensity, 0.82);
+      }
 
       if (darkMode) {
-        // Dark mode: soft pastel gradient from light mint to sage green
-        const r = Math.floor(169 - intensity * 50); // 169 -> 119 (mint to sage)
-        const g = Math.floor(228 - intensity * 40); // 228 -> 188 (soft green range)
-        const b = Math.floor(204 - intensity * 70); // 204 -> 134 (pastel to deeper)
-        return `rgb(${r}, ${g}, ${b})`;
-      } else {
-        // Light mode: soft pastel gradient from very light mint to medium sage
-        const r = Math.floor(209 - intensity * 80); // 209 -> 129 (pale mint to sage)
-        const g = Math.floor(242 - intensity * 55); // 242 -> 187 (very soft to medium)
-        const b = Math.floor(235 - intensity * 85); // 235 -> 150 (pastel range)
-        return `rgb(${r}, ${g}, ${b})`;
+        // Dark slate-green → bright emerald
+        return lerpRgb([34, 48, 58], [52, 211, 153], intensity);
       }
+      // Very light mint → deep forest green
+      return lerpRgb([236, 253, 245], [20, 83, 45], intensity);
     },
     [processedData, darkMode],
   );
 
-  // Handle role selection
-  const handleRoleChange = useCallback(value => {
-    setSelectedRole(value);
-  }, []);
+  const selectedRoleOptions = useMemo(
+    () => roleOptions.filter(o => selectedRoles.includes(o.value)),
+    [roleOptions, selectedRoles],
+  );
 
   // Handle date filter change
   const handleDateFilterChange = useCallback(value => {
-    setDateFilter(value);
+    setDateFilter(String(value));
     if (value !== 'CUSTOM') {
       setCustomStartDate(null);
       setCustomEndDate(null);
@@ -257,27 +412,6 @@ function CountryOfApplicationMapChart() {
   const handleMouseLeave = useCallback(() => {
     setHoveredCountry(null);
   }, []);
-
-  // Get comparison text based on date filter
-  const getComparisonText = useCallback(
-    country => {
-      if (dateFilter === 'CUSTOM' || dateFilter === 'ALL') {
-        return null;
-      }
-
-      // Use percentageChange from backend if available
-      const percentageChange = country.percentageChange;
-      if (percentageChange === null || percentageChange === undefined) return null;
-
-      const periodText = dateFilter === 'WEEK' ? 'week' : dateFilter === 'MONTH' ? 'month' : 'year';
-
-      const direction = percentageChange > 0 ? 'more' : 'less';
-      const absChange = Math.abs(Math.round(percentageChange));
-
-      return `${absChange}% ${direction} than last ${periodText}`;
-    },
-    [dateFilter],
-  );
 
   // Match country names flexibly
   const findCountryData = useCallback(
@@ -321,6 +455,10 @@ function CountryOfApplicationMapChart() {
     );
   }
 
+  const tooltipComparisonLine = hoveredCountry
+    ? getMapTooltipComparisonLine(hoveredCountry, dateFilter)
+    : null;
+
   return (
     <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
       <div className={styles.header}>
@@ -343,7 +481,7 @@ function CountryOfApplicationMapChart() {
               : dateFilter === 'YEAR'
               ? 'Last Year'
               : 'Custom'}{' '}
-            | Role: {selectedRole}
+            | Roles: {selectedRoles.length ? selectedRoles.join(', ') : 'All'}
           </p>
         )}
       </div>
@@ -399,24 +537,28 @@ function CountryOfApplicationMapChart() {
           )}
         </div>
 
-        {/* Role Filter */}
-        <div className={styles.filterGroup}>
-          <label htmlFor="role-filter" className={styles.filterLabel}>
-            Role
+        {/* Role filter — multi-select (API accepts comma-separated roles). */}
+        <div className={`${styles.filterGroup} ${styles.filterGroupWide}`}>
+          <label htmlFor="country-map-role-filter" className={styles.filterLabel}>
+            Roles
           </label>
-          <select
-            id="role-filter"
-            value={selectedRole}
-            onChange={e => handleRoleChange(e.target.value)}
-            className={styles.filterSelect}
-          >
-            <option value="ALL">All Roles</option>
-            {availableRoles.map(role => (
-              <option key={role} value={role}>
-                {role}
-              </option>
-            ))}
-          </select>
+          <Select
+            inputId="country-map-role-filter"
+            instanceId="country-map-role-filter"
+            isMulti
+            isClearable
+            closeMenuOnSelect={false}
+            hideSelectedOptions={false}
+            options={roleOptions}
+            value={selectedRoleOptions}
+            onChange={opts => setSelectedRoles(opts ? opts.map(o => o.value) : [])}
+            placeholder="All roles"
+            classNamePrefix="custom-select"
+            className={styles.roleSelect}
+            styles={roleSelectStyles}
+            menuPortalTarget={typeof document !== 'undefined' ? document.body : null}
+            menuPosition="fixed"
+          />
         </div>
       </div>
 
@@ -437,71 +579,73 @@ function CountryOfApplicationMapChart() {
             </button>
           </div>
         ) : (
-          <ComposableMap
-            projection="geoMercator"
-            projectionConfig={{
-              scale: 147,
-              center: [0, 20],
-            }}
-            width={1200}
-            height={600}
-            style={{ width: '100%', height: 'auto' }}
-          >
-            <Geographies
-              geography={geoUrl}
-              onError={error => {
-                console.error('Map loading error:', error);
-                setMapError('Unable to load map data');
+          <div ref={mapWrapRef} className={styles.mapSvgWrap}>
+            <ComposableMap
+              projection="geoMercator"
+              projectionConfig={{
+                scale: Math.max(100, Math.round((147 * mapDims.w) / 1200)),
+                center: [0, 20],
               }}
+              width={mapDims.w}
+              height={mapDims.h}
+              style={{ width: '100%', maxWidth: '100%', height: 'auto', display: 'block' }}
             >
-              {({ geographies }) =>
-                geographies.map(geo => {
-                  const countryName =
-                    geo.properties.NAME || geo.properties.NAME_EN || geo.properties.name;
-                  const countryData = findCountryData(countryName);
+              <Geographies
+                geography={geoUrl}
+                onError={error => {
+                  console.error('Map loading error:', error);
+                  setMapError('Unable to load map data');
+                }}
+              >
+                {({ geographies }) =>
+                  geographies.map(geo => {
+                    const countryName =
+                      geo.properties.NAME || geo.properties.NAME_EN || geo.properties.name;
+                    const countryData = findCountryData(countryName);
 
-                  const applications = countryData?.applications || 0;
+                    const applications = countryData?.applications || 0;
 
-                  return (
-                    <Geography
-                      key={geo.rsmKey}
-                      geography={geo}
-                      fill={colorScale(applications)}
-                      stroke={darkMode ? '#4a5568' : '#e2e8f0'}
-                      strokeWidth={0.5}
-                      onMouseEnter={event => {
-                        if (countryData) {
-                          handleMouseEnter(event, countryData);
-                        }
-                      }}
-                      onMouseMove={handleMouseMove}
-                      onMouseLeave={handleMouseLeave}
-                      style={{
-                        default: {
-                          fill: colorScale(applications),
-                          outline: 'none',
-                          cursor: countryData ? 'pointer' : 'default',
-                        },
-                        hover: {
-                          fill: countryData
-                            ? colorScale(applications * 1.15)
-                            : colorScale(applications),
-                          outline: 'none',
-                          cursor: countryData ? 'pointer' : 'default',
-                          stroke: darkMode ? '#68d391' : '#48bb78',
-                          strokeWidth: 1.5,
-                        },
-                        pressed: {
-                          fill: colorScale(applications * 1.2),
-                          outline: 'none',
-                        },
-                      }}
-                    />
-                  );
-                })
-              }
-            </Geographies>
-          </ComposableMap>
+                    return (
+                      <Geography
+                        key={geo.rsmKey}
+                        geography={geo}
+                        fill={colorScale(applications)}
+                        stroke={darkMode ? '#4a5568' : '#e2e8f0'}
+                        strokeWidth={0.5}
+                        onMouseEnter={event => {
+                          if (countryData) {
+                            handleMouseEnter(event, countryData);
+                          }
+                        }}
+                        onMouseMove={handleMouseMove}
+                        onMouseLeave={handleMouseLeave}
+                        style={{
+                          default: {
+                            fill: colorScale(applications),
+                            outline: 'none',
+                            cursor: countryData ? 'pointer' : 'default',
+                          },
+                          hover: {
+                            fill: countryData
+                              ? colorScale(applications * 1.15)
+                              : colorScale(applications),
+                            outline: 'none',
+                            cursor: countryData ? 'pointer' : 'default',
+                            stroke: darkMode ? '#68d391' : '#48bb78',
+                            strokeWidth: 1.5,
+                          },
+                          pressed: {
+                            fill: colorScale(applications * 1.2),
+                            outline: 'none',
+                          },
+                        }}
+                      />
+                    );
+                  })
+                }
+              </Geographies>
+            </ComposableMap>
+          </div>
         )}
 
         {/* Color Scale Legend */}
@@ -568,11 +712,18 @@ function CountryOfApplicationMapChart() {
           <div className={styles.tooltipTitle}>{hoveredCountry.country}</div>
           <div className={styles.tooltipContent}>
             <div className={styles.tooltipStat}>
-              <strong>Applications:</strong> {hoveredCountry.applications}
+              <strong>Applications:</strong> {formatApplicationCount(hoveredCountry.applications)}
             </div>
-            {getComparisonText(hoveredCountry) && (
-              <div className={styles.tooltipComparison}>{getComparisonText(hoveredCountry)}</div>
-            )}
+            {(dateFilter === 'WEEK' || dateFilter === 'MONTH' || dateFilter === 'YEAR') &&
+              hoveredCountry.previousPeriod != null && (
+                <div className={styles.tooltipStat}>
+                  <strong>Prior period:</strong>{' '}
+                  {formatApplicationCount(hoveredCountry.previousPeriod)}
+                </div>
+              )}
+            {tooltipComparisonLine ? (
+              <div className={styles.tooltipComparison}>{tooltipComparisonLine}</div>
+            ) : null}
           </div>
         </div>
       )}
@@ -600,10 +751,15 @@ function CountryOfApplicationMapChart() {
           </div>
           <div className={styles.statLabel}>Avg per Country</div>
         </div>
-        {selectedRole !== 'ALL' && (
+        {selectedRoles.length > 0 && (
           <div className={styles.statItem}>
-            <div className={styles.statValue}>{selectedRole}</div>
-            <div className={styles.statLabel}>Selected Role</div>
+            <div
+              className={styles.statValue}
+              style={{ fontSize: 'clamp(13px, 2.8vw, 24px)', lineHeight: 1.2, textAlign: 'center' }}
+            >
+              {selectedRoles.join(', ')}
+            </div>
+            <div className={styles.statLabel}>Selected Roles</div>
           </div>
         )}
       </div>
