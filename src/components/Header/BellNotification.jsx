@@ -207,8 +207,9 @@ export default function BellNotification({ userId }) {
     const fetchDbNotifications = async () => {
       try {
         const { data } = await axios.get(`${ENDPOINTS.NOTIFICATIONS}/unread/user/${userId}`);
-        setDbNotifications(data);
-        if (data.length > 0) setHasMessageNotification(true);
+        const notifications = Array.isArray(data) ? data : [];
+        setDbNotifications(notifications);
+        if (notifications.length > 0) setHasMessageNotification(true);
       } catch (error) {
         console.error('Error fetching notifications from DB:', error);
       }
@@ -261,7 +262,7 @@ export default function BellNotification({ userId }) {
 
     if (!showNotification) {
       try {
-        const notificationIds = dbNotifications.map(n => n._id);
+        const notificationIds = (Array.isArray(dbNotifications) ? dbNotifications : []).map(n => n._id);
         if (notificationIds.length > 0) {
           await axios.post(`${ENDPOINTS.MSG_NOTIFICATION}/mark-as-read`, { notificationIds });
         }

@@ -19,10 +19,7 @@
   text-align: center;
 }
 
-.resourceTitle {
-  color: rgb(12, 11, 11); 
-  font-weight: bold;
-  margin-bottom: 10px;
+.resourceTitle { 
   width: 100%;            
   display: block;         
   text-align: center; 
@@ -210,7 +207,7 @@
   border-radius: 5px;
   color: white;
   font-weight: bold;
-}
+} 
 .active {
   color: green;
 }
@@ -403,7 +400,7 @@
   border: none;
   border-radius: 5px;
   cursor: pointer;
-}
+} 
 
 
 
