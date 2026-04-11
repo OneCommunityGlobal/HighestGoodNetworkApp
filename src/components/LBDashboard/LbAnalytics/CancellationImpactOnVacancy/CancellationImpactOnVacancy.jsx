@@ -70,13 +70,19 @@ function getTimeAxisLabels(timeUnit, startDate, endDate) {
       current.add(1, 'week');
     }
   } else if (timeUnit === 'last6months') {
-    let current = end.clone().startOf('month').subtract(5, 'month');
+    let current = end
+      .clone()
+      .startOf('month')
+      .subtract(5, 'month');
     for (let k = 0; k < 6; k += 1) {
       labels.push(current.format('MMM YYYY'));
       current.add(1, 'month');
     }
   } else if (timeUnit === 'year') {
-    let current = end.clone().startOf('month').subtract(11, 'month');
+    let current = end
+      .clone()
+      .startOf('month')
+      .subtract(11, 'month');
     for (let k = 0; k < 12; k += 1) {
       labels.push(current.format('MMM YYYY'));
       current.add(1, 'month');
@@ -107,7 +113,9 @@ function buildFilterKey(category, selectedVillages, selectedProperties) {
 // Generate mock chart data (replace with API when backend is ready)
 function generateMockData(timeUnit, startDate, endDate, filterKey) {
   const labels = getTimeAxisLabels(timeUnit, startDate, endDate);
-  const rangeKey = `${moment(startDate).format('YYYY-MM-DD')}|${moment(endDate).format('YYYY-MM-DD')}`;
+  const rangeKey = `${moment(startDate).format('YYYY-MM-DD')}|${moment(endDate).format(
+    'YYYY-MM-DD',
+  )}`;
   const baseSeed = hashString(`${timeUnit}|${rangeKey}|${filterKey}`);
 
   return labels.map((label, i) => {
@@ -118,12 +126,8 @@ function generateMockData(timeUnit, startDate, endDate, filterKey) {
     const vacancyJitter = unitNoise(rowSeed, 'v') * 14;
     return {
       time: label,
-      cancellationRate: Math.round(
-        Math.max(0, Math.min(55, 5 + cancelWave + cancelJitter)),
-      ),
-      vacancyRate: Math.round(
-        Math.max(0, Math.min(55, 12 + vacancyWave + vacancyJitter)),
-      ),
+      cancellationRate: Math.round(Math.max(0, Math.min(55, 5 + cancelWave + cancelJitter))),
+      vacancyRate: Math.round(Math.max(0, Math.min(55, 12 + vacancyWave + vacancyJitter))),
     };
   });
 }
@@ -164,7 +168,9 @@ const customSelectStyles = darkMode => ({
 });
 
 function CancellationImpactOnVacancy({ darkMode }) {
-  const defaultStart = moment().subtract(6, 'months').toDate();
+  const defaultStart = moment()
+    .subtract(6, 'months')
+    .toDate();
   const defaultEnd = moment().toDate();
 
   const [startDate, setStartDate] = useState(defaultStart);
@@ -197,7 +203,9 @@ function CancellationImpactOnVacancy({ darkMode }) {
         ]);
       }
     })();
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   // Mock property options (grouped by village for now)
@@ -211,15 +219,18 @@ function CancellationImpactOnVacancy({ darkMode }) {
     setPropertyOptions(props);
   }, []);
 
-  const filterKey = useMemo(
-    () => buildFilterKey(category, selectedVillages, selectedProperties),
-    [category, selectedVillages, selectedProperties],
-  );
+  const filterKey = useMemo(() => buildFilterKey(category, selectedVillages, selectedProperties), [
+    category,
+    selectedVillages,
+    selectedProperties,
+  ]);
 
-  const chartData = useMemo(
-    () => generateMockData(timeUnit, startDate, endDate, filterKey),
-    [timeUnit, startDate, endDate, filterKey],
-  );
+  const chartData = useMemo(() => generateMockData(timeUnit, startDate, endDate, filterKey), [
+    timeUnit,
+    startDate,
+    endDate,
+    filterKey,
+  ]);
 
   const xAxisLabel = useMemo(() => {
     if (timeUnit === 'week') return 'Days';
@@ -236,12 +247,17 @@ function CancellationImpactOnVacancy({ darkMode }) {
       </div>
 
       <div className={`${styles.filters} ${darkMode ? styles.darkFilters : ''}`}>
-        <div className={styles.filterGroup}>
-          <label className={`${styles.filterLabel} ${darkMode ? styles.darkFilterLabel : ''}`}>
+        <fieldset className={`${styles.filterGroup} ${styles.filterGroupFieldset}`}>
+          <legend
+            className={`${styles.filterLegend} ${styles.filterLabel} ${
+              darkMode ? styles.darkFilterLabel : ''
+            }`}
+          >
             Dates
-          </label>
+          </legend>
           <div className={styles.dateRange}>
             <DatePicker
+              id="cancellation-impact-start-date"
               selected={startDate}
               onChange={date => setStartDate(date)}
               selectsStart
@@ -252,6 +268,7 @@ function CancellationImpactOnVacancy({ darkMode }) {
             />
             <span className={styles.dateSeparator}>to</span>
             <DatePicker
+              id="cancellation-impact-end-date"
               selected={endDate}
               onChange={date => setEndDate(date)}
               selectsEnd
@@ -262,13 +279,17 @@ function CancellationImpactOnVacancy({ darkMode }) {
               className={darkMode ? styles.datePickerDark : styles.datePicker}
             />
           </div>
-        </div>
+        </fieldset>
 
         <div className={styles.filterGroup}>
-          <label className={`${styles.filterLabel} ${darkMode ? styles.darkFilterLabel : ''}`}>
+          <label
+            className={`${styles.filterLabel} ${darkMode ? styles.darkFilterLabel : ''}`}
+            htmlFor="cancellation-impact-category"
+          >
             Category
           </label>
           <select
+            id="cancellation-impact-category"
             value={category}
             onChange={e => {
               setCategory(e.target.value);
@@ -286,11 +307,19 @@ function CancellationImpactOnVacancy({ darkMode }) {
         </div>
 
         <div className={styles.filterGroup}>
-          <label className={`${styles.filterLabel} ${darkMode ? styles.darkFilterLabel : ''}`}>
+          <label
+            className={`${styles.filterLabel} ${darkMode ? styles.darkFilterLabel : ''}`}
+            htmlFor={
+              category === 'village'
+                ? 'cancellation-impact-villages-select'
+                : 'cancellation-impact-properties-select'
+            }
+          >
             {category === 'village' ? 'Villages' : 'Properties'}
           </label>
           {category === 'village' ? (
             <Select
+              inputId="cancellation-impact-villages-select"
               isMulti
               options={villageOptions}
               value={selectedVillages}
@@ -301,6 +330,7 @@ function CancellationImpactOnVacancy({ darkMode }) {
             />
           ) : (
             <Select
+              inputId="cancellation-impact-properties-select"
               isMulti
               options={propertyOptions}
               value={selectedProperties}
@@ -313,10 +343,14 @@ function CancellationImpactOnVacancy({ darkMode }) {
         </div>
 
         <div className={styles.filterGroup}>
-          <label className={`${styles.filterLabel} ${darkMode ? styles.darkFilterLabel : ''}`}>
+          <label
+            className={`${styles.filterLabel} ${darkMode ? styles.darkFilterLabel : ''}`}
+            htmlFor="cancellation-impact-time-unit"
+          >
             X-axis units
           </label>
           <select
+            id="cancellation-impact-time-unit"
             value={timeUnit}
             onChange={e => setTimeUnit(e.target.value)}
             className={`${styles.select} ${darkMode ? styles.selectDark : ''}`}

@@ -2,13 +2,13 @@
   padding: 20px;
   background-color: #fff;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
 }
 
 .darkContainer {
   background: #1c2541;
   color: #fff;
-  box-shadow: 0 4px 16px rgba(28, 37, 65, 0.25);
+  box-shadow: 0 4px 16px rgb(28 37 65 / 25%);
 }
 
 .header {
@@ -47,6 +47,18 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+}
+
+.filterGroupFieldset {
+  border: none;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.filterLegend {
+  padding: 0;
+  margin: 0 0 6px;
 }
 
 .filterLabel {
@@ -119,13 +131,13 @@
   padding: 16px;
   background: #fff;
   border: 1px solid #e5e7eb;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 8%);
 }
 
 .darkChartCard {
   background: #243b5a;
   border-color: #3a506b;
-  box-shadow: 0 4px 16px rgba(28, 37, 65, 0.25);
+  box-shadow: 0 4px 16px rgb(28 37 65 / 25%);
 }
 
 .loading {
@@ -140,7 +152,7 @@
   color: #9ca3af;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .filters {
     flex-direction: column;
     align-items: stretch;
