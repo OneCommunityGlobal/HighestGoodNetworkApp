@@ -126,7 +126,7 @@ export const initiateFacebookLogin =
             }
           },
           {
-            scope: 'pages_show_list,pages_read_engagement,pages_manage_posts',
+            scope: 'pages_manage_posts,pages_read_user_content',
             return_scopes: true,
           },
         );
@@ -188,7 +188,7 @@ export const disconnectFacebookPage =
 
 export const verifyFacebookConnection = () => async () => {
   try {
-    const { data } = await axios.post(ENDPOINTS.FACEBOOK_AUTH_VERIFY);
+    const { data } = await axios.get(ENDPOINTS.FACEBOOK_AUTH_VERIFY);
     return data;
   } catch (error) {
     console.error('[FacebookAuth] Verify failed:', error.message);

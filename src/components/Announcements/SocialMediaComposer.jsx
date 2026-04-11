@@ -14,6 +14,9 @@ import {
 } from '~/actions/facebookActions';
 import { getFacebookConnectionStatus } from '~/actions/facebookAuthActions';
 import FacebookConnection from './FacebookConnection';
+import CharacterCounter from './CharacterCounter';
+import ConfirmationModal from './ConfirmationModal';
+import './SocialMediaComposer.module.css';
 
 const PST_TZ = 'America/Los_Angeles';
 
@@ -41,20 +44,28 @@ export default function SocialMediaComposer({ platform }) {
   const fbConnectionStatus = useSelector(state => state.facebook?.connectionStatus);
   const isConnected = fbConnectionStatus?.connected ?? null;
 
+  const PLATFORM_CHAR_LIMITS = {
+    mastodon: 500,
+    x: 280,
+    facebook: 63206,
+    linkedin: 3000,
+    instagram: 2200,
+    threads: 500,
+  };
+  const charLimit = PLATFORM_CHAR_LIMITS[platform] || 500;
+
   // Composer state
   const [postContent, setPostContent] = useState('');
   const [link, setLink] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
-  const [isPosting, setIsPosting] = useState(false);
 
   // Scheduling state
   const [scheduledContent, setScheduledContent] = useState('');
   const [scheduledDateTime, setScheduledDateTime] = useState('');
   const [scheduledLink, setScheduledLink] = useState('');
   const [scheduledImageUrl, setScheduledImageUrl] = useState('');
-  // Scheduled image state
   const [scheduledImageFile, setScheduledImageFile] = useState(null);
   const [scheduledImagePreview, setScheduledImagePreview] = useState(null);
   const [isScheduling, setIsScheduling] = useState(false);
@@ -76,7 +87,19 @@ export default function SocialMediaComposer({ platform }) {
   const [editMessage, setEditMessage] = useState('');
   const [editDateTime, setEditDateTime] = useState('');
 
+  // Tabs and confirmation modal
   const [activeSubTab, setActiveSubTab] = useState('composer');
+  const [isPosting, setIsPosting] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalConfig, setModalConfig] = useState({
+    title: '',
+    message: '',
+    onConfirm: () => {},
+    confirmText: 'Confirm',
+    confirmColor: 'primary',
+    showDontShowAgain: false,
+    preferenceKey: null,
+  });
 
   const tabOrder = [
     { id: 'composer', label: '📝 Make Post' },
@@ -85,6 +108,7 @@ export default function SocialMediaComposer({ platform }) {
     { id: 'settings', label: '⚙️ Settings' },
   ];
 
+  // Dark mode styles
   const textColor = darkMode ? '#e5e7eb' : '#333';
   const mutedTextColor = darkMode ? '#cbd5e1' : '#666';
   const surfaceBg = darkMode ? '#0f172a' : '#fff';
@@ -98,9 +122,7 @@ export default function SocialMediaComposer({ platform }) {
     cursor: 'pointer',
     border: 'none',
     borderBottom:
-      activeSubTab === tabId
-        ? `3px solid ${darkMode ? '#60a5fa' : '#007bff'}`
-        : '3px solid transparent',
+      activeSubTab === tabId ? `3px solid ${darkMode ? '#60a5fa' : '#007bff'}` : '3px solid transparent',
     backgroundColor:
       activeSubTab === tabId
         ? darkMode
@@ -236,6 +258,10 @@ export default function SocialMediaComposer({ platform }) {
       toast.info(`Posting for ${platform} is not wired yet.`);
       return;
     }
+    if (platform === 'facebook' && !isConnected) {
+      toast.error('Please connect a Facebook Page in Settings before posting.');
+      return;
+    }
     if (!postContent.trim() && !imageFile && !imageUrl.trim()) {
       toast.error('Please enter content or add an image for your post.');
       return;
@@ -277,6 +303,10 @@ export default function SocialMediaComposer({ platform }) {
   const handleSchedule = async () => {
     if (platform !== 'facebook') {
       toast.info('Scheduling is only available for Facebook right now.');
+      return;
+    }
+    if (platform === 'facebook' && !isConnected) {
+      toast.error('Please connect a Facebook Page in Settings before scheduling.');
       return;
     }
     if (!scheduledContent.trim() && !scheduledImageFile && !scheduledImageUrl.trim()) {
@@ -335,14 +365,28 @@ export default function SocialMediaComposer({ platform }) {
     }
   };
 
-  const handleCancelPost = async postId => {
-    if (!window.confirm('Are you sure you want to cancel this scheduled post?')) return;
-    try {
-      await dispatch(cancelScheduledPost({ postId, requestor }));
-      loadScheduledPosts();
-    } catch {
-      /* toast shown in action */
-    }
+  const showModal = config => {
+    setModalConfig(config);
+    setModalOpen(true);
+  };
+
+  const handleCancelPost = postId => {
+    showModal({
+      title: 'Cancel Scheduled Post',
+      message: 'Are you sure you want to cancel this scheduled post?',
+      onConfirm: async () => {
+        try {
+          await dispatch(cancelScheduledPost({ postId, requestor }));
+          loadScheduledPosts();
+        } catch {
+          /* toast shown in action */
+        }
+      },
+      confirmText: 'Cancel Post',
+      confirmColor: 'danger',
+      showDontShowAgain: false,
+      preferenceKey: null,
+    });
   };
 
   const openEditModal = post => {
@@ -381,6 +425,8 @@ export default function SocialMediaComposer({ platform }) {
       /* toast shown in action */
     }
   };
+
+  const handleDontShowAgainChange = () => {};
 
   const formatDate = dateStr =>
     moment(dateStr)
@@ -507,6 +553,7 @@ export default function SocialMediaComposer({ platform }) {
               e.target.style.outline = 'none';
             }}
           />
+          <CharacterCounter currentLength={postContent.length} maxLength={charLimit} />
           {platform === 'facebook' && (
             <>
               <div style={{ display: 'flex', gap: '1rem', flexDirection: 'column' }}>
@@ -652,7 +699,7 @@ export default function SocialMediaComposer({ platform }) {
                       value={imageUrl}
                       onChange={e => {
                         setImageUrl(e.target.value);
-                        if (e.target.value) clearImageFile(); // Clear file when URL is entered
+                        if (e.target.value) clearImageFile();
                       }}
                       placeholder="Paste image URL (e.g., https://example.com/image.jpg)"
                       disabled={!!imageFile}
@@ -678,8 +725,8 @@ export default function SocialMediaComposer({ platform }) {
           <button
             type="button"
             onClick={handlePost}
-            disabled={isPosting}
-            style={{ ...btnPrimary, marginTop: '1rem', opacity: isPosting ? 0.6 : 1 }}
+            disabled={isPosting || (platform === 'facebook' && !isConnected)}
+            style={{ ...btnPrimary, marginTop: '1rem', opacity: (isPosting || (platform === 'facebook' && !isConnected)) ? 0.6 : 1 }}
           >
             {isPosting ? 'Posting...' : `Post to ${platform}`}
           </button>
@@ -873,8 +920,8 @@ export default function SocialMediaComposer({ platform }) {
             <button
               type="button"
               onClick={handleSchedule}
-              disabled={isScheduling}
-              style={{ ...btnSuccess, opacity: isScheduling ? 0.6 : 1 }}
+              disabled={isScheduling || (platform === 'facebook' && !isConnected)}
+              style={{ ...btnSuccess, opacity: (isScheduling || (platform === 'facebook' && !isConnected)) ? 0.6 : 1 }}
             >
               {isScheduling ? 'Scheduling...' : 'Schedule Post'}
             </button>
@@ -1228,6 +1275,18 @@ export default function SocialMediaComposer({ platform }) {
           </div>
         </div>
       )}
+
+      <ConfirmationModal
+        isOpen={modalOpen}
+        toggle={() => setModalOpen(false)}
+        title={modalConfig.title}
+        message={modalConfig.message}
+        onConfirm={modalConfig.onConfirm}
+        confirmText={modalConfig.confirmText}
+        confirmColor={modalConfig.confirmColor}
+        showDontShowAgain={modalConfig.showDontShowAgain}
+        onDontShowAgainChange={() => handleDontShowAgainChange(modalConfig.preferenceKey)}
+      />
     </div>
   );
 }
