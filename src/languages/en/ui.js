@@ -33,6 +33,7 @@ export const INVENTORY = 'Inventory';
 export const REPORTS = 'Reports';
 export const WEEKLY_SUMMARIES_REPORT = 'Weekly Summaries Report';
 export const TOTAL_ORG_SUMMARY = 'Total Org Summary';
+export const TOTAL_ORG_SUMMARY_EMAIL = 'Total Org Summary Email'
 export const ACTUAL_COST_BREAKDOWN = 'Actual Cost Breakdown';
 export const TEAM_LOCATIONS = 'Team Locations';
 export const TOTAL_CONSTRUCTION_SUMMARY = 'Total Construction Summary';
@@ -66,7 +67,7 @@ export const TEAM_NAME = 'Team Names';
 export const TOTAL_TEAMS = 'Total Teams';
 export const TOTAL_PROJECTS = 'Total Projects';
 export const ACTIVE_TEAMS = 'Active Teams';
-export const IN_ACTIVE_TEAMS = 'In Active Teams';
+export const IN_ACTIVE_TEAMS = 'Inactive Teams';
 export const ADMIN = 'Admin';
 export const POPUP_MANAGEMENT = 'Popup Management';
 export const CANCEL = 'Delete Final Day';
@@ -93,6 +94,8 @@ export const PR_PROMOTIONS = 'PR Promotions';
 export const JOB_ANALYTICS_REPORT = 'Job Analytics Report';
 export const ACTIVITY_RESOURCE_USAGE = 'Activity Resource Usage';
 export const ACTIVITY_RESOURCE_MANGEMENT = 'Activity Resource Management';
+export const EVENT_DATABASE_DESIGN = 'Event Database Design';
+
 
 export const PRODUCTION = 'Production';
 export const GARDEN_MANAGEMENT = 'Garden Management';
@@ -109,3 +112,5 @@ export const FOOD_BARS = 'Food Bars';
 
 export const SEND_EMAILS = 'Send Emails';
 export const BLUE_SQUARE_EMAIL_MANAGEMENT = 'Blue Square Email Management';
+
+ 

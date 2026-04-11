@@ -15,9 +15,81 @@
 .containerTotalOrgWrapper {
   min-height: 100%;
   background-color: #fff;
-  margin: 0;
+  margin: 0 !important;
   padding: 20px;
-  width: 100%;
+  width: 100% !important;
+  max-width: 100vw !important;
+  overflow-x: hidden !important;
+  box-sizing: border-box;
+  position: relative;
+}
+
+/* Override Bootstrap py-3 and mb-5 classes on mobile */
+@media (max-width: 768px) {
+  .containerTotalOrgWrapper:global(.py-3) {
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+  }
+  
+  .containerTotalOrgWrapper:global(.mb-5) {
+    margin-bottom: 20px !important;
+  }
+}
+
+/* Ensure Container fluid doesn't cause overflow */
+.containerTotalOrgWrapper :global(.container-fluid) {
+  max-width: 100% !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  overflow-x: hidden !important;
+  width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+/* Override reactstrap Container default padding */
+.containerTotalOrgWrapper:global(.container-fluid) {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* Ensure the root PDF wrapper doesn't overflow */
+.containerTotalOrgWrapper [data-pdf-root] {
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+  box-sizing: border-box !important;
+}
+
+/* Ensure all images, svg, and charts are responsive */
+.containerTotalOrgWrapper img,
+.containerTotalOrgWrapper svg,
+.containerTotalOrgWrapper canvas {
+  max-width: 100% !important;
+  height: auto !important;
+}
+
+/* Ensure hr doesn't cause overflow */
+.containerTotalOrgWrapper hr {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  max-width: 100% !important;
+}
+
+/* Fix Row component negative margins that can cause overflow */
+.containerTotalOrgWrapper :global(.row) {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+/* Ensure all child elements respect container bounds */
+.containerTotalOrgWrapper * {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.containerTotalOrgWrapper *:not(script):not(style) {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 /* Unified dark mode background */
@@ -138,6 +210,8 @@
   overflow: visible;
   flex-wrap: wrap;
   gap: 20px;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .reportHeaderTitle {
@@ -147,6 +221,9 @@
   flex: 1;
   min-height: 50px;
   overflow: visible;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* Beautiful header title styling */
@@ -173,6 +250,9 @@
   align-items: center;
   gap: 15px;
   flex-wrap: wrap;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* Beautiful dropdown styling */
@@ -286,6 +366,8 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .componentBorder {
@@ -297,6 +379,8 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .componentBorderLoose {
@@ -315,6 +399,8 @@
   gap: 1.5rem;
   width: 100%;
   margin-top: 15px;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .componentPieChartLabel {
@@ -377,25 +463,54 @@
 
 /* Responsive design for better mobile experience */
 @media (max-width: 768px) {
+  .containerTotalOrgWrapper {
+    padding: 10px !important;
+    overflow-x: hidden;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  .containerTotalOrgWrapper:global(.container-fluid) {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+
   .totalOrgReportHeaderRow {
     flex-direction: column;
     align-items: stretch;
     gap: 15px;
-    padding: 15px;
+    padding: 15px 5px !important;
+    margin-bottom: 15px;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
   }
 
   .reportHeaderTitle {
     justify-content: center;
     text-align: center;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
   }
 
   .reportHeaderTitle h3 {
-    font-size: 28px;
+    font-size: 24px;
+    width: 100% !important;
+    max-width: 100% !important;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
 
   .reportHeaderActions {
     justify-content: center;
     gap: 12px;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
   }
 
   .reportHeaderActions :global(.dropdown-toggle),
@@ -404,9 +519,92 @@
     padding: 10px 16px !important;
     font-size: 13px !important;
   }
+
+  .componentContainer,
+  .componentBorder {
+    padding: 15px;
+    margin: 0 0 15px 0;
+    overflow-x: auto;
+    max-width: 100%;
+  }
+
+  .totalOrgChartTitle p {
+    font-size: 1.4rem !important;
+    margin: 8px;
+  }
+
+  .volunteerStatusGrid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem;
+  }
+
+  /* Ensure all charts and content scale properly */
+  .componentContainer :global(.recharts-wrapper),
+  .componentBorder :global(.recharts-wrapper) {
+    max-width: 100% !important;
+    overflow: visible !important;
+  }
+
+  .componentContainer :global(canvas),
+  .componentBorder :global(canvas) {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  /* Ensure Row and Col don't cause overflow */
+  .containerTotalOrgWrapper :global(.row) {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .containerTotalOrgWrapper :global(.col),
+  .containerTotalOrgWrapper :global([class*='col-']) {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Fix AccordianWrapper margins on mobile */
+  :global(.Collapsible) {
+    margin-top: 10px !important;
+    margin-bottom: 10px !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  :global(.Collapsible__contentInner) {
+    padding: 10px 5px !important;
+  }
 }
 
 @media (max-width: 480px) {
+  .containerTotalOrgWrapper {
+    padding: 8px !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  .containerTotalOrgWrapper:global(.container-fluid) {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+
+  .totalOrgReportHeaderRow {
+    padding: 10px 4px !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .reportHeaderTitle h3 {
+    font-size: 20px;
+  }
+
   .reportHeaderActions {
     flex-direction: column;
     width: 100%;
@@ -416,5 +614,60 @@
   .reportHeaderActions button {
     width: 100% !important;
     min-width: unset !important;
+  }
+
+  .componentContainer,
+  .componentBorder {
+    padding: 12px;
+    margin: 0 0 12px 0;
+  }
+
+  .totalOrgChartTitle p {
+    font-size: 1.2rem !important;
+    margin: 6px;
+  }
+
+  /* Ensure all charts and content scale properly on small screens */
+  .componentContainer :global(.recharts-wrapper),
+  .componentBorder :global(.recharts-wrapper) {
+    max-width: 100% !important;
+    overflow: visible !important;
+  }
+
+  .componentContainer :global(canvas),
+  .componentBorder :global(canvas) {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  :global(.row) {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  .containerTotalOrgWrapper :global(.col),
+  .containerTotalOrgWrapper :global([class*='col-']) {
+    padding-left: 4px !important;
+    padding-right: 4px !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Fix AccordianWrapper margins on small mobile */
+  :global(.Collapsible) {
+    margin-top: 8px !important;
+    margin-bottom: 8px !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  :global(.Collapsible__contentInner) {
+    padding: 8px 4px !important;
+  }
+
+  :global(.Collapsible__trigger) {
+    font-size: 24px !important;
+    padding-left: 1% !important;
   }
 }

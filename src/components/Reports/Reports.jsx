@@ -2,36 +2,36 @@
 /* eslint-disable react/no-unused-state */
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable react/sort-comp */
-import { Component } from 'react';
-import { connect } from 'react-redux';
-import { Container, Button } from 'reactstrap';
 import moment from 'moment-timezone';
-import { boxStyle, boxStyleDark } from '~/styles';
-import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
-import { searchWithAccent } from '~/utils/search';
-import { fetchAllProjects } from '../../actions/projects';
-import { getAllUserTeams } from '../../actions/allTeamsAction';
-import TeamTable from './TeamTable';
-import PeopleTable from './PeopleTable';
-import ProjectTable from './ProjectTable';
-import { getUserProfileBasicInfo } from '../../actions/userManagement';
-import { fetchAllTasks } from '../../actions/task';
+import { Component } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
-import './reportsPage.css';
-import projectsImage from './images/Projects.svg';
+import { connect } from 'react-redux';
+import { Button, Container } from 'reactstrap';
+import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
+import { boxStyle, boxStyleDark } from '~/styles';
+import { searchWithAccent } from '~/utils/search';
+import { getAllUserTeams } from '../../actions/allTeamsAction';
+import { fetchAllProjects } from '../../actions/projects';
+import { fetchAllTasks } from '../../actions/task';
+import { getUsersTotalHoursForSpecifiedPeriod } from '../../actions/timeEntries';
+import { getUserProfileBasicInfo } from '../../actions/userManagement';
+import Loading from '../common/Loading';
+import '../Header/index.css';
 import peopleImage from './images/People.svg';
+import projectsImage from './images/Projects.svg';
 import teamsImage from './images/Teams.svg';
-import TotalPeopleReport from './TotalReport/TotalPeopleReport';
-import TotalTeamReport from './TotalReport/TotalTeamReport';
-import TotalProjectReport from './TotalReport/TotalProjectReport';
-import TotalContributorsReport from './TotalReport/TotalContributorsReport';
 import AddLostTime from './LostTime/AddLostTime';
 import LostTimeHistory from './LostTime/LostTimeHistory';
-import '../Header/index.css';
-import ViewReportByDate from './ViewReportsByDate/ViewReportsByDate';
+import PeopleTable from './PeopleTable';
+import ProjectTable from './ProjectTable';
 import ReportFilter from './ReportFilter/ReportFilter';
-import Loading from '../common/Loading';
-import { getUsersTotalHoursForSpecifiedPeriod } from '../../actions/timeEntries';
+import './reportsPage.css';
+import TeamTable from './TeamTable';
+import TotalContributorsReport from './TotalReport/TotalContributorsReport';
+import TotalPeopleReport from './TotalReport/TotalPeopleReport';
+import TotalProjectReport from './TotalReport/TotalProjectReport';
+import TotalTeamReport from './TotalReport/TotalTeamReport';
+import ViewReportByDate from './ViewReportsByDate/ViewReportsByDate';
 
 const DATE_PICKER_MIN_DATE = '01/01/2010';
 
@@ -158,8 +158,18 @@ class ReportsPage extends Component {
 
   handleClearFilters() {
     this.setState({
-      startDate: new Date(DATE_PICKER_MIN_DATE),
-      endDate: new Date(),
+     startDate: moment()
+  .tz('America/Los_Angeles')
+  .subtract(1, 'week')
+  .startOf('week')
+  .toDate(),
+
+endDate: moment()
+  .tz('America/Los_Angeles')
+  .subtract(1, 'week')
+  .endOf('week')
+  .toDate(),
+
       wildCardSearchText: '',
       filterStatus: 'all',
     });
@@ -512,7 +522,7 @@ class ReportsPage extends Component {
     const boxStyling = darkMode ? boxStyleDark : boxStyle;
 
     return (
-      <Container fluid className={`mb-5 container-component-wrapper ${isOxfordBlue}`}>
+      <Container fluid className={`mb-5 container-component-wrapper ${isOxfordBlue}`} style={darkMode ? { backgroundColor: '#1C2B3A' } : {}}>
         <div
           className={`category-data-container ${isOxfordBlue} ${
             this.state.showPeople ||
@@ -529,6 +539,7 @@ class ReportsPage extends Component {
               ? ''
               : 'no-active-selection'
           }`}
+          style={darkMode ? { backgroundColor: '#1C2B3A' } : {}}
           type="button"
         >
           <div className="container-component-category">
@@ -562,7 +573,10 @@ class ReportsPage extends Component {
                     type="button"
                     className={`card-category-item ${this.state.showProjects ? 'selected' : ''
                       } ${isYinmnBlue}`}
-                    style={boxStyling}
+                    style={{
+                      ...(darkMode ? boxStyleDark : boxStyle),
+                      ...(darkMode ? { backgroundColor: '#2a3f6f', color: '#fff' } : {})
+                    }}
                     onClick={this.showProjectTable}
                   >
                     <h3 className="card-category-item-title"> Projects</h3>
@@ -576,7 +590,10 @@ class ReportsPage extends Component {
                     type="button"
                     className={`card-category-item ${this.state.showPeople ? 'selected' : ''
                       } ${isYinmnBlue}`}
-                    style={boxStyling}
+                    style={{
+                      ...(darkMode ? boxStyleDark : boxStyle),
+                      ...(darkMode ? { backgroundColor: '#2a3f6f', color: '#fff' } : {})
+                    }}
                     onClick={this.showPeopleTable}
                   >
                     <h3 className="card-category-item-title"> People </h3>
@@ -589,7 +606,10 @@ class ReportsPage extends Component {
                     type="button"
                     className={`card-category-item ${this.state.showTeams ? 'selected' : ''
                       } ${isYinmnBlue}`}
-                    style={boxStyling}
+                    style={{
+                      ...(darkMode ? boxStyleDark : boxStyle),
+                      ...(darkMode ? { backgroundColor: '#2a3f6f', color: '#fff' } : {})
+                    }}
                     onClick={this.showTeamsTable}
                   >
                     <h3 className="card-category-item-title"> Teams </h3>
