@@ -1,9 +1,8 @@
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
-import styles from './Participation.module.css';
 import mockEvents from './mockData';
+import styles from './Participation.module.css';
 
-function DropOffTracking() {
+function DropOffTracking({ darkMode }) {
   const [selectedEvent, setSelectedEvent] = useState('All Events');
   const [selectedTime, setSelectedTime] = useState('All Time');
 
@@ -44,10 +43,10 @@ function DropOffTracking() {
     return true;
   });
 
-  const darkMode = useSelector((state) => state.theme.darkMode);
-
   return (
-    <div className={`tracking-container-global ${styles.trackingContainer}`}>
+    <div
+      className={`tracking-container-global ${styles.trackingContainer} ${darkMode ? styles.darkMode : ''}`}
+    >
       <div className={styles.trackingHeader}>
         <h3>Drop-off and no-show rate tracking</h3>
         <div className={styles.trackingFilters}>

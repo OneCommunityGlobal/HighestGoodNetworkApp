@@ -31,97 +31,116 @@
   transform: translateY(-1px);
 }
 
+.trackingContainer.darkMode,
 .darkMode .trackingContainer,
-.darkMode .insights {
+.darkMode .insights,
+.insights.darkMode {
   background-color: #1c2541;
   color: #ffffff;
-  border: 1px solid #ddd;
+  border: 1px solid #4a5568;
 }
 
-.darkMode .trackingHeader {
+.trackingContainer.darkMode .trackingHeader,
+.darkMode .trackingContainer .trackingHeader {
   color: #ffffff;
 }
 
-.darkMode .trackingHeader h3 {
+.trackingContainer.darkMode .trackingHeader h3,
+.darkMode .trackingContainer .trackingHeader h3 {
   color: #ffffff;
 }
 
-.darkMode .trackingFilters select {
+.trackingContainer.darkMode .trackingFilters select,
+.darkMode .trackingContainer .trackingFilters select {
   background-color: #2d3748;
   border-color: #4a5568;
   color: #fff;
 }
 
-.darkMode .trackingFilters select option {
+.trackingContainer.darkMode .trackingFilters select option,
+.darkMode .trackingContainer .trackingFilters select option {
   background-color: #2d3748;
   color: #fff;
 }
 
-.darkMode .trackingRate {
+.trackingContainer.darkMode .trackingRate,
+.darkMode .trackingContainer .trackingRate {
   background: #3a506b;
   color: #ffffff;
 }
 
-.darkMode .trackingRate span {
+.trackingContainer.darkMode .trackingRate span,
+.darkMode .trackingContainer .trackingRate span {
+  color: #cbd5e1;
+}
+
+.trackingContainer.darkMode .trackingListContainer,
+.darkMode .trackingContainer .trackingListContainer {
+  background: #2d3748;
   color: #ffffff;
 }
 
-.darkMode .trackingListContainer {
-  background: #3a506b;
+.trackingContainer.darkMode .trackingTable thead th,
+.darkMode .trackingContainer .trackingTable thead th {
+  background: #1e293b;
   color: #ffffff;
 }
 
-.darkMode .trackingTable thead th {
-  background: #1c2541;
+.insightsHeader {
   color: #ffffff;
 }
 
-.darkMode .insightsHeader {
+.insights.darkMode .insightsHeader h3,
+.darkMode .insights .insightsHeader h3 {
   color: #ffffff;
 }
 
-.darkMode .insightsHeader h3 {
-  color: #ffffff;
-}
-
-.darkMode .insightsFilters select {
+.insights.darkMode .insightsFilters select,
+.darkMode .insights .insightsFilters select {
   background-color: #2d3748;
   border-color: #4a5568;
   color: #fff;
 }
 
-.darkMode .insightsFilters select option {
+.insights.darkMode .insightsFilters select option,
+.darkMode .insights .insightsFilters select option {
   background-color: #2d3748;
   color: #fff;
 }
 
-.darkMode .insightsTabs {
-  border: 1px solid #555;
+.insights.darkMode .insightsTabs,
+.darkMode .insights .insightsTabs {
+  border: 1px solid #4a5568;
   background-color: #1e293b;
 }
 
-.darkMode .insightsTab {
-  color: #ddd;
+.insights.darkMode .insightsTab,
+.darkMode .insights .insightsTab {
+  color: #cbd5e1;
   background-color: #1e293b;
-  border-right: 1px solid #555;
+  border-right: 1px solid #4a5568;
 }
 
-.darkMode .insightsTab:hover {
+.insights.darkMode .insightsTab:hover,
+.darkMode .insights .insightsTab:hover {
   background-color: #374151;
 }
 
-.darkMode .insightsTab.activeTab {
+.insights.darkMode .insightsTab.activeTab,
+.darkMode .insights .insightsTab.activeTab {
   background-color: #3b82f6;
   color: #fff;
   font-weight: bold;
 }
 
-.darkMode .insightLabel {
-  color: #ffffff;
+.insights.darkMode .insightLabel,
+.darkMode .insights .insightLabel {
+  color: #f1f5f9;
 }
 
-.darkMode .insightsPercentage {
-  color: #ffffff;
+.insights.darkMode .insightsPercentage,
+.darkMode .insights .insightsPercentage {
+  color: #f1f5f9;
 }
 
 .darkMode .modalOverlay {
@@ -133,12 +152,14 @@
 }
 
 .darkMode .exportOptionsButtons {
-  border: 1px solid #ccc;
-  color: #111;
+  background: #3a506b;
+  border: 1px solid #4a5568;
+  color: #f1f5f9;
 }
 
 .darkMode .exportOptionsButtons:hover {
-  background: #3a506b;
+  background: #475569;
+  color: #ffffff;
 }
 
 /* ---------- Page Header ---------- */
@@ -392,7 +413,7 @@
 }
 
 /* Dark mode */
-.trackingRateDark {
+.darkMode .trackingRate {
   background: #3a506b;
   border-radius: 10px;
   width: 48%;
@@ -400,8 +421,7 @@
   color: #ffffff;
 }
 
-.trackingRateDark .trackingRateSubheading span,
-.trackingRateDark .trackingRateValue span {
+.darkMode .trackingRate span {
   color: #ffffff;
 }
 
@@ -453,13 +473,35 @@
   border-bottom: 1px solid #eee;
 }
 
+.darkMode .trackingTable tbody td {
+  color: #f1f5f9;
+  border-bottom: 1px solid #475569;
+}
+
+.darkMode .trackingTable tbody tr:hover {
+  background-color: #374151;
+}
+
 .trackingRateGreen {
-  color: green;
+  color: #16a34a;
   font-weight: bold;
 }
 
 .trackingRateRed {
-  color: red;
+  color: #dc2626;
+}
+
+.darkMode .trackingTable tbody td.trackingRateGreen,
+.darkMode .trackingContainer .trackingRateGreen,
+.trackingContainer.darkMode .trackingRateGreen {
+  color: #4ade80 !important;
+  font-weight: bold;
+}
+
+.darkMode .trackingTable tbody td.trackingRateRed,
+.darkMode .trackingContainer .trackingRateRed,
+.trackingContainer.darkMode .trackingRateRed {
+  color: #f87171 !important;
 }
 
 /* ---------- Insights Section ---------- */
@@ -638,10 +680,22 @@
   transition: width 0.3s ease-in-out;
 }
 
+.darkMode .insightBar {
+  background: #475569;
+}
+
+.darkMode .insightFill {
+  background: #60a5fa;
+}
+
 .insightPercentage {
   font-size: 0.9rem;
   font-weight: bold;
   color: #333;
+}
+
+.darkMode .insightPercentage {
+  color: #ffffff;
 }
 
 .insightsPercentageDark {

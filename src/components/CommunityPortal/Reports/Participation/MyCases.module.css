@@ -73,28 +73,33 @@
 }
 
 .myCasesPage.darkMode .caseCard .eventBadge {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.15);
   color: #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .myCasesPage.darkMode .caseCard .eventBadge[data-type='Yoga Class'] {
-  background-color: rgba(40, 167, 69, 0.2);
-  color: #8fd19e;
+  background-color: #052e16;
+  color: #4ade80;
+  border: 1px solid #22c55e;
 }
 
 .myCasesPage.darkMode .caseCard .eventBadge[data-type='Cooking Workshop'] {
-  background-color: rgba(231, 76, 60, 0.2);
-  color: #f1948a;
+  background-color: #450a0a;
+  color: #f87171;
+  border: 1px solid #ef4444;
 }
 
 .myCasesPage.darkMode .caseCard .eventBadge[data-type='Dance Class'] {
-  background-color: rgba(243, 156, 18, 0.2);
-  color: #f7dc6f;
+  background-color: #451a03;
+  color: #fbbf24;
+  border: 1px solid #f59e0b;
 }
 
 .myCasesPage.darkMode .caseCard .eventBadge[data-type='Fitness Bootcamp'] {
-  background-color: rgba(155, 89, 182, 0.2);
-  color: #d2b4de;
+  background-color: #2e1065;
+  color: #c084fc;
+  border: 1px solid #a855f7;
 }
 
 .myCasesPage.darkMode .caseCard .eventTime {

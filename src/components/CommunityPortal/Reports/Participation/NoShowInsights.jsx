@@ -1,16 +1,14 @@
 import { useState, useRef } from 'react';
-import { useSelector } from 'react-redux';
 import { ArrowUpDown, ArrowUp, ArrowDown, SquareArrowOutUpRight } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import mockEvents from './mockData';
 import styles from './Participation.module.css';
 
-function NoShowInsights() {
+function NoShowInsights({ darkMode }) {
   const [dateFilter, setDateFilter] = useState('All');
   const [activeTab, setActiveTab] = useState('Event type');
   const [sortOrder, setSortOrder] = useState('none');
-  const darkMode = useSelector((state) => state.theme.darkMode);
   const insightsRef = useRef(null);
   const [isExportOpen, setIsExportOpen] = useState(false);
   const [exportError, setExportError] = useState('');
@@ -196,7 +194,7 @@ function NoShowInsights() {
     <>
       {isExportOpen && (
         <div
-          className={styles.modalOverlay}
+          className={`${styles.modalOverlay} ${darkMode ? styles.darkMode : ''}`}
           onClick={() => !isExporting && setIsExportOpen(false)}
           onKeyDown={() => !isExporting && setIsExportOpen(false)}
           role="button"
@@ -256,7 +254,7 @@ function NoShowInsights() {
           </div>
         </div>
       )}
-      <div ref={insightsRef} className={styles.insights}>
+      <div ref={insightsRef} className={`${styles.insights} ${darkMode ? styles.darkMode : ''}`}>
         <div className={styles.insightsHeader}>
           <h3>No-show rate insights</h3>
           <div className={styles.insightsFilters}>

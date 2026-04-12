@@ -64,8 +64,8 @@ function EventParticipation() {
       <div className={darkMode ? styles.darkMode : ''}>
         <MyCases darkMode={darkMode} />
         <div className={styles.analyticsSection}>
-          <DropOffTracking />
-          <NoShowInsights />
+          <DropOffTracking darkMode={darkMode} />
+          <NoShowInsights darkMode={darkMode} />
         </div>
       </div>
 
