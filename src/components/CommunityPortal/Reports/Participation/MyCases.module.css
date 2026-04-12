@@ -511,3 +511,26 @@
     color: #9b59b6 !important;
   }
 }
+
+.myCasesPageDark .viewSwitcher button,
+.myCasesPageDark .createNew {
+  background-color: #3A506B;
+  color: #ffffff;
+  border: 1px solid #3A506B;
+}
+
+.myCasesPageDark .viewSwitcher button.active {
+  background-color: #007bff;
+  color: #ffffff;
+}
+
+.myCasesPageDark .filterDropdown {
+  background-color: #3A506B;
+  color: #ffffff;
+  border: 1px solid #3A506B;
+}
+
+.myCasesPageDark .filterDropdown option {
+  background-color: #3A506B;
+  color: #ffffff;
+}
