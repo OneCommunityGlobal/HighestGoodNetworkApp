@@ -12,6 +12,10 @@
   margin-top: 15px;
 }
 
+.pie-chart-heading {
+  margin-bottom: 0;
+}
+
 .dark-mode .pie-chart-title h4 {
   color: white; /* White for dark mode */
 }
@@ -30,8 +34,52 @@
   color: white; /* Ensure description text is white */
 }
 
+.pie-chart-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pie-chart-toggle-label {
+  padding-right: 1rem;
+  margin-bottom: 0;
+  font-size: 14px;
+}
+
 .pie-chart-checkbox {
-  margin-left: 8px; 
+  margin-left: 8px;
+}
+
+.pie-chart-details {
+  text-align: left;
+  margin: auto;
+}
+
+.pie-chart-members-label {
+  text-align: center;
+}
+
+.pie-chart-switch-wrapper {
+  width: 100%;
+}
+
+.pie-chart-switch-row {
+  word-break: keep-all;
+}
+
+.pie-chart-switch-label {
+  margin-bottom: 1rem;
+}
+
+.pie-chart-stat {
+  font-weight: bold;
+  font-size: 13px;
+  margin-bottom: 0.25rem;
+}
+
+.pie-chart-container {
+  width: 100%;
+  height: 32rem;
 }
 
 .dark-mode .all-time-total-text {
@@ -52,4 +100,75 @@
 
 .dark-mode .switchContainer {
   color: white; /* Text in switch container in dark mode */
+}
+
+@media screen and (max-width: 768px) {
+  .pie-chart-description {
+    flex-direction: column;
+    padding: 0 10px;
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .pie-chart-title h4 {
+    font-size: 18px;
+  }
+
+  .pie-chart-description {
+    align-items: flex-start;
+  }
+
+  .pie-chart-toggle-row {
+    display: block;
+  }
+
+  .pie-chart-toggle-label {
+    display: block;
+    padding-right: 0.5rem;
+    margin-bottom: 8px;
+    font-size: 12px;
+  }
+
+  .pie-chart-checkbox {
+    margin-left: 0;
+    transform: scale(1.1);
+  }
+
+  .pie-chart-switch-row {
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px 0;
+  }
+
+  .pie-chart-switch-label {
+    font-size: 12px;
+    margin-bottom: 0;
+  }
+
+  .pie-chart-stat {
+    font-size: 11px;
+    margin-bottom: 0.2rem;
+  }
+
+  .pie-chart-container {
+    height: 24rem;
+  }
+}
+
+@media screen and (max-width: 400px) {
+  .pie-chart-title h4 {
+    font-size: 16px;
+  }
+
+  .pie-chart-toggle-label {
+    font-size: 11px;
+  }
+
+  .pie-chart-stat {
+    font-size: 10px;
+  }
+
+  .pie-chart-container {
+    height: 20rem;
+  }
 }
