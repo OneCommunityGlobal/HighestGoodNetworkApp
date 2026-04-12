@@ -199,7 +199,7 @@ function CommunityCalendar() {
           {visible.map(event => (
             <div
               key={event.id}
-              className={`${styles.eventItem} ${styles.clickable}`}
+              className={`${styles.eventItem} ${styles.clickable} ${styles[statusMap[event.status]] || ''}`}
               onClick={() => handleEventClick(event)}
               onKeyDown={e => handleEventKeyPress(e, event)}
               onMouseEnter={() => setHoveredEventId(event.id)}
@@ -207,7 +207,11 @@ function CommunityCalendar() {
               role="button"
               tabIndex={0}
               aria-label={`Click to view details for ${event.title}`}
-            >
+              style={{ 
+              borderRadius: '4px',
+              padding: '2px 6px',   
+            }}
+                >
               {event.title}
 
               {hoveredEventId === event.id && (
