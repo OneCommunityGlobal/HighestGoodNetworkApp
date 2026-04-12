@@ -113,16 +113,17 @@
 .darkMode .preferenceButton:hover {
   background-color: #374151;
 }
+
 .darkMode .skillButton.selected {
   background-color: #3b82f6;
   border-color: #3b82f6;
-  color: #ffffff;
+  color: #fff;
 }
 
 .darkMode .preferenceButton.selected {
   background-color: #22c55e;
   border-color: #22c55e;
-  color: #ffffff;
+  color: #fff;
 }
 
 .searchContainer {
@@ -142,6 +143,33 @@
   font-size: 14px;
   background: transparent;
   color: #000;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  justify-content: flex-end;
+}
+
+.sortLabel {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.sortSelect {
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.75rem;
+  background: white;
+  color: #111827;
+}
+
+.darkMode .sortSelect {
+  background: #1f2937;
+  color: #f9fafb;
+  border-color: #4b5563;
 }
 
 .clearButton {
