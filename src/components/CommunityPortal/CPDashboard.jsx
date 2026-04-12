@@ -153,6 +153,14 @@ export function CPDashboard() {
   };
 
   const searchRef = useRef(null);
+  const dateInputRef = useRef(null);
+
+  const handleDateInputClick = () => {
+    if (dateInputRef.current?.showPicker) {
+      dateInputRef.current.showPicker();
+    }
+  };
+
   useEffect(() => {
     autoGrow(searchRef.current); // ✅ runs even when you clear via button
   }, [searchInput]);
@@ -413,13 +421,15 @@ export function CPDashboard() {
                   </Button>
                 </div>
                 <Input
+                  innerRef={dateInputRef}
                   type="date"
                   placeholder="Select Date"
                   className={styles.dateFilter}
                   value={selectedDate}
                   onChange={e => setSelectedDate(e.target.value)}
+                  onClick={handleDateInputClick}
                   min={today}
-                  style={{ marginTop: '10px' }}
+                  style={{ marginTop: '10px', cursor: 'pointer' }}
                 />
               </div>
 

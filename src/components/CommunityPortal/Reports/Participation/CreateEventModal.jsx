@@ -274,6 +274,9 @@ function CreateEventModal({ isOpen, toggle }) {
               onChange={handleChange}
               disabled={loading}
               style={darkMode ? { colorScheme: 'dark' } : {}}
+              min={moment()
+                .tz('America/Los_Angeles')
+                .format('YYYY-MM-DD')}
             />
             {errors.date && <div className="text-danger small">{errors.date}</div>}
           </div>
