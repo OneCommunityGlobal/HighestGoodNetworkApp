@@ -13,6 +13,8 @@ import {
   Label,
 } from 'reactstrap';
 import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt, FaSearch, FaTimes } from 'react-icons/fa';
+import { format } from 'date-fns';
+import { getUserTimezone, formatEventTimeWithTimezone } from '../../utils/timezoneUtils';
 import styles from './CPDashboard.module.css';
 import { ENDPOINTS } from '../../utils/URL';
 import DatePicker from 'react-datepicker';
@@ -132,7 +134,7 @@ export function CPDashboard() {
           total: response.data.events?.length || 0,
         }));
       } catch (err) {
-        console.error('Failed to fetch events', err);
+        console.error('Failed to load events:', err);
         setError('Failed to load events');
       } finally {
         setIsLoading(false);
@@ -180,19 +182,40 @@ export function CPDashboard() {
   };
 
   const formatDate = dateStr => {
-    if (!dateStr) {
+    if (!dateStr) return 'Date TBD';
+    try {
+      const date = new Date(dateStr);
+      if (Number.isNaN(date.getTime())) {
+        return 'Invalid date';
+      }
+      // Format: "Saturday, February 15"
+      return format(date, 'EEEE, MMMM d');
+    } catch (err) {
+      console.error('Error formatting date:', err);
       return 'Date TBD';
     }
+  };
 
-    const date = new Date(dateStr);
-    return date.toLocaleString('en-US', {
-      weekday: 'long',
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-    });
+  const formatTime = (eventDate, timeStr) => {
+    if (!timeStr) return 'Time TBD';
+    try {
+      const userTimezone = getUserTimezone();
+      return formatEventTimeWithTimezone(eventDate, timeStr, userTimezone);
+    } catch (err) {
+      console.error('Error formatting time:', err);
+      return 'Time TBD';
+    }
+  };
+
+  const getDisplayLocation = location => {
+    if (
+      location == null ||
+      String(location).trim() === '' ||
+      String(location).toLowerCase() === 'tbd'
+    ) {
+      return 'Location TBD';
+    }
+    return location;
   };
 
   const parseEventDate = dateString => {
@@ -200,14 +223,14 @@ export function CPDashboard() {
 
     try {
       const parsedDate = new Date(dateString);
-      if (!isNaN(parsedDate.getTime())) {
+      if (!Number.isNaN(parsedDate.getTime())) {
         const year = parsedDate.getFullYear();
         const month = String(parsedDate.getMonth() + 1).padStart(2, '0');
         const day = String(parsedDate.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
       }
     } catch (err) {
-      console.error('Error parsing date:', err);
+      console.error('Error parsing event date:', err);
     }
     return null;
   };
@@ -298,11 +321,17 @@ export function CPDashboard() {
           </div>
           <CardBody>
             <h5 className={styles.eventTitle}>{event.title}</h5>
-            <p className={styles.eventDate}>
-              <FaCalendarAlt className={styles.eventIcon} /> {formatDate(event.date)}
-            </p>
+            <div className={styles.eventDate}>
+              <FaCalendarAlt className={styles.eventIcon} />
+              <div>
+                <div>{formatDate(event.date)}</div>
+                {event.startTime && (
+                  <div className={styles.eventTime}>{formatTime(event.date, event.startTime)}</div>
+                )}
+              </div>
+            </div>
             <p className={styles.eventLocation}>
-              <FaMapMarkerAlt className={styles.eventIcon} /> {event.location || 'Location TBD'}
+              <FaMapMarkerAlt className={styles.eventIcon} /> {getDisplayLocation(event.location)}
             </p>
             <p className={styles.eventOrganizer}>
               {event.organizerLogo && !failedLogos.has(event._id) ? (
