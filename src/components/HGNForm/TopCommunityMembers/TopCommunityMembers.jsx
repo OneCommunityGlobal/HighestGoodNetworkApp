@@ -1,6 +1,7 @@
 // eslint-disable-next-line no-unused-vars
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 // eslint-disable-next-line import/order
 import httpService from '../../../services/httpService';
 import { ENDPOINTS } from '../../../utils/URL';
@@ -167,12 +168,12 @@ function TopCommunityMembers() {
           })}
         </tbody>
       </table>
-      <a
-        href="/hgnhelp?request=1"
+      <Link
+        to="/hgnhelp/community"
         className={darkMode ? styles.underlineLinkDark : styles.underlineLink}
       >
         Show your team members &gt;
-      </a>
+      </Link>
     </div>
   );
 }
