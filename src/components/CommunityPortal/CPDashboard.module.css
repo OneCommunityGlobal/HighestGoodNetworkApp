@@ -299,6 +299,7 @@
 .filterSection .checkboxGroup {
   /* Override any form-check positioning so flex layout controls spacing */
   position: relative;
+  padding-left: 0 !important;
 }
 
 .filterSection .radioGroup input,
@@ -511,17 +512,14 @@
 }
 
 .dateFilter {
-  padding-left: 10px;
   margin-top: 15px;
-  padding-top: 0px;
-  padding-bottom: 0px;
 }
 
 .dateFilterContainer {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 6px 10px 20px;
+  padding: 6px 0 20px 0;
 }
 .dateFilterContainer :global(.react-datepicker-wrapper) input {
   border: 2px solid #1b3c55; 
