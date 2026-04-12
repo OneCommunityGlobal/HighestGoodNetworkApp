@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Dropdown, Input } from 'reactstrap';
 import './TeamsAndProjects.css';
 import { useSelector } from 'react-redux';
@@ -9,6 +9,12 @@ const AddTeamsAutoComplete = React.memo((props) => {
   const { teamsData, searchText, setSearchText, setInputs, onCreateNewTeam } = props;
   const [isOpen, setIsOpen] = React.useState(false);
   const darkMode = useSelector((state) => state.theme.darkMode);
+  const inputRef = useRef(null);
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
 
 
   // Accept both shapes: { allTeams: [...] } OR just [...]
@@ -47,7 +53,8 @@ const AddTeamsAutoComplete = React.memo((props) => {
       <Input
         type="text"
         value={searchText}
-        autoFocus // eslint-disable-line jsx-a11y/no-autofocus
+        innerRef={inputRef}
+        //autoFocus // eslint-disable-line jsx-a11y/no-autofocus
         onFocus={() => setIsOpen(true)}
         onBlur={() => setTimeout(() => setIsOpen(false), 120)}
         onChange={(e) => {
