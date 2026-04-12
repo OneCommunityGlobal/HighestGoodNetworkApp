@@ -368,7 +368,7 @@ export default function BellNotification({ userId }) {
 
     if (!showNotification) {
       try {
-        const notificationIds = dbNotifications.map(n => n._id);
+        const notificationIds = (Array.isArray(dbNotifications) ? dbNotifications : []).map(n => n._id);
         if (notificationIds.length > 0) {
           await axios.post(`${ENDPOINTS.MSG_NOTIFICATION}/mark-as-read`, { notificationIds });
         }
