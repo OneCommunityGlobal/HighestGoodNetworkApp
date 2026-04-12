@@ -60,10 +60,25 @@ const buildDueDateState = serverDateISO => {
     ? moment(serverDateISO).tz(SERVER_TIMEZONE)
     : moment().tz(SERVER_TIMEZONE);
 
-  const dueDate = serverMoment.clone().endOf('week').toISOString();
-  const dueDateLastWeek = serverMoment.clone().subtract(1, 'week').endOf('week').toISOString();
-  const dueDateBeforeLast = serverMoment.clone().subtract(2, 'week').endOf('week').toISOString();
-  const dueDateThreeWeeksAgo = serverMoment.clone().subtract(3, 'week').endOf('week').toISOString();
+  const dueDate = serverMoment
+    .clone()
+    .endOf('week')
+    .toISOString();
+  const dueDateLastWeek = serverMoment
+    .clone()
+    .subtract(1, 'week')
+    .endOf('week')
+    .toISOString();
+  const dueDateBeforeLast = serverMoment
+    .clone()
+    .subtract(2, 'week')
+    .endOf('week')
+    .toISOString();
+  const dueDateThreeWeeksAgo = serverMoment
+    .clone()
+    .subtract(3, 'week')
+    .endOf('week')
+    .toISOString();
 
   return {
     dueDate,
@@ -367,8 +382,7 @@ export class WeeklySummary extends Component {
   handleMove = () => {
     const { isNotAllowedToEdit } = this.props;
     if (isNotAllowedToEdit) {
-      // eslint-disable-next-line no-alert
-      alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
+      toast.warn(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
       return;
     }
     const { moveSelect, formElements, activeTab, movePopup } = this.state;
@@ -678,11 +692,9 @@ export class WeeklySummary extends Component {
     const { isNotAllowedToEdit, displayUserEmail } = this.props;
     if (isNotAllowedToEdit) {
       if (displayUserEmail === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
-        // eslint-disable-next-line no-alert, prettier/prettier
-        alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
+        toast.warn(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
       } else {
-        // eslint-disable-next-line no-alert, prettier/prettier
-        alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
+        toast.warn(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
       }
       return;
     }
@@ -705,11 +717,9 @@ export class WeeklySummary extends Component {
     const { isNotAllowedToEdit, displayUserEmail } = this.props;
     if (isNotAllowedToEdit) {
       if (displayUserEmail === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
-        // eslint-disable-next-line no-alert, prettier/prettier
-        alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
+        toast.warn(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
       } else {
-        // eslint-disable-next-line no-alert, prettier/prettier
-        alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
+        toast.warn(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
       }
       return;
     }

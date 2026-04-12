@@ -36,7 +36,6 @@ export default function SupportLogViewer({ match }) {
 
         setEntries(list);
       } catch (err) {
-        console.error(err);
         if (err.response?.status === 401 || err.response?.status === 403) {
           setError('Access denied. You are not authorized to view this log.');
         } else {

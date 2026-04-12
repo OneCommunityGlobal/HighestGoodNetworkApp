@@ -24,7 +24,6 @@ export default function initAuth() {
     }
   } catch (error) {
     // Handle invalid or malformed token
-    console.error('Invalid token detected, clearing authentication:', error);
     localStorage.removeItem(config.tokenKey);
     store.dispatch(logoutUser());
   }

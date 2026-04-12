@@ -125,4 +125,3 @@ export function ServerTimeProvider({ children }) {
 ServerTimeProvider.propTypes = {
   children: PropTypes.node.isRequired,
 };
-

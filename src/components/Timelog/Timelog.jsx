@@ -921,7 +921,7 @@ return (
                                 <p>
                                   <strong>Tangible Time</strong> is the default for logging time using the timer
                                   at the top of the app. It represents all work done on assigned action items and
-                                  counts towards a person's weekly volunteer time commitment.
+                                  counts towards a person&apos;s weekly volunteer time commitment.
                                 </p>
 
                                 <p>The only way for a volunteer to log Tangible Time is by using the clock in/out timer.</p>
@@ -946,7 +946,7 @@ return (
                                 <p>
                                   Intangible Time may also be logged by a volunteer when in the field or for other
                                   reasons when the timer was not able to be used. In these cases, the volunteer
-                                  will use this button to log time as "Intangible Time" and then request that an
+                                  will use this button to log time as &quot;Intangible Time&quot; and then request that an
                                   Admin manually change the log from Intangible to Tangible.
                                 </p>
                               </div>

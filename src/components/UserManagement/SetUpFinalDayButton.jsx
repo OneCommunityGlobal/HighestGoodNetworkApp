@@ -4,6 +4,7 @@ import { boxStyle } from '../../styles';
 import SetUpFinalDayPopUp from './SetUpFinalDayPopUp';
 import { SET_FINAL_DAY, CANCEL } from '../../languages/en/ui';
 import { scheduleDeactivationAction, activateUserAction } from '../../actions/userLifecycleActions';
+import { toast } from 'react-toastify';
 import styles from './usermanagement.module.css';
 
 function SetUpFinalDayButton(props) {
@@ -17,7 +18,7 @@ function SetUpFinalDayButton(props) {
       try {
         await activateUserAction(dispatch, userProfile, loadUserProfile);
       } catch (error) {
-        console.error(error);
+        toast.error('Unable to cancel the scheduled deactivation right now.');
       }
     } else {
       setFinalDayDateOpen(true);
@@ -29,7 +30,7 @@ function SetUpFinalDayButton(props) {
       await scheduleDeactivationAction(dispatch, userProfile, finalDayDate, loadUserProfile);
       setFinalDayDateOpen(false);
     } catch (error) {
-      console.error(error);
+      toast.error('Unable to save the final day right now.');
     }
   };
 

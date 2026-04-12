@@ -114,8 +114,7 @@ class UserProfileAdd extends Component {
   normalizeName = s => (s || '').toLowerCase().replace(/[^a-z]/g, '');
 
   productionNameIsIncluded = () => {
-    console.log('NODE_ENV =', process.env.NODE_ENV);
-  // ✅ DO NOT enforce name rules in production
+    // Do not enforce name rules in production.
     if (process.env.NODE_ENV === 'production') {
       return true;
     }
@@ -192,7 +191,7 @@ class UserProfileAdd extends Component {
       
       // Check if response.data exists and is an array
       if (!response.data || !Array.isArray(response.data)) {
-        console.warn('Invalid response format from weekly summaries endpoint:', response.data);
+        toast.error('Unable to load team codes right now.');
         this.setState({ inputAutoComplete: [], isLoading: false });
         return;
       }
@@ -207,8 +206,6 @@ class UserProfileAdd extends Component {
       this.setState({ isLoading: false })
 
     } catch (error) {
-      // eslint-disable-next-line no-console
-      console.log(error);
       this.setState({ isLoading: false })
       toast.error(`It was not possible to retrieve the team codes. 
       Please try again by clicking the icon inside the input auto complete.`);
@@ -757,8 +754,7 @@ class UserProfileAdd extends Component {
     const location = this.state.userProfile.location.userProvided;
 
     if (!location) {
-      // eslint-disable-next-line no-alert
-      alert('Please enter valid location');
+      toast.warn('Please enter a valid location');
       return;
     }
 

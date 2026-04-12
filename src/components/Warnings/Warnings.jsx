@@ -133,8 +133,6 @@ export default function Warning({ personId, username, userRole, displayUser }) {
               toast.success('Successfully logged and Blue Square issued on profile and by email.');
             })
             .catch(error => {
-              // eslint-disable-next-line no-console
-              console.log('error in adding bluesquare', error);
               toast.error('Failed to add Blue Square!');
             });
         }
@@ -143,9 +141,7 @@ export default function Warning({ personId, username, userRole, displayUser }) {
           toast.success(toastMessage);
         }
       })
-      .catch(err => {
-        console.log(err);
-      });
+      .catch(() => {});
   };
 
   const warnings = !toggle
