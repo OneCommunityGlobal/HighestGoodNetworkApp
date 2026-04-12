@@ -190,7 +190,7 @@ export function CPDashboard() {
       // Format: "Saturday, February 15"
       return format(date, 'EEEE, MMMM d');
     } catch (err) {
-      console.error('Error formatting date:', err);
+      setError('Error formatting date.');
       return 'Date TBD';
     }
   };
@@ -201,7 +201,7 @@ export function CPDashboard() {
       const userTimezone = getUserTimezone();
       return formatEventTimeWithTimezone(eventDate, timeStr, userTimezone);
     } catch (err) {
-      console.error('Error formatting time:', err);
+      setError('Error formatting time.');
       return 'Time TBD';
     }
   };
@@ -229,7 +229,7 @@ export function CPDashboard() {
         return `${year}-${month}-${day}`;
       }
     } catch (err) {
-      console.error('Error parsing event date:', err);
+      setError('Error parsing event date.');
     }
     return null;
   };
@@ -304,41 +304,43 @@ export function CPDashboard() {
           target="_blank"
           rel="noopener noreferrer"
         >
-		<Card className={styles.eventCard}>
-          <div className={styles.eventCardImgContainer}>
-            <FixedRatioImage src={event.image} alt={event.title} fallback={FALLBACK_IMG} />
-          </div>
-          <CardBody>
-            <h5 className={styles.eventTitle}>{event.title}</h5>
-            <div className={styles.eventDate}>
-              <FaCalendarAlt className={styles.eventIcon} />
-              <div>
-                <div>{formatDate(event.date)}</div>
-                {event.startTime && (
-                  <div className={styles.eventTime}>{formatTime(event.date, event.startTime)}</div>
-                )}
-              </div>
+          <Card className={styles.eventCard}>
+            <div className={styles.eventCardImgContainer}>
+              <FixedRatioImage src={event.coverImage} alt={event.title} fallback={FALLBACK_IMG} />
             </div>
-            <p className={styles.eventLocation}>
-              <FaMapMarkerAlt className={styles.eventIcon} /> {getDisplayLocation(event.location)}
-            </p>
-            <p className={styles.eventOrganizer}>
-              {event.organizerLogo && !failedLogos.has(event._id) ? (
-                <img
-                  src={event.organizerLogo}
-                  alt={normalizeOrganizer(event.organizer) || 'Organizer'}
-                  className={styles.organizerLogo}
-                  onError={() => handleLogoError(event._id)}
-                  loading="lazy"
-                />
-              ) : (
-                <FaUserAlt className={styles.eventIcon} aria-hidden="true" />
-              )}{' '}
-              <span>{normalizeOrganizer(event.organizer) || 'Organizer TBD'}</span>
-            </p>
-          </CardBody>
-        </Card>
-		</Link>
+            <CardBody>
+              <h5 className={styles.eventTitle}>{event.title}</h5>
+              <div className={styles.eventDate}>
+                <FaCalendarAlt className={styles.eventIcon} />
+                <div>
+                  <div>{formatDate(event.date)}</div>
+                  {event.startTime && (
+                    <div className={styles.eventTime}>
+                      {formatTime(event.date, event.startTime)}
+                    </div>
+                  )}
+                </div>
+              </div>
+              <p className={styles.eventLocation}>
+                <FaMapMarkerAlt className={styles.eventIcon} /> {getDisplayLocation(event.location)}
+              </p>
+              <p className={styles.eventOrganizer}>
+                {event.organizerLogo && !failedLogos.has(event._id) ? (
+                  <img
+                    src={event.organizerLogo}
+                    alt={normalizeOrganizer(event.organizer) || 'Organizer'}
+                    className={styles.organizerLogo}
+                    onError={() => handleLogoError(event._id)}
+                    loading="lazy"
+                  />
+                ) : (
+                  <FaUserAlt className={styles.eventIcon} aria-hidden="true" />
+                )}{' '}
+                <span>{normalizeOrganizer(event.organizer) || 'Organizer TBD'}</span>
+              </p>
+            </CardBody>
+          </Card>
+        </Link>
       </Col>
     ));
   } else {

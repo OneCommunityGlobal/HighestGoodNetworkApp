@@ -224,12 +224,6 @@ function Register() {
     setIsRegistering(true);
 
     try {
-      console.log({
-        userId: userId,
-        name: displayName,
-        profilePic: null,
-        location: activity.location || 'TBD',
-      });
       const response = await axios.post(ENDPOINTS.REGISTER_FOR_EVENT(activity._id), {
         userId: userId,
         name: displayName,
@@ -405,7 +399,7 @@ function Register() {
               </div>
 
               <div className={styles.infoCard}>
-                <h2>Facilitators / Resources</h2>
+                <h2>Attendees</h2>
                 <div className={styles.resourceList}>
                   {activity.resources?.map(person => (
                     <div key={person._id} className={styles.resourceCard}>
