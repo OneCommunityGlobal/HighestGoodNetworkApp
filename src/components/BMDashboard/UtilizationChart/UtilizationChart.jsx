@@ -9,8 +9,9 @@ import axios from 'axios';
 import styles from './UtilizationChart.module.css';
 import { useSelector } from 'react-redux';
 import { ENDPOINTS } from '../../../utils/URL';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
-ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Title);
+ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Title, ChartDataLabels);
 
 function UtilizationChart() {
   const [toolsData, setToolsData] = useState([]);
@@ -92,11 +93,10 @@ function UtilizationChart() {
         labels: { color: darkMode ? '#ffffff' : '#333' },
       },
       datalabels: {
-        color: '#333',
+        color: darkMode ? '#ffffff' : '#333',
         anchor: 'end',
         align: 'end',
         font: {
-          weight: 'bold',
           size: 12,
         },
         formatter: (_, context) => {
@@ -136,8 +136,8 @@ function UtilizationChart() {
   };
 
   return (
-    <div className={styles.utilizationChartContainer + (darkMode ? ` bg-yinmn-blue` : '')}>
-      <h2 className={styles.chartTitle + (darkMode ? ' text-light' : '')}>Utilization Chart</h2>
+    <div className={`${styles.utilizationChartContainer} ${darkMode ? styles.darkMode : ''}`}>
+      <h2 className={styles.chartTitle}>Utilization Chart</h2>
 
       {error ? (
         <div className={styles.utilizationChartError}>{error}</div>
@@ -147,7 +147,7 @@ function UtilizationChart() {
             <select
               value={toolFilter}
               onChange={e => setToolFilter(e.target.value)}
-              className={styles.select + (darkMode ? ' bg-space-cadet text-light' : '')}
+              className={styles.select}
             >
               <option value="ALL">All Tools</option>
               {toolTypes.map(toolType => (
@@ -160,7 +160,7 @@ function UtilizationChart() {
             <select
               value={projectFilter}
               onChange={e => setProjectFilter(e.target.value)}
-              className={styles.select + (darkMode ? ' bg-space-cadet text-light' : '')}
+              className={styles.select}
             >
               <option value="ALL">All Projects</option>
               {projects.map(project => (
@@ -174,20 +174,20 @@ function UtilizationChart() {
               selected={startDate}
               onChange={date => setStartDate(date)}
               placeholderText="Start Date"
-              className={styles.datepickerWrapper + (darkMode ? ' bg-space-cadet text-light' : '')}
+              maxDate={endDate || '' || new Date()}
+              className={styles.datepickerWrapper}
             />
 
             <DatePicker
               selected={endDate}
               onChange={date => setEndDate(date)}
               placeholderText="End Date"
-              className={styles.datepickerWrapper + (darkMode ? ' bg-space-cadet text-light' : '')}
+              minDate={startDate || ''}
+              maxDate={new Date()}
+              className={styles.datepickerWrapper}
             />
 
-            <button
-              onClick={handleApplyClick}
-              className={styles.button + (darkMode ? ' bg-azure text-light' : '')}
-            >
+            <button onClick={handleApplyClick} className={styles.button}>
               Apply
             </button>
           </div>
