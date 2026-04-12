@@ -1,3 +1,8 @@
+@media (prefers-color-scheme: dark) {
+  .form-label {
+    color: #e9ecef !important;
+  }
+}
 .masterContainer {
   display: flex;
   flex-direction: column;
@@ -43,14 +48,14 @@
 }
 
 .masterContainer{
- display: flex;
- flex-direction: column;
- height: 100%;
-   padding-left: 10%;
-   padding-right: 10%;
-   padding-top: 5%;
-   padding-bottom: 10%;
-    background-color: #E8F4F9;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding-left: 10%;
+  padding-right: 10%;
+  padding-top: 5%;
+  padding-bottom: 10%;
+  background-color: #E8F4F9;
 }
 
 /* Dark Mode Input Fields (Yinmn Blue) */

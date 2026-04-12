@@ -268,7 +268,7 @@ function LessonForm() {
       }
     });
   };
-// git stash pop
+  // git stash pop
   const clearSelectionGlobal = () => {
     if (typeof window.getSelection === 'function') {
       const selection = window.getSelection();
@@ -405,7 +405,7 @@ function LessonForm() {
 
             {/* Tag Selection Area */}
             <Form.Group controlId="exampleForm.ControlInput1">
-              <Form.Label className={`${dark ? styles.whiteText : ''}`}>
+              <Form.Label className={`${darkMode ? styles.whiteText : ''}`}>
                 Add tag (Press enter to add tag)
               </Form.Label>
               <div className={`${styles.inputGroup}`}>
@@ -423,8 +423,10 @@ function LessonForm() {
                     }
                   }}
                   className={`${styles.formControl}`}
-                  style={{ color: 'black', WebkitTextFillColor: 'black', /* fallback for Safari */ }}
-                  ref={el => { if (el) el.style.setProperty('color', 'black', 'important'); }}
+                  style={{ color: 'black', WebkitTextFillColor: 'black' /* fallback for Safari */ }}
+                  ref={el => {
+                    if (el) el.style.setProperty('color', 'black', 'important');
+                  }}
                 />
                 {showDropdown && filteredTags.length > 0 && (
                   <div
@@ -436,8 +438,13 @@ function LessonForm() {
                         className={`${styles.tagOption} ${darkMode ? 'text-light' : ''}`}
                         onClick={() => handleTagSelection(tag)}
                         type="button"
-                        style={{ color: 'black', WebkitTextFillColor: 'black', /* fallback for Safari */ }}
-                        ref={el => { if (el) el.style.setProperty('color', 'black', 'important'); }}
+                        style={{
+                          color: 'black',
+                          WebkitTextFillColor: 'black' /* fallback for Safari */,
+                        }}
+                        ref={el => {
+                          if (el) el.style.setProperty('color', 'black', 'important');
+                        }}
                       >
                         {tag}
                       </button>
@@ -466,7 +473,9 @@ function LessonForm() {
             {/* Project Selection */}
             <div className={`${styles.singleFormSelect}`}>
               <Form.Group controlId="Form.ControlSelect1">
-                <Form.Label className={`${dark ? styles.whiteText : ''}`}>Belongs to</Form.Label>
+                <Form.Label className={`${darkMode ? styles.whiteText : ''}`}>
+                  Belongs to
+                </Form.Label>
                 <FormControl
                   onChange={handleProjectChange}
                   as="select"
@@ -487,7 +496,7 @@ function LessonForm() {
             {/* Role View Selection */}
             <div className={`${styles.singleFormSelect}`}>
               <Form.Group controlId="Form.ControlSelect2">
-                <Form.Label className={`${dark ? styles.whiteText : ''}`}>View by</Form.Label>
+                <Form.Label className={`${darkMode ? styles.whiteText : ''}`}>View by</Form.Label>
                 <FormControl
                   as="select"
                   className={darkMode ? styles.darkModeInput : ''}
@@ -507,7 +516,9 @@ function LessonForm() {
           {/* File Upload / Drag & Drop Zone */}
           <div className="DragAndDropFormGroup">
             <Form.Group controlId="exampleForm.ControlFile1">
-              <Form.Label className={`${dark ? styles.whiteText : ''}`}>Upload Appendix</Form.Label>
+              <Form.Label className={`${darkMode ? styles.whiteText : ''}`}>
+                Upload Appendix
+              </Form.Label>
               <input
                 type="file"
                 id="fileInput"
