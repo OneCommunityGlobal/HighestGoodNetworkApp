@@ -159,6 +159,9 @@ const TeamMemberTask = React.memo(
       rolesAllowedToResolveTasks.includes(userRole) || dispatch(hasPermission('getReports'));
     const canUpdateTask = dispatch(hasPermission('updateTask'));
     const canDeleteTask = dispatch(hasPermission('canDeleteTask'));
+    const canUnassignTask =
+      dispatch(hasPermission('removeUserFromTask')) ||
+      dispatch(hasPermission('deleteDashboardTask'));
     const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
 
     // Role-based color mapping for visual hierarchy
@@ -632,7 +635,7 @@ const TeamMemberTask = React.memo(
                                           />
                                         )}
 
-                                        {(canUpdateTask || canDeleteTask) && (
+                                        {(canUpdateTask || canDeleteTask || canUnassignTask) && (
                                           <FontAwesomeIcon
                                             className={styles['team-member-task-remove']}
                                             icon={faTimesCircle}
