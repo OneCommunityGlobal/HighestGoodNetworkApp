@@ -65,13 +65,9 @@ function MyCases({ darkMode }) {
   const placeholderAvatar = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
 
   const renderCardView = () => (
-    <div
-      className={`case-cards-global ${styles.caseCards} ${
-        expanded || isExporting ? styles.expanded : ''
-      }`}
-    >
+    <div className={`${styles.caseCards} ${expanded || isExporting ? styles.expanded : ''}`}>
       {visibleEvents.map((event) => (
-        <div className={`case-card-global ${styles.caseCard}`} key={event.id}>
+        <div className={styles.caseCard} key={event.id}>
           <span className={styles.eventBadge} data-type={event.eventType}>
             {event.eventType}
           </span>
@@ -96,13 +92,9 @@ function MyCases({ darkMode }) {
   );
 
   const renderListView = () => (
-    <ul
-      className={`case-list-global ${styles.caseList} ${
-        expanded || isExporting ? styles.expanded : ''
-      }`}
-    >
+    <ul className={`${styles.caseList} ${expanded || isExporting ? styles.expanded : ''}`}>
       {visibleEvents.map((event) => (
-        <li className={`case-list-item-global ${styles.caseListItem}`} key={event.id}>
+        <li className={styles.caseListItem} key={event.id}>
           <span className={styles.eventType}>{event.eventType}</span>
           <span className={styles.eventTime}>{event.eventTime}</span>
           <span className={styles.eventName}>{event.eventName}</span>
@@ -119,7 +111,7 @@ function MyCases({ darkMode }) {
   );
 
   return (
-    <div className={`my-cases-global ${styles.myCasesPage} ${darkMode ? styles.darkMode : ''}`}>
+    <div className={`${styles.myCasesPage} ${darkMode ? styles.darkMode : ''}`}>
       <header className={styles.header}>
         <h2 className={styles.sectionTitle}>Upcoming Events</h2>
         <div className={styles.headerActions}>
@@ -147,7 +139,7 @@ function MyCases({ darkMode }) {
             </button>
           </div>
 
-          <div className={`filter-wrapper-global ${styles.filterWrapper}`}>
+          <div className={styles.filterWrapper}>
             <select
               className={styles.filterDropdown}
               value={filter}
@@ -167,11 +159,7 @@ function MyCases({ darkMode }) {
             + Create New
           </button>
           {filteredEvents.length > 10 && !isExporting && (
-            <button
-              type="button"
-              className={`more-btn-global ${styles.moreBtn}`}
-              onClick={() => setExpanded(!expanded)}
-            >
+            <button type="button" className={styles.moreBtn} onClick={() => setExpanded(!expanded)}>
               {expanded ? 'Show Less' : 'More'}
             </button>
           )}

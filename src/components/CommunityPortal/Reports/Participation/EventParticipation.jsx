@@ -42,9 +42,7 @@ function EventParticipation() {
   return (
     <div
       ref={exportRef}
-      className={`participation-landing-page-global ${styles.participationLandingPage} ${
-        darkMode ? styles.darkMode : ''
-      }`}
+      className={`${styles.participationLandingPage} ${darkMode ? styles.darkMode : ''}`}
     >
       {/* Print-only page title header */}
       <header
@@ -61,9 +59,9 @@ function EventParticipation() {
         </button>
       </header>
 
-      <div className={darkMode ? styles.darkMode : ''}>
+      <div className={`${darkMode ? styles.darkMode : ''}`}>
         <MyCases darkMode={darkMode} />
-        <div className={styles.analyticsSection}>
+        <div className={`${styles.analyticsSection} ${darkMode ? styles.darkMode : ''}`}>
           <DropOffTracking darkMode={darkMode} />
           <NoShowInsights darkMode={darkMode} />
         </div>

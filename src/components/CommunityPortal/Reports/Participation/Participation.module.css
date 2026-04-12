@@ -431,6 +431,11 @@
   display: inline-block;
 }
 
+.darkMode .trackingRateValue,
+.darkMode .trackingSummary .trackingRateValue {
+  color: #f87171 !important;
+}
+
 /* Tables */
 .trackingListContainer {
   max-height: 600px;

@@ -44,9 +44,7 @@ function DropOffTracking({ darkMode }) {
   });
 
   return (
-    <div
-      className={`tracking-container-global ${styles.trackingContainer} ${darkMode ? styles.darkMode : ''}`}
-    >
+    <div className={`${styles.trackingContainer} ${darkMode ? styles.darkMode : ''}`}>
       <div className={styles.trackingHeader}>
         <h3>Drop-off and no-show rate tracking</h3>
         <div className={styles.trackingFilters}>
@@ -66,7 +64,7 @@ function DropOffTracking({ darkMode }) {
         </div>
       </div>
 
-      <div className={styles.trackingSummary}>
+      <div className={`${styles.trackingSummary} ${darkMode ? styles.darkMode : ''}`}>
         <div className={styles.trackingRate}>
           <p className={styles.trackingRateValue}>
             +5% <span>Last week</span>
@@ -86,7 +84,7 @@ function DropOffTracking({ darkMode }) {
       </div>
 
       <div className={styles.trackingListContainer}>
-        <table className={`tracking-table-global ${styles.trackingTable}`}>
+        <table className={styles.trackingTable}>
           <thead>
             <tr>
               <th>Event name</th>
