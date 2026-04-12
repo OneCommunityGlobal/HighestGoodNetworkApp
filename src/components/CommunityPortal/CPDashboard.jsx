@@ -112,8 +112,6 @@ export function CPDashboard() {
   const FALLBACK_IMG =
     'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=600&q=60';
 
-
-
   const normalizeOrganizer = organizer => {
     if (!organizer || typeof organizer !== 'string') return null;
     const trimmed = organizer.trim();
