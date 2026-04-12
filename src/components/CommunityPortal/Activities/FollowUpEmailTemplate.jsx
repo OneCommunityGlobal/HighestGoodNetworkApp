@@ -1,14 +1,20 @@
-import { useParams, Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import styles from './FollowUpEmailTemplate.module.css';
-import { FaLinkedin, FaInstagram, FaFacebook } from 'react-icons/fa';
+import { FaFacebook, FaInstagram, FaLinkedin } from 'react-icons/fa';
+import { Link, useParams } from 'react-router-dom';
 import companyLogo from '../../../assets/images/logo2.png';
+import styles from './FollowUpEmailTemplate.module.css';
 
 function FollowUpEmailTemplate() {
   const { eventId = 1234, email = '' } = useParams();
-
-  // Dark mode state from Redux
   const darkMode = useSelector(state => state.theme.darkMode);
+
+  const textClassName = `${styles.p} ${darkMode ? styles.textLight : ''}`;
+  const dividerClassName = `${styles.emailDivider} ${darkMode ? styles.emailDividerDark : ''}`;
+  const socialIconsClassName = `${styles.socialIcons} ${darkMode ? styles.socialIconsDark : ''}`;
+  const listClassName = `${styles.ul} ${darkMode ? styles.textLight : ''} ${
+    darkMode ? styles.linkSoftDark : ''
+  }`;
+  const feedbackLinkClassName = `${styles.feedbackLink} ${darkMode ? styles.feedbackLinkDark : ''}`;
 
   return (
     <div
@@ -16,29 +22,30 @@ function FollowUpEmailTemplate() {
         darkMode ? styles.emailTemplateContainerDark : ''
       }`}
     >
-      {/* Company Logo */}
       <img src={companyLogo} alt="One Community Logo" className={styles.emailLogo} />
 
-      <h2 className={`${styles.h2} ${darkMode ? styles.textLight : ''}`}>Hi {email || '[Name]'},</h2>
+      <h2 className={`${styles.h2} ${darkMode ? styles.textLight : ''}`}>
+        Hi {email || '[Name]'},
+      </h2>
 
-      <p className={`${styles.p} ${darkMode ? styles.textLight : ''}`}>
+      <p className={textClassName}>
         We hope you enjoyed our recent event. Your feedback is valuable to us as we strive to
         improve our future events.
       </p>
 
-      <p className={`${styles.p} ${darkMode ? styles.textLight : ''}`}>
+      <p className={textClassName}>
         Please take a moment to share your thoughts:
         <br />
         <Link
           to={`/communityportal/activities/FeedbackForm/${eventId}/${email || 'no-email'}`}
-          className={`${styles.feedbackLink} ${darkMode ? styles.feedbackLinkDark : ''}`}
+          className={feedbackLinkClassName}
         >
           Survey Form
         </Link>
       </p>
 
-      <p className={`${styles.p} ${darkMode ? styles.textLight : ''}`}>If you'd like to:</p>
-      <ul className={`${styles.ul} ${darkMode ? styles.textLight : ''} ${darkMode ? styles.linkSoftDark : ''}`}>
+      <p className={textClassName}>If you&apos;d like to:</p>
+      <ul className={listClassName}>
         <li>
           Reschedule: <a href="https://www.onecommunityevents.org/reschedule">Reschedule Link</a>
         </li>
@@ -48,17 +55,15 @@ function FollowUpEmailTemplate() {
         </li>
       </ul>
 
-      <p className={`${styles.p} ${darkMode ? styles.textLight : ''}`}>Best regards,</p>
-      <p className={`${styles.p} ${darkMode ? styles.textLight : ''}`}>One Community Team</p>
-      <p className={`${styles.p} ${darkMode ? styles.textLight : ''}`}>Primary Email: jae@onecommunityglobal.org</p>
-      <p className={`${styles.p} ${darkMode ? styles.textLight : ''}`}>Google Email: onecommunityglobal@gmail.com</p>
-      <p className={`${styles.p} ${darkMode ? styles.textLight : ''}`}>Timezone: Los Angeles, CA - Pacific Time</p>
+      <p className={textClassName}>Best regards,</p>
+      <p className={textClassName}>One Community Team</p>
+      <p className={textClassName}>Primary Email: jae@onecommunityglobal.org</p>
+      <p className={textClassName}>Google Email: onecommunityglobal@gmail.com</p>
+      <p className={textClassName}>Timezone: Los Angeles, CA - Pacific Time</p>
 
-      {/* Divider */}
-      <hr className={`${styles.emailDivider} ${darkMode ? styles.emailDividerDark : ''}`} />
+      <hr className={dividerClassName} />
 
-      {/* Social Icons */}
-      <div className={`${styles.socialIcons} ${darkMode ? styles.socialIconsDark : ''}`}>
+      <div className={socialIconsClassName}>
         <a
           href="https://www.linkedin.com/company/one-community-global/"
           target="_blank"
@@ -87,8 +92,7 @@ function FollowUpEmailTemplate() {
         </a>
       </div>
 
-      {/* Divider */}
-      <hr className={`${styles.emailDivider} ${darkMode ? styles.emailDividerDark : ''}`} />
+      <hr className={dividerClassName} />
 
       <p
         style={{ fontWeight: 'bold', textAlign: 'center' }}

@@ -9,11 +9,10 @@
   background-color: #ffffff;
 }
 
-/* DARK MODE CONTAINER */
 .emailTemplateContainerDark {
-  background-color: #1C2541 !important;
-  border: 1px solid #3A506B !important;
-  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.45) !important;
+  background-color: #1c2541 !important;
+  border: 1px solid #3a506b !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45) !important;
   color: #ffffff !important;
 }
 
@@ -22,7 +21,7 @@
 }
 
 .linkSoftDark a {
-  color: #9fc1ff !important; 
+  color: #9fc1ff !important;
 }
 
 .emailLogo {
@@ -52,7 +51,6 @@
   color: #ffffff !important;
 }
 
-/* BUTTON — LIGHT MODE */
 .feedbackLink {
   display: flex;
   justify-content: center;
@@ -62,7 +60,7 @@
   margin-top: 10px;
   padding: 10px 15px;
   background-color: #007bff;
-  color: white;
+  color: #fff;
   font-size: 16px;
   text-align: center;
   text-decoration: none;
@@ -72,25 +70,23 @@
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* BUTTON — DARK MODE */
 .feedbackLinkDark {
-  background-color: #3A506B !important; 
-  color: #ffffff !important;
-  border: none !important;
-  height: 45px !important;
   display: flex !important;
   justify-content: center !important;
   align-items: center !important;
+  height: 45px !important;
+  background-color: #3a506b !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+.feedbackLink:hover {
+  background-color: #3399ff;
+  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
 }
 
 .feedbackLinkDark:hover {
-  background-color: #5B7CA6 !important;
-}
-
-/* LIGHT MODE HOVER */
-.feedbackLink:hover {
-  background-color: #3399ff;
-  box-shadow: 0px 4px 10px rgba(0, 123, 255, 0.2);
+  background-color: #5b7ca6 !important;
 }
 
 .feedbackLink:active {
@@ -98,7 +94,6 @@
   box-shadow: none;
 }
 
-/* LIST */
 .ul {
   padding-left: 20px;
 }
@@ -107,7 +102,6 @@
   margin-bottom: 5px;
 }
 
-/* SOCIAL ICONS */
 .socialIcons {
   display: flex;
   justify-content: center;
@@ -137,7 +131,6 @@
   color: #07a3db;
 }
 
-/* FOOTER LINKS */
 .footerLinksContainer {
   display: flex;
   flex-direction: row;
@@ -147,31 +140,26 @@
 }
 
 .footerLinks {
+  margin: 5px 0;
+  padding: 0 8px;
   font-size: 12px;
   font-weight: bold;
   color: #555;
-  margin: 5px 0;
-}
-
-.footerLinks a {
   text-decoration: none;
-  color: #007bff;
-  padding: 0 8px;
 }
 
-.footerLinks a:hover {
+.footerLinks:hover {
   text-decoration: underline;
 }
 
-/* DIVIDER */
 .emailDivider {
   width: 95%;
   height: 1px;
+  margin: 10px auto;
   background-color: #ddd;
   border: none;
-  margin: 10px auto;
 }
 
 .emailDividerDark {
-  background-color: #3A506B !important;
+  background-color: #3a506b !important;
 }
