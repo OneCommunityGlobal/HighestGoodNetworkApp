@@ -141,7 +141,9 @@ export default function Warning({ personId, username, userRole, displayUser }) {
           toast.success(toastMessage);
         }
       })
-      .catch(() => {});
+      .catch(() => {
+        toast.error('Unable to refresh warnings right now.');
+      });
   };
 
   const warnings = !toggle

@@ -121,7 +121,7 @@ function UserProfile(props) {
       setInputAutoStatus(response.status);
   
       return uniqueTeamCodes;
-    } catch (error) {
+    } catch {
       toast.error(`It was not possible to retrieve the team codes.
       Please try again by clicking the icon inside the input auto complete.`);
       return [];
@@ -181,7 +181,7 @@ function UserProfile(props) {
       });
       await loadUserProfile();
       toast.success('Profile Image Removed');
-    } catch (error) {
+    } catch {
       toast.error('Failed to remove profile Image.');
     }
   };
@@ -323,7 +323,7 @@ function UserProfile(props) {
           : '<list all team members names NOT included in the summary>';
   
       return `This week's summary was managed by ${currentManager.firstName} ${currentManager.lastName} and includes ${memberSubmittedString}. These people did NOT provide a summary ${memberDidntSubmitString}. <Insert the proofread and single-paragraph summary created by ChatGPT>`;
-    } catch (error) {
+    } catch {
       return '';
     }
   };
@@ -343,7 +343,9 @@ function UserProfile(props) {
         setTasks(res?.data || []);
         setOriginalTasks(res.data);
       })
-      .catch(() => {});
+      .catch(() => {
+        toast.error('Unable to load tasks right now.');
+      });
   };
 
   const getCurretLoggedinUserEmail = async () => {
@@ -364,7 +366,7 @@ function UserProfile(props) {
           },
         }),
       );
-    } catch (err) {
+    } catch {
       toast.error('Error while getting current logged in user email');
     }
   };
@@ -390,7 +392,7 @@ function UserProfile(props) {
           : '';
         setCalculatedStartDate(createdDate);
       }
-    } catch (error) {
+    } catch {
       // Fallback to createdDate on error
       const createdDate = userProfile?.createdDate
         ? userProfile.createdDate.split('T')[0]
@@ -503,7 +505,7 @@ function UserProfile(props) {
 
       checkIsProjectsEqual();
       setShowLoading(false);
-    } catch (err) {
+    } catch {
       setShowLoading(false);
     }
   };
@@ -518,7 +520,7 @@ function UserProfile(props) {
 
       setSummarySelected(userSummaries);
       setShowSummary(true);
-    } catch (err) {
+    } catch {
       setShowLoading(false);
     }
   };
@@ -537,7 +539,7 @@ function UserProfile(props) {
         label: `View ${item.name}'s summary.`,
       }));
       setSummaries(allSummaries);
-    } catch (err) {
+    } catch {
       toast.error('Could not load leaderboard data.');
     } finally {
       setLoadingSummaries(false);
@@ -567,7 +569,7 @@ function UserProfile(props) {
   try {
     await handleSubmit(updatedUserProfile);  // this already toasts success
     toast.success(`User removed from Project "${removedProject?.projectName || 'Unknown'}"`);
-  } catch (e) {
+  } catch {
     toast.error('Failed to remove project, please try again.');
   }
   return updatedProjects;
@@ -599,7 +601,7 @@ const onAssignProject = async (assignedProject) => {
   try {
     await handleSubmit(updatedUserProfile);  // reuses same pipeline
     toast.success(`User assigned to Project "${assignedProject.projectName || 'Unknown'}"`);
-  } catch (e) {
+  } catch {
     toast.error('Failed to assign project, please try again.');
   }
   return updatedProjects;
@@ -620,7 +622,7 @@ const onUpdateTask = async (taskId, updatedTask, method) => {
       toast.error('Failed to remove task');
     }
     return newTasks;
-  } catch (e) {
+  } catch {
     toast.error('Failed to remove task, please try again.');
     return tasks;
   }
@@ -645,7 +647,7 @@ setUpdatedTasks(prev => {
   try {
     await handleSubmit(updatedUserProfile);
     toast.success("Task updated");
-  } catch (e) {
+  } catch {
     toast.error("Failed to update task");
   }
 };
@@ -695,7 +697,7 @@ setUpdatedTasks(prev => {
         // keep originals in sync so the Save button doesn't light up unnecessarily
         setOriginalUserProfile(nextProfile);
         toast.success('Profile photo updated');
-      } catch (err) {
+      } catch {
         // revert on failure
         setUserProfile(prevProfile);
         toast.error('Failed to save profile photo. Please try again.');
@@ -830,7 +832,7 @@ setUpdatedTasks(prev => {
         }
         setSpecialWarnings(res);
       });
-    } catch (err) {
+    } catch {
       toast.error('Error loading special warnings.');
     }
   };
@@ -958,7 +960,9 @@ setUpdatedTasks(prev => {
     const updatedTask = updatedTasks[i];
     const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
     // consider await here if order matters
-    axios.put(url, updatedTask.updatedTask).catch(() => {});
+    axios.put(url, updatedTask.updatedTask).catch(() => {
+      toast.error('Failed to sync one or more task updates.');
+    });
   }
 
   try {
@@ -985,7 +989,7 @@ setUpdatedTasks(prev => {
   const handleBadgeSubmit = async () => {
     try {
       setSaved(false);
-    } catch (err) {
+    } catch {
       toast.error('An error occurred while reloading the user profile after the badge update.');
     }
   };
@@ -997,12 +1001,7 @@ setUpdatedTasks(prev => {
   });
 
   useEffect(() => {
-    const helper = async () => {
-      try {
-        await updateProjectTouserProfile();
-      } catch (error) {}
-    };
-    helper();
+    updateProjectTouserProfile();
   }, [projects]);
 
   useEffect(() => {
@@ -1084,7 +1083,7 @@ setUpdatedTasks(prev => {
       setIsRehireable(pendingRehireableStatus);
       setUserProfile(updatedUserProfile);
       setOriginalUserProfile(updatedUserProfile);
-    } catch (error) {
+    } catch {
       toast.error('Unable change rehireable status');
     }
   };

@@ -13,7 +13,7 @@ export function useProjectsData() {
       let response;
       try {
         response = await axios.get(ENDPOINTS.BM_PROJECTS_WITH_LOCATION);
-      } catch (projectError) {
+      } catch {
         response = await axios.get(ENDPOINTS.BM_ORGS_WITH_LOCATION);
       }
 
@@ -26,7 +26,7 @@ export function useProjectsData() {
         setOrgs(data);
       }
       return data;
-    } catch (error) {
+    } catch {
       const pseudoData = MapUtils.getPseudoOrgs();
       setOrgs(pseudoData);
       return [];

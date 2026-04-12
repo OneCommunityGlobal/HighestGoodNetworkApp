@@ -207,8 +207,11 @@ class UserProfileAdd extends Component {
 
     } catch (error) {
       this.setState({ isLoading: false })
-      toast.error(`It was not possible to retrieve the team codes. 
-      Please try again by clicking the icon inside the input auto complete.`);
+      toast.error(
+        error?.response?.data?.message ||
+          `It was not possible to retrieve the team codes. 
+      Please try again by clicking the icon inside the input auto complete.`,
+      );
     }
   };
 

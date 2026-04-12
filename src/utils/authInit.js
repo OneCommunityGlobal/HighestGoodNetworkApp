@@ -22,7 +22,7 @@ export default function initAuth() {
       httpService.setjwt(token);
       store.dispatch(setCurrentUser(decoded));
     }
-  } catch (error) {
+  } catch {
     // Handle invalid or malformed token
     localStorage.removeItem(config.tokenKey);
     store.dispatch(logoutUser());
