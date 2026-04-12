@@ -84,6 +84,16 @@ function FeedbackModal({ authUser }) {
       return;
     }
 
+    // Validate that member names are selected from dropdown only
+    const invalidActive = activeMembers.find(m => m.name.trim() !== '' && !m.selectedUser);
+
+    const invalidInactive = inactiveMembers.find(m => m.name.trim() !== '' && !m.selectedUser);
+
+    if (invalidActive || invalidInactive) {
+      toast.warn('Please select valid members from the dropdown only.');
+      return;
+    }
+
     const userId = authUser?.userid || 'test-user-id';
 
     const feedbackData = {

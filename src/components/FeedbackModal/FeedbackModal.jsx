@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import {
   Button,
   FormGroup,
@@ -38,13 +39,13 @@ function FeedbackModal() {
     const checkHelpRequest = async () => {
       try {
         const response = await axios.get(ENDPOINTS.QUESTIONNAIRE_CHECK_MODAL(userProfile._id));
-        console.log('CHECK MODAL RESPONSE:', response.data); // ← add this
         if (response.data.showModal) {
           setIsOpen(true);
         } else {
           setIsOpen(false);
         }
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error('Error checking help request:', error);
         setIsOpen(false);
       }
@@ -80,6 +81,34 @@ function FeedbackModal() {
       console.error('User ID not available');
       return;
     }
+
+    // Validate that all filled member names are valid users from the list
+    const allUsers = [...activeUsers, ...inactiveUsers];
+
+    const invalidActive = ratedMembers.find(
+      m =>
+        m.name.trim() !== '' &&
+        !allUsers.some(
+          u => `${u.firstName} ${u.lastName}`.toLowerCase() === m.name.trim().toLowerCase(),
+        ),
+    );
+
+    const invalidInactive = inactiveRatedMembers.find(
+      m =>
+        m.name.trim() !== '' &&
+        !allUsers.some(
+          u => `${u.firstName} ${u.lastName}`.toLowerCase() === m.name.trim().toLowerCase(),
+        ),
+    );
+
+    if (invalidActive || invalidInactive) {
+      toast.warn('Please select valid members from the dropdown only.');
+      return;
+    }
+    console.log('allUsers:', allUsers);
+    console.log('ratedMembers:', ratedMembers);
+    console.log('invalidActive:', invalidActive);
+    console.log('invalidInactive:', invalidInactive);
 
     setIsSubmitting(true);
 
