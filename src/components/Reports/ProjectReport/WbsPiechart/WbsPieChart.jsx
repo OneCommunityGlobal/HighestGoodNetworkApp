@@ -1,7 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 import {  useEffect, useState } from 'react';
 import { ProjectPieChart } from '../ProjectPieChart/ProjectPieChart';
-import '../PiechartByProject/PieChartByProject.css';
+import styles from '../PiechartByProject/PieChartByProject.module.css';
 
 export function WbsPieChart({
   projectMembers,
@@ -70,12 +70,12 @@ export function WbsPieChart({
   return (
     <div className={darkMode ? "text-light" : ""}>
       <h5> Owners, Managers and Admins in {projectName} </h5>
-      <div className= "pie-chart-title" >
+      <div className={styles.pieChartTitle}>
         <div>
           <label className={`${darkMode ? 'text-light' : ''} pr-4`} >{isChecked ? 'Weekly Committed Hours By Active Member(Hide Piechart)' : 'Weekly Committed Hours By Member(Show Piechart)'}</label>
           <input
             type="checkbox"
-            // className="pie-chart-checkbox"
+            className={styles.checkbox}
             checked={isChecked}
             onChange={handleShowPieChart}
           />
