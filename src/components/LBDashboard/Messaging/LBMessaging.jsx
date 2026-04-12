@@ -21,6 +21,109 @@ import {
 import logo from '../../../assets/images/logo2.png';
 import Header from '../../Header/Header';
 
+const DEFAULT_PROFILE_PICTURE = '/pfp-default-header.png';
+
+function MessagingContactItem({ user, contactNameClassName, onSelect }) {
+  return (
+    <div
+      key={user.userId || user._id}
+      className={styles.lbMessagingContact}
+      role="button"
+      tabIndex={0}
+      onClick={() => onSelect(user)}
+      onKeyDown={event => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          onSelect(user);
+        }
+      }}
+    >
+      <img
+        src={user.profilePic || DEFAULT_PROFILE_PICTURE}
+        alt="User Profile"
+        onError={event => {
+          event.target.onerror = null;
+          event.target.src = DEFAULT_PROFILE_PICTURE;
+        }}
+      />
+      <div className={styles.lbMessagingContactInfo}>
+        <div className={contactNameClassName}>
+          {user.firstName} {user.lastName}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MessagingContactsPanel({
+  isSearchOpen,
+  placeholder,
+  searchQuery,
+  onSearchChange,
+  onToggleSearch,
+  searchResults,
+  existingChats,
+  onSelectUser,
+  headerClassName,
+  bodyClassName,
+  contactNameClassName,
+  searchIconClassName,
+}) {
+  const visibleUsers = isSearchOpen ? searchResults : existingChats;
+
+  return (
+    <>
+      {isSearchOpen ? (
+        <div className={headerClassName}>
+          <input
+            type="text"
+            placeholder={placeholder}
+            className={`lb-search-input ${styles.lbSearchInput}`}
+            value={searchQuery}
+            onChange={onSearchChange}
+          />
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={onToggleSearch}
+            onKeyDown={event => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                onToggleSearch();
+              }
+            }}
+          >
+            <img
+              src="https://img.icons8.com/metro/26/multiply.png"
+              alt="multiply"
+              className="lb-msg-icon"
+            />
+          </div>
+        </div>
+      ) : (
+        <div className={headerClassName}>
+          <h3 className={`lb-contact-msgs ${styles.lbContactMsgs}`}>Messages</h3>
+          <div className={searchIconClassName}>
+            <FontAwesomeIcon icon={faSearch} className="lb-msg-icon" onClick={onToggleSearch} />
+          </div>
+        </div>
+      )}
+      <div className={bodyClassName}>
+        {visibleUsers.length === 0 ? (
+          <p>No chats available.</p>
+        ) : (
+          visibleUsers.map(user => (
+            <MessagingContactItem
+              key={user.userId || user._id}
+              user={user}
+              contactNameClassName={contactNameClassName}
+              onSelect={onSelectUser}
+            />
+          ))
+        )}
+      </div>
+    </>
+  );
+}
+
 export default function LBMessaging() {
   const dispatch = useDispatch();
   const [selectedUser, updateSelectedUser] = useState({});
@@ -331,45 +434,6 @@ export default function LBMessaging() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const renderContacts = () => {
-    if (existingChats.length === 0) {
-      return <p>No chats available.</p>;
-    }
-
-    return existingChats.map(user => (
-      <div
-        key={user.userId}
-        className={styles.lbMessagingContact}
-        role="button"
-        tabIndex={0}
-        onClick={() => {
-          updateSelection(user);
-          setMobileHamMenu(false);
-        }}
-        onKeyDown={e => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            updateSelection(user);
-            setMobileHamMenu(false);
-          }
-        }}
-      >
-        <img
-          src={user.profilePic || '/pfp-default-header.png'}
-          alt="User Profile"
-          onError={e => {
-            e.target.onerror = null;
-            e.target.src = '/pfp-default-header.png';
-          }}
-        />
-        <div className={styles.lbMessagingContactInfo}>
-          <div className={`${styles.lbMessagingContactName} ${mobileView ? styles.black : ''}`}>
-            {user.firstName} {user.lastName}
-          </div>
-        </div>
-      </div>
-    ));
-  };
-
   const getMaskedPhone = phone => {
     if (!phone) return '';
     const digits = phone.replace(/\D/g, '');
@@ -448,6 +512,25 @@ export default function LBMessaging() {
     );
   };
 
+  const handleSearchChange = event => {
+    const query = event.target.value;
+    setSearchQuery(query);
+    if (query.trim() !== '') {
+      searchUserProfiles(query);
+      return;
+    }
+    setSearchResults([]);
+  };
+
+  const handleToggleContacts = () => {
+    setShowContacts(prev => !prev);
+  };
+
+  const handleSelectUser = user => {
+    updateSelection(user);
+    setMobileHamMenu(false);
+  };
+
   return (
     userProfilesBasicInfo.length !== 0 && (
       <div className={`main-container ${styles.mainContainer}`}>
@@ -473,96 +556,20 @@ export default function LBMessaging() {
                       ref={menuRef}
                     >
                       <div className="lb-mobile-ham-menu-header">
-                        {showContacts ? (
-                          <div
-                            className={`lb-messaging-contacts-header-mobile ${styles.lbMessagingContactsHeaderMobile}`}
-                          >
-                            <input
-                              type="text"
-                              placeholder={placeholder}
-                              className={`lb-search-input ${styles.lbSearchInput}`}
-                              value={searchQuery}
-                              onChange={e => {
-                                const query = e.target.value;
-                                setSearchQuery(query);
-                                if (query.trim() !== '') {
-                                  searchUserProfiles(query);
-                                } else {
-                                  setSearchResults([]);
-                                }
-                              }}
-                            />
-                            <div
-                              role="button"
-                              tabIndex={0}
-                              onClick={() => setShowContacts(prev => !prev)}
-                              onKeyDown={e => {
-                                if (e.key === 'Enter' || e.key === ' ') {
-                                  setShowContacts(prev => !prev);
-                                }
-                              }}
-                            >
-                              <img
-                                src="https://img.icons8.com/metro/26/multiply.png"
-                                alt="multiply"
-                                className="lb-msg-icon"
-                              />
-                            </div>
-                          </div>
-                        ) : (
-                          <div
-                            className={`lb-messaging-contacts-header-mobile ${styles.lbMessagingContactsHeaderMobile}`}
-                          >
-                            <h3 className={`lb-contact-msgs ${styles.lbContactMsgs}`}>Messages</h3>
-                            <div className="lb-messaging-search-icons-mobile">
-                              <FontAwesomeIcon
-                                icon={faSearch}
-                                className="lb-msg-icon-mobile"
-                                onClick={() => setShowContacts(prev => !prev)}
-                              />
-                            </div>
-                          </div>
-                        )}
-                        <div className="lb-messaging-contacts-body active">
-                          {showContacts
-                            ? searchResults.map(user => (
-                                <div
-                                  key={user._id}
-                                  className={`lb-messaging-contact ${styles.lbMessagingContact}`}
-                                  role="button"
-                                  tabIndex={0}
-                                  onClick={() => {
-                                    updateSelection(user);
-                                    setMobileHamMenu(false);
-                                  }}
-                                  onKeyDown={e => {
-                                    if (e.key === 'Enter' || e.key === ' ') {
-                                      updateSelection(user);
-                                      setMobileHamMenu(false);
-                                    }
-                                  }}
-                                >
-                                  <img
-                                    src={user.profilePic || '/pfp-default-header.png'}
-                                    alt="User Profile"
-                                    onError={e => {
-                                      e.target.onerror = null;
-                                      e.target.src = '/pfp-default-header.png';
-                                    }}
-                                  />
-                                  <div className="lb-messaging-contact-info">
-                                    <div
-                                      className={`lb-messaging-contact-name ${
-                                        mobileView ? 'black' : ''
-                                      }`}
-                                    >
-                                      {user.firstName} {user.lastName}
-                                    </div>
-                                  </div>
-                                </div>
-                              ))
-                            : renderContacts()}
-                        </div>
+                        <MessagingContactsPanel
+                          isSearchOpen={showContacts}
+                          placeholder={placeholder}
+                          searchQuery={searchQuery}
+                          onSearchChange={handleSearchChange}
+                          onToggleSearch={handleToggleContacts}
+                          searchResults={searchResults}
+                          existingChats={existingChats}
+                          onSelectUser={handleSelectUser}
+                          headerClassName={`lb-messaging-contacts-header-mobile ${styles.lbMessagingContactsHeaderMobile}`}
+                          bodyClassName="lb-messaging-contacts-body active"
+                          contactNameClassName={`${styles.lbMessagingContactName} ${styles.black}`}
+                          searchIconClassName="lb-messaging-search-icons-mobile"
+                        />
                       </div>
                     </div>
                   )}
@@ -673,88 +680,20 @@ export default function LBMessaging() {
             {/* Contacts Section */}
             {!mobileView && (
               <div className="lb-messaging-contacts">
-                {showContacts ? (
-                  <div
-                    className={`lb-messaging-contacts-header ${styles.lbMessagingContactsHeader}`}
-                  >
-                    <input
-                      type="text"
-                      placeholder={placeholder}
-                      className={`lb-search-input ${styles.lbSearchInput}`}
-                      value={searchQuery}
-                      onChange={e => {
-                        const query = e.target.value;
-                        setSearchQuery(query);
-                        if (query.trim() !== '') {
-                          searchUserProfiles(query);
-                        } else {
-                          setSearchResults([]);
-                        }
-                      }}
-                    />
-                    <div
-                      role="button"
-                      tabIndex={0}
-                      onClick={() => setShowContacts(prev => !prev)}
-                      onKeyDown={e => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          setShowContacts(prev => !prev);
-                        }
-                      }}
-                    >
-                      <img
-                        src="https://img.icons8.com/metro/26/multiply.png"
-                        alt="multiply"
-                        className="lb-msg-icon"
-                      />
-                    </div>
-                  </div>
-                ) : (
-                  <div
-                    className={`lb-messaging-contacts-header ${styles.lbMessagingContactsHeader}`}
-                  >
-                    <h3 className={`lb-contact-msgs ${styles.lbContactMsgs}`}>Messages</h3>
-                    <div className="lb-messaging-search-icons">
-                      <FontAwesomeIcon
-                        icon={faSearch}
-                        className="lb-msg-icon"
-                        onClick={() => setShowContacts(prev => !prev)}
-                      />
-                    </div>
-                  </div>
-                )}
-                <div className="lb-messaging-contacts-body active">
-                  {showContacts
-                    ? searchResults.map(user => (
-                        <div
-                          key={user._id}
-                          className={`lb-messaging-contact ${styles.lbMessagingContact}`}
-                          role="button"
-                          tabIndex={0}
-                          onClick={() => updateSelection(user)}
-                          onKeyDown={e => {
-                            if (e.key === 'Enter' || e.key === ' ') {
-                              updateSelection(user);
-                            }
-                          }}
-                        >
-                          <img
-                            src={user.profilePic || '/pfp-default-header.png'}
-                            alt="User Profile"
-                            onError={e => {
-                              e.target.onerror = null;
-                              e.target.src = '/pfp-default-header.png';
-                            }}
-                          />
-                          <div className="lb-messaging-contact-info">
-                            <div className="lb-messaging-contact-name">
-                              {user.firstName} {user.lastName}
-                            </div>
-                          </div>
-                        </div>
-                      ))
-                    : renderContacts()}
-                </div>
+                <MessagingContactsPanel
+                  isSearchOpen={showContacts}
+                  placeholder={placeholder}
+                  searchQuery={searchQuery}
+                  onSearchChange={handleSearchChange}
+                  onToggleSearch={handleToggleContacts}
+                  searchResults={searchResults}
+                  existingChats={existingChats}
+                  onSelectUser={handleSelectUser}
+                  headerClassName={`lb-messaging-contacts-header ${styles.lbMessagingContactsHeader}`}
+                  bodyClassName="lb-messaging-contacts-body active"
+                  contactNameClassName={styles.lbMessagingContactName}
+                  searchIconClassName="lb-messaging-search-icons"
+                />
               </div>
             )}
 
