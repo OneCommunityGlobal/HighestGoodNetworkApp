@@ -191,6 +191,8 @@ import PRDashboardPromotionEligibility from './components/HGNPRDashboard/PRDashb
 import PRDashboardTopReviewedPRs from './components/HGNPRDashboard/PRDashboardTopReviewedPRs';
 import PRDashboardDetails from './components/HGNPRDashboard/PRDashboardDetails';
 import PromotionEligibility from './components/HGNPRDashboard/PromotionEligibility';
+import BookingPage from './components/Booking/BookingPage';
+import BookingConfirmPage from './components/Booking/BookingConfirmPage';
 import PRPromotionsPage from './components/PRPromotions/PRPromotionsPage';
 import ReviewersStackedBarChart from './components/HGNPRDashboard/ReviewersStackedBarChart/ReviewersStackedBarChart';
 import PRGradingDashboard from './components/PRGradingDashboard/PRGradingDashboard';
@@ -357,6 +359,8 @@ export default (
         <Route path="/logattendance" component={AttendanceNoShow} />
         <ProtectedRoute path="/project/members/:projectId" fallback component={Members} />
         <ProtectedRoute path="/timelog/" exact render={() => <Timelog userId={null} />} />
+        <ProtectedRoute path="/booking" exact component={BookingPage} />
+        <ProtectedRoute path="/booking/confirm" exact component={BookingConfirmPage} />
         <ProtectedRoute
           path="/timelog/:userId"
           exact
