@@ -15,6 +15,7 @@ import {
 import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt, FaSearch, FaTimes } from 'react-icons/fa';
 import styles from './CPDashboard.module.css';
 import { ENDPOINTS } from '../../utils/URL';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 const FixedRatioImage = ({ src, alt, fallback }) => (
@@ -31,9 +32,7 @@ const FixedRatioImage = ({ src, alt, fallback }) => (
       alt={alt}
       loading="lazy"
       onError={e => {
-        if (e.currentTarget.src !== fallback) {
-          e.currentTarget.src = fallback;
-        }
+        if (e.currentTarget.src !== fallback) e.currentTarget.src = fallback;
       }}
       style={{
         width: '100%',
@@ -115,7 +114,6 @@ export function CPDashboard() {
           total: response.data.events?.length || 0,
         }));
       } catch (err) {
-        console.error('Failed to fetch events', err);
         setError('Failed to load events');
       } finally {
         setIsLoading(false);
@@ -163,10 +161,7 @@ export function CPDashboard() {
   };
 
   const formatDate = dateStr => {
-    if (!dateStr) {
-      return 'Date TBD';
-    }
-
+    if (!dateStr) return 'Date TBD';
     const date = new Date(dateStr);
     return date.toLocaleString('en-US', {
       weekday: 'long',
@@ -232,24 +227,8 @@ export function CPDashboard() {
     pagination.currentPage * pagination.limit,
   );
 
-  const isFiltered = Boolean(searchQuery);
-  const totalFilteredCount = filteredEvents.length;
-
-  let eventCountText = 'Showing all events';
-
-  if (isFiltered) {
-    if (totalFilteredCount > 0) {
-      eventCountText = `Showing ${totalFilteredCount} event${totalFilteredCount !== 1 ? 's' : ''}`;
-    } else {
-      eventCountText = 'No events found';
-    }
-  }
-
   const goToPage = newPage => {
-    if (newPage < 1 || newPage > totalPages) {
-      return;
-    }
-
+    if (newPage < 1 || newPage > totalPages) return;
     setPagination(prev => ({ ...prev, currentPage: newPage }));
   };
 
@@ -273,35 +252,38 @@ export function CPDashboard() {
 
   if (displayedEvents.length > 0) {
     eventsContent = displayedEvents.map(event => (
-      <Col md={4} key={event.id} className={styles.eventCardCol}>
-        <Card className={styles.eventCard}>
-          <div className={styles.eventCardImgContainer}>
-            <FixedRatioImage src={event.image} alt={event.title} fallback={FALLBACK_IMG} />
-          </div>
-          <CardBody>
-            <h5 className={styles.eventTitle}>{event.title}</h5>
-            <p className={styles.eventDate}>
-              <FaCalendarAlt className={styles.eventIcon} /> {formatDate(event.date)}
-            </p>
-            <p className={styles.eventLocation}>
-              <FaMapMarkerAlt className={styles.eventIcon} /> {event.location || 'Location TBD'}
-            </p>
-            <p className={styles.eventOrganizer}>
-              {event.organizerLogo && !failedLogos.has(event._id) ? (
-                <img
-                  src={event.organizerLogo}
-                  alt={normalizeOrganizer(event.organizer) || 'Organizer'}
-                  className={styles.organizerLogo}
-                  onError={() => handleLogoError(event._id)}
-                  loading="lazy"
-                />
-              ) : (
-                <FaUserAlt className={styles.eventIcon} aria-hidden="true" />
-              )}{' '}
-              <span>{normalizeOrganizer(event.organizer) || 'Organizer TBD'}</span>
-            </p>
-          </CardBody>
-        </Card>
+      <Col md={4} key={event.id} className={`${styles.eventCardCol}`}>
+        <Link
+          className={styles.eventCardLink}
+          to={`/communityportal/Activities/Register/${event._id}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Card className={`${styles.eventCard} ${darkMode ? styles.darkEventCard : ''}`}>
+            <div className={styles.eventCardImgContainer}>
+              <FixedRatioImage src={event.coverImage} alt={event.title} fallback={FALLBACK_IMG} />
+            </div>
+            <CardBody className={`${styles.eventCardBody} ${darkMode ? styles.darkEventCard : ''}`}>
+              <h5 className={styles.eventTitle}>{event.title}</h5>
+              <p className={styles.eventDate}>
+                <FaCalendarAlt
+                  className={`${darkMode ? styles.eventIconDark : styles.eventIcon}`}
+                />{' '}
+                {formatDate(event.date)}
+              </p>
+              <p className={styles.eventLocation}>
+                <FaMapMarkerAlt
+                  className={`${darkMode ? styles.eventIconDark : styles.eventIcon}`}
+                />{' '}
+                {event.location || 'Location TBD'}
+              </p>
+              <p className={styles.eventOrganizer}>
+                <FaUserAlt className={`${darkMode ? styles.eventIconDark : styles.eventIcon}`} />{' '}
+                {event.organizer || 'Organizer TBD'}
+              </p>
+            </CardBody>
+          </Card>
+        </Link>
       </Col>
     ));
   } else {
@@ -365,8 +347,7 @@ export function CPDashboard() {
       <Row>
         <Col md={3} className={`${styles.dashboardSidebar} ${darkMode ? styles.darkSidebar : ''}`}>
           <div className={styles.filterSection}>
-            <h4>Search Filters</h4>
-
+            <h4 className={styles.sidebarTitle}>Search Filters</h4>
             <div className={styles.filterSectionDivider}>
               <div className={styles.filterItem}>
                 <label htmlFor="date-tomorrow"> Dates</label>
@@ -388,7 +369,6 @@ export function CPDashboard() {
                       Tomorrow
                     </Label>
                   </FormGroup>
-
                   <FormGroup check className={styles.radioGroup + ' d-flex align-items-center'}>
                     <Input
                       id="date-weekend"
@@ -407,7 +387,6 @@ export function CPDashboard() {
                     </Label>
                   </FormGroup>
                 </div>
-
                 <Button
                   color="primary"
                   size="sm"
@@ -415,10 +394,10 @@ export function CPDashboard() {
                     setDateFilter('');
                     setSelectedDate('');
                   }}
+                  className={styles.clearDateFilterBtn}
                 >
                   Clear date filter
                 </Button>
-
                 <Input
                   type="date"
                   placeholder="Select Date"
@@ -432,36 +411,41 @@ export function CPDashboard() {
               <div className={styles.filterItem}>
                 <label htmlFor="online-only">Online</label>
                 <div>
-                  <Input
-                    type="checkbox"
-                    id="online-only"
-                    checked={onlineOnly}
-                    onChange={e => {
-                      setOnlineOnly(e.target.checked);
-                      setPagination(prev => ({ ...prev, currentPage: 1 }));
-                    }}
-                  />{' '}
-                  Online Only
+                  <FormGroup check className={styles.radioGroup + ' d-flex align-items-center'}>
+                    <Input
+                      type="checkbox"
+                      id="online-only"
+                      checked={onlineOnly}
+                      onChange={e => {
+                        setOnlineOnly(e.target.checked);
+                        setPagination(prev => ({ ...prev, currentPage: 1 }));
+                      }}
+                      className={styles.radioInput}
+                    />
+                    <Label htmlFor="online-only" check className={styles.radioLabel}>
+                      Online Only
+                    </Label>
+                  </FormGroup>
                 </div>
               </div>
 
               <div className={styles.filterItem}>
                 <label htmlFor="branches">Branches</label>
-                <Input id="branches" type="select">
+                <Input type="select">
                   <option>Select branches</option>
                 </Input>
               </div>
 
               <div className={styles.filterItem}>
                 <label htmlFor="themes">Themes</label>
-                <Input id="themes" type="select">
+                <Input type="select">
                   <option>Select themes</option>
                 </Input>
               </div>
 
               <div className={styles.filterItem}>
                 <label htmlFor="categories">Categories</label>
-                <Input id="categories" type="select">
+                <Input type="select">
                   <option>Select categories</option>
                 </Input>
               </div>
@@ -469,21 +453,8 @@ export function CPDashboard() {
           </div>
         </Col>
 
-        <Col md={9} className={`${styles.dashboardMain} ${darkMode ? styles.darkMain : ''}`}>
-          <div className={styles.eventsHeader}>
-            <h2 className={styles.sectionTitle}>Events</h2>
-            <Button color="primary" className={styles.showPastEventsBtn}>
-              Show Past Events
-            </Button>
-          </div>
-
-          <p className={styles['event-count-text']}>
-            {isFiltered
-              ? totalFilteredCount > 0
-                ? `Showing ${totalFilteredCount} event${totalFilteredCount !== 1 ? 's' : ''}`
-                : 'No events found'
-              : 'Showing all events'}
-          </p>
+        <Col md={9} className={`${styles.dashboardMain}`}>
+          <h2 className={styles.sectionTitle}>Events</h2>
 
           <Row>{eventsContent}</Row>
 
