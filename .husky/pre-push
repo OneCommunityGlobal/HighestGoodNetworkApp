@@ -9,6 +9,18 @@ fi
 
 . "$(dirname "$0")/_/husky.sh"
 
+changed_files=$(git diff --name-only @{upstream}...HEAD 2>/dev/null)
+
+if [ -z "$changed_files" ]; then
+  echo "ℹ️  No outgoing changes to validate. Skipping pre-push checks."
+  exit 0
+fi
+
+if ! printf '%s\n' "$changed_files" | grep -qvE '^\.husky/'; then
+  echo "ℹ️  Only Husky hook changes detected. Skipping full test and lint checks."
+  exit 0
+fi
+
 echo "🧪 Running tests before push..."
 npm run test -- --bail=1
 test_status=$?
