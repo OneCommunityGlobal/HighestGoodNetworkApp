@@ -171,10 +171,17 @@ function UserPermissionsPopUp({
         autoComplete="off"
       >
         <div
-          className={darkMode ? styles['text-space-cadet'] : ''}
-          style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '5px' }}
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            paddingBottom: '5px',
+            color: darkMode ? '#e2e8f0' : 'inherit',
+          }}
         >
-          <h4 className={styles['user-permissions-pop-up__title']}>
+          <h4
+            className={styles['user-permissions-pop-up__title']}
+            style={{ color: darkMode ? '#e2e8f0' : '' }}
+          >
             User name<span className="red-asterisk">* </span>:
           </h4>
           <Button
@@ -211,7 +218,8 @@ function UserPermissionsPopUp({
               setIsOpen(true);
             }}
             placeholder="Shows only ACTIVE users"
-            className={darkMode ? styles['bg-darkmode-liblack text-light border-0'] : ''}
+            className={darkMode ? 'text-light border-0' : ''}
+            style={darkMode ? { backgroundColor: '#1c2541', color: '#ffffff' } : {}}
             autoComplete="off"
             name="user-search"
           />
@@ -221,9 +229,9 @@ function UserPermissionsPopUp({
               role="menu"
               aria-hidden="false"
               className={`dropdown-menu${isOpen ? ` show ${styles['dropdown__user-perms']}` : ''} ${
-                darkMode ? styles['bg-darkmode-liblack text-light'] : ''
+                darkMode ? 'text-light' : ''
               }`}
-              style={{ marginTop: '0px', width: '100%' }}
+              style={darkMode ? { backgroundColor: '#1c2541', borderColor: '#3a506b' } : {}}
             >
               {filteredUsers.length === 0 && searchText !== '' ? (
                 <div style={{ padding: '5px' }}>No user found</div>
@@ -261,9 +269,8 @@ function UserPermissionsPopUp({
         </Dropdown>
         <div>
           <h4
-            className={`${styles['user-permissions-pop-up__title']} ${
-              darkMode ? styles['text-space-cadet'] : ''
-            }`}
+            className={styles['user-permissions-pop-up__title']}
+            style={{ color: darkMode ? '#e2e8f0' : '' }}
           >
             Permissions:
           </h4>
@@ -284,7 +291,7 @@ function UserPermissionsPopUp({
           color="primary"
           size="lg"
           block
-          style={{ ...boxStyle, marginTop: '1rem' }}
+          style={{ ...(darkMode ? boxStyleDark : boxStyle), marginTop: '1rem' }}
         >
           Submit
         </Button>

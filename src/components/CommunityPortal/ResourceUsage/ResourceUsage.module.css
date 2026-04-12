@@ -234,3 +234,24 @@
   font-weight: 700;
   fill: #666;
 }
+
+.customDropdownDark {
+  background-color: #1c2541 !important;
+  color: #fff !important;
+  border-color: #3a506b !important;
+}
+
+.dropdownMenuDark {
+  background-color: #1c2541 !important;
+  border-color: #3a506b !important;
+}
+
+.dropdownItemDark {
+  color: #fff !important;
+}
+
+.dropdownItemDark:hover,
+.dropdownItemDark:focus {
+  background-color: #3a506b !important;
+  color: #fff !important;
+}

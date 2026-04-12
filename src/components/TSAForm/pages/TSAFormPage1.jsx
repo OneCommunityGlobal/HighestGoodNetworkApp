@@ -1,8 +1,11 @@
 import { useHistory } from 'react-router-dom';
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 
 function TSAFormPage1() {
   const history = useHistory();
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   const [errors, setErrors] = useState({
     email: false,
     fullname: false,
@@ -11,18 +14,26 @@ function TSAFormPage1() {
     areaofExpertise: false,
   });
 
+  // Dark mode color tokens
+  const pageBg = darkMode ? '#1a2634' : '#e6f5fb';
+  const cardBg = darkMode ? '#1e2d3d' : '#ffffff';
+  const cardBorder = darkMode ? '1px solid #3a506b' : '1px solid #ccc';
+  const textColor = darkMode ? '#e2e8f0' : '#000000';
+  const inputBorderBottom = darkMode ? '1px solid #5a7a96' : '1px solid #ccc';
+  const inputBg = 'transparent';
+  const inputColor = darkMode ? '#e2e8f0' : '#000000';
+
   const clearError = field => {
     setErrors(prev => ({ ...prev, [field]: false }));
   };
+
   const isValidEmail = email => {
-    // Simple email regex (enough for most use cases)
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   };
 
   const isValidFullName = name => {
     const words = name.trim().split(/\s+/);
     if (words.length < 2) return false;
-
     return words.every(word => /^[A-Z][a-zA-Z'-]*$/.test(word));
   };
 
@@ -44,11 +55,9 @@ function TSAFormPage1() {
     if (!email || !email.value.trim() || !isValidEmail(email.value.trim())) {
       newErrors.email = true;
     }
-
     if (!fullname || !fullname.value.trim() || !isValidFullName(fullname.value.trim())) {
       newErrors.fullname = true;
     }
-
     if (!title || !title.value.trim()) newErrors.professionaltitle = true;
     if (!experience) newErrors.professionalExperience = true;
     if (expertise.length === 0) newErrors.areaofExpertise = true;
@@ -65,6 +74,7 @@ function TSAFormPage1() {
 
     history.push('/tsaformpage2');
   };
+
   return (
     <div
       style={{
@@ -73,23 +83,25 @@ function TSAFormPage1() {
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: '#e6f5fb',
+        backgroundColor: pageBg,
         fontFamily: 'Arial, sans-serif',
         overflowY: 'auto',
         zIndex: 1000,
         padding: '40px 0',
+        color: textColor,
       }}
     >
       {/* Banner Box */}
       <div
         style={{
-          backgroundColor: '#fff',
+          backgroundColor: cardBg,
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',
           marginBottom: '15px',
-          boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+          boxShadow: darkMode ? '0 4px 10px rgba(0,0,0,0.5)' : '0 4px 10px rgba(0,0,0,0.1)',
           overflow: 'hidden',
+          border: cardBorder,
         }}
       >
         <div
@@ -108,14 +120,14 @@ function TSAFormPage1() {
       {/* Introduction Content Box */}
       <div
         style={{
-          backgroundColor: '#fff',
+          backgroundColor: cardBg,
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',
-          boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+          boxShadow: darkMode ? '0 4px 10px rgba(0,0,0,0.5)' : '0 4px 10px rgba(0,0,0,0.1)',
+          border: cardBorder,
         }}
       >
-        {/* Title Bar inside content box */}
         <div
           style={{
             backgroundColor: '#4d87a1',
@@ -131,8 +143,15 @@ function TSAFormPage1() {
           Technical Support and Advisory Volunteer Agreement
         </div>
 
-        {/* Content */}
-        <div style={{ padding: '35px', fontSize: '16px', lineHeight: '1.6', textAlign: 'justify' }}>
+        <div
+          style={{
+            padding: '35px',
+            fontSize: '16px',
+            lineHeight: '1.6',
+            textAlign: 'justify',
+            color: textColor,
+          }}
+        >
           <p>
             This questionnaire is for those interested in helping support One Community as a member
             of the all-volunteer Sustainable Infrastructure Technical Support and Advisory Team. It
@@ -160,7 +179,7 @@ function TSAFormPage1() {
           </p>
           <p
             style={{
-              borderTop: '1px solid #ccc',
+              borderTop: darkMode ? '1px solid #3a506b' : '1px solid #ccc',
               margin: '30px 0 0 0',
               padding: '10px 0 0 0',
               color: 'red',
@@ -171,14 +190,16 @@ function TSAFormPage1() {
           </p>
         </div>
       </div>
-      {/* Title + Intro */}
+
+      {/* General Questions Section */}
       <div
         style={{
-          backgroundColor: '#fff',
+          backgroundColor: cardBg,
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',
-          boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+          boxShadow: darkMode ? '0 4px 10px rgba(0,0,0,0.5)' : '0 4px 10px rgba(0,0,0,0.1)',
+          border: cardBorder,
         }}
       >
         <div
@@ -195,7 +216,15 @@ function TSAFormPage1() {
         >
           General Questions
         </div>
-        <div style={{ padding: '35px', fontSize: '16px', lineHeight: '1.6', textAlign: 'justify' }}>
+        <div
+          style={{
+            padding: '35px',
+            fontSize: '16px',
+            lineHeight: '1.6',
+            textAlign: 'justify',
+            color: textColor,
+          }}
+        >
           <p>These are the basics we need to understand your experience and areas of expertise.</p>
         </div>
       </div>
@@ -203,14 +232,15 @@ function TSAFormPage1() {
       {/* Email */}
       <div
         style={{
-          backgroundColor: '#fff',
+          backgroundColor: cardBg,
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',
-          boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+          boxShadow: darkMode ? '0 4px 10px rgba(0,0,0,0.5)' : '0 4px 10px rgba(0,0,0,0.1)',
           padding: '30px',
           fontSize: '16px',
-          border: errors.email ? '2px solid #d93025' : '1px solid #ccc',
+          border: errors.email ? '2px solid #d93025' : cardBorder,
+          color: textColor,
         }}
       >
         <label
@@ -221,6 +251,7 @@ function TSAFormPage1() {
             alignItems: 'center',
             marginBottom: '20px',
             fontWeight: 'bold',
+            color: textColor,
           }}
         >
           <span>Email</span>
@@ -236,9 +267,10 @@ function TSAFormPage1() {
             padding: '10px 0',
             fontSize: '16px',
             border: 'none',
-            borderBottom: '1px solid #ccc',
+            borderBottom: inputBorderBottom,
             outline: 'none',
-            backgroundColor: 'transparent',
+            backgroundColor: inputBg,
+            color: inputColor,
           }}
         />
         {errors.email && (
@@ -251,14 +283,15 @@ function TSAFormPage1() {
       {/* Full Name */}
       <div
         style={{
-          backgroundColor: '#fff',
+          backgroundColor: cardBg,
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',
-          boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+          boxShadow: darkMode ? '0 4px 10px rgba(0,0,0,0.5)' : '0 4px 10px rgba(0,0,0,0.1)',
           padding: '30px',
           fontSize: '16px',
-          border: errors.fullname ? '2px solid #d93025' : '1px solid #ccc',
+          border: errors.fullname ? '2px solid #d93025' : cardBorder,
+          color: textColor,
         }}
       >
         <label
@@ -269,6 +302,7 @@ function TSAFormPage1() {
             alignItems: 'center',
             marginBottom: '20px',
             fontWeight: 'bold',
+            color: textColor,
           }}
         >
           <span>Your Full Name:</span>
@@ -284,9 +318,10 @@ function TSAFormPage1() {
             padding: '10px 0',
             fontSize: '16px',
             border: 'none',
-            borderBottom: '1px solid #ccc',
+            borderBottom: inputBorderBottom,
             outline: 'none',
-            backgroundColor: 'transparent',
+            backgroundColor: inputBg,
+            color: inputColor,
           }}
         />
         {errors.fullname && (
@@ -297,17 +332,18 @@ function TSAFormPage1() {
         )}
       </div>
 
-      {/* Professional Tile */}
+      {/* Professional Title */}
       <div
         style={{
-          backgroundColor: '#fff',
+          backgroundColor: cardBg,
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',
-          boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+          boxShadow: darkMode ? '0 4px 10px rgba(0,0,0,0.5)' : '0 4px 10px rgba(0,0,0,0.1)',
           padding: '30px',
           fontSize: '16px',
-          border: errors.professionaltitle ? '2px solid #d93025' : '1px solid #ccc',
+          border: errors.professionaltitle ? '2px solid #d93025' : cardBorder,
+          color: textColor,
         }}
       >
         <label
@@ -318,6 +354,7 @@ function TSAFormPage1() {
             alignItems: 'center',
             marginBottom: '20px',
             fontWeight: 'bold',
+            color: textColor,
           }}
         >
           <span>Professional Title:</span>
@@ -333,9 +370,10 @@ function TSAFormPage1() {
             padding: '10px 0',
             fontSize: '16px',
             border: 'none',
-            borderBottom: '1px solid #ccc',
+            borderBottom: inputBorderBottom,
             outline: 'none',
-            backgroundColor: 'transparent',
+            backgroundColor: inputBg,
+            color: inputColor,
           }}
         />
         {errors.professionaltitle && (
@@ -348,14 +386,15 @@ function TSAFormPage1() {
       {/* Years of Professional Experience */}
       <div
         style={{
-          backgroundColor: '#fff',
+          backgroundColor: cardBg,
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',
-          boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+          boxShadow: darkMode ? '0 4px 10px rgba(0,0,0,0.5)' : '0 4px 10px rgba(0,0,0,0.1)',
           padding: '30px',
           fontSize: '16px',
-          border: errors.professionalExperience ? '2px solid #d93025' : '1px solid #ccc',
+          border: errors.professionalExperience ? '2px solid #d93025' : cardBorder,
+          color: textColor,
         }}
       >
         <label
@@ -366,6 +405,7 @@ function TSAFormPage1() {
             alignItems: 'center',
             marginBottom: '20px',
             fontWeight: 'bold',
+            color: textColor,
           }}
         >
           <span>Years of Professional Experience:</span>
@@ -381,6 +421,7 @@ function TSAFormPage1() {
               marginBottom: '10px',
               cursor: 'pointer',
               fontWeight: 'normal',
+              color: textColor,
             }}
           >
             <input
@@ -407,14 +448,15 @@ function TSAFormPage1() {
       {/* Areas of Expertise */}
       <div
         style={{
-          backgroundColor: '#fff',
+          backgroundColor: cardBg,
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',
-          boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+          boxShadow: darkMode ? '0 4px 10px rgba(0,0,0,0.5)' : '0 4px 10px rgba(0,0,0,0.1)',
           padding: '30px',
           fontSize: '16px',
-          border: errors.areaofExpertise ? '2px solid #d93025' : '1px solid #ccc',
+          border: errors.areaofExpertise ? '2px solid #d93025' : cardBorder,
+          color: textColor,
         }}
       >
         <div
@@ -425,12 +467,12 @@ function TSAFormPage1() {
             flexWrap: 'wrap',
             gap: '8px',
             marginBottom: '20px',
+            color: textColor,
           }}
         >
           <span style={{ fontWeight: 'bold' }}>
             Areas of Expertise: <span style={{ fontWeight: 'normal' }}>(Check all that apply)</span>
           </span>
-
           <span style={{ color: 'red' }}>*</span>
         </div>
 
@@ -464,6 +506,7 @@ function TSAFormPage1() {
                 alignItems: 'center',
                 cursor: 'pointer',
                 fontWeight: 'normal',
+                color: textColor,
               }}
             >
               <input
@@ -493,9 +536,10 @@ function TSAFormPage1() {
                   padding: '8px 0',
                   fontSize: '16px',
                   border: 'none',
-                  borderBottom: '1px solid #ccc',
+                  borderBottom: inputBorderBottom,
                   outline: 'none',
-                  backgroundColor: 'transparent',
+                  backgroundColor: inputBg,
+                  color: inputColor,
                 }}
               />
             )}

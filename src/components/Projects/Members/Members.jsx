@@ -168,6 +168,7 @@ const Members = props => {
                   wordBreak: 'break-word',
                   flexGrow: 1,
                   whiteSpace: 'normal',
+                  color: darkMode ? '#ffffff' : 'inherit',
                 }}
               >
                 {projectName}
@@ -178,24 +179,35 @@ const Members = props => {
           {canAssignProjectToUsers ? (
             <div className="input-group" id="new_project">
               <div className="input-group-prepend">
-                <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>Find user</span>
+              <span
+                  className="input-group-text"
+                  style={
+                    darkMode
+                      ? { backgroundColor: '#1c2541', color: '#ffffff' } // Added by Shreya
+                      : {}
+                  }
+                >
+                  Find user
+                </span>
               </div>
 
               <input
                 // eslint-disable-next-line jsx-a11y/no-autofocus
                 autoFocus
                 type="text"
-                className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
-                aria-label="Search user"
+                className="form-control"
                 placeholder="Name"
                 value={searchText}
                 onChange={handleInputChange}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    handleFind();
-                  }
-                }}
+                style={
+                  darkMode
+                    ? {
+                        backgroundColor: '#1c2541', // Added by Shreya
+                        color: '#ffffff',
+                        borderColor: '#3a506b',
+                      }
+                    : {}
+                }
               // disabled={showActiveMembersOnly}
               />
               <div className="input-group-append">
@@ -204,6 +216,15 @@ const Members = props => {
                   type="button"
                   disabled={!searchText.trim()}   // enabled only when there’s something to find
                   onClick={handleFind}
+                  style={
+                    darkMode
+                      ? {
+                          backgroundColor: '#3a506b', // Added by Shreya
+                          color: '#ffffff',
+                          border: 'none',
+                        }
+                      : {}
+                  }
                 >
                   Find
                 </button>

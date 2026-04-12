@@ -506,3 +506,58 @@
 .infringementCount a:hover {
   text-decoration: none;
 }
+
+.dark-mode .table,
+.dark-mode .table th,
+.dark-mode .table td {
+  border-color: #3a506b;
+}
+
+.dark-mode .form-control,
+.dark-mode select {
+  background-color: #1c2541;
+  color: #ffffff;
+  border-color: #3a506b;
+}
+
+/* added by shreya P — dark mode: pagination Previous/Next buttons and page
+   number links need a contrasting background so they are readable */
+.dark-mode .btn-default,
+.bg-oxford-blue .btn-default {
+  background-color: #1c2541;
+  color: #ffffff;
+  border-color: #3a506b;
+}
+   
+   /* added by shreya P — table border lines in dark mode */
+.dark-mode .table-bordered td,
+.dark-mode .table-bordered th,
+.bg-yinmn-blue .table-bordered td,
+.bg-yinmn-blue .table-bordered th {
+  border-color: #3a506b;
+}
+
+.dark-mode .userManagementTable thead {
+  background-color: #1c2541;
+  color: #ffffff;
+}
+
+.dark-mode input,
+.dark-mode select {
+  background-color: #1c2541;
+  color: #ffffff;
+  border-color: #3a506b;
+}
+
+.dark-mode .userManagementTable tbody tr {
+  background-color: #3a506b;
+  color: #ffffff;
+}
+
+.dark-mode .userManagementTable tbody tr:hover {
+  background-color: #1c2541 !important;
+}
+
+.dark-mode .btn {
+  color: #ffffff;
+}

@@ -38,7 +38,9 @@ export default function SearchProjectByPerson({
       <form className="input-group mb-2" onSubmit={e => e.preventDefault()}>
         <div className="input-group-prepend">
           <span
-            className={`input-group-text search-field-container ${darkMode ? 'bg-light-grey' : ''}`}
+            className={`input-group-text search-field-container ${
+              darkMode ? 'bg-light-grey text-light' : ''
+            }`}
           >
             Search
           </span>
