@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment-timezone';
@@ -30,6 +30,12 @@ function CreateEventModal({ isOpen, toggle }) {
     coverImage: '',
   });
 
+  useEffect(() => {
+    if (isOpen && !loading) {
+      resetForm();
+    }
+  }, [isOpen]);
+
   const resetForm = () => {
     setFormData({
       title: '',
@@ -55,9 +61,11 @@ function CreateEventModal({ isOpen, toggle }) {
 
   const handleToggle = () => {
     if (!loading) {
-      toggle();
-      if (!isOpen) {
+      if (isOpen) {
+        toggle();
+      } else {
         resetForm();
+        toggle();
       }
     }
   };
@@ -88,6 +96,16 @@ function CreateEventModal({ isOpen, toggle }) {
 
     if (!formData.date) {
       newErrors.date = 'Date is required';
+    }
+
+    if (formData.date) {
+      const selectedDate = moment(formData.date, 'YYYY-MM-DD').startOf('day');
+      const today = moment()
+        .tz('America/Los_Angeles')
+        .startOf('day');
+      if (selectedDate.isBefore(today)) {
+        newErrors.date = 'Event Date Cannot be in the past';
+      }
     }
 
     if (!formData.startTime) {
@@ -273,6 +291,9 @@ function CreateEventModal({ isOpen, toggle }) {
               value={formData.date}
               onChange={handleChange}
               disabled={loading}
+              min={moment()
+                .tz('America/Los_Angeles')
+                .format('YYYY-MM-DD')}
               style={darkMode ? { colorScheme: 'dark' } : {}}
               min={moment()
                 .tz('America/Los_Angeles')

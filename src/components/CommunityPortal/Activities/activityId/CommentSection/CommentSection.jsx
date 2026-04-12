@@ -3,21 +3,19 @@ import styles from './CommentSection.module.css';
 function CommentSection({ comments }) {
   return (
     <div>
-      <div className={styles['activity-comments-section']}>
+      <div className={styles.commentsSection}>
         {comments.map(comment => (
-          <div key={comment.id} className={styles['activity-comment']}>
-            <div className={styles['activity-comment-user']}>
+          <div key={comment.id} className={styles.comment}>
+            <div className={styles.commentUser}>
               <span
-                className={`${styles['activity-icon']} ${
-                  comment.id % 2 === 0 ? styles.purple : styles.blue
-                }`}
+                className={`${styles.icon} ${comment.id % 2 === 0 ? styles.purple : styles.blue}`}
               >
                 {comment.name[0]}
               </span>
             </div>
-            <div className={styles['activity-comment-text']}>
+            <div className={styles.commentText}>
               {comment.comment}
-              <div className={styles['activity-comment-footer']}>
+              <div className={styles.commentFooter}>
                 <span>{comment.name} - </span>
                 <span>{comment.time}</span>
               </div>

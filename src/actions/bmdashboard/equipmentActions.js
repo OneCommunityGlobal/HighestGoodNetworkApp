@@ -88,7 +88,6 @@ export const updateMultipleEquipmentLogs = (projectId, bulkArr) => dispatch => {
     )
     .then(res => {
       dispatch(setEquipments(res.data));
-      toast.success('Equipment logs updated successfully!');
       return res.data;
     })
     .catch(err => {
