@@ -168,6 +168,7 @@ export function CPDashboard() {
   };
 
   const searchRef = useRef(null);
+
   useEffect(() => {
     autoGrow(searchRef.current);
   }, [searchInput]);
@@ -468,6 +469,7 @@ export function CPDashboard() {
                       className={styles.dateFilter}
                       dateFormat="yyyy-MM-dd"
                       isClearable
+                      minDate={new Date()}
                     />
                   </div>
                 </div>

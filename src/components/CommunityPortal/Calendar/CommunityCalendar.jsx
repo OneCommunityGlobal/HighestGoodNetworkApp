@@ -407,6 +407,7 @@ function CommunityCalendar() {
               tileClassName={tileClassName}
               onClickDay={handleDateSelect}
               value={selectedDate}
+              minDate={new Date()}
             />
             <section
               className={`${styles.selectedDatePanel} ${
