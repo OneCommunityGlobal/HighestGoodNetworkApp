@@ -1,4 +1,4 @@
-.pie-chart-title {
+.pieChartTitle {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -12,16 +12,15 @@
   margin-top: 15px;
 }
 
-.pie-chart-heading {
+.pieChartHeading {
   margin-bottom: 0;
 }
 
-.dark-mode .pie-chart-title h4 {
-  color: white; /* White for dark mode */
+:global(.dark-mode) .pieChartTitle h4 {
+  color: white;
 }
 
-
-.pie-chart-description {
+.pieChartDescription {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -31,144 +30,139 @@
   margin-bottom: 16px;
   padding: 0;
   background-color: transparent;
-  color: white; /* Ensure description text is white */
+  color: white;
 }
 
-.pie-chart-toggle-row {
+.toggleRow {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.pie-chart-toggle-label {
+.toggleLabel {
   padding-right: 1rem;
   margin-bottom: 0;
   font-size: 14px;
 }
 
-.pie-chart-checkbox {
+.checkbox {
   margin-left: 8px;
 }
 
-.pie-chart-details {
+.details {
   text-align: left;
   margin: auto;
 }
 
-.pie-chart-members-label {
+.membersLabel {
   text-align: center;
 }
 
-.pie-chart-switch-wrapper {
+.switchWrapper {
   width: 100%;
 }
 
-.pie-chart-switch-row {
+.switchRow {
   word-break: keep-all;
 }
 
-.pie-chart-switch-label {
+.switchLabel {
   margin-bottom: 1rem;
 }
 
-.pie-chart-stat {
+.stat {
   font-weight: bold;
   font-size: 13px;
   margin-bottom: 0.25rem;
 }
 
-.pie-chart-container {
+.chartContainer {
   width: 100%;
   height: 32rem;
 }
 
-.dark-mode .all-time-total-text {
-  color: white; /* Ensure the 'all-time-total-text' is white in dark mode */
-}
-
-.dark-mode .pie-chart-description {
+:global(.dark-mode) .pieChartDescription {
   background-color: transparent;
-  color: white; /* Apply white text color in dark mode */
+  color: white;
 }
 
-/* Additional styling for general text in dark mode */
-.dark-mode label,
-.dark-mode h5,
-.dark-mode p {
-  color: white !important; /* Set all labels, headings, and paragraphs to white in dark mode */
+:global(.dark-mode) label,
+:global(.dark-mode) h5,
+:global(.dark-mode) p {
+  color: white !important;
 }
 
-.dark-mode .switchContainer {
-  color: white; /* Text in switch container in dark mode */
+:global(.dark-mode) .switchContainer {
+  color: white;
 }
 
 @media screen and (max-width: 768px) {
-  .pie-chart-description {
+  .pieChartDescription {
     flex-direction: column;
     padding: 0 10px;
   }
 }
 
 @media screen and (max-width: 576px) {
-  .pie-chart-title h4 {
+  .pieChartTitle h4 {
     font-size: 18px;
   }
 
-  .pie-chart-description {
+  .pieChartDescription {
     align-items: flex-start;
   }
 
-  .pie-chart-toggle-row {
+  .toggleRow {
     display: block;
   }
 
-  .pie-chart-toggle-label {
+  .toggleLabel {
     display: block;
     padding-right: 0.5rem;
     margin-bottom: 8px;
     font-size: 12px;
   }
 
-  .pie-chart-checkbox {
+  .checkbox {
     margin-left: 0;
     transform: scale(1.1);
   }
 
-  .pie-chart-switch-row {
+  .switchRow {
     flex-direction: column;
     gap: 8px;
     padding: 10px 0;
   }
 
-  .pie-chart-switch-label {
+  .switchLabel {
     font-size: 12px;
     margin-bottom: 0;
   }
 
-  .pie-chart-stat {
+  .stat {
     font-size: 11px;
     margin-bottom: 0.2rem;
   }
 
-  .pie-chart-container {
+  .chartContainer {
     height: 24rem;
   }
 }
 
 @media screen and (max-width: 400px) {
-  .pie-chart-title h4 {
+  .pieChartTitle h4 {
     font-size: 16px;
   }
 
-  .pie-chart-toggle-label {
+  .toggleLabel {
     font-size: 11px;
   }
 
-  .pie-chart-stat {
+  .stat {
     font-size: 10px;
   }
 
-  .pie-chart-container {
+  .chartContainer {
     height: 20rem;
   }
 }
