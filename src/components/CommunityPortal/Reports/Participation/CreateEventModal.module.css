@@ -1,9 +1,13 @@
 .modalDialog {
+  width: 90%;
   max-width: 800px;
+  margin: 1.75rem auto;
 }
 
 .modalDialogDark {
+  width: 90%;
   max-width: 800px;
+  margin: 1.75rem auto;
 }
 
 .modalHeader {

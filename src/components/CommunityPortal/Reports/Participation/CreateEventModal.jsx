@@ -149,16 +149,16 @@ function CreateEventModal({ isOpen, toggle }) {
     <Modal
       isOpen={isOpen}
       toggle={handleToggle}
-      className={`modal-dialog modal-lg ${darkMode ? styles.modalDialogDark : styles.modalDialog}`}
+      className={`${styles.modalDialog} ${darkMode ? styles.modalDialogDark : ''}`}
     >
       <ModalHeader
         toggle={handleToggle}
-        className={darkMode ? styles.modalHeaderDark : ''}
+        className={`${styles.modalHeader} ${darkMode ? styles.modalHeaderDark : ''}`}
         cssModule={{ 'modal-title': styles.modalTitle }}
       >
         Create New Event
       </ModalHeader>
-      <ModalBody className={darkMode ? styles.modalBodyDark : ''}>
+      <ModalBody className={`${styles.modalBody} ${darkMode ? styles.modalBodyDark : ''}`}>
         <form onSubmit={handleSubmit}>
           <div className={styles.formGroup}>
             <label
@@ -170,7 +170,7 @@ function CreateEventModal({ isOpen, toggle }) {
             <span className={styles.redAsterisk}>* </span>
             <input
               type="text"
-              className={`form-control ${darkMode ? `${styles.input} ${styles.inputDark}` : styles.input} ${errors.title ? styles.inputInvalid : ''}`}
+              className={`${styles.input} ${darkMode ? styles.inputDark : ''} ${errors.title ? styles.inputInvalid : ''}`}
               id="title"
               name="title"
               placeholder="Enter event title"
@@ -187,7 +187,7 @@ function CreateEventModal({ isOpen, toggle }) {
             </label>
             <span className={styles.redAsterisk}>* </span>
             <select
-              className={`form-control ${darkMode ? `${styles.select} ${styles.selectDark}` : styles.select}`}
+              className={`${styles.select} ${darkMode ? styles.selectDark : ''}`}
               id="type"
               name="type"
               value={formData.type}
@@ -210,7 +210,7 @@ function CreateEventModal({ isOpen, toggle }) {
             </label>
             <span className={styles.redAsterisk}>* </span>
             <select
-              className={`form-control ${darkMode ? `${styles.select} ${styles.selectDark}` : styles.select}`}
+              className={`${styles.select} ${darkMode ? styles.selectDark : ''}`}
               id="location"
               name="location"
               value={formData.location}
@@ -229,7 +229,7 @@ function CreateEventModal({ isOpen, toggle }) {
             <span className={styles.redAsterisk}>* </span>
             <input
               type="date"
-              className={`form-control ${darkMode ? `${styles.input} ${styles.inputDark}` : styles.input} ${errors.date ? styles.inputInvalid : ''}`}
+              className={`${styles.input} ${darkMode ? styles.inputDark : ''} ${errors.date ? styles.inputInvalid : ''}`}
               id="date"
               name="date"
               value={formData.date}
@@ -250,7 +250,7 @@ function CreateEventModal({ isOpen, toggle }) {
               <span className={styles.redAsterisk}>* </span>
               <input
                 type="time"
-                className={`form-control ${darkMode ? `${styles.input} ${styles.inputDark}` : styles.input} ${errors.startTime ? styles.inputInvalid : ''}`}
+                className={`${styles.input} ${darkMode ? styles.inputDark : ''} ${errors.startTime ? styles.inputInvalid : ''}`}
                 id="startTime"
                 name="startTime"
                 value={formData.startTime}
@@ -270,7 +270,7 @@ function CreateEventModal({ isOpen, toggle }) {
               <span className={styles.redAsterisk}>* </span>
               <input
                 type="time"
-                className={`form-control ${darkMode ? `${styles.input} ${styles.inputDark}` : styles.input} ${errors.endTime ? styles.inputInvalid : ''}`}
+                className={`${styles.input} ${darkMode ? styles.inputDark : ''} ${errors.endTime ? styles.inputInvalid : ''}`}
                 id="endTime"
                 name="endTime"
                 value={formData.endTime}
@@ -290,7 +290,7 @@ function CreateEventModal({ isOpen, toggle }) {
             </label>
             <span className={styles.redAsterisk}>* </span>
             <textarea
-              className={`form-control ${darkMode ? `${styles.textarea} ${styles.textareaDark}` : styles.textarea} ${errors.description ? styles.inputInvalid : ''}`}
+              className={`${styles.textarea} ${darkMode ? styles.textareaDark : ''} ${errors.description ? styles.inputInvalid : ''}`}
               id="description"
               name="description"
               rows="4"
@@ -312,7 +312,7 @@ function CreateEventModal({ isOpen, toggle }) {
             <span className={styles.redAsterisk}>* </span>
             <input
               type="number"
-              className={`form-control ${darkMode ? `${styles.input} ${styles.inputDark}` : styles.input} ${errors.maxAttendees ? styles.inputInvalid : ''}`}
+              className={`${styles.input} ${darkMode ? styles.inputDark : ''} ${errors.maxAttendees ? styles.inputInvalid : ''}`}
               id="maxAttendees"
               name="maxAttendees"
               min="1"
@@ -333,7 +333,7 @@ function CreateEventModal({ isOpen, toggle }) {
             </label>
             <input
               type="url"
-              className={`form-control ${darkMode ? `${styles.input} ${styles.inputDark}` : styles.input}`}
+              className={`${styles.input} ${darkMode ? styles.inputDark : ''}`}
               id="coverImage"
               name="coverImage"
               placeholder="Enter cover image URL"
@@ -344,7 +344,7 @@ function CreateEventModal({ isOpen, toggle }) {
           </div>
         </form>
       </ModalBody>
-      <ModalFooter className={darkMode ? styles.modalFooterDark : ''}>
+      <ModalFooter className={`${styles.modalFooter} ${darkMode ? styles.modalFooterDark : ''}`}>
         <Button
           color="secondary"
           onClick={handleToggle}
