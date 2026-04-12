@@ -4,26 +4,40 @@ import styles from './BiddingOverview.module.css';
 import logo from '../../../assets/images/logo2.png';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchUnitDetails, submitBid } from '../../../actions/lbdashboard/bidOverviewActions';
-import LBDashboardHeader from '../Header';
 import Header from '../../Header/Header';
+import { BsChat } from 'react-icons/bs';
+import { IoNotificationsOutline } from 'react-icons/io5';
+import { FiUser } from 'react-icons/fi';
+import Modal from 'react-bootstrap/Modal';
+import Button from 'react-bootstrap/Button';
 
 function BiddingOverview() {
   const { listingId } = useParams();
   const dispatch = useDispatch();
 
   const userId = useSelector(state => state.auth.user.userid);
-  const firstName = useSelector(state => state.auth.firstName);
+  const auth = useSelector(state => state.auth);
+  const firstName = auth.firstName || auth.user?.firstName || auth.user?.username || 'User';
   const unitDetails = useSelector(state => state.bidOverview.unitDetails);
   const notifications = useSelector(state => state.bidOverview.notifications);
   const loading = useSelector(state => state.bidOverview.loading);
   const error = useSelector(state => state.bidOverview.error);
   const darkMode = useSelector(state => state.theme.darkMode);
+
   const [rentingFrom, setRentingFrom] = useState('');
   const [rentingTo, setRentingTo] = useState('');
   const [name, setName] = useState('');
   const [biddingPrice, setBiddingPrice] = useState('');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [imageScale, setImageScale] = useState(1);
+
+  // Header state
+  const [selectedVillage, setSelectedVillage] = useState('Village 1');
+  const [showNotifications, setShowNotifications] = useState(false);
+
+  const flatNotifications = Array.isArray(notifications) ? notifications.flat() : [];
+  const notificationCount = flatNotifications.length;
+
   useEffect(() => {
     if (listingId) {
       dispatch(fetchUnitDetails(listingId));
@@ -70,8 +84,6 @@ function BiddingOverview() {
     setBiddingPrice('');
   };
 
-  const flatNotifications = Array.isArray(notifications) ? notifications.flat() : [];
-
   if (loading || !unitDetails) {
     return <div className={styles.loading}>Loading...</div>;
   }
@@ -80,19 +92,97 @@ function BiddingOverview() {
   }
 
   return (
-    <div className={`${styles.biddingPage}`}>
+    <div className={styles.biddingPage}>
+      {/* Top site-wide header */}
       <Header />
+
       <div className={`${styles.biddingPage} ${darkMode ? styles.darkMode : ''}`}>
-        <div className={`${styles.topLogoContainer}`}>
-          <img src={logo} alt="One Community Logo" className={`${styles.topLogo}`} />
+        {/* Logo */}
+        <div className={styles.topLogoContainer}>
+          <img src={logo} alt="One Community Logo" className={styles.topLogo} />
         </div>
 
         <div className={styles.boxContainer}>
-          <LBDashboardHeader notifications={flatNotifications} />
+          {/* ── Inlined LBDashboardHeader ── */}
+          <nav className={styles.lbHeader}>
+            {/* Left: village selector */}
+            <div className={styles.lbHeaderLeft}>
+              <select
+                className={styles.villageSelect}
+                value={selectedVillage}
+                onChange={e => setSelectedVillage(e.target.value)}
+              >
+                <option value="Village 1">Village 1</option>
+                <option value="Village 2">Village 2</option>
+                <option value="Village 3">Village 3</option>
+              </select>
+              <button type="button" className={styles.goButton}>
+                Go
+              </button>
+            </div>
+
+            {/* Right: welcome + icons */}
+            <div className={styles.lbHeaderRight}>
+              <span className={styles.welcomeText}>WELCOME {firstName.toUpperCase()}</span>
+              <div className={styles.iconContainer}>
+                {/* Chat */}
+                <Link to="/bidding" className={styles.iconLink} aria-label="Chat">
+                  <BsChat className={styles.navIcon} />
+                </Link>
+
+                {/* Notifications */}
+                <button
+                  type="button"
+                  className={styles.iconLink}
+                  onClick={() => setShowNotifications(true)}
+                  aria-label="Notifications"
+                >
+                  <IoNotificationsOutline className={styles.navIcon} />
+                  {notificationCount > 0 && (
+                    <span className={styles.badge}>{notificationCount}</span>
+                  )}
+                </button>
+
+                {/* User */}
+                <Link to="/bidding" className={styles.iconLink} aria-label="Profile">
+                  <FiUser className={styles.navIcon} />
+                </Link>
+              </div>
+            </div>
+          </nav>
+
+          {/* Notifications modal */}
+          <Modal show={showNotifications} onHide={() => setShowNotifications(false)} centered>
+            <Modal.Header closeButton>
+              <Modal.Title>Notifications</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              {flatNotifications.length > 0 ? (
+                <ul>
+                  {flatNotifications.map((notif, idx) => (
+                    <li key={notif._id || idx}>
+                      {notif.message ? notif.message : 'No message available'}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No notifications.</p>
+              )}
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={() => setShowNotifications(false)}>
+                Close
+              </Button>
+            </Modal.Footer>
+          </Modal>
+          {/* ── End inlined header ── */}
+
           <main className={styles.biddingContainer}>
             <div className={styles.biddingCard}>
+              {/* Left column */}
               <div className={styles.biddingLeft}>
                 <div className={styles.currentBid}>Current bid: {unitDetails.bidAmount} /night</div>
+
                 <div className={styles.biddingImage}>
                   <img
                     src={unitDetails.images[currentImageIndex]}
@@ -136,12 +226,12 @@ function BiddingOverview() {
                     {unitDetails.images.map((image, index) => (
                       <span
                         key={image}
-                        className={`image-dot ${index === currentImageIndex ? 'active' : ''}`}
+                        className={`${styles.imageDot} ${
+                          index === currentImageIndex ? styles.active : ''
+                        }`}
                         onClick={() => setCurrentImageIndex(index)}
                         onKeyDown={e => {
-                          if (e.key === 'Enter' || e.key === ' ') {
-                            setCurrentImageIndex(index);
-                          }
+                          if (e.key === 'Enter' || e.key === ' ') setCurrentImageIndex(index);
                         }}
                         role="button"
                         tabIndex={0}
@@ -150,6 +240,7 @@ function BiddingOverview() {
                     ))}
                   </div>
                 </div>
+
                 <div className={styles.amenitiesContainer}>
                   <div className={styles.amenitiesSection}>
                     <h4>Available amenities in this Unit:</h4>
@@ -168,6 +259,7 @@ function BiddingOverview() {
                     </ol>
                   </div>
                 </div>
+
                 <div className={styles.mapLinkContainer}>
                   <Link to="/property-map" className={styles.mapLink}>
                     <i className={`fa fa-map-marker ${styles.locationIcon}`} />
@@ -175,12 +267,14 @@ function BiddingOverview() {
                   </Link>
                 </div>
               </div>
+
+              {/* Right column */}
               <div className={styles.biddingRight}>
                 <div className={styles.unitHeader}>
                   <h2 className={styles.unitTitle}>{unitDetails.title}</h2>
-                  {/* <h3 className={styles.unitSubtitle}>{unitDetails.villageName}</h3> */}
                 </div>
                 <p className={styles.unitDescription}>{unitDetails.description}</p>
+
                 <form className={styles.biddingForm} onSubmit={handleSubmit}>
                   <div className={styles.formRowContainer}>
                     <div className={`${styles.formGroup} ${styles.biddingFormGroup}`}>
@@ -208,6 +302,7 @@ function BiddingOverview() {
                       </div>
                     </div>
                   </div>
+
                   <div
                     className={`${styles.formGroup} ${styles.fullWidth} ${styles.biddingFormGroup}`}
                   >
@@ -221,6 +316,7 @@ function BiddingOverview() {
                       required
                     />
                   </div>
+
                   <div
                     className={`${styles.formGroup} ${styles.fullWidth} ${styles.biddingFormGroup}`}
                   >
@@ -236,14 +332,19 @@ function BiddingOverview() {
                       required
                     />
                   </div>
-                  <div className="submit-button-container">
+
+                  <div className={styles.submitButtonContainer}>
                     <button type="submit" className={styles.submitButton1}>
                       Proceed to submit with details
                     </button>
                   </div>
                 </form>
+
                 <div className={styles.biddingActions}>
-                  <button type="button" className={`${styles.actionButton} reviews-button`}>
+                  <button
+                    type="button"
+                    className={`${styles.actionButton} ${styles.reviewsButton}`}
+                  >
                     <i className="fa fa-star" /> Reviews
                   </button>
                   <button type="button" className={`${styles.actionButton} ${styles.saveButton}`}>

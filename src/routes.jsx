@@ -303,10 +303,11 @@ export default (
       )}
     />
     <LBProtectedRoute path="/lbdashboard/listOverview" exact component={ListOveriew} />
-    <LBProtectedRoute path="/lbdashboard/bidoverview" exact component={LBBidOverview} />
+    <LBProtectedRoute path="/lbdashboard/bidOverview/:listingId" exact component={LBBidOverview} />
     <LBProtectedRoute path="/lbdashboard/bidding" exact component={BiddingHomepage} />
     <LBProtectedRoute path="/lbdashboard/messaging" component={LBMessaging} />
     <LBProtectedRoute path="/lbdashboard/masterplan" exact component={MasterPlan} />
+
     <LBProtectedRoute
       exact
       path="/lbdashboard/wishlists"
@@ -844,23 +845,7 @@ export default (
           fallback
           routePermissions={RoutePermissions.resourceManagement}
         />
-        {/* Listing and Bidding Routes - Additional routes with parameters */}
-        <LBProtectedRoute path="/lbdashboard/listOverview/:id" exact component={ListOveriew} />
-        <LBProtectedRoute path="/lbdashboard/masterplan" exact component={MasterPlan} />
-        <Route path="/lbdashboard/login" component={LBLogin} />
-        <Route path="/lbdashboard/register" component={LBRegister} />
-        <LBProtectedRoute path="/lbdashboard/messaging" component={LBMessaging} />
-        <Route
-          path="/lbdashboard/listingshome"
-          render={() => (
-            <>
-              <AutoUpdate />
-              <LBHome />
-            </>
-          )}
-        />
-        <Route path="/lbdashboard/bidoverview" exact component={LBBidOverview} />
-        <LBProtectedRoute path="/lbdashboard/bidding" exact component={BiddingHomepage} />
+
         {/* Good Education  Portal Routes */}
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
         <Route path="/educationportal/login" component={EPLogin} />
