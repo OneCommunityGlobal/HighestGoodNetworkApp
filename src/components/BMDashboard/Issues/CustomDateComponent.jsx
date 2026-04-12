@@ -25,14 +25,9 @@ export const CustomDateComponent = ({
           year: 'numeric',
         })}
       </span>
-
-      {isStartDate ? (
-        <button onClick={increaseMonth} style={{ ...buttonStyle, marginRight: '10px' }}>
-          ▶
-        </button>
-      ) : (
-        <></>
-      )}
+      <button onClick={increaseMonth} style={{ ...buttonStyle, marginRight: '10px' }}>
+        ▶
+      </button>
     </div>
   );
 };
