@@ -1,54 +1,26 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Alert, Spinner } from 'reactstrap';
+import {
+  Button,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Alert,
+  Spinner,
+} from 'reactstrap';
 import AddTeamsAutoComplete from './AddTeamsAutoComplete';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import darkModeStyles from '../../Header/DarkMode.module.css';
 import { postNewTeam, getAllUserTeams } from '../../../../src/actions/allTeamsAction';
-// eslint-disable-next-line import/no-named-as-default-member
-import axios from 'axios';
-
-function runConfirmStrategy(trimmedSearchText, selectedTeam, exactMatch, matches, callbacks) {
-  const {
-    onValidation,
-    onNewTeamValidation,
-    setIsNotDisplayAlert,
-    setDuplicateTeam,
-    onAssignTeam,
-  } = callbacks;
-  if (!trimmedSearchText && !selectedTeam) {
-    onValidation(false);
-    onNewTeamValidation(true);
-    setIsNotDisplayAlert(true);
-    return;
-  }
-  if (selectedTeam) {
-    onValidation(true);
-    setDuplicateTeam(true);
-    setIsNotDisplayAlert(true);
-    return;
-  }
-  if (exactMatch) {
-    onValidation(true);
-    setDuplicateTeam(true);
-    setIsNotDisplayAlert(true);
-    return;
-  }
-  if (matches.length === 1) {
-    onValidation(true);
-    setIsNotDisplayAlert(true);
-    onAssignTeam(matches[0]);
-    return;
-  }
-  setIsNotDisplayAlert(false);
-}
+import axios, { CancelToken } from 'axios';
 
 function generateValidTeamCode(name) {
   if (!name?.trim()) return 'TEAM-1';
   const firstLetter = name.charAt(0).toUpperCase();
-  const remainingLetters = name.slice(1, 5).toUpperCase().padEnd(4, 'A');
+  const remainingLetters = name.slice(1, 4).toUpperCase().padEnd(3, 'A');
   return `${firstLetter}-${remainingLetters}`;
 }
 
@@ -73,7 +45,6 @@ const AddTeamPopup = React.memo((props) => {
   const { darkMode, isEdit, teamName, teamId, teamCode, isActive, onUpdateTeam } = props;
   const dispatch = useDispatch();
 
-  // ---- Local source of truth for teams (avoids relying on store shape)
   const [teams, setTeams] = useState(() => props.teamsData?.allTeams ?? []);
   const [teamsLoading, setTeamsLoading] = useState(false);
   const [selectedTeam, onSelectTeam] = useState(undefined);
@@ -85,25 +56,23 @@ const AddTeamPopup = React.memo((props) => {
   const [isNotDisplayAlert, setIsNotDisplayAlert] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Keep local teams in sync if parent props change later
   useEffect(() => {
     if (Array.isArray(props.teamsData?.allTeams) && props.teamsData.allTeams.length) {
       setTeams(props.teamsData.allTeams);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.teamsData?.allTeams]);
 
   const closePopup = () => {
     props.onClose();
-    !isNotDisplayAlert && setIsNotDisplayAlert(true);
-    setDuplicateTeam(false);
+    if (!isNotDisplayAlert) setIsNotDisplayAlert(true);
+    setSearchText('');
+    onSelectTeam(undefined);
     onValidation(true);
     onNewTeamValidation(true);
-    setSearchText('');
+    setDuplicateTeam(false);
   };
 
-  const normalize = (s) =>
-    (s ?? '').toString().toLowerCase().trim().replace(/\s+/g, ' ');
+  const normalize = (s) => (s ?? '').toString().toLowerCase().trim().replace(/\s+/g, ' ');
 
   const allTeams = useMemo(() => teams ?? [], [teams]);
 
@@ -124,21 +93,21 @@ const AddTeamPopup = React.memo((props) => {
       onValidation(false);
       return;
     }
+
     const toAssign = result || selectedTeam;
     const idToCheck = toAssign?._id;
 
     const notAlreadyMember = !props.userTeamsById?.some((x) => x._id === idToCheck);
+
     if (toAssign && notAlreadyMember) {
       props.onSelectAssignTeam(toAssign);
       setSearchText('');
-      if (selectedTeam) {
-        onSelectTeam(undefined);
-        onValidation(false);
-      }
+      onSelectTeam(undefined);
+      onValidation(true);
       closePopup();
     } else {
       toast.error(
-        'Your user has been found in this team. Please select another team to add your user.'
+        'Your user has been found in this team. Please select another team to add your user.',
       );
     }
   };
@@ -166,8 +135,12 @@ const AddTeamPopup = React.memo((props) => {
     if (Array.isArray(payload)) return payload;
     if (Array.isArray(payload.data)) return payload.data;
     if (Array.isArray(payload.allTeams)) return payload.allTeams;
+    if (payload.data && Array.isArray(payload.data.allTeams)) return payload.data.allTeams;
     if (Array.isArray(payload.data?.allTeams)) return payload.data.allTeams;
     if (payload.status && Array.isArray(payload.data)) return payload.data;
+    if (payload.status && payload.data && Array.isArray(payload.data.allTeams)) {
+      return payload.data.allTeams;
+    }
     return [];
   };
 
@@ -182,59 +155,48 @@ const AddTeamPopup = React.memo((props) => {
     }
   };
 
-  const applyCreateResponse = async (response) => {
-    if (response?.status === 200) {
-      setDuplicateTeam(false);
-      !isNotDisplayAlert && setIsNotDisplayAlert(true);
-      await refreshTeams();
-      toast.success('Team created successfully');
-      const created =
-        allTeams.find((t) => normalize(t.teamName) === normalize(searchText)) ||
-        extractTeams(response)?.[0] ||
-        response?.data;
-      setIsLoading(false);
-      props.onSelectAssignTeam ? onAssignTeam(created) : closePopup();
-      return;
-    }
-    setIsLoading(false);
-    const isDuplicate =
-      response?.status === 403 ||
-      response?.data?.message?.toLowerCase().includes('already exists');
-    if (isDuplicate) {
-      setDuplicateTeam(true);
-    } else {
-      const msg =
-        response?.status === 500
-          ? 'No response received from the server'
-          : 'Error occurred while creating team';
-      toast.error(msg);
-    }
-  };
-
   const onCreateTeam = async () => {
-    const trimmedTeamName = searchText?.trim();
-    if (!trimmedTeamName) {
+    if (!searchText?.trim()) {
       onNewTeamValidation(false);
       return;
     }
-    const existingTeam = allTeams.find(
-      (team) => normalize(team.teamName) === normalize(trimmedTeamName)
-    );
-    if (existingTeam) {
-      setDuplicateTeam(true);
-      setIsLoading(false);
-      return;
-    }
-    // eslint-disable-next-line import/no-named-as-default-member
-    const CancelToken = axios.CancelToken;
+
     const source = CancelToken.source();
     const timeout = setTimeout(() => axiosResponseExceededTimeout(source), 20000);
     try {
       setIsLoading(true);
-      setDuplicateTeam(false);
-      const response = await dispatch(postNewTeam(trimmedTeamName, true, source));
+      const teamName = searchText.trim();
+      const response = await dispatch(postNewTeam(teamName, true, source));
       clearTimeout(timeout);
-      await applyCreateResponse(response);
+
+      if (response?.status === 200) {
+        setDuplicateTeam(false);
+        if (!isNotDisplayAlert) setIsNotDisplayAlert(true);
+
+        await refreshTeams();
+
+        toast.success('Team created successfully');
+
+        const created =
+          extractTeams(response)?.find((t) => normalize(t.teamName) === normalize(teamName)) ||
+          allTeams.find((t) => normalize(t.teamName) === normalize(teamName)) ||
+          response?.data;
+
+        setIsLoading(false);
+        onAssignTeam(created);
+      } else {
+        setIsLoading(false);
+        const messageToastError =
+          response?.status === 500
+            ? 'No response received from the server'
+            : 'Error occurred while creating team';
+
+        if (response?.status === 403) {
+          setDuplicateTeam(true);
+        } else {
+          toast.error(messageToastError);
+        }
+      }
     } catch (e) {
       clearTimeout(timeout);
       setIsLoading(false);
@@ -243,24 +205,41 @@ const AddTeamPopup = React.memo((props) => {
   };
 
   const onConfirm = () => {
-    const trimmedSearchText = searchText.trim();
+    if (!searchText && !selectedTeam) {
+      onValidation(false);
+      return;
+    }
+
+    if (selectedTeam) {
+      onValidation(true);
+      if (!isNotDisplayAlert) setIsNotDisplayAlert(true);
+      onAssignTeam(selectedTeam);
+      return;
+    }
+
     const exact = findExact();
+    if (exact) {
+      onValidation(true);
+      if (!isNotDisplayAlert) setIsNotDisplayAlert(true);
+      onAssignTeam(exact);
+      return;
+    }
+
     const matches = findCandidates();
-    runConfirmStrategy(trimmedSearchText, selectedTeam, exact, matches, {
-      onValidation,
-      onNewTeamValidation,
-      setIsNotDisplayAlert,
-      setDuplicateTeam,
-      onAssignTeam,
-    });
+    if (matches.length === 1) {
+      onValidation(true);
+      if (!isNotDisplayAlert) setIsNotDisplayAlert(true);
+      onAssignTeam(matches[0]);
+      return;
+    }
+
+    setIsNotDisplayAlert(false);
   };
 
-  // Fetch/refresh teams whenever the modal opens
   useEffect(() => {
     if (props.open) {
       refreshTeams();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.open]);
 
   useEffect(() => {
@@ -347,112 +326,181 @@ const AddTeamPopup = React.memo((props) => {
     <Modal
       isOpen={props.open}
       toggle={closePopup}
+      centered
       className={darkMode ? `text-light ${darkModeStyles['dark-mode']}` : ''}
     >
-      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>
+      <ModalHeader className={darkMode ? 'bg-space-cadet text-light' : ''} toggle={closePopup}>
         {isEdit ? 'Update Team Name' : 'Add Team'}
       </ModalHeader>
-      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''} style={{ textAlign: 'center' }}>
-        <label htmlFor="team-search" className={darkMode ? 'text-light' : ''} style={{ textAlign: 'left', fontWeight: isEdit ? 'bold' : 'normal' }}>
-          {isEdit ? (
-            <>
-              Name of the Team<span className="red-asterisk">* </span>
-            </>
-          ) : (
-            'Add to Team'
-          )}
-        </label>
 
-        <div className="input-group-prepend" style={{ marginBottom: '10px' }}>
-          {isEdit ? (
-            <input
-              type="text"
-              className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
-              value={searchText}
-              onChange={(e) =>
-                handleEditInputChange(e.target.value, {
-                  setSearchText,
-                  setDuplicateTeam,
-                  onNewTeamValidation,
-                  allTeams,
-                  normalize,
-                  teamId,
-                })
-              }
-              placeholder="Enter new team name"
-              // eslint-disable-next-line jsx-a11y/no-autofocus
-              autoFocus
-            />
-          ) : (
-            <AddTeamsAutoComplete
-              teamsData={{ allTeams }}
-              onCreateNewTeam={onCreateTeam}
-              searchText={searchText}
-              setInputs={onSelectTeam}
-              setSearchText={handleSearchTextChange}
-            />
-          )}
-          <Button
-            color="primary"
-            style={{ marginLeft: '5px' }}
-            onClick={isEdit ? handleConfirm : onConfirm}
-            disabled={isLoading}
+      <ModalBody
+        className={darkMode ? 'bg-yinmn-blue text-light' : ''}
+        style={{
+          padding: '1.25rem 1.5rem',
+        }}
+      >
+        <div
+          style={{
+            maxWidth: '720px',
+            margin: '0 auto',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.75rem',
+          }}
+        >
+          <div
+            style={{
+              textAlign: 'center',
+              fontSize: '1.4rem',
+              fontWeight: 700,
+              marginBottom: '0.5rem',
+            }}
           >
-            {isLoading ? <Spinner color="light" size="sm" /> : 'OK'}
-          </Button>
-        </div>
-
-        {/* Helpful hint while loading the list the first time */}
-        {teamsLoading && (
-          <div style={{ fontSize: 13, color: darkMode ? '#cbd5e1' : '#6b7280', marginTop: -6 }}>
-            Loading teams…
+            {isEdit ? 'Update Team Name' : 'Add to Team'}
           </div>
-        )}
 
-        {!isNotDisplayAlert && (
-          <>
-            <Alert color="danger">
-              {findCandidates().length > 1
-                ? 'More than one team matches your text. Please refine or pick from the dropdown.'
-                : 'Oops, this team does not exist! Create it if you want it.'}
-            </Alert>
+          <label
+            htmlFor="team-search"
+            className={darkMode ? 'text-light' : ''}
+            style={{
+              textAlign: 'left',
+              fontWeight: 600,
+              marginBottom: '0.2rem',
+            }}
+          >
+            {isEdit ? (
+              <>
+                Name of the Team<span className="red-asterisk">* </span>
+              </>
+            ) : (
+              'Team Name'
+            )}
+          </label>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'stretch',
+              gap: '0.75rem',
+              width: '100%',
+            }}
+          >
             <div
               style={{
-                marginBottom: '10px',
-                display: 'flex',
-                flexDirection: 'row',
-                gap: '10px',
-                justifyContent: 'center',
+                flex: 1,
+                minWidth: 0,
               }}
             >
-              <Button color="info" onClick={onCreateTeam}>
-                <b>Create Team</b>
-              </Button>
-              <Button color="danger" onClick={() => {
-                closePopup();
-              }}>
-                <b>Cancel team creation </b>
-              </Button>
+              {isEdit ? (
+                <input
+                  type="text"
+                  className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
+                  value={searchText}
+                  onChange={(e) =>
+                    handleEditInputChange(e.target.value, {
+                      setSearchText,
+                      setDuplicateTeam,
+                      onNewTeamValidation,
+                      allTeams,
+                      normalize,
+                      teamId,
+                    })
+                  }
+                  placeholder="Enter new team name"
+                  // eslint-disable-next-line jsx-a11y/no-autofocus
+                  autoFocus
+                />
+              ) : (
+                <AddTeamsAutoComplete
+                  teamsData={{ allTeams }}
+                  onCreateNewTeam={onCreateTeam}
+                  searchText={searchText}
+                  setInputs={onSelectTeam}
+                  setSearchText={handleSearchTextChange}
+                />
+              )}
             </div>
-          </>
-        )}
 
-        {!isValidTeam && !searchText && !selectedTeam && (
-          <Alert color="danger">Team name cannot be empty.</Alert>
-        )}
+            <Button
+              color="primary"
+              onClick={handleConfirm}
+              disabled={isLoading}
+              style={{
+                width: '140px',
+                height: '38px',
+                fontWeight: 600,
+                flexShrink: 0,
+              }}
+            >
+              {isLoading ? <Spinner color="light" size="sm" /> : isEdit ? 'OK' : 'Confirm'}
+            </Button>
+          </div>
 
-        {!isValidNewTeam && !isDuplicateTeam ? (
-          <Alert color="danger">
-            {isEdit ? 'Team name cannot be empty.' : 'Please enter a team name.'}
-          </Alert>
-        ) : null}
-        {isDuplicateTeam && (
-          <Alert color="warning">
-            <strong>A team with this name already exists!</strong> Please choose a different name.
-          </Alert>
-        )}
+          {teamsLoading && (
+            <div
+              style={{
+                fontSize: '13px',
+                color: darkMode ? '#cbd5e1' : '#6b7280',
+                textAlign: 'left',
+              }}
+            >
+              Loading teams...
+            </div>
+          )}
+
+          {!isNotDisplayAlert && !isEdit && (
+            <>
+              <Alert color="danger" style={{ marginBottom: 0 }}>
+                {findCandidates().length > 1
+                  ? 'More than one team matches your text. Please refine or pick from the dropdown.'
+                  : 'Oops, this team does not exist! Create it if you want it.'}
+              </Alert>
+
+              <div
+                style={{
+                  display: 'flex',
+                  gap: '0.75rem',
+                  justifyContent: 'center',
+                  flexWrap: 'wrap',
+                }}
+              >
+                <Button color="info" onClick={onCreateTeam}>
+                  <b>Create Team</b>
+                </Button>
+                <Button color="danger" onClick={() => setIsNotDisplayAlert(true)}>
+                  <b>Cancel Team Creation</b>
+                </Button>
+              </div>
+            </>
+          )}
+
+          {!isValidTeam && !searchText && !selectedTeam && (
+            <Alert color="danger" style={{ marginBottom: 0 }}>
+              {isEdit ? 'Team name cannot be empty.' : 'Hey, you need to pick a team first!'}
+            </Alert>
+          )}
+
+          {!isValidNewTeam && !isDuplicateTeam && (
+            <Alert color="danger" style={{ marginBottom: 0 }}>
+              {isEdit ? 'Team name cannot be empty.' : 'Please enter a team name.'}
+            </Alert>
+          )}
+
+          {isDuplicateTeam && (
+            <Alert color="danger" style={{ marginBottom: 0 }}>
+              {isEdit
+                ? 'A team with this name already exists'
+                : 'A team with this name already exists.'}
+            </Alert>
+          )}
+        </div>
       </ModalBody>
-      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+
+      <ModalFooter
+        className={darkMode ? 'bg-yinmn-blue' : ''}
+        style={{
+          padding: '0.75rem 1.5rem',
+        }}
+      >
         <Button color="secondary" onClick={closePopup}>
           Close
         </Button>
