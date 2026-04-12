@@ -4,72 +4,56 @@ import ReactCalendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import CalendarActivitySection from './CalendarActivitySection';
 import styles from './CommunityCalendar.module.css';
-import axios from 'axios';
-import { ENDPOINTS } from '../../../utils/URL';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faClock, faLocationDot, faTag, faCircleCheck } from '@fortawesome/free-solid-svg-icons';
 
 const STATUSES = ['New', 'Needs Attendees', 'Filling Fast', 'Full Event'];
-const EVENT_TYPES = ['Workshop', 'Meetup', 'Lecture', 'Social'];
-const LOCATIONS = ['Community Hall', 'Online', 'Park', 'Library'];
-const TIMES = ['10:00 AM', '2:00 PM', '6:00 PM', '8:00 PM'];
+const EVENT_TYPES = ['Workshop', 'Webinar', 'Meeting', 'Social Gathering'];
+const LOCATIONS = ['Virtual', 'In person'];
+const TIMES = ['10:00 AM', '1:00 PM', '3:00 PM', '5:00 PM'];
 
-export default function CommunityCalendar() {
-  const [events, setEvents] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+function CommunityCalendar() {
   const [filter, setFilter] = useState({ type: 'all', location: 'all', status: 'all' });
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showEventModal, setShowEventModal] = useState(false);
+  const [hoveredEventId, setHoveredEventId] = useState(null);
   const [overflowDate, setOverflowDate] = useState(null);
+  const darkMode = useSelector(state => state.theme.darkMode);
   const popupRef = useRef(null);
 
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth();
   const currentYear = currentDate.getFullYear();
 
-  useEffect(() => {
-    const fetchEvents = async () => {
-      setIsLoading(true);
-      try {
-        const response = await axios.get(ENDPOINTS.EVENTS);
-        setEvents(response.data.events || []);
-      } catch (err) {
-        setError('Failed to load events');
-        console.error('Error fetching calendar events:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchEvents();
-  }, []);
-
-  const mappedEvents = useMemo(() => {
-    return events.map(event => {
-      const eventDate = new Date(event.date);
-      const timeString = eventDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-      return {
-        ...event,
-        date: eventDate,
-        type: event.type || 'General',
-        status: event.status || 'New',
-        time: event.time || timeString,
-        description: event.description || `Join us for ${event.title}`,
-        // Ensure location is present or default
-        location: event.location || 'Online',
-      };
-    });
-  }, [events]);
+  const mockEvents = useMemo(() => {
+    const events = [];
+    for (let i = 0; i < 6; i++) {
+      STATUSES.forEach((status, idx) => {
+        events.push({
+          id: i * 10 + idx + 1,
+          title: `Event ${idx + 1}`,
+          type: EVENT_TYPES[idx % 4],
+          location: LOCATIONS[idx % 2],
+          time: TIMES[idx % 4],
+          date: new Date(currentYear, currentMonth + i, 5 + idx * 5),
+          status,
+          description: `Details about ${status.toLowerCase()} - ${i + 1}`,
+        });
+      });
+    }
+    return events;
+  }, [currentMonth, currentYear]);
 
   const filteredEvents = useMemo(
     () =>
-      mappedEvents.filter(
+      mockEvents.filter(
         e =>
           (filter.type === 'all' || e.type === filter.type) &&
           (filter.location === 'all' || e.location === filter.location) &&
           (filter.status === 'all' || e.status === filter.status),
       ),
-    [mappedEvents, filter],
+    [mockEvents, filter],
   );
 
   const eventCache = useMemo(() => {
@@ -132,9 +116,17 @@ export default function CommunityCalendar() {
   const handleEventClick = useCallback(event => {
     setSelectedEvent(event);
     setShowEventModal(true);
-    // Also select the date of the event so the sidebar shows events for that date
-    setSelectedDate(event.date);
   }, []);
+
+  const handleEventKeyPress = useCallback(
+    (e, event) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        handleEventClick(event);
+      }
+    },
+    [handleEventClick],
+  );
 
   const closeEventModal = useCallback(() => {
     setShowEventModal(false);
@@ -204,20 +196,39 @@ export default function CommunityCalendar() {
 
       return (
         <div className={styles.tileEvents}>
-          {visible.map(e => {
-            const statusKey = statusMap[e.status];
-            return (
-              <button
-                key={e.id}
-                type="button"
-                className={`${styles.eventItem} ${styles[statusKey] || ''}`}
-                onClick={() => handleEventClick(e)}
-                title={e.title}
-              >
-                {e.title}
-              </button>
-            );
-          })}
+          {visible.map(event => (
+            <div
+              key={event.id}
+              className={`${styles.eventItem} ${styles.clickable}`}
+              onClick={() => handleEventClick(event)}
+              onKeyDown={e => handleEventKeyPress(e, event)}
+              onMouseEnter={() => setHoveredEventId(event.id)}
+              onMouseLeave={() => setHoveredEventId(null)}
+              role="button"
+              tabIndex={0}
+              aria-label={`Click to view details for ${event.title}`}
+            >
+              {event.title}
+
+              {hoveredEventId === event.id && (
+                <div
+                  className={`${styles.eventTooltip} ${darkMode ? styles.eventTooltipDark : ''}`}
+                >
+                  <strong>{event.title}</strong>
+                  <span className={styles.tooltipDetail}>
+                    <strong>Time:</strong> {event.time}
+                  </span>
+                  <span className={styles.tooltipDetail}>
+                    <strong>Location:</strong> {event.location}
+                  </span>
+                  <span className={styles.tooltipDetail}>
+                    <strong>Status:</strong> {event.status}
+                  </span>
+                  <small>Click for more details</small>
+                </div>
+              )}
+            </div>
+          ))}
 
           {hiddenCount > 0 && (
             <button
@@ -232,7 +243,7 @@ export default function CommunityCalendar() {
         </div>
       );
     },
-    [getEventsForDate, handleEventClick],
+    [getEventsForDate, handleEventClick, darkMode, hoveredEventId],
   );
 
   const tileClassName = useCallback(
@@ -249,25 +260,17 @@ export default function CommunityCalendar() {
     [eventCountByDate, selectedDate],
   );
 
-  // Get events for the selected date
-  const eventsForSelectedDate = useMemo(() => {
-    if (!selectedDate) return [];
-    return getEventsForDate(selectedDate);
-  }, [selectedDate, getEventsForDate]);
-
   const handleFilterChange = field => e =>
     setFilter(prev => ({ ...prev, [field]: e.target.value }));
 
   const uniqueFilterValues = useMemo(
     () => ({
-      types: [...new Set(mappedEvents.map(e => e.type))],
-      locations: [...new Set(mappedEvents.map(e => e.location))],
-      statuses: [...new Set(mappedEvents.map(e => e.status))],
+      types: [...new Set(mockEvents.map(e => e.type))],
+      locations: [...new Set(mockEvents.map(e => e.location))],
+      statuses: [...new Set(mockEvents.map(e => e.status))],
     }),
-    [mappedEvents],
+    [mockEvents],
   );
-
-  const darkMode = useSelector(s => s.theme.darkMode);
 
   const calendarClasses = useMemo(
     () => ({
@@ -310,7 +313,9 @@ export default function CommunityCalendar() {
               background: #1a2332 !important;
               color: #ffffff !important;
             }
+
             /* Force white text on dark background */
+
             .react-calendar__tile.selectedDate abbr,
             .react-calendar__tile.selectedDate abbr[title],
             .react-calendar__tile.selectedDate > abbr,
@@ -338,6 +343,28 @@ export default function CommunityCalendar() {
             /* But preserve event item colors */
             .react-calendar__tile.selectedDate .eventItem {
               color: inherit !important;
+            }
+              /* 1. Target the button and any text inside it */
+            .react-calendar__navigation button:enabled:hover,
+            .react-calendar__navigation button:enabled:hover *,
+            .react-calendar__navigation button:enabled:focus,
+            .react-calendar__navigation button:enabled:focus * {
+              background-color: #e6e6e6 !important;
+              color: #000000 !important;
+              /* This handles cases where they use text-shadows or strokes */
+              text-shadow: none !important;
+              -webkit-text-stroke: 0px transparent !important;
+            }
+
+            /* 2. Target the specific arrows (the << < > >> symbols) */
+            .react-calendar__navigation__arrow:enabled:hover {
+              color: #000000 !important;
+            }
+
+            /* 3. If they are using pseudo-elements (common in some versions) */
+            .react-calendar__navigation button:enabled:hover::before,
+            .react-calendar__navigation button:enabled:hover::after {
+              color: #000000 !important;
             }
           `}
         </style>
@@ -371,11 +398,7 @@ export default function CommunityCalendar() {
       <main className={calendarClasses.main}>
         <div className={calendarClasses.calendarContainer}>
           <div className={calendarClasses.activitySection}>
-            <CalendarActivitySection
-              selectedDate={selectedDate}
-              events={eventsForSelectedDate}
-              onEventClick={handleEventClick}
-            />
+            <CalendarActivitySection />
           </div>
           <div className={calendarClasses.calendarSection}>
             <ReactCalendar
@@ -384,6 +407,7 @@ export default function CommunityCalendar() {
               tileClassName={tileClassName}
               onClickDay={handleDateSelect}
               value={selectedDate}
+              minDate={new Date()}
             />
             <section
               className={`${styles.selectedDatePanel} ${
@@ -421,10 +445,33 @@ export default function CommunityCalendar() {
                             <div>
                               <h3>{event.title}</h3>
                               <div className={styles.selectedEventMeta}>
-                                <span>{event.time}</span>
-                                <span>{event.location}</span>
-                                <span>{event.type}</span>
-                                <span>{event.status}</span>
+                                <ul className={styles.selectedEventMeta}>
+                                  <li className={styles.metaItem}>
+                                    <FontAwesomeIcon icon={faClock} className={styles.metaIcon} />
+                                    <span>{event.time}</span>
+                                  </li>
+
+                                  <li className={styles.metaItem}>
+                                    <FontAwesomeIcon
+                                      icon={faLocationDot}
+                                      className={styles.metaIcon}
+                                    />
+                                    <span>{event.location}</span>
+                                  </li>
+
+                                  <li className={styles.metaItem}>
+                                    <FontAwesomeIcon icon={faTag} className={styles.metaIcon} />
+                                    <span>{event.type}</span>
+                                  </li>
+
+                                  <li className={styles.metaItem}>
+                                    <FontAwesomeIcon
+                                      icon={faCircleCheck}
+                                      className={styles.metaIcon}
+                                    />
+                                    <span>{event.status}</span>
+                                  </li>
+                                </ul>
                               </div>
                             </div>
                             <button
@@ -542,3 +589,5 @@ export default function CommunityCalendar() {
     </div>
   );
 }
+
+export default CommunityCalendar;
