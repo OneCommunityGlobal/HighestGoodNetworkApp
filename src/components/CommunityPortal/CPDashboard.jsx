@@ -112,11 +112,7 @@ export function CPDashboard() {
   const FALLBACK_IMG =
     'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=600&q=60';
 
-  // Get today's date in YYYY-MM-DD format for min date restriction (local timezone so user can select today)
-  const now = new Date();
-  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(
-    now.getDate(),
-  ).padStart(2, '0')}`;
+
 
   const normalizeOrganizer = organizer => {
     if (!organizer || typeof organizer !== 'string') return null;
@@ -174,13 +170,6 @@ export function CPDashboard() {
   };
 
   const searchRef = useRef(null);
-  const dateInputRef = useRef(null);
-
-  const handleDateInputClick = () => {
-    if (dateInputRef.current?.showPicker) {
-      dateInputRef.current.showPicker();
-    }
-  };
 
   useEffect(() => {
     autoGrow(searchRef.current);
