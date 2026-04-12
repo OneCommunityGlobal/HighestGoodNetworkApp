@@ -295,9 +295,6 @@ function CreateEventModal({ isOpen, toggle }) {
                 .tz('America/Los_Angeles')
                 .format('YYYY-MM-DD')}
               style={darkMode ? { colorScheme: 'dark' } : {}}
-              min={moment()
-                .tz('America/Los_Angeles')
-                .format('YYYY-MM-DD')}
             />
             {errors.date && <div className="text-danger small">{errors.date}</div>}
           </div>
