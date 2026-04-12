@@ -83,12 +83,34 @@ export default function ReturnedLateChart() {
   const [selectedToolDetail, setSelectedToolDetail] = useState(null);
   const [detailOpen, setDetailOpen] = useState(false);
   const [detailLoading, setDetailLoading] = useState(false);
+  const [hiddenProjects, setHiddenProjects] = useState([]);
   const darkMode = useSelector(state => state.theme.darkMode);
   const [sortOption, setSortOption] = useState('DESC');
   const isMultiProjectView = selectedProject === 'All';
+  const visibleDatasets = useMemo(
+    () =>
+      chartData.datasets.map(dataset => ({
+        ...dataset,
+        hidden: Boolean(dataset.projectId) && hiddenProjects.includes(dataset.projectId),
+      })),
+    [chartData.datasets, hiddenProjects],
+  );
   const maxChartValue = Math.max(
     0,
-    ...chartData.datasets.flatMap(dataset => dataset.data.filter(value => value != null)),
+    ...visibleDatasets
+      .filter(dataset => !dataset.hidden)
+      .flatMap(dataset => dataset.data.filter(value => value != null)),
+  );
+  const legendItems = useMemo(
+    () =>
+      chartData.datasets.map(dataset => ({
+        projectId: dataset.projectId || dataset.label,
+        label: dataset.label,
+        backgroundColor: dataset.backgroundColor,
+        borderColor: dataset.borderColor,
+        hidden: Boolean(dataset.projectId) && hiddenProjects.includes(dataset.projectId),
+      })),
+    [chartData.datasets, hiddenProjects],
   );
 
   const sortToolsData = data => {
@@ -281,6 +303,18 @@ export default function ReturnedLateChart() {
     fetchData();
   }, [availableProjects, darkMode, selectedProject, dateRange, selectedTools, sortOption]);
 
+  useEffect(() => {
+    if (!isMultiProjectView) {
+      setHiddenProjects([]);
+      return;
+    }
+
+    const validProjectIds = new Set(
+      chartData.datasets.map(dataset => dataset.projectId).filter(Boolean),
+    );
+    setHiddenProjects(prev => prev.filter(projectId => validProjectIds.has(projectId)));
+  }, [chartData.datasets, isMultiProjectView]);
+
   const handleBarClick = useCallback(
     (event, elements) => {
       if (!elements || !elements.length) return;
@@ -312,17 +346,7 @@ export default function ReturnedLateChart() {
       },
       plugins: {
         legend: {
-          display: isMultiProjectView && chartData.datasets.length > 1,
-          position: 'top',
-          align: 'end',
-          labels: {
-            color: textColor,
-            usePointStyle: true,
-            pointStyle: 'rectRounded',
-            boxWidth: 14,
-            boxHeight: 14,
-            padding: 16,
-          },
+          display: false,
         },
         title: {
           display: false,
@@ -387,7 +411,17 @@ export default function ReturnedLateChart() {
         },
       },
     };
-  }, [chartData, darkMode, handleBarClick, isMultiProjectView, maxChartValue, rawToolsData]);
+  }, [darkMode, handleBarClick, maxChartValue, rawToolsData]);
+
+  const toggleProjectVisibility = projectId => {
+    if (!projectId || !isMultiProjectView) return;
+
+    setHiddenProjects(prev =>
+      prev.includes(projectId) ? prev.filter(id => id !== projectId) : [...prev, projectId],
+    );
+  };
+
+  const multiProjectLegendVisible = isMultiProjectView && legendItems.length > 1;
 
   const handleProjectChange = e => setSelectedProject(e.target.value);
   const handleStartDateChange = date =>
@@ -403,10 +437,40 @@ export default function ReturnedLateChart() {
     <div className={`${styles['returned-late-chart']} ${isOxfordBlue}`}>
       <div className={styles['returned-late-header-row']}>
         <h1 className={darkMode ? 'text-white' : ''}>Percent of Tools Returned Late</h1>
-        {isMultiProjectView && chartData.datasets.length > 1 && (
-          <p className={`${styles['returned-late-legend-hint']} ${darkMode ? 'text-white' : ''}`}>
-            Click legend items to show or hide project bars.
-          </p>
+        {multiProjectLegendVisible && (
+          <div className={styles['returned-late-legend-block']}>
+            <p className={`${styles['returned-late-legend-hint']} ${darkMode ? 'text-white' : ''}`}>
+              Click legend items to show or hide project bars.
+            </p>
+            <div
+              className={styles['returned-late-legend']}
+              role="group"
+              aria-label="Project color legend"
+            >
+              {legendItems.map(item => (
+                <button
+                  key={item.projectId}
+                  type="button"
+                  className={`${styles['returned-late-legend-item']} ${
+                    item.hidden ? styles['returned-late-legend-item-hidden'] : ''
+                  }`}
+                  onClick={() => toggleProjectVisibility(item.projectId)}
+                  aria-pressed={!item.hidden}
+                  title={`${item.hidden ? 'Show' : 'Hide'} ${item.label}`}
+                >
+                  <span
+                    className={styles['returned-late-legend-swatch']}
+                    style={{
+                      backgroundColor: item.backgroundColor,
+                      borderColor: item.borderColor,
+                    }}
+                    aria-hidden="true"
+                  />
+                  <span className={styles['returned-late-legend-label']}>{item.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
         )}
       </div>
       <div className={styles['returned-late-filters']}>
@@ -515,7 +579,12 @@ export default function ReturnedLateChart() {
           </div>
         )}
         {!loading && !error && chartData.labels.length > 0 && (
-          <Bar ref={chartRef} data={chartData} options={options} plugins={[ChartDataLabels]} />
+          <Bar
+            ref={chartRef}
+            data={{ ...chartData, datasets: visibleDatasets }}
+            options={options}
+            plugins={[ChartDataLabels]}
+          />
         )}
       </div>
       {detailOpen && (

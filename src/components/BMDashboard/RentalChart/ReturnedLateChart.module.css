@@ -18,10 +18,72 @@
 }
 
 .returned-late-legend-hint {
-  margin: 4px 0 20px;
+  margin: 4px 0 10px;
   color: #475569;
   font-size: 14px;
   font-weight: 500;
+}
+
+.returned-late-legend-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  max-width: min(100%, 720px);
+}
+
+.returned-late-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.returned-late-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+  background: #fff;
+  color: #1f2937;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease,
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.returned-late-legend-item:hover {
+  border-color: #94a3b8;
+  transform: translateY(-1px);
+}
+
+.returned-late-legend-item:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.returned-late-legend-item-hidden {
+  opacity: 0.55;
+  background: #f8fafc;
+}
+
+.returned-late-legend-swatch {
+  width: 14px;
+  height: 14px;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.returned-late-legend-label {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
 }
 
 .returned-late-filters {
@@ -139,6 +201,25 @@
   color: #cbd5e1;
 }
 
+:global(html.dark-mode) .returned-late-legend-item,
+:global(body.dark-mode) .returned-late-legend-item {
+  background: #0f172a;
+  color: #f8fafc;
+  border-color: #475569;
+}
+
+:global(html.dark-mode) .returned-late-legend-item:hover,
+:global(body.dark-mode) .returned-late-legend-item:hover {
+  border-color: #94a3b8;
+  background: #172033;
+}
+
+:global(html.dark-mode) .returned-late-legend-item-hidden,
+:global(body.dark-mode) .returned-late-legend-item-hidden {
+  background: #172033;
+  color: #cbd5e1;
+}
+
 :global(html.dark-mode) .returned-late-filter-label,
 :global(body.dark-mode) .returned-late-filter-label {
   color: #fff;
@@ -207,5 +288,14 @@
 
   .returned-late-legend-hint {
     margin-top: 0;
+  }
+
+  .returned-late-legend-block {
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .returned-late-legend {
+    justify-content: flex-start;
   }
 }
