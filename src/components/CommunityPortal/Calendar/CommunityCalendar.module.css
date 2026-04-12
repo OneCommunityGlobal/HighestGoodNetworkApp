@@ -569,6 +569,10 @@
   color: #cbd5e0;
 }
 
+.selectedEventMeta .metaItem{
+  list-style-type: none;
+}
+
 .eventDetailButton {
   border: none;
   background-color: #1e40af;
