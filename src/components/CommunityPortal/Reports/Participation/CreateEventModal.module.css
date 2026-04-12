@@ -1,0 +1,138 @@
+.modalDialog {
+  max-width: 800px;
+}
+
+.modalDialogDark {
+  max-width: 800px;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+}
+
+.modalHeaderDark {
+  background-color: #1c2541;
+}
+
+.modalTitle {
+  width: 100%;
+  text-align: center;
+  margin-left: 8px;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.modalBody {
+  padding: 1rem;
+}
+
+.modalBodyDark {
+  background-color: #3a506b;
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 1rem;
+}
+
+.modalFooterDark {
+  background-color: #3a506b;
+}
+
+.formGroup {
+  margin-bottom: 1rem;
+}
+
+.label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.labelDark {
+  color: #f8f9fa;
+}
+
+.redAsterisk {
+  color: #dc3545;
+}
+
+.input,
+.select,
+.textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  font-size: 1rem;
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.inputDark,
+.selectDark,
+.textareaDark {
+  background-color: #1c2541;
+  border: 1px solid #3a506b;
+  color: #f8f9fa;
+}
+
+.inputInvalid {
+  border-color: #dc3545;
+}
+
+.errorText {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.formRow {
+  display: flex;
+  gap: 1rem;
+}
+
+.formCol {
+  flex: 1;
+}
+
+.button {
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  font-size: 1rem;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.2s ease;
+}
+
+.buttonSecondary {
+  background-color: #6c757d;
+  color: #fff;
+}
+
+.buttonSecondary:hover {
+  background-color: #5a6268;
+}
+
+.buttonPrimary {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.buttonPrimary:hover {
+  background-color: #0056b3;
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

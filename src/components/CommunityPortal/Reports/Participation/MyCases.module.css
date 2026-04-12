@@ -14,47 +14,116 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.myCasesPageDark {
-  padding: 16px;
+/* Dark mode - descendant styling */
+.myCasesPage.darkMode {
   background-color: #1c2541;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* ---------- Header ---------- */
-.myCasesPage .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.myCasesPageDark .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.myCasesPage.darkMode .header {
   background-color: #1c2541;
   color: #ffffff;
 }
 
-.myCasesPageDark .headerActions {
+.myCasesPage.darkMode .headerActions {
   gap: 20px;
-  /* more room between dropdowns/buttons */
 }
 
-.sectionTitle {
-  font-size: 24px;
-  font-weight: bold;
-  color: #333;
-  margin: 0;
-}
-
-.sectionTitleDark {
-  font-size: 24px;
-  font-weight: bold;
+.myCasesPage.darkMode .sectionTitle {
   background-color: #1c2541;
-  color: #ffffff !important;
-  margin: 0;
+  color: #ffffff;
+}
+
+.myCasesPage.darkMode .viewSwitcher button,
+.myCasesPage.darkMode .createNew {
+  background-color: #1e293b;
+  border-radius: 6px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #f1f5f9;
+  border: 1px solid #555;
+}
+
+.myCasesPage.darkMode .viewSwitcher button.active {
+  background-color: #3b82f6;
+  color: #fff;
+  border-color: #3b82f6;
+}
+
+.myCasesPage.darkMode .filterDropdown {
+  background-color: #3a506b;
+  color: #ffffff;
+  border: 1px solid #555;
+}
+
+.myCasesPage.darkMode .createNew {
+  font-weight: bold;
+  border: 1px solid #555;
+  background-color: #1e293b;
+  color: #f1f5f9;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.myCasesPage.darkMode .caseCard {
+  background-color: #3a506b;
+  color: #ffffff;
+  border: 1px solid #ddd;
+}
+
+.myCasesPage.darkMode .caseCard .eventBadge {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+}
+
+.myCasesPage.darkMode .caseCard .eventBadge[data-type='Yoga Class'] {
+  background-color: rgba(40, 167, 69, 0.2);
+  color: #8fd19e;
+}
+
+.myCasesPage.darkMode .caseCard .eventBadge[data-type='Cooking Workshop'] {
+  background-color: rgba(231, 76, 60, 0.2);
+  color: #f1948a;
+}
+
+.myCasesPage.darkMode .caseCard .eventBadge[data-type='Dance Class'] {
+  background-color: rgba(243, 156, 18, 0.2);
+  color: #f7dc6f;
+}
+
+.myCasesPage.darkMode .caseCard .eventBadge[data-type='Fitness Bootcamp'] {
+  background-color: rgba(155, 89, 182, 0.2);
+  color: #d2b4de;
+}
+
+.myCasesPage.darkMode .caseCard .eventTime {
+  color: #ffffff;
+}
+
+.myCasesPage.darkMode .caseCard .eventName {
+  color: #ffffff;
+}
+
+.myCasesPage.darkMode .caseCard .attendeesInfo {
+  color: #ffffff;
+}
+
+.myCasesPage.darkMode .caseCard .attendeesCount {
+  color: #ffffff;
+}
+
+.myCasesPage.darkMode .caseListItem {
+  background-color: #3a506b;
+}
+
+.myCasesPage.darkMode .caseListItem span {
+  color: #ffffff;
+}
+
+.myCasesPage.darkMode .calendarView {
+  background-color: #3a506b;
+  color: #ffffff;
 }
 
 .headerActions {
@@ -112,7 +181,6 @@
   border-color: #3b82f6;
 }
 
-
 .filterWrapper {
   margin: 10px 0;
 }
@@ -126,7 +194,7 @@
 }
 
 .myCasesPageDark .filterDropdown {
-  background-color: #3A506B;
+  background-color: #3a506b;
   color: #ffffff;
   border: 1px solid #555;
 }
@@ -179,7 +247,7 @@
 }
 
 .myCasesPageDark .createNew {
-  background-color: #3A506B;
+  background-color: #3a506b;
   /* Matches other dark elements */
   color: #ffffff;
   border: 1px solid #555;
@@ -249,7 +317,6 @@
   background-color: #f5e6ff;
   color: #9b59b6;
 }
-
 
 .caseCardDark .eventBadge {
   background-color: rgba(255, 255, 255, 0.1);

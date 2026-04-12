@@ -32,7 +32,7 @@ function DropOffTracking() {
     return { startDate, endDate };
   };
 
-  const filteredEvents = mockEvents.filter(event => {
+  const filteredEvents = mockEvents.filter((event) => {
     if (selectedEvent !== 'All Events' && event.eventType !== selectedEvent) {
       return false;
     }
@@ -44,25 +44,21 @@ function DropOffTracking() {
     return true;
   });
 
-  const darkMode = useSelector(state => state.theme.darkMode);
+  const darkMode = useSelector((state) => state.theme.darkMode);
 
   return (
-    <div
-      className={`tracking-container-global ${styles.trackingContainer} ${
-        darkMode ? styles.trackingContainerDark : ''
-      }`}
-    >
-      <div className={`${styles.trackingHeader} ${darkMode ? styles.trackingHeaderDark : ''}`}>
+    <div className={`tracking-container-global ${styles.trackingContainer}`}>
+      <div className={styles.trackingHeader}>
         <h3>Drop-off and no-show rate tracking</h3>
-        <div className={`${styles.trackingFilters} ${darkMode ? styles.trackingFiltersDark : ''}`}>
-          <select value={selectedEvent} onChange={e => setSelectedEvent(e.target.value)}>
+        <div className={styles.trackingFilters}>
+          <select value={selectedEvent} onChange={(e) => setSelectedEvent(e.target.value)}>
             <option value="All Events">All Events</option>
             <option value="Yoga Class">Yoga Class</option>
             <option value="Cooking Workshop">Cooking Workshop</option>
             <option value="Dance Class">Dance Class</option>
             <option value="Fitness Bootcamp">Fitness Bootcamp</option>
           </select>
-          <select value={selectedTime} onChange={e => setSelectedTime(e.target.value)}>
+          <select value={selectedTime} onChange={(e) => setSelectedTime(e.target.value)}>
             <option value="All Time">All Time</option>
             <option value="Today">Today</option>
             <option value="This Week">This Week</option>
@@ -72,7 +68,7 @@ function DropOffTracking() {
       </div>
 
       <div className={styles.trackingSummary}>
-        <div className={`${styles.trackingRate} ${darkMode ? styles.trackingRateDark : ''}`}>
+        <div className={styles.trackingRate}>
           <p className={styles.trackingRateValue}>
             +5% <span>Last week</span>
           </p>
@@ -80,7 +76,7 @@ function DropOffTracking() {
             <span> Drop-off rate</span>
           </p>
         </div>
-        <div className={`${styles.trackingRate} ${darkMode ? styles.trackingRateDark : ''}`}>
+        <div className={styles.trackingRate}>
           <p className={styles.trackingRateValue}>
             +5% <span>Last week</span>
           </p>
@@ -90,16 +86,8 @@ function DropOffTracking() {
         </div>
       </div>
 
-      <div
-        className={`${styles.trackingListContainer} ${
-          darkMode ? styles.trackingListContainerDark : ''
-        }`}
-      >
-        <table
-          className={`tracking-table-global ${styles.trackingTable} ${
-            darkMode ? `tracking-table-global-dark ${styles.trackingTableDark}` : ''
-          }`}
-        >
+      <div className={styles.trackingListContainer}>
+        <table className={`tracking-table-global ${styles.trackingTable}`}>
           <thead>
             <tr>
               <th>Event name</th>
@@ -109,11 +97,11 @@ function DropOffTracking() {
             </tr>
           </thead>
           <tbody>
-            {filteredEvents.map(event => (
+            {filteredEvents.map((event) => (
               <tr key={event.id}>
                 <td>{event.eventName}</td>
-                <td className={`${styles.trackingRateGreen}`}>{event.noShowRate}</td>
-                <td className={`${styles.trackingRateRed}`}>{event.dropOffRate}</td>
+                <td className={styles.trackingRateGreen}>{event.noShowRate}</td>
+                <td className={styles.trackingRateRed}>{event.dropOffRate}</td>
                 <td>{event.attendees}</td>
               </tr>
             ))}

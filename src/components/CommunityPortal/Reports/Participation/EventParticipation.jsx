@@ -7,7 +7,7 @@ import NoShowInsights from './NoShowInsights';
 import styles from './Participation.module.css';
 
 function EventParticipation() {
-  const darkMode = useSelector(state => state.theme.darkMode);
+  const darkMode = useSelector((state) => state.theme.darkMode);
   const exportRef = useRef(null);
   const [exporting, setExporting] = useState(false);
 
@@ -43,22 +43,16 @@ function EventParticipation() {
     <div
       ref={exportRef}
       className={`participation-landing-page-global ${styles.participationLandingPage} ${
-        darkMode ? styles.participationLandingPageDark : ''
+        darkMode ? styles.darkMode : ''
       }`}
     >
       {/* Print-only page title header */}
       <header
         className={`${styles.landingPageHeaderContainer} ${styles.avoidBreak} ${styles.noPrintGap}`}
       >
-        <h1
-          className={`${styles.landingPageHeader} ${darkMode ? styles.landingPageHeaderDark : ''}`}
-        >
-          Social And Recreational Management
-        </h1>
+        <h1 className={styles.landingPageHeader}>Social And Recreational Management</h1>
         <button
-          className={`${styles.savePdfBtn} ${
-            darkMode ? styles.savePdfBtnDark : styles.savePdfBtnLight
-          } ${styles.noPrint}`}
+          className={`${styles.savePdfBtn} ${darkMode ? '' : styles.savePdfBtnLight} ${styles.noPrint}`}
           onClick={handleSaveAsPDF}
           disabled={exporting}
           aria-busy={exporting}
@@ -67,10 +61,12 @@ function EventParticipation() {
         </button>
       </header>
 
-      <MyCases />
-      <div className={`${styles.analyticsSection}`}>
-        <DropOffTracking />
-        <NoShowInsights />
+      <div className={darkMode ? styles.darkMode : ''}>
+        <MyCases darkMode={darkMode} />
+        <div className={styles.analyticsSection}>
+          <DropOffTracking />
+          <NoShowInsights />
+        </div>
       </div>
 
       {/* Print-only footer note */}
