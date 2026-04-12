@@ -571,6 +571,7 @@
 
 .selectedEventMeta .metaItem{
   list-style-type: none;
+  margin-left: 2px;
 }
 
 .eventDetailButton {
