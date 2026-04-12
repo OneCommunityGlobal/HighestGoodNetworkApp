@@ -70,7 +70,7 @@ const allInsights = {
   ],
 };
 
-/* ----------Insight definitions for clarity ---------- */
+/* ---------- Insight definitions for clarity ---------- */
 const insightDefinitions = {
   'Most vulnerable materials':
     'Material with the lowest return rate compared to loaned items for the selected period.',
@@ -130,35 +130,79 @@ export default function ResourceUsage() {
   }, [insightsTimePeriod]);
 
   return (
+    // added by shreya P — outer wrapper now stretches to fill the page with correct flex direction
     <div
       data-testid="resource-usage-container"
       className={`${styles.resourceUsageContainer} ${
         darkMode ? 'dark-mode bg-oxford-blue text-light' : ''
       }`}
     >
-      {/* LEFT SECTION */}
+      {/* LEFT SECTION — Chart */}
       <div className={`${styles.chartSection} ${darkMode ? 'bg-space-cadet' : ''}`}>
+        {/* added by shreya P — headerSection uses flex row so title and dropdowns sit side-by-side and align properly */}
         <div className={styles.headerSection}>
-          <h1>Resources usage</h1>
+          <h1
+            // added by shreya P — heading color switches in dark mode so it stays visible
+            style={{ color: darkMode ? '#ffffff' : '#111827' }}
+          >
+            Resources usage
+          </h1>
 
+          {/* added by shreya P — filters wrapper keeps dropdowns in a row with consistent gap */}
           <div className={styles.filters}>
+            {/* added by shreya P — Resource type dropdown: Toggle and Menu get dark CSS module classes */}
             <Dropdown>
-              <Dropdown.Toggle className={styles.customDropdown}>{resourceType}</Dropdown.Toggle>
-              <Dropdown.Menu>
-                <Dropdown.Item onClick={() => setResourceType('Material')}>Material</Dropdown.Item>
-                <Dropdown.Item onClick={() => setResourceType('Equipment')}>
+              <Dropdown.Toggle
+                className={`${styles.customDropdown} ${darkMode ? styles.customDropdownDark : ''}`}
+              >
+                {resourceType}
+              </Dropdown.Toggle>
+              <Dropdown.Menu className={darkMode ? styles.dropdownMenuDark : ''}>
+                <Dropdown.Item
+                  className={darkMode ? styles.dropdownItemDark : ''}
+                  onClick={() => setResourceType('Material')}
+                >
+                  Material
+                </Dropdown.Item>
+                <Dropdown.Item
+                  className={darkMode ? styles.dropdownItemDark : ''}
+                  onClick={() => setResourceType('Equipment')}
+                >
                   Equipment
                 </Dropdown.Item>
-                <Dropdown.Item onClick={() => setResourceType('Venue')}>Venue</Dropdown.Item>
+                <Dropdown.Item
+                  className={darkMode ? styles.dropdownItemDark : ''}
+                  onClick={() => setResourceType('Venue')}
+                >
+                  Venue
+                </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
 
+            {/* added by shreya P — Time period dropdown: same dark class treatment as above */}
             <Dropdown>
-              <Dropdown.Toggle className={styles.customDropdown}>{timePeriod}</Dropdown.Toggle>
-              <Dropdown.Menu>
-                <Dropdown.Item onClick={() => setTimePeriod('This Week')}>This Week</Dropdown.Item>
-                <Dropdown.Item onClick={() => setTimePeriod('Last Week')}>Last Week</Dropdown.Item>
-                <Dropdown.Item onClick={() => setTimePeriod('This Month')}>
+              <Dropdown.Toggle
+                className={`${styles.customDropdown} ${darkMode ? styles.customDropdownDark : ''}`}
+              >
+                {timePeriod}
+              </Dropdown.Toggle>
+              <Dropdown.Menu className={darkMode ? styles.dropdownMenuDark : ''}>
+                <Dropdown.Item
+                  className={darkMode ? styles.dropdownItemDark : ''}
+                  onClick={() => setTimePeriod('This Week')}
+                >
+                  This Week
+                </Dropdown.Item>
+                <Dropdown.Item
+                  className={darkMode ? styles.dropdownItemDark : ''}
+                  onClick={() => setTimePeriod('Last Week')}
+                >
+                  Last Week
+                </Dropdown.Item>
+                <Dropdown.Item
+                  className={darkMode ? styles.dropdownItemDark : ''}
+                  onClick={() => setTimePeriod('This Month')}
+                >
                   This Month
                 </Dropdown.Item>
               </Dropdown.Menu>
@@ -220,53 +264,80 @@ export default function ResourceUsage() {
         </div>
       </div>
 
-      {/* RIGHT SECTION */}
+      {/* RIGHT SECTION — Insights */}
+      {/* added by shreya P — darkInsightsSection class handles the dark background for the right panel */}
       <div className={`${styles.insightsSection} ${darkMode ? styles.darkInsightsSection : ''}`}>
+        {/* added by shreya P — insightsHeader keeps "Insights" title and the dropdown aligned on one row */}
         <div className={styles.insightsHeader}>
-          <h2>Insights</h2>
+          <h2
+            // added by shreya P — h2 color switches so "Insights" is readable in dark mode
+            style={{ color: darkMode ? '#ffffff' : '#111827' }}
+          >
+            Insights
+          </h2>
 
+          {/* added by shreya P — Insights time-period dropdown gets the same dark classes */}
           <Dropdown>
-            <Dropdown.Toggle className={styles.customDropdown}>
+            <Dropdown.Toggle
+              className={`${styles.customDropdown} ${darkMode ? styles.customDropdownDark : ''}`}
+            >
               {insightsTimePeriod}
             </Dropdown.Toggle>
-            <Dropdown.Menu>
-              <Dropdown.Item onClick={() => setInsightsTimePeriod('This Week')}>
+            <Dropdown.Menu className={darkMode ? styles.dropdownMenuDark : ''}>
+              <Dropdown.Item
+                className={darkMode ? styles.dropdownItemDark : ''}
+                onClick={() => setInsightsTimePeriod('This Week')}
+              >
                 This Week
               </Dropdown.Item>
-              <Dropdown.Item onClick={() => setInsightsTimePeriod('Last Week')}>
+              <Dropdown.Item
+                className={darkMode ? styles.dropdownItemDark : ''}
+                onClick={() => setInsightsTimePeriod('Last Week')}
+              >
                 Last Week
               </Dropdown.Item>
-              <Dropdown.Item onClick={() => setInsightsTimePeriod('This Month')}>
+              <Dropdown.Item
+                className={darkMode ? styles.dropdownItemDark : ''}
+                onClick={() => setInsightsTimePeriod('This Month')}
+              >
                 This Month
               </Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
         </div>
 
+        {/* added by shreya P — insightsGrid renders cards in a 2-column grid */}
         <div className={styles.insightsGrid}>
           {insights.map((insight, idx) => (
             <div
               key={idx}
-              className={`${styles.insightCard} ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
+              // added by shreya P — removed bg-yinmn-blue Bootstrap class; dark card bg is now
+              // controlled by .darkInsightsSection .insightCard in the CSS module to avoid
+              // a Bootstrap override fight that was causing alignment/colour conflicts
+              className={`${styles.insightCard} ${darkMode ? styles.insightCardDark : ''}`}
             >
-              {/* 🔹 ADD THIS LINE RIGHT HERE */}
               <div className={styles.insightTooltip}>{insightDefinitions[insight.title]}</div>
 
               <div
                 className={styles.insightTitle}
                 title={insightDefinitions[insight.title]}
-                style={{ color: darkMode ? '#342d2dff' : '#6b7280', fontWeight: 600 }}
+                // added by shreya P — insightTitle colour: was '#342d2dff' (nearly black) in dark mode
+                // which made it invisible on a dark card. Changed to '#e5e7eb' (light grey).
+                style={{ color: darkMode ? '#e5e7eb' : '#6b7280', fontWeight: 600 }}
               >
                 {insight.title}
               </div>
 
               <div
-                className={`${styles.insightBadge} ${darkMode ? 'text-dark' : ''}`}
-                style={{ backgroundColor: insight.color }}
+                className={styles.insightBadge}
+                // added by shreya P — badge keeps its pastel background in both modes;
+                // text is forced dark so it stays readable on the light-coloured badge pill
+                style={{ backgroundColor: insight.color, color: '#111827' }}
               >
                 {insight.value}
               </div>
 
+              {/* added by shreya P — insightMeta text colour handled by CSS module dark rule */}
               <div className={styles.insightMeta}>Based on returned vs loaned comparison</div>
             </div>
           ))}

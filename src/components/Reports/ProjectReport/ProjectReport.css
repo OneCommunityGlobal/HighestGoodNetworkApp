@@ -20,3 +20,33 @@
 .pie-chart-checkbox {
   margin-right: 8px; /* Space between checkbox and label */
 }
+
+.dark-mode .project-header,
+.bg-oxford-blue .project-header {
+  color: #ffffff !important;
+}
+
+.dark-mode select,
+.bg-oxford-blue select,
+.dark-mode .form-control,
+.bg-oxford-blue .form-control {
+  background-color: #1c2541;
+  color: #ffffff;
+  border-color: #3a506b;
+}
+
+.dark-mode .dropdown-menu,
+.bg-oxford-blue .dropdown-menu {
+  background-color: #1c2541;
+  border-color: #3a506b;
+}
+
+.dark-mode .dropdown-item,
+.bg-oxford-blue .dropdown-item {
+  color: #ffffff;
+}
+
+.dark-mode .dropdown-item:hover,
+.bg-oxford-blue .dropdown-item:hover {
+  background-color: #3a506b;
+}

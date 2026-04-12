@@ -168,3 +168,22 @@
   line-height: 1;
   margin-top: 0;
 }
+
+/* ================= DARK MODE FIXES ================= */
+/* Added by Shreya */
+
+.dark-mode tr:hover,
+.bg-yinmn-blue tr:hover {
+  background: #1c2541 !important;
+  color: #ffffff !important;
+}
+
+.dark-mode .suggestions-list {
+  background-color: #1c2541;
+  color: #ffffff;
+}
+
+.dark-mode .projects__name--input input:hover {
+  background-color: #1c2541;
+  color: #ffffff;
+}

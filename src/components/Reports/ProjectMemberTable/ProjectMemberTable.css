@@ -34,6 +34,13 @@
   text-align: left;
 }
 
+/* added by shreya P — dark mode override for the member table header row */
+.bg-space-cadet.reports-table-head-members {
+  background-color: #1c2b3a !important;
+  border-bottom: 3px solid #3a506b;
+  color: #ffffff;
+}
+
 .project-member-table-row {
   display: grid;
   grid-template-columns: 1fr 2fr 1fr 3fr;

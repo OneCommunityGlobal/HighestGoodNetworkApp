@@ -8,12 +8,24 @@
   padding-bottom: 40px;
 }
 
+/* .heading {
+  text-align: center;
+  margin: 20px 0;
+  color: #1e3a8a;
+  font-size: 2.5em;
+  font-weight: 600;
+} */
+
 .heading {
   text-align: center;
   margin: 20px 0;
   color: #1e3a8a;
   font-size: 2.5em;
   font-weight: 600;
+}
+
+.headingDark {
+  color: #ffffff;
 }
 
 .filters {

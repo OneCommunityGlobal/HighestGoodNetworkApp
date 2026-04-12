@@ -68,19 +68,45 @@ export function TasksTable({ darkMode, tasks, projectId }) {
     setOneFilter(filterName, selectedOption ? selectedOption.value : '');
   };
 
+  const darkSelectStyles = darkMode ? {
+    control: (base) => ({
+      ...base,
+      backgroundColor: '#1c2541',
+      borderColor: '#3a506b',
+      color: '#ffffff',
+    }),
+    menu: (base) => ({
+      ...base,
+      backgroundColor: '#1c2541',
+      borderColor: '#3a506b',
+    }),
+    option: (base, state) => ({
+      ...base,
+      backgroundColor: state.isFocused ? '#3a506b' : '#1c2541',
+      color: '#ffffff',
+    }),
+    singleValue: (base) => ({ ...base, color: '#ffffff' }),
+    placeholder: (base) => ({ ...base, color: '#94a3b8' }),
+    input: (base) => ({ ...base, color: '#ffffff' }),
+  } : {};
   return (
+    // added by shreya P — outer wrapper dark text
     <div className={darkMode ? 'text-light' : ''}>
       <div>
-        <h4 className="tasks-table-header">Tasks</h4>
+        {/* added by shreya P — h4 title color switches in dark mode */}
+        <h4 className="tasks-table-header" style={{ color: darkMode ? '#ffffff' : '' }}>Tasks</h4>
       </div>
       <div className="tasks-table-filters-wrapper">
-        <div className={`tasks-table-filters ${darkMode ? 'text-dark' : ''}`}>
+        {/* added by shreya P — removed 'text-dark' which made filter text invisible;
+            react-select gets darkSelectStyles for full dark mode support */}
+        <div className="tasks-table-filters">
           <Select
             ref={userRef}
             options={getUserOptions()}
             placeholder="Any user"
             onChange={(selectedOption) => handleSelectChange(selectedOption, 'users')}
             className="tasks-table-filter-item tasks-table-filter-input"
+            styles={darkSelectStyles}
             value={filters.users ? { value: filters.users, label: filters.users } : null}
           />
           <Select
@@ -88,6 +114,7 @@ export function TasksTable({ darkMode, tasks, projectId }) {
             placeholder="Any classification"
             onChange={(selectedOption) => handleSelectChange(selectedOption, 'classification')}
             className="tasks-table-filter-item tasks-table-filter-input"
+            styles={darkSelectStyles}
             value={filters.classification ? { value: filters.classification, label: filters.classification } : null}
           />
           <Select
@@ -95,6 +122,7 @@ export function TasksTable({ darkMode, tasks, projectId }) {
             placeholder="Any priority"
             onChange={(selectedOption) => handleSelectChange(selectedOption, 'priority')}
             className="tasks-table-filter-item tasks-table-filter-input"
+            styles={darkSelectStyles}
             value={filters.priority ? { value: filters.priority, label: filters.priority } : null}
           />
           <Select
@@ -102,6 +130,7 @@ export function TasksTable({ darkMode, tasks, projectId }) {
             placeholder="Any status"
             onChange={(selectedOption) => handleSelectChange(selectedOption, 'status')}
             className="tasks-table-filter-item tasks-table-filter-input"
+            styles={darkSelectStyles}
             value={filters.status ? { value: filters.status, label: filters.status } : null}
           />
           <TextSearchBox
@@ -129,7 +158,11 @@ export function TasksTable({ darkMode, tasks, projectId }) {
           <button
             className="tasks-table-edit-tasks-button"
             onClick={() => setToggleEditTasks(!toggleEditTasks)}
-            style={darkMode ? boxStyleDark : boxStyle}
+            style={
+              darkMode
+                ? { ...boxStyleDark, color: '#ffffff' } // Added by Shreya
+                : boxStyle
+            }
           >
             Edit Tasks
           </button>
@@ -137,9 +170,13 @@ export function TasksTable({ darkMode, tasks, projectId }) {
           <button
             className="tasks-table-clear-filter-button"
             onClick={() => resetAllFilters()}
-            style={darkMode ? boxStyleDark : boxStyle}
-          >
-            Clear filters
+            style={
+              darkMode
+                ? { ...boxStyleDark, color: '#ffffff' } // Added by Shreya
+                : boxStyle
+            }
+            >
+              Clear filters
           </button>
         </div>
         
