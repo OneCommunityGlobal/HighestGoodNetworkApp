@@ -138,7 +138,7 @@
   color: #9ca3af !important;
   opacity: 1 !important;
 }
-
+ 
 /* Dark mode styles for recharts surface */
 :global(.bg-oxford-blue) :global(.recharts-surface) {
   background-color: #1b2a41 !important;

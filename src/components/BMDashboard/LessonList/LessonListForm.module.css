@@ -10,7 +10,6 @@
   }
 }
 
-/* ✅ merged duplicate .formControlDelete */
 .formControlDelete {
   margin-left: 0;
   font-size: small !important;
@@ -18,7 +17,6 @@
   width: 100%;
 }
 
-/* Tag delete button */
 .tag .deleteTag {
   margin-left: 10px;
   background-color: red;
@@ -28,10 +26,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding-left: 10%;
-  padding-right: 10%;
-  padding-top: 5%;
-  padding-bottom: 1%;
+  padding: 5% 10% 1%;
 }
 
 .lessonLabel {
@@ -74,7 +69,6 @@
   flex: 1;
 }
 
-/* ✅ merged duplicate .tagsInputContainer */
 .tagsInputContainer {
   display: flex;
   flex-direction: column;
@@ -95,7 +89,7 @@
   gap: 6px;
   min-height: 28px;
   transition: all 0.2s ease;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 10%);
   color: #1976d2;
   position: relative;
 }
@@ -105,14 +99,14 @@
 }
 
 .tag:hover {
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 15%);
   transform: translateY(-1px);
 }
 
 .tag .close {
   margin-left: 5px;
   cursor: pointer;
-} 
+}
 
 .buttonClose {
   background-color: transparent;
@@ -139,13 +133,12 @@
   position: relative;
   z-index: 100 !important;
   pointer-events: auto !important;
-  -webkit-user-select: none;
   user-select: none;
   outline: none;
 }
 
 .buttonClose:hover {
-  background-color: rgba(25, 118, 210, 0.1);
+  background-color: rgb(25 118 210 / 10%);
   color: #1565c0;
 }
 
@@ -153,48 +146,49 @@
   transform: scale(0.9);
 }
 
-/* Dark mode styles */
+/* Dark mode */
+
 .tagTextDark {
-  color: #ffffff;
+  color: #fff;
 }
 
 .tagDark {
   background-color: #3a506b;
   border-color: #5a6b88;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-  color: #ffffff;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 30%);
+  color: #fff;
 }
 
 .tagDark:hover {
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 40%);
   background-color: #4a5a77;
 }
 
 .tagDark span {
-  color: #ffffff;
+  color: #fff;
 }
 
 .buttonCloseDark {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .buttonCloseDark:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-  color: #ffffff !important;
-}
-
-.tagContainerDark {
-  /* Dark mode container styles if needed */
+  background-color: rgb(255 255 255 / 20%);
+  color: #fff !important;
 }
 
 .tagsWrapper {
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
+  position: relative;
+  width: 100%;
 }
 
 .tagDropdown {
   position: absolute;
+  top: 100%;
+  left: 0;
   background: white;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -202,7 +196,7 @@
   overflow-y: auto;
   z-index: 1000;
   width: 100%;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
   margin-top: 4px;
 }
 
@@ -220,8 +214,61 @@
   background-color: #f0f0f0;
 }
 
-@media (max-width: 570px) {
+@media (width <= 570px) {
   .formSelectContainer {
     flex-direction: column;
   }
+}
+
+.lightMode label {
+  color: #212529 !important;
+}
+
+.darkMode label,
+.darkMode :global(.form-label) {
+  color: #f8f9fa !important;
+}
+
+.lightMode :global(.form-control),
+.lightMode :global(.custom-select),
+.lightMode select:not(.buttonClose),
+.lightMode input:not(.buttonClose) {
+  background-color: #fff !important;
+  color: #212529 !important;
+  border: 1px solid #ced4da;
+}
+
+.darkMode :global(.form-control),
+.darkMode :global(.custom-select),
+.darkMode select:not(.buttonClose),
+.darkMode input:not(.buttonClose) {
+  background-color: #2c3e50 !important;
+  color: #e9ecef !important;
+  border: 1px solid #495057;
+}
+
+.lightMode input::placeholder {
+  color: #6c757d !important;
+}
+
+.darkMode input::placeholder {
+  color: #adb5bd !important;
+}
+
+.darkMode .tagDropdown {
+  background: #2c3e50;
+  border-color: #495057;
+}
+
+.darkMode .tagDropdownItem {
+  color: #e9ecef;
+}
+
+.darkMode .tagDropdownItem:hover {
+  background-color: #34495e;
+}
+
+.darkMode select option {
+  background-color: #2c3e50;
+  color: #e9ecef;
 }

@@ -34,41 +34,67 @@
 /* Header Container */
 .weeklySummaryHeaderContainer {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   justify-content: space-between;
-  width: 80%;
-  padding: 16px;
+  width: 88%;
+  max-width: 1280px;
+  padding: 12px 16px;
   background: var(--section-bg);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
+  gap: 12px;
 }
 
 /* Title */
 .weeklySummaryHeaderTitle {
-  padding-top: 5px;
+  margin: 0;
+  line-height: 1.2;
   color: var(--text-color);
-  font-size: x-large;
-  text-align: center;
-  flex-wrap: wrap;
+  font-size: 32px;
+  font-weight: 700;
+  text-align: left;
+  flex: 0 0 auto;
 }
 
 /* Header Controls */
 .weeklySummaryHeaderControls {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   align-items: center;
+  flex-wrap: nowrap;
+  margin-left: auto;
+  min-width: 0; /* allow selects to shrink instead of crushing the button */
+}
+
+/* Reactstrap Input adds .form-control — match box model to the Share PDF button */
+.weeklySummaryHeaderControls :global(.form-control) {
+  box-sizing: border-box;
+  height: 38px !important;
+  min-height: 38px;
+  padding: 0 12px !important;
+  margin: 0 !important;
+  line-height: 1.25 !important;
+  font-size: 14px;
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 220px;
 }
 
 /* Dropdown Styling */
 .weeklySummaryHeaderControls select {
-  padding: 8px 12px;
+  height: 38px;
+  min-height: 38px;
+  padding: 0 12px;
   border: 1px solid var(--border-color, #ccc);
   border-radius: 6px;
-  min-width: 200px;
+  min-width: 128px;
   font-size: 14px;
   background: var(--section-bg);
   color: var(--text-color);
+  box-sizing: border-box;
+  line-height: 1.25;
+  vertical-align: middle;
 }
 
 .weeklySummaryHeaderControls select:focus {
@@ -81,18 +107,65 @@
   background-color: var(--section-title-hover) !important;
 }
 
-/* Share Button */
+/* Share Button — override Bootstrap .btn so it lines up with .form-control selects */
+/* Bootstrap .btn defaults to flex-shrink: 1; when the row is tight the button shrinks and
+   the label overflows outside the painted background (overlapping the last dropdown). */
 .weeklySummaryShareBtn {
+  height: 38px !important;
+  min-height: 38px;
+  min-width: 7.25rem;
+  padding: 0 14px !important;
+  margin: 0 !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.25 !important;
+  box-sizing: border-box;
+  border-width: 1px;
+  vertical-align: middle;
+  align-self: center;
+  flex: 0 0 auto;
+  flex-shrink: 0;
   background-color: var(--button-bg) !important;
   color: white;
   font-family: inherit;
   white-space: nowrap;
-  border-radius: 8px !important;
+  border-radius: 6px !important;
   transition: background 0.2s ease-in-out;
 }
 
-.weeklySummaryShareBtn:hover {
+/* Bootstrap .btn can add vertical offset; align with selects */
+.weeklySummaryHeaderControls :global(button.btn) {
+  margin: 0 !important;
+  vertical-align: middle;
+}
+
+.weeklySummaryShareBtn:hover:not(:disabled) {
   background-color: var(--button-hover) !important;
+}
+
+.weeklySummaryShareBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Spinner for PDF generation */
+.spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 0.8s linear infinite;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ---------------- DASHBOARD ---------------- */
@@ -123,12 +196,12 @@
 /* ---------------- CARDS ---------------- */
 
 .weeklyProjectSummaryCard {
+  background: var(--card-bg);
   padding: 10px;
   border-radius: 6px;
   text-align: center;
   box-shadow: 0 2px 5px var(--card-shadow);
 }
-
 
 .darkMode .weeklyProjectSummaryCard {
   background: var(--card-bg);
@@ -219,7 +292,6 @@
 .weeklyProjectSummaryDashboardCategoryContent {
   padding: 15px;
   display: grid;
-  /* grid-template-columns: repeat(4, 1fr); */
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 20px;
   border-top: 1px solid var(--card-shadow);
@@ -247,14 +319,6 @@
   --section-title-hover: #e0e0e0;
   --button-bg: black;
   --button-hover: #333;
-
-   --pos-color: #15803d;          /* darker green for light bg */
-  --neg-color: #b91c1c;          /* darker red for light bg */
-  --neutral-change: rgba(0, 0, 0, 0.65);
-
-  --card-elev: rgba(0, 0, 0, 0.15);
-  --card-elev-hover: rgba(0, 0, 0, 0.18);
-  --card-border: rgba(0, 0, 0, 0.1);
 }
 
 /* ---------------- DARK MODE STYLES ---------------- */
@@ -270,14 +334,6 @@
   --button-hover: #f5b13a;
   --border-color: #4a5a77;
   --focus-border-color: #e8a71c;
-
-  --pos-color: #22c55e;          /* bright green for dark bg */
-  --neg-color: #ef4444;          /* bright red for dark bg */
-  --neutral-change: rgba(255, 255, 255, 0.75);
-
-  --card-elev: rgba(0, 0, 0, 0.45);
-  --card-elev-hover: rgba(0, 0, 0, 0.6);
-  --card-border: rgba(255, 255, 255, 0.18);
 }
 
 .darkMode .weeklyProjectSummaryDashboardCategoryTitle {
@@ -342,12 +398,13 @@
 @media (max-width: 1024px) {
   .weeklySummaryHeaderContainer {
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
+    width: 95%;
   }
 
   .weeklySummaryHeaderControls {
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: flex-start;
     width: 100%;
   }
 
@@ -360,7 +417,7 @@
 @media (max-width: 768px) {
   .weeklySummaryHeaderContainer {
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
   }
 
   .weeklySummaryHeaderControls {
@@ -372,6 +429,11 @@
   /* Make Dropdowns Full Width */
   .weeklySummaryHeaderControls select {
     width: 100%;
+    max-width: none;
+  }
+
+  .weeklySummaryHeaderControls :global(.form-control) {
+    max-width: none;
   }
 
   /* Make Button Full Width */
@@ -397,46 +459,20 @@
 
 /* ---------------- STATUS CARD ---------------- */
 .statusCard {
-  background: var(--status-card-bg, var(--card-bg));
-  border: 1px solid var(--card-border);
-  box-shadow: 0 4px 10px var(--card-elev);
-  color: var(--text-color);
-  border-radius: 25px;
-  width: 100%;
-  max-width: 284px;
-  height: 190px;
-  padding: 20px;
-  text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  transition: box-shadow 160ms ease, filter 160ms ease;
+  border-radius: 25px;
+  width: 100%;
+  max-width: 284px;
+  height: 190px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  padding: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
   position: relative;
 }
-
-.weeklyStatusChange {
-  font-weight: 600;
-}
-
-.darkMode .statusCard .weeklyStatusChange,
-.statusCard .weeklyStatusChange {
-  color: var(--wow-color) !important;
-}
-
-/* Hover/focus: no transform => no layout shift */
-.statusCard:hover {
-  box-shadow: 0 8px 18px var(--card-elev-hover, rgba(0, 0, 0, 0.18));
-  filter: brightness(1.03);
-}
-
-.statusCard:focus-visible {
-  outline: 2px solid var(--focus-border-color, #3b82f6);
-  outline-offset: 3px;
-  box-shadow: 0 10px 22px var(--card-elev-hover, rgba(0, 0, 0, 0.18));
-}
-
-
 
 /* ---------------- RESPONSIVE GRID LAYOUT ---------------- */
 .projectStatusGrid {
@@ -449,65 +485,35 @@
   max-width: 1600px;
   margin: auto;
 }
-
+/* .projectStatusGrid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(2, auto);
+  gap: 10px;
+} */
 
 /* ---------------- OVAL STATUS BUTTON ---------------- */
 .weeklyStatusButton {
-  color: var(--status-pill-text, var(--text-color));
-  background: var(--status-pill-bg, rgba(255, 255, 255, 0.6));
-
-  /* ✅ allow bigger values */
-  width: fit-content;
-  min-width: 130px;
-  padding: 10px 18px;
-  height: auto;
-
-  border-radius: 999px;
+  width: 130px;
+  height: 65px;
+  border-radius: 50px / 32px;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
   margin: 12px 0;
-
-  border: 1px solid var(--pill-border, rgba(0, 0, 0, 0.12));
-  box-shadow: 0 2px 6px var(--pill-elev, rgba(0, 0, 0, 0.14));
 }
 
-.weeklyStatusValue {
-  color: inherit;
-  font-weight: 700;
-  white-space: nowrap;
-
-  /* ✅ scales a bit for longer strings like $27.6K / 12.8K */
-  font-size: clamp(28px, 3vw, 40px);
-  line-height: 1;
-}
-
-/* This targets the value text specifically when in Dark Mode */
-:global(body.dark-mode) .weeklyStatusValue,
-:global(body.bm-dashboard-dark) .weeklyStatusValue {
-    /* If you want the pink color back, it needs !important to beat the global rule */
-    color: #090336 !important; 
-    /* OR, if you prefer white text, we should darken the background bubble instead */
-}
-
-/* Title/value should NEVER be hard-coded black */
 .weeklyCardTitle {
-  color: var(--card-title, var(--text-color));
+  color: #000;
   font-size: clamp(14px, 1.4vw, 18px);
   font-weight: 600;
 }
 
-/* Accent bar */
-.statusCard::before {
-  content: "";
-  position: absolute;
-  top: 14px;
-  left: 14px;
-  right: 14px;
-  height: 4px;
-  border-radius: 999px;
-  background: var(--status-accent, transparent);
-  opacity: 0.95;
+.weeklyStatusValue {
+  color: #000;
+  font-size: 40px;
+  font-weight: 600;
 }
 
 /* ---------------- RESPONSIVE BREAKPOINTS ---------------- */
