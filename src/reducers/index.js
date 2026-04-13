@@ -108,6 +108,7 @@ import { studentReducer } from './studentProfileReducer';
 import { atomReducer } from './educationPortal/atomReducer';
 import { weeklySummariesFiltersApi } from '../actions/weeklySummariesFilterAction';
 import browseLessonPlanReducer from './educationPortal/broweLPReducer';
+import KIInventoryReducer from './KIInventoryReducer';
 
 // Kitchen and Inventory Management
 import { kiCalendarApi } from '../actions/kiCalendarAction';
@@ -202,6 +203,7 @@ const localReducers = {
 
   // education portal
   browseLessonPlan: browseLessonPlanReducer,
+  kiInventory: KIInventoryReducer,
 
   // Kitchen and Inventory Management
   [kiCalendarApi.reducerPath]: kiCalendarApi.reducer,
