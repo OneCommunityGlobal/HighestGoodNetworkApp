@@ -116,45 +116,46 @@ function UtilizationChart() {
   // Fetch 4 weekly trend data points in parallel
   const fetchTrendData = async () => {
     try {
-      // const weeklyRanges = buildWeeklyRanges(endDate);
-      // const weeklyResponses = await Promise.all(
-      //   weeklyRanges.map(({ startDate: wStart, endDate: wEnd }) =>
-      //     axios.get(`${process.env.REACT_APP_APIENDPOINT}/tools/utilization`, {
-      //       params: {
-      //         startDate: wStart,
-      //         endDate: wEnd,
-      //         tool: toolFilter,
-      //         project: projectFilter,
-      //       },
-      //       headers: { Authorization: localStorage.getItem('token') },
-      //     }),
-      //   ),
-      // );
+      const weeklyRanges = buildWeeklyRanges(endDate);
+      const weeklyResponses = await Promise.all(
+        weeklyRanges.map(({ startDate: wStart, endDate: wEnd }) =>
+          axios.get(`${process.env.REACT_APP_APIENDPOINT}/tools/utilization`, {
+            params: {
+              startDate: wStart,
+              endDate: wEnd,
+              tool: toolFilter,
+              project: projectFilter,
+            },
+            headers: { Authorization: localStorage.getItem('token') },
+          }),
+        ),
+      );
 
-      // const trend = weeklyRanges.map(({ label }, i) => {
-      //   const data = weeklyResponses[i].data;
-      //   const avgUtilization =
-      //     data.length > 0
-      //       ? Math.round(
-      //           (data.reduce((sum, t) => sum + t.utilizationRate, 0) / data.length) * 10,
-      //         ) / 10
-      //       : 0;
-      //   return { week: label, avgUtilization };
-      // // });
-
-      // setTrendData(trend);
-      const now = new Date();
-      const mockTrend = Array.from({ length: 4 }, (_, i) => {
-        const weekStart = new Date(now);
-        weekStart.setDate(now.getDate() - (3 - i) * 7);
-        const label = `Week of ${weekStart.toLocaleDateString('en-US', {
-          month: 'short',
-          day: 'numeric',
-        })}`;
-        const avgUtilization = Math.max(0, Math.min(100, 20 + Math.floor(Math.random() * 40)));
+      const trend = weeklyRanges.map(({ label }, i) => {
+        const data = weeklyResponses[i].data;
+        const avgUtilization =
+          data.length > 0
+            ? Math.round((data.reduce((sum, t) => sum + t.utilizationRate, 0) / data.length) * 10) /
+              10
+            : 0;
         return { week: label, avgUtilization };
       });
-      setTrendData(mockTrend);
+
+      setTrendData(trend);
+
+      //Mock trend data for testing - uncomment to use
+      // const now = new Date();
+      // const mockTrend = Array.from({ length: 4 }, (_, i) => {
+      //   const weekStart = new Date(now);
+      //   weekStart.setDate(now.getDate() - (3 - i) * 7);
+      //   const label = `Week of ${weekStart.toLocaleDateString('en-US', {
+      //     month: 'short',
+      //     day: 'numeric',
+      //   })}`;
+      //   const avgUtilization = Math.max(0, Math.min(100, 20 + Math.floor(Math.random() * 40)));
+      //   return { week: label, avgUtilization };
+      // });
+      // setTrendData(mockTrend);
     } catch (err) {
       // Silently fail for trend — main chart still works
       console.error('Failed to load trend data:', err);
