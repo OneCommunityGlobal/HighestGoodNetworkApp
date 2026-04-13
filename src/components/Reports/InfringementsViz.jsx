@@ -1,10 +1,10 @@
 /* eslint-disable testing-library/no-node-access */
-import React from 'react';
 import * as d3 from 'd3';
+import React from 'react';
 
 import { Button, Modal } from 'react-bootstrap';
-import styles from './PeopleReport/PeopleReport.module.css';
 import { boxStyle, boxStyleDark } from '../../styles';
+import styles from './PeopleReport/PeopleReport.module.css';
 
 function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
   const [graphVisible, setGraphVisible] = React.useState(false);
@@ -39,7 +39,7 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
         return (
           `${'<div class="tip__container">' +
           '<div class="close">' +
-          '<button>&times</button>' +
+          `<button style="color: ${darkMode ? '#f9fafb' : 'black'}; background: transparent; border: none;">&times</button>` +
           '</div>' +
           '<div>' +
           'Exact date: '}${d3.timeFormat('%A, %B %e, %Y')(d.date)}<br>` +
@@ -50,28 +50,26 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
         );
       };
 
+      const textColor = darkMode ? 'color: #f9fafb;' : '';
       const legendEl = function legendEl() {
         return (
-          '<div class="lengendSubContainer">' +
-          '<div class="infLabelsOff">' +
-          '<button>Labels Off</button>' +
-          '</div>' +
-          '<div class="infCountLabelsOn">' +
-          '<button>Show Squares</button>' +
-          '</div>' +
-          '<div class="infDateLabelsOn">' +
-          '<button>Show Dates</button>' +
-          '</div>' +
-          '</div>'
+          `<div class="lengendSubContainer" style="${textColor}">` +
+          `<div class="infLabelsOff"><button style="${textColor}">Labels Off</button></div>` +
+          `<div class="infCountLabelsOn"><button style="${textColor}">Show Squares</button></div>` +
+          `<div class="infDateLabelsOn"><button style="${textColor}">Show Dates</button></div>` +
+          `</div>`
         );
       };
 
-      const svg = d3
+      const svgRoot = d3
         .select('#infplot')
         .append('svg')
         .attr('width', '100%')
         .attr('height', height + margin.top + margin.bottom)
         .attr('viewBox', `0 0 ${containerWidth} ${height + margin.top + margin.bottom}`)
+        .style('background-color', darkMode ? '#1b2a41' : '#ffffff');
+
+      const svg = svgRoot
         .append('g')
         .attr('transform', `translate(${margin.left},${margin.top})`);
 
@@ -82,7 +80,8 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
       svg
         .append('g')
         .attr('transform', `translate(0, ${height})`)
-        .call(d3.axisBottom(x));
+        .call(d3.axisBottom(x))
+        .selectAll('text').attr('fill', darkMode ? '#f9fafb' : 'black');
 
       const y = d3
         .scaleLinear()
@@ -92,14 +91,15 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
         d3
           .axisLeft(y)
           .ticks(5)
-          .tickFormat(d3.format('d')),
-      );
+          .tickFormat(d3.format('d')))
+          .selectAll('text').attr('fill', darkMode ? '#f9fafb' : 'black');
+      
 
       svg
         .append('path')
         .datum(bsCount)
         .attr('fill', 'none')
-        .attr('stroke', 'black')
+        .attr('stroke', darkMode ? '#f9fafb' : 'black')
         .attr('stroke-width', 1.5)
         .attr(
           'd',
@@ -130,7 +130,8 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
               .append('div')
               .style('opacity', 0)
               .attr('class', `tooltip inf${d.id}`)
-              .style('background-color', 'white')
+              .style('background-color', darkMode ? '#1b2a41' : 'white')
+              .style('color', darkMode ? '#f9fafb' : 'black')
               .style('border', 'solid')
               .style('border-width', '2px')
               .style('border-radius', '5px')
@@ -161,7 +162,7 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
         .attr('class', 'infCountLabel')
         .attr('x', d => x(d.date) + 10)
         .attr('y', d => y(d.count) - 5)
-        .attr('fill', 'black')
+        .attr('fill', darkMode ? '#f9fafb' : 'black')
         .style('z-index', 999)
         .style('font-weight', 700)
         .style('display', 'none')
@@ -175,7 +176,7 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
         .attr('class', 'infDateLabel')
         .attr('x', d => x(d.date) + 10)
         .attr('y', d => y(d.count) - 5)
-        .attr('fill', 'black')
+        .attr('fill', darkMode ? '#f9fafb' : 'black')
         .style('z-index', 999)
         .style('font-weight', 700)
         .style('display', 'none')
@@ -273,25 +274,25 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
       <Button onClick={handleModalShow} aria-expanded={graphVisible} style={darkMode ? boxStyleDark : boxStyle}>
         {graphVisible ? 'Hide Infringements Graph' : 'Show Infringements Graph'}
       </Button>
-      <div className={`${styles.kaitest} ${darkMode ? 'bg-light mt-2' : ''}`} id="infplot" data-testid="infplot" />
+      <div className={`${styles.kaitest} ${darkMode ? 'mt-2' : ''}`} id="infplot" data-testid="infplot" />
 
       <Modal size="lg" show={modalVisible} onHide={handleModalClose}>
-        <Modal.Header closeButton>
+        <Modal.Header closeButton style={darkMode ? { backgroundColor: '#1b2a41', color: '#f9fafb', borderColor: '#374151' } : {}}>
           <Modal.Title>{focusedInf.date ? focusedInf.date.toString() : 'Infringement'}</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body style={darkMode ? { backgroundColor: '#1b2a41', color: '#f9fafb' } : {}}>
           <div id="inf">
-            <table>
+            <table style={darkMode ? { backgroundColor: '#1b2a41', color: '#f9fafb', width: '100%' } : { width: '100%' }}>
               <thead>
-                <tr>
-                  <th>Descriptions</th>
+                <tr style={darkMode ? { backgroundColor: '#1b2a41' } : {}}>
+                  <th style={darkMode ? { backgroundColor: '#1b2a41', color: '#f9fafb' } : {}}>Descriptions</th>
                 </tr>
               </thead>
               <tbody>
                 {focusedInf.des
                   ? focusedInf.des.map((desc) => (
-                    <tr key={desc}>
-                      <td>{desc}</td>
+                    <tr key={desc} style={darkMode ? { backgroundColor: '#1b2a41' } : {}}>
+                      <td style={darkMode ? { backgroundColor: '#1b2a41', color: '#f9fafb' } : {}}>{desc}</td>
                     </tr>
                   ))
                   : null}
@@ -299,7 +300,7 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
             </table>
           </div>
         </Modal.Body>
-        <Modal.Footer>
+        <Modal.Footer style={darkMode ? { backgroundColor: '#1b2a41', borderColor: '#374151' } : {}}>
           <Button variant="secondary" onClick={handleModalClose}>
             Close
           </Button>
