@@ -26,7 +26,7 @@ function Collaboration() {
   const [selectedCategory, setSelectedCategory] = useState('');
   const categoryRef = useRef(null);
   const positionRef = useRef(null);
-
+  const dropdownRef = useRef(null);
   const history = useHistory();
   const darkMode = useSelector(state => state.theme.darkMode);
 
@@ -111,21 +111,19 @@ function Collaboration() {
 
   useEffect(() => {
     const handleClickOutside = event => {
-      if (categoryRef.current && !categoryRef.current.contains(event.target)) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowCategoryDropdown(false);
-      }
-
-      if (positionRef.current && !positionRef.current.contains(event.target)) {
-        setShowPositionDropdown(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    if (showCategoryDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, []);
+  }, [showCategoryDropdown]);
 
   /* ================= HANDLERS ================= */
   const handleSubmit = e => {
@@ -226,73 +224,31 @@ function Collaboration() {
             <button className="btn btn-secondary">Go</button>
           </form>
 
-          <div className={styles.dropdownWrapper} ref={categoryRef}>
+          <div ref={dropdownRef} style={{ position: 'relative' }}>
             <button
               type="button"
-              onClick={() => {
-                setShowCategoryDropdown(prev => !prev);
-                setShowPositionDropdown(false);
-              }}
+              onClick={() => setShowCategoryDropdown(p => !p)}
               aria-expanded={showCategoryDropdown}
             >
-              {selectedCategory || 'Select Categories'} ▼
+              Select Categories ▼
             </button>
 
             {showCategoryDropdown && (
               <div className={styles.jobSelect}>
                 {categories.map(cat => (
-                  <button
-                    key={cat}
-                    type="button"
-                    className={styles.dropdownItem}
-                    onClick={() => {
-                      setSelectedCategory(cat);
-                      setSelectedPosition('');
-                      setShowCategoryDropdown(false);
-                      setCurrentPage(1);
-                    }}
-                  >
+                  <label key={cat} className={styles.dropdownItem}>
+                    <input
+                      type="checkbox"
+                      checked={categoriesSelected.includes(cat)}
+                      onChange={() =>
+                        setCategoriesSelected(prev =>
+                          prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat],
+                        )
+                      }
+                    />
                     {cat}
-                  </button>
+                  </label>
                 ))}
-              </div>
-            )}
-          </div>
-
-          <div className={styles.dropdownWrapper} ref={positionRef}>
-            <button
-              type="button"
-              disabled={!selectedCategory}
-              onClick={() => {
-                if (!selectedCategory) return;
-                setShowPositionDropdown(prev => !prev);
-                setShowCategoryDropdown(false);
-              }}
-              aria-expanded={showPositionDropdown}
-            >
-              {selectedPosition || 'Select Positions'} ▼
-            </button>
-
-            {showPositionDropdown && selectedCategory && (
-              <div className={styles.jobSelect}>
-                {positions.length > 0 ? (
-                  positions.map(pos => (
-                    <button
-                      key={pos}
-                      type="button"
-                      className={styles.dropdownItem}
-                      onClick={() => {
-                        setSelectedPosition(pos);
-                        setShowPositionDropdown(false);
-                        setCurrentPage(1);
-                      }}
-                    >
-                      {pos}
-                    </button>
-                  ))
-                ) : (
-                  <div className={styles.dropdownItem}>No positions found</div>
-                )}
               </div>
             )}
           </div>
