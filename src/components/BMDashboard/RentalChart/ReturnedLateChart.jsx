@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL';
 import { Bar } from 'react-chartjs-2';
@@ -18,7 +18,10 @@ import {
 import { useSelector } from 'react-redux';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ChartDataLabels);
+// Register chart components but do NOT register ChartDataLabels globally here.
+// ChartDataLabels will be passed per-chart via the `plugins` prop so other charts
+// are not affected by the datalabels plugin by default.
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 export default function ReturnedLateChart() {
   const chartRef = useRef(null);
@@ -34,7 +37,30 @@ export default function ReturnedLateChart() {
   });
   const [chartData, setChartData] = useState({ labels: [], datasets: [] });
   const [rawToolsData, setRawToolsData] = useState([]);
+  const [selectedToolDetail, setSelectedToolDetail] = useState(null);
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [detailLoading, setDetailLoading] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
+  const [sortOption, setSortOption] = useState('DESC');
+
+  const sortToolsData = data => {
+    const sorted = [...data];
+
+    switch (sortOption) {
+      case 'ASC':
+        sorted.sort((a, b) => a.percentLate - b.percentLate);
+        break;
+      case 'ALPHA':
+        sorted.sort((a, b) => a.toolName.localeCompare(b.toolName));
+        break;
+      case 'DESC':
+      default:
+        sorted.sort((a, b) => b.percentLate - a.percentLate);
+        break;
+    }
+
+    return sorted;
+  };
 
   useEffect(() => {
     const fetchInitial = async () => {
@@ -101,13 +127,15 @@ export default function ReturnedLateChart() {
           toolName: item.toolName || item.toolNameName || item.name || '',
           percentLate: Number(item.percentLate || item.percent || item.value || 0),
         }));
-        normalized.sort((a, b) => b.percentLate - a.percentLate);
+
+        const sortedData = sortToolsData(normalized);
+
         setChartData({
-          labels: normalized.map(i => i.toolName),
+          labels: sortedData.map(item => item.toolName),
           datasets: [
             {
               label: '% Returned Late',
-              data: normalized.map(i => i.percentLate),
+              data: sortedData.map(item => item.percentLate),
               backgroundColor: 'rgba(53,162,235,0.7)',
             },
           ],
@@ -124,7 +152,22 @@ export default function ReturnedLateChart() {
       }
     };
     fetchData();
-  }, [selectedProject, dateRange, selectedTools]);
+  }, [selectedProject, dateRange, selectedTools, sortOption]);
+
+  const handleBarClick = useCallback(
+    (event, elements) => {
+      if (!elements || !elements.length) return;
+
+      const index = elements[0].index;
+      const toolName = chartData.labels[index];
+
+      const toolDetail = rawToolsData.find(t => t.toolName === toolName);
+
+      setSelectedToolDetail(toolDetail || null);
+      setDetailOpen(true);
+    },
+    [chartData.labels, rawToolsData],
+  );
 
   const options = useMemo(() => {
     const textColor = darkMode ? '#fff' : '#333';
@@ -132,6 +175,11 @@ export default function ReturnedLateChart() {
     return {
       responsive: true,
       maintainAspectRatio: false,
+      onClick: handleBarClick,
+      interaction: {
+        mode: 'nearest',
+        intersect: true,
+      },
       plugins: {
         legend: { display: false },
         title: {
@@ -182,7 +230,7 @@ export default function ReturnedLateChart() {
         },
       },
     };
-  }, [chartData, darkMode]);
+  }, [chartData, darkMode, handleBarClick]);
 
   const handleProjectChange = e => setSelectedProject(e.target.value);
   const handleStartDateChange = date =>
@@ -219,6 +267,7 @@ export default function ReturnedLateChart() {
             ))}
           </select>
         </div>
+
         <div className={styles['returned-late-filter-group']}>
           <label
             htmlFor="tools-select"
@@ -226,15 +275,36 @@ export default function ReturnedLateChart() {
           >
             Tools:
           </label>
-          <div id="tools-select" className={styles['returned-late-tools-select']}>
-            <MultiSelect
-              options={availableTools}
-              value={selectedTools}
-              onChange={setSelectedTools}
-              labelledBy="tools-select"
-            />
-          </div>
+
+          <MultiSelect
+            options={availableTools}
+            value={selectedTools}
+            onChange={setSelectedTools}
+            labelledBy="tools-select"
+            className={styles['returned-late-tools-select']}
+          />
         </div>
+
+        <div className={styles['returned-late-filter-group']}>
+          <label
+            htmlFor="returned-late-sort"
+            className={`${styles['returned-late-filter-label']} ${darkMode ? 'text-white' : ''}`}
+          >
+            Sort By:
+          </label>
+
+          <select
+            id="returned-late-sort"
+            value={sortOption}
+            onChange={e => setSortOption(e.target.value)}
+            className={styles['returned-late-project-select']}
+          >
+            <option value="DESC">Highest % Late</option>
+            <option value="ASC">Lowest % Late</option>
+            <option value="ALPHA">Alphabetical (A–Z)</option>
+          </select>
+        </div>
+
         <div className={styles['returned-late-filter-group']}>
           <label
             htmlFor="start-date-picker"
@@ -281,9 +351,58 @@ export default function ReturnedLateChart() {
           </div>
         )}
         {!loading && !error && chartData.labels.length > 0 && (
-          <Bar ref={chartRef} data={chartData} options={options} />
+          <Bar ref={chartRef} data={chartData} options={options} plugins={[ChartDataLabels]} />
         )}
       </div>
+      {detailOpen && (
+        <>
+          {/* Backdrop */}
+          <div
+            className={styles['returned-late-detail-backdrop']}
+            role="button"
+            tabIndex={0}
+            aria-label="Close tool detail panel"
+            onClick={() => setDetailOpen(false)}
+            onKeyDown={e => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                setDetailOpen(false);
+              }
+            }}
+          />
+
+          {/* Slide-out Panel */}
+          <div
+            className={`${styles['returned-late-detail-panel']} ${
+              darkMode ? styles['dark-panel'] : ''
+            }`}
+          >
+            <button
+              className={styles['returned-late-detail-close']}
+              onClick={() => setDetailOpen(false)}
+            >
+              ✕
+            </button>
+
+            {detailLoading && <p>Loading details...</p>}
+
+            {!detailLoading && selectedToolDetail && !selectedToolDetail.error && (
+              <>
+                <h3>{selectedToolDetail.toolName}</h3>
+                <p>Total Checkouts: {selectedToolDetail.totalCheckouts ?? '—'}</p>
+                <p>Late Returns: {selectedToolDetail.percentLate}%</p>
+                <p>
+                  Average Delay:{' '}
+                  {selectedToolDetail.avgDelayDays != null
+                    ? `${selectedToolDetail.avgDelayDays} days`
+                    : '—'}
+                </p>
+              </>
+            )}
+
+            {!detailLoading && selectedToolDetail?.error && <p>{selectedToolDetail.error}</p>}
+          </div>
+        </>
+      )}
     </div>
   );
 }
