@@ -23,23 +23,24 @@
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-@media (max-width: 768px) {
+.container.darkMode {
+  background-color: #1B2A41;
+  color: #e0e0e0;
+}
+
+@media (width <= 768px) {
   .pageContainer {
     padding: 15px;
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .pageContainer {
     padding: 10px;
   }
 }
 
-/* Dark theme support */
-.container.darkMode {
-  background-color: #1B2A41;
-  color: #e0e0e0;
-}
+/* ── Chart card ── */
 
 .chartCard {
   flex: 1;
@@ -69,42 +70,37 @@
   color: #e0e0e0;
 }
 
+/* ── Chart area ── */
+
 .chartArea {
   min-height: 400px;
   position: relative;
-  padding-left: 140px;
-  /* Room for value labels placed to the right of each bar (not on the bar) */
-  padding-right: 108px;
-  padding-top: 20px;
-  padding-bottom: 40px;
+  padding: 20px 108px 40px 140px;
 }
 
-/* Responsive design for mobile */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .chartArea {
-    padding-left: 100px;
-    padding-right: 88px;
+    padding: 16px 88px 40px 100px;
     min-height: 300px;
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .chartArea {
-    padding-left: 80px;
-    padding-right: 72px;
+    padding: 16px 72px 40px 80px;
     min-height: 250px;
   }
 }
 
+/* ── Grid ── */
+
 .grid {
   position: absolute;
-  left: 140px;
-  right: 108px;
-  top: 20px;
-  bottom: 40px;
+  inset: 20px 108px 40px 140px;
   background-image: linear-gradient(to right, #e0e0e0 1px, transparent 1px),
     linear-gradient(to bottom, #e0e0e0 1px, transparent 1px);
   opacity: 0.5;
+  pointer-events: none;
   transition: opacity 0.3s ease;
 }
 
@@ -114,19 +110,19 @@
     linear-gradient(to bottom, #5a6c7d 1px, transparent 1px);
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .grid {
-    left: 100px;
-    right: 88px;
+    inset: 20px 88px 40px 100px;
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .grid {
-    left: 80px;
-    right: 72px;
+    inset: 20px 72px 40px 80px;
   }
 }
+
+/* ── Y-axis ── */
 
 .yAxis {
   position: absolute;
@@ -137,13 +133,13 @@
   justify-content: space-between;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .yAxis {
     width: 90px;
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .yAxis {
     width: 70px;
   }
@@ -165,18 +161,18 @@
   border-right-color: #5a6c7d;
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .yAxisItem {
     font-size: 10px;
     padding-right: 5px;
   }
 }
 
+/* ── X-axis ── */
+
 .xAxis {
   position: absolute;
-  left: 140px;
-  right: 108px;
-  bottom: 0;
+  inset: auto 108px 0 140px;
   height: 40px;
   border-top: 1px solid #9aa0a6;
   display: flex;
@@ -189,50 +185,44 @@
   border-top-color: #5a6c7d;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .xAxis {
-    left: 100px;
-    right: 88px;
+    inset: auto 88px 0 100px;
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .xAxis {
-    left: 80px;
-    right: 72px;
+    inset: auto 72px 0 80px;
   }
 }
+
+/* ── Bars ── */
 
 .bars {
   position: absolute;
-  left: 140px;
-  right: 108px;
-  top: 20px;
-  bottom: 40px;
+  inset: 20px 108px 40px 140px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .bars {
-    left: 100px;
-    right: 88px;
+    inset: 20px 88px 40px 100px;
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .bars {
-    left: 80px;
-    right: 72px;
+    inset: 20px 72px 40px 80px;
   }
 }
 
 .barRow {
   display: flex;
   align-items: center;
-  padding-top: 10px;
-  padding-bottom: 10px;
+  padding: 10px 0;
   overflow: visible;
 }
 
@@ -245,12 +235,24 @@
   min-width: 2px;
   flex-shrink: 0;
   overflow: visible;
-  transition: background-color 0.3s ease, border-color 0.3s ease;
+  cursor: pointer;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    filter 0.15s ease;
+}
+
+.bar:hover {
+  filter: brightness(1.1);
 }
 
 .bar.darkMode {
   background-color: #58d68d;
   border-color: #27ae60;
+}
+
+.bar.darkMode:hover {
+  filter: brightness(1.12);
 }
 
 .dataLabel {
@@ -269,15 +271,17 @@
 
 .dataLabel.darkMode {
   color: #f1f5f9;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+  text-shadow: 0 1px 2px rgb(0 0 0 / 45%);
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .dataLabel {
     font-size: 12px;
     margin-left: 8px;
   }
 }
+
+/* ── X-axis label ── */
 
 .xAxisLabel {
   position: absolute;
@@ -286,6 +290,7 @@
   transform: translateX(-50%);
   font-size: 12px;
   color: #5f6368;
+  white-space: nowrap;
   transition: color 0.3s ease;
 }
 
@@ -293,12 +298,14 @@
   color: #e0e0e0;
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .xAxisLabel {
     font-size: 10px;
     bottom: -20px;
   }
 }
+
+/* ── No-data placeholder ── */
 
 .noData {
   display: flex;
@@ -314,19 +321,21 @@
   color: #e0e0e0;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .noData {
     height: 300px;
     font-size: 14px;
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .noData {
     height: 250px;
     font-size: 12px;
   }
 }
+
+/* ── Summary strip ── */
 
 .summary {
   margin-top: 20px;
@@ -343,12 +352,14 @@
   color: #e0e0e0;
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .summary {
     font-size: 12px;
     padding: 10px;
   }
 }
+
+/* ── Filters panel ── */
 
 .filters {
   display: flex;
@@ -357,14 +368,14 @@
   min-width: 150px;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .filters {
     min-width: 120px;
     gap: 15px;
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .filters {
     min-width: 100px;
     gap: 10px;
@@ -375,7 +386,7 @@
   border: 1px solid #dadce0;
   border-radius: 4px;
   padding: 12px;
-  background-color: #ffffff;
+  background-color: #fff;
   transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
@@ -384,7 +395,7 @@
   border-color: #5a6c7d;
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .filterCard {
     padding: 8px;
   }
@@ -402,7 +413,7 @@
   color: #e0e0e0;
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .filterTitle {
     font-size: 12px;
     margin-bottom: 6px;
@@ -415,7 +426,7 @@
   border: 1px solid #dadce0;
   border-radius: 4px;
   font-size: 14px;
-  background-color: #ffffff;
+  background-color: #fff;
   color: #3c4043;
   transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
@@ -426,9 +437,8 @@
   color: #e0e0e0;
 }
 
-/* Native <option> is often white-on-white in dark mode without explicit colors */
 .select option {
-  background-color: #ffffff;
+  background-color: #fff;
   color: #3c4043;
 }
 
@@ -437,38 +447,39 @@
   color: #f1f5f9;
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .select {
     font-size: 12px;
     padding: 3px 6px;
   }
 }
 
-/* Responsive layout adjustments */
-@media (max-width: 1024px) {
+/* ── Responsive layout ── */
+
+@media (width <= 1024px) {
   .container {
     max-width: 100%;
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .container {
     flex-direction: column;
     gap: 15px;
     padding: 0;
   }
-  
+
   .chartCard {
     order: 1;
     padding: 15px;
     width: 100%;
   }
-  
+
   .title {
     font-size: 18px;
     margin-bottom: 20px;
   }
-  
+
   .filters {
     order: 2;
     flex-direction: row;
@@ -477,68 +488,129 @@
     width: 100%;
     gap: 15px;
   }
-  
+
   .filterCard {
     flex: 1;
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .container {
     gap: 10px;
   }
-  
+
   .chartCard {
     padding: 12px;
   }
-  
+
   .title {
     font-size: 16px;
     margin-bottom: 15px;
   }
-  
+
   .filters {
     flex-direction: column;
     gap: 10px;
   }
-  
+
   .filterCard {
     width: 100%;
   }
 }
 
-@media (max-width: 320px) {
+@media (width <= 320px) {
   .title {
     font-size: 14px;
   }
-  
+
   .chartArea {
-    padding-left: 60px;
-    padding-right: 20px;
+    padding: 0 20px 0 60px;
     min-height: 200px;
   }
-  
+
   .yAxis {
     width: 55px;
   }
-  
+
   .yAxisItem {
     font-size: 9px;
     padding-right: 3px;
   }
-  
+
   .bars {
-    left: 60px;
-    right: 20px;
+    inset: 0 20px 0 60px;
   }
-  
+
   .grid {
-    left: 60px;
-    right: 20px;
+    inset: 0 20px 0 60px;
   }
-  
+
   .xAxis {
-    left: 60px;
-    right: 20px;
+    inset: auto 20px 0 60px;
   }
+}
+
+/* ── Tooltip ── */
+
+.tooltip {
+  position: fixed;
+  z-index: 9999;
+  background-color: #1e2730;
+  color: #fff;
+  border-radius: 8px;
+  padding: 10px 14px;
+  pointer-events: none;
+  min-width: 180px;
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+  border: 1px solid rgb(255 255 255 / 10%);
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease;
+}
+
+.tooltipVisible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.tooltipRole {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 6px;
+  white-space: nowrap;
+}
+
+.tooltipDivider {
+  height: 1px;
+  background-color: rgb(255 255 255 / 18%);
+  margin-bottom: 8px;
+}
+
+.tooltipRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 4px;
+}
+
+.tooltipRow:last-child {
+  margin-bottom: 0;
+}
+
+.tooltipLabel {
+  font-size: 12px;
+  color: #9ab0bb;
+  white-space: nowrap;
+}
+
+.tooltipValue {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
 }
