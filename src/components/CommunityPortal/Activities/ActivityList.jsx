@@ -90,10 +90,17 @@ function ActivityList() {
     return d;
   }, []);
 
-  const activityTypes = useMemo(
-    () => [...new Set(activities.map(activity => activity.type).filter(Boolean))].sort(),
-    [activities],
-  );
+  const activityTypes = useMemo(() => {
+    const typeOrder = new Map();
+
+    activities.forEach(activity => {
+      if (activity.type && !typeOrder.has(activity.type)) {
+        typeOrder.set(activity.type, typeOrder.size);
+      }
+    });
+
+    return [...typeOrder.keys()].sort((typeA, typeB) => typeOrder.get(typeA) - typeOrder.get(typeB));
+  }, [activities]);
 
   const filteredActivities = activities
     .filter(activity => showPastEvents || activity._dateObj >= startOfToday)
@@ -121,7 +128,7 @@ function ActivityList() {
 
       <div className={`${darkMode ? styles.darkModeFilters : styles.filters}`}>
         <label className={darkMode ? 'text-light' : ''}>
-          Type:
+          Type:{' '}
           <select
             name="type"
             value={filter.type}
