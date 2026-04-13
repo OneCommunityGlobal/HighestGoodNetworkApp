@@ -189,10 +189,8 @@ function ApplicationTimeChart() {
   }, []);
 
   const handleMouseLeave = useCallback(() => {
-    // Short delay prevents flicker when cursor passes between bar and label
-    hideTimerRef.current = setTimeout(() => {
-      setTooltip(prev => ({ ...prev, visible: false }));
-    }, 80);
+    clearTimeout(hideTimerRef.current);
+    setTooltip(prev => ({ ...prev, visible: false }));
   }, []);
 
   // Tooltip position — keep inside viewport
@@ -269,7 +267,7 @@ function ApplicationTimeChart() {
           </h2>
 
           {/* Chart */}
-          <div className={styles.chartArea}>
+          <div className={styles.chartArea} onMouseLeave={handleMouseLeave}>
             {processedData.length > 0 ? (
               <>
                 {/* Grid Lines */}
