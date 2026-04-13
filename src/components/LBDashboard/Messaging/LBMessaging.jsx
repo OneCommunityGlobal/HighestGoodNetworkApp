@@ -62,7 +62,7 @@ export default function LBMessaging() {
     if (users.userProfilesBasicInfo.length === 0) {
       dispatch(getUserProfileBasicInfo());
     }
-  }, [dispatch, users.userProfilesBasicInfo, auth.userid]);
+  }, [dispatch, users.userProfilesBasicInfo, auth.user]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -213,7 +213,7 @@ export default function LBMessaging() {
   }, []);
 
   const renderContacts = () => {
-    if (existingChats.length === 0) {
+    if (existingChats?.length === 0) {
       return <p>No chats available.</p>;
     }
 

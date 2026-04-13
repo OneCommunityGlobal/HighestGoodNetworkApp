@@ -3,7 +3,6 @@
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
-  margin: 20px 40px 30px;
   padding: 0;
   width: auto;
   min-height:550px;
@@ -68,13 +67,13 @@
 }
 
 .lbMessagingContact {
-  display: flex;
-  align-items: center;
-  padding: 8px;
-  margin: 2px;
-  background-color: white;
-  border-radius: 5px;
+  align-items: center; 
+  cursor: pointer;
+  border-radius: 5px;  
   border-bottom: 1px solid #eee;
+  display: flex;
+  width: 100%;
+  padding: 8px;
 }
 
 .lbMessagingContact:hover {
@@ -104,7 +103,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1px 0px 1px 5px;
+  padding: 1px 0 1px 5px;
   margin: 1px;
 }
 
@@ -185,7 +184,6 @@
 
 .lbMessaingMessageWindowFooter {
   display: flex;
-  /* background-color: #e0e0e0; */
   color: black;
   height: 12%;
   padding: 2.5px;
@@ -256,7 +254,7 @@
 }
 
 .lbSearchInput {
-  width: 75%;
+  width: 90%;
   background-color: #8b8888;
   color: #000;
   outline: none;
@@ -299,45 +297,61 @@
 .lbMessagingContactName {
   font-size: 15px;
   font-weight: 500;
-  color: black;
+  color: #000;
 }
 
 .darkMode{
   background-color: #1b2a41;
 }
+
 .lightMode{
   background-color: #e0e0e0;
 }
+
 .profile{
   width: 50px;
   height: 50px;
 }
+
 .darkMode1{
   background-color: #203844;
 }
+
 .darkMode2{  
   background-color: #526e7c;
 }
+
 .darkMode2::placeholder{
   color: #fff;
 }
+
 .lightBackground{
   background-color: #869aa3;
   color: white;
 }
+
 .lightBackground::placeholder{
   background-color: #869aa3;
   color: #fff;
   outline: none;
 }
+
 .lbClose{
   font-size: x-large;
   color:#000;
   padding: 3px;
 }
+
 .displayItems{
   display: flex;
   gap: 5px;
   flex-direction: row;
   align-items: center;
+}
+
+.lgMessagingBellSelectDropdown {
+  align-items: center;
+  z-index: 100;
+  padding: 5px;
+  width: max-content;
 }
