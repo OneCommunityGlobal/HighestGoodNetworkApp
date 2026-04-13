@@ -38,7 +38,8 @@
 }
 
 .myCasesPageDark .headerActions {
-  gap: 20px; /* more room between dropdowns/buttons */
+  gap: 20px;
+  /* more room between dropdowns/buttons */
 }
 
 .sectionTitle {
@@ -123,6 +124,7 @@
   color: #fff;
   border-color: #3b82f6;
 }
+
 
 .filterWrapper {
   margin: 10px 0;
@@ -211,6 +213,13 @@
   cursor: pointer;
 }
 
+.myCasesPageDark .createNew {
+  background-color: #3A506B;
+  /* Matches other dark elements */
+  color: #ffffff;
+  border: 1px solid #555;
+}
+
 .content {
   margin-top: 10px;
   cursor: pointer;
@@ -272,8 +281,8 @@
 }
 
 .eventBadge[data-type='Cooking Workshop'] {
-  background-color: #fdecea;
-  color: #e74c3c;
+  background-color: #eaeafd;
+  color: #3c3ce7;
 }
 
 .eventBadge[data-type='Dance Class'] {
@@ -320,7 +329,7 @@
 
 .eventTimeDark {
   font-size: 14px;
-  color: #ffffff;
+  color: #ffffff !important;
   margin-bottom: 10px;
 }
 
@@ -335,7 +344,7 @@
   font-size: 16px;
   font-weight: bold;
   margin-bottom: 15px;
-  color: #ffffff;
+  color: #ffffff !important;
 }
 
 .attendeesInfo {
@@ -348,7 +357,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: #ffffff;
+  color: #ffffff !important;
 }
 
 .avatars img {
@@ -374,7 +383,7 @@
 
 .attendeesCountDark {
   font-size: 14px;
-  color: #ffffff;
+  color: #ffffff !important;
 }
 
 .rates {
@@ -569,4 +578,27 @@
     background-color: #f5e6ff !important;
     color: #9b59b6 !important;
   }
+}
+
+.myCasesPageDark .viewSwitcher button,
+.myCasesPageDark .createNew {
+  background-color: #3A506B;
+  color: #ffffff;
+  border: 1px solid #3A506B;
+}
+
+.myCasesPageDark .viewSwitcher button.active {
+  background-color: #007bff;
+  color: #ffffff;
+}
+
+.myCasesPageDark .filterDropdown {
+  background-color: #3A506B;
+  color: #ffffff;
+  border: 1px solid #3A506B;
+}
+
+.myCasesPageDark .filterDropdown option {
+  background-color: #3A506B;
+  color: #ffffff;
 }

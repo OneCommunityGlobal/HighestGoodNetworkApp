@@ -58,7 +58,7 @@ for (let month = 0; month < 12; month++) {
 
 // Mock data generation for today
 const today = new Date();
-for (let t = 0; t < 3; t++) {
+for (let t = 0; t < 6; t++) {
   const eventDate = new Date(today);
   eventDate.setHours(10 + t * 2, 0, 0, 0);
   mockEvents.push({
