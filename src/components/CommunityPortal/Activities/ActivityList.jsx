@@ -6,8 +6,6 @@ import styles from './ActivityList.module.css';
 import { mockActivities } from './mockActivities';
 
 function ActivityList() {
-  
-
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -99,7 +97,9 @@ function ActivityList() {
       }
     });
 
-    return [...typeOrder.keys()].sort((typeA, typeB) => typeOrder.get(typeA) - typeOrder.get(typeB));
+    return [...typeOrder.keys()].sort(
+      (typeA, typeB) => typeOrder.get(typeA) - typeOrder.get(typeB),
+    );
   }, [activities]);
 
   const filteredActivities = activities
@@ -222,17 +222,15 @@ function ActivityList() {
                   }
                 }}
               >
-
-              
-              <li
-                key={activity.id}
-                className={`${styles.activityItem} ${darkMode ? styles.darkModeItem : ''}`}
-              >
-                <strong>{activity.name}</strong>
-                <span>
-                  {activity.type} – {activity.date} – {activity.location}
-                </span>
-              </li>
+                <li
+                  key={activity.id}
+                  className={`${styles.activityItem} ${darkMode ? styles.darkModeItem : ''}`}
+                >
+                  <strong>{activity.name}</strong>
+                  <span>
+                    {activity.type} – {activity.date} – {activity.location}
+                  </span>
+                </li>
               </div>
             ))}
           </ul>

@@ -166,7 +166,8 @@ export const mockActivities = [
     type: 'Educational',
     date: '2026-09-10',
     time: '5:00 PM',
-    description: 'An introductory session covering practical generative AI tools, prompts, and use cases.',
+    description:
+      'An introductory session covering practical generative AI tools, prompts, and use cases.',
     location: 'Tech Hub',
   },
   {
@@ -177,5 +178,5 @@ export const mockActivities = [
     time: '6:00 PM',
     description: 'Meet fellow readers for a guided discussion of this month’s featured book.',
     location: 'Library',
-  }
+  },
 ];
