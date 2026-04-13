@@ -60,6 +60,6 @@ describe('ActivityList', () => {
     });
 
     const items = screen.getAllByRole('listitem');
-    expect(items[0]).toHaveTextContent('Marathon Training');
+    expect(items[0]).toHaveTextContent('Book Club - March');
   });
 });
