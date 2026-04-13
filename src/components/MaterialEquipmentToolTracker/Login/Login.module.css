@@ -1,18 +1,79 @@
 .loginContainer{
-    background-color: #3d4160;
+    background-color: #353A3F;
     padding: 2em;
+    margin-top: -1.5em;
+    font-family: Inter, sans-serif;
+    min-height: 100vh;
 }
 
-.pageTtile{
+.pageTitle{
     font-size: x-large;
     text-align: center;
-    color: #fff;
+    color: #F7F7F7;
+    font-weight: 400;
 }
 
 .formContainer{
-    background-color: #fff;
+    background-color: #E8F4F9;
     text-align: center;
-    padding: 2em;
-    width: 60%;
+    padding: 4em;
+    width: 100%;
+    max-width: 400px;
     margin: 1em auto;
+    border-radius: 3%;
+}
+
+.heading2{
+    color: #DF7801;
+    font-size: large;
+    font-weight: 600;
+    padding: 1em;
+}
+
+.inputBox{
+    border: none !important;   
+    background: none !important;   
+    border-radius: 0 !important;
+    text-align: center;
+    width: auto;
+}
+
+.inputWrapper{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-bottom: 1px solid !important;
+    margin: 1em 0 0;
+}
+
+.inputIcon{
+    padding-left: 1em;
+}
+
+.forgetPswd{
+    text-align: right;
+    font-size: small;
+    padding: 0.5em 0;
+}
+
+.forgetPswd a{    
+    color: #000 !important;
+}
+
+.logInBtn{
+    display: block;
+    margin: 1em;
+    background-color: #2E5061 !important;
+    color: #F7F7F7;
+    padding: 0.5em 2em !important;
+    font-weight: 100;
+    font-size: medium;
+}
+
+.infoSec{
+    color: #DF7801 !important;
+    text-align: center;
+    font-weight: 400;
+    font-size: small;
+    margin: 0 !important;
 }
