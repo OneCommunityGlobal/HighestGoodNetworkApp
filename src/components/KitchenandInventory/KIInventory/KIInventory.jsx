@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import styles from './KIInventory.module.css';
 import MetricCard from '../MetricCards/MetricCard';
@@ -20,20 +20,25 @@ import {
 import { RiLeafLine } from 'react-icons/ri';
 import KIItemCard from './KIItemCard';
 import {
-  ingredients,
-  preservedItems,
-  lowStock,
-  totalItems,
-  criticalStock,
-  onsiteGrown,
-  equipmentAndSupplies,
-  seeds,
-  canningSupplies,
-  animalSupplies,
-} from './KIInventorySampleItems.js';
+  fetchInventoryItems,
+  fetchInventoryStats,
+  fetchPreservedItems,
+} from '../../../actions/KIInventoryActions';
+
+// Category enum values — must match backend model enum exactly
+const CATEGORY_MAP = {
+  ingredients: 'INGREDIENT',
+  'equipment & supplies': 'EQUIPEMENTANDSUPPLIES',
+  seeds: 'SEEDS',
+  'canning supplies': 'CANNINGSUPPLIES',
+  'animal supplies': 'ANIMALSUPPLIES',
+};
 
 const KIInventory = () => {
+  const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme.darkMode);
+  const { items, preservedItems, stats, loading } = useSelector(state => state.kiInventory);
+
   const tabs = [
     'ingredients',
     'equipment & supplies',
@@ -43,19 +48,36 @@ const KIInventory = () => {
   ];
   const [activeTab, setActiveTab] = useState(tabs[0]);
   const [searchTerm, setSearchTerm] = useState('');
+
   const toggleTab = tab => {
-    if (activeTab !== tabs[tab]) setActiveTab(tabs[tab]);
+    if (activeTab !== tabs[tab]) {
+      setActiveTab(tabs[tab]);
+      setSearchTerm('');
+    }
   };
+
+  // Fetch all data on mount
   useEffect(() => {
-    // This is where you would fetch real data from an API or database
-    // For this example, we're using static sample data from KIInventorySampleItems.js
-  }, []);
-  let preservedDesc = [];
-  if (preservedItems.length > 0) {
-    preservedDesc = preservedItems.map(
-      item => `${item.presentQuantity} ${item.unit} of ${item.name}`,
-    );
-  }
+    dispatch(fetchInventoryItems());
+    dispatch(fetchInventoryStats());
+    dispatch(fetchPreservedItems());
+  }, [dispatch]);
+
+  // Onsite grown — computed from all items
+  const onsiteGrown = items.filter(i => i.onsite).length;
+
+  // Items for active tab filtered by category and search term
+  const activeCategory = CATEGORY_MAP[activeTab];
+  const tabItems = items
+    .filter(i => i.category === activeCategory)
+    .filter(i => !searchTerm || i.name.toLowerCase().includes(searchTerm.toLowerCase()));
+
+  // Preserved items description for notification banner
+  const preservedDesc =
+    preservedItems.length > 0
+      ? preservedItems.map(item => `${item.presentQuantity} ${item.unit} of ${item.name}`)
+      : [];
+
   return (
     <div className={classnames(styles.inventoryContainer, darkMode ? styles.darkContainer : '')}>
       <header className={classnames(styles.inventoryPageHeader, darkMode ? styles.darkHeader : '')}>
@@ -64,17 +86,21 @@ const KIInventory = () => {
           <p>Track ingredients, equipment, and supplies across all kitchen operations</p>
         </div>
         <div className={styles.inventoryMetricCards}>
-          <MetricCard metricname={'Total Items'} metricvalue={totalItems} iconcolor={'#023f80'}>
+          <MetricCard
+            metricname={'Total Items'}
+            metricvalue={stats.totalItems}
+            iconcolor={'#023f80'}
+          >
             <FiPackage />
           </MetricCard>
           <MetricCard
             metricname={'Critical Stock'}
-            metricvalue={criticalStock}
+            metricvalue={stats.criticalStock}
             iconcolor={'#ef2d2dff'}
           >
             <FiAlertCircle />
           </MetricCard>
-          <MetricCard metricname={'Low Stock'} metricvalue={lowStock} iconcolor={'#dea208ff'}>
+          <MetricCard metricname={'Low Stock'} metricvalue={stats.lowStock} iconcolor={'#dea208ff'}>
             <FiAlertTriangle />
           </MetricCard>
           <MetricCard metricname={'Onsite Grown'} metricvalue={onsiteGrown} iconcolor={'#12ad36ff'}>
@@ -105,7 +131,7 @@ const KIInventory = () => {
               onClick={() => toggleTab(1)}
             >
               <FiPackage className={styles.inventoryNavBarIcon} />
-              Equipment & Supplies
+              Equipment &amp; Supplies
             </NavLink>
           </NavItem>
           <NavItem>
@@ -161,9 +187,7 @@ const KIInventory = () => {
               type="text"
               placeholder={`Search ${activeTab}...`}
               value={searchTerm}
-              onChange={e => {
-                setSearchTerm(e.target.value);
-              }}
+              onChange={e => setSearchTerm(e.target.value)}
             />
             <button className={`${styles.clearSearch}`} onClick={() => setSearchTerm('')}>
               x
@@ -183,89 +207,56 @@ const KIInventory = () => {
         activeTab={activeTab}
         className={`${styles.inventoryTabContent} ${darkMode ? styles.darkTabContent : ''}`}
       >
-        <TabPane tabId={tabs[0]}>
-          <div className={styles.tabContainer}>
-            {preservedItems.length > 0 && (
-              <div
-                className={`${styles.notificationContainer} ${
-                  darkMode ? styles.darkModeNotification : ''
-                }`}
-              >
-                <div className={styles.notificationHeader}>
-                  <p style={{ margin: 0, padding: 0 }}>
-                    <FiArchive style={{ marginRight: '10px' }} />
-                    Preserved Stock Available
-                  </p>
-                  <p style={{ margin: 0, padding: 0, fontSize: 'small' }}>
-                    Extended shelf life items for year-round use
-                  </p>
-                </div>
-                <div className={styles.notificationBody}>
-                  <p style={{ color: 'rgb(175, 124, 62)' }}>{preservedDesc.join(', ')}</p>
-                  <div>
-                    <button
-                      className={styles.viewAllButton}
-                      style={darkMode ? { backgroundColor: 'rgb(245, 162, 61)' } : {}}
-                    >
-                      View All
-                    </button>
+        {tabs.map((tab, index) => (
+          <TabPane key={tab} tabId={tab}>
+            <div className={styles.tabContainer}>
+              {/* Preserved items notification — only on the Ingredients tab */}
+              {index === 0 && preservedItems.length > 0 && (
+                <div
+                  className={`${styles.notificationContainer} ${
+                    darkMode ? styles.darkModeNotification : ''
+                  }`}
+                >
+                  <div className={styles.notificationHeader}>
+                    <p style={{ margin: 0, padding: 0 }}>
+                      <FiArchive style={{ marginRight: '10px' }} />
+                      Preserved Stock Available
+                    </p>
+                    <p style={{ margin: 0, padding: 0, fontSize: 'small' }}>
+                      Extended shelf life items for year-round use
+                    </p>
+                  </div>
+                  <div className={styles.notificationBody}>
+                    <p style={{ color: 'rgb(175, 124, 62)' }}>{preservedDesc.join(', ')}</p>
+                    <div>
+                      <button
+                        className={styles.viewAllButton}
+                        style={darkMode ? { backgroundColor: 'rgb(245, 162, 61)' } : {}}
+                      >
+                        View All
+                      </button>
+                    </div>
                   </div>
                 </div>
+              )}
+              <div className={styles.ingredientsContainer}>
+                {loading ? (
+                  <p style={{ padding: '1rem' }}>Loading...</p>
+                ) : tabItems.length > 0 ? (
+                  tabItems.map(item => (
+                    <div key={item._id}>
+                      <KIItemCard item={item} />
+                    </div>
+                  ))
+                ) : (
+                  <p style={{ padding: '1rem', opacity: 0.6 }}>
+                    {searchTerm ? `No results for "${searchTerm}"` : `No items in ${tab} yet.`}
+                  </p>
+                )}
               </div>
-            )}
-            <div className={styles.ingredientsContainer}>
-              {ingredients.map(item => (
-                <div key={item._id}>
-                  <KIItemCard item={item} />
-                </div>
-              ))}
             </div>
-          </div>
-        </TabPane>
-        <TabPane tabId={tabs[1]}>
-          <div className={styles.tabContainer}>
-            <div className={styles.ingredientsContainer}>
-              {equipmentAndSupplies.map(item => (
-                <div key={item._id}>
-                  <KIItemCard item={item} />
-                </div>
-              ))}
-            </div>
-          </div>
-        </TabPane>
-        <TabPane tabId={tabs[2]}>
-          <div className={styles.tabContainer}>
-            <div className={styles.ingredientsContainer}>
-              {seeds.map(item => (
-                <div key={item._id}>
-                  <KIItemCard item={item} />
-                </div>
-              ))}
-            </div>
-          </div>
-        </TabPane>
-        <TabPane tabId={tabs[3]}>
-          <div className={styles.tabContainer}>
-            <div className={styles.ingredientsContainer}>
-              {canningSupplies.map(item => (
-                <div key={item._id}>
-                  <KIItemCard item={item} />
-                </div>
-              ))}
-            </div>
-          </div>
-        </TabPane>
-        <TabPane tabId={tabs[4]}>
-          <div className={styles.tabContainer}>
-            <div className={styles.ingredientsContainer}>
-              {animalSupplies.map(item => (
-                <div key={item._id}>
-                  <KIItemCard item={item} />
-                </div>
-              ))}
-            </div>
-          </div>
-        </TabPane>
+          </TabPane>
+        ))}
       </TabContent>
     </div>
   );

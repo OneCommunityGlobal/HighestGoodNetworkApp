@@ -12,13 +12,14 @@ const KIProtectedRoute = ({ component: Component, render, auth, fallback, ...res
         if (!auth.isAuthenticated) {
           return <Redirect to={{ pathname: '/login', state: { from: props.location } }} />;
         }
-        if (auth.user.access && !auth.user.access.canAccessBMPortal) {
-          return (
-            <Redirect
-              to={{ pathname: '/kitchenandinventory/login', state: { from: props.location } }}
-            />
-          );
-        }
+        // TODO: Replace with a proper KI-specific permission check (e.g. canAccessKIPortal)
+        // if (auth.user.access && !auth.user.access.canAccessKIPortal) {
+        //   return (
+        //     <Redirect
+        //       to={{ pathname: '/kitchenandinventory/login', state: { from: props.location } }}
+        //     />
+        //   );
+        // }
         // eslint-disable-next-line no-nested-ternary
         return Component && fallback ? (
           <Suspense
