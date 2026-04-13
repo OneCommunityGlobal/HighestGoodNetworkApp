@@ -1,10 +1,18 @@
 /* eslint-disable testing-library/no-node-access */
 import * as d3 from 'd3';
 import React from 'react';
-
 import { Button, Modal } from 'react-bootstrap';
 import { boxStyle, boxStyleDark } from '../../styles';
 import styles from './PeopleReport/PeopleReport.module.css';
+import {
+  createAxes,
+  createDots,
+  createLabels,
+  createLegend,
+  createLine,
+  createSvgRoot,
+  createTooltip,
+} from './d3GraphUtils';
 
 function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
   const [graphVisible, setGraphVisible] = React.useState(false);
@@ -18,198 +26,97 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
 
   const handleModalShow = d => {
     setFocusedInf(d);
-    if (graphVisible === false) {
-      setModalVisible(!modalVisible);
-    }
-    setGraphVisible(!graphVisible); // Open the graph when opening the modal
+    if (graphVisible === false) setModalVisible(!modalVisible);
+    setGraphVisible(!graphVisible);
   };
+
   function displayGraph(bsCount, maxSquareCount) {
     if (!graphVisible) {
       d3.selectAll('#infplot > *').remove();
     } else {
       d3.selectAll('#infplot > *').remove();
+
       const margin = { top: 30, right: 20, bottom: 30, left: 20 };
       const containerWidth = '1000';
-      // Adjusted width based on the available space
       const width = Math.min(containerWidth - margin.left - margin.right, 1000);
-
       const height = 400 - margin.top - margin.bottom;
 
-      const tooltipEl = function tooltipEl(d) {
-        return (
-          `${'<div class="tip__container">' +
-          '<div class="close">' +
-          `<button style="color: ${darkMode ? '#f9fafb' : 'black'}; background: transparent; border: none;">&times</button>` +
-          '</div>' +
-          '<div>' +
-          'Exact date: '}${d3.timeFormat('%A, %B %e, %Y')(d.date)}<br>` +
-          `Count: ${d.count === 1 ? d.count : `${d.count} <span class="detailsModal"><a>See All</a></span>`
-          }<br>` +
-          `Description: ${d.des[0]}</div>` +
-          `</div>`
-        );
-      };
+      const textColor = darkMode ? `color: #f9fafb;` : '';
+      const legendHtml =
+        `<div class="lengendSubContainer" style="${textColor}">` +
+        `<div class="infLabelsOff"><button style="${textColor}">Labels Off</button></div>` +
+        `<div class="infCountLabelsOn"><button style="${textColor}">Show Squares</button></div>` +
+        `<div class="infDateLabelsOn"><button style="${textColor}">Show Dates</button></div>` +
+        `</div>`;
 
-      const textColor = darkMode ? 'color: #f9fafb;' : '';
-      const legendEl = function legendEl() {
-        return (
-          `<div class="lengendSubContainer" style="${textColor}">` +
-          `<div class="infLabelsOff"><button style="${textColor}">Labels Off</button></div>` +
-          `<div class="infCountLabelsOn"><button style="${textColor}">Show Squares</button></div>` +
-          `<div class="infDateLabelsOn"><button style="${textColor}">Show Dates</button></div>` +
-          `</div>`
-        );
-      };
+      const svgRoot = createSvgRoot('#infplot', containerWidth, height, margin, darkMode);
+      const svg = svgRoot.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
 
-      const svgRoot = d3
-        .select('#infplot')
-        .append('svg')
-        .attr('width', '100%')
-        .attr('height', height + margin.top + margin.bottom)
-        .attr('viewBox', `0 0 ${containerWidth} ${height + margin.top + margin.bottom}`)
-        .style('background-color', darkMode ? '#1b2a41' : '#ffffff');
+      const x = d3.scaleTime().domain(d3.extent(bsCount, d => d.date)).range([0, width]);
+      const y = d3.scaleLinear().domain([0, maxSquareCount + 2]).range([height, 0]);
 
-      const svg = svgRoot
-        .append('g')
-        .attr('transform', `translate(${margin.left},${margin.top})`);
-
-      const x = d3
-        .scaleTime()
-        .domain(d3.extent(bsCount, d => d.date))
-        .range([0, width]);
-      svg
-        .append('g')
-        .attr('transform', `translate(0, ${height})`)
-        .call(d3.axisBottom(x))
-        .selectAll('text').attr('fill', darkMode ? '#f9fafb' : 'black');
-
-      const y = d3
-        .scaleLinear()
-        .domain([0, maxSquareCount + 2])
-        .range([height, 0]);
-      svg.append('g').call(
-        d3
-          .axisLeft(y)
-          .ticks(5)
-          .tickFormat(d3.format('d')))
-          .selectAll('text').attr('fill', darkMode ? '#f9fafb' : 'black');
-      
-
-      svg
-        .append('path')
-        .datum(bsCount)
-        .attr('fill', 'none')
-        .attr('stroke', darkMode ? '#f9fafb' : 'black')
-        .attr('stroke-width', 1.5)
-        .attr(
-          'd',
-          d3
-            .line()
-            .x(d => x(d.date))
-            .y(d => y(d.count)),
-        );
+      createAxes(svg, x, y, height, darkMode);
 
       svg
         .append('g')
-        .selectAll('dot')
-        .data(bsCount)
-        .join('circle')
-        .attr('class', 'myCircle')
-        .attr('cx', d => x(d.date))
-        .attr('cy', d => y(d.count))
-        .attr('r', 3)
-        .attr('stroke', '#69b3a2')
-        .attr('stroke-width', 3)
-        .attr('fill', 'white')
-        .on('click', function handleCircleClick(event, d) {
-          const prevTooltip = d3.select(`.inf${d.id}`);
-
-          if (prevTooltip.empty()) {
-            const Tooltip = d3
-              .select('#infplot')
-              .append('div')
-              .style('opacity', 0)
-              .attr('class', `tooltip inf${d.id}`)
-              .style('background-color', darkMode ? '#1b2a41' : 'white')
-              .style('color', darkMode ? '#f9fafb' : 'black')
-              .style('border', 'solid')
-              .style('border-width', '2px')
-              .style('border-radius', '5px')
-              .style('padding', '5px')
-              .style('max-width', '500px')
-              .style('z-index', 1000);
-
-            Tooltip.html(tooltipEl(d))
-              .style('left', `${event.pageX + 10}px`)
-              .style('top', `${event.pageY}px`)
-              .style('opacity', 1);
-
-            Tooltip.select('.close').on('click', function handleCloseClick() {
-              Tooltip.remove();
-            });
-
-            Tooltip.select('.detailsModal').on('click', function handleDetailsModalClick() {
-              handleModalShow(d);
-            });
-          }
-        });
-
-      svg
-        .append('g')
+        .call(d3.axisLeft(y).ticks(5).tickFormat(d3.format('d')))
         .selectAll('text')
-        .data(bsCount)
-        .join('text')
-        .attr('class', 'infCountLabel')
-        .attr('x', d => x(d.date) + 10)
-        .attr('y', d => y(d.count) - 5)
-        .attr('fill', darkMode ? '#f9fafb' : 'black')
-        .style('z-index', 999)
-        .style('font-weight', 700)
-        .style('display', 'none')
-        .text(d => parseInt(d.count, 10));
+        .attr('fill', darkMode ? '#f9fafb' : 'black');
 
-      svg
-        .append('g')
-        .selectAll('text')
-        .data(bsCount)
-        .join('text')
-        .attr('class', 'infDateLabel')
-        .attr('x', d => x(d.date) + 10)
-        .attr('y', d => y(d.count) - 5)
-        .attr('fill', darkMode ? '#f9fafb' : 'black')
-        .style('z-index', 999)
-        .style('font-weight', 700)
-        .style('display', 'none')
-        .text(d => d3.timeFormat('%m/%d/%Y')(d.date));
+      createLine(svg, bsCount, x, y, darkMode);
 
-      const legend = d3
-        .select('#infplot')
-        .append('div')
-        .attr('class', 'legendContainer');
-      legend.html(legendEl());
+      const dots = createDots(svg, bsCount, x, y);
+      dots.on('click', function handleCircleClick(event, d) {
+        const prevTooltip = d3.select(`.inf${d.id}`);
+        if (prevTooltip.empty()) {
+          const Tooltip = createTooltip('#infplot', d, darkMode);
+          Tooltip.attr('class', `tooltip inf${d.id}`)
+            .style('max-width', '500px')
+            .html(
+              `<div class="tip__container"><div class="close">` +
+              `<button style="color: ${darkMode ? '#f9fafb' : 'black'}; background: transparent; border: none;">&times</button>` +
+              `</div><div>Exact date: ${d3.timeFormat('%A, %B %e, %Y')(d.date)}<br>` +
+              `Count: ${d.count === 1 ? d.count : `${d.count} <span class="detailsModal"><a>See All</a></span>`}<br>` +
+              `Description: ${d.des[0]}</div></div>`
+            )
+            .style('left', `${event.pageX + 10}px`)
+            .style('top', `${event.pageY}px`)
+            .style('opacity', 1);
+
+          Tooltip.select('.close').on('click', function handleCloseClick() {
+            Tooltip.remove();
+          });
+          Tooltip.select('.detailsModal').on('click', function handleDetailsModalClick() {
+            handleModalShow(d);
+          });
+        }
+      });
+
+      createLabels(svg, bsCount, x, y, 'infCountLabel', darkMode, d => parseInt(d.count, 10));
+      createLabels(svg, bsCount, x, y, 'infDateLabel', darkMode, d => d3.timeFormat('%m/%d/%Y')(d.date));
+
+      const legend = createLegend('#infplot', legendHtml);
 
       legend.select('.infLabelsOff').on('click', function handleLabelsOffClick() {
         d3.selectAll('.infCountLabel').style('display', 'none');
         d3.selectAll('.infDateLabel').style('display', 'none');
       });
-
       legend.select('.infCountLabelsOn').on('click', function handleCountLabelsOnClick() {
         d3.selectAll('.infCountLabel').style('display', 'block');
         d3.selectAll('.infDateLabel').style('display', 'none');
       });
-
       legend.select('.infDateLabelsOn').on('click', function handleDateLabelsOnClick() {
         d3.selectAll('.infDateLabel').style('display', 'block');
         d3.selectAll('.infCountLabel').style('display', 'none');
       });
     }
   }
+
   const generateGraph = () => {
     const dict = {};
     const value = [];
     let maxSquareCount = 0;
 
-    // aggregate infringements
     for (let i = 0; i < infringements.length; i += 1) {
       if (infringements[i].date in dict) {
         dict[infringements[i].date].ids.push(infringements[i]._id);
@@ -224,11 +131,8 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
       }
     }
 
-    // filter infringements by date
     if (fromDate === '' || toDate === '') {
-      // condition no longer needed
       Object.keys(dict).forEach(key => {
-        // Use if statement to filter unwanted properties from the prototype chain
         if (Object.prototype.hasOwnProperty.call(dict, key)) {
           value.push({
             date: d3.timeParse('%Y-%m-%d')(key),
@@ -237,9 +141,7 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
             type: 'Infringement',
             ids: dict[key].ids,
           });
-          if (dict[key].count > maxSquareCount) {
-            maxSquareCount = dict[key].count;
-          }
+          if (dict[key].count > maxSquareCount) maxSquareCount = dict[key].count;
         }
       });
     } else {
@@ -254,9 +156,7 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
             type: 'Infringement',
             ids: dict[key].ids,
           });
-          if (dict[key].count > maxSquareCount) {
-            maxSquareCount = dict[key].count;
-          }
+          if (dict[key].count > maxSquareCount) maxSquareCount = dict[key].count;
           counter += 1;
         }
       });
@@ -290,7 +190,7 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
               </thead>
               <tbody>
                 {focusedInf.des
-                  ? focusedInf.des.map((desc) => (
+                  ? focusedInf.des.map(desc => (
                     <tr key={desc} style={darkMode ? { backgroundColor: '#1b2a41' } : {}}>
                       <td style={darkMode ? { backgroundColor: '#1b2a41', color: '#f9fafb' } : {}}>{desc}</td>
                     </tr>
@@ -301,9 +201,7 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
           </div>
         </Modal.Body>
         <Modal.Footer style={darkMode ? { backgroundColor: '#1b2a41', borderColor: '#374151' } : {}}>
-          <Button variant="secondary" onClick={handleModalClose}>
-            Close
-          </Button>
+          <Button variant="secondary" onClick={handleModalClose}>Close</Button>
         </Modal.Footer>
       </Modal>
     </div>
