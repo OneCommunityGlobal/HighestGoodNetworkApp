@@ -36,10 +36,11 @@ const formatDisplayTime = date =>
 const mockEvents = [];
 let id = 1;
 
+// Mock data generation for 12 months and 4 event types per week
 for (let month = 0; month < 12; month++) {
   for (let week = 0; week < 4; week++) {
     for (let t = 0; t < eventTypes.length; t++) {
-      const eventDate = new Date(2025, month, 1 + week * 7 + t);
+      const eventDate = new Date(2026, month, 1 + week * 7 + t);
       mockEvents.push({
         id: id++,
         eventType: eventTypes[t],
@@ -55,6 +56,7 @@ for (let month = 0; month < 12; month++) {
   }
 }
 
+// Mock data generation for today
 const today = new Date();
 for (let t = 0; t < 3; t++) {
   const eventDate = new Date(today);

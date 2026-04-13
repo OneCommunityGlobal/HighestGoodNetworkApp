@@ -48,6 +48,10 @@ function MyCases() {
         return eventDate >= startOfMonth && eventDate <= endOfMonth;
       });
     }
+
+    if (filter === 'all') {
+      return upcomingEvents;
+    }
     return upcomingEvents;
   };
 
@@ -59,7 +63,10 @@ function MyCases() {
   // Sonar: extract nested ternary into independent statement
   let visibleEvents = filteredEvents;
   if (!isExporting) {
-    visibleEvents = expanded ? filteredEvents.slice(0, 40) : filteredEvents.slice(0, 10);
+    // Limt to 10 events by default, but show all if when user clicks "More" or when exporting
+    visibleEvents = expanded
+      ? filteredEvents.slice(0, filteredEvents.length)
+      : filteredEvents.slice(0, 10);
   }
 
   const placeholderAvatar = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
@@ -80,7 +87,7 @@ function MyCases() {
         expanded || isExporting ? styles.expanded : ''
       }`}
     >
-      {visibleEvents.map(event => (
+      {visibleEvents?.map(event => (
         <div
           className={`case-card-global ${styles.caseCard} ${darkMode ? styles.caseCardDark : ''}`}
           key={event.id}
@@ -121,7 +128,7 @@ function MyCases() {
         expanded || isExporting ? styles.expanded : ''
       }`}
     >
-      {visibleEvents.map(event => (
+      {visibleEvents?.map(event => (
         <li
           className={`case-list-item-global ${styles.caseListItem} ${
             darkMode ? styles.caseListItemDark : ''
@@ -190,6 +197,7 @@ function MyCases() {
               <option value="thisMonth">This Month</option>
             </select>
           </div>
+
           <button
             type="button"
             className={`${styles.createNew} ${darkMode ? styles.createNewDarkMode : ''}`}

@@ -28,7 +28,6 @@ function DropOffTracking() {
       endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
       endDate.setHours(23, 59, 59, 999);
     }
-
     return { startDate, endDate };
   };
 
@@ -68,8 +67,8 @@ function DropOffTracking() {
           </select>
           <select
             className={styles.filterDropdown}
-            value={selectedEvent}
-            onChange={e => setSelectedEvent(e.target.value)}
+            value={selectedTime}
+            onChange={e => setSelectedTime(e.target.value)}
           >
             <option value="All Time">All Time</option>
             <option value="Today">Today</option>
@@ -83,6 +82,7 @@ function DropOffTracking() {
         <div className={`${styles.trackingRate} ${darkMode ? styles.trackingRateDark : ''}`}>
           <p className={styles.trackingRateValue}>
             +5% <span>Last week</span>
+            {/* People who signed up but did not show up */}
           </p>
           <p className={styles.trackingRateSubheading}>
             <span> Drop-off rate</span>
@@ -91,6 +91,7 @@ function DropOffTracking() {
         <div className={`${styles.trackingRate} ${darkMode ? styles.trackingRateDark : ''}`}>
           <p className={styles.trackingRateValue}>
             +5% <span>Last week</span>
+            {/* People who did not show up */}
           </p>
           <p className={styles.trackingRateSubheading}>
             <span> No-show rate </span>

@@ -62,6 +62,20 @@
   gap: 15px;
 }
 
+
+@media (max-width: 1024px) {
+  .headerActions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .myCasesPage .header {
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+  }
+}
+
 /* ---------- View Switcher & Segmented Controls ---------- */
 .viewSwitcher {
   display: flex;
@@ -121,12 +135,12 @@
   border: 1px solid #ccc;
   border-radius: 4px;
   cursor: pointer;
+  width:100%;
 }
 
 .myCasesPageDark .viewSwitcher button,
 .myCasesPageDark .filterDropdown,
 .myCasesPageDark .createNew {
-  background-color: #3A506B !important;
   color: #ffffff !important;
   border: 1px solid #555 !important;
 }
@@ -199,6 +213,7 @@
 
 .content {
   margin-top: 10px;
+  cursor: pointer;
 }
 
 /* ---------- Card View Styles ---------- */
@@ -219,6 +234,11 @@
   justify-content: space-between;
 }
 
+.caseCard:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+
 .caseCardDark {
   background-color: #3a506b;
   color: #ffffff;
@@ -229,6 +249,10 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+}
+
+.caseCardDark:hover {
+  box-shadow: 0 4px 8px rgba(255, 255, 255, 0.15);
 }
 
 .eventBadge {
@@ -332,7 +356,15 @@
   height: 24px;
   border-radius: 50%;
   margin-right: -8px;
-  border: 2px solid #fff;
+  border: 2px solid #1c2541; 
+}
+
+.attendeesInfoDark .avatars img {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  margin-right: -8px;
+  border: 2px solid #fff; 
 }
 
 .attendeesCount {
@@ -377,6 +409,10 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
+.caseListItem:hover{
+  background-color: #d2cfcf;
+}
+
 .caseListItemDark {
   display: grid;
   grid-template-columns: 2fr 3fr 1fr 1fr;
@@ -384,6 +420,9 @@
   padding: 15px;
   background-color: #3a506b;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+.caseListItemDark:hover{
+  background-color: #2c3e50;
 }
 
 .caseListItem span {

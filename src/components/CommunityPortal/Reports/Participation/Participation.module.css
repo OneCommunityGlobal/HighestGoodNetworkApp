@@ -175,11 +175,19 @@
   box-sizing: border-box;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .analyticsSection {
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 30px;
   }
 
+  .trackingContainer,
+  .insights {
+    min-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
   .trackingContainer,
   .insights {
     width: 100%;
@@ -200,6 +208,21 @@
   align-items: center;
   margin-bottom: 20px;
   color: #ffffff;
+}
+
+
+@media (max-width: 1024px) {
+  .trackingHeader {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .trackingHeaderDark {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
 }
 
 .trackingHeader h3 {
@@ -353,6 +376,20 @@
   justify-content: space-between;
 }
 
+@media (max-width: 1024px) {
+  .insightsHeader {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .insightsHeaderDark {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+}
+
 .insightsHeader h3 {
   font-size: 1.3rem;
   color: #333;
@@ -391,10 +428,9 @@
 
 .insightsTabs {
   display: flex;
+  align-items: center;
   border: 1px solid #ccc;
   border-radius: 5px;
-  overflow: hidden;
-  max-width: 60%;
 }
 
 .insightsTab {
@@ -507,7 +543,6 @@
   .participationLandingPageDark .insightsPercentageDark {
     color: #ffffff !important;
   }
-}
 
 .filterDropdown {
   padding: 8px;
@@ -527,6 +562,9 @@
 .participationLandingPageDark .filterDropdown:focus {
   border-color: #007bff;
   background-color: #4A627D;
+}
+
+
 /* Hover effect dark mode */
 .insightsTabDarkMode:hover {
   background-color: #374151;
