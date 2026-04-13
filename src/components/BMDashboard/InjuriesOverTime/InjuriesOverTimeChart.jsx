@@ -63,6 +63,10 @@ function InjuriesOverTimeLine({ darkMode = false }) {
   const [selInjTypes, setSelInjTypes] = useState([]);
   const [selDepts, setSelDepts] = useState([]);
   const [selSeverities, setSelSeverities] = useState([]);
+  const [projectOptions, setProjectOptions] = useState([]);
+  const [departmentOptions, setDepartmentOptions] = useState([]);
+  const [injuryTypeOptions, setInjuryTypeOptions] = useState([]);
+  const [severityOptions, setSeverityOptions] = useState([]);
 
   useEffect(() => {
     setLoading(true);
@@ -83,25 +87,42 @@ function InjuriesOverTimeLine({ darkMode = false }) {
       .finally(() => setLoading(false));
   }, [dispatch, selProjects, selInjTypes, selDepts, dateRange, selSeverities]);
 
-  const allProjects = useMemo(() => {
-    const ids = Array.from(new Set(rawData.map(r => String(r.projectId)).filter(Boolean)));
-    return ids.map(id => ({ id, label: `Project …${shortId(id)}` }));
+  useEffect(() => {
+    if (!rawData.length) return;
+
+    setProjectOptions(prev => {
+      const next = new Map(prev.map(project => [project.id, project]));
+      rawData.forEach(record => {
+        const id = String(record.projectId || '');
+        if (id) next.set(id, { id, label: `Project ...${shortId(id)}` });
+      });
+      return Array.from(next.values());
+    });
+
+    setDepartmentOptions(prev => {
+      const next = new Set(prev);
+      rawData.forEach(record => {
+        if (record.department) next.add(record.department);
+      });
+      return Array.from(next);
+    });
+
+    setInjuryTypeOptions(prev => {
+      const next = new Set(prev);
+      rawData.forEach(record => {
+        if (record.injuryType) next.add(record.injuryType);
+      });
+      return Array.from(next);
+    });
+
+    setSeverityOptions(prev => {
+      const next = new Set(prev);
+      rawData.forEach(record => {
+        if (record.severity) next.add(record.severity);
+      });
+      return Array.from(next);
+    });
   }, [rawData]);
-
-  const allDepartments = useMemo(
-    () => Array.from(new Set(rawData.map(r => r.department).filter(Boolean))),
-    [rawData],
-  );
-
-  const allInjuryTypes = useMemo(
-    () => Array.from(new Set(rawData.map(r => r.injuryType).filter(Boolean))),
-    [rawData],
-  );
-
-  const allSeverities = useMemo(
-    () => Array.from(new Set(rawData.map(r => r.severity).filter(Boolean))),
-    [rawData],
-  );
 
   const filtered = useMemo(() => {
     const [start, end] = dateRange || [null, null];
@@ -201,7 +222,7 @@ function InjuriesOverTimeLine({ darkMode = false }) {
           maxTagPlaceholder={o => `+${o.length}`}
           popupClassName={darkMode ? 'wrapperDark-dropdown' : ''}
         >
-          {allProjects.map(p => (
+          {projectOptions.map(p => (
             <Option className={styles.filterOptions} key={p.id} value={p.id}>
               {p.label}
             </Option>
@@ -226,7 +247,7 @@ function InjuriesOverTimeLine({ darkMode = false }) {
           maxTagPlaceholder={o => `+${o.length}`}
           popupClassName={darkMode ? 'wrapperDark-dropdown' : ''}
         >
-          {allInjuryTypes.map(t => (
+          {injuryTypeOptions.map(t => (
             <Option key={t} value={t}>
               {t}
             </Option>
@@ -244,7 +265,7 @@ function InjuriesOverTimeLine({ darkMode = false }) {
           maxTagPlaceholder={o => `+${o.length}`}
           popupClassName={darkMode ? 'wrapperDark-dropdown' : ''}
         >
-          {allDepartments.map(d => (
+          {departmentOptions.map(d => (
             <Option key={d} value={d}>
               {d}
             </Option>
@@ -262,7 +283,7 @@ function InjuriesOverTimeLine({ darkMode = false }) {
           maxTagPlaceholder={o => `+${o.length}`}
           popupClassName={darkMode ? 'wrapperDark-dropdown' : ''}
         >
-          {allSeverities.map(s => (
+          {severityOptions.map(s => (
             <Option key={s} value={s}>
               {s}
             </Option>
@@ -340,3 +361,5 @@ const mapStateToProps = state => ({
 });
 
 export default connect(mapStateToProps)(InjuriesOverTimeLine);
+
+

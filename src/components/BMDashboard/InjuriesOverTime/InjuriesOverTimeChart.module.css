@@ -50,6 +50,9 @@
   color: rgba(0, 0, 0, 0.7) !important;
 }
 
+.filterSelect :global(.ant-picker-input input) {
+  text-align: center;
+}
 /* Dark Mode Styles for Select */
 .wrapperDark .filterSelect :global(.ant-select-selector) {
   background-color: #0f172a !important;
@@ -71,6 +74,8 @@
 .wrapperDark .filterSelect :global(.ant-select-clear) {
   color: rgba(245, 247, 250, 0.7) !important;
 }
+
+
 
 /* Dark Mode Styles for RangePicker */
 .wrapperDark .filterSelect :global(.ant-picker) {
