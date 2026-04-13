@@ -68,6 +68,13 @@
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
+  padding: 0;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.container.darkMode {
+  background-color: #1B2A41;
+  color: #e0e0e0;
 }
 
 @media (width <= 768px) {
@@ -76,15 +83,14 @@
   }
 }
 
-/* ── Loading / error ─────────────────────────────────────────────── */
-.atcLoading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 300px;
-  font-size: 16px;
-  color: var(--atc-muted);
+@media (width <= 480px) {
+@media (width <= 480px) {
+  .pageContainer {
+    padding: 10px;
+  }
 }
+
+/* ── Chart card ── */
 
 /* ── Chart card ──────────────────────────────────────────────────── */
 .atcCard {
@@ -114,33 +120,40 @@
   color: #93c5fd;
 }
 
-/* ── Empty state ─────────────────────────────────────────────────── */
-.atcEmpty {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 18px;
+/* ── Chart area ── */
+
+.chartArea {
+  min-height: 400px;
+  position: relative;
+  padding: 20px 108px 40px 140px;
 }
 
-.atcEmptyText {
-  font-size: 15px;
-  color: var(--atc-muted);
-  margin: 0;
+@media (width <= 768px) {
+  .chartArea {
+    padding: 16px 88px 40px 100px;
+    min-height: 300px;
+  }
 }
 
-.atcResetBtn {
-  padding: 10px 28px;
-  background-color: #4285f4;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: Arial, sans-serif;
-  transition: background-color 0.2s ease, transform 0.1s ease;
+@media (width <= 480px) {
+@media (width <= 480px) {
+  .chartArea {
+    padding: 16px 72px 40px 80px;
+    min-height: 250px;
+  }
+}
+
+/* ── Grid ── */
+
+.grid {
+  position: absolute;
+  inset: 20px 108px 40px 140px;
+  inset: 20px 108px 40px 140px;
+  background-image: linear-gradient(to right, #e0e0e0 1px, transparent 1px),
+    linear-gradient(to bottom, #e0e0e0 1px, transparent 1px);
+  opacity: 0.5;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
 }
 
 .atcResetBtn:hover {
@@ -151,17 +164,23 @@
   transform: scale(0.97);
 }
 
-/* ── Chart wrapper ───────────────────────────────────────────────── */
-.atcChart {
-  position: relative;
-  width: 100%;
-  min-height: 400px;
-  display: flex;
-  flex-direction: column;
+@media (width <= 768px) {
+@media (width <= 768px) {
+  .grid {
+    inset: 20px 88px 40px 100px;
+  }
 }
 
-/* ── Vertical grid lines ─────────────────────────────────────────── */
-.atcGrid {
+@media (width <= 480px) {
+@media (width <= 480px) {
+  .grid {
+    inset: 20px 72px 40px 80px;
+  }
+}
+
+/* ── Y-axis ── */
+
+.yAxis {
   position: absolute;
   inset: 20px auto 40px 0;
   width: 130px;
@@ -170,40 +189,105 @@
   justify-content: space-evenly;
 }
 
-/* ── Each row = label + track ────────────────────────────────────── */
-.atcRow {
-  display: grid;
-  grid-template-columns: var(--atc-label-col) 1fr;
-  align-items: center;
-  gap: 0;
+@media (width <= 768px) {
+@media (width <= 768px) {
+  .yAxis {
+    width: 90px;
+  }
 }
 
-/* ── Role label ──────────────────────────────────────────────────── */
+@media (width <= 480px) {
+@media (width <= 480px) {
+  .yAxis {
+    width: 70px;
+  }
+}
 
-.atcLabel {
-  text-align: right;
-  padding-right: 12px;
-  font-size: 13px;
-  color: var(--atc-muted);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  height: 44px;
+.yAxisItem {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  border-right: 1px solid var(--atc-axis);
-  box-sizing: border-box;
+  padding-right: 10px;
+  font-size: 12px;
+  color: #5f6368;
+  border-right: 1px solid #9aa0a6;
+  transition: color 0.3s ease, border-color 0.3s ease;
 }
 
-/* ── Bar track ───────────────────────────────────────────────────── */
-.atcTrack {
-  height: 44px;
+.yAxisItem.darkMode {
+  color: #e0e0e0;
+  border-right-color: #5a6c7d;
+}
+
+@media (width <= 480px) {
+@media (width <= 480px) {
+  .yAxisItem {
+    font-size: 10px;
+    padding-right: 5px;
+  }
+}
+
+/* ── X-axis ── */
+
+.xAxis {
+  position: absolute;
+  inset: auto 108px 0 140px;
+  height: 40px;
+  border-top: 1px solid #9aa0a6;
+  display: flex;
+  align-items: flex-start;
+  padding-top: 5px;
+  transition: border-color 0.3s ease;
+}
+
+.xAxis.darkMode {
+  border-top-color: #5a6c7d;
+}
+
+@media (width <= 768px) {
+@media (width <= 768px) {
+  .xAxis {
+    inset: auto 88px 0 100px;
+  }
+}
+
+@media (width <= 480px) {
+@media (width <= 480px) {
+  .xAxis {
+    inset: auto 72px 0 80px;
+  }
+}
+
+/* ── Bars ── */
+
+.bars {
+  position: absolute;
+  inset: 20px 108px 40px 140px;
+  inset: 20px 108px 40px 140px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+@media (width <= 768px) {
+@media (width <= 768px) {
+  .bars {
+    inset: 20px 88px 40px 100px;
+  }
+}
+
+@media (width <= 480px) {
+@media (width <= 480px) {
+  .bars {
+    inset: 20px 72px 40px 80px;
+  }
+}
+
+.barRow {
   display: flex;
   align-items: center;
-  overflow: hidden;
-  padding: 6px 0;
-  box-sizing: border-box;
+  padding: 10px 0;
+  overflow: visible;
 }
 
 /* ── The bar itself ──────────────────────────────────────────────── */
@@ -215,14 +299,30 @@
   min-width: 4px;
   flex-shrink: 0;
   position: relative;
-  display: flex;
-  align-items: center;
-  transition: background 0.3s ease, border-color 0.3s ease, width 160ms ease;
+  min-width: 2px;
+  flex-shrink: 0;
+  overflow: visible;
+  cursor: pointer;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    filter 0.15s ease;
 }
 
-/* ── Value label inside bar ──────────────────────────────────────── */
+.bar:hover {
+  filter: brightness(1.1);
+}
 
-.atcBarValue {
+.bar.darkMode {
+  background-color: #58d68d;
+  border-color: #27ae60;
+}
+
+.bar.darkMode:hover {
+  filter: brightness(1.12);
+}
+
+.dataLabel {
   position: absolute;
   right: 8px;
   top: 50%;
@@ -234,39 +334,83 @@
   pointer-events: none;
 }
 
-.atcBarValue[data-outside='true'] {
-  right: auto;
-  left: calc(100% + 6px);
-  color: var(--atc-muted);
+.dataLabel.darkMode {
+  color: #f1f5f9;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 45%);
+  text-shadow: 0 1px 2px rgb(0 0 0 / 45%);
 }
 
-/* ── X-axis ticks ────────────────────────────────────────────────── */
-.atcXaxis {
+@media (width <= 480px) {
+@media (width <= 480px) {
+  .dataLabel {
+    font-size: 12px;
+    margin-left: 8px;
+  }
+}
+
+/* ── X-axis label ── */
+
+.xAxisLabel {
+  position: absolute;
+  bottom: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 12px;
+  color: #5f6368;
+  white-space: nowrap;
+  transition: color 0.3s ease;
+}
+
+.xAxisLabel.darkMode {
+  color: #e0e0e0;
+}
+
+@media (width <= 480px) {
+@media (width <= 480px) {
+  .xAxisLabel {
+    font-size: 10px;
+    bottom: -20px;
+  }
+}
+
+/* ── No-data placeholder ── */
+
+.noData {
   display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-  color: var(--atc-muted);
-  margin-top: 8px;
-  margin-left: var(--atc-label-col);
-  border-top: 1px solid var(--atc-axis);
-  padding-top: 4px;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  color: #5f6368;
+  font-size: 16px;
+  transition: color 0.3s ease;
 }
 
-/* ── X-axis label ────────────────────────────────────────────────── */
-.atcXaxisLabel {
-  text-align: center;
-  font-size: 12px;
-  color: var(--atc-muted);
-  margin-top: 6px;
-  margin-bottom: 16px;
-  margin-left: var(--atc-label-col);
+.noData.darkMode {
+  color: #e0e0e0;
 }
 
-/* ── Summary footer ──────────────────────────────────────────────── */
-.atcFooter {
-  margin-top: 12px;
-  padding: 12px 16px;
-  background: var(--atc-summary-bg);
+@media (width <= 768px) {
+@media (width <= 768px) {
+  .noData {
+    height: 300px;
+    font-size: 14px;
+  }
+}
+
+@media (width <= 480px) {
+@media (width <= 480px) {
+  .noData {
+    height: 250px;
+    font-size: 12px;
+  }
+}
+
+/* ── Summary strip ── */
+
+.summary {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f8f9fa;
   border-radius: 4px;
   font-size: 14px;
   color: var(--atc-muted);
@@ -280,51 +424,89 @@
   font-weight: 600;
 }
 
-/* ── Filters sidebar ─────────────────────────────────────────────── */
-.atcFilters {
-  flex: 0 0 180px;
-  width: 180px;
+@media (width <= 480px) {
+@media (width <= 480px) {
+  .summary {
+    font-size: 12px;
+    padding: 10px;
+  }
+}
+
+/* ── Filters panel ── */
+
+.filters {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
 @media (width <= 768px) {
-  .atcFilters {
-    flex: 0 0 auto;
-    flex-flow: row wrap;
-    width: 100%;
+@media (width <= 768px) {
+  .filters {
+    min-width: 120px;
+    gap: 15px;
   }
 }
 
-/* ── Individual filter card ──────────────────────────────────────── */
-.atcFilter {
-  border: 1px solid var(--atc-filter-border);
-  border-radius: 6px;
-  padding: 14px 16px;
-  background: var(--atc-filter-bg);
-  transition: background 0.3s ease, border-color 0.3s ease;
+@media (width <= 480px) {
+@media (width <= 480px) {
+  .filters {
+    min-width: 100px;
+    gap: 10px;
+  }
 }
 
-.atcFilterLabel {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--atc-filter-label);
-  margin: 0 0 8px;
+.filterCard {
+  border: 1px solid #dadce0;
+  border-radius: 4px;
+  padding: 12px;
+  background-color: #fff;
+  background-color: #fff;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.filterCard.darkMode {
+  background-color: #2c3e50;
+  border-color: #5a6c7d;
+}
+
+@media (width <= 480px) {
+@media (width <= 480px) {
+  .filterCard {
+    padding: 8px;
+  }
+}
+
+.filterTitle {
+  font-size: 14px;
+  font-weight: 500;
+  color: #3c4043;
+  margin-bottom: 8px;
   transition: color 0.3s ease;
 }
 
-.atcSelect {
+.filterTitle.darkMode {
+  color: #e0e0e0;
+}
+
+@media (width <= 480px) {
+@media (width <= 480px) {
+  .filterTitle {
+    font-size: 12px;
+    margin-bottom: 6px;
+  }
+}
+
+.select {
   width: 100%;
   padding: 6px 8px;
   border: 1px solid var(--atc-filter-border);
   border-radius: 4px;
   font-size: 14px;
-  background: var(--atc-filter-bg);
-  color: var(--atc-text);
-  cursor: pointer;
-  box-sizing: border-box;
-  transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  background-color: #fff;
+  background-color: #fff;
+  color: #3c4043;
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
 .atcSelect:focus {
@@ -333,48 +515,185 @@
   box-shadow: 0 0 0 2px rgb(66 133 244 / 20%);
 }
 
-.atc.dark .atcSelect {
-  color-scheme: dark;
+.select option {
+  background-color: #fff;
+  background-color: #fff;
+  color: #3c4043;
 }
 
-/* ── No-match state ──────────────────────────────────────────────── */
-.atcSelectNoMatch {
-  border-color: #fbbc04;
-  color: #7a5800;
-  background-color: #fffde7;
+.select.darkMode option {
+  background-color: #1e293b;
+  color: #f1f5f9;
 }
 
-.atc.dark .atcSelectNoMatch {
-  border-color: #f9a825;
-  color: #fdd835;
-  background-color: #2c2a00;
+@media (width <= 480px) {
+@media (width <= 480px) {
+  .select {
+    font-size: 12px;
+    padding: 3px 6px;
+  }
 }
 
+/* ── Responsive layout ── */
 
-@media (width <= 600px) {
-  .atc {
-    --atc-label-col: 110px;
+@media (width <= 1024px) {
+  .container {
+    max-width: 100%;
+  }
+}
 
-    padding: 12px;
+@media (width <= 768px) {
+@media (width <= 768px) {
+  .container {
+    flex-direction: column;
+    gap: 15px;
+    padding: 0;
   }
 
-  .atcTitle {
-    font-size: 15px;
+  .chartCard {
+    order: 1;
+    padding: 15px;
+    width: 100%;
   }
 
-  .atcLabel {
-    font-size: 11px;
+  .title {
+    font-size: 18px;
+    margin-bottom: 20px;
   }
 
-  .atcBarValue {
-    font-size: 11px;
+  .filters {
+    order: 2;
+    flex-direction: row;
+    justify-content: space-between;
+    min-width: auto;
+    width: 100%;
+    gap: 15px;
+  }
+
+  .filterCard {
+    flex: 1;
   }
 }
 
 @media (width <= 480px) {
-  .atc {
-    --atc-label-col: 80px;
-
-    padding: 8px;
+@media (width <= 480px) {
+  .container {
+    gap: 10px;
   }
+
+  .chartCard {
+    padding: 12px;
+  }
+
+  .title {
+    font-size: 16px;
+    margin-bottom: 15px;
+  }
+
+  .filters {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .filterCard {
+    width: 100%;
+  }
+}
+
+@media (width <= 320px) {
+@media (width <= 320px) {
+  .title {
+    font-size: 14px;
+  }
+
+  .chartArea {
+    padding: 0 20px 0 60px;
+    min-height: 200px;
+  }
+
+  .yAxis {
+    width: 55px;
+  }
+
+  .yAxisItem {
+    font-size: 9px;
+    padding-right: 3px;
+  }
+
+  .bars {
+    inset: 0 20px 0 60px;
+  }
+
+  .grid {
+    inset: 0 20px 0 60px;
+  }
+
+  .xAxis {
+    inset: auto 20px 0 60px;
+  }
+}
+
+/* ── Tooltip ── */
+
+.tooltip {
+  position: fixed;
+  z-index: 9999;
+  background-color: #1e2730;
+  color: #fff;
+  border-radius: 8px;
+  padding: 10px 14px;
+  pointer-events: none;
+  min-width: 180px;
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+  border: 1px solid rgb(255 255 255 / 10%);
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease;
+}
+
+.tooltipVisible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.tooltipRole {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 6px;
+  white-space: nowrap;
+}
+
+.tooltipDivider {
+  height: 1px;
+  background-color: rgb(255 255 255 / 18%);
+  margin-bottom: 8px;
+}
+
+.tooltipRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 4px;
+}
+
+.tooltipRow:last-child {
+  margin-bottom: 0;
+}
+
+.tooltipLabel {
+  font-size: 12px;
+  color: #9ab0bb;
+  white-space: nowrap;
+}
+
+.tooltipValue {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
 }
