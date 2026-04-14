@@ -17,6 +17,7 @@ import { format } from 'date-fns';
 import { getUserTimezone, formatEventTimeWithTimezone } from '../../utils/timezoneUtils';
 import styles from './CPDashboard.module.css';
 import { ENDPOINTS } from '../../utils/URL';
+import { Link } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { toast } from 'react-toastify';
@@ -89,6 +90,7 @@ export function CPDashboard() {
   const [dateFilter, setDateFilter] = useState('');
   const [error, setError] = useState(null);
   const [failedLogos, setFailedLogos] = useState(new Set());
+  const [showPastEvents, setShowPastEvents] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
   const [pagination, setPagination] = useState({
     currentPage: 1,
@@ -236,36 +238,52 @@ export function CPDashboard() {
     return null;
   };
 
-  const filteredEvents = events.filter(event => {
-    if (onlineOnly) {
-      const isOnlineEvent = event.location?.toLowerCase() === 'virtual';
-      if (!isOnlineEvent) return false;
-    }
+  const now = new Date();
 
-    if (dateFilter === 'tomorrow') {
-      if (!isTomorrow(event.date)) return false;
-    } else if (dateFilter === 'weekend') {
-      if (!isComingWeekend(event.date)) return false;
-    }
+  const isPastEvent = event => {
+    const ref = event.startTime || event.date;
+    if (!ref) return false;
+    return new Date(ref) < now;
+  };
 
-    const eventDate = event.date ? parseEventDate(event.date) : null;
-    if (selectedDate && eventDate !== selectedDate) {
-      return false;
-    }
+  const filteredEvents = events
+    .filter(event => {
+      if (!showPastEvents && isPastEvent(event)) return false;
 
-    if (!searchQuery) return true;
-    const term = searchQuery.toLowerCase();
+      if (onlineOnly) {
+        const isOnlineEvent = event.location?.toLowerCase() === 'virtual';
+        if (!isOnlineEvent) return false;
+      }
 
-    return (
-      fuzzySearch(event.title, term, 0.6) ||
-      fuzzySearch(event.location, term, 0.6) ||
-      fuzzySearch(event.organizer, term, 0.6)
-    );
-  });
+      if (dateFilter === 'tomorrow') {
+        if (!isTomorrow(event.date)) return false;
+      } else if (dateFilter === 'weekend') {
+        if (!isComingWeekend(event.date)) return false;
+      }
+
+      const eventDate = event.date ? parseEventDate(event.date) : null;
+      if (selectedDate && eventDate !== selectedDate) {
+        return false;
+      }
+
+      if (!searchQuery) return true;
+      const term = searchQuery.toLowerCase();
+
+      return (
+        fuzzySearch(event.title, term, 0.6) ||
+        fuzzySearch(event.location, term, 0.6) ||
+        fuzzySearch(event.organizer, term, 0.6)
+      );
+    })
+    .sort((a, b) => {
+      const aTime = new Date(a.startTime || a.date || 0);
+      const bTime = new Date(b.startTime || b.date || 0);
+      return aTime - bTime;
+    });
 
   useEffect(() => {
     setPagination(prev => ({ ...prev, currentPage: 1 }));
-  }, [searchQuery, selectedDate, onlineOnly, dateFilter]);
+  }, [searchQuery, selectedDate, onlineOnly, dateFilter, showPastEvents]);
 
   const totalPages = Math.ceil(filteredEvents.length / pagination.limit) || 1;
 
@@ -521,8 +539,12 @@ export function CPDashboard() {
         <Col md={9} className={`${styles.dashboardMain} ${darkMode ? styles.darkMain : ''}`}>
           <div className={styles.eventsHeader}>
             <h2 className={styles.sectionTitle}>Events</h2>
-            <Button color="primary" className={styles.showPastEventsBtn}>
-              Show Past Events
+            <Button
+              color="primary"
+              className={styles.showPastEventsBtn}
+              onClick={() => setShowPastEvents(prev => !prev)}
+            >
+              {showPastEvents ? 'Hide Past Events' : 'Show Past Events'}
             </Button>
           </div>
 
