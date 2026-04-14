@@ -1,0 +1,38 @@
+.popupContainer {
+  position: sticky;
+  width: 100%;
+  top: 0;
+  left: 0%;
+  margin: 0;
+  text-align: center;
+  background-color: #ffcc00;
+  color: #fff;
+  z-index: 2;
+  opacity: 0.8;
+}
+.popupContainer.blackText{
+  color: #000000
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #000000;
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  right: 30px;
+  transform: translateY(-50%);
+}
+
+.closeButton.btnPadding{
+  @media (max-width: 768px) { 
+    top: 70%;
+  }
+}
+
+.closeButton > .containerFluid {
+  padding: 0px;
+}
+  

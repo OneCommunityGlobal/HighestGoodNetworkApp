@@ -1,0 +1,58 @@
+.recordsModalTableContainer {
+  overflow: scroll;
+  height: 75vh;
+  text-align: center;
+  font-size: small;
+  white-space: nowrap;
+}
+
+@media (min-width: 1200px) {
+  .recordsModalTableContainer {
+    font-size: medium;
+  }
+}
+
+.approveButton {
+  background-color: green;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-right: 8px;
+}
+
+.approveButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.rejectButton {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-right: 8px;
+}
+
+.rejectButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.statusApproved {
+  color: green;
+  font-weight: bold;
+}
+
+.statusRejected {
+  color: red;
+  font-weight: bold;
+}
+
+.statusPending {
+  color: #e6a800;
+  font-weight: bold;
+}

@@ -1,7 +1,6 @@
 *.png
 *.svg
 src/actions/**
-src/App.css
 src/config.json
 
 src/languages/**
@@ -19,7 +18,6 @@ src/components/Memberships/**
 src/components/Projects/**
 src/components/Reports/**
 src/components/SummaryManagement/**
-src/components/TeamMemberTasks/**
 src/components/Timelog/**
 src/components/UserManagement/**
 src/components/UserProfile/**

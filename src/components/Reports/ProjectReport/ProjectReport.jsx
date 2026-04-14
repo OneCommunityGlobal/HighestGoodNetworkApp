@@ -16,7 +16,7 @@ import { WbsTable } from '../WbsTable';
 import hasPermission from '../../../utils/permissions';
 import viewWBSpermissionsRequired from '../../../utils/viewWBSpermissionsRequired';
 import { projectReportViewData } from './selectors';
-import '../../Teams/Team.css';
+import '../../Teams/Team.module.css';
 import './ProjectReport.css';
 import { boxStyle, boxStyleDark } from '../../../styles';
 import { PieChartByProject } from './PiechartByProject/PieChartByProject';
@@ -161,7 +161,7 @@ export function ProjectReport({ match }) {
         </ReportPage.ReportBlock>
       </div>
         <ReportPage.ReportBlock darkMode={darkMode}>
-          <TasksTable darkMode={darkMode} tasks={tasks}/>
+          <TasksTable darkMode={darkMode} tasks={tasks} projectId={projectId} />
         </ReportPage.ReportBlock>
         <ReportPage.ReportBlock darkMode={darkMode}>
           <PieChartByProject mergedProjectUsersArray={mergedProjectUsersArray} projectName={projectName} darkMode={darkMode}/>

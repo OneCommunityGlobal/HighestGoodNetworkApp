@@ -1,0 +1,143 @@
+/* Full-screen dark wrapper */
+.full-screen-dark {
+  background-color: #1b2a41; /* Oxford Blue */
+  color: #e0e0e0; /* Light text */
+  min-height: 100vh;
+  width: 100%;
+  padding: 20px;
+}
+
+/* Main container */
+.months-pledged-chart {
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(139, 117, 0, 0.1);
+  margin: 20px;
+  border: 1px solid #daa520;
+}
+.dark {
+  background: #1c2541; /* Space Cadet */
+  border: 1px solid #444;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); /* Dark shadow */
+  color: #e0e0e0;
+}
+
+/* Title */
+.months-pledged-chart__title {
+  color: #8b7500;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+}
+.dark .months-pledged-chart__title {
+  color: #e0e0e0;
+}
+
+/* Filters */
+.months-pledged-chart__filters {
+  display: flex;
+  gap: 30px;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+}
+.months-pledged-chart__date-filter,
+.months-pledged-chart__role-filter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 300px;
+}
+.months-pledged-chart__filter-label {
+  font-weight: 600;
+  color: #8b7500;
+}
+.dark .months-pledged-chart__filter-label {
+  color: #e0e0e0;
+}
+
+/* Date picker */
+.months-pledged-chart__date-picker {
+  padding: 8px 12px;
+  border: 1px solid #daa520;
+  border-radius: 4px;
+  background-color: #ffffff;
+  color: #8b7500;
+  min-width: 150px;
+}
+.months-pledged-chart__date-picker:focus {
+  outline: none;
+  border-color: #8b7500;
+}
+.dark .months-pledged-chart__date-picker {
+  background-color: #3a506b; /* Yinmn Blue */
+  border: 1px solid #444;
+  color: #e0e0e0;
+}
+
+/* Reset button */
+.months-pledged-chart__reset-btn {
+  align-self: flex-end;
+  padding: 8px 16px;
+  background-color: #ffffff;
+  border: 1px solid #daa520;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #8b7500;
+  font-weight: 600;
+}
+.dark .months-pledged-chart__reset-btn {
+  background-color: #3a506b; /* Yinmn Blue */
+  border: 1px solid #444;
+  color: #e0e0e0;
+}
+
+/* Chart container */
+.months-pledged-chart__container {
+  margin-top: 20px;
+  height: 500px;
+}
+
+/* States */
+.months-pledged-chart__loading,
+.months-pledged-chart__empty,
+.months-pledged-chart__error {
+  text-align: center;
+  padding: 50px;
+  font-size: 1.1rem;
+}
+.months-pledged-chart__loading,
+.months-pledged-chart__empty {
+  color: #8b7500;
+}
+.dark .months-pledged-chart__loading,
+.dark .months-pledged-chart__empty,
+.dark .months-pledged-chart__error {
+  color: #e0e0e0;
+}
+.months-pledged-chart__error {
+  color: #ff6b6b;
+  font-weight: 600;
+}
+
+/* Bar labels */
+.months-pledged-chart__bar-label {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .months-pledged-chart__filters {
+    flex-direction: column;
+    gap: 15px;
+  }
+  .months-pledged-chart__date-filter,
+  .months-pledged-chart__role-filter {
+    width: 100%;
+  }
+  .months-pledged-chart__date-picker {
+    width: 100%;
+  }
+}

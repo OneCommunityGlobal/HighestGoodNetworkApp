@@ -5,8 +5,8 @@ import { toast } from 'react-toastify';
 import { PAUSE, RESUME, PROCESSING } from '../../languages/en/ui';
 import { UserStatus } from '../../utils/enums';
 import ActivationDatePopup from './ActivationDatePopup';
-import { updateUserStatus } from '../../actions/userManagement';
 import { boxStyle, boxStyleDark } from '../../styles';
+import { pauseUserAction, activateUserAction } from '../../actions/userLifecycleActions';
 
 /**
  * @param {*} props
@@ -18,7 +18,7 @@ function PauseAndResumeButton(props) {
   const { darkMode } = props;
   const [activationDateOpen, setActivationDateOpen] = useState(false);
   const [isActive, setIsActive] = useState(true);
-  const [isLoading, setIsLoading] = useState(false); // Added loading state
+  const [isLoading, setIsLoading] = useState(false);
 
   const activationDatePopupClose = () => {
     setActivationDateOpen(false);
@@ -36,7 +36,7 @@ function PauseAndResumeButton(props) {
   const pauseUser = async reActivationDate => {
     setIsLoading(true); // Start loading indicator
     try {
-      await updateUserStatus(props.userProfile, UserStatus.InActive, reActivationDate)(dispatch);
+      await pauseUserAction(dispatch, props.userProfile, reActivationDate, props.loadUserProfile);
       setIsActive(false);
       setActivationDateOpen(false);
 
@@ -44,6 +44,7 @@ function PauseAndResumeButton(props) {
       toast.success('Your Changes were saved successfully.');
     } catch (error) {
       toast.error('Failed to update the user status.');
+      // eslint-disable-next-line no-console
       console.error(error);
     } finally {
       setIsLoading(false); // Stop loading indicator
@@ -58,13 +59,14 @@ function PauseAndResumeButton(props) {
     if (status === UserStatus.Active) {
       setIsLoading(true); // Start loading indicator
       try {
-        await updateUserStatus(user, status, Date.now())(dispatch);
+        await activateUserAction(dispatch, props.userProfile, props.loadUserProfile);
         setIsActive(true);
 
         // Optimistically update the UI
         toast.success('Your Changes were saved successfully.');
       } catch (error) {
         toast.error('Failed to update the user status.');
+        // eslint-disable-next-line no-console
         console.error(error);
       } finally {
         setIsLoading(false); // Stop loading indicator
@@ -89,12 +91,14 @@ function PauseAndResumeButton(props) {
           props.isBigBtn ? '' : 'btn-sm'
         }  mr-1`}
         onClick={() => {
-          onPauseResumeClick(props.userProfile, isActive ? UserStatus.InActive : UserStatus.Active);
+          onPauseResumeClick(props.userProfile, isActive ? UserStatus.Inactive : UserStatus.Active);
         }}
         style={darkMode ? boxStyleDark : boxStyle}
         data-testid="pause-resume-button"
       >
+        {/* eslint-disable-next-line no-nested-ternary */}
         {isLoading ? PROCESSING : isActive ? PAUSE : RESUME} {/* Show loading state */}
+        
       </Button>
     </>
   );

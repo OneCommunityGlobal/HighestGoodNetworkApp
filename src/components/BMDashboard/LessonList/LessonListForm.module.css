@@ -1,0 +1,274 @@
+.formContainer {
+  .formControl {
+    max-width: unset !important;
+    font-size: small !important;
+  }
+
+  .formLabel {
+    margin: 5px 0;
+    font-size: small;
+  }
+}
+
+.formControlDelete {
+  margin-left: 0;
+  font-size: small !important;
+  max-width: 100%;
+  width: 100%;
+}
+
+.tag .deleteTag {
+  margin-left: 10px;
+  background-color: red;
+}
+
+.mainContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 5% 10% 1%;
+}
+
+.lessonLabel {
+  font-size: larger !important;
+  font-weight: bold;
+}
+
+.formSelectContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  font-size: small;
+}
+
+.singleForm {
+  display: flex !important;
+  gap: 5px;
+  text-align: center !important;
+  margin-right: 40px;
+  width: 200px;
+}
+
+.singleFormSelect {
+  background-color: #f2f2f266 !important;
+}
+
+.tagContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px 0;
+  margin-top: 10px;
+  min-height: 32px;
+  position: relative;
+  z-index: 1;
+}
+
+.deleteInputWrapper {
+  position: relative;
+  flex: 1;
+}
+
+.tagsInputContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  background-color: #e3f2fd;
+  border: 1px solid #90caf9;
+  border-radius: 16px;
+  padding: 4px 12px;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  gap: 6px;
+  min-height: 28px;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 10%);
+  color: #1976d2;
+  position: relative;
+}
+
+.tag span {
+  color: inherit;
+}
+
+.tag:hover {
+  box-shadow: 0 2px 4px rgb(0 0 0 / 15%);
+  transform: translateY(-1px);
+}
+
+.tag .close {
+  margin-left: 5px;
+  cursor: pointer;
+}
+
+.buttonClose {
+  background-color: transparent;
+  border: none;
+  color: #1976d2;
+  font-size: 20px;
+  font-weight: bold;
+  line-height: 1;
+  padding: 2px;
+  margin: 0;
+  margin-left: 6px;
+  cursor: pointer !important;
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  min-height: 22px;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  vertical-align: middle;
+  position: relative;
+  z-index: 100 !important;
+  pointer-events: auto !important;
+  user-select: none;
+  outline: none;
+}
+
+.buttonClose:hover {
+  background-color: rgb(25 118 210 / 10%);
+  color: #1565c0;
+}
+
+.buttonClose:active {
+  transform: scale(0.9);
+}
+
+/* Dark mode */
+
+.tagTextDark {
+  color: #fff;
+}
+
+.tagDark {
+  background-color: #3a506b;
+  border-color: #5a6b88;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 30%);
+  color: #fff;
+}
+
+.tagDark:hover {
+  box-shadow: 0 2px 4px rgb(0 0 0 / 40%);
+  background-color: #4a5a77;
+}
+
+.tagDark span {
+  color: #fff;
+}
+
+.buttonCloseDark {
+  color: #fff !important;
+}
+
+.buttonCloseDark:hover {
+  background-color: rgb(255 255 255 / 20%);
+  color: #fff !important;
+}
+
+.tagsWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  position: relative;
+  width: 100%;
+}
+
+.tagDropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+  width: 100%;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
+  margin-top: 4px;
+}
+
+.tagDropdownItem {
+  padding: 8px 12px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  transition: background-color 0.2s ease;
+}
+
+.tagDropdownItem:hover {
+  background-color: #f0f0f0;
+}
+
+@media (width <= 570px) {
+  .formSelectContainer {
+    flex-direction: column;
+  }
+}
+
+.lightMode label {
+  color: #212529 !important;
+}
+
+.darkMode label,
+.darkMode :global(.form-label) {
+  color: #f8f9fa !important;
+}
+
+.lightMode :global(.form-control),
+.lightMode :global(.custom-select),
+.lightMode select:not(.buttonClose),
+.lightMode input:not(.buttonClose) {
+  background-color: #fff !important;
+  color: #212529 !important;
+  border: 1px solid #ced4da;
+}
+
+.darkMode :global(.form-control),
+.darkMode :global(.custom-select),
+.darkMode select:not(.buttonClose),
+.darkMode input:not(.buttonClose) {
+  background-color: #2c3e50 !important;
+  color: #e9ecef !important;
+  border: 1px solid #495057;
+}
+
+.lightMode input::placeholder {
+  color: #6c757d !important;
+}
+
+.darkMode input::placeholder {
+  color: #adb5bd !important;
+}
+
+.darkMode .tagDropdown {
+  background: #2c3e50;
+  border-color: #495057;
+}
+
+.darkMode .tagDropdownItem {
+  color: #e9ecef;
+}
+
+.darkMode .tagDropdownItem:hover {
+  background-color: #34495e;
+}
+
+.darkMode select option {
+  background-color: #2c3e50;
+  color: #e9ecef;
+}

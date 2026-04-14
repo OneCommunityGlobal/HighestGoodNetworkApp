@@ -1,16 +1,16 @@
 import axios from 'axios';
 import 'leaflet/dist/leaflet.css';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, forwardRef } from 'react';
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
-import MarkerClusterGroup from 'react-leaflet-cluster';
+import MarkerClusterGroup from '@changey/react-leaflet-markercluster';
 import { Button, Container, Spinner } from 'reactstrap';
 import './TeamLocations.css';
 
-import { SEARCH } from 'languages/en/ui';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { boxStyle, boxStyleDark } from 'styles';
-import { ApiEndpoint, ENDPOINTS } from '../../utils/URL';
+import { SEARCH } from '~/languages/en/ui';
+import { boxStyle, boxStyleDark } from '~/styles';
+import { ApiEndpoint, ENDPOINTS } from '~/utils/URL';
 import AddOrEditPopup from './AddOrEditPopup';
 import ListUsersPopUp from './ListUsersPopUp';
 import MarkerPopup from './MarkerPopup';
@@ -26,7 +26,7 @@ function getUserName(profile) {
   return userName;
 }
 
-function TeamLocations() {
+const TeamLocations = forwardRef(() => {
   const [userProfiles, setUserProfiles] = useState([]);
   const [manuallyAddedProfiles, setManuallyAddedProfiles] = useState([]);
   const [addNewIsOpen, setAddNewIsOpen] = useState(false);
@@ -101,10 +101,14 @@ function TeamLocations() {
 
   // We don't need the back to top button on this page
   useEffect(() => {
-    const backToTopButton = document.querySelector('.top');
-    backToTopButton.style.display = 'none';
+    const btn = document.querySelector('.back-to-top');
+    if (!btn) return;
+
+    const prev = btn.style.display;
+    btn.style.display = 'none';
+
     return () => {
-      backToTopButton.style.display = 'block';
+      btn.style.display = prev;
     };
   }, []);
 
@@ -267,7 +271,10 @@ function TeamLocations() {
       )}
       <div className="py-2 d-flex justify-content-between flex-column flex-md-row">
         <div className="text-and-table-icon-container">
-          <h5>Total Countries: {totalUniqueCountries}</h5>
+          <h5>
+            Total Countries:
+            {totalUniqueCountries}
+          </h5>
           <button
             type="button"
             id="toggle-table-button"
@@ -319,9 +326,11 @@ function TeamLocations() {
                             return (
                               <tr key={profile._id}>
                                 <td>{userName}</td>
-                                <td>{`${profile.location.city ? `${profile.location.city},` : ''} ${
-                                  profile.location.country
-                                }`}</td>
+                                <td>
+                                  {`${profile.location.city ? `${profile.location.city},` : ''} ${
+                                    profile.location.country
+                                  }`}
+                                </td>
                                 <td>
                                   <div
                                     style={{
@@ -399,8 +408,6 @@ function TeamLocations() {
         </div>
         {loading ? (
           <div
-            animation="border"
-            size="md"
             className="d-flex justify-content-center align-items-center"
             style={{ minHeight: '50vh' }}
           >
@@ -418,7 +425,9 @@ function TeamLocations() {
             zoom={3}
             scrollWheelZoom
             style={{ border: '1px solid grey' }}
-            ref={mapRef}
+            whenCreated={mapInstance => {
+              mapRef.current = mapInstance;
+            }}
           >
             <EventComponent
               setPopupsOpen={setPopupsOpen}
@@ -454,7 +463,7 @@ function TeamLocations() {
       </div>
     </Container>
   );
-}
+});
 
 function EventComponent({ setPopupsOpen, currentUser, setMarkerPopupVisible }) {
   const map = useMapEvents({
@@ -477,4 +486,5 @@ function EventComponent({ setPopupsOpen, currentUser, setMarkerPopupVisible }) {
   return null;
 }
 
+TeamLocations.displayName = 'TeamLocations';
 export default TeamLocations;

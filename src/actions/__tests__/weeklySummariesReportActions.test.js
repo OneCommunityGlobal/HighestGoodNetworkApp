@@ -1,11 +1,14 @@
-import axios from 'axios';
+import axios from "axios";
+
+
 import * as actions from '../../constants/weeklySummariesReport';
 import * as weeklySummaryReport from '../weeklySummariesReport';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
-jest.mock('axios');
+vi.mock('axios');
 
 describe('Weekly Summaries Report Actions', () => {
+
   it('Should return action FETCH_SUMMARIES_REPORT_BEGIN', () => {
     const data = weeklySummaryReport.fetchWeeklySummariesReportBegin();
     expect(data).toEqual({ type: actions.FETCH_SUMMARIES_REPORT_BEGIN });
@@ -29,36 +32,38 @@ describe('Weekly Summaries Report Actions', () => {
   });
 
   it('Should return action FETCH_SUMMARIES_REPORT_ERROR', () => {
-    const error = {};
 
+    const error = {}
     const data = weeklySummaryReport.fetchWeeklySummariesReportError(error);
 
     expect(data).toEqual({
       type: actions.FETCH_SUMMARIES_REPORT_ERROR,
-      payload: { error },
+      payload: { error }
     });
   });
 });
 
 describe('Weekly Summary Report', () => {
-  const dispatch = jest.fn();
+
+  const dispatch = vi.fn();
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('Get Weekly Summaries Report', () => {
     it('Should dispatch actions and return 200 on successful API call ', async () => {
-      const mockData = {
-        weeklySummaries: [
-          {
-            id: '1',
-            dueDate: '2024-12-29',
-            summary: 'Week1 Summary',
-          },
-        ],
-      };
 
+      const mockData = {
+        'weeklySummaries': [
+          {
+            id: "1",
+            dueDate: "2024-12-29",
+            summary: "Week1 Summary"
+          }
+        ]
+      }
+      
       axios.get.mockResolvedValue({ data: mockData, status: 200 });
 
       const result = await weeklySummaryReport.getWeeklySummariesReport()(dispatch);
@@ -82,6 +87,7 @@ describe('Weekly Summary Report', () => {
       );
       expect(result).toBe(500);
     });
+
   });
 
   describe('Update One Summary Report', () => {
@@ -116,7 +122,7 @@ describe('Weekly Summary Report', () => {
     it('Should successfully update user profile with weekly summary and dispatch UPDATE_SUMMARY_REPORT action ', async () => {
       axios.get.mockResolvedValue({ data: mockUserProfile });
       axios.put.mockResolvedValue({
-        status: 200,
+        status: 200
       });
 
       const result = await weeklySummaryReport.updateOneSummaryReport(1, updatedField)(dispatch);
@@ -131,13 +137,12 @@ describe('Weekly Summary Report', () => {
     it('Should throw error when PUT request fails', async () => {
       axios.get.mockResolvedValue({ data: mockUserProfile });
       axios.put.mockResolvedValue({
-        status: 500,
+        status: 500
       });
 
       const result = weeklySummaryReport.updateOneSummaryReport(1, updatedField);
-      await expect(result(dispatch)).rejects.toThrow(
-        new Error('An error occurred while attempting to save the changes to the profile.'),
-      );
+      await expect(result(dispatch)).rejects.toThrow(new Error('An error occurred while attempting to save the changes to the profile.'));
+
     });
 
     it('Should throw error when GET request fails', async () => {

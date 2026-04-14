@@ -3,16 +3,16 @@
 /* eslint-disable camelcase */
 /* eslint-disable import/prefer-default-export */
 import { useState, useEffect, useRef } from 'react';
-import '../../Teams/Team.css';
+import '../../Teams/Team.module.css';
 import 'react-datepicker/dist/react-datepicker.css';
 import './TasksTable.css';
 import Select from 'react-select';
-import { Checkbox } from 'components/common/Checkbox';
-import TextSearchBox from 'components/UserManagement/TextSearchBox';
-import { boxStyle, boxStyleDark } from 'styles';
+import { Checkbox } from '~/components/common/Checkbox';
+import TextSearchBox from '~/components/UserManagement/TextSearchBox';
+import { boxStyle, boxStyleDark } from '~/styles';
 import { TasksDetail } from '../TasksDetail';
 
-export function TasksTable({ darkMode, tasks }) {
+export function TasksTable({ darkMode, tasks, projectId }) {
   const [isActive, setActive] = useState(true);
   const [isAssigned, setAssigned] = useState(true);
   const [toggleEditTasks, setToggleEditTasks] = useState(false);
@@ -47,14 +47,20 @@ export function TasksTable({ darkMode, tasks }) {
   };
 
   const getOptions = (filterName) => {
-    const options = [...Array.from(new Set(tasks.map(item => item[filterName]))).sort()];
+    const options = Array.from(
+      new Set(tasks.map(item => item[filterName]).filter(Boolean)),
+    ).sort((a, b) => String(a).localeCompare(String(b)));
+  
     return options.map(option => ({ value: option, label: option }));
   };
 
   const getUserOptions = () => {
-    let users = [];
-    tasks.forEach(task => task.resources?.forEach(resource => users.push(resource.name)));
-    users = Array.from(new Set(users)).sort();
+    const users = Array.from(
+      new Set(
+        tasks.flatMap(task => task.resources?.map(r => r.name) ?? []).filter(Boolean),
+      ),
+    ).sort((a, b) => a.localeCompare(b));
+  
     return users.map(user => ({ value: user, label: user }));
   };
 
@@ -149,6 +155,7 @@ export function TasksTable({ darkMode, tasks }) {
         status={filters.status}
         classification={filters.classification}
         users={filters.users}
+        projectId={projectId}
       />
     </div>
   );
