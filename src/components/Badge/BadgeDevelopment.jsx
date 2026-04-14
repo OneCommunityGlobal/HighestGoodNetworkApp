@@ -93,6 +93,12 @@ function BadgeDevelopment(props) {
               value={searchType}
               onChange={e => setSearchType(e.target.value)}
               className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+              style={{
+                padding: '5px',
+                borderRadius: '5px',
+                border: '1px solid #ccc',
+                outline: 'none',
+              }}
             >
               <option value="">Select a type</option>
               {BadgeTypes.map((type, index) => (
