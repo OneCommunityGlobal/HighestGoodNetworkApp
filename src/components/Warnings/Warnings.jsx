@@ -150,20 +150,22 @@ export default function Warning({ personId, username, userRole, displayUser }) {
 
   const warnings = !toggle
     ? null
-    : usersWarnings.map(warning => (
-        <div className={`${styles['warning-item-container']}`} key={warning.title}>
-          <div className={`${styles['warning-wrapper']}`}>
-            <WarningIcons
-              warnings={warning.warnings}
-              warningText={warning.title}
-              handleWarningIconClicked={handlePostWarningDetails}
-              handleShowWarningModal={handleShowWarningModal}
-              numberOfWarnings={warning.warnings.length}
-            />
-            <p className={`${styles['warning-text']}`}> {warning.title}</p>
+    : usersWarnings
+        .map(warning => (
+          <div className={`${styles['warning-item-container']}`} key={warning.title}>
+            <div className={`${styles['warning-wrapper']}`}>
+              <WarningIcons
+                warnings={warning.warnings}
+                warningText={warning.title}
+                handleWarningIconClicked={handlePostWarningDetails}
+                handleShowWarningModal={handleShowWarningModal}
+                numberOfWarnings={warning.warnings.length}
+              />
+              <p className={`${styles['warning-text']}`}> {warning.title}</p>
+            </div>
           </div>
-        </div>
-      ));
+        ))
+        .sort((warn1, warn2) => warn1.order - warn2.order);
 
   return (
     <div className={`${styles['warnings-container']}`}>

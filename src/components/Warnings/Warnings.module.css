@@ -185,6 +185,10 @@
   margin: 0.5em 0;
 }
 
+.modal__information.darkMode {
+  color: black !important;
+}
+
 .alert__container {
   margin-top: 0.5em;
   text-align: center;
@@ -220,6 +224,15 @@ input[type='text'] {
 .warnings__tracker__modal {
   z-index: 1100 !important;
 }
+
+.warning__tracker__modal_save__changes__btns {
+  width: 20%;
+}
+
+.warnings__descriptions__title.darkMode {
+  color: black !important;
+}
+
 /* Media query for screens smaller than 767px */
 @media (max-width: 767px) {
   .warnings-container {
