@@ -72,7 +72,7 @@ describe('Weekly Summaries', () => {
             summary: 'Weekly Summary',
           },
         ],
-        mediaUrl: 'http://media.com',
+        mediaUrl: 'http://media.com', //NOSONAR - using http for test data
         adminLinks: [{ Name: 'Media Folder', Link: 'http://newmedia.com' }],
       };
 
@@ -168,7 +168,7 @@ describe('Weekly Summaries', () => {
             summary: 'Weekly Summary Week1',
           },
         ],
-        mediaUrl: 'http://newmedia.com',
+        mediaUrl: 'http://newmedia.com', // NOSONAR - using http for test data
       };
 
       axios.get.mockResolvedValue({ data: mockUserProfile });
