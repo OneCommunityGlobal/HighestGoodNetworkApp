@@ -7,6 +7,7 @@ import RecordsModal from './RecordsModal';
 import MaterialUsageChart from '../MaterialUsage/MaterialUsageChart';
 import MaterialSummaryCards from '../MaterialList/MaterialSummaryCards';
 import styles from './ItemListView.module.css';
+import PropTypes from 'prop-types';
 
 export default function ItemsTable({
   selectedProject,
@@ -16,6 +17,8 @@ export default function ItemsTable({
   dynamicColumns,
   darkMode = false,
   itemType,
+  selectedRowId,
+  onRowSelect,
 }) {
   const [sortedData, setData] = useState(filteredItems);
   const [modal, setModal] = useState(false);
@@ -293,7 +296,12 @@ export default function ItemsTable({
           <tbody>
             {sortedData && sortedData.length > 0 ? (
               sortedData.map(el => (
-                <tr key={el._id}>
+                <tr
+                  key={el._id}
+                  onClick={() => onRowSelect(el)}
+                  className={el._id === selectedRowId ? styles.selectedrow : ''}
+                  style={{ cursor: 'pointer' }}
+                >
                   <td style={{ verticalAlign: 'middle' }}>{el.project?.name}</td>
                   <td style={{ verticalAlign: 'middle' }}>{el.itemType?.name}</td>
                   {dynamicColumns.map(({ label, key }) => {
@@ -376,3 +384,7 @@ export default function ItemsTable({
     </>
   );
 }
+ItemsTable.propTypes = {
+  selectedRowId: PropTypes.any,
+  onRowSelect: PropTypes.any,
+};
