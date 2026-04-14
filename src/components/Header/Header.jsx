@@ -86,8 +86,6 @@ export function Header(props) {
   const [isAckLoading, setIsAckLoading] = useState(false);
   const [ showPromotionsPopup, setShowPromotionsPopup ] = useState(false);
 
-  
-
   const ALLOWED_ROLES_TO_INTERACT = useMemo(() => ['Owner', 'Administrator'], []);
   const canInteractWithViewingUser = useMemo(
     () => ALLOWED_ROLES_TO_INTERACT.includes(props.auth.user.role),
