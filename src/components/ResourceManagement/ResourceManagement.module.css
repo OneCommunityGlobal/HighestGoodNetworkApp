@@ -277,6 +277,135 @@
   color: #94a3b8;
 }
 
+.darkMode .searchBarContainer {
+  background-color: #2a2a2a;
+  border: 1px solid #444;
+}
+
+.darkMode .searchBarContainerLeft {
+  color: #e0e0e0;
+}
+
+.darkMode .searchInput {
+  background-color: #1a1a1a;
+  color: #e0e0e0;
+  border: 1px solid #444;
+}
+
+.darkMode .searchInput::placeholder {
+  color: #888;
+}
+
+.darkMode .searchButton {
+  background-color: #0d6efd;
+  color: white;
+}
+
+.darkMode .searchButton:hover {
+  background-color: #0a58ca;
+}
+
+.darkMode .resourceList {
+  background-color: #1a1a1a;
+  border: 1px solid #444;
+}
+
+.darkMode .resourceHeadingItem {
+  color: #b0b0b0;
+}
+
+.darkMode .resourceItemDetail {
+  color: #e0e0e0;
+}
+
+.darkMode .lineSperator {
+  border-top: 1px solid #444;
+}
+
+.darkMode .rmPagination button {
+  background-color: #2a2a2a;
+  border: 1px solid #444;
+  color: #e0e0e0;
+}
+
+.darkMode .rmPagination button:hover {
+  background-color: #0d6efd;
+  color: white;
+}
+
+.darkMode .modalOverlay {
+  background-color: rgb(0 0 0 / 75%);
+}
+
+.darkMode .modalContent {
+  background: #1a1a1a;
+  border: 1px solid #444;
+  box-shadow: 0 4px 6px rgb(0 0 0 / 40%);
+}
+
+.darkMode .modalHeader h3 {
+  color: #e0e0e0;
+}
+
+.darkMode .errorMessage {
+  background-color: #4a2020;
+  border: 1px solid #8a3030;
+  color: #ffb3b3;
+}
+
+.darkMode .closeButton {
+  color: #b0b0b0;
+}
+
+.darkMode .closeButton:hover {
+  color: #e0e0e0;
+}
+
+.darkMode .formGroup label {
+  color: #e0e0e0;
+}
+
+.darkMode .formGroup input {
+  background-color: #2a2a2a;
+  color: #e0e0e0;
+  border: 1px solid #444;
+}
+
+.darkMode .formGroup input::placeholder {
+  color: #888;
+}
+
+.darkMode .formGroup input:focus {
+  border-color: #4caf50;
+}
+
+.darkMode .cancelButton {
+  background-color: #2a2a2a;
+  color: #e0e0e0;
+}
+
+.darkMode .cancelButton:hover {
+  background-color: #3a3a3a;
+}
+
+.darkMode .submitButton {
+  background-color: #4caf50;
+  color: white;
+}
+
+.darkMode .submitButton:hover {
+  background-color: #45a049;
+}
+
+.darkMode .checkboxLabel {
+  color: #ccc;
+}
+
+/* Checkbox styling for dark mode */
+.darkMode input[type='checkbox'] {
+  filter: invert(1) hue-rotate(180deg);
+}
+
 .actionButtons {
   display: flex;
   gap: 10px; 

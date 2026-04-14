@@ -297,6 +297,7 @@ function ResourceManagement() {
                 checked={selectedIds.size === sortedResources.length && sortedResources.length > 0}
                 onChange={toggleSelectAll}
               />
+              <span className={styles.checkboxLabel}>Select</span>
             </div>
 
             <div className={styles.colUser}>
