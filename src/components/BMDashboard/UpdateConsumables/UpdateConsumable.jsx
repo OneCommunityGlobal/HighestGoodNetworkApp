@@ -1,8 +1,7 @@
-import * as moment from 'moment';
-import { Container, FormGroup, Input, Label, Form, Col, Button } from 'reactstrap';
-import { useState } from 'react';
+import moment from 'moment';
+import { Container, FormGroup, Input, Label, Form, Col, Button, Spinner } from 'reactstrap';
+import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { postConsumableUpdate } from '../../../actions/bmdashboard/consumableActions';
 import styles from './UpdateConsumable.module.css';
@@ -29,6 +28,7 @@ function UpdateConsumable({ record, setModal }) {
   const [validations, setValidations] = useState(validationsInitialState);
   const [availableCount, setAvailableCount] = useState(undefined);
   const [changeOccured, setChangeOccured] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     setUpdateRecord({ ...recordInitialState });
@@ -38,15 +38,18 @@ function UpdateConsumable({ record, setModal }) {
   useEffect(() => {
     if (postConsumableUpdateResult.loading === false && postConsumableUpdateResult.error === true) {
       toast.error(`${postConsumableUpdateResult.result}`);
+      setIsSubmitting(false);
       setModal(false);
     } else if (
       postConsumableUpdateResult.loading === false &&
-      postConsumableUpdateResult.result !== null
+      postConsumableUpdateResult.result !== null &&
+      isSubmitting
     ) {
       toast.success(`Updated ${record?.itemType?.name} successfully`);
+      setIsSubmitting(false);
       setModal(false);
     }
-  }, [postConsumableUpdateResult]);
+  }, [postConsumableUpdateResult, isSubmitting]);
 
   useEffect(() => {
     const qtyUsedFloat = parseFloat(updateRecord.quantityUsed);
@@ -110,12 +113,15 @@ function UpdateConsumable({ record, setModal }) {
   };
 
   const submitHandler = () => {
+    if (isSubmitting) return; // Prevent double-click
+
     if (
       validations.quantityUsed === '' &&
       validations.quantityWasted === '' &&
       validations.quantityTogether === '' &&
       changeOccured
     ) {
+      setIsSubmitting(true);
       const postObject = {
         date: updateRecord.date,
         quantityUsed: updateRecord.quantityUsed === '' ? 0 : parseFloat(updateRecord.quantityUsed),
@@ -304,6 +310,7 @@ function UpdateConsumable({ record, setModal }) {
             <FormGroup row className="d-flex justify-content-right">
               <Button
                 disabled={
+                  isSubmitting ||
                   postConsumableUpdateResult.loading ||
                   availableCount < 0 ||
                   changeOccured === false
@@ -311,7 +318,13 @@ function UpdateConsumable({ record, setModal }) {
                 className={`${styles.consumableButtonBg}`}
                 onClick={submitHandler}
               >
-                Update Consumable
+                {isSubmitting ? (
+                  <>
+                    <Spinner size="sm" /> Updating...
+                  </>
+                ) : (
+                  'Update Consumable'
+                )}
               </Button>
             </FormGroup>
           </Form>

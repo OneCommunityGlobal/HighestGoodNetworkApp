@@ -11,9 +11,9 @@ import {
   InputGroupText,
   Input,
 } from 'reactstrap';
-import ReactHtmlParser from 'react-html-parser';
-import { boxStyle, boxStyleDark } from 'styles';
-import '../../Header/DarkMode.css';
+import parse from 'html-react-parser';
+import { boxStyle, boxStyleDark } from '~/styles';
+import '../../Header/index.css';
 
 // eslint-disable-next-line react/function-component-definition
 const ModalExample = props => {
@@ -35,6 +35,9 @@ const ModalExample = props => {
     darkMode,
     confirmButtonText = 'Confirm',
     isConfirmDisabled = false,
+    hasConfirmBtn = false,
+    hasInactiveBtn = false,
+    hasActiveBtn = false,
   } = props;
 
   const [linkName, setLinkName] = useState('');
@@ -51,7 +54,7 @@ const ModalExample = props => {
   };
 
   const buttonDisabled = !(linkName && linkURL);
-
+  const parsedMessage = typeof modalMessage === 'string' ? parse(modalMessage) : null;
   if (type) {
     // console.log('Type of Modal is ', type, linkName, linkURL, buttonDisabled);
   }
@@ -72,7 +75,6 @@ const ModalExample = props => {
               <Input id="linkName" placeholder="Name of the link" onChange={handleChange} />
             </InputGroup>
             <br />
-
             <InputGroup>
               <InputGroupAddon addonType="prepend">
                 <InputGroupText style={{ width: '80px' }}>Link URL</InputGroupText>
@@ -81,7 +83,7 @@ const ModalExample = props => {
             </InputGroup>
           </>
         ) : (
-          ReactHtmlParser(modalMessage)
+          parsedMessage
         )}
       </ModalBody>
       <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
@@ -95,6 +97,7 @@ const ModalExample = props => {
             Nope, leave it buried
           </Button>
         ) : null}
+        {/*
         {confirmModal != null ? (
           <Button color="primary" onClick={closeModal} style={darkMode ? boxStyleDark : boxStyle}>
             Close
@@ -118,7 +121,7 @@ const ModalExample = props => {
             onClick={setInactiveModal}
             style={darkMode ? boxStyleDark : boxStyle}
           >
-            {/* Yes, hide it all */}
+
             {setInactiveButton}
           </Button>
         ) : null}
@@ -129,7 +132,7 @@ const ModalExample = props => {
             onClick={setActiveModal}
             style={darkMode ? boxStyleDark : boxStyle}
           >
-            {/* Yes, revive the monster */}
+
             {setActiveButton}
           </Button>
         ) : null}
@@ -139,6 +142,59 @@ const ModalExample = props => {
             color="danger"
             onClick={() => confirmModal(linkName, linkURL, linkType)}
             disabled={buttonDisabled}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
+            Add
+          </Button>
+        )}
+          */}
+        {/* Close button */}
+        {confirmModal && (
+          <Button color="secondary" onClick={closeModal} style={darkMode ? boxStyleDark : boxStyle}>
+            Close
+          </Button>
+        )}
+
+        {/* Green Confirm button */}
+        {confirmModal && (
+          <Button
+            color="success" // <-- green
+            onClick={confirmModal}
+            disabled={isConfirmDisabled}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
+            {confirmButtonText || 'Confirm'}
+          </Button>
+        )}
+
+        {/* Only show inactive/active buttons if explicitly passed */}
+        {hasInactiveBtn && setInactiveModal && (
+          <Button
+            color="success"
+            disabled={isSetInactiveDisabled}
+            onClick={setInactiveModal}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
+            {setInactiveButton}
+          </Button>
+        )}
+
+        {hasActiveBtn && setActiveModal && (
+          <Button
+            color="success"
+            disabled={isSetActiveDisabled}
+            onClick={setActiveModal}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
+            {setActiveButton}
+          </Button>
+        )}
+
+        {type === 'input' && (
+          <Button
+            color="danger"
+            onClick={() => confirmModal(linkName, linkURL, linkType)}
+            disabled={!(linkName && linkURL)}
             style={darkMode ? boxStyleDark : boxStyle}
           >
             Add

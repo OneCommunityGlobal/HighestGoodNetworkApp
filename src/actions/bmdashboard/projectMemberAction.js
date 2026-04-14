@@ -1,16 +1,16 @@
 /* eslint-disable no-use-before-define */
 import axios from 'axios';
 
-import { ENDPOINTS } from 'utils/URL';
-import GET_BM_PROJECT_MEMBERS from 'constants/bmdashboard/projectMemberConstants';
-import { GET_ERRORS } from 'constants/errors';
+import { ENDPOINTS } from '~/utils/URL';
+import GET_BM_PROJECT_MEMBERS from '~/constants/bmdashboard/projectMemberConstants';
+import { GET_ERRORS } from '~/constants/errors';
 
 export const fetchBMProjectMembers = projectId => {
   return async dispatch => {
     axios
       .get(ENDPOINTS.BM_PROJECT_MEMBERS(projectId))
       .then(res => {
-        dispatch(setProjectMembers(res.data));
+        dispatch(setProjectMembers(res.data.members));
       })
       .catch(err => {
         dispatch(setErrors(err));

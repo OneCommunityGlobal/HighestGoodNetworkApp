@@ -14,7 +14,7 @@ import {
   DropdownMenu,
   DropdownItem,
 } from 'reactstrap';
-import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
+import { fetchTaskEditSuggestions } from '~/components/TaskEditSuggestions/thunks';
 import { getHeaderData } from '../../../actions/authActions';
 import { getAllRoles } from '../../../actions/role';
 import Timer from '../../Timer/Timer';
@@ -31,6 +31,7 @@ import {
   LOG_EQUIPMENT_TOOL,
   UPDATE_EQUIPMENT_TOOL,
   EQUIPMENT_TOOL_LIST,
+  CONSUMABLE_LIST,
   ISSUE,
   LESSON,
   TIMELOG,
@@ -177,6 +178,9 @@ export function Header(props) {
                     </DropdownItem>
                     <DropdownItem tag={Link} to="/bmdashboard/equipment-tool-list">
                       {EQUIPMENT_TOOL_LIST}
+                    </DropdownItem>
+                    <DropdownItem tag={Link} to="/bmdashboard/consumables">
+                      {CONSUMABLE_LIST}
                     </DropdownItem>
                     <DropdownItem tag={Link} to="/bmdashboard/issue">
                       {ISSUE}

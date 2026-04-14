@@ -5,8 +5,8 @@
   gap: 0.5rem;
   z-index: 30;
   user-select: none;
-  -moz-user-select: none;
 }
+
 .btnDiv {
   border: none;
   padding: 0;
@@ -21,21 +21,23 @@
   font-size: 1.2rem;
   font-weight: bold;
   width: fit-content;
-  background-color: rgba(82, 92, 102, 1);
-  color: rgb(238, 10, 10);
+  background-color: rgb(82 92 102 / 100%);
+  color: rgb(238 10 10);
   border-radius: 0 0 0.5rem 0.5rem;
-  padding: 0.25rem 0.25rem;
+  padding: 0.25rem;
 }
 
 .preview {
   font-size: 1.2rem;
   font-weight: bold;
   width: 100px;
-  background-color: rgba(82, 92, 102, 1);
+  background-color: rgb(82 92 102 / 100%);
   color: white;
   border-radius: 0 0 0.5rem 0.5rem;
-  border-color: rgba(82, 92, 102, 1);
-  padding: 0.25rem 0.25rem;
+  border: none;
+  padding: 0.25rem;
+  box-shadow: none;
+  appearance: none;
 }
 
 .btns {
@@ -54,23 +56,61 @@
   top: 4rem;
   background: #343a40;
   border-radius: 1rem;
-  box-shadow: 15px 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.1);
   overflow: hidden;
   border-color: #343a40;
 }
 
 .timerContent {
-  /* position: relative; */
   padding: 1rem;
-  /* padding-top: 2rem; */
   margin-bottom: auto;
   margin-top: auto;
   gap: 1rem;
   color: white;
 }
 
+.hideTimer {
+  display: none;
+}
+
+/* Base buttons (must come before hover to satisfy no-descending-specificity) */
+.btn {
+  cursor: pointer;
+  color: white;
+  background-color: #343a40;
+  border-color: #343a40;
+  margin: 0;
+  outline: none;
+}
+
+.btn:hover {
+  color: #ed688a;
+}
+
+.preview:focus,
+.preview:active,
+.preview:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+.btnDisabled {
+  cursor: not-allowed;
+  color: #837175;
+  border: none;
+  outline: none;
+}
+
+.transitionColor {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+  border: none;
+  outline: none;
+}
+
+/* Specific versions inside timer */
 .timer .btnNormal {
-  color: rgba(237, 104, 138, 1);
+  color: rgb(237 104 138 / 100%);
   cursor: pointer;
 }
 
@@ -79,22 +119,9 @@
   cursor: not-allowed;
 }
 
-.hideTimer {
-  display: none;
-}
-
 .btnNormal:hover {
   color: #fda4af;
   background-color: #881337;
-}
-
-.btn {
-  cursor: pointer;
-  color: white;
-  background-color: #343a40;
-  border-color: #343a40;
-  margin: 0;
-  border: none;
 }
 
 .timerContainer .disabled {
@@ -104,24 +131,14 @@
   border: none;
 }
 
-.btn:hover {
-  color: #ed688a;
+/* Use "context/range" media queries (what stylelint is asking for) */
+@media (width <= 530px) {
+  .btnDiv {
+    display: none;
+  }
 }
 
-.btnDisabled {
-  cursor: not-allowed;
-  color: #837175;
-  border: none;
-}
-
-.transitionColor {
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 300ms;
-  border: none;
-}
-
-@media (max-width: 460px) {
+@media (width <= 460px) {
   .btns {
     display: grid;
     grid-template-columns: auto auto auto auto;
@@ -132,7 +149,7 @@
   }
 }
 
-@media (max-width: 410px) {
+@media (width <= 410px) {
   .btns {
     display: grid;
     grid-template-columns: auto auto auto;
@@ -143,27 +160,15 @@
   }
 }
 
-@media (max-width: 360px) {
+@media (width <= 360px) {
   .btns {
     display: grid;
     grid-template-columns: auto auto;
   }
 
   .btns button {
-    padding: 1px 1px;
+    padding: 1px;
   }
-}
-
-@media (max-width: 530px) {
-  .btnDiv {
-    display: none;
-  }
-}
-.btn,
-.btnDisabled,
-.transitionColor {
-  border: none;
-  outline: none;
 }
 
 .iconWrapper {
