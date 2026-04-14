@@ -29,7 +29,17 @@ import styles from './usermanagement.module.css';
  */
 const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser, enableEditUserInfo, disableEditUserInfo, isMobile, mobileFontSize }) => {
     const dispatch = useDispatch();
-    const [editFlag, setEditFlag] = useState(editUser);
+    const defaultEditFlags = {
+       first: 1,
+       last: 1,
+       role: 1,
+       jobTitle: 1,
+       email: 1,
+       weeklycommittedHours: 1,
+       startDate: 1,
+       endDate: 1,
+   };
+    const [editFlag, setEditFlag] = useState(editUser ? editUser : defaultEditFlags);
     const updatedUserData = useSelector(state => state.userProfileEdit.newUserData);
     const saveUserInformation = async updatedData => {
       try {
