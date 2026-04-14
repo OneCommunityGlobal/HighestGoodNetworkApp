@@ -496,7 +496,9 @@ const BasicInformationTab = props => {
   const [errorOccurred, setErrorOccurred] = useState(false);
   const dispatch = useDispatch();
   const rolesAllowedToEditStatusFinalDay = ['Administrator', 'Owner'];
-  const canEditStatus = props.hasPermission?.('interactWithPauseUserButton');
+  const canEditStatus =
+    rolesAllowedToEditStatusFinalDay.includes(role) ||
+    dispatch(hasPermission('interactWithPauseUserButton'));
 
   const canEditEndDate =
   rolesAllowedToEditStatusFinalDay.includes(role) || dispatch(hasPermission('setFinalDay'));
@@ -898,7 +900,6 @@ const BasicInformationTab = props => {
           </Label>
           {canEdit && canEditStatus && (
             <PauseAndResumeButton
-              hasPermission={props.hasPermission}
               setUserProfile={setUserProfile}
               loadUserProfile={loadUserProfile}
               isBigBtn={true}
@@ -954,7 +955,6 @@ const BasicInformationTab = props => {
         &nbsp;
         {canEdit && canEditStatus && (
           <PauseAndResumeButton
-            hasPermission={props.hasPermission}
             setUserProfile={setUserProfile}
             loadUserProfile={loadUserProfile}
             isBigBtn={true}

@@ -1747,7 +1747,6 @@ setUpdatedTasks(prev => {
                   roles={roles}
                   darkMode={darkMode}
                   hasFinalDay={hasScheduledFinalDay}
-                  hasPermission={props.hasPermission}
                 />
               </TabPane>
               <TabPane tabId="2">
@@ -1957,7 +1956,6 @@ setUpdatedTasks(prev => {
                     canEditRole={canEditUserProfile}
                     roles={roles}
                     darkMode={darkMode}
-                    hasPermission={props.hasPermission}
                   />
                 </ModalBody>
                 <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
@@ -2431,4 +2429,3 @@ export default connect(
   mapStateToProps,
   { hasPermission, updateUserProfile, getTimeEntriesForWeek }
 )(UserProfile);
-
