@@ -10,7 +10,19 @@
   padding: 20px;
 }
 
+.darkModeResourceManagementDashboard {
+  background-color: #1b2a41;
+  color: white;
+}
+
 .dashboardTitle {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.darkModeTitle{
   display: flex;
   align-items: center;
   gap: 20px;
@@ -24,8 +36,8 @@
 }
 
 .addLogButton {
-  background-color: #d3d3d3;
-  color: black;
+  background-color:#007bff;
+  color: white;
   border: none;
   padding: 10px 20px;
   border-radius: 5px;
@@ -34,6 +46,14 @@
 
 .addLogButton:hover {
   background-color: #b3b3b3;
+}
+
+.darkModeResourceManagementDashboard .addLogButton {
+  background-color: #2196F3;
+  color: white;
+}
+.darkModeResourceManagementDashboard .addLogButton:hover {
+  background-color: #1976D2;
 }
 
 /* Search Bar */
@@ -46,6 +66,10 @@
   border: 1px solid #ddd;
   border-radius: 5px;
   padding: 10px;
+}
+
+.darkModeSearchBarContainer{
+  background-color: #172f53;
 }
 
 .searchBarContainerLeft {
@@ -78,6 +102,15 @@
   border-radius: 5px;
 }
 
+.darkModeSearchBarContainer .searchInput {
+  background-color: #1b2a41;
+  color: white;
+  border: 1px solid #777;
+}
+
+.darkModeSearchBarContainer .searchInput::placeholder {
+  color: #bbb;
+}
 .searchButton {
   background-color: #007bff;
   color: white;
@@ -89,6 +122,10 @@
 
 .searchButton:hover {
   background-color: #0056b3;
+}
+
+.darkModeSearchBarContainer .searchButton {
+  background-color: #2196F3;
 }
 
 /* Resource List */
@@ -113,6 +150,11 @@
   justify-content: space-between;
   align-items: center;
   padding: 10px 0;
+}
+
+.darkModeResourceManagementDashboard .resourceList {
+  background-color: #1b2a41;
+  border: 1px solid #777;
 }
 
 .resourceHeadingItem {
