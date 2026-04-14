@@ -59,6 +59,7 @@ function RegistrationForm() {
           value={eventDate}
           onChange={e => setEventDate(e.target.value)}
           placeholder="Select Event Date"
+          min={new Date().toISOString().split('T')[0]}
         />
       </div>
 

@@ -67,6 +67,7 @@ const TeamMemberTasks = React.memo(props => {
 
   const [userStateCatalog, setUserStateCatalog] = useState([]);
   const [userStateSelections, setUserStateSelections] = useState({});
+  const [selectionsLoaded, setSelectionsLoaded] = useState(false);
 
   useEffect(() => {
     axios
@@ -77,15 +78,19 @@ const TeamMemberTasks = React.memo(props => {
 
   // Fetch all selections in ONE call once teamList is ready
   useEffect(() => {
-    if (teamList.length === 0) return;
-    const userIds = teamList.map(u => u.personId);
-    const result = axios.post(ENDPOINTS.USER_STATE_SELECTIONS_BATCH, { userIds });
-    if (result && typeof result.then === 'function') {
-      result
-        .then(res => setUserStateSelections(res.data.selections || {}))
-        .catch(() => setUserStateSelections({}));
-    }
-  }, [teamList]);
+    if (usersWithTasks.length === 0) return;
+    const userIds = usersWithTasks.map(u => u.personId);
+    axios
+      .post(ENDPOINTS.USER_STATE_SELECTIONS_BATCH, { userIds })
+      .then(res => {
+        setUserStateSelections(res.data.selections || {});
+        setSelectionsLoaded(true);
+      })
+      .catch(() => {
+        setUserStateSelections({});
+        setSelectionsLoaded(true);
+      });
+  }, [usersWithTasks]);
 
   // Keep width reactive without putting window.innerWidth in deps (which never triggers)
   useEffect(() => {
@@ -718,7 +723,7 @@ const TeamMemberTasks = React.memo(props => {
           </thead>
 
           <tbody className={darkMode ? styles.darkTbody : ''}>
-            {teamList.length === 0 ? (
+            {teamList.length === 0 || !selectionsLoaded ? (
               <SkeletonLoading
                 template="TeamMemberTasks"
                 data-testid="skeleton-loading-team-member-tasks-row"
