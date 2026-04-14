@@ -4,6 +4,8 @@ import ReactCalendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import CalendarActivitySection from './CalendarActivitySection';
 import styles from './CommunityCalendar.module.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faClock, faLocationDot, faTag, faCircleCheck } from '@fortawesome/free-solid-svg-icons';
 
 const STATUSES = ['New', 'Needs Attendees', 'Filling Fast', 'Full Event'];
 const EVENT_TYPES = ['Workshop', 'Webinar', 'Meeting', 'Social Gathering'];
@@ -15,7 +17,9 @@ function CommunityCalendar() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showEventModal, setShowEventModal] = useState(false);
+  const [hoveredEventId, setHoveredEventId] = useState(null);
   const [overflowDate, setOverflowDate] = useState(null);
+  const darkMode = useSelector(state => state.theme.darkMode);
   const popupRef = useRef(null);
 
   const currentDate = new Date();
@@ -114,6 +118,16 @@ function CommunityCalendar() {
     setShowEventModal(true);
   }, []);
 
+  const handleEventKeyPress = useCallback(
+    (e, event) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        handleEventClick(event);
+      }
+    },
+    [handleEventClick],
+  );
+
   const closeEventModal = useCallback(() => {
     setShowEventModal(false);
     setSelectedEvent(null);
@@ -182,20 +196,39 @@ function CommunityCalendar() {
 
       return (
         <div className={styles.tileEvents}>
-          {visible.map(e => {
-            const statusKey = statusMap[e.status];
-            return (
-              <button
-                key={e.id}
-                type="button"
-                className={`${styles.eventItem} ${styles[statusKey] || ''}`}
-                onClick={() => handleEventClick(e)}
-                title={e.title}
-              >
-                {e.title}
-              </button>
-            );
-          })}
+          {visible.map(event => (
+            <div
+              key={event.id}
+              className={`${styles.eventItem} ${styles.clickable}`}
+              onClick={() => handleEventClick(event)}
+              onKeyDown={e => handleEventKeyPress(e, event)}
+              onMouseEnter={() => setHoveredEventId(event.id)}
+              onMouseLeave={() => setHoveredEventId(null)}
+              role="button"
+              tabIndex={0}
+              aria-label={`Click to view details for ${event.title}`}
+            >
+              {event.title}
+
+              {hoveredEventId === event.id && (
+                <div
+                  className={`${styles.eventTooltip} ${darkMode ? styles.eventTooltipDark : ''}`}
+                >
+                  <strong>{event.title}</strong>
+                  <span className={styles.tooltipDetail}>
+                    <strong>Time:</strong> {event.time}
+                  </span>
+                  <span className={styles.tooltipDetail}>
+                    <strong>Location:</strong> {event.location}
+                  </span>
+                  <span className={styles.tooltipDetail}>
+                    <strong>Status:</strong> {event.status}
+                  </span>
+                  <small>Click for more details</small>
+                </div>
+              )}
+            </div>
+          ))}
 
           {hiddenCount > 0 && (
             <button
@@ -210,7 +243,7 @@ function CommunityCalendar() {
         </div>
       );
     },
-    [getEventsForDate, handleEventClick],
+    [getEventsForDate, handleEventClick, darkMode, hoveredEventId],
   );
 
   const tileClassName = useCallback(
@@ -238,8 +271,6 @@ function CommunityCalendar() {
     }),
     [mockEvents],
   );
-
-  const darkMode = useSelector(s => s.theme.darkMode);
 
   const calendarClasses = useMemo(
     () => ({
@@ -282,7 +313,9 @@ function CommunityCalendar() {
               background: #1a2332 !important;
               color: #ffffff !important;
             }
+
             /* Force white text on dark background */
+
             .react-calendar__tile.selectedDate abbr,
             .react-calendar__tile.selectedDate abbr[title],
             .react-calendar__tile.selectedDate > abbr,
@@ -310,6 +343,28 @@ function CommunityCalendar() {
             /* But preserve event item colors */
             .react-calendar__tile.selectedDate .eventItem {
               color: inherit !important;
+            }
+              /* 1. Target the button and any text inside it */
+            .react-calendar__navigation button:enabled:hover,
+            .react-calendar__navigation button:enabled:hover *,
+            .react-calendar__navigation button:enabled:focus,
+            .react-calendar__navigation button:enabled:focus * {
+              background-color: #e6e6e6 !important;
+              color: #000000 !important;
+              /* This handles cases where they use text-shadows or strokes */
+              text-shadow: none !important;
+              -webkit-text-stroke: 0px transparent !important;
+            }
+
+            /* 2. Target the specific arrows (the << < > >> symbols) */
+            .react-calendar__navigation__arrow:enabled:hover {
+              color: #000000 !important;
+            }
+
+            /* 3. If they are using pseudo-elements (common in some versions) */
+            .react-calendar__navigation button:enabled:hover::before,
+            .react-calendar__navigation button:enabled:hover::after {
+              color: #000000 !important;
             }
           `}
         </style>
@@ -352,6 +407,7 @@ function CommunityCalendar() {
               tileClassName={tileClassName}
               onClickDay={handleDateSelect}
               value={selectedDate}
+              minDate={new Date()}
             />
             <section
               className={`${styles.selectedDatePanel} ${
@@ -389,10 +445,33 @@ function CommunityCalendar() {
                             <div>
                               <h3>{event.title}</h3>
                               <div className={styles.selectedEventMeta}>
-                                <span>{event.time}</span>
-                                <span>{event.location}</span>
-                                <span>{event.type}</span>
-                                <span>{event.status}</span>
+                                <ul className={styles.selectedEventMeta}>
+                                  <li className={styles.metaItem}>
+                                    <FontAwesomeIcon icon={faClock} className={styles.metaIcon} />
+                                    <span>{event.time}</span>
+                                  </li>
+
+                                  <li className={styles.metaItem}>
+                                    <FontAwesomeIcon
+                                      icon={faLocationDot}
+                                      className={styles.metaIcon}
+                                    />
+                                    <span>{event.location}</span>
+                                  </li>
+
+                                  <li className={styles.metaItem}>
+                                    <FontAwesomeIcon icon={faTag} className={styles.metaIcon} />
+                                    <span>{event.type}</span>
+                                  </li>
+
+                                  <li className={styles.metaItem}>
+                                    <FontAwesomeIcon
+                                      icon={faCircleCheck}
+                                      className={styles.metaIcon}
+                                    />
+                                    <span>{event.status}</span>
+                                  </li>
+                                </ul>
                               </div>
                             </div>
                             <button
