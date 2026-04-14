@@ -419,13 +419,16 @@ function ResourceManagement() {
             <div className={styles.checkboxContainer}>
               <input
                 type="checkbox"
-                checked={selectedIds.size === filteredResources.length}
+                checked={
+                  selectedIds.size === filteredResources.length && filteredResources.length > 0
+                }
                 onChange={e =>
                   setSelectedIds(
                     e.target.checked ? new Set(filteredResources.map(r => r.id)) : new Set(),
                   )
                 }
               />
+              <span className={styles.checkboxLabel}>Select</span>
             </div>
 
             <div className={styles.resourceHeadingItem}>User</div>
