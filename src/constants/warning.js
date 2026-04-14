@@ -4,6 +4,7 @@ export const DELETE_WARNINGS_BY_USER_ID = 'DELETE_WARNINGS_BY_USER_ID';
 export const CURRENT_WARNINGS = 'CURRENT_WARNINGS';
 export const POST_NEW_WARNING = 'POST_NEW_WARNING';
 export const UPDATE_WARNING_DESCRIPTION = 'UPDATE_WARNING_DESCRIPTION';
+export const REORDER_WARNING_DESCRIPTIONS = 'REORDER_WARNING_DESCRIPTIONS';
 export const EDIT_WARNING_DESCRIPTION = 'EDIT_WARNING_DESCRIPTION';
 export const GET_SPECIAL_WARNINGS = 'GET_SPECIAL_WARNINGS';
 
@@ -33,6 +34,10 @@ export const deleteWarningDescription = data => ({
 
 export const updateWarningDescription = data => ({
   type: UPDATE_WARNING_DESCRIPTION,
+  payload: data,
+});
+export const reorderWarningDescriptions = data => ({
+  type: REORDER_WARNING_DESCRIPTIONS,
   payload: data,
 });
 export const editWarningDescription = data => ({
