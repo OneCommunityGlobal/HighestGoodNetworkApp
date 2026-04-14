@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import styles from './ResourceManagement.module.css';
+import { useSelector } from 'react-redux';
 
 // Move mock data OUTSIDE the component so it is stable and doesn't re-calculate
 const MOCK_RESOURCES = [
@@ -93,11 +94,38 @@ const MOCK_RESOURCES = [
     date: 'Feb 2, 2024',
     timestamp: new Date('2024-02-02').getTime() - 1000,
   },
+  {
+    id: 11,
+    user: 'Jane Doe',
+    timeDuration: '02:32:56',
+    facilities: 'Landing Page',
+    materials: 'Meadow Lane Oakland',
+    date: 'Just now',
+    timestamp: Date.now() - 2000,   
+  },
+  {
+    id: 12,
+    user: 'John Smith',
+    timeDuration: '02:32:56',
+    facilities: 'CRM Admin pages',
+    materials: 'Larry San Francisco',
+    date: 'A minute ago',
+    timestamp: Date.now() - 60000,
+  },
+  {
+    id: 13,
+    user: 'Emily Davis',
+    timeDuration: '02:32:56',
+    facilities: 'Client Project',
+    materials: 'Bagwell Avenue Ocala',
+    date: '1 hour ago',
+    timestamp: Date.now() - 3600000, 
+  }
 ];
 
-function SearchBar({ onSortToggle }) {
+function SearchBar({ onSortToggle, darkMode }) {
   return (
-    <div className={styles.searchBarContainer}>
+   <div className={`${styles.searchBarContainer} ${darkMode ? styles.darkModeSearchBarContainer : ''}`}>
       <div className={styles.searchBarContainerLeft}>
         <span className={styles.iconAdd}>+</span>
         <span className={styles.iconLines}>=</span>
@@ -125,6 +153,7 @@ function SearchBar({ onSortToggle }) {
 function ResourceManagement() {
   const [resources] = useState(MOCK_RESOURCES);
   const [sortConfig, setSortConfig] = useState({ key: 'date', direction: 'desc' });
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const sortedResources = useMemo(() => {
     let sortableItems = [...resources];
@@ -164,15 +193,15 @@ function ResourceManagement() {
   };
 
   return (
-    <div className={styles.resourceManagementDashboard}>
-      <div className={styles.dashboardTitle}>
+    <div className={`${styles.resourceManagementDashboard} ${darkMode ? styles.darkModeResourceManagementDashboard : ''}`}>
+      <div className={styles.dashboardTitle }>
         <h2>Used Resources</h2>
         <button type="button" className={styles.addLogButton}>
           Add New Log
         </button>
       </div>
 
-      <SearchBar onSortToggle={toggleGlobalDirection} />
+      <SearchBar onSortToggle={toggleGlobalDirection} darkMode={darkMode} />
 
       <div className={styles.resourceList}>
         <div className={styles.resourceHeading}>
