@@ -1,13 +1,13 @@
 // PST week fix, 48/24 thresholds, dev time-travel (no reload), week-safe localStorage
 // + Task progress alerts at 50% / 75% / 90% with modal list & view-to-reset
-import { useState, useEffect, useRef, useMemo } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
-import { getMessagingSocket } from '../../utils/messagingSocket';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   clearDBNotifications,
   clearNotifications,
 } from '../../actions/lbdashboard/messagingActions';
+import { getMessagingSocket } from '../../utils/messagingSocket';
 import { ENDPOINTS } from '../../utils/URL';
 
 // Import getUserTasks action for fetching user-specific tasks
@@ -32,8 +32,6 @@ const endOfPSTWeek = d => new Date(startOfPSTWeek(d).getTime() + 7 * 24 * 60 * 6
 // Key for week-scoped storage, anchored to PT Sunday 00:00
 const weekKey = d => startOfPSTWeek(d).toISOString();
 
-// Task progress helpers (HOURS-based buckets)
-const pick = (...vals) => vals.find(v => v != null);
 
 // Round to nearest whole percent, clamp 0..100
 const hoursPercent = (logged, est) => {
@@ -50,7 +48,8 @@ const bucketForHoursPct = p => {
   return null;
 };
 
-const taskNameOf = t => pick(t.taskName, t.name, t.title, '(unnamed task)');
+
+import PropTypes from 'prop-types';
 
 export default function BellNotification({ userId }) {
   const [isDataReady, setIsDataReady] = useState(false);
@@ -73,38 +72,10 @@ export default function BellNotification({ userId }) {
   const weeklycommittedHours = useSelector(state => state.userProfile?.weeklycommittedHours || 0);
   const darkMode = useSelector(state => state.theme?.darkMode);
 
-  // check state.userTask
-  const tasksFromStore = useSelector(state => {
-    // Check state.userTask
-    if (state.userTask) {
-      // The API returns an object with a 'tasks' array inside
-      if (state.userTask.tasks && Array.isArray(state.userTask.tasks)) {
-        if (state.userTask.tasks.length > 0) {
-        }
-        return state.userTask.tasks;
-      }
-      if (Array.isArray(state.userTask)) {
-        return state.userTask;
-      }
-    }
-
-    // Fallback to other possible locations
-    const possiblePaths = [
-      state.tasks?.assignedTasks,
-      state.tasks?.taskItems,
-      state.tasks?.list,
-      state.tasks?.tasks,
-      state.myTasks,
-    ];
-
-    for (const path of possiblePaths) {
-      if (Array.isArray(path) && path.length > 0) {
-        return path;
-      }
-    }
-
-    return [];
-  });
+  
+  const tasksFromStore = useSelector(state => 
+    Array.isArray(state.userTask) ? state.userTask : []
+  );
 
   // Fetch user-specific tasks using getUserTasks action
   useEffect(() => {
@@ -188,115 +159,45 @@ export default function BellNotification({ userId }) {
 
   // HOURS-logged vs task estimate
   // Enhanced logging for debugging
-  const loggedByTask = useMemo(() => {
-    const map = new Map();
-
-    for (const e of timeEntries) {
-      // Log first entry to see structure
-      if (map.size === 0 && timeEntries.length > 0) {
-      }
-
-      // The time entry should reference the task ID somehow
-      // Try these fields in order
-      const taskId =
-        e.projectTaskId ||
-        e.taskId ||
-        e.task ||
-        e.taskID ||
-        e.task_id ||
-        e.taskObj?._id ||
-        e.taskObj?.id;
-
-      if (!taskId) continue;
-
-      const h = parseInt(e.hours, 10) || 0;
-      const m = parseInt(e.minutes, 10) || 0;
-      const totalHours = h + m / 60;
-
-      if (totalHours > 0) {
-        map.set(taskId, (map.get(taskId) || 0) + totalHours);
-      }
-    }
-
-    return map;
-  }, [timeEntries]);
-
-  // Use whatever array we actually got from Redux
-  const tasks = tasksFromStore;
-
-  // Enhanced task normalization with better debugging
-  const normalizedTasks = useMemo(() => {
-    const normalized = (tasks || [])
-      .map(t => {
-        const id = t._id || t.id || t.taskId;
-        const name = taskNameOf(t);
-
-        // Try multiple field names for estimated hours
-        const estimatedHours =
-          Number(
-            pick(
-              t.estimatedHours,
-              t.hoursEstimated,
-              t.hoursMost,
-              t.mostHours,
-              t.hoursBest,
-              t.hoursWorst,
-              t.totalHours,
-              t.plannedHours,
-              0,
-            ),
-          ) || 0;
-
-        // Debug log for tasks with estimates
-        if (estimatedHours > 0) {
-        }
-
-        return { id, name, estimatedHours };
-      })
-      .filter(t => t.id && t.estimatedHours > 0);
-
-    return normalized;
-  }, [tasks]);
-
-  // Add taskAlertsVersion to dependencies to force recalculation
+  // Build task alerts directly from task.hoursLogged / task.estimatedHours
   const taskHoursAlerts = useMemo(() => {
     const list = [];
+    for (const t of tasksFromStore) {
+      const id = t._id || t.id;
+      const name = t.taskName || t.name || '(unnamed task)';
+      const logged = Number(t.hoursLogged) || 0;
+      const estimate = Number(t.estimatedHours) || 0;
+      if (!id || estimate <= 0) continue;
 
-    for (const t of normalizedTasks) {
-      const logged = loggedByTask.get(t.id) || 0;
-      const pct = hoursPercent(logged, t.estimatedHours); // 0..100
+      // Skip completed/submitted tasks
+      const isDone = t.resources?.some(
+        r => r.completedTask || r.reviewStatus === 'Submitted'
+      );
+      if (isDone) continue;
 
-      if (pct >= 100) continue; // task effectively done
+      const pct = hoursPercent(logged, estimate);
+      if (pct >= 100) continue;
 
       const bucket = bucketForHoursPct(pct); // 50 / 75 / 90 / null
       if (!bucket) continue;
 
-      const seenKey = `${userId}::${currentWeekKey}::taskHours::${t.id}::seen::${bucket}`;
-      if (localStorage.getItem(seenKey)) {
-        continue;
-      }
+      // Reset seen key when a higher bucket is reached
+      const higherBuckets = [90, 75, 50].filter(b => b > bucket);
+      const seenKey = `${userId}::taskProgress::${id}::seen::${bucket}`;
+      const higherSeen = higherBuckets.some(b =>
+        localStorage.getItem(`${userId}::taskProgress::${id}::seen::${b}`)
+      );
+      // If a higher bucket was already seen, skip lower ones
+      if (higherSeen) continue;
+      if (localStorage.getItem(seenKey)) continue;
 
-      list.push({
-        id: t.id,
-        name: t.name,
-        logged,
-        estimate: t.estimatedHours,
-        percent: pct,
-        bucket,
-        seenKey,
-      });
+      list.push({ id, name, logged, estimate, percent: pct, bucket, seenKey, task: t });
     }
 
-    // Sort: highest bucket first, then by biggest remaining gap
-    list.sort((a, b) => {
-      if (b.bucket !== a.bucket) return b.bucket - a.bucket;
-      const aRemain = a.estimate - a.logged;
-      const bRemain = b.estimate - b.logged;
-      return bRemain - aRemain;
-    });
-
+    // Sort: highest bucket first
+    list.sort((a, b) => b.bucket - a.bucket);
     return list;
-  }, [normalizedTasks, loggedByTask, userId, currentWeekKey, taskAlertsVersion]); // Added taskAlertsVersion
+  }, [tasksFromStore, userId, taskAlertsVersion]);
 
   const hasTaskAlerts = taskHoursAlerts.length > 0;
 
@@ -349,9 +250,9 @@ export default function BellNotification({ userId }) {
   }, [messageNotifications]);
 
   const allNotifications = [
-    ...(Array.isArray(dbNotifications) ? dbNotifications : []),
-    ...(Array.isArray(messageNotifications) ? messageNotifications : []),
-  ];
+  ...(Array.isArray(dbNotifications) ? dbNotifications : []),
+  ...(Array.isArray(messageNotifications) ? messageNotifications : []),
+];
 
   // Ready after first mount
   useEffect(() => setIsDataReady(true), []);
@@ -540,15 +441,32 @@ export default function BellNotification({ userId }) {
                     border: `1px solid ${darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
                   }}
                 >
-                  <div style={{ marginBottom: 4 }}>
+                  {/* Exact message per spec */}
+                  <div style={{ marginBottom: 6, fontSize: '14px' }}>
                     Hey! Your <strong>{a.name}</strong> is <strong>{a.bucket}%</strong> complete.
+                    How are you doing? Please, communicate with your manager if you need more time.
+                    If you do, be sure to include the specific reason why.
                   </div>
-                  <div style={{ marginBottom: 4, fontSize: '14px' }}>
-                    How are you doing? Please communicate with your manager if you need more time.
-                    If you do, include the specific reason.
+                  {/* Task info mirroring Tasks tab: name, hours logged/estimated, progress bar */}
+                  <div style={{ fontSize: '13px', marginBottom: 4 }}>
+                    <strong>{a.task.num ? `${a.task.num} ` : ''}{a.name}</strong>
                   </div>
-                  <div style={{ fontSize: 12, opacity: 0.7, marginTop: 4 }}>
-                    📈 Progress: {a.percent}% ({a.logged.toFixed(1)} / {a.estimate.toFixed(1)} hrs)
+                  <div style={{ fontSize: '12px', opacity: 0.8, marginBottom: 4 }}>
+                    {a.logged.toFixed(2)} of {a.estimate.toFixed(2)} hours
+                  </div>
+                  <div style={{
+                    height: '8px',
+                    borderRadius: '4px',
+                    backgroundColor: darkMode ? 'rgba(255,255,255,0.15)' : '#e9ecef',
+                    overflow: 'hidden',
+                    marginBottom: 4,
+                  }}>
+                    <div style={{
+                      height: '100%',
+                      width: `${Math.min(a.percent, 100)}%`,
+                      backgroundColor: a.percent >= 90 ? '#dc3545' : a.percent >= 75 ? '#ffc107' : '#28a745',
+                      borderRadius: '4px',
+                    }} />
                   </div>
                 </div>
               ))}
@@ -584,6 +502,9 @@ export default function BellNotification({ userId }) {
     </>
   );
 }
+BellNotification.propTypes = {
+  userId: PropTypes.string.isRequired,
+};
 // ===== (Optional) Console test helpers =====
 // Keep your existing bellTest block if you like. You can also add helpers to clear per-task seen:
 // Object.keys(localStorage)
