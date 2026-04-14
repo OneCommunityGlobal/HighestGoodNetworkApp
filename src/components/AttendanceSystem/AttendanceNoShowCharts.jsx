@@ -549,7 +549,7 @@ function AttendanceNoShowCharts() {
                   textAlign: 'center',
                 }}
               >
-                Registration vs Attendance
+                No-Show Breakdown
               </h3>
               <div style={{ height: '300px', width: '100%' }}>
                 <ResponsiveContainer width="100%" height="100%">
