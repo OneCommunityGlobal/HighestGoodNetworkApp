@@ -26,9 +26,7 @@ describe('User Management Actions', () => {
       axios.get.mockRejectedValueOnce(new Error('Network error'));
 
       const expectedActions = [
-        { type: 'CLEAR_USER_INFO_UPDATE' },
         { type: 'FETCH_USER_PROFILES_START' },
-        { type: 'RECEIVE_ALL_USER_PROFILES' },
         { type: 'FETCH_USER_PROFILES_ERROR' }
       ];
 

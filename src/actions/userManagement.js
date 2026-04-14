@@ -110,7 +110,7 @@ export const userProfilesBasicInfoFetchCompleteACtion = payload => {
 export const getAllUserProfile = () => {
   const userProfilesPromise = axios.get(ENDPOINTS.USER_PROFILES);
   return async dispatch => {
-    await dispatch(clearUserInformation());
+
     await dispatch(userProfilesFetchStartAction());
 
     if (!userProfilesPromise || typeof userProfilesPromise.then !== 'function') {
