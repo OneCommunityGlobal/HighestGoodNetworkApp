@@ -5,6 +5,44 @@
   width: 100%;
 }
 
+/* Header row (title + export buttons) */
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.resourceTitle {
+  text-align: left;
+  font-size: 1.2rem;
+  margin-bottom: 5px;
+  font-weight: 700;
+  color: grey;
+}
+
+/* Export buttons */
+.exportButtons {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.exportButton {
+  background-color: #d3d3d3;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.exportButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Table rows */
 .resourceRow {
   display: flex;
   justify-content: space-between;
@@ -13,6 +51,7 @@
   border: 2px solid black;
 }
 
+/* Column Styling */
 .column {
   flex: 1;
   padding: 15px;
@@ -24,19 +63,15 @@
   border-right: none;
 }
 
-.resourceTitle {
-  text-align: left;
-  font-size: 1.2rem;
-  margin-bottom: 5px;
-  font-weight: 700;
-  color: grey;
-}
-
 .header {
   background-color: #f5f5f5;
-  font-weight: bold;
 }
 
+.headerDark {
+  background-color: #2c3e50;
+}
+
+/* Status colors */
 .statusgreen {
   color: green;
 }
@@ -49,6 +84,7 @@
   color: red;
 }
 
+/* View Details Button (standardized) */
 .viewDetailsButton {
   display: block;
   width: 100%;
@@ -59,7 +95,6 @@
   padding: 10px;
   cursor: pointer;
   border: none;
-  text-decoration: none;
   text-align: center;
   transition: background 0.3s ease-in-out;
 }
@@ -84,7 +119,6 @@
 .tickLabel {
   display: flex;
   align-items: center;
-  justify-content: center;
   font-weight: bold;
   background-color: white;
   border: 2px solid black;
@@ -93,6 +127,7 @@
   cursor: pointer;
 }
 
+/* DARK MODE */
 .darkMode .resourcesUsage {
   background-color: #34495e;
   color: #ecf0f1;
@@ -112,6 +147,17 @@
   background-color: #34495e;
 }
 
+.darkMode .exportButton {
+  background-color: #4caf50;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.darkMode .exportButton:hover {
+  background-color: #81c784;
+}
+
+/* View Details in dark mode */
 .darkMode .viewDetailsButton {
   background-color: #27ae60;
   color: #ecf0f1;
@@ -119,9 +165,9 @@
 
 .darkMode .viewDetailsButton:hover {
   background-color: #1e8449;
-  color: #ecf0f1;
 }
 
+/* Status colors in dark mode */
 .darkMode .statusgreen {
   color: #27ae60 !important;
 }
