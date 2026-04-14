@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faSave } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { getAllUserProfile, clearUserInformation } from '../../actions/userManagement';
+import { getAllUserProfile , clearUserInformation} from '../../actions/userManagement';
 import { ENDPOINTS } from '~/utils/URL';
 import userTableDataPermissions from '../../utils/userTableDataPermissions';
 import PropTypes from 'prop-types';
