@@ -56,6 +56,7 @@ export default function BellNotification({ userId }) {
   const [isDataReady, setIsDataReady] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
   const notificationRef = useRef(null);
+  const bellRef = useRef(null);
 
   const [dbNotifications, setDbNotifications] = useState([]); // DB notifications
   const [messageNotifications, setMessageNotifications] = useState([]);
@@ -305,8 +306,9 @@ export default function BellNotification({ userId }) {
     const fetchDbNotifications = async () => {
       try {
         const { data } = await axios.get(`${ENDPOINTS.NOTIFICATIONS}/unread/user/${userId}`);
-        setDbNotifications(data);
-        if (data.length > 0) setHasMessageNotification(true);
+        const notifications = Array.isArray(data) ? data : [];
+        setDbNotifications(notifications);
+        if (notifications.length > 0) setHasMessageNotification(true);
       } catch (error) {
         console.error('Error fetching notifications from DB:', error);
       }
@@ -346,7 +348,10 @@ export default function BellNotification({ userId }) {
     };
   }, [messageNotifications]);
 
-  const allNotifications = [...(dbNotifications || []), ...messageNotifications];
+  const allNotifications = [
+    ...(Array.isArray(dbNotifications) ? dbNotifications : []),
+    ...(Array.isArray(messageNotifications) ? messageNotifications : []),
+  ];
 
   // Ready after first mount
   useEffect(() => setIsDataReady(true), []);
@@ -356,7 +361,7 @@ export default function BellNotification({ userId }) {
 
     if (!showNotification) {
       try {
-        const notificationIds = dbNotifications.map(n => n._id);
+        const notificationIds = (Array.isArray(dbNotifications) ? dbNotifications : []).map(n => n._id);
         if (notificationIds.length > 0) {
           await axios.post(`${ENDPOINTS.MSG_NOTIFICATION}/mark-as-read`, { notificationIds });
         }
@@ -410,7 +415,7 @@ export default function BellNotification({ userId }) {
 
   useEffect(() => {
     const handleClickOutside = event => {
-      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+      if (notificationRef.current && !notificationRef.current.contains(event.target) && !bellRef.current.contains(event.target)) {
         //to close notification panel without marking as read
         setShowNotification(false);
       }
@@ -446,6 +451,7 @@ export default function BellNotification({ userId }) {
     <>
       {isDataReady && (
         <button
+          ref={bellRef}
           type="button"
           onClick={handleMessageNotificationClick}
           className={`fa fa-bell i-large ${bellHasDot ? 'has-notification' : ''}`}
@@ -483,7 +489,7 @@ export default function BellNotification({ userId }) {
           ref={notificationRef}
           style={{
             position: 'absolute',
-            top: '75%',
+            top: '4rem',
             right: '5%',
             transform: 'translateX(0)',
             backgroundColor: darkMode ? '#3A506B' : 'white',

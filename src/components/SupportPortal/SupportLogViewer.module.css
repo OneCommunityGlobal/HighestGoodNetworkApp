@@ -1,0 +1,148 @@
+/* src/components/SupportPortal/SupportLogViewer.module.css */
+
+.container {
+  padding: 2rem;
+  background-color: #f9fafc;
+  min-height: 100vh;
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.7rem;
+  font-weight: 600;
+  color: #333333;
+}
+
+.subtitle {
+  margin: 0.25rem 0 0;
+  font-size: 0.95rem;
+  color: #666666;
+}
+
+.backLink {
+  font-size: 0.9rem;
+  color: #1976d2;
+  text-decoration: none;
+}
+
+.backLink:hover {
+  text-decoration: underline;
+}
+
+.errorBanner {
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  background-color: #ffe5e5;
+  color: #a10000;
+  font-size: 0.9rem;
+}
+
+/* ==== Timeline ==== */
+.timeline {
+  position: relative;
+  margin-top: 1rem;
+  padding-left: 1.5rem;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 10px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: #d0d7e2;
+}
+
+.timelineItem {
+  position: relative;
+  display: flex;
+  margin-bottom: 1.25rem;
+}
+
+.timelineDot {
+  position: absolute;
+  left: 3px;
+  top: 6px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background-color: #1976d2;
+}
+
+.timelineContent {
+  margin-left: 1.75rem;
+  background-color: #ffffff;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+  padding: 0.75rem 1rem;
+  flex: 1;
+}
+
+.timelineHeader {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+
+.entryDate {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #333333;
+}
+
+.badge {
+  font-size: 0.8rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  background-color: #e3f2fd;
+  color: #1565c0;
+}
+
+.entryText {
+  margin: 0.25rem 0;
+  font-size: 0.95rem;
+  color: #444444;
+}
+
+.supportNotes {
+  margin: 0.3rem 0 0;
+  font-size: 0.9rem;
+  color: #555555;
+}
+
+/* ==== Empty ==== */
+.emptyState {
+  text-align: center;
+  color: #999;
+  font-size: 1rem;
+  margin-top: 3rem;
+}
+
+/* ==== Responsive ==== */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .timelineContent {
+    padding: 0.75rem;
+  }
+}
