@@ -85,6 +85,8 @@ export const enableUserInfoEditReducer = (userProfile = userProfilesInitial, act
       return updateObject(userProfile, { editable: action.payload });
     case 'START_USER_INFO_UPDATE':
       return { ...userProfile, newUserData: userProfile.newUserData.concat(action.payload) };
+    case 'CLEAR_USER_INFO_UPDATE':
+      return { ...userProfile, newUserData: [] };
     default:
       return userProfile;
   }

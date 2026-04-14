@@ -14,6 +14,7 @@ import {
   DISABLE_USER_PROFILE_EDIT,
   CHANGE_USER_PROFILE_PAGE,
   START_USER_INFO_UPDATE,
+  CLEAR_USER_INFO_UPDATE
 } from '../constants/userManagement';
 import { ENDPOINTS } from '~/utils/URL';
 import { UserStatus, UserStatusOperations, InactiveReason } from '~/utils/enums';
@@ -109,7 +110,9 @@ export const userProfilesBasicInfoFetchCompleteACtion = payload => {
 export const getAllUserProfile = () => {
   const userProfilesPromise = axios.get(ENDPOINTS.USER_PROFILES);
   return async dispatch => {
+    await dispatch(clearUserInformation());
     await dispatch(userProfilesFetchStartAction());
+
     if (!userProfilesPromise || typeof userProfilesPromise.then !== 'function') {
       return Promise.resolve([]);
     }
@@ -139,18 +142,18 @@ const resolveEndDate = (user) => {
 
   //2) if no lastActivityAt, use createdDate (if present)
   // format createdDate to real datetime in COMPANY_TZ
-  if(!user?.lastActivityAt && user?.createdDate) {
+  if (!user?.lastActivityAt && user?.createdDate) {
     const created = moment.tz(user.createdDate, 'YYYY-MM-DD', COMPANY_TZ).startOf('day');
     return created.toISOString();
   }
 
   //3) if no createdDate -> endDate will be set as passed
-  if(user?.endDate) {
+  if (user?.endDate) {
     return moment(user.endDate).toISOString();
   }
 
   // optional: if lastActivityAt is present, use that
-  if(user?.lastActivityAt) {
+  if (user?.lastActivityAt) {
     return moment(user.lastActivityAt).toISOString();
   }
 
@@ -159,7 +162,7 @@ const resolveEndDate = (user) => {
 }
 
 export const buildUpdatedUserLifecycleDetails = (user, payload) => {
-  const {action, endDate, reactivationDate} = payload;
+  const { action, endDate, reactivationDate } = payload;
   switch (action) {
     case UserStatusOperations.ACTIVATE:
       return {
@@ -204,7 +207,7 @@ export const buildUpdatedUserLifecycleDetails = (user, payload) => {
 
 const buildBackendPayload = (userDetails, action) => {
   console.log('Building backend payload with:', { userDetails, action });
-  switch (action){
+  switch (action) {
     case UserStatusOperations.ACTIVATE:
       return {
         action: action,
@@ -406,4 +409,8 @@ export const changePagination = value => dispatch => {
 
 export const updateUserInfomation = value => dispatch => {
   dispatch({ type: START_USER_INFO_UPDATE, payload: value });
+};
+
+export const clearUserInformation = () => dispatch => {
+  dispatch({ type: CLEAR_USER_INFO_UPDATE });
 };
