@@ -27,7 +27,8 @@ describe('User Management Actions', () => {
 
       const expectedActions = [
         { type: 'FETCH_USER_PROFILES_START' },
-        { type: 'FETCH_USER_PROFILES_ERROR' }
+        { type: 'FETCH_USER_PROFILES_ERROR' },
+        { type: 'CLEAR_USER_INFO_UPDATE' }
       ];
 
       await store.dispatch(actions.getAllUserProfile());
@@ -187,7 +188,7 @@ describe('User Management Actions', () => {
         { type: 'RECEIVE_USER_PROFILE_BASIC_INFO', payload: mockBasicInfo }
       ];
 
-      await store.dispatch(actions.getUserProfileBasicInfo({source: mockSource}));
+      await store.dispatch(actions.getUserProfileBasicInfo({ source: mockSource }));
       expect(store.getActions()).toEqual(expectedActions);
       expect(axios.get).toHaveBeenCalledWith(ENDPOINTS.USER_PROFILE_BASIC_INFO(mockSource));
     });
