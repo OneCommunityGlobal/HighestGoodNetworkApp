@@ -72,8 +72,8 @@ describe('Weekly Summaries', () => {
             summary: 'Weekly Summary',
           },
         ],
-        mediaUrl: 'http://media.com', //NOSONAR - using http for test data
-        adminLinks: [{ Name: 'Media Folder', Link: 'http://newmedia.com' }],
+        mediaUrl: 'http://media.com',
+        adminLinks: [{ Name: 'Media Folder', Link: 'http://newmedia.com' }], //NOSONAR - using http for test data
       };
 
       axios.get.mockResolvedValue({ data: mockData, status: 200 });
