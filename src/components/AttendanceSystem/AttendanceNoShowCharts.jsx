@@ -417,46 +417,46 @@ function AttendanceNoShowCharts() {
                 </div>
               )}
 
-            {/* No-Show Chart */}
-            <div style={{ width: '100%' }}>
-              <h3
-                style={{
-                  fontSize: '18px',
-                  fontWeight: '500',
-                  color: '#111827',
-                  marginBottom: '12px',
-                  textAlign: 'center',
-                }}
-              >
-                No-Show Breakdown
-              </h3>
-              <div style={{ height: '300px', width: '100%' }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={noShowData}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={renderCustomizedLabel}
-                      outerRadius="70%"
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {noShowData.map((entry, index) => (
-                        <Cell
-                          key={`cell-${entry.name}`}
-                          fill={noShowColors[index % noShowColors.length]}
-                        />
-                      ))}
-                    </Pie>
-                    <Tooltip
-                      content={<CustomTooltip />}
-                      wrapperClassName={darkMode ? 'dark-mode' : ''}
-                    />
-                    <Legend />
-                  </PieChart>
-                </ResponsiveContainer>
+              {/* No-Show Chart */}
+              <div style={{ width: '100%' }}>
+                <h3
+                  style={{
+                    fontSize: '18px',
+                    fontWeight: '500',
+                    color: '#111827',
+                    marginBottom: '12px',
+                    textAlign: 'center',
+                  }}
+                >
+                  No-Show Breakdown
+                </h3>
+                <div style={{ height: '300px', width: '100%' }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={noShowData}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={renderCustomizedLabel}
+                        outerRadius="70%"
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {noShowData.map((entry, index) => (
+                          <Cell
+                            key={`cell-${entry.name}`}
+                            fill={noShowColors[index % noShowColors.length]}
+                          />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        content={<CustomTooltip />}
+                        wrapperClassName={darkMode ? 'dark-mode' : ''}
+                      />
+                      <Legend />
+                    </PieChart>
+                  </ResponsiveContainer>
                 </div>
               </div>
             </div>
