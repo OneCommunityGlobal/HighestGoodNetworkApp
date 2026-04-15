@@ -1,10 +1,9 @@
 .container {
   padding: 20px;
-  min-height: 100vh;
 }
 
 .darkContainer {
-  background-color: #1a1a1a;
+  background-color: #1C2541;
 }
 
 .card {
@@ -14,8 +13,9 @@
 }
 
 .darkCard {
-  background-color: #2c2c2c;
-  border-color: #444444;
+  background-color: #243B5A !important;
+  border-color: #3A506B !important;
+  box-shadow: 0 4px 16px #1C1C1C;
 }
 
 .filtersSection {
@@ -48,7 +48,6 @@
 
 .chartSection {
   padding: 20px;
-  min-height: 500px;
 }
 
 .chartContainer {

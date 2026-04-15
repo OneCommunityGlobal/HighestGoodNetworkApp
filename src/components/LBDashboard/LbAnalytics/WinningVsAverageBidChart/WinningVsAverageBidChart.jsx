@@ -232,6 +232,9 @@ const WinningVsAverageBidChart = ({ darkMode = false }) => {
     const winningBids = data.map(item => item.winningBid);
     const averageBids = data.map(item => item.averageBid);
 
+    const labelColor = '#ffffff';
+    const winningBidBarColor = darkMode ? '#888888' : '#555555';
+
     setChartData({
       labels,
       datasets: [
@@ -242,7 +245,7 @@ const WinningVsAverageBidChart = ({ darkMode = false }) => {
           borderColor: '#9370db',
           borderWidth: 0,
           datalabels: {
-            color: '#6b4fa0',
+            color: labelColor,
             font: { weight: 'bold', size: 12 },
             anchor: 'center',
             align: 'center',
@@ -251,11 +254,11 @@ const WinningVsAverageBidChart = ({ darkMode = false }) => {
         {
           label: 'Winning Bid',
           data: winningBids,
-          backgroundColor: '#555555',
-          borderColor: '#555555',
+          backgroundColor: winningBidBarColor,
+          borderColor: winningBidBarColor,
           borderWidth: 0,
           datalabels: {
-            color: '#ffffff',
+            color: labelColor,
             font: { weight: 'bold', size: 12 },
             anchor: 'center',
             align: 'center',
@@ -266,6 +269,9 @@ const WinningVsAverageBidChart = ({ darkMode = false }) => {
   };
 
   // Chart options
+  const textColor = darkMode ? '#ffffff' : '#000000';
+  const gridColor = darkMode ? 'rgba(255, 255, 255, 0.15)' : 'rgba(200, 200, 200, 0.3)';
+
   const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -279,7 +285,7 @@ const WinningVsAverageBidChart = ({ darkMode = false }) => {
       legend: {
         position: 'top',
         labels: {
-          color: '#000000',
+          color: textColor,
           font: {
             size: 13,
             weight: '500',
@@ -291,7 +297,7 @@ const WinningVsAverageBidChart = ({ darkMode = false }) => {
       title: {
         display: true,
         text: 'Winning Bid vs Average Bid',
-        color: '#000000',
+        color: textColor,
         font: {
           size: 20,
           weight: 'bold',
@@ -319,7 +325,7 @@ const WinningVsAverageBidChart = ({ darkMode = false }) => {
         title: {
           display: true,
           text: 'Listing number/identifier',
-          color: '#000000',
+          color: textColor,
           font: {
             size: 12,
             weight: 'bold',
@@ -327,14 +333,14 @@ const WinningVsAverageBidChart = ({ darkMode = false }) => {
           padding: 10,
         },
         ticks: {
-          color: '#000000',
+          color: textColor,
           font: {
             size: 11,
           },
         },
         grid: {
           display: true,
-          color: 'rgba(200, 200, 200, 0.3)',
+          color: gridColor,
           drawBorder: true,
         },
       },
@@ -344,7 +350,7 @@ const WinningVsAverageBidChart = ({ darkMode = false }) => {
         title: {
           display: true,
           text: 'Bid Amount in USD',
-          color: '#000000',
+          color: textColor,
           font: {
             size: 12,
             weight: 'bold',
@@ -352,7 +358,7 @@ const WinningVsAverageBidChart = ({ darkMode = false }) => {
           padding: 10,
         },
         ticks: {
-          color: '#000000',
+          color: textColor,
           font: {
             size: 11,
           },
@@ -362,7 +368,7 @@ const WinningVsAverageBidChart = ({ darkMode = false }) => {
         },
         grid: {
           display: true,
-          color: 'rgba(200, 200, 200, 0.3)',
+          color: gridColor,
           drawBorder: true,
         },
       },
@@ -374,7 +380,7 @@ const WinningVsAverageBidChart = ({ darkMode = false }) => {
     if (villages.length > 0 && listings.length > 0) {
       fetchChartData();
     }
-  }, [category, limit, selectedVillages, selectedListings, villages, listings]);
+  }, [category, limit, selectedVillages, selectedListings, villages, listings, darkMode]);
 
   const handleApplyFilters = () => {
     fetchChartData();
@@ -451,6 +457,44 @@ const WinningVsAverageBidChart = ({ darkMode = false }) => {
                         textField: {
                           size: 'small',
                           fullWidth: true,
+                          sx: darkMode
+                            ? {
+                                '& .MuiOutlinedInput-root': {
+                                  backgroundColor: '#2c2c2c',
+                                  color: '#ffffff',
+                                  '& fieldset': { borderColor: '#555555' },
+                                  '&:hover fieldset': { borderColor: '#777777' },
+                                  '&.Mui-focused fieldset': { borderColor: '#9370db' },
+                                },
+                                '& .MuiInputAdornment-root .MuiButtonBase-root': {
+                                  color: '#ffffff',
+                                },
+                              }
+                            : {},
+                        },
+                        popper: {
+                          sx: darkMode
+                            ? {
+                                '& .MuiPaper-root': {
+                                  backgroundColor: '#2c2c2c',
+                                  color: '#ffffff',
+                                },
+                                '& .MuiPickersDay-root': {
+                                  color: '#ffffff',
+                                  '&:hover': { backgroundColor: '#444444' },
+                                  '&.Mui-selected': { backgroundColor: '#9370db' },
+                                },
+                                '& .MuiPickersCalendarHeader-label': {
+                                  color: '#ffffff',
+                                },
+                                '& .MuiIconButton-root': {
+                                  color: '#ffffff',
+                                },
+                                '& .MuiDayCalendar-weekDayLabel': {
+                                  color: '#aaaaaa',
+                                },
+                              }
+                            : {},
                         },
                       }}
                     />
@@ -474,6 +518,44 @@ const WinningVsAverageBidChart = ({ darkMode = false }) => {
                         textField: {
                           size: 'small',
                           fullWidth: true,
+                          sx: darkMode
+                            ? {
+                                '& .MuiOutlinedInput-root': {
+                                  backgroundColor: '#2c2c2c',
+                                  color: '#ffffff',
+                                  '& fieldset': { borderColor: '#555555' },
+                                  '&:hover fieldset': { borderColor: '#777777' },
+                                  '&.Mui-focused fieldset': { borderColor: '#9370db' },
+                                },
+                                '& .MuiInputAdornment-root .MuiButtonBase-root': {
+                                  color: '#ffffff',
+                                },
+                              }
+                            : {},
+                        },
+                        popper: {
+                          sx: darkMode
+                            ? {
+                                '& .MuiPaper-root': {
+                                  backgroundColor: '#2c2c2c',
+                                  color: '#ffffff',
+                                },
+                                '& .MuiPickersDay-root': {
+                                  color: '#ffffff',
+                                  '&:hover': { backgroundColor: '#444444' },
+                                  '&.Mui-selected': { backgroundColor: '#9370db' },
+                                },
+                                '& .MuiPickersCalendarHeader-label': {
+                                  color: '#ffffff',
+                                },
+                                '& .MuiIconButton-root': {
+                                  color: '#ffffff',
+                                },
+                                '& .MuiDayCalendar-weekDayLabel': {
+                                  color: '#aaaaaa',
+                                },
+                              }
+                            : {},
                         },
                       }}
                     />
