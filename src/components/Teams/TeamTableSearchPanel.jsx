@@ -1,6 +1,6 @@
 /* eslint-disable react/destructuring-assignment */
 import { connect } from 'react-redux';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { boxStyle, boxStyleDark } from '~/styles';
 import hasPermission from '~/utils/permissions';
 import { SEARCH, CREATE_NEW_TEAM } from '../../languages/en/ui';
@@ -11,7 +11,7 @@ import styles from './TeamTableSearchPanel.module.css';
 export function TeamTableSearchPanelBase(props) {
   const { darkMode } = props;
 
-  const [canPostTeam, setCanPostTeam] = React.useState(props.hasPermission('postTeam'));
+  const [canPostTeam, setCanPostTeam] = useState(props.hasPermission('postTeam'));
 
   // prettier-ignore
   if (canPostTeam === false) setTimeout(() => setCanPostTeam(props.hasPermission('postTeam')), 1000);
