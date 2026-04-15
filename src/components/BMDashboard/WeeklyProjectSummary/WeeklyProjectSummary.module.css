@@ -34,41 +34,67 @@
 /* Header Container */
 .weeklySummaryHeaderContainer {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   justify-content: space-between;
-  width: 80%;
-  padding: 16px;
+  width: 88%;
+  max-width: 1280px;
+  padding: 12px 16px;
   background: var(--section-bg);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
+  gap: 12px;
 }
 
 /* Title */
 .weeklySummaryHeaderTitle {
-  padding-top: 5px;
+  margin: 0;
+  line-height: 1.2;
   color: var(--text-color);
-  font-size: x-large;
-  text-align: center;
-  flex-wrap: wrap;
+  font-size: 32px;
+  font-weight: 700;
+  text-align: left;
+  flex: 0 0 auto;
 }
 
 /* Header Controls */
 .weeklySummaryHeaderControls {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   align-items: center;
+  flex-wrap: nowrap;
+  margin-left: auto;
+  min-width: 0; /* allow selects to shrink instead of crushing the button */
+}
+
+/* Reactstrap Input adds .form-control — match box model to the Share PDF button */
+.weeklySummaryHeaderControls :global(.form-control) {
+  box-sizing: border-box;
+  height: 38px !important;
+  min-height: 38px;
+  padding: 0 12px !important;
+  margin: 0 !important;
+  line-height: 1.25 !important;
+  font-size: 14px;
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 220px;
 }
 
 /* Dropdown Styling */
 .weeklySummaryHeaderControls select {
-  padding: 8px 12px;
+  height: 38px;
+  min-height: 38px;
+  padding: 0 12px;
   border: 1px solid var(--border-color, #ccc);
   border-radius: 6px;
-  min-width: 200px;
+  min-width: 128px;
   font-size: 14px;
   background: var(--section-bg);
   color: var(--text-color);
+  box-sizing: border-box;
+  line-height: 1.25;
+  vertical-align: middle;
 }
 
 .weeklySummaryHeaderControls select:focus {
@@ -81,18 +107,65 @@
   background-color: var(--section-title-hover) !important;
 }
 
-/* Share Button */
+/* Share Button — override Bootstrap .btn so it lines up with .form-control selects */
+/* Bootstrap .btn defaults to flex-shrink: 1; when the row is tight the button shrinks and
+   the label overflows outside the painted background (overlapping the last dropdown). */
 .weeklySummaryShareBtn {
+  height: 38px !important;
+  min-height: 38px;
+  min-width: 7.25rem;
+  padding: 0 14px !important;
+  margin: 0 !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.25 !important;
+  box-sizing: border-box;
+  border-width: 1px;
+  vertical-align: middle;
+  align-self: center;
+  flex: 0 0 auto;
+  flex-shrink: 0;
   background-color: var(--button-bg) !important;
   color: white;
   font-family: inherit;
   white-space: nowrap;
-  border-radius: 8px !important;
+  border-radius: 6px !important;
   transition: background 0.2s ease-in-out;
 }
 
-.weeklySummaryShareBtn:hover {
+/* Bootstrap .btn can add vertical offset; align with selects */
+.weeklySummaryHeaderControls :global(button.btn) {
+  margin: 0 !important;
+  vertical-align: middle;
+}
+
+.weeklySummaryShareBtn:hover:not(:disabled) {
   background-color: var(--button-hover) !important;
+}
+
+.weeklySummaryShareBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Spinner for PDF generation */
+.spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 0.8s linear infinite;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ---------------- DASHBOARD ---------------- */
@@ -325,12 +398,13 @@
 @media (max-width: 1024px) {
   .weeklySummaryHeaderContainer {
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
+    width: 95%;
   }
 
   .weeklySummaryHeaderControls {
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: flex-start;
     width: 100%;
   }
 
@@ -343,7 +417,7 @@
 @media (max-width: 768px) {
   .weeklySummaryHeaderContainer {
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
   }
 
   .weeklySummaryHeaderControls {
@@ -355,6 +429,11 @@
   /* Make Dropdowns Full Width */
   .weeklySummaryHeaderControls select {
     width: 100%;
+    max-width: none;
+  }
+
+  .weeklySummaryHeaderControls :global(.form-control) {
+    max-width: none;
   }
 
   /* Make Button Full Width */
