@@ -329,6 +329,7 @@ export default function ReturnedLateChart() {
           <DatePicker
             id="end-date-picker"
             selected={dateRange.endDate}
+            minDate={dateRange.startDate}
             onChange={handleEndDateChange}
             className={`${styles['returned-late-date-picker']} ${
               darkMode ? styles['background-dark'] : ''
