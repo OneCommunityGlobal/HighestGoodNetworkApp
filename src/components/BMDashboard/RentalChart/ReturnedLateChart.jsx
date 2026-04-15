@@ -274,18 +274,6 @@ export default function ReturnedLateChart() {
           >
             Tools:
           </label>
-<<<<<<< HEAD
-          <div id="tools-select" className={styles['returned-late-tools-select']}>
-            <MultiSelect
-              options={availableTools}
-              value={selectedTools}
-              onChange={setSelectedTools}
-              labelledBy="tools-select"
-              className={`${darkMode ? 'dark' : ''} ${darkMode ? styles['background-dark'] : ''}`}
-            />
-          </div>
-=======
-
           <MultiSelect
             options={availableTools}
             value={selectedTools}
@@ -293,7 +281,6 @@ export default function ReturnedLateChart() {
             labelledBy="tools-select"
             className={styles['returned-late-tools-select']}
           />
->>>>>>> e018903ed503febddf4cd02a6d22b8a833c34992
         </div>
 
         <div className={styles['returned-late-filter-group']}>
