@@ -190,26 +190,66 @@
 }
 
 /* Pagination */
-.rmPagination {
+.paginationContainer {
   display: flex;
   gap: 10px;
-  justify-content: flex-end;
+  justify-content: center;
   margin-top: 20px;
 }
 
-.rmPagination button {
+.paginationButtonIndexes {
   background-color: #f1f1f1;
   border: 1px solid #ddd;
   padding: 5px 10px;
   cursor: pointer;
 }
 
-.rmPagination button:hover {
+.paginationButtonIndexes:hover {
   background-color: #007bff;
   color: white;
 }
 
-.arrow-button {
+.paginationLeft,
+.paginationRight {
   font-weight: bold;
   padding: 5px 15px;
+  background-color: #f1f1f1;
+  border: 1px solid #ddd;
+}
+
+.paginationLeft:hover,
+.paginationRight:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+.activePage{
+  background-color: #007bff;
+  color: white;
+  padding: 5px 15px;
+}
+
+.darkModePaginationContainer {
+  background-color: #1b2a41;
+}
+
+.darkModePaginationContainer .paginationButtonIndexes {
+  background-color: #172f53;
+  border: 1px solid #777;
+  color: white;
+}
+.darkModePaginationContainer .paginationButtonIndexes:hover {
+  background-color: #2196F3;
+  color: white;
+}
+.darkModePaginationContainer .paginationLeft,
+.darkModePaginationContainer .paginationRight {
+  background-color: #172f53;
+  border: 1px solid #777;
+  color: white;
+}
+.darkModePaginationContainer .paginationLeft:hover,
+.darkModePaginationContainer .paginationRight:hover {
+  background-color: #2196F3;
+  color: white;
 }

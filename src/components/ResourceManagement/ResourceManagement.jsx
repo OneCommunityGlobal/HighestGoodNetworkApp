@@ -1,129 +1,11 @@
 import { useState, useEffect, useMemo } from 'react';
 import styles from './ResourceManagement.module.css';
 import { useSelector } from 'react-redux';
+import { ChevronLeft,ChevronRight } from 'lucide-react';
+import { MOCK_RESOURCES } from './MockData';
+import { toast } from 'react-toastify';
 
-// Move mock data OUTSIDE the component so it is stable and doesn't re-calculate
-const MOCK_RESOURCES = [
-  {
-    id: 1,
-    user: 'Alice Johnson',
-    timeDuration: '02:32:56',
-    facilities: 'Landing Page',
-    materials: 'Meadow Lane Oakland',
-    date: 'Just now',
-    timestamp: Date.now(),
-  },
-  {
-    id: 2,
-    user: 'Zane Thompson',
-    timeDuration: '01:10:00',
-    facilities: 'CRM Admin pages',
-    materials: 'Larry San Francisco',
-    date: 'A minute ago',
-    timestamp: Date.now() - 60000,
-  },
-  {
-    id: 3,
-    user: 'Bob Miller',
-    timeDuration: '05:20:10',
-    facilities: 'Client Project',
-    materials: 'Bagwell Avenue Ocala',
-    date: '1 hour ago',
-    timestamp: Date.now() - 3600000,
-  },
-  {
-    id: 4,
-    user: 'Charlie Davis',
-    timeDuration: '00:45:30',
-    facilities: 'Admin Dashboard',
-    materials: 'Washburn Baton Rouge',
-    date: 'Yesterday',
-    timestamp: Date.now() - 86400000,
-  },
-  {
-    id: 5,
-    user: 'Diana Prince',
-    timeDuration: '03:15:22',
-    facilities: 'App Landing page',
-    materials: 'Nest Lane Olivette',
-    date: 'Feb 2, 2024',
-    timestamp: new Date('2024-02-02').getTime(),
-  },
-  {
-    id: 6,
-    user: 'Edward Norton',
-    timeDuration: '02:32:56',
-    facilities: 'Landing Page',
-    materials: 'Meadow Lane Oakland',
-    date: 'Just now',
-    timestamp: Date.now() - 1000,
-  },
-  {
-    id: 7,
-    user: 'Fiona Gallagher',
-    timeDuration: '02:32:56',
-    facilities: 'CRM Admin Pages',
-    materials: 'Larry San Francisco',
-    date: 'A minute ago',
-    timestamp: Date.now() - 61000,
-  },
-  {
-    id: 8,
-    user: 'George Clooney',
-    timeDuration: '02:32:56',
-    facilities: 'Client Project',
-    materials: 'Bagwell Avenue Ocala',
-    date: '1 hour ago',
-    timestamp: Date.now() - 3601000,
-  },
-  {
-    id: 9,
-    user: 'Hannah Abbott',
-    timeDuration: '02:32:56',
-    facilities: 'Admin Dashboard',
-    materials: 'Washburn Baton Rouge',
-    date: 'Yesterday',
-    timestamp: Date.now() - 86401000,
-  },
-  {
-    id: 10,
-    user: 'Ian Wright',
-    timeDuration: '02:32:56',
-    facilities: 'App Landing Page',
-    materials: 'Nest Lane Olivette',
-    date: 'Feb 2, 2024',
-    timestamp: new Date('2024-02-02').getTime() - 1000,
-  },
-  {
-    id: 11,
-    user: 'Jane Doe',
-    timeDuration: '02:32:56',
-    facilities: 'Landing Page',
-    materials: 'Meadow Lane Oakland',
-    date: 'Just now',
-    timestamp: Date.now() - 2000,   
-  },
-  {
-    id: 12,
-    user: 'John Smith',
-    timeDuration: '02:32:56',
-    facilities: 'CRM Admin pages',
-    materials: 'Larry San Francisco',
-    date: 'A minute ago',
-    timestamp: Date.now() - 60000,
-  },
-  {
-    id: 13,
-    user: 'Emily Davis',
-    timeDuration: '02:32:56',
-    facilities: 'Client Project',
-    materials: 'Bagwell Avenue Ocala',
-    date: '1 hour ago',
-    timestamp: Date.now() - 3600000, 
-  }
-];
-
-function SearchBar({ onSortToggle, darkMode }) {
+function SearchBar({ onSortToggle, darkMode,searchTerm,onSearchTermChange }) {
   return (
    <div className={`${styles.searchBarContainer} ${darkMode ? styles.darkModeSearchBarContainer : ''}`}>
       <div className={styles.searchBarContainerLeft}>
@@ -141,22 +23,36 @@ function SearchBar({ onSortToggle, darkMode }) {
         </button>
       </div>
       <div className={styles.searchBarContainerRight}>
-        <input type="text" className={styles.searchInput} placeholder="Search" />
-        <button type="button" className={styles.searchButton}>
-          Search
-        </button>
+        <input type="text" className={styles.searchInput} 
+        placeholder="Search" value={searchTerm} onChange={onSearchTermChange}/>
       </div>
     </div>
   );
 }
 
 function ResourceManagement() {
-  const [resources] = useState(MOCK_RESOURCES);
+  const [resources,_] = useState(MOCK_RESOURCES);
   const [sortConfig, setSortConfig] = useState({ key: 'date', direction: 'desc' });
   const darkMode = useSelector(state => state.theme.darkMode);
+  const [searchTerm,setSearchTerm]=useState('');
+  const [currentPage,setCurrentPage]=useState(1); // Default to page 1
+  const itemsPerPage = 5; // Number of items to show per page
+  const totalPages = Math.ceil(MOCK_RESOURCES.length / itemsPerPage);
+
+
+  const filteredResources = useMemo(() => {
+    if (!searchTerm.trim()) return resources;
+
+    const term = searchTerm.toLowerCase();
+    return resources.filter(resource =>
+      resource.user.toLowerCase().includes(term) ||
+      resource.facilities.toLowerCase().includes(term) ||
+      resource.materials.toLowerCase().includes(term)
+    );
+  }, [resources, searchTerm]);
 
   const sortedResources = useMemo(() => {
-    let sortableItems = [...resources];
+    let sortableItems = [...filteredResources];
     if (sortConfig.key !== null) {
       sortableItems.sort((a, b) => {
         let valA, valB;
@@ -175,7 +71,7 @@ function ResourceManagement() {
       });
     }
     return sortableItems;
-  }, [resources, sortConfig]);
+  }, [filteredResources, sortConfig]);
 
   const requestSort = key => {
     let direction = 'asc';
@@ -192,6 +88,85 @@ function ResourceManagement() {
     }));
   };
 
+  const onSearchTermChange =(e)=>{
+    setSearchTerm(e.target.value);
+  }
+
+  const Pagination = ({ totalPages, currentPage, setCurrentPage,darkMode}) => {
+  
+  const getPaginationGroup = () => {
+    let pages = [];
+    const threshold = 5; // Show full list if total pages are low
+
+    if (totalPages <= threshold) {
+      pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+    } else {
+      // Logic for truncation
+      if (currentPage <= 5) {
+        // Near the start
+        pages = [1, 2, 3, 4, 5, '...', totalPages];
+      } else if (currentPage > totalPages - 4) {
+        // Near the end
+        pages = [1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+      } else {
+        // In the middle
+        pages = [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
+      }
+    }
+    return pages;
+  };
+
+  return (
+    <div className={`${styles.paginationContainer} ${darkMode ? styles.darkModePaginationContainer : ''}`}>
+      {/* Left Button */}
+      <button 
+        disabled={currentPage === 1}
+        onClick={() => setCurrentPage(prev => prev - 1)}
+        className={styles.paginationLeft}
+      >
+        <ChevronLeft size={24} />
+      </button>
+
+      {/* Page Numbers & Ellipses */}
+      {getPaginationGroup().map((value, index) => (
+        <button
+          key={index}
+          type="button"
+          className={value === currentPage ? styles.activePage : styles.paginationButtonIndexes}
+          onClick={() => {
+            if(typeof value === 'number') {
+              setCurrentPage(value);
+            }
+            else{
+              console.log('Ellipsis clicked - no action');
+              toast.info('Please use arrow buttons or page numbers to navigate through pages.', {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+              });
+            }
+          }}
+        >
+          {value}
+        </button>
+      ))}
+
+      {/* Right Button */}
+      <button 
+        disabled={currentPage === totalPages}
+        onClick={() => setCurrentPage(prev => prev + 1)}
+        className={styles.paginationRight}
+      >
+        <ChevronRight size={24} />
+      </button>
+    </div>
+  );
+};
+
   return (
     <div className={`${styles.resourceManagementDashboard} ${darkMode ? styles.darkModeResourceManagementDashboard : ''}`}>
       <div className={styles.dashboardTitle }>
@@ -201,7 +176,9 @@ function ResourceManagement() {
         </button>
       </div>
 
-      <SearchBar onSortToggle={toggleGlobalDirection} darkMode={darkMode} />
+      <SearchBar onSortToggle={toggleGlobalDirection} 
+      darkMode={darkMode} searchTerm={searchTerm} onSearchTermChange={onSearchTermChange}
+      />
 
       <div className={styles.resourceList}>
         <div className={styles.resourceHeading}>
@@ -241,7 +218,7 @@ function ResourceManagement() {
 
         <hr className={styles.lineSperator} />
 
-        {sortedResources.map(resource => (
+        {sortedResources.slice((currentPage-1) * itemsPerPage, currentPage * itemsPerPage).map(resource => (
           <div key={resource.id}>
             <div className={styles.resourceItem}>
               <div className={styles.checkboxContainer}>
@@ -261,9 +238,14 @@ function ResourceManagement() {
             <hr className={styles.lineSperator} />
           </div>
         ))}
+      
       </div>
+        {/* Pagination */}
+        <Pagination totalPages={totalPages} currentPage={currentPage} 
+        setCurrentPage={setCurrentPage} darkMode={darkMode}/>
     </div>
   );
 }
 
 export default ResourceManagement;
+
