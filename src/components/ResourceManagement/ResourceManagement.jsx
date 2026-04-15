@@ -7,7 +7,11 @@ import { toast } from 'react-toastify';
 
 function SearchBar({ onSortToggle, darkMode, searchTerm, onSearchTermChange }) {
   return (
-    <div className={`${styles.searchBarContainer} ${darkMode ? styles.darkModeSearchBarContainer : ''}`}>
+    <div
+      className={`${styles.searchBarContainer} ${
+        darkMode ? styles.darkModeSearchBarContainer : ''
+      }`}
+    >
       <div className={styles.searchBarContainerLeft}>
         <span className={styles.iconAdd}>+</span>
         <span className={styles.iconLines}>=</span>
@@ -21,11 +25,11 @@ function SearchBar({ onSortToggle, darkMode, searchTerm, onSearchTermChange }) {
         </button>
       </div>
       <div className={styles.searchBarContainerRight}>
-        <input 
-          type="text" 
-          className={styles.searchInput} 
-          placeholder="Search resources..." 
-          value={searchTerm} 
+        <input
+          type="text"
+          className={styles.searchInput}
+          placeholder="Search resources..."
+          value={searchTerm}
           onChange={onSearchTermChange}
         />
       </div>
@@ -43,7 +47,15 @@ const Pagination = ({ totalPages, currentPage, setCurrentPage, darkMode }) => {
       if (currentPage <= 3) {
         pages = [1, 2, 3, 4, 5, '...', totalPages];
       } else if (currentPage > totalPages - 3) {
-        pages = [1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+        pages = [
+          1,
+          '...',
+          totalPages - 4,
+          totalPages - 3,
+          totalPages - 2,
+          totalPages - 1,
+          totalPages,
+        ];
       } else {
         pages = [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
       }
@@ -52,8 +64,12 @@ const Pagination = ({ totalPages, currentPage, setCurrentPage, darkMode }) => {
   };
 
   return (
-    <div className={`${styles.paginationContainer} ${darkMode ? styles.darkModePaginationContainer : ''}`}>
-      <button 
+    <div
+      className={`${styles.paginationContainer} ${
+        darkMode ? styles.darkModePaginationContainer : ''
+      }`}
+    >
+      <button
         disabled={currentPage === 1}
         onClick={() => setCurrentPage(prev => prev - 1)}
         className={styles.paginationLeft}
@@ -75,7 +91,7 @@ const Pagination = ({ totalPages, currentPage, setCurrentPage, darkMode }) => {
         </button>
       ))}
 
-      <button 
+      <button
         disabled={currentPage === totalPages}
         onClick={() => setCurrentPage(prev => prev + 1)}
         className={styles.paginationRight}
@@ -94,7 +110,7 @@ function ResourceManagement() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
-  const onSearchTermChange = (e) => {
+  const onSearchTermChange = e => {
     setSearchTerm(e.target.value);
     setCurrentPage(1); // Reset to page 1 on search
   };
@@ -102,10 +118,11 @@ function ResourceManagement() {
   const filteredResources = useMemo(() => {
     const term = searchTerm.toLowerCase().trim();
     if (!term) return resources;
-    return resources.filter(r => 
-      r.user.toLowerCase().includes(term) ||
-      r.facilities.toLowerCase().includes(term) ||
-      r.materials.toLowerCase().includes(term)
+    return resources.filter(
+      r =>
+        r.user.toLowerCase().includes(term) ||
+        r.facilities.toLowerCase().includes(term) ||
+        r.materials.toLowerCase().includes(term),
     );
   }, [resources, searchTerm]);
 
@@ -123,7 +140,7 @@ function ResourceManagement() {
 
   const totalPages = Math.ceil(sortedResources.length / itemsPerPage);
 
-  const requestSort = (key) => {
+  const requestSort = key => {
     let direction = 'asc';
     if (sortConfig.key === key && sortConfig.direction === 'asc') direction = 'desc';
     setSortConfig({ key, direction });
@@ -134,17 +151,23 @@ function ResourceManagement() {
   };
 
   return (
-    <div className={`${styles.resourceManagementDashboard} ${darkMode ? styles.darkModeResourceManagementDashboard : ''}`}>
+    <div
+      className={`${styles.resourceManagementDashboard} ${
+        darkMode ? styles.darkModeResourceManagementDashboard : ''
+      }`}
+    >
       <div className={styles.dashboardTitle}>
         <h2>Used Resources</h2>
-        <button type="button" className={styles.addLogButton}>Add New Log</button>
+        <button type="button" className={styles.addLogButton}>
+          Add New Log
+        </button>
       </div>
 
-      <SearchBar 
-        onSortToggle={toggleGlobalDirection} 
-        darkMode={darkMode} 
-        searchTerm={searchTerm} 
-        onSearchTermChange={onSearchTermChange} 
+      <SearchBar
+        onSortToggle={toggleGlobalDirection}
+        darkMode={darkMode}
+        searchTerm={searchTerm}
+        onSearchTermChange={onSearchTermChange}
       />
 
       <div className={styles.resourceList}>
@@ -155,19 +178,33 @@ function ResourceManagement() {
               <input type="checkbox" aria-label="Select all" />
             </div>
             <div className={styles.colUser}>
-              <button type="button" className={styles.headerSortButton} onClick={() => requestSort('user')}>
+              <button
+                type="button"
+                className={styles.headerSortButton}
+                onClick={() => requestSort('user')}
+              >
                 User {sortConfig.key === 'user' && (sortConfig.direction === 'asc' ? '🔼' : '🔽')}
               </button>
             </div>
             <div className={styles.colDuration}>
-              <button type="button" className={styles.headerSortButton} onClick={() => requestSort('timeDuration')}>
-                Time/Duration {sortConfig.key === 'timeDuration' && (sortConfig.direction === 'asc' ? '🔼' : '🔽')}
+              <button
+                type="button"
+                className={styles.headerSortButton}
+                onClick={() => requestSort('timeDuration')}
+              >
+                Time/Duration{' '}
+                {sortConfig.key === 'timeDuration' &&
+                  (sortConfig.direction === 'asc' ? '🔼' : '🔽')}
               </button>
             </div>
             <div className={styles.colFacilities}>Facilities</div>
             <div className={styles.colMaterials}>Materials</div>
             <div className={styles.colDate}>
-              <button type="button" className={styles.headerSortButton} onClick={() => requestSort('date')}>
+              <button
+                type="button"
+                className={styles.headerSortButton}
+                onClick={() => requestSort('date')}
+              >
                 Date {sortConfig.key === 'date' && (sortConfig.direction === 'asc' ? '🔼' : '🔽')}
               </button>
             </div>
@@ -176,15 +213,23 @@ function ResourceManagement() {
           {/* THE DATA ROWS */}
           {sortedResources
             .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-            .map((resource) => (
+            .map(resource => (
               <div key={resource.id} className={styles.resourceItem}>
                 <div className={styles.colCheck}>
                   <input type="checkbox" aria-label={`Select ${resource.user}`} />
                 </div>
-                <div className={`${styles.resourceItemDetail} ${styles.colUser}`}>{resource.user}</div>
-                <div className={`${styles.resourceItemDetail} ${styles.colDuration}`}>{resource.timeDuration}</div>
-                <div className={`${styles.resourceItemDetail} ${styles.colFacilities}`}>{resource.facilities}</div>
-                <div className={`${styles.resourceItemDetail} ${styles.colMaterials}`}>{resource.materials}</div>
+                <div className={`${styles.resourceItemDetail} ${styles.colUser}`}>
+                  {resource.user}
+                </div>
+                <div className={`${styles.resourceItemDetail} ${styles.colDuration}`}>
+                  {resource.timeDuration}
+                </div>
+                <div className={`${styles.resourceItemDetail} ${styles.colFacilities}`}>
+                  {resource.facilities}
+                </div>
+                <div className={`${styles.resourceItemDetail} ${styles.colMaterials}`}>
+                  {resource.materials}
+                </div>
                 <div className={`${styles.resourceItemDetail} ${styles.colDate}`}>
                   <Calendar size={14} className={styles.calendarIcon} /> {resource.date}
                 </div>
@@ -193,11 +238,11 @@ function ResourceManagement() {
         </div>
       </div>
 
-      <Pagination 
-        totalPages={totalPages} 
-        currentPage={currentPage} 
-        setCurrentPage={setCurrentPage} 
-        darkMode={darkMode} 
+      <Pagination
+        totalPages={totalPages}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        darkMode={darkMode}
       />
     </div>
   );
