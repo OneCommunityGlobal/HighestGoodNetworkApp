@@ -99,6 +99,26 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
-    setupFiles: [resolve(__dirname, 'src/setupTests.js')],
+    setupFiles: ['./src/setupTests.js'],
+    testTimeout: 30000, // 30 seconds timeout
+    fakeTimers: {
+      toFake: [
+        'setTimeout',
+        'clearTimeout',
+        'setInterval',
+        'clearInterval',
+        'setImmediate',
+        'clearImmediate',
+      ],
+    },
+    pool: 'threads',
+    poolOptions: {
+      threads: {
+        singleThread: false,
+        useAtomics: true,
+      },
+    },
+    maxThreads: 4,
+    minThreads: 1,
   },
 });
