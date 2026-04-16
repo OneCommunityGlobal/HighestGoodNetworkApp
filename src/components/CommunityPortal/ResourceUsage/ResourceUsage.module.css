@@ -81,7 +81,7 @@
   background-color: #f9fafb;
   border: 1px solid #e5e7eb;
   cursor: help;
-  /* overflow: hidden; */
+  overflow: hidden;
 }
 
 /* TITLE */
