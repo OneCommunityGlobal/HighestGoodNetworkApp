@@ -28,7 +28,7 @@ function SearchBar({ onSortToggle, darkMode, searchTerm, onSearchTermChange }) {
         <input
           type="text"
           className={styles.searchInput}
-          placeholder="Search resources..."
+          placeholder="Search ..."
           value={searchTerm}
           onChange={onSearchTermChange}
         />

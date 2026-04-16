@@ -96,7 +96,7 @@ export const MOCK_RESOURCES = [
     facilities: 'Landing Page',
     materials: 'Meadow Lane Oakland',
     date: 'Just now',
-    timestamp: Date.now() - 2000,   
+    timestamp: Date.now() - 2000,
   },
   {
     id: 12,
@@ -114,7 +114,7 @@ export const MOCK_RESOURCES = [
     facilities: 'Client Project',
     materials: 'Bagwell Avenue Ocala',
     date: '1 hour ago',
-    timestamp: Date.now() - 3600000, 
+    timestamp: Date.now() - 3600000,
   },
   {
     id: 14,
@@ -448,5 +448,5 @@ export const MOCK_RESOURCES = [
     materials: 'Small Heath Birmingham',
     date: 'Nov 15, 2023',
     timestamp: new Date('2023-11-15').getTime(),
-  }
+  },
 ];
