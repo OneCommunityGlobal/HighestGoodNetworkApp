@@ -111,7 +111,13 @@
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  align-items: center;
+  align-items: stretch;
+}
+
+.formProfileDetailGroup input,
+.resumeWrapper {
+  height: 40px;
+  display: flex;
 }
 
 .formProfileDetailGroup input,
@@ -200,10 +206,11 @@
 /* RESUME UPLOAD */
 .resumeWrapper {
   display: flex;
-  align-items: center;
+  align-items: stretch; 
   gap: 6px;
   flex: 1;
   min-width: 200px;
+  height: 40px;
 }
 
 .resumeLabel {
@@ -242,8 +249,8 @@
 
 /* REMOVE BUTTON */
 .removeResumeBtn {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   flex-shrink: 0;
   border-radius: 5px;
   display: flex;
