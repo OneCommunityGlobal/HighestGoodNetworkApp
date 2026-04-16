@@ -43,6 +43,25 @@
   z-index: 5;
 }
 
+.scrollButton {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  cursor: pointer;
+  background: #000;
+  color: #fff;
+}
+
+.dark {
+  background: #1e293b;
+}
+
 /* ---------------- INSIGHTS ---------------- */
 
 .insightsSection {

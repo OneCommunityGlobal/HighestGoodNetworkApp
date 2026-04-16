@@ -153,20 +153,7 @@ export default function ResourceUsage() {
       {showScroll && (
         <button
           onClick={scrollToTop}
-          style={{
-            position: 'fixed',
-            bottom: '24px',
-            right: '24px',
-            zIndex: 1000,
-            width: '40px',
-            height: '40px',
-            borderRadius: '50%',
-            border: 'none',
-            backgroundColor: darkMode ? '#1e293b' : '#000000',
-            color: darkMode ? '#f8fafc' : '#ffffff',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-            cursor: 'pointer',
-          }}
+          className={`${styles.scrollButton} ${darkMode ? styles.dark : ''}`}
         >
           ↑
         </button>
