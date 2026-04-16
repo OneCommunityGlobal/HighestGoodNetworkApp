@@ -46,9 +46,7 @@ function ResourcesUsage() {
     today.setHours(0, 0, 0, 0);
     dueDate.setHours(0, 0, 0, 0);
 
-    const diffInDays = Math.floor(
-      (dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
-    );
+    const diffInDays = Math.floor((dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
 
     if (diffInDays < 0) {
       return { status: 'overdue', label: 'Overdue', tooltip: 'This item is overdue' };
@@ -80,18 +78,13 @@ function ResourcesUsage() {
           const dueInfo = getDueStatus(row.dueDate);
 
           return (
-            <div
-              key={row.sNo}
-              className={`${styles.resourceRow} ${styles[dueInfo.status]}`}
-            >
+            <div key={row.sNo} className={`${styles.resourceRow} ${styles[dueInfo.status]}`}>
               <div className={`${styles.column}`}>{row.sNo}</div>
               <div className={`${styles.column}`}>{row.name}</div>
               <div className={`${styles.column}`}>{row.materials}</div>
               <div className={`${styles.column}`}>{row.facilities}</div>
 
-              <div
-                className={`${styles.column} ${styles[`status${row.status.color}`]}`}
-              >
+              <div className={`${styles.column} ${styles[`status${row.status.color}`]}`}>
                 {row.status.text}
               </div>
 
