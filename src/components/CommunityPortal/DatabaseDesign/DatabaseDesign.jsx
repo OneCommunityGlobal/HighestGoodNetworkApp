@@ -299,340 +299,287 @@ function DatabaseDesign() {
     );
   }
 
-// ONLY the return JSX part is fixed — rest unchanged
+  // ONLY the return JSX part is fixed — rest unchanged
 
-return (
-  <div className={`${styles.page} ${darkMode ? styles.darkMode : ''}`}>
-    <header className={styles.header}>
-      <h1>Event Database Design</h1>
-      <p className={styles.subtitle}>
-        Organize and categorize events by type and location
-      </p>
-    </header>
+  return (
+    <div className={`${styles.page} ${darkMode ? styles.darkMode : ''}`}>
+      <header className={styles.header}>
+        <h1>Event Database Design</h1>
+        <p className={styles.subtitle}>Organize and categorize events by type and location</p>
+      </header>
 
-    <div className={styles.filtersSection}>
-      <div className={styles.filterGroup}>
-        <label htmlFor="eventType">Event Type</label>
-        <select
-          id="eventType"
-          value={filters.type}
-          onChange={e => handleFilterChange('type', e.target.value)}
-          className={styles.filterSelect}
-        >
-          <option value="">All Types</option>
-          {eventTypes.map(type => (
-            <option key={type} value={type}>
-              {type}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className={styles.filterGroup}>
-        <label htmlFor="location">Location</label>
-        <select
-          id="location"
-          value={filters.location}
-          onChange={e => handleFilterChange('location', e.target.value)}
-          className={styles.filterSelect}
-        >
-          <option value="">All Locations</option>
-          {eventLocations.map(location => (
-            <option key={location} value={location}>
-              {location}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className={styles.filterGroup}>
-        <label htmlFor="availability">Availability</label>
-        <label className={styles.checkboxWrapper}>
-          <input
-            type="checkbox"
-            checked={filters.hasCapacity}
-            onChange={e => handleFilterChange('hasCapacity', e.target.checked)}
-          />
-          Only show events with available capacity
-        </label>
-      </div>
-
-      <div className={styles.filterGroup}>
-        <label htmlFor="sortDate">Sort by Date</label>
-        <select
-          id="sortDate"
-          value={filters.sortDate}
-          onChange={e => handleFilterChange('sortDate', e.target.value)}
-          className={styles.filterSelect}
-        >
-          <option value="">None</option>
-          <option value="earliest">Earliest to Latest</option>
-          <option value="latest">Latest to Earliest</option>
-        </select>
-      </div>
-
-      <div className={styles.filtersGroup}>
-        {(filters.type ||
-          filters.location ||
-          filters.hasCapacity ||
-          filters.sortDate) && (
-          <button
-            id="clearFilter"
-            onClick={handleClearFilters}
-            className={styles.clearFiltersButton}
+      <div className={styles.filtersSection}>
+        <div className={styles.filterGroup}>
+          <label htmlFor="eventType">Event Type</label>
+          <select
+            id="eventType"
+            value={filters.type}
+            onChange={e => handleFilterChange('type', e.target.value)}
+            className={styles.filterSelect}
           >
-            Clear Filters
+            <option value="">All Types</option>
+            {eventTypes.map(type => (
+              <option key={type} value={type}>
+                {type}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className={styles.filterGroup}>
+          <label htmlFor="location">Location</label>
+          <select
+            id="location"
+            value={filters.location}
+            onChange={e => handleFilterChange('location', e.target.value)}
+            className={styles.filterSelect}
+          >
+            <option value="">All Locations</option>
+            {eventLocations.map(location => (
+              <option key={location} value={location}>
+                {location}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className={styles.filterGroup}>
+          <label htmlFor="availability">Availability</label>
+          <label className={styles.checkboxWrapper}>
+            <input
+              type="checkbox"
+              checked={filters.hasCapacity}
+              onChange={e => handleFilterChange('hasCapacity', e.target.checked)}
+            />
+            Only show events with available capacity
+          </label>
+        </div>
+
+        <div className={styles.filterGroup}>
+          <label htmlFor="sortDate">Sort by Date</label>
+          <select
+            id="sortDate"
+            value={filters.sortDate}
+            onChange={e => handleFilterChange('sortDate', e.target.value)}
+            className={styles.filterSelect}
+          >
+            <option value="">None</option>
+            <option value="earliest">Earliest to Latest</option>
+            <option value="latest">Latest to Earliest</option>
+          </select>
+        </div>
+
+        <div className={styles.filtersGroup}>
+          {(filters.type || filters.location || filters.hasCapacity || filters.sortDate) && (
+            <button
+              id="clearFilter"
+              onClick={handleClearFilters}
+              className={styles.clearFiltersButton}
+            >
+              Clear Filters
+            </button>
+          )}
+        </div>
+      </div>
+
+      {error && events.length > 0 && (
+        <div className={styles.errorBanner}>
+          <span>Warning: {error}</span>
+          <button onClick={handleRetry} className={styles.retryButtonSmall}>
+            Retry
           </button>
+        </div>
+      )}
+
+      <div className={styles.resultsCount}>
+        <span>
+          Showing {events.length} event{events.length !== 1 ? 's' : ''}
+        </span>
+      </div>
+
+      <div className={styles.eventsSection}>
+        {events.length === 0 ? (
+          <div className={styles.emptyState}>
+            <p>No events found matching your filters.</p>
+          </div>
+        ) : (
+          <div className={styles.eventsGrid}>
+            {events
+              .filter(event => {
+                if (filters.hasCapacity) {
+                  const capacity = event.maxAttendees || 0;
+                  const currentAttendees = event.currentAttendees || 0;
+                  const hasCapacity = capacity === 0 ? true : currentAttendees < capacity;
+                  if (!hasCapacity) return false;
+                }
+                return true;
+              })
+              .map(event => {
+                const alreadyJoined = isAlreadyInWaitlist(event);
+
+                const formattedDate = event.date
+                  ? moment(event.date).format('dddd, MMM D, YYYY')
+                  : 'Date TBD';
+
+                const formattedStartTime = event.startTime
+                  ? moment(event.startTime).format('h:mm A')
+                  : '';
+
+                const formattedEndTime = event.endTime
+                  ? moment(event.endTime).format('h:mm A')
+                  : '';
+
+                const timeRange =
+                  formattedStartTime && formattedEndTime
+                    ? `${formattedStartTime} - ${formattedEndTime}`
+                    : 'Time TBD';
+
+                const isVirtual = event.location === 'Virtual';
+                const organizer = event.resources?.[0]?.name || 'Organizer TBD';
+
+                const capacity = event.maxAttendees || 0;
+                const currentAttendees = event.currentAttendees || 0;
+
+                return (
+                  <div
+                    key={event._id || event.id}
+                    className={`${styles.eventCard} ${
+                      isVirtual ? styles.virtualEvent : styles.inPersonEvent
+                    }`}
+                  >
+                    <div className={styles.eventHeader}>
+                      <h3>{event.title}</h3>
+
+                      {event.waitlistEnabled && (
+                        <span className={styles.waitlistBadge}>Waitlist</span>
+                      )}
+
+                      <span
+                        className={`${styles.statusBadge} ${
+                          styles[`status${event.status?.replace(/\s+/g, '')}`]
+                        }`}
+                      >
+                        {event.status}
+                      </span>
+                    </div>
+
+                    <div className={styles.eventFormatIndicator}>
+                      {isVirtual ? (
+                        <span className={styles.formatBadge}>
+                          <FaVideo className={styles.formatIcon} />
+                          Virtual Event
+                        </span>
+                      ) : (
+                        <span className={styles.formatBadge}>
+                          <FaBuilding className={styles.formatIcon} />
+                          In-Person Event
+                        </span>
+                      )}
+                    </div>
+
+                    <div className={styles.eventDetails}>
+                      <div className={styles.eventDetailRow}>
+                        <FaCalendarAlt className={styles.detailIcon} />
+                        <span>{formattedDate}</span>
+                      </div>
+
+                      <div className={styles.eventDetailRow}>
+                        <FaClock className={styles.detailIcon} />
+                        <span>{timeRange}</span>
+                      </div>
+
+                      <div className={styles.eventDetailRow}>
+                        <FaMapMarkerAlt className={styles.detailIcon} />
+                        <span>{event.location}</span>
+                      </div>
+
+                      <div className={styles.eventDetailRow}>
+                        <FaUsers className={styles.detailIcon} />
+                        <span>
+                          {currentAttendees} / {capacity} attendees
+                          {event.waitlistCount > 0 && <> • {event.waitlistCount} on waitlist</>}
+                          {event.waitlistEnabled && !event.userWaitlistPosition && (
+                            <div className={styles.waitlistAvailable}>Waitlist available</div>
+                          )}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className={styles.eventMeta}>
+                      <span className={styles.eventType}>{event.type}</span>
+                      <span className={styles.organizer}>Organized by: {organizer}</span>
+                    </div>
+
+                    {event.description && (
+                      <p className={styles.eventDescription}>{event.description}</p>
+                    )}
+
+                    {event.userWaitlistPosition && (
+                      <div className={styles.waitlistPosition}>
+                        You&apos;re on the waitlist (Position #{event.userWaitlistPosition})
+                      </div>
+                    )}
+
+                    <div className={styles.eventActions}>
+                      {currentAttendees >= capacity || alreadyJoined ? (
+                        <button
+                          onClick={() =>
+                            alreadyJoined
+                              ? handleLeaveWaitlist(event._id || event.id)
+                              : handleJoinWaitlist(event._id || event.id)
+                          }
+                          className={styles.actionButton}
+                          disabled={
+                            actionLoading[`waitlist-${event._id || event.id}`] ||
+                            (!userId && !alreadyJoined)
+                          }
+                        >
+                          {actionLoading[`waitlist-${event._id || event.id}`] ? (
+                            <>
+                              <FaSpinner className={styles.buttonSpinner} />
+                              Processing...
+                            </>
+                          ) : !userId ? (
+                            'Login to Join'
+                          ) : alreadyJoined ? (
+                            'Leave Waitlist'
+                          ) : (
+                            'Join Waitlist'
+                          )}
+                        </button>
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => handleConfirmAttendance(event._id || event.id)}
+                            className={styles.actionButton}
+                          >
+                            Confirm Attendance
+                          </button>
+
+                          <button
+                            onClick={() => handleLogActivity(event._id || event.id)}
+                            className={styles.actionButton}
+                          >
+                            Log Activity
+                          </button>
+
+                          <button
+                            onClick={() => handleReports(event._id || event.id)}
+                            className={styles.actionButton}
+                          >
+                            Reports
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
         )}
       </div>
     </div>
-
-    {error && events.length > 0 && (
-      <div className={styles.errorBanner}>
-        <span>Warning: {error}</span>
-        <button onClick={handleRetry} className={styles.retryButtonSmall}>
-          Retry
-        </button>
-      </div>
-    )}
-
-    <div className={styles.resultsCount}>
-      <span>
-        Showing {events.length} event{events.length !== 1 ? 's' : ''}
-      </span>
-    </div>
-
-    <div className={styles.eventsSection}>
-      {events.length === 0 ? (
-        <div className={styles.emptyState}>
-          <p>No events found matching your filters.</p>
-        </div>
-      ) : (
-        <div className={styles.eventsGrid}>
-          {events
-            .filter(event => {
-              if (filters.hasCapacity) {
-                const capacity = event.maxAttendees || 0;
-                const currentAttendees = event.currentAttendees || 0;
-                const hasCapacity =
-                  capacity === 0 ? true : currentAttendees < capacity;
-                if (!hasCapacity) return false;
-              }
-              return true;
-            })
-            .map(event => {
-              const alreadyJoined = isAlreadyInWaitlist(event);
-
-              const formattedDate = event.date
-                ? moment(event.date).format('dddd, MMM D, YYYY')
-                : 'Date TBD';
-
-              const formattedStartTime = event.startTime
-                ? moment(event.startTime).format('h:mm A')
-                : '';
-
-              const formattedEndTime = event.endTime
-                ? moment(event.endTime).format('h:mm A')
-                : '';
-
-              const timeRange =
-                formattedStartTime && formattedEndTime
-                  ? `${formattedStartTime} - ${formattedEndTime}`
-                  : 'Time TBD';
-
-              const isVirtual = event.location === 'Virtual';
-              const organizer =
-                event.resources?.[0]?.name || 'Organizer TBD';
-
-              const capacity = event.maxAttendees || 0;
-              const currentAttendees = event.currentAttendees || 0;
-
-              return (
-                <div
-                  key={event._id || event.id}
-                  className={`${styles.eventCard} ${
-                    isVirtual
-                      ? styles.virtualEvent
-                      : styles.inPersonEvent
-                  }`}
-                >
-                  <div className={styles.eventHeader}>
-                    <h3>{event.title}</h3>
-
-                    {event.waitlistEnabled && (
-                      <span className={styles.waitlistBadge}>
-                        Waitlist
-                      </span>
-                    )}
-
-                    <span
-                      className={`${styles.statusBadge} ${
-                        styles[
-                          `status${event.status?.replace(/\s+/g, '')}`
-                        ]
-                      }`}
-                    >
-                      {event.status}
-                    </span>
-                  </div>
-
-                  <div className={styles.eventFormatIndicator}>
-                    {isVirtual ? (
-                      <span className={styles.formatBadge}>
-                        <FaVideo className={styles.formatIcon} />
-                        Virtual Event
-                      </span>
-                    ) : (
-                      <span className={styles.formatBadge}>
-                        <FaBuilding className={styles.formatIcon} />
-                        In-Person Event
-                      </span>
-                    )}
-                  </div>
-
-                  <div className={styles.eventDetails}>
-                    <div className={styles.eventDetailRow}>
-                      <FaCalendarAlt className={styles.detailIcon} />
-                      <span>{formattedDate}</span>
-                    </div>
-
-                    <div className={styles.eventDetailRow}>
-                      <FaClock className={styles.detailIcon} />
-                      <span>{timeRange}</span>
-                    </div>
-
-                    <div className={styles.eventDetailRow}>
-                      <FaMapMarkerAlt className={styles.detailIcon} />
-                      <span>{event.location}</span>
-                    </div>
-
-                    <div className={styles.eventDetailRow}>
-                      <FaUsers className={styles.detailIcon} />
-                      <span>
-                        {currentAttendees} / {capacity} attendees
-                        {event.waitlistCount > 0 && (
-                          <> • {event.waitlistCount} on waitlist</>
-                        )}
-                        {event.waitlistEnabled &&
-                          !event.userWaitlistPosition && (
-                            <div
-                              className={
-                                styles.waitlistAvailable
-                              }
-                            >
-                              Waitlist available
-                            </div>
-                          )}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className={styles.eventMeta}>
-                    <span className={styles.eventType}>
-                      {event.type}
-                    </span>
-                    <span className={styles.organizer}>
-                      Organized by: {organizer}
-                    </span>
-                  </div>
-
-                  {event.description && (
-                    <p className={styles.eventDescription}>
-                      {event.description}
-                    </p>
-                  )}
-
-                  {event.userWaitlistPosition && (
-                    <div className={styles.waitlistPosition}>
-                      You&apos;re on the waitlist (Position #
-                      {event.userWaitlistPosition})
-                    </div>
-                  )}
-
-                  <div className={styles.eventActions}>
-                    {currentAttendees >= capacity || alreadyJoined ? (
-                      <button
-                        onClick={() =>
-                          alreadyJoined
-                            ? handleLeaveWaitlist(
-                                event._id || event.id
-                              )
-                            : handleJoinWaitlist(
-                                event._id || event.id
-                              )
-                        }
-                        className={styles.actionButton}
-                        disabled={
-                          actionLoading[
-                            `waitlist-${event._id || event.id}`
-                          ] ||
-                          (!userId && !alreadyJoined)
-                        }
-                      >
-                        {actionLoading[
-                          `waitlist-${event._id || event.id}`
-                        ] ? (
-                          <>
-                            <FaSpinner
-                              className={
-                                styles.buttonSpinner
-                              }
-                            />
-                            Processing...
-                          </>
-                        ) : !userId ? (
-                          'Login to Join'
-                        ) : alreadyJoined ? (
-                          'Leave Waitlist'
-                        ) : (
-                          'Join Waitlist'
-                        )}
-                      </button>
-                    ) : (
-                      <>
-                        <button
-                          onClick={() =>
-                            handleConfirmAttendance(
-                              event._id || event.id
-                            )
-                          }
-                          className={styles.actionButton}
-                        >
-                          Confirm Attendance
-                        </button>
-
-                        <button
-                          onClick={() =>
-                            handleLogActivity(
-                              event._id || event.id
-                            )
-                          }
-                          className={styles.actionButton}
-                        >
-                          Log Activity
-                        </button>
-
-                        <button
-                          onClick={() =>
-                            handleReports(
-                              event._id || event.id
-                            )
-                          }
-                          className={styles.actionButton}
-                        >
-                          Reports
-                        </button>
-                      </>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-        </div>
-      )}
-    </div>
-  </div>
-);
+  );
 }
 
 export default DatabaseDesign;
