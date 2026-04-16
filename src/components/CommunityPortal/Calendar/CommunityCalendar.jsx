@@ -37,48 +37,48 @@ export default function CommunityCalendar() {
   const currentDate = new Date();
 
 
-useEffect(() => {
-  if (process.env.NODE_ENV === 'test') {
-    setEvents(MOCK_EVENTS);
-    setIsLoading(false);
-    return;
-  }
+  useEffect(() => {
+    const fetchEvents = async () => {
+      setIsLoading(true);
+      try {
+        const response = await axios.get(ENDPOINTS.EVENTS);
 
-  const fetchEvents = async () => {
-    setIsLoading(true);
-    try {
-      const response = await axios.get(ENDPOINTS.EVENTS);
-      const apiEvents = response.data?.events || response.data || [];
+        const apiEvents = response.data?.events || response.data || [];
 
-      setEvents(apiEvents.length ? apiEvents : MOCK_EVENTS);
-    } catch (err) {
-      setEvents(MOCK_EVENTS);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  fetchEvents();
-}, []);
-
-const mappedEvents = useMemo(() => {
-  return events.map(event => {
-    const eventDate = event.date ? new Date(event.date) : new Date();
-
-    return {
-      ...event,
-      id: event.id || `${event.title}-${eventDate.getTime()}`,
-      date: eventDate,
-      type: event.type || 'General',
-      status: normalizeStatus(event.status),
-      time:
-        event.time ||
-        eventDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      description: event.description || `Join us for ${event.title}`,
-      location: event.location || 'Online',
+        if (!apiEvents || apiEvents.length === 0) {
+          console.warn('API returned empty → using mock events');
+          setEvents(MOCK_EVENTS);
+        } else {
+          setEvents(apiEvents);
+        }
+      } catch (err) {
+        console.warn('API failed → using mock events');
+        setEvents(MOCK_EVENTS);
+      } finally {
+        setIsLoading(false);
+      }
     };
-  });
-}, [events]);
+
+    fetchEvents();
+  }, []);
+
+  const mappedEvents = useMemo(() => {
+    return events.map(event => {
+      const eventDate = new Date(event.date);
+      const timeString = eventDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      return {
+        ...event,
+        id: event.id || `${event.title}-${eventDate.getTime()}`,
+        date: eventDate,
+        type: event.type || 'General',
+        status: normalizeStatus(event.status),
+        time: event.time || timeString,
+        description: event.description || `Join us for ${event.title}`,
+        location: event.location || 'Online',
+      };
+    });
+  }, [events]);
 
   const filteredEvents = useMemo(
     () =>
@@ -165,13 +165,13 @@ const mappedEvents = useMemo(() => {
     },
     [getEventsForDate],
   );
-const handleEventClick = useCallback(event => {
-  setSelectedDate(new Date(event.date));
+  const handleEventClick = useCallback(event => {
+    setSelectedDate(new Date(event.date));
 
-  setSelectedEvent(event);
+    setSelectedEvent(event);
 
-  setShowEventModal(true);
-}, []);
+    setShowEventModal(true);
+  }, []);
   const closeEventModal = useCallback(() => {
     setShowEventModal(false);
     setSelectedEvent(null);
@@ -347,51 +347,50 @@ const handleEventClick = useCallback(event => {
       const hiddenCount = events.length - 3;
 
       return (
-      
         <div className={styles.tileEvents}>
-        {visible.map(e => {
-          const statusKey = statusMap[e.status] || 'statusNew';
+          {visible.map(e => {
+            const statusKey = statusMap[e.status] || 'statusNew';
 
-          return (
-            <button
-              key={e.id}
-              type="button"
-              className={`${styles.eventItem} ${styles[statusKey] || ''}`}
-              onClick={e_obj => {
-                e_obj.stopPropagation();
-                handleEventClick(e);
-              }}
-              onMouseEnter={() => setHoveredEventId(e.id)}
-              onMouseLeave={() => setHoveredEventId(null)}
-              aria-label={`Click to view details for ${e.title}`}
-            >
-              <span className={styles.eventContent}>
-                <span className={styles.eventIcon} aria-label={e.status} title={e.status}>
-                  {statusIconMap[e.status] || '⭐'}
+            return (
+              <button
+                key={e.id}
+                type="button"
+                className={`${styles.eventItem} ${styles[statusKey] || ''}`}
+                onClick={e_obj => {
+                  e_obj.stopPropagation();
+                  handleEventClick(e);
+                }}
+                onMouseEnter={() => setHoveredEventId(e.id)}
+                onMouseLeave={() => setHoveredEventId(null)}
+                aria-label={`Click to view details for ${e.title}`}
+              >
+                <span className={styles.eventContent}>
+                  <span className={styles.eventIcon} aria-label={e.status} title={e.status}>
+                    {statusIconMap[e.status] || '⭐'}
+                  </span>
+                  <span className={styles.eventTitleText}>{e.title}</span>
                 </span>
-                <span className={styles.eventTitleText}>{e.title}</span>
-              </span>
 
-              {hoveredEventId === e.id && (
-                <div
-                  className={`${styles.eventTooltip} ${darkMode ? styles.eventTooltipDark : ''}`}
-                >
-                  <strong>{e.title}</strong>
-                  <span className={styles.tooltipDetail}>
-                    <strong>Time:</strong> {e.time}
-                  </span>
-                  <span className={styles.tooltipDetail}>
-                    <strong>Location:</strong> {e.location}
-                  </span>
-                  <span className={styles.tooltipDetail}>
-                    <strong>Status:</strong> {e.status}
-                  </span>
-                  <small>Click for more details</small>
-                </div>
-              )}
-            </button>
-          );
-        })}
+                {hoveredEventId === e.id && (
+                  <div
+                    className={`${styles.eventTooltip} ${darkMode ? styles.eventTooltipDark : ''}`}
+                  >
+                    <strong>{e.title}</strong>
+                    <span className={styles.tooltipDetail}>
+                      <strong>Time:</strong> {e.time}
+                    </span>
+                    <span className={styles.tooltipDetail}>
+                      <strong>Location:</strong> {e.location}
+                    </span>
+                    <span className={styles.tooltipDetail}>
+                      <strong>Status:</strong> {e.status}
+                    </span>
+                    <small>Click for more details</small>
+                  </div>
+                )}
+              </button>
+            );
+          })}
           {hiddenCount > 0 && (
             <button
               type="button"
@@ -634,7 +633,10 @@ const handleEventClick = useCallback(event => {
                                   </li>
 
                                   <li className={styles.metaItem}>
-                                    <FontAwesomeIcon icon={faLocationDot} className={styles.metaIcon} />
+                                    <FontAwesomeIcon
+                                      icon={faLocationDot}
+                                      className={styles.metaIcon}
+                                    />
                                     <span>{event.location}</span>
                                   </li>
 
@@ -644,7 +646,10 @@ const handleEventClick = useCallback(event => {
                                   </li>
 
                                   <li className={styles.metaItem}>
-                                    <FontAwesomeIcon icon={faCircleCheck} className={styles.metaIcon} />
+                                    <FontAwesomeIcon
+                                      icon={faCircleCheck}
+                                      className={styles.metaIcon}
+                                    />
                                     <span className={styles.statusInline}>
                                       {statusIconMap[event.status] || ''} {event.status}
                                     </span>
@@ -778,4 +783,3 @@ const handleEventClick = useCallback(event => {
     </div>
   );
 }
-
