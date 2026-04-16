@@ -406,7 +406,7 @@ export function Header(props) {
   const viewingUser = JSON.parse(window.sessionStorage.getItem('viewingUser'));
   return (
     <div className={`${styles.headerWrapper}`} data-testid="header">
-      <Navbar className={`py-3 ${styles.navbar}`} color="dark" dark expand="xl">
+      <Navbar className={`py-3 ${styles.navbar}`} color="dark" dark expand={true}>
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
         {showPromotionsPopup && <DisplayBox onClose={() => setShowPromotionsPopup(false)} />}
   
