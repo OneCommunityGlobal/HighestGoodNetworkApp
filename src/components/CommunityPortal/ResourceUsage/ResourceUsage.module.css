@@ -62,25 +62,12 @@
   z-index: 5;
 }
 
-.yAxisLabel {
-  position: absolute;
-  top: -8px;
-  left: 35px;
-  font-size: 13px;
-  font-weight: 700;
-  z-index: 5;
-}
-
 /* ---------------- INSIGHTS ---------------- */
 
 .insightsSection {
   width: 400px;
   padding: 1.5rem;
   border-left: 1px solid #e5e7eb;
-}
-
-.darkInsightsSection {
-  background: #1b2a41;
 }
 
 .insightCard {
@@ -111,27 +98,22 @@
 /* Tooltip */
 .insightTooltip {
   position: absolute;
-  bottom: 3.25rem;
+  bottom: 100%;
   left: 50%;
-  transform: translateX(-50%) translateY(6px);
-  max-width: 140px;
-  width: max-content;
-  padding: 0.6rem 0.75rem;
-  background-color: #374151;
-  color: #fff;
-  font-size: 0.75rem;
-  line-height: 1.35;
-  border-radius: 0.5rem;
-  white-space: normal;
-  text-align: left;
-  box-shadow: 0 8px 20px rgb(0 0 0 / 18%);
+  transform: translateX(-50%);
+  background: #374151;
+  color: white;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 12px;
   opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
   pointer-events: none;
-  transition: opacity 0.15s ease, transform 0.15s ease;
-  z-index: 5;
+  z-index: 10;
 }
 
-/* 🔥 FIX: Apply dark styles INSIDE insights section */
+/* FIX: Apply dark styles INSIDE insights section */
 .darkInsightsSection .insightCard {
   background-color: #1e293b;
   border: 1px solid #334155;
@@ -176,20 +158,6 @@
 }
 
 /* BADGE */
-
-.insightCard {
-  padding: 1rem;
-  border-radius: 0.75rem;
-}
-
-.darkInsightCard {
-  background: #2b3e59;
-}
-
-.insightTitle {
-  margin-bottom: 0.75rem;
-  font-size: 0.875rem;
-}
 
 .insightBadge {
   padding: 0.25rem 0.75rem;
@@ -256,7 +224,7 @@
 .dark-mode .customDropdown,
 .dark-mode .dropdown-toggle.customDropdown {
   background-color: #1C2541 !important;
-  color: #ffffff !important;
+  color: #fff !important;
   border-color: #3A506B !important;
 }
 
@@ -271,16 +239,11 @@
 }
 
 .dark-mode .dropdown-item {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .dark-mode .dropdown-item:hover {
   background-color: #3A506B !important;
-}
-
-/* Badge visibility in dark mode */
-.dark-mode .insightBadge {
-  color: #111827 !important;
 }
 
 /* Chart ticks */
@@ -288,5 +251,4 @@
   font-size: 12px;
   font-weight: 700;
   fill: #666;
-  font-weight: 700;
 }

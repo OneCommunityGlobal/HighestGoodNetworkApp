@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef} from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import {
   BarChart,
@@ -89,31 +89,31 @@ function filterDataByDate(data, timePeriod) {
 function CustomTooltip({ active, payload, darkMode }) {
   if (!active || !payload || !payload.length) return null;
 
-const data = payload[0].payload;
+  const data = payload[0].payload;
 
-return (
-  <div
-    className={styles.chartTooltip}
-    style={{
-      backgroundColor: darkMode ? '#1e293b' : '#ffffff',
-      color: darkMode ? '#f8fafc' : '#111827',
-    }}
-  >
-    <div className={styles.tooltipTitle}>{data.name}</div>
+  return (
+    <div
+      className={styles.chartTooltip}
+      style={{
+        backgroundColor: darkMode ? '#1e293b' : '#ffffff',
+        color: darkMode ? '#f8fafc' : '#111827',
+      }}
+    >
+      <div className={styles.tooltipTitle}>{data.name}</div>
 
-    <div className={styles.tooltipRow}>
-      <span className={styles.tooltipDot} style={{ background: '#22c55e' }} />
-      <span>Returned</span>
-      <span className={styles.tooltipValue}>{data.returned}</span>
+      <div className={styles.tooltipRow}>
+        <span className={styles.tooltipDot} style={{ background: '#22c55e' }} />
+        <span>Returned</span>
+        <span className={styles.tooltipValue}>{data.returned}</span>
+      </div>
+
+      <div className={styles.tooltipRow}>
+        <span className={styles.tooltipDot} style={{ background: '#fca5a5' }} />
+        <span>Loaned</span>
+        <span className={styles.tooltipValue}>{data.loaned}</span>
+      </div>
     </div>
-
-    <div className={styles.tooltipRow}>
-      <span className={styles.tooltipDot} style={{ background: '#fca5a5' }} />
-      <span>Loaned</span>
-      <span className={styles.tooltipValue}>{data.loaned}</span>
-    </div>
-  </div>
-);
+  );
 }
 
 export default function ResourceUsage() {
@@ -129,10 +129,10 @@ export default function ResourceUsage() {
   useEffect(() => {
     badgeRefs.current.forEach(badge => {
       if (badge) {
-        badge.style.setProperty('color', '#000', 'important');
+        badge.style.setProperty('color', darkMode ? '#000' : '#000');
       }
     });
-  }, [insights]);
+  }, [insights, darkMode]);
 
   useEffect(() => {
     const resourceTypeKey = resourceType.toLowerCase();
@@ -245,65 +245,63 @@ export default function ResourceUsage() {
               <p>No data available for the selected time period and resource type.</p>
             </div>
           )}
-          </div>
-          </div>
+        </div>
+      </div>
 
-          {/* RIGHT SECTION */}
-          <div className={`${styles.insightsSection} ${darkMode ? 'bg-space-cadet text-light' : ''}`}>
-            <div className={styles.insightsHeader}>
-              <h2>Insights</h2>
-              <Dropdown>
-                <Dropdown.Toggle className={styles.customDropdown}>
-                  {insightsTimePeriod}
-                </Dropdown.Toggle>
-                <Dropdown.Menu>
-                  <Dropdown.Item onClick={() => setInsightsTimePeriod('This Week')}>
-                    This Week
-                  </Dropdown.Item>
-                  <Dropdown.Item onClick={() => setInsightsTimePeriod('Last Week')}>
-                    Last Week
-                  </Dropdown.Item>
-                  <Dropdown.Item onClick={() => setInsightsTimePeriod('This Month')}>
-                    This Month
-                  </Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
-            </div>
+      {/* RIGHT SECTION */}
+      <div className={`${styles.insightsSection} ${darkMode ? styles.darkInsightsSection : ''}`}>
+        <div className={styles.insightsHeader}>
+          <h2>Insights</h2>
+          <Dropdown>
+            <Dropdown.Toggle className={styles.customDropdown}>
+              {insightsTimePeriod}
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+              <Dropdown.Item onClick={() => setInsightsTimePeriod('This Week')}>
+                This Week
+              </Dropdown.Item>
+              <Dropdown.Item onClick={() => setInsightsTimePeriod('Last Week')}>
+                Last Week
+              </Dropdown.Item>
+              <Dropdown.Item onClick={() => setInsightsTimePeriod('This Month')}>
+                This Month
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+        </div>
 
-            <div className={styles.insightsGrid}>
-              {insights.map((insight, idx) => (
+        <div className={styles.insightsGrid}>
+          {insights.map((insight, idx) => (
+            <div
+              key={idx}
+              className={`${styles.insightCard} ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
+            >
+              <div className={styles.insightContent}>
                 <div
-                  key={idx}
-                  className={`${styles.insightCard} ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
+                  className={styles.insightTitle}
+                  title={insightDefinitions[insight.title]}
+                  style={{ color: darkMode ? '#e5e7eb' : '#6b7280', fontWeight: 600 }}
                 >
-                  {/* Tooltip description */}
-                  <div className={styles.insightTooltip}>
-                    {insightDefinitions[insight.title]}
-                  </div>
+                  {insight.title}
+                </div>
 
-              <div
-                className={styles.insightTitle}
-                title={insightDefinitions[insight.title]}
-                style={{ color: darkMode ? '#342d2dff' : '#6b7280', fontWeight: 600 }}
-              >
-                {insight.title}
+                <div
+                  ref={el => (badgeRefs.current[idx] = el)}
+                  className={`${styles.insightBadge} ${darkMode ? 'text-dark' : ''}`}
+                  style={{ backgroundColor: insight.color }}
+                >
+                  {insight.value}
+                </div>
+
+                <div className={styles.insightMeta}>Based on returned vs loaned comparison</div>
               </div>
 
-              <div
-                ref={el => (badgeRefs.current[idx] = el)}
-                className={`${styles.insightBadge} ${darkMode ? 'text-dark' : ''}`}
-                style={{ backgroundColor: insight.color }}
-              >
-                {insight.value}
-              </div>
-
-              <div className={styles.insightMeta}>
-                Based on returned vs loaned comparison
-              </div>
+              {/* Tooltip */}
+              <div className={styles.insightTooltip}>{insightDefinitions[insight.title]}</div>
             </div>
           ))}
         </div>
-              </div>
       </div>
+    </div>
   );
 }
