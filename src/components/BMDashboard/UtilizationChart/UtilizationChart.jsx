@@ -48,23 +48,6 @@ const computeTrendLine = values => {
   return values.map((_, x) => Math.round((slope * x + intercept) * 10) / 10);
 };
 
-// Build 4 weekly date ranges ending at 'baseEnd'
-// If no baseEnd provided, defaults to today
-const buildWeeklyRanges = baseEnd => {
-  const end = baseEnd ? new Date(baseEnd) : new Date();
-  return Array.from({ length: 4 }, (_, i) => {
-    const weekEnd = new Date(end);
-    weekEnd.setDate(end.getDate() - (3 - i) * 7);
-    const weekStart = new Date(weekEnd);
-    weekStart.setDate(weekEnd.getDate() - 7);
-    return {
-      label: `Week of ${weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`,
-      startDate: weekStart,
-      endDate: weekEnd,
-    };
-  });
-};
-
 function UtilizationChart() {
   const [toolsData, setToolsData] = useState([]);
   const [previousToolsData, setPreviousToolsData] = useState([]);
@@ -93,14 +76,14 @@ function UtilizationChart() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Mock previous data for comparison testing
-  const getMockPreviousData = data => {
-    return data.map(tool => ({
-      ...tool,
-      utilizationRate: Math.max(0, tool.utilizationRate + Math.floor(Math.random() * 21) - 15),
-      downtime: Math.round(tool.downtime * (0.85 + Math.random() * 0.3)),
-    }));
-  };
+  // Mock previous data for comparison testing — uncomment to use
+  // const getMockPreviousData = data => {
+  //   return data.map(tool => ({
+  //     ...tool,
+  //     utilizationRate: Math.max(0, tool.utilizationRate + Math.floor(Math.random() * 21) - 15),
+  //     downtime: Math.round(tool.downtime * (0.85 + Math.random() * 0.3)),
+  //   }));
+  // };
 
   // Compute previous period date range
   const getPreviousPeriod = () => {
@@ -113,37 +96,22 @@ function UtilizationChart() {
     };
   };
 
-  // Fetch 4 weekly trend data points in parallel
+  // Fetch trend data using single API call with groupBy=week
   const fetchTrendData = async () => {
     try {
-      const weeklyRanges = buildWeeklyRanges(endDate);
-      const weeklyResponses = await Promise.all(
-        weeklyRanges.map(({ startDate: wStart, endDate: wEnd }) =>
-          axios.get(`${process.env.REACT_APP_APIENDPOINT}/tools/utilization`, {
-            params: {
-              startDate: wStart,
-              endDate: wEnd,
-              tool: toolFilter,
-              project: projectFilter,
-            },
-            headers: { Authorization: localStorage.getItem('token') },
-          }),
-        ),
-      );
-
-      const trend = weeklyRanges.map(({ label }, i) => {
-        const data = weeklyResponses[i].data;
-        const avgUtilization =
-          data.length > 0
-            ? Math.round((data.reduce((sum, t) => sum + t.utilizationRate, 0) / data.length) * 10) /
-              10
-            : 0;
-        return { week: label, avgUtilization };
+      const response = await axios.get(`${process.env.REACT_APP_APIENDPOINT}/tools/utilization`, {
+        params: {
+          startDate,
+          endDate,
+          tool: toolFilter,
+          project: projectFilter,
+          groupBy: 'week',
+        },
+        headers: { Authorization: localStorage.getItem('token') },
       });
+      setTrendData(response.data);
 
-      setTrendData(trend);
-
-      //Mock trend data for testing - uncomment to use
+      // Mock trend data for testing — uncomment to use
       // const now = new Date();
       // const mockTrend = Array.from({ length: 4 }, (_, i) => {
       //   const weekStart = new Date(now);
@@ -185,8 +153,9 @@ function UtilizationChart() {
             headers: { Authorization: localStorage.getItem('token') },
           },
         );
-        // setPreviousToolsData(prevResponse.data);
-        setPreviousToolsData(getMockPreviousData(data));
+        setPreviousToolsData(prevResponse.data);
+        // Mock comparison data for testing — uncomment to use
+        // setPreviousToolsData(getMockPreviousData(data));
       } else {
         setPreviousToolsData([]);
         setShowIncreasedOnly(false);
@@ -228,7 +197,6 @@ function UtilizationChart() {
     const newMode = !comparisonMode;
     setComparisonMode(newMode);
     if (!newMode) setShowIncreasedOnly(false);
-    fetchChartData(newMode);
   };
 
   // Filtered data for "increased only" toggle
@@ -458,7 +426,11 @@ function UtilizationChart() {
       y: {
         min: 0,
         max: 100,
-        title: { display: true, text: 'Avg Utilization (%)', color: darkMode ? '#ffffff' : '#333' },
+        title: {
+          display: true,
+          text: 'Avg Utilization (%)',
+          color: darkMode ? '#ffffff' : '#333',
+        },
         ticks: { color: darkMode ? '#ffffff' : '#333' },
         grid: { color: darkMode ? '#c7c7c7ff' : '#bebebeff' },
       },
