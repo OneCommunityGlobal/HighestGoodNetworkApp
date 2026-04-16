@@ -488,6 +488,13 @@
   color: #cbd5e0;
 }
 
+.selectedEventMeta .metaItem{
+  list-style-type: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .eventDetailButton {
   border: none;
   background-color: #1e40af;
@@ -1143,3 +1150,4 @@
   }
 
 }
+
