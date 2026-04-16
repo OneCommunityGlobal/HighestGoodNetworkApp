@@ -132,7 +132,7 @@ export default function ResourceUsage() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setShowScroll(window.scrollY > 200);
+      setShowScroll(window.scrollY < 200);
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -162,8 +162,8 @@ export default function ResourceUsage() {
             height: '40px',
             borderRadius: '50%',
             border: 'none',
-            backgroundColor: darkMode ? '#1e293b' : '#ffffff',
-            color: darkMode ? '#f8fafc' : '#111827',
+            backgroundColor: darkMode ? '#1e293b' : '#000000',
+            color: darkMode ? '#f8fafc' : '#ffffff',
             boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
             cursor: 'pointer',
           }}
