@@ -85,6 +85,33 @@
   gap: 8px;
 }
 
+.emptyState {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  text-align: center;
+  color: #666; 
+  min-height: 250px;
+  border-radius: 12px;
+  background: transparent;
+}
+
+.emptyState.dark {
+  color: #ccc; /* Dark mode text color */
+}
+
+.emptyState p {
+  margin: 0.5rem 0;
+  font-size: 1rem;
+}
+
+.emptyState button {
+  margin-top: 1rem;
+}
+
 /* Buttons FIRST to avoid specificity issues */
 .dropdownWrapper button {
   padding: 8px 12px;

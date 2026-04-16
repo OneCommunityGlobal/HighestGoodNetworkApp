@@ -333,23 +333,33 @@ function Collaboration() {
 
         {/* JOB GRID */}
         <div className={styles.jobList}>
-          {jobAds.map(ad => (
-            <button
-              key={ad._id}
-              type="button"
-              className={styles.jobAd}
-              onClick={() => setSelectedJob(ad)}
-            >
-              <img
-                src={
-                  ad.imageUrl ||
-                  `/api/placeholder/640/480?text=${encodeURIComponent(ad.category || 'Job')}`
-                }
-                alt={ad.title}
-              />
-              <h3>{ad.title}</h3>
-            </button>
-          ))}
+          {jobAds.length > 0 ? (
+            jobAds.map(ad => (
+              <button
+                key={ad._id}
+                type="button"
+                className={styles.jobAd}
+                onClick={() => setSelectedJob(ad)}
+              >
+                <img
+                  src={
+                    ad.imageUrl ||
+                    `/api/placeholder/640/480?text=${encodeURIComponent(ad.category || 'Job')}`
+                  }
+                  alt={ad.title}
+                />
+                <h3>{ad.title}</h3>
+              </button>
+            ))
+          ) : (
+            <div className={styles.emptyState}>
+              <p>No job listings found matching your criteria.</p>
+              <p>Try clearing filters or adjusting your search terms.</p>
+              <button className="btn btn-secondary" onClick={handleClearAllFilters}>
+                Clear All Filters
+              </button>
+            </div>
+          )}
         </div>
 
         {/* PAGINATION */}
