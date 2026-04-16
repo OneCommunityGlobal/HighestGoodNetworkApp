@@ -1700,6 +1700,10 @@ const WeeklySummariesReport = props => {
           canEditSummaryCount: props.hasPermission('editSummaryHoursCount'),
           canSeeBioHighlight: props.hasPermission('highlightEligibleBios'),
           hasSeeBadgePermission: props.hasPermission('seeBadges'),
+          canManageFilter:
+            props.hasPermission('manageSummariesFilters') ||
+            props.auth?.user?.role === 'Owner' ||
+            props.auth?.user?.role === 'Administrator',
         }));
       } catch (error) {
         console.error('Failed to fetch badges or permissions', error);
@@ -2313,7 +2317,7 @@ const WeeklySummariesReport = props => {
                               badges={state.badges}
                               loadBadges={state.loadBadges}
                               canEditTeamCode={permissionState.codeEditPermission}
-                              auth={state.auth}
+                              auth={props.auth}
                               canSeeBioHighlight={permissionState.canSeeBioHighlight}
                               darkMode={darkMode}
                               handleTeamCodeChange={handleTeamCodeChange}
