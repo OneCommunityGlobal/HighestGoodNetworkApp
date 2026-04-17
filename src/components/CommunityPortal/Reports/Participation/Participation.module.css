@@ -1,10 +1,3 @@
-/* ---------- General Styling ---------- */
-.body {
-  font-family: 'Arial', sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: #f5f5f5;
-}
 
 .participationLandingPage {
   max-width: 90%;
@@ -162,7 +155,7 @@
   color: #ffffff;
 }
 
-/* ---------- Page Header ---------- */
+
 .landingPageHeaderContainer {
   display: flex;
   justify-content: space-between;
@@ -186,7 +179,7 @@
   letter-spacing: 0.5px;
 }
 
-/* ---------- Save as PDF button ---------- */
+
 .savePdfBtn {
   font-size: 14px;
   font-weight: 500;
@@ -230,7 +223,7 @@
   }
 }
 
-/* ---------- Section Headers ---------- */
+
 .myCasesHeader h2,
 .trackingHeader h3,
 .insightsHeader h3 {
@@ -244,7 +237,7 @@
   font-weight: 600;
 }
 
-/* ---------- My Cases Section ---------- */
+
 .myCases {
   margin-bottom: 40px;
 }
@@ -287,7 +280,7 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* ---------- Analytics Section ---------- */
+
 .analyticsSection {
   display: flex;
   flex-wrap: nowrap;
@@ -332,7 +325,7 @@
   }
 }
 
-/* ---------- Tracking Section ---------- */
+
 .trackingHeader {
   display: flex;
   justify-content: space-between;
@@ -363,7 +356,7 @@
 .trackingFilters {
   display: flex;
   flex-wrap: nowrap;
-  gap: 12px; /* spacing between dropdowns */
+  gap: 12px; 
 }
 
 .trackingFilters select {
@@ -391,14 +384,14 @@
   color: #fff;
 }
 
-/* Summary boxes */
+
 .trackingSummary {
   display: flex;
   justify-content: space-between;
   margin-bottom: 20px;
 }
 
-/* Light mode */
+
 .trackingRate {
   background: #f8f9fa;
   border-radius: 10px;
@@ -412,7 +405,7 @@
   color: #333;
 }
 
-/* Dark mode */
+
 .darkMode .trackingRate {
   background: #3a506b;
   border-radius: 10px;
@@ -436,7 +429,7 @@
   color: #f87171 !important;
 }
 
-/* Tables */
+
 .trackingListContainer {
   max-height: 600px;
   overflow-y: auto;
@@ -509,7 +502,7 @@
   color: #f87171 !important;
 }
 
-/* ---------- Insights Section ---------- */
+
 .insightsHeader {
   font-weight: bold;
   color: #444;
@@ -734,7 +727,7 @@
   opacity: 1;
 }
 
-/* ---------- Export PDF modal ---------- */
+
 .modalOverlay {
   position: fixed;
   inset: 0;
@@ -831,7 +824,7 @@
   cursor: not-allowed;
 }
 
-/* ---------- PDF/Print helpers ---------- */
+
 .pageBreakBefore {
   break-before: page;
   page-break-before: always;
@@ -845,27 +838,25 @@
   page-break-inside: avoid;
 }
 
-/* Use :global for data attributes and print styles */
-:global(html[data-exporting='true']) .caseCards:global(.expanded),
-:global(html[data-exporting='true']) .caseList:global(.expanded),
-:global(html[data-exporting='true']) .trackingListContainer {
+
+.trackingListContainer {
   max-height: none !important;
   overflow: visible !important;
   -webkit-overflow-scrolling: auto !important;
 }
 
-/* Dark mode container */
+
 .insightsTabsDarkMode {
   border: 1px solid #555;
-  background-color: #1e293b; /* Dark background */
+  background-color: #1e293b; 
 }
-/* Dark mode tab */
+
 .insightsTabDarkMode {
   color: #ddd;
   background-color: #1e293b;
 }
 
-/* Dark mode divider */
+
 .insightsTabDarkMode:not(:last-child) {
   border-right: 1px solid #555;
 }
@@ -874,20 +865,10 @@
   display: none;
 }
 
-/* Print styles using global selectors */
-/* Print styles using global selectors */
+
 @media print {
-  /* Hide everything except the participation component */
-  :global(body > *:not(#root)) {
-    display: none !important;
-  }
-
-  :global(#root > *:not(.participation-landing-page-global)) {
-    display: none !important;
-  }
-
-  /* Sonar fix: avoid duplicate selector by scoping the print version */
-  :global(#root) .participationLandingPage {
+  
+  .participationLandingPage {
     max-width: 100% !important;
     margin: 0 !important;
     background: white !important;
@@ -897,7 +878,7 @@
 
   @page {
     size: auto;
-    /* Use auto instead of Letter to allow multiple pages */
+    
     margin: 0.5in;
   }
 
@@ -913,42 +894,42 @@
     }
   }
 
-  /* Critical: Remove all height restrictions for printing */
-  :global(.my-cases-global),
-  :global(.case-cards-global),
-  :global(.case-list-global) {
+  
+  .my-cases-global,
+  .case-cards-global,
+  .case-list-global {
     height: auto !important;
     max-height: none !important;
     overflow: visible !important;
     display: block !important;
   }
 
-  /* Ensure cards display properly in print with page breaks */
-  :global(.case-cards-global) {
+  
+  .case-cards-global {
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 12px !important;
     page-break-inside: auto !important;
   }
 
-  /* Allow cards to break across pages */
-  :global(.case-card-global) {
+  
+  .case-card-global {
     break-inside: avoid-page !important;
     page-break-inside: avoid !important;
     height: auto !important;
   }
 
-  /* Allow list items to break across pages */
-  :global(.case-list-global) {
+  
+  .case-list-global {
     page-break-inside: auto !important;
   }
 
-  :global(.case-list-item-global) {
+  .case-list-item-global {
     break-inside: avoid-page !important;
     page-break-inside: avoid !important;
   }
 
-  /* Remove scroll containers for print */
+  
   .trackingListContainer,
   .trackingListContainerDark {
     max-height: none !important;
@@ -956,8 +937,8 @@
     height: auto !important;
   }
 
-  /* Avoid breaking elements */
-  :global(.tracking-table-global) tr {
+  
+  .tracking-table-global tr {
     break-inside: avoid;
     page-break-inside: avoid;
   }
@@ -967,11 +948,11 @@
     page-break-inside: avoid;
   }
 
-  /* Hide non-print elements */
-  :global(.view-switcher-global),
-  :global(.filter-wrapper-global),
-  :global(.create-new-global),
-  :global(.more-btn-global),
+  
+  .view-switcher-global,
+  .filter-wrapper-global,
+  .create-new-global,
+  .more-btn-global,
   .noPrint {
     display: none !important;
   }
@@ -980,13 +961,13 @@
     margin-bottom: 8px;
   }
 
-  /* Ensure table headers are visible */
-  :global(.tracking-table-global) thead th {
+  
+  .tracking-table-global thead th {
     background: #f4f4f4 !important;
     color: #333 !important;
   }
 
-  :global(.tracking-table-global-dark) thead th {
+  .tracking-table-global-dark thead th {
     background: #1c2541 !important;
     color: #ffffff !important;
   }
@@ -995,19 +976,19 @@
     display: block !important;
   }
 
-  /* Force proper backgrounds for all elements */
+  
   .participationLandingPage,
   .participationLandingPage * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
 
-  /* Light mode styles for print */
+  
   .participationLandingPage {
     background: white !important;
   }
 
-  :global(#root) .case-card-global {
+  #root .case-card-global {
     background: white !important;
     color: #333 !important;
     border: 1px solid #ddd !important;
@@ -1025,13 +1006,13 @@
     border: 1px solid #ddd !important;
   }
 
-  /* Dark mode styles for print */
+  
   .participationLandingPageDark {
     background: #1b2a41 !important;
     color: #ffffff !important;
   }
 
-  .participationLandingPageDark :global(.case-card-global) {
+  .participationLandingPageDark .case-card-global {
     background: #3a506b !important;
     color: #ffffff !important;
     border: 1px solid #555 !important;
@@ -1054,7 +1035,7 @@
     color: #ffffff !important;
   }
 
-  .participationLandingPageDark :global(.tracking-table-global-dark) thead th {
+  .participationLandingPageDark .tracking-table-global-dark thead th {
     background: #1c2541 !important;
     color: #ffffff !important;
   }
@@ -1064,28 +1045,28 @@
     color: #ffffff !important;
   }
 
-  /* Event badge colors for print */
-  :global(.event-badge-global)[data-type='Yoga Class'] {
+  
+  .event-badge-global[data-type='Yoga Class'] {
     background-color: #e9f7ef !important;
     color: #28a745 !important;
   }
 
-  :global(.event-badge-global)[data-type='Cooking Workshop'] {
+  .event-badge-global[data-type='Cooking Workshop'] {
     background-color: #fdecea !important;
     color: #e74c3c !important;
   }
 
-  :global(.event-badge-global)[data-type='Dance Class'] {
+  .event-badge-global[data-type='Dance Class'] {
     background-color: #fff5e6 !important;
     color: #f39c12 !important;
   }
 
-  :global(.event-badge-global)[data-type='Fitness Bootcamp'] {
+  .event-badge-global[data-type='Fitness Bootcamp'] {
     background-color: #f5e6ff !important;
     color: #9b59b6 !important;
   }
 
-  /* Rate colors for print */
+  
   .trackingRateGreen {
     color: green !important;
     font-weight: bold !important;
@@ -1096,12 +1077,12 @@
     font-weight: bold !important;
   }
 
-  /* Insight bar colors */
+  
   .insightFill {
     background: #007bff !important;
   }
 
-  /* Text colors for dark mode */
+  
   .participationLandingPageDark .landingPageHeaderDark,
   .participationLandingPageDark .sectionTitleDark,
   .participationLandingPageDark .eventNameDark,
@@ -1112,14 +1093,14 @@
     color: #ffffff !important;
   }
 }
-/* Active tab dark mode */
+
 .activeTabDarkMode {
   background-color: #3b82f6;
   color: #fff;
   font-weight: bold;
 }
 
-/* Hover effect dark mode */
+
 .insightsTabDarkMode:hover {
   background-color: #374151;
 }
