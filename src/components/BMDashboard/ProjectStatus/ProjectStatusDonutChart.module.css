@@ -7,6 +7,7 @@
   border-radius: 12px;
   position: relative;
   border: 1px solid rgba(0, 0, 0, 0.12);
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .title {
@@ -78,6 +79,7 @@
     text-align: center;
   }
 }
+
 .centerLabel {
   font-size: 16px;
   font-weight: 600;
@@ -94,4 +96,29 @@
   text-align: center;
   margin-top: 16px;
   font-weight: 500;
+}
+
+.darkContainer {
+  background-color: #1b2a41 !important;
+  color: #ffffff !important;
+  border-color: #3a506b !important;
+}
+
+.darkContainer input[type="date"] {
+  background-color: #2a3f5f !important;
+  color: #ffffff !important;
+  border: 1px solid #3a506b !important;
+  color-scheme: dark;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.darkContainer .label {
+  color: #b5bac5 !important;
+}
+
+.darkContainer .title,
+.darkContainer h3,
+.darkContainer .noDataMessage {
+  color: #ffffff !important;
 }
