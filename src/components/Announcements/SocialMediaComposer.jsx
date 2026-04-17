@@ -24,23 +24,21 @@ function getPostMethodBadgeStyle(postMethod, darkMode) {
   const isDirect = postMethod === 'direct';
   return {
     backgroundColor: isDirect
-      ? darkMode ? '#1d4ed8' : '#e3f2fd'
-      : darkMode ? '#4338ca' : '#f3e5f5',
-    color: isDirect
-      ? darkMode ? '#bfdbfe' : '#1565c0'
-      : darkMode ? '#e0e7ff' : '#7b1fa2',
+      ? darkMode
+        ? '#1d4ed8'
+        : '#e3f2fd'
+      : darkMode
+      ? '#4338ca'
+      : '#f3e5f5',
+    color: isDirect ? (darkMode ? '#bfdbfe' : '#1565c0') : darkMode ? '#e0e7ff' : '#7b1fa2',
   };
 }
 
 function getPostStatusBadgeStyle(status, darkMode) {
   const isSent = status === 'sent';
   return {
-    backgroundColor: isSent
-      ? darkMode ? '#14532d' : '#e8f5e9'
-      : darkMode ? '#3f1d2e' : '#ffebee',
-    color: isSent
-      ? darkMode ? '#bbf7d0' : '#2e7d32'
-      : darkMode ? '#fecdd3' : '#c62828',
+    backgroundColor: isSent ? (darkMode ? '#14532d' : '#e8f5e9') : darkMode ? '#3f1d2e' : '#ffebee',
+    color: isSent ? (darkMode ? '#bbf7d0' : '#2e7d32') : darkMode ? '#fecdd3' : '#c62828',
   };
 }
 
