@@ -60,14 +60,15 @@ const getMonthlyRanges = (startDate, endDate) => {
   firstMonth.setUTCDate(1);
   lastMonth.setUTCDate(1);
 
-  for (let currentMonth = new Date(firstMonth); currentMonth <= lastMonth;) {
+  let currentMonth = new Date(firstMonth);
+  while (currentMonth <= lastMonth) {
     const monthStart = new Date(currentMonth);
     const monthEnd = new Date(Date.UTC(monthStart.getUTCFullYear(), monthStart.getUTCMonth() + 1, 0));
     const monthStartIso = monthStart.toISOString().slice(0, 10);
     const monthEndIso = monthEnd.toISOString().slice(0, 10);
 
-    const rangeStart = [startDate, monthStartIso].sort().at(-1);
-    const rangeEnd = [endDate, monthEndIso].sort()[0];
+    const rangeStart = startDate > monthStartIso ? startDate : monthStartIso;
+    const rangeEnd = endDate < monthEndIso ? endDate : monthEndIso;
 
     ranges.push({
       label: monthStart.toLocaleString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' }),
