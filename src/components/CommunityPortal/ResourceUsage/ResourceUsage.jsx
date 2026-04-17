@@ -287,7 +287,7 @@ export default function ResourceUsage() {
 
                 <div
                   ref={el => (badgeRefs.current[idx] = el)}
-                  className={`${styles.insightBadge} ${darkMode ? 'text-dark' : ''}`}
+                  className={styles.insightBadge}
                   style={{ backgroundColor: insight.color }}
                 >
                   {insight.value}
