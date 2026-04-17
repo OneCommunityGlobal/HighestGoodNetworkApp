@@ -129,7 +129,7 @@ export default function ResourceUsage() {
   useEffect(() => {
     badgeRefs.current.forEach(badge => {
       if (badge) {
-        badge.style.setProperty('color', darkMode ? '#000' : '#000');
+        badge.style.setProperty('color', '#000');
       }
     });
   }, [insights, darkMode]);
