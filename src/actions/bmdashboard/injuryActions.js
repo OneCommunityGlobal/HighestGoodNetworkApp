@@ -54,22 +54,20 @@ const normalizeSeverityBucket = category => {
 
 const getMonthlyRanges = (startDate, endDate) => {
   const ranges = [];
-  const currentMonth = new Date(`${startDate}T00:00:00.000Z`);
+  const firstMonth = new Date(`${startDate}T00:00:00.000Z`);
   const lastMonth = new Date(`${endDate}T00:00:00.000Z`);
 
-  currentMonth.setUTCDate(1);
+  firstMonth.setUTCDate(1);
   lastMonth.setUTCDate(1);
 
-  while (currentMonth <= lastMonth) {
+  for (let currentMonth = new Date(firstMonth); currentMonth <= lastMonth;) {
     const monthStart = new Date(currentMonth);
     const monthEnd = new Date(Date.UTC(monthStart.getUTCFullYear(), monthStart.getUTCMonth() + 1, 0));
+    const monthStartIso = monthStart.toISOString().slice(0, 10);
+    const monthEndIso = monthEnd.toISOString().slice(0, 10);
 
-    const rangeStart = startDate > monthStart.toISOString().slice(0, 10)
-      ? startDate
-      : monthStart.toISOString().slice(0, 10);
-    const rangeEnd = endDate < monthEnd.toISOString().slice(0, 10)
-      ? endDate
-      : monthEnd.toISOString().slice(0, 10);
+    const rangeStart = [startDate, monthStartIso].sort().at(-1);
+    const rangeEnd = [endDate, monthEndIso].sort()[0];
 
     ranges.push({
       label: monthStart.toLocaleString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' }),
