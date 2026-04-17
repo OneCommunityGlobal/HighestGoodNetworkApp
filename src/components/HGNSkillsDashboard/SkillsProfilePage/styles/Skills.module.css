@@ -48,14 +48,33 @@
 @media (width <= 768px) {
   .skills {
     width: 100%;
-    flex-direction: column;
+    flex-flow: row wrap;
     align-items: center;
+    justify-content: center;
+    gap: 8px;
   }
 
   .skills button {
-    width: 100%;
-    max-width: 80%;
+    width: auto;
+    max-width: none;
     font-size: 14px;
+    padding: 8px 12px;
+  }
+  
+  .skills h3 {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (width <= 480px) {
+  .skills {
+    gap: 6px;
+  }
+  
+  .skills button {
+    font-size: 13px;
+    padding: 6px 10px;
   }
 }
 
@@ -73,6 +92,5 @@
 }
 
 :global(.dark-mode) .skills button.selected {
-  color: #3ea0cb;
-  font-weight: 600;
+  color: #8ab4f8;
 }

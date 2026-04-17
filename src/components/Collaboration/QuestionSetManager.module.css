@@ -3,22 +3,13 @@
   padding: 15px;
   border-radius: 5px;
   margin-bottom: 20px;
-  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .questionSetManager h3 {
   margin-top: 0;
   margin-bottom: 15px;
   color: #333;
-}
-
-.error-message {
-  color: #d32f2f;
-  background-color: #ffebee;
-  padding: 8px 12px;
-  border-radius: 4px;
-  margin-bottom: 10px;
-  border: 1px solid #f8bbd9;
 }
 
 .templateActions {
@@ -76,7 +67,7 @@
 }
 
 .clearTemplateButton {
-  background-color: rgb(100 100 100 / 30%);
+  background-color: rgba(100, 100, 100, 0.3);
   color: #666;
   border: 2px solid #999;
 }
@@ -87,7 +78,7 @@
 }
 
 .clearTemplateButton:disabled {
-  background-color: rgb(200 200 200 / 30%);
+  background-color: rgba(200, 200, 200, 0.3);
   color: #999;
   border: 2px solid #ddd;
   cursor: not-allowed;
@@ -111,7 +102,7 @@
   background-color: #d32f2f;
 }
 
-@media (width <= 768px) {
+@media (max-width: 768px) {
   .templateActions {
     flex-direction: column;
     align-items: stretch;
@@ -121,82 +112,4 @@
   .loadTemplate {
     flex-direction: column;
   }
-}
-
-.questionSetManager.darkMode {
-  background: linear-gradient(135deg, #23272a, #181a1b);
-  color: #f1f1f1;
-  border-color: #333;
-}
-
-.questionSetManager.darkMode h3 {
-  color: #e0e0e0;
-}
-
-.questionSetManager.darkMode input,
-.questionSetManager.darkMode select {
-  background-color: #1c1c1c;
-  color: #f1f1f1;
-  border: 1px solid #444;
-}
-
-.questionSetManager.darkMode input::placeholder {
-  color: #f1f1f1;
-}
-
-.questionSetManager.darkMode .saveTemplateButton,
-.questionSetManager.darkMode .loadTemplateButton,
-.questionSetManager.darkMode .appendTemplateButton,
-.questionSetManager.darkMode .deleteTemplateButton {
-  background-color: #333;
-  color: #f1f1f1;
-  border: 1px solid #444;
-}
-
-.questionSetManager.darkMode .saveTemplateButton:hover,
-.questionSetManager.darkMode .loadTemplateButton:hover,
-.questionSetManager.darkMode .appendTemplateButton:hover {
-  background-color: #555;
-}
-
-.questionSetManager.darkMode .deleteTemplateButton {
-  background-color: #d32f2f;
-}
-
-.questionSetManager.darkMode .deleteTemplateButton:hover {
-  background-color: #b71c1c;
-}
-
-.questionSetManager.darkMode .errorMessage {
-  color: #ff6b6b;
-}
-
-/* Tooltip styles */
-.tooltip {
-  visibility: hidden;
-  min-width: 260px;
-  max-width: 320px;
-  background: #2d3748;
-  color: #fff;
-  text-align: center;
-  border-radius: 8px;
-  padding: 14px 18px;
-  position: absolute;
-  z-index: 20;
-  font-size: 15px;
-  font-weight: 500;
-  box-shadow: 0 4px 16px rgb(0 0 0 / 18%);
-  bottom: 120%; /* Show above the button */
-  left: 50%;
-  transform: translateX(-50%);
-  opacity: 0;
-  transition: opacity 0.2s;
-  pointer-events: none;
-  white-space: pre-line;
-}
-
-button:hover .tooltip,
-button:focus .tooltip {
-  visibility: visible;
-  opacity: 1;
 }

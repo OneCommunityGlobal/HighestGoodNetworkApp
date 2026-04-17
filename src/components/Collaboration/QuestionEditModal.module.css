@@ -1,17 +1,20 @@
-.overlay {
+.questionEditModalOverlay {
   position: fixed;
-  inset: 0;
-  background-color: rgb(0 0 0 / 50%);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
 }
 
-.modal {
+.questionEditModal {
   background-color: white;
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgb(0 0 0 / 20%);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   width: 90%;
   max-width: 600px;
   max-height: 90vh;
@@ -19,7 +22,7 @@
   padding: 20px;
 }
 
-.modal h3 {
+.questionEditModal h3 {
   margin-top: 0;
   margin-bottom: 15px;
   color: #333;
@@ -130,8 +133,8 @@
   background-color: #757575;
 }
 
-@media (width <= 600px) {
-  .modal {
+@media (max-width: 600px) {
+  .questionEditModal {
     width: 95%;
     padding: 15px;
   }

@@ -359,3 +359,19 @@
     margin-bottom: 10px;
   }
 }
+
+.taskTopActionButtons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+}
+
+.taskActionButton {
+  width: 90px;
+  margin: 0 !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}

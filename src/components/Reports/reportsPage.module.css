@@ -35,7 +35,7 @@
   .category-data-container {
     grid-template-columns: 1fr;
   }
-  
+
   .table-data-container {
     max-width: 720px;
     margin: 0 auto;
@@ -135,7 +135,7 @@
 
 .date-picker-container {
   display: flex;
-  flex-direction: row;
+  flex-flow: row;
   justify-content: flex-start;
   padding: 8px 0;
   gap: 4%;
@@ -357,7 +357,9 @@
   color: #fff !important;
 }
 
-.force-white-text, .bg-yinmn-blue .force-white-text, .bg-yinmn-blue .info-modal-content.force-white-text {
+.force-white-text,
+.bg-yinmn-blue .force-white-text,
+.bg-yinmn-blue .info-modal-content.force-white-text {
   color: #fff !important;
 }
 

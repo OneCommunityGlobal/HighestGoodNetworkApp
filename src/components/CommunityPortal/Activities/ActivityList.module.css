@@ -1,13 +1,9 @@
-/* ===== ORIGINAL STYLES (UNCHANGED) ===== */
-
-/* Activity List Container */
 .activityListContainer {
   padding: 20px;
   min-height: calc(100vh - 140px);
 }
 
-/* Dark mode follows Dashboard pattern using bg-oxford-blue */
-.activityListContainer:global(.bg-oxford-blue) {
+.activityListContainerDark {
   color: #fff;
   padding-bottom: 40px;
 }
@@ -18,19 +14,6 @@
   color: #1e3a8a;
   font-size: 2.5em;
   font-weight: 600;
-}
-
-/* Dark mode heading */
-.activityListContainer:global(.bg-oxford-blue) .heading {
-  color: #fff !important;
-}
-
-/* Body background helper */
-:global(.activity-list-dark-body),
-:global(.activity-list-dark-body #root),
-:global(.activity-list-dark-body .App) {
-  background-color: #1b2a41 !important;
-  color: #fff !important;
 }
 
 .filters {
@@ -46,13 +29,20 @@
 }
 
 .darkModeFilters {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 30px;
+  margin: 30px 0;
+  padding: 10px;
   background: #1e2a3a;
   box-shadow: none;
   border: 1px solid #3a4a5c;
   border-radius: 0;
 }
 
-.filters label {
+.filters label,
+.darkModeFilters label {
   display: flex;
   flex-direction: column;
   font-weight: 500;
@@ -60,7 +50,9 @@
 }
 
 .filters input,
-.filters select {
+.filters select,
+.darkModeFilters input,
+.darkModeFilters select {
   padding: 10px;
   border: 1px solid #d1d5db;
   border-radius: 6px;
@@ -98,28 +90,8 @@
   color: #a0a0a0;
 }
 
-/* Clear button */
-.clearButton {
-  padding: 10px 20px;
-  background-color: #ef4444;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.clearButton:hover:not(:disabled) {
-  background-color: #dc2626;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgb(239 68 68 / 30%);
-}
-
-.clearButton:disabled {
-  background-color: #9ca3af;
-  cursor: not-allowed;
-  opacity: 0.6;
+.darkFilters input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
 }
 
 .activityList {
@@ -196,6 +168,50 @@
   margin: 20px 0;
 }
 
+.clearButtonWrapper{
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.clearFiltersButton {
+  padding: 10px 14px;
+  border: 1px solid #000;
+  border-radius: 6px;
+  background: #f9fafb;
+  color: #1f2937;
+  font-family: Poppins, sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.clearFiltersButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.clearFiltersButton:hover:not(:disabled) {
+  transform: scale(1.05);
+  background-color: #f9fafb;
+}
+
+
+.clearFiltersButtonDark {
+  border: 1px solid #fff;
+  background: #0f172a;
+  color: #f1f5f9;
+}
+
+.clearFiltersButtonDark:hover:not(:disabled) {
+  background: #111c33;
+}
+
+
 /* Suggestions */
 .suggestions {
   position: absolute;
@@ -234,6 +250,39 @@
 
 .darkSuggestions .suggestionItem:hover {
   background-color: #334155;
+}
+
+.showPastToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  color: #1f2937;
+  border-radius: 6px;
+  margin-top: 5px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.showPastToggle input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  cursor: pointer;
+  accent-color: #3b82f6;
+}
+
+.showPastToggle input[type="checkbox"]:focus-visible {
+  outline: none;
+  border-radius: 4px;
+}
+
+.darkShowPastToggle {
+  color: #f1f5f9;
+}
+
+.darkShowPastToggle input[type="checkbox"] {
+  accent-color: #60a5fa;
 }
 
 /* Responsive */

@@ -577,12 +577,8 @@ const SummaryBar = React.forwardRef((props, ref) => {
             {totalEffort >= weeklyCommittedHours && (
               <div className={`${styles['border-green']} col-4 ${styles['bg--dark-green']}`}>
                 <div className="py-1"> </div>
-                <p
-                  className={`${styles['text-center']} ${styles.large_text_summary} ${styles['text--black']}`}
-                >
-                  ✓
-                </p>
-                <font className={`${styles['text-center']}`} size="3">
+                <p className="text-center large_text_summary">✓</p>
+                <font className="text-center" size="3">
                   HOURS
                 </font>
                 <div className="py-2"> </div>
