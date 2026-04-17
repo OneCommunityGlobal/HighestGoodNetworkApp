@@ -11,6 +11,19 @@ import {
 
 const PST_TZ = 'America/Los_Angeles';
 
+function getStatusBadge(connectionStatus) {
+  if (!connectionStatus?.connected) {
+    return { text: 'Not Connected', color: '#dc3545', bg: '#f8d7da' };
+  }
+  if (connectionStatus.tokenStatus === 'expired') {
+    return { text: 'Token Expired', color: '#dc3545', bg: '#f8d7da' };
+  }
+  if (connectionStatus.tokenStatus === 'expiring_soon') {
+    return { text: 'Expiring Soon', color: '#856404', bg: '#fff3cd' };
+  }
+  return { text: 'Connected', color: '#155724', bg: '#d4edda' };
+}
+
 export default function FacebookConnection() {
   const dispatch = useDispatch();
   const authUser = useSelector(state => state.auth?.user);
@@ -121,20 +134,7 @@ export default function FacebookConnection() {
       .format('MMM D, YYYY h:mm A');
   };
 
-  const getStatusBadge = () => {
-    if (!connectionStatus?.connected) {
-      return { text: 'Not Connected', color: '#dc3545', bg: '#f8d7da' };
-    }
-    if (connectionStatus.tokenStatus === 'expired') {
-      return { text: 'Token Expired', color: '#dc3545', bg: '#f8d7da' };
-    }
-    if (connectionStatus.tokenStatus === 'expiring_soon') {
-      return { text: 'Expiring Soon', color: '#856404', bg: '#fff3cd' };
-    }
-    return { text: 'Connected', color: '#155724', bg: '#d4edda' };
-  };
-
-  const statusBadge = getStatusBadge();
+  const statusBadge = getStatusBadge(connectionStatus);
 
   // Styles
   const textColor = darkMode ? '#e5e7eb' : '#333';
@@ -225,6 +225,54 @@ export default function FacebookConnection() {
     transition: 'background-color 0.2s',
     backgroundColor: panelBg,
     color: textColor,
+  };
+
+  const renderPageSelectorModal = () => {
+    if (!showPageSelector) return null;
+    return (
+      <div style={modalOverlay}>
+        <div style={modalContent}>
+          <h4 style={{ marginTop: 0 }}>Select a Facebook Page</h4>
+          <p style={{ color: mutedTextColor, fontSize: '14px' }}>
+            Choose the Page you want to connect for posting:
+          </p>
+
+          {availablePages.map(page => (
+            <div
+              key={page.pageId}
+              style={pageItemStyle}
+              onClick={() => handleSelectPage(page)}
+              onKeyDown={e => e.key === 'Enter' && handleSelectPage(page)}
+              role="button"
+              tabIndex={0}
+              onMouseEnter={e => {
+                e.currentTarget.style.backgroundColor = darkMode ? '#1f2937' : '#f0f0f0';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.backgroundColor = panelBg;
+              }}
+            >
+              <p style={{ margin: 0, fontWeight: 'bold', color: textColor }}>{page.pageName}</p>
+              <p style={{ margin: '4px 0 0', fontSize: '12px', color: mutedTextColor }}>
+                {page.category} • ID: {page.pageId}
+              </p>
+            </div>
+          ))}
+
+          <button
+            type="button"
+            onClick={() => {
+              setShowPageSelector(false);
+              setAvailablePages([]);
+              setSelectionNonce(null);
+            }}
+            style={{ ...btnDanger, backgroundColor: '#6c757d', marginTop: '12px', width: '100%' }}
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    );
   };
 
   if (loading) {
@@ -335,50 +383,7 @@ export default function FacebookConnection() {
       )}
 
       {/* Page Selection Modal */}
-      {showPageSelector && (
-        <div style={modalOverlay}>
-          <div style={modalContent}>
-            <h4 style={{ marginTop: 0 }}>Select a Facebook Page</h4>
-            <p style={{ color: mutedTextColor, fontSize: '14px' }}>
-              Choose the Page you want to connect for posting:
-            </p>
-
-            {availablePages.map(page => (
-              <div
-                key={page.pageId}
-                style={pageItemStyle}
-                onClick={() => handleSelectPage(page)}
-                onKeyDown={e => e.key === 'Enter' && handleSelectPage(page)}
-                role="button"
-                tabIndex={0}
-                onMouseEnter={e => {
-                  e.currentTarget.style.backgroundColor = darkMode ? '#1f2937' : '#f0f0f0';
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.backgroundColor = panelBg;
-                }}
-              >
-                <p style={{ margin: 0, fontWeight: 'bold', color: textColor }}>{page.pageName}</p>
-                <p style={{ margin: '4px 0 0', fontSize: '12px', color: mutedTextColor }}>
-                  {page.category} • ID: {page.pageId}
-                </p>
-              </div>
-            ))}
-
-            <button
-              type="button"
-              onClick={() => {
-                setShowPageSelector(false);
-                setAvailablePages([]);
-                setSelectionNonce(null);
-              }}
-              style={{ ...btnDanger, backgroundColor: '#6c757d', marginTop: '12px', width: '100%' }}
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
+      {renderPageSelectorModal()}
     </div>
   );
 }
