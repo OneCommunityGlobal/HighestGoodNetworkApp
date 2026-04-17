@@ -69,55 +69,51 @@ import WeeklySummaries from './WeeklySummaries';
 import TimestampsTab from './TimestampsTab';
 import Badge from '../Badge';
 import { ENDPOINTS } from '~/utils/URL';
+import { useServerTime } from '~/context/ServerTimeContext';
 // should be clear now too in fixing styling differences
-
-// startOfWeek returns the date of the start of the week based on offset. Offset is the number of weeks before.
-// For example, if offset is 0, returns the start of this week. If offset is 1, returns the start of last week.
-const startOfWeek = offset => {
-  return moment()
-    .tz('America/Los_Angeles')
-    .startOf('week')
-    .subtract(offset, 'weeks')
-    .format('YYYY-MM-DD');
-};
-
-// endOfWeek returns the date of the end of the week based on offset. Offset is the number of weeks before.
-// For example, if offset is 0, returns the end of this week. If offset is 1, returns the end of last week.
-const endOfWeek = offset => {
-  return moment()
-    .tz('America/Los_Angeles')
-    .endOf('week')
-    .subtract(offset, 'weeks')
-    .format('YYYY-MM-DD');
-};
 
 function Timelog(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
+  const { getServerDateMoment, lastSyncTime } = useServerTime();
   const location = useLocation();
+
+  const startOfWeek = offset =>
+    getServerDateMoment()
+      .clone()
+      .startOf('week')
+      .subtract(offset, 'weeks')
+      .format('YYYY-MM-DD');
+
+  const endOfWeek = offset =>
+    getServerDateMoment()
+      .clone()
+      .endOf('week')
+      .subtract(offset, 'weeks')
+      .format('YYYY-MM-DD');
 
   const normalizeNotes = (raw) => {
     if (!raw) return '';
     let s = String(raw);
-  
+
     // Temporary line-break markers
     s = s.replace(/<br\s*\/?>/gi, '\n')
          .replace(/<\/p>\s*<p>/gi, '\n')
          .replace(/<\/?p[^>]*>/gi, '');
-  
+
     // Strip remaining tags
     s = s.replace(/<\/?[^>]+>/g, '');
-  
+
     // Decode entities using the browser
     const txt = document.createElement('textarea');
     txt.innerHTML = s;
     s = txt.value;
-  
+
     // Linkify URLs
     s = s.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1">$1</a>');
-  
+
     // Convert newlines back to <br> for pdfmake line breaks
     s = s.replace(/\n/g, '<br/>');
-  
+
     return s;
   };
 
@@ -146,7 +142,7 @@ const getFilteredPeriodData = () => {
 const formatPeriodHtml = (rows) => {
   const title =
     `<h1 style="margin:0 0 12px 0; font-size:22px;">Time Log Report</h1>
-     <div style="margin: 0 0 4px 0;"><b>Range:</b> ${formatDate(timeLogState.fromDate)} – ${formatDate(timeLogState.toDate)}</div>
+     <div style="margin: 0 0 4px 0;"><b>Range:</b> ${formatDate(timeLogState.fromDate)} - ${formatDate(timeLogState.toDate)}</div>
      <div style="margin: 0 0 12px 0;"><b>User:</b> ${escapeHtml(displayUserProfile?.firstName)} ${escapeHtml(displayUserProfile?.lastName)}</div>`;
 
      const thead =
@@ -219,7 +215,7 @@ const downloadPeriodPdf = () => {
   const html = formatPeriodHtml(rows);
   const content = htmlToPdfmake(html, { tableAutoSize: true });
 
-  const generatedAt = moment().tz('America/Los_Angeles').format('YYYY-MM-DD HH:mm z');
+  const generatedAt = getServerDateMoment().format('YYYY-MM-DD HH:mm z');
 
   const docDefinition = {
     content: [content],
@@ -335,7 +331,7 @@ const downloadPeriodPdf = () => {
     const pid = e?.personId ?? e?.userId ?? e?.person?._id ?? e?.person?._id ?? e?.person?._id;
     return String(pid) === String(displayedId);
   };
-  
+
   const tabMapping = {
     '#tasks': 0,
     '#currentWeek': 1,
@@ -370,7 +366,7 @@ if (role === 'Volunteer' && userHaveTask.length > 0) {
   tab = null;
 }
 
- 
+
     // Sets active tab to "Current Week Timelog" when the Progress bar in Leaderboard is clicked
     if (!props.isDashboard) {
       tab = 1;
@@ -468,9 +464,9 @@ const generateAllTimeEntryItems = () => {
           isTimeEntriesLoading: false,
           activeTab: mappedHash,
         }));
-        setInitialTab(null); // so the initialTab effect won’t override
+        setInitialTab(null); // so the initialTab effect won't override
       } else {
-        // No hash → fall back to your existing default logic
+        // No hash -> fall back to your existing default logic
         setTimeLogState(s => ({ ...s, isTimeEntriesLoading: false }));
         setInitialTab(defaultTab(data));
       }
@@ -509,13 +505,13 @@ const generateAllTimeEntryItems = () => {
   };
 
   const openInfo = () => {
-    const str = `This is the One Community time log! It is used to show a record of all the time you have volunteered with One Community, what you’ve done for each work session, etc.
-    * “Add Time Entry” Button: Clicking this button will only allow you to add “Intangible” time. This is for time not related to your tasks OR for time you need a manager to change to “Tangible” for you because you were working away from your computer or made a mistake and are trying to manually log time. Intangible time will not be counted towards your committed time for the week or your tasks. “Intangible” time changed by a manager to “Tangible” time WILL be counted towards your committed time for the week and whatever task it is logged towards. For Blue Square purposes, changing Intangible Time to Tangible Time for any reason other than work away from your computer will count and be recorded in the system the same as a time edit.
+    const str = `This is the One Community time log! It is used to show a record of all the time you have volunteered with One Community, what you've done for each work session, etc.
+    * "Add Time Entry" Button: Clicking this button will only allow you to add "Intangible" time. This is for time not related to your tasks OR for time you need a manager to change to "Tangible" for you because you were working away from your computer or made a mistake and are trying to manually log time. Intangible time will not be counted towards your committed time for the week or your tasks. "Intangible" time changed by a manager to "Tangible" time WILL be counted towards your committed time for the week and whatever task it is logged towards. For Blue Square purposes, changing Intangible Time to Tangible Time for any reason other than work away from your computer will count and be recorded in the system the same as a time edit.
     * Viewing Past Work: The current week is always shown by default but past weeks can also be viewed by clicking the tabs or selecting a date range.
     * Sorting by Project and Task: All projects and tasks are shown by default but you can also choose to sort your time log by Project or Task.
-    * Notes: The “Notes” section is where you write a summary of what you did during the time you are about to log. You must write a minimum of 10 words because we want you to be specific. You must include a link to your work so others can easily confirm and review it.
-    * Tangible Time: By default, the “Tangible” box is clicked. Tangible time is any time spent working on your Projects/Tasks and counts towards your committed time for the week and also the time allocated for your task.
-    * Intangible Time: Clicking the Tangible box OFF will mean you are logging “Intangible Time.” This is for time not related to your tasks OR for time you need a manager to change to “Tangible” for you because you were working away from your computer or made a mistake and are trying to manually log time. Intangible time will not be counted towards your committed time for the week or your tasks. “Intangible” time changed by a manager to “Tangible” time WILL be counted towards your committed time for the week and whatever task it is logged towards. For Blue Square purposes, changing Intangible Time to Tangible Time for any reason other than work away from your computer will count and be recorded in the system the same as a time edit. `;
+    * Notes: The "Notes" section is where you write a summary of what you did during the time you are about to log. You must write a minimum of 10 words because we want you to be specific. You must include a link to your work so others can easily confirm and review it.
+    * Tangible Time: By default, the "Tangible" box is clicked. Tangible time is any time spent working on your Projects/Tasks and counts towards your committed time for the week and also the time allocated for your task.
+    * Intangible Time: Clicking the Tangible box OFF will mean you are logging "Intangible Time." This is for time not related to your tasks OR for time you need a manager to change to "Tangible" for you because you were working away from your computer or made a mistake and are trying to manually log time. Intangible time will not be counted towards your committed time for the week or your tasks. "Intangible" time changed by a manager to "Tangible" time WILL be counted towards your committed time for the week and whatever task it is logged towards. For Blue Square purposes, changing Intangible Time to Tangible Time for any reason other than work away from your computer will count and be recorded in the system the same as a time edit. `;
 
     setTimeLogState({
       ...timeLogState,
@@ -731,6 +727,14 @@ const generateAllTimeEntryItems = () => {
     props.getBadgeCount(displayUserId);
   }, [displayUserId, props]);
 
+  useEffect(() => {
+    setTimeLogState(prev => ({
+      ...prev,
+      fromDate: prev.activeTab === 4 ? prev.fromDate : startOfWeek(0),
+      toDate: prev.activeTab === 4 ? prev.toDate : endOfWeek(0),
+    }));
+  }, [lastSyncTime]);
+
 
   useEffect(() => {
     // Build the time log after new data is loaded
@@ -909,15 +913,15 @@ return (
                                 }}
                               >
                                 <p>
-                                  Clicking this button only allows for <strong>“Intangible Time”</strong> to be
+                                  Clicking this button only allows for <strong>Intangible Time</strong> to be
                                   added to your time log. You can manually log Intangible Time, but it does not
                                   count towards your weekly time commitment.
                                 </p>
 
                                 <p>
-                                  <strong>“Tangible Time”</strong> is the default for logging time using the timer
+                                  <strong>Tangible Time</strong> is the default for logging time using the timer
                                   at the top of the app. It represents all work done on assigned action items and
-                                  counts towards a person’s weekly volunteer time commitment.
+                                  counts towards a person&apos;s weekly volunteer time commitment.
                                 </p>
 
                                 <p>The only way for a volunteer to log Tangible Time is by using the clock in/out timer.</p>
@@ -942,7 +946,7 @@ return (
                                 <p>
                                   Intangible Time may also be logged by a volunteer when in the field or for other
                                   reasons when the timer was not able to be used. In these cases, the volunteer
-                                  will use this button to log time as “Intangible Time” and then request that an
+                                  will use this button to log time as &quot;Intangible Time&quot; and then request that an
                                   Admin manually change the log from Intangible to Tangible.
                                 </p>
                               </div>
@@ -1270,8 +1274,8 @@ return (
                       />
                     )}
                     <TabPane tabId={0}>
-                      <TeamMemberTasks 
-                      filteredUserTeamIds={props.filteredUserTeamIds} 
+                      <TeamMemberTasks
+                      filteredUserTeamIds={props.filteredUserTeamIds}
                       />
                     </TabPane>
                     <TabPane tabId={1}>{currentWeekEntries}</TabPane>

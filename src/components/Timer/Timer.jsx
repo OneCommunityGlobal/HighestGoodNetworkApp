@@ -127,7 +127,6 @@ function Timer({ authUser, darkMode, isPopout }) {
 
   // Enhanced function to clear submitted time with better logging
   const clearSubmittedTime = useCallback(() => {
-    console.log(' Clearing submitted time - Timer reset or user change detected');
     setLastSubmittedTime(null);
     setLogTimer({ hours: 0, minutes: 0 });
     setTimerState('idle');
@@ -146,9 +145,6 @@ function Timer({ authUser, darkMode, isPopout }) {
         goal,
         remaining,
       };
-
-      console.log('✅ Time submitted successfully:', submissionRecord);
-
       setLastSubmittedTime(timeKey);
       setSubmissionHistory(prev => [...prev, submissionRecord]);
       setLogTimer({ hours: 0, minutes: 0 });
@@ -159,8 +155,8 @@ function Timer({ authUser, darkMode, isPopout }) {
         const existingHistory = JSON.parse(localStorage.getItem('timerSubmissionHistory') || '[]');
         const updatedHistory = [...existingHistory, submissionRecord].slice(-10); // Keep last 10 entries
         localStorage.setItem('timerSubmissionHistory', JSON.stringify(updatedHistory));
-      } catch (error) {
-        console.warn('Could not save submission history to localStorage:', error);
+      } catch {
+        // Ignore localStorage persistence failures.
       }
     },
     [goal, remaining, sessionId, viewingUserId, authUser?.userid],
@@ -221,7 +217,6 @@ function Timer({ authUser, darkMode, isPopout }) {
   // Enhanced function to handle timer state changes
   const updateTimerState = useCallback(
     newState => {
-      console.log(`🔄 Timer state changed: ${timerState} → ${newState}`);
       setTimerState(newState);
     },
     [timerState],
@@ -248,7 +243,6 @@ function Timer({ authUser, darkMode, isPopout }) {
     }
     const newSessionId = `session_${Date.now()}_${randomPart}`;
     setSessionId(newSessionId);
-    console.log('🚀 Timer session initialized:', newSessionId);
   }, []);
 
   // Enhanced useEffect for timer state management
@@ -470,7 +464,6 @@ function Timer({ authUser, darkMode, isPopout }) {
       return;
     }
 
-    console.log('🛑 Stop button clicked - preparing to log time:', timeToSubmit);
     toggleLogTimeModal();
   }, [logHours, logMinutes, validateTimeForSubmission, toggleLogTimeModal]);
 
@@ -593,7 +586,6 @@ function Timer({ authUser, darkMode, isPopout }) {
     if (lastSubmittedTime !== timeKey && (logHours > 0 || logMinutes > 0)) {
       if (validateTimeForSubmission(currentTimeToLog)) {
         setLogTimer(currentTimeToLog);
-        console.log('⏱️ Time to log updated:', currentTimeToLog);
       }
     }
   }, [remaining, logHours, logMinutes, goal, lastSubmittedTime, validateTimeForSubmission]);
@@ -602,7 +594,6 @@ function Timer({ authUser, darkMode, isPopout }) {
   useEffect(() => {
     if (!started || goal !== lastSubmittedTime?.goal) {
       clearSubmittedTime();
-      console.log('🔄 Timer reset detected - clearing submitted time');
     }
   }, [started, goal, clearSubmittedTime]);
 
@@ -655,14 +646,12 @@ function Timer({ authUser, darkMode, isPopout }) {
   // Enhanced cleanup when viewing user changes
   useEffect(() => {
     clearSubmittedTime();
-    console.log('👤 User changed - clearing timer state');
   }, [viewingUserId, clearSubmittedTime]);
 
   // Enhanced cleanup on component unmount
   useEffect(() => {
     return () => {
       clearSubmittedTime();
-      console.log('🔚 Timer component unmounting - cleanup complete');
     };
   }, [clearSubmittedTime]);
 

@@ -121,9 +121,7 @@ function UserProfile(props) {
       setInputAutoStatus(response.status);
   
       return uniqueTeamCodes;
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.log(error);
+    } catch {
       toast.error(`It was not possible to retrieve the team codes.
       Please try again by clicking the icon inside the input auto complete.`);
       return [];
@@ -183,9 +181,7 @@ function UserProfile(props) {
       });
       await loadUserProfile();
       toast.success('Profile Image Removed');
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.log(error);
+    } catch {
       toast.error('Failed to remove profile Image.');
     }
   };
@@ -327,8 +323,7 @@ function UserProfile(props) {
           : '<list all team members names NOT included in the summary>';
   
       return `This week's summary was managed by ${currentManager.firstName} ${currentManager.lastName} and includes ${memberSubmittedString}. These people did NOT provide a summary ${memberDidntSubmitString}. <Insert the proofread and single-paragraph summary created by ChatGPT>`;
-    } catch (error) {
-      console.error('Error fetching team users:', error);
+    } catch {
       return '';
     }
   };
@@ -348,8 +343,9 @@ function UserProfile(props) {
         setTasks(res?.data || []);
         setOriginalTasks(res.data);
       })
-      // eslint-disable-next-line no-console
-      .catch(err => console.log(err));
+      .catch(() => {
+        toast.error('Unable to load tasks right now.');
+      });
   };
 
   const getCurretLoggedinUserEmail = async () => {
@@ -370,7 +366,7 @@ function UserProfile(props) {
           },
         }),
       );
-    } catch (err) {
+    } catch {
       toast.error('Error while getting current logged in user email');
     }
   };
@@ -396,9 +392,7 @@ function UserProfile(props) {
           : '';
         setCalculatedStartDate(createdDate);
       }
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('Error fetching calculated start date:', error);
+    } catch {
       // Fallback to createdDate on error
       const createdDate = userProfile?.createdDate
         ? userProfile.createdDate.split('T')[0]
@@ -511,10 +505,8 @@ function UserProfile(props) {
 
       checkIsProjectsEqual();
       setShowLoading(false);
-    } catch (err) {
+    } catch {
       setShowLoading(false);
-      // eslint-disable-next-line no-console
-      console.log(err);
     }
   };
 
@@ -528,7 +520,7 @@ function UserProfile(props) {
 
       setSummarySelected(userSummaries);
       setShowSummary(true);
-    } catch (err) {
+    } catch {
       setShowLoading(false);
     }
   };
@@ -547,9 +539,8 @@ function UserProfile(props) {
         label: `View ${item.name}'s summary.`,
       }));
       setSummaries(allSummaries);
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.log('Could not load leaderBoard data.', err);
+    } catch {
+      toast.error('Could not load leaderboard data.');
     } finally {
       setLoadingSummaries(false);
     }
@@ -578,9 +569,8 @@ function UserProfile(props) {
   try {
     await handleSubmit(updatedUserProfile);  // this already toasts success
     toast.success(`User removed from Project "${removedProject?.projectName || 'Unknown'}"`);
-  } catch (e) {
+  } catch {
     toast.error('Failed to remove project, please try again.');
-    console.error(e);
   }
   return updatedProjects;
 };
@@ -611,9 +601,8 @@ const onAssignProject = async (assignedProject) => {
   try {
     await handleSubmit(updatedUserProfile);  // reuses same pipeline
     toast.success(`User assigned to Project "${assignedProject.projectName || 'Unknown'}"`);
-  } catch (e) {
+  } catch {
     toast.error('Failed to assign project, please try again.');
-    console.error(e);
   }
   return updatedProjects;
 };
@@ -633,9 +622,8 @@ const onUpdateTask = async (taskId, updatedTask, method) => {
       toast.error('Failed to remove task');
     }
     return newTasks;
-  } catch (e) {
+  } catch {
     toast.error('Failed to remove task, please try again.');
-    console.error(e);
     return tasks;
   }
   } else {
@@ -659,9 +647,8 @@ setUpdatedTasks(prev => {
   try {
     await handleSubmit(updatedUserProfile);
     toast.success("Task updated");
-  } catch (e) {
+  } catch {
     toast.error("Failed to update task");
-    console.error(e);
   }
 };
 
@@ -710,7 +697,7 @@ setUpdatedTasks(prev => {
         // keep originals in sync so the Save button doesn't light up unnecessarily
         setOriginalUserProfile(nextProfile);
         toast.success('Profile photo updated');
-      } catch (err) {
+      } catch {
         // revert on failure
         setUserProfile(prevProfile);
         toast.error('Failed to save profile photo. Please try again.');
@@ -726,11 +713,9 @@ setUpdatedTasks(prev => {
   const handleBlueSquare = (status = true, type = 'message', blueSquareID = '') => {
     if (targetIsDevAdminUneditable) {
       if (userProfile?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
-        // eslint-disable-next-line no-alert
-        alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
+        toast.warn(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
       } else {
-        // eslint-disable-next-line no-alert
-        alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
+        toast.warn(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
       }
       return;
     }
@@ -761,16 +746,10 @@ setUpdatedTasks(prev => {
       /* peizhou: check that the date of the blue square is not future or empty. */
       if (moment(dateStamp).isAfter(moment().format('YYYY-MM-DD')) || dateStamp === '') {
         if (moment(dateStamp).isAfter(moment().format('YYYY-MM-DD'))) {
-          // eslint-disable-next-line no-console
-          console.log('WARNING: Future Blue Square');
-          // eslint-disable-next-line no-alert
-          alert('WARNING: Cannot Assign Blue Square with a Future Date');
+          toast.warn('WARNING: Cannot Assign Blue Square with a Future Date');
         }
         if (dateStamp === '') {
-          // eslint-disable-next-line no-console
-          console.log('WARNING: Empty Date');
-          // eslint-disable-next-line no-alert
-          alert('WARNING: Cannot Assign Blue Square with an Empty Date');
+          toast.warn('WARNING: Cannot Assign Blue Square with an Empty Date');
         }
       } else {
         const newBlueSquare = {
@@ -811,8 +790,6 @@ setUpdatedTasks(prev => {
             }));
           })
           .catch(error => {
-            // eslint-disable-next-line no-console
-            console.log('error in modifying bluesquare', error);
             toast.error('Failed to add Blue Square!');
           });
       }
@@ -854,15 +831,13 @@ setUpdatedTasks(prev => {
     try {
       dispatch(getSpecialWarnings(userId)).then(res => {
         if (res.error) {
-          // eslint-disable-next-line no-console
-          console.error('Error fetching special warnings:', res.error);
+          toast.error('Error loading special warnings.');
           return;
         }
         setSpecialWarnings(res);
       });
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error('Error in fetchSpecialWarnings:', err);
+    } catch {
+      toast.error('Error loading special warnings.');
     }
   };
 
@@ -965,8 +940,7 @@ setUpdatedTasks(prev => {
         toast.success(toastMessage);
       })
       .catch(err => {
-        // eslint-disable-next-line no-console
-        console.error('Error updating user profile:', err);
+        toast.error('Error updating user profile.');
       });
   };
 
@@ -990,8 +964,9 @@ setUpdatedTasks(prev => {
     const updatedTask = updatedTasks[i];
     const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
     // consider await here if order matters
-    // eslint-disable-next-line no-console
-    axios.put(url, updatedTask.updatedTask).catch(err => console.error(err));
+    axios.put(url, updatedTask.updatedTask).catch(() => {
+      toast.error('Failed to sync one or more task updates.');
+    });
   }
 
   try {
@@ -1005,8 +980,7 @@ setUpdatedTasks(prev => {
     setSaved(false);
   } catch (err) {
     if (err?.response?.data?.error) {
-      // eslint-disable-next-line no-alert
-      alert(err.response.data.error.join('\n'));
+      toast.error(err.response.data.error.join(' '));
     }
     return err;
   }
@@ -1019,9 +993,8 @@ setUpdatedTasks(prev => {
   const handleBadgeSubmit = async () => {
     try {
       setSaved(false);
-    } catch (err) {
-      // eslint-disable-next-line no-alert
-      alert('An error occurred while reload user profile after badge udpate.');
+    } catch {
+      toast.error('An error occurred while reloading the user profile after the badge update.');
     }
   };
 
@@ -1032,12 +1005,7 @@ setUpdatedTasks(prev => {
   });
 
   useEffect(() => {
-    const helper = async () => {
-      try {
-        await updateProjectTouserProfile();
-      } catch (error) {}
-    };
-    helper();
+    updateProjectTouserProfile();
   }, [projects]);
 
   useEffect(() => {
@@ -1119,7 +1087,7 @@ setUpdatedTasks(prev => {
       setIsRehireable(pendingRehireableStatus);
       setUserProfile(updatedUserProfile);
       setOriginalUserProfile(updatedUserProfile);
-    } catch (error) {
+    } catch {
       toast.error('Unable change rehireable status');
     }
   };
@@ -1467,8 +1435,7 @@ setUpdatedTasks(prev => {
                 onClick={() => {
                   if (cantDeactivateOwner(userProfile, requestorRole)) {
                     // Owner user cannot be deactivated by another user that is not an Owner.
-                    // eslint-disable-next-line no-alert
-                    alert('You are not authorized to deactivate an owner.');
+                    toast.warn('You are not authorized to deactivate an owner.');
                     return;
                   }
                   setActiveInactivePopupOpen(true);
@@ -1847,7 +1814,7 @@ setUpdatedTasks(prev => {
                   onClick={() => {
                     if (targetIsDevAdminUneditable) {
                       // eslint-disable-next-line no-alert
-                      alert(
+                      toast.warn(
                         'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. ' +
                           'You shouldn’t even be using this account except to create your own accounts to use. ' +
                           'Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now.',
@@ -1981,7 +1948,7 @@ setUpdatedTasks(prev => {
                           onClick={() => {
                             if (targetIsDevAdminUneditable) {
                               // eslint-disable-next-line no-alert
-                              alert(
+                              toast.warn(
                                 'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. ' +
                                   'You shouldn’t even be using this account except to create your own accounts to use. ' +
                                   'Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now.',
@@ -2433,4 +2400,3 @@ export default connect(
   mapStateToProps,
   { hasPermission, updateUserProfile, getTimeEntriesForWeek }
 )(UserProfile);
-

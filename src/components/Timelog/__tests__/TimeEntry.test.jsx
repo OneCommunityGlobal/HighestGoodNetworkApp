@@ -14,6 +14,7 @@ import {
   rolesMock,
 } from '../../../__tests__/mockStates';
 import { renderWithProvider } from '../../../__tests__/utils';
+import { ServerTimeProvider } from '../../../context/ServerTimeContext';
 import TimeEntry from '../TimeEntry';
 
 const mockStore = configureStore([thunk]);
@@ -42,13 +43,15 @@ describe('<TimeEntry />', () => {
     });
 
     renderWithProvider(
-      <TimeEntry
-        data={data}
-        displayYear
-        from="WeeklyTab"
-        timeEntryUserProfile={userProfileMock}
-        tab={0}
-      />,
+      <ServerTimeProvider>
+        <TimeEntry
+          data={data}
+          displayYear
+          from="WeeklyTab"
+          timeEntryUserProfile={userProfileMock}
+          tab={0}
+        />
+      </ServerTimeProvider>,
       { store }
     );
   };
