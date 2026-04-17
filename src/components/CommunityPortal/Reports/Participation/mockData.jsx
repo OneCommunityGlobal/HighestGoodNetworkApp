@@ -56,9 +56,15 @@ for (let month = 0; month < 12; month++) {
 }
 
 const today = new Date();
-for (let t = 0; t < 6; t++) {
-  const eventDate = new Date(today);
-  eventDate.setHours(10 + t * 2, 0, 0, 0);
+const endOfToday = new Date(today);
+endOfToday.setHours(23, 59, 0, 0);
+const remainingMinutesToday = Math.max(14, Math.floor((endOfToday - today) / (1000 * 60)));
+const todayEventSpacingMinutes = Math.max(1, Math.floor(remainingMinutesToday / 14));
+
+for (let t = 0; t < 13; t++) {
+  const eventDate = new Date(today.getTime() + todayEventSpacingMinutes * (t + 1) * 60 * 1000);
+  eventDate.setSeconds(0, 0);
+
   mockEvents.push({
     id: id++,
     eventType: eventTypes[t % eventTypes.length],
