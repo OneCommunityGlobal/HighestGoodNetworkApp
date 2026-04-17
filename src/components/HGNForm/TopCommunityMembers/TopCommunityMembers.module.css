@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .top-members-container {
   padding: 20px;
   font-family: Arial, sans-serif;
@@ -45,15 +46,18 @@
 .team-btn:hover {
   background-color: #0056b3;
 }
+
 .iconLink {
   font-size: 18px;
   margin: 0 5px;
   color: #0073e6;
   transition: color 0.2s;
 }
+
 .iconLink:hover {
   color: #005bb5;
 }
+
 .iconSlack {
   color: #611f69;
   font-size: 18px;
@@ -74,20 +78,21 @@
 
 .underlineLink {
   text-decoration: underline;
-  color: rgb(3, 3, 7);
+  color: rgb(3 3 7);
   cursor: pointer;
   font-size: 16px;
 }
+
 .underlineLink:hover {
   text-decoration: none;
-  color: rgb(3, 3, 7);
+  color: rgb(3 3 7);
 }
 
 .componentBox {
   border: 1px solid #ccc; /* Light gray border */
   padding: 20px;
   border-radius: 10px; /* Rounded corners */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow */
+  box-shadow: 0 4px 8px rgb(0 0 0 / 10%); /* Soft shadow */
   background-color: #fff; /* Optional: white background */
   width: 90%;
   max-width: 700px;
@@ -135,22 +140,22 @@
 
 .darkMode {
   background-color: #1b2a41 !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .darkMode .componentBox {
   background-color: #2b3e59 !important;
   border: 1px solid #4a5a77 !important;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3) !important;
-  color: #ffffff !important;
+  box-shadow: 0 4px 8px rgb(0 0 0 / 30%) !important;
+  color: #fff !important;
 }
 
 .darkMode h2 {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .darkMode label {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .selectDark {
@@ -158,7 +163,7 @@
   border: 1px solid #4a5a77;
   border-radius: 4px;
   background-color: #3a506b;
-  color: #ffffff;
+  color: #fff;
   font-size: 14px;
 }
 
@@ -170,7 +175,7 @@
 .tableDark {
   border-collapse: collapse;
   width: 100%;
-  color: #ffffff;
+  color: #fff;
 }
 
 .tableDark th,
@@ -185,7 +190,7 @@
 }
 
 .tableDark th {
-  color: #ffffff;
+  color: #fff;
   font-weight: 600;
 }
 

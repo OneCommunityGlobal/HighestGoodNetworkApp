@@ -690,7 +690,12 @@ function BlueskyPostDetails() {
 
   const charsLeft = CHAR_LIMIT - postText.length;
   const charsPercent = Math.min((postText.length / CHAR_LIMIT) * 100, 100);
-  const charColor = charsLeft < 0 ? '#e53e3e' : charsLeft <= 20 ? '#ed8936' : '#0085ff';
+  const getCharColor = remainingChars => {
+    if (remainingChars < 0) return '#e53e3e';
+    if (remainingChars <= 20) return '#ed8936';
+    return '#0085ff';
+  };
+  const charColor = getCharColor(charsLeft);
   const canPost =
     isConnected && (postText.trim() !== '' || selectedImage !== null) && charsLeft >= 0;
 

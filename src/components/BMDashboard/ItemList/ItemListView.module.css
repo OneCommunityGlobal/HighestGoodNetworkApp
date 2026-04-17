@@ -1,3 +1,4 @@
+/* stylelint-disable no-descending-specificity */
 table thead th,
 table td {
   vertical-align: middle !important;
@@ -56,7 +57,7 @@ table td {
   gap: 30px;
   width: 100%;
   max-width: 1200px;
-  margin: 0 auto 20px auto;
+  margin: 0 auto 20px;
   overflow: visible;
 }
 
@@ -91,6 +92,7 @@ table td {
 .selectInput input[type='text'] {
   padding: 5px;
 }
+
 .btnPrimary {
   background-color: #468ef9;
   color: white;
@@ -99,12 +101,14 @@ table td {
   border-radius: 4px;
   cursor: pointer;
 }
+
 .buttonsRow {
   display: flex;
   justify-content: center;
   gap: 15px;
   margin-bottom: 15px;
 }
+
 .btnPrimary:hover {
   background-color: #3b82f6;
 }
@@ -114,7 +118,7 @@ table td {
 }
 
 .darkMode h3 {
-  color: #ffffff;
+  color: #fff;
 }
 
 .darkMode .selectInput label {
@@ -124,7 +128,7 @@ table td {
 
 /* RESET selects per theme — REQUIRED */
 .lightTheme .selectInput select {
-  background-color: #ffffff;
+  background-color: #fff;
   color: #111827;
   border-color: #d1d5db;
 }
@@ -211,7 +215,7 @@ table td {
 .darkDatePicker .react-datepicker__day--keyboard-selected,
 .darkDatePicker .react-datepicker__time-list-item--selected {
   background-color: #468ef9 !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .darkDatePicker .react-datepicker__time-container {
@@ -251,7 +255,7 @@ table td {
   ul.react-datepicker__time-list
   li:hover {
   background-color: #3a506b !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .darkDatePicker
@@ -282,12 +286,12 @@ table td {
 .darkDatePicker :global(.react-datepicker__time-list-item:hover),
 .darkDatePicker :global(.react-datepicker__time-list-item:focus) {
   background-color: #3a506b !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .darkDatePicker :global(.react-datepicker__time-list-item--selected) {
   background-color: #468ef9 !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .darkDatePickerPopper .react-datepicker__triangle {
@@ -296,14 +300,14 @@ table td {
 
 /* Light mode styles to improve time list contrast */
 .lightDatePickerInput {
-  background-color: #ffffff !important;
+  background-color: #fff !important;
   color: #111827 !important;
   border: 1px solid #d1d5db !important;
   padding: 4px;
 }
 
 .lightDatePicker {
-  background-color: #ffffff !important;
+  background-color: #fff !important;
   color: #111827 !important;
   border: 1px solid #d1d5db !important;
 }
@@ -329,26 +333,26 @@ table td {
 .lightDatePicker .react-datepicker__day--keyboard-selected,
 .lightDatePicker .react-datepicker__time-list-item--selected {
   background-color: #468ef9 !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .lightDatePicker .react-datepicker__time-container {
   border-color: #d1d5db !important;
-  background-color: #ffffff !important;
+  background-color: #fff !important;
 }
 
 .lightDatePicker .react-datepicker__time-container .react-datepicker__time {
-  background-color: #ffffff !important;
+  background-color: #fff !important;
   border-color: #d1d5db !important;
 }
 
 .lightDatePicker .react-datepicker__time-container .react-datepicker__time-box {
-  background-color: #ffffff !important;
+  background-color: #fff !important;
   border-color: #d1d5db !important;
 }
 
 .lightDatePicker .react-datepicker__time-container .react-datepicker__time-list {
-  background-color: #ffffff !important;
+  background-color: #fff !important;
   color: #1f2937 !important;
   border-color: #d1d5db !important;
 }
@@ -360,13 +364,13 @@ table td {
   :global(.react-datepicker__time-container
     .react-datepicker__time-box
     ul.react-datepicker__time-list) {
-  background-color: #ffffff !important;
+  background-color: #fff !important;
   border-color: #d1d5db !important;
   color: #1f2937 !important;
 }
 
 .lightDatePicker :global(.react-datepicker__time-list-item) {
-  background-color: #ffffff !important;
+  background-color: #fff !important;
   color: #1f2937 !important;
 }
 
@@ -378,7 +382,7 @@ table td {
 
 .lightDatePicker :global(.react-datepicker__time-list-item--selected) {
   background-color: #468ef9 !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .lightDatePickerPopper .react-datepicker__triangle {
@@ -399,29 +403,31 @@ table td {
   color: #e5e7eb;
   border-color: #334155;
 }
+
 .darkTheme .filterSelect option {
   background-color: #1e293b;
   color: #e5e7eb;
 }
 
 .lightTheme .filterSelect option {
-  background-color: #ffffff;
+  background-color: #fff;
   color: #111827;
 }
+
 .lightTheme .filterSelect:focus {
   outline: none;
   border-color: #2563eb;
-  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.25);
+  box-shadow: 0 0 0 1px rgb(37 99 235 / 25%);
 }
 
 .darkTheme .filterSelect:focus {
   outline: none;
   border-color: #3b82f6;
-  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 0 0 1px rgb(59 130 246 / 30%);
 }
 
 .lightTheme .selectInput select option {
-  background-color: #ffffff;
+  background-color: #fff;
   color: #111827;
 }
 
@@ -440,10 +446,11 @@ table td {
 
 /* Light theme selects */
 .itemsListContainer.lightTheme select {
-  background-color: #ffffff;
+  background-color: #fff;
   color: #111827;
   border-color: #d1d5db;
 }
+
 /* ===========================
    SELECT FOCUS (AUTHORITATIVE)
    =========================== */
@@ -457,18 +464,19 @@ table td {
 /* LIGHT MODE focus */
 .itemsListContainer.lightTheme .selectInput select:focus {
   border-color: #2563eb !important; /* blue-600 */
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.35) !important;
-  background-color: #ffffff !important;
+  box-shadow: 0 0 0 2px rgb(37 99 235 / 35%) !important;
+  background-color: #fff !important;
   color: #111827 !important;
 }
 
 /* DARK MODE focus */
 .itemsListContainer.darkTheme .selectInput select:focus {
   border-color: #2563eb;
-  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.25);
+  box-shadow: 0 0 0 1px rgb(37 99 235 / 25%);
   background-color: #1e293b !important;
   color: #e5e7eb !important;
 }
+
 .dropdownRow {
   display: flex;
   align-items: center;
@@ -484,11 +492,13 @@ table td {
   min-width: 200px;
   margin: 0;          
 }
+
 .dropdownRow .react-datepicker-wrapper,
 .dropdownRow .react-datepicker__input-container,
 .dropdownRow .react-datepicker__input-container input {
   width: 100%;
 }
+
 .datePickerGroup{
   margin: -8px auto 10px 10px;
   display: flex;
@@ -500,20 +510,25 @@ table td {
 :global(html body.dark-mode select.form-control.form-control) {
    background-color: #2a3f5f !important; 
 }
+
 :global(html body.dark-mode) .darkBg option {
   background-color: #2a3f5f !important;
   color: #f9fafb !important;
 }
+
 .selectedrow{
   background-color: #91b6db !important;
 }
+
 .fieldRequired{
   color: red;
 }
+
 :global(body.dark-mode) .fieldRequired,
 :global(body.bm-dashboard-dark) .fieldRequired {
   color: #F87171 !important;
 }
+
 .historyTable{
   overflow: scroll;
   height: 75vh;

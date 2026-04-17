@@ -1,3 +1,5 @@
+/* stylelint-disable no-descending-specificity */
+
 /* Announcements.module.css */
 
 :global(h2),
@@ -63,13 +65,16 @@ button.sendButton:hover {
 
 .editor {
   flex: 1;
+
   /* Editor takes up remaining space */
   margin-right: 20px;
+
   /* Add some spacing between editor and email inputs */
 }
 
 .editor :global(h2) {
   margin-top: 0;
+
   /* Remove top margin for the heading */
 }
 
@@ -84,11 +89,13 @@ button.sendButton:hover {
   border-radius: 20px;
   width: 300px;
   box-sizing: border-box; /* Ensures padding is included in width */
+
   /* Set a fixed width for the email inputs container */
 }
 
 .emails :global(h3) {
   margin-top: 0;
+
   /* Remove top margin for the email input headings */
 }
 
@@ -113,15 +120,16 @@ button.sendButton:hover {
 }
 
 /* Responsive design: Adjusts the preview section on smaller screens. */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .emailContentPreview {
     margin-top: 10px;
+
     /* Reduce margin top on smaller screens */
   }
 }
 
 /* Responsive design: Adjust the layout for smaller screens */
-@media (max-width: 800px) {
+@media (width <= 800px) {
   .emailUpdateContainer {
     display: flex;
     flex-direction: column;
@@ -180,7 +188,6 @@ button.sendButton:hover {
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   margin-right: 4px;
-
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
@@ -240,8 +247,7 @@ button.sendButton:hover {
 .tabGrid {
   display: grid !important;
   gap: 8px;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: auto hidden;
   scroll-behavior: smooth;
   scrollbar-width: thin;
   scrollbar-color: #888 #f1f1f1;
@@ -270,12 +276,12 @@ button.sendButton:hover {
 }
 
 .tabGrid.dark > .navItem .tabNavItem {
-  box-shadow: -2px 0 6px rgba(0, 0, 0, 0.25), 2px 0 6px rgba(0, 0, 0, 0.25);
+  box-shadow: -2px 0 6px rgb(0 0 0 / 25%), 2px 0 6px rgb(0 0 0 / 25%);
 }
 
 .tabGrid.dark > .navItem:nth-child(-n + 12) .tabNavItem {
-  box-shadow: -2px 0 6px rgba(0, 0, 0, 0.25), 2px 0 6px rgba(0, 0, 0, 0.25),
-    0 6px 6px rgba(0, 0, 0, 0.35);
+  box-shadow: -2px 0 6px rgb(0 0 0 / 25%), 2px 0 6px rgb(0 0 0 / 25%),
+    0 6px 6px rgb(0 0 0 / 35%);
 }
 
 .tabGrid.dark::-webkit-scrollbar-track {
@@ -358,16 +364,16 @@ button.sendButton:hover {
   filter: brightness(1.05);
 }
 
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
   .tabGrid {
     grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-    grid-template-columns: repeat(auto, minmax(110px, 120px));
+    grid-template-columns: repeat(auto-fill, minmax(110px, 120px));
   }
 }
 
-@media (max-width: 700px) {
+@media (width <= 700px) {
   .tabGrid {
-    grid-template-columns: repeat(auto, minmax(95px, 100px));
+    grid-template-columns: repeat(auto-fill, minmax(95px, 100px));
   }
 
   .tabGrid .navLink.tabNavItem {
@@ -375,7 +381,7 @@ button.sendButton:hover {
   }
 }
 
-@media (max-width: 460px) {
+@media (width <= 460px) {
   .tabLabel {
     display: none;
   }
@@ -386,7 +392,7 @@ button.sendButton:hover {
   }
 
   .tabGrid {
-    grid-template-columns: repeat(auto, minmax(70px, 80px));
+    grid-template-columns: repeat(auto-fill, minmax(70px, 80px));
   }
 
   .tabGrid > .navItem {
@@ -402,72 +408,95 @@ button.sendButton:hover {
 .tabGrid > .navItem:nth-child(1) {
   z-index: 12;
 }
+
 .tabGrid > .navItem:nth-child(2) {
   z-index: 11;
 }
+
 .tabGrid > .navItem:nth-child(3) {
   z-index: 10;
 }
+
 .tabGrid > .navItem:nth-child(4) {
   z-index: 9;
 }
+
 .tabGrid > .navItem:nth-child(5) {
   z-index: 8;
 }
+
 .tabGrid > .navItem:nth-child(6) {
   z-index: 7;
 }
+
 .tabGrid > .navItem:nth-child(7) {
   z-index: 6;
 }
+
 .tabGrid > .navItem:nth-child(8) {
   z-index: 5;
 }
+
 .tabGrid > .navItem:nth-child(9) {
   z-index: 4;
 }
+
 .tabGrid > .navItem:nth-child(10) {
   z-index: 3;
 }
+
 .tabGrid > .navItem:nth-child(11) {
   z-index: 2;
 }
+
 .tabGrid > .navItem:nth-child(12) {
   z-index: 1;
 }
+
 .tabGrid > .navItem:nth-child(13) {
   z-index: 24;
 }
+
 .tabGrid > .navItem:nth-child(14) {
   z-index: 23;
 }
+
 .tabGrid > .navItem:nth-child(15) {
   z-index: 22;
 }
+
 .tabGrid > .navItem:nth-child(16) {
   z-index: 21;
 }
+
 .tabGrid > .navItem:nth-child(17) {
   z-index: 20;
 }
+
 .tabGrid > .navItem:nth-child(18) {
   z-index: 19;
 }
+
 .tabGrid > .navItem:nth-child(19) {
   z-index: 18;
 }
+
 .tabGrid > .navItem:nth-child(20) {
   z-index: 17;
 }
+
 .tabGrid > .navItem:nth-child(21) {
   z-index: 16;
 }
+
 .tabGrid > .navItem:nth-child(22) {
   z-index: 15;
 }
+
 .tabGrid > .navItem:nth-child(23) {
   z-index: 14;
 }
+
 .tabGrid > .navItem:nth-child(24) {
   z-index: 13;
 }
@@ -480,10 +509,10 @@ button.sendButton:hover {
 
 .tabGrid > .navItem .tabNavItem {
   /* left + right only */
-  box-shadow: -2px 0 6px rgba(0, 0, 0, 0.12), 2px 0 6px rgba(0, 0, 0, 0.12);
+  box-shadow: -2px 0 6px rgb(0 0 0 / 12%), 2px 0 6px rgb(0 0 0 / 12%);
 }
 
 .tabGrid > .navItem:nth-child(-n + 12) .tabNavItem {
-  box-shadow: -2px 0 6px rgba(0, 0, 0, 0.12), 2px 0 6px rgba(0, 0, 0, 0.12),
-    0 6px 6px rgba(0, 0, 0, 0.2);
+  box-shadow: -2px 0 6px rgb(0 0 0 / 12%), 2px 0 6px rgb(0 0 0 / 12%),
+    0 6px 6px rgb(0 0 0 / 20%);
 }

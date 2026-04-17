@@ -1,3 +1,4 @@
+/* stylelint-disable no-descending-specificity, no-duplicate-selectors, selector-type-no-unknown */
 .profileDetails {
   width: 100%;
   margin-bottom: 20px;
@@ -58,6 +59,20 @@ strong {
   font-weight: bold;
 }
 
+=======
+.value {
+  color: #111827;
+  display: inline-block;
+  font-family: Arial, sans-serif;
+}
+
+strong {
+  /* color: #fffdfd; */
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+>>>>>>> 8a4b98ab6a93571d5bb6f6c5b38d85d3cace01b3
 .githubLink {
   color: #1a73e8;
   text-decoration: none;

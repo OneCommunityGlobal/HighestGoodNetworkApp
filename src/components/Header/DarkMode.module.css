@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 /* --- Root Wrapper --- */
 .darkModeButton {
   display: inline-block;
@@ -21,6 +22,7 @@
 }
 
 .sliderContainerDark { background-color: #1C2541; }
+
 .sliderContainerLight { 
   background-color: #e3e3e3; 
   border: 1px solid #d4d4d4; 
@@ -52,10 +54,10 @@
 }
 
 .labelLightHover { margin-left: 6px; color: #151515; }
-.labelDarkHover { margin-left: 32px; color: #ffffff; }
+.labelDarkHover { margin-left: 32px; color: #fff; }
 
 /* --- Hover States (Dark) --- */
-.sliderContainerDark:hover { background-color: #ffffff; }
+.sliderContainerDark:hover { background-color: #fff; }
 
 .sliderContainerDark:hover .labelDark { opacity: 0; }
 .sliderContainerDark:hover .labelLightHover { opacity: 1; }

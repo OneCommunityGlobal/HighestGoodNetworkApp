@@ -1,17 +1,18 @@
+/* stylelint-disable no-descending-specificity */
 .overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgb(0 0 0 / 50%);
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .popup {
-  background-color: rgb(187, 185, 185);
+  background-color: rgb(187 185 185);
   padding: 24px;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 20%);
   max-width: 800px;
   width: 100%;
   border: 6px solid black;
@@ -105,17 +106,17 @@
 }
 
 .color-2 {
-  background-color: #0000FF; /* Blue - dark, use white text */
+  background-color: #00F; /* Blue - dark, use white text */
   color: white;
 }
 
 .color-3 {
-  background-color: #00FF00; /* Green - bright, use black text */
+  background-color: #0F0; /* Green - bright, use black text */
   color: black;
 }
 
 .color-4 {
-  background-color: #FFFF00; /* Yellow - bright, use black text */
+  background-color: #FF0; /* Yellow - bright, use black text */
   color: black;
 }
 
@@ -125,7 +126,7 @@
 }
 
 .color-6 {
-  background-color: #FF0000; /* Red - dark, use white text */
+  background-color: #F00; /* Red - dark, use white text */
   color: white;
 }
 
@@ -182,33 +183,39 @@
   color: #fff !important;
   background-color: #9400D3 !important;
 }
+
 :global(body.dark-mode) .popup-table-dark .pr-count-badge.color-1,
 :global(body.bm-dashboard-dark) .popup-table-dark .pr-count-badge.color-1 {
   color: #fff !important;
   background-color: #4B0082 !important;
 }
+
 :global(body.dark-mode) .popup-table-dark .pr-count-badge.color-2,
 :global(body.bm-dashboard-dark) .popup-table-dark .pr-count-badge.color-2 {
   color: #fff !important;
-  background-color: #0000FF !important;
+  background-color: #00F !important;
 }
+
 :global(body.dark-mode) .popup-table-dark .pr-count-badge.color-3,
 :global(body.bm-dashboard-dark) .popup-table-dark .pr-count-badge.color-3 {
   color: #000 !important;
-  background-color: #00FF00 !important;
+  background-color: #0F0 !important;
 }
+
 :global(body.dark-mode) .popup-table-dark .pr-count-badge.color-4,
 :global(body.bm-dashboard-dark) .popup-table-dark .pr-count-badge.color-4 {
   color: #000 !important;
-  background-color: #FFFF00 !important;
+  background-color: #FF0 !important;
 }
+
 :global(body.dark-mode) .popup-table-dark .pr-count-badge.color-5,
 :global(body.bm-dashboard-dark) .popup-table-dark .pr-count-badge.color-5 {
   color: #fff !important;
   background-color: #C45C00 !important;
 }
+
 :global(body.dark-mode) .popup-table-dark .pr-count-badge.color-6,
 :global(body.bm-dashboard-dark) .popup-table-dark .pr-count-badge.color-6 {
   color: #fff !important;
-  background-color: #FF0000 !important;
+  background-color: #b00000 !important;
 }

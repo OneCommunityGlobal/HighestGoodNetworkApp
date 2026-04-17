@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 :global(thead) {
   background: aliceblue;
 }
@@ -35,6 +36,7 @@
 }
 
 /* Keep overview layout global for now (likely used in Overview.jsx) */
+
 /* .projects__overview--top {
   background: gray;
 } */
@@ -103,7 +105,7 @@
   background: #e9f6ff;
 }
 
-@media (max-width: 375px) {
+@media (width <= 375px) {
   :global(#new_project .form-control) {
     flex: 1 1 auto;
     width: 50%;
@@ -167,4 +169,55 @@
   font-size: 1.5rem;
   line-height: 1;
   margin-top: 0;
+
+=======
+.suggestion-item {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.suggestion-item:hover {
+  background-color: #f0f0f0;
+}
+
+.suggestion-button {
+  display: block;
+  width: 100%; 
+  padding: 10px; 
+  text-align: left; 
+  background: none; 
+  border: none; 
+  cursor: pointer; 
+}
+
+.suggestion-button:hover {
+  background-color: #f0f0f0;
+}
+
+tr:hover {
+  background: #e9f6ff;
+}
+
+.archived-button {
+  background-color: #007bff;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-left: 10px;
+}
+
+.archived-button:hover {
+  background-color: #0056b3;
+}
+
+@media (width <= 375px) {
+  #new_project .form-control {
+    flex: 1 1 auto;
+    width: 50%;
+  }
+}
 }

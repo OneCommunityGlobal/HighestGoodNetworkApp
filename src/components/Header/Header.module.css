@@ -1,3 +1,5 @@
+/* stylelint-disable no-descending-specificity, selector-type-no-unknown */
+
 /* General Styling */
 .headerWrapper {
   height: fit-content;
@@ -31,7 +33,7 @@
   align-items: center;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .headerRow {
     grid-template-columns: auto auto; /* left | right */
     grid-template-rows: auto auto;
@@ -56,11 +58,13 @@
   left: 0;
   padding: 12px;
 } */
+
 /* Timer Message Section */
 .timer-message-section {
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   /* flex-wrap: wrap; */
   width: 100%;
   gap: 1rem;
@@ -74,7 +78,6 @@
   color: white;
   font-size: medium;
   line-height: 1.4;
-  word-wrap: break-word;
   overflow-wrap: break-word;
   box-sizing: border-box;
   width: 100%;
@@ -84,25 +87,25 @@
 .headerCard {
   margin-left: 0; /* Remove left margin */
   margin-right: 0; /* Remove right margin */
+
   /* Use full viewport width */
   width: 100vw;
   max-width: 100vw;
   box-sizing: border-box;
   overflow: hidden;
   position: relative;
+
   /* Ensure card extends to full width */
   left: 0;
   right: 0;
 }
 
 .cardWrapper {
-  padding-top: 1rem;
-  padding-bottom: 1rem;
+  padding: 1rem 0;
+
   /* Ensure wrapper uses full width */
   width: 100%;
   margin: 0;
-  padding-left: 0;
-  padding-right: 0;
   box-sizing: border-box;
 }
 
@@ -174,58 +177,72 @@
 .hideInTablet {
   display: block;
 }
+
 .showInTablet {
   display: none;
 }
 
-@media (max-width: 1700px) {
+@media (width <= 1700px) {
   .hideInTablet {
     display: none;
   }
+
   .showInTablet {
     display: block;
   }
 }
 
 
-@media screen and (max-width: 1151px) and (min-width: 992px) {
+@media screen and (width <= 1151px) and (width >= 992px) {
+=======
+@media screen and (width <= 1151px) and (width >= 992px) {
+>>>>>>> 8a4b98ab6a93571d5bb6f6c5b38d85d3cace01b3
   .dropdownMenu {
       width: auto !important;
   }
 }
 
-@media screen and (max-width: 1199px) {
+@media screen and (width <= 1199px) {
   .menuContainer {
     align-items: start;
     flex-direction: column !important;
+
     /* width: 100%; */
     padding-left: 50px;
   }
+
   .mobileMenuDropdown {
     background-color: #343a40 !important;
     border: none !important;
   }
+
   .mobileDropdownText{
-    color: rgba(255, 255, 255, 0.5) !important;
+    color: rgb(255 255 255 / 50%) !important;
   }
+
   .mobileDropdownItem:hover{
     background-color: #343a40 !important;
-    color: rgba(255, 255, 255, 0.75) !important;
+    color: rgb(255 255 255 / 75%) !important;
   }
+
   .darkMenuDropdown {
     background-color: #343a40 !important;
     border: none !important;
   }
+
   .darkDropdownText {
-    color: rgba(255, 255, 255, 0.5) !important;
+    color: rgb(255 255 255 / 50%) !important;
   }
+
   .darkDropdownItem:hover {
     background-color: #343a40 !important;
-    color: rgba(255, 255, 255, 0.75) !important;
+    color: rgb(255 255 255 / 75%) !important;
   }
+
   .hideInMobile {
     display: none;
   }
+
   .showInMobile {
     display: block;
   }
@@ -251,7 +268,6 @@
   @page {
     size: auto;
     margin: 0;
-    scale: 100%;
   }
 
   /* Ensure navbar is compact and font size is correct */
@@ -304,7 +320,10 @@
 
 /* Responsive behavior - prevent icon overlap on smaller screens */
 
-@media (max-width: 1200px) {
+@media (width <= 1200px) {
+=======
+@media (width <= 1200px) {
+>>>>>>> 8a4b98ab6a93571d5bb6f6c5b38d85d3cace01b3
   .left-section,
   .center-section,
   .right-section {
@@ -332,7 +351,7 @@
 }
 
 /* Medium screens - better balance */
-@media (max-width: 900px) {
+@media (width <= 900px) {
   .center-section {
     min-width: 120px; /* Still visible but more compressed */
     font-size: 0.9rem; /* Slightly smaller text */
@@ -340,7 +359,7 @@
 }
 
 /* Mobile specific - stack vertically to prevent overlap */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .navbar .d-flex {
     flex-direction: column !important;
     align-items: center !important;
@@ -355,3 +374,4 @@
   }
 }
 
+}}

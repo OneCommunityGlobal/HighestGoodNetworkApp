@@ -151,6 +151,11 @@ function Announcements({ title, email: initialEmail }) {
             <TruthSocialAutoPoster darkMode={darkMode} />
           </TabPane>
 
+          {/* Bluesky uses the dedicated BlueskyPostDetails component */}
+          <TabPane tabId="bluesky">
+            <BlueskyPostDetails />
+          </TabPane>
+
           {[
             'x',
             'facebook',
@@ -159,7 +164,6 @@ function Announcements({ title, email: initialEmail }) {
             'instagram',
             'threads',
             'mastodon',
-            'bluesky',
             'youtube',
             'reddit',
             'tumblr',

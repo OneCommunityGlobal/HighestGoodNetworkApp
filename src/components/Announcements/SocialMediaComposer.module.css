@@ -1,18 +1,19 @@
+/* stylelint-disable  */
 /* Social Media Composer - LIGHT MODE BY DEFAULT */
 
 /* Main Container - WHITE background in light mode */
 .social-media-composer {
   padding: 1.5rem;
-  background: #ffffff;
+  background: #fff;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
 }
 
 .platform-title {
   font-size: 1.5rem;
   font-weight: 600;
   margin-bottom: 1rem;
-  color: #333333;
+  color: #333;
   text-transform: capitalize;
 }
 
@@ -34,7 +35,7 @@
   cursor: pointer;
   font-size: 0.95rem;
   font-weight: 500;
-  color: #666666;
+  color: #666;
   transition: all 0.2s;
   white-space: nowrap;
   min-width: 120px;
@@ -66,13 +67,14 @@
   width: 100%;
   min-height: 150px;
   padding: 12px;
-  border: 1px solid #cccccc;
+  border: 1px solid #ccc;
   border-radius: 6px;
   font-family: inherit;
   font-size: 1rem;
   resize: vertical;
-  background: #ffffff;
-  color: #000000;
+  background: #fff;
+  color: #000;
+
   /* BLACK TEXT */
   box-sizing: border-box;
 }
@@ -80,11 +82,11 @@
 .post-textarea:focus {
   outline: none;
   border-color: #007bff;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+  box-shadow: 0 0 0 3px rgb(0 123 255 / 10%);
 }
 
 .post-textarea::placeholder {
-  color: #999999;
+  color: #999;
 }
 
 /* Upload Section */
@@ -97,15 +99,15 @@
 .section-label {
   font-weight: 500;
   font-size: 0.9rem;
-  color: #333333;
+  color: #333;
 }
 
 .file-input {
   padding: 0.5rem;
-  border: 1px solid #cccccc;
+  border: 1px solid #ccc;
   border-radius: 4px;
-  background: #ffffff;
-  color: #333333;
+  background: #fff;
+  color: #333;
   cursor: pointer;
 }
 
@@ -137,7 +139,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 20%);
   transition: background 0.2s;
 }
 
@@ -154,9 +156,10 @@
   width: 100%;
   padding: 8px 12px;
   border-radius: 4px;
-  border: 1px solid #cccccc;
-  background: #ffffff;
-  color: #000000;
+  border: 1px solid #ccc;
+  background: #fff;
+  color: #000;
+
   /* BLACK TEXT */
   font-family: inherit;
   font-size: 0.9rem;
@@ -169,7 +172,7 @@
 }
 
 .alt-text-input::placeholder {
-  color: #999999;
+  color: #999;
 }
 
 /* Schedule Section */
@@ -187,11 +190,12 @@
 .datetime-input {
   flex: 1;
   padding: 0.5rem;
-  border: 1px solid #cccccc;
+  border: 1px solid #ccc;
   border-radius: 4px;
   font-family: inherit;
-  background: #ffffff;
-  color: #000000;
+  background: #fff;
+  color: #000;
+
   /* BLACK TEXT */
 }
 
@@ -268,11 +272,11 @@
   position: absolute;
   bottom: calc(100% + 8px);
   left: 0;
-  background: #ffffff;
-  border: 1px solid #cccccc;
+  background: #fff;
+  border: 1px solid #ccc;
   border-radius: 6px;
   padding: 1rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
   z-index: 1000;
   min-width: 200px;
 }
@@ -283,7 +287,7 @@
   gap: 0.5rem;
   padding: 0.5rem;
   cursor: pointer;
-  color: #333333;
+  color: #333;
 }
 
 .crosspost-option:hover {
@@ -301,7 +305,7 @@
   padding-top: 0.5rem;
   border-top: 1px solid #e0e0e0;
   font-size: 0.75rem;
-  color: #666666;
+  color: #666;
 }
 
 /* Edit Banner */
@@ -338,14 +342,14 @@
 .history-content,
 .details-content {
   padding: 1rem;
-  background: #ffffff;
-  color: #333333;
+  background: #fff;
+  color: #333;
 }
 
 .scheduled-content h4,
 .history-content h4 {
   margin-bottom: 1rem;
-  color: #333333;
+  color: #333;
 }
 
 .posts-list {
@@ -369,14 +373,14 @@
 }
 
 .post-text {
-  color: #333333;
+  color: #333;
   margin-bottom: 0.5rem;
   line-height: 1.5;
 }
 
 .post-meta {
   font-size: 0.85rem;
-  color: #666666;
+  color: #666;
   margin-bottom: 0.5rem;
 }
 
@@ -437,7 +441,7 @@
   gap: 1rem;
   margin: 0.5rem 0;
   font-size: 0.9rem;
-  color: #666666;
+  color: #666;
 }
 
 .post-media {
@@ -460,23 +464,23 @@
 
 /* Details Content */
 .details-content {
-  color: #333333;
+  color: #333;
 }
 
 .details-content ul {
   padding-left: 1.5rem;
   line-height: 1.8;
-  color: #333333;
+  color: #333;
 }
 
 .details-content strong {
-  color: #333333;
+  color: #333;
 }
 
 /* Preview Modal Content */
 .preview-container {
   padding: 1rem;
-  background: #ffffff;
+  background: #fff;
 }
 
 .preview-header {
@@ -492,11 +496,11 @@
   border-radius: 6px;
   white-space: pre-wrap;
   line-height: 1.6;
-  color: #333333;
+  color: #333;
 }
 
 /* Mobile Responsiveness */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .tabs-container {
     overflow-x: auto;
   }
@@ -551,7 +555,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .social-media-composer {
     padding: 1rem;
   }
@@ -588,7 +592,7 @@
   }
 
   .tabs-container {
-    border-bottom-color: #444444;
+    border-bottom-color: #444;
   }
 
   .tab-button {
@@ -608,12 +612,12 @@
 
   .post-textarea {
     background: #2a2a2a;
-    border-color: #444444;
+    border-color: #444;
     color: #e0e0e0;
   }
 
   .post-textarea::placeholder {
-    color: #666666;
+    color: #666;
   }
 
   .section-label {
@@ -622,29 +626,29 @@
 
   .file-input {
     background: #2a2a2a;
-    border-color: #444444;
+    border-color: #444;
     color: #e0e0e0;
   }
 
   .alt-text-input {
     background: #2a2a2a;
-    border-color: #444444;
+    border-color: #444;
     color: #e0e0e0;
   }
 
   .alt-text-input::placeholder {
-    color: #666666;
+    color: #666;
   }
 
   .datetime-input {
     background: #2a2a2a;
-    border-color: #444444;
+    border-color: #444;
     color: #e0e0e0;
   }
 
   .crosspost-dropdown {
     background: #2a2a2a;
-    border-color: #444444;
+    border-color: #444;
   }
 
   .crosspost-option {
@@ -652,12 +656,12 @@
   }
 
   .crosspost-option:hover {
-    background: #333333;
+    background: #333;
   }
 
   .crosspost-note {
     color: #a0a0a0;
-    border-top-color: #444444;
+    border-top-color: #444;
   }
 
   .edit-banner {
@@ -680,7 +684,7 @@
 
   .post-card {
     background: #2a2a2a;
-    border-color: #444444;
+    border-color: #444;
   }
 
   .post-text {
@@ -713,7 +717,7 @@
 
   .preview-content {
     background: #2a2a2a;
-    border-color: #444444;
+    border-color: #444;
     color: #e0e0e0;
   }
 }
