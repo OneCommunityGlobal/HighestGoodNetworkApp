@@ -135,6 +135,11 @@
   gap: 6px;
 }
 
+.dashboardSearchContainer:focus,
+.dashboardSearchContainer:focus-visible {
+  outline: none;
+}
+
 .dashboardSearchContainer input {
   outline: none;
 }
@@ -178,26 +183,11 @@
   background: #1b2a41;
 }
 
-.darkSidebar .filterItem input:not([type='checkbox']):not([type='radio']),
-.darkSidebar .filterItem select {
-  background-color: #34495e;
-  color: #fff;
-  border: 1px solid #4a6572;
-}
-
-.darkSidebar .filterItem label {
-  color: #ecf0f1;
-}
-
-.darkSidebar input[type="date"] {
-  color-scheme: dark;
-}
-
 .filterSection h4 {
   font-size: 1.8rem;
   color: #2c3e50;
-  margin-bottom: 20px;
   font-weight: 600;
+  margin-bottom: 20px;
 }
 
 .filterSectionDivider {
@@ -207,24 +197,53 @@
   gap: 20px;
 }
 
+.filterItem input:not([type='checkbox']):not([type='radio']),
 .radioRow {
   display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
+  flex-direction: column;
+  gap: 8px;
   margin-top: 10px;
 }
 
+.darkSidebar .filterItem input:not([type='checkbox']):not([type='radio']),
+.darkSidebar .filterItem select {
+  background-color: #34495e;
+  color: #fff;
+  border: 1px solid #4a6572;
+}
+
+.darkSidebar .filterItem label,
+.darkSidebar .filterSectionHeader {
+  color: #ecf0f1;
+}
+
+.darkSidebar input[type="date"] {
+  color-scheme: dark;
+}
+
 .radioGroup {
-  margin-right: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
 }
 
-.radioInput {
-  margin-right: 6px;
+.checkboxGroup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  flex-wrap: nowrap;
 }
 
-.radioLabel {
-  margin-bottom: 0;
-  vertical-align: middle;
+.radioInput,
+.checkboxInput {
+  margin: 0;
+  flex-shrink: 0;
+  min-width: 18px;
+  min-height: 18px;
+  width: 18px;
+  height: 18px;
 }
 
 .filterItem input:not([type="checkbox"]):not([type="radio"]),
@@ -246,6 +265,13 @@
   background-size: 1em;
 }
 
+.filterSectionHeader {
+  font-weight: 600;
+  color: #34495e;
+  margin-bottom: 8px;
+  font-size: 1rem;
+}
+
 .filterItem label {
   display: block;
   font-weight: 600;
@@ -253,18 +279,61 @@
   margin-bottom: 8px;
 }
 
-.dateFilter {
-  margin-top: 10px;
+.radioLabel {
+  margin-bottom: 0;
+  margin-left: 0;
+  vertical-align: middle;
+  font-weight: 400;
+  white-space: nowrap;
 }
 
-.dateFilter:focus {
+/* Prevent Bootstrap/Reactstrap form-check from causing overlap; keep label on same row as control */
+.filterSection .radioGroup .radioLabel,
+.filterSection .checkboxGroup .radioLabel {
+  padding-left: 0;
+  display: inline;
+  margin-bottom: 0;
+}
+
+.filterSection .radioGroup,
+.filterSection .checkboxGroup {
+  /* Override any form-check positioning so flex layout controls spacing */
+  position: relative;
+  padding-left: 0 !important;
+}
+
+.filterSection .radioGroup input,
+.filterSection .checkboxGroup input {
+  position: static;
+  margin-left: 0 !important;
+}
+
+.filterItem input[type='radio'],
+.filterItem input[type='checkbox'] {
+  display: inline-block;
+  width: 18px;
+  min-width: 18px;
+  height: 18px;
+  min-height: 18px;
+  padding: 0;
+  margin: 0;
+  vertical-align: middle;
+  flex-shrink: 0;
+  position: static;
+}
+
+.filterItem input:focus,
+.filterItem select:focus {
   border-color: #2c3e50;
   box-shadow: 0 0 5px rgba(44, 62, 80, 0.4);
   outline: none;
 }
 
-.filterItem input:focus,
-.filterItem select:focus {
+.dateFilter {
+  margin-top: 15px;
+}
+
+.dateFilter:focus {
   border-color: #2c3e50;
   box-shadow: 0 0 5px rgba(44, 62, 80, 0.4);
   outline: none;
@@ -349,9 +418,39 @@
   font-size: 1rem;
   color: #555;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 8px;
-  margin: 5px 0;
+  margin: 8px 0;
+  line-height: 1.5;
+}
+
+.eventDate > svg,
+.eventLocation > svg,
+.eventOrganizer > svg {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  margin-top: 3px;
+  align-self: flex-start;
+}
+
+.eventDate > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.eventDate > div > div:first-child {
+  line-height: 1.4;
+}
+
+.eventTime {
+  font-size: 0.9rem;
+  color: #777;
+  font-weight: 500;
+  line-height: 1.4;
 }
 
 .organizerLogo {
@@ -369,6 +468,22 @@
   margin-top: 2px;
   flex-shrink: 0;
   font-size: 1rem;
+}
+
+/* Dark mode: ensure date, time, location and organizer are readable */
+.darkMain .eventDate,
+.darkMain .eventDate .eventTime,
+.darkMain .eventLocation,
+.darkMain .eventOrganizer {
+  color: #e4e6eb;
+}
+
+.darkMain .eventTime {
+  color: #b0b3b8;
+}
+
+.darkMain .eventIcon {
+  color: #e4e6eb;
 }
 
 .noEvents {
@@ -396,6 +511,45 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
+
+
+.dateFilterContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 6px 0 20px 0;
+}
+.dateFilterContainer :global(.react-datepicker-wrapper) input {
+  border: 2px solid #1b3c55; 
+  border-radius: 8px;
+  padding: 8px 12px;
+  width: 100%;
+  outline: none;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.darkSidebar :global(.react-datepicker__input-container input) {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border: 2px solid #4da3ff !important;
+}
+
+.darkSidebar :global(.react-datepicker__input-container input::placeholder) {
+  color: #ffffff !important;
+}
+
+.dateFilterContainer :global(.react-datepicker-wrapper) input:focus {
+  border-color: #34495e;
+  box-shadow: 0 0 5px rgba(44, 62, 80, 0.4);
+}
+
+.dateErrorMessage {
+  color: red;
+  margin-top: 5px;
+}
+
+
 .paginationContainer {
   margin-top: 20px;
   display: flex;
@@ -410,31 +564,15 @@
   -webkit-appearance: none;
   appearance: none;
 }
-
-.darkSearchContainer {
-  background: #1b2a41;
-  border-color: #4da3ff;
-}
-
-.darkSearchTextarea {
-  color: #ffffff;
-}
-
-.darkSearchTextarea::placeholder {
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.darkSearchContainer .dashboardClearBtn,
-.darkSearchContainer .dashboardSearchIconBtn {
-  color: #ffffff;
-
-}
-
-/*event count text */
-.event-count-text {
+.noEvents{
+  display: flex;
+  justify-content: center;
   text-align: center;
-  font-size: 0.95rem;
-  color: #6c757d;
-  margin-top: -10px;
-  margin-bottom: 20px;
+  width: 100%;
+  font-size: 1.25rem;
+  font-style: italic;
+  color:#6b7280;
+}
+.darkMain .noEvents {
+  color: #9ca3af;
 }
