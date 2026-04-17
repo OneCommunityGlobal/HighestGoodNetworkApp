@@ -42,7 +42,6 @@ import TaskCompletedBarChart from './TaskCompleted/TaskCompletedBarChart';
 import TeamStats from './TeamStats/TeamStats';
 import styles from './TotalOrgSummary.module.css';
 import VolunteerActivities from './VolunteerActivities/VolunteerActivities';
-import VolunteerHoursDistribution from './VolunteerHoursDistribution/VolunteerHoursDistribution';
 import RoleDistributionPieChart from './VolunteerRolesTeamDynamics/RoleDistributionPieChart';
 import WorkDistributionBarChart from './VolunteerRolesTeamDynamics/WorkDistributionBarChart';
 import VolunteerStatus from './VolunteerStatus/VolunteerStatus';
