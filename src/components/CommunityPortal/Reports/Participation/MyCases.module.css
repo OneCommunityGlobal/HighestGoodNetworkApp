@@ -302,8 +302,8 @@
 }
 
 .eventBadge[data-type='Cooking Workshop'] {
-  background-color: #fdecea;
-  color: #e74c3c;
+  background-color: #eaeafd;
+  color: #3c3ce7;
 }
 
 .eventBadge[data-type='Dance Class'] {
@@ -327,8 +327,8 @@
 }
 
 .caseCardDark .eventBadge[data-type='Cooking Workshop'] {
-  background-color: rgba(231, 76, 60, 0.2);
-  color: #f1948a;
+  background-color: rgba(4, 0, 255, 0.2);
+  color: #8a8af1;
 }
 
 .caseCardDark .eventBadge[data-type='Dance Class'] {
@@ -575,4 +575,27 @@
     background-color: #f5e6ff !important;
     color: #9b59b6 !important;
   }
+}
+
+.myCasesPageDark .viewSwitcher button,
+.myCasesPageDark .createNew {
+  background-color: #3A506B;
+  color: #ffffff;
+  border: 1px solid #3A506B;
+}
+
+.myCasesPageDark .viewSwitcher button.active {
+  background-color: #007bff;
+  color: #ffffff;
+}
+
+.myCasesPageDark .filterDropdown {
+  background-color: #3A506B;
+  color: #ffffff;
+  border: 1px solid #3A506B;
+}
+
+.myCasesPageDark .filterDropdown option {
+  background-color: #3A506B;
+  color: #ffffff;
 }

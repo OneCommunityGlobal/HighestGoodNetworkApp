@@ -55,7 +55,7 @@
     "date-fns-tz": "^2.0.1",
     "dayjs": "^1.11.13",
     "diff": "^8.0.3",
-    "dompurify": "^3.2.5",
+    "dompurify": "^3.3.2",
     "elliptic": "^6.6.1",
     "font-awesome": "^4.7.0",
     "fs-extra": "^11.3.0",
@@ -64,8 +64,10 @@
     "html-to-pdfmake": "^2.0.6",
     "html2canvas": "^1.4.1",
     "jest": "^30.2.0",
+    "joi": "^18.1.2",
+    "joi-browser": "^13.4.0",
     "jquery": "^3.7.1",
-    "jspdf": "^4.2.0",
+    "jspdf": "^4.2.1",
     "jwt-decode": "^2.2.0",
     "leaflet": "^1.9.4",
     "leaflet.heat": "^0.2.0",
@@ -125,6 +127,7 @@
     "tinymce": "^7.2.0",
     "util": "^0.12.5",
     "uuid": "^9.0.1",
+    "validator": "^13.15.26",
     "webpack": "^5.104.1"
   },
   "resolutions": {
@@ -217,4 +220,3 @@
     "@rollup/rollup-darwin-arm64": "^4.54.0"
   }
 }
-
