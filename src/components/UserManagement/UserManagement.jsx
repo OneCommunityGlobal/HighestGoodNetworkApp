@@ -786,8 +786,8 @@ const mapDispatchToProps = (dispatch) => ({
   getAllUserProfile: () => dispatch(getAllUserProfile()),
   deleteUser: (...args) => dispatch(deleteUser(...args)),
   getAllTimeOffRequests: () => dispatch(getAllTimeOffRequests()),
-  enableEditUserInfo: (value) => dispatch(enableEditUserInfo(value)),
-  disableEditUserInfo: (value) => dispatch(disableEditUserInfo(value)),
+  enableEditUserInfo: () => dispatch(enableEditUserInfo()),
+  disableEditUserInfo: () => dispatch(disableEditUserInfo()),
   getAllRoles: () => dispatch(getAllRoles()),
 });
 

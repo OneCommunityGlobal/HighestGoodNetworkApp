@@ -16,7 +16,9 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { faFacebook, faLinkedin, faMedium } from '@fortawesome/free-brands-svg-icons';
 import ReactTooltip from 'react-tooltip';
-import EmailPanel from './platforms/email';
+
+import EmailPanel from './platforms/email'; // ← new
+import SlashdotAutoPoster from './platforms/slashdot';
 
 function Announcements({ title, email: initialEmail }) {
   const [activeTab, setActiveTab] = useState('email');
@@ -169,11 +171,16 @@ function Announcements({ title, email: initialEmail }) {
             'livejournal',
             'slashdot',
             'blogger',
-          ].map(platform => (
-            <TabPane tabId={platform} key={platform}>
-              <SocialMediaComposer platform={platform} darkMode={darkMode} />
-            </TabPane>
-          ))}
+            'truthsocial',
+          ].map(platform => {
+            const PlatformComposer =
+              platform === 'slashdot' ? SlashdotAutoPoster : SocialMediaComposer;
+            return (
+              <TabPane tabId={platform} key={platform}>
+                <PlatformComposer platform={platform} darkMode={darkMode} />
+              </TabPane>
+            );
+          })}
         </TabContent>
       </div>
     </div>

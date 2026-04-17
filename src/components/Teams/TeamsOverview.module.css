@@ -11,17 +11,17 @@
 
 .totalCard {
   background: linear-gradient(to bottom, #87ceeb, #1e90ff, #4169e1);
-  margin-top: 10px;
+  margin: 0;
 }
 
 .activeCard {
   background: linear-gradient(to bottom, #ffd700, #ffa500, #ff8c00);
-  margin: 10px;
+  margin: 0;
 }
 
 .inactiveCard {
-  background: linear-gradient(to bottom, #cbbc14, #bfb116, #d3d61b) !important;
-  margin: 10px;
+  background: linear-gradient(to bottom, #d387e0, #b044c0, #8e24aa) !important;
+  margin: 0;
 }
 
 .cardBody {
@@ -59,13 +59,13 @@
   width: 40%;
   max-width: 40%;
   white-space: normal;
-  word-break: break-word;
+  word-break: break-all;
   overflow-wrap: anywhere;
 }
 
 .overviewTop {
   display: flex;
-  gap: 10px;
+  gap: 16px;
   align-items: center;
-  margin: 10px 0;
+  margin: 25px 0;
 }

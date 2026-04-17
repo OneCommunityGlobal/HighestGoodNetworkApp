@@ -53,7 +53,7 @@ table td {
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  gap: 30px; 
+  gap: 30px;
   width: 100%;
   max-width: 1200px;
   margin: 0 auto 20px auto;
@@ -61,18 +61,19 @@ table td {
 }
 
 .filterGroup,
-.selectInput > div,
-.selectInput > form {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.filterGroup > div,
+.filterGroup > form {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 10px !important;
 }
 
 .selectInput label {
   font-weight: bold;
   text-align: center;
   white-space: nowrap;
-  margin-bottom: 0;
+  margin-bottom: 0 !important;
 }
 
 .selectInput input,
@@ -84,12 +85,11 @@ table td {
   padding: 5px;
   border: 1px solid #ccc;
   border-radius: 4px;
-  margin-bottom: 0;
+  margin-bottom: 0 !important;
 }
 
 .selectInput input[type='text'] {
   padding: 5px;
-  margin-bottom: 0;
 }
 .btnPrimary {
   background-color: #468ef9;
@@ -172,6 +172,7 @@ table td {
   background-color: #2a3f5f !important;
   color: #e8edf4 !important;
   border: 1px solid #3f5269 !important;
+  padding: 4px;
 }
 
 .darkDatePickerInput::placeholder {
@@ -298,6 +299,7 @@ table td {
   background-color: #ffffff !important;
   color: #111827 !important;
   border: 1px solid #d1d5db !important;
+  padding: 4px;
 }
 
 .lightDatePicker {
@@ -466,4 +468,56 @@ table td {
   box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.25);
   background-color: #1e293b !important;
   color: #e5e7eb !important;
+}
+.dropdownRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  flex-wrap: wrap;  
+}
+
+.dropdownRow form {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 220px;     
+  min-width: 200px;
+  margin: 0;          
+}
+.dropdownRow .react-datepicker-wrapper,
+.dropdownRow .react-datepicker__input-container,
+.dropdownRow .react-datepicker__input-container input {
+  width: 100%;
+}
+.datePickerGroup{
+  margin: -8px auto 10px 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0; 
+}
+
+:global(html body.dark-mode select.form-control.form-control) {
+   background-color: #2a3f5f !important; 
+}
+:global(html body.dark-mode) .darkBg option {
+  background-color: #2a3f5f !important;
+  color: #f9fafb !important;
+}
+.selectedrow{
+  background-color: #91b6db !important;
+}
+.fieldRequired{
+  color: red;
+}
+:global(body.dark-mode) .fieldRequired,
+:global(body.bm-dashboard-dark) .fieldRequired {
+  color: #F87171 !important;
+}
+.historyTable{
+  overflow: scroll;
+  height: 75vh;
+  text-align: center;
+  font-size: small;
+  white-space: nowrap;
 }

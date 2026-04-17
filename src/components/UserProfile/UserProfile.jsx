@@ -81,7 +81,7 @@ import { postWarningByUserId, getSpecialWarnings } from '../../actions/warnings'
 import SetUpFinalDayPopUp from '../UserManagement/SetUpFinalDayPopUp';
 import { InactiveReason } from '../../utils/enums';
 import { activateUserAction, deactivateImmediatelyAction, scheduleDeactivationAction } from '../../actions/userLifecycleActions';
-
+import { clearCachedTeamMembers } from '../Teams/teamMembersCache';
 
 function UserProfile(props) { 
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -782,6 +782,9 @@ setUpdatedTasks(prev => {
           //   .toISOString()
           //   .split('T')[0],
           createdDate: moment().format('YYYY-MM-DD'),
+          // Track manual assignment - note: backend uses 'manullyAssigned' (typo in field name)
+          manullyAssigned: true,
+          manullyAssignedBy: requestorId,
         };
         setModalTitle('Blue Square');
         axios
@@ -826,6 +829,7 @@ setUpdatedTasks(prev => {
         .put(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id), {
           dateStamp,
           summary,
+          editedBy: requestorId,
         })
         .catch(error => {
           toast.error('Failed to update Blue Square!');
@@ -1010,7 +1014,8 @@ setUpdatedTasks(prev => {
   try {
     const result = await props.updateUserProfile(userProfileToUpdate);
 
-    await axios.patch(permissionURL, permissionData)
+    await axios.patch(permissionURL, permissionData) // my code, need to check how it works with below added line
+    clearCachedTeamMembers(); // clear all team caches on any profile save
     if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
       await props.refreshToken(userProfile._id);
     }
