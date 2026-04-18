@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import styles from './StudentTasks.module.css';
-import RubricModal from './RubricModal';
 
 const getStatusClass = (status, css) => {
   if (status === 'Incomplete') return css.incomplete;
@@ -12,7 +11,6 @@ const getStatusClass = (status, css) => {
 
 const TaskCard = ({ task, onOpenRubric }) => {
   const history = useHistory();
-  const [showRubric, setShowRubric] = useState(false);
 
   const goToDetails = () => {
     history.push(`/educationportal/student/tasks/${task.id}`, { task });
@@ -20,8 +18,7 @@ const TaskCard = ({ task, onOpenRubric }) => {
 
   const handleRubricClick = e => {
     e.stopPropagation();
-    setShowRubric(true);
-    onOpenRubric?.();
+    onOpenRubric?.(task);
   };
 
   const statusClass = getStatusClass(task.status, styles);
@@ -63,8 +60,6 @@ const TaskCard = ({ task, onOpenRubric }) => {
           View Grading Rubric
         </button>
       </div>
-
-      {showRubric && <RubricModal task={task} onClose={() => setShowRubric(false)} />}
     </>
   );
 };

@@ -2167,7 +2167,7 @@ const WeeklySummariesReport = props => {
                 MenuList: CustomMenuList,
               }}
               options={[
-                { value: '0', label: '0' },
+                { value: '=0', label: '0' },
                 { value: '0-10', label: '0-10' },
                 { value: '10-20', label: '10-20' },
                 { value: '20-40', label: '20-40' },
@@ -2180,7 +2180,7 @@ const WeeklySummariesReport = props => {
               styles={customStyles}
               value={state.selectedLoggedHoursRange}
               onChange={selectedOption =>
-                setState({ ...state, selectedLoggedHoursRange: selectedOption })
+                setState(prev => ({ ...prev, selectedLoggedHoursRange: selectedOption }))
               }
             />
           </div>
@@ -2194,6 +2194,7 @@ const WeeklySummariesReport = props => {
               chartData={state.chartData}
               COLORS={state.COLORS}
               total={state.total}
+              darkMode={darkMode}
               style={{ width: '100%' }}
             />
           </Col>
