@@ -215,8 +215,5 @@
       "prettier --write"
     ],
     "**/*.{css,scss,sass}": "stylelint"
-  },
-  "optionalDependencies": {
-    "@rollup/rollup-darwin-arm64": "^4.54.0"
   }
 }
