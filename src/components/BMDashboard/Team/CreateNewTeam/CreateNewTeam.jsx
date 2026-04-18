@@ -7,7 +7,6 @@ import styles from './CreateNewTeam.module.css';
 import { getUserProfileBasicInfo } from '../../../../actions/userManagement';
 import { toast } from 'react-toastify';
 
-
 const initialFormState = {
   teamName: '',
   additionalInformation: '',
