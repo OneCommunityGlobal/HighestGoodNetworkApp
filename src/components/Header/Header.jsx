@@ -47,13 +47,15 @@ import {
   PERMISSIONS_MANAGEMENT,
   SEND_EMAILS,
   TOTAL_ORG_SUMMARY,
+  TOTAL_ORG_SUMMARY_EMAIL,
   TOTAL_CONSTRUCTION_SUMMARY,
   PR_PROMOTIONS,
+  ACTUAL_COST_BREAKDOWN,
   BLUE_SQUARE_EMAIL_MANAGEMENT,
   JOB_ANALYTICS_REPORT,
 } from '../../languages/en/ui';
 import Logout from '../Logout/Logout';
-import '../../App.css';
+import '../../App.module.css';
 import styles from './Header.module.css';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import {
@@ -166,7 +168,6 @@ export function Header(props) {
   const unreadNotifications = props.notification?.unreadNotifications; // List of unread notifications
   const dispatch = useDispatch();
   const history = useHistory();
-
   const [showProjectDropdown, setShowProjectDropdown] = useState(false);
 
   useEffect(() => {
@@ -404,53 +405,43 @@ export function Header(props) {
   const viewingUser = JSON.parse(window.sessionStorage.getItem('viewingUser'));
   return (
     <div className={`${styles.headerWrapper}`} data-testid="header">
-      {isAuthenticated && (
-        <div className={`bg-dark pt-3 ${styles.navbarOwnerMessage} ${styles.showInTablet}`}>
-          <OwnerMessage />
-        </div>
-      )}
-      <Navbar className={`py-3 ${styles.navbar}`} color="dark" dark expand="xl">
+      <Navbar className={`py-3 ${styles.navbar}`} color="dark" dark expand={true}>
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
-        {showPromotionsPopup && 
-        (<DisplayBox onClose={() => setShowPromotionsPopup(false)} />)}
-        {/* Left Component - Timer */}
-        {isAuthenticated && <Timer darkMode={darkMode} />}
-        
-        {/* ITEM SHOWS OUTSIDE OF THE DROPDOWN IN MOBILE */}
-        <div className={`${styles.showInMobile} ml-auto mr-3`}>
-          <BellNotification userId={displayUserId}/>
-        </div>
-        {/* --------------------------------------------- */}
+        {showPromotionsPopup && <DisplayBox onClose={() => setShowPromotionsPopup(false)} />}
+  
+        <div className={styles.headerRow}>
+            <div className={styles.leftSection}>
+              {isAuthenticated && <Timer darkMode={darkMode} />}
+            </div>
 
-        <div ref={toggleRef}>
-          <NavbarToggler onClick={toggle} className='mr-3'/>
-        </div>
-
-        {isAuthenticated && (
-          <Collapse isOpen={isOpen} navbar innerRef={collapseRef}>
-            {isAuthenticated && (
-              <div className={`${styles.navbarOwnerMessage} ${styles.hideInTablet}`}>
-                <OwnerMessage />
-              </div>
-            )}
+            <div className={styles.centerSection}>
+              {isAuthenticated && <OwnerMessage />}
+            </div>
+            <div className={styles.rightSection}>
+            <Collapse isOpen={isOpen} navbar ref={collapseRef}>
             <Nav className={`ml-auto ${styles.menuContainer} mr-3`} navbar>
-              <NavItem className={styles.showInMobile}>
-                <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
-                  <img
-                    src={`${profilePic || '/pfp-default-header.png'}`}
-                    alt=""
-                    style={{ maxWidth: '60px', maxHeight: '60px' }}
-                    className="dashboardimg"
-                  />
-                </NavLink>
-              </NavItem>
-              <UncontrolledDropdown nav inNavbar className={styles.showInMobile}>
+                <NavItem className={styles.showInMobile}>
+                  <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
+                    <img
+                      src={`${profilePic || '/pfp-default-header.png'}`}
+                      alt=""
+                      style={{ maxWidth: '60px', maxHeight: '60px' }}
+                      className="dashboardimg"
+                    />
+                  </NavLink>
+                </NavItem>
+  
+                <UncontrolledDropdown nav inNavbar className={styles.showInMobile}>
                   <DropdownToggle nav caret>
                     <span>
                       {WELCOME}, {firstName}
                     </span>
                   </DropdownToggle>
-                  <DropdownMenu className={`${styles.noMaxHeight} ${darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown}`}>
+                  <DropdownMenu
+                    className={`${styles.noMaxHeight} ${
+                      darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
+                    }`}
+                  >
                     <DropdownItem
                       tag={Link}
                       to={`/userprofile/${displayUserId}`}
@@ -458,10 +449,8 @@ export function Header(props) {
                     >
                       {VIEW_PROFILE}
                     </DropdownItem>
-                    {!cantUpdateDevAdminDetails(
-                      props.userProfile.email,
-                      props.userProfile.email,
-                    ) && (
+  
+                    {!cantUpdateDevAdminDetails(props.userProfile.email, props.userProfile.email) && (
                       <DropdownItem
                         tag={Link}
                         to={`/updatepassword/${displayUserId}`}
@@ -470,56 +459,70 @@ export function Header(props) {
                         {UPDATE_PASSWORD}
                       </DropdownItem>
                     )}
+  
                     <DropdownItem className={fontColor}>
                       <DarkModeButton />
                     </DropdownItem>
+  
                     <DropdownItem onClick={openModal} className={fontColor}>
                       {LOGOUT}
                     </DropdownItem>
                   </DropdownMenu>
                 </UncontrolledDropdown>
-
+  
                 {canUpdateTask && (
                   <NavItem>
                     <NavLink tag={Link} to="/taskeditsuggestions" disabled={headerDisabled}>
                       <div className={`${styles.redBackGroupHeader} ${styles.hideInMobile}`}>
                         <span>{props.taskEditSuggestionCount}</span>
                       </div>
-
-                      {/* --- MOBILE VIEW ONLY --- */}
-                      <span className={styles.showInMobile}>Task Edit Suggestion ({props.taskEditSuggestionCount})</span>
-                      {/* ------------------- */}
+                      <span className={styles.showInMobile}>
+                        Task Edit Suggestion ({props.taskEditSuggestionCount})
+                      </span>
                     </NavLink>
                   </NavItem>
                 )}
+  
                 <NavItem>
                   <NavLink tag={Link} to="/dashboard" disabled={headerDisabled}>
                     <span>{DASHBOARD}</span>
                   </NavLink>
                 </NavItem>
+  
                 <NavItem>
                   <NavLink tag={Link} to="/timelog#currentWeek" disabled={headerDisabled}>
                     <span>{TIMELOG}</span>
                   </NavLink>
                 </NavItem>
-
+  
                 {showProjectDropdown && (
                   <UncontrolledDropdown nav inNavbar>
                     <DropdownToggle nav caret disabled={headerDisabled}>
                       <span>{PROJECTS}</span>
                     </DropdownToggle>
-                    <DropdownMenu className={`${styles.noMaxHeight} ${darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown}`} disabled={headerDisabled}>
-                      <DropdownItem
-                        tag={Link}
-                        to="/bmdashboard/materials/add"
-                        className={fontColor}
-                      >
+                    <DropdownMenu
+                      className={`${styles.noMaxHeight} ${
+                        darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
+                      }`}
+                      disabled={headerDisabled}
+                    >
+                      <DropdownItem tag={Link} to="/bmdashboard/materials/add" className={fontColor}>
                         Add Material
                       </DropdownItem>
-                      <DropdownItem tag={Link} to="/bmdashboard/logMaterial" className={fontColor}  disabled={headerDisabled}>
+                      <DropdownItem
+                        tag={Link}
+                        to="/bmdashboard/logMaterial"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
                         Log Material
                       </DropdownItem>
-                      <DropdownItem tag={Link} to="/bmdashboard/materials" className={fontColor}  disabled={headerDisabled}>
+                      <DropdownItem
+                        tag={Link}
+                        to="/bmdashboard/materials"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
                         Material List
                       </DropdownItem>
                       <DropdownItem
@@ -546,13 +549,28 @@ export function Header(props) {
                       >
                         Update Equipment/Tool
                       </DropdownItem>
-                      <DropdownItem tag={Link} to="/bmdashboard/equipment" className={fontColor}  disabled={headerDisabled}>
+                      <DropdownItem
+                        tag={Link}
+                        to="/bmdashboard/equipment"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
                         Equipment/Tool List
                       </DropdownItem>
-                      <DropdownItem tag={Link} to="/bmdashboard/Issue" className={fontColor}  disabled={headerDisabled}>
+                      <DropdownItem
+                        tag={Link}
+                        to="/bmdashboard/Issue"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
                         Issue
                       </DropdownItem>
-                      <DropdownItem tag={Link} to="/bmdashboard/lessonform/" className={fontColor}  disabled={headerDisabled}>
+                      <DropdownItem
+                        tag={Link}
+                        to="/bmdashboard/lessonform/"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
                         Lesson
                       </DropdownItem>
                       <DropdownItem tag={Link} to="/teams" className={fontColor}>
@@ -561,45 +579,91 @@ export function Header(props) {
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 )}
-            
+  
                 {canGetReports || canGetWeeklySummaries || canGetWeeklyVolunteerSummary ? (
                   <UncontrolledDropdown nav inNavbar>
                     <DropdownToggle nav caret>
                       <span>{REPORTS}</span>
                     </DropdownToggle>
-                    <DropdownMenu className= {`${styles.noMaxHeight} ${darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown}`}>
+                    <DropdownMenu
+                      className={`${styles.noMaxHeight} ${
+                        darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
+                      }`}
+                    >
                       {canGetReports && (
-                        <DropdownItem tag={Link} to="/reports" className={`${fontColor}`}  disabled={headerDisabled}>
+                        <DropdownItem
+                          tag={Link}
+                          to="/reports"
+                          className={fontColor}
+                          disabled={headerDisabled}
+                        >
                           {REPORTS}
                         </DropdownItem>
                       )}
                       {canGetWeeklySummaries && (
-                        <DropdownItem tag={Link} to="/weeklysummariesreport" className={fontColor}  disabled={headerDisabled}>
+                        <DropdownItem
+                          tag={Link}
+                          to="/weeklysummariesreport"
+                          className={fontColor}
+                          disabled={headerDisabled}
+                        >
                           {WEEKLY_SUMMARIES_REPORT}
                         </DropdownItem>
                       )}
                       {canGetWeeklyVolunteerSummary && (
-                        <DropdownItem tag={Link} to="/totalorgsummary" className={fontColor}  disabled={headerDisabled}>
+                        <DropdownItem
+                          tag={Link}
+                          to="/totalorgsummary"
+                          className={fontColor}
+                          disabled={headerDisabled}
+                        >
                           {TOTAL_ORG_SUMMARY}
                         </DropdownItem>
                       )}
+                      <DropdownItem
+                        tag={Link}
+                        to="/actual-cost-breakdown"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        {ACTUAL_COST_BREAKDOWN}
+                      </DropdownItem>
+                      {canGetWeeklyVolunteerSummary && (
+                      <DropdownItem tag={Link} to="/TotalOrgSummaryEmail" className={fontColor}>
+                          {TOTAL_ORG_SUMMARY_EMAIL}
+                        </DropdownItem>
+                      )}
                       {canGetJobAnalytics && (
-                        <DropdownItem tag={Link} to="/application/analytics" className={fontColor}  disabled={headerDisabled}>
+                        <DropdownItem
+                          tag={Link}
+                          to="/application/analytics"
+                          className={fontColor}
+                          disabled={headerDisabled}
+                        >
                           {JOB_ANALYTICS_REPORT}
                         </DropdownItem>
                       )}
-                      <DropdownItem tag={Link} to="/teamlocations" className={fontColor}  disabled={headerDisabled}>
+                      <DropdownItem
+                        tag={Link}
+                        to="/teamlocations"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
                         {TEAM_LOCATIONS}
                       </DropdownItem>
                       <DropdownItem
                         tag={Link}
                         to="/bmdashboard/totalconstructionsummary"
                         className={fontColor}
-                         disabled={headerDisabled}
+                        disabled={headerDisabled}
                       >
                         {TOTAL_CONSTRUCTION_SUMMARY}
                       </DropdownItem>
-                      <DropdownItem onClick={() => setShowPromotionsPopup(true)} className={fontColor}  disabled={headerDisabled}>
+                      <DropdownItem
+                        onClick={() => setShowPromotionsPopup(true)}
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
                         {PR_PROMOTIONS}
                       </DropdownItem>
                     </DropdownMenu>
@@ -611,6 +675,7 @@ export function Header(props) {
                     </NavLink>
                   </NavItem>
                 )}
+  
                 {(canAccessUserManagement ||
                   canAccessBadgeManagement ||
                   canAccessProjects ||
@@ -623,35 +688,64 @@ export function Header(props) {
                     <DropdownToggle nav caret>
                       <span>{OTHER_LINKS}</span>
                     </DropdownToggle>
-                    <DropdownMenu className={`${styles.noMaxHeight} ${darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown}`}>
+                    <DropdownMenu
+                      className={`${styles.noMaxHeight} ${
+                        darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
+                      }`}
+                    >
                       {canAccessUserManagement && (
-                        <DropdownItem tag={Link} to="/usermanagement" className={fontColor}  disabled={headerDisabled}>
+                        <DropdownItem
+                          tag={Link}
+                          to="/usermanagement"
+                          className={fontColor}
+                          disabled={headerDisabled}
+                        >
                           {USER_MANAGEMENT}
                         </DropdownItem>
                       )}
                       {canAccessBadgeManagement && (
-                        <DropdownItem tag={Link} to="/badgemanagement" className={fontColor}  disabled={headerDisabled}>
+                        <DropdownItem
+                          tag={Link}
+                          to="/badgemanagement"
+                          className={fontColor}
+                          disabled={headerDisabled}
+                        >
                           {BADGE_MANAGEMENT}
                         </DropdownItem>
                       )}
                       {canAccessProjects && (
-                        <DropdownItem tag={Link} to="/projects" className={fontColor}  disabled={headerDisabled}>
+                        <DropdownItem
+                          tag={Link}
+                          to="/projects"
+                          className={fontColor}
+                          disabled={headerDisabled}
+                        >
                           {PROJECTS}
                         </DropdownItem>
                       )}
                       {canAccessTeams && (
-                        <DropdownItem tag={Link} to="/teams" className={fontColor}  disabled={headerDisabled}>
+                        <DropdownItem
+                          tag={Link}
+                          to="/teams"
+                          className={fontColor}
+                          disabled={headerDisabled}
+                        >
                           {TEAMS}
                         </DropdownItem>
                       )}
                       {canAccessSendEmails && (
-                        <DropdownItem tag={Link} to="/announcements" className={fontColor}  disabled={headerDisabled}>
+                        <DropdownItem
+                          tag={Link}
+                          to="/announcements"
+                          className={fontColor}
+                          disabled={headerDisabled}
+                        >
                           {SEND_EMAILS}
                         </DropdownItem>
                       )}
                       {canAccessPermissionsManagement && (
                         <>
-                          <DropdownItem divider className={styles.hideInMobile}/>
+                          <DropdownItem divider className={styles.hideInMobile} />
                           <DropdownItem
                             tag={Link}
                             to="/permissionsmanagement"
@@ -663,8 +757,21 @@ export function Header(props) {
                         </>
                       )}
                       <DropdownItem divider className={styles.hideInMobile} />
-                      <DropdownItem tag={Link} to="/pr-dashboard/overview" className={fontColor} disabled={headerDisabled}>
+                      <DropdownItem
+                        tag={Link}
+                        to="/pr-dashboard/analytics"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
                         PR Team Analytics
+                      </DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/pr-dashboard/analytics"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        PR Analytics
                       </DropdownItem>
                       {canAccessBlueSquareEmailManagement && (
                         <DropdownItem
@@ -679,9 +786,11 @@ export function Header(props) {
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 )}
+  
                 <NavItem className={styles.hideInMobile}>
-                  <BellNotification userId={displayUserId}/>
+                  <BellNotification userId={displayUserId} />
                 </NavItem>
+  
                 <NavItem className={styles.hideInMobile}>
                   <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
                     <div
@@ -705,8 +814,15 @@ export function Header(props) {
                       {WELCOME}, {firstName}
                     </span>
                   </DropdownToggle>
-                  <DropdownMenu className={`${styles.noMaxHeight} ${darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown}`}>
-                    <DropdownItem header className={darkMode ? 'text-custom-grey' : styles.mobileDropdownText}>
+                  <DropdownMenu
+                    className={`${styles.noMaxHeight} ${
+                      darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
+                    }`}
+                  >
+                    <DropdownItem
+                      header
+                      className={darkMode ? 'text-custom-grey' : styles.mobileDropdownText}
+                    >
                       Hello {firstName}
                     </DropdownItem>
                     <DropdownItem divider />
@@ -718,31 +834,29 @@ export function Header(props) {
                     >
                       {VIEW_PROFILE}
                     </DropdownItem>
-                    {!cantUpdateDevAdminDetails(
-                      props.userProfile.email,
-                      props.userProfile.email,
-                    ) && (
-                        <DropdownItem
-                          tag={Link}
-                          to={`/updatepassword/${displayUserId}`}
-                          className={fontColor}
-                        >
-                          {UPDATE_PASSWORD}
-                        </DropdownItem>
-                      )}
+  
+                    {!cantUpdateDevAdminDetails(props.userProfile.email, props.userProfile.email) && (
+                      <DropdownItem
+                        tag={Link}
+                        to={`/updatepassword/${displayUserId}`}
+                        className={fontColor}
+                      >
+                        {UPDATE_PASSWORD}
+                      </DropdownItem>
+                    )}
                     <DropdownItem className={fontColor}>
                       <DarkModeButton />
                     </DropdownItem>
                     <DropdownItem divider />
-                    <DropdownItem onClick={openModal} className={fontColor}  disabled={headerDisabled}>
+                    <DropdownItem onClick={openModal} className={fontColor} disabled={headerDisabled}>
                       {LOGOUT}
                     </DropdownItem>
                   </DropdownMenu>
                 </UncontrolledDropdown>
-            </Nav>
-          </Collapse>
-        )}
-     
+              </Nav>
+            </Collapse>
+          </div>
+        </div>
       </Navbar>
       {!isAuthUser && (
         <PopUpBar
@@ -791,13 +905,12 @@ export function Header(props) {
           </Card>
         </div>
       )}
-      {/* Only render one unread message at a time */}
       {props.auth.isAuthenticated && unreadNotifications?.length > 0 ? (
         <NotificationCard notification={unreadNotifications[0]} />
       ) : null}
       <div className={darkMode ? styles.headerMargin : styles.headerMarginLight} />
     </div>
-  );
+  );  
 }
 
 const mapStateToProps = state => ({
