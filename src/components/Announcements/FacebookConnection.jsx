@@ -23,7 +23,9 @@ function buildRequestor(authUser) {
 
 function formatDate(dateStr) {
   if (!dateStr) return 'Unknown';
-  return moment(dateStr).tz(PST_TZ).format('MMM D, YYYY h:mm A');
+  return moment(dateStr)
+    .tz(PST_TZ)
+    .format('MMM D, YYYY h:mm A');
 }
 
 function applyConnectResult(result, setAvailablePages, setSelectionNonce, setShowPageSelector) {
