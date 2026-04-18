@@ -235,7 +235,6 @@ export const updateUserLifecycle = (updatedUser, payload) => {
   return async (dispatch, getState) => {
     const { auth } = getState();
     dispatch(userProfileUpdateAction(updatedUser));
-
     const requestor = {
       requestorId: auth.user.userid,
       role: auth.user.role,

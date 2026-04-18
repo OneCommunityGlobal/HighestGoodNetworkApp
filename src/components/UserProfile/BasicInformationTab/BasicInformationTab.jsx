@@ -496,9 +496,7 @@ const BasicInformationTab = props => {
   const [errorOccurred, setErrorOccurred] = useState(false);
   const dispatch = useDispatch();
   const rolesAllowedToEditStatusFinalDay = ['Administrator', 'Owner'];
-  const canEditStatus =
-    rolesAllowedToEditStatusFinalDay.includes(role) ||
-    dispatch(hasPermission('interactWithPauseUserButton'));
+  const canEditStatus = dispatch(hasPermission('interactWithPauseUserButton'));
 
   const canEditEndDate =
   rolesAllowedToEditStatusFinalDay.includes(role) || dispatch(hasPermission('setFinalDay'));
