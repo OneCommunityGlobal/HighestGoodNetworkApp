@@ -322,40 +322,42 @@ export function CPDashboard() {
           target="_blank"
           rel="noopener noreferrer"
         >
-        <Card className={styles.eventCard}>
-          <div className={styles.eventCardImgContainer}>
-            <FixedRatioImage src={event.coverImage} alt={event.title} fallback={FALLBACK_IMG} />
-          </div>
-          <CardBody>
-            <h5 className={styles.eventTitle}>{event.title}</h5>
-            <div className={styles.eventDate}>
-              <FaCalendarAlt className={styles.eventIcon} />
-              <div>
-                <div>{formatDate(event.date)}</div>
-                {event.startTime && (
-                  <div className={styles.eventTime}>{formatTime(event.date, event.startTime)}</div>
-                )}
-              </div>
+          <Card className={styles.eventCard}>
+            <div className={styles.eventCardImgContainer}>
+              <FixedRatioImage src={event.coverImage} alt={event.title} fallback={FALLBACK_IMG} />
             </div>
-            <p className={styles.eventLocation}>
-              <FaMapMarkerAlt className={styles.eventIcon} /> {getDisplayLocation(event.location)}
-            </p>
-            <p className={styles.eventOrganizer}>
-              {event.organizerLogo && !failedLogos.has(event._id) ? (
-                <img
-                  src={event.organizerLogo}
-                  alt={normalizeOrganizer(event.organizer) || 'Organizer'}
-                  className={styles.organizerLogo}
-                  onError={() => handleLogoError(event._id)}
-                  loading="lazy"
-                />
-              ) : (
-                <FaUserAlt className={styles.eventIcon} aria-hidden="true" />
-              )}{' '}
-              <span>{normalizeOrganizer(event.organizer) || 'Organizer TBD'}</span>
-            </p>
-          </CardBody>
-        </Card>
+            <CardBody>
+              <h5 className={styles.eventTitle}>{event.title}</h5>
+              <div className={styles.eventDate}>
+                <FaCalendarAlt className={styles.eventIcon} />
+                <div>
+                  <div>{formatDate(event.date)}</div>
+                  {event.startTime && (
+                    <div className={styles.eventTime}>
+                      {formatTime(event.date, event.startTime)}
+                    </div>
+                  )}
+                </div>
+              </div>
+              <p className={styles.eventLocation}>
+                <FaMapMarkerAlt className={styles.eventIcon} /> {getDisplayLocation(event.location)}
+              </p>
+              <p className={styles.eventOrganizer}>
+                {event.organizerLogo && !failedLogos.has(event._id) ? (
+                  <img
+                    src={event.organizerLogo}
+                    alt={normalizeOrganizer(event.organizer) || 'Organizer'}
+                    className={styles.organizerLogo}
+                    onError={() => handleLogoError(event._id)}
+                    loading="lazy"
+                  />
+                ) : (
+                  <FaUserAlt className={styles.eventIcon} aria-hidden="true" />
+                )}{' '}
+                <span>{normalizeOrganizer(event.organizer) || 'Organizer TBD'}</span>
+              </p>
+            </CardBody>
+          </Card>
         </Link>
       </Col>
     ));
