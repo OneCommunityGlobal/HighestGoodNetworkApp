@@ -81,6 +81,32 @@ export const initiateFacebookLogin =
       const FB = await loadFacebookSDK();
 
       return new Promise((resolve, reject) => {
+        function onAuthCallbackSuccess({ data }) {
+          if (data.success && data.pages?.length > 0) {
+            resolve({
+              success: true,
+              pages: data.pages, // No tokens in here
+              selectionNonce: data.selectionNonce, // Nonce to claim tokens later
+            });
+          } else if (data.pages?.length === 0) {
+            toast.error(
+              'No Facebook Pages found. Make sure you have admin access to a Page.',
+            );
+            reject(new Error('No pages found'));
+          } else {
+            reject(new Error(data.error || 'Failed to authenticate'));
+          }
+        }
+
+        function onAuthCallbackError(err) {
+          const detail =
+            err.response?.data?.details ||
+            err.response?.data?.error ||
+            err.message;
+          toast.error(`Facebook authentication failed: ${detail}`);
+          reject(err);
+        }
+
         FB.login(
           response => {
             if (response.authResponse) {
@@ -96,30 +122,8 @@ export const initiateFacebookLogin =
                   grantedScopes,
                   requestor,
                 })
-                .then(({ data }) => {
-                  if (data.success && data.pages?.length > 0) {
-                    resolve({
-                      success: true,
-                      pages: data.pages, // No tokens in here
-                      selectionNonce: data.selectionNonce, // Nonce to claim tokens later
-                    });
-                  } else if (data.pages?.length === 0) {
-                    toast.error(
-                      'No Facebook Pages found. Make sure you have admin access to a Page.',
-                    );
-                    reject(new Error('No pages found'));
-                  } else {
-                    reject(new Error(data.error || 'Failed to authenticate'));
-                  }
-                })
-                .catch(err => {
-                  const detail =
-                    err.response?.data?.details ||
-                    err.response?.data?.error ||
-                    err.message;
-                  toast.error(`Facebook authentication failed: ${detail}`);
-                  reject(err);
-                });
+                .then(onAuthCallbackSuccess)
+                .catch(onAuthCallbackError);
             } else {
               toast.info('Facebook login was cancelled.');
               reject(new Error('Login cancelled'));

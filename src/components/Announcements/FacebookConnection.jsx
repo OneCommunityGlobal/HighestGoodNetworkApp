@@ -11,6 +11,29 @@ import {
 
 const PST_TZ = 'America/Los_Angeles';
 
+function buildRequestor(authUser) {
+  if (!authUser?.userid) return null;
+  return {
+    requestorId: authUser.userid,
+    name: `${authUser.firstName || ''} ${authUser.lastName || ''}`.trim(),
+    role: authUser.role,
+    permissions: authUser.permissions,
+  };
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return 'Unknown';
+  return moment(dateStr).tz(PST_TZ).format('MMM D, YYYY h:mm A');
+}
+
+function applyConnectResult(result, setAvailablePages, setSelectionNonce, setShowPageSelector) {
+  if (result.success && result.pages?.length > 0) {
+    setAvailablePages(result.pages);
+    setSelectionNonce(result.selectionNonce);
+    setShowPageSelector(true);
+  }
+}
+
 function getStatusBadge(connectionStatus) {
   if (!connectionStatus?.connected) {
     return { text: 'Not Connected', color: '#dc3545', bg: '#f8d7da' };
@@ -29,15 +52,7 @@ export default function FacebookConnection() {
   const authUser = useSelector(state => state.auth?.user);
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const requestor = useMemo(() => {
-    if (!authUser?.userid) return null;
-    return {
-      requestorId: authUser.userid,
-      name: `${authUser.firstName || ''} ${authUser.lastName || ''}`.trim(),
-      role: authUser.role,
-      permissions: authUser.permissions,
-    };
-  }, [
+  const requestor = useMemo(() => buildRequestor(authUser), [
     authUser?.userid,
     authUser?.firstName,
     authUser?.lastName,
@@ -75,11 +90,7 @@ export default function FacebookConnection() {
     setConnecting(true);
     try {
       const result = await dispatch(initiateFacebookLogin({ requestor }));
-      if (result.success && result.pages?.length > 0) {
-        setAvailablePages(result.pages);
-        setSelectionNonce(result.selectionNonce);
-        setShowPageSelector(true);
-      }
+      applyConnectResult(result, setAvailablePages, setSelectionNonce, setShowPageSelector);
     } catch {
       // Error already shown via toast
     } finally {
@@ -125,13 +136,6 @@ export default function FacebookConnection() {
     } finally {
       setDisconnecting(false);
     }
-  };
-
-  const formatDate = dateStr => {
-    if (!dateStr) return 'Unknown';
-    return moment(dateStr)
-      .tz(PST_TZ)
-      .format('MMM D, YYYY h:mm A');
   };
 
   const statusBadge = getStatusBadge(connectionStatus);
