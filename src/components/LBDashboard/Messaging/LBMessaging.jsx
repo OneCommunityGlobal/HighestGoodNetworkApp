@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-
 import styles from './LBMessaging.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBell, faLocationArrow, faSearch, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faBell, faLocationArrow, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserProfileBasicInfo } from '~/actions/userManagement';
 import {
@@ -20,6 +19,7 @@ import {
   markMessagesAsReadViaSocket,
 } from '../../../utils/messagingSocket';
 import logo from '../../../assets/images/logo2.png';
+import PropTypes from 'prop-types';
 
 const Image = React.memo(function Image({ profilePic }) {
   return (
@@ -112,7 +112,7 @@ export default function LBMessaging() {
   const users = useSelector(state => state.allUserProfilesBasicInfo);
   const auth = useSelector(state => state.auth.user);
   const messagesState = useSelector(state => state.messages);
-  const existingChats = useSelector(state => state.messages.existingChats);
+  const existingChats = useSelector(state => state.messages.existingChats || []);
   const { messages, loading: messagesLoading } = messagesState;
 
   const latestRequestRef = useRef(0);
@@ -606,3 +606,18 @@ export default function LBMessaging() {
     )
   );
 }
+Image.propTypes = {
+  profilePic: PropTypes.string,
+};
+ContactInfo.propTypes = {
+  user: PropTypes.shape({
+    firstName: PropTypes.string,
+    lastName: PropTypes.string,
+  }),
+};
+Chat.propTypes = {
+  user: PropTypes.object.isRequired,
+  onSelect: PropTypes.func.isRequired,
+  mobileView: PropTypes.bool,
+  setMobileHamMenu: PropTypes.func,
+};
