@@ -5,7 +5,7 @@ import Joi from 'joi';
 import { boxStyle } from '../../../../styles';
 import styles from './CreateNewTeam.module.css';
 import { getUserProfileBasicInfo } from '../../../../actions/userManagement';
-import {toast} from 'react-toastify';
+import { toast } from 'react-toastify';
 
 
 const initialFormState = {
