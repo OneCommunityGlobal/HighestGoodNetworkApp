@@ -20,6 +20,10 @@
   font-weight: bold;
 }
 
+.darkMode .column {
+  color: #ecf0f1;
+}
+
 .resourceRow .column:last-child {
   border-right: none;
 }
@@ -102,10 +106,6 @@
   border: 2px solid #7f8c8d;
 }
 
-.darkMode .column {
-  color: #ecf0f1;
-}
-
 .darkMode .tickLabel {
   color: #ecf0f1;
   border: 2px solid #7f8c8d;
@@ -132,4 +132,29 @@
 
 .darkMode .statusred {
   color: #e74c3c !important;
+}
+
+.overdue {
+  border-left: 5px solid #e74c3c;
+  background-color: rgb(231 76 60 / 10%);
+}
+
+.dueSoon {
+  border-left: 5px solid #f39c12;
+  background-color: rgb(243 156 18 / 10%);
+}
+
+.dueTag {
+  display: block;
+  font-size: 0.75rem;
+  margin-top: 5px;
+  font-weight: 600;
+}
+
+.darkMode .overdue {
+  background-color: rgb(231 76 60 / 20%);
+}
+
+.darkMode .dueSoon {
+  background-color: rgb(243 156 18 / 20%);
 }

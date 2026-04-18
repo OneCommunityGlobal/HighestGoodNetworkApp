@@ -187,6 +187,7 @@
   }
 }
 
+
 @media screen and (max-width: 1151px) and (min-width: 992px) {
   .dropdownMenu {
       width: auto !important;
@@ -302,6 +303,7 @@
 }
 
 /* Responsive behavior - prevent icon overlap on smaller screens */
+
 @media (max-width: 1200px) {
   .left-section,
   .center-section,
@@ -352,3 +354,4 @@
     justify-content: center !important;
   }
 }
+
