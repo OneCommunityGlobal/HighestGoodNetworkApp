@@ -93,6 +93,13 @@ export function formatEventDisplay(event) {
   return `${formatTime(start)} - ${formatTime(end)}. ${month} ${day}${getOrdinal(day)}, ${year}`;
 }
 
+const ageGroups = ['18-25', '26-35', '36-50', '50+'];
+const genders = ['Male', 'Female', 'Other'];
+const incomeLevels = ['Low', 'Medium', 'High'];
+const occupations = ['Student', 'Engineer', 'Doctor', 'Business', 'Other'];
+const educationLevels = ['High School', 'Bachelor', 'Master', 'PhD'];
+const userSegments = ['New', 'Returning'];
+
 for (let month = 0; month < 12; month++) {
   for (let week = 0; week < 4; week++) {
     for (let t = 0; t < eventTypes.length; t++) {
@@ -115,6 +122,12 @@ for (let month = 0; month < 12; month++) {
         noShowRate: `${secureRandInt(5, 94)}%`,
         dropOffRate: `${secureRandInt(10, 79)}%`,
         location: locations[(id + t) % locations.length],
+        ageGroup: ageGroups[secureRandInt(0, ageGroups.length - 1)],
+        gender: genders[secureRandInt(0, genders.length - 1)],
+        incomeLevel: incomeLevels[secureRandInt(0, incomeLevels.length - 1)],
+        occupation: occupations[secureRandInt(0, occupations.length - 1)],
+        educationLevel: educationLevels[secureRandInt(0, educationLevels.length - 1)],
+        userSegment: userSegments[secureRandInt(0, userSegments.length - 1)],
       });
     }
   }
@@ -138,6 +151,12 @@ for (let t = 0; t < 3; t++) {
     noShowRate: `${secureRandInt(5, 94)}%`,
     dropOffRate: `${secureRandInt(10, 79)}%`,
     location: locations[id % locations.length],
+    ageGroup: ageGroups[secureRandInt(0, ageGroups.length - 1)],
+    gender: genders[secureRandInt(0, genders.length - 1)],
+    incomeLevel: incomeLevels[secureRandInt(0, incomeLevels.length - 1)],
+    occupation: occupations[secureRandInt(0, occupations.length - 1)],
+    educationLevel: educationLevels[secureRandInt(0, educationLevels.length - 1)],
+    userSegment: userSegments[secureRandInt(0, userSegments.length - 1)],
   });
 }
 

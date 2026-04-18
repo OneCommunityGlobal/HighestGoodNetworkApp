@@ -366,6 +366,12 @@
   max-width: 60%;
 }
 
+.selectDemographic {
+  padding: 5px 8px;
+  margin-top: 10px;
+  border-radius: 5px;
+}
+
 .insightsTab {
   flex: 1;
   text-align: center;

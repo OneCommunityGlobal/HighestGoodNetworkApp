@@ -7,6 +7,7 @@ function NoShowInsights() {
   const [dateFilter, setDateFilter] = useState('All');
   const [activeTab, setActiveTab] = useState('Event type');
   const darkMode = useSelector(state => state.theme.darkMode);
+  const [demographicType, setDemographicType] = useState('Age');
 
   const filterByDate = events => {
     const today = new Date();
@@ -41,6 +42,30 @@ function NoShowInsights() {
       if (activeTab === 'Event type') key = event.eventType;
       else if (activeTab === 'Time') key = event.eventTime.split(' ')[0];
       else if (activeTab === 'Location') key = event.location;
+      else if (activeTab === 'Demographics') {
+        switch (demographicType) {
+          case 'Age':
+            key = event.ageGroup;
+            break;
+          case 'Gender':
+            key = event.gender;
+            break;
+          case 'Income':
+            key = event.incomeLevel;
+            break;
+          case 'Occupation':
+            key = event.occupation;
+            break;
+          case 'Education':
+            key = event.educationLevel;
+            break;
+          case 'Segment':
+            key = event.userSegment;
+            break;
+          default:
+            key = event.ageGroup;
+        }
+      }
 
       const percentage = parseInt(event.noShowRate, 10);
 
@@ -110,6 +135,21 @@ function NoShowInsights() {
           </button>
         ))}
       </div>
+
+      {activeTab === 'Demographics' && (
+        <select
+          value={demographicType}
+          onChange={e => setDemographicType(e.target.value)}
+          className={styles.selectDemographic}
+        >
+          <option value="Age">Age</option>
+          <option value="Gender">Gender</option>
+          <option value="Income">Income</option>
+          <option value="Occupation">Occupation</option>
+          <option value="Education">Education</option>
+          <option value="Segment">User Segment</option>
+        </select>
+      )}
 
       <div className={styles.insightsContent}>{renderStats()}</div>
     </div>
