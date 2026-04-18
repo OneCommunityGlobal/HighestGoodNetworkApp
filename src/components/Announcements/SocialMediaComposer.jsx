@@ -42,20 +42,145 @@ function getPostStatusBadgeStyle(status, darkMode) {
   };
 }
 
+function buildRequestor(authUser) {
+  if (!authUser?.userid) return null;
+  return {
+    requestorId: authUser.userid,
+    name: `${authUser.firstName || ''} ${authUser.lastName || ''}`.trim(),
+    role: authUser.role,
+    permissions: authUser.permissions,
+  };
+}
+
+function getTabStyle(tabId, activeSubTab, darkMode, textColor) {
+  return {
+    padding: '10px 16px',
+    cursor: 'pointer',
+    border: 'none',
+    borderBottom:
+      activeSubTab === tabId
+        ? `3px solid ${darkMode ? '#60a5fa' : '#007bff'}`
+        : '3px solid transparent',
+    backgroundColor:
+      activeSubTab === tabId
+        ? darkMode
+          ? '#1d2b44'
+          : '#dbeeff'
+        : darkMode
+        ? '#111a2c'
+        : '#dedede',
+    color: activeSubTab === tabId ? (darkMode ? '#bfdbfe' : '#007bff') : textColor,
+    fontSize: '14px',
+    fontWeight: activeSubTab === tabId ? 'bold' : 'normal',
+    flex: 1,
+    textAlign: 'center',
+    outline: 'none',
+  };
+}
+
+function validateImageFile(file) {
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+  if (!allowedTypes.includes(file.type)) return 'Please select a JPEG, PNG, GIF, or WebP image';
+  if (file.size > 10 * 1024 * 1024) return 'Image must be under 10MB';
+  return null;
+}
+
+function validatePostInput(platform, isConnected, postContent, imageFile, imageUrl, requestor) {
+  if (platform !== 'facebook')
+    return { msg: `Posting for ${platform} is not wired yet.`, type: 'info' };
+  if (!isConnected)
+    return { msg: 'Please connect a Facebook Page in Settings before posting.', type: 'error' };
+  if (!postContent.trim() && !imageFile && !imageUrl.trim())
+    return { msg: 'Please enter content or add an image for your post.', type: 'error' };
+  if (!requestor) return { msg: 'User information is missing; please re-login.', type: 'error' };
+  return null;
+}
+
+function validateScheduleInput(
+  platform,
+  isConnected,
+  scheduledContent,
+  scheduledImageFile,
+  scheduledImageUrl,
+  scheduledDateTime,
+  requestor,
+) {
+  if (platform !== 'facebook')
+    return { msg: 'Scheduling is only available for Facebook right now.', type: 'info' };
+  if (!isConnected)
+    return { msg: 'Please connect a Facebook Page in Settings before scheduling.', type: 'error' };
+  if (!scheduledContent.trim() && !scheduledImageFile && !scheduledImageUrl.trim())
+    return { msg: 'Please enter content or add an image for your scheduled post.', type: 'error' };
+  if (!scheduledDateTime) return { msg: 'Please pick a date and time.', type: 'error' };
+  const m = moment.tz(scheduledDateTime, 'YYYY-MM-DDTHH:mm', PST_TZ);
+  if (!m.isValid() || m.isBefore(moment.tz(PST_TZ)))
+    return { msg: 'Scheduled time must be a valid future date/time (PST).', type: 'error' };
+  if (!requestor) return { msg: 'User information is missing; please re-login.', type: 'error' };
+  return null;
+}
+
+function validateEditInput(editMessage, editDateTime) {
+  if (!editMessage.trim()) return 'Message cannot be empty.';
+  const m = moment.tz(editDateTime, 'YYYY-MM-DDTHH:mm', PST_TZ);
+  if (!m.isValid() || m.isBefore(moment.tz(PST_TZ)))
+    return 'Scheduled time must be in the future (PST).';
+  return null;
+}
+
+function isFacebookRequestSkippable(platform, requestor) {
+  return platform !== 'facebook' || !requestor;
+}
+
+function buildHistoryFetchParams(requestor, historySource, historyStatus, historyPostMethod) {
+  return {
+    requestor,
+    source: historySource,
+    status: historyStatus !== 'all' ? historyStatus : undefined,
+    postMethod: historyPostMethod !== 'all' ? historyPostMethod : undefined,
+  };
+}
+
+function ConnectionWarning({ platform, isConnected, onGoToSettings, darkMode }) {
+  if (platform !== 'facebook' || isConnected === null || isConnected) return null;
+  const warningBanner = {
+    backgroundColor: darkMode ? '#3b3000' : '#fff3cd',
+    border: '1px solid #ffc107',
+    borderRadius: '6px',
+    padding: '12px',
+    marginBottom: '16px',
+    color: darkMode ? '#fef3c7' : '#856404',
+  };
+  return (
+    <div style={warningBanner}>
+      <strong>⚠️ Facebook Not Connected</strong>
+      <p style={{ margin: '8px 0 0' }}>
+        Posts and scheduled posts will fail until a Facebook Page is connected. Go to the{' '}
+        <button
+          type="button"
+          onClick={onGoToSettings}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: '#007bff',
+            cursor: 'pointer',
+            textDecoration: 'underline',
+            padding: 0,
+          }}
+        >
+          Settings tab
+        </button>{' '}
+        to connect.
+      </p>
+    </div>
+  );
+}
+
 export default function SocialMediaComposer({ platform }) {
   const dispatch = useDispatch();
   const authUser = useSelector(state => state.auth?.user);
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const requestor = useMemo(() => {
-    if (!authUser?.userid) return null;
-    return {
-      requestorId: authUser.userid,
-      name: `${authUser.firstName || ''} ${authUser.lastName || ''}`.trim(),
-      role: authUser.role,
-      permissions: authUser.permissions,
-    };
-  }, [
+  const requestor = useMemo(() => buildRequestor(authUser), [
     authUser?.userid,
     authUser?.firstName,
     authUser?.lastName,
@@ -139,30 +264,6 @@ export default function SocialMediaComposer({ platform }) {
   const inputBg = darkMode ? '#0b1220' : '#fff';
   const inputBorder = darkMode ? '#1f2937' : '#ccc';
 
-  const tabStyle = tabId => ({
-    padding: '10px 16px',
-    cursor: 'pointer',
-    border: 'none',
-    borderBottom:
-      activeSubTab === tabId
-        ? `3px solid ${darkMode ? '#60a5fa' : '#007bff'}`
-        : '3px solid transparent',
-    backgroundColor:
-      activeSubTab === tabId
-        ? darkMode
-          ? '#1d2b44'
-          : '#dbeeff'
-        : darkMode
-        ? '#111a2c'
-        : '#dedede',
-    color: activeSubTab === tabId ? (darkMode ? '#bfdbfe' : '#007bff') : textColor,
-    fontSize: '14px',
-    fontWeight: activeSubTab === tabId ? 'bold' : 'normal',
-    flex: 1,
-    textAlign: 'center',
-    outline: 'none',
-  });
-
   useEffect(() => {
     if (platform === 'facebook' && fbConnectionStatus === null) {
       dispatch(getFacebookConnectionStatus());
@@ -171,7 +272,7 @@ export default function SocialMediaComposer({ platform }) {
 
   // Fetch scheduled posts
   const loadScheduledPosts = useCallback(async () => {
-    if (platform !== 'facebook' || !requestor) return;
+    if (isFacebookRequestSkippable(platform, requestor)) return;
     setLoadingScheduled(true);
     try {
       const result = await dispatch(fetchScheduledPosts({ requestor }));
@@ -185,17 +286,14 @@ export default function SocialMediaComposer({ platform }) {
 
   // Fetch post history
   const loadPostHistory = useCallback(async () => {
-    if (platform !== 'facebook' || !requestor) return;
+    if (isFacebookRequestSkippable(platform, requestor)) return;
     setLoadingHistory(true);
     setFacebookApiError(null);
     try {
       const result = await dispatch(
-        fetchPostHistory({
-          requestor,
-          source: historySource,
-          status: historyStatus !== 'all' ? historyStatus : undefined,
-          postMethod: historyPostMethod !== 'all' ? historyPostMethod : undefined,
-        }),
+        fetchPostHistory(
+          buildHistoryFetchParams(requestor, historySource, historyStatus, historyPostMethod),
+        ),
       );
       setPostHistory(result.posts || []);
       if (result.facebookApiError) {
@@ -215,20 +313,15 @@ export default function SocialMediaComposer({ platform }) {
 
   const handleImageFileChange = e => {
     const file = e.target.files?.[0];
-    if (file) {
-      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-      if (!allowedTypes.includes(file.type)) {
-        toast.error('Please select a JPEG, PNG, GIF, or WebP image');
-        return;
-      }
-      if (file.size > 10 * 1024 * 1024) {
-        toast.error('Image must be under 10MB');
-        return;
-      }
-      setImageFile(file);
-      setImagePreview(URL.createObjectURL(file));
-      setImageUrl('');
+    if (!file) return;
+    const error = validateImageFile(file);
+    if (error) {
+      toast.error(error);
+      return;
     }
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+    setImageUrl('');
   };
 
   const clearImageFile = () => {
@@ -242,20 +335,15 @@ export default function SocialMediaComposer({ platform }) {
   // Handle scheduled image file selection
   const handleScheduledImageFileChange = e => {
     const file = e.target.files?.[0];
-    if (file) {
-      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-      if (!allowedTypes.includes(file.type)) {
-        toast.error('Please select a JPEG, PNG, GIF, or WebP image');
-        return;
-      }
-      if (file.size > 10 * 1024 * 1024) {
-        toast.error('Image must be under 10MB');
-        return;
-      }
-      setScheduledImageFile(file);
-      setScheduledImagePreview(URL.createObjectURL(file));
-      setScheduledImageUrl('');
+    if (!file) return;
+    const error = validateImageFile(file);
+    if (error) {
+      toast.error(error);
+      return;
     }
+    setScheduledImageFile(file);
+    setScheduledImagePreview(URL.createObjectURL(file));
+    setScheduledImageUrl('');
   };
 
   const clearScheduledImageFile = () => {
@@ -278,20 +366,16 @@ export default function SocialMediaComposer({ platform }) {
   }, [imagePreview, scheduledImagePreview]);
 
   const handlePost = async () => {
-    if (platform !== 'facebook') {
-      toast.info(`Posting for ${platform} is not wired yet.`);
-      return;
-    }
-    if (platform === 'facebook' && !isConnected) {
-      toast.error('Please connect a Facebook Page in Settings before posting.');
-      return;
-    }
-    if (!postContent.trim() && !imageFile && !imageUrl.trim()) {
-      toast.error('Please enter content or add an image for your post.');
-      return;
-    }
-    if (!requestor) {
-      toast.error('User information is missing; please re-login.');
+    const invalid = validatePostInput(
+      platform,
+      isConnected,
+      postContent,
+      imageFile,
+      imageUrl,
+      requestor,
+    );
+    if (invalid) {
+      toast[invalid.type](invalid.msg);
       return;
     }
 
@@ -325,30 +409,17 @@ export default function SocialMediaComposer({ platform }) {
   };
 
   const handleSchedule = async () => {
-    if (platform !== 'facebook') {
-      toast.info('Scheduling is only available for Facebook right now.');
-      return;
-    }
-    if (platform === 'facebook' && !isConnected) {
-      toast.error('Please connect a Facebook Page in Settings before scheduling.');
-      return;
-    }
-    if (!scheduledContent.trim() && !scheduledImageFile && !scheduledImageUrl.trim()) {
-      toast.error('Please enter content or add an image for your scheduled post.');
-      return;
-    }
-    if (!scheduledDateTime) {
-      toast.error('Please pick a date and time.');
-      return;
-    }
-
-    const m = moment.tz(scheduledDateTime, 'YYYY-MM-DDTHH:mm', PST_TZ);
-    if (!m.isValid() || m.isBefore(moment.tz(PST_TZ))) {
-      toast.error('Scheduled time must be a valid future date/time (PST).');
-      return;
-    }
-    if (!requestor) {
-      toast.error('User information is missing; please re-login.');
+    const invalid = validateScheduleInput(
+      platform,
+      isConnected,
+      scheduledContent,
+      scheduledImageFile,
+      scheduledImageUrl,
+      scheduledDateTime,
+      requestor,
+    );
+    if (invalid) {
+      toast[invalid.type](invalid.msg);
       return;
     }
 
@@ -424,13 +495,9 @@ export default function SocialMediaComposer({ platform }) {
   };
 
   const handleSaveEdit = async () => {
-    if (!editMessage.trim()) {
-      toast.error('Message cannot be empty.');
-      return;
-    }
-    const m = moment.tz(editDateTime, 'YYYY-MM-DDTHH:mm', PST_TZ);
-    if (!m.isValid() || m.isBefore(moment.tz(PST_TZ))) {
-      toast.error('Scheduled time must be in the future (PST).');
+    const error = validateEditInput(editMessage, editDateTime);
+    if (error) {
+      toast.error(error);
       return;
     }
     try {
@@ -451,6 +518,16 @@ export default function SocialMediaComposer({ platform }) {
   };
 
   const handleDontShowAgainChange = () => {};
+
+  const handleImageUrlChange = e => {
+    setImageUrl(e.target.value);
+    if (e.target.value) clearImageFile();
+  };
+
+  const handleScheduledImageUrlChange = e => {
+    setScheduledImageUrl(e.target.value);
+    if (e.target.value) clearScheduledImageFile();
+  };
 
   const formatDate = dateStr =>
     moment(dateStr)
@@ -506,33 +583,8 @@ export default function SocialMediaComposer({ platform }) {
     color: darkMode ? '#fef3c7' : '#856404',
   };
 
-  // Connection warning for non-connected state
-  const ConnectionWarning = () => {
-    if (platform !== 'facebook' || isConnected === null || isConnected) return null;
-    return (
-      <div style={warningBanner}>
-        <strong>⚠️ Facebook Not Connected</strong>
-        <p style={{ margin: '8px 0 0' }}>
-          Posts and scheduled posts will fail until a Facebook Page is connected. Go to the{' '}
-          <button
-            type="button"
-            onClick={() => setActiveSubTab('settings')}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#007bff',
-              cursor: 'pointer',
-              textDecoration: 'underline',
-              padding: 0,
-            }}
-          >
-            Settings tab
-          </button>{' '}
-          to connect.
-        </p>
-      </div>
-    );
-  };
+  const isPostDisabled = isPosting || (platform === 'facebook' && !isConnected);
+  const isScheduleDisabled = isScheduling || (platform === 'facebook' && !isConnected);
 
   return (
     <div style={{ padding: '1rem', backgroundColor: surfaceBg, color: textColor }}>
@@ -546,7 +598,12 @@ export default function SocialMediaComposer({ platform }) {
         }}
       >
         {tabOrder.map(({ id, label }) => (
-          <button key={id} type="button" onClick={() => setActiveSubTab(id)} style={tabStyle(id)}>
+          <button
+            key={id}
+            type="button"
+            onClick={() => setActiveSubTab(id)}
+            style={getTabStyle(id, activeSubTab, darkMode, textColor)}
+          >
             {label}
           </button>
         ))}
@@ -555,7 +612,12 @@ export default function SocialMediaComposer({ platform }) {
       {/* COMPOSER TAB */}
       {activeSubTab === 'composer' && (
         <div>
-          <ConnectionWarning />
+          <ConnectionWarning
+            platform={platform}
+            isConnected={isConnected}
+            onGoToSettings={() => setActiveSubTab('settings')}
+            darkMode={darkMode}
+          />
           <textarea
             value={postContent}
             onChange={e => setPostContent(e.target.value)}
@@ -721,10 +783,7 @@ export default function SocialMediaComposer({ platform }) {
                     <input
                       type="text"
                       value={imageUrl}
-                      onChange={e => {
-                        setImageUrl(e.target.value);
-                        if (e.target.value) clearImageFile();
-                      }}
+                      onChange={handleImageUrlChange}
                       placeholder="Paste image URL (e.g., https://example.com/image.jpg)"
                       disabled={!!imageFile}
                       style={{
@@ -749,11 +808,11 @@ export default function SocialMediaComposer({ platform }) {
           <button
             type="button"
             onClick={handlePost}
-            disabled={isPosting || (platform === 'facebook' && !isConnected)}
+            disabled={isPostDisabled}
             style={{
               ...btnPrimary,
               marginTop: '1rem',
-              opacity: isPosting || (platform === 'facebook' && !isConnected) ? 0.6 : 1,
+              opacity: isPostDisabled ? 0.6 : 1,
             }}
           >
             {isPosting ? 'Posting...' : `Post to ${platform}`}
@@ -764,7 +823,12 @@ export default function SocialMediaComposer({ platform }) {
       {/* SCHEDULED TAB */}
       {activeSubTab === 'scheduled' && (
         <div>
-          <ConnectionWarning />
+          <ConnectionWarning
+            platform={platform}
+            isConnected={isConnected}
+            onGoToSettings={() => setActiveSubTab('settings')}
+            darkMode={darkMode}
+          />
           <h4>Schedule a New Post</h4>
           <textarea
             value={scheduledContent}
@@ -904,10 +968,7 @@ export default function SocialMediaComposer({ platform }) {
             <input
               type="text"
               value={scheduledImageUrl}
-              onChange={e => {
-                setScheduledImageUrl(e.target.value);
-                if (e.target.value) clearScheduledImageFile();
-              }}
+              onChange={handleScheduledImageUrlChange}
               placeholder="Paste image URL"
               disabled={!!scheduledImageFile}
               style={{
@@ -948,10 +1009,10 @@ export default function SocialMediaComposer({ platform }) {
             <button
               type="button"
               onClick={handleSchedule}
-              disabled={isScheduling || (platform === 'facebook' && !isConnected)}
+              disabled={isScheduleDisabled}
               style={{
                 ...btnSuccess,
-                opacity: isScheduling || (platform === 'facebook' && !isConnected) ? 0.6 : 1,
+                opacity: isScheduleDisabled ? 0.6 : 1,
               }}
             >
               {isScheduling ? 'Scheduling...' : 'Schedule Post'}
