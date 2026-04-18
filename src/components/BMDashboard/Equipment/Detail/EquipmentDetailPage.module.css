@@ -213,6 +213,7 @@ button.descriptionItem_button:hover {
   color: #d0dbe8;
 }
 
+/* Dark mode editable fields - background/color and select arrow */
 :global(body.dark-mode) .editableFieldInput,
 :global(body.bm-dashboard-dark) .editableFieldInput,
 :global(body.dark-mode) .editableField select,
