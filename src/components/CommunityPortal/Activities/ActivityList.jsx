@@ -153,6 +153,7 @@ function ActivityList() {
             value={filter.date}
             onChange={handleFilterChange}
             className={darkMode ? styles.darkModeInput : ''}
+            min={new Date().toISOString().split('T')[0]}
           />
         </label>
 
