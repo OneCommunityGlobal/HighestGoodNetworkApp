@@ -52,7 +52,7 @@ const RecipeCard = ({ recipe, onViewDetails }) => {
       </div>
 
       {/* View Button */}
-      <button className={styles.viewButton} onClick={() => onViewDetails(recipe.id)}>
+      <button className={styles.viewButton} onClick={() => onViewDetails(recipe._id || recipe.id)}>
         View Recipe
       </button>
     </div>
@@ -61,7 +61,8 @@ const RecipeCard = ({ recipe, onViewDetails }) => {
 
 RecipeCard.propTypes = {
   recipe: PropTypes.shape({
-    id: PropTypes.number.isRequired,
+    id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    _id: PropTypes.string,
     name: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
     description: PropTypes.string.isRequired,

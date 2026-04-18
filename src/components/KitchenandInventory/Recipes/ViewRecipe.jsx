@@ -1,17 +1,32 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import styles from './ViewRecipe.module.css';
+import SubstituteIngredientModal from './SubstituteIngredientModal';
 
-const ViewRecipe = ({ recipe, onClose }) => {
+const ViewRecipe = ({ recipe, onClose, onRecipeUpdate }) => {
   const panelRef = useRef(null);
+  const [substituteTarget, setSubstituteTarget] = useState(null);
+  const [ingredients, setIngredients] = useState([]);
+
+  useEffect(() => {
+    if (recipe && recipe.ingredients) {
+      setIngredients(recipe.ingredients);
+    }
+  }, [recipe]);
 
   useEffect(() => {
     const handleEscape = e => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') {
+        if (substituteTarget) {
+          setSubstituteTarget(null);
+        } else {
+          onClose();
+        }
+      }
     };
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
-  }, [onClose]);
+  }, [onClose, substituteTarget]);
 
   if (!recipe) return null;
 
@@ -41,8 +56,38 @@ const ViewRecipe = ({ recipe, onClose }) => {
   };
 
   const handleSubstitute = ingredientId => {
-    // eslint-disable-next-line no-console
-    console.log('Substitute ingredient:', ingredientId);
+    const target = ingredients.find(ing => (ing._id || ing.id) === ingredientId);
+    if (target) setSubstituteTarget(target);
+  };
+
+  const handleSubstituteConfirm = substitution => {
+    let updatedIngredients;
+    if (substitution.updatedRecipe) {
+      updatedIngredients = substitution.updatedRecipe.ingredients;
+    } else {
+      updatedIngredients = ingredients.map(ing => {
+        const ingId = ing._id || ing.id;
+        return ingId === substitution.ingredientId
+          ? {
+              ...ing,
+              name: substitution.substituteName,
+              quantity: substitution.quantity,
+              isAvailable: true,
+              isOnsite: false,
+            }
+          : ing;
+      });
+    }
+    setIngredients(updatedIngredients);
+
+    if (onRecipeUpdate) {
+      onRecipeUpdate({
+        ...recipe,
+        ingredients: updatedIngredients,
+      });
+    }
+
+    setSubstituteTarget(null);
   };
 
   const handleReorder = ingredientId => {
@@ -122,9 +167,9 @@ const ViewRecipe = ({ recipe, onClose }) => {
         <div className={styles.section}>
           <h3 className={styles.sectionTitle}>Ingredients</h3>
           <div className={styles.ingredientsList}>
-            {recipe.ingredients && recipe.ingredients.length > 0 ? (
-              recipe.ingredients.map(ingredient => (
-                <div key={ingredient.id} className={styles.ingredientRow}>
+            {ingredients && ingredients.length > 0 ? (
+              ingredients.map(ingredient => (
+                <div key={ingredient._id || ingredient.id} className={styles.ingredientRow}>
                   <div className={styles.ingredientInfo}>
                     <span className={styles.ingredientName}>{ingredient.name}</span>
                     <span className={styles.ingredientQty}>{ingredient.quantity}</span>
@@ -138,14 +183,14 @@ const ViewRecipe = ({ recipe, onClose }) => {
                         <button
                           type="button"
                           className={styles.substituteBtn}
-                          onClick={() => handleSubstitute(ingredient.id)}
+                          onClick={() => handleSubstitute(ingredient._id || ingredient.id)}
                         >
                           Substitute
                         </button>
                         <button
                           type="button"
                           className={styles.reorderBtn}
-                          onClick={() => handleReorder(ingredient.id)}
+                          onClick={() => handleReorder(ingredient._id || ingredient.id)}
                         >
                           Reorder
                         </button>
@@ -165,9 +210,9 @@ const ViewRecipe = ({ recipe, onClose }) => {
           <h3 className={styles.sectionTitle}>Instructions</h3>
           {recipe.instructions && recipe.instructions.length > 0 ? (
             <ol className={styles.instructionsList}>
-              {recipe.instructions.map(step => (
+              {recipe.instructions.map((step, index) => (
                 <li key={step} className={styles.instructionStep}>
-                  <span className={styles.stepNumber}>{recipe.instructions.indexOf(step) + 1}</span>
+                  <span className={styles.stepNumber}>{index + 1}</span>
                   <p className={styles.stepText}>{step}</p>
                 </li>
               ))}
@@ -177,12 +222,24 @@ const ViewRecipe = ({ recipe, onClose }) => {
           )}
         </div>
       </div>
+
+      {/* Substitute Ingredient Modal */}
+      {substituteTarget && (
+        <SubstituteIngredientModal
+          ingredient={substituteTarget}
+          recipeId={recipe._id || recipe.id}
+          onConfirm={handleSubstituteConfirm}
+          onClose={() => setSubstituteTarget(null)}
+        />
+      )}
     </div>
   );
 };
 
 ViewRecipe.propTypes = {
   recipe: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    _id: PropTypes.string,
     name: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
     description: PropTypes.string.isRequired,
@@ -194,7 +251,8 @@ ViewRecipe.propTypes = {
     onsitePercentage: PropTypes.number,
     ingredients: PropTypes.arrayOf(
       PropTypes.shape({
-        id: PropTypes.string.isRequired,
+        id: PropTypes.string,
+        _id: PropTypes.string,
         name: PropTypes.string.isRequired,
         quantity: PropTypes.string.isRequired,
         isOnsite: PropTypes.bool,
@@ -204,6 +262,11 @@ ViewRecipe.propTypes = {
     instructions: PropTypes.arrayOf(PropTypes.string),
   }).isRequired,
   onClose: PropTypes.func.isRequired,
+  onRecipeUpdate: PropTypes.func,
+};
+
+ViewRecipe.defaultProps = {
+  onRecipeUpdate: null,
 };
 
 export default ViewRecipe;
