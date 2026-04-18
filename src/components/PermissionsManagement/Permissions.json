@@ -525,6 +525,11 @@
         "label": "Blue Square Email Management",
         "key": "resendBlueSquareAndSummaryEmails",
         "description": "Gives the user permission to access Blue Square Email Management and resend infringement emails and weekly summary emails."
+      },
+      {
+      "label": "Manage user state indicator",
+      "key": "manage_user_state_indicator",
+      "description": "Gives the user permission to edit the state indicator for team members on the Dashboard Tasks and Weekly Summaries Reports pages."
       }
     ]
   },

@@ -3,6 +3,7 @@ import { Label } from 'reactstrap';
 import styles from '../WeeklySummariesReport.module.css';
 import ReactTooltip from 'react-tooltip';
 import { toggleField } from '~/utils/stateHelper';
+import { SlideToggle } from '../components';
 
 export default function WeeklySummariesToggleFilter({
   state,
@@ -26,78 +27,53 @@ export default function WeeklySummariesToggleFilter({
     toggleField(setState, 'selectedOverTime');
   };
 
-  const textColorClass = darkMode ? 'text-light' : '';
+  const textColorClass = darkMode ? `${styles.filterLabel} text-light` : styles.filterLabel;
 
   return (
-    <div className={`${styles.filterContainer}`}>
-      {(hasPermissionToFilter || props.hasPermission('highlightEligibleBios')) && (
-        <div
-          className={`${styles.filterStyle} ${styles.marginRight}`}
-          style={{ minWidth: 'max-content' }}
-        >
-          <span className={textColorClass}>Filter by Bio Status</span>
-          <div className={styles.switchToggleControl}>
-            <input
-              type="checkbox"
-              className={styles.switchToggle}
-              id="bio-status-toggle"
-              onChange={handleBioStatusToggleChange}
+    <div className={styles.specialColorsRow}>
+      <span className={styles.filterGroupLabel}>Filter by:</span>
+
+      {(hasPermissionToFilter || hasPermission?.('highlightEligibleBios')) && (
+        <div className={styles.specialColorsItem}>
+          <span className={textColorClass}>Bio Status</span>
+          <div style={{ marginTop: '10px' }}>
+            <SlideToggle
+              color="default"
+              onChange={() => toggleField(setState, 'selectedBioStatus')}
+              style={{ marginTop: '20px' }}
             />
-            <Label className={styles.switchToggleLabel} htmlFor="bio-status-toggle">
-              <span className={styles.switchToggleInner} />
-              <span className={styles.switchToggleSwitch} />
-            </Label>
           </div>
         </div>
       )}
+
       {hasPermissionToFilter && (
-        <div
-          className={`${styles.filterStyle} ${styles.marginRight}`}
-          style={{ minWidth: 'max-content' }}
-        >
-          <span className={textColorClass}>Filter by Trophies</span>
-          <div className={`${styles.switchToggleControl}`}>
-            <input
-              type="checkbox"
-              className={`${styles.switchToggle}`}
-              id="trophy-toggle"
-              onChange={handleTrophyToggleChange}
+        <div className={styles.specialColorsItem}>
+          <span className={textColorClass}>Trophies</span>
+          <div style={{ marginTop: '10px' }}>
+            <SlideToggle
+              color="default"
+              onChange={() => toggleField(setState, 'selectedTrophies')}
             />
-            <Label className={`${styles.switchToggleLabel}`} htmlFor="trophy-toggle">
-              <span className={`${styles.switchToggleInner}`} />
-              <span className={`${styles.switchToggleSwitch}`} />
-            </Label>
           </div>
         </div>
       )}
+
       {hasPermissionToFilter && (
-        <div className={`${styles.filterStyle}`} style={{ minWidth: 'max-content' }}>
-          <span className={textColorClass}>Filter by Over Hours</span>
-          <div className={`${styles.switchToggleControl}`}>
-            <input
-              type="checkbox"
-              className={`${styles.switchToggle}`}
-              id="over-hours-toggle"
-              onChange={handleOverHoursToggleChange}
+        <div className={styles.specialColorsItem}>
+          <span className={textColorClass}>Over Hours</span>
+          <div style={{ marginTop: '10px' }}>
+            <SlideToggle
+              color="default"
+              onChange={() => toggleField(setState, 'selectedOverTime')}
             />
-            <Label className={`${styles.switchToggleLabel}`} htmlFor="over-hours-toggle">
-              <span className={`${styles.switchToggleInner}`} />
-              <span className={`${styles.switchToggleSwitch}`} />
-            </Label>
           </div>
-          <ReactTooltip id="filterTooltip" place="top" effect="solid" className="custom-tooltip">
-            <span
-              style={{
-                whiteSpace: 'normal',
-                wordWrap: 'break-word',
-                maxWidth: '200px',
-              }}
-            >
+          <ReactTooltip id="filterTooltip" place="top" effect="solid">
+            <span style={{ whiteSpace: 'normal', wordWrap: 'break-word', maxWidth: '200px' }}>
               Filter people who contributed more than 25% of their committed hours
             </span>
           </ReactTooltip>
         </div>
-      )}{' '}
+      )}
     </div>
   );
 }
