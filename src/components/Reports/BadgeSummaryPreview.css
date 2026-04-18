@@ -8,10 +8,11 @@
   margin: 5px;
 }
 
-@media screen and (max-width: 1024px) {
+@media screen and (width <= 1024px) {
   .badge_summary_preview_footer {
     width: 100%;
   }
+
   .badge_summary_preview_button {
     width: 100%;
     float: none;

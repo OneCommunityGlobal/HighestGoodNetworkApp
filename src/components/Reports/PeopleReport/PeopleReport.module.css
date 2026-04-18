@@ -1,5 +1,6 @@
 body {
   margin: 0;
+
   /* font-family: 'Lato', sans-serif; */
 }
 
@@ -38,7 +39,7 @@ body {
 } */
 
 
-/*profile style changes ends*/
+/* profile style changes ends */
 
 .btn--dark-sea-green {
   background-color: #c9d6c6 !important;
@@ -160,7 +161,7 @@ body {
   background-color: #666;
 }
 
-/*Badge changes ends here*/
+/* Badge changes ends here */
 
 .visualizationDiv {
   /* margin-bottom: 10px; */
@@ -185,10 +186,10 @@ body {
   background-color: #f2f2f2;
 }
 
-/*Table css starts*/
+/* Table css starts */
 
 .introDate {
-  margin: 16px 0px 16px 0px;
+  margin: 16px 0;
   display: flex;
 }
 
@@ -196,9 +197,9 @@ body {
   width: 100%;
 }
 
-@media (max-width: 850px) {
+@media (width <= 850px) {
   .introDate {
-    margin: 16px 0px 16px 0px;
+    margin: 16px 0;
     display: flex;
     justify-content: center;
   }
@@ -236,13 +237,13 @@ body {
   color:white
 }
 
-@media (max-width: 1488px) {
+@media (width <= 1488px) {
   .peopleReportTimeLogsWrapper > .peopleReportTimeLogBlock {
     flex: 0 1 calc((100% - 1rem) / 2);
   }
 }
 
-@media (max-width: 1155px) {
+@media (width <= 1155px) {
   .peopleReportTimeLogsWrapper {
     justify-content: center;
     gap: 1.5rem;
@@ -258,17 +259,18 @@ body {
 }
 
 /* Prevent wrapping weirdly at mid-screen sizes for 3-box layout */
-@media (max-width: 1488px) {
+@media (width <= 1488px) {
   .peopleReportTimeLogsWrapper.threeBoxes > .peopleReportTimeLogBlock {
     flex: 0 1 calc((100% - 2rem) / 3);
   }
 }
 
-@media (max-width: 1155px) {
+@media (width <= 1155px) {
   .peopleReportTimeLogsWrapper.threeBoxes {
     justify-content: center;
     gap: 1.5rem;
   }
+
   .peopleReportTimeLogsWrapper.threeBoxes > .peopleReportTimeLogBlock {
     flex: 0 1 100%; /* Stack only on smaller screens */
   }
@@ -349,7 +351,7 @@ body {
   color: #e9ecef;
 }
 
-@media (max-width: 1100px) {
+@media (width <= 1100px) {
   .mobilePeopleTable {
     display: flex;
     flex-direction: column;
@@ -362,7 +364,7 @@ body {
   order: 1;
 }
 
-@media (max-width: 981px) {
+@media (width <= 981px) {
   .orderColumn {
     order: -1;
     flex: 0 0 100%;
@@ -420,30 +422,30 @@ body {
   background-color: white;
   padding: 2rem;
   border-radius: 16px;
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 0 12px rgb(0 0 0 / 8%);
   height: 698px;
   margin-top: 2rem;
 }
 
-@media (min-width: 1489px) and (max-width: 1784px) {
+@media (width >= 1489px) and (width <= 1784px) {
   .reportStats {
     height: 721px;
   }
 }
 
-@media (min-width: 1156px) and (max-width: 1488px) {
+@media (width >= 1156px) and (width <= 1488px) {
   .reportStats {
     height: 869px;
   }
 }
 
-@media (min-width: 1025px) and (max-width: 1155px) {
+@media (width >= 1025px) and (width <= 1155px) {
   .reportStats {
     height: 873px;
   }
 }
 
-@media (min-width: 960px) and (max-width: 1024px) {
+@media (width >= 960px) and (width <= 1024px) {
   .reportStats {
     height: 895px;
   }
@@ -458,17 +460,16 @@ body {
 }
 
 .textLight {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .fontWeightBold {
   font-weight: 600 !important; /* or 700 if you prefer */
 }
 
-@media (max-width: 960px) {
+@media (width <= 960px) {
   .peopleReportFlexLayout {
-    flex-direction: column;
-    flex-wrap: wrap;
+    flex-flow: column wrap;
   }
 
   .peopleReportLeft,

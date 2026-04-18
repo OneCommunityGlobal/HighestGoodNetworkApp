@@ -220,10 +220,10 @@
 }
 
 .blue {
-  background-color: #3366ff;
+  background-color: #36f;
 }
 
-@media (max-width: 800px) {
+@media (width <= 800px) {
   .eventCard {
     max-width: 98vw;
     padding: 8px;
@@ -271,7 +271,7 @@
   }
 }
 
-@media (max-width: 500px) {
+@media (width <= 500px) {
   .eventCard {
     padding: 4px;
     font-size: 14px;
@@ -311,7 +311,7 @@
   }
 
   .tab {
-    padding: 6px 6px;
+    padding: 6px;
   }
 }
 

@@ -46,7 +46,7 @@
   white-space: nowrap;
 }
 
-@media (max-width: 700px) {
+@media (width <= 700px) {
   .projectSummaryLabel {
     font-size: 14px;
   }

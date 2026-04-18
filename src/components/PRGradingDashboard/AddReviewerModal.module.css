@@ -1,10 +1,7 @@
 .overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  inset: 0;
+  background-color: rgb(0 0 0 / 50%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -14,7 +11,7 @@
 .modal {
   background-color: white;
   border-radius: 0.5rem;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 10%), 0 10px 10px -5px rgb(0 0 0 / 4%);
   max-width: 500px;
   width: 90%;
   max-height: 90vh;
@@ -53,7 +50,7 @@
 
 .closeButton:focus {
   outline: none;
-  box-shadow: 0 0 0 2px rgba(107, 114, 128, 0.5);
+  box-shadow: 0 0 0 2px rgb(107 114 128 / 50%);
 }
 
 .closeIcon {
@@ -98,7 +95,7 @@
 .input:focus {
   outline: none;
   border-color: #2563eb;
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.5);
+  box-shadow: 0 0 0 2px rgb(37 99 235 / 50%);
 }
 
 .inputError {
@@ -107,7 +104,7 @@
 
 .inputError:focus {
   border-color: #ef4444;
-  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.5);
+  box-shadow: 0 0 0 2px rgb(239 68 68 / 50%);
 }
 
 .errorMessage {
@@ -155,7 +152,7 @@
 
 .buttonConfirm:focus {
   outline: none;
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.5), 0 0 0 4px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 2px rgb(37 99 235 / 50%), 0 0 0 4px rgb(37 99 235 / 10%);
 }
 
 /* Dark mode support */
@@ -178,7 +175,7 @@
 }
 
 :global(.dark-mode) .closeButton:focus {
-  box-shadow: 0 0 0 2px rgba(156, 163, 175, 0.5);
+  box-shadow: 0 0 0 2px rgb(156 163 175 / 50%);
 }
 
 :global(.dark-mode) .label {
@@ -197,7 +194,7 @@
 
 :global(.dark-mode) .input:focus {
   border-color: #3b82f6;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+  box-shadow: 0 0 0 2px rgb(59 130 246 / 50%);
 }
 
 :global(.dark-mode) .inputError {
@@ -206,7 +203,7 @@
 
 :global(.dark-mode) .inputError:focus {
   border-color: #ef4444;
-  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.5);
+  box-shadow: 0 0 0 2px rgb(239 68 68 / 50%);
 }
 
 :global(.dark-mode) .errorMessage {

@@ -38,7 +38,7 @@
   border-radius: 50%;
   transition: 0.2s;
   background: #fff;
-  box-shadow: 0 0 2px 0 rgba(10, 10, 10, 0.29);
+  box-shadow: 0 0 2px 0 rgb(10 10 10 / 29%);
 }
 
 .switch-checkbox:checked + .switch-label .switch-button {

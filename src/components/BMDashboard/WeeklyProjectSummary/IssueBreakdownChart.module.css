@@ -5,7 +5,7 @@
   height: 100%;
   background: var(--card-bg, #fafbfc);
   border-radius: 18px;
-  box-shadow: 0 2px 12px var(--card-shadow, rgba(0, 0, 0, 0.06));
+  box-shadow: 0 2px 12px var(--card-shadow, rgb(0 0 0 / 6%));
   padding: 32px;
   display: flex;
   flex-direction: column;
@@ -65,8 +65,8 @@
 
 /* Dark mode legend label */
 :global(.dark-mode) .legendLabel {
-  color: #ffffff;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  color: #fff;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 10%);
 }
 
 .filtersRow {
@@ -517,13 +517,13 @@
    =========================== */
 
 /* Responsive design */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .container {
     padding: 20px;
   }
 
 /* Tablets */
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
   .heading {
     font-size: 28px;
   }
@@ -553,7 +553,7 @@
 }
 
 /* Mobile */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .heading {
     font-size: 22px;
   }
@@ -580,7 +580,7 @@
 }
 
 /* Very small screens */
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .chartContainer {
     height: 320px;
     width: 100%;
@@ -595,7 +595,8 @@
   }
 
   .legendBox {
-    border: 1px solid currentColor;
+    border: 1px solid currentcolor;
+
   /* Reduce label size and opacity instead of hiding */
   :global(.recharts-label-list text) {
     font-size: 8px;
@@ -611,34 +612,37 @@
   font-weight: 600;
   font-size: 12px;
 }
+
 /* Selected value text — DARK MODE (keep text black) */
 :global(.darkMode .injurySelect__single-value) {
-  color: #000000 !important;
+  color: #000 !important;
 }
 
 :global(.darkMode .injurySelect__multi-value__label) {
-  color: #000000 !important;
+  color: #000 !important;
 }
 
 /* Ensure input text while typing is also black */
 :global(.darkMode .injurySelect__input-container),
 :global(.darkMode .injurySelect__input) {
-  color: #000000 !important;
+  color: #000 !important;
 }
 
 /* Ensure clear (×) and dropdown arrow are black in dark mode */
 :global(.darkMode .injurySelect__clear-indicator),
 :global(.darkMode .injurySelect__dropdown-indicator) {
-  color: #000000 !important;
+  color: #000 !important;
 }
 
 :global(.darkMode .injurySelect__clear-indicator:hover),
 :global(.darkMode .injurySelect__dropdown-indicator:hover) {
-  color: #000000 !important;
+  color: #000 !important;
 }
+
 :global(.filter label) {
   margin-bottom: 4px;
 }
+
 /* Ensure filter blocks always stack label + input vertically */
 :global(.filter) {
   display: flex;

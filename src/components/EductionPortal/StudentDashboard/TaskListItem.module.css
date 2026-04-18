@@ -1,8 +1,8 @@
 .taskListItem {
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
   border: 1px solid #e5e7eb;
   display: flex;
   flex-wrap: wrap;
@@ -12,7 +12,7 @@
 }
 
 .taskListItem:hover {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 10%), 0 2px 4px -1px rgb(0 0 0 / 6%);
   transform: translateY(-1px);
 }
 
@@ -121,7 +121,7 @@
   width: 40px;
   height: 40px;
   border: 1px solid #d1d5db;
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 50%;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -142,7 +142,7 @@
   height: 40px;
   border: none;
   background-color: #3b82f6;
-  color: #ffffff;
+  color: #fff;
   border-radius: 50%;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -166,7 +166,7 @@
   height: 40px;
   border: none;
   background-color: #10b981;
-  color: #ffffff;
+  color: #fff;
   border-radius: 50%;
   cursor: default;
 }
@@ -178,7 +178,7 @@
   width: 40px;
   height: 40px;
   border: 1px solid #d1d5db;
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 50%;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -240,13 +240,13 @@
   font-size: 0.9rem;
   font-weight: 600;
   color: #1f2937;
-  margin: 0 0 0.25rem 0;
+  margin: 0 0 0.25rem;
 }
 
 .intermediateTaskDescription {
   font-size: 0.8rem;
   color: #6b7280;
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.5rem;
   line-height: 1.4;
 }
 
@@ -318,7 +318,7 @@
   width: 32px;
   height: 32px;
   border: 1px solid #d1d5db;
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -329,7 +329,7 @@
 .markIntermediateDoneButton:hover:not(.disabled) {
   background-color: #10b981;
   border-color: #10b981;
-  color: #ffffff;
+  color: #fff;
 }
 
 .markIntermediateDoneButton.disabled {
@@ -347,7 +347,7 @@
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .taskListItem {
     flex-direction: column;
     align-items: flex-start;
@@ -372,11 +372,11 @@
 :global(.dark-mode) .taskListItem {
   background-color: #2d2d2d;
   border-color: #404040;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 30%);
 }
 
 :global(.dark-mode) .taskListItem:hover {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 40%), 0 2px 4px -1px rgb(0 0 0 / 30%);
 }
 
 :global(.dark-mode) .statusBadge {
@@ -405,7 +405,7 @@
 }
 
 :global(.dark-mode) .taskTitle {
-  color: #ffffff;
+  color: #fff;
 }
 
 :global(.dark-mode) .taskSubtitle {
@@ -442,7 +442,7 @@
 
 :global(.dark-mode) .markDoneButton {
   background-color: #2563eb;
-  color: #ffffff;
+  color: #fff;
 }
 
 :global(.dark-mode) .markDoneButton:hover:not(.disabled) {
@@ -456,7 +456,7 @@
 
 :global(.dark-mode) .completedButton {
   background-color: #10b981;
-  color: #ffffff;
+  color: #fff;
 }
 
 :global(.dark-mode) .toggleIntermediateButton {
@@ -488,7 +488,7 @@
 }
 
 :global(.dark-mode) .intermediateTaskTitle {
-  color: #ffffff;
+  color: #fff;
 }
 
 :global(.dark-mode) .intermediateTaskDescription {
@@ -539,7 +539,7 @@
 :global(.dark-mode) .markIntermediateDoneButton:hover:not(.disabled) {
   background-color: #10b981;
   border-color: #10b981;
-  color: #ffffff;
+  color: #fff;
 }
 
 :global(.dark-mode) .markIntermediateDoneButton.disabled {

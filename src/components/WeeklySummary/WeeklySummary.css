@@ -22,8 +22,9 @@
 }
 
 .btn--white-smoke:hover:not([disabled]) {
-  background-color: #ffffff !important;
+  background-color: #fff !important;
 }
+
 .btn:disabled {
   cursor: not-allowed;
 }
@@ -73,7 +74,6 @@
 }
 
 .countdown__col__element {
-  display: inline-block;
   margin: 0 9px;
   display: flex;
   flex-direction: column;
@@ -93,6 +93,7 @@
   margin-left: 5px;
   padding-top: 5px;
 }
+
 .summaryContentTooltip,
 .summaryTabsTooltip,
 .mediaURLTooltip {
@@ -139,20 +140,20 @@
   width: 100%;
 }
 
-@media screen and (min-width: 992px) {
+@media screen and (width >= 992px) {
   .left-col-dashboard {
     margin-top: -200px;
   }
 }
 
-@media screen and (min-width: 576px) and (max-width: 992px) {
+@media screen and (width >= 576px) and (width <= 992px) {
   .modal-dialog.weekly-summary-modal {
     max-width: 85%;
   }
 }
 
 /* Small devices (landscape phones, 544px and up) */
-@media (max-width: 544px) {
+@media (width <= 544px) {
   .weeklysummarypane {
     overflow: auto;
   }
@@ -162,7 +163,7 @@
   }
 }
 
-@media only screen and (max-width: 544px) {
+@media only screen and (width <= 544px) {
   .responsive-font-size {
     font-size: 0.75rem !important;
   }

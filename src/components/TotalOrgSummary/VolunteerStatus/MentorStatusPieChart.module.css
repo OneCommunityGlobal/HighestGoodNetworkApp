@@ -15,6 +15,7 @@
   max-width: 320px;
   aspect-ratio: 1 / 1;
   overflow: visible;
+
   /* Enable container queries to scale font-size based on chart container width */
   container-type: inline-size;
 }
@@ -39,9 +40,13 @@
   transform: translateY(6px);
   width: 100%;
   text-align: center;
+
   /* Scale font-size based on chart container width (not viewport width) */
+
   /* At 280px container: 0.95rem, At 320px container: 1.2rem */
+
   /* Uses container query width units (cqw): 1cqw = 1% of container width */
+
   /* Percentage-based scaling: ~5.43-6% of container width */
   font-size: clamp(0.95rem, 5.71cqw, 1.2rem);
 }
@@ -51,9 +56,13 @@
   font-weight: 800;
   line-height: 1.18;
   margin-top: -10px;
+
   /* Scale font-size based on chart container width (not viewport width) */
+
   /* At 280px container: 1.35rem, At 320px container: 1.8rem */
+
   /* Uses container query width units (cqw): 1cqw = 1% of container width */
+
   /* Percentage-based scaling: ~7.71-9% of container width */
   font-size: clamp(1.35rem, 8.36cqw, 1.8rem);
 }
@@ -81,6 +90,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
+
   /* Responsive font-size: scales from 0.875rem at 1200px to 0.95rem at 1920px - INCREASES with screen size */
   font-size: clamp(0.875rem, calc(0.75rem + 0.01042vw), 0.95rem);
   white-space: nowrap;
@@ -99,10 +109,10 @@
 }
 
 :global(.bg-oxford-blue) .mentorCount {
-  color: #ffffff;
+  color: #fff;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .mentorStatusChart {
     width: min(280px, 100%);
   }
@@ -112,7 +122,7 @@
   }
 }
 
-@media (min-width: 768px) {
+@media (width >= 768px) {
   .mentorStatusChart {
     max-width: 280px;
   }

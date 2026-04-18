@@ -4,18 +4,20 @@ html {
 
 body {
   display: grid;
-  grid-template-columns: auto 0px;
+  grid-template-columns: auto 0;
 }
+
 button {
   border: none;
   background-color: transparent;
 }
+
 #root {
   height: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: auto hidden;
+
   /* background-color: var(--background-color); */
-  background-color: #ffffff;
+  background-color: #fff;
 }
 
 .App {
@@ -46,14 +48,14 @@ button {
   width: 180px;
 }
 
-.accordion-toggle:after {
-  font-family: 'FontAwesome',  sans-serif;
+.accordion-toggle::after {
+  font-family: FontAwesome,  sans-serif;
   content: '\f054';
   float: right;
 }
 
-.accordion-toggle.collapsed:after {
-  /* symbol for down chevron*/
+.accordion-toggle.collapsed::after {
+  /* symbol for down chevron */
   content: '\f078';
 }
 
@@ -63,27 +65,31 @@ button {
 }
 
 .hgn-leaderboard {
-  /*background-color:#FFCCBC */
+  /* background-color:#FFCCBC */
   background-color: black;
 }
 
 .bg-super {
   background-color: #0000cd !important;
-  /* medium blue #0000CD*/
+
+  /* medium blue #0000CD */
 }
 
 .bg-awesome {
-  background-color: #990099 !important;
+  background-color: #909 !important;
+
   /*  violet */
 }
 
 .bg-super-awesome {
-  background-color: #660099 !important;
+  background-color: #609 !important;
+
   /*  purple */
 }
 
 .bg-orange {
   background-color: #ffa500 !important;
+
   /*  brighter orange */
 }
 
@@ -92,12 +98,14 @@ button {
 }
 
 .bg-bright-red {
-  background-color: #ff3300 !important;
+  background-color: #f30 !important;
+
   /*  bright-red */
 }
 
 .bg-almost-red {
-  background-color: #cc3366 !important;
+  background-color: #c36 !important;
+
   /*  90%to100%-red */
 }
 
@@ -142,7 +150,7 @@ button {
 }
 
 .bg-darkmode-black {
-  background-color: #000000 !important;
+  background-color: #000 !important;
 }
 
 .bg-azure {
@@ -170,7 +178,7 @@ button {
 }
 
 .text-custom-grey {
-  color: rgb(192, 192, 192) !important;
+  color: rgb(192 192 192) !important;
 }
 
 .box-shadow-dark {
@@ -194,7 +202,7 @@ button {
 }
 
 nav ul.navbar-nav li:last-child > div {
-  transform: translate3d(-26px, 40px, 0px) !important;
+  transform: translate3d(-26px, 40px, 0) !important;
 }
 
 .calendar-icon-dark {
@@ -205,7 +213,9 @@ nav ul.navbar-nav li:last-child > div {
   text-decoration: none;
   padding: 10px;
   margin: 10px;
+
   --offset: 100px;
+
   margin-top: calc(100vh + var(--offset));
   font-family: sans-serif;
   color: #fff;
@@ -273,6 +283,7 @@ input[type='checkbox']:not([disabled]):hover {
 .pdrl-1 {
   padding: 0 1em !important;
 }
+
 .user-card-container {
   display: flex;
   flex-wrap: wrap;
