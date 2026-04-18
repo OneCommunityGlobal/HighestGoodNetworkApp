@@ -5,6 +5,8 @@ import Joi from 'joi';
 import { boxStyle } from '../../../../styles';
 import styles from './CreateNewTeam.module.css';
 import { getUserProfileBasicInfo } from '../../../../actions/userManagement';
+import {toast} from 'react-toastify';
+
 
 const initialFormState = {
   teamName: '',
@@ -130,6 +132,8 @@ export default function CreateNewTeam() {
 
     // eslint-disable-next-line no-console
     console.log('Form Submitted:', updatedFormData);
+
+    toast.success('Team created successfully!');
 
     setSelectedMember('');
     setAssignedMembers([]);
