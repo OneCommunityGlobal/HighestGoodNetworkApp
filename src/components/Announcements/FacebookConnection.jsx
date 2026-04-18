@@ -36,6 +36,16 @@ function applyConnectResult(result, setAvailablePages, setSelectionNonce, setSho
   }
 }
 
+function isManagerRole(role) {
+  return role === 'Owner' || role === 'Administrator';
+}
+
+function loadInitialConnectionStatus(connectionStatus, dispatch) {
+  if (connectionStatus === null) {
+    dispatch(getFacebookConnectionStatus());
+  }
+}
+
 function getStatusBadge(connectionStatus) {
   if (!connectionStatus?.connected) {
     return { text: 'Not Connected', color: '#dc3545', bg: '#f8d7da' };
@@ -47,6 +57,92 @@ function getStatusBadge(connectionStatus) {
     return { text: 'Expiring Soon', color: '#856404', bg: '#fff3cd' };
   }
   return { text: 'Connected', color: '#155724', bg: '#d4edda' };
+}
+
+function PageSelectorModal({ availablePages, onSelectPage, onCancel, darkMode }) {
+  const panelBg = darkMode ? '#111827' : '#fff';
+  const textColor = darkMode ? '#e5e7eb' : '#333';
+  const mutedTextColor = darkMode ? '#cbd5e1' : '#666';
+  const borderColor = darkMode ? '#1f2937' : '#ddd';
+
+  const modalOverlay = {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+  };
+  const modalContent = {
+    backgroundColor: panelBg,
+    padding: '24px',
+    borderRadius: '8px',
+    width: '90%',
+    maxWidth: '450px',
+    maxHeight: '80vh',
+    overflow: 'auto',
+    color: textColor,
+  };
+  const pageItemStyle = {
+    padding: '12px',
+    border: `1px solid ${borderColor}`,
+    borderRadius: '6px',
+    marginBottom: '8px',
+    cursor: 'pointer',
+    transition: 'background-color 0.2s',
+    backgroundColor: panelBg,
+    color: textColor,
+  };
+  const btnCancel = {
+    backgroundColor: '#6c757d',
+    color: 'white',
+    padding: '8px 16px',
+    borderRadius: '6px',
+    border: 'none',
+    cursor: 'pointer',
+    fontSize: '14px',
+    marginTop: '12px',
+    width: '100%',
+  };
+
+  return (
+    <div style={modalOverlay}>
+      <div style={modalContent}>
+        <h4 style={{ marginTop: 0 }}>Select a Facebook Page</h4>
+        <p style={{ color: mutedTextColor, fontSize: '14px' }}>
+          Choose the Page you want to connect for posting:
+        </p>
+        {availablePages.map(page => (
+          <div
+            key={page.pageId}
+            style={pageItemStyle}
+            onClick={() => onSelectPage(page)}
+            onKeyDown={e => e.key === 'Enter' && onSelectPage(page)}
+            role="button"
+            tabIndex={0}
+            onMouseEnter={e => {
+              e.currentTarget.style.backgroundColor = darkMode ? '#1f2937' : '#f0f0f0';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.backgroundColor = panelBg;
+            }}
+          >
+            <p style={{ margin: 0, fontWeight: 'bold', color: textColor }}>{page.pageName}</p>
+            <p style={{ margin: '4px 0 0', fontSize: '12px', color: mutedTextColor }}>
+              {page.category} • ID: {page.pageId}
+            </p>
+          </div>
+        ))}
+        <button type="button" onClick={onCancel} style={btnCancel}>
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
 }
 
 export default function FacebookConnection() {
@@ -72,15 +168,10 @@ export default function FacebookConnection() {
   const [selectionNonce, setSelectionNonce] = useState(null);
   const [showPageSelector, setShowPageSelector] = useState(false);
 
-  const canManageConnection = useMemo(() => {
-    const role = authUser?.role;
-    return role === 'Owner' || role === 'Administrator';
-  }, [authUser?.role]);
+  const canManageConnection = useMemo(() => isManagerRole(authUser?.role), [authUser?.role]);
 
   useEffect(() => {
-    if (connectionStatus === null) {
-      dispatch(getFacebookConnectionStatus());
-    }
+    loadInitialConnectionStatus(connectionStatus, dispatch);
   }, [dispatch, connectionStatus]);
 
   const handleConnect = async () => {
@@ -140,6 +231,12 @@ export default function FacebookConnection() {
     }
   };
 
+  const handleCancelPageSelect = () => {
+    setShowPageSelector(false);
+    setAvailablePages([]);
+    setSelectionNonce(null);
+  };
+
   const statusBadge = getStatusBadge(connectionStatus);
 
   // Styles
@@ -196,89 +293,6 @@ export default function FacebookConnection() {
     border: 'none',
     cursor: 'pointer',
     fontSize: '14px',
-  };
-
-  const modalOverlay = {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 1000,
-  };
-
-  const modalContent = {
-    backgroundColor: panelBg,
-    padding: '24px',
-    borderRadius: '8px',
-    width: '90%',
-    maxWidth: '450px',
-    maxHeight: '80vh',
-    overflow: 'auto',
-    color: textColor,
-  };
-
-  const pageItemStyle = {
-    padding: '12px',
-    border: `1px solid ${borderColor}`,
-    borderRadius: '6px',
-    marginBottom: '8px',
-    cursor: 'pointer',
-    transition: 'background-color 0.2s',
-    backgroundColor: panelBg,
-    color: textColor,
-  };
-
-  const renderPageSelectorModal = () => {
-    if (!showPageSelector) return null;
-    return (
-      <div style={modalOverlay}>
-        <div style={modalContent}>
-          <h4 style={{ marginTop: 0 }}>Select a Facebook Page</h4>
-          <p style={{ color: mutedTextColor, fontSize: '14px' }}>
-            Choose the Page you want to connect for posting:
-          </p>
-
-          {availablePages.map(page => (
-            <div
-              key={page.pageId}
-              style={pageItemStyle}
-              onClick={() => handleSelectPage(page)}
-              onKeyDown={e => e.key === 'Enter' && handleSelectPage(page)}
-              role="button"
-              tabIndex={0}
-              onMouseEnter={e => {
-                e.currentTarget.style.backgroundColor = darkMode ? '#1f2937' : '#f0f0f0';
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.backgroundColor = panelBg;
-              }}
-            >
-              <p style={{ margin: 0, fontWeight: 'bold', color: textColor }}>{page.pageName}</p>
-              <p style={{ margin: '4px 0 0', fontSize: '12px', color: mutedTextColor }}>
-                {page.category} • ID: {page.pageId}
-              </p>
-            </div>
-          ))}
-
-          <button
-            type="button"
-            onClick={() => {
-              setShowPageSelector(false);
-              setAvailablePages([]);
-              setSelectionNonce(null);
-            }}
-            style={{ ...btnDanger, backgroundColor: '#6c757d', marginTop: '12px', width: '100%' }}
-          >
-            Cancel
-          </button>
-        </div>
-      </div>
-    );
   };
 
   if (loading) {
@@ -389,7 +403,14 @@ export default function FacebookConnection() {
       )}
 
       {/* Page Selection Modal */}
-      {renderPageSelectorModal()}
+      {showPageSelector && (
+        <PageSelectorModal
+          availablePages={availablePages}
+          onSelectPage={handleSelectPage}
+          onCancel={handleCancelPageSelect}
+          darkMode={darkMode}
+        />
+      )}
     </div>
   );
 }
