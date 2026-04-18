@@ -138,7 +138,7 @@ import UtilizationChart from './components/BMDashboard/UtilizationChart/Utilizat
 import InjuriesDonutChart from './components/InjuriesAnalytics/InjuriesDonutChart';
 import CostPredictionPage from './components/BMDashboard/CostPrediction/CostPredictionPage';
 //import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChart';
-import { JobsHitsApplicationsChart } from './components/JobAnalytics/JobsHitsApplicationsChart/JobsHitsApplicationsChart';
+import JobsHitsApplicationsChart from './components/JobAnalytics/JobsHitsApplicationsChart/JobsHitsApplicationsChart';
 
 import RentalChart from './components/BMDashboard/RentalChart/RentalChart';
 import ReturnedLateChart from './components/BMDashboard/RentalChart/ReturnedLateChart';
@@ -165,6 +165,7 @@ import CommunityCalendar from './components/CommunityPortal/Calendar/CommunityCa
 import KitchenandInventoryLogin from './components/KitchenandInventory/Login';
 import KIProtectedRoute from './components/common/KitchenandInventory/KIProtectedRoute';
 import KIDashboard from './components/KitchenandInventory/KIDashboard/KIDashboard';
+import RecipesLandingPage from './components/KitchenandInventory/Recipes';
 import KIINVENTORY from './components/KitchenandInventory/KIInventory/KIInventory';
 import KICalendar from './components/KitchenandInventory/KICalendar/KICalendar';
 import OrchardManagement from './components/KitchenandInventory/OrchardManagement/OrchardManagement';
@@ -246,6 +247,11 @@ const PurchaseTools = lazy(() => import('./components/BMDashboard/ToolPurchaseRe
 const PurchaseEquipment = lazy(() => import('./components/BMDashboard/EquipmentPurchaseRequest'));
 const AddMaterial = lazy(() => import('./components/BMDashboard/AddMaterial/AddMaterial'));
 const AddConsumable = lazy(() => import('./components/BMDashboard/AddConsumable/AddConsumable'));
+
+const InjuriesOverTimeChart = lazy(() =>
+  import('./components/BMDashboard/InjuriesOverTime/InjuriesOverTimeChart'),
+);
+
 // Code-Splitting
 const Projects = lazy(() => import('./components/Projects'));
 const WeeklySummariesReport = lazy(() => import('./components/WeeklySummariesReport'));
@@ -407,6 +413,13 @@ export default (
           path="/pr-dashboard"
           exact
           component={PRDashboard}
+          fallback
+          routePermissions={RoutePermissions.prDashboard}
+        />
+        <ProtectedRoute
+          path="/pr-dashboard/analytics"
+          exact
+          component={PRReviewTeamAnalytics}
           fallback
           routePermissions={RoutePermissions.prDashboard}
         />
@@ -779,6 +792,12 @@ export default (
           exact
           component={ToolsAvailabilityPage}
         />
+        <BMProtectedRoute
+          path="/bmdashboard/injuriesovertimechart"
+          fallback
+          exact
+          component={InjuriesOverTimeChart}
+        />
         {/* PR Analytics Dashboard */}
         <Route path="/pull-request-analytics/reviews-insight" component={ReviewsInsight} />
         {/* Community Portal Routes */}
@@ -786,6 +805,7 @@ export default (
         <Route path="/communityportal/login" component={CPLogin} />
         {/* ----- Community Calendar Routing ----- */}
         <CPProtectedRoute path="/communityportal/calendar" exact component={CommunityCalendar} />
+        <CPProtectedRoute path="/communityportal/database/design" exact component={EventList} />
         <CPProtectedRoute path="/communityportal/activities" exact component={ActivityList} />
         <CPProtectedRoute
           path="/communityportal/profile/:userId"
@@ -833,7 +853,7 @@ export default (
           component={ActivityComments}
         />
         <CPProtectedRoute
-          path="/communityportal/activity/:activityId/Resources"
+          path="/communityportal/activity/:activityId/resourcesusage"
           exact
           component={ResourcesUsage}
         />
@@ -929,6 +949,11 @@ export default (
           component={OrchardManagement}
         />
         <Route path="/kitchenandinventory/login" exact component={KitchenandInventoryLogin} />
+        <KIProtectedRoute
+          path="/kitchenandinventory/recipes"
+          exact
+          component={RecipesLandingPage}
+        />
         {/* ----- End of Kitchen and Inventory Portal Routes ----- */}
         <Route path="/login" component={Login} />
         <Route path="/forgotpassword" component={ForgotPassword} />
