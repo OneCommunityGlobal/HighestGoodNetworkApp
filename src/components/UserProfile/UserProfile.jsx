@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useId } from 'react';
+import React, { useState, useEffect, useRef, useId, useCallback } from 'react';
 import {
   Row,
   Input,
@@ -49,13 +49,12 @@ import Badges from './Badges';
 import { getAllTeamCode , getAllUserTeams } from '../../actions/allTeamsAction';
 import TimeEntryEditHistory from './TimeEntryEditHistory';
 import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
-import { updateUserStatus, updateRehireableStatus, toggleVisibility } from '../../actions/userManagement';
+import { updateRehireableStatus, toggleVisibility } from '../../actions/userManagement';
 import { updateUserProfile } from "../../actions/userProfile";
-import { UserStatus } from '../../utils/enums';
 import BlueSquareLayout from './BlueSquareLayout';
 import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
 import { connect, useDispatch, useSelector } from 'react-redux';
-import { formatDateLocal } from '~/utils/formatDate';
+import { formatDateCompany } from '~/utils/formatDate';
 import EditableInfoModal from './EditableModal/EditableInfoModal';
 import { fetchAllProjects } from '../../actions/projects';
 
@@ -78,6 +77,10 @@ import ConfirmRemoveModal from './UserProfileModal/confirmRemoveModal';
 import { formatDateYYYYMMDD, CREATED_DATE_CRITERIA } from '~/utils/formatDate.js';
 import AccessManagementModal from './UserProfileModal/AccessManagementModal';
 import { postWarningByUserId, getSpecialWarnings } from '../../actions/warnings';
+import SetUpFinalDayPopUp from '../UserManagement/SetUpFinalDayPopUp';
+import { InactiveReason } from '../../utils/enums';
+import { activateUserAction, deactivateImmediatelyAction, scheduleDeactivationAction } from '../../actions/userLifecycleActions';
+import { clearCachedTeamMembers } from '../Teams/teamMembersCache';
 
 function UserProfile(props) { 
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -98,27 +101,36 @@ function UserProfile(props) {
   // Explaination:
   //        fetchTeamCodeAllUsers get all weekly summaries and filter out the team codes. (~800ms - 1 sec res time)
   //        getAllTeamCode() will get all team codes from the database directly with distinct teamcode value (~15ms res time cache enabled).
-  const fetchTeamCodeAllUsers = async () => {
-    const url = ENDPOINTS.WEEKLY_SUMMARIES_REPORT();
+  const fetchTeamCodeAllUsers = useCallback(async () => {
+    const url = ENDPOINTS.WEEKLY_SUMMARIES_TEAM_CODES();
+  
     try {
       setIsLoading(true);
-      const response = await axios.get(url);
-      const stringWithValue = response.data.map(item => item.teamCode).filter(Boolean);
-      const stringNoRepeat = stringWithValue
-        .map(item => item)
-        .filter((item, index, array) => array.indexOf(item) === index);
-      setInputAutoComplete(stringNoRepeat);
+  
+      const response = await axios.get(url, {
+        params: { _ts: Date.now() },
+        headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache' },
+      });
+  
+      const teamCodes = (Array.isArray(response.data) ? response.data : [])
+        .filter(item => typeof item === 'string' && item.trim() !== '');
+  
+      const uniqueTeamCodes = [...new Set(teamCodes)].sort((a, b) => a.localeCompare(b));
+  
+      setInputAutoComplete(uniqueTeamCodes);
       setInputAutoStatus(response.status);
-      setIsLoading(false);
-      return stringNoRepeat;
+  
+      return uniqueTeamCodes;
     } catch (error) {
       // eslint-disable-next-line no-console
       console.log(error);
-      setIsLoading(false);
       toast.error(`It was not possible to retrieve the team codes.
       Please try again by clicking the icon inside the input auto complete.`);
+      return [];
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }, []);
 
 
   /* Hooks */
@@ -145,6 +157,7 @@ function UserProfile(props) {
   const [modalMessage, setModalMessage] = useState('');
   const [shouldRefresh, setShouldRefresh] = useState(false);
   const [activeInactivePopupOpen, setActiveInactivePopupOpen] = useState(false);
+  const [finalDayPopupOpen, setFinalDayPopupOpen] = useState(false);
   const [tasks, setTasks] = useState([]);
   const [updatedTasks, setUpdatedTasks] = useState([]);
   const [summarySelected, setSummarySelected] = useState(null);
@@ -768,6 +781,9 @@ setUpdatedTasks(prev => {
           //   .toISOString()
           //   .split('T')[0],
           createdDate: moment().format('YYYY-MM-DD'),
+          // Track manual assignment - note: backend uses 'manullyAssigned' (typo in field name)
+          manullyAssigned: true,
+          manullyAssignedBy: requestorId,
         };
         setModalTitle('Blue Square');
         axios
@@ -812,6 +828,7 @@ setUpdatedTasks(prev => {
         .put(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id), {
           dateStamp,
           summary,
+          editedBy: requestorId,
         })
         .catch(error => {
           toast.error('Failed to update Blue Square!');
@@ -953,37 +970,6 @@ setUpdatedTasks(prev => {
       });
   };
 
-  // const handleSubmit = async updatedUserProfile => {
-  //   for (let i = 0; i < updatedTasks.length; i += 1) {
-  //     const updatedTask = updatedTasks[i];
-  //     const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
-  //     // eslint-disable-next-line no-console
-  //     axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
-  //   }
-  //   try {
-  //      const userProfileToUpdate = {
-  //       ...(updatedUserProfile || userProfileRef.current),
-  //       projects, // Ensure projects are included in the payload
-  //       };
-  //       // eslint-disable-next-line no-console
-  //       console.log('Submitting UserProfile:', userProfileToUpdate); // Debugging log
-  //     const result = await props.updateUserProfile(userProfileToUpdate);
-  //     if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
-  //       await props.refreshToken(userProfile._id);
-  //     }
-  //     await loadUserProfile();
-  //     await loadUserTasks();
-  //     setSaved(false);
-  //   } catch (err) {
-  //     if (err.response && err.response.data && err.response.data.error) {
-  //       const errorMessage = err.response.data.error.join('\n');
-  //       // eslint-disable-next-line no-alert
-  //       alert(errorMessage);
-  //     }
-  //     return err;
-  //   }
-  // };
-
   const handleSubmit = async (updatedUserProfile) => {
   // 1) Merge with the current ref FIRST
   const merged = { ...(userProfileRef.current || {}), ...(updatedUserProfile || {}) };
@@ -1010,6 +996,7 @@ setUpdatedTasks(prev => {
 
   try {
     const result = await props.updateUserProfile(userProfileToUpdate);
+    clearCachedTeamMembers(); // clear all team caches on any profile save
     if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
       await props.refreshToken(userProfile._id);
     }
@@ -1102,53 +1089,6 @@ setUpdatedTasks(prev => {
     });
   };
 
-  const setActiveInactive = async isActive => {
-    let endDate;
-
-    if (!isActive) {
-      endDate = await dispatch(
-        getTimeEndDateEntriesByPeriod(
-          userProfile._id,
-          userProfile.createdDate,
-          moment().format('YYYY-MM-DDTHH:mm:ss'),
-        ),
-      );
-      if (endDate == 'N/A') {
-        endDate = userProfile.createdDate;
-      }
-      endDate = moment(endDate).format('YYYY-MM-DDTHH:mm:ss');
-    }
-    const newUserProfile = {
-      ...userProfile,
-      isActive,
-      ...(isActive ? {endDate: null} : {endDate}),
-    };
-
-    try {
-      await props.updateUserStatus(
-        newUserProfile,
-        isActive ? UserStatus.Active : UserStatus.InActive,
-        undefined,
-      );
-      setUserProfile(newUserProfile);
-      setOriginalUserProfile(newUserProfile);
-      // window.location.reload();
-      await loadUserProfile();
-      await loadUserTasks();
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('Failed to update user status:', error);
-    }
-    setActiveInactivePopupOpen(false);
-
-    if (!userProfile.deactivatedAt && !isActive) {
-      toast.success('User scheduled for deactivation.');
-    } else if (userProfile.deactivatedAt && isActive) {
-      toast.success('Scheduled deactivation canceled.');
-    } else if (!userProfile.isActive && isActive) {
-      toast.success('User reactivated.');
-    }
-  };
 
   const activeInactivePopupClose = () => {
     setActiveInactivePopupOpen(false);
@@ -1328,16 +1268,36 @@ setUpdatedTasks(prev => {
     setUserEndDate(endDate);
   };
 
+  const hasScheduledFinalDay = userProfile.isActive && userProfile.inactiveReason === InactiveReason.ScheduledSeparation && !!userProfile.endDate;
+
   return (
     <div className={darkMode ? 'bg-oxford-blue' : ''} style={{ minHeight: '100%' }}>
       <ActiveInactiveConfirmationPopup
-        isActive={userProfile.isActive}
-        deactivatedAt={userProfile.deactivatedAt}
-        fullName={`${userProfile.firstName} ${userProfile.lastName}`}
         open={activeInactivePopupOpen}
-        setActiveInactive={setActiveInactive}
         onClose={activeInactivePopupClose}
+        fullName={`${userProfile.firstName} ${userProfile.lastName}`}
+        isActive={userProfile.isActive}
+        endDate={userProfile.endDate}
+        inactiveReason={userProfile.inactiveReason}
+        onDeactivateImmediate={() => deactivateImmediatelyAction(dispatch, userProfile, loadUserProfile)}
+        onScheduleFinalDay={() => {
+          setFinalDayPopupOpen(true);
+          setActiveInactivePopupOpen(false);
+        }}
+        onCancelScheduledDeactivation={() => activateUserAction(dispatch, userProfile, loadUserProfile)}
+        onReactivateUser={() => activateUserAction(dispatch, userProfile, loadUserProfile)}
       />
+
+      <SetUpFinalDayPopUp
+        open={finalDayPopupOpen}
+        darkMode={darkMode}
+        onClose={() => setFinalDayPopupOpen(false)}
+        onSave={(finalDayISO) => {
+          scheduleDeactivationAction(dispatch, userProfile, finalDayISO, loadUserProfile);
+          setFinalDayPopupOpen(false);
+        }}
+      />
+
       {showModal && (
         <UserProfileModal
           isOpen={showModal}
@@ -1501,6 +1461,8 @@ setUpdatedTasks(prev => {
                 isActive={userProfile.isActive}
                 deactivatedAt={userProfile.deactivatedAt}
                 user={userProfile}
+                endDate={userProfile.endDate}
+                reactivationDate={userProfile.reactivationDate}
                 canChange={canChangeUserStatus}
                 onClick={() => {
                   if (cantDeactivateOwner(userProfile, requestorRole)) {
@@ -1628,12 +1590,12 @@ setUpdatedTasks(prev => {
             {/* use converted date without tz otherwise the record's will updated with timezoned ts for start date.  */}
             From:{' '}
             <span className={darkMode ? 'text-light' : ''}>
-              {formatDateLocal(userProfile.startDate)}
+              {formatDateCompany(userProfile.startDate)}
             </span>
             {'   '}
             To:{' '}
             <span className={darkMode ? 'text-light' : ''}>
-              {userProfile.endDate ? formatDateLocal(userProfile.endDate) : 'N/A'}
+              {userProfile.endDate ? formatDateCompany(userProfile.endDate) : 'N/A'}
             </span>
           </p>
           {showSelect ? (
@@ -1682,12 +1644,15 @@ setUpdatedTasks(prev => {
             <div className="profile-tabs">
               <Nav tabs>
                 <NavItem>
-                  <NavLink
+                <NavLink
                     className={classnames(
-                      { active: activeTab === '1' },
                       'nav-link',
-                      darkMode && activeTab === '1' ? 'bg-space-cadet' : 'text-azure',
-                      darkMode ? 'text-light' : '',
+                      { active: activeTab === '1' },
+                      darkMode
+                        ? activeTab === '1'
+                          ? 'bg-space-cadet text-light'
+                          : 'text-azure'
+                        : 'text-azure',
                     )}
                     onClick={() => toggleTab('1')}
                     id="nabLink-basic"
@@ -1696,12 +1661,15 @@ setUpdatedTasks(prev => {
                   </NavLink>
                 </NavItem>
                 <NavItem>
-                  <NavLink
+                <NavLink
                     className={classnames(
-                      { active: activeTab === '2' },
                       'nav-link',
-                      darkMode && activeTab === '2' ? 'bg-space-cadet' : 'text-azure',
-                      darkMode ? 'text-light' : '',
+                      { active: activeTab === '2' },
+                      darkMode
+                        ? activeTab === '1'
+                          ? 'bg-space-cadet text-light'
+                          : 'text-azure'
+                        : 'text-azure',
                     )}
                     onClick={() => toggleTab('2')}
                     id="nabLink-time"
@@ -1710,12 +1678,15 @@ setUpdatedTasks(prev => {
                   </NavLink>
                 </NavItem>
                 <NavItem>
-                  <NavLink
+                <NavLink
                     className={classnames(
-                      { active: activeTab === '3' },
                       'nav-link',
-                      darkMode && activeTab === '3' ? 'bg-space-cadet' : 'text-azure',
-                      darkMode ? 'text-light' : '',
+                      { active: activeTab === '3' },
+                      darkMode
+                        ? activeTab === '1'
+                          ? 'bg-space-cadet text-light'
+                          : 'text-azure'
+                        : 'text-azure',
                     )}
                     onClick={() => toggleTab('3')}
                     id="nabLink-teams"
@@ -1724,12 +1695,15 @@ setUpdatedTasks(prev => {
                   </NavLink>
                 </NavItem>
                 <NavItem>
-                  <NavLink
+                <NavLink
                     className={classnames(
-                      { active: activeTab === '4' },
                       'nav-link',
-                      darkMode && activeTab === '4' ? 'bg-space-cadet' : 'text-azure',
-                      darkMode ? 'text-light' : '',
+                      { active: activeTab === '4' },
+                      darkMode
+                        ? activeTab === '1'
+                          ? 'bg-space-cadet text-light'
+                          : 'text-azure'
+                        : 'text-azure',
                     )}
                     onClick={() => toggleTab('4')}
                     id="nabLink-projects"
@@ -1739,19 +1713,19 @@ setUpdatedTasks(prev => {
                 </NavItem>
                 <NavItem>
                   <NavLink
+                    data-test-id="edit-history-tab"
                     className={classnames(
-                      { active: activeTab === '5' },
                       'nav-link',
-                      darkMode && activeTab === '5' ? 'bg-space-cadet' : 'text-azure',
-                      darkMode ? 'text-light' : '',
+                      { active: activeTab === '5' },
+                      darkMode
+                        ? activeTab === '1'
+                          ? 'bg-space-cadet text-light'
+                          : 'text-azure'
+                        : 'text-azure',
                     )}
-                    onClick={e => {
-                      e.preventDefault();
-                      toggleTab('5');
-                    }}
-                    data-testid="edit-history-tab"
+                    onClick={() => toggleTab('5')}
                   >
-                    Edit History
+                      Edit History
                   </NavLink>
                 </NavItem>
               </Nav>
@@ -1776,6 +1750,7 @@ setUpdatedTasks(prev => {
                   canEditRole={canEditUserProfile}
                   roles={roles}
                   darkMode={darkMode}
+                  hasFinalDay={hasScheduledFinalDay}
                 />
               </TabPane>
               <TabPane tabId="2">
@@ -2456,6 +2431,6 @@ setUpdatedTasks(prev => {
 
 export default connect(
   mapStateToProps,
-  { hasPermission, updateUserStatus, updateUserProfile, getTimeEntriesForWeek }
+  { hasPermission, updateUserProfile, getTimeEntriesForWeek }
 )(UserProfile);
 

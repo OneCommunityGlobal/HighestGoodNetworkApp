@@ -64,6 +64,7 @@
   justify-content: flex-end;
   align-items: center;
   width: 100%;
+  padding: 1rem 0 0;
 }
 
 .item__navbar-right h2{
@@ -336,6 +337,24 @@
   flex-direction: column;
 }
 
+.item__form button {
+  background: #006b32;
+  color: white;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.item__form button:hover {
+  background: #0f9a50;
+  transform: scale(1.01);
+}
+
+.item__form button:active {
+  transform: scale(0.99);
+}
 .item__rent input[type='date'] {
   border: 1px solid #ccc;
   margin-top: 2.5%;
@@ -477,6 +496,7 @@
   }
   .item__navbar-right {
     justify-content: space-between;
+    padding: 1rem 0 0;
   }
   .item__navbar-right h2{
     font-family: sans-serif;
