@@ -9,7 +9,7 @@ import { Pie } from 'react-chartjs-2';
 import { useDispatch, useSelector } from 'react-redux';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { Chart as ChartJS } from 'chart.js';
-import fetchOptStatusBreakdown from '../../actions/optStatusBreakdownAction';
+import { fetchOptStatusBreakdown } from '../../actions/optStatusBreakdownAction';
 import { roleOptions } from './filter';
 import 'chart.js/auto';
 import styles from './OptStatusPieChart.module.css';
@@ -23,6 +23,45 @@ const COLORS = {
   Citizen: '#4caf50',
   'N/A': '#ff9800',
 };
+
+const LABEL_OFFSET = 36;
+
+const leaderLinesPlugin = {
+  id: 'leaderLines',
+  afterDatasetDraw(chart) {
+    const { ctx } = chart;
+    const meta = chart.getDatasetMeta(0);
+
+    meta.data.forEach(arc => {
+      const { startAngle, endAngle, outerRadius, x, y } = arc;
+
+      const angle = (startAngle + endAngle) / 2;
+
+      const dx = Math.cos(angle);
+      const dy = Math.sin(angle);
+
+      const startX = x + outerRadius * dx;
+      const startY = y + outerRadius * dy;
+
+      const lineLength = LABEL_OFFSET;
+      const endX = startX + dx * lineLength;
+      const endY = startY + dy * lineLength;
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(startX, startY);
+      ctx.lineTo(endX, endY);
+
+      ctx.strokeStyle = '#aaaaaa';
+      ctx.lineWidth = 1;
+      ctx.lineCap = 'round'; // smoother line
+      ctx.stroke();
+      ctx.restore();
+    });
+  },
+};
+
+ChartJS.register(leaderLinesPlugin);
 
 const OptStatusPieChart = () => {
   const dispatch = useDispatch();
@@ -65,6 +104,8 @@ const OptStatusPieChart = () => {
       {
         data: dataCounts,
         backgroundColor: backgroundColors,
+        borderWidth: 2,
+        borderColor: darkMode ? '#2a3b55' : '#ffffff',
       },
     ],
   };
@@ -72,22 +113,44 @@ const OptStatusPieChart = () => {
   const options = {
     responsive: true,
     maintainAspectRatio: false,
+    layout: {
+      padding: {
+        top: 70,
+        bottom: 70,
+        left: 130,
+        right: 130,
+      },
+    },
     plugins: {
-      legend: { display: false },
+      legend: {
+        display: false,
+      },
       datalabels: {
-        color: darkMode ? '#ffffff' : '#000000',
-        font: { weight: 'bold' },
-        formatter: value => {
-          const percent = ((value / total) * 100).toFixed(1);
-          return `${percent}%\n(${value})`;
+        display: true,
+        anchor: 'end',
+        align: 'end',
+        offset: LABEL_OFFSET,
+        clamp: false,
+        clip: false,
+        color: darkMode ? '#cccccc' : '#555555',
+        font: {
+          size: 12,
+          weight: 'normal',
         },
+        formatter: (value, context) => {
+          const label = context.chart.data.labels[context.dataIndex];
+          const percent = ((value / total) * 100).toFixed(1);
+          return `${label}\n${percent}%`;
+        },
+        textAlign: 'center',
       },
       tooltip: {
         callbacks: {
+          title: () => '',
           label: context => {
             const count = context.raw;
             const percent = ((count / total) * 100).toFixed(1);
-            return `${context.label}: ${percent}% (${count})`;
+            return `${percent}% (${count})`;
           },
         },
       },
