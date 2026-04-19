@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import classnames from 'classnames';
 import SocialMediaComposer from './SocialMediaComposer';
+import TruthSocialAutoPoster from '../AutoPoster/TruthSocialAutoPoster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faEnvelope,
@@ -15,7 +16,9 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { faFacebook, faLinkedin, faMedium } from '@fortawesome/free-brands-svg-icons';
 import ReactTooltip from 'react-tooltip';
-import EmailPanel from './platforms/email';
+
+import EmailPanel from './platforms/email'; // ← new
+import SlashdotAutoPoster from './platforms/slashdot';
 
 function Announcements({ title, email: initialEmail }) {
   const [activeTab, setActiveTab] = useState('email');
@@ -128,19 +131,23 @@ function Announcements({ title, email: initialEmail }) {
           </TabPane>
 
           <TabPane tabId="video">
-            <SocialMediaComposer platform="video" />
+            <SocialMediaComposer platform="video" darkMode={darkMode} />
           </TabPane>
 
           <TabPane tabId="article">
-            <SocialMediaComposer platform="article" />
+            <SocialMediaComposer platform="article" darkMode={darkMode} />
           </TabPane>
 
           <TabPane tabId="photo">
-            <SocialMediaComposer platform="photo" />
+            <SocialMediaComposer platform="photo" darkMode={darkMode} />
           </TabPane>
 
           <TabPane tabId="weeklyreport">
-            <SocialMediaComposer platform="weeklyreport" />
+            <SocialMediaComposer platform="weeklyreport" darkMode={darkMode} />
+          </TabPane>
+
+          <TabPane tabId="truthsocial">
+            <TruthSocialAutoPoster darkMode={darkMode} />
           </TabPane>
 
           {[
@@ -165,11 +172,15 @@ function Announcements({ title, email: initialEmail }) {
             'slashdot',
             'blogger',
             'truthsocial',
-          ].map(platform => (
-            <TabPane tabId={platform} key={platform}>
-              <SocialMediaComposer platform={platform} />
-            </TabPane>
-          ))}
+          ].map(platform => {
+            const PlatformComposer =
+              platform === 'slashdot' ? SlashdotAutoPoster : SocialMediaComposer;
+            return (
+              <TabPane tabId={platform} key={platform}>
+                <PlatformComposer platform={platform} darkMode={darkMode} />
+              </TabPane>
+            );
+          })}
         </TabContent>
       </div>
     </div>

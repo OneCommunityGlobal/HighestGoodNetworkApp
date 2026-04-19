@@ -47,13 +47,15 @@ import {
   PERMISSIONS_MANAGEMENT,
   SEND_EMAILS,
   TOTAL_ORG_SUMMARY,
+  TOTAL_ORG_SUMMARY_EMAIL,
   TOTAL_CONSTRUCTION_SUMMARY,
   PR_PROMOTIONS,
+  ACTUAL_COST_BREAKDOWN,
   BLUE_SQUARE_EMAIL_MANAGEMENT,
   JOB_ANALYTICS_REPORT,
 } from '../../languages/en/ui';
 import Logout from '../Logout/Logout';
-import '../../App.css';
+import '../../App.module.css';
 import styles from './Header.module.css';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import {
@@ -166,7 +168,6 @@ export function Header(props) {
   const unreadNotifications = props.notification?.unreadNotifications; // List of unread notifications
   const dispatch = useDispatch();
   const history = useHistory();
-
   const [showProjectDropdown, setShowProjectDropdown] = useState(false);
 
   useEffect(() => {
@@ -404,7 +405,7 @@ export function Header(props) {
   const viewingUser = JSON.parse(window.sessionStorage.getItem('viewingUser'));
   return (
     <div className={`${styles.headerWrapper}`} data-testid="header">
-      <Navbar className={`py-3 ${styles.navbar}`} color="dark" dark expand="xl">
+      <Navbar className={`py-3 ${styles.navbar}`} color="dark" dark expand={true}>
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
         {showPromotionsPopup && <DisplayBox onClose={() => setShowPromotionsPopup(false)} />}
   
@@ -619,6 +620,19 @@ export function Header(props) {
                           {TOTAL_ORG_SUMMARY}
                         </DropdownItem>
                       )}
+                      <DropdownItem
+                        tag={Link}
+                        to="/actual-cost-breakdown"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        {ACTUAL_COST_BREAKDOWN}
+                      </DropdownItem>
+                      {canGetWeeklyVolunteerSummary && (
+                      <DropdownItem tag={Link} to="/TotalOrgSummaryEmail" className={fontColor}>
+                          {TOTAL_ORG_SUMMARY_EMAIL}
+                        </DropdownItem>
+                      )}
                       {canGetJobAnalytics && (
                         <DropdownItem
                           tag={Link}
@@ -745,11 +759,19 @@ export function Header(props) {
                       <DropdownItem divider className={styles.hideInMobile} />
                       <DropdownItem
                         tag={Link}
-                        to="/pr-dashboard/overview"
+                        to="/pr-dashboard/analytics"
                         className={fontColor}
                         disabled={headerDisabled}
                       >
                         PR Team Analytics
+                      </DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/pr-dashboard/analytics"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        PR Analytics
                       </DropdownItem>
                       {canAccessBlueSquareEmailManagement && (
                         <DropdownItem

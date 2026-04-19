@@ -4,17 +4,18 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 20px;
-  background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+  padding: 18px;
+  background: linear-gradient(145deg, #fff 0%, #f8f9fa 100%);
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(62, 160, 203, 0.1);
-  min-height: 500px;
+  box-shadow: 0 4px 20px rgb(0 0 0 / 8%);
+  border: 1px solid rgb(62 160 203 / 10%);
+  min-height: 420px;
+  max-height: 500px;
   position: relative;
 }
 
 .radarChart.compact {
-  padding: 0;
+  padding: 8px;
   background: transparent;
   box-shadow: none;
   border: none;
@@ -26,6 +27,7 @@
   text-align: center;
   margin-bottom: 20px;
   color: #333;
+  padding: 12px 16px;
 }
 
 .chartTitle h4 {
@@ -33,7 +35,7 @@
   font-size: 24px;
   font-weight: 600;
   margin-bottom: 8px;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  text-shadow: 0 1px 2px rgb(0 0 0 / 10%);
 }
 
 .chartTitle p {
@@ -45,7 +47,7 @@
 
 .chartContainer {
   width: 100%;
-  max-width: clamp(300px, 42vw, 520px); /* reduced overall footprint */
+  max-width: clamp(280px, 38vw, 460px);
   aspect-ratio: 1 / 1;
   height: auto;
   position: relative;
@@ -56,7 +58,7 @@
 .chartContainer canvas {
   width: 100% !important;
   height: 100% !important;
-  filter: drop-shadow(0 2px 8px rgba(62, 160, 203, 0.15));
+  filter: drop-shadow(0 2px 8px rgb(62 160 203 / 15%));
 }
 
 .chartLegend {
@@ -79,10 +81,10 @@
 .legendColor {
   width: 18px;
   height: 18px;
-  background: linear-gradient(135deg, rgba(62, 160, 203, 0.8) 0%, rgba(62, 160, 203, 0.6) 100%);
-  border: 2px solid rgba(62, 160, 203, 1);
+  background: linear-gradient(135deg, rgb(62 160 203 / 80%) 0%, rgb(62 160 203 / 60%) 100%);
+  border: 2px solid rgb(62 160 203 / 100%);
   border-radius: 50%;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
 }
 
 /* Loading state */
@@ -94,7 +96,7 @@
 .loadingSpinner {
   width: 40px;
   height: 40px;
-  border: 4px solid rgba(62, 160, 203, 0.2);
+  border: 4px solid rgb(62 160 203 / 20%);
   border-left: 4px solid #3ea0cb;
   border-radius: 50%;
   animation: spin 1s linear infinite;
@@ -123,92 +125,117 @@
 }
 
 /* Responsive breakpoints */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .radarChart {
-    padding: 15px;
-    min-height: 450px;
+    padding: 10px 0;
   }
 
-  .chartTitle h4 {
-    font-size: 20px;
-  }
-
-  .chartTitle p {
-    font-size: 13px;
-  }
-
-  .chartContainer {
-    max-width: clamp(280px, 58vw, 500px);
-  }
-
-  .legendItem {
-    font-size: 13px;
+  .radarChart canvas {
+    max-height: 460px;
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .radarChart {
-    padding: 10px;
-    min-height: 400px;
+    padding: 8px;
+    min-height: 320px;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .chartTitle h4 {
-    font-size: 18px;
+    font-size: 16px;
   }
 
   .chartTitle p {
-    font-size: 12px;
+    font-size: 11px;
   }
 
   .chartContainer {
-    max-width: clamp(240px, 78vw, 420px);
+    max-width: 100%;
+    width: 100%;
   }
 
   .chartLegend {
     flex-direction: column;
-    gap: 10px;
-    margin-top: 15px;
+    gap: 8px;
+    margin-top: 12px;
   }
 
   .legendItem {
-    font-size: 12px;
+    font-size: 11px;
   }
 
   .legendColor {
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
+  }
+}
+
+@media (width <= 360px) {
+  .radarChart {
+    padding: 5px;
+    min-height: 280px;
+  }
+
+  .chartTitle h4 {
+    font-size: 14px;
   }
 }
 
 /* High DPI displays */
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+@media (resolution >= 192dpi) {
   .chartContainer canvas {
-    image-rendering: -webkit-optimize-contrast;
     image-rendering: crisp-edges;
   }
 }
 
-/* Dark theme support (optional) */
-@media (prefers-color-scheme: dark) {
-  .radarChart {
-    background: linear-gradient(145deg, #2d3748 0%, #1a202c 100%);
-    border-color: rgba(62, 160, 203, 0.3);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  }
-
-  .chartTitle h4 {
-    color: #63b3ed;
-  }
-
-  .chartTitle p {
-    color: #a0aec0;
-  }
-
-  .legendItem {
-    color: #e2e8f0;
-  }
+/* Dark theme support */
+.dark {
+  background: #1f1f1f;
+  border-color: #2a2a2a;
+  box-shadow: none;
 }
 
-:global(.dark-mode) .radarChart canvas {
-  filter: invert(1) hue-rotate(180deg);
+.dark .chartTitle h4 {
+  color: #e6e6e6;
+}
+
+.dark .chartTitle p {
+  color: #bfbfbf;
+}
+
+.dark .legendItem {
+  color: #e2e8f0;
+}
+
+:global(.dark-mode) .radarChart {
+  background: linear-gradient(145deg, #2a2f3e 0%, #1e2330 100%);
+  border-color: rgb(62 160 203 / 30%);
+  box-shadow: 0 4px 20px rgb(0 0 0 / 30%);
+}
+
+:global(.dark-mode) .chartTitle h4 {
+  color: #63b3ed;
+}
+
+:global(.dark-mode) .chartTitle p {
+  color: #a0aec0;
+}
+
+:global(.dark-mode) .legendItem {
+  color: #e2e8f0;
+}
+
+:global(.dark-mode) .loadingSpinner {
+  border-color: rgb(62 160 203 / 30%);
+  border-left-color: #63b3ed;
+}
+
+:global(.dark-mode) .errorState h4 {
+  color: #ff6b6b;
+}
+
+:global(.dark-mode) .errorState p {
+  color: #a0aec0;
 }
