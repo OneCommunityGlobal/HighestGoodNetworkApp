@@ -80,6 +80,50 @@
   font-style: italic;
 }
 
+.background-dark {
+  background-color: #2a3f5f;
+  border: 1px solid #555;
+}
+.background-red {
+  background-color: #ff4d4f;
+}
+
+:global(.dark.rmsc ) {
+  --rmsc-border: none;
+  --rmsc-bg: none;
+  border:transparent;
+}
+
+:global(.dark.rmsc .dropdown-heading) {
+  background-color: #2a3f5f; 
+  color: #fff;
+  border: 1px solid #555;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+:global(.dark.rmsc .select-item:hover) {
+  background-color: #253246;
+}
+
+:global(.dark.rmsc .select-item.selected) {
+  background-color: #253246;
+}
+:global(.rmsc.dark .options) {
+  background-color: #2a3f5f;
+  color: #fff;
+}
+
+/* Search box */
+:global(.rmsc.dark .search) {
+  background-color: #2a3f5f;
+  color: #fff;
+}
+:global(.rmsc.dark .search input:focus) {
+  background-color: #223653;
+}
+
+
 .returned-late-detail-backdrop {
   position: fixed;
   inset: 0;
@@ -96,13 +140,13 @@
   padding: 20px;
   z-index: 2147483647;
   box-shadow: -4px 0 10px rgba(0, 0, 0, 0.4);
-  background: #ffffff;
-  color: #111111;
+  background: #fff;
+  color: #111;
 }
 
 .dark-panel {
   background: #0b2545;
-  color: #ffffff;
+  color: #fff;
 }
 
 .returned-late-detail-close {
@@ -115,63 +159,63 @@
 }
 :global(html.dark-mode) .returned-late-chart h1,
 :global(body.dark-mode) .returned-late-chart h1 {
-  color: #ffffff;
+  color: #fff;
 }
 
 :global(html.dark-mode) .returned-late-filter-label,
 :global(body.dark-mode) .returned-late-filter-label {
-  color: #ffffff;
+  color: #fff;
 }
 
 :global(html.dark-mode) .returned-late-project-select,
 :global(body.dark-mode) .returned-late-project-select {
   background-color: #1e293b;
-  color: #ffffff;
+  color: #fff;
   border: 1px solid #475569;
 }
 
 :global(html.dark-mode) .returned-late-project-select option,
 :global(body.dark-mode) .returned-late-project-select option {
   background-color: #1e293b;
-  color: #ffffff;
+  color: #fff;
 }
 
 :global(html.dark-mode) .returned-late-date-picker,
 :global(body.dark-mode) .returned-late-date-picker {
   background-color: #1e293b;
-  color: #ffffff;
+  color: #fff;
   border: 1px solid #475569;
 }
 
 :global(html.dark-mode) .returned-late-tools-select :global(.dropdown-container),
 :global(body.dark-mode) .returned-late-tools-select :global(.dropdown-container) {
   background-color: #1e293b;
-  color: #ffffff;
+  color: #fff;
   border: 1px solid #475569;
 }
 
 :global(html.dark-mode) .returned-late-tools-select :global(.dropdown-heading),
 :global(body.dark-mode) .returned-late-tools-select :global(.dropdown-heading) {
-  color: #ffffff;
+  color: #fff;
 }
 
 :global(html.dark-mode) .returned-late-tools-select :global(.select-panel),
 :global(body.dark-mode) .returned-late-tools-select :global(.select-panel) {
   background-color: #1e293b;
-  color: #ffffff;
+  color: #fff;
   border: 1px solid #475569;
 }
 
 :global(html.dark-mode) .returned-late-tools-select :global(.select-panel) :global(input),
 :global(body.dark-mode) .returned-late-tools-select :global(.select-panel) :global(input) {
   background-color: #0f172a;
-  color: #ffffff;
+  color: #fff;
   border: 1px solid #475569;
 }
 
 :global(html.dark-mode) .returned-late-tools-select :global(.select-item),
 :global(body.dark-mode) .returned-late-tools-select :global(.select-item) {
-  color: #ffffff;
+  color: #fff;
 }
 
 :global(html.dark-mode) .returned-late-tools-select :global(.select-item:hover),
