@@ -42,6 +42,41 @@ const unitIcon = new L.Icon({
   popupAnchor: [1, -34],
 });
 
+const buildApiFilters = (selectedVillage, dateRange) => {
+  const filters = {};
+  if (selectedVillage) filters.village = selectedVillage;
+  if (dateRange.startDate) filters.availableFrom = dateRange.startDate;
+  if (dateRange.endDate) filters.availableTo = dateRange.endDate;
+  return filters;
+};
+
+const withVillageFallback = async (
+  fetcher,
+  currentPage,
+  pageSize,
+  filters,
+  selectedVillage,
+  villageFilterCandidates,
+) => {
+  let response = await fetcher(currentPage, pageSize, filters);
+  if (!selectedVillage || (response.items || []).length > 0) return response;
+
+  const fallbackVillages = villageFilterCandidates(selectedVillage).filter(
+    v => v !== filters.village,
+  );
+  for (const villageCandidate of fallbackVillages) {
+    const retryResponse = await fetcher(currentPage, pageSize, {
+      ...filters,
+      village: villageCandidate,
+    });
+    if ((retryResponse.items || []).length > 0) {
+      response = retryResponse;
+      break;
+    }
+  }
+  return response;
+};
+
 function Home() {
   const [viewMode, setViewMode] = useState('Grid');
   const [activeTab, setActiveTab] = useState('listings');
@@ -132,89 +167,50 @@ function Home() {
   );
 
   useEffect(() => {
+    const loadListings = async filters => {
+      const listingsData = await withVillageFallback(
+        fetchListings,
+        pagination.currentPage,
+        pagination.pageSize,
+        filters,
+        selectedVillage,
+        villageFilterCandidates,
+      );
+      setAllListings(listingsData.items || []);
+      setPagination(prev => ({
+        ...prev,
+        totalPages: listingsData.pagination.totalPages || 1,
+      }));
+    };
+
+    const loadBiddings = async filters => {
+      const biddingsData = await withVillageFallback(
+        fetchBiddings,
+        pagination.currentPage,
+        pagination.pageSize,
+        filters,
+        selectedVillage,
+        villageFilterCandidates,
+      );
+      setAllBiddings(biddingsData.items || []);
+      setPagination(prev => ({
+        ...prev,
+        totalPages: biddingsData.pagination.totalPages || 1,
+      }));
+    };
+
     const fetchData = async () => {
       try {
         setIsLoading(true);
-
-        const filters = {};
-        if (selectedVillage) filters.village = selectedVillage;
-        if (dateRange.startDate) filters.availableFrom = dateRange.startDate;
-        if (dateRange.endDate) filters.availableTo = dateRange.endDate;
-
-        if (activeTab === 'listings') {
-          try {
-            let listingsData = await fetchListings(
-              pagination.currentPage,
-              pagination.pageSize,
-              filters,
-            );
-            if (selectedVillage && (listingsData.items || []).length === 0) {
-              const fallbackVillages = villageFilterCandidates(selectedVillage).filter(
-                v => v !== filters.village,
-              );
-              for (const villageCandidate of fallbackVillages) {
-                const retryData = await fetchListings(pagination.currentPage, pagination.pageSize, {
-                  ...filters,
-                  village: villageCandidate,
-                });
-                if ((retryData.items || []).length > 0) {
-                  listingsData = retryData;
-                  break;
-                }
-              }
-            }
-            setAllListings(listingsData.items || []);
-            console.log('fetching listings', listingsData.items);
-            setPagination(prev => ({
-              ...prev,
-              totalPages: listingsData.pagination.totalPages || 1,
-            }));
-          } catch (error) {
-            console.error('API Error (Listings):', error);
-            setError('Failed to fetch listings. Please try again later.');
-
-            setAllListings([]);
-          }
-        } else {
-          console.log('fetching biddings');
-          try {
-            let biddingsData = await fetchBiddings(
-              pagination.currentPage,
-              pagination.pageSize,
-              filters,
-            );
-            if (selectedVillage && (biddingsData.items || []).length === 0) {
-              const fallbackVillages = villageFilterCandidates(selectedVillage).filter(
-                v => v !== filters.village,
-              );
-              for (const villageCandidate of fallbackVillages) {
-                const retryData = await fetchBiddings(pagination.currentPage, pagination.pageSize, {
-                  ...filters,
-                  village: villageCandidate,
-                });
-                if ((retryData.items || []).length > 0) {
-                  biddingsData = retryData;
-                  break;
-                }
-              }
-            }
-
-            setAllBiddings(biddingsData.items || []);
-
-            setPagination(prev => ({
-              ...prev,
-              totalPages: biddingsData.pagination.totalPages || 1,
-            }));
-          } catch (error) {
-            console.error('API Error (Biddings):', error);
-            setError('Failed to fetch biddings. Please try again later.');
-
-            setAllBiddings([]);
-          }
-        }
+        const filters = buildApiFilters(selectedVillage, dateRange);
+        if (activeTab === 'listings') await loadListings(filters);
+        else await loadBiddings(filters);
 
         setIsLoading(false);
-      } catch (err) {
+      } catch (error) {
+        console.error(`API Error (${activeTab}):`, error);
+        if (activeTab === 'listings') setAllListings([]);
+        else setAllBiddings([]);
         setError('Failed to load data. Please try again later.');
         setIsLoading(false);
       }
