@@ -12,7 +12,11 @@ export const initMessagingSocket = (token) => {
 
     const webSocketURL = ENDPOINTS.MESSAGING_SERVICE;
 
-    messagingSocket = new WebSocket(webSocketURL, token);
+    try {
+        messagingSocket = new WebSocket(webSocketURL, token);
+    } catch (e) {
+        return null;
+    }
 
     messagingSocket.onopen = () => {
         reconnectAttempts = 0;
@@ -24,7 +28,12 @@ export const initMessagingSocket = (token) => {
     };
 
     messagingSocket.onmessage = (message) => {
-        const data = JSON.parse(message.data);
+        let data;
+        try {
+            data = JSON.parse(message.data);
+        } catch (e) {
+            return;
+        }
 
         if (data.action === "RECEIVE_MESSAGE") {
             store.dispatch(handleMessageReceived(data.payload));

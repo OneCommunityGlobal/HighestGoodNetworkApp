@@ -9,6 +9,7 @@
 
 .carouselWrapper {
   width: 100%;
+  min-height: 200px;
   overflow: hidden;
 }
 
@@ -29,7 +30,7 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgb(0 0 0 / 50%);
   color: white;
   border: none;
   padding: 10px;
@@ -73,12 +74,12 @@
 }
 
 .imgArrow--dark {
-  background-color: rgba(255, 255, 255, 0.7) !important;
+  background-color: rgb(255 255 255 / 70%) !important;
   color: #000 !important;
 }
 
 .imgArrow--dark:hover {
-  background-color: rgba(255, 255, 255, 0.9) !important;
+  background-color: rgb(255 255 255 / 90%) !important;
 }
 
 .indicator--dark {

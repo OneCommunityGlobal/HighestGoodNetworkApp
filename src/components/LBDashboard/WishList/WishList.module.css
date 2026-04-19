@@ -1,61 +1,94 @@
-.listLocation {
-  display: flex;
-  padding-right: 8%;
-  justify-content: flex-end;
-  margin-top: 2% !important;
-  margin-bottom: 0 !important;
+.pageRoot {
+  min-height: 100vh;
 }
 
-.listTitle{
-  padding-left: 6%;
-  text-align: left;
+.pageRootDark {
+  background-color: #0a0f1a;
+  color: #e8eaed;
 }
 
-/* .list__overview {
-  background-color: #e0e0e0;
+.item {
+  width: 100%;
+}
+
+.itemContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem 2rem;
+  box-sizing: border-box;
+}
+
+.itemLocation {
   display: flex;
   align-items: center;
-  margin: 20px 40px 30px 40px;
-  padding: 10px 0px 10px 0px;
-  width: auto;
-  height: auto;
-} */
-.itemBody {
-  background-color: #e0e0e0;
-  margin: 20px 40px 30px 40px;
-  padding: 10px 0px 10px 0px;
-  width: auto;
-  height: auto;
+  gap: 0.35rem;
 }
 
-.itemDetailsWrapper {
+.itemIcon {
+  flex-shrink: 0;
+}
+
+.mapLinkLight {
+  color: #1976d2;
+  text-decoration: underline;
+}
+
+.itemImage {
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  display: block;
+  border-radius: 8px;
+}
+
+.imagePlaceholder {
   display: flex;
-  justify-content: space-evenly;
   align-items: center;
+  justify-content: center;
+  min-height: 180px;
+  background: #d1d1d1;
+  border-radius: 8px;
+  color: #333;
 }
 
-.itemFooter { 
-  display: flex;
-  justify-content: space-between;
-  margin: 0px 40px 10px 30px;
-}
-
-.listDetailsLeft {
-  width: 45%;
-  height: 100%;
-  padding: 2.5%;
+.itemDetails {
   display: flex;
   flex-direction: column;
+  gap: 0.5rem;
 }
 
-.listDetailsRight {
-  width: 55%;
-  height: 100%;
-  padding: 2.5% 2.5% 2.5% 0%;
+.listItemAmenities ol {
+  margin: 0.25rem 0 0 1.25rem;
+}
+
+.listTitleDark {
+  color: #e8eaed !important;
+}
+
+.itemBody {
+  background-color: #e0e0e0;
+  margin: 1rem auto 1.5rem;
+  padding: 0;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+}
+
+.itemBodyDark {
+  background-color: #0f1629 !important;
+  border: 1px solid #1c2541 !important;
+  color: #e8eaed;
+}
+
+.wishlistLinkDark {
+  color: #81b0ff !important;
 }
 
 .listItemTitle {
-  font-size: 2.2rem;
+  font-size: clamp(1.25rem, 2.5vw, 2.2rem);
   text-transform: uppercase;
   font-weight: 600;
 }
@@ -65,9 +98,77 @@ h1.listItemTitleMobile {
   text-transform: uppercase;
 }
 
+.font600 {
+  font-weight: 600;
+}
+
+.itemPrice {
+  padding: 1rem 0;
+}
+
+.pageRootDark .listItemTitle,
+.pageRootDark h1.listItemTitleMobile,
+.pageRootDark h2.listItemTitleMobile {
+  color: #e8eaed !important;
+}
+
+.pageRootDark .font600 {
+  color: #e8eaed;
+}
+
+.pageRootDark .itemPrice {
+  color: #e8eaed;
+}
+
+.pageRootDark .imagePlaceholder {
+  background: #1c2541;
+  color: #9ca3af;
+}
+
+.listLocation {
+  display: flex;
+  padding-right: 0;
+  justify-content: flex-end;
+  margin-top: 1rem !important;
+  margin-bottom: 0 !important;
+}
+
+.listTitle {
+  padding-left: 0;
+  text-align: left;
+  margin: 1rem 0;
+}
+
+/* Main row: image + details only (no footer squeezed as third column) */
+.itemMainRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 1.25rem;
+  padding: 1rem 1.25rem 0.75rem;
+  box-sizing: border-box;
+}
+
+.listDetailsLeft {
+  flex: 0 1 42%;
+  max-width: 420px;
+  min-width: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.listDetailsRight {
+  flex: 1 1 58%;
+  min-width: 0;
+  padding: 0;
+}
+
 .itemTitleWrapper {
   position: relative;
-  height: 2.3rem;
+  min-height: 2.3rem;
 }
 
 .itemTitleWrapperDesktop {
@@ -84,99 +185,132 @@ h1.listItemTitleMobile {
   bottom: 0;
 }
 
-.font600{
-  font-weight: 600;
+/* Full-width footer under both columns — no overlap with chat */
+.itemCardFooter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem 1.25rem;
+  margin-top: 0;
+  border-top: 1px solid rgb(0 0 0 / 12%);
+  box-sizing: border-box;
 }
 
-.listLink{
-  margin-top: 2%;
-  text-decoration: underline;
+.pageRootDark .itemCardFooter {
+  border-top-color: #2f3b59;
 }
 
-.listDetails{
-  margin-top: 3%;
-  text-decoration: underline;
-}
-
-.wishlistStartChat {
+.footerLinks {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  margin-top: 2.5%;
-  align-self: center;
+  gap: 0.5rem;
+  flex: 1 1 220px;
+  min-width: 0;
 }
 
-.wishlistStartChat button {
-  background: #d1d1d1;
-  padding: 2.5%;
-  border-radius: 998px;
-  border: none;
-  width: 33%;
-  display: flex;
-  justify-content: center;
-  min-width: 200px;
-  gap: 10%;
+.footerLink {
+  display: inline-block;
+  text-decoration: underline;
+  overflow-wrap: anywhere;
+  line-height: 1.4;
+}
+
+.chatButton {
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  background: #d1d1d1;
+  padding: 0.65rem 1.25rem;
+  border-radius: 999px;
+  border: none;
+  min-height: 3rem;
+  font-size: 0.95rem;
   cursor: pointer;
-  transition: background 0.3s ease, transform 0.2s ease;
-  height: 3.5rem;
+  text-decoration: none;
+  color: #111 !important;
+  white-space: nowrap;
+  box-sizing: border-box;
+  max-width: 100%;
 }
 
-.itemPrice {
-  padding: 2rem 0rem;
+.chatButton:hover {
+  background: #c1c1c1;
+  color: #111 !important;
 }
 
-@media screen and (max-width: 500px) {
-  .itemDetailsWrapper {
-    padding: 10px;
-    margin: 10px;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .wishlistStartChat button {
-    background: #d1d1d1;
-    padding: 2.5%;
-    border-radius: 998px;
-    border: none;
-    width: 80%;
-    display: flex;
-    justify-content: center;
-    min-width: 150px;
-    font-size: 12px;
-    height: 3.5vh;
-  }
-
-  .itemFooter{
-    padding: 10px;
-    margin: 10px;
-  }
+.chatButtonDark {
+  background: #1c2541 !important;
+  color: #e8eaed !important;
+  border: 1px solid #3a506b;
 }
 
-@media screen and (max-width: 800px) {
+.chatButtonDark:hover {
+  background: #2d3f5e !important;
+  color: #fff !important;
+}
 
-  .itemDetailsWrapper {
-    padding: 10px;
-    margin: 10px;
-  }
-  
+@media screen and (width <= 800px) {
   .itemTitleWrapperMobile {
     display: block;
-  }  
+    text-align: center;
+  }
+
   .itemTitleWrapperDesktop {
     display: none;
   }
-  .itemDetailsWrapper {
+
+  .itemMainRow {
     flex-direction: column;
     align-items: center;
+    padding: 1rem;
   }
+
   .listDetailsLeft {
-    width: 98%;
+    flex: 1 1 auto;
+    width: 100%;
+    max-width: 100%;
+    align-items: center;
   }
+
   .listDetailsRight {
-    width: 98%;
+    width: 100%;
   }
-  .listLink {
-    align-self: center;
+
+  .itemCardFooter {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .footerLinks {
+    align-items: center;
+    text-align: center;
+  }
+
+  .chatButton {
+    width: 100%;
+    white-space: normal;
+    justify-content: center;
+  }
+}
+
+@media screen and (width <= 500px) {
+  .itemContainer {
+    padding: 0 0.75rem 1.5rem;
+  }
+
+  .itemBody {
+    margin: 0.75rem 0;
+  }
+
+  .itemMainRow {
+    padding: 0.75rem;
+  }
+
+  .itemCardFooter {
+    padding: 0.75rem;
   }
 }

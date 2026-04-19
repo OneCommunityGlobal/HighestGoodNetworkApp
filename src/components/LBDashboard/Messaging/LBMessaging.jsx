@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { useLocation, useHistory } from 'react-router-dom';
 import styles from './LBMessaging.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faLocationArrow, faSearch } from '@fortawesome/free-solid-svg-icons';
@@ -22,6 +23,8 @@ import logo from '../../../assets/images/logo2.png';
 
 export default function LBMessaging() {
   const dispatch = useDispatch();
+  const location = useLocation();
+  const history = useHistory();
   const darkMode = useSelector(state => state.theme.darkMode);
   const [selectedUser, updateSelectedUser] = useState({});
   const [searchQuery, setSearchQuery] = useState('');
@@ -36,12 +39,35 @@ export default function LBMessaging() {
   const [selectedOption, setSelectedOption] = useState({});
   const messageEndRef = useRef(null);
   const menuRef = useRef(null);
+  const appliedListingSelectionRef = useRef(null);
 
   const users = useSelector(state => state.allUserProfilesBasicInfo);
+  const wishlists = useSelector(state => state.wishlistItem?.wishlists);
   const auth = useSelector(state => state.auth.user);
-  const messagesState = useSelector(state => state.messages);
-  const existingChats = useSelector(state => state.messages.existingChats);
-  const { messages, loading: messagesLoading } = messagesState;
+  const currentUserId = auth?.userid ?? auth?.userId ?? auth?._id;
+  const messagesState = useSelector(state => state.messages) ?? {};
+  const existingChats = Array.isArray(messagesState.existingChats)
+    ? messagesState.existingChats
+    : [];
+  const messages = Array.isArray(messagesState.messages) ? messagesState.messages : [];
+  const messagesLoading = messagesState.loading ?? false;
+  const safeSearchResults = Array.isArray(searchResults) ? searchResults : [];
+
+  const sidebarContacts = useMemo(() => {
+    const chats = [...existingChats];
+    const sid = selectedUser?.userId;
+    if (!sid) return chats;
+    const exists = chats.some(c => String(c.userId ?? c._id) === String(sid));
+    if (!exists) {
+      chats.unshift({
+        userId: sid,
+        firstName: selectedUser.firstName,
+        lastName: selectedUser.lastName,
+        profilePic: selectedUser.profilePic,
+      });
+    }
+    return chats;
+  }, [existingChats, selectedUser]);
 
   useEffect(() => {
     if (messageEndRef.current) {
@@ -52,17 +78,17 @@ export default function LBMessaging() {
   const searchUserProfiles = async query => {
     try {
       const { data } = await axios.get(`${ENDPOINTS.LB_SEARCH_USERS}?query=${query}`);
-      setSearchResults(data);
+      setSearchResults(Array.isArray(data) ? data : []);
     } catch (error) {
       Error('Error searching user profiles:', error);
     }
   };
 
   useEffect(() => {
-    if (users.userProfilesBasicInfo.length === 0) {
+    if ((users?.userProfilesBasicInfo?.length ?? 0) === 0) {
       dispatch(getUserProfileBasicInfo());
     }
-  }, [dispatch, users.userProfilesBasicInfo, auth.userid]);
+  }, [dispatch, users?.userProfilesBasicInfo?.length, currentUserId]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -74,7 +100,7 @@ export default function LBMessaging() {
         socket.close();
       }
     };
-  }, [auth.userid]);
+  }, [currentUserId]);
 
   useEffect(() => {
     if (selectedUser.userId) {
@@ -95,12 +121,14 @@ export default function LBMessaging() {
   }, [selectedUser]);
 
   useEffect(() => {
-    dispatch(fetchExistingChats(auth.userid));
-  }, [dispatch, auth.userid]);
+    if (currentUserId) {
+      dispatch(fetchExistingChats(currentUserId));
+    }
+  }, [dispatch, currentUserId]);
 
   useEffect(() => {
     if (selectedUser.userId) {
-      dispatch(fetchUserPreferences(auth.userid, selectedUser.userId)).then(response => {
+      dispatch(fetchUserPreferences(currentUserId, selectedUser.userId)).then(response => {
         if (response) {
           setSelectedOption({
             notifyInApp: response.notifyInApp || false,
@@ -119,7 +147,7 @@ export default function LBMessaging() {
         notifyEmail: false,
       });
     }
-  }, [dispatch, auth.userid, selectedUser.userId]);
+  }, [dispatch, currentUserId, selectedUser.userId]);
 
   useEffect(() => {
     const handleClickOutside = event => {
@@ -134,32 +162,105 @@ export default function LBMessaging() {
     };
   }, []);
 
-  const updateSelection = user => {
-    const newSelectedUser = {
-      userId: user.userId || user._id,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      profilePic: user.profilePic || '/pfp-default-header.png',
-    };
+  const updateSelection = useCallback(
+    user => {
+      const newSelectedUser = {
+        userId: user.userId || user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        profilePic: user.profilePic || '/pfp-default-header.png',
+      };
 
-    updateSelectedUser(newSelectedUser);
+      updateSelectedUser(newSelectedUser);
 
-    if (newSelectedUser.userId) {
-      dispatch(fetchMessages(auth.userid, newSelectedUser.userId));
-    } else {
-      Error('Invalid user selected:', user);
-      toast.error('Invalid user selected. Please try again.');
+      if (newSelectedUser.userId && currentUserId) {
+        dispatch(fetchMessages(currentUserId, newSelectedUser.userId));
+      } else if (!newSelectedUser.userId) {
+        toast.error('Invalid user selected. Please try again.');
+      }
+    },
+    [currentUserId, dispatch],
+  );
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const listingId = params.get('listingId');
+    if (!listingId) {
+      appliedListingSelectionRef.current = null;
+      return;
     }
-  };
+    if (!wishlists?.length || !currentUserId) return;
+
+    const wishItem = wishlists.find(w => String(w.id) === String(listingId));
+    const host = wishItem?.host;
+    if (!host?.userId) return;
+
+    if (appliedListingSelectionRef.current === listingId) return;
+    appliedListingSelectionRef.current = listingId;
+
+    const profiles = users?.userProfilesBasicInfo ?? [];
+    const matched = profiles.find(p => String(p._id) === String(host.userId));
+
+    updateSelection({
+      userId: host.userId,
+      firstName: matched?.firstName ?? host.firstName,
+      lastName: matched?.lastName ?? host.lastName,
+      profilePic: matched?.profilePic || host.profilePic || '/pfp-default-header.png',
+    });
+
+    params.delete('listingId');
+    const nextSearch = params.toString();
+    history.replace({
+      pathname: location.pathname,
+      search: nextSearch ? `?${nextSearch}` : '',
+      hash: location.hash,
+    });
+  }, [
+    location.search,
+    location.pathname,
+    location.hash,
+    wishlists,
+    users?.userProfilesBasicInfo,
+    currentUserId,
+    updateSelection,
+    history,
+  ]);
+
+  useEffect(() => {
+    const uid = selectedUser?.userId;
+    if (!uid) return;
+    const profiles = users?.userProfilesBasicInfo ?? [];
+    if (!profiles.length) return;
+    const matched = profiles.find(p => String(p._id) === String(uid));
+    if (!matched) return;
+    updateSelectedUser(prev => {
+      const nextPic = matched.profilePic || prev.profilePic;
+      const nextFirst = matched.firstName ?? prev.firstName;
+      const nextLast = matched.lastName ?? prev.lastName;
+      if (
+        prev.firstName === nextFirst &&
+        prev.lastName === nextLast &&
+        prev.profilePic === nextPic
+      ) {
+        return prev;
+      }
+      return {
+        ...prev,
+        firstName: nextFirst,
+        lastName: nextLast,
+        profilePic: nextPic,
+      };
+    });
+  }, [users?.userProfilesBasicInfo, selectedUser?.userId]);
 
   const saveUserPreferences = () => {
-    dispatch(updateUserPreferences(auth.userid, selectedUser.userId, selectedOption))
+    dispatch(updateUserPreferences(currentUserId, selectedUser.userId, selectedOption))
       .then(() => {
         toast.success('Preferences updated successfully!');
         setBellDropdownActive(false);
 
         // Refresh preferences after saving
-        dispatch(fetchUserPreferences(auth.userid, selectedUser.userId)).then(response => {
+        dispatch(fetchUserPreferences(currentUserId, selectedUser.userId)).then(response => {
           if (response && response.payload) {
             setSelectedOption({
               notifyInApp: response.payload.notifyInApp || false,
@@ -213,13 +314,15 @@ export default function LBMessaging() {
   }, []);
 
   const renderContacts = () => {
-    if (existingChats.length === 0) {
-      return <p>No chats available.</p>;
+    if (sidebarContacts.length === 0) {
+      return (
+        <p className={styles.sidebarHint}>No contacts yet. Use the search icon to find someone.</p>
+      );
     }
 
-    return existingChats.map(user => (
+    return sidebarContacts.map(user => (
       <button
-        key={user.userId}
+        key={user.userId || user._id}
         type="button"
         className={`${styles.lbMessagingContact}`}
         onClick={() => {
@@ -255,8 +358,8 @@ export default function LBMessaging() {
 
     const filteredMessages = messages.filter(
       message =>
-        (message.sender === auth.userid && message.receiver === selectedUser.userId) ||
-        (message.sender === selectedUser.userId && message.receiver === auth.userid),
+        (message.sender === currentUserId && message.receiver === selectedUser.userId) ||
+        (message.sender === selectedUser.userId && message.receiver === currentUserId),
     );
 
     if (filteredMessages.length === 0) {
@@ -270,16 +373,18 @@ export default function LBMessaging() {
           <div
             key={message._id || message.timestamp}
             className={`${styles.messageItem} ${
-              message.sender === auth.userid ? styles.sent : styles.received
+              message.sender === currentUserId ? styles.sent : styles.received
             }`}
           >
             <p className={`${styles.messageText}`}>
-              {message.content.split('\n').map(line => (
-                <span key={message._id + line}>
-                  {line}
-                  <br />
-                </span>
-              ))}
+              {String(message.content ?? '')
+                .split('\n')
+                .map((line, lineIdx) => (
+                  <span key={`${message._id || message.timestamp}-${lineIdx}`}>
+                    {line}
+                    <br />
+                  </span>
+                ))}
             </p>
           </div>
         ))}
@@ -289,15 +394,15 @@ export default function LBMessaging() {
   };
 
   return (
-    users.userProfilesBasicInfo.length !== 0 && (
+    (users?.userProfilesBasicInfo?.length ?? 0) !== 0 && (
       <div className={`${darkMode ? styles.darkMode : ''}`}>
         <div className={`${styles.mainContainer}`}>
           <div className={`${styles.logoContainer}`}>
             <img src={logo} alt="One Community Logo" />
           </div>
           <div className={`${styles.contentContainer}`}>
-            <div className={`${styles.containerTop} ${styles.msg}`}>
-              {mobileView && (
+            {mobileView ? (
+              <div className={`${styles.containerTop} ${styles.msg}`}>
                 <div className={`${styles.lbMobileMessagingMenu}`}>
                   <div className={`${styles.lbMobileHeader}`}>
                     <button
@@ -355,7 +460,7 @@ export default function LBMessaging() {
                             className={`${styles.lbMessagingContactsBody} ${styles.activeInlbMessagingContactsBody}`}
                           >
                             {showContacts
-                              ? searchResults.map(user => (
+                              ? safeSearchResults.map(user => (
                                   <button
                                     key={user.userId}
                                     type="button"
@@ -391,8 +496,8 @@ export default function LBMessaging() {
                     )}
                   </div>
                 </div>
-              )}
-            </div>
+              </div>
+            ) : null}
             <div className={`${styles.containerMainMsg}`}>
               {/* Contacts Section */}
               {!mobileView && (
@@ -442,7 +547,7 @@ export default function LBMessaging() {
                     className={`${styles.lbMessagingContactsBody} ${styles.activeInlbMessagingContactsBody}`}
                   >
                     {showContacts
-                      ? searchResults.map(user => (
+                      ? safeSearchResults.map(user => (
                           <button
                             key={user._id}
                             type="button"
@@ -472,7 +577,7 @@ export default function LBMessaging() {
               {/* Chat Window Section */}
               <div className={`${styles.lbMessagingMessageWindow}`}>
                 <div className={`${styles.lbMessagingMessageWindowHeader}`}>
-                  <div>
+                  <div className={`${styles.lbMessagingHeaderIdentity}`}>
                     <img
                       src={selectedUser.profilePic || '/pfp-default-header.png'}
                       onError={e => {
@@ -481,9 +586,11 @@ export default function LBMessaging() {
                       }}
                       alt="Profile"
                     />
-                    {selectedUser.firstName
-                      ? `${selectedUser.firstName} ${selectedUser.lastName}`
-                      : 'Select a user to chat'}
+                    <span className={`${styles.lbMessagingHeaderTitle}`}>
+                      {selectedUser.firstName
+                        ? `${selectedUser.firstName} ${selectedUser.lastName}`
+                        : 'Select a user to chat'}
+                    </span>
                   </div>
                   {selectedUser.userId && (
                     <div className={`${styles.lbMessagingHeaderIcons}`}>

@@ -22,7 +22,7 @@ import {
 import { BsSliders } from 'react-icons/bs';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import L from 'leaflet';
 import logo from '../../../assets/images/logo2.png';
 import { fetchVillages, fetchListings, fetchBiddings, FIXED_VILLAGES } from './data';
@@ -74,6 +74,15 @@ function Home() {
 
   const pageSizeOptions = [12, 24, 36, 48];
   const navigate = useHistory();
+  const location = useLocation();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const village = params.get('village');
+    if (village) {
+      setSelectedVillage(village);
+    }
+  }, [location.search]);
 
   useEffect(() => {
     const fetchVillagesData = async () => {

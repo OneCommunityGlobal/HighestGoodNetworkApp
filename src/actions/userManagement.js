@@ -19,6 +19,9 @@ import { ENDPOINTS } from '~/utils/URL';
 import { UserStatus, UserStatusOperations, InactiveReason } from '~/utils/enums';
 import { COMPANY_TZ } from '~/utils/formatDate';
 
+/** Used when callers request all basic profiles without a named source (e.g. LB/BM dashboards). */
+const DEFAULT_USER_PROFILE_BASIC_INFO_SOURCE = 'UserManagement';
+
 /**
  * Set a flag that fetching user profiles
  */
@@ -365,15 +368,20 @@ export const updateUserFinalDayStatusIsSet = (user, status, finalDayDate, isSet)
  * fetching all user profiles basic info
  *  Added `source` parameter to identify the calling component.
  */
-export const getUserProfileBasicInfo = ({ userId, source }) => {
+export const getUserProfileBasicInfo = ({ userId, source } = {}) => {
   // API request to fetch basic user profile information
   let userProfileBasicInfoPromise;
-  if (userId)
-    userProfileBasicInfoPromise = axios.get(`${ENDPOINTS.USER_PROFILE_BASIC_INFO}?userId=${userId}`);
-  else if (source)
+  if (userId) {
+    userProfileBasicInfoPromise = axios.get(
+      `${ENDPOINTS.APIEndpoint()}/userProfile/basicInfo?userId=${userId}`,
+    );
+  } else if (source) {
     userProfileBasicInfoPromise = axios.get(ENDPOINTS.USER_PROFILE_BASIC_INFO(source));
-  else
-    userProfileBasicInfoPromise = axios.get(ENDPOINTS.USER_PROFILE_BASIC_INFO);
+  } else {
+    userProfileBasicInfoPromise = axios.get(
+      ENDPOINTS.USER_PROFILE_BASIC_INFO(DEFAULT_USER_PROFILE_BASIC_INFO_SOURCE),
+    );
+  }
 
   return async dispatch => {
     // Dispatch action indicating the start of the fetch process

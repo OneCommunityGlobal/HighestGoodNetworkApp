@@ -7,9 +7,10 @@ import { IoMdHeart, IoMdHeartEmpty } from 'react-icons/io';
 import { BsChat } from 'react-icons/bs';
 import ImageCarousel from '../Components/ImageCarousel';
 import Header from '../Header';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 const item = {
+  id: '2',
   title: 'Cob Village',
   unit: 'Unit 405',
   images: [
@@ -34,23 +35,33 @@ function WishListItem(props) {
   const [isWishlist, setIsWishlist] = useState(true);
   const [currWishlistItem, setCurrWishlistItem] = useState(item);
   const darkMode = useSelector(state => state.theme.darkMode);
+  const { id } = useParams();
 
-  const { wishlistItem } = props;
+  const { wishlistItem, wishlists } = props;
 
-  // We don't need the back to top button on this page
+  // Hide global "back to top" control while this page is mounted (element may not exist).
   useEffect(() => {
     const backToTopButton = document.querySelector('.top');
+    if (!backToTopButton) return undefined;
+    const prevDisplay = backToTopButton.style.display;
     backToTopButton.style.display = 'none';
     return () => {
-      backToTopButton.style.display = 'block';
+      backToTopButton.style.display = prevDisplay || '';
     };
   }, []);
 
   useEffect(() => {
     if (wishlistItem) {
       setCurrWishlistItem(wishlistItem);
+      return;
     }
-  }, [wishlistItem]);
+    if (id != null && wishlists?.length) {
+      const match = wishlists.find(w => String(w.id) === String(id));
+      if (match) {
+        setCurrWishlistItem(match);
+      }
+    }
+  }, [wishlistItem, id, wishlists]);
 
   return (
     <div
@@ -150,7 +161,7 @@ function WishListItem(props) {
             >
               <FaMapMarkerAlt className={styles['item__icon']} />
               <Link
-                to="/"
+                to="/lbdashboard/masterplan"
                 className={getClassNames('', styles['item__location-link--dark'], darkMode)}
               >
                 View on Property Map
@@ -291,7 +302,7 @@ function WishListItem(props) {
             >
               <h6>The Dates you picked are not available</h6>
               <Link
-                to="/"
+                to="/lbdashboard/listingshome"
                 className={getClassNames('', styles['item__error-link--dark'], darkMode)}
               >
                 Click here to see available dates
@@ -321,8 +332,14 @@ function WishListItem(props) {
                 </button>
               </div>
               <div className={styles['start__chat']}>
-                <button
-                  type="button"
+                <Link
+                  to={
+                    currWishlistItem?.id ?? id
+                      ? `/lbdashboard/messaging?listingId=${encodeURIComponent(
+                          String(currWishlistItem?.id ?? id),
+                        )}`
+                      : '/lbdashboard/messaging'
+                  }
                   className={getClassNames(
                     styles['start__chat-button'],
                     styles['start__chat-button--dark'],
@@ -331,7 +348,7 @@ function WishListItem(props) {
                 >
                   <BsChat />
                   &nbsp;Chat with the Host
-                </button>
+                </Link>
               </div>
             </div>
           </div>
@@ -343,6 +360,7 @@ function WishListItem(props) {
 
 const mapStateToProps = state => ({
   wishlistItem: state.wishlistItem.wishListItem,
+  wishlists: state.wishlistItem.wishlists,
 });
 
 export default connect(mapStateToProps)(WishListItem);

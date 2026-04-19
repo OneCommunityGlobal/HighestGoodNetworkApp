@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styles from './ImageCarousel.module.css';
 
@@ -7,6 +7,10 @@ const getClassNames = (baseClass, darkClass, darkMode) =>
 
 export default function ImageCarousel({ images, darkMode = false }) {
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    setCurrentIndex(0);
+  }, [images]);
 
   if (!images || images.length === 0)
     return (
@@ -40,7 +44,7 @@ export default function ImageCarousel({ images, darkMode = false }) {
         >
           {images.map((image, index) => (
             <img
-              key={image}
+              key={`slide-${index}-${image}`}
               className={styles.carouselImage}
               src={image}
               alt={`Slide ${index + 1}`}
@@ -69,7 +73,7 @@ export default function ImageCarousel({ images, darkMode = false }) {
       <div className={styles.carouselIndicators}>
         {images.map((image, index) => (
           <span
-            key={image}
+            key={`dot-${index}-${image}`}
             role="button"
             tabIndex={0}
             className={`${getClassNames(styles.indicator, styles['indicator--dark'], darkMode)} ${
