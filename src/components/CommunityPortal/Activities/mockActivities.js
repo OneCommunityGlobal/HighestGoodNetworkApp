@@ -12,6 +12,8 @@ export const mockActivities = [
     name: 'Yoga Class',
     type: 'Fitness',
     date: '2024-01-10',
+    time: '10:00 AM',
+    description: 'A relaxing yoga session for all levels.',
     location: 'Community Center',
   },
   {
@@ -19,6 +21,8 @@ export const mockActivities = [
     name: 'Book Club',
     type: 'Social',
     date: '2024-01-12',
+    time: '6:00 PM',
+    description: 'Monthly book discussion group.',
     location: 'Library',
   },
   {
@@ -26,6 +30,8 @@ export const mockActivities = [
     name: 'Coding Workshop',
     type: 'Educational',
     date: '2023-12-30',
+    time: '2:00 PM',
+    description: 'Learn the basics of coding in this hands-on workshop.',
     location: 'Tech Hub',
   },
   {
@@ -33,6 +39,8 @@ export const mockActivities = [
     name: 'Painting Session',
     type: 'Art',
     date: '2024-01-15',
+    time: '4:00 PM',
+    description: 'Express your creativity with paints and brushes.',
     location: 'Art Studio',
   },
   {
@@ -40,6 +48,8 @@ export const mockActivities = [
     name: 'Dance Class',
     type: 'Fitness',
     date: '2024-01-10',
+    time: '7:00 PM',
+    description: 'Learn new dance moves and have fun.',
     location: 'Community Center',
   },
   {
@@ -47,6 +57,8 @@ export const mockActivities = [
     name: 'Gardening Meetup',
     type: 'Social',
     date: '2024-01-20',
+    time: '3:00 PM',
+    description: 'Share gardening tips and plant care advice.',
     location: 'Botanical Garden',
   },
   {
@@ -54,6 +66,8 @@ export const mockActivities = [
     name: 'Cooking Class',
     type: 'Educational',
     date: '2024-01-18',
+    time: '5:00 PM',
+    description: 'Learn to cook delicious meals with our expert chefs.',
     location: 'Culinary School',
   },
   {
@@ -61,6 +75,8 @@ export const mockActivities = [
     name: 'Photography Walk',
     type: 'Art',
     date: '2023-12-30',
+    time: '9:00 AM',
+    description: 'Explore the city and capture beautiful moments with your camera.',
     location: 'City Park',
   },
   {
@@ -68,6 +84,8 @@ export const mockActivities = [
     name: 'Marathon Training',
     type: 'Fitness',
     date: '2024-02-01',
+    time: '6:00 AM',
+    description: 'Join us for early morning runs to prepare for the upcoming marathon.',
     location: 'Stadium',
   },
   {
@@ -75,6 +93,8 @@ export const mockActivities = [
     name: 'Chess Tournament',
     type: 'Social',
     date: '2024-01-12',
+    time: '1:00 PM',
+    description: 'Compete in our friendly chess tournament and test your skills.',
     location: 'Library',
   },
   {
@@ -82,6 +102,8 @@ export const mockActivities = [
     name: 'Tech Talk',
     type: 'Educational',
     date: '2024-01-15',
+    time: '4:00 PM',
+    description: 'Join us for an insightful talk on the latest tech trends and innovations.',
     location: 'Tech Hub',
   },
   {
@@ -89,6 +111,8 @@ export const mockActivities = [
     name: 'Sculpture Workshop',
     type: 'Art',
     date: '2024-01-25',
+    time: '2:00 PM',
+    description: 'Learn the art of sculpture and create your own masterpiece.',
     location: 'Art Studio',
   },
   {
@@ -96,6 +120,8 @@ export const mockActivities = [
     name: 'Pilates Class',
     type: 'Fitness',
     date: '2024-01-20',
+    time: '8:00 AM',
+    description: 'Strengthen your core and improve flexibility with our Pilates class.',
     location: 'Community Center',
   },
   {
@@ -103,6 +129,8 @@ export const mockActivities = [
     name: 'Film Screening',
     type: 'Social',
     date: '2024-01-18',
+    time: '7:00 PM',
+    description: 'Join us for a screening of a popular film followed by a discussion.',
     location: 'Library',
   },
   {
@@ -110,6 +138,45 @@ export const mockActivities = [
     name: 'Robotics Expo',
     type: 'Educational',
     date: '2024-01-10',
+    time: '10:00 AM',
+    description: 'Explore the world of robotics with interactive exhibits and demonstrations.',
     location: 'Tech Hub',
+  },
+  {
+    id: 16,
+    name: 'Watercolor Workshop',
+    type: 'Art',
+    date: '2026-01-22',
+    time: '3:30 PM',
+    description: 'Practice watercolor techniques and create a take-home landscape painting.',
+    location: 'Art Studio',
+  },
+  {
+    id: 17,
+    name: 'HIIT Workout Class',
+    type: 'Fitness',
+    date: '2026-02-15',
+    time: '6:30 PM',
+    description: 'A high-energy interval training session designed to build strength and stamina.',
+    location: 'Community Gym',
+  },
+  {
+    id: 18,
+    name: 'GenAI for Beginners',
+    type: 'Educational',
+    date: '2026-09-10',
+    time: '5:00 PM',
+    description:
+      'An introductory session covering practical generative AI tools, prompts, and use cases.',
+    location: 'Tech Hub',
+  },
+  {
+    id: 19,
+    name: 'Book Club - March',
+    type: 'Social',
+    date: '2026-10-21',
+    time: '6:00 PM',
+    description: 'Meet fellow readers for a guided discussion of this month’s featured book.',
+    location: 'Library',
   },
 ];

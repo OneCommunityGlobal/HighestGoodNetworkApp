@@ -1,0 +1,305 @@
+/* FormPreviewModal.module.css - Modal styling for form preview */
+
+/* Modal Overlay */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+/* Modal Container */
+.modalContainer {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  max-width: 750px;
+  width: 100%;
+  max-height: 90vh;
+  overflow: hidden;
+}
+
+/* Modal Header */
+.modalHeader {
+  background-color: #97ca02;
+  color: white;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #7ab000;
+}
+
+.modalTitle {
+  margin: 0;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+/* Modal Close Button */
+.modalCloseBtn {
+  background: none;
+  border: none;
+  font-size: 32px;
+  color: white;
+  cursor: pointer;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.3s;
+}
+
+.modalCloseBtn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Modal Content */
+.modalContent {
+  flex: 1;
+  overflow-y: auto;
+  padding: 30px;
+  background-color: #f9f9f9;
+}
+
+/* Preview Form */
+.previewForm {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.previewFormTitle {
+  text-align: center;
+  color: #333;
+  font-weight: bold;
+  margin: 0 0 10px 0;
+  font-size: 20px;
+}
+
+.previewFormSubtitle {
+  text-align: center;
+  color: #666;
+  font-size: 14px;
+  margin: 0 0 20px 0;
+  font-style: italic;
+}
+
+/* Preview Fields Container */
+.previewFieldsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Individual Field */
+.previewField {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.previewLabel {
+  font-weight: bold;
+  color: #333;
+  font-size: 14px;
+  margin: 0;
+}
+
+.previewInput,
+.previewTextarea,
+.previewSelect {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-family: inherit;
+  font-size: 14px;
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+  color: #999;
+}
+
+.previewTextarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.previewInput:disabled,
+.previewTextarea:disabled,
+.previewSelect:disabled {
+  background-color: #f5f5f5;
+  color: #999;
+}
+
+/* Preview Options (Radio/Checkbox/Dropdown) */
+.previewOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-left: 10px;
+}
+
+.previewOptionItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.previewCheckbox,
+.previewRadio {
+  cursor: not-allowed;
+  width: 18px;
+  height: 18px;
+}
+
+.previewOptionLabel {
+  font-weight: normal;
+  margin: 0;
+  cursor: not-allowed;
+  color: #333;
+  font-size: 14px;
+}
+
+/* Empty Message */
+.previewEmptyMessage {
+  text-align: center;
+  padding: 40px 20px;
+  color: #999;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  border: 1px dashed #ccc;
+}
+
+.previewEmptyMessage p {
+  margin: 0;
+}
+
+/* Modal Footer */
+.modalFooter {
+  background-color: #f9f9f9;
+  border-top: 1px solid #e0e0e0;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modalFooterNote {
+  margin: 0;
+  color: #666;
+  font-size: 12px;
+  font-style: italic;
+}
+
+/* Modal Action Button */
+.modalActionBtn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  background-color: #97ca02;
+  color: white;
+}
+
+.modalActionBtn:hover {
+  background-color: #7ab000;
+}
+
+/* Dark Mode Support */
+.darkMode .modalContainer {
+  background-color: #2a2a2a;
+  color: #f1f1f1;
+}
+
+.darkMode .modalHeader {
+  background-color: #555;
+  border-bottom-color: #444;
+}
+
+.darkMode .modalContent {
+  background-color: #1a1a1a;
+}
+
+.darkMode .previewForm {
+  background-color: #333;
+  border-color: #555;
+}
+
+.darkMode .previewFormTitle,
+.darkMode .previewLabel {
+  color: #f1f1f1;
+}
+
+.darkMode .previewFormSubtitle {
+  color: #bbb;
+}
+
+.darkMode .previewInput,
+.darkMode .previewTextarea,
+.darkMode .previewSelect {
+  background-color: #444;
+  border-color: #555;
+  color: #999;
+}
+
+.darkMode .previewOptionLabel {
+  color: #f1f1f1;
+}
+
+.darkMode .modalFooter {
+  background-color: #2a2a2a;
+  border-top-color: #444;
+}
+
+.darkMode .modalFooterNote {
+  color: #bbb;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .modalContainer {
+    max-width: 95%;
+    max-height: 95vh;
+  }
+
+  .modalHeader {
+    padding: 15px;
+  }
+
+  .modalTitle {
+    font-size: 20px;
+  }
+
+  .modalContent {
+    padding: 20px;
+  }
+
+  .previewForm {
+    padding: 15px;
+  }
+
+  .modalFooter {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .modalFooterNote {
+    text-align: center;
+  }
+}

@@ -306,16 +306,23 @@
 
 .tasksAndTimelogHeaderRow {
   display: flex;
-  grid-template-columns: auto auto;
   align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 .tasksAndTimelogHeaderAddTimeDiv {
-  float: left;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 .taskboardHeaderTitle {
   font-size: 1.8rem;
+  margin: 0;
+  line-height: 1;
+  display: flex;
+  align-items: center;
 }
 
 @media screen and (width <= 1240px) {
