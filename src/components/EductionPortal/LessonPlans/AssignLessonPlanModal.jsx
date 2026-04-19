@@ -269,8 +269,11 @@
 //   );
 // }
 
-export default function AssignLessonPlanModal({ onClose, lessonPlanId, assignTasks }) {
+export default function AssignLessonPlanModal({ onClose, lessonPlanId, assignTasks, isAssigning }) {
   const handleConfirm = async () => {
+    if (isAssigning) {
+      return;
+    }
     // Close the modal immediately
     onClose();
 
@@ -301,8 +304,13 @@ export default function AssignLessonPlanModal({ onClose, lessonPlanId, assignTas
             <button type="button" className="btn btn-secondary" onClick={onClose}>
               Cancel
             </button>
-            <button type="button" className="btn btn-primary" onClick={handleConfirm}>
-              Confirm
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={handleConfirm}
+              disabled={isAssigning}
+            >
+              {isAssigning ? 'Assigning…' : 'Confirm'}
             </button>
           </div>
         </div>

@@ -1125,7 +1125,8 @@
 // }
 // require('dotenv').config();
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { toast } from 'react-toastify';
 import AssignLessonPlanModal from './AssignLessonPlanModal';
 // Including FaCopy to make Duplicate button logic runnable, although not visible in UI
 import { FaTrashAlt, FaCopy } from 'react-icons/fa';
@@ -1135,21 +1136,10 @@ import styles2 from './LessonPlanLogTable.module.css';
 // Dummy ID for the API call
 const LESSON_PLAN_ID = '68ed6e6e746d9b633a6158f3';
 
-// Helper function to safely parse response body as JSON
-// const safeJsonParse = async response => {
-//   try {
-//     const clonedResponse = response.clone();
-//     return await clonedResponse.json();
-//   } catch (e) {
-//     return null;
-//   }
-// };
-
-// Assume you have a simple utility for showing notifications
-const showNotification = (message, type = 'success') => {
-  console.log(`Notification (${type}): ${message}`);
-  // eslint-disable-next-line no-alert
-  alert(message);
+const notify = (message, type = 'success') => {
+  if (type === 'error') toast.error(message);
+  else if (type === 'warning') toast.warn(message);
+  else toast.success(message);
 };
 
 export default function LessonPlanBuilder() {
@@ -1172,6 +1162,8 @@ export default function LessonPlanBuilder() {
   ]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAssigning, setIsAssigning] = useState(false);
+  const assigningInFlightRef = useRef(false);
   // State for tracking assignment status ---
   const [assignmentStatus, setAssignmentStatus] = useState(null);
   // State to hold the logs ---
@@ -1246,9 +1238,23 @@ export default function LessonPlanBuilder() {
     //   }
     // }
     if (!token) {
-      showNotification('Authentication error: No user token found. Please log in again.', 'error');
+      notify('Authentication error: No user token found. Please log in again.', 'error');
       return;
     }
+
+    if (assigningInFlightRef.current) {
+      return;
+    }
+
+    assigningInFlightRef.current = true;
+
+    const progressToastId = toast.info('Assigning tasks…', {
+      autoClose: false,
+      closeOnClick: false,
+      draggable: false,
+    });
+
+    setIsAssigning(true);
 
     try {
       // const response = await fetch('/api/educator/assign-tasks', {
@@ -1276,34 +1282,12 @@ export default function LessonPlanBuilder() {
       // If the response IS successful, parse the JSON.
       const data = await response.json();
 
-      // if (data) {
-      //   const { assigned_count = 0, skipped_count = 0 } = data;
-      //   if (skipped_count > 0) {
-      //     showNotification(
-      //       `${assigned_count} tasks assigned, ${skipped_count} skipped due to unmet prerequisites.`,
-      //       'warning',
-      //     );
-      //   } else {
-      //     showNotification(`${assigned_count} tasks assigned successfully.`, 'success');
-      //   }
-      //   // TODO: Update local state/UI dashboard
+      const skippedCount = Number(data?.skippedCount ?? data?.skipped_count ?? 0);
 
-      //   // --- THIS IS THE STATE UPDATE ---
-      //   // Call the callback function on success
-      //   if (onAssignmentSuccess) {
-      //     onAssignmentSuccess();
-      //   }
-      // } else {
-      //   showNotification('Tasks assigned, but response data was incomplete.', 'warning');
-      // }
-      const { assignedCount = 0, skippedCount = 0 } = data;
       if (skippedCount > 0) {
-        showNotification(
-          `${assignedCount} tasks assigned, ${skippedCount} skipped due to unmet prerequisites.`,
-          'warning',
-        );
+        notify('Tasks assigned; some were skipped due to unmet prerequisites.', 'warning');
       } else {
-        showNotification(`${assignedCount} tasks assigned successfully.`, 'success');
+        notify('Tasks assigned successfully.', 'success');
       }
 
       // On success, call the callback to update the UI.
@@ -1314,9 +1298,13 @@ export default function LessonPlanBuilder() {
       fetchLogs();
     } catch (error) {
       // This will now catch both network errors and the errors we throw manually.
-      showNotification(`Task assignment failed. Error: ${error.message}`, 'error');
+      notify(`Task assignment failed. ${error.message}`, 'error');
       console.error('Final Assignment Error:', error.message);
       // Don't show a generic notification here if a specific one was already shown
+    } finally {
+      toast.dismiss(progressToastId);
+      assigningInFlightRef.current = false;
+      setIsAssigning(false);
     }
     // end of temporaryu change
 
@@ -1331,10 +1319,16 @@ export default function LessonPlanBuilder() {
   };
 
   const handleAssignClick = () => {
+    if (assigningInFlightRef.current) {
+      return;
+    }
     setIsModalOpen(true);
   };
 
   const handleSaveClick = async () => {
+    if (assigningInFlightRef.current) {
+      return;
+    }
     // eslint-disable-next-line no-console
     console.log('Lesson Plan Saved!');
     // Logic to save the lesson plan data
@@ -1360,20 +1354,32 @@ export default function LessonPlanBuilder() {
       {/* <div className="d-flex justify-content-between align-items-center mb-4"> */}
       {/* <div className={styles.contentBox}> */}
       <div className={styles.titleBox}>
-        <h2 className="h2 font-weight-bold w-100 text-left" style={{ color: '#000000' }}>
+        <h2
+          className={`h2 font-weight-bold text-left mb-0 ${styles.pageTitle} ${styles.titleHeading}`}
+        >
           Lesson Plan Builder
         </h2>
-        {/* FIXED: Save Lesson Plan Button with custom color class
-        <button onClick={handleSaveClick} className={styles.headerSaveBtn}>
-          Save Lesson Plan
-        </button> */}
-        {/* <div className="d-flex align-items-center"> */}
-        {/* Displays assignment status --- */}
-        {assignmentStatus && <span className="text-success mr-3">{assignmentStatus}</span>}
-        <button onClick={handleSaveClick} className={styles.headerSaveBtn}>
-          Save Lesson Plan
-        </button>
-        {/* </div> */}
+        <div className={styles.titleActions}>
+          {assignmentStatus && (
+            <span
+              className={
+                assignmentStatus.startsWith('Manually')
+                  ? styles.assignmentStatusManual
+                  : styles.assignmentStatusAuto
+              }
+            >
+              {assignmentStatus}
+            </span>
+          )}
+          <button
+            type="button"
+            onClick={handleSaveClick}
+            className={styles.headerSaveBtn}
+            disabled={isAssigning}
+          >
+            Save Lesson Plan
+          </button>
+        </div>
       </div>
 
       <div className={styles.grayBackgroundWrapper}>
@@ -1518,7 +1524,12 @@ export default function LessonPlanBuilder() {
           </div>
           <br />
           {/* Right: Assign Lesson Plan (Green) */}
-          <button onClick={handleAssignClick} className={styles.assignLsnBtn}>
+          <button
+            type="button"
+            onClick={handleAssignClick}
+            className={styles.assignLsnBtn}
+            disabled={isAssigning}
+          >
             Assign Lesson Plan
           </button>
           {/* </div> */}
@@ -1545,6 +1556,7 @@ export default function LessonPlanBuilder() {
         <AssignLessonPlanModal
           onClose={() => setIsModalOpen(false)}
           lessonPlanId={LESSON_PLAN_ID}
+          isAssigning={isAssigning}
           // Pass the assignTasks function to the modal
           // assignTasks={assignTasks}
           assignTasks={isAuto => assignTasks(isAuto, handleManualAssignmentSuccess)}
