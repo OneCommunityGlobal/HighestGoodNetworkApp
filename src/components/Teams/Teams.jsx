@@ -207,6 +207,7 @@ class Teams extends React.PureComponent {
               onActiveClick={() => this.setFilter(FILTER_ACTIVE)}
               onInactiveClick={() => this.setFilter(FILTER_INACTIVE)}
               selectedFilter={this.state.selectedFilter}
+              darkMode={darkMode}
             />
             <TeamTableSearchPanel
               onSearch={this.onWildCardSearch}
