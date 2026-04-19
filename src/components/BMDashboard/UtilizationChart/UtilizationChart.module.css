@@ -1,12 +1,19 @@
+/* ============ BASE CONTAINER & VARIABLES ============ */
 .utilizationChartContainer {
   padding: 2rem;
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto;
   background-color: var(--bg-color, #fff);
   color: var(--text-color, #333);
   border-radius: 10px;
   box-shadow: var(--shadow, 0 2px 10px rgb(0 0 0 / 10%));
   min-height: 100vh;
+
+  --card-bg: #f9fafb;
+  --text-secondary: #6b7280;
+  --hover-bg: #f3f4f6;
+  --panel-bg: #fff;
+  --panel-border: #e5e7eb;
 }
 
 .chartTitle {
@@ -15,6 +22,7 @@
   color: var(--title-color, #333);
 }
 
+/* ============ FILTERS ============ */
 .filters {
   display: flex;
   flex-wrap: wrap;
@@ -44,7 +52,6 @@
   border-color: var(--focus-border-color, #3b82f6);
 }
 
-/* Force light dropdown in light mode (override any global dark select/option styles) */
 .utilizationChartContainer:not(.darkMode) .select {
   background-color: #fff !important;
   color: #000 !important;
@@ -60,7 +67,6 @@
   color: #999;
 }
 
-/* Force light calendar when app is in light mode (datepicker renders in portal, so scope by body) */
 :global(body:not(.dark-mode)) :global(.react-datepicker) {
   background-color: #fff;
   color: #333;
@@ -102,9 +108,377 @@
   background-color: var(--button-hover, #333);
 }
 
+/* ============ ERROR / EMPTY / LOADING STATES ============ */
 .utilizationChartError {
   color: var(--error-color, red);
   text-align: center;
+}
+
+.emptyMessage {
+  text-align: center;
+  color: var(--text-secondary, #6b7280);
+  padding: 2rem;
+  font-style: italic;
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 0;
+}
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 4px solid var(--panel-border, #e5e7eb);
+  border-top-color: var(--button-bg, #000);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ============ FORECAST MODE TOGGLE ============ */
+.forecastToggle {
+  display: flex;
+  border: 1px solid var(--border-color, #ccc);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  justify-content: center;
+}
+
+.toggleButton {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  border: none;
+  background-color: var(--input-bg, #fff);
+  color: var(--text-color, #333);
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  white-space: nowrap;
+}
+
+.toggleButton:not(:last-child) {
+  border-right: 1px solid var(--border-color, #ccc);
+}
+
+.toggleButtonActive {
+  background-color: var(--button-bg, #000);
+  color: var(--button-text, #fff);
+  font-weight: 600;
+}
+
+.toggleButton:focus-visible {
+  outline: 2px solid var(--focus-border-color, #3b82f6);
+  outline-offset: -2px;
+}
+
+.toggleButton:hover:not(.toggleButtonActive) {
+  background-color: var(--hover-bg, #f3f4f6);
+}
+
+/* ============ WARNING BANNER ============ */
+.warningBanner {
+  background-color: #fef3c7;
+  border: 1px solid #fde68a;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  color: #92400e;
+  font-size: 0.875rem;
+}
+
+/* ============ SUMMARY BAR ============ */
+.summaryBar {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.summaryCard {
+  flex: 1;
+  min-width: 120px;
+  padding: 1rem;
+  border-radius: 8px;
+  background-color: var(--card-bg, #f9fafb);
+  border: 1px solid var(--panel-border, #e5e7eb);
+  text-align: center;
+}
+
+.summaryValue {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-color, #111);
+}
+
+.summaryLabel {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-secondary, #6b7280);
+  margin-top: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.summaryCardGreen {
+  border-bottom: 3px solid #22c55e;
+}
+
+.summaryCardYellow {
+  border-bottom: 3px solid #eab308;
+}
+
+.summaryCardRed {
+  border-bottom: 3px solid #ef4444;
+}
+
+/* ============ INSIGHTS PANELS GRID ============ */
+.insightsPanelsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+/* ============ SHARED PANEL STYLES ============ */
+.insightsPanel {
+  background-color: var(--panel-bg, #fff);
+  border: 1px solid var(--panel-border, #e5e7eb);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.panelTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: var(--text-color, #333);
+}
+
+.emptyPanel {
+  color: var(--text-secondary, #6b7280);
+  font-size: 0.875rem;
+  font-style: italic;
+}
+
+/* ============ RECOMMENDATION PANEL ============ */
+.recommendationList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.recommendationItem {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--panel-border, #e5e7eb);
+}
+
+.recommendationItem:last-child {
+  border-bottom: none;
+}
+
+.trafficDot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 0.35rem;
+}
+
+.toolName {
+  font-size: 0.875rem;
+  color: var(--text-color, #333);
+}
+
+.classificationBadge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
+
+.classificationBadge[data-level='green'] {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.classificationBadge[data-level='yellow'] {
+  background-color: #fef9c3;
+  color: #854d0e;
+}
+
+.classificationBadge[data-level='red'] {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.actionText {
+  font-size: 0.8125rem;
+  color: var(--text-secondary, #6b7280);
+  margin: 0.25rem 0;
+}
+
+.rateText {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #6b7280);
+}
+
+/* ============ MAINTENANCE ALERTS ============ */
+.alertList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.alertItem {
+  padding: 0.75rem;
+  border-radius: 6px;
+  border-left: 4px solid;
+  margin-bottom: 0.5rem;
+}
+
+.alertItem[data-urgency='high'] {
+  border-left-color: #ef4444;
+  background-color: #fef2f2;
+}
+
+.alertItem[data-urgency='medium'] {
+  border-left-color: #f59e0b;
+  background-color: #fffbeb;
+}
+
+.alertHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+
+.urgencyBadge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.alertMessage {
+  font-size: 0.8125rem;
+  color: var(--text-secondary, #6b7280);
+  margin: 0;
+}
+
+/* ============ RESOURCE BALANCING ============ */
+.balancingList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.balancingItem {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--panel-border, #e5e7eb);
+}
+
+.balancingItem:last-child {
+  border-bottom: none;
+}
+
+.suggestionText {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-color, #333);
+  margin: 0 0 0.25rem;
+}
+
+.balancingDetail {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.8125rem;
+  color: var(--text-color, #333);
+  margin-bottom: 0.25rem;
+}
+
+.fromTool,
+.toTool {
+  font-size: 0.8125rem;
+}
+
+.rationaleText {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #6b7280);
+  margin: 0;
+  font-style: italic;
+}
+
+/* ============ EXPORT SECTION ============ */
+.exportSection {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  justify-content: flex-end;
+}
+
+.exportLabel {
+  font-size: 0.875rem;
+  color: var(--text-secondary, #6b7280);
+}
+
+.exportButton {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  border-radius: 5px;
+  border: 1px solid var(--border-color, #ccc);
+  background-color: var(--input-bg, #fff);
+  color: var(--text-color, #333);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.exportButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.exportButton:focus-visible {
+  outline: 2px solid var(--focus-border-color, #3b82f6);
+  outline-offset: -2px;
+}
+
+.exportButton:hover:not(:disabled) {
+  background-color: var(--button-bg, #000);
+  color: var(--button-text, #fff);
 }
 
 /* ============ DARK MODE ============ */
@@ -120,13 +494,17 @@
   --button-hover: #f5b13a;
   --shadow: 0 2px 10px rgb(255 255 255 / 10%);
   --error-color: #ff6b6b;
+  --card-bg: #2b3e59;
+  --text-secondary: #94a3b8;
+  --hover-bg: #334155;
+  --panel-bg: #253342;
+  --panel-border: #4a5a77;
 }
 
 .utilizationChartContainer.darkMode .datepickerWrapper::placeholder {
   color: #fff;
 }
 
-/* React-DatePicker Dark Mode Dropdown Styling */
 .utilizationChartContainer.darkMode :global(.react-datepicker) {
   background-color: #333;
   color: #e0e0e0;
@@ -153,4 +531,81 @@
 .utilizationChartContainer.darkMode :global(.react-datepicker__day--in-range) {
   background-color: #e8a71c;
   color: #000;
+}
+
+.darkMode .warningBanner {
+  background-color: #713f12;
+  border-color: #92400e;
+  color: #fef08a;
+}
+
+.darkMode .classificationBadge[data-level='green'] {
+  background-color: #14532d;
+  color: #bbf7d0;
+}
+
+.darkMode .classificationBadge[data-level='yellow'] {
+  background-color: #713f12;
+  color: #fef08a;
+}
+
+.darkMode .classificationBadge[data-level='red'] {
+  background-color: #7f1d1d;
+  color: #fecaca;
+}
+
+.darkMode .alertItem[data-urgency='high'] {
+  border-left-color: #ef4444;
+  background-color: #451a1a;
+}
+
+.darkMode .alertItem[data-urgency='medium'] {
+  border-left-color: #f59e0b;
+  background-color: #3b2f10;
+}
+
+/* ============ RESPONSIVE ============ */
+@media (width <= 1024px) {
+  .insightsPanelsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (width <= 768px) {
+  .insightsPanelsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .summaryBar {
+    gap: 0.5rem;
+  }
+
+  .summaryCard {
+    min-width: 80px;
+  }
+
+  .filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+@media (width <= 576px) {
+  .utilizationChartContainer {
+    padding: 1rem;
+  }
+
+  .forecastToggle {
+    flex-direction: column;
+  }
+
+  .toggleButton:not(:last-child) {
+    border-right: none;
+    border-bottom: 1px solid var(--border-color, #ccc);
+  }
+
+  .exportSection {
+    flex-direction: column;
+    align-items: stretch;
+  }
 }
