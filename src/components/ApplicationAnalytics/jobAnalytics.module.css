@@ -1,3 +1,7 @@
+/* ============================================================
+   Development-added container styles (used by index.jsx)
+   ============================================================ */
+
 .jobAnalytics {
   padding: 20px;
   background-color: #f8f9fa;
@@ -7,11 +11,11 @@
 
 .jobAnalyticsDarkMode {
   background-color: #1b2a41;
-  color: #ffffff;
+  color: #fff;
 }
 
 .jobAnalyticsDarkMode .jobAnalytics {
-  background-color: #1b2a41; /* match dark mode */
+  background-color: #1b2a41;
 }
 
 .jobAnalyticsContainer {
@@ -29,7 +33,7 @@
   flex: 1;
   border: 2px solid #4285f4;
   border-radius: 8px;
-  background-color: #ffffff;
+  background-color: #fff;
   padding: 20px;
   min-width: 800px;
 }
@@ -38,26 +42,20 @@
   font-size: 24px;
   font-weight: 400;
   color: #5f6368;
-  margin: 0 0 30px 0;
+  margin: 0 0 30px;
   text-align: center;
 }
 
 .chartArea {
   min-height: 400px;
   position: relative;
-  padding-left: 170px;
-  padding-right: 40px;
-  padding-top: 20px;
-  padding-bottom: 60px;
+  padding: 20px 40px 60px 170px;
   width: 100%;
 }
 
 .gridLines {
   position: absolute;
-  left: 170px;
-  right: 40px;
-  top: 20px;
-  bottom: 60px;
+  inset: 20px 40px 60px 170px;
   background-image: linear-gradient(to right, #e0e0e0 1px, transparent 1px),
     linear-gradient(to bottom, #e0e0e0 1px, transparent 1px);
   background-size: calc(100% / var(--x-grid-divisions, 10)) 25%;
@@ -67,12 +65,9 @@
 .yAxis {
   position: absolute;
   left: 0;
-  top: 20px;
-  bottom: 60px;
-  width: 160px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
 }
 
 .yAxisLabel {
@@ -123,10 +118,7 @@
 
 .barsContainer {
   position: absolute;
-  left: 170px;
-  right: 40px;
-  top: 20px;
-  bottom: 60px;
+  inset: 20px 40px 60px 170px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -163,8 +155,6 @@
   right: -25px;
   font-size: 14px;
   font-weight: 600;
-  color: #1a73e8;
-  white-space: nowrap;
 }
 
 .tooltip {
@@ -181,7 +171,7 @@
   font-weight: bold;
   white-space: nowrap;
   z-index: 1000;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 30%);
   border: 2px solid #1a73e8;
 }
 
@@ -193,23 +183,10 @@
   font-weight: 600;
 }
 
-.tooltip::before {
-  content: '';
-  position: absolute;
-  left: -5px;
-  top: 50%;
-  transform: translateY(-50%);
-  border: 5px solid transparent;
-  border-right-color: #333;
-}
-
 .noData {
   display: flex;
   align-items: center;
-  justify-content: center;
-  height: 400px;
-  color: #5f6368;
-  font-size: 16px;
+  overflow: hidden;
 }
 
 .summaryInfo {
@@ -257,28 +234,21 @@
 
 .filterSelectJobAnalytics {
   width: 100%;
-  padding: 6px 8px;
-  border: 1px solid #dadce0;
-  border-radius: 4px;
   font-size: 14px;
-  background-color: #ffffff;
-  color: #3c4043;
-  cursor: pointer;
-  height: 32px !important;
 }
 
 .filterSelectJobAnalytics:focus {
   outline: none;
-  border-color: #4285f4;
+  box-shadow: 0 0 0 2px rgb(59 130 246 / 20%);
 }
 
 .filterSelectJobAnalytics:hover {
   border-color: #9aa0a6;
 }
 
-/* Dark Mode Support */
+/* Dark mode overrides for development container classes */
 .jobAnalyticsContainerDarkMode .jobAnalyticsContainer {
-  color: #ffffff;
+  color: #fff;
 }
 
 .jobAnalyticsContainerDarkMode .chartContainer {
@@ -300,7 +270,7 @@
 
 .jobAnalyticsContainerDarkMode .filtersPanel select {
   background-color: #2d2d2d;
-  color: #ffffff;
+  color: #fff;
   border-color: #5f6368;
 }
 
@@ -318,9 +288,9 @@
 }
 
 .jobAnalyticsContainerDarkMode .gridLines {
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
-  opacity: 0.3; /* softer look */
+  background-image: linear-gradient(to right, rgb(255 255 255 / 8%) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 255 255 / 8%) 1px, transparent 1px);
+  opacity: 0.3;
 }
 
 .jobAnalyticsContainerDarkMode .tooltip {
@@ -328,17 +298,17 @@
 }
 
 .jobAnalyticsContainerDarkMode .tooltip strong {
-  color: #ffffff;
+  color: #fff;
 }
 
-/* Responsive Design */
-@media (max-width: 1200px) {
+/* Responsive design for development container classes */
+@media (width <= 1200px) {
   .chartContainer {
     min-width: 700px;
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .jobAnalyticsContainer {
     flex-direction: column;
     padding: 10px;
@@ -384,7 +354,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .chartArea {
     padding-left: 100px;
     padding-right: 10px;
@@ -408,4 +378,398 @@
     left: 100px;
     right: 10px;
   }
+}
+
+/* ============================================================
+   JobAnalytics chart styles (used by jobAnalytics.jsx)
+   ============================================================ */
+
+/* CSS custom properties — light mode defaults */
+.ja {
+  --bg: #fff;
+  --text: #111827;
+  --muted: #6b7280;
+  --card: #fff;
+  --border: #e5e7eb;
+  --bar: #3b82f6;
+  --bar-hover: #2563eb;
+  --shadow: 0 1px 3px rgb(0 0 0 / 8%);
+  --label-col: 220px;
+
+  color: var(--text);
+  padding: 16px;
+  background: var(--bg);
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+}
+
+/* Dark mode — override custom properties */
+.ja.dark {
+  --bg: #1b2a41;
+  --text: #e5e7eb;
+  --muted: #9aa4b2;
+  --card: #1e293b;
+  --border: #334155;
+  --bar: #3b82f6;
+  --bar-hover: #60a5fa;
+  --shadow: 0 1px 3px rgb(0 0 0 / 60%);
+
+  background-color: var(--bg);
+}
+
+/* Fixed background overlay to cover any gaps */
+.ja.dark::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: -1;
+}
+
+.jaMain {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  width: 100%;
+}
+
+.jaCard {
+  flex: 1 1 auto;
+  min-width: 0;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  padding: 20px;
+}
+
+.jaFilters {
+  flex: 0 0 340px;
+  width: 340px;
+}
+
+@media (width <= 900px) {
+  .jaMain {
+    flex-direction: column;
+  }
+
+  .jaFilters {
+    width: 100%;
+    flex: 0 0 auto;
+  }
+}
+
+.jaTitle {
+  text-align: center;
+  margin: 4px 0 12px;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.ja.dark .jaTitle {
+  color: #93c5fd;
+}
+
+.jaWarning {
+  background: rgb(255 193 7 / 28%);
+  color: #78350f;
+  border: 1px solid rgb(255 193 7 / 65%);
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.ja.dark .jaWarning {
+  background: rgb(255 193 7 / 18%);
+  color: #fcd34d;
+  border-color: rgb(255 193 7 / 50%);
+}
+
+.jaNoData {
+  padding: 20px;
+  text-align: center;
+  color: var(--muted);
+}
+
+.ja.dark .jaNoData {
+  color: #cbd5e1;
+}
+
+/* Chart */
+.jaBars {
+  overflow: hidden;
+  position: relative;
+  z-index: 2;
+}
+
+.jaChart {
+  position: relative;
+}
+
+.jaGrid {
+  position: absolute;
+  inset: 0 20px 0 var(--label-col, 220px);
+  background-image: linear-gradient(to right, rgb(0 0 0 / 6%) 1px, transparent 1px);
+  background-size: 20% 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.ja.dark .jaGrid {
+  background-image: linear-gradient(to right, rgb(255 255 255 / 6%) 1px, transparent 1px);
+}
+
+/* Vertical y-axis line */
+.jaChart::before {
+  content: '';
+  position: absolute;
+  left: var(--label-col, 220px);
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--border);
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* Horizontal x-axis line */
+.jaChart::after {
+  content: '';
+  position: absolute;
+  left: var(--label-col, 220px);
+  right: 20px;
+  bottom: 0;
+  height: 1px;
+  background: var(--border);
+  z-index: 3;
+}
+
+.jaRow {
+  display: grid;
+  grid-template-columns: var(--label-col, 220px) 1fr;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+@media (width <= 600px) {
+  .ja {
+    --label-col: 130px;
+
+    padding: 10px;
+  }
+
+  .jaRow {
+    margin-bottom: 16px;
+  }
+
+  .jaLabel {
+    font-size: 11px;
+  }
+}
+
+/* On very small phones: stack label above bar, full-width bars */
+@media (width <= 480px) {
+  .ja {
+    --label-col: 0px;
+
+    padding: 8px;
+  }
+
+  .jaRow {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    margin-bottom: 14px;
+  }
+
+  .jaLabel {
+    text-align: left;
+    white-space: normal;
+    font-size: 12px;
+    font-weight: 500;
+    padding-right: 0;
+    overflow: visible;
+    width: 100%;
+  }
+
+  .jaTrack {
+    width: 100%;
+    height: 36px;
+  }
+
+  /* Hide the vertical y-axis line; it has no meaning without a side label column */
+  .jaChart::before {
+    display: none;
+  }
+
+  .jaXaxis {
+    font-size: 11px;
+  }
+}
+
+.jaLabel {
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--muted);
+  padding-right: 8px;
+}
+
+.jaTrack {
+  position: relative;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+@media (width <= 600px) {
+  .jaTrack {
+    height: 40px;
+  }
+}
+
+.jaBar {
+  height: 100%;
+  background: var(--bar);
+  border-radius: 6px;
+  max-width: 100%;
+  min-width: 18px;
+  position: relative;
+  transition: width 160ms ease, background 120ms ease;
+}
+
+.jaBar:hover {
+  background: var(--bar-hover);
+}
+
+.jaValue {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  line-height: 1;
+  user-select: none;
+}
+
+.jaXaxis {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 12px;
+  margin-left: var(--label-col, 220px);
+  margin-right: 20px;
+}
+
+.jaXaxisLabel {
+  text-align: center;
+  color: var(--muted);
+  margin-top: 8px;
+  font-size: 13px;
+  margin-left: var(--label-col, 220px);
+  margin-right: 20px;
+}
+
+/* Footer */
+.jaFooter {
+  margin-top: 10px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+/* stylelint-disable-next-line no-descending-specificity */
+.jaFooter strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* Filter sidebar */
+.jaFilter {
+  margin-bottom: 16px;
+}
+
+.jaFilterLabel {
+  margin-bottom: 6px;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+/* stylelint-disable-next-line no-descending-specificity */
+.jaFilter select,
+.jaFilter input[type='date'] {
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 8px;
+  width: 100%;
+  font-size: 14px;
+}
+
+.jaFilter select:focus,
+.jaFilter input[type='date']:focus {
+  outline: none;
+  border-color: var(--bar);
+  box-shadow: 0 0 0 2px rgb(59 130 246 / 20%);
+}
+
+.ja.dark .jaFilter select,
+.ja.dark .jaFilter input[type='date'] {
+  background: var(--bg);
+  color: var(--text);
+  border-color: var(--border);
+  color-scheme: dark;
+}
+
+.jaDateRange {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* stylelint-disable-next-line no-descending-specificity */
+.jaDateRange input[type='date'] {
+  flex: 1 1 120px;
+  min-width: 0;
+  width: auto;
+}
+
+.jaDateDash {
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+.jaClear {
+  flex: 0 0 auto;
+  height: 32px;
+  padding: 0 10px;
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.jaClear:hover {
+  background: rgb(0 0 0 / 4%);
+}
+
+.ja.dark .jaClear:hover {
+  background: rgb(255 255 255 / 4%);
 }
