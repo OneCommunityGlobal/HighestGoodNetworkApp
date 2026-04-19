@@ -35,6 +35,13 @@ function LBDashboardHeader(props) {
       }
     : undefined;
 
+  const goButtonStyle = darkMode
+    ? {
+        backgroundColor: '#4f6fdc',
+        borderColor: '#89a2ff',
+      }
+    : undefined;
+
   const handleGoClick = useCallback(() => {
     const qs = selectedVillage ? `?village=${encodeURIComponent(selectedVillage)}` : '';
     history.push(`/lbdashboard/listingshome${qs}`);
@@ -63,7 +70,12 @@ function LBDashboardHeader(props) {
               ))}
             </select>
           </div>
-          <button type="button" className={itemStyles.item__button} onClick={handleGoClick}>
+          <button
+            type="button"
+            className={itemStyles.item__button}
+            style={goButtonStyle}
+            onClick={handleGoClick}
+          >
             <p>Go</p>
           </button>
         </div>

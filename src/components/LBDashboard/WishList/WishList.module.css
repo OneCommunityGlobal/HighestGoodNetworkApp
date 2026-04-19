@@ -243,13 +243,14 @@ h1.listItemTitleMobile {
 }
 
 .chatButtonDark {
-  background: #1c2541 !important;
-  color: #e8eaed !important;
-  border: 1px solid #3a506b;
+  background: #4f6fdc !important;
+  color: #fff !important;
+  border: 1px solid #a6bbff;
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 15%);
 }
 
 .chatButtonDark:hover {
-  background: #2d3f5e !important;
+  background: #6886ea !important;
   color: #fff !important;
 }
 

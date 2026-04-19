@@ -107,9 +107,12 @@ function WishList(props) {
                       Click for list overview
                     </Link>
                   </div>
-                  <Link
-                    to={`/lbdashboard/messaging?listingId=${encodeURIComponent(item.id)}`}
+                  <button
+                    type="button"
                     className={`${styles.chatButton} ${darkMode ? styles.chatButtonDark : ''}`}
+                    onClick={e => {
+                      e.preventDefault();
+                    }}
                   >
                     <img
                       width="24"
@@ -119,7 +122,7 @@ function WishList(props) {
                       aria-hidden="true"
                     />
                     Chat with the Host
-                  </Link>
+                  </button>
                 </div>
               </div>
             );

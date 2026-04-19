@@ -76,6 +76,23 @@ function Home() {
   const navigate = useHistory();
   const location = useLocation();
 
+  const villageFilterCandidates = useCallback(village => {
+    const raw = String(village || '').trim();
+    if (!raw) return [];
+    const noSuffix = raw.replace(/\s+Village$/i, '').trim();
+    const withSuffix = `${noSuffix} Village`;
+    return Array.from(new Set([raw, noSuffix, withSuffix])).filter(Boolean);
+  }, []);
+
+  const normalizeVillageName = useCallback(
+    village =>
+      String(village || '')
+        .replace(/\s+Village$/i, '')
+        .trim()
+        .toLowerCase(),
+    [],
+  );
+
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const village = params.get('village');
@@ -126,11 +143,26 @@ function Home() {
 
         if (activeTab === 'listings') {
           try {
-            const listingsData = await fetchListings(
+            let listingsData = await fetchListings(
               pagination.currentPage,
               pagination.pageSize,
               filters,
             );
+            if (selectedVillage && (listingsData.items || []).length === 0) {
+              const fallbackVillages = villageFilterCandidates(selectedVillage).filter(
+                v => v !== filters.village,
+              );
+              for (const villageCandidate of fallbackVillages) {
+                const retryData = await fetchListings(pagination.currentPage, pagination.pageSize, {
+                  ...filters,
+                  village: villageCandidate,
+                });
+                if ((retryData.items || []).length > 0) {
+                  listingsData = retryData;
+                  break;
+                }
+              }
+            }
             setAllListings(listingsData.items || []);
             console.log('fetching listings', listingsData.items);
             setPagination(prev => ({
@@ -146,11 +178,26 @@ function Home() {
         } else {
           console.log('fetching biddings');
           try {
-            const biddingsData = await fetchBiddings(
+            let biddingsData = await fetchBiddings(
               pagination.currentPage,
               pagination.pageSize,
               filters,
             );
+            if (selectedVillage && (biddingsData.items || []).length === 0) {
+              const fallbackVillages = villageFilterCandidates(selectedVillage).filter(
+                v => v !== filters.village,
+              );
+              for (const villageCandidate of fallbackVillages) {
+                const retryData = await fetchBiddings(pagination.currentPage, pagination.pageSize, {
+                  ...filters,
+                  village: villageCandidate,
+                });
+                if ((retryData.items || []).length > 0) {
+                  biddingsData = retryData;
+                  break;
+                }
+              }
+            }
 
             setAllBiddings(biddingsData.items || []);
 
@@ -174,10 +221,27 @@ function Home() {
     };
 
     fetchData();
-  }, [pagination.currentPage, pagination.pageSize, selectedVillage, dateRange, activeTab]);
+  }, [
+    pagination.currentPage,
+    pagination.pageSize,
+    selectedVillage,
+    dateRange,
+    activeTab,
+    villageFilterCandidates,
+  ]);
 
-  const currentItems = activeTab === 'listings' ? allListings : allBiddings;
-  const allItems = activeTab === 'listings' ? allListings : allBiddings;
+  const baseItems = activeTab === 'listings' ? allListings : allBiddings;
+  const currentItems = useMemo(() => {
+    if (!selectedVillage) return baseItems;
+    const selectedKey = normalizeVillageName(selectedVillage);
+    const strictMatches = baseItems.filter(
+      item => normalizeVillageName(item.village) === selectedKey,
+    );
+    // If backend returns unresolved village ids/names that do not match dropdown labels,
+    // avoid showing an empty page while data actually exists.
+    return strictMatches.length > 0 ? strictMatches : baseItems;
+  }, [baseItems, normalizeVillageName, selectedVillage]);
+  const allItems = currentItems;
 
   const handlePageChange = useCallback(
     newPage => {
@@ -406,7 +470,14 @@ function Home() {
                 onClick={() => handlePropertySelect(unit)}
               >
                 <div className={`${styles.lbPropertyImage}`}>
-                  <img src={unit.images[0]} alt={unit.title} />
+                  <img
+                    src={unit.images[0]}
+                    alt={unit.title}
+                    onError={e => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = 'https://picsum.photos/seed/lb-fallback/600/400';
+                    }}
+                  />
                 </div>
                 <div className={`${styles.lbPropertyDetails}`}>
                   <div>

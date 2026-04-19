@@ -332,23 +332,20 @@ function WishListItem(props) {
                 </button>
               </div>
               <div className={styles['start__chat']}>
-                <Link
-                  to={
-                    currWishlistItem?.id ?? id
-                      ? `/lbdashboard/messaging?listingId=${encodeURIComponent(
-                          String(currWishlistItem?.id ?? id),
-                        )}`
-                      : '/lbdashboard/messaging'
-                  }
+                <button
+                  type="button"
                   className={getClassNames(
                     styles['start__chat-button'],
                     styles['start__chat-button--dark'],
                     darkMode,
                   )}
+                  onClick={e => {
+                    e.preventDefault();
+                  }}
                 >
                   <BsChat />
                   &nbsp;Chat with the Host
-                </Link>
+                </button>
               </div>
             </div>
           </div>
