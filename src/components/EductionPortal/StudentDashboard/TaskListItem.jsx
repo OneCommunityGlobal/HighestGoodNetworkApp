@@ -1,8 +1,18 @@
 import React from 'react';
 import styles from './TaskListItem.module.css';
 import { useTaskLogic } from './useTaskLogic';
+import MarkAsDoneButton from './MarkAsDoneButton';
+import IntermediateTasksList from './IntermediateTasksList';
 
-const TaskListItem = ({ task, onMarkAsDone }) => {
+const TaskListItem = ({
+  task,
+  onMarkAsDone,
+  intermediateTasks = [],
+  isExpanded = false,
+  onToggleIntermediateTasks,
+  onMarkIntermediateAsDone,
+  darkMode = false,
+}) => {
   const {
     progressPercentage,
     canMarkDone,
@@ -10,11 +20,17 @@ const TaskListItem = ({ task, onMarkAsDone }) => {
     markAsDoneTooltip,
     formattedTimeAndDate,
     progressText,
-  } = useTaskLogic(task, styles);
+  } = useTaskLogic(task, styles, intermediateTasks);
 
-  const handleMarkAsDone = () => {
-    if (canMarkDone) {
-      onMarkAsDone(task.id);
+  const handleToggleIntermediateTasks = () => {
+    if (onToggleIntermediateTasks) {
+      onToggleIntermediateTasks(task.id);
+    }
+  };
+
+  const handleMarkIntermediateAsDone = intermediateTaskId => {
+    if (onMarkIntermediateAsDone) {
+      onMarkIntermediateAsDone(intermediateTaskId, task.id);
     }
   };
 
@@ -65,25 +81,22 @@ const TaskListItem = ({ task, onMarkAsDone }) => {
           </svg>
         </button>
 
-        {task.is_completed ? (
-          <button className={styles.completedButton} disabled>
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <polyline points="20,6 9,17 4,12" />
-            </svg>
-          </button>
-        ) : (
+        <MarkAsDoneButton
+          task={task}
+          intermediateTasks={intermediateTasks}
+          canMarkDone={canMarkDone}
+          markAsDoneTooltip={markAsDoneTooltip}
+          onMarkAsDone={onMarkAsDone}
+          styles={styles}
+          iconSize="20"
+        />
+
+        {/* Toggle Intermediate Tasks */}
+        {onToggleIntermediateTasks && (
           <button
-            className={`${styles.markDoneButton} ${!canMarkDone ? styles.disabled : ''}`}
-            onClick={handleMarkAsDone}
-            disabled={!canMarkDone}
-            title={markAsDoneTooltip}
+            className={styles.toggleIntermediateButton}
+            onClick={handleToggleIntermediateTasks}
+            title={isExpanded ? 'Hide Sub-tasks' : 'Show Sub-tasks'}
           >
             <svg
               width="20"
@@ -92,12 +105,26 @@ const TaskListItem = ({ task, onMarkAsDone }) => {
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
+              className={isExpanded ? styles.expandedIcon : ''}
             >
-              <polyline points="20,6 9,17 4,12" />
+              <polyline points="6 9 12 15 18 9" />
             </svg>
           </button>
         )}
       </div>
+
+      {/* Intermediate Tasks */}
+      {isExpanded && onToggleIntermediateTasks && (
+        <div className={styles.intermediateTasksWrapper}>
+          <div className={styles.intermediateTasksList}>
+            <IntermediateTasksList
+              intermediateTasks={intermediateTasks}
+              styles={styles}
+              onMarkIntermediateAsDone={handleMarkIntermediateAsDone}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

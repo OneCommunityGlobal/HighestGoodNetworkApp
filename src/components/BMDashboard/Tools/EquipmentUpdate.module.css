@@ -1,0 +1,32 @@
+.equipmentUpdateWrapper {
+  min-height: 100vh;
+  padding: 1rem 0;
+}
+
+.equipmentUpdateContainer {
+  width: 100%;
+  max-width: 800px;
+  margin: 1rem auto;
+  padding: 1rem 2rem;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+}
+
+.equipmentUpdateHeader h2 {
+  font-size: clamp(1.5rem, 2.5vw, 2.5rem);
+  margin-left: 1rem;
+}
+
+@media screen and (max-width: 800px) {
+  .equipmentUpdateContainer {
+    width: 95%;
+  }
+}
+
+.equipmentUpdateWrapper:global(.bg-oxford-blue) .equipmentUpdateContainer {
+  border-color: #495057;
+}
+
+.equipmentUpdateWrapper:global(.bg-oxford-blue) .equipmentUpdateHeader h2 {
+  color: #e9ecef;
+}
