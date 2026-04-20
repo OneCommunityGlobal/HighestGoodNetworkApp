@@ -4,6 +4,21 @@
   width: clamp(100vw, 0.1rem + 1vw, 100%);
 }
 
+.notificationOverlay {
+  position: fixed;
+  top: 72px;
+  left: 0;
+  right: 0;
+  z-index: 1200;
+  pointer-events: none;
+}
+
+.notificationOverlay :global(.container-fluid) {
+  padding-left: 0;
+  padding-right: 0;
+  pointer-events: auto;
+}
+
 .headerRow {
   display: grid;
   grid-template-columns: auto 1fr auto; 
