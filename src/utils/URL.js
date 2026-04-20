@@ -573,6 +573,11 @@ export const ENDPOINTS = {
   PROMOTION_ELIGIBILITY: `${APIEndpoint}/promotion-eligibility`,
   PROMOTE_MEMBERS: `${APIEndpoint}/promote-members`,
 
+  // LinkedIn autoposter endpoints
+  LINKEDIN_POST: `${APIEndpoint}/postToLinkedIn`,
+  LINKEDIN_SCHEDULED_POSTS: `${APIEndpoint}/scheduledPosts`,
+  LINKEDIN_SCHEDULED_POST_BY_ID: postId => `${APIEndpoint}/scheduledPosts/${postId}`,
+
   // actual cost endpoints
   ACTUAL_COST_BREAKDOWN: projectId => `${APIEndpoint}/projects/${projectId}/actual-cost-breakdown`,
   MATERIAL_UTILIZATION: () => `${APIEndpoint}/materials/utilization`,
@@ -615,7 +620,6 @@ export const ENDPOINTS = {
     if (roles && roles.length > 0) url += `roles=${encodeURIComponent(roles.join(','))}&`;
     return url.slice(0, -1);
   },
-
 };
 
 export const ApiEndpoint = APIEndpoint;
