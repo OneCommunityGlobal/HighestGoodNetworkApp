@@ -42,6 +42,16 @@ const unitIcon = new L.Icon({
   popupAnchor: [1, -34],
 });
 
+const VILLAGE_SUFFIX = 'village';
+
+const stripVillageSuffix = value => {
+  const input = String(value || '').trim();
+  if (!input) return '';
+  const lower = input.toLowerCase();
+  if (!lower.endsWith(VILLAGE_SUFFIX)) return input;
+  return input.slice(0, -VILLAGE_SUFFIX.length).trim();
+};
+
 const buildApiFilters = (selectedVillage, dateRange) => {
   const filters = {};
   if (selectedVillage) filters.village = selectedVillage;
@@ -114,17 +124,13 @@ function Home() {
   const villageFilterCandidates = useCallback(village => {
     const raw = String(village || '').trim();
     if (!raw) return [];
-    const noSuffix = raw.replace(/\s+Village$/i, '').trim();
+    const noSuffix = stripVillageSuffix(raw);
     const withSuffix = `${noSuffix} Village`;
     return Array.from(new Set([raw, noSuffix, withSuffix])).filter(Boolean);
   }, []);
 
   const normalizeVillageName = useCallback(
-    village =>
-      String(village || '')
-        .replace(/\s+Village$/i, '')
-        .trim()
-        .toLowerCase(),
+    village => stripVillageSuffix(village).toLowerCase(),
     [],
   );
 
