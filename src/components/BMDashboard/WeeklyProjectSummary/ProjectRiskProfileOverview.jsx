@@ -26,8 +26,22 @@ export default function ProjectRiskProfileOverview() {
   const [showDateDropdown, setShowDateDropdown] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const allSpanRef = useRef(null);
-  const dateSpanRef = useRef(null);
+  const projectWrapperRef = useRef(null);
+  const dateWrapperRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = event => {
+      if (projectWrapperRef.current && !projectWrapperRef.current.contains(event.target)) {
+        setShowProjectDropdown(false);
+      }
+      if (dateWrapperRef.current && !dateWrapperRef.current.contains(event.target)) {
+        setShowDateDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   useEffect(() => {
     async function fetchData() {
@@ -72,8 +86,90 @@ export default function ProjectRiskProfileOverview() {
     return `${selectedDates.length} selected`;
   };
 
-  if (loading) return <div className={`${styles.loading}`}>Loading project risk profiles...</div>;
-  if (error) return <div className={`${styles.error}`}>{error}</div>;
+  const chartTheme = {
+    grid: darkMode ? '#3f4652' : '#e8e8e8',
+    axisText: darkMode ? '#d7dbe2' : '#666',
+    axisLine: darkMode ? '#6b7280' : '#d5d5d5',
+    tooltipBg: darkMode ? '#1f2937' : '#fff',
+    tooltipBorder: darkMode ? '#4b5563' : '#e0e0e0',
+    tooltipText: darkMode ? '#f3f4f6' : '#333',
+    hover: darkMode ? 'rgba(66, 133, 244, 0.16)' : 'rgba(66, 133, 244, 0.08)',
+  };
+
+  const customSelectStyles = {
+    control: base => ({
+      ...base,
+      fontSize: 12,
+      minHeight: 34,
+      backgroundColor: darkMode ? '#2c2c2c' : '#fff',
+      borderColor: darkMode ? '#555' : '#d5d5d5',
+      boxShadow: 'none',
+    }),
+    valueContainer: base => ({
+      ...base,
+      padding: '2px 6px',
+    }),
+    multiValue: base => ({
+      ...base,
+      background: darkMode ? '#444' : '#e8f0fe',
+      fontSize: 11,
+    }),
+    multiValueLabel: base => ({
+      ...base,
+      color: darkMode ? '#eee' : '#333',
+    }),
+    multiValueRemove: base => ({
+      ...base,
+      color: darkMode ? '#eee' : '#333',
+      ':hover': {
+        backgroundColor: darkMode ? '#555' : '#dbe7ff',
+        color: darkMode ? '#fff' : '#111',
+      },
+    }),
+    input: base => ({
+      ...base,
+      color: darkMode ? '#eee' : '#333',
+    }),
+    placeholder: base => ({
+      ...base,
+      color: darkMode ? '#c7c7c7' : '#666',
+    }),
+    menu: base => ({
+      ...base,
+      zIndex: 9999,
+      backgroundColor: darkMode ? '#2c2c2c' : '#fff',
+      border: darkMode ? '1px solid #555' : '1px solid #e2e2e2',
+      boxShadow: darkMode ? '0 4px 16px rgba(0, 0, 0, 0.45)' : '0 4px 16px rgba(0,0,0,0.12)',
+    }),
+    option: (base, state) => ({
+      ...base,
+      color: darkMode ? '#eee' : '#333',
+      backgroundColor: state.isSelected
+        ? darkMode
+          ? '#4a4a4a'
+          : '#dbe7ff'
+        : state.isFocused
+        ? darkMode
+          ? '#3a3a3a'
+          : '#f5f5f5'
+        : darkMode
+        ? '#2c2c2c'
+        : '#fff',
+    }),
+  };
+
+  if (loading)
+    return (
+      <div className={`${styles.statusCard} ${darkMode ? styles.darkMode : ''}`}>
+        <div className={`${styles.loading}`}>Loading project risk profiles...</div>
+      </div>
+    );
+  if (error)
+    return (
+      <div className={`${styles.statusCard} ${darkMode ? styles.darkMode : ''}`}>
+        <div className={`${styles.error}`}>{error}</div>
+      </div>
+    );
 
   return (
     <div className={`${styles.wrapper} ${darkMode ? styles.darkMode : ''}`}>
@@ -83,10 +179,9 @@ export default function ProjectRiskProfileOverview() {
 
           <div className={`${styles.filterRow}`}>
             {/* Project Dropdown */}
-            <div className={`${styles.dropdownWrapper}`}>
+            <div ref={projectWrapperRef} className={`${styles.dropdownWrapper}`}>
               <span className={`${styles.dropdownLabel}`}>Project</span>
               <button
-                ref={allSpanRef}
                 type="button"
                 className={`${styles.dropdownButton}`}
                 onClick={() => setShowProjectDropdown(prev => !prev)}
@@ -105,16 +200,17 @@ export default function ProjectRiskProfileOverview() {
                     closeMenuOnSelect={false}
                     hideSelectedOptions={false}
                     components={{ IndicatorSeparator: () => null, ClearIndicator: () => null }}
+                    styles={customSelectStyles}
+                    placeholder="Select projects"
                   />
                 </div>
               )}
             </div>
 
             {/* Date Dropdown */}
-            <div className={`${styles.dropdownWrapper}`}>
+            <div ref={dateWrapperRef} className={`${styles.dropdownWrapper}`}>
               <span className={`${styles.dropdownLabel}`}>Dates</span>
               <button
-                ref={dateSpanRef}
                 type="button"
                 className={`${styles.dropdownButton}`}
                 onClick={() => setShowDateDropdown(prev => !prev)}
@@ -133,6 +229,8 @@ export default function ProjectRiskProfileOverview() {
                     closeMenuOnSelect={false}
                     hideSelectedOptions={false}
                     components={{ IndicatorSeparator: () => null, ClearIndicator: () => null }}
+                    styles={customSelectStyles}
+                    placeholder="Select dates"
                   />
                 </div>
               )}
@@ -173,7 +271,7 @@ export default function ProjectRiskProfileOverview() {
             >
               <CartesianGrid
                 strokeDasharray="5 5"
-                stroke={darkMode ? '#3a3a3a' : '#e8e8e8'}
+                stroke={chartTheme.grid}
                 horizontal={true}
                 vertical={false}
               />
@@ -182,27 +280,29 @@ export default function ProjectRiskProfileOverview() {
                 angle={-45}
                 textAnchor="end"
                 height={110}
-                tick={{ fontSize: 13, fill: darkMode ? '#888' : '#666', fontWeight: 500 }}
-                axisLine={{ stroke: darkMode ? '#555' : '#d5d5d5', strokeWidth: 1.5 }}
-                tickLine={{ stroke: darkMode ? '#555' : '#d5d5d5' }}
+                tick={{ fontSize: 13, fill: chartTheme.axisText, fontWeight: 500 }}
+                axisLine={{ stroke: chartTheme.axisLine, strokeWidth: 1.5 }}
+                tickLine={{ stroke: chartTheme.axisLine }}
               />
               <YAxis
-                tick={{ fontSize: 12, fill: darkMode ? '#888' : '#666', fontWeight: 500 }}
-                axisLine={{ stroke: darkMode ? '#555' : '#d5d5d5', strokeWidth: 1.5 }}
-                tickLine={{ stroke: darkMode ? '#555' : '#d5d5d5' }}
+                tick={{ fontSize: 12, fill: chartTheme.axisText, fontWeight: 500 }}
+                axisLine={{ stroke: chartTheme.axisLine, strokeWidth: 1.5 }}
+                tickLine={{ stroke: chartTheme.axisLine }}
               />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: darkMode ? '#333' : '#fff',
-                  border: `2px solid ${darkMode ? '#666' : '#e0e0e0'}`,
+                  backgroundColor: chartTheme.tooltipBg,
+                  border: `2px solid ${chartTheme.tooltipBorder}`,
                   borderRadius: '8px',
                   padding: '14px',
-                  color: darkMode ? '#fff' : '#333',
+                  color: chartTheme.tooltipText,
                   fontSize: '13px',
                   fontWeight: 500,
                   boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
                 }}
-                cursor={{ fill: 'rgba(66, 133, 244, 0.08)' }}
+                labelStyle={{ color: chartTheme.tooltipText }}
+                itemStyle={{ color: chartTheme.tooltipText }}
+                cursor={{ fill: chartTheme.hover }}
               />
               <Bar
                 dataKey="predictedCostOverrun"
@@ -219,6 +319,10 @@ export default function ProjectRiskProfileOverview() {
               />
             </BarChart>
           </ResponsiveContainer>
+
+          {filteredData.length === 0 && (
+            <div className={styles.emptyState}>No risk profile data for selected filters.</div>
+          )}
         </div>
       </div>
     </div>

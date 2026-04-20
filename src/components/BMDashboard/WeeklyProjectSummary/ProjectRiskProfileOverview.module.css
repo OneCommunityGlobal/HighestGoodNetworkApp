@@ -5,6 +5,11 @@
   padding: 0;
   overflow-x: auto;
   margin: 0 auto;
+  transition: background-color 0.25s ease;
+}
+
+.darkMode.wrapper {
+  background: #141a23;
 }
 
 .container {
@@ -16,6 +21,24 @@
   padding: 36px;
   box-sizing: border-box;
   position: relative;
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+.statusCard {
+  width: 87vw;
+  margin: 0 auto;
+  border-radius: 10px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 12px rgb(0 0 0 / 8%);
+  padding: 24px;
+}
+
+.statusCard.darkMode {
+  background: #1e1e1e;
+  border-color: #374151;
+  color: #f3f4f6;
+  box-shadow: 0 2px 8px #111;
 }
 
 .heading {
@@ -79,7 +102,7 @@
 }
 
 .darkMode .dropdownLabel {
-  color: #ddd;
+  color: #f5f5f5;
 }
 
 .dropdownButton {
@@ -116,7 +139,8 @@
 .dropdownMenu {
   position: absolute;
   top: 100%;
-  left: 0;
+  left: 50%;
+  transform: translateX(-50%);
   width: 200px;
   z-index: 2000;
   margin-top: 8px;
@@ -208,6 +232,7 @@
   display: flex;
   flex-direction: column;
   position: relative;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
 }
 
 .darkMode .chartWrapper {
@@ -249,12 +274,38 @@
 }
 
 .error {
-  color: red;
+  color: #dc2626;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.statusCard.darkMode .error {
+  color: #fca5a5;
 }
 
 .loading {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 500;
+  color: #374151;
+}
+
+.statusCard.darkMode .loading {
+  color: #d1d5db;
+}
+
+.emptyState {
+  text-align: center;
+  margin-top: 16px;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #6b7280;
+  background: #f3f4f6;
+}
+
+.darkMode .emptyState {
+  color: #d1d5db;
+  background: #374151;
 }
 
 /* ===================== DARK MODE ===================== */
@@ -265,5 +316,5 @@
 }
 
 .darkMode .heading {
-  color: #eee;
+  color: #fff;
 }
