@@ -583,7 +583,9 @@ function WeeklyProjectSummary() {
   return (
     <div
       ref={containerRef}
-      className={`${styles.weeklyProjectSummaryContainer} ${darkMode ? styles.darkMode : ''}`}
+      className={`weekly-project-summary-container ${styles.weeklyProjectSummaryContainer} ${
+        darkMode ? styles.darkMode : ''
+      } ${darkMode ? 'dark-mode' : ''}`}
       data-testid="weekly-project-summary-container"
     >
       <WeeklyProjectSummaryHeader
