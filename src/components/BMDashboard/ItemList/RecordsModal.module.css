@@ -10,7 +10,7 @@
 :global(.dark-mode) .records_modal_table_container,
 :global(.dark-mode) .recordsModalTableContainer {
   background-color: #3a506b;
-  color: #ffffff;
+  color: #fff;
 }
 
 :global(.dark-mode) .records_modal_table_container a,
@@ -27,24 +27,24 @@
 :global(.dark-mode) .records_modal_table_container thead tr th,
 :global(.dark-mode) .recordsModalTableContainer thead tr th {
   background-color: #1c2541 !important;
-  color: #ffffff !important;
+  color: #fff !important;
   border-color: #3a506b !important;
 }
 
 :global(.dark-mode) .records_modal_table_container tbody tr td,
 :global(.dark-mode) .recordsModalTableContainer tbody tr td {
   background-color: #3a506b !important;
-  color: #ffffff !important;
+  color: #fff !important;
   border-color: #1c2541 !important;
 }
 
 :global(.dark-mode) .records_modal_table_container tbody tr:hover td,
 :global(.dark-mode) .recordsModalTableContainer tbody tr:hover td {
   background-color: #1c2541 !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
-@media (min-width: 1200px) {
+@media (width >= 1200px) {
   .records_modal_table_container,
   .recordsModalTableContainer {
     font-size: medium;
@@ -88,7 +88,7 @@
 :global(.dark-mode) .reject_button,
 :global(.dark-mode) .rejectButton {
   background-color: #1c2541;
-  color: #ffffff;
+  color: #fff;
   border: 1px solid #3a506b;
 }
 
