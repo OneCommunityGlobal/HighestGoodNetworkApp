@@ -11,6 +11,7 @@ import {
   Legend,
   CartesianGrid,
   LabelList,
+  Cell,
 } from 'recharts';
 import { fetchBMProjects } from '../../../../actions/bmdashboard/projectActions';
 import { ENDPOINTS } from '../../../../utils/URL';
@@ -74,6 +75,19 @@ function ActualVsPlannedCost() {
       ? [{ category: 'Overall', actualCost: totals.actual, plannedCost: totals.planned }]
       : breakdown.filter(d => d.category === selectedCategory);
 
+  // Detect over-budget items
+  const isOverBudget = chartData.some(d => d.actualCost > d.plannedCost && d.plannedCost > 0);
+  const overBudgetPct =
+    totals.planned > 0 ? ((totals.actual - totals.planned) / totals.planned) * 100 : 0;
+
+  // Dynamic bar color: flash red when actual exceeds planned
+  const getActualBarColor = entry => {
+    if (entry.plannedCost > 0 && entry.actualCost > entry.plannedCost) {
+      return '#dc2626'; // bright red for over-budget
+    }
+    return darkMode ? '#c0392b' : '#e74a3b';
+  };
+
   // ---- Extracted chart content ----
   let chartContent;
   if (loading) {
@@ -117,6 +131,9 @@ function ActualVsPlannedCost() {
                 fill={darkMode ? '#c0392b' : '#e74a3b'}
                 barSize={40}
               >
+                {chartData.map((entry, index) => (
+                  <Cell key={`actual-cell-${index}`} fill={getActualBarColor(entry)} />
+                ))}
                 <LabelList dataKey="actualCost" position="top" fill="var(--text-color)" />
               </Bar>
               <Bar
@@ -131,6 +148,14 @@ function ActualVsPlannedCost() {
           </ResponsiveContainer>
         </div>
         <div className={styles.chartCaption}>{selectedProjectName}</div>
+        {isOverBudget && (
+          <div className={styles.overBudgetWarning}>
+            ⚠️ Actual cost exceeds planned budget
+            {selectedCategory === 'Overall' && overBudgetPct > 0
+              ? ` by ${overBudgetPct.toFixed(1)}%`
+              : ''}
+          </div>
+        )}
       </>
     );
   }

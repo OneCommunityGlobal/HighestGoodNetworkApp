@@ -9,10 +9,24 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  Cell,
 } from 'recharts';
 import Select from 'react-select';
 import httpService from '../../../services/httpService';
 import styles from './ProjectRiskProfileOverview.module.css';
+
+// Color-code cost overrun bars by severity
+const OVERRUN_THRESHOLDS = {
+  LOW: 10,
+  MEDIUM: 25,
+};
+
+const getOverrunColor = value => {
+  if (value == null || value <= 0) return '#22c55e'; // green — on/under budget
+  if (value <= OVERRUN_THRESHOLDS.LOW) return '#3b82f6'; // blue — minor
+  if (value <= OVERRUN_THRESHOLDS.MEDIUM) return '#f59e0b'; // amber — moderate
+  return '#ef4444'; // red — severe
+};
 
 // Fetch project risk profile data from backend
 
@@ -321,7 +335,14 @@ export default function ProjectRiskProfileOverview() {
               name="Predicted Cost Overrun (%)"
               fill="#4285F4"
               barSize={35}
-            />
+            >
+              {filteredData.map((entry, index) => (
+                <Cell
+                  key={`overrun-cell-${index}`}
+                  fill={getOverrunColor(entry.predictedCostOverrun)}
+                />
+              ))}
+            </Bar>
             <Bar dataKey="totalOpenIssues" name="Issues" fill="#EA4335" barSize={35} />
             <Bar
               dataKey="predictedTimeDelay"

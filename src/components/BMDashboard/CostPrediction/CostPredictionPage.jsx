@@ -1,4 +1,4 @@
-import { useState, useEffect, Fragment } from 'react';
+import { useState, useEffect, useMemo, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import {
   LineChart,
@@ -16,7 +16,7 @@ import Select from 'react-select';
 import { getProjectCosts, getProjectIds } from '../../../services/projectCostTrackingService';
 import { useSelector } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
-import { Info } from 'lucide-react';
+import { Info, AlertTriangle, TrendingUp, ShieldCheck } from 'lucide-react';
 import styles from './CostPredictionPage.module.css';
 import {
   DARK,
@@ -92,6 +92,87 @@ const LaborDot = createDotComponent('Labor');
 const MaterialsDot = createDotComponent('Materials');
 const EquipmentDot = createDotComponent('Equipment');
 const TotalDot = createDotComponent('Total');
+
+// Cost overrun thresholds for budget alerts
+const BUDGET_THRESHOLDS = {
+  INFO: 5,
+  WARNING: 15,
+  CRITICAL: 25,
+};
+
+// Compute forecast confidence score from data coverage and consistency
+const computeConfidenceScore = (chartData, selectedCosts) => {
+  if (!chartData || chartData.length === 0) return null;
+
+  const activeCosts = selectedCosts.length > 0 ? selectedCosts : ['Labor', 'Materials'];
+
+  let totalActual = 0;
+  let totalPredicted = 0;
+
+  activeCosts.forEach(category => {
+    totalActual += chartData.filter(d => d[category] !== undefined && d[category] !== null).length;
+    totalPredicted += chartData.filter(
+      d => d[`${category}Predicted`] !== undefined && d[`${category}Predicted`] !== null,
+    ).length;
+  });
+
+  if (totalPredicted === 0) return null;
+
+  // More actual data relative to predicted = higher confidence
+  const ratio = totalActual / (totalActual + totalPredicted);
+  const dataBonus = Math.min(30, chartData.length * 3);
+  const score = Math.round(Math.min(100, ratio * 70 + dataBonus));
+  return score;
+};
+
+const getConfidenceLevel = score => {
+  if (score === null) return null;
+  if (score >= 75) return { label: 'High', color: '#22c55e', icon: ShieldCheck };
+  if (score >= 45) return { label: 'Medium', color: '#f59e0b', icon: TrendingUp };
+  return { label: 'Low', color: '#ef4444', icon: AlertTriangle };
+};
+
+// Detect categories where predicted cost exceeds the last actual cost
+const detectOverBudgetAlerts = (chartData, lastPredictedValues, selectedCosts) => {
+  if (!chartData || chartData.length === 0) return [];
+
+  const activeCosts = selectedCosts.length > 0 ? selectedCosts : ['Labor', 'Materials'];
+  const alerts = [];
+
+  activeCosts.forEach(category => {
+    const lastActualPoint = [...chartData]
+      .reverse()
+      .find(d => d[category] !== undefined && d[category] !== null);
+    const predictedEnd = lastPredictedValues[category];
+
+    if (lastActualPoint && predictedEnd && lastActualPoint[category] > 0) {
+      const overrunPct =
+        ((predictedEnd - lastActualPoint[category]) / lastActualPoint[category]) * 100;
+
+      if (overrunPct > BUDGET_THRESHOLDS.CRITICAL) {
+        alerts.push({ category, pct: overrunPct, level: 'critical' });
+      } else if (overrunPct > BUDGET_THRESHOLDS.WARNING) {
+        alerts.push({ category, pct: overrunPct, level: 'warning' });
+      } else if (overrunPct > BUDGET_THRESHOLDS.INFO) {
+        alerts.push({ category, pct: overrunPct, level: 'info' });
+      }
+    }
+  });
+
+  return alerts;
+};
+
+const ALERT_STYLES = {
+  critical: { bg: '#fef2f2', border: '#fca5a5', color: '#991b1b', icon: '🔴' },
+  warning: { bg: '#fffbeb', border: '#fcd34d', color: '#92400e', icon: '🟡' },
+  info: { bg: '#eff6ff', border: '#93c5fd', color: '#1e40af', icon: '🔵' },
+};
+
+const ALERT_STYLES_DARK = {
+  critical: { bg: '#450a0a', border: '#dc2626', color: '#fca5a5', icon: '🔴' },
+  warning: { bg: '#451a03', border: '#d97706', color: '#fcd34d', icon: '🟡' },
+  info: { bg: '#172554', border: '#3b82f6', color: '#93c5fd', icon: '🔵' },
+};
 
 // Calculate last predicted values for reference lines
 const getLastPredictedValues = costData => {
@@ -329,6 +410,17 @@ function CostPredictionPage({ projectId }) {
   const [lastPredictedValues, setLastPredictedValues] = useState({});
   const darkMode = useSelector(state => state.theme.darkMode);
 
+  // Compute confidence score and over-budget alerts from current data
+  const confidenceScore = useMemo(() => computeConfidenceScore(data, selectedCosts), [
+    data,
+    selectedCosts,
+  ]);
+  const confidenceLevel = useMemo(() => getConfidenceLevel(confidenceScore), [confidenceScore]);
+  const overBudgetAlerts = useMemo(
+    () => detectOverBudgetAlerts(data, lastPredictedValues, selectedCosts),
+    [data, lastPredictedValues, selectedCosts],
+  );
+
   useEffect(() => {
     const fetchProjects = async () => {
       try {
@@ -440,6 +532,20 @@ function CostPredictionPage({ projectId }) {
       <div className={styles.costPredictionWrapper}>
         <div className={styles.chartTitleContainer}>
           <h2 className={styles.costPredictionTitle}>Planned v Actual Costs Tracking</h2>
+          {confidenceLevel && (
+            <span
+              className={styles.confidenceBadge}
+              style={{
+                backgroundColor: `${confidenceLevel.color}20`,
+                color: confidenceLevel.color,
+                border: `1px solid ${confidenceLevel.color}`,
+              }}
+              title={`Forecast confidence: ${confidenceScore}%`}
+            >
+              <confidenceLevel.icon size={12} />
+              {confidenceLevel.label} Confidence ({confidenceScore}%)
+            </span>
+          )}
           <button
             type="button"
             className={styles.costPredictionInfoButton}
@@ -477,6 +583,39 @@ function CostPredictionPage({ projectId }) {
             styles={getMultiSelectStyles(darkMode)}
           />
         </div>
+
+        {/* Over-budget alert banners */}
+        {!loading && overBudgetAlerts.length > 0 && (
+          <div className={styles.alertContainer}>
+            {overBudgetAlerts.map(alert => {
+              const alertStyle = darkMode
+                ? ALERT_STYLES_DARK[alert.level]
+                : ALERT_STYLES[alert.level];
+              return (
+                <div
+                  key={alert.category}
+                  className={styles.alertBanner}
+                  style={{
+                    backgroundColor: alertStyle.bg,
+                    borderLeft: `4px solid ${alertStyle.border}`,
+                    color: alertStyle.color,
+                  }}
+                >
+                  <AlertTriangle size={14} />
+                  <span>
+                    {alertStyle.icon} <strong>{alert.category}</strong> cost forecast exceeds budget
+                    by <strong>{alert.pct.toFixed(1)}%</strong>
+                    {alert.level === 'critical'
+                      ? ' — Immediate review recommended'
+                      : alert.level === 'warning'
+                      ? ' — Monitor closely'
+                      : ''}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        )}
 
         <div className={styles.costPredictionChartContainer}>
           {loading && <div className={styles.costChartLoading}>Loading...</div>}

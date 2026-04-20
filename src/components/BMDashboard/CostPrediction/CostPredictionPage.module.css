@@ -199,6 +199,38 @@
   fill: #e0e0e0 !important;
 }
 
+/* Confidence Badge */
+.confidenceBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  margin-left: 10px;
+}
+
+/* Over-budget Alert Container */
+.alertContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0 10px;
+  margin-bottom: 10px;
+}
+
+.alertBanner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
 :global(.dark-mode-body) :global(.recharts-default-legend) {
   background-color: #1e2736 !important;
 }

@@ -42,7 +42,19 @@
   color: var(--text-color);
 }
 
-@media (max-width: 768px) {
+.overBudgetWarning {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #dc2626;
+  margin-top: 4px;
+  padding: 4px 8px;
+  background-color: #fef2f2;
+  border-radius: 4px;
+  border: 1px solid #fca5a5;
+}
+
+@media (width <= 768px) {
   .selectorsContainer {
     flex-direction: column;
     gap: 0.5rem;

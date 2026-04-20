@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
+import { ENDPOINTS } from '../../../../utils/URL';
 import styles from './FinancialStatButtons.module.css';
 
 function formatCurrency(amount) {
@@ -26,6 +27,7 @@ export default function FinancialStatButtons({ defaultProjectId }) {
   const [laborCost, setLaborCost] = useState(null);
   const [equipmentCost, setEquipmentCost] = useState(null);
   const [mom, setMom] = useState(null);
+  const [plannedBudget, setPlannedBudget] = useState(null);
 
   const apiBase = useMemo(() => (process.env.REACT_APP_APIENDPOINT || '').replace(/\/$/, ''), []);
 
@@ -146,6 +148,16 @@ export default function FinancialStatButtons({ defaultProjectId }) {
         setLaborCost(breakdownRes?.data?.laborCost ?? null);
         setEquipmentCost(breakdownRes?.data?.equipmentCost ?? null);
         setMom(momRes?.data ?? null);
+        // Fetch planned budget for over-budget detection
+        try {
+          const expenseRes = await axios.get(ENDPOINTS.BM_PROJECT_EXPENSE_BY_ID(projectId));
+          if (!cancelled) {
+            setPlannedBudget(expenseRes?.data?.totalPlannedCost ?? null);
+          }
+        } catch {
+          // Planned budget endpoint may not exist for all projects
+          if (!cancelled) setPlannedBudget(null);
+        }
       } catch (e) {
         if (cancelled) return;
         setError('Failed to load financials');
@@ -158,6 +170,16 @@ export default function FinancialStatButtons({ defaultProjectId }) {
       cancelled = true;
     };
   }, [apiBase, projectId]);
+
+  // Compute budget status
+  const budgetStatus = useMemo(() => {
+    if (totalCost == null || plannedBudget == null || plannedBudget <= 0) return null;
+    const pct = ((totalCost - plannedBudget) / plannedBudget) * 100;
+    if (pct > 20) return { label: 'Over Budget', color: '#dc2626', pct };
+    if (pct > 10) return { label: 'Near Limit', color: '#f59e0b', pct };
+    if (pct > 0) return { label: 'Slightly Over', color: '#3b82f6', pct };
+    return { label: 'On Budget', color: '#22c55e', pct };
+  }, [totalCost, plannedBudget]);
 
   return (
     <div className={styles.container}>
@@ -193,6 +215,19 @@ export default function FinancialStatButtons({ defaultProjectId }) {
           <button type="button" className={styles.kpiButton} aria-label="Total Project Cost">
             <span className={styles.label}>Total Project Cost</span>
             <span className={styles.value}>{formatCurrency(totalCost)}</span>
+            {budgetStatus && (
+              <span
+                className={styles.budgetBadge}
+                style={{
+                  backgroundColor: `${budgetStatus.color}18`,
+                  color: budgetStatus.color,
+                  border: `1px solid ${budgetStatus.color}`,
+                }}
+              >
+                {budgetStatus.label} ({budgetStatus.pct > 0 ? '+' : ''}
+                {budgetStatus.pct.toFixed(1)}%)
+              </span>
+            )}
           </button>
 
           <button type="button" className={styles.kpiButton} aria-label="Material Cost">
