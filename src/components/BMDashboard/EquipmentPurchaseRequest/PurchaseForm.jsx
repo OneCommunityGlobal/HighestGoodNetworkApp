@@ -10,6 +10,8 @@ import { purchaseEquipment } from '~/actions/bmdashboard/equipmentActions';
 
 import stylesPurchaseForm from './PurchaseForm.module.css';
 
+const DESC_CHAR_LIMIT = 150;
+
 export default function PurchaseForm() {
   const bmProjects = useSelector(state => state.bmProjects);
   const equipments = useSelector(state => state.bmInvTypes.list);
@@ -38,7 +40,7 @@ export default function PurchaseForm() {
     estTime: Joi.string().required(),
     desc: Joi.string()
       .required()
-      .max(150),
+      .max(DESC_CHAR_LIMIT),
     makeModel: Joi.string().allow(''),
   });
 
@@ -204,13 +206,23 @@ export default function PurchaseForm() {
         <Input
           id="input-usage-description"
           type="textarea"
+          maxLength={DESC_CHAR_LIMIT}
           value={desc}
           onChange={({ currentTarget }) => {
             setValidationError('');
-            setDesc(currentTarget.value);
+            setDesc(currentTarget.value.slice(0, DESC_CHAR_LIMIT));
           }}
         />
-        <FormText>Max 150 characters</FormText>
+        <FormText
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            gap: '1rem',
+          }}
+        >
+          <span>Max {DESC_CHAR_LIMIT} characters</span>
+          <span aria-live="polite">{DESC_CHAR_LIMIT - desc.length} characters left</span>
+        </FormText>
       </FormGroup>
       <FormGroup>
         <Label for="input-brand">Preferred Make &amp; Model (optional)</Label>
