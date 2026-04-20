@@ -697,7 +697,7 @@ function Announcements({ email, title }) {
           <input
             type="text"
             id="email-list-input"
-            defaultValue={email || ''}
+            value={emailList.join(',')}
             onChange={handleEmailListChange}
             className="input-text-for-announcement"
           />
