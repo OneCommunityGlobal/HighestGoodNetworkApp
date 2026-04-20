@@ -236,8 +236,8 @@
 }
 
 .eventBadge[data-type='Cooking Workshop'] {
-  background-color: #fdecea;
-  color: #e74c3c;
+  background-color: #eaeafd;
+  color: #3c3ce7;
 }
 
 .eventBadge[data-type='Dance Class'] {
@@ -262,8 +262,8 @@
 }
 
 .caseCardDark .eventBadge[data-type='Cooking Workshop'] {
-  background-color: rgba(231, 76, 60, 0.2);
-  color: #f1948a;
+  background-color: rgba(4, 0, 255, 0.2);
+  color: #8a8af1;
 }
 
 .caseCardDark .eventBadge[data-type='Dance Class'] {

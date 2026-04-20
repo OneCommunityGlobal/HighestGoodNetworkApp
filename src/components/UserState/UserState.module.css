@@ -429,3 +429,52 @@
   background: var(--us-unselected-toggle-bg) !important;
   color: var(--us-unselected-toggle-color) !important;
 }
+
+.swatchesRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.swatchWrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.swatchUsedDot {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  font-size: 8px;
+  color: #e53e3e;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.colorWarning {
+  width: 100%;
+  font-size: 12px;
+  color: #e53e3e;
+  margin-top: 6px;
+  margin-bottom: 0;
+}
+
+.emojiUsed {
+  position: relative;
+  opacity: 0.6;
+}
+
+.emojiUsedIndicator {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 6px;
+  color: #e53e3e;
+  line-height: 1;
+}
+
+.emojiWarning {
+  grid-column: 1 / -1;
+  margin-top: 4px;
+  margin-bottom: 0;
+}
