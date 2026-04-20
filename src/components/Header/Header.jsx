@@ -168,7 +168,6 @@ export function Header(props) {
   const unreadNotifications = props.notification?.unreadNotifications; // List of unread notifications
   const dispatch = useDispatch();
   const history = useHistory();
-
   const [showProjectDropdown, setShowProjectDropdown] = useState(false);
 
   useEffect(() => {
@@ -406,7 +405,7 @@ export function Header(props) {
   const viewingUser = JSON.parse(window.sessionStorage.getItem('viewingUser'));
   return (
     <div className={`${styles.headerWrapper}`} data-testid="header">
-      <Navbar className={`py-3 ${styles.navbar}`} color="dark" dark expand="xl">
+      <Navbar className={`py-3 ${styles.navbar}`} color="dark" dark expand={true}>
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
         {showPromotionsPopup && <DisplayBox onClose={() => setShowPromotionsPopup(false)} />}
   
@@ -760,7 +759,7 @@ export function Header(props) {
                       <DropdownItem divider className={styles.hideInMobile} />
                       <DropdownItem
                         tag={Link}
-                        to="/pr-dashboard/overview"
+                        to="/pr-dashboard/analytics"
                         className={fontColor}
                         disabled={headerDisabled}
                       >
@@ -906,9 +905,13 @@ export function Header(props) {
           </Card>
         </div>
       )}
-      {props.auth.isAuthenticated && unreadNotifications?.length > 0 ? (
-        <NotificationCard notification={unreadNotifications[0]} />
-      ) : null}
+      {props.auth.isAuthenticated && (
+        <div className={styles.notificationOverlay}>
+          {unreadNotifications?.length > 0 ? (
+            <NotificationCard notification={unreadNotifications[0]} />
+          ) : null}
+        </div>
+      )}
       <div className={darkMode ? styles.headerMargin : styles.headerMarginLight} />
     </div>
   );  
