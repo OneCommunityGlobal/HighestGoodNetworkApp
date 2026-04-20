@@ -34,7 +34,16 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, outerRadius, percent, width }
 };
 
 // Custom tooltip component
-const CustomTooltip = ({ active, payload, total, hasNoData, toolName, projectName, toolId, darkMode }) => {
+const CustomTooltip = ({
+  active,
+  payload,
+  total,
+  hasNoData,
+  toolName,
+  projectName,
+  toolId,
+  darkMode,
+}) => {
   if (!active || !payload || !payload.length) {
     return null;
   }
@@ -53,7 +62,9 @@ const CustomTooltip = ({ active, payload, total, hasNoData, toolName, projectNam
           maxWidth: '200px',
         }}
       >
-        <div style={{ fontWeight: '600', color: darkMode ? '#e0e0e0' : '#333' }}>📊 No Tools Match</div>
+        <div style={{ fontWeight: '600', color: darkMode ? '#e0e0e0' : '#333' }}>
+          📊 No Tools Match
+        </div>
         <div style={{ color: darkMode ? '#c5d0dd' : '#666', fontSize: '12px' }}>
           No tools match the selected combination
         </div>
@@ -76,7 +87,9 @@ const CustomTooltip = ({ active, payload, total, hasNoData, toolName, projectNam
         }}
       >
         <div style={{ fontWeight: '600', color: darkMode ? '#e0e0e0' : '#333' }}>{toolName}</div>
-        <div style={{ color: darkMode ? '#c5d0dd' : '#666', fontSize: '12px' }}>❌ Not used in this project</div>
+        <div style={{ color: darkMode ? '#c5d0dd' : '#666', fontSize: '12px' }}>
+          ❌ Not used in this project
+        </div>
       </div>
     );
   }

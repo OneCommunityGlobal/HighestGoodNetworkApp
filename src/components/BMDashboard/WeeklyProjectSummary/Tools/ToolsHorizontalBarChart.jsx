@@ -395,7 +395,9 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
               transition: 'filter 0.25s ease, opacity 0.25s ease',
             }}
           >
-            <div style={{ textAlign: 'center', width: '100%', maxWidth: '360px', padding: '0 12px' }}>
+            <div
+              style={{ textAlign: 'center', width: '100%', maxWidth: '360px', padding: '0 12px' }}
+            >
               <div
                 style={{
                   fontSize: '28px',
@@ -452,7 +454,10 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
       )}
 
       {selectedProject?.value && !loading && !error && data.length > 0 && (
-        <div className={styles['tools-horizontal-bar-chart-content']} style={{ flex: 1, minHeight: 0 }}>
+        <div
+          className={styles['tools-horizontal-bar-chart-content']}
+          style={{ flex: 1, minHeight: 0 }}
+        >
           <ResponsiveContainer width="100%" height={Math.max(data.length * 100 + 60, 320)}>
             <BarChart
               layout="vertical"

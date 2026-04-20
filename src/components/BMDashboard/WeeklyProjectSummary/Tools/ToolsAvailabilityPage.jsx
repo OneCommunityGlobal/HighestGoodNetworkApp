@@ -113,9 +113,7 @@ function ToolsAvailabilityPage() {
   };
 
   return (
-    <div
-      className={`tools-availability-page ${darkMode ? 'dark-mode' : ''}`}
-    >
+    <div className={`tools-availability-page ${darkMode ? 'dark-mode' : ''}`}>
       <div className="tools-availability-content">
         <div className="tools-chart-filters">
           <div className="filter-group">
