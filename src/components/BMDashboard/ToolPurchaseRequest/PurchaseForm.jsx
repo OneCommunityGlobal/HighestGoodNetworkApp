@@ -7,6 +7,7 @@ import Joi from 'joi-browser';
 
 import { boxStyle } from '~/styles';
 import { purchaseTools } from '~/actions/bmdashboard/toolActions';
+import BMCharacterLimitHint from '../shared/BMCharacterLimitHint';
 
 import styles from './PurchaseForm.module.css';
 
@@ -433,16 +434,7 @@ export default function PurchaseForm() {
             setDesc(currentTarget.value.slice(0, DESC_CHAR_LIMIT));
           }}
         />
-        <FormText
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            gap: '1rem',
-          }}
-        >
-          <span>Max {DESC_CHAR_LIMIT} characters</span>
-          <span aria-live="polite">{DESC_CHAR_LIMIT - desc.length} characters left</span>
-        </FormText>
+        <BMCharacterLimitHint limit={DESC_CHAR_LIMIT} length={desc.length} />
       </FormGroup>
       <FormGroup>
         <Label for="input-brand">Preferred Make &amp; Model (optional)</Label>

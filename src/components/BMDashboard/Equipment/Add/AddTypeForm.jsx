@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
 
 import { addEquipmentType, fetchAllEquipments } from '~/actions/bmdashboard/equipmentActions';
+import BMCharacterLimitHint from '../../shared/BMCharacterLimitHint';
 
 const FuelTypes = {
   dies: 'Diesel',
@@ -111,20 +112,11 @@ export default function AddTypeForm() {
           invalid={errInput === 'desc'}
           onChange={handleChange}
         />
-        <div
-          className="form-footer"
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            gap: '1rem',
-            color: 'black',
-          }}
-        >
-          <span>
-            Character {desc.length}/{DESC_CHAR_LIMIT}
-          </span>
-          <span aria-live="polite">{DESC_CHAR_LIMIT - desc.length} characters left</span>
-        </div>
+        <BMCharacterLimitHint
+          limit={DESC_CHAR_LIMIT}
+          length={desc.length}
+          summary={`Character ${desc.length}/${DESC_CHAR_LIMIT}`}
+        />
         {/* {!errInput && <FormText>Max 150 characters</FormText>} */}
         <FormFeedback>
           {errType === 'string.max'
