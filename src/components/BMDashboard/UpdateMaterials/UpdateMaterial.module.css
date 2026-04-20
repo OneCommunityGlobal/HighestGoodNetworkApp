@@ -96,3 +96,55 @@
   overflow-y: scroll;
   height: 75vh;
 }
+
+/* 🌙 Dark Mode Support — HGN Theme */
+
+/* Page background */
+:global(.dark-mode) .updateMaterialPage {
+  background-color: #3A506B; /* Yinmn Blue */
+  color: #ffffff;
+}
+
+/* Card container */
+:global(.dark-mode) .updateMaterial {
+  background-color: #1B2A41; /* Muted Oxford Blue */
+  color: #ffffff;
+  border: 1px solid #2a2f3a;
+}
+
+/* Labels */
+:global(.dark-mode) .materialFormLabel {
+  color: #4DA8DA; /* light blue accent */
+}
+
+/* Values */
+:global(.dark-mode) .materialFormValue {
+  color: #ffffff;
+}
+
+/* Buttons */
+:global(.dark-mode) .materialButtonOutline {
+  color: #ffffff !important;
+  border-color: #ffffff !important;
+}
+
+:global(.dark-mode) .materialButtonOutline:hover {
+  background-color: #1C2541 !important; /* Space Cadet */
+  color: #ffffff !important;
+}
+
+:global(.dark-mode) .materialButtonBg {
+  background-color: #1C2541 !important; /* Space Cadet */
+  color: #ffffff !important;
+}
+
+:global(.dark-mode) .materialButtonBg:hover {
+  background-color: #3A506B !important; /* Yinmn Blue */
+  color: #ffffff !important;
+}
+
+/* Modal container */
+:global(.dark-mode) .updateModalContainer {
+  background-color: #1B2A41; /* Muted Oxford Blue */
+  color: #ffffff;
+}

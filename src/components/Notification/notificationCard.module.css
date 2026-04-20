@@ -1,0 +1,33 @@
+.notificationContainer {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 0 16px;
+  box-sizing: border-box;
+}
+
+.notificationCard {
+  width: min(720px, 100%);
+  margin: 8px 0;
+  border-radius: 12px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+}
+
+.notificationCard :global(.card-body) {
+  padding: 16px 18px;
+}
+
+.fade {
+  animation: notificationFade 0.25s ease-out forwards;
+}
+
+@keyframes notificationFade {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
