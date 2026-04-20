@@ -1,24 +1,45 @@
 .tools-availability-page {
+  --tools-bg: #ffffff;
+  --tools-text: #000000;
+  --tools-card: #fafafa;
+  --tools-section: #ffffff;
+  --tools-border: #d1d5db;
+  --tools-input-bg: #ffffff;
+  --tools-input-border: #d1d5db;
+  --tools-select-bg: #ffffff;
+  --tools-select-hover: #f3f4f6;
+
   padding: 24px;
   min-height: 100vh;
-  background-color: var(--bg-color);
+  background-color: var(--tools-bg);
+  color: var(--tools-text);
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 .tools-availability-page.dark-mode {
-  background-color: var(--dark-bg);
+  --tools-bg: #1b2a41;
+  --tools-text: #ffffff;
+  --tools-card: #2b3e59;
+  --tools-section: #253342;
+  --tools-border: #3a506b;
+  --tools-input-bg: #253342;
+  --tools-input-border: #3a506b;
+  --tools-select-bg: #253342;
+  --tools-select-hover: #3a506b;
 }
 
 .tools-availability-content {
   max-width: 1200px;
   margin: 0 auto;
   padding: 24px;
-  background-color: var(--card-bg);
+  background-color: var(--tools-section);
   border-radius: 8px;
-  box-shadow: 0 2px 5px var(--card-shadow);
+  box-shadow: 0 2px 5px var(--card-shadow, rgba(0,0,0,0.1));
 }
 
 .tools-availability-page.dark-mode .tools-availability-content {
-  background-color: var(--section-bg);
+  background-color: var(--tools-section);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 /* Filter section styling */
@@ -79,8 +100,8 @@
 
 /* Dark mode date picker styling */
 .tools-availability-page.dark-mode .date-picker {
-  background-color: #2c3344;
-  border-color: #364156;
+  background-color: var(--tools-input-bg);
+  border-color: var(--tools-input-border);
   color: #e0e0e0;
 }
 
@@ -90,7 +111,7 @@
 }
 
 .tools-availability-page.dark-mode .date-picker:hover {
-  border-color: #4b5563;
+  border-color: var(--tools-input-border);
 }
 
 /* "to" text styling */
@@ -184,9 +205,9 @@
 }
 
 .tools-availability-page.dark-mode .select-loading {
-  background-color: #2c3344;
+  background-color: var(--tools-input-bg);
   color: #9ca3af;
-  border-color: #364156;
+  border-color: var(--tools-input-border);
 }
 
 .tools-availability-page.dark-mode .select-error {

@@ -59,51 +59,6 @@ function ToolsAvailabilityPage() {
     setEndDate('');
   };
 
-  // Apply dark mode styles to document body when in dark mode
-  useEffect(() => {
-    if (darkMode) {
-      document.body.classList.add('dark-mode-body');
-    } else {
-      document.body.classList.remove('dark-mode-body');
-    }
-
-    // Add dark mode CSS
-    if (!document.getElementById('dark-mode-styles')) {
-      const styleElement = document.createElement('style');
-      styleElement.id = 'dark-mode-styles';
-      styleElement.innerHTML = `
-        .dark-mode-body .tools-availability-page {
-          background-color: #1e2736 !important;
-          color: #e0e0e0 !important;
-        }
-        .dark-mode-body .tools-availability-content {
-          background-color: #1e2736 !important;
-          color: #e0e0e0 !important;
-        }
-        .dark-mode-body .recharts-wrapper,
-        .dark-mode-body .recharts-surface {
-          background-color: #1e2736 !important;
-        }
-        .dark-mode-body .recharts-layer {
-          background-color: #1e2736 !important;
-        }
-      `;
-      document.head.appendChild(styleElement);
-    }
-
-    return () => {
-      // Cleanup
-      document.body.classList.remove('dark-mode-body');
-    };
-  }, [darkMode]);
-
-  const darkModeStyles = darkMode
-    ? {
-        backgroundColor: '#1e2736',
-        color: '#e0e0e0',
-      }
-    : {};
-
   // Render project selection based on loading and error states
   const renderProjectSelection = () => {
     if (loading) {
@@ -130,16 +85,16 @@ function ToolsAvailabilityPage() {
             ? {
                 control: baseStyles => ({
                   ...baseStyles,
-                  backgroundColor: '#2c3344',
-                  borderColor: '#364156',
+                  backgroundColor: '#253342',
+                  borderColor: '#3a506b',
                 }),
                 menu: baseStyles => ({
                   ...baseStyles,
-                  backgroundColor: '#2c3344',
+                  backgroundColor: '#253342',
                 }),
                 option: (baseStyles, state) => ({
                   ...baseStyles,
-                  backgroundColor: state.isFocused ? '#364156' : '#2c3344',
+                  backgroundColor: state.isFocused ? '#3a506b' : '#253342',
                   color: '#e0e0e0',
                 }),
                 singleValue: baseStyles => ({
@@ -158,11 +113,8 @@ function ToolsAvailabilityPage() {
   };
 
   return (
-    <div
-      className={`tools-availability-page ${darkMode ? 'dark-mode' : ''}`}
-      style={darkModeStyles}
-    >
-      <div className="tools-availability-content" style={darkModeStyles}>
+    <div className={`tools-availability-page ${darkMode ? 'dark-mode' : ''}`}>
+      <div className="tools-availability-content">
         <div className="tools-chart-filters">
           <div className="filter-group">
             <label htmlFor="project-select">Project</label>
