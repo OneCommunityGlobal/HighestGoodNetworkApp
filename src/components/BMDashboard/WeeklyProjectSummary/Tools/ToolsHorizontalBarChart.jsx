@@ -1,30 +1,51 @@
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import Select from 'react-select';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../../utils/URL';
-import './ToolsHorizontalBarChart.module.css';
+import './ToolsHorizontalBarChart.css';
 
 // Custom tooltip component
-function CustomTooltip({ active, payload, label }) {
+function CustomTooltip({ active, payload, label, darkMode }) {
   if (!active || !payload || !payload.length) return null;
 
   const total = payload.reduce((sum, entry) => sum + (entry.value || 0), 0);
 
   return (
-    <div className="tools-horizontal-bar-chart-tooltip">
-      <p className="tools-horizontal-bar-chart-tooltip-label">{label}</p>
+    <div
+      className="tools-horizontal-bar-chart-tooltip"
+      style={{
+        backgroundColor: darkMode ? 'rgba(27, 42, 65, 0.97)' : 'rgba(255, 255, 255, 0.95)',
+        borderColor: darkMode ? '#3a506b' : '#ccc',
+      }}
+    >
+      <p
+        className="tools-horizontal-bar-chart-tooltip-label"
+        style={{ color: darkMode ? '#e0e0e0' : '#333' }}
+      >
+        {label}
+      </p>
       {payload.map((entry, index) => (
         <p key={index} style={{ color: entry.color }}>
           {entry.name}: {entry.value}
         </p>
       ))}
-      <p className="tools-horizontal-bar-chart-tooltip-total">Total: {total}</p>
+      <p
+        className="tools-horizontal-bar-chart-tooltip-total"
+        style={{
+          color: darkMode ? '#e0e0e0' : '#333',
+          borderTopColor: darkMode ? 'rgba(255, 255, 255, 0.2)' : '#eee',
+        }}
+      >
+        Total: {total}
+      </p>
     </div>
   );
 }
 
-function ToolsHorizontalBarChart({ darkMode }) {
+function ToolsHorizontalBarChart() {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -156,6 +177,7 @@ function ToolsHorizontalBarChart({ darkMode }) {
     const end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
     setStartDate(start.toISOString().split('T')[0]);
     setEndDate(end.toISOString().split('T')[0]);
+    setSelectedProject(null);
   };
 
   return (
@@ -185,19 +207,19 @@ function ToolsHorizontalBarChart({ darkMode }) {
                 ? {
                     control: baseStyles => ({
                       ...baseStyles,
-                      backgroundColor: '#2c3344',
-                      borderColor: '#364156',
+                      backgroundColor: '#253342',
+                      borderColor: '#3a506b',
                       minHeight: '32px',
                       fontSize: '12px',
                     }),
                     menu: baseStyles => ({
                       ...baseStyles,
-                      backgroundColor: '#2c3344',
+                      backgroundColor: '#253342',
                       fontSize: '12px',
                     }),
                     option: (baseStyles, state) => ({
                       ...baseStyles,
-                      backgroundColor: state.isFocused ? '#364156' : '#2c3344',
+                      backgroundColor: state.isFocused ? '#3a506b' : '#253342',
                       color: '#e0e0e0',
                       fontSize: '12px',
                     }),
@@ -277,44 +299,70 @@ function ToolsHorizontalBarChart({ darkMode }) {
       {/* 1) NO PROJECT SELECTED => SHOW PLACEHOLDER + HOVER PREVIEW */}
       {!selectedProject?.value && (
         <div
-          className="tools-horizontal-bar-chart-preview-wrapper"
+          style={{
+            position: 'relative',
+            height: '200px',
+            border: `1px dashed ${darkMode ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.15)'}`,
+            borderRadius: '8px',
+            background: darkMode ? '#1f2e40' : 'rgba(0,0,0,0.02)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'hidden',
+            cursor: 'default',
+          }}
           onMouseEnter={() => setIsPreviewHovering(true)}
           onMouseLeave={() => setIsPreviewHovering(false)}
         >
+          {/* Tooltip — only visible on hover */}
           <div
-            className={`tools-horizontal-bar-chart-preview-tooltip ${
-              isPreviewHovering ? 'show' : ''
-            }`}
+            style={{
+              position: 'absolute',
+              top: '12px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              background: darkMode ? 'rgba(27,42,65,0.97)' : 'rgba(255,255,255,0.95)',
+              border: `1px solid ${darkMode ? '#3a506b' : 'rgba(0,0,0,0.12)'}`,
+              borderRadius: '10px',
+              padding: '10px 14px',
+              fontSize: '13px',
+              fontWeight: 600,
+              color: darkMode ? '#fff' : '#111',
+              boxShadow: '0 6px 16px rgba(0,0,0,0.12)',
+              opacity: isPreviewHovering ? 1 : 0,
+              pointerEvents: 'none',
+              transition: 'opacity 0.25s ease',
+              textAlign: 'center',
+              whiteSpace: 'nowrap',
+              zIndex: 2,
+            }}
           >
             Hover to preview — apply filters to load data.
           </div>
 
+          {/* Silhouette body — blurs on hover */}
           <div
-            className={`tools-horizontal-bar-chart-preview-body ${
-              isPreviewHovering ? 'hover' : ''
-            }`}
+            style={{
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              filter: isPreviewHovering ? 'blur(1px)' : 'none',
+              opacity: isPreviewHovering ? 0.92 : 1,
+              transition: 'filter 0.25s ease, opacity 0.25s ease',
+            }}
           >
-            <div className="tools-horizontal-bar-chart-preview-inner">
-              <div className="tools-horizontal-bar-chart-preview-title">📊 Chart Preview</div>
-              <div className="tools-horizontal-bar-chart-preview-subtitle">
-                Apply filters to load data
-              </div>
-
-              {/* axes + layout silhouette only */}
-              <div className="tools-horizontal-bar-chart-preview-silhouette">
-                <div className="silhouette-row">
-                  <div className="silhouette-label" />
-                  <div className="silhouette-bar w80" />
+            <div style={{ textAlign: 'center', width: '100%', maxWidth: '360px', padding: '0 12px' }}>
+              <div style={{ fontSize: '28px', fontWeight: 800, color: darkMode ? '#ffffff' : '#111', marginBottom: '6px' }}>📊 Chart Preview</div>
+              <div style={{ fontSize: '14px', color: darkMode ? 'rgba(224,224,224,0.6)' : 'rgba(0,0,0,0.45)', marginBottom: '14px' }}>Select a project to load data</div>
+              {/* Bar silhouette rows */}
+              {[80, 55, 70].map((w, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                  <div style={{ width: '40px', height: '10px', borderRadius: '3px', background: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)' }} />
+                  <div style={{ width: `${w}%`, height: '14px', borderRadius: '4px', background: darkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.1)' }} />
                 </div>
-                <div className="silhouette-row">
-                  <div className="silhouette-label" />
-                  <div className="silhouette-bar w55" />
-                </div>
-                <div className="silhouette-row">
-                  <div className="silhouette-label" />
-                  <div className="silhouette-bar w70" />
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
@@ -330,12 +378,13 @@ function ToolsHorizontalBarChart({ darkMode }) {
       )}
 
       {selectedProject?.value && !loading && !error && data.length > 0 && (
-        <div className="tools-horizontal-bar-chart-content">
-          <ResponsiveContainer width="100%" height={200}>
+        <div className="tools-horizontal-bar-chart-content" style={{ flex: 1, minHeight: 0 }}>
+          <ResponsiveContainer width="100%" height={Math.max(data.length * 100 + 60, 320)}>
             <BarChart
               layout="vertical"
               data={data}
-              margin={{ top: 10, right: 30, left: 40, bottom: 10 }}
+              margin={{ top: 10, right: 80, left: 40, bottom: 10 }}
+              barSize={40}
             >
               <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
               <XAxis type="number" hide />
@@ -343,11 +392,16 @@ function ToolsHorizontalBarChart({ darkMode }) {
                 type="category"
                 dataKey="name"
                 tick={{ fill: darkMode ? '#e0e0e0' : '#333', fontSize: 12 }}
-                width={35}
+                width={80}
                 axisLine={false}
                 tickLine={false}
               />
-              <Tooltip content={<CustomTooltip />} />
+              <Tooltip
+                content={<CustomTooltip darkMode={darkMode} />}
+                cursor={{ fill: 'rgba(0,0,0,0.05)' }}
+                wrapperStyle={{ zIndex: 10, outline: 'none', pointerEvents: 'none' }}
+                position={{ x: 0, y: -110 }}
+              />
               <Bar dataKey="inUse" stackId="a" fill="#2196F3" name="In Use" />
               <Bar dataKey="needsReplacement" stackId="a" fill="#F44336" name="Needs Replacement" />
               <Bar dataKey="yetToReceive" stackId="a" fill="#FF9800" name="Yet to Receive" />

@@ -46,6 +46,40 @@
   color: var(--donut-text-color);
 }
 
+.tool-donut-wrapper select {
+  width: 220px;
+  margin-top: 8px;
+  padding: 10px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 14px;
+  background-color: #ffffff;
+  color: #111827;
+  font-size: 20px;
+  line-height: 1.2;
+  outline: none;
+}
+
+.tool-donut-wrapper select:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.dark-mode.tool-donut-wrapper select {
+  background-color: #253342;
+  color: #ffffff;
+  border-color: #3a506b;
+}
+
+.dark-mode.tool-donut-wrapper select:focus {
+  border-color: #5b89c2;
+  box-shadow: 0 0 0 2px rgba(91, 137, 194, 0.25);
+}
+
+.dark-mode.tool-donut-wrapper select option {
+  background-color: #253342;
+  color: #ffffff;
+}
+
 .filter-value {
   font-size: 14px;
   color: #888;
