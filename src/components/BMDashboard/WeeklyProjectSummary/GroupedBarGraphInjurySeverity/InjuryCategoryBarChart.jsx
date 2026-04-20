@@ -166,6 +166,7 @@ function InjuryCategoryBarChart() {
     injuryTypeFilter,
     startDate,
     endDate,
+  ]);
 
   const selectStyles = darkMode && {
     control: base => ({
