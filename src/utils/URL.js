@@ -382,6 +382,12 @@ export const ENDPOINTS = {
   // pr dashboard endpoints
   PROMOTION_ELIGIBILITY: `${APIEndpoint}/promotion-eligibility`,
   PROMOTE_MEMBERS: `${APIEndpoint}/promote-members`,
+
+  // LinkedIn autoposter endpoints
+  LINKEDIN_POST: `${APIEndpoint}/postToLinkedIn`,
+  LINKEDIN_SCHEDULED_POSTS: `${APIEndpoint}/scheduledPosts`,
+  LINKEDIN_SCHEDULED_POST_BY_ID: postId => `${APIEndpoint}/scheduledPosts/${postId}`,
+  LINKEDIN_POST_NOW: jobId => `${APIEndpoint}/postNow/${jobId}`,
 };
 
 export const ApiEndpoint = APIEndpoint;

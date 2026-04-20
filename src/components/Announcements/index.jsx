@@ -8,12 +8,13 @@ import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
 import { boxStyle, boxStyleDark } from '../../styles';
 import { toast } from 'react-toastify';
 import { Upload, Calendar, X, Loader, Edit, Trash2 } from 'lucide-react';
+import { ENDPOINTS } from '../../utils/URL';
 
 
-function Announcements() {
+function Announcements({ email, title }) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const dispatch = useDispatch();
-  const [emailList, setEmailList] = useState([]);
+  const [emailList, setEmailList] = useState(email ? [email] : []);
   const [emailContent, setEmailContent] = useState('');
   const [headerContent, setHeaderContent] = useState('');
   
@@ -23,6 +24,7 @@ function Announcements() {
   const [scheduleDate, setScheduleDate] = useState('');
   const [scheduleTime, setScheduleTime] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isCanceling, setIsCanceling] = useState(false);
   
   const [showEditor, setShowEditor] = useState(true); // State to control rendering of the editor
   const [scheduledPosts, setScheduledPosts] = useState([]);
@@ -38,7 +40,6 @@ function Announcements() {
     license_key: 'gpl',
     selector: 'textarea#open-source-plugins',
     height: 500,
-    menubar: false,
     plugins: [
       'advlist autolink lists link image paste',
       'charmap print preview anchor help',
@@ -157,7 +158,7 @@ function Announcements() {
       return;
     }
 
-    dispatch(sendEmail(emailList.join(','), 'Weekly Update', htmlContent));
+    dispatch(sendEmail(emailList.join(','), title || 'Weekly Update', htmlContent));
   };
 
   const handleBroadcastEmails = () => {
@@ -166,7 +167,7 @@ function Announcements() {
       ${emailContent}
     </div>
   `;
-    dispatch(broadcastEmailsToAll('Weekly Update', htmlContent));
+    dispatch(broadcastEmailsToAll(title || 'Weekly Update', htmlContent));
   };
 
   // Handle media upload
@@ -297,7 +298,7 @@ function Announcements() {
       // });
 
       const response = await axios.post(
-        'http://localhost:4500/api/postToLinkedIn',
+        ENDPOINTS.LINKEDIN_POST,
         formData,
         {
           headers: {
@@ -314,7 +315,7 @@ function Announcements() {
       if (response.data.success) {
          if (editingJobId) {
           try {
-            await axios.delete(`http://localhost:4500/api/scheduledPosts/${editingJobId}`);
+            await axios.delete(ENDPOINTS.LINKEDIN_SCHEDULED_POST_BY_ID(editingJobId));
             toast.success('Old post deleted after rescheduling');
           } catch (error) {
             console.error('Failed to delete old post:', error);
@@ -398,7 +399,7 @@ function Announcements() {
 
   const fetchScheduledPosts = async () => {
     try {
-      const response = await axios.get('http://localhost:4500/api/scheduledPosts');
+      const response = await axios.get(ENDPOINTS.LINKEDIN_SCHEDULED_POSTS);
       if (response.data.success) {
         setScheduledPosts(response.data.scheduledPosts);
       } else {
@@ -422,7 +423,7 @@ function Announcements() {
     setIsCanceling(true);
     try {
       console.log('Canceling post:', postId);
-      const response = await axios.delete(`http://localhost:4500/api/scheduledPosts/${postId}`);
+      const response = await axios.delete(ENDPOINTS.LINKEDIN_SCHEDULED_POST_BY_ID(postId));
       console.log('Cancel response:', response.data);
       
       toast.success('Post cancelled successfully');
@@ -633,7 +634,7 @@ function Announcements() {
     <button
       className="mt-2 px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700"
       onClick={async () => {
-        const res = await fetch(`http://localhost:4500/api/postNow/${post.jobId}`, {
+        const res = await fetch(ENDPOINTS.LINKEDIN_POST_NOW(post.jobId), {
           method: 'POST',
         });
         const data = await res.json();
@@ -665,7 +666,7 @@ function Announcements() {
       onClick={async () => {
         if (!window.confirm('Are you sure you want to delete this post?')) return;
         try {
-          await axios.delete(`http://localhost:4500/api/scheduledPosts/${post.jobId}`);
+          await axios.delete(ENDPOINTS.LINKEDIN_SCHEDULED_POST_BY_ID(post.jobId));
           toast.success('Post deleted successfully');
           fetchScheduledPosts();
         } catch (err) {
@@ -696,6 +697,7 @@ function Announcements() {
           <input
             type="text"
             id="email-list-input"
+            defaultValue={email || ''}
             onChange={handleEmailListChange}
             className="input-text-for-announcement"
           />
