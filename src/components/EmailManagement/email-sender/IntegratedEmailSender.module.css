@@ -1,0 +1,1192 @@
+/* Enhanced Email Sender Styles */
+
+/* Main Email Sender Container - Add padding */
+.email-sender {
+  padding: 0 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Page Title - Better styling */
+.email-sender .page-title-container {
+  margin-bottom: 1.5rem;
+  padding-left: 0.5rem;
+}
+
+.email-sender .page-title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #343a40;
+  margin: 0;
+}
+
+/* Email Controls Container */
+.email-controls-container {
+  width: 100%;
+  margin-bottom: 2rem;
+  padding: 0 0.5rem;
+}
+
+.email-controls-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Mode Buttons (Templates/Custom) */
+.mode-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.mode-buttons .btn {
+  border-radius: 6px;
+  border: 1px solid #dee2e6;
+  font-weight: 500;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  min-width: 90px;
+  padding: 0.4rem 0.7rem;
+}
+
+.mode-buttons .btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.mode-buttons .btn:active {
+  transform: translateY(0);
+}
+
+.mode-buttons .btn-primary {
+  background: #007bff;
+  border-color: #007bff;
+  color: white;
+}
+
+.mode-buttons .btn-outline-primary {
+  background: white;
+  color: #007bff;
+  border-color: #007bff;
+}
+
+.mode-buttons .btn-outline-primary:hover {
+  background: #007bff;
+  color: white;
+}
+
+.mode-buttons .btn-success {
+  background: #28a745;
+  border-color: #28a745;
+  color: white;
+}
+
+.mode-buttons .btn-outline-success {
+  background: white;
+  color: #28a745;
+  border-color: #28a745;
+}
+
+.mode-buttons .btn-outline-success:hover {
+  background: #28a745;
+  color: white;
+}
+
+/* Email Distribution Radio Buttons - Compact */
+.distribution-options {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.distribution-option {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: white;
+  font-size: 0.9rem;
+  position: relative;
+}
+
+.distribution-option:hover {
+  border-color: #007bff;
+  background: #f8f9fa;
+}
+
+.distribution-option.selected {
+  border-color: #007bff;
+  background: #e3f2fd;
+  color: #007bff;
+}
+
+.distribution-option input[type="radio"] {
+  margin-right: 0.5rem;
+}
+
+.option-icon {
+  font-size: 1.1rem;
+  margin-right: 0.5rem;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.action-buttons .btn {
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+  min-width: 100px;
+  padding: 0.5rem 1rem;
+}
+
+.action-buttons .btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.action-buttons .btn:active {
+  transform: translateY(0);
+}
+
+.sending-email-btn {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Email Sending Progress */
+.email-sending-progress {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+}
+
+.progress-container {
+  width: 100%;
+}
+
+.progress-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  color: #495057;
+  font-weight: 500;
+}
+
+.progress-bar-container {
+  position: relative;
+  height: 8px;
+  background: #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.progress-bar-sending {
+  height: 100%;
+  background: #007bff;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: #007bff;
+  border-radius: 4px;
+  animation: progress-pulse 2s ease-in-out infinite;
+}
+
+@keyframes progress-pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.progress-text {
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+/* Template Selection */
+.template-selection-container {
+  margin-bottom: 1rem;
+}
+
+.template-select {
+  width: 100%;
+  border-radius: 6px;
+  border: 1px solid #ced4da;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.template-select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.template-select-disabled {
+  background-color: #e9ecef;
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.template-info {
+  font-size: 0.8rem;
+  color: #6c757d;
+  margin-top: 0.5rem;
+}
+
+.template-error-message {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #dc3545;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+.error-icon {
+  color: #dc3545;
+}
+
+.error-text {
+  flex: 1;
+}
+
+.template-retry-simple {
+  margin-top: 0.5rem;
+}
+
+.retry-btn-simple {
+  background: #dc3545;
+  border: 1px solid #dc3545;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  transition: all 0.2s ease;
+}
+
+.retry-btn-simple:hover {
+  background: #c82333;
+  border-color: #bd2130;
+  color: white;
+}
+
+.retry-btn-simple:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Template Variables */
+.template-variables {
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.variables-header {
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.variables-header h6 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #343a40;
+  margin: 0;
+}
+
+/* Table Improvements */
+.template-variables .table {
+  margin-bottom: 0;
+  background: white;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.template-variables .table thead th {
+  background: #e9ecef;
+  color: #495057;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0.85rem;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.template-variables .table tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.template-variables .table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.template-variables .table tbody td {
+  padding: 1rem 0.85rem;
+  vertical-align: middle;
+  border-color: #e9ecef;
+}
+
+/* Empty Variables State */
+.empty-variables-state {
+  background: #f8f9fa;
+  border-radius: 6px;
+  border: 1px dashed #dee2e6;
+  margin-top: 0.5rem;
+}
+
+.variable-label {
+  font-weight: 600;
+  color: #343a40;
+  margin-bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.95rem;
+}
+
+.variable-input {
+  width: 100%;
+  border-radius: 6px;
+  border: 1.5px solid #ced4da;
+  padding: 0.65rem 0.85rem;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  background: white;
+}
+
+.variable-input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.15);
+  outline: none;
+}
+
+.variable-input:hover:not(:focus) {
+  border-color: #adb5bd;
+}
+
+.variable-textarea {
+  min-height: 100px;
+  resize: vertical;
+  font-family: inherit;
+}
+
+/* Editor Container */
+.editor-container {
+  position: relative;
+  border: none;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.editor-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: #f8f9fa;
+  color: #6c757d;
+}
+
+.editor-suspense {
+  min-height: 200px;
+}
+
+.editor-fallback {
+  padding: 1rem;
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 6px;
+  color: #856404;
+}
+
+/* Shimmer Loading */
+.template-shimmer-container {
+  margin-bottom: 1rem;
+}
+
+.shimmer-select-wrapper {
+  margin-bottom: 0.5rem;
+}
+
+.shimmer-select {
+  width: 100%;
+  height: 38px;
+  background: #e9ecef;
+  border-radius: 6px;
+}
+
+.shimmer-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.shimmer-line {
+  height: 16px;
+  background: #e9ecef;
+  border-radius: 4px;
+}
+
+.shimmer-short {
+  width: 60%;
+}
+
+.shimmer-animated {
+  background: linear-gradient(90deg, #e9ecef 25%, #f8f9fa 50%, #e9ecef 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Skeleton Loader */
+.skeleton-loader {
+  background: #e9ecef;
+  border-radius: 4px;
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton-animated {
+  background: linear-gradient(90deg, #e9ecef 25%, #f8f9fa 50%, #e9ecef 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.enhanced-loader {
+  text-align: center;
+  padding: 2rem;
+}
+
+.fallback-card {
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  background: white;
+}
+
+
+/* Empty content message */
+.empty-content-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  text-align: center;
+  padding: 2rem;
+}
+
+.empty-content-message p {
+  margin: 0;
+  font-size: 1rem;
+  color: #6c757d;
+}
+
+.empty-content-message i {
+  color: #17a2b8;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) and (min-width: 769px) {
+  .email-sender {
+    padding: 0 1.5rem;
+  }
+
+  .email-controls-row {
+    gap: 0.75rem;
+  }
+
+  .mode-buttons .btn,
+  .action-buttons .btn {
+    font-size: 0.8rem;
+    padding: 0.35rem 0.6rem;
+    min-width: 80px;
+  }
+}
+
+@media (max-width: 768px) {
+  .email-sender {
+    padding: 0 1rem;
+  }
+
+  .email-controls-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .mode-buttons,
+  .action-buttons {
+    justify-content: center;
+  }
+
+  .distribution-options {
+    flex-direction: column;
+    gap: 0.75rem;
+    padding-left: 0;
+  }
+
+  .distribution-option {
+    justify-content: center;
+  }
+}
+
+/* Action Buttons Dark Mode */
+.dark-mode .action-buttons .btn-outline-secondary {
+  background: #2d3748;
+  color: #e2e8f0;
+  border-color: #4a5568;
+}
+
+.dark-mode .action-buttons .btn-outline-secondary:hover {
+  background: #4a5568;
+  color: #e2e8f0;
+  border-color: #718096;
+}
+
+.dark-mode .action-buttons .btn-primary {
+  background: #3182ce;
+  border-color: #3182ce;
+  color: white;
+}
+
+.dark-mode .action-buttons .btn-primary:hover {
+  background: #2c5aa0;
+  border-color: #2c5aa0;
+  color: white;
+}
+
+.dark-mode .action-buttons .btn-primary:disabled {
+  background: #4a5568;
+  border-color: #4a5568;
+  color: #a0aec0;
+  opacity: 0.7;
+}
+
+/* Dark Mode Support */
+.dark-mode .email-controls-container {
+  color: #e2e8f0;
+}
+
+.dark-mode .email-sender .page-title {
+  color: #e2e8f0;
+}
+
+/* Variable Type Badges */
+.template-variables .badge {
+  padding: 0.35rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.dark-mode .mode-buttons .btn-outline-primary {
+  background: #2d3748;
+  color: #63b3ed;
+  border-color: #4a5568;
+}
+
+.dark-mode .mode-buttons .btn-outline-primary:hover {
+  background: #3182ce;
+  color: white;
+}
+
+.dark-mode .mode-buttons .btn-outline-success {
+  background: #2d3748;
+  color: #68d391;
+  border-color: #4a5568;
+}
+
+.dark-mode .mode-buttons .btn-outline-success:hover {
+  background: #38a169;
+  color: white;
+}
+
+.dark-mode .distribution-option {
+  background: #2d3748;
+  border-color: #4a5568;
+  color: #e2e8f0;
+}
+
+.dark-mode .distribution-option:hover {
+  border-color: #63b3ed;
+  background: #4a5568;
+}
+
+.dark-mode .distribution-option.selected {
+  border-color: #63b3ed;
+  background: #2b6cb0;
+  color: #e2e8f0;
+}
+
+.dark-mode .template-select {
+  background: #2d3748;
+  border-color: #4a5568;
+  color: #e2e8f0;
+}
+
+.dark-mode .template-select:focus {
+  border-color: #63b3ed;
+  box-shadow: 0 0 0 0.2rem rgba(99, 179, 237, 0.25);
+}
+
+.dark-mode .template-variables {
+  background: #1a202c;
+  border-color: #2d3748;
+}
+
+.dark-mode .variables-header {
+  border-bottom-color: #4a5568;
+}
+
+.dark-mode .variables-header h6 {
+  color: #e2e8f0;
+}
+
+.dark-mode .template-variables .table {
+  background: #2d3748;
+}
+
+.dark-mode .template-variables .table thead th {
+  background: #4a5568;
+  color: #e2e8f0;
+  border-color: #718096;
+}
+
+.dark-mode .template-variables .table tbody tr:hover {
+  background-color: #374151;
+}
+
+.dark-mode .template-variables .table tbody td {
+  background: #2d3748;
+  color: #e2e8f0;
+  border-color: #4a5568;
+}
+
+.dark-mode .template-variables .variable-input {
+  background: #374151;
+  border-color: #4a5568;
+  color: #e2e8f0;
+}
+
+.dark-mode .template-variables .variable-input:focus {
+  border-color: #63b3ed;
+  box-shadow: 0 0 0 0.2rem rgba(99, 179, 237, 0.15);
+}
+
+.dark-mode .template-variables .variable-input:hover:not(:focus) {
+  border-color: #718096;
+}
+
+.dark-mode .template-variables .form-control {
+  background: #4a5568;
+  border-color: #718096;
+  color: #e2e8f0;
+}
+
+.dark-mode .template-variables .form-select {
+  background: #4a5568;
+  border-color: #718096;
+  color: #e2e8f0;
+}
+
+.dark-mode .template-variables .variable-label {
+  color: #e2e8f0;
+}
+
+.dark-mode .template-variables .badge {
+  background: #4a5568;
+  color: #e2e8f0;
+}
+
+.dark-mode .empty-variables-state {
+  background: #4a5568;
+  border-color: #718096;
+  color: #e2e8f0;
+}
+
+.dark-mode .invalid-feedback {
+  color: #f8d7da !important;
+}
+
+/* Simple Modal Styles - Component Scoped */
+.email-sender .modal-content {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.email-sender .modal-header {
+  background: #007bff;
+  color: white;
+  border-bottom: none;
+  border-radius: 12px 12px 0 0;
+  padding: 1.25rem 1.5rem;
+  font-weight: 600;
+}
+
+.email-sender .modal-header .btn-close {
+  filter: brightness(0) invert(1);
+}
+
+.email-sender .modal-body {
+  padding: 1.5rem;
+  background: #ffffff;
+}
+
+.email-sender .modal-footer {
+  background: #f8f9fa;
+  border-top: 1px solid #dee2e6;
+  border-radius: 0 0 12px 12px;
+  padding: 1rem 1.5rem;
+}
+
+/* Preview & Send Modal - Uses standard Bootstrap modal styling (matching template info modal) */
+
+/* Legacy Preview Modal Styles (for backward compatibility) */
+.email-sender .preview-info {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.email-sender .preview-field {
+  margin-bottom: 0.75rem;
+  color: #495057;
+}
+
+.email-sender .preview-field:last-child {
+  margin-bottom: 0;
+}
+
+.email-sender .preview-field strong {
+  color: #495057;
+  font-weight: 600;
+}
+
+.email-sender .preview-content {
+  background: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 1rem;
+  min-height: 200px;
+  color: #495057;
+}
+
+/* Dark Mode - Simple and Bulletproof */
+.email-sender.dark-mode .modal-content {
+  background: #2d3748 !important;
+  border: 1px solid #4a5568 !important;
+  color: #e2e8f0 !important;
+}
+
+.email-sender.dark-mode .modal-header {
+  background: #3182ce !important;
+  color: #e2e8f0 !important;
+  border-bottom: 1px solid #4a5568 !important;
+}
+
+.email-sender.dark-mode .modal-body {
+  background: #2d3748 !important;
+  color: #e2e8f0 !important;
+}
+
+.email-sender.dark-mode .modal-footer {
+  background: #4a5568 !important;
+  border-top: 1px solid #718096 !important;
+}
+
+.email-sender.dark-mode .preview-info {
+  background: #4a5568 !important;
+  border: 1px solid #718096 !important;
+}
+
+.email-sender.dark-mode .preview-field {
+  color: #e2e8f0 !important;
+}
+
+.email-sender.dark-mode .preview-field strong {
+  color: #e2e8f0 !important;
+}
+
+.email-sender.dark-mode .preview-content {
+  background: #1a202c !important;
+  border-color: #4a5568 !important;
+  color: #e2e8f0 !important;
+}
+
+.email-sender.dark-mode .confirm-info {
+  background: #4a5568 !important;
+  border: 1px solid #718096 !important;
+}
+
+.email-sender.dark-mode .confirm-field {
+  color: #e2e8f0 !important;
+}
+
+.email-sender.dark-mode .confirm-field strong {
+  color: #e2e8f0 !important;
+}
+
+.email-sender.dark-mode .confirm-warning {
+  background: #744210 !important;
+  border-color: #d69e2e !important;
+}
+
+.email-sender.dark-mode .confirm-warning small {
+  color: #f6e05e !important;
+}
+
+/* Preview & Send Modal - Dark mode handled by Bootstrap's dark mode classes */
+
+/* Dark Mode Buttons */
+.email-sender.dark-mode .btn-secondary {
+  background: #4a5568 !important;
+  border-color: #718096 !important;
+  color: #e2e8f0 !important;
+}
+
+.email-sender.dark-mode .btn-secondary:hover {
+  background: #718096 !important;
+  border-color: #a0aec0 !important;
+  color: #e2e8f0 !important;
+}
+
+.email-sender.dark-mode .btn-primary {
+  background: #3182ce !important;
+  border-color: #3182ce !important;
+  color: white !important;
+}
+
+.email-sender.dark-mode .btn-primary:hover {
+  background: #2c5aa0 !important;
+  border-color: #2c5aa0 !important;
+  color: white !important;
+}
+
+/* ========================================
+   IMPROVED FORM STYLING
+   ======================================== */
+
+/* Main Form Container - Add consistent padding */
+.email-sender form {
+  padding: 0 0.5rem;
+}
+
+/* Form Groups - Better spacing */
+.email-sender .form-group {
+  margin-bottom: 2rem;
+  padding: 0;
+}
+
+/* Form Labels - Better typography and spacing */
+.email-sender .form-label,
+.email-sender label {
+  font-weight: 600;
+  color: #343a40;
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+  display: block;
+  padding-left: 0.25rem;
+}
+
+/* Select Template Dropdown - Enhanced */
+.email-sender .template-select {
+  font-size: 0.95rem;
+  padding: 0.75rem 2.5rem 0.75rem 1rem;
+  border: 1.5px solid #ced4da;
+  transition: all 0.2s ease;
+  color: #495057;
+  font-weight: 500;
+  width: 100%;
+  height: auto;
+  min-height: 45px;
+  line-height: 1.5;
+  appearance: none;
+  background-color: white;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 12px;
+  white-space: nowrap;
+  overflow: visible;
+  text-overflow: ellipsis;
+}
+
+.email-sender .template-select option {
+  color: #212529;
+  font-weight: 400;
+  padding: 0.5rem;
+}
+
+.email-sender .template-select:hover:not(:disabled) {
+  border-color: #adb5bd;
+}
+
+/* Template Selection Container - Add padding */
+.email-sender .template-selection-container {
+  padding: 0;
+}
+
+/* Email Distribution Section - Enhanced with padding */
+.email-sender .distribution-options {
+  padding-left: 0.25rem;
+}
+
+.email-sender .distribution-option {
+  padding: 0.85rem 1.5rem;
+  border: 2px solid #dee2e6;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.email-sender .distribution-option:hover {
+  border-color: #007bff;
+  background: #f8f9fa;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.email-sender .distribution-option.selected {
+  border-color: #007bff;
+  background: #e7f3ff;
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.15);
+}
+
+/* Recipients Textarea - Enhanced with more padding */
+.email-sender textarea.form-control {
+  border: 1.5px solid #ced4da;
+  border-radius: 6px;
+  padding: 0.75rem;
+  padding-bottom: 3rem;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  line-height: 1.6;
+  min-height: 120px;
+}
+
+.email-sender textarea.form-control:hover:not(:focus) {
+  border-color: #adb5bd;
+}
+
+.email-sender textarea.form-control:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.15);
+}
+
+.email-sender textarea.form-control::placeholder {
+  color: #6c757d;
+  font-size: 0.875rem;
+}
+
+/* Form Section Titles - Better styling */
+.email-sender h6,
+.email-sender .section-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #343a40;
+  margin-bottom: 0.75rem;
+}
+
+/* Info Text - Better styling */
+.email-sender .template-info,
+.email-sender small.text-muted {
+  font-size: 0.8rem;
+  color: #6c757d;
+  display: block;
+  margin-top: 0.5rem;
+}
+
+/* Dark Mode for Form Improvements */
+.email-sender.dark-mode .form-label,
+.email-sender.dark-mode label {
+  color: #e2e8f0;
+}
+
+.email-sender.dark-mode .template-select {
+  background: #2d3748;
+  border-color: #4a5568;
+  color: #e2e8f0;
+}
+
+.email-sender.dark-mode .template-select option {
+  background: #2d3748;
+  color: #e2e8f0;
+}
+
+.email-sender.dark-mode .template-select:hover:not(:disabled) {
+  border-color: #718096;
+}
+
+.email-sender.dark-mode textarea.form-control {
+  background: #2d3748;
+  border-color: #4a5568;
+  color: #e2e8f0;
+}
+
+.email-sender.dark-mode textarea.form-control:hover:not(:focus) {
+  border-color: #718096;
+}
+
+.email-sender.dark-mode textarea.form-control::placeholder {
+  color: #a0aec0;
+}
+
+.email-sender.dark-mode .distribution-option {
+  border-color: #4a5568;
+}
+
+.email-sender.dark-mode .distribution-option.selected {
+  background: #2b6cb0;
+  border-color: #63b3ed;
+}
+
+
+/* Draft notification animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.draft-notification {
+  animation: fadeIn 0.3s ease-in;
+}
+
+/* Alert button gaps */
+.alert .gap-2 {
+  gap: 0.5rem !important;
+}
+
+.alert .d-flex.gap-2 > * {
+  margin-left: 0 !important;
+}
+
+/* Offline warning styling */
+.alert-warning {
+  border-left: 4px solid #ffc107;
+}
+
+.alert-info {
+  border-left: 4px solid #17a2b8;
+}
+
+/* Draft notification responsive */
+@media (max-width: 768px) {
+  .draft-notification {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+  
+  .draft-notification .d-flex.gap-2 {
+    margin-top: 0.75rem;
+    width: 100%;
+  }
+  
+  .draft-notification .d-flex.gap-2 button {
+    flex: 1;
+  }
+}
+
+/* Clear Draft button styling */
+.action-buttons .btn-outline-danger {
+  border-color: #dc3545;
+  color: #dc3545;
+}
+
+.action-buttons .btn-outline-danger:hover {
+  background-color: #dc3545;
+  color: #ffffff;
+}
+
+/* Dark mode adjustments for alerts */
+[data-theme="dark"] .alert-info,
+.dark-mode .alert-info {
+  background-color: rgba(23, 162, 184, 0.2);
+  border-color: #17a2b8;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .alert-warning,
+.dark-mode .alert-warning {
+  background-color: rgba(255, 193, 7, 0.2);
+  border-color: #ffc107;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .alert-info small,
+[data-theme="dark"] .alert-warning small,
+.dark-mode .alert-info small,
+.dark-mode .alert-warning small {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Email preview content - constrain images for better readability */
+.email-preview-content img {
+  max-width: 100% !important;
+  height: auto !important;
+  display: block;
+  margin: 10px 0;
+  object-fit: contain;
+}
+
+/* Ensure text content after images is visible */
+.email-preview-content {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Better spacing for preview content */
+.email-preview-content p {
+  margin-bottom: 0.5rem;
+}
+
+.email-preview-content > *:last-child {
+  margin-bottom: 0;
+}
