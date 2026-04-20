@@ -218,7 +218,7 @@ export default function MaterialUsageDashboard() {
                 {loading && (
                   <div className={styles.loadingArea}>
                     <div className={styles.loadingSpinner} />
-                    <p>Loading data...</p>
+                    <p className={styles.loadingText}>Loading data...</p>
                   </div>
                 )}
                 {!loading && chartData && (
@@ -282,7 +282,7 @@ export default function MaterialUsageDashboard() {
                     />
                   </div>
                 )}
-                {!loading && !chartData && <p>No data available</p>}
+                {!loading && !chartData && <p className={styles.noDataText}>No data available</p>}
               </div>
               {/* Material Breakdown List */}
               {chartData && !loading && (

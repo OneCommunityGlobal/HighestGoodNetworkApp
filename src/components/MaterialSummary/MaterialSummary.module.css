@@ -2,13 +2,13 @@
   width: 100%;
   padding: 0;
   margin: 0;
-  background-color: var(--bg-color);
+  background-color: var(--bg-color, #f3f4f6);
   min-height: calc(100vh - 70px);
   transition: background-color 0.3s ease, color 0.3s ease;
   --bg-color: #f3f4f6;
   --text-color: #000;
-  --card-bg: #ffffff;
-  --card-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+  --card-bg: #fff;
+  --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 10%);
   --secondary-text: #6b7280;
   --border-color: #d1d5db;
   --input-bg: #fff;
@@ -20,10 +20,10 @@
 }
 
 .dashboardWrapper.darkMode {
-  --bg-color: #1B2A41;
+  --bg-color: #1b2a41;
   --text-color: #f1f1f1;
   --card-bg: #2a3f5f;
-  --card-shadow: 0 4px 6px -1px rgba(0,0,0,0.3);
+  --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 30%);
   --secondary-text: #b0b0b0;
   --border-color: #4a5f7f;
   --input-bg: #1f3a52;
@@ -70,6 +70,10 @@
   outline: none;
   background-color: var(--input-bg);
   color: var(--input-text);
+}
+
+.selectInput:focus {
+  border-color: var(--focus-border-color, #3b82f6);
 }
 
 .checkboxGroup {
@@ -123,6 +127,7 @@
   background: #dcfce7;
   color: #166534;
 }
+
 .trendBadgeDecrease {
   background: #fee2e2;
   color: #991b1b;
@@ -180,9 +185,24 @@
   margin-bottom: 8px;
 }
 
+.loadingText {
+  color: var(--text-color);
+  margin: 0;
+}
+
+.noDataText {
+  color: var(--secondary-text);
+  margin: 0;
+}
+
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .materialBreakdown {
@@ -256,7 +276,7 @@
   width: 100%;
 }
 
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
   .gridContainer {
     grid-template-columns: 1fr;
     padding: 32px 24px;
