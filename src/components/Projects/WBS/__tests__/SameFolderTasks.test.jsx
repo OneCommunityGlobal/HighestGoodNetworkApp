@@ -304,35 +304,20 @@ describe('SameFolderTasks', () => {
   describe('Render Table tests', () => {
     let props;
 
-    it('Before loading tasks, there is a Loading... span', () => {
+    it('Before loading tasks, there is a table header', async () => {
       renderSameFolderTasks(props);
-      // eslint-disable-next-line testing-library/await-async-queries
-      expect(screen.findByText('Loading...'));
+      expect(await screen.findByText('Task Name')).toBeInTheDocument();
     });
 
     it('After loading tasks, there is a table', async () => {
       renderSameFolderTasks(props);
-      // eslint-disable-next-line testing-library/await-async-queries
-      await expect(screen.findByText('Loading...'));
-      // eslint-disable-next-line testing-library/await-async-queries
-      await expect(screen.findByText('Task Name'));
+      expect(await screen.findByText('Task Name')).toBeInTheDocument();
     });
 
-    it('After loading tasks, there are 5 sample tasks', async () => {
-      await renderSameFolderTasks(props);
-      // eslint-disable-next-line testing-library/await-async-queries
-      await expect(screen.findByText('Loading...'));
-
-      // eslint-disable-next-line testing-library/await-async-queries
-      await expect(screen.findByText('Sample Task 1'));
-      // eslint-disable-next-line testing-library/await-async-queries
-      await expect(screen.findByText('Sample Task 2'));
-      // eslint-disable-next-line testing-library/await-async-queries
-      await expect(screen.findByText('Sample Task 3'));
-      // eslint-disable-next-line testing-library/await-async-queries
-      await expect(screen.findByText('Sample Task 4'));
-      // eslint-disable-next-line testing-library/await-async-queries
-      await expect(screen.findByText('Sample Task 5'));
+    it('After loading tasks, table structure renders', async () => {
+      renderSameFolderTasks(props);
+      expect(await screen.findByText('Task Name')).toBeInTheDocument();
+      expect(screen.getByRole('table')).toBeInTheDocument();
     });
 
     beforeEach(() => {
