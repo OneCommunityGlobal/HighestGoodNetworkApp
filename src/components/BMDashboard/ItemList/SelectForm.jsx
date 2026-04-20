@@ -1,7 +1,9 @@
 import { Form, FormGroup, Label, Input } from 'reactstrap';
-import styles from './ItemListView.module.css';
+import { useSelector } from 'react-redux';
 
 export default function SelectForm({ items, setSelectedProject, setSelectedItem }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   let projectsSet = [];
   if (items.length) {
     projectsSet = [...new Set(items.map(el => el.project?.name))];
@@ -14,28 +16,31 @@ export default function SelectForm({ items, setSelectedProject, setSelectedItem 
 
   return (
     <Form>
-      <FormGroup className={`${styles.selectInput}`}>
-        <Label htmlFor="select-project">Project:</Label>
+      <FormGroup className="select_input">
+        <Label htmlFor="select-project" style={{ color: darkMode ? 'white' : 'inherit' }}>
+          Project:
+        </Label>
         <Input
           id="select-project"
           name="select-project"
           type="select"
           onChange={handleChange}
           disabled={!items.length}
+          style={{ color: darkMode ? 'white' : 'inherit' }}
         >
           {items.length ? (
             <>
-              <option value="all">All</option>
-              {projectsSet.map(name => {
-                return (
-                  <option key={name} value={name}>
-                    {name}
-                  </option>
-                );
-              })}
+              <option value="all" style={{ color: darkMode ? 'white' : 'inherit' }}>
+                All
+              </option>
+              {projectsSet.map(name => (
+                <option key={name} value={name} style={{ color: darkMode ? 'white' : 'inherit' }}>
+                  {name}
+                </option>
+              ))}
             </>
           ) : (
-            <option>No data</option>
+            <option style={{ color: darkMode ? 'white' : 'inherit' }}>No data</option>
           )}
         </Input>
       </FormGroup>
