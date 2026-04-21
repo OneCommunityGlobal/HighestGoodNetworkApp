@@ -62,7 +62,7 @@
   max-height: 200px;
   overflow-y: auto;
   z-index: 1000;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgb(0 0 0 / 10%);
   margin-top: 4px;
 }
 
@@ -141,21 +141,22 @@ body.dark-mode .suggestion-link {
   color: #ccc;
 }
 
-body.dark-mode .star {
-  color: #555;
+:global(body.dark-mode) .star {
+  color: #555 !important;
 }
 
-body.dark-mode .star:hover {
-  color: #ffc107;
-}
-
-body.dark-mode .star.selected {
-  color: #ffc107;
+:global(body.dark-mode) .star:hover,
+:global(body.dark-mode) .star.selected {
+  color: #ffc107 !important;
 }
 
 body.dark-mode .autocomplete-dropdown {
   background: #2d2d2d;
   border-color: #444;
+}
+
+:global(body.dark-mode) .autocomplete-item {
+  border-bottom-color: #444 !important;
 }
 
 body.dark-mode .autocomplete-item {
@@ -177,6 +178,7 @@ body.dark-mode .user-details {
 body.dark-mode .loading {
   color: #fff;
 }
+
 /* Dark Mode Support - Issues #6 & #7 */
 :global(body.dark-mode) .feedback-modal :global(.modal-content) {
   background-color: #1e1e1e !important;
@@ -222,10 +224,6 @@ body.dark-mode .loading {
   border-color: #444 !important;
 }
 
-:global(body.dark-mode) .autocomplete-item {
-  border-bottom-color: #444 !important;
-}
-
 :global(body.dark-mode) .autocomplete-item:hover {
   background-color: #3d3d3d !important;
 }
@@ -248,13 +246,4 @@ body.dark-mode .loading {
 
 :global(body.dark-mode) .loading {
   color: #fff !important;
-}
-
-:global(body.dark-mode) .star {
-  color: #555 !important;
-}
-
-:global(body.dark-mode) .star:hover,
-:global(body.dark-mode) .star.selected {
-  color: #ffc107 !important;
 }
