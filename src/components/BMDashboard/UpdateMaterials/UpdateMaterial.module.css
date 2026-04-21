@@ -1,0 +1,150 @@
+.updateMaterialContainer {
+  padding: 0% !important;
+
+}
+
+.updateMaterialPage {
+  background-color: #E8F4F9;
+  width: 100%;
+  height: auto;
+  margin: 0px;
+  padding: 1rem 2rem;
+  font-size: 15px;
+}
+
+.updateMaterial {
+  background-color: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  height: auto;
+}
+
+.materialImage {
+  height: 10rem;
+  width: 10rem;
+  margin-bottom: 1rem;
+}
+
+.materialFormField {
+  margin-bottom: .5rem;
+}
+
+.materialFormLabel {
+  font-weight: 500;
+  font-size: 15px;
+  color: #1C8BCC;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.materialFormError {
+  font-weight: 500;
+  font-size: 11px !important;
+  color: red;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.materialFormTableError {
+  font-weight: 500;
+  font-size: 11px !important;
+  color: red;
+}
+
+.materialFormErrorClr {
+  color: red;
+}
+
+.materialFormValue {
+  font-weight: 400;
+  font-size: 15px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.materialButtonOutline {
+  color: #2E5061 !important;
+}
+
+.materialButtonOutline:hover {
+  background-color: #2E5061 !important;
+  color: white !important
+}
+
+.materialButtonBg {
+  background-color: #2E5061 !important
+}
+
+.materialButtonBg:hover {
+  background-color: white !important;
+  color: #2E5061 !important;
+}
+
+/* .modal-open {
+  padding-right: 0 !important;
+}
+
+.modal-open .modal {
+  overflow-y: hidden !important;
+}
+
+.modal-body {
+  padding: 0 !important;
+} */
+
+.updateModalContainer {
+  overflow-y: scroll;
+  height: 75vh;
+}
+
+/* 🌙 Dark Mode Support — HGN Theme */
+
+/* Page background */
+:global(.dark-mode) .updateMaterialPage {
+  background-color: #3A506B; /* Yinmn Blue */
+  color: #ffffff;
+}
+
+/* Card container */
+:global(.dark-mode) .updateMaterial {
+  background-color: #1B2A41; /* Muted Oxford Blue */
+  color: #ffffff;
+  border: 1px solid #2a2f3a;
+}
+
+/* Labels */
+:global(.dark-mode) .materialFormLabel {
+  color: #4DA8DA; /* light blue accent */
+}
+
+/* Values */
+:global(.dark-mode) .materialFormValue {
+  color: #ffffff;
+}
+
+/* Buttons */
+:global(.dark-mode) .materialButtonOutline {
+  color: #ffffff !important;
+  border-color: #ffffff !important;
+}
+
+:global(.dark-mode) .materialButtonOutline:hover {
+  background-color: #1C2541 !important; /* Space Cadet */
+  color: #ffffff !important;
+}
+
+:global(.dark-mode) .materialButtonBg {
+  background-color: #1C2541 !important; /* Space Cadet */
+  color: #ffffff !important;
+}
+
+:global(.dark-mode) .materialButtonBg:hover {
+  background-color: #3A506B !important; /* Yinmn Blue */
+  color: #ffffff !important;
+}
+
+/* Modal container */
+:global(.dark-mode) .updateModalContainer {
+  background-color: #1B2A41; /* Muted Oxford Blue */
+  color: #ffffff;
+}

@@ -1,14 +1,13 @@
-import React, { useEffect } from 'react';
-import RolePermissions from './RolePermissions';
+import { useEffect } from 'react';
 import { connect } from 'react-redux';
-import './UserRoleTab.css';
-import { getUserProfile } from 'actions/userProfile';
+import styles from './UserRoleTab.module.css';
+import { getUserProfile } from '~/actions/userProfile';
 import { useHistory } from 'react-router-dom';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
+import RolePermissions from './RolePermissions';
 
-
-const UserRoleTab = props => {
-  const darkMode = props.darkMode;
+function UserRoleTab(props) {
+  const { darkMode } = props;
 
   useEffect(() => {
     props.getUserRole(props.auth?.user.userid);
@@ -23,7 +22,7 @@ const UserRoleTab = props => {
 
   if (roleIndex === -1) {
     return (
-      <div className="userRoleTab__container">
+      <div className={styles.userRoleTabContainer}>
         <h1>Error</h1>
         <div>User Role not existent</div>
         <a href="/permissionsmanagement">Back to permissions management</a>
@@ -32,16 +31,17 @@ const UserRoleTab = props => {
   }
 
   const actualRole = props.roles[roleIndex];
-  const permissions = actualRole.permissions;
-  const roleName = actualRole.roleName;
+  const { permissions } = actualRole;
+  const { roleName } = actualRole;
   const roleId = actualRole._id;
 
   return (
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''}>
-      <div className={`userRoleTab__container`}>
+      <div className={`${styles.userRoleTabContainer} pb-5`}>
         <button
+          type="button"
           onClick={() => history.push('/permissionsmanagement')}
-          className="userRoleTab__backBtn"
+          className={styles.userRoleTabBackBtn}
           style={darkMode ? boxStyleDark : boxStyle}
         >
           Back
@@ -57,9 +57,8 @@ const UserRoleTab = props => {
       </div>
     </div>
   );
-};
+}
 
-// export default UserRoleTab;
 const mapStateToProps = state => ({
   roles: state.role.roles,
   auth: state.auth,
@@ -68,6 +67,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
+  // eslint-disable-next-line no-undef
   getAllRoles: () => dispatch(getAllRoles()),
   getUserRole: id => dispatch(getUserProfile(id)),
 });

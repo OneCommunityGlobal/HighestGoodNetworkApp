@@ -4,7 +4,7 @@ import { Component } from 'react';
 import Joi from 'joi';
 import { cloneDeep, isEqual, groupBy } from 'lodash';
 import { Link } from 'react-router-dom';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import Input from '../Input';
 import Dropdown from '../Dropdown';
 import Radio from '../Radio';
@@ -12,204 +12,6 @@ import Image from '../Image';
 import FileUpload from '../FileUpload';
 import TinyMCEEditor from '../TinyceEditor/tinymceEditor';
 import CheckboxCollection from '../CheckboxCollection';
-
-/* const Form = () => {
-  const [data, setData] = useState({});
-  const [errors, setErrors] = useState({});
-
-  const resetForm = () => {
-    setData({});
-    setErrors({});
-  };
-
-  const handleInput = ({ currentTarget: input }) => {
-    handleState(input.name, input.value);
-  };
-
-  const handleRichTextEditor = ({ target }) => {
-    let { id } = target;
-    handleState(id, target.getContent());
-  };
-
-  const handleCollection = (collection, item, action, index = null) => {
-    let data = data[collection] || [];
-    switch(action){
-      case 'create':
-        data.push(item);
-        break;
-      case 'edit':
-        data[index] = item;
-        break;
-      case 'delete':
-        data.splice(index, 1);
-        break;
-      default:
-        break;
-    }
-    handleState(collection, data);
-  };
-
-  const handleFileUpload = (e, readAsType = 'data') => {
-    const file = e.target.files[0];
-    const reader = new FileReader();
-    let name = e.target.name;
-    if (file) {
-      switch (readAsType) {
-        case 'data':
-          reader.readAsDataURL(file);
-          break;
-        default:
-          break;
-      }
-    }
-    reader.onload = () => handleState(name, reader.result);
-  };
-
-  const handleState = (name, value) => {
-    data[name] = value;
-    const errorMessage = validateProperty(name, value);
-    if (errorMessage) {
-      errors[name] = errorMessage;
-    } else {
-      delete errors[name];
-    }
-    setData(data);
-    setErrors(errors);
-  }; 
-  
-  const isStateChanged = () => !isEqual(data, {});
-
-  const validateProperty = (name, value) => {
-    const obj = { [name]: value };
-    const schema = { [name]: schema[name] };
-    let refs = schema[name]._refs;
-    if (refs) {
-      refs.forEach((ref) => {
-        schema[ref] = schema[ref];
-        obj[ref] = data[ref];
-      });
-    }
-    const { error } = Joi.validate(obj, schema);
-    if (!error) return null;
-    return error.details[0].message;
-  };
-
-  const validateForm = () => {
-    let errors = {};
-    const options = { abortEarly: false };
-    const { error } = Joi.validate(data, schema, options);
-    if (!error) return null;
-    error.details.forEach((element) => {
-      errors[element.path[0]] = element.message;
-    });
-
-    const messages = groupBy(error.details, 'path[0]');
-    Object.keys(messages).forEach((key) => {
-      errors[key] = messages[key].map((item) => item.message).join('. ');
-    });
-    return errors;
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const errors = validateForm();
-    setErrors({ errors: errors || {} });
-    if (errors) return;
-    doSubmit();
-  };
-
-  const renderButton = (label) => {
-    return (
-      <button disabled={validateForm()} className="btn btn-primary">
-        {label}
-      </button>
-    );
-  };
-
-  const renderRichTextEditor = ({ name, ...rest }) => {
-    return (
-      <TinyMCEEditor
-        name={name}
-        value={data[name]}
-        onChange={(e) => handleRichTextEditor(e)}
-        error={errors[name]}
-        {...rest}
-      />
-    );
-  };
-
-  const renderDropDown = ({ name, label, options, ...rest }) => {
-    return (
-      <Dropdown
-        name={name}
-        label={label}
-        options={options}
-        value={data[name]}
-        onChange={(e) => handleInput(e)}
-        error={errors[name]}
-        {...rest}
-      />
-    );
-  };
-
-  const renderInput = ({ name, label, type = 'text', ...rest }) => {
-    return (
-      <Input
-        name={name}
-        type={type}
-        onChange={(e) => handleInput(e)}
-        value={data[name]}
-        label={label}
-        error={errors[name]}
-        {...rest}
-      />
-    );
-  };
-
-  const renderRadio = ({ name, label, type = 'text', ...rest }) => {
-    return (
-      <Radio
-        name={name}
-        value={data[name]}
-        onChange={(e) => handleInput(e)}
-        error={errors[name]}
-        {...rest}
-      />
-    );
-  };
-
-  const renderFileUpload = ({ name, ...rest }) => {
-    return (
-      <FileUpload name={name} onUpload={this.handleFileUpload} {...rest} error={errors[name]} />
-    );
-  };
-
-  const renderCheckboxCollection = ({ collectionName, ...rest }) => {
-    return <CheckboxCollection error={errors[collectionName]} {...rest} />;
-  }
-
-  const renderImage = ({ name, label, ...rest }) => {
-    return (
-      <Image
-        name={name}
-        onChange={(e) => handleInput(e)}
-        value={data[name]}
-        label={label}
-        error={errors[name]}
-        {...rest}
-      />
-    );
-  };
-
-  const renderLink = ({ label, to, className }) => {
-    return (
-      <Link to={to} className={className}>
-        {label}
-      </Link>
-    );
-  };
-}; */
 
 class Form extends Component {
   constructor(props) {
@@ -219,6 +21,7 @@ class Form extends Component {
       errors: {},
     };
 
+    // Default schema — overridden by each derived form
     this.schema = {
       test: Joi.string().required(),
       testEditor: Joi.string().required(),
@@ -238,8 +41,10 @@ class Form extends Component {
       someField: Joi.string().required(),
     };
 
+    // ─── Reset Form ──────────────────────────────────────────────
     this.resetForm = () => this.setState(cloneDeep(this.initialState));
 
+    // ─── Input Handlers ──────────────────────────────────────────
     this.handleInput = ({ currentTarget: input }) => {
       this.handleState(input.name, input.value);
     };
@@ -267,61 +72,70 @@ class Form extends Component {
       this.handleState(collection, data);
     };
 
+    // ─── File Upload ─────────────────────────────────────────────
     this.handleFileUpload = (e, readAsType = 'data') => {
       const file = e.target.files[0];
       const reader = new FileReader();
       const { name } = e.target;
-      if (file) {
-        switch (readAsType) {
-          case 'data':
-            reader.readAsDataURL(file);
-            break;
-          default:
-            break;
-        }
+
+      if (!file) return;
+
+      reader.onload = event => {
+        const result = event.target.result;
+        this.handleState(name, {
+          data: result,
+          name: file.name,
+          type: file.type,
+        });
+      };
+
+      if (readAsType === 'data') {
+        reader.readAsDataURL(file);
       }
-      reader.onload = () => this.handleState(name, reader.result);
     };
 
+    // ─── Generic State Update ───────────────────────────────────
     this.handleState = (name, value) => {
       const { errors, data } = this.state;
       data[name] = value;
-      const errorMessage = this.validateProperty(name, value);
-      if (errorMessage) {
-        errors[name] = errorMessage;
-      } else {
-        delete errors[name];
-      }
+
+      Object.keys(data).forEach(field => {
+        const errorMessage = this.validateProperty(field, data[field]);
+        if (errorMessage) {
+          errors[field] = errorMessage;
+        } else {
+          delete errors[field];
+        }
+      });
+
       this.setState({ data, errors });
     };
 
-    this.isStateChanged = () => !isEqual(this.state.data, this.initialState.data);
+    // ─── Utility ────────────────────────────────────────────────
+    this.isStateChanged = () => !isEqual(this.state.data, this.initialState?.data);
 
+    // ─── Validation (Modern Joi v18) ─────────────────────────────
     this.validateProperty = (name, value) => {
+      if (!this.schema[name]) return null;
+
+      // Build minimal schema
+      const fieldSchema = Joi.object({ [name]: this.schema[name] });
       const obj = { [name]: value };
-      const schema = { [name]: this.schema[name] };
-      const refs = schema[name]._refs;
-      if (refs) {
-        refs.forEach(ref => {
-          schema[ref] = this.schema[ref];
-          obj[ref] = this.state.data[ref];
-        });
-      }
-      const { error } = Joi.validate(obj, schema);
+
+      // Joi now resolves refs internally (no manual _refs needed)
+      const { error } = fieldSchema.validate(obj, { abortEarly: false });
+
       if (!error) return null;
-      return error.details[0].message;
+      const detail = error.details.find(d => d.path[0] === name);
+      return detail ? detail.message : null;
     };
 
     this.validateForm = () => {
-      const errors = {};
       const options = { abortEarly: false };
-      const { error } = Joi.validate(this.state.data, this.schema, options);
-
+      const { error } = Joi.object(this.schema).validate(this.state.data, options);
       if (!error) return null;
-      error.details.forEach(element => {
-        errors[element.path[0]] = element.message;
-      });
 
+      const errors = {};
       const messages = groupBy(error.details, 'path[0]');
       Object.keys(messages).forEach(key => {
         errors[key] = messages[key].map(item => item.message).join('. ');
@@ -329,9 +143,9 @@ class Form extends Component {
       return errors;
     };
 
+    // ─── Submission ─────────────────────────────────────────────
     this.doSubmit = () => {
-      // Here you would typically handle the form submission.
-      // console.log("Form submitted with data");
+      // To be implemented in subclasses
     };
 
     this.handleSubmit = e => {
@@ -344,10 +158,12 @@ class Form extends Component {
     };
   }
 
+  // ─── UI Rendering Helpers ─────────────────────────────────────
+
   renderButton({ label, darkMode }) {
     return (
-      // eslint-disable-next-line react/button-has-type
       <button
+        type="submit"
         disabled={this.validateForm()}
         className="btn btn-primary"
         style={darkMode ? boxStyleDark : boxStyle}
@@ -358,7 +174,7 @@ class Form extends Component {
   }
 
   renderRichTextEditor({ name, ...rest }) {
-    const { data, errors } = { ...this.state };
+    const { data, errors } = this.state;
     return (
       <TinyMCEEditor
         name={name}
@@ -371,7 +187,7 @@ class Form extends Component {
   }
 
   renderDropDown({ name, label, options, ...rest }) {
-    const { data, errors } = { ...this.state };
+    const { data, errors } = this.state;
     return (
       <Dropdown
         name={name}
@@ -385,8 +201,8 @@ class Form extends Component {
     );
   }
 
-  renderInput({ name, label, type = 'text', ...rest }) {
-    const { data, errors } = { ...this.state };
+  renderInput({ name, label, type = 'text', darkMode, ...rest }) {
+    const { data, errors } = this.state;
     return (
       <Input
         name={name}
@@ -400,9 +216,8 @@ class Form extends Component {
     );
   }
 
-  // eslint-disable-next-line no-unused-vars
-  renderRadio({ name, label, type = 'text', ...rest }) {
-    const { data, errors } = { ...this.state };
+  renderRadio({ name, ...rest }) {
+    const { data, errors } = this.state;
     return (
       <Radio
         name={name}
@@ -415,19 +230,19 @@ class Form extends Component {
   }
 
   renderFileUpload({ name, ...rest }) {
-    const { errors } = { ...this.state };
+    const { errors } = this.state;
     return (
       <FileUpload name={name} onUpload={this.handleFileUpload} {...rest} error={errors[name]} />
     );
   }
 
   renderCheckboxCollection({ collectionName, ...rest }) {
-    const { errors } = { ...this.state };
+    const { errors } = this.state;
     return <CheckboxCollection error={errors[collectionName]} {...rest} />;
   }
 
   renderImage({ name, label, ...rest }) {
-    const { data, errors } = { ...this.state };
+    const { data, errors } = this.state;
     return (
       <Image
         name={name}
@@ -440,7 +255,6 @@ class Form extends Component {
     );
   }
 
-  // eslint-disable-next-line class-methods-use-this
   renderLink({ label, to, className }) {
     return (
       <Link to={to} className={className}>

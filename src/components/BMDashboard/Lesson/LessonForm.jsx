@@ -1,84 +1,205 @@
-import { useState, useEffect } from 'react';
+/* eslint-disable testing-library/no-node-access */
+import { useState, useEffect, useRef } from 'react';
 import { Form, FormControl, Button } from 'react-bootstrap';
-import './LessonForm.css';
-import { useParams } from 'react-router-dom';
+import axios from 'axios';
+import { ENDPOINTS } from '~/utils/URL';
+import { useParams, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import postNewLesson from '../../../actions/bmdashboard/lessonActions';
 import { getAllRoles } from '../../../actions/role';
 import { fetchBMProjects } from '../../../actions/bmdashboard/projectActions';
-// import { fetchAllProjects } from '../../../actions/projects'; // fetch all projects (not bmprojects)
 import Noimg from './images/Noimg3.jpg';
+import styles from './LessonForm.module.css';
 
 const style = {
   backgroundImage: `url(${Noimg})`,
 };
+
 function LessonForm() {
+  // Redux and Router hooks
   const dispatch = useDispatch();
-  const user = useSelector(state => state.auth.user); // grab user from store
-  const userId = user ? user.userid : null; // get userID from user object
-  const roles = useSelector(state => state.role.roles); // grab all roles from store
-  // const projects = useSelector(state => state.allProjects.projects); // grab all projects from store(not BM projects)
-  const projects = useSelector(state => state.bmProjects); // grab all BM projects from store
-  const [LessonFormtags, setLessonFormTags] = useState([]); // save all tags user inputs
-  const [tagInput, setTagInput] = useState(''); // track user input in tag input
-  const [selectedFile, setSelectedFile] = useState(null); // track file that was selected or droped in upload appendix
-  const [prevselectedProject, setprevSelectedProject] = useState(null); // used to track the previously project selected for deletion in tags when changed
-  const [selectedProject, setSelectedProject] = useState(null); // Track selected project in Belongs to dropdown
-  const [selectedRole, setSelectedRole] = useState('All'); // track selected role in View by dropdown
-  const [LessonText, setLessonText] = useState(null); // track lesson text
-  const [LessonTitleText, setLessonTitleText] = useState(null); // track lessontitle text
-  const { projectId } = useParams(); // passed project id in parameters
+  const history = useHistory();
+  const { projectId } = useParams();
+  const user = useSelector(state => state.auth.user);
+  const userId = user ? user.userid : null;
+  const roles = useSelector(state => state.role.roles);
+  const projects = useSelector(state => state.bmProjects);
+  const darkMode = useSelector(state => state.theme.darkMode);
+
+  // Local state
+  const [LessonFormtags, setLessonFormTags] = useState([]);
+  const [permanentTags, setPermanentTags] = useState([]);
+  const [tagInput, setTagInput] = useState('');
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [selectedRole, setSelectedRole] = useState('All');
+  const [LessonText, setLessonText] = useState(null);
+  const [LessonTitleText, setLessonTitleText] = useState(null);
   const [projectname, setProjectName] = useState(null);
-  // track user input in the tag input feild
+  const [filteredTags, setFilteredTags] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [suppressInitialFocus, setSuppressInitialFocus] = useState(true);
+  const [hasUserFocused, setHasUserFocused] = useState(false);
+
+  const lessonTitleRef = useRef(null);
+  const lessonTextRef = useRef(null);
+  const formContainerRef = useRef(null);
+  const allowNextFocusRef = useRef(false);
+
+  // Filter tags for autocomplete as user types
   const handleTagInput = e => {
     e.preventDefault();
-    setTagInput(e.target.value);
+    const input = e.target.value;
+    setTagInput(input);
+
+    if (input.trim()) {
+      const filtered = permanentTags.filter(tag => tag.toLowerCase().includes(input.toLowerCase()));
+      setFilteredTags(filtered);
+      setShowDropdown(true);
+    } else {
+      setFilteredTags([]);
+      setShowDropdown(false);
+    }
   };
-  // when user hits enter add the tag to LessonFromtags
-  const addTag = e => {
+
+  // Add a tag from the dropdown selection
+  const handleTagSelection = selectedTag => {
+    if (!LessonFormtags.includes(selectedTag)) {
+      setLessonFormTags([...LessonFormtags, selectedTag]);
+    }
+    setTagInput('');
+    setShowDropdown(false);
+  };
+
+  // Create a new tag via API if it doesn't exist, then add to local state
+  const addTag = async e => {
     e.preventDefault();
-    const trimmedTagInput = tagInput.trim().replace(/\s+/g, ' '); // Replace consecutive spaces with a single space
-    if (trimmedTagInput !== '') {
-      if (!LessonFormtags.includes(trimmedTagInput)) {
-        setLessonFormTags([...LessonFormtags, trimmedTagInput]);
-        setTagInput('');
+    const trimmedTagInput = tagInput.trim().replace(/\s+/g, ' ');
+    if (trimmedTagInput && !LessonFormtags.includes(trimmedTagInput)) {
+      try {
+        const response = await axios.post(ENDPOINTS.BM_TAG_ADD, {
+          tag: trimmedTagInput,
+        });
+        if (response.data) {
+          setLessonFormTags(prev => [...prev, trimmedTagInput]);
+          setPermanentTags(response.data);
+          setTagInput('');
+          toast.success('Tag added successfully');
+        }
+      } catch (error) {
+        const errorMsg = error.response?.data?.details || error.message;
+        toast.error(`Failed to add tag: ${errorMsg}`);
       }
     }
   };
-  // removes tag when 'x' is clicked from LessonFormtags variable
-  const removeTag = tagIndex => {
-    const newTags = LessonFormtags.filter((_, index) => index !== tagIndex);
+
+  const removeTag = tagToRemove => {
+    const newTags = LessonFormtags.filter(tag => tag !== tagToRemove);
     setLessonFormTags(newTags);
   };
-  // removes the previously added project from tags if a new one is selected from belongs to dropdown
-  const removePreviousProject = prevproject => {
-    const newTags = LessonFormtags.filter(project => project !== prevproject);
-    setLessonFormTags(newTags);
+
+  const fetchTags = async () => {
+    try {
+      const response = await axios.get(ENDPOINTS.BM_TAGS);
+      setPermanentTags(response.data);
+    } catch (error) {
+      toast.error('Error fetching tags: ', error.message);
+    }
   };
-  // Dispatch the action to fetch roles and projects when the component mounts
+
+  // Initial data fetch on component mount
   useEffect(() => {
+    fetchTags();
     dispatch(fetchBMProjects(projectId));
     dispatch(getAllRoles());
-  }, [dispatch]);
-  // logic if there is a projectId passed in params(on project specific from) to add the project tag automatically
+  }, [dispatch, projectId]);
+
+  // Focus and Selection management
+  useEffect(() => {
+    if (document.activeElement && document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+    const blurTargets = () => {
+      lessonTitleRef.current?.blur();
+      lessonTextRef.current?.blur();
+      if (document.activeElement && document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
+    };
+    blurTargets();
+    const timer = setTimeout(blurTargets, 50);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    const clearInactiveSelection = () => {
+      const active = document.activeElement;
+      [lessonTitleRef.current, lessonTextRef.current].forEach(el => {
+        if (!el || el === active) return;
+        if (typeof el.setSelectionRange === 'function') {
+          el.setSelectionRange(0, 0);
+        }
+      });
+    };
+    document.addEventListener('selectionchange', clearInactiveSelection);
+    document.addEventListener('mouseup', clearInactiveSelection);
+    document.addEventListener('keyup', clearInactiveSelection);
+    return () => {
+      document.removeEventListener('selectionchange', clearInactiveSelection);
+      document.removeEventListener('mouseup', clearInactiveSelection);
+      document.removeEventListener('keyup', clearInactiveSelection);
+    };
+  }, []);
+
+  const blockInitialFocus = e => {
+    if (!suppressInitialFocus) return;
+    if (allowNextFocusRef.current) {
+      allowNextFocusRef.current = false;
+      setSuppressInitialFocus(false);
+      return;
+    }
+    const target = e.target;
+    if (target && typeof target.blur === 'function') {
+      target.blur();
+    }
+  };
+
+  const allowFocusOnUserAction = () => {
+    allowNextFocusRef.current = true;
+    setHasUserFocused(true);
+  };
+
+  // Handle outside clicks to close the tag dropdown
+  useEffect(() => {
+    const handleClickOutside = event => {
+      const dropdown = document.querySelector(`.${styles.tagDropdown}`);
+      const input = document.querySelector(`.${styles.formControl}`);
+      if (dropdown && !dropdown.contains(event.target) && input && !input.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  // Set default project if projectId exists in URL
   useEffect(() => {
     if (projectId) {
-      // Fetch the project with the given projectId
       const foundProject = projects.find(project => project._id === projectId);
-      // Check if the project is found
       if (foundProject) {
-        // Set the project name as a tag
         setProjectName(foundProject.name);
         setSelectedProject(projectId);
-        setLessonFormTags([projectname]);
       }
     }
   }, [projectId, projects]);
-  // when user selects a file updates selectedFile variable
+
+  // --- File Upload Handlers (Click and Drag-n-Drop) ---
   const handleFileSelection = e => {
-    const file = e.target.files[0]; // Get the selected file
-    setSelectedFile(file); // Update the state with the selected file
+    const file = e.target.files[0];
+    setSelectedFile(file);
   };
 
   const handleClick = () => {
@@ -90,7 +211,6 @@ function LessonForm() {
 
   const handleKeyPress = e => {
     e.preventDefault();
-    // console.log("hi Keypress")
   };
 
   const handleDragOver = e => {
@@ -102,59 +222,96 @@ function LessonForm() {
     const fileInput = document.getElementById('fileInput');
     const file = e.dataTransfer.files[0];
     setSelectedFile(file);
-    // Reset the file input value to clear the selection
     if (fileInput) {
       fileInput.value = '';
     }
   };
+  // ----------------------------------------------------
+
+  const onHandleCancel = () => {
+    history.goBack();
+  };
+
   const handleProjectChange = e => {
     const selectedProjectInput = e.target.value;
     setSelectedProject(selectedProjectInput);
   };
+
   const handleRoleChange = e => {
     const selectedRoleInput = e.target.value;
     setSelectedRole(selectedRoleInput);
   };
+
   const handleLessonInput = e => {
     const lessonforminput = e.target.value;
     setLessonText(lessonforminput);
   };
+
   const handleLessonTitleInput = e => {
     const lessonformtitleinput = e.target.value;
     setLessonTitleText(lessonformtitleinput);
   };
-  useEffect(() => {
-    if (selectedProject && prevselectedProject !== selectedProject) {
-      // Find the project with the selected ID
-      const foundProject = projects.find(project => project._id === selectedProject);
-      // Check if the found project is valid
-      if (foundProject) {
-        setprevSelectedProject(selectedProject);
-        // Remove the tag for the previously selected project
-        if (prevselectedProject) {
-          removePreviousProject(
-            projects.find(project => project._id === prevselectedProject)?.name,
-          );
-        }
-        // Add the project name to the tags array
-        setLessonFormTags(tags => [...tags, foundProject.name]);
+
+  const clearOtherSelections = target => {
+    if (typeof window.getSelection === 'function') {
+      const selection = window.getSelection();
+      if (selection && selection.removeAllRanges) {
+        selection.removeAllRanges();
       }
     }
-  }, [selectedProject, prevselectedProject, projects]);
+    const refs = [lessonTitleRef.current, lessonTextRef.current];
+    refs.forEach(el => {
+      if (!el || el === target) return;
+      if (typeof el.setSelectionRange === 'function') {
+        const end = el.value ? el.value.length : 0;
+        el.setSelectionRange(end, end);
+      }
+    });
+  };
+  // git stash pop
+  const clearSelectionGlobal = () => {
+    if (typeof window.getSelection === 'function') {
+      const selection = window.getSelection();
+      if (selection && selection.removeAllRanges) {
+        selection.removeAllRanges();
+      }
+    }
+    [lessonTitleRef.current, lessonTextRef.current].forEach(el => {
+      if (el && typeof el.setSelectionRange === 'function') {
+        el.setSelectionRange(0, 0);
+      }
+    });
+  };
 
-  // Lesson submit. all the data from user input is in here
+  const enforceDarkInputStyle = e => {
+    if (!darkMode) return;
+    const target = e.currentTarget;
+    clearOtherSelections(target);
+    target.style.setProperty('background-color', '#3A506B', 'important');
+    target.style.setProperty('color', '#ffffff', 'important');
+    target.style.setProperty('border-color', '#556B8D', 'important');
+    target.style.setProperty('box-shadow', '0 0 0 1000px #3A506B inset', 'important');
+    target.style.setProperty('-webkit-box-shadow', '0 0 0 1000px #3A506B inset', 'important');
+  };
+
+  const enforceDarkInputBlurStyle = e => {
+    if (!darkMode) return;
+    const target = e.currentTarget;
+    clearOtherSelections(target);
+    target.style.setProperty('background-color', '#3A506B', 'important');
+    target.style.setProperty('color', '#ffffff', 'important');
+    target.style.setProperty('border-color', '#556B8D', 'important');
+    target.style.setProperty('box-shadow', 'none', 'important');
+    target.style.setProperty('-webkit-box-shadow', 'none', 'important');
+    if (typeof target.setSelectionRange === 'function') {
+      const end = target.value ? target.value.length : 0;
+      target.setSelectionRange(end, end);
+    }
+  };
+
+  // Compile form data and dispatch creation action
   const LessonFormSubmit = async e => {
     e.preventDefault();
-    // console.log(LessonFormtags, "Tags")
-    // console.log(selectedProject, "selected project")
-    // console.log(selectedRole, "selecedRole")
-    // console.log(selectedFile, "selected file")
-    // console.log(LessonText, "lesson text")
-    // console.log(LessonTitleText,"lesson title")
-    if (!LessonFormtags.length) {
-      toast.info('Need atleast one tag');
-      return;
-    }
     if (!selectedProject) {
       toast.info('Need to select a project');
       return;
@@ -170,89 +327,159 @@ function LessonForm() {
     };
     try {
       const response = await dispatch(postNewLesson(lessonData));
-
-      // Check if the response indicates success
       if (response && response._id) {
         toast.success('Lesson Added');
+        fetchTags();
       } else {
-        // Handle unexpected response
         toast.error('Unexpected Response: Lesson may not have been added');
       }
     } catch (error) {
-      // Handle errors, and display the error message
       toast.error('Error Adding Lesson', error.message || 'Unknown error');
     }
   };
+
   return (
-    <div className="MasterContainer">
-      <div className="FormContainer">
-        <Form onSubmit={LessonFormSubmit}>
+    <div className={`${styles.masterContainer} ${darkMode ? styles.darkModeMaster : ''}`}>
+      <div
+        ref={formContainerRef}
+        className={`${styles.formContainer} ${darkMode ? styles.darkModeForm : ''} ${
+          suppressInitialFocus ? styles.suppressInitialFocus : ''
+        } ${!hasUserFocused ? styles.noFocusShadow : ''}`}
+      >
+        <Form
+          onSubmit={LessonFormSubmit}
+          onFocusCapture={blockInitialFocus}
+          onMouseDownCapture={clearSelectionGlobal}
+          onTouchStartCapture={clearSelectionGlobal}
+        >
           <div className="WriteLessonAndTagDiv">
+            {/* Title Input */}
             <Form.Group className="LessonFrom" controlId="exampleForm.ControlTextarea1">
-              <Form.Label className="LessonLabel">Lesson Title</Form.Label>
+              <Form.Label className={`${styles.lessonLabel} ${darkMode ? 'text-light' : ''}`}>
+                Lesson Title
+              </Form.Label>
+              <span className="red-asterisk">* </span>
               <Form.Control
                 required
-                className="LessonTitle"
+                ref={lessonTitleRef}
+                className={`LessonTitle ${darkMode ? styles.darkModeInput : ''}`}
                 type="text"
                 placeholder="Enter title here"
                 onChange={handleLessonTitleInput}
+                onFocus={enforceDarkInputStyle}
+                onBlur={enforceDarkInputBlurStyle}
+                onMouseDown={allowFocusOnUserAction}
+                onTouchStart={allowFocusOnUserAction}
+                onKeyDown={allowFocusOnUserAction}
+                tabIndex={suppressInitialFocus ? -1 : 0}
                 maxLength={40}
+                autoComplete="new-password"
+                name="lessonTitle"
               />
             </Form.Group>
+
+            {/* Content Input */}
             <Form.Group className="LessonForm" controlId="exampleForm.ControlTextarea1">
-              <Form.Label className="LessonLabel">Write a Lesson</Form.Label>
+              <Form.Label className={`${styles.lessonLabel} ${darkMode ? 'text-light' : ''}`}>
+                Write a Lesson
+              </Form.Label>
+              <span className="red-asterisk">* </span>
               <Form.Control
                 required
-                className="LessonPlaceholderText"
+                ref={lessonTextRef}
+                className={`${styles.lessonPlaceholderText} ${
+                  darkMode ? styles.darkModeInput : ''
+                }`}
                 as="textarea"
                 placeholder="Enter the lesson you learn..."
                 rows={10}
                 onChange={handleLessonInput}
+                onFocus={enforceDarkInputStyle}
+                onBlur={enforceDarkInputBlurStyle}
+                onMouseDown={allowFocusOnUserAction}
+                onTouchStart={allowFocusOnUserAction}
+                onKeyDown={allowFocusOnUserAction}
+                tabIndex={suppressInitialFocus ? -1 : 0}
               />
             </Form.Group>
+
+            {/* Tag Selection Area */}
             <Form.Group controlId="exampleForm.ControlInput1">
-              <Form.Label>Add tag</Form.Label>
-              <div className="input-group">
+              <Form.Label className={`${darkMode ? styles.whiteText : ''}`}>
+                Add tag (Press enter to add tag)
+              </Form.Label>
+              <div className={`${styles.inputGroup}`}>
                 <input
                   type="text"
                   placeholder="Input tag for the lesson"
                   value={tagInput}
                   onChange={handleTagInput}
+                  onMouseDown={allowFocusOnUserAction}
+                  onTouchStart={allowFocusOnUserAction}
                   onKeyDown={e => {
+                    allowFocusOnUserAction();
                     if (e.key === 'Enter') {
                       addTag(e);
                     }
                   }}
-                  className="form-control"
+                  className={`${styles.formControl}`}
+                  style={{ color: 'black', WebkitTextFillColor: 'black' /* fallback for Safari */ }}
+                  ref={el => {
+                    if (el) el.style.setProperty('color', 'black', 'important');
+                  }}
                 />
-              </div>
-              <div className="TagsDiv">
-                {LessonFormtags.map((tag, index) => {
-                  const key = `${tag}_${index}`;
-                  return (
-                    <div className="Tag" key={key}>
-                      <span className="TagSpan">{tag}</span>
+                {showDropdown && filteredTags.length > 0 && (
+                  <div
+                    className={`${styles.tagDropdown} ${darkMode ? styles.darkModeDropdown : ''}`}
+                  >
+                    {filteredTags.map(tag => (
                       <button
-                        className="removeTagBTN"
+                        key={tag}
+                        className={`${styles.tagOption} ${darkMode ? 'text-light' : ''}`}
+                        onClick={() => handleTagSelection(tag)}
                         type="button"
-                        onClick={() => removeTag(index)}
+                        style={{
+                          color: 'black',
+                          WebkitTextFillColor: 'black' /* fallback for Safari */,
+                        }}
+                        ref={el => {
+                          if (el) el.style.setProperty('color', 'black', 'important');
+                        }}
                       >
-                        X
+                        {tag}
                       </button>
-                    </div>
-                  );
-                })}
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div className={`${styles.tagsDiv}`}>
+                {LessonFormtags.map(tag => (
+                  <div className={`${styles.tag} ${darkMode ? styles.darkModeTag : ''}`} key={tag}>
+                    <span className={`${styles.tagSpan}`}>{tag}</span>
+                    <button
+                      className={`${styles.removeTagBTN} ${darkMode ? 'text-light' : ''}`}
+                      type="button"
+                      onClick={() => removeTag(tag)}
+                    >
+                      X
+                    </button>
+                  </div>
+                ))}
               </div>
             </Form.Group>
           </div>
-          <div className="FormSelectContainer">
-            <div className="SingleFormSelect">
+
+          <div className={`${styles.formSelectContainer}`}>
+            {/* Project Selection */}
+            <div className={`${styles.singleFormSelect}`}>
               <Form.Group controlId="Form.ControlSelect1">
-                <Form.Label>Belongs to</Form.Label>
+                <Form.Label className={`${darkMode ? styles.whiteText : ''}`}>
+                  Belongs to
+                </Form.Label>
                 <FormControl
                   onChange={handleProjectChange}
                   as="select"
-                  aria-label="Default select example"
+                  className={darkMode ? styles.darkModeInput : ''}
                   disabled={!!projectId}
                 >
                   {!selectedProject && !projectId && <option>Select Project</option>}
@@ -265,12 +492,14 @@ function LessonForm() {
                 </FormControl>
               </Form.Group>
             </div>
-            <div className="SingleFormSelect">
+
+            {/* Role View Selection */}
+            <div className={`${styles.singleFormSelect}`}>
               <Form.Group controlId="Form.ControlSelect2">
-                <Form.Label>View by</Form.Label>
+                <Form.Label className={`${darkMode ? styles.whiteText : ''}`}>View by</Form.Label>
                 <FormControl
                   as="select"
-                  aria-label="Default select example"
+                  className={darkMode ? styles.darkModeInput : ''}
                   onChange={handleRoleChange}
                 >
                   <option>All</option>
@@ -283,9 +512,13 @@ function LessonForm() {
               </Form.Group>
             </div>
           </div>
+
+          {/* File Upload / Drag & Drop Zone */}
           <div className="DragAndDropFormGroup">
             <Form.Group controlId="exampleForm.ControlFile1">
-              <Form.Label>Upload Appendix</Form.Label>
+              <Form.Label className={`${darkMode ? styles.whiteText : ''}`}>
+                Upload Appendix
+              </Form.Label>
               <input
                 type="file"
                 id="fileInput"
@@ -299,25 +532,35 @@ function LessonForm() {
                 onKeyPress={handleKeyPress}
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
-                className={`dragAndDropStyle ${selectedFile ? 'fileSelected' : ''}`}
+                className={`${styles.dragAndDropStyle} ${selectedFile ? styles.fileSelected : ''} ${
+                  darkMode ? styles.darkModeDragDrop : ''
+                }`}
               >
                 {selectedFile ? (
-                  <p>Selected File: {selectedFile.name}</p>
+                  <p className={darkMode ? 'text-light' : ''}>Selected File: {selectedFile.name}</p>
                 ) : (
-                  <div className="TextAndImageDiv">
-                    <div className="ImageDiv" style={style} />
-
-                    <p className="DragandDropText">Drag and drop a file here</p>
+                  <div className={`${styles.textAndImageDiv}`}>
+                    <div className={`${styles.imageDiv}`} style={style} />
+                    <p className={`${styles.dragandDropText} ${darkMode ? 'text-azure' : ''}`}>
+                      Drag and drop a file here
+                    </p>
                   </div>
                 )}
               </div>
             </Form.Group>
           </div>
-          <div className="ButtonDiv">
-            <Button className="LessonFormButtonCancel" type="cancel">
-              Cancel
+
+          <div className={`${styles.buttonDiv}`}>
+            <Button
+              className={`${styles.lessonFormButtonCancel} ${
+                darkMode ? styles.darkModeBtnCancel : ''
+              }`}
+              type="button"
+              onClick={onHandleCancel}
+            >
+              Back
             </Button>
-            <Button className="LessonFormButtonSubmit" type="submit">
+            <Button className={`${styles.lessonFormButtonSubmit}`} type="submit">
               Post
             </Button>
           </div>
@@ -326,4 +569,5 @@ function LessonForm() {
     </div>
   );
 }
+
 export default LessonForm;

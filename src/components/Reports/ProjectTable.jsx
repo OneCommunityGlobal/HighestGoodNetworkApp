@@ -1,8 +1,5 @@
-// eslint-disable-next-line no-unused-vars
 import React from 'react';
-import { boxStyle, boxStyleDark } from 'styles';
-// These styles were not being used
-// import './reports.css';
+import { boxStyle, boxStyleDark } from '~/styles';
 import { Link } from 'react-router-dom';
 
 function ProjectTable({ projects, darkMode }) {
@@ -10,7 +7,7 @@ function ProjectTable({ projects, darkMode }) {
   let ProjectsList = [];
   if (projects.length > 0) {
     ProjectsList = projects.map((project, index) => (
-      <tr id={`tr_${project._id}`} key={project._id} className={darkMode ? 'hover-effect-reports-page-dark-mode' : ''}>
+      <tr data-testid={`project-row-${project._id}`} key={project._id}>
         <th scope="row" className={darkMode ? 'text-light' : ''}>
           <div>{index + 1}</div>
         </th>
@@ -20,11 +17,11 @@ function ProjectTable({ projects, darkMode }) {
         <td>
           {project.isActive ? (
             <div className="isActive">
-              <i className="fa fa-circle" aria-hidden="true" />
+              <i className="fa fa-circle" data-testid="status-icon" aria-hidden="true" />
             </div>
           ) : (
             <div className="isNotActive">
-              <i className="fa fa-circle-o" aria-hidden="true" />
+              <i className="fa fa-circle-o" data-testid="status-icon" aria-hidden="true" />
             </div>
           )}
         </td>
@@ -34,8 +31,8 @@ function ProjectTable({ projects, darkMode }) {
 
   return (
     <table className={`table ${darkMode ? 'bg-yinmn-blue' : 'table-bordered'}`} style={darkMode ? boxStyleDark : boxStyle}>
-      <thead className={darkMode ? "bg-space-cadet text-light" : ""}>
-        <tr className={darkMode ? 'hover-effect-reports-page-dark-mode' : ''}>
+      <thead>
+        <tr className={darkMode ? 'bg-space-cadet text-light' : ''}>
           <th scope="col" id="projects__order">
             #
           </th>
@@ -45,7 +42,7 @@ function ProjectTable({ projects, darkMode }) {
           </th>
         </tr>
       </thead>
-      <tbody>{ProjectsList}</tbody>
+      <tbody className={darkMode ? 'dark-mode' : ''}>{ProjectsList}</tbody>
     </table>
   );
 }

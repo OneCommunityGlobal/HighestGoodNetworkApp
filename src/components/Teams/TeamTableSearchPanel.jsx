@@ -1,36 +1,33 @@
-import React from 'react';
-import { SEARCH, CREATE_NEW_TEAM } from '../../languages/en/ui';
-import hasPermission from 'utils/permissions';
-import { boxStyle } from 'styles';
+/* eslint-disable react/destructuring-assignment */
 import { connect } from 'react-redux';
+import { useEffect, useRef } from 'react';
+import { boxStyle, boxStyleDark } from '~/styles';
+import hasPermission from '~/utils/permissions';
+import { SEARCH, CREATE_NEW_TEAM } from '../../languages/en/ui';
+import styles from './TeamTableSearchPanel.module.css';
 
 /**
  * The search panel stateless component for  Teams grid
  */
-export const TeamTablesearchPanel = props => {
+export function TeamTableSearchPanelBase(props) {
+  const { darkMode } = props;
   const canPostTeam = props.hasPermission('postTeam');
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    inputRef.current.focus(); // Programmatically focus the input
+  }, []);
   return (
     <div className="input-group" id="new_team">
-      {canPostTeam && (
-        <button
-          type="button"
-          className="btn btn-info"
-          onClick={e => {
-            props.onCreateNewTeamClick();
-          }}
-          style={boxStyle}
-        >
-          {CREATE_NEW_TEAM}
-        </button>
-      )}
       <div className="input-group-prepend" style={{ marginLeft: '10px' }}>
-        <span className="input-group-text">{SEARCH}</span>
+        <span className={`input-group-text ${darkMode ? styles.searchLabelDark : ''}`}>
+          {SEARCH}
+        </span>
       </div>
-
       <input
-        autoFocus
+        ref={inputRef}
         type="text"
-        className="form-control"
+        className={`form-control ${darkMode ? styles.searchInputDark : ''}`}
         aria-label="Search"
         placeholder="Search Text"
         id="team-profiles-wild-card-search"
@@ -38,8 +35,19 @@ export const TeamTablesearchPanel = props => {
           props.onSearch(e.target.value);
         }}
       />
+      {canPostTeam && (
+        <button
+          type="button"
+          className="btn btn-info ml-2"
+          onClick={() => {
+            props.onCreateNewTeamClick();
+          }}
+          style={darkMode ? boxStyleDark : boxStyle}
+        >
+          {CREATE_NEW_TEAM}
+        </button>
+      )}
     </div>
   );
-};
-
-export default connect(null, { hasPermission })(TeamTablesearchPanel);
+}
+export default connect(null, { hasPermission })(TeamTableSearchPanelBase);

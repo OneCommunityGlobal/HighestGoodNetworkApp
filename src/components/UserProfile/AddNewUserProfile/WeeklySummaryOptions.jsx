@@ -1,5 +1,6 @@
 import React from 'react';
 import { Input, FormGroup } from 'reactstrap';
+import { useSelector } from 'react-redux';
 
 function WeeklySummaryOptions({ handleUserProfile }) {
   const summaryOptions = [
@@ -14,6 +15,8 @@ function WeeklySummaryOptions({ handleUserProfile }) {
     { value: 'Team Amethyst', text: 'Team Amethyst (Purple)' },
   ];
 
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   return (
     <FormGroup>
       <Input
@@ -22,6 +25,7 @@ function WeeklySummaryOptions({ handleUserProfile }) {
         id="weeklySummaryOption"
         defaultValue="Required"
         onChange={handleUserProfile}
+        className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
       >
         {summaryOptions.map(({ value, text }) => (
           <option key={value} value={value}>

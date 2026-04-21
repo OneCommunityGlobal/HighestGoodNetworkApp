@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import 'reactjs-popup/dist/index.css';
 import { Container } from 'reactstrap';
-import './PeopleTableDetails.css';
+import './PeopleTableDetails.module.css';
 import NewModal from '../common/NewModal';
 import TableFilter from './TableFilter/TableFilter';
+
 
 function PeopleTableDetails(props) {
   const [name, setName] = useState('');
@@ -14,8 +15,19 @@ function PeopleTableDetails(props) {
   const [assign, setAssign] = useState('');
   const [estimatedHours, setEstimatedHours] = useState('');
   const [order, setOrder] = useState('');
-  const [startDate] = useState('');
-  const [endDate] = useState('');
+  const [startDate,updateStartDate] = useState(new Date('01/01/2010'));
+  const [endDate, updateEndDate] = useState(new Date());
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    }
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    }
+  }, [])
 
   const onTaskNameSearch = text => {
     setName(text);
@@ -54,20 +66,50 @@ function PeopleTableDetails(props) {
     setActive('');
     setAssign('');
     setEstimatedHours('');
+    updateStartDate(new Date('01/01/2010'));
+    updateEndDate(new Date());
   };
+
+  const filterOptions = tasks => {
+    let filterTaskslist = tasks.filter(task => {
+      return (
+        task.taskName.toLowerCase().includes(name.toLowerCase()) &&
+        task?.estimatedHours?.toLowerCase().includes(estimatedHours.toLowerCase())
+      );
+    });
+    // addtasknamelist
+    filterTaskslist = filterTaskslist.filter(task => {
+      const tasklist = []
+      for (let i = 0; i < task.taskName.length; i += 1) {
+        tasklist.push(task.taskName[i])
+
+      }
+      return tasklist
+    });
+    return filterTaskslist;
+  }
 
   const filterTasks = tasks => {
     // eslint-disable-next-line no-unused-vars
     const simple = [];
     // eslint-disable-next-line array-callback-return,consistent-return
     let filteredList = tasks.filter(task => {
+      // Convert task dates to Date objects for comparison
+      const taskStartDate = new Date(task.startDate);
+      // const taskEndDate = new Date(task.endDate);
+      
+      // Check if dates are within the selected range
+      const isWithinDateRange = (!startDate || taskStartDate <= endDate) 
+      // && (!endDate || taskEndDate <= endDate);
+
       if (
         task.taskName.toLowerCase().includes(name.toLowerCase()) &&
         task?.priority?.toLowerCase().includes(priority.toLowerCase()) &&
         task?.status?.toLowerCase().includes(status.toLowerCase()) &&
         task?.active?.toLowerCase().includes(active.toLowerCase()) &&
         task?.estimatedHours?.toLowerCase().includes(estimatedHours.toLowerCase()) &&
-        task?.assign?.toLowerCase().includes(assign.toLowerCase())
+        task?.assign?.toLowerCase().includes(assign.toLowerCase()) &&
+        isWithinDateRange
       ) {
         return true;
       }
@@ -98,6 +140,7 @@ function PeopleTableDetails(props) {
   };
   const { taskData, darkMode } = props;
   const filteredTasks = filterTasks(taskData);
+  const filteredOptions = filterOptions(taskData)
 
   const renderFilteredTask = value => (
     <div
@@ -159,21 +202,97 @@ function PeopleTableDetails(props) {
           </div>
         </div>
       </div>
-      <div className="people-table-center-cell">
-        {value.active === 'Yes' ? <span>&#10003;</span> : <span>&#10060;</span>}
+    )
+  }
+
+  const renderFilteredTask = value => (
+    <div>
+      <div key={value._id} className={`people-table-row people-table-body-row ${darkMode ? 'people-table-row-dark' : ''}`}>
+        <div className='people-report-task-name'>{value.taskName}</div>
+        <div>{value.priority}</div>
+        <div>{value.status}</div>
+        <div>
+          {value.resources?.map(res =>
+            res.map((resource, index) => {
+              if (index < 2) {
+                return (
+                  <img
+                    key={`${value._id}-${resource.name}`}
+                    alt={resource.name}
+                    src={resource.profilePic || '/pfp-default.png'}
+                    className="img-circle"
+                    title={resource.name}
+                  />
+                );
+              }
+              return null;
+            }),
+          )}
+          {value.resources?.map((res) =>
+            res.length > 2 ? (
+              <button
+                key={res[0]?.name || res[0]?.id}
+                type="button"
+                className="name resourceMoreToggle"
+                onClick={() => toggleMoreResources(value._id)}
+              >
+                <span className="dot">{res.length - 2}+</span>
+              </button>
+            ) : null,
+          )}
+          <div id={value._id} className="extra">
+            <div className="extra1">
+              {value.resources?.map(res =>
+                // eslint-disable-next-line array-callback-return,consistent-return
+                res.map((resource, index) => {
+                  if (index >= 2) {
+                    return (
+                      <img
+                        key={resource.index}
+                        alt={resource.name}
+                        src={resource.profilePic || '/pfp-default.png'}
+                        className="img-circle"
+                        title={resource.name}
+                      />
+                    );
+                  }
+                }),
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="people-table-center-cell">
+          {value.active === 'Yes' ? <span>&#10003;</span> : <span>&#10060;</span>}
+        </div>
+        <div className="people-table-center-cell">
+          {value.assign === 'Yes' ? <span>&#10003;</span> : <span>&#10060;</span>}
+        </div>
+        <div className="people-table-end-cell">{value.estimatedHours}</div>
+        <div className="people-table-end-cell">{value.startDate}</div>
+        <div className="people-table-end-cell">{value.endDate}</div>
       </div>
-      <div className="people-table-center-cell">
-        {value.assign === 'Yes' ? <span>&#10003;</span> : <span>&#10060;</span>}
-      </div>
-      <div className="people-table-end-cell">{value.estimatedHours}</div>
-      <div className="people-table-end-cell">{value.startDate}</div>
-      <div className="people-table-end-cell">{value.endDate}</div>
     </div>
   );
 
+  // const renderFilteredTask = () => (
+    
+  // )
+
+  const renderModalContent = (value) => (
+    <div>
+      <div>Why This Task is important</div>
+      <textarea className="rectangle" type="text" value={value.whyInfo} />
+      <div>Design Intent</div>
+      <textarea className="rectangle" type="text" value={value.intentInfo} />
+      <div>End State</div>
+      <textarea className="rectangle" type="text" value={value.endstateInfo} />
+    </div>
+  )
+
   return (
     <Container fluid className={`wrapper ${darkMode ? 'text-light' : ''}`}>
-      {props.showFilter && (
+      <div className="table-filter-container">
         <TableFilter
           onTaskNameSearch={onTaskNameSearch}
           searchPriority={searchPriority}
@@ -184,6 +303,7 @@ function PeopleTableDetails(props) {
           searchEstimatedHours={searchEstimatedHours}
           resetFilters={resetFilters}
           name={name}
+          taskNameList={filteredOptions}
           order={order}
           priority={priority}
           status={status}
@@ -191,8 +311,10 @@ function PeopleTableDetails(props) {
           active={active}
           assign={assign}
           estimatedHours={estimatedHours}
-          startDate={startDate}
+          StartDate={startDate}
+          UpdateStartDate={updateStartDate}
           EndDate={endDate}
+          UpdateEndDate={updateEndDate}
         />
       )}
       <div className={`people-table-row reports-table-head ${darkMode ? 'bg-space-cadet' : ''}`}>
@@ -228,6 +350,36 @@ function PeopleTableDetails(props) {
           </NewModal>
         ))}
       </div>
+      {windowWidth > 1020 ? (
+        <>
+          <div className={`people-table-row reports-table-head ${darkMode ? 'bg-space-cadet' : ''}`}>
+            <div data-testid="task">Task</div>
+            <div data-testid="priority">Priority</div>
+            <div data-testid="status">Status</div>
+            <div data-testid="resources" className="people-table-center-cell">Resources</div>
+            <div data-testid="active" className="people-table-center-cell">Active</div>
+            <div data-testid="assign" className="people-table-center-cell">Assign</div>
+            <div data-testid="eh" className="people-table-end-cell">Estimated Hours</div>
+            <div data-testid="sd" className="people-table-end-cell">Start Date</div>
+            <div data-testid="ed" className="people-table-end-cell">End Date</div>
+          </div>
+          <div className="people-table people-table-scrollable">
+            {filteredTasks.map(value => (
+              <NewModal key={value._id} header="Task info" trigger={() => renderFilteredTask(value)} darkMode={darkMode}>
+                {renderModalContent(value)}
+              </NewModal>
+            ))}
+          </div>
+        </>
+      ) : (
+        <div className="people-table">
+          {filteredTasks.map(value => (
+            <NewModal key={value._id} header="Task info" trigger={() => renderMobileFilteredTask(value)} darkMode={darkMode}>
+              {renderModalContent(value)}
+            </NewModal>
+          ))}
+        </div>
+      )}
     </Container>
   );
 }

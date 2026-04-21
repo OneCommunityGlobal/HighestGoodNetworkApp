@@ -1,6 +1,7 @@
 import Joi from 'joi';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
+import NetlifyPoweredLink from '~/components/Footer/NetlifyPoweredLink';
 import Form from '../common/Form/Form';
 import { loginUser } from '../../actions/authActions';
 import { clearErrors } from '../../actions/errorsActions';
@@ -22,6 +23,7 @@ export class Login extends Form {
   };
 
   componentDidMount() {
+    this._isMounted = true;
     if (this.props.auth.isAuthenticated) {
       this.props.history.push('/');
     }
@@ -33,37 +35,42 @@ export class Login extends Form {
         const url = `/forcePasswordUpdate/${this.props.auth.user.userId}`;
         this.props.history.push(url);
       } else if (this.props.auth.isAuthenticated) {
-        this.props.history.push('/dashboard');
+        const redirectPath = this.props.location?.state?.from?.pathname;
+        if (redirectPath && redirectPath.includes('/hgnform')) {
+          this.props.history.push(redirectPath);
+        } else {
+          this.props.history.push('/dashboard');
+        }
       }
     }
-
     if (prevProps.errors.email !== this.props.errors.email) {
       this.setState({ errors: this.props.errors });
     }
   }
 
   componentWillUnmount() {
+    this._isMounted = false;
     this.props.clearErrors();
   }
 
   doSubmit = async () => {
-    const email = this.state.data.email.replace(/[A-Z]/g, char => char.toLowerCase());
-    const { password } = this.state.data;
-    this.props.loginUser({ email, password });
-    this.setState({ errors: this.props.errors });
+    const { email, password } = this.state.data;
+    const formattedEmail = email.replace(/[A-Z]/g, char => char.toLowerCase());
+    await this.props.loginUser({ email: formattedEmail, password });
+    if (this.props.errors && this._isMounted) {
+      this.setState({ errors: this.props.errors });
+    }
   };
 
   render() {
     const { darkMode } = this.props;
-
     return (
       <div
-        className={`pt-5 h-100 container-fluid d-flex flex-column align-items-center ${
+        className={`pt-5 min-vh-100 container-fluid d-flex flex-column align-items-center ${
           darkMode ? 'bg-oxford-blue' : ''
         }`}
       >
         <h2>Please Sign in</h2>
-
         <form className="col-md-4 xs-12" onSubmit={e => this.handleSubmit(e)}>
           {this.renderInput({ name: 'email', label: 'Email:', darkMode })}
           {this.renderInput({
@@ -73,7 +80,13 @@ export class Login extends Form {
             darkMode,
           })}
           <div>
-            {this.renderButton({ label: 'Submit', darkMode })}
+            {this.renderButton({
+              name: 'submit',
+              id: 'submit',
+              label: 'Submit',
+              type: 'submit',
+              darkMode,
+            })}
             <Link to="forgotpassword">
               <span
                 style={{
@@ -89,6 +102,9 @@ export class Login extends Form {
             </Link>
           </div>
         </form>
+        <footer className="mt-5">
+          <NetlifyPoweredLink />
+        </footer>
       </div>
     );
   }

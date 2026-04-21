@@ -1,33 +1,29 @@
-import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import Form from '../common/Form';
 import Joi from 'joi';
 import { toast } from 'react-toastify';
+import Form from '../common/Form';
 import { updatePassword } from '../../actions/updatePassword';
 import { logoutUser } from '../../actions/authActions';
 import { clearErrors } from '../../actions/errorsActions';
-import Input from 'components/common/Input';
-
 
 class UpdatePassword extends Form {
   state = {
     data: { currentpassword: '', newpassword: '', confirmnewpassword: '' },
     errors: {},
-    showPassword: { currentpassword: false, newpassword: false, confirmnewpassword: false }
+    showPassword: { currentpassword: false, newpassword: false, confirmnewpassword: false },
   };
 
-  togglePasswordVisibility = (field) => {
+  togglePasswordVisibility = field => {
     this.setState(prevState => ({
       showPassword: {
         ...prevState.showPassword,
-        [field]: !prevState.showPassword[field]
-      }
+        [field]: !prevState.showPassword[field],
+      },
     }));
-  }
+  };
 
-
-  componentDidMount() { }
+  componentDidMount() {}
 
   componentDidUpdate(prevProps) {
     if (prevProps.errors.error !== this.props.errors.error) {
@@ -39,41 +35,80 @@ class UpdatePassword extends Form {
     this.props.clearErrors();
   }
 
+  // schema = {
+  //   currentpassword: Joi.string()
+  //     .required()
+  //     .label('Current Password'),
+  //   newpassword: Joi.string()
+  //     .regex(/^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[\W_]).{8,}$/)
+  //     .required()
+  //     .disallow(Joi.ref('currentpassword'))
+  //     .label('New Password')
+  //     .options({
+  //       language: {
+  //         any: {
+  //           invalid: 'should not be same as old password',
+  //         },
+  //         string: {
+  //           regex: {
+  //             base:
+  //               'should be at least 8 characters long and must include at least one uppercase letter, one lowercase letter, one number and one special character',
+  //           },
+  //         },
+  //       },
+  //     }),
+
+  //   confirmnewpassword: Joi.any()
+  //     .valid(Joi.ref('newpassword'))
+  //     .messages({ 'any.only': 'must match new password' })
+  //     .label('Confirm Password'),
+  // };
+
   schema = {
     currentpassword: Joi.string()
       .required()
-      .label('Current Password'),
+      .label('Current Password')
+      .messages({
+        'string.empty': '"Current Password" is required',
+        'any.required': '"Current Password" is required',
+      }),
+
     newpassword: Joi.string()
-      .regex(/^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[\W_]).{8,}$/)
+      .custom((value, helpers) => {
+        const { currentpassword } = helpers.state.ancestors[0];
+        if (value === currentpassword) {
+          return helpers.error('any.invalid');
+        }
+        return value;
+      })
+      .pattern(/^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[\W_]).{8,}$/)
       .required()
-      .disallow(Joi.ref('currentpassword'))
       .label('New Password')
-      .options({
-        language: {
-          any: {
-            invalid: 'should not be same as old password',
-          },
-          string: {
-            regex: {
-              base:
-                'should be at least 8 characters long and must include at least one uppercase letter, one lowercase letter, one number and one special character',
-            },
-          },
-        },
+      .messages({
+        'any.invalid': '"New Password" should not be same as old password.',
+        'string.pattern.base':
+          '"New Password" should be at least 8 characters long and must include at least one uppercase letter, one lowercase letter, one number and one special character',
+        'string.empty': '"New Password" is required',
+        'any.required': '"New Password" is required',
       }),
 
     confirmnewpassword: Joi.any()
       .valid(Joi.ref('newpassword'))
-      .options({ language: { any: { allowOnly: 'must match new password' } } })
-      .label('Confirm Password'),
+      .required()
+      .label('Confirm Password')
+      .messages({
+        'any.only': '"Confirm Password" must match new password',
+        'string.empty': '"Confirm Password" is required',
+        'any.required': '"Confirm Password" is required',
+      }),
   };
 
   doSubmit = async () => {
     const { currentpassword, newpassword, confirmnewpassword } = {
       ...this.state.data,
     };
-    let userId = this.props.match.params.userId;
-    let data = { currentpassword, newpassword, confirmnewpassword };
+    const { userId } = this.props.match.params;
+    const data = { currentpassword, newpassword, confirmnewpassword };
 
     const status = await this.props.updatePassword(userId, data);
     if (status === 200) {
@@ -87,8 +122,8 @@ class UpdatePassword extends Form {
         },
       );
     } else if (status === 400) {
-      let { errors } = this.state;
-      errors['currentpassword'] = this.props.errors.error;
+      const { errors } = this.state;
+      errors.currentpassword = this.props.errors.error;
       this.setState({ errors });
     } else {
       toast.error('Something went wrong. Please contact your administrator.');
@@ -96,7 +131,7 @@ class UpdatePassword extends Form {
   };
 
   render() {
-    const {darkMode} = this.props;
+    const { darkMode } = this.props;
     return (
       <div
         className={`pt-5 h-100 container-fluid d-flex flex-column align-items-center ${
@@ -106,32 +141,34 @@ class UpdatePassword extends Form {
         <h2 className="text-2xl font-bold mb-5">Change Password</h2>
         <form className="col-md-4 xs-12" onSubmit={e => this.handleSubmit(e)}>
           <div className="mb-4">
-            <div className="flex justify-between items-center">
-              <label htmlFor="currentpassword" className={`text-sm font-medium mr-2 ${darkMode ? "text-azure" : "text-gray-700"}`}>Current Password:</label>
-            </div>
-            {this.renderInput({ name: 'currentpassword', type: this.state.showPassword.currentpassword ? 'text' : 'password'})}
+            {this.renderInput({
+              name: 'currentpassword',
+              type: this.state.showPassword.currentpassword ? 'text' : 'password',
+              label: 'Current Password', // passing label as it is labelled as required.
+            })}
           </div>
 
           <div className="mb-4">
-            <div className="flex justify-between items-center">
-              <label htmlFor="newpassword" className={`text-sm font-medium mr-2 ${darkMode ? "text-azure" : "text-gray-700"}`}>New Password:</label>
-            </div>
-            {this.renderInput({ name: 'newpassword', type: this.state.showPassword.newpassword ? 'text' : 'password'})}
+            {this.renderInput({
+              name: 'newpassword',
+              type: this.state.showPassword.newpassword ? 'text' : 'password',
+              label: 'New Password', // passing label as it is labelled as required.
+            })}
           </div>
 
           <div className="mb-4">
-            <div className="flex justify-between items-center">
-              <label htmlFor="confirmnewpassword" className={`text-sm font-medium mr-2 ${darkMode ? "text-azure" : "text-gray-700"}`}>Confirm Password:</label>
-            </div>
-            {this.renderInput({ name: 'confirmnewpassword', type: this.state.showPassword.confirmnewpassword ? 'text' : 'password' })}
+            {this.renderInput({
+              name: 'confirmnewpassword',
+              type: this.state.showPassword.confirmnewpassword ? 'text' : 'password',
+              label: 'Confirm Password', // passing label as it is labelled as required.
+            })}
           </div>
 
-          {this.renderButton({label: 'Submit', darkMode: darkMode})}
+          {this.renderButton({ label: 'Submit', darkMode })}
         </form>
       </div>
     );
   }
-
 }
 
 const mapStateToProps = state => ({

@@ -1,22 +1,34 @@
 import { Form, FormGroup, Label, Input } from 'reactstrap';
 
-export default function SelectItem({ items, selectedProject, selectedItem, setSelectedItem }) {
+export default function SelectItem({
+  items,
+  selectedProject,
+  selectedItem,
+  setSelectedItem,
+  label,
+  darkMode,
+}) {
   let itemSet = [];
   if (items.length) {
-    if (selectedProject === 'all') itemSet = [...new Set(items.map(m => m.itemType?.name))];
-    else
+    if (selectedProject === 'all') {
+      itemSet = [...new Set(items.map(m => m.itemType?.name))];
+    } else {
       itemSet = [
         ...new Set(
           items.filter(mat => mat.project?.name === selectedProject).map(m => m.itemType?.name),
         ),
       ];
+    }
   }
 
   return (
     <Form>
       <FormGroup className="select_input">
-        <Label htmlFor="select-material" style={{ marginLeft: '10px' }}>
-          Material:
+        <Label
+          htmlFor="select-material"
+          style={{ marginLeft: '10px', color: darkMode ? 'white' : 'inherit' }}
+        >
+          {label ? `${label}:` : 'Material:'}
         </Label>
         <Input
           id="select-item"
@@ -29,13 +41,11 @@ export default function SelectItem({ items, selectedProject, selectedItem, setSe
           {items.length ? (
             <>
               <option value="all">All</option>
-              {itemSet.map(name => {
-                return (
-                  <option key={name} value={name}>
-                    {name}
-                  </option>
-                );
-              })}
+              {itemSet.map(name => (
+                <option key={name} value={name}>
+                  {name}
+                </option>
+              ))}
             </>
           ) : (
             <option>No data</option>

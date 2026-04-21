@@ -2,6 +2,11 @@
   display: none;
 }
 
+.taskName {
+  height: auto;
+  text-align: left !important;
+}
+
 @media (max-width: 1024px) {
   .desktop {
     display: none;
@@ -27,8 +32,6 @@
 }
 
 .projects-and-tasks-header {
-  background-color: #e9ecef;
-  border: 1px solid #ced4da;
   margin-bottom: 10px;
 }
 

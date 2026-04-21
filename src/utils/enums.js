@@ -3,11 +3,27 @@
  */
 export const UserStatus = {
   Active: 'Active',
-  InActive: 'Inactive',
+  Inactive: 'Inactive',
+  Paused: 'Paused',
+  Scheduled: 'Scheduled',
 };
 export const FinalDay = {
   FinalDay: 'FinalDay',
-  NotSetFinalDay: 'NotSetFinalDay',
+  RemoveFinalDay: 'RemoveFinalDay',
+};
+
+export const UserStatusOperations = {
+  ACTIVATE: 'ACTIVATE',
+  DEACTIVATE: 'DEACTIVATE',
+  SCHEDULE_DEACTIVATION: 'SCHEDULE_DEACTIVATION',
+  PAUSE: 'PAUSE',
+  CANCEL_SCHEDULED_DEACTIVATION: 'CANCEL_SCHEDULED_DEACTIVATION'
+}
+
+export const InactiveReason = {
+  SCHEDULED_SEPARATION: 'ScheduledSeparation',
+  SEPARATED: 'Separated',
+  PAUSED: 'Paused',
 };
 /**
  * Enum representing the different roles of a user
@@ -30,4 +46,12 @@ export const UserDeleteType = {
 export const UserFinalDayStatus = {
   Set: ' Set',
   Unset: 'Unset',
+};
+
+export const QuestionType = {
+  Select: 'select',
+  ShortAnswer: 'short_answer',
+  Paragraph: 'paragraph',
+  MultiSelect: 'multi_select',
+  Radio: 'radio',
 };

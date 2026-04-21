@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from 'reactstrap';
 import EditConfirmModal from '../UserProfileModal/EditConfirmModal';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 
 /**
  *
@@ -13,13 +13,13 @@ const getRandomMessage = () => {
     'Research has shown that a fun workplace is not only more enjoyable, but also more productive. So, enjoy a little chuckle knowing the HGN electronic minions have reviewed your updated information, approved it, and stamped it on their foreheads so they won’t forget… or so they think. Their lives are complete now, and it’s all because of this successful update and save! \n' +
       '✺◟( ͡° ͜ʖ ͡°)◞✺\n',
     'Walla! YOU are a Super Saver. You clicked the “save” button and it worked! Well done, Jedi masters salute you!',
-    'Way to go Champion, your update has been saved! Before you close this window, take a moment to bask in your own awesomeness. Think you don’t deserve it? Think again! Many people forget to save their changes, you, however, are not one of them. Well done!',
+    'Way to go Champion, your update has been saved! Before you close this window, take a moment to bask in your own awesomeness. Think you dont deserve it? Think again! Many people forget to save their changes, you, however, are not one of them. Well done!',
   ];
-  return messages[Math.floor(Math.random() * messages.length)];
+  return messages[Date.now() % messages.length];
 };
 
-const invalidCodemessage = 'Nice save! It seems you do not have a valid team code. It would be a lot cooler if you did. You can add one in the teams tab';
-const validTeamCodeRegex = /^([a-zA-Z]-[a-zA-Z]{3}|[a-zA-Z]{5})$/;
+const invalidCodemessage = 'Nice save! It seems you do not have a valid team code. It would be a lot cooler if you did. You can add one in the teams tab.';
+const validTeamCodeRegex = /^.{5,7}$/;
 const stillSavingMessage = 'Saving, will take just a second...';
 
 /**
@@ -31,7 +31,7 @@ const stillSavingMessage = 'Saving, will take just a second...';
  * @returns
  */
 const SaveButton = props => {
-  const { handleSubmit, disabled, userProfile, setSaved, darkMode } = props;
+  const {handleSubmit, disabled, userProfile, setSaved, darkMode} = props;
   const [modal, setModal] = useState(false);
   const [randomMessage, setRandomMessage] = useState(getRandomMessage());
   const [isLoading,setIsLoading] = useState(false);
@@ -47,6 +47,10 @@ const SaveButton = props => {
       setIsLoading(false);
       setIsErr(false);
       setSaved();
+
+      setTimeout(() => {
+        setModal(true);
+      }, 1000); 
     } catch (err) {
       setIsErr(true);
       setIsLoading(false);
@@ -94,15 +98,18 @@ const SaveButton = props => {
         modalTitle={getMessage('title')}
         modalMessage={getMessage('message')}
         disabled={isLoading}
+        darkMode={darkMode}
       />
       <Button
-        outline
+        {...(darkMode ? { outline: false } : {outline: true})}
         color='primary'
         // to={`/userprofile/${this.state.userProfile._id}`}
-        className='btn btn-outline-primary mr-1 bg-white'
+        //the line below caused the mouse over issue, so I commented it out
+        //className='btn btn-outline-primary mr-1 bg-white'
         onClick={handleSave}
         disabled={disabled}
-        style={darkMode ? boxStyleDark : boxStyle}
+        className='mr-1'
+        style={darkMode ? { ...boxStyleDark, backgroundColor: '#f8f9fa', color: '#000', border: '1px solid #adb5bd' } : boxStyle}
       >
         Save Changes
       </Button>

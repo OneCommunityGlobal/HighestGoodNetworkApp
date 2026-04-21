@@ -1,66 +1,80 @@
-import React, { useState, useEffect } from 'react';
-import { Button, Col, Tooltip } from 'reactstrap';
+import React, { useState, useEffect, useMemo } from 'react';
+import PropTypes from "prop-types";
+import { Button, Col, UncontrolledTooltip } from 'reactstrap';
 import './TeamsAndProjects.css';
 import hasPermission from '../../../utils/permissions';
-import styles from './UserProjectsTable.css';
-import { boxStyle, boxStyleDark } from 'styles';
-import { useLocation } from 'react-router-dom';
+// import styles from './UserProjectsTable.css';
+import { boxStyle, boxStyleDark } from '~/styles';
+import { useLocation , Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
 
+
+// eslint-disable-next-line react/display-name
 const UserProjectsTable = React.memo(props => {
   const {darkMode} = props;
+  const ensureArray = (value, fallback = []) => {
+    if (Array.isArray(value)) return value;
+    if (value === null || value === undefined) return fallback;
+    return fallback;
+  };
 
   const [tooltipOpen, setTooltip] = useState(false);
   const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers');
   const canUpdateTask = props.hasPermission('updateTask');
   const canDeleteProjects = props.hasPermission('deleteProject');
   const canDeleteTasks = props.hasPermission('deleteTask')
+  const canPostTask = props.hasPermission('postTask');
 
-  const userProjects = props.userProjectsById;
-  const userTasks = props.userTasks;
+  const userProjects = ensureArray(props.userProjectsById);
+  const userTasks = ensureArray(props.userTasks);
   const [actualType, setActualType] = useState('active');
 
   const location = useLocation();
   const currentRoute = location.pathname;
   const isUserProfilePage = currentRoute === '/usermanagement';
 
-  const toggleTooltip = () => setTooltip(!tooltipOpen);
+  // const toggleTooltip = () => setTooltip(!tooltipOpen);
 
   //Situation can be all, active, or complete
   const filterTasksAndUpdateFilter = situation => {
     setActualType(situation);
   };
 
-  const sortedTasksByNumber = userTasks?.sort((task1, task2) => task1.num - task2.num);
+  const sortedTasksByNumber = useMemo(() => {
+    return userTasks?.sort((task1, task2) => task1.num - task2.num);
+}, [userTasks]);
 
   const tasksByProject = userProjects?.map(project => {
-    const tasks = sortedTasksByNumber?.filter(task => task.projectId.includes(project._id));
+    const tasks = sortedTasksByNumber?.filter(task => task.projectId?.includes(project.projectId));
     return { ...project, tasks };
   });
 
-  const filterTasksByUserTaskSituation = situation => {
-    if (sortedTasksByNumber) {
-      return userProjects?.map(project => {
-        const filteredTasks = sortedTasksByNumber.filter(task => {
-          const isTaskForProject = task.projectId.includes(project._id);
-          const isCompletedTask = task.resources?.find(user => user.userID === props.userId)?.completedTask;
-  
-          if (isTaskForProject) {
-            if (situation === 'active' && !isCompletedTask) {
-              return true;
-            } else if (situation === 'complete' && isCompletedTask) {
-              return true;
-            } else if (situation === 'all') {
-              return true;
+  const filterTasksByUserTaskSituation = useMemo(() => {
+    return (situation) => {
+      if (sortedTasksByNumber) {
+        return userProjects?.map(project => {
+          const filteredTasks = sortedTasksByNumber.filter(task => {
+            const isTaskForProject = task.projectId?.includes(project.projectId);
+            const isCompletedTask = task.resources?.find(user => user.userID === props.userId)?.completedTask;
+    
+            if (isTaskForProject) {
+              if (situation === 'active' && !isCompletedTask) {
+                return true;
+              } else if (situation === 'complete' && isCompletedTask) {
+                return true;
+              } else if (situation === 'all') {
+                return true;
+              }
             }
-          }
-          return false;
+            return false;
+          });
+    
+          return { ...project, tasks: filteredTasks };
         });
-  
-        return { ...project, tasks: filteredTasks };
-      });
-    }
-  };
+      }
+    };
+  }, [sortedTasksByNumber, props.userId, userProjects]);
 
   const [filteredTasks, setFilteredTasks] = useState(filterTasksByUserTaskSituation('active'));
 
@@ -68,32 +82,43 @@ const UserProjectsTable = React.memo(props => {
     setFilteredTasks(() => filterTasksByUserTaskSituation(actualType));
   }, [sortedTasksByNumber, actualType]);
 
-  const removeOrAddTaskFromUser = (task, method) => {
-    const newResources = task.resources?.map(resource => {
-      if (resource.userID === props.userId) {
-        if (method === 'remove') {
-          task.status = 'Complete';
-          return { ...resource, completedTask: true };
-        } else if (method === 'add') {
-          task.status = "Started"
-          return { ...resource, completedTask: false };
-        }
+const removeOrAddTaskFromUser = (task, method) => {
+
+  let newResources = task.resources;
+
+  if (method === "remove") {
+    // REMOVE the user completely
+    newResources = task.resources.filter(r => r.userID !== props.userId);
+  } else if (method === "add") {
+    // RE-ADD user as uncompleted resource
+    newResources = [
+      ...task.resources,
+      {
+        userID: props.userId,
+        completedTask: method === 'remove',
+        reviewStatus: "Unsubmitted",
+        startedDatetime: new Date().toISOString()
       }
-      return resource;
-    });
-  
-    const updatedTask = { ...task, resources: newResources };
-    props.updateTask(task._id, updatedTask, method);
+    ];
+  }
+
+  const updatedTask = {
+    ...task,
+      resources: newResources,
+      status: method === 'remove' ? 'Complete' : 'Started'
   };
+
+  props.updateTask(task._id, updatedTask, method);
+};
 
   //For updating tasks visually but not saving until user clicks save changes
   const deleteTasksTemporarily = (project_id) => {
-    setFilteredTasks(filteredTasks?.filter(project => project._id !== project_id ));
+    setFilteredTasks(filteredTasks?.filter(project => project.projectId !== project_id ));
   }
 
   useEffect(()=>{
     setFilteredTasks(() => filterTasksByUserTaskSituation('active'));
-  }, [props.userProjectsById])
+  }, [props.userProjectsById], filteredTasks);
 
 
   return (
@@ -111,9 +136,9 @@ const UserProjectsTable = React.memo(props => {
                 <Col md="4" className='p-0'>
                   {props.disabled ? (
                     <>
-                      <Tooltip placement="bottom" isOpen={tooltipOpen} target="btn-assignproject" toggle={toggleTooltip}>
+                      {/* <Tooltip placement="bottom" isOpen={tooltipOpen} target="btn-assignproject" toggle={toggleTooltip}>
                         Please save changes before assign project
-                      </Tooltip>
+                      </Tooltip> */}
                       <Button className="btn-addproject mt-2" id="btn-assignproject" color="primary" style={darkMode ? boxStyleDark : boxStyle} disabled>
                         Assign Project
                       </Button>
@@ -135,13 +160,28 @@ const UserProjectsTable = React.memo(props => {
               </Col>
             </div>
           </div>
-          <div className='table-container'>
+          <div className={`table-container ${darkMode ? 'bg-yinmn-blue' : ''}`}>
             <table className={`table table-bordered table-responsive-sm ${darkMode ? 'text-light' : ''}`}>
-              <thead>
+              <thead className={darkMode ? 'bg-space-cadet' : ''}>
                 {props.role && (
-                  <tr>
+                  <tr className={darkMode ? 'bg-space-cadet' : ''}>
                     <th className='table-header'>#</th>
                     <th>Project Name</th>
+                    {canPostTask && 
+                    <th style={{width: '100px'}}>
+                      <div className="d-flex align-items-center">
+                        <span className="mr-2">WBS</span>
+                          <EditableInfoModal
+                            areaName="ProjectTableHeaderWBS"
+                            areaTitle="WBS"
+                            fontSize={24}
+                            isPermissionPage={true}
+                            role={props.role}
+                            className="p-2"
+                            darkMode={darkMode}
+                          />
+                      </div>
+                    </th>}
                     {canAssignProjectToUsers ? <th style={{ width: '100px' }}>{}</th> : null}
                   </tr>
                 )}
@@ -149,17 +189,39 @@ const UserProjectsTable = React.memo(props => {
               <tbody>
                 {props.userProjectsById.length > 0 ? (
                   tasksByProject?.map((project, index) => (
-                    <tr key={project._id}>
+                    <tr key={project.projectId} className={darkMode ? 'bg-yinmn-blue' : ''}>
                       <td>{index + 1}</td>
-                      <td>{project.projectName}</td>
-                      {props.edit && props.role && canDeleteProjects &&(
+                      <td className="taskName">{project.projectName}</td>
+                      {props.role && canPostTask && (
+                        <td className='table-cell'>
+                          <Link to={`/project/wbs/${project.projectId}`}>
+                            <button
+                              id={`wbs-tooltip-${project.projectId}`}
+                              type="button"
+                              className="btn btn-outline-info"
+                              style={darkMode ? {} : boxStyle}
+                            >
+                              <i className="fa fa-tasks" aria-hidden="true"></i>
+                            </button>
+                          </Link>
+
+                          <UncontrolledTooltip
+                            placement="left"
+                            target={`wbs-tooltip-${project.projectId}`}
+                            delay={{ show: 250, hide: 100 }} // Optional: smoother UX
+                          >
+                            Click to access the Work Breakdown Structures &#40;WBSs&#41; for this project
+                          </UncontrolledTooltip>
+                        </td>
+                      )}
+                      {props.edit && props.role && canDeleteProjects && (
                         <td className='table-cell'>
                           <Button
                             color="danger"
                             disabled={!canUpdateTask}
                             onClick={e => {
-                              props.onDeleteClicK(project._id);
-                              deleteTasksTemporarily(project._id);
+                              props.onDeleteClick(project.projectId);
+                              deleteTasksTemporarily(project.projectId);
                             }}
                             style={darkMode ? boxStyleDark : boxStyle}
                           >
@@ -168,7 +230,6 @@ const UserProjectsTable = React.memo(props => {
                         </td>
                       )}
                     </tr>
-
                   ))
                 ) : (
                   <></>
@@ -216,11 +277,11 @@ const UserProjectsTable = React.memo(props => {
                 </div>
               </Col>
             </div>
-            <div className='table-container' data-testid='userProjectTaskTest'>
+            <div className={`table-container ${darkMode ? 'bg-yinmn-blue' : ''}`} data-testid='userProjectTaskTest'>
               <table className={`table table-bordered table-responsive-sm ${darkMode ?'text-light' : ''}`}>
-                <thead>
+                <thead className={darkMode  ? 'bg-space-cadet' : ''}>
                   {props.role && (
-                    <tr>
+                    <tr className={darkMode  ? 'bg-space-cadet' : ''}>
                       <th className='table-header'>#</th>
                       <th>Task Name</th>
                       {canAssignProjectToUsers ? <th className='table-cell'>{}</th> : null}
@@ -237,10 +298,12 @@ const UserProjectsTable = React.memo(props => {
                         return (
                           <tr key={task._id}>
                             <td>{task.num}</td>
-                            <td>
+                            <td className='taskName'>
                               <span className='opacity-70'>{project.projectName} </span>
                               <br />
-                              <span className="fs-18">{task.taskName && `\u2003 ↳ ${task.taskName}`}</span>
+                              <a className="fs-18" href={`/wbs/tasks/${task._id}`}>
+                                {task.taskName && `\u2003 ↳ ${task.taskName}`}
+                              </a>
                             </td>
                             {!isCompletedTask && props.edit && props.role && canDeleteTasks && (
                               <td>
@@ -314,9 +377,9 @@ const UserProjectsTable = React.memo(props => {
             )}
             </Col>
           </div>
-          <div className='table-container'>
+          <div className={`table-container ${darkMode ? 'bg-yinmn-blue' : ''}`}>
             <table className={`table table-bordered ${darkMode ? 'text-light' : ''}`}>
-              <thead>
+              <thead className={darkMode ? 'bg-space-cadet' : ''}>
                 {props.role && (
                   <tr>
                     <th className={`table-header ${darkMode ? 'bg-space-cadet' : ''}`}>#</th>
@@ -327,18 +390,17 @@ const UserProjectsTable = React.memo(props => {
               </thead>
               <tbody>
                 {props.userProjectsById.length > 0 ? (
-                  tasksByProject?.map((project, index) => (
-                    <tr key={project._id}>
+                  filteredTasks?.map((project, index) => (
+                    <tr key={project.projectId}>
                       <td>{index + 1}</td>
-                      <td>{`${project.projectName}`}</td>
+                      <td className="taskName">{`${project.projectName}`}</td>
                       {props.edit && props.role && canDeleteProjects && (
                         <td className='table-cell'>
                           <Button
                             color="danger"
                             disabled={!canUpdateTask}
                             onClick={e => {
-                              props.onDeleteClicK(project._id);
-                              deleteTasksTemporarily(project._id);
+                              props.onDeleteClick(project.projectId);
                             }}
                             style={darkMode ? boxStyleDark : boxStyle}
                           >
@@ -393,13 +455,13 @@ const UserProjectsTable = React.memo(props => {
                 </Col>
               </div>
             </div>
-            <div className='table-container'>
+            <div className={`table-container ${darkMode ? 'bg-yinmn-blue' : ''}`}>
               <table className="table table-bordered">
                 <thead className={darkMode ? 'text-light' : ''}>
                   {props.role && (
                     <tr>
                       <th className={`table-header ${darkMode ? 'bg-space-cadet' : ''}`}>#</th>
-                      <th className={darkMode ? 'bg-space-cadet' : ''}>Task Name</th>
+                      <th className={`taskName ${darkMode ? 'bg-space-cadet' : ''}`}>Task Name</th>
                       {canAssignProjectToUsers ? <th className={darkMode ? 'bg-space-cadet' : ''} style={{ width: '100px' }}>{}</th> : null}
                     </tr>
                   )}
@@ -461,4 +523,14 @@ const UserProjectsTable = React.memo(props => {
 });
 
 export default connect(null, { hasPermission })(UserProjectsTable);
-
+UserProjectsTable.propTypes = {
+  userId: PropTypes.string,
+  userProjectsById: PropTypes.array,
+  userTasks: PropTypes.array,
+  role: PropTypes.string,
+  edit: PropTypes.bool,
+  hasPermission: PropTypes.func,
+  onDeleteClick: PropTypes.func,
+  updateTask: PropTypes.func,
+  darkMode: PropTypes.bool,
+};

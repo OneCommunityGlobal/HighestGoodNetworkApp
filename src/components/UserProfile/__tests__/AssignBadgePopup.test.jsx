@@ -1,8 +1,9 @@
 import { render, fireEvent, waitFor, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import configureStore from 'redux-mock-store'; // If using Redux
+import { configureStore } from 'redux-mock-store'; // If using Redux
 import MockAssignTableRow from '../MockData/MockAssignTableRow';
 import AssignBadgePopup from '../AssignBadgePopup';
+import { themeMock } from '__tests__/mockStates';
 
 /** ********************************TEST PRE-REQUISITE*************************************** */
 // Mock Redux store
@@ -10,7 +11,9 @@ const mockStore = configureStore([]);
 const initialState = {
   badge: {
     selectedBadges: [],
+    allBadges: [],
   },
+  theme: themeMock,
 };
 const store = mockStore(initialState);
 
@@ -29,12 +32,12 @@ const tip2 = 'Want to assign multiple of the same badge to a person? Repeat the 
 const renderComponent = () => {
   render(
     <Provider store={store}>
-      <AssignBadgePopup />
+      <AssignBadgePopup isTableOpen={true} />
     </Provider>,
   );
 };
 
-// jest.mock('axios');
+// vi.mock('axios');
 
 /** **************************************TEST CASES******************************************** */
 describe('Userprofile/AssignBadgePopup Test Suite', () => {
@@ -66,6 +69,8 @@ describe('Userprofile/AssignBadgePopup Test Suite', () => {
   it('Test case 4 : Assert the pop up contains only one table with 3 columns ', async () => {
     renderComponent();
 
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
     // / Find all tables within the component
     const tables = screen.getAllByRole('table');
 
@@ -73,6 +78,7 @@ describe('Userprofile/AssignBadgePopup Test Suite', () => {
     expect(tables.length).toBe(1);
 
     // Find all table headers (th elements) within the table
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
     const tableHeaders = tables[0].querySelectorAll('th');
 
     // Ensure there are exactly three table headers in the table
@@ -80,6 +86,8 @@ describe('Userprofile/AssignBadgePopup Test Suite', () => {
   });
   it('Test case 5 : Assert the presnce of objects associated with the search results: a table and three columns', async () => {
     renderComponent();
+
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
     const table = screen.getByTestId('test-badgeResults');
     const badge = screen.getByText('Badge');
@@ -98,23 +106,38 @@ describe('Userprofile/AssignBadgePopup Test Suite', () => {
     expect(message1).toBeNull();
     expect(message2).toBeNull();
   });
-  it('Test case 7 : Assert the tool tip message  displayed when  hover overed', async () => {
+  it('Test case 7 : Assert the tool tip message displayed when hovered', async () => {
     renderComponent();
 
-    const tooltip = screen.getByTestId('test-selectinfo');
-    fireEvent.mouseEnter(tooltip);
-    const message1 = await screen.findByText(tip1);
-    const message2 = await screen.findByText(tip2);
-    expect(message1).toBeInTheDocument();
-    expect(message2).toBeInTheDocument();
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    const infoIcon = screen.getByTestId('test-selectinfo');
+    fireEvent.mouseOver(infoIcon); // trigger the tooltip
+
+    // now grab the two <p> elements by their test IDs
+    const tip1El = await screen.findByTestId('test-tip1');
+    const tip2El = await screen.findByTestId('test-tip2');
+
+    expect(tip1El).toBeInTheDocument();
+    // just check the unique leading phrase
+    expect(tip1El).toHaveTextContent('Hmmm, little blank boxes');
+
+    expect(tip2El).toBeInTheDocument();
+    expect(tip2El).toHaveTextContent('Want to assign multiple of the same badge');
   });
   it('Test case 8 : Assert if the pop up has a submit button ', async () => {
     renderComponent();
+
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
     const button = screen.getByTestId('test-button');
     expect(button).toBeInTheDocument();
   });
   it('Test case 9 :  Assert if the popup renders badge data correctly ', async () => {
     renderComponent();
+
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
     // Find the AssignTableRow component within AssignBadgePopup
     const assignTableRowComponent = screen.getByTestId('test-badgeResults'); // Assuming you have a data-testid on the AssignTableRow
 

@@ -1,0 +1,132 @@
+.items_list_container {
+  width: 100%;
+  max-width: 1536px;
+  margin: 1rem auto;
+  padding: 0 1rem;
+}
+
+.items_table_container {
+  overflow-x: scroll;
+}
+
+.items_list_container section {
+  margin-top: 2rem;
+}
+
+.items_list_container table {
+  text-align: center;
+  min-width: 1024px;
+  overflow: scroll;
+  font-size: small;
+}
+
+.items_list_container th {
+  height: 2rem;
+}
+
+.items_cell button {
+  cursor: pointer;
+}
+
+.items_cell svg {
+  width: 20px;
+  height: 20px;
+  margin-right: 6px;
+  color: dimgray;
+}
+
+.items_cell svg:hover {
+  color: black;
+}
+
+.select_input {
+  display: flex;
+  background-color: blanchedalmond;
+  align-items: flex-end;
+  width: 300px;
+  column-gap: 1rem;
+}
+
+:global(.dark-mode) .items_list_container {
+  background-color: #0d1117 !important;
+  color: #ffffff !important;
+  min-height: 100vh;
+  padding-bottom: 2rem;
+}
+
+:global(.dark-mode) .items_table_container {
+  background-color: transparent !important;
+}
+
+:global(.dark-mode) .items_list_container table {
+  background-color: #161b22;
+  color: #ffffff;
+  border: 1px solid #30363d;
+}
+
+:global(.dark-mode) .items_list_container th {
+  background-color: #1f2937;
+  color: #ffffff;
+  border-bottom: 1px solid #30363d;
+}
+
+:global(.dark-mode) .items_list_container td {
+  border-bottom: 1px solid #30363d;
+  color: #ffffff;
+}
+
+:global(.dark-mode) .items_list_container tr:hover {
+  background-color: #1f2a37;
+}
+
+:global(.dark-mode) .items_cell svg {
+  color: #ffffff;
+}
+
+:global(.dark-mode) .items_cell svg:hover {
+  color: #ffffff;
+}
+
+:global(.dark-mode) .select_input {
+  background-color: #1e2632;
+  color: #ffffff;
+  border: 1px solid #30363d;
+}
+
+:global(.dark-mode) select,
+:global(.dark-mode) input {
+  background-color: #1e2632;
+  color: #ffffff;
+  border: 1px solid #30363d;
+}
+
+:global(.dark-mode) option {
+  background-color: #111827;
+  color: #ffffff;
+}
+
+:global(.dark-mode) body,
+:global(.dark-mode) html,
+:global(.dark-mode) #root {
+  background-color: #0d1117 !important;
+}
+
+.items_list_container.dark_mode {
+  background-color: #1b1f27 !important;
+  color: #ffffff !important;
+  border-color: #2a2f3a !important;
+}
+
+.dark-mode .items_table_container .table thead th {
+  background-color: #1c2541 !important;
+  color: #ffffff !important;
+  border-color: #555 !important;
+}
+
+.dark-mode .items_table_container .table thead tr {
+  background-color: #1c2541 !important;
+}
+
+:global(.dark-mode) [class*='items_list_container'] {
+  background-color: #1b2a41 !important;
+}

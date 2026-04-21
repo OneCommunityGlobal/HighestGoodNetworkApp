@@ -1,1 +1,0 @@
-export { PeopleTasksPieChart } from './PeopleTasksPieChart';

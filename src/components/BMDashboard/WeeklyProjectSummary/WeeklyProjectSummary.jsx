@@ -1,0 +1,620 @@
+/* eslint-disable import/no-unresolved */
+import { useState, useEffect, useMemo, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { v4 as uuidv4 } from 'uuid';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
+import { toast } from 'react-toastify';
+import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
+import CostPredictionChart from './CostPredictionChart';
+import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
+import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
+import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
+import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
+import ProjectRiskProfileOverview from './ProjectRiskProfileOverview';
+import IssuesBreakdownChart from './IssuesBreakdownChart';
+import InjuryCategoryBarChart from './GroupedBarGraphInjurySeverity/InjuryCategoryBarChart';
+import ToolsHorizontalBarChart from './Tools/ToolsHorizontalBarChart';
+import ExpenseBarChart from './Financials/ExpenseBarChart';
+import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
+import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
+import EmbedInteractiveMap from '../InteractiveMap/EmbedInteractiveMap';
+import InteractiveMap from '../InteractiveMap/InteractiveMap';
+import styles from './WeeklyProjectSummary.module.css';
+import IssueCharts from '../Issues/openIssueCharts';
+import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
+import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
+import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
+
+const projectStatusButtons = [
+  {
+    title: 'Total Projects',
+    value: 426,
+    change: '+16% week over week',
+    bgColor: '#F0FFEE',
+    buttonColor: '#BAF0B6',
+    textColor: '#328D1B',
+  },
+  {
+    title: 'Completed Projects',
+    value: 127,
+    change: '+14% week over week',
+    bgColor: '#F3FCFF',
+    buttonColor: '#C1EFFB',
+    textColor: '#328D1B',
+  },
+  {
+    title: 'Delayed Projects',
+    value: 34,
+    change: '-18% week over week',
+    bgColor: '#FFE9FA',
+    buttonColor: '#FECFF3',
+    textColor: '#C82F2F',
+  },
+  {
+    title: 'Active Projects',
+    value: 265,
+    change: '+3% week over week',
+    bgColor: '#E8E8FF',
+    buttonColor: '#CBCBFE',
+    textColor: '#328D1B',
+  },
+  {
+    title: 'Avg Project Duration',
+    value: '17 hrs',
+    change: '+13% week over week',
+    bgColor: '#FFF6EE',
+    buttonColor: '#FFD8A5',
+    textColor: '#FFD8A5',
+  },
+  {
+    title: 'Total Material Cost',
+    value: '$27.6K',
+    change: '+9% week over week',
+    bgColor: '#FFF3F3',
+    buttonColor: '#FBC1C2',
+    textColor: '#328D1B',
+  },
+  {
+    title: 'Total Material Used',
+    value: '2714',
+    change: '+11% week over week',
+    bgColor: '#DAC8FF',
+    buttonColor: '#B28ECC',
+    textColor: '#328D1B',
+  },
+  {
+    title: 'Active Projects',
+    value: '265',
+    change: '+3% week over week',
+    bgColor: '#E8E8FF',
+    buttonColor: '#CBCBFE',
+    textColor: '#328D1B',
+  },
+  {
+    title: 'Total Labor Hours Invested',
+    value: '12.8K',
+    change: '+17% week over week',
+    bgColor: '#E5C1FC',
+    buttonColor: '#F6E1FB',
+    textColor: '#328D1B',
+  },
+  {
+    title: 'Total Labor Cost',
+    value: '$18.4K',
+    change: '+14% week over week',
+    bgColor: '#FFFDF3',
+    buttonColor: '#FBF9C1',
+    textColor: '#328D1B',
+  },
+  {
+    title: 'Material Available',
+    value: 693,
+    change: '-8% week over week',
+    bgColor: '#B4D9C5',
+    buttonColor: '#31BD41',
+    textColor: '#C82F2F',
+  },
+  {
+    title: 'Material Wasted',
+    value: 879,
+    change: '+14% week over week',
+    bgColor: '#EFBABB',
+    buttonColor: '#F79395',
+    textColor: '#328D1B',
+  },
+];
+
+export function WeeklyProjectSummaryContent() {
+  const dispatch = useDispatch();
+  const materials = useSelector(state => state.materials?.materialslist || []);
+  const [openSections, setOpenSections] = useState({});
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const projectFilter = useSelector(state => state.weeklyProjectSummary?.projectFilter || '');
+  const dateRangeFilter = useSelector(state => state.weeklyProjectSummary?.dateRangeFilter || '');
+
+  const getColorScheme = percentage => {
+    if (percentage === '-') return 'neutral';
+    if (percentage > 0) return 'positive';
+    if (percentage < 0) return 'negative';
+    return 'neutral';
+  };
+
+  const colorScheme = getColorScheme(monthOverMonth);
+
+  const titleClass = title.replace(/\s+/g, '-').toLowerCase();
+
+  return (
+    <div
+      className={`financial-card ${colorScheme} custom-box-shadow financial-card-background-${titleClass}`}
+      onMouseEnter={() => setShowTooltip(true)}
+      onMouseLeave={() => setShowTooltip(false)}
+    >
+      <div className="financial-card-title">{title}</div>
+      <div className={`financial-card-ellipse financial-card-ellipse-${titleClass}`} />
+      <div className="financial-card-value">{value === '-' ? '-' : value.toLocaleString()}</div>
+      <div className={`financial-card-month-over-month ${colorScheme}`}>
+        {monthOverMonth === '-'
+          ? '-'
+          : `${monthOverMonth > 0 ? '+' : ''}${monthOverMonth}% month over month`}
+      </div>
+
+      {/* Tooltip for Additional Info */}
+      {showTooltip && Object.keys(additionalInfo).length > 0 && (
+        <div className="financial-card-tooltip">
+          {Object.entries(additionalInfo).map(([key]) => (
+            <div key={key} className="financial-card-tooltip-item">
+              <span className="tooltip-key">{key}:</span>
+              <span className="tooltip-value">{value}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function WeeklyProjectSummary() {
+  const dispatch = useDispatch();
+  const materials = useSelector(state => state.materials?.materialslist || []);
+  const [openSections, setOpenSections] = useState({});
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const projectFilter = useSelector(state => state.weeklyProjectSummary?.projectFilter || '');
+  const dateRangeFilter = useSelector(state => state.weeklyProjectSummary?.dateRangeFilter || '');
+  const containerRef = useRef(null);
+  useEffect(() => {
+    if (materials.length === 0) {
+      dispatch(fetchAllMaterials());
+    }
+  }, [dispatch, materials.length]);
+
+  const quantityOfMaterialsUsedData = useMemo(() => {
+    if (!materials.length) return [];
+    const uniqueMaterials = Array.from(new Map(materials.map(m => [m._id, m])).values());
+    return uniqueMaterials;
+  }, [materials]);
+
+  const toggleSection = category => {
+    setOpenSections(prev => ({
+      ...prev,
+      [category]: !prev[category],
+    }));
+  };
+
+  const sections = useMemo(
+    () => [
+      {
+        title: 'Risk profile for projects',
+        key: 'Risk profile for projects',
+        className: 'full',
+        content: <ProjectRiskProfileOverview />,
+      },
+      {
+        title: 'Project Status',
+        key: 'Project Status',
+        className: 'full',
+        content: (
+          <div className={`${styles.projectStatusGrid}`}>
+            {projectStatusButtons.map(button => {
+              const uniqueId = uuidv4();
+              return (
+                <div
+                  key={uniqueId}
+                  className={`${styles.weeklyProjectSummaryCard} ${styles.statusCard}`}
+                  style={{ backgroundColor: button.bgColor }} // Dynamic Background
+                >
+                  <div className={`${styles.weeklyCardTitle}`}>{button.title}</div>
+                  <div
+                    className={`${styles.weeklyStatusButton}`}
+                    style={{ backgroundColor: button.buttonColor }} // Dynamic Oval Color
+                  >
+                    <span className={`${styles.weeklyStatusValue}`}>{button.value}</span>
+                  </div>
+                  <div
+                    className="weekly-status-change"
+                    style={{ color: button.textColor }} // Dynamic Change Color
+                  >
+                    {button.change}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ),
+      },
+      // New Issues Breakdown card
+      {
+        title: 'Issues Breakdown',
+        key: 'Issues Breakdown',
+        className: 'full',
+        content: (
+          <div className={`${styles.weeklyProjectSummaryCard} ${styles.fullCard}`}>
+            <IssuesBreakdownChart />
+          </div>
+        ),
+      },
+      {
+        title: 'Material Consumption',
+        key: 'Material Consumption',
+        className: 'full',
+        content: [1, 2, 3].map((_, index) => {
+          let content;
+          if (index === 1) {
+            content = <QuantityOfMaterialsUsed data={quantityOfMaterialsUsedData} />;
+          } else if (index === 2) {
+            content = <TotalMaterialCostPerProject />;
+          } else {
+            content = <p>📊 Card</p>;
+          }
+          const uniqueId = uuidv4();
+          return (
+            <div
+              key={uniqueId}
+              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+            >
+              {content}
+            </div>
+          );
+        }),
+      },
+      {
+        title: 'Issue Tracking',
+        key: 'Issue Tracking',
+        className: 'full',
+        content: (
+          <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+            <IssueCharts />
+          </div>
+        ),
+      },
+      {
+        title: 'Tools and Equipment Tracking',
+        key: 'Tools and Equipment Tracking',
+        className: 'full',
+        content: (
+          <div className="weekly-project-summary-card normal-card tools-tracking-layout">
+            <div className="tools-donut-wrap">
+              <ToolStatusDonutChart />
+            </div>
+            <div className="weekly-project-summary-card normal-card" style={{ minHeight: '300px' }}>
+              <ToolsHorizontalBarChart darkMode={darkMode} />
+            </div>
+            <div
+              className="weekly-project-summary-card normal-card"
+              style={{ minHeight: '300px', gridColumn: 'span 2' }}
+            >
+              <SupplierPerformanceGraph />
+            </div>
+          </div>
+        ),
+      },
+      {
+        title: 'Lessons Learned',
+        key: 'Lessons Learned',
+        className: 'half',
+        content: [
+          <div
+            key="frequent-tags-card"
+            className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+            style={{ minHeight: '520px', height: 'auto', overflow: 'visible' }}
+          >
+            <MostFrequentKeywords darkMode={darkMode} />
+          </div>,
+          <div
+            key="injury-chart"
+            className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+          >
+            <InjuryCategoryBarChart />
+          </div>,
+        ],
+      },
+      {
+        title: 'Financials',
+        key: 'Financials',
+        className: 'large',
+        content: (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
+            <div className="weekly-project-summary-card financial-small">📊 Card</div>
+            <div className="weekly-project-summary-card financial-small financial-chart">
+              <ExpenseBarChart />
+            </div>
+            <div className="weekly-project-summary-card financial-small">📊 Card</div>
+            <div className="weekly-project-summary-card financial-small">📊 Card</div>
+            <div className="weekly-project-summary-card financial-big">📊 Big Card</div>
+          </div>
+        ),
+      },
+      {
+        title: 'Loss Tracking',
+        key: 'Loss Tracking',
+        className: 'small',
+        content: (
+          <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>📊 Card</div>
+        ),
+      },
+      {
+        title: 'Global Distribution and Project Status Overview',
+        key: 'Global Distribution and Project Status',
+        className: 'full',
+        content: (
+          <div
+            className={`${styles.weeklyProjectSummaryCard} ${styles.mapCard}`}
+            style={{ height: '500px', padding: '0' }}
+          >
+            <InteractiveMap />
+          </div>
+        ),
+      },
+      {
+        title: 'Labor and Time Tracking',
+        key: 'Labor and Time Tracking',
+        className: 'half',
+        content: [1, 2].map((_, index) => {
+          const uniqueId = uuidv4();
+          return (
+            <div
+              key={uniqueId}
+              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+            >
+              {index === 1 ? <PaidLaborCost /> : <DistributionLaborHours />}
+            </div>
+          );
+        }),
+      },
+      {
+        title: 'Financials Tracking',
+        key: 'Financials Tracking',
+        className: 'full',
+        content: [1, 2, 3, 4].map((_, index) => {
+          const uniqueId = uuidv4();
+          return (
+            <div
+              key={uniqueId}
+              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+            >
+              {(() => {
+                if (index === 2) return <CostPredictionChart projectId={1} />;
+                if (index === 3) return <ActualVsPlannedCost />;
+                return '📊 Card';
+              })()}
+            </div>
+          );
+        }),
+      },
+    ],
+    [quantityOfMaterialsUsedData, darkMode],
+  );
+
+  const handleSaveAsPDF = async () => {
+    // Prevent multiple simultaneous PDF generations
+    if (isGeneratingPDF) {
+      return;
+    }
+
+    const currentOpenSections = { ...openSections };
+    setIsGeneratingPDF(true);
+
+    // Show loading toast
+    const loadingToastId = toast.info('Generating PDF...', {
+      position: 'top-right',
+      autoClose: false,
+      closeOnClick: false,
+      pauseOnHover: false,
+    });
+
+    try {
+      // Open all sections for PDF export
+      const allSectionsOpen = {};
+      sections.forEach(section => {
+        allSectionsOpen[section.key] = true;
+      });
+      setOpenSections(allSectionsOpen);
+
+      // Wait for sections to render
+      // eslint-disable-next-line no-promise-executor-return
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      // Try to find the container using ref first, then fallback to querySelector
+      const contentElement =
+        containerRef.current || document.querySelector(`.${styles.weeklyProjectSummaryContainer}`);
+      if (!contentElement) {
+        throw new Error(
+          'Weekly project summary container not found. Please refresh the page and try again.',
+        );
+      }
+
+      // Create PDF container
+      const pdfContainer = document.createElement('div');
+      pdfContainer.id = 'pdf-export-container';
+      Object.assign(pdfContainer.style, {
+        width: '420mm',
+        padding: '10mm',
+        backgroundColor: '#fff',
+        position: 'absolute',
+        left: '-9999px',
+        top: '0',
+        boxSizing: 'border-box',
+        zIndex: '-1',
+      });
+
+      // Clone the content
+      const clonedContent = contentElement.cloneNode(true);
+
+      // Remove buttons and controls not needed in PDF
+      clonedContent
+        .querySelectorAll(
+          'button, .weekly-project-summary-dropdown-icon, .no-print, .weekly-summary-header-controls',
+        )
+        .forEach(el => {
+          if (el.parentNode) {
+            el.parentNode.removeChild(el);
+          }
+        });
+
+      // Add styles for PDF
+      const styleElem = document.createElement('style');
+      styleElem.textContent = `
+        img, svg {
+          height: auto !important;
+          page-break-inside: avoid !important;
+        }
+        * {
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
+      `;
+
+      clonedContent.prepend(styleElem);
+      pdfContainer.appendChild(clonedContent);
+      document.body.appendChild(pdfContainer);
+
+      // Wait a bit for styles to apply
+      // eslint-disable-next-line no-promise-executor-return
+      await new Promise(resolve => setTimeout(resolve, 300));
+
+      // Generate canvas from HTML
+      const canvas = await html2canvas(pdfContainer, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#fff',
+        windowWidth: pdfContainer.scrollWidth,
+        windowHeight: pdfContainer.scrollHeight,
+        logging: false,
+        allowTaint: false,
+      });
+
+      if (!canvas) {
+        throw new Error('Failed to capture content as image. Please try again.');
+      }
+
+      const imgData = canvas.toDataURL('image/jpeg', 0.95);
+
+      if (!imgData || imgData === 'data:,') {
+        throw new Error('Failed to generate image data. Please try again.');
+      }
+
+      const pdfWidth = 210; // A4 width in mm
+      const imgHeight = (canvas.height * pdfWidth) / canvas.width;
+
+      // Create PDF
+      // eslint-disable-next-line new-cap
+      const pdf = new jsPDF({
+        orientation: imgHeight > pdfWidth ? 'portrait' : 'landscape',
+        unit: 'mm',
+        format: [pdfWidth, imgHeight],
+      });
+
+      pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, imgHeight);
+
+      // Generate filename with project and date range
+      const now = new Date();
+      const dateStr = now.toISOString().slice(0, 10);
+      const projectName = projectFilter || 'All-Projects';
+      const dateRange = dateRangeFilter
+        ? dateRangeFilter.replace(/\s+/g, '-').replace(/,/g, '')
+        : dateStr;
+      const fileName = `weekly-project-summary-${projectName}-${dateRange}.pdf`;
+
+      // Save the PDF
+      pdf.save(fileName);
+
+      // Clean up
+      if (document.body.contains(pdfContainer)) {
+        document.body.removeChild(pdfContainer);
+      }
+
+      // Dismiss loading toast and show success
+      toast.dismiss(loadingToastId);
+      toast.success('PDF generated and downloaded successfully!', {
+        position: 'top-right',
+        autoClose: 3000,
+      });
+    } catch (err) {
+      // Dismiss loading toast
+      toast.dismiss(loadingToastId);
+
+      // Show error message
+      const errorMessage =
+        err?.message ||
+        'Failed to generate PDF. Please try again or contact support if the issue persists.';
+      toast.error(errorMessage, {
+        position: 'top-right',
+        autoClose: 5000,
+      });
+
+      // Log error for debugging
+      // eslint-disable-next-line no-console
+      console.error('PDF generation failed:', err);
+
+      // Clean up PDF container if it exists
+      const pdfContainer = document.getElementById('pdf-export-container');
+      if (pdfContainer && document.body.contains(pdfContainer)) {
+        document.body.removeChild(pdfContainer);
+      }
+    } finally {
+      setOpenSections(currentOpenSections);
+      setIsGeneratingPDF(false);
+    }
+  };
+
+  return (
+    <div
+      ref={containerRef}
+      className={`${styles.weeklyProjectSummaryContainer} ${darkMode ? styles.darkMode : ''}`}
+      data-testid="weekly-project-summary-container"
+    >
+      <WeeklyProjectSummaryHeader
+        handleSaveAsPDF={handleSaveAsPDF}
+        isGeneratingPDF={isGeneratingPDF}
+      />
+      <div className={`${styles.weeklyProjectSummaryDashboardContainer}`}>
+        <div className={`${styles.weeklyProjectSummaryDashboardGrid}`}>
+          {sections.map(({ title, key, className, content }) => (
+            <div
+              key={key}
+              className={`${styles.weeklyProjectSummaryDashboardSection} ${styles[className]}`}
+            >
+              <button
+                type="button"
+                className={styles.weeklyProjectSummaryDashboardCategoryTitle}
+                onClick={() => toggleSection(key)}
+              >
+                {title} <span>{openSections[key] ? '∧' : '∨'}</span>
+              </button>
+              {openSections[key] && (
+                <div className={`${styles.weeklyProjectSummaryDashboardCategoryContent}`}>
+                  {content}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default WeeklyProjectSummary;

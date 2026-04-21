@@ -1,31 +1,186 @@
 import axios from 'axios';
-import { ENDPOINTS } from "utils/URL";
-import GET_MATERIAL_TYPES, { POST_BUILDING_MATERIAL_INVENTORY_TYPE, POST_ERROR_BUILDING_MATERIAL_INVENTORY_TYPE, RESET_POST_BUILDING_MATERIAL_INVENTORY_TYPE, GET_INV_BY_TYPE, GET_TOOL_TYPES ,GET_CONSUMABLE_TYPES  } from "constants/bmdashboard/inventoryTypeConstants";
-import { GET_ERRORS } from "constants/errors";
+import { toast } from 'react-toastify';
+import GET_MATERIAL_TYPES, {
+  POST_BUILDING_MATERIAL_INVENTORY_TYPE,
+  POST_ERROR_BUILDING_MATERIAL_INVENTORY_TYPE,
+  RESET_POST_BUILDING_MATERIAL_INVENTORY_TYPE,
+  POST_BUILDING_CONSUMABLE_INVENTORY_TYPE,
+  POST_ERROR_BUILDING_CONSUMABLE_INVENTORY_TYPE,
+  RESET_POST_BUILDING_CONSUMABLE_INVENTORY_TYPE,
+  POST_BUILDING_TOOL_INVENTORY_TYPE,
+  POST_ERROR_BUILDING_TOOL_INVENTORY_TYPE,
+  RESET_POST_BUILDING_TOOL_INVENTORY_TYPE,
+  GET_INV_BY_TYPE,
+  GET_TOOL_TYPES,
+  GET_CONSUMABLE_TYPES,
+  GET_REUSABLE_TYPES,
+  GET_EQUIPMENT_TYPES,
+  ADD_INVENTORY_TYPE_SUCCESS,
+  ADD_INVENTORY_TYPE_ERROR,
+  UPDATE_INVENTORY_TYPE_SUCCESS,
+  UPDATE_INVENTORY_TYPE_ERROR,
+  DELETE_INVENTORY_TYPE_SUCCESS,
+  DELETE_INVENTORY_TYPE_ERROR,
+  POST_UPDATE_NAME_AND_UNIT_SUCCESS,
+  POST_UPDATE_NAME_AND_UNIT_FAILURE,
+  GET_ITEM_UPDATE_HISTORY
+} from '../../constants/bmdashboard/inventoryTypeConstants';
+import {
+  POST_TOOLS_LOG,
+  POST_ERROR_TOOLS_LOG,
+  RESET_POST_TOOLS_LOG,
+} from '../../constants/bmdashboard/toolsConstants';
+import { GET_ERRORS } from '../../constants/errors';
+import { ENDPOINTS } from '~/utils/URL';
+
+export const setConsumableTypes = payload => {
+  return {
+    type: GET_CONSUMABLE_TYPES,
+    payload,
+  };
+};
+
+export const setPostErrorBuildingConsumableTypeResult = payload => {
+  return {
+    type: POST_ERROR_BUILDING_CONSUMABLE_INVENTORY_TYPE,
+    payload,
+  };
+};
+
+export const setPostErrorBuildingToolTypeResult = payload => {
+  return {
+    type: POST_ERROR_BUILDING_TOOL_INVENTORY_TYPE,
+    payload,
+  };
+};
+
+export const resetPostBuildingInventoryTypeResult = () => {
+  return {
+    type: RESET_POST_BUILDING_MATERIAL_INVENTORY_TYPE,
+  };
+};
+
+export const resetPostBuildingConsumableTypeResult = () => {
+  return {
+    type: RESET_POST_BUILDING_CONSUMABLE_INVENTORY_TYPE,
+  };
+};
+
+export const resetPostBuildingToolTypeResult = () => {
+  return {
+    type: RESET_POST_BUILDING_TOOL_INVENTORY_TYPE,
+  };
+};
+
+export const setMaterialTypes = payload => {
+  return {
+    type: GET_MATERIAL_TYPES,
+    payload,
+  };
+};
+
+export const setEquipmentTypes = payload => {
+  return {
+    type: GET_EQUIPMENT_TYPES,
+    payload,
+  };
+};
+
+export const setReusableTypes = payload => {
+  return {
+    type: GET_REUSABLE_TYPES,
+    payload,
+  };
+};
+
+export const setToolTypes = payload => {
+  return {
+    type: GET_TOOL_TYPES,
+    payload,
+  };
+};
+
+export const setInvTypesByType = payload => {
+  return {
+    type: GET_INV_BY_TYPE,
+    payload,
+  };
+};
+
+export const setErrors = payload => {
+  return {
+    type: GET_ERRORS,
+    payload,
+  };
+};
+
+export const setPostBuildingInventoryTypeResult = payload => {
+  return {
+    type: POST_BUILDING_MATERIAL_INVENTORY_TYPE,
+    payload,
+  };
+};
+
+export const setPostBuildingConsumableTypeResult = payload => {
+  return {
+    type: POST_BUILDING_CONSUMABLE_INVENTORY_TYPE,
+    payload,
+  };
+};
+
+export const setPostBuildingToolTypeResult = payload => {
+  return {
+    type: POST_BUILDING_TOOL_INVENTORY_TYPE,
+    payload,
+  };
+};
+
+export const setPostErrorBuildingInventoryTypeResult = payload => {
+  return {
+    type: POST_ERROR_BUILDING_MATERIAL_INVENTORY_TYPE,
+    payload,
+  };
+};
+
 
 export const fetchMaterialTypes = () => {
   return async dispatch => {
-    axios.get(ENDPOINTS.BM_MATERIAL_TYPES)
+    axios
+      .get(ENDPOINTS.BM_MATERIAL_TYPES)
       .then(res => {
-        dispatch(setMaterialTypes(res.data))
+        dispatch(setMaterialTypes(res.data));
       })
       .catch(err => {
-        dispatch(setErrors(err))
+        dispatch(setErrors(err));
+      });
+  };
+};
+
+export const fetchEquipmentTypes = () => {
+  return async dispatch => {
+    axios
+      .get(ENDPOINTS.BM_EQUIPMENT_TYPES)
+      .then(res => {
+        dispatch(setEquipmentTypes(res.data));
       })
-  }
-}
+      .catch(err => {
+        dispatch(setErrors(err));
+      });
+  };
+};
 
 export const fetchReusableTypes = () => {
   return async dispatch => {
-    axios.get(ENDPOINTS.BM_REUSABLE_TYPES)
+    axios
+      .get(ENDPOINTS.BM_REUSABLE_TYPES)
       .then(res => {
-        dispatch(setReusableTypes(res.data))
+        dispatch(setReusableTypes(res.data));
       })
       .catch(err => {
-        dispatch(setErrors(err))
-      })
-  }
-}
+        dispatch(setErrors(err));
+      });
+  };
+};
 
 export const fetchToolTypes = () => {
   return async dispatch => {
@@ -40,18 +195,19 @@ export const fetchToolTypes = () => {
   };
 };
 
-export const fetchInvTypeByType = (type) => {
+export const fetchInvTypeByType = type => {
   const url = ENDPOINTS.BM_INVTYPE_TYPE(type);
   return async dispatch => {
-    axios.get(url)
+    axios
+      .get(url)
       .then(res => {
-        dispatch(setInvTypesByType({ type: type, data: res.data }))
+        dispatch(setInvTypesByType({ type, data: res.data }));
       })
       .catch(err => {
-        dispatch(setErrors(err))
-      })
-  }
-}
+        console.error('Failed to refresh data:', err);
+      });
+  };
+};
 
 export const postBuildingConsumableType = payload => {
   return async dispatch => {
@@ -70,40 +226,39 @@ export const postBuildingConsumableType = payload => {
   };
 };
 
-export const postBuildingInventoryType = (payload) => {
+export const postBuildingToolType = payload => {
   return async dispatch => {
-    axios.post(ENDPOINTS.BM_MATERIAL_TYPE, payload)
+    axios
+      .post(ENDPOINTS.BM_TOOLS, payload)
       .then(res => {
-        dispatch(setPostBuildingInventoryTypeResult(res.data))
+        dispatch(setPostBuildingToolTypeResult(res.data));
       })
       .catch(err => {
-        dispatch(setPostErrorBuildingInventoryTypeResult(JSON.stringify(err.response.data) || 'Sorry! Some error occurred!'))
-      })
-  }
-}
-
-export const setPostBuildingInventoryTypeResult = (payload) => {
-  return {
-    type: POST_BUILDING_MATERIAL_INVENTORY_TYPE,
-    payload
-  }
-}
-
-
-export const setPostBuildingConsumableTypeResult = payload => {
-  return {
-    type: POST_BUILDING_CONSUMABLE_INVENTORY_TYPE,
-    payload,
+        dispatch(
+          setPostErrorBuildingToolTypeResult(
+            JSON.stringify(err.response.data) || 'Sorry! Some error occurred!',
+          ),
+        );
+      });
   };
 };
 
-
-export const setPostErrorBuildingInventoryTypeResult = (payload) => {
-  return {
-    type: POST_ERROR_BUILDING_MATERIAL_INVENTORY_TYPE,
-    payload
-  }
-}
+export const postBuildingInventoryType = payload => {
+  return async dispatch => {
+    axios
+      .post(ENDPOINTS.BM_MATERIAL_TYPE, payload)
+      .then(res => {
+        dispatch(setPostBuildingInventoryTypeResult(res.data));
+      })
+      .catch(err => {
+        dispatch(
+          setPostErrorBuildingInventoryTypeResult(
+            JSON.stringify(err.response.data) || 'Sorry! Some error occurred!',
+          ),
+        );
+      });
+  };
+};
 
 export const fetchConsumableTypes = () => {
   return async dispatch => {
@@ -116,69 +271,176 @@ export const fetchConsumableTypes = () => {
         dispatch(setErrors(err));
       });
   };
-}
+};
 
-export const setConsumableTypes = payload => {
-  return {
-    type: GET_CONSUMABLE_TYPES,
-    payload,
-  };
-}
-
-export const setPostErrorBuildingConsumableTypeResult = payload => {
-  return {
-    type: POST_ERROR_BUILDING_CONSUMABLE_INVENTORY_TYPE,
-    payload,
+export const postToolsLog = payload => {
+  return async dispatch => {
+    axios
+      .post(ENDPOINTS.BM_LOG_TOOLS, payload)
+      .then(res => {
+        dispatch(setToolsLogResult(res.data));
+      })
+      .catch(err => {
+        dispatch(
+          setPostErrorToolsLog(err.response.data || 'Sorry! Some error occurred!'),
+        );
+      });
   };
 };
 
-export const resetPostBuildingInventoryTypeResult = () => {
+export const setToolsLogResult = payload => {
   return {
-    type: RESET_POST_BUILDING_MATERIAL_INVENTORY_TYPE
-  }
-}
-
-export const resetPostBuildingConsumableTypeResult = () => {
-  return {
-    type: RESET_POST_BUILDING_CONSUMABLE_INVENTORY_TYPE,
-  };
-};
-
-
-
-export const setMaterialTypes = payload => {
-  return {
-    type: GET_MATERIAL_TYPES,
-    payload
-  }
-}
-
-export const setReusableTypes = payload => {
-  return {
-    type: GET_REUSABLE_TYPES,
-    payload
-  }
-}
-
-export const setToolTypes = payload => {
-  return {
-    type: GET_TOOL_TYPES,
+    type: POST_TOOLS_LOG,
     payload,
   };
 };
-export const setInvTypesByType = payload => {
 
+export const setPostErrorToolsLog = payload => {
   return {
-    type: GET_INV_BY_TYPE,
-    payload
+    type: POST_ERROR_TOOLS_LOG,
+    payload,
+  };
+};
+
+export const resetPostToolsLog = () => {
+  return {
+    type: RESET_POST_TOOLS_LOG,
+  };
+};
+
+export const deleteInvType = (type, invtypeId) => {
+  return async dispatch => {
+    const toastId = `delete-${type}-${Date.now()}`;
+    try {
+      await axios.delete(`${ENDPOINTS.BM_INVTYPE_TYPE(type)}/${invtypeId}`);
+      // Refresh the data after successful deletion
+      dispatch(fetchInvTypeByType(type));
+      toast.success(`${type.slice(0, -1)} deleted successfully!`, { toastId });
+    } catch (err) {
+      const errorMessage = err.response?.data?.error || err.response?.data?.message || 'Failed to delete item. Please try again.';
+      toast.error(errorMessage, { toastId: `delete-error-${type}-${Date.now()}` });
+    }
+  };
+};
+
+export const updateInvType = (type, invtypeId, payload) => {
+  return async dispatch => {
+    const toastId = `update-${type}-${Date.now()}`;
+    try {
+      await axios.put(`${ENDPOINTS.BM_INVTYPE_TYPE(type)}/${invtypeId}`, payload);
+      // Refresh the data after successful update
+      dispatch(fetchInvTypeByType(type));
+      toast.success(`${type.slice(0, -1)} updated successfully!`, { toastId });
+    } catch (err) {
+      const errorMessage = err.response?.data?.error || err.response?.data?.message || 'Failed to update item. Please try again.';
+      toast.error(errorMessage, { toastId: `update-error-${type}-${Date.now()}` });
+    }
+  };
+};
+
+export const addInvType = (type, payload) => {
+  let endpoint;
+  switch (type) {
+    case 'Materials':
+      endpoint = ENDPOINTS.BM_MATERIAL_TYPE;
+      break;
+    case 'Consumables':
+      endpoint = ENDPOINTS.BM_CONSUMABLES;
+      break;
+    case 'Tools':
+      endpoint = ENDPOINTS.BM_TOOLS;
+      break;
+    case 'Equipments':
+      endpoint = ENDPOINTS.BM_EQUIPMENT_INVTYPE;
+      break;
+    case 'Reusables':
+      endpoint = ENDPOINTS.BM_REUSABLES_INVTYPE;
+      break;
+    default:
+      endpoint = ENDPOINTS.BM_MATERIAL_TYPE;
   }
-}
 
-export const setErrors = payload => {
-  return {
-    type: GET_ERRORS,
+  return async (dispatch, getState) => {
+    const toastId = `add-${type}-${Date.now()}`;
+    const { auth } = getState();
+    const requestorId = auth.user?.userid;
+
+    const body = { ...payload, requestor: { requestorId } };
+
+    if (type === 'Equipments') {
+      body.desc = body.description;
+      body.fuel = body.fuel || 'Diesel';
+    }
+
+    try {
+      await axios.post(endpoint, body);
+      dispatch(fetchInvTypeByType(type));
+      toast.success(`${type.slice(0, -1)} added successfully!`, { toastId });
+    } catch (err) {
+      const errorMessage = err.response?.data?.error || err.response?.data?.message || 'Failed to add item. Please try again.';
+      toast.error(errorMessage, { toastId: `add-error-${type}-${Date.now()}` });
+    }
+  };
+};
+
+/**
+ * Delete an inventory type by ID and category.
+ * Used by DeleteInvTypeModal (param order: typeId, category).
+ */
+export const deleteInventoryType = (invtypeId, category) => {
+  return async dispatch => {
+    try {
+      await axios.delete(`${ENDPOINTS.BM_INVTYPE_TYPE(category)}/${invtypeId}`);
+      dispatch(fetchInvTypeByType(category));
+      return { success: true };
+    } catch (err) {
+      const errorMessage = err.response?.data?.error || err.response?.data?.message || 'Failed to delete item.';
+      return { success: false, error: errorMessage };
+    }
+  };
+};
+export const updateNameAndUnitResult = payload =>{
+  return{
+    type : POST_UPDATE_NAME_AND_UNIT_SUCCESS,
     payload
   }
 };
-
-
+export const setUpdateNamwAndUnitError = payload => {
+  return {
+    type: POST_UPDATE_NAME_AND_UNIT_FAILURE,
+    payload
+  }
+}
+export const updateNameAndUnit = (id,payload) => {
+  return async dispatch => {
+    axios
+      .put(ENDPOINTS.BM_UPDATE_NAME_AND_UNIT(id), payload)
+      .then(res => {
+        dispatch(updateNameAndUnitResult(res.data));
+      })
+      .catch(err => {
+        dispatch(
+         setUpdateNamwAndUnitError(JSON.stringify(err.response.data) || 'Sorry! Some error occurred!',
+          ),
+        );
+      });
+     };
+};
+export const setItemUpdateHistory = payload =>{
+  return{
+    type: GET_ITEM_UPDATE_HISTORY,
+    payload
+  }
+}
+export const fetchItemUpdateHistory = (id) => {
+  return async dispatch => {
+    axios
+      .get(ENDPOINTS.BM_ITEM_UPDATE_HISTORY(id))
+      .then(res => {
+        dispatch(setItemUpdateHistory(res.data));
+      })
+      .catch(err => {
+        dispatch(setErrors(err));
+      });
+  };
+};

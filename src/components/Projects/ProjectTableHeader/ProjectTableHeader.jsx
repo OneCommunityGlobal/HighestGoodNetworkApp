@@ -1,5 +1,6 @@
 import React from 'react';
-import './../projects.css';
+import PropTypes from 'prop-types';
+import './../projects.module.css';
 import {
   PROJECT_NAME,
   ACTIVE,
@@ -7,70 +8,98 @@ import {
   WBS,
   PROJECT_CATEGORY,
   INVENTORY,
-  DELETE,
+  ARCHIVE,
 } from './../../../languages/en/ui';
-import hasPermission from 'utils/permissions';
+import hasPermission from '~/utils/permissions';
 import { connect } from 'react-redux';
-import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSort, faArrowUp, faArrowDown} from '@fortawesome/free-solid-svg-icons';
-import Dropdown from 'react-bootstrap/Dropdown';
-import DropdownButton from 'react-bootstrap/DropdownButton';
-import { boxStyle } from 'styles';
+import { faArrowUp, faArrowDown, faSortDown } from '@fortawesome/free-solid-svg-icons';
+import { Dropdown,DropdownButton } from 'react-bootstrap';
+
+// import DropdownButton from 'react-bootstrap/DropdownButton';
+import { boxStyle } from '~/styles';
 import { Button } from 'reactstrap';
 
 
 const ProjectTableHeader = props => {
-  const { role } = props; // Access the 'role' prop
-  const canDeleteProject = props.hasPermission('deleteProject');
+  const { role, darkMode } = props;
+  const canDeleteProject = hasPermission('deleteProject')
+
+  const categoryList = ['Unspecified', 'Food', 'Energy', 'Housing', 'Education', 'Society', 'Economics', 'Stewardship', 'Other'];
+  const statusList = ['Active', 'Inactive'];
+
+  const getSortIcon = column => {
+    if (props.sorted.column !== column || props.sorted.direction === "DEFAULT") return faSortDown;
+    if (props.sorted.direction === "ASC") return faArrowDown;
+    if (props.sorted.direction === "DESC") return faArrowUp;
+    return faSortDown;
+  };
+
+  const renderSortButton = column => (
+    <Button
+      size="sm"
+      className="ml-3 mb-1"
+      id={`${column.toLowerCase()}_sort`}
+      onClick={() => props.handleSort(column)}
+    >
+      <FontAwesomeIcon icon={getSortIcon(column)} pointerEvents="none" />
+    </Button>
+  );
 
   return (
-    <tr>
-      <th scope="col" id="projects__order">
+    <tr className={darkMode ? 'bg-space-cadet text-light' : ''}>
+      <th scope="col" id="projects__order" style={{ textAlign: 'center' }}>
         #
       </th>
       {/* <th scope="col">{PROJECT_NAME}</th> */}
-      <th scope="col" className='d-flex justify-content-between'>{PROJECT_NAME}
-      {/* Below tag adds an up arrow and a downArrow buttons to sort Product names alphabetically- Sucheta */}
-      <span className='d-flex flex-wrap'>
-      <Button size='sm' className='ml-3' id='Ascending' onClick={props.handleSort}><FontAwesomeIcon icon={faArrowDown} pointerEvents="none"/></Button>
-      <Button size='sm' className='ml-2' id='Descending' onClick={props.handleSort}><FontAwesomeIcon icon={faArrowUp} pointerEvents="none"/></Button>
-
-      </span>
+      <th scope="col" className='align-middle'>        
+        <span className='d-flex justify-content-between align-middle mt-1'>
+          {PROJECT_NAME}
+          <div>
+            {renderSortButton('PROJECTS')}
+          </div>
+        </span>
       </th>
-      <th scope="col" id="projects__category">
+      <th scope="col" id="projects__category" className='align-middle'>
          {/* This span holds the header-name and a dropDown component */}
-       <span className='d-flex justify-content-between'>{PROJECT_CATEGORY}
-        <DropdownButton id="" title="" size='sm'style={boxStyle} variant='info' value={props.selectedValue} onSelect={props.onChange} >
-            <Dropdown.Item default value="Unspecified">Unspecified</Dropdown.Item>
-            <Dropdown.Item eventKey="Food">Food</Dropdown.Item>
-            <Dropdown.Item eventKey="Energy">Energy</Dropdown.Item>
-            <Dropdown.Item eventKey="Housing">Housing</Dropdown.Item>
-            <Dropdown.Item eventKey="Education">Education</Dropdown.Item>
-            <Dropdown.Item eventKey="Society">Society</Dropdown.Item>
-            <Dropdown.Item eventKey="Economics">Economics</Dropdown.Item>
-            <Dropdown.Item eventKey="Stewardship">Stewardship</Dropdown.Item>
-            <Dropdown.Item eventKey="Other">Other</Dropdown.Item>
-
+       <span className='d-flex justify-content-between align-middle mt-1'>
+        {PROJECT_CATEGORY}
+        <DropdownButton id="" title="" size='sm'style={darkMode ? {} : boxStyle} variant='info' value={props.selectedValue} onSelect={props.onChange} menuAlign="right">
+          <Dropdown.Item default eventKey="" disabled={!props.selectedValue} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}>{props.selectedValue ? 'Clear filter' : 'Choose category'}</Dropdown.Item>
+          <Dropdown.Divider />
+          {categoryList.map((category, index) => 
+            <Dropdown.Item key={index} eventKey={category} active={props.selectedValue === category} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}>{category}</Dropdown.Item>
+          )}
         </DropdownButton>
        </span> 
       </th>
-      <th scope="col" id="projects__active">
-      <span className='d-flex justify-content-between'>{ACTIVE}
-        <DropdownButton className='ml-2' id="" title="" size='sm'style={boxStyle} variant='info' value={props.showStatus} onSelect={props.selectStatus} >
-        <Dropdown.Item default value="Unspecified">Choose Status</Dropdown.Item>
-            <Dropdown.Item eventKey="Active">Active</Dropdown.Item>
-            <Dropdown.Item eventKey="Inactive">Inactive</Dropdown.Item>
+      <th scope="col" id="projects__active" className='align-middle'>
+      <span className='d-flex justify-content-between align-middle mt-1'>
+        {ACTIVE}
+        <DropdownButton className='ml-2 align-middle' id="" title="" size='sm'style={darkMode ? {} : boxStyle} variant='info' value={props.showStatus} onSelect={props.selectStatus}  menuAlign="right" >
+        <Dropdown.Item default value="" disabled={!props.showStatus} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}>{props.showStatus ? 'Clear filter' : 'Choose Status'}</Dropdown.Item>
+          {statusList.map((status, index) => 
+            <Dropdown.Item key={index} eventKey={status} active={props.showStatus === status} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}>{status}</Dropdown.Item>
+          )}
         </DropdownButton>
        </span> 
       </th>
-      <th scope="col" id="projects__inv">
-        {INVENTORY}
+      <th scope="col" id="projects__inv" className='align-middle'>
+        <span className='d-flex justify-content-between'>
+          {INVENTORY}
+          <div>
+            {renderSortButton('INVENTORY')}
+          </div>
+        </span> 
       </th>
-      <th scope="col" id="projects__members">
-        {MEMBERS}
+      <th scope="col" id="projects__members" className='align-middle'>
+        <span className='d-flex'>
+          {MEMBERS}
+          {renderSortButton('MEMBERS')}
+        </span>
       </th>
-      <th scope="col" id="projects__wbs">
+      <th scope="col" id="projects__wbs" className='align-middle'>
         <div className="d-flex align-items-center">
           <span className="mr-2">{WBS}</span>
           <EditableInfoModal
@@ -80,21 +109,36 @@ const ProjectTableHeader = props => {
             isPermissionPage={true}
             role={role}
             className="p-2" // Add Bootstrap padding class to the EditableInfoModal
+            darkMode={darkMode}
           />
         </div>
       </th>
       {canDeleteProject ? (
-        <th scope="col" id="projects__delete">
-          {DELETE}
+        <th scope="col" id="projects__delete" className='align-middle'>
+          {ARCHIVE}
         </th>
       ) : null}
     </tr>
   );
 };
 
+ProjectTableHeader.propTypes = {
+  role: PropTypes.string,
+  darkMode: PropTypes.bool,
+  selectedValue: PropTypes.string,
+  showStatus: PropTypes.string,
+  onChange: PropTypes.func.isRequired,
+  selectStatus: PropTypes.func.isRequired,
+  handleSort: PropTypes.func.isRequired,
+  sorted: PropTypes.shape({
+    column: PropTypes.string.isRequired,
+    direction: PropTypes.string.isRequired,
+  }).isRequired,
+};
+
 const mapStateToProps = state => ({
   role: state.userProfile.role, // Map 'role' from Redux state to 'role' prop
 });
 
-export default connect(mapStateToProps, { hasPermission })(ProjectTableHeader);
+export default connect(mapStateToProps)(ProjectTableHeader)
 
