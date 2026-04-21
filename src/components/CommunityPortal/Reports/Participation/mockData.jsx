@@ -74,5 +74,4 @@ for (let t = 0; t < 6; t++) {
   });
 }
 
-
 export default mockEvents;
