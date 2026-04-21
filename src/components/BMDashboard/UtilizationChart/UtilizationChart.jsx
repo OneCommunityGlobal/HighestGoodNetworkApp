@@ -1,13 +1,14 @@
 /* eslint-disable */
 /* prettier-ignore */
-
 import { useState, useEffect } from 'react';
 import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Title } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import axios from 'axios';
-import './UtilizationChart.css';
+import styles from './UtilizationChart.module.css';
+import { useSelector } from 'react-redux';
+import { ENDPOINTS } from '../../../utils/URL';
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Title);
 
@@ -18,6 +19,9 @@ function UtilizationChart() {
   const [toolFilter, setToolFilter] = useState('ALL');
   const [projectFilter, setProjectFilter] = useState('ALL');
   const [error, setError] = useState(null);
+  const [toolTypes, setToolTypes] = useState([]);
+  const [projects, setProjects] = useState([]);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const fetchChartData = async () => {
     try {
@@ -38,7 +42,29 @@ function UtilizationChart() {
     }
   };
 
+  const fetchFilterData = async () => {
+    try {
+      const [toolTypesResponse, projectsResponse] = await Promise.all([
+        axios.get(ENDPOINTS.BM_TOOL_TYPES, {
+          headers: {
+            Authorization: localStorage.getItem('token'),
+          },
+        }),
+        axios.get(ENDPOINTS.BM_PROJECTS + 'Names', {
+          headers: {
+            Authorization: localStorage.getItem('token'),
+          },
+        }),
+      ]);
+      setToolTypes(toolTypesResponse.data);
+      setProjects(projectsResponse.data);
+    } catch (err) {
+      setError('Failed to load filter options. Please try refreshing the page.');
+    }
+  };
+
   useEffect(() => {
+    fetchFilterData();
     fetchChartData();
   }, []);
 
@@ -52,7 +78,7 @@ function UtilizationChart() {
       {
         label: 'Utilization (%)',
         data: toolsData.map(tool => tool.utilizationRate),
-        backgroundColor: '#a0e7e5',
+        backgroundColor: '#007bff',
         borderRadius: 6,
       },
     ],
@@ -62,8 +88,11 @@ function UtilizationChart() {
     indexAxis: 'y',
     responsive: true,
     plugins: {
+      legend: {
+        labels: { color: darkMode ? '#ffffff' : '#333' },
+      },
       datalabels: {
-        color: '#333',
+        color: darkMode ? '#ffffff' : '#333333',
         anchor: 'end',
         align: 'end',
         font: {
@@ -76,6 +105,8 @@ function UtilizationChart() {
         },
       },
       tooltip: {
+        titleColor: '#ffffff',
+        bodyColor: '#ffffff',
         callbacks: {
           label: context => {
             const tool = toolsData[context.dataIndex];
@@ -90,43 +121,77 @@ function UtilizationChart() {
         title: {
           display: true,
           text: 'Time (%)',
+          color: darkMode ? '#ffffff' : '#333',
         },
+        ticks: { color: darkMode ? '#ffffff' : '#333' },
+        grid: { color: darkMode ? '#c7c7c7ff' : '#bebebeff' },
       },
       y: {
         ticks: {
           autoSkip: false,
+          color: darkMode ? '#ffffff' : '#333',
         },
+        grid: { color: darkMode ? '#c7c7c7ff' : '#bebebeff' },
       },
     },
   };
 
   return (
-    <div className="utilization-chart-container">
-      <h2>Utilization Rate and Downtime of Tools/Equipment</h2>
-
-      <div className="filters">
-        <select value={toolFilter} onChange={e => setToolFilter(e.target.value)}>
-          <option value="ALL">All Tools</option>
-          {/* have to add actual tools dynamic */}
-        </select>
-
-        <select value={projectFilter} onChange={e => setProjectFilter(e.target.value)}>
-          <option value="ALL">All Projects</option>
-          {/* need to add actual projects dynamically */}
-        </select>
-
-        <DatePicker selected={startDate} onChange={setStartDate} placeholderText="From Date" />
-        <DatePicker selected={endDate} onChange={setEndDate} placeholderText="To Date" />
-
-        <button type="button" onClick={handleApplyClick}>
-          Apply
-        </button>
-      </div>
+    <div className={`${styles.utilizationChartContainer} ${darkMode ? styles.darkMode : ''}`}>
+      <h2 className={styles.chartTitle}>Utilization Chart</h2>
 
       {error ? (
-        <p className="utilization-chart-error">{error}</p>
+        <div className={styles.utilizationChartError}>{error}</div>
       ) : (
-        <Bar data={chartData} options={options} />
+        <>
+          <div className={styles.filters}>
+            <select
+              value={toolFilter}
+              onChange={e => setToolFilter(e.target.value)}
+              className={styles.select}
+            >
+              <option value="ALL">All Tools</option>
+              {toolTypes.map(toolType => (
+                <option key={toolType._id} value={toolType._id}>
+                  {toolType.name}
+                </option>
+              ))}
+            </select>
+
+            <select
+              value={projectFilter}
+              onChange={e => setProjectFilter(e.target.value)}
+              className={styles.select}
+            >
+              <option value="ALL">All Projects</option>
+              {projects.map(project => (
+                <option key={project.projectId} value={project.projectId}>
+                  {project.projectName}
+                </option>
+              ))}
+            </select>
+
+            <DatePicker
+              selected={startDate}
+              onChange={date => setStartDate(date)}
+              placeholderText="Start Date"
+              className={styles.datepickerWrapper}
+            />
+
+            <DatePicker
+              selected={endDate}
+              onChange={date => setEndDate(date)}
+              placeholderText="End Date"
+              className={styles.datepickerWrapper}
+            />
+
+            <button onClick={handleApplyClick} className={styles.button}>
+              Apply
+            </button>
+          </div>
+
+          <Bar data={chartData} options={options} />
+        </>
       )}
     </div>
   );

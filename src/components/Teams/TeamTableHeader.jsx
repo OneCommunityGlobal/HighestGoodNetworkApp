@@ -3,11 +3,8 @@ import { connect } from 'react-redux';
 import hasPermission from '~/utils/permissions';
 import { TEAM_NAME, ACTIVE, MEMBERS } from '../../languages/en/ui';
 
-import './TeamsOverview.css';
+import styles from './TeamTableHeader.module.css';
 
-/**
- * The header row of the team table.
- */
 function TeamTableHeaderComponent({
   onTeamNameSort,
   onTeamActiveSort,
@@ -32,22 +29,34 @@ function TeamTableHeaderComponent({
 
   return (
     <tr className={darkMode ? 'bg-space-cadet text-light' : ''}>
-      <th scope="col" id="teams__order">
+      <th scope="col" id="teams__order" style={{ textAlign: 'center', verticalAlign: 'middle' }}>
         #
       </th>
-      <th scope="col">
-        <button type="button" onClick={onTeamNameSort} className={darkMode ? 'text-light' : ''}>
+      <th
+        scope="col"
+        className={styles.teamNameCol}
+        onClick={onTeamNameSort}
+        style={{ cursor: 'pointer' }}
+      >
+        {TEAM_NAME} <span aria-hidden="true">(All | Active | In Active)</span>
+        <span aria-hidden="true" style={{ float: 'right' }}>
           {getSortIcon(sortTeamNameState)}
-          {TEAM_NAME}
-        </button>
+        </span>
       </th>
-      <th scope="col" id="teams__active">
-        <button type="button" onClick={onTeamActiveSort} className={darkMode ? 'text-light' : ''}>
+
+      <th
+        scope="col"
+        id="teams__active"
+        onClick={onTeamActiveSort}
+        style={{ cursor: 'pointer', textAlign: 'center', verticalAlign: 'middle' }}
+        aria-label="Active"
+      >
+        {ACTIVE}
+        <span aria-hidden="true" style={{ float: 'right' }}>
           {getSortIcon(sortTeamActiveState)}
-          {ACTIVE}
-        </button>
+        </span>
       </th>
-      <th scope="col" id="teams__members">
+      <th scope="col" id="teams__members" style={{ textAlign: 'center', verticalAlign: 'middle' }}>
         {MEMBERS}
       </th>
       {(canDeleteTeam || canPutTeam) && (
@@ -58,7 +67,5 @@ function TeamTableHeaderComponent({
 }
 
 TeamTableHeaderComponent.displayName = 'TeamTableHeader';
-
 export const TeamTableHeader = React.memo(TeamTableHeaderComponent);
-
 export default connect(null, { hasPermission })(TeamTableHeader);

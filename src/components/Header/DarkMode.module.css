@@ -1,0 +1,81 @@
+/* --- Root Wrapper --- */
+.darkModeButton {
+  display: inline-block;
+  background: transparent !important;
+}
+
+/* Neutralize menu/row hover effects */
+.isDarkState, .isDarkState:hover {
+  background-color: transparent !important;
+}
+
+/* --- Shared Slider Logic --- */
+.sliderContainerDark, .sliderContainerLight {
+  width: 120px;
+  height: 30px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  transition: background-color 0.4s ease;
+}
+
+.sliderContainerDark { background-color: #1C2541; }
+.sliderContainerLight { 
+  background-color: #e3e3e3; 
+  border: 1px solid #d4d4d4; 
+}
+
+/* --- Icons --- */
+.iconSun, .iconSunHover, .iconNight, .iconNightHover {
+  height: 25px;
+  padding: 2px;
+  border-radius: 50%;
+  background: white;
+  position: absolute;
+  transition: all 500ms ease-in-out;
+}
+
+/* --- Text Visibility Logic --- */
+.labelDark, .labelLight, .labelDarkHover, .labelLightHover {
+  font-size: 13px;
+  font-weight: 500;
+  transition: opacity 500ms ease, color 0.2s ease;
+}
+
+.labelDark { margin-left: 32px; color: #f0f0f0; opacity: 1; }
+.labelLight { margin-left: 6px; color: #151515; opacity: 1; }
+
+.labelLightHover, .labelDarkHover {
+  position: absolute;
+  opacity: 0;
+}
+
+.labelLightHover { margin-left: 6px; color: #151515; }
+.labelDarkHover { margin-left: 32px; color: #ffffff; }
+
+/* --- Hover States (Dark) --- */
+.sliderContainerDark:hover { background-color: #ffffff; }
+
+.sliderContainerDark:hover .labelDark { opacity: 0; }
+.sliderContainerDark:hover .labelLightHover { opacity: 1; }
+
+.sliderContainerDark:hover .iconSunHover { opacity: 0; left: 90px; }
+.sliderContainerDark:hover .iconNight { opacity: 1; left: 90px; }
+
+/* --- Hover States (Light) --- */
+.sliderContainerLight:hover { background-color: #1C2541; }
+
+.sliderContainerLight:hover .labelLight { opacity: 0; }
+.sliderContainerLight:hover .labelDarkHover { opacity: 1; }
+
+.sliderContainerLight:hover .iconSun { opacity: 0; left: 4px; }
+.sliderContainerLight:hover .iconNightHover { opacity: 1; left: 4px; }
+
+/* Initialization positions */
+.iconSun, .iconNightHover { left: 90px; }
+.iconNight, .iconSunHover { left: 4px; }
+
+.sliderContainerDark:hover .labelLightHover{
+  color: #151515 !important;
+}

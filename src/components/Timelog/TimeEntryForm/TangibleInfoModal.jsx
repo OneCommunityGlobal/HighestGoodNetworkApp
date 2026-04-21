@@ -12,7 +12,7 @@ function TangibleInfoModal(props) {
     <Modal isOpen={props.visible} className={props.darkMode ? 'text-light' : ''}>
       <ModalHeader className={props.darkMode ? 'bg-space-cadet' : ''}>Info</ModalHeader>
       <ModalBody className={props.darkMode ? 'bg-yinmn-blue' : ''}>
-        <p>
+        <p className={props.darkMode ? 'text-light' : ''}>
           Intangible time is time logged to items not related to your specific action items OR for
           time that needs to be manually changed to tangible time by an Admin (e.g. work away from
           your computer). In the case of the latter, be sure to email your Admin your change
