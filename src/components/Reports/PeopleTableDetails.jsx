@@ -220,7 +220,8 @@ function PeopleTableDetails(props) {
               if (index < 2) {
                 return (
                   <img
-                    key={`${value._id}-${resource.name}`}
+                    // Unique key using task ID, context, and index
+                    key={`${value._id}-main-${index}`}
                     alt={resource.name}
                     src={resource.profilePic || '/pfp-default.png'}
                     className="img-circle"
@@ -234,7 +235,8 @@ function PeopleTableDetails(props) {
           {value.resources?.map((res) =>
             res.length > 2 ? (
               <button
-                key={res[0]?.name || res[0]?.id}
+                // Unique key using task ID
+                key={`${value._id}-toggle-btn`}
                 type="button"
                 className="name resourceMoreToggle"
                 onClick={() => toggleMoreResources(value._id)}
@@ -246,12 +248,12 @@ function PeopleTableDetails(props) {
           <div id={value._id} className="extra" data-testid="extra-resources">
             <div className="extra1">
               {value.resources?.map(res =>
-                // eslint-disable-next-line array-callback-return,consistent-return
                 res.map((resource, index) => {
                   if (index >= 2) {
                     return (
                       <img
-                        key={resource.index}
+                        // Unique key using task ID, context, and index
+                        key={`${value._id}-extra-${index}`}
                         alt={resource.name}
                         src={resource.profilePic || '/pfp-default.png'}
                         className="img-circle"
@@ -259,6 +261,7 @@ function PeopleTableDetails(props) {
                       />
                     );
                   }
+                  return null;
                 }),
               )}
             </div>
@@ -277,10 +280,6 @@ function PeopleTableDetails(props) {
       </div>
     </div>
   );
-
-  // const renderFilteredTask = () => (
-    
-  // )
 
   const renderModalContent = (value) => (
     <div>
