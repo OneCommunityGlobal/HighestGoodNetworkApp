@@ -1,0 +1,320 @@
+.lessonPlanContainer {
+  margin-left: 0.05rem;
+  padding-bottom: 0;
+}
+
+.tableHeader {
+  background-color: #f8f9fa;
+  color: #343a40;
+  font-weight: 600;
+}
+
+.titleBox {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  border-bottom: 1px solid #dee2e6;
+  padding: 10px;
+  width: 100%;
+}
+
+/* Title uses flex space; avoid w-100 on heading or Save wraps alone to the left */
+.titleHeading {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.titleActions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.pageTitle {
+  color: #212529;
+}
+
+.assignmentStatusManual {
+  font-weight: 600;
+  color: #198754;
+  white-space: nowrap;
+}
+
+.assignmentStatusAuto {
+  font-weight: 600;
+  color: #0d6efd;
+  white-space: nowrap;
+}
+
+.grayBackgroundWrapper {
+  margin-top: -0.02rem;
+  min-height: calc(100vh - 70px);
+  margin-right: 0.5rem;
+  background-color: #f0f0f1;
+  padding-top: 2rem;
+}
+
+.contentBox {
+  background-color: white;
+  border: 1px solid #dee2e6;
+  padding: 1.5rem;
+  border-radius: 0.2rem;
+  box-shadow: 0 0.125rem 0.25rem rgb(0 0 0 / 7.5%);
+  position: relative;
+  top: 3rem; 
+  left: 2rem;
+  right: 4rem;
+  margin: 0 8rem 20%;
+  height: auto;
+}
+
+/* Light mode row hover effect */
+.contentBox table tbody tr:hover {
+  background-color: #f8f9fa; 
+}
+
+.controlRow {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  width: auto;
+  flex-wrap: wrap;
+}
+
+.controlRow select {
+  width: 200px;
+}
+
+.addSubTaskDiv {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  border: 1px solid rgb(246 232 232);
+  border-style: outset;
+  border-width: 1px;
+  box-shadow: 2px 2px 6px rgb(0 0 0 / 8%);
+  margin-bottom: 0;
+}
+
+.inputNarrow {
+  width: 100px !important;
+  box-sizing: border-box;
+}
+
+.selectBtn {
+  color: black;
+  width: 40%;
+  padding: 2px 7px;
+  background-color: white;
+  border: 1px solid #e7e7e7;
+  margin-right: 5px;
+  border-radius: 0.25rem;
+}
+
+.duplicateBtn {
+  border: 2px solid #78ce6a;
+  margin-right: 5px;
+  color: #78ce6a;
+  font-size: 1.2rem;
+  padding: 0.25rem 0.5rem;
+  line-height: 1.5;
+  white-space: nowrap;
+  border-radius: 0.25rem;
+}
+
+.deleteIcon {
+  color: #dc3545 !important;
+  cursor: pointer;
+  padding: 0.25rem;
+}
+
+.footerButtonWrapper {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.headerSaveBtn {
+  background-color: #3B75FC;
+  color: white;
+  width: auto;
+  min-width: 150px;
+  height: auto;
+  flex-shrink: 0;
+  font-size: 1.2rem;
+  padding: 0.5rem 1.5rem;
+  border-radius: 0.30rem;
+  margin-right: 3px;
+  white-space: nowrap;
+  border: none;
+}
+
+.assignLsnBtn {
+  background-color: #2ecc71;
+  color: #fff;
+  width: auto;
+  font-size: 1.2rem;
+  padding: 0.25rem 1.5rem;
+  margin-top: -10px;
+  margin-bottom: 5px;
+  border-radius: 0.3rem;
+  float: right;
+}
+
+.addSubtaskBtn {
+  margin-left: 0.6rem;
+  background-color: #3b75fc;
+  color: white;
+  width: 13%;
+  font-size: 1.2rem;
+  padding: 0.25rem 1.5rem;
+  border-radius: 0.3rem;
+}
+
+.headerSaveBtn:disabled,
+.assignLsnBtn:disabled,
+.addSubtaskBtn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ========================================================== */
+
+/* DARK MODE OVERRIDES (Automatically triggered by global app) */
+
+/* ========================================================== */
+
+:global(body.dark-mode) .grayBackgroundWrapper {
+  background-color: #121212;
+}
+
+:global(body.dark-mode) .contentBox {
+  background-color: #1e1e1e;
+  border: 1px solid #333;
+  box-shadow: 0 0.125rem 0.25rem rgb(0 0 0 / 50%);
+}
+
+:global(body.dark-mode) .tableHeader {
+  background-color: #2d2d2d;
+  color: #e0e0e0;
+}
+
+:global(body.dark-mode) .titleBox {
+  border-bottom: 1px solid #444;
+}
+
+:global(body.dark-mode) .contentBox table tbody tr:hover {
+  background-color: #2a2a2a;
+}
+
+:global(body.dark-mode) .pageTitle {
+  color: #f1f1f1;
+}
+
+:global(body.dark-mode) .assignmentStatusManual {
+  color: #4ade80;
+}
+
+:global(body.dark-mode) .assignmentStatusAuto {
+  color: #7cb6ff;
+}
+
+/* Native date picker follows app theme in dark mode */
+:global(body.dark-mode) .contentBox input[type='date'] {
+  color-scheme: dark;
+  background-color: #2d2d2d;
+  color: #e8e8e8;
+  border-color: #555;
+}
+
+:global(body.dark-mode) .duplicateBtn {
+  color: #6ee7a8;
+  border-color: #34d399;
+  background-color: rgb(52 211 153 / 12%);
+}
+
+:global(body.dark-mode) .selectBtn {
+  color: #e8e8e8;
+  background-color: #2d2d2d;
+  border-color: #555;
+}
+
+:global(body.dark-mode) .contentBox .form-control,
+:global(body.dark-mode) .contentBox .form-select {
+  background-color: #2d2d2d;
+  color: #e8e8e8;
+  border-color: #555;
+}
+
+@media (width <= 992px) {
+  .contentBox {
+    margin: 1rem 1.25rem 2rem;
+    left: 0;
+    right: 0;
+    top: 1rem;
+    padding: 1rem;
+  }
+
+  .grayBackgroundWrapper {
+    margin-right: 0;
+    padding-top: 1rem;
+  }
+
+  .titleBox {
+    padding: 8px 12px;
+  }
+
+  .addSubtaskBtn {
+    width: auto;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .assignLsnBtn {
+    float: none;
+    display: block;
+    width: 100%;
+    margin-top: 0.75rem;
+  }
+
+  .addSubTaskDiv {
+    width: 100%;
+  }
+
+  .controlRow select {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+@media (width <= 576px) {
+  .contentBox {
+    margin: 0.5rem 0.75rem 1.5rem;
+    padding: 0.75rem;
+  }
+
+  .titleBox {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .titleHeading {
+    flex: none;
+    width: 100%;
+  }
+
+  .titleActions {
+    margin-left: 0;
+    width: 100%;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+
+  .headerSaveBtn {
+    width: 100%;
+    margin-right: 0;
+  }
+}

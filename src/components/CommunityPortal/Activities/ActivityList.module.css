@@ -145,6 +145,15 @@
   border-radius: 0;
 }
 
+.activityItem strong {
+  color: #1e3a8a;
+  font-size: 1.2rem;
+}
+
+.darkModeItem strong {
+  color: #5c9ce6 !important;
+}
+
 .activityList.darkActivityList li strong {
   color: #00f3ff;
   font-size: 1.2rem;
@@ -158,15 +167,6 @@
 .darkModeItem:hover {
   background-color: #3d4f62 !important;
   box-shadow: none !important;
-}
-
-.activityItem strong {
-  color: #1e3a8a;
-  font-size: 1.2rem;
-}
-
-.darkModeItem strong {
-  color: #5c9ce6 !important;
 }
 
 .activityItem span {
@@ -288,17 +288,17 @@
   accent-color: #3b82f6;
 }
 
-.showPastToggle input[type="checkbox"]:focus-visible {
-  outline: none;
-  border-radius: 4px;
-}
-
 .darkShowPastToggle {
   color: #f1f5f9;
 }
 
 .darkShowPastToggle input[type="checkbox"] {
   accent-color: #60a5fa;
+}
+
+.showPastToggle input[type="checkbox"]:focus-visible {
+  outline: none;
+  border-radius: 4px;
 }
 
 /* Responsive */
