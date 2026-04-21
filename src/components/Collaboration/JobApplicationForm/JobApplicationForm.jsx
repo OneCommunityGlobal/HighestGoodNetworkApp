@@ -72,8 +72,30 @@ function getQuestionType(q) {
   return String(q.questionType || q.type || '').toLowerCase();
 }
 
+/**
+ * Strip numbering often baked into saved template text (e.g. "1.) …") so the UI can show a single
+ * running index from `{idx + 1}. …`.
+ */
+function stripLeadingQuestionEnumeration(raw) {
+  let s = String(raw || '').trim();
+  if (!s) return s;
+  let prev;
+  do {
+    prev = s;
+    s = s
+      .replace(/^[Qq]uestion\s*\d+\s*[.:]\s*/, '')
+      .replace(/^\d+\.\)\s*/, '')
+      .replace(/^\d+\)\s*/, '')
+      .trim();
+  } while (s !== prev);
+  return s;
+}
+
 function getQuestionLabel(q, idx) {
-  return (q.label || q.questionText || `Question ${idx + 1}`).trim();
+  const raw = (q.label || q.questionText || '').trim();
+  if (!raw) return `Question ${idx + 1}`;
+  const cleaned = stripLeadingQuestionEnumeration(raw);
+  return cleaned || raw;
 }
 
 function isQuestionRequired(q) {
