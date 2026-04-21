@@ -36,8 +36,6 @@ const formatDisplayTime = date =>
 const mockEvents = [];
 let id = 1;
 
-const todayEvents=[];
-
 // Mock data generation for 12 months and 4 event types per week
 for (let month = 0; month < 12; month++) {
   for (let week = 0; week < 4; week++) {
@@ -63,17 +61,6 @@ const today = new Date();
 for (let t = 0; t < 6; t++) {
   const eventDate = new Date(today);
   eventDate.setHours(10 + t * 2, 0, 0, 0);
-  todayEvents.push({
-    id: id++,
-    eventType: eventTypes[t % eventTypes.length],
-    eventDate: eventDate.toISOString(),
-    eventTime: formatDisplayTime(eventDate),
-    eventName: `Event ${id}`,
-    attendees: secureRandInt(20, 99),
-    noShowRate: `${secureRandInt(5, 94)}%`,
-    dropOffRate: `${secureRandInt(10, 79)}%`,
-    location: locations[id % locations.length],
-  })
   mockEvents.push({
     id: id++,
     eventType: eventTypes[t % eventTypes.length],
