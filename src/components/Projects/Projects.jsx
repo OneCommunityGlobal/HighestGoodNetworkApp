@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect , useSelector } from 'react-redux';
 import SearchProjectByPerson from '~/components/SearchProjectByPerson/SearchProjectByPerson';
-import { fetchAllProjects, modifyProject, clearError } from '../../actions/projects';
+import { fetchAllProjects, fetchAllArchivedProjects, modifyProject, clearError } from '../../actions/projects';
 import { fetchProjectsWithActiveUsers } from '../../actions/projectMembers';
 import { getProjectsByUsersName } from '../../actions/userProfile';
 import { getPopupById } from '../../actions/popupEditorAction';
@@ -58,6 +58,20 @@ const Projects = function(props) {
   const [isArchiving, setIsArchiving] = useState(false);
   const [searchMode, setSearchMode] = useState('person'); 
 
+  const [showArchived, setShowArchived] = useState(false);
+
+  const handleFetchArchivedProjects = () => {
+  setShowArchived(prev => {
+    const next = !prev;
+    if (next) {
+      props.fetchAllArchivedProjects();
+    } else {
+      props.fetchAllProjects();
+    }
+      return next;
+    });
+  };
+
   const useDebounce = (value, delay) => {
     const [debouncedValue, setDebouncedValue] = useState(value);
 
@@ -82,8 +96,8 @@ const Projects = function(props) {
     setProjectTarget(projectData);
     setModalData({
       showModal: true,
-      modalMessage: `<p style="${darkMode ? 'color: white' : 'color: black;'}">Do you want to archive ${projectData.projectName}?</p>`,
-      modalTitle: CONFIRM_ARCHIVE,
+      modalMessage: `<p style="${darkMode ? 'color: white' : 'color: black'}">Do you want to ${projectData.isArchived ? 'unarchive' : 'archive'} ${projectData.projectName}?</p>`,
+      modalTitle: projectData.isArchived ? 'Confirm Unarchive' : CONFIRM_ARCHIVE,
       hasConfirmBtn: true,
       hasInactiveBtn: false,
       hasActiveBtn: false,
@@ -154,11 +168,15 @@ const Projects = function(props) {
   };
 
   const confirmArchive = async () => {
-    setIsArchiving(true); // show loading on confirm
-    const updatedProject = { ...projectTarget, isArchived: true };
+    setIsArchiving(true);
+    const updatedProject = { ...projectTarget, isArchived: !projectTarget.isArchived };
     await onUpdateProject(updatedProject);
-    await props.fetchAllProjects();
-    setIsArchiving(false); // reset loading
+    if (showArchived) {
+      await props.fetchAllArchivedProjects(); // stay in archived view after unarchiving
+    } else {
+      await props.fetchAllProjects();
+    }
+    setIsArchiving(false);
     onCloseModal();
   };
 
@@ -171,10 +189,14 @@ const Projects = function(props) {
     onCloseModal();
   };
 
-  const generateProjectList = (categorySelectedForSort, showStatus) => {
+  const generateProjectList = (categorySelectedForSort, showStatus, isShowingArchived) => {
+    console.log('generateProjectList called, isShowingArchived:', isShowingArchived);
+    console.log('total projects:', allReduxProjects.length);
+    console.log('archived projects:', allReduxProjects.filter(p => p.isArchived).length);
+    console.log('non-archived projects:', allReduxProjects.filter(p => !p.isArchived).length);
     const activeMemberCounts = props.state.projectMembers?.activeMemberCounts || {};  
     const filteredProjects = allReduxProjects
-      .filter(project => !project.isArchived)
+      .filter(project => isShowingArchived ? project.isArchived : !project.isArchived)
       .filter(project => {
         if (categorySelectedForSort && showStatus){
           return project.category === categorySelectedForSort && project.isActive === showStatus;
@@ -254,7 +276,8 @@ const Projects = function(props) {
   }, []);
 
   useEffect(() => {
-    generateProjectList(categorySelectedForSort, showStatus);
+    console.log('useEffect triggered, showArchived:', showArchived);
+    generateProjectList(categorySelectedForSort, showStatus, showArchived);
     if (status !== 200) {
       setModalData({
         showModal: true,
@@ -264,7 +287,7 @@ const Projects = function(props) {
         hasInactiveBtn: false,
       });
     }
-  }, [categorySelectedForSort, showStatus, sorter, allReduxProjects, props.state.theme.darkMode, props.state.projectMembers?.activeMemberCounts]);
+  }, [categorySelectedForSort, showStatus, sorter, allReduxProjects, props.state.theme.darkMode, props.state.projectMembers?.activeMemberCounts, showArchived]);
 
   useEffect(() => {
   const fetchProjects = async () => {
@@ -343,8 +366,13 @@ const Projects = function(props) {
 
             {canPostProject ? <AddProject hasPermission={hasPermission} /> : null}
         </div>
-        <div className="d-flex" style={{ gap: '10px' }}>
-          <SearchProjectByPerson onSearch={handleSearchName} searchMode={searchMode} />
+        <div className="d-flex mb-3" style={{ gap: '10px' }}>
+          <SearchProjectByPerson
+            onSearch={handleSearchName}
+            searchMode={searchMode}
+            handleFetchArchivedProjects={handleFetchArchivedProjects}
+            showArchived={showArchived}
+          />
           <div className="input-group" style={{ maxWidth: '260px', maxHeight: '38px' }}>
             <div className="input-group-prepend">
               <span
@@ -363,6 +391,16 @@ const Projects = function(props) {
               <option value="project">Project Name</option>
             </select>
           </div>
+          <button
+          type="button"
+          onClick={handleFetchArchivedProjects}
+          style={{ whiteSpace: 'nowrap', height: '38px', flexShrink: 0 }}
+          className={`btn px-3 ${
+            showArchived ? 'btn-warning' : darkMode ? 'btn-outline-light' : 'btn-outline-secondary'
+          }`}
+        >
+          {showArchived ? 'Hide Archived' : 'Show Archived'}
+        </button>
         </div>
         <div>
         <table className="table table-bordered table-responsive-sm">
@@ -391,7 +429,10 @@ const Projects = function(props) {
         modalMessage={modalData.modalMessage}
         modalTitle={modalData.modalTitle}
         darkMode={darkMode}
-        confirmButtonText={isArchiving ? 'Archiving...' : 'Confirm'}
+        confirmButtonText={isArchiving
+          ? (projectTarget.isArchived ? 'Unarchiving...' : 'Archiving...') 
+          : (projectTarget.isArchived ? 'Unarchive' : 'Confirm')
+        }
         isConfirmDisabled={isArchiving}
         setInactiveButton={isChangingStatus ? 'Setting Inactive' : 'Yes, hide it all'}
         isSetInactiveDisabled={isChangingStatus}
@@ -410,6 +451,7 @@ const mapStateToProps = state => {
 Projects.propTypes = {
   clearError: PropTypes.func.isRequired,
   fetchAllProjects: PropTypes.func.isRequired,
+  fetchAllArchivedProjects: PropTypes.func.isRequired,
   fetchProjectsWithActiveUsers: PropTypes.func.isRequired,
   getProjectsByUsersName: PropTypes.func.isRequired,
   hasPermission: PropTypes.func.isRequired,
@@ -436,6 +478,7 @@ Projects.propTypes = {
 
 export default connect(mapStateToProps, {
   fetchAllProjects,
+  fetchAllArchivedProjects,
   modifyProject,
   clearError,
   getPopupById,
