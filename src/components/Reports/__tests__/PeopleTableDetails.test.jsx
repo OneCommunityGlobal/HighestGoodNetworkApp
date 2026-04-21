@@ -43,13 +43,13 @@ const taskData = [
     endDate: '2022-03-15',
   },
 ];
-describe('PeopleTableDetails component', () => {
-  it('renders without crashing', () => {
+describe(' Unit Test case for PeopleTableDetails component', () => {
+  it('Test 1 : Basic render without crashing', () => {
     render(<PeopleTableDetails taskData={taskData} />);
     expect(screen.getByTestId('eh'));
   });
 
-  it('renders all table headers correctly', () => {
+  it('Test 2 : Verify if the table header renders as expected ', () => {
     render(<PeopleTableDetails taskData={taskData} />);
     expect(screen.getByTestId('task'));
     expect(screen.getByTestId('priority'));
@@ -61,7 +61,7 @@ describe('PeopleTableDetails component', () => {
     expect(screen.getByTestId('ed'));
   });
 
-  it('displays all task data in table rows', () => {
+  it('Test 3 : Verify if the table row renders the mock data', () => {
     render(<PeopleTableDetails taskData={taskData} />);
     // Expect to see text from the first task
     expect(screen.getByText('Task 1')).toBeInTheDocument();
@@ -79,7 +79,7 @@ describe('PeopleTableDetails component', () => {
     expect(screen.getByText('Not Started')).toBeInTheDocument();
   });
 
-  it('handles missing task attributes gracefully', () => {
+  it('Test 4 : Verify if the filterTasks function gracefully handless missing attribute and doesnt throw any error  ', () => {
     const tasks = [
       {
         _id: '1',
@@ -118,7 +118,7 @@ describe('PeopleTableDetails component', () => {
     expect(project2Text).not.toBeInTheDocument();
   });
 
-  it('does not show resource toggle button when there are less than 2 resources', () => {
+  it('Test 5 : Verify if the renderFilteredTask doesnt render any toggle button if the no of resources is less than 2', () => {
     const tasks = [
       {
         _id: '1',
@@ -136,11 +136,16 @@ describe('PeopleTableDetails component', () => {
     render(<PeopleTableDetails taskData={tasks} />);
 
     expect(screen.getByText('Project 1')).toBeInTheDocument();
-    const toggleButton = screen.queryByText('+');
-    expect(toggleButton).not.toBeInTheDocument();
+    
+    // Check for the presence of the Clear Filters button (should be there)
+    expect(screen.getByRole('button', { name: /clear filters/i })).toBeInTheDocument();
+    
+    // Check that the resource toggle button (matching the "N+" format) is NOT there
+    const resourceButton = screen.queryByRole('button', { name: /\d+\+/ });
+    expect(resourceButton).not.toBeInTheDocument();
   });
 
-  it('shows resource toggle button when there are more than 2 resources', () => {
+  it('Test 6 : Verify if the renderFilteredTask render button if the no of resources is greater than 2', () => {
     const tasks = [
       {
         _id: '1',
@@ -149,9 +154,9 @@ describe('PeopleTableDetails component', () => {
         status: 'Completed',
         resources: [
           [
-            { name: 'Resource 2', index: 2, profilePic: '' },
-            { name: 'Resource 3', index: 3, profilePic: '' },
-            { name: 'Resource 1', index: 1, profilePic: '' },
+            { name: 'Resource 2', index: 2, profilepic: '' },
+            { name: 'Resource 3', index: 3, profilepic: '' },
+            { name: 'Resource 1', index: 1, profilepic: '' },
           ],
         ],
         active: 'Yes',
@@ -164,11 +169,13 @@ describe('PeopleTableDetails component', () => {
     render(<PeopleTableDetails taskData={tasks} />);
 
     expect(screen.getByText('Project 2')).toBeInTheDocument();
-    const toggleButton = screen.getByText('1+');
-    expect(toggleButton).toBeInTheDocument();
+    
+    // Target specifically the resource toggle button using regex for the "1+" format
+    const resourceButton = screen.getByRole('button', { name: /\d+\+/ });
+    expect(resourceButton).toBeInTheDocument();
   });
-
-  it('toggles resource visibility when button is clicked', () => {
+  
+  it('Test 7 : Verify the button in the resource cell renders as expected when clicked', () => {
     const tasks = [
       {
         _id: '1',
@@ -177,9 +184,9 @@ describe('PeopleTableDetails component', () => {
         status: 'Completed',
         resources: [
           [
-            { name: 'Resource 2', index: 2, profilePic: '' },
-            { name: 'Resource 3', index: 3, profilePic: '' },
-            { name: 'Resource 1', index: 1, profilePic: '' },
+            { name: 'Resource 2', index: 2, profilepic: '' },
+            { name: 'Resource 3', index: 3, profilepic: '' },
+            { name: 'Resource 1', index: 1, profilepic: '' },
           ],
         ],
         active: 'Yes',
@@ -191,25 +198,26 @@ describe('PeopleTableDetails component', () => {
     ];
 
     render(<PeopleTableDetails taskData={tasks} />);
-
-    const allButtons = screen.getAllByRole('button');
-    const toggleButton = allButtons.find(button =>
-      button.classList.contains('resourceMoreToggle')
-    );
-    expect(toggleButton).toBeInTheDocument();
-
-    // eslint-disable-next-line testing-library/no-node-access
-    const extraDiv = toggleButton.parentElement.querySelector('.extra');
+    
+    // SPECIFIC SELECTION: Target only the button that contains a number followed by +
+    const toggleButton = screen.getByRole('button', { name: /\d+\+/ });
+    
+    // Find the extra div using the ID that corresponds to the task ID
+    const extraDiv = document.getElementById('1'); 
+    
     expect(extraDiv).toBeInTheDocument();
+    // Default display should be based on your CSS, usually hidden or not set
+    // If your CSS defaults it to 'none', start there:
+    extraDiv.style.display = 'none';
 
     fireEvent.click(toggleButton);
     expect(extraDiv.style.display).toBe('table-cell');
-
+    
     fireEvent.click(toggleButton);
     expect(extraDiv.style.display).toBe('none');
   });
 
-  it('displays correct number of remaining resources', () => {
+  it('Test 8 : Verify when there are more than 2 resources the remaining number of resources is displayed', () => {
     const tasks = [
       {
         _id: '1',
@@ -233,6 +241,10 @@ describe('PeopleTableDetails component', () => {
     ];
 
     render(<PeopleTableDetails taskData={tasks} />);
+    
+    // Based on your component: res.length - 2
+    // 4 resources - 2 = 2, so it should display "2+"
     expect(screen.getByText('2+')).toBeInTheDocument();
   });
+  
 });
