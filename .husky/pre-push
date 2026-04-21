@@ -3,7 +3,7 @@
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 # Use Node 20 if available (or install if needed)
-if [ -f .nvmrc ]; then
+if command -v nvm >/dev/null 2>&1 && [ -f .nvmrc ]; then
   nvm use 20 2>/dev/null || nvm install 20 && nvm use 20
 fi
 
@@ -30,17 +30,17 @@ style_status=0
 
 if [ -n "$js_files" ]; then
   echo "🧪 Running related tests before push..."
-  yarn vitest related --run $js_files
+  npx vitest related --run $js_files
   test_status=$?
 
   echo "🧹 Running ESLint on changed files before push..."
-  yarn eslint $js_files
+  npx eslint $js_files
   lint_status=$?
 fi
 
 if [ -n "$style_files" ]; then
   echo "🎨 Running Stylelint on changed files before push..."
-  yarn stylelint $style_files
+  npx stylelint $style_files
   style_status=$?
 fi
 
