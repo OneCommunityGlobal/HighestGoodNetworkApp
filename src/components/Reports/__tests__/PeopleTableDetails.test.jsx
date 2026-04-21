@@ -52,24 +52,23 @@ describe('Unit Test case for PeopleTableDetails component', () => {
     expect(screen.getByRole('button', { name: /^\d+\+$/ })).toBeInTheDocument();
   });
 
-  it('Test 7 : Verify toggle interaction using Testing Library methods', () => {
-    render(<PeopleTableDetails taskData={[getMockTask('1', 'P2', 3)]} />);
-    const row = screen.getByText('P2').closest('.people-table-row');
-    const toggleButton = within(row).getByRole('button', { name: /^\d+\+$/ });
-    
-    // Bypass the linter only for this specific line
-    // eslint-disable-next-line testing-library/no-node-access
-    const extraDiv = document.getElementById('1'); 
-    
-    extraDiv.style.display = 'none'; 
-    expect(extraDiv).not.toBeVisible();
+  it('Test 7 : Verify toggle interaction', () => {
+  render(<PeopleTableDetails taskData={[getMockTask('1', 'P2', 3)]} />);
+  
+  const toggleButton = screen.getByRole('button', { name: /1\+/ });
+  const extraDiv = screen.getByTestId('extra-resources-1'); 
 
-    fireEvent.click(toggleButton);
-    expect(extraDiv).toBeVisible();
-    
-    fireEvent.click(toggleButton);
-    expect(extraDiv).not.toBeVisible();
-  });
+  // Instead of checking visibility (which depends on CSS), 
+  // check if the click actually triggers the change you expect.
+  fireEvent.click(toggleButton);
+  
+  // If your toggle function sets display to 'block' inline:
+  expect(extraDiv).toBeVisible();
+  
+  fireEvent.click(toggleButton);
+  // If the toggle function sets it back to 'none' inline:
+  expect(extraDiv).not.toBeVisible();
+});
 
   it('Test 8 : Verify remaining resource count displayed', () => {
     render(<PeopleTableDetails taskData={[getMockTask('1', 'P2', 4)]} />);
