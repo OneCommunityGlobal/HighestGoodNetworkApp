@@ -36,7 +36,6 @@ export default function CommunityCalendar() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const currentDate = new Date();
 
-
   useEffect(() => {
     const fetchEvents = async () => {
       setIsLoading(true);
@@ -124,13 +123,13 @@ export default function CommunityCalendar() {
   const [overflowDate, setOverflowDate] = useState(false);
 
   // Memoized helper function to get events for a specific date
- const getEventsForDate = useCallback(
-  date => {
-    if (!date) return [];
-    return eventCache.get(new Date(date).toDateString()) || [];
-  },
-  [eventCache],
-);
+  const getEventsForDate = useCallback(
+    date => {
+      if (!date) return [];
+      return eventCache.get(new Date(date).toDateString()) || [];
+    },
+    [eventCache],
+  );
 
   const selectedDateEvents = useMemo(() => {
     const dateKey = selectedDate?.toDateString();
@@ -202,24 +201,22 @@ export default function CommunityCalendar() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
- useEffect(() => {
-  const eventsForDate = getEventsForDate(selectedDate);
+  useEffect(() => {
+    const eventsForDate = getEventsForDate(selectedDate);
 
-  if (eventsForDate.length === 0) {
-    if (selectedEvent !== null) {
-      setSelectedEvent(null);
+    if (eventsForDate.length === 0) {
+      if (selectedEvent !== null) {
+        setSelectedEvent(null);
+      }
+      return;
     }
-    return;
-  }
 
-  const hasSelectedEvent = eventsForDate.some(
-    event => event.id === selectedEvent?.id
-  );
+    const hasSelectedEvent = eventsForDate.some(event => event.id === selectedEvent?.id);
 
-  if (!hasSelectedEvent) {
-    setSelectedEvent(eventsForDate[0]);
-  }
-}, [getEventsForDate, selectedDate]);
+    if (!hasSelectedEvent) {
+      setSelectedEvent(eventsForDate[0]);
+    }
+  }, [getEventsForDate, selectedDate]);
 
   const statusMap = {
     New: 'statusNew',
@@ -734,49 +731,44 @@ export default function CommunityCalendar() {
             </div>
 
             <div className={styles.modalContent}>
-                <div className={styles.eventStatus}>
-                  <span
-                    className={`${styles.statusBadge} ${
-                      styles[statusMap[selectedEvent.status]] || ''
-                    } ${darkMode ? styles.darkModeStatusBadge : ''}`}
-                  >
-                    {statusIconMap[selectedEvent.status] || ''} {selectedEvent.status}
-                  </span>
-                </div>
+              <div className={styles.eventStatus}>
+                <span
+                  className={`${styles.statusBadge} ${styles[statusMap[selectedEvent.status]] ||
+                    ''} ${darkMode ? styles.darkModeStatusBadge : ''}`}
+                >
+                  {statusIconMap[selectedEvent.status] || ''} {selectedEvent.status}
+                </span>
+              </div>
 
-                <div className={styles.eventDetailsGrid}>
-                  <div className={styles.detailItem}>
-                    <span>Type:</span>
-                    <span>{selectedEvent.type}</span>
-                  </div>
-                  <div className={styles.detailItem}>
-                    <span>Location:</span>
-                    <span>{selectedEvent.location}</span>
-                  </div>
-                  <div className={styles.detailItem}>
-                    <span>Date:</span>
-                    <span>{selectedEvent.date.toLocaleDateString()}</span>
-                  </div>
-                  <div className={styles.detailItem}>
-                    <span>Time:</span>
-                    <span>{selectedEvent.time}</span>
-                  </div>
+              <div className={styles.eventDetailsGrid}>
+                <div className={styles.detailItem}>
+                  <span>Type:</span>
+                  <span>{selectedEvent.type}</span>
                 </div>
-
-                <div className={styles.eventDescription}>
-                  <span>Description:</span>
-                  <p>{selectedEvent.description}</p>
+                <div className={styles.detailItem}>
+                  <span>Location:</span>
+                  <span>{selectedEvent.location}</span>
+                </div>
+                <div className={styles.detailItem}>
+                  <span>Date:</span>
+                  <span>{selectedEvent.date.toLocaleDateString()}</span>
+                </div>
+                <div className={styles.detailItem}>
+                  <span>Time:</span>
+                  <span>{selectedEvent.time}</span>
                 </div>
               </div>
 
-              <div className={styles.modalActions}>
-                <button className={styles.btnPrimary}>
-                  Register for Event
-                </button>
-                <button className={styles.btnSecondary}>
-                  Add to Calendar
-                </button>
+              <div className={styles.eventDescription}>
+                <span>Description:</span>
+                <p>{selectedEvent.description}</p>
               </div>
+            </div>
+
+            <div className={styles.modalActions}>
+              <button className={styles.btnPrimary}>Register for Event</button>
+              <button className={styles.btnSecondary}>Add to Calendar</button>
+            </div>
           </div>
         </div>
       )}
