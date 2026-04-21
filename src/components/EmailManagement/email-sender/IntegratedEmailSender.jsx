@@ -215,7 +215,7 @@ const VariableRow = React.memo(
                     href={value}
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ fontSize: '0.85rem', wordBreak: 'break-all' }}
+                    style={{ fontSize: '0.85rem', wordBreak: 'break-all', color: '#3182ce' }}
                   >
                     {value}
                   </a>
