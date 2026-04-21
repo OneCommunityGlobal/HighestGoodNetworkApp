@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Alert, Button, Card, Container, Form, Modal, Spinner } from 'react-bootstrap';
 import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
 import styles from './BlueskyPostDetails.module.css';
 
 const API_BASE_URL = 'http://localhost:4500/api/bluesky';
@@ -99,6 +100,7 @@ ConnectionCard.propTypes = {
 function UploadDropZone({
   dropZoneRef,
   fileInputRef,
+  darkMode,
   isDragging,
   onDragEnter,
   onDragOver,
@@ -116,9 +118,13 @@ function UploadDropZone({
       onDragLeave={onDragLeave}
       onDrop={onDrop}
       style={{
-        border: `2px dashed ${isDragging ? '#0d6efd' : '#dee2e6'}`,
+        border: `2px dashed ${isDragging ? '#0d6efd' : darkMode ? '#4a5568' : '#dee2e6'}`,
         borderRadius: '4px',
-        backgroundColor: isDragging ? 'rgba(13, 110, 253, 0.05)' : 'transparent',
+        backgroundColor: isDragging
+          ? 'rgba(13, 110, 253, 0.08)'
+          : darkMode
+          ? '#1a2a3d'
+          : 'transparent',
         transition: 'all 0.2s ease',
         cursor: 'pointer',
       }}
@@ -133,10 +139,12 @@ function UploadDropZone({
           accept="image/*"
           onChange={onFileChange}
           style={{ maxWidth: '300px' }}
-          className="mb-2"
+          className={`mb-2 ${darkMode ? styles['dark-file-input'] : ''}`}
           aria-label="Upload an image from your device"
         />
-        <small className="text-muted">Max file size: 1MB (5MB for GIFs)</small>
+        <small className={darkMode ? styles['dark-text-muted'] : 'text-muted'}>
+          Max file size: 1MB (5MB for GIFs)
+        </small>
       </div>
     </label>
   );
@@ -145,6 +153,7 @@ function UploadDropZone({
 UploadDropZone.propTypes = {
   dropZoneRef: PropTypes.shape({ current: PropTypes.any }),
   fileInputRef: PropTypes.shape({ current: PropTypes.any }),
+  darkMode: PropTypes.bool.isRequired,
   isDragging: PropTypes.bool.isRequired,
   onDragEnter: PropTypes.func.isRequired,
   onDragOver: PropTypes.func.isRequired,
@@ -345,6 +354,7 @@ PostsCard.propTypes = {
 };
 
 function BlueskyPostDetails() {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [handle, setHandle] = useState('');
   const [appPassword, setAppPassword] = useState('');
   const [isConnected, setIsConnected] = useState(false);
@@ -364,6 +374,9 @@ function BlueskyPostDetails() {
   const clearImage = () => {
     setSelectedImage(null);
     setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   const checkSession = async () => {
@@ -700,7 +713,7 @@ function BlueskyPostDetails() {
     isConnected && (postText.trim() !== '' || selectedImage !== null) && charsLeft >= 0;
 
   return (
-    <Container className={styles['bluesky-post-details']}>
+    <Container className={`${styles['bluesky-post-details']} ${darkMode ? styles.dark : ''}`}>
       {/* Status alert — shown at top */}
       {status !== '' && (
         <Alert
@@ -759,6 +772,7 @@ function BlueskyPostDetails() {
               <UploadDropZone
                 dropZoneRef={dropZoneRef}
                 fileInputRef={fileInputRef}
+                darkMode={darkMode}
                 isDragging={isDragging}
                 onDragEnter={handleDragEnter}
                 onDragOver={handleDragOver}

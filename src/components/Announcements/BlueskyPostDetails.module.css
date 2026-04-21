@@ -9,6 +9,10 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+.dark {
+  color: #e2e8f0;
+}
+
 /* ── Status alert ───────────────────────────────────────── */
 .status-alert {
   border-radius: 10px;
@@ -69,6 +73,14 @@
   overflow: hidden;
 }
 
+.dark .connection-card,
+.dark .composer-card,
+.dark .posts-card {
+  background: #13253a;
+  border: 1px solid #2f435d;
+  box-shadow: 0 3px 14px rgb(0 0 0 / 30%);
+}
+
 .brand-header {
   display: flex;
   align-items: center;
@@ -87,12 +99,30 @@
   margin-bottom: 6px;
 }
 
+.dark .form-label,
+.dark .section-title,
+.dark .post-text {
+  color: #e2e8f0;
+}
+
 .form-input {
   border-radius: 8px;
   border: 1.5px solid #e2e8f0;
   padding: 10px 14px;
   font-size: 15px;
   transition: border-color 0.2s ease;
+}
+
+.dark .form-input,
+.dark .composer-textarea {
+  background: #1a2a3d;
+  border-color: #3b516b;
+  color: #f7fafc;
+}
+
+.dark .form-input::placeholder,
+.dark .composer-textarea::placeholder {
+  color: #9fb3c8;
 }
 
 .form-input:focus {
@@ -248,6 +278,25 @@
   background: #f7fafc;
 }
 
+.dark .drop-zone {
+  background: #1a2a3d;
+  border-color: #3b516b;
+}
+
+.dark-file-input {
+  color: #e2e8f0;
+}
+
+.dark-file-input::file-selector-button {
+  background: #2d4b6d;
+  border: 1px solid #4b6787;
+  color: #e2e8f0;
+}
+
+.dark-text-muted {
+  color: #b6c6d8;
+}
+
 .drop-zone:hover,
 .drop-zone.dragging {
   border-color: #0085ff;
@@ -308,6 +357,10 @@
   border-bottom: 1px solid #edf2f7;
 }
 
+.dark .post-item {
+  border-bottom-color: #2f435d;
+}
+
 .post-item:last-child {
   border-bottom: none;
 }
@@ -352,10 +405,18 @@
   gap: 4px;
 }
 
+.dark .post-stat {
+  color: #b6c6d8;
+}
+
 .post-time {
   font-size: 12px;
   color: #a0aec0;
   margin-right: auto;
+}
+
+.dark .post-time {
+  color: #97abc3;
 }
 
 .post-actions {
@@ -379,6 +440,11 @@
   color: #0085ff;
 }
 
+.dark .action-btn-view {
+  background: #24486a;
+  color: #e8f3ff;
+}
+
 .action-btn-view:hover {
   background: #0085ff;
   color: #fff;
@@ -387,6 +453,11 @@
 .action-btn-delete {
   background: #fff5f5;
   color: #e53e3e;
+}
+
+.dark .action-btn-delete {
+  background: #5a2630;
+  color: #ffd8dd;
 }
 
 .action-btn-delete:disabled {
@@ -404,6 +475,10 @@
   text-align: center;
   padding: 48px 24px;
   color: #a0aec0;
+}
+
+.dark .empty-state {
+  color: #9fb3c8;
 }
 
 .empty-icon {
@@ -487,5 +562,18 @@
 /* ── Modal header ───────────────────────────────────────── */
 .modal-header {
   border-bottom: 1px solid #edf2f7;
+}
+
+.dark .connected-bar {
+  background: #17314f;
+  border-color: #2f557e;
+}
+
+.dark .connected-badge {
+  color: #9fc5f4;
+}
+
+.dark .char-bar-track {
+  background: #3b516b;
 }
 

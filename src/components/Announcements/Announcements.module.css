@@ -63,6 +63,11 @@ button.sendButton:hover {
   box-sizing: border-box; /* Ensures padding is included in width */
 }
 
+.emailUpdateContainerDark {
+  background: #14233a;
+  color: #e2e8f0;
+}
+
 .editor {
   flex: 1;
 
@@ -70,6 +75,15 @@ button.sendButton:hover {
   margin-right: 20px;
 
   /* Add some spacing between editor and email inputs */
+}
+
+.editorDark {
+  background: #14233a;
+  color: #e2e8f0;
+}
+
+.editorDark :global(h3) {
+  color: #e2e8f0;
 }
 
 .editor :global(h2) {
