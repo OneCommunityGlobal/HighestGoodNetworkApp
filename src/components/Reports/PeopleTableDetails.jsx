@@ -243,7 +243,7 @@ function PeopleTableDetails(props) {
               </button>
             ) : null,
           )}
-          <div id={value._id} className="extra">
+          <div id={value._id} className="extra" data-testid="extra-resources">
             <div className="extra1">
               {value.resources?.map(res =>
                 // eslint-disable-next-line array-callback-return,consistent-return

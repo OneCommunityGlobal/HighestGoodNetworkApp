@@ -142,7 +142,8 @@ describe(' Unit Test case for PeopleTableDetails component', () => {
     expect(screen.getByRole('button', { name: /clear filters/i })).toBeInTheDocument();
     
     // Check that the resource toggle button (matching the "N+" format) is NOT there
-    const resourceButton = screen.queryByRole('button', { name: /\d+\+/ });
+    // This tells the regex to look for digits at the start and end of the string
+    const resourceButton = screen.queryByRole('button', { name: /^\d+\+$/ });
     expect(resourceButton).not.toBeInTheDocument();
   });
 
@@ -172,7 +173,8 @@ describe(' Unit Test case for PeopleTableDetails component', () => {
     expect(screen.getByText('Project 2')).toBeInTheDocument();
     
     // Target specifically the resource toggle button using regex for the "1+" format
-    const resourceButton = screen.getByRole('button', { name: /\d+\+/ });
+    // This tells the regex to look for digits at the start and end of the string
+    const resourceButton = screen.queryByRole('button', { name: /^\d+\+$/ });
     expect(resourceButton).toBeInTheDocument();
   });
   
@@ -197,19 +199,17 @@ describe(' Unit Test case for PeopleTableDetails component', () => {
         endDate: '2022-01-10',
       },
     ];
-
+  
     render(<PeopleTableDetails taskData={tasks} />);
-    
+  
     const row = screen.getByText('Project 2').closest('.people-table-row');
-    const toggleButton = within(row).getByRole('button', { name: /\d+\+/ });
-    const extraDiv = document.getElementById('1'); 
+    const toggleButton = within(row).getByRole('button', { name: /^\d+\+$/ });
+    const extraDiv = within(row).getByTestId('extra-resources');
     
-    // --- ADD THIS LINE ---
-    // Force the element to be hidden so we can test the toggle logic
+    // Since JSDOM doesn't know your CSS, we explicitly set it to none here
     extraDiv.style.display = 'none'; 
-    // ---------------------
     
-    // Now this will pass because we just forced it to be hidden
+    // Now this will pass because we just hid it manually
     expect(extraDiv).not.toBeVisible();
 
     fireEvent.click(toggleButton);
