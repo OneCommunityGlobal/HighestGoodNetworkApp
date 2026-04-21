@@ -147,10 +147,7 @@ export default function UserProjectD3PieChart({ projectsData, darkMode }) {
         </ResponsiveContainer>
       </div>
 
-      <div
-        className={styles['pie-chart-legend-container']}
-        style={{ marginTop: 8, marginLeft: 40 }}
-      >
+      <div className={styles['pie-chart-legend-container']} style={{ marginTop: 8 }}>
         <table
           className={
             darkMode ? styles['pie-chart-legend-table-dark'] : styles['pie-chart-legend-table']
