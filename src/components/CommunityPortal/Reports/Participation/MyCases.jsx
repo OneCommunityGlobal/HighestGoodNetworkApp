@@ -12,50 +12,57 @@ function MyCases() {
 
   const isExporting =
     typeof document !== 'undefined' && document.documentElement?.dataset?.exporting === 'true'; // Sonar: prefer .dataset
-
   const filterEvents = events => {
-    const now = new Date();
+  const now = new Date();
+  // Create a clean "today" at midnight to avoid hour/minute comparison issues
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  // First, only take events that haven't happened yet (Today or later)
+  const upcomingEvents = events.filter(event => {
+    const eventDate = new Date(event.eventDate);
+    return eventDate >= startOfToday;
+  });
 
-    const upcomingEvents = events.filter(event => {
-      const eventTime = new Date(event.eventDate).getTime();
-      return eventTime >= startOfToday;
+  if (filter === 'today') {
+    return upcomingEvents.filter(event => {
+      const eDate = new Date(event.eventDate);
+      return eDate.toDateString() === startOfToday.toDateString();
     });
+  }
 
-    if (filter === 'today') {
-      return upcomingEvents.filter(event => {
-        const eventDate = new Date(event.eventDate);
-        return (
-          eventDate.getDate() === now.getDate() &&
-          eventDate.getMonth() === now.getMonth() &&
-          eventDate.getFullYear() === now.getFullYear()
-        );
-      });
-    }
-    if (filter === 'thisWeek') {
-      const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
-      const endOfWeek = new Date(startOfWeek);
-      endOfWeek.setDate(endOfWeek.getDate() + 6);
-      return upcomingEvents.filter(event => {
-        const eventDate = new Date(event.eventTime);
-        return eventDate >= startOfWeek && eventDate <= endOfWeek;
-      });
-    }
-    if (filter === 'thisMonth') {
-      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-      const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-      return upcomingEvents.filter(event => {
-        const eventDate = new Date(event.eventTime);
-        return eventDate >= startOfMonth && eventDate <= endOfMonth;
-      });
-    }
+  if (filter === 'thisWeek') {
+    // 1. Calculate days to subtract to get to Monday
+    // (now.getDay() || 7) treats Sun as 7 instead of 0
+    // Week starts from Monday(0) and ends on Sunday(7)
+    const dayOfWeek = now.getDay(); 
+    const diffToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
 
-    if (filter === 'all') {
-      return upcomingEvents;
-    }
-    return upcomingEvents;
-  };
+    const startOfWeek = new Date(startOfToday);
+    startOfWeek.setDate(startOfToday.getDate() - diffToMonday);
+
+    // 2. Calculate Sunday (Monday + 6 days)
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
+    endOfWeek.setHours(23, 59, 59, 999); // End of Sunday
+
+    return upcomingEvents.filter(event => {
+      const eDate = new Date(event.eventDate);
+      // Because we use 'upcomingEvents', this naturally returns [Today -> Sunday]
+      return eDate >= startOfWeek && eDate <= endOfWeek;
+    });
+  }
+
+  if (filter === 'thisMonth') {
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+    
+    return upcomingEvents.filter(event => {
+      const eDate = new Date(event.eventDate);
+      return eDate <= endOfMonth;
+    });
+  }
+
+  return upcomingEvents; // 'all' returns all future events
+};
 
   const darkMode = useSelector(state => state.theme.darkMode);
   const filteredEvents = filterEvents(mockEvents);
