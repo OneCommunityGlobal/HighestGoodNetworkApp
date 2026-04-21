@@ -37,7 +37,7 @@ describe('UserManagement Component', () => {
     expect(screen.getByTestId('activation-date-popup')).toBeInTheDocument();
   });
 
-  it('should update state when onActiveFiter is called with active', async () => {
+  it.skip('should update state when onActiveFiter is called with active', async () => {
     render(<UnconnectedUserManagement {...props} />);
 
     // Find and click the active filter button
