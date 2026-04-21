@@ -295,7 +295,6 @@
   border-radius: 10px;
   width: 48%;
   padding: 10px;
-  color: #ffffff;
 }
 
 .trackingRateDark .trackingRateSubheading span,
@@ -305,8 +304,16 @@
 
 .trackingRateValue {
   font-size: 0.9rem;
-  color: #f44336;
   display: inline-block;
+}
+.trackingRate .trackingRateValue span.trackingRateValuePositive,
+.trackingRateDark .trackingRateValue span.trackingRateValuePositive {
+  color: #f44336 !important;
+}
+
+.trackingRate .trackingRateValue span.trackingRateValueNegative,
+.trackingRateDark .trackingRateValue span.trackingRateValueNegative {
+  color: #008000 !important;
 }
 
 /* Tables */

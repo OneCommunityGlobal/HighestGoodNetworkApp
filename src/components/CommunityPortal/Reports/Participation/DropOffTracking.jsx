@@ -101,7 +101,13 @@ function DropOffTracking() {
             {/* People who signed up but did not show up */}
           </p>
           <p className={styles.trackingRateSubheading}>
-            <span> Drop-off rate</span>
+            <span>
+              <b>Drop-off rate</b>
+            </span>
+          </p>
+          <p className={styles.trackingRateValue}>
+            <span className={styles.trackingRateValuePositive}>+5%</span>{' '}
+            <span>since Last week</span>
           </p>
         </div>
         <div className={`${styles.trackingRate} ${darkMode ? styles.trackingRateDark : ''}`}>
@@ -110,7 +116,15 @@ function DropOffTracking() {
             {/* People who did not show up */}
           </p>
           <p className={styles.trackingRateSubheading}>
-            <span> No-show rate </span>
+            <span>
+              <b>No-show rate</b>
+            </span>
+          </p>
+          <p className={styles.trackingRateValue}>
+            <span className={styles.trackingRateValueNegative}>
+              <b>-5%</b>
+            </span>{' '}
+            <span>since Last week</span>
           </p>
         </div>
       </div>
