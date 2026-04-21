@@ -12,6 +12,7 @@
   padding: 0;
 }
 
+/* ---------------- DASHBOARD CONTAINER ---------------- */
 .weeklyProjectSummaryDashboardContainer {
   width: 95%;
   margin: auto;
@@ -154,7 +155,7 @@
   display: inline-block;
   width: 14px;
   height: 14px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid rgb(255 255 255 / 30%);
   border-radius: 50%;
   border-top-color: white;
   animation: spin 0.8s linear infinite;
@@ -168,8 +169,7 @@
   }
 }
 
-/* ---------------- DASHBOARD ---------------- */
-
+/* ---------------- GRID ---------------- */
 .weeklyProjectSummaryDashboardGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -215,7 +215,6 @@
   grid-column: span 1;
 }
 
-
 .weekly-project-summary-card.financial-big {
   grid-column: span 4;
   min-height: 600px;
@@ -233,7 +232,6 @@
   margin: 0;
   font-weight: normal;
   font-size: 24px;
-
 }
 
 .fullCard {
@@ -266,6 +264,7 @@
   grid-column: span 4;
 }
 
+/* ---------------- SECTION ---------------- */
 .weeklyProjectSummaryDashboardSection {
   background: var(--section-bg);
   border-radius: 8px;
@@ -336,13 +335,22 @@
   --focus-border-color: #e8a71c;
 }
 
+/* MERGED: keep background + FORCE all title text visible in dark mode */
 .darkMode .weeklyProjectSummaryDashboardCategoryTitle {
-  color: #ffffff;
   background: #2d4059;
+  color: #ffffff;
 }
 
 .darkMode .weeklyProjectSummaryDashboardCategoryTitle:hover {
   background: #3a506b;
+}
+
+.darkMode .weeklyProjectSummaryDashboardCategoryTitle span {
+  color: #ffffff;
+}
+
+.darkMode .weeklyProjectSummaryDashboardCategoryTitle * {
+  color: #ffffff;
 }
 
 .darkMode .weeklyProjectSummaryDashboardCategoryContent {
@@ -355,17 +363,18 @@
   color: var(--text-color);
 }
 
-/* First, set a max-height and make it scrollable */
+/* ---------------- TOOLTIP SCROLL FIX ---------------- */
 .quantityOfMaterialsUsedChartTooltip {
-  max-height: 80vh !important; /* Limit to 80% of viewport height */
-  overflow-y: auto !important; /* Enable vertical scrolling */
-  padding-right: 15px !important; /* Add some padding for the scrollbar */
-  /* Support for Firefox */
+  max-height: 80vh !important;
+  overflow-y: auto !important;
+  padding-right: 15px !important;
+
+  /* Firefox */
   scrollbar-width: thin;
   scrollbar-color: rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.1);
 }
 
-/* Style the scrollbar for better visibility - Webkit browsers */
+/* Chrome/Safari scrollbar */
 .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar {
   width: 8px;
 }
@@ -392,9 +401,8 @@
 .darkMode .quantityOfMaterialsUsedChartTooltip {
   scrollbar-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.1);
 }
-/* ---------------- RESPONSIVE DESIGN ---------------- */
 
-/* Medium Screens - Wrap Items */
+/* ---------------- RESPONSIVE DESIGN ---------------- */
 @media (max-width: 1024px) {
   .weeklySummaryHeaderContainer {
     flex-direction: column;
@@ -413,7 +421,6 @@
   }
 }
 
-/* Small Screens - Make Dropdowns Vertical */
 @media (max-width: 768px) {
   .weeklySummaryHeaderContainer {
     flex-direction: column;
@@ -426,7 +433,6 @@
     width: 100%;
   }
 
-  /* Make Dropdowns Full Width */
   .weeklySummaryHeaderControls select {
     width: 100%;
     max-width: none;
@@ -436,7 +442,6 @@
     max-width: none;
   }
 
-  /* Make Button Full Width */
   .weeklySummaryShareBtn {
     width: 100%;
   }
@@ -450,10 +455,6 @@
   .weeklyProjectSummaryDashboardSection.half,
   .weeklyProjectSummaryDashboardSection.small {
     grid-column: span 1;
-  }
-
-  .projectStatusGrid {
-    grid-template-columns: 1fr;
   }
 }
 
@@ -475,6 +476,7 @@
 }
 
 /* ---------------- RESPONSIVE GRID LAYOUT ---------------- */
+/* MERGED: keep ONLY one projectStatusGrid */
 .projectStatusGrid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
