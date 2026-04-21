@@ -8,7 +8,6 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
 } from 'recharts';
 import styles from './LossTrackingLineChart.module.css';
@@ -221,6 +220,16 @@ export default function LossTrackingLineChart() {
     endDate === DEFAULTS.endDate;
 
   const isDateRangeValid = !startDate || !endDate || startDate <= endDate;
+  const legendItems = useMemo(
+    () =>
+      filteredLines.map(line => ({
+        key: `${line.year}-${line.material}`,
+        label: `${line.year} - ${line.material}`,
+        color: colors[`${line.year}-${line.material}`],
+      })),
+    [filteredLines],
+  );
+
   const handleReset = () => {
     setMaterial(DEFAULTS.material);
     setYear(DEFAULTS.year);
@@ -283,52 +292,68 @@ export default function LossTrackingLineChart() {
           {filteredLines.length === 0 || chartData.length === 0 ? (
             <div className={styles.noDataMessage}>No data available for the selected filters.</div>
           ) : (
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-                <XAxis
-                  dataKey="month"
-                  tick={{ fill: textColor }}
-                  axisLine={{ stroke: textColor }}
-                  tickLine={{ stroke: textColor }}
-                  label={{
-                    value: 'Time (months)',
-                    position: 'insideBottom',
-                    offset: -5,
-                    fill: textColor,
-                  }}
-                />
-                <YAxis
-                  tick={{ fill: textColor }}
-                  axisLine={{ stroke: textColor }}
-                  tickLine={{ stroke: textColor }}
-                  label={{ value: 'Loss (%)', angle: -90, position: 'insideLeft', fill: textColor }}
-                />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: 'var(--tooltip-bg)',
-                    color: 'var(--text-color)',
-                    border: `1px solid var(--border-color)`,
-                  }}
-                />
-                <Legend
-                  wrapperStyle={{ color: textColor }}
-                  formatter={value => <span style={{ color: textColor }}>{value}</span>}
-                />
-                {filteredLines.map(line => (
-                  <Line
-                    key={`${line.year}-${line.material}`}
-                    type="monotone"
-                    dataKey={`${line.year}-${line.material}`}
-                    stroke={colors[`${line.year}-${line.material}`]}
-                    strokeWidth={2}
-                    dot={{ r: 3 }}
-                    activeDot={{ r: 5 }}
-                    name={`${line.year} - ${line.material}`}
+            <>
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 44 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+                  <XAxis
+                    dataKey="month"
+                    height={72}
+                    tick={{ fill: textColor }}
+                    axisLine={{ stroke: textColor }}
+                    tickLine={{ stroke: textColor }}
+                    label={{
+                      value: 'Time (months)',
+                      position: 'bottom',
+                      offset: 18,
+                      fill: textColor,
+                    }}
                   />
+                  <YAxis
+                    tick={{ fill: textColor }}
+                    axisLine={{ stroke: textColor }}
+                    tickLine={{ stroke: textColor }}
+                    label={{
+                      value: 'Loss (%)',
+                      angle: -90,
+                      position: 'insideLeft',
+                      fill: textColor,
+                    }}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'var(--tooltip-bg)',
+                      color: 'var(--text-color)',
+                      border: `1px solid var(--border-color)`,
+                    }}
+                  />
+                  {filteredLines.map(line => (
+                    <Line
+                      key={`${line.year}-${line.material}`}
+                      type="monotone"
+                      dataKey={`${line.year}-${line.material}`}
+                      stroke={colors[`${line.year}-${line.material}`]}
+                      strokeWidth={2}
+                      dot={{ r: 3 }}
+                      activeDot={{ r: 5 }}
+                      name={`${line.year} - ${line.material}`}
+                    />
+                  ))}
+                </LineChart>
+              </ResponsiveContainer>
+              <div className={styles.customLegend}>
+                {legendItems.map(item => (
+                  <span key={item.key} className={styles.legendItem}>
+                    <span
+                      className={styles.legendSwatch}
+                      style={{ backgroundColor: item.color }}
+                      aria-hidden="true"
+                    />
+                    <span>{item.label}</span>
+                  </span>
                 ))}
-              </LineChart>
-            </ResponsiveContainer>
+              </div>
+            </>
           )}
         </div>
       </div>

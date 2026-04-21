@@ -120,6 +120,19 @@
   transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, color 0.2s ease;
 }
 
+.lossTrackingChartFilters input[type="month"] {
+  color-scheme: light;
+}
+
+.darkMode .lossTrackingChartFilters input[type="month"] {
+  color-scheme: dark;
+}
+
+.darkMode .lossTrackingChartFilters input[type="month"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) brightness(1.15);
+  cursor: pointer;
+}
+
 .lossTrackingChartFilters select:focus-visible,
 .lossTrackingChartFilters input[type="month"]:focus-visible {
   outline: none;
@@ -194,7 +207,30 @@
 
 /* Recharts tweaks */
 .recharts-cartesian-grid line { stroke: var(--grid-color); }
-.recharts-legend-wrapper { color: var(--text-color); }
+
+.customLegend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem 1rem;
+  margin-top: 1rem;
+  color: var(--text-color);
+  font-size: 0.95rem;
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  white-space: nowrap;
+}
+
+.legendSwatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  flex: 0 0 auto;
+}
 
 /* ---------- No data state ---------- */
 .noDataMessage {
