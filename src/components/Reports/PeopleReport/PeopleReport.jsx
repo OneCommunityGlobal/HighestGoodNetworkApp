@@ -482,7 +482,6 @@ class PeopleReport extends Component {
     const boxCount = visibleBlocks.length;
 
     return (
-
       <div className={`${styles.containerPeopleWrapper} ${darkMode ? styles.bgOxfordBlue : ''}`}>
         <div className={`${styles.peopleReportFlexLayout}`}>
 
@@ -492,7 +491,6 @@ class PeopleReport extends Component {
                 boxCount === 3 ? styles.threeBoxes :
                 ''}`}
               >
-
                 <ReportPage.ReportBlock
                   firstColor="#ff5e82"
                   secondColor="#e25cb2"
@@ -651,54 +649,60 @@ class PeopleReport extends Component {
               darkMode={darkMode}
             >
 
-              <div
-                // style={{ minHeight: '200px' }}
-                className={`${styles.reportStats} ${darkMode ? `${styles.bgYinmnBlue} ${styles.textLight}` : ''}`}
-              >
-                <p>
-                  <Link to={`/userProfile/${_id}`}
-                    title="View Profile"
-                    className={`${darkMode ? `${styles.textLight} ${styles.fontWeightBold}` : ''}`}
-                    style={{ fontSize: "24px" }}>
-                    {firstName} {lastName}
-                  </Link>
-                </p>
-                <div className={styles.dateInfo}>
-                  <div>
-                    <p>Role</p>
-                    <h4>{role}</h4>
-                  </div>
-                  </div>
-                  <div className={styles.dateInfo}>
-                  <div>
-                    <p>Title</p>
-                    <h4>{jobTitle}</h4>
-                  </div>
-                </div>
+<div
+  className={`${styles.card} ${
+    darkMode ? `${styles.darkCard}` : styles.lightCard
+  }`}
+>
+  {/* Name */}
+  <Link
+    to={`/userProfile/${_id}`}
+    title="View Profile"
+    className={`${styles.userName} ${
+      darkMode ? styles.textLight : styles.textDark
+    }`}
+  >
+    {firstName} {lastName}
+  </Link>
 
-                {/* {endDate ? ( */}
-                <div className={styles.rehireable}>
-                  <Checkbox
-                    value={isRehireable}
-                    onChange={() => this.setRehireable(!isRehireable)}
-                    label="Rehireable"
-                    darkMode={darkMode}
-                    className={`${styles.reportStats} ${darkMode ? `${styles.bgYinmnBlue} ${styles.textLight}` : ''}`}
-                    backgroundColorCN={darkMode ? styles.bgYinmnBlue : ""}
-                    textColorCN={darkMode ? styles.textLight : ""}
-                  />
-                </div>
-                <div className={styles.dateInfo}>
-                  <div>
-                    <p>Start Date</p>
-                    <h4>{formatDate(startDate)}</h4>
-                  </div>
-                  <div>
-                    <p>End Date</p>
-                    <h4>{endDate ? formatDate(endDate) : 'N/A'}</h4>
-                  </div>
-                </div>
-              </div>
+  {/* Info Grid */}
+  <div className={styles.infoGrid}>
+    <div>
+      <p className={styles.label}>Role</p>
+      <h5 className={styles.value}>{role}</h5>
+    </div>
+
+    <div>
+      <p className={styles.label}>Title</p>
+      <h5 className={styles.value}>{jobTitle}</h5>
+    </div>
+
+    <div>
+      <p className={styles.label}>Start Date</p>
+      <h5 className={styles.value}>{formatDate(startDate)}</h5>
+    </div>
+
+    <div>
+      <p className={styles.label}>End Date</p>
+      <h5 className={styles.value}>
+        {endDate ? formatDate(endDate) : 'N/A'}
+      </h5>
+    </div>
+  </div>
+
+  {/* Checkbox */}
+  <div className={styles.checkboxWrapper}>
+    <Checkbox
+      value={isRehireable}
+      onChange={() => this.setRehireable(!isRehireable)}
+      label="Rehireable"
+      darkMode={darkMode}
+      backgroundColorCN={darkMode ? styles.bgYinmnBlue : ""}
+      textColorCN={darkMode ? styles.textLight : ""}
+    />
+  </div>
+</div>
+              
             </ReportPage.ReportHeader>
           </div >
         </div>
