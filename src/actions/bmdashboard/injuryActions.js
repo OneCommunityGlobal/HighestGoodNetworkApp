@@ -1,5 +1,9 @@
 import axios from 'axios';
-import { FETCH_INJURIES_REQUEST, FETCH_INJURIES_SUCCESS, FETCH_INJURIES_FAILURE } from './types';
+import {
+  FETCH_INJURIES_REQUEST,
+  FETCH_INJURIES_SUCCESS,
+  FETCH_INJURIES_FAILURE,
+} from './types';
 import { ENDPOINTS } from '../../utils/URL';
 
 export const FETCH_BM_INJURY_DATA_REQUEST = 'FETCH_BM_INJURY_DATA_REQUEST';
@@ -34,98 +38,6 @@ const paramsSerializer = params => {
   return usp.toString();
 };
 const safeData = res => (Array.isArray(res?.data) ? res.data : res?.data?.data ?? []);
-const normalizeSeverityBucket = category => {
-  const normalizedCategory = String(category || '').trim().toLowerCase();
-
-  if (['critical', 'severe', 'serious', 'major'].includes(normalizedCategory)) {
-    return 'serious';
-  }
-
-  if (['moderate', 'medium'].includes(normalizedCategory)) {
-    return 'medium';
-  }
-
-  if (['minor', 'low'].includes(normalizedCategory)) {
-    return 'low';
-  }
-
-  return null;
-};
-
-const getMonthlyRanges = (startDate, endDate) => {
-  const ranges = [];
-  const firstMonth = new Date(`${startDate}T00:00:00.000Z`);
-  const lastMonth = new Date(`${endDate}T00:00:00.000Z`);
-
-  firstMonth.setUTCDate(1);
-  lastMonth.setUTCDate(1);
-
-  let currentMonth = new Date(firstMonth);
-  while (currentMonth <= lastMonth) {
-    const monthStart = new Date(currentMonth);
-    const monthEnd = new Date(Date.UTC(monthStart.getUTCFullYear(), monthStart.getUTCMonth() + 1, 0));
-    const monthStartIso = monthStart.toISOString().slice(0, 10);
-    const monthEndIso = monthEnd.toISOString().slice(0, 10);
-
-    const rangeStart = startDate > monthStartIso ? startDate : monthStartIso;
-    const rangeEnd = endDate < monthEndIso ? endDate : monthEndIso;
-
-    ranges.push({
-      label: monthStart.toLocaleString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' }),
-      startDate: rangeStart,
-      endDate: rangeEnd,
-    });
-
-    currentMonth.setUTCMonth(currentMonth.getUTCMonth() + 1);
-  }
-
-  return ranges;
-};
-
-const aggregateMonthlySeveritySeries = async (projectId, startDate, endDate) => {
-  const monthRanges = getMonthlyRanges(startDate, endDate);
-  const requests = monthRanges.map(({ startDate: monthStart, endDate: monthEnd }) => {
-    const params = {
-      startDate: monthStart,
-      endDate: monthEnd,
-      groupBy: 'severity',
-    };
-
-    if (projectId && projectId !== 'all') {
-      params.projectId = projectId;
-    }
-
-    return axios.get(`${ENDPOINTS.INJURIES}/distribution`, { params });
-  });
-
-  const responses = await Promise.all(requests);
-
-  return monthRanges.reduce(
-    (series, range, index) => {
-      const distribution = Array.isArray(responses[index]?.data?.distribution)
-        ? responses[index].data.distribution
-        : [];
-
-      const counts = distribution.reduce(
-        (accumulator, item) => {
-          const bucket = normalizeSeverityBucket(item?.category);
-          if (bucket) {
-            accumulator[bucket] += Number(item?.count) || 0;
-          }
-          return accumulator;
-        },
-        { serious: 0, medium: 0, low: 0 },
-      );
-
-      series.months.push(range.label);
-      series.serious.push(counts.serious);
-      series.medium.push(counts.medium);
-      series.low.push(counts.low);
-      return series;
-    },
-    { months: [], serious: [], medium: [], low: [] },
-  );
-};
 
 // Action creators
 export const resetInjuryData = () => ({ type: RESET_BM_INJURY_DATA });
@@ -244,9 +156,14 @@ export const fetchInjuries = (projectId, startDate, endDate) => async dispatch =
 
 // Function to get injury data (non-Redux version for direct component use)
 export const getInjuryData = async (projectId, startDate, endDate) => {
-  if (!startDate || !endDate) {
-    return { months: [], serious: [], medium: [], low: [] };
+  const params = {};
+  if (projectId && projectId !== 'all') {
+    params.projectId = projectId;
   }
+  if (startDate) params.startDate = startDate;
+  if (endDate) params.endDate = endDate;
 
-  return aggregateMonthlySeveritySeries(projectId, startDate, endDate);
+  const response = await axios.get(ENDPOINTS.INJURIES, { params });
+
+  return response.data;
 };
