@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
 
 import { addEquipmentType, fetchAllEquipments } from '~/actions/bmdashboard/equipmentActions';
+import BMCharacterLimitHint from '../../shared/BMCharacterLimitHint';
 
 const FuelTypes = {
   dies: 'Diesel',
@@ -15,13 +16,15 @@ const FuelTypes = {
   etha: 'Ethanol',
 };
 
+const DESC_CHAR_LIMIT = 150;
+
 // const [inputText, setInputText] = useState('');
 
 const schema = Joi.object({
   name: Joi.string().required(),
   desc: Joi.string()
     .required()
-    .max(150),
+    .max(DESC_CHAR_LIMIT),
 });
 
 export default function AddTypeForm() {
@@ -46,7 +49,7 @@ export default function AddTypeForm() {
       setName(event.target.value);
     }
     if (event.target.name === 'desc') {
-      setDesc(event.target.value);
+      setDesc(event.target.value.slice(0, DESC_CHAR_LIMIT));
     }
     if (event.target.name === 'fuel') {
       setFuel(event.target.value);
@@ -104,13 +107,16 @@ export default function AddTypeForm() {
           name="desc"
           type="textarea"
           rows={2}
+          maxLength={DESC_CHAR_LIMIT}
           value={desc}
           invalid={errInput === 'desc'}
           onChange={handleChange}
         />
-        <div className="form-footer" style={{ color: desc.length > 150 ? '#dc3545' : 'black' }}>
-          Character {desc.length}/150
-        </div>
+        <BMCharacterLimitHint
+          limit={DESC_CHAR_LIMIT}
+          length={desc.length}
+          summary={`Character ${desc.length}/${DESC_CHAR_LIMIT}`}
+        />
         {/* {!errInput && <FormText>Max 150 characters</FormText>} */}
         <FormFeedback>
           {errType === 'string.max'

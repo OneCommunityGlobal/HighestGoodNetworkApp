@@ -90,7 +90,7 @@
 }
 
 .button {
-  background-color: var(--button-bg, #000);
+  background-color: #2563eb;
   color: var(--button-text, #fff);
   border: none;
   cursor: pointer;
@@ -99,7 +99,7 @@
 }
 
 .button:hover {
-  background-color: var(--button-hover, #333);
+  background-color: #1d4ed8;
 }
 
 .utilizationChartError {
