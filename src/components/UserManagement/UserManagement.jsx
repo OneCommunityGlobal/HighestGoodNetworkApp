@@ -727,7 +727,7 @@ class UserManagement extends React.PureComponent {
         style={{ minHeight: '100%' }}
       >
         {this.state.isFilteringTable ?(
-           <div className="filtering-message">
+           <div className="filtering-message" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
               <h3 className={darkMode ? `text-light` : `text-dark`}>
                 The table is being filtered, please wait.
               </h3>
@@ -743,6 +743,7 @@ class UserManagement extends React.PureComponent {
             handleNewUserSetupPopup={this.handleNewUserSetupPopup}
             handleSetupHistoryPopup={this.handleSetupHistoryPopup}
             darkMode={darkMode}
+            selectText={this.state.selectText}
           />
           <div className={`table-responsive ${styles.userManagementTable}`}>
             <Table
@@ -803,9 +804,6 @@ class UserManagement extends React.PureComponent {
 const mapStateToProps = (state) => {
   return { state };
 };
-
-// exporting without connect
-export { UserManagement as UnconnectedUserManagement };
 
 const mapDispatchToProps = (dispatch) => ({
   dispatch,
