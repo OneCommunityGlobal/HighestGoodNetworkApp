@@ -266,8 +266,8 @@ export function Header(props) {
   }, [props.notification?.error]);
 
   const toggle = () => {
-    setIsOpen(prevIsOpen => !prevIsOpen);
-  };
+  setIsOpen(prevIsOpen => !prevIsOpen);
+};
 
   const openModal = () => {
     setLogoutPopup(true);
@@ -380,25 +380,25 @@ export function Header(props) {
     setShowProjectDropdown(location.pathname.startsWith('/bmdashboard/projects/'));
   }, [location.pathname]);
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        collapseRef.current && 
-        !collapseRef.current.contains(event.target) &&
-        !toggleRef.current?.contains(event.target)
-      ) {
-        setIsOpen(false);
-      }
-    };
+ useEffect(() => {
+  if (!isOpen) return;
 
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
+  const handleClickOutside = (event) => {
+    if (collapseRef.current?.contains(event.target)) return;
+    if (toggleRef.current?.contains(event.target)) return;
+    setIsOpen(false);
+  };
 
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isOpen]);
+  // Defer adding listener until after current click event finishes
+  const timer = setTimeout(() => {
+    document.addEventListener('click', handleClickOutside);
+  }, 0);
+
+  return () => {
+    clearTimeout(timer);
+    document.removeEventListener('click', handleClickOutside);
+  };
+}, [isOpen]);
 
   const fontColor = darkMode ? `${styles.darkDropdownText} ${styles.darkDropdownItem}` : `${styles.mobileDropdownText} ${styles.mobileDropdownItem}`;
 
@@ -407,7 +407,7 @@ export function Header(props) {
   const viewingUser = JSON.parse(window.sessionStorage.getItem('viewingUser'));
   return (
     <div className={`${styles.headerWrapper}`} data-testid="header">
-      <Navbar className={`py-3 ${styles.navbar}`} color="dark" dark expand={true}>
+      <Navbar className={`py-3 ${styles.navbar}`} color="dark" dark expand="xl">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
         {showPromotionsPopup && <DisplayBox onClose={() => setShowPromotionsPopup(false)} />}
   
@@ -420,8 +420,17 @@ export function Header(props) {
               {isAuthenticated && <OwnerMessage />}
             </div>
             <div className={styles.rightSection}>
-            <Collapse isOpen={isOpen} navbar ref={collapseRef}>
-            <Nav className={`ml-auto ${styles.menuContainer} mr-3`} navbar>
+            <NavbarToggler onClick={toggle} ref={toggleRef} className={styles.navbarToggler} />
+            <div
+              ref={collapseRef}
+              className={`${styles.navCollapse} ${isOpen ? styles.navCollapseOpen : styles.navCollapseHidden}`}
+              role="menu"
+              tabIndex={-1}
+              onKeyDown={(e) => {
+                if (e.key === 'Escape') setIsOpen(false);
+              }}
+            >
+            <Nav className={`${styles.menuContainer} mr-3`} navbar>
                 <NavItem className={styles.showInMobile}>
                   <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
                     <img
@@ -905,7 +914,7 @@ export function Header(props) {
                   </DropdownMenu>
                 </UncontrolledDropdown>
               </Nav>
-            </Collapse>
+              </div>
           </div>
         </div>
       </Navbar>
