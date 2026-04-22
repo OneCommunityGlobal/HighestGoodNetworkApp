@@ -1,3 +1,8 @@
+@media (prefers-color-scheme: dark) {
+  .form-label {
+    color: #e9ecef !important;
+  }
+}
 .masterContainer {
   display: flex;
   flex-direction: column;
@@ -12,7 +17,6 @@
 
 .formContainer {
   padding: 5%;
-  background-color: #FFFFFF;
   border-radius: 1%;
 }
 
@@ -44,14 +48,14 @@
 }
 
 .masterContainer{
- display: flex;
- flex-direction: column;
- height: 100%;
-   padding-left: 10%;
-   padding-right: 10%;
-   padding-top: 5%;
-   padding-bottom: 10%;
-    background-color: #E8F4F9;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding-left: 10%;
+  padding-right: 10%;
+  padding-top: 5%;
+  padding-bottom: 10%;
+  background-color: #E8F4F9;
 }
 
 /* Dark Mode Input Fields (Yinmn Blue) */
@@ -255,6 +259,23 @@
  }
  }
 
+.wrapperDark {
+  background-color: #1b2a41; 
+  color: #f5f7fa; 
+}
+
+.whiteText {
+  color: white;
+}
+
+.blackText {
+  color: black;
+}
+
+.darkFormContainer{
+  background-color: '#1e2433';
+  /* color: '#f5f7fa' */
+}
 
 /* ===================== */
 /* Dark Mode Styles */

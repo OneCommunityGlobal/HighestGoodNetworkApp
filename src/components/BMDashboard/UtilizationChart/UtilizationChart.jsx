@@ -21,7 +21,6 @@ import autoTable from 'jspdf-autotable';
 import styles from './UtilizationChart.module.css';
 import { useSelector } from 'react-redux';
 import { ENDPOINTS } from '../../../utils/URL';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 ChartJS.register(
   BarElement,
@@ -369,6 +368,8 @@ function UtilizationChart() {
         },
       },
       tooltip: {
+        titleColor: '#ffffff',
+        bodyColor: '#ffffff',
         callbacks: {
           title: context => filteredToolsData[context[0].dataIndex]?.name,
           label: context => {
@@ -518,7 +519,6 @@ function UtilizationChart() {
               selected={startDate}
               onChange={date => setStartDate(date)}
               placeholderText="Start Date"
-              maxDate={endDate || '' || new Date()}
               className={styles.datepickerWrapper}
             />
 
@@ -526,8 +526,6 @@ function UtilizationChart() {
               selected={endDate}
               onChange={date => setEndDate(date)}
               placeholderText="End Date"
-              minDate={startDate || ''}
-              maxDate={new Date()}
               className={styles.datepickerWrapper}
             />
 

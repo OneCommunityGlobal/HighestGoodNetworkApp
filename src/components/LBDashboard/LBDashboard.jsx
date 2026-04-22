@@ -18,7 +18,9 @@ import {
 
 import DemandOverTime from './LbAnalytics/DemandOverTime/DemandOverTime';
 import ReviewWordCloud from './ReviewWordCloud/ReviewWordCloud';
+import CancellationImpactOnVacancy from './LbAnalytics/CancellationImpactOnVacancy/CancellationImpactOnVacancy';
 import SentimentBreakdownDonutChart from './SentimentBreakdownDonutChart/SentimentBreakdownDonutChart';
+import ReviewVolumeOverTimeChart from './ReviewVolumeOverTimeChart/ReviewVolumeOverTimeChart';
 import { CompareBarGraph } from './BarGraphs/CompareGraphs';
 
 import httpService from '../../services/httpService';
@@ -304,12 +306,17 @@ export function LBDashboard() {
     };
   }, []);
 
-  const dateRange = [
-    moment()
-      .subtract(1, 'year')
-      .startOf('month'),
-    moment().endOf('month'),
-  ];
+  // Stable reference so opening metric dropdowns does not retrigger DemandOverTime's effect
+  // (which would regenerate random series and make the line charts appear to "jump").
+  const dateRange = useMemo(
+    () => [
+      moment()
+        .subtract(1, 'year')
+        .startOf('month'),
+      moment().endOf('month'),
+    ],
+    [],
+  );
 
   const getMetricLabel = () => {
     const all = Object.values(METRIC_OPTIONS).flat();
@@ -505,6 +512,14 @@ export function LBDashboard() {
         </Row>
       </AnalysisSection>
 
+      <AnalysisSection title="Vacancy Rate and Cancellation Rate" darkMode={darkMode}>
+        <Row>
+          <Col>
+            <CancellationImpactOnVacancy darkMode={darkMode} />
+          </Col>
+        </Row>
+      </AnalysisSection>
+
       <AnalysisSection title="Insights from Reviews" darkMode={darkMode}>
         <Row xs="1" md="2" className="g-3">
           <Col>
@@ -512,6 +527,12 @@ export function LBDashboard() {
           </Col>
           <Col>
             <ReviewWordCloud darkMode={darkMode} />
+          </Col>
+        </Row>
+
+        <Row xs="1" md="2" className="g-3 mt-3">
+          <Col md={6}>
+            <ReviewVolumeOverTimeChart darkMode={darkMode} />
           </Col>
         </Row>
       </AnalysisSection>

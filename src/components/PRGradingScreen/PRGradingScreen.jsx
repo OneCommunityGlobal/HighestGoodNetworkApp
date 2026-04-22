@@ -1,8 +1,10 @@
+import axios from 'axios';
 import { useState } from 'react';
 import { Button, Card, Col, Container, Row } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import styles from './PRGradingScreen.module.css';
+import PromotionConfirmationBox from './PromotionConfirmationBox';
 
 const PRGradingScreen = ({ teamData, reviewers }) => {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -13,6 +15,10 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
   const [inputError, setInputError] = useState('');
   const [showGradingModal, setShowGradingModal] = useState(null);
   const [isFinalized, setIsFinalized] = useState(false);
+  const [promotionCandidate, setPromotionCandidate] = useState(null);
+  const [confirmedPromotions, setConfirmedPromotions] = useState([]);
+  const [selectedForPromotion, setSelectedForPromotion] = useState([]);
+  const [showBatchConfirm, setShowBatchConfirm] = useState(false);
 
   if (!teamData || !reviewers) {
     return <div>Error: Missing required props</div>;
@@ -58,9 +64,10 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
     const trimmed = inputValue.trim();
 
     // Duplicate check
+    const normalize = str => str.replace(/\s/g, '').toLowerCase();
     const reviewer = reviewerData.find(r => r.id === reviewerId);
     const isDuplicate = reviewer?.gradedPrs.some(
-      pr => pr.prNumbers.replace(/\s/g, '') === trimmed.replace(/\s/g, ''),
+      pr => normalize(pr.prNumbers) === normalize(trimmed),
     );
 
     if (isDuplicate) {
@@ -129,6 +136,81 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
   const handleFinalize = () => {
     setIsFinalized(true);
   };
+  /* ---------------- PROMOTION ---------------- */
+
+  const handlePromoteClick = async reviewer => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_APIENDPOINT}/promotion-details/${reviewer.id}`,
+      );
+      setPromotionCandidate({
+        reviewerId: reviewer.id,
+        reviewerName: response.data.reviewerName || reviewer.reviewer,
+        teamCode: response.data.teamCode || teamData.teamName,
+        teamReviewerName: response.data.teamReviewerName || reviewer.reviewer,
+        weeklyPRs:
+          response.data.weeklyPRs && response.data.weeklyPRs.length > 0
+            ? response.data.weeklyPRs
+            : [{ week: teamData.dateRange.start, count: reviewer.gradedPrs.length }],
+      });
+    } catch (error) {
+      // fallback to local data if API fails
+      setPromotionCandidate({
+        reviewerId: reviewer.id,
+        reviewerName: reviewer.reviewer,
+        teamCode: teamData.teamName,
+        teamReviewerName: reviewer.reviewer,
+        weeklyPRs: [{ week: teamData.dateRange.start, count: reviewer.gradedPrs.length }],
+      });
+    }
+  };
+
+  const handleConfirmPromotion = async (reviewerName, reviewerId) => {
+    try {
+      if (reviewerId) {
+        await axios.post(`${process.env.REACT_APP_APIENDPOINT}/promote-members`, {
+          memberIds: [reviewerId],
+        });
+      }
+    } catch (error) {
+      // silently continue even if API fails
+    }
+    setConfirmedPromotions(prev => [...prev, reviewerName]);
+    setPromotionCandidate(null);
+  };
+
+  const handleCancelPromotion = () => {
+    setPromotionCandidate(null);
+  };
+  /* ---------------- BATCH PROMOTION ---------------- */
+
+  const handleCheckboxChange = reviewerId => {
+    setSelectedForPromotion(prev =>
+      prev.includes(reviewerId) ? prev.filter(id => id !== reviewerId) : [...prev, reviewerId],
+    );
+  };
+
+  const handleBatchConfirm = async () => {
+    try {
+      if (selectedForPromotion.length > 0) {
+        await axios.post(`${process.env.REACT_APP_APIENDPOINT}/promote-members`, {
+          memberIds: selectedForPromotion,
+        });
+      }
+    } catch (error) {
+      // silently continue
+    }
+    const selectedNames = reviewerData
+      .filter(r => selectedForPromotion.includes(r.id))
+      .map(r => r.reviewer);
+    setConfirmedPromotions(prev => [...prev, ...selectedNames]);
+    setSelectedForPromotion([]);
+    setShowBatchConfirm(false);
+  };
+
+  const handleBatchCancel = () => {
+    setShowBatchConfirm(false);
+  };
 
   /* ---------------- RENDER ---------------- */
 
@@ -194,7 +276,56 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                 <tbody>
                   {reviewerData.map(reviewer => (
                     <tr key={reviewer.id}>
-                      <td>{reviewer.reviewer}</td>
+                      <td>
+                        <div
+                          style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            gap: '6px',
+                          }}
+                        >
+                          <span>{reviewer.reviewer}</span>
+                          {!confirmedPromotions.includes(reviewer.reviewer) && (
+                            <input
+                              type="checkbox"
+                              title="Select for batch promotion"
+                              checked={selectedForPromotion.includes(reviewer.id)}
+                              onChange={() => handleCheckboxChange(reviewer.id)}
+                              style={{
+                                marginTop: '4px',
+                                cursor: 'pointer',
+                                width: '16px',
+                                height: '16px',
+                              }}
+                            />
+                          )}
+                          {!confirmedPromotions.includes(reviewer.reviewer) ? (
+                            <button
+                              type="button"
+                              onClick={() => handlePromoteClick(reviewer)}
+                              style={{
+                                fontSize: '0.75rem',
+                                padding: '3px 10px',
+                                borderRadius: '4px',
+                                border: 'none',
+                                background: '#ffc107',
+                                color: '#333',
+                                cursor: 'pointer',
+                                fontWeight: '600',
+                              }}
+                            >
+                              🏆 Promote
+                            </button>
+                          ) : (
+                            <span
+                              style={{ fontSize: '0.75rem', color: '#28a745', fontWeight: '600' }}
+                            >
+                              ✅ Promoted
+                            </span>
+                          )}
+                        </div>
+                      </td>
 
                       <td>
                         <input
@@ -396,6 +527,159 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
             </div>
           </div>
         </div>
+      )}
+      {selectedForPromotion.length > 0 && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: '24px',
+            right: '24px',
+            zIndex: 999,
+            display: 'flex',
+            gap: '12px',
+            alignItems: 'center',
+            background: darkMode ? '#2d4059' : '#fff',
+            padding: '12px 20px',
+            borderRadius: '8px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+            border: `1px solid ${darkMode ? '#4a5a77' : '#dee2e6'}`,
+          }}
+        >
+          <span style={{ color: darkMode ? '#fff' : '#333', fontWeight: '600' }}>
+            {selectedForPromotion.length} selected
+          </span>
+          <button
+            type="button"
+            onClick={() => setShowBatchConfirm(true)}
+            style={{
+              padding: '8px 20px',
+              borderRadius: '4px',
+              border: 'none',
+              background: '#28a745',
+              color: '#fff',
+              cursor: 'pointer',
+              fontWeight: '600',
+            }}
+          >
+            🏆 Promote Selected
+          </button>
+          <button
+            type="button"
+            onClick={() => setSelectedForPromotion([])}
+            style={{
+              padding: '8px 12px',
+              borderRadius: '4px',
+              border: `1px solid ${darkMode ? '#5a6b88' : '#dee2e6'}`,
+              background: 'transparent',
+              color: darkMode ? '#fff' : '#333',
+              cursor: 'pointer',
+            }}
+          >
+            Clear
+          </button>
+        </div>
+      )}
+      {showBatchConfirm && (
+        <div
+          className={`${styles['pr-grading-screen-modal-overlay']} ${
+            darkMode ? styles['dark-mode'] : ''
+          }`}
+        >
+          <div
+            className={`${styles['pr-grading-screen-modal']} ${
+              darkMode ? styles['dark-mode'] : ''
+            }`}
+          >
+            <div
+              className={`${styles['pr-grading-screen-modal-header']} ${
+                darkMode ? styles['dark-mode'] : ''
+              }`}
+            >
+              <h4 style={{ margin: 0, color: darkMode ? '#fff' : '#333' }}>
+                🏆 Confirm Batch Promotion
+              </h4>
+              <button
+                type="button"
+                className={styles['pr-grading-screen-modal-close']}
+                onClick={handleBatchCancel}
+              >
+                ×
+              </button>
+            </div>
+            <div
+              className={`${styles['pr-grading-screen-modal-body']} ${
+                darkMode ? styles['dark-mode'] : ''
+              }`}
+            >
+              <p style={{ color: darkMode ? '#fff' : '#333', marginBottom: '12px' }}>
+                You are about to promote <strong>{selectedForPromotion.length}</strong> reviewer(s):
+              </p>
+              <ul style={{ color: darkMode ? '#fff' : '#333', marginBottom: '16px' }}>
+                {reviewerData
+                  .filter(r => selectedForPromotion.includes(r.id))
+                  .map(r => (
+                    <li key={r.id} style={{ marginBottom: '4px' }}>
+                      {r.reviewer}
+                    </li>
+                  ))}
+              </ul>
+              <p
+                style={{
+                  color: darkMode ? '#fff' : '#333',
+                  fontWeight: '600',
+                  textAlign: 'center',
+                }}
+              >
+                Are you sure you want to promote all selected reviewers?
+              </p>
+            </div>
+            <div
+              className={`${styles['pr-grading-screen-modal-footer']} ${
+                darkMode ? styles['dark-mode'] : ''
+              }`}
+              style={{ gap: '12px' }}
+            >
+              <button
+                type="button"
+                onClick={handleBatchCancel}
+                style={{
+                  padding: '8px 20px',
+                  borderRadius: '4px',
+                  border: `1px solid ${darkMode ? '#5a6b88' : '#6c757d'}`,
+                  background: darkMode ? '#6c757d' : '#fff',
+                  color: darkMode ? '#fff' : '#6c757d',
+                  cursor: 'pointer',
+                  fontWeight: '600',
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleBatchConfirm}
+                style={{
+                  padding: '8px 20px',
+                  borderRadius: '4px',
+                  border: 'none',
+                  background: '#28a745',
+                  color: '#fff',
+                  cursor: 'pointer',
+                  fontWeight: '600',
+                }}
+              >
+                ✅ Confirm All
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {promotionCandidate && (
+        <PromotionConfirmationBox
+          reviewer={promotionCandidate}
+          onConfirm={handleConfirmPromotion}
+          onCancel={handleCancelPromotion}
+          darkMode={darkMode}
+        />
       )}
     </Container>
   );

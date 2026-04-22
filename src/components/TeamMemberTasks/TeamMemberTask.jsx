@@ -8,7 +8,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Modal, ModalBody, ModalFooter, ModalHeader, Progress, Table } from 'reactstrap';
 import CopyToClipboard from '~/components/common/Clipboard/CopyToClipboard';
 import UserStateDisplay from '../UserState/UserStateDisplay';
@@ -65,6 +65,9 @@ const TeamMemberTask = React.memo(
     const manager = 'Manager';
     const adm = 'Administrator';
     const owner = 'Owner';
+    const isOwnerOrAdmin = ['Owner', 'Administrator'].includes(userRole);
+
+    useEffect(() => {}, [userStateSelection]);
 
     const handleDashboardAccess = () => {
       // null checks
@@ -528,7 +531,9 @@ const TeamMemberTask = React.memo(
                               </div>
                               <UserStateDisplay
                                 userId={user.personId}
+                                userName={user.name}
                                 canEdit={displayUser?.email === 'jae@onecommunityglobal.org'}
+                                canManage={isOwnerOrAdmin}
                                 catalog={userStateCatalog}
                                 onCatalogChange={onCatalogChange}
                                 initialSelected={userStateSelection}
@@ -636,7 +641,12 @@ const TeamMemberTask = React.memo(
                                       </div>
 
                                       {/* Review Button */}
-                                      <div className={styles['team-member-task-review-button']}>
+                                      <div
+                                        className={styles['team-member-task-review-button']}
+                                        style={
+                                          onTimeOff ? { opacity: 0.4, pointerEvents: 'none' } : {}
+                                        }
+                                      >
                                         <ReviewButton
                                           user={user}
                                           userId={userId}
