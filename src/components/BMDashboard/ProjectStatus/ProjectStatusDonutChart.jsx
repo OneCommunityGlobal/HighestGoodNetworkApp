@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer, Label } from 'recharts';
 import axios from 'axios';
 import styles from './ProjectStatusDonutChart.module.css';
 
-const COLORS = ['#B39DDB', '#80DEEA', '#FFABAB']; // Active, Completed, Delayed
+const COLORS = ['#B39DDB', '#80DEEA', '#FFABAB'];
 
 export default function ProjectStatusDonutChart() {
+  const darkMode = useSelector(state => state.theme?.darkMode || false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [statusData, setStatusData] = useState(null);
@@ -18,31 +20,19 @@ export default function ProjectStatusDonutChart() {
       setLoading(true);
       setError(null);
 
-      // Build query string
       const query = [];
       if (startDate) query.push(`startDate=${startDate}`);
       if (endDate) query.push(`endDate=${endDate}`);
       const queryString = query.length ? `?${query.join('&')}` : '';
 
-      // Get token from localStorage (Dev Admin session)
       const token = localStorage.getItem('token');
 
       const res = await axios.get(`http://localhost:4500/api/projects/status${queryString}`, {
         headers: { Authorization: token },
       });
 
-      // TEMPORARY MOCK DATA - for testing purposes
-      /*setStatusData({
-        totalProjects: 50,
-        activeProjects: 20,
-        completedProjects: 20,
-        delayedProjects: 10,
-      });
-      return;*/
-
       setStatusData(res.data);
     } catch (err) {
-      // console.error(err);
       setError('Unable to load project status.');
     } finally {
       setLoading(false);
@@ -63,10 +53,9 @@ export default function ProjectStatusDonutChart() {
     { name: 'Delayed Projects', value: statusData.delayedProjects },
   ];
 
-  // SHOW MESSAGE WHEN THERE IS NO DATA
   if (pieData.every(item => item.value === 0)) {
     return (
-      <div className={styles.container}>
+      <div className={`${styles.container} ${darkMode ? styles.darkContainer : ''}`}>
         <h2 className={styles.title}>PROJECT STATUS</h2>
         <p className={styles.noDataMessage}>No project status data available.</p>
       </div>
@@ -84,7 +73,7 @@ export default function ProjectStatusDonutChart() {
     !statusData.activeProjects && !statusData.completedProjects && !statusData.delayedProjects;
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} ${darkMode ? styles.darkContainer : ''}`}>
       <h2 className={styles.title}>PROJECT STATUS</h2>
 
       <div className={styles.filterRow}>
@@ -108,9 +97,8 @@ export default function ProjectStatusDonutChart() {
       </div>
 
       <div className={styles.chartWrapper}>
-        {/* Only draw the ring if at least one status has data */}
         {!allZero && (
-          <ResponsiveContainer width="100%" aspect={1}>
+          <ResponsiveContainer width="100%" height={350}>
             <PieChart margin={{ top: 10, right: 10, bottom: 40, left: 10 }}>
               <Pie
                 data={pieData}
@@ -142,7 +130,20 @@ export default function ProjectStatusDonutChart() {
                 />
               </Pie>
 
-              <Tooltip />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: darkMode ? '#2a3f5f' : '#ffffff',
+                  borderRadius: '8px',
+                  border: darkMode ? '1px solid #3a506b' : '1px solid #e5e7eb',
+                  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3)',
+                  color: darkMode ? '#ffffff' : '#111827',
+                }}
+                itemStyle={{
+                  color: darkMode ? '#ffffff' : '#111827',
+                  fontWeight: '600',
+                  textTransform: 'capitalize',
+                }}
+              />
               <Legend verticalAlign="bottom" align="center" />
             </PieChart>
           </ResponsiveContainer>

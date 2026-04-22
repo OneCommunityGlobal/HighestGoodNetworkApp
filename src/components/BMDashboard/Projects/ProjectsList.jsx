@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import { Row, Col } from 'reactstrap';
+import { Row, Col, FormGroup, Label, Spinner } from 'reactstrap';
 import Select from 'react-select';
 import ProjectSummary from './ProjectSummary';
 import styles from '../BMDashboard.module.css';
@@ -8,21 +8,36 @@ import styles from '../BMDashboard.module.css';
 function ProjectsList() {
   const projects = useSelector(state => state.bmProjects) || [];
   const darkMode = useSelector(state => state.theme?.darkMode || false);
+
   const [selectedProjects, setSelectedProjects] = useState([]);
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  const timeoutRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
+
   const projectOptions = projects.map(project => ({
     value: project._id,
     label: project.name,
   }));
 
   const handleSelectChange = selectedOptions => {
-    setSelectedProjects(selectedOptions || []);
+    setIsUpdating(true);
+
+    timeoutRef.current = setTimeout(() => {
+      setSelectedProjects(selectedOptions || []);
+      setIsUpdating(false);
+    }, 600);
   };
 
   const filteredProjects = selectedProjects.length
     ? projects.filter(project => selectedProjects.some(selected => selected.value === project._id))
     : projects;
 
-  // Custom styles for react-select in dark mode
   const selectStyles = {
     control: (base, state) => ({
       ...base,
@@ -105,34 +120,78 @@ function ProjectsList() {
       className="ml-0 text-center mt-5"
       style={{ width: '100%', display: 'flex', justifyContent: 'center', flexDirection: 'column' }}
     >
-      <Col md="8" lg="6" className="mb-3" style={{ margin: '0 auto' }}>
-        <Select
-          isMulti
-          options={projectOptions}
-          onChange={handleSelectChange}
-          placeholder="Select Projects"
-          styles={selectStyles}
-          classNamePrefix="react-select"
-        />
+      <Col md="8" lg="6" className="mb-4" style={{ margin: '0 auto' }}>
+        <FormGroup className="text-left" style={{ textAlign: 'left' }}>
+          <Label
+            className={darkMode ? 'text-light' : ''}
+            style={{ fontWeight: '600', fontSize: '1.1rem', marginBottom: '0.5rem' }}
+          >
+            Filter Building Summaries
+          </Label>
+
+          <Select
+            isMulti
+            isDisabled={isUpdating}
+            options={projectOptions}
+            onChange={handleSelectChange}
+            placeholder="Select a project to view summary details."
+            styles={selectStyles}
+            classNamePrefix="react-select"
+            value={selectedProjects}
+          />
+
+          <small className={`form-text ${darkMode ? 'text-light opacity-75' : 'text-muted'} mt-2`}>
+            Select one or multiple projects from the dropdown to filter the inventory and building
+            data below.
+          </small>
+        </FormGroup>
       </Col>
+
       <Col xs="12">
+        <div
+          className="d-flex align-items-center justify-content-center mb-3"
+          style={{ minHeight: '40px' }}
+        >
+          <h3 className={`m-0 ${darkMode ? 'text-light' : ''}`} style={{ fontSize: '1.4rem' }}>
+            {selectedProjects.length > 0
+              ? `Showing Summary for: ${selectedProjects.map(p => p.label).join(', ')}`
+              : 'Showing All Projects'}
+          </h3>
+          {isUpdating && (
+            <Spinner size="sm" color="primary" className="ml-3" style={{ marginLeft: '15px' }} />
+          )}
+        </div>
+
         {filteredProjects.length ? (
           <ul
             className={`${styles.projectsList} ${
               darkMode ? styles.darkProjectsList : styles.lightProjectsList
             }`}
+            style={{
+              opacity: isUpdating ? 0.6 : 1,
+              transition: 'opacity 0.2s ease',
+              listStyleType: 'none',
+              paddingLeft: 0,
+              margin: '0 auto',
+            }}
           >
             {filteredProjects.map(project => (
               <li
                 className={`${darkMode ? styles.darkProjectSummary : styles.projectSummary}`}
                 key={project._id}
+                style={{
+                  listStyleType: 'none',
+                  marginBottom: '3rem',
+                }}
               >
                 <ProjectSummary project={project} />
               </li>
             ))}
           </ul>
         ) : (
-          <p className={darkMode ? 'text-light' : ''}>No projects data</p>
+          <p className={darkMode ? 'text-light mt-4' : 'mt-4'}>
+            No projects data available for the selected filters.
+          </p>
         )}
       </Col>
     </Row>

@@ -201,7 +201,7 @@ export function BMDashboard() {
         ) : (
           <>
             <ProjectSelectForm />
-            <ProjectStatusDonutChart />
+            {/* <ProjectStatusDonutChart /> */}
             <ProjectsList />
           </>
         )}
