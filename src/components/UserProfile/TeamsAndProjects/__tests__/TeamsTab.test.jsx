@@ -1,6 +1,12 @@
 import React from 'react';
 import { vi } from 'vitest';
 
+// Add this with the other vi.mock() calls at the TOP, before any imports
+vi.mock('react-redux', () => ({
+  __esModule: true,
+  useDispatch: () => fn => fn(), // mock dispatch to just call the thunk directly
+}));
+
 // MUST come before you import TeamsTab!
 vi.mock('../AddTeamPopup', () => ({
   __esModule: true,

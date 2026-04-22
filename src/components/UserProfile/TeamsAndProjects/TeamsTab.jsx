@@ -4,6 +4,7 @@ import { addTeamMember, deleteTeamMember } from '~/actions/allTeamsAction';
 import { toast } from 'react-toastify';
 import AddTeamPopup from './AddTeamPopup';
 import UserTeamsTable from './UserTeamsTable';
+import PropTypes from 'prop-types';
 
 function TeamsTab(props) {
   const {
@@ -147,4 +148,14 @@ function TeamsTab(props) {
     </>
   );
 }
+
+TeamsTab.propTypes = {
+  userProfile: PropTypes.shape({
+    _id: PropTypes.string,
+    firstName: PropTypes.string,
+    lastName: PropTypes.string,
+    teams: PropTypes.arrayOf(PropTypes.object),
+  }),
+};
+
 export default TeamsTab;
