@@ -11,17 +11,7 @@ import {
   Title as ChartTitle,
 } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import {
-  Container,
-  Row,
-  Col,
-  Card,
-  CardBody,
-  FormGroup,
-  Label,
-  Button,
-  Spinner,
-} from 'reactstrap';
+import { Container, Row, Col, Card, CardBody, FormGroup, Label, Button, Spinner } from 'reactstrap';
 import Select from 'react-select';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -193,12 +183,18 @@ const WinningVsAverageBidChart = ({ darkMode = false }) => {
 
   // Generate mock data (similar to DemandOverTime component)
   const getVillageItems = () => {
-    const source = selectedVillages.length > 0 ? selectedVillages : villages.slice(0, Math.min(limit, villages.length));
+    const source =
+      selectedVillages.length > 0
+        ? selectedVillages
+        : villages.slice(0, Math.min(limit, villages.length));
     return source.map(v => ({ id: v.value, identifier: v.label, type: 'village' }));
   };
 
   const getListingItems = () => {
-    const source = selectedListings.length > 0 ? selectedListings : listings.slice(0, Math.min(limit, listings.length));
+    const source =
+      selectedListings.length > 0
+        ? selectedListings
+        : listings.slice(0, Math.min(limit, listings.length));
     return source.map(l => ({ id: l.value, identifier: l.label, type: 'property' }));
   };
 
@@ -231,8 +227,7 @@ const WinningVsAverageBidChart = ({ darkMode = false }) => {
         setError('No data available for the selected filters.');
       }
     } catch (err) {
-      console.error('Error generating chart data:', err);
-      setError('Failed to load chart data. Please try again.');
+      setError(`Failed to load chart data: ${err.message}`);
     } finally {
       setLoading(false);
     }
