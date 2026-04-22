@@ -21,6 +21,7 @@ import autoTable from 'jspdf-autotable';
 import styles from './UtilizationChart.module.css';
 import { useSelector } from 'react-redux';
 import { ENDPOINTS } from '../../../utils/URL';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 ChartJS.register(
   BarElement,
