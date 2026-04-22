@@ -41,6 +41,7 @@ function AddLogModal({ isOpen, onClose, onAdd }) {
     timeDuration: '',
     facilities: '',
     materials: '',
+    date: '',
   });
   const [validationError, setValidationError] = useState('');
 
@@ -55,29 +56,53 @@ function AddLogModal({ isOpen, onClose, onAdd }) {
   };
 
   const validateForm = () => {
-    if (!formData.user || !formData.timeDuration || !formData.facilities || !formData.materials) {
-      return false;
-    }
-    return true;
-  };
+      if (!formData.user.trim()) {
+        return 'User is required';
+      }
+
+      const timeRegex = /^([0-1]\d|2[0-3]):([0-5]\d):([0-5]\d)$/;
+      if (!timeRegex.test(formData.timeDuration)) {
+        return 'Time must be in HH:MM:SS format';
+      }
+
+      if (!formData.facilities.trim()) {
+        return 'Facilities is required';
+      }
+
+      if (!formData.materials.trim()) {
+        return 'Materials is required';
+      }
+
+      if (!formData.date) {
+        return 'Date is required';
+      }
+
+      return '';
+    };
 
   const handleSubmit = e => {
-    e.preventDefault();
+      e.preventDefault();
 
-    if (formData.user && formData.timeDuration && formData.facilities && formData.materials) {
+      const error = validateForm();
+
+      if (error) {
+        setValidationError(error);
+        return;
+      }
+
       onAdd(formData);
+
       setFormData({
         user: '',
         timeDuration: '',
         facilities: '',
         materials: '',
+        date: '',
       });
+
       setValidationError('');
       onClose();
-    } else {
-      setValidationError('Please fill in all fields');
-    }
-  };
+    };
 
   if (!isOpen) return null;
 
@@ -107,7 +132,7 @@ function AddLogModal({ isOpen, onClose, onAdd }) {
               name="timeDuration"
               value={formData.timeDuration}
               onChange={handleChange}
-              placeholder="Enter time"
+              className={`${validationError.includes('Time') ? styles.inputError : ''}`}
             />
           </div>
 
@@ -133,6 +158,17 @@ function AddLogModal({ isOpen, onClose, onAdd }) {
             />
           </div>
 
+          <div className={styles.formGroup}>
+            <label htmlFor="date">Date</label>
+            <input
+              id="date"
+              name="date"
+              type="date"
+              value={formData.date}
+              onChange={handleChange}
+            />
+          </div>
+
           <div className={styles.modalActions}>
             <button type="submit" className={styles.submitButton}>
               Save Log
@@ -152,14 +188,6 @@ function ResourceManagement() {
   const [showModal, setShowModal] = useState(false);
   const [showToast, setShowToast] = useState(false);
 
-  const [formData, setFormData] = useState({
-    user: '',
-    timeDuration: '',
-    facilities: '',
-    materials: '',
-    date: '',
-  });
-  const [errors, setErrors] = useState({});
   const [resources, setResources] = useState([
     {
       id: 1,
@@ -244,68 +272,6 @@ function ResourceManagement() {
   ]);
 
   const [searchTerm, setSearchTerm] = useState('');
-
-  const handleChange = e => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const validateForm = () => {
-    const newErrors = {};
-
-    if (!formData.user.trim()) {
-      newErrors.user = 'User is required';
-    }
-
-    const timeRegex = /^([0-1]\d|2[0-3]):([0-5]\d):([0-5]\d)$/;
-    if (!timeRegex.test(formData.timeDuration)) {
-      newErrors.timeDuration = 'Enter valid time (HH:MM:SS)';
-    }
-
-    if (!formData.facilities.trim()) {
-      newErrors.facilities = 'Facilities required';
-    }
-
-    if (!formData.materials.trim()) {
-      newErrors.materials = 'Materials required';
-    }
-
-    if (isNaN(Date.parse(formData.date))) {
-      newErrors.date = 'Enter valid date';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = e => {
-    e.preventDefault();
-
-    if (!validateForm()) return;
-
-    const newResource = {
-      id: resources.length + 1,
-      ...formData,
-      date: 'Just now',
-    };
-
-    setResources(prev => [newResource, ...prev]);
-
-    setShowModal(false);
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 4000);
-
-    setFormData({
-      user: '',
-      timeDuration: '',
-      facilities: '',
-      materials: '',
-      date: '',
-    });
-
-    setErrors({});
-  };
-
   const filteredResources = resources.filter(resource => {
     const term = searchTerm.toLowerCase();
 

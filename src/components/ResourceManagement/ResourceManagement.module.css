@@ -66,6 +66,10 @@
   background-color: #4B7BEC;
 }
 
+.inputError {
+  border: 1px solid #ff4d4f !important;
+}
+
 /* ---------- Search Bar ---------- */
 .searchBarContainer {
   display: flex;
