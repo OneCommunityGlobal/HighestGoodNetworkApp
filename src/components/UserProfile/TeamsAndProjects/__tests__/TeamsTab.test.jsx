@@ -2,10 +2,9 @@ import React from 'react';
 import { vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 
-// Add this with the other vi.mock() calls at the TOP, before any imports
 vi.mock('react-redux', () => ({
   __esModule: true,
-  useDispatch: () => fn => fn(), // mock dispatch to just call the thunk directly
+  useDispatch: () => fn => Promise.resolve(fn),
 }));
 
 // MUST come before you import TeamsTab!
@@ -41,10 +40,11 @@ vi.mock('../UserTeamsTable', () => ({
 }));
 
 // Stub your action creators
+// REPLACE the allTeamsAction mock with this:
 vi.mock('../../../../actions/allTeamsAction', () => ({
   __esModule: true,
-  addTeamMember: vi.fn(),
-  deleteTeamMember: vi.fn(),
+  addTeamMember: vi.fn(() => 'addTeamMember_result'),
+  deleteTeamMember: vi.fn(() => 'deleteTeamMember_result'),
 }));
 
 // Stub toast
