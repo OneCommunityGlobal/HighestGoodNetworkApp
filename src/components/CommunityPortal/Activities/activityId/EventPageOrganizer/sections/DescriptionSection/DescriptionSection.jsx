@@ -1,5 +1,6 @@
 import { ImageIcon, XIcon } from 'lucide-react';
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Button } from '../../components/ui/button';
 import { Textarea } from '../../components/ui/textarea';
 import styles from './DescriptionSection.module.css';
@@ -26,6 +27,12 @@ export const DescriptionSection = ({
 }) => {
   const [selectedMedia, setSelectedMedia] = useState([]);
   const [description, setDescription] = useState(initialDescription);
+  const darkMode = useSelector(state => state.theme.darkMode);
+
+  const containerClassName = `${styles.container} ${darkMode ? styles.containerDark : ''}`;
+  const textareaClassName = `${styles.textarea} ${darkMode ? styles.textareaDark : ''}`;
+  const mediaButtonClassName = `${styles.mediaButton} ${darkMode ? styles.mediaButtonDark : ''}`;
+  const addMediaLabelClassName = `${styles.buttonLabel} ${darkMode ? styles.buttonLabelDark : ''}`;
 
   // Open file picker and upload via provided uploadMediaFn (if any)
   const handleAddMedia = async () => {
@@ -99,11 +106,11 @@ export const DescriptionSection = ({
   }, [selectedMedia]);
 
   return (
-    <section className={styles.container}>
+    <section className={containerClassName}>
       <div className={styles.content}>
         <Textarea
           placeholder="Create description here"
-          className={styles.textarea}
+          className={textareaClassName}
           value={description}
           onChange={e => setDescription(e.target.value)}
         />
@@ -129,11 +136,9 @@ export const DescriptionSection = ({
         )}
 
         <div className={styles.actions}>
-          <Button variant="secondary" className={styles.mediaButton} onClick={handleAddMedia}>
+          <Button variant="secondary" className={mediaButtonClassName} onClick={handleAddMedia}>
             <ImageIcon className="w-5 h-5" />
-            <span className="font-navigation font-[number:var(--navigation-font-weight)] text-black text-[length:var(--navigation-font-size)] tracking-[var(--navigation-letter-spacing)] leading-[var(--navigation-line-height)] [font-style:var(--navigation-font-style)]">
-              Add media
-            </span>
+            <span className={addMediaLabelClassName}>Add media</span>
           </Button>
 
           <Button

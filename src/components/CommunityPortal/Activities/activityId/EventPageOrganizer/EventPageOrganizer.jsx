@@ -1,5 +1,6 @@
 import { CalendarIcon, ClockIcon, StarIcon, UserCircleIcon, UsersIcon } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Avatar, AvatarFallback, AvatarImage } from './components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
 import { DescriptionSection } from './sections/DescriptionSection';
@@ -20,6 +21,7 @@ export const EventPageOrganizer = () => {
   const activityId = 'test-event';
   const [evt, setEvt] = useState(null);
   const [loading, setLoading] = useState(true);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
     let mounted = true;
@@ -43,12 +45,21 @@ export const EventPageOrganizer = () => {
       mounted = false;
     };
   }, []);
+
+  const containerClassName = `${styles.container} ${darkMode ? styles.containerDark : ''}`;
+  const eventCardClassName = `${styles.eventCard} ${darkMode ? styles.eventCardDark : ''}`;
+  const tabsListClassName = `${styles.tabsList} ${darkMode ? styles.tabsListDark : ''}`;
+  const tabsTriggerClassName = `${styles.tabTrigger} ${darkMode ? styles.tabTriggerDark : ''}`;
+  const placeholderPanelClassName = `${styles.placeholderPanel} ${
+    darkMode ? styles.placeholderPanelDark : ''
+  }`;
+
   return (
-    <div className={styles.container} data-model-id="3572:7958">
+    <div className={containerClassName} data-model-id="3572:7958">
       <div className={styles.contentWrapper}>
         <EventStatusSection />
 
-        <div className={styles.eventCard}>
+        <div className={eventCardClassName}>
           <div className={styles.eventCardContent}>
             <div className={styles.eventImageSection}>
               <div
@@ -84,7 +95,7 @@ export const EventPageOrganizer = () => {
               <div className={styles.detailsGrid}>
                 <div className={styles.detailItem}>
                   <div className={styles.detailLabel}>
-                    <CalendarIcon className="w-3 h-3.5 text-black" />
+                    <CalendarIcon className={`${styles.detailIcon} w-3 h-3.5`} />
                     <span className={styles.detailLabelText}>Date</span>
                   </div>
                   <div className={styles.detailValue}>{evt?.selectedDate ?? '—'}</div>
@@ -92,7 +103,7 @@ export const EventPageOrganizer = () => {
 
                 <div className={styles.detailItem}>
                   <div className={styles.detailLabel}>
-                    <ClockIcon className="w-3 h-[13px] text-black" />
+                    <ClockIcon className={`${styles.detailIcon} w-3 h-[13px]`} />
                     <span className={styles.detailLabelText}>Time</span>
                   </div>
                   <div className="flex items-center gap-2">
@@ -105,7 +116,7 @@ export const EventPageOrganizer = () => {
 
                 <div className={styles.detailItem}>
                   <div className={styles.detailLabel}>
-                    <UserCircleIcon className="w-[13px] h-[13px] text-black" />
+                    <UserCircleIcon className={`${styles.detailIcon} w-[13px] h-[13px]`} />
                     <span className={styles.detailLabelText}>Orgnizer</span>
                   </div>
                   <div className={styles.detailValue}>{evt?.organizer?.name ?? '—'}</div>
@@ -113,7 +124,7 @@ export const EventPageOrganizer = () => {
 
                 <div className={styles.detailItem}>
                   <div className={styles.detailLabel}>
-                    <UsersIcon className="w-[19px] h-[13px] text-black" />
+                    <UsersIcon className={`${styles.detailIcon} w-[19px] h-[13px]`} />
                     <span className={styles.detailLabelText}>Capacity</span>
                   </div>
                   <div className={styles.capacityValue}>
@@ -128,7 +139,7 @@ export const EventPageOrganizer = () => {
 
                 <div className={styles.detailItem}>
                   <div className={styles.detailLabel}>
-                    <StarIcon className="w-[19px] h-[19px] text-black" />
+                    <StarIcon className={`${styles.detailIcon} w-[19px] h-[19px]`} />
                     <span className={styles.detailLabelText}>Overall Rating</span>
                   </div>
                   <div className="flex items-center gap-2">
@@ -174,17 +185,17 @@ export const EventPageOrganizer = () => {
               </div>
             </div>
 
-            <div className="flex-shrink-0 w-[238px] relative">
-              <div className="absolute top-0 right-0 flex gap-2 items-center bg-[#f3f3f3] rounded-lg px-2 py-1.5">
-                <div className="w-[19px] h-[19px] bg-[#f96d6d] rounded-full" />
+            <div className={styles.calendarSection}>
+              <div className={styles.statusIndicator}>
+                <div className={styles.statusDot} />
                 <img
-                  className="w-[17px] h-[17px]"
+                  className={styles.sortIcon}
                   alt="Sort down"
                   src="https://c.animaapp.com/mhkba7ef3J2kka/img/sort-down.png"
                 />
               </div>
 
-              <div className="absolute top-[98px] left-0 w-full h-px bg-[#e5e5e5]" />
+              <div className={styles.calendarDivider} />
 
               <ScheduleSection />
             </div>
@@ -192,51 +203,20 @@ export const EventPageOrganizer = () => {
         </div>
 
         <Tabs defaultValue="description" className={styles.tabsContainer}>
-          <TabsList
-            style={{ display: 'flex', flexDirection: 'row', width: '100%' }}
-            className="bg-transparent border-b border-[#e5e5e5] rounded-none p-0 gap-0"
-          >
-            <TabsTrigger
-              value="description"
-              style={{ flex: 1 }}
-              className="text-center rounded-none px-0 py-4 text-2xl font-semibold
-                 data-[state=active]:text-black data-[state=inactive]:text-[#00000099]
-                 data-[state=active]:border-b-2 data-[state=active]:border-[#81b6e7]
-                 bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none"
-            >
+          <TabsList className={tabsListClassName}>
+            <TabsTrigger value="description" style={{ flex: 1 }} className={tabsTriggerClassName}>
               Description
             </TabsTrigger>
 
-            <TabsTrigger
-              value="analysis"
-              style={{ flex: 1 }}
-              className="text-center rounded-none px-0 py-4 text-2xl font-semibold
-                 data-[state=active]:text-black data-[state=inactive]:text-[#666666]
-                 data-[state=active]:border-b-2 data-[state=active]:border-[#81b6e7]
-                 bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none"
-            >
+            <TabsTrigger value="analysis" style={{ flex: 1 }} className={tabsTriggerClassName}>
               Analysis
             </TabsTrigger>
 
-            <TabsTrigger
-              value="resource"
-              style={{ flex: 1 }}
-              className="text-center rounded-none px-0 py-4 text-2xl font-semibold
-                 data-[state=active]:text-black data-[state=inactive]:text-[#666666]
-                 data-[state=active]:border-b-2 data-[state=active]:border-[#81b6e7]
-                 bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none"
-            >
+            <TabsTrigger value="resource" style={{ flex: 1 }} className={tabsTriggerClassName}>
               Resource
             </TabsTrigger>
 
-            <TabsTrigger
-              value="engagement"
-              style={{ flex: 1 }}
-              className="text-center rounded-none px-0 py-4 text-2xl font-semibold
-                 data-[state=active]:text-black data-[state=inactive]:text-[#666666]
-                 data-[state=active]:border-b-2 data-[state=active]:border-[#81b6e7]
-                 bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none"
-            >
+            <TabsTrigger value="engagement" style={{ flex: 1 }} className={tabsTriggerClassName}>
               Engagement
             </TabsTrigger>
           </TabsList>
@@ -261,20 +241,20 @@ export const EventPageOrganizer = () => {
           </TabsContent>
 
           <TabsContent value="analysis" className="mt-8">
-            <div className="w-full h-[400px] bg-gray-100 rounded-lg flex items-center justify-center">
-              <span className="text-gray-500">Analysis content</span>
+            <div className={placeholderPanelClassName}>
+              <span className={styles.placeholderText}>Analysis content</span>
             </div>
           </TabsContent>
 
           <TabsContent value="resource" className="mt-8">
-            <div className="w-full h-[400px] bg-gray-100 rounded-lg flex items-center justify-center">
-              <span className="text-gray-500">Resource content</span>
+            <div className={placeholderPanelClassName}>
+              <span className={styles.placeholderText}>Resource content</span>
             </div>
           </TabsContent>
 
           <TabsContent value="engagement" className="mt-8">
-            <div className="w-full h-[400px] bg-gray-100 rounded-lg flex items-center justify-center">
-              <span className="text-gray-500">Engagement content</span>
+            <div className={placeholderPanelClassName}>
+              <span className={styles.placeholderText}>Engagement content</span>
             </div>
           </TabsContent>
         </Tabs>

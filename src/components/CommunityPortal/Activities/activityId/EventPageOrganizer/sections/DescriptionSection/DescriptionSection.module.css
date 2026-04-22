@@ -10,6 +10,11 @@
   opacity: 0;
 }
 
+.containerDark {
+  background-color: #0f1722;
+  border-color: #334155;
+}
+
 .content {
   display: flex;
   flex-direction: column;
@@ -28,6 +33,18 @@
   font-size: 1.5rem;
   line-height: 38.4px;
   padding: 0;
+}
+
+.textarea::placeholder {
+  color: #6b7280;
+}
+
+.textareaDark {
+  color: #d1d5db;
+}
+
+.textareaDark::placeholder {
+  color: #94a3b8;
 }
 
 .textarea:focus-visible {
@@ -49,8 +66,31 @@
   transition: background-color 0.2s;
 }
 
+.mediaButtonDark {
+  background-color: #1f2937;
+  border: 1px solid #374151;
+}
+
 .mediaButton:hover {
   background-color: #d1d5db;
+}
+
+.mediaButtonDark:hover {
+  background-color: #111827;
+}
+
+.buttonLabel {
+  font-family: var(--navigation-font-family);
+  font-weight: var(--navigation-font-weight);
+  color: #111827;
+  font-size: var(--navigation-font-size);
+  letter-spacing: var(--navigation-letter-spacing);
+  line-height: var(--navigation-line-height);
+  font-style: var(--navigation-font-style);
+}
+
+.buttonLabelDark {
+  color: #e5e7eb;
 }
 
 .postButton {
