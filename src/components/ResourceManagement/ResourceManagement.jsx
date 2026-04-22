@@ -66,6 +66,7 @@ function AddLogModal({ isOpen, onClose, onAdd }) {
   };
 
   const validateForm = () => {
+<<<<<<< HEAD
     const newErrors = {};
     const timeRegex = /^([0-1]\d|2[0-3]):([0-5]\d):([0-5]\d)$/;
 
@@ -90,18 +91,43 @@ function AddLogModal({ isOpen, onClose, onAdd }) {
     if (!formData.date) newErrors.date = 'Date is required';
 
     return newErrors;
+=======
+    if (!formData.user.trim()) {
+      return 'User is required';
+    }
+
+    const timeRegex = /^([0-1]\d|2[0-3]):([0-5]\d):([0-5]\d)$/;
+    if (!timeRegex.test(formData.timeDuration)) {
+      return 'Time must be in HH:MM:SS format';
+    }
+
+    if (!formData.facilities.trim()) {
+      return 'Facilities is required';
+    }
+
+    if (!formData.materials.trim()) {
+      return 'Materials is required';
+    }
+
+    if (!formData.date) {
+      return 'Date is required';
+    }
+
+    return '';
+>>>>>>> e10aa7ca1 (Fix: prettier formatting for ResourceManagement)
   };
 
   const handleSubmit = e => {
-      e.preventDefault();
+    e.preventDefault();
 
-      const error = validateForm();
+    const error = validateForm();
 
-      if (error) {
-        setValidationError(error);
-        return;
-      }
+    if (error) {
+      setValidationError(error);
+      return;
+    }
 
+<<<<<<< HEAD
     const validationErrors = validateForm();
 
     if (Object.keys(validationErrors).length > 0) {
@@ -119,6 +145,19 @@ function AddLogModal({ isOpen, onClose, onAdd }) {
       date: '',
     });
 
+=======
+    onAdd(formData);
+
+    setFormData({
+      user: '',
+      timeDuration: '',
+      facilities: '',
+      materials: '',
+      date: '',
+    });
+
+    setValidationError('');
+>>>>>>> e10aa7ca1 (Fix: prettier formatting for ResourceManagement)
     onClose();
   };
 
