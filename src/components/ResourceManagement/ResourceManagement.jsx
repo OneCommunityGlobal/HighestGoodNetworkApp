@@ -56,53 +56,53 @@ function AddLogModal({ isOpen, onClose, onAdd }) {
   };
 
   const validateForm = () => {
-      if (!formData.user.trim()) {
-        return 'User is required';
-      }
+    if (!formData.user.trim()) {
+      return 'User is required';
+    }
 
-      const timeRegex = /^([0-1]\d|2[0-3]):([0-5]\d):([0-5]\d)$/;
-      if (!timeRegex.test(formData.timeDuration)) {
-        return 'Time must be in HH:MM:SS format';
-      }
+    const timeRegex = /^([0-1]\d|2[0-3]):([0-5]\d):([0-5]\d)$/;
+    if (!timeRegex.test(formData.timeDuration)) {
+      return 'Time must be in HH:MM:SS format';
+    }
 
-      if (!formData.facilities.trim()) {
-        return 'Facilities is required';
-      }
+    if (!formData.facilities.trim()) {
+      return 'Facilities is required';
+    }
 
-      if (!formData.materials.trim()) {
-        return 'Materials is required';
-      }
+    if (!formData.materials.trim()) {
+      return 'Materials is required';
+    }
 
-      if (!formData.date) {
-        return 'Date is required';
-      }
+    if (!formData.date) {
+      return 'Date is required';
+    }
 
-      return '';
-    };
+    return '';
+  };
 
   const handleSubmit = e => {
-      e.preventDefault();
+    e.preventDefault();
 
-      const error = validateForm();
+    const error = validateForm();
 
-      if (error) {
-        setValidationError(error);
-        return;
-      }
+    if (error) {
+      setValidationError(error);
+      return;
+    }
 
-      onAdd(formData);
+    onAdd(formData);
 
-      setFormData({
-        user: '',
-        timeDuration: '',
-        facilities: '',
-        materials: '',
-        date: '',
-      });
+    setFormData({
+      user: '',
+      timeDuration: '',
+      facilities: '',
+      materials: '',
+      date: '',
+    });
 
-      setValidationError('');
-      onClose();
-    };
+    setValidationError('');
+    onClose();
+  };
 
   if (!isOpen) return null;
 
