@@ -55,7 +55,15 @@
   background-color: #4b7bec;
 }
 
+<<<<<<< HEAD
 /* --- Search Bar --- */
+=======
+.inputError {
+  border: 1px solid #ff4d4f !important;
+}
+
+/* ---------- Search Bar ---------- */
+>>>>>>> 45f6ac1ca (Fix: added validation to Add New Log modal and included Date field)
 .searchBarContainer {
   display: flex;
   justify-content: space-between;

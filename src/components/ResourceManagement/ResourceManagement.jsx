@@ -93,7 +93,14 @@ function AddLogModal({ isOpen, onClose, onAdd }) {
   };
 
   const handleSubmit = e => {
-    e.preventDefault();
+      e.preventDefault();
+
+      const error = validateForm();
+
+      if (error) {
+        setValidationError(error);
+        return;
+      }
 
     const validationErrors = validateForm();
 
@@ -152,6 +159,17 @@ function AddLogModal({ isOpen, onClose, onAdd }) {
               className={errors.date ? styles.inputError : ''}
             />
             {errors.date && <span className={styles.errorText}>{errors.date}</span>}
+          </div>
+
+          <div className={styles.formGroup}>
+            <label htmlFor="date">Date</label>
+            <input
+              id="date"
+              name="date"
+              type="date"
+              value={formData.date}
+              onChange={handleChange}
+            />
           </div>
 
           <div className={styles.modalActions}>
