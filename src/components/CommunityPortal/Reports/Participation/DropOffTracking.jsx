@@ -136,8 +136,12 @@ function DropOffTracking() {
             {filteredEvents.map(event => (
               <tr key={event.id}>
                 <td>{event.eventName}</td>
-                <td className={styles.trackingRateGreen} style={{ color: 'green' }}>{event.noShowRate}</td>
-                <td className={styles.trackingRateRed} style={{ color: 'red' }}>{event.dropOffRate}</td>
+                <td className={styles.trackingRateGreen} style={{ color: 'green' }}>
+                  {event.noShowRate}
+                </td>
+                <td className={styles.trackingRateRed} style={{ color: 'red' }}>
+                  {event.dropOffRate}
+                </td>
                 <td>
                   <button
                     type="button"
@@ -209,7 +213,6 @@ function DropOffTracking() {
                 className={styles.sendEmailBtn}
                 disabled={selectedUsers.length === 0}
                 onClick={() => {
-                  console.log('Send email to:', selectedUsers);
                   handleCloseModal();
                 }}
               >
