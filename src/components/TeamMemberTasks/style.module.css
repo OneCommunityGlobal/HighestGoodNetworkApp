@@ -1,24 +1,47 @@
-:global .dark-mode .modal-body p { 
-  color: #fff; 
-  background-color: transparent; /* no bg by default; apply on hover */
+:global(.dark-mode) .modal-body p {
+  color: #fff;
+  background-color: transparent;
   transition: background-color 120ms ease-in-out;
 }
-:global .dark-mode .modal-body p:hover {
+
+:global(.dark-mode) .modal-body p:hover {
   background-color: #444;
 }
+
 .team-member-tasks {
   background-color: white;
   overflow: hidden;
+  max-width: 100%;
+}
+
+.truncateTasksBtn {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  appearance: none;
+}
+
+.truncateTasksBtn:hover {
+  text-decoration: underline;
+}
+
+.truncateTasksBtn:focus-visible {
+  outline: 2px solid currentcolor;
+  outline-offset: 2px;
 }
 
 .progress-wrapper {
-  display: inline-grid;  
-  width: fit-content;    
+  display: inline-grid;
+  width: fit-content;
   justify-items: start;
 }
 
 .team-task-progress-container {
-  display: inline-flex;  
+  display: inline-flex;
   align-items: center;
   gap: 6px;
   flex-wrap: nowrap;
@@ -26,12 +49,17 @@
 }
 
 .team-task-progress-bar {
-  width: 100%;            
+  width: 100%;
   margin-top: 4px;
 }
 
 .team-member-task-review-button {
-  margin-top: 0;
+  grid-column: 1;
+  grid-row: 2;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  min-height: 40px;
 }
 
 .team-member-tasks h1 {
@@ -40,8 +68,9 @@
 }
 
 .task_table-container {
-  overflow: auto;
-  position: relative;
+  width: 100%;
+  overflow: hidden auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .task_table-container table {
@@ -86,21 +115,21 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 10px;
 }
 
 .team-member-tasks .team-member-tasks-headers {
   justify-content: center;
   margin-left: -10px;
-  vertical-align: middle; 
+  vertical-align: middle;
   text-align: center;
 }
 
 .team-member-tasks .team-member-tasks-subtable {
-  margin: 0 0 0 0;
+  margin: 0;
   text-align: left;
   vertical-align: middle;
-  justify-content: center; 
+  justify-content: center;
 }
 
 .team-task-progress {
@@ -119,10 +148,6 @@
 .task-break {
   /* border: red 1px solid; */
   border-bottom: 1px solid lightgray;
-  height: auto !important; 
-  width: 100%;
-  display: flex; 
-  margin: 1px 0 1px 0;
 }
 
 .task-break:last-of-type {
@@ -144,28 +169,37 @@
   flex: 1 1 auto;
   min-width: 0;
   height: auto !important;
+  vertical-align: middle !important;
 }
 
-.inner-task-align{
-  /* border: purple 1px solid !important; */
-  padding: 0px 5px 5px 3px;
-  text-align: left;
-  display: flex;
-  justify-content: flex-start;
-  gap: 10px;
-  vertical-align: top;
-  flex-wrap: wrap;
-  margin: 0px;
+.inner-task-align {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto;
+  gap: 6px 10px;
+  align-items: start;
+  width: 100%;
+  padding: 0 5px 5px 3px;
 }
-.team-member-task-review-button, .task-align { /* Use the actual parent class from your HTML */
-    overflow: visible !important; 
-    z-index: 10; 
+
+.team-member-task-review-button,
+.task-align {
+  overflow: visible !important;
+  z-index: 10;
 }
+
 .team-member-tasks-user-name {
   width: 50%;
   text-align: center;
-  justify-content: center;
-  vertical-align: middle; 
+  vertical-align: top !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start !important;
+  align-items: center;
+}
+
+.team-member-tasks td {
+  vertical-align: top !important;
 }
 
 .team-member-tasks-subtable th:first-child {
@@ -187,8 +221,8 @@
 
 .deadlineCount {
   position: absolute;
-  top: -4px;     /* slightly up */
-  right: -17px;  /* shift more to the right, away from the i */
+  top: -4px;
+  right: -17px;
   background: #e74c3c;
   color: #fff;
   border-radius: 50%;
@@ -206,26 +240,25 @@
   z-index: 3;
 }
 
-
-
-.task-followup-icon{
-  /* border: palevioletred 1px solid; */
+.task-followup-icon {
   display: flex;
   align-items: center;
-  gap: 6px;               /* space between the two icons only */
-  /* margin-left: -20px;   */
+  gap: 6px;
 }
 
 .team-clocks {
-  display: flex;
-  justify-content: space-around;
+  display: table-cell;
+  text-align: center;
+  vertical-align: top;
+  padding-left: 10px !important;
 }
+
 
 .team-member-tasks-number {
   display: inline-block;
   text-align: center;
   vertical-align: middle;
-  background: #0000FF;
+  background: #00f;
   border-radius: 50%;
   color: #fff;
   height: 22px;
@@ -235,7 +268,7 @@
 }
 
 .dashboard-team-clocks {
-  color: #339CFF !important;
+  color: #339cff !important;
 }
 
 .team-clocks-header {
@@ -297,9 +330,8 @@
 }
 
 .taking-time-off-content-div {
-  background-color: rgba(0, 0, 25, 0.7);
+  background-color: rgb(0 0 25 / 70%);
   height: 100%;
-  justify-items: center;
   align-items: center;
   text-align: center;
   position: absolute;
@@ -325,7 +357,7 @@
 }
 
 .taking-time-off-table-div:hover {
-  background-color: rgba(0, 0, 25, 0.6);
+  background-color: rgb(0 0 25 / 60%);
 }
 
 .taking-time-off-content-text {
@@ -342,14 +374,13 @@
   border-radius: 6px;
   height: 42px;
   width: 42px;
-  border: 1px solid #17A2B8;
+  border: 1px solid #17a2b8;
   font-size: 12px;
   font-weight: bold;
   font-family: Arial, Helvetica, sans-serif;
   color: white;
   box-shadow: 2px 2px 4px 1px lightgray;
   box-sizing: border-box;
-  /* Icon group centering */
   position: relative;
   display: flex;
   align-items: center;
@@ -358,15 +389,13 @@
 }
 
 .show-time-off-btn-selected {
-  background-color: #17A2B8;
+  background-color: #17a2b8;
 }
 
 .show-time-off-calender-svg {
   width: 22px;
   height: 20px;
   position: relative;
-  /* top: 11px;
-  left: -2px; */
 }
 
 .show-time-off-calender-svg-selected {
@@ -387,11 +416,11 @@
 }
 
 .show-time-off-icon-selected {
-  background-color: #17A2B8;
+  background-color: #17a2b8;
 }
 
 .show-time-off-icon path {
-  fill: #17A2B8;
+  fill: #17a2b8;
 }
 
 .taking-time-off-content-btn {
@@ -403,7 +432,7 @@
 }
 
 .taking-time-off-content-btn:hover {
-  background-color: rgba(0, 0, 25, 0.8);
+  background-color: rgb(0 0 25 / 80%);
 }
 
 .time-off-detail-modal {
@@ -421,19 +450,33 @@
 
 .time-off-detail-modal::-webkit-scrollbar-track {
   border-radius: 4px;
-  background-color: #E7E7E7;
-  border: 1px solid #CACACA;
-  box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+  background-color: #e7e7e7;
+  border: 1px solid #cacaca;
+  box-shadow: inset 0 0 6px rgb(0 0 0 / 30%);
 }
 
 .time-off-detail-modal::-webkit-scrollbar-thumb {
   border-radius: 8px;
-  background-color: #007BFF;
+  background-color: #007bff;
   box-shadow: inset 0 0 3px #e7e7e7;
 }
 
 .time-off-detail-modal-section {
   margin-bottom: 10px;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-rows: 1fr auto;
+}
+
+.expand-time-off-detail-button {
+  color: white;
+  background-color: rgb(0 0 25 / 70%);
+  border-radius: 5px;
+  justify-self: end;
+  margin-right: -12px;
+  margin-bottom: -12px;
 }
 
 .compress-time-off-detail-button {
@@ -449,28 +492,14 @@
 
 .compress-time-off-detail-button:hover,
 .expand-time-off-detail-button:hover {
-  background-color: rgba(0, 0, 25, 0.6);
+  background-color: rgb(0 0 25 / 60%);
 }
 
-.grid-container {
-  display: grid;
-  grid-template-rows: 1fr auto;
-}
-
-.expand-time-off-detail-button {
-  color: white;
-  background-color: rgba(0, 0, 25, 0.7);
-  border-radius: 5px;
-  justify-self: end;
-  margin-right: -12px;
-  margin-bottom: -12px;
-}
 .review-dropdown-item {
   display: flex;
   align-items: center;
   gap: 6px;
 }
-
 
 .time-off-detail-modal-card-container {
   border: 1px solid #ccc;
@@ -478,52 +507,47 @@
   border-radius: 5px;
 }
 
- .team-member-tasks-icons {
-  /* border: green 1px solid; */
+.team-member-tasks-icons {
+  grid-column: 2;
+  grid-row: 1;
   display: inline-flex;
-  align-items: flex-start;
-  justify-content: flex-start;
+  align-items: center;
   gap: 7px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
- .team-member-tasks-content {
-  /* border: blue 10px solid; */
-  gap: 5px;
-  height: auto !important;
-  max-height: none !important; 
-  overflow: visible !important;
-  text-align: left;
-
+.team-member-tasks-content {
+  grid-column: 1;
+  grid-row: 1;
   display: flex;
-  align-items: flex-start;  
-  /* min-width: 150px; */
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+}
+
+.taskTitle {
+  white-space: normal !important;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+  hyphens: auto;
 }
 
 .team-member-tasks-content-link {
   display: inline-block;
   max-width: 100%;
   min-width: 0;
-
-  white-space: normal;            
-  word-break: break-word;         
-  overflow-wrap: anywhere;      
-}
-
-.team-member-tasks-content span {
-  display: inline;
   white-space: normal;
-  word-break: break-word;
-  overflow-wrap: anywhere;
+  word-break: normal;
+  overflow-wrap: break-word;
+  hyphens: auto;
 }
 
-.progress-text{
+.progress-text {
   margin: 0;
-  /* border: green 1px solid; */
   font-size: 13px;
   padding: 0;
   flex-wrap: wrap;
-  display: inline-block; 
+  display: inline-block;
   font-weight: 400;
   width: 60px;
 }
@@ -532,9 +556,10 @@
 .team-task-progress-time-volunteers {
   display: flex;
   align-items: center;
-  padding: 0;             
-  margin: 0;              
+  padding: 0;
+  margin: 0;
 }
+
 .followup-tooltip-container {
   grid-column: 3 / span 1;
   grid-row: 1 / span 1;
@@ -588,19 +613,24 @@
 }
 
 .timelog-info {
-  width: 1.0rem;
+  width: 1rem;
   display: flex;
   justify-content: center;
 }
 
 .dark-mode.multi-select-filter .dropdown-container {
-  background-color: #1C1C1C !important;
+  background-color: #1c1c1c !important;
+}
+
+.dropdown-content {
+  z-index: 11 !important;
 }
 
 .rmsc.dark-mode .dropdown-content,
 .rmsc.dark-mode .dropdown-content .panel-content {
-  background-color: #1C1C1C !important;
+  background-color: #1c1c1c !important;
   color: #fff !important;
+  z-index: 11 !important;
 }
 
 .rmsc.dark-mode .select-item,
@@ -632,7 +662,7 @@
   z-index: 30;
 }
 
-@media (max-width: 1240px) and (min-width: 992px) {
+@media ((width <= 1240px) and (width >= 992px)) {
   .header-box {
     flex-direction: column;
   }
@@ -671,23 +701,23 @@
   }
 }
 
-@media only screen and (max-width: 768px) {
-  /* Adjust 768px to the breakpoint you want */
+@media (width <= 768px) {
   .team-task-progress {
     width: 100%;
     min-width: auto;
     max-width: none;
   }
 
-  .task_table-container{
+  .task_table-container {
     max-height: 900px;
   }
+
   .header-box {
     flex-direction: column;
   }
 }
 
-@media only screen and (max-width: 768px) {
+@media (width <= 768px) {
   .pc-component {
     display: none;
   }
@@ -730,8 +760,8 @@
   }
 
   .table-row {
-    border: solid #E9ECEF 2px;
-    background: #FAF7FC;
+    border: solid #e9ecef 2px;
+    background: #faf7fc;
     font-size: 0.75rem !important;
   }
 
@@ -749,7 +779,7 @@
   }
 }
 
-@media only screen and (max-width: 440px) {
+@media (width <= 440px) {
   .hours-btn-container {
     column-gap: 0.2em;
   }
@@ -761,17 +791,18 @@
   }
 }
 
-@media only screen and (max-width: 544px) {
+@media (width <= 544px) {
   .responsive-font-size {
     font-size: 0.75rem !important;
   }
 
   .multi-select-filter {
     width: 50%;
+    z-index: 20;
   }
 }
 
-@media screen and (max-width: 1075px) and (min-width: 992px) {
+@media ((width <= 1075px) and (width >= 992px)) {
   .header-box h1 {
     font-size: 1.25rem !important;
     margin-right: 10px;
@@ -782,7 +813,7 @@
   }
 }
 
-@media screen and (max-width: 1200px) and (min-width: 992px) {
+@media ((width <= 1200px) and (width >= 992px)) {
   .team-member-tasks-user-name-link {
     font-size: 14px !important;
   }
@@ -808,28 +839,21 @@
   }
 }
 
-
-/* wrapper around the info icon + tooltip */
 .followup-tooltip-button {
   position: relative;
   display: inline-flex;
   align-items: center;
 }
 
-
-/* HIDE by default (override any earlier display:block !important) */
 .followup-tooltip {
   position: absolute;
   top: 22px;
   right: 0;
   z-index: 3000;
-
-  display: none !important;          /* <- key change */
+  display: none !important;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-
-  /* keep your existing visuals */
   max-width: min(520px, 90vw);
   max-height: 90vh;
   overflow: auto;
@@ -838,15 +862,131 @@
   padding: 15px;
   border-radius: 6px;
   box-sizing: border-box;
-
   transition: opacity 120ms ease;
 }
 
-/* SHOW on hover or keyboard focus of the wrapper */
 .followup-tooltip-button:hover .followup-tooltip,
 .followup-tooltip-button:focus-within .followup-tooltip {
   display: block !important;
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
+}
+
+.task-table {
+  width: 100%;
+}
+
+.container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.p0 {
+  padding: 0 !important;
+}
+
+.ml2 {
+  margin-left: 0.5rem !important;
+}
+
+.m1 {
+  margin: 0.25rem !important;
+}
+
+.flexWrap {
+  flex-wrap: wrap;
+}
+
+.dFlex {
+  display: flex;
+}
+
+.flexColumn {
+  flex-direction: column;
+}
+
+.textLight {
+  color: #f8f9fa;
+}
+
+.darkContainer {
+  background-color: #1b263b;
+  border-left: 1px solid rgb(255 255 255 / 20%);
+  border-right: 1px solid rgb(255 255 255 / 20%);
+}
+
+.darkStickyHeader {
+  background-color: #1b263b;
+}
+
+.darkTbody {
+  background-color: #223b5a;
+}
+
+.boxShadowDark {
+  box-shadow: 2px 2px 4px 1px rgb(0 0 0 / 60%);
+}
+
+.boxShadowLight {
+  box-shadow: 2px 2px 4px 1px lightgray;
+}
+
+/* Previously `responsive-btn-size` */
+.responsiveBtnSize {
+  /* keep sizing controlled by your existing .circle-border; this is a hook for future */
+}
+
+.filtersRow {
+  margin-bottom: 10px;
+}
+
+.filtersCol {
+  margin-left: 1rem;
+}
+
+.responsiveFontSize {
+  font-size: 1rem;
+}
+
+.multiSelectFilter {
+  position: relative;
+  z-index: 20;
+}
+
+.multiSelectDark :global(.dropdown-container) {
+  background-color: #1c1c1c !important;
+}
+
+.multiSelectDark :global(.dropdown-content),
+.multiSelectDark :global(.dropdown-content .panel-content) {
+  background-color: #1c1c1c !important;
+  color: #fff !important;
+}
+
+.multiSelectDark :global(.select-item),
+.multiSelectDark :global(.select-item.selected) {
+  color: #fff !important;
+  background: #252525 !important;
+}
+
+.multiSelectDark :global(.select-item:hover) {
+  background: #252525 !important;
+  color: #fff !important;
+}
+
+.multiSelectDark :global(.search input:focus) {
+  background: #252525 !important;
+  color: #fff !important;
+}
+
+@media (width <= 544px) {
+  .responsiveFontSize {
+    font-size: 0.75rem !important;
+  }
+
+  .multiSelectFilter {
+    width: 50%;
+  }
 }

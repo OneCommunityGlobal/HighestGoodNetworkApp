@@ -19,7 +19,6 @@ import {
   CardBody,
   FormGroup,
   Label,
-  Input,
   Button,
   Spinner,
 } from 'reactstrap';
@@ -27,7 +26,6 @@ import Select from 'react-select';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import dayjs from 'dayjs';
 import styles from './WinningVsAverageBidChart.module.css';
 
 ChartJS.register(
@@ -51,6 +49,47 @@ const CATEGORY_OPTIONS = [
   { value: 'property', label: 'By Property' },
   { value: 'village', label: 'By Village' },
 ];
+
+const getRandomInt = (min, max) => {
+  const range = max - min + 1;
+  const bytes = new Uint32Array(1);
+  crypto.getRandomValues(bytes);
+  return min + (bytes[0] % range);
+};
+
+const getDatePickerSlotProps = isDark => ({
+  textField: {
+    size: 'small',
+    fullWidth: true,
+    sx: isDark
+      ? {
+          '& .MuiOutlinedInput-root': {
+            backgroundColor: '#2c2c2c',
+            color: '#ffffff',
+            '& fieldset': { borderColor: '#555555' },
+            '&:hover fieldset': { borderColor: '#777777' },
+            '&.Mui-focused fieldset': { borderColor: '#9370db' },
+          },
+          '& .MuiInputAdornment-root .MuiButtonBase-root': { color: '#ffffff' },
+        }
+      : {},
+  },
+  popper: {
+    sx: isDark
+      ? {
+          '& .MuiPaper-root': { backgroundColor: '#2c2c2c', color: '#ffffff' },
+          '& .MuiPickersDay-root': {
+            color: '#ffffff',
+            '&:hover': { backgroundColor: '#444444' },
+            '&.Mui-selected': { backgroundColor: '#9370db' },
+          },
+          '& .MuiPickersCalendarHeader-label': { color: '#ffffff' },
+          '& .MuiIconButton-root': { color: '#ffffff' },
+          '& .MuiDayCalendar-weekDayLabel': { color: '#aaaaaa' },
+        }
+      : {},
+  },
+});
 
 const WinningVsAverageBidChart = ({ darkMode = false }) => {
   // Filter states
@@ -153,48 +192,25 @@ const WinningVsAverageBidChart = ({ darkMode = false }) => {
   }, []);
 
   // Generate mock data (similar to DemandOverTime component)
+  const getVillageItems = () => {
+    const source = selectedVillages.length > 0 ? selectedVillages : villages.slice(0, Math.min(limit, villages.length));
+    return source.map(v => ({ id: v.value, identifier: v.label, type: 'village' }));
+  };
+
+  const getListingItems = () => {
+    const source = selectedListings.length > 0 ? selectedListings : listings.slice(0, Math.min(limit, listings.length));
+    return source.map(l => ({ id: l.value, identifier: l.label, type: 'property' }));
+  };
+
+  const generateBidEntry = item => {
+    const winningBid = getRandomInt(150, 500);
+    const averageBid = getRandomInt(100, winningBid - 20);
+    return { ...item, winningBid, averageBid, totalBids: getRandomInt(5, 25) };
+  };
+
   const generateMockData = () => {
-    const randomBid = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-
-    let items = [];
-
-    if (category === 'village') {
-      // Use selected villages or all villages
-      items =
-        selectedVillages.length > 0
-          ? selectedVillages.map(v => ({ id: v.value, identifier: v.label, type: 'village' }))
-          : villages.slice(0, Math.min(limit, villages.length)).map(v => ({
-              id: v.value,
-              identifier: v.label,
-              type: 'village',
-            }));
-    } else {
-      // Use selected listings or all listings
-      items =
-        selectedListings.length > 0
-          ? selectedListings.map(l => ({ id: l.value, identifier: l.label, type: 'property' }))
-          : listings.slice(0, Math.min(limit, listings.length)).map(l => ({
-              id: l.value,
-              identifier: l.label,
-              type: 'property',
-            }));
-    }
-
-    // Generate random bid data for each item
-    const mockData = items.map(item => {
-      const winningBid = randomBid(150, 500);
-      const averageBid = randomBid(100, winningBid - 20); // Average is always less than winning
-
-      return {
-        ...item,
-        winningBid,
-        averageBid,
-        totalBids: randomBid(5, 25),
-      };
-    });
-
-    // Sort by winning bid (descending)
-    return mockData.sort((a, b) => b.winningBid - a.winningBid);
+    const items = category === 'village' ? getVillageItems() : getListingItems();
+    return items.map(generateBidEntry).sort((a, b) => b.winningBid - a.winningBid);
   };
 
   // Fetch chart data (using mock data for now)
@@ -404,17 +420,15 @@ const WinningVsAverageBidChart = ({ darkMode = false }) => {
       ...provided,
       backgroundColor: darkMode ? '#2c2c2c' : '#ffffff',
     }),
-    option: (provided, state) => ({
-      ...provided,
-      backgroundColor: state.isFocused
-        ? darkMode
-          ? '#444444'
-          : '#f0f0f0'
-        : darkMode
-        ? '#2c2c2c'
-        : '#ffffff',
-      color: darkMode ? '#ffffff' : '#000000',
-    }),
+    option: (provided, state) => {
+      let bgColor;
+      if (state.isFocused) {
+        bgColor = darkMode ? '#444444' : '#f0f0f0';
+      } else {
+        bgColor = darkMode ? '#2c2c2c' : '#ffffff';
+      }
+      return { ...provided, backgroundColor: bgColor, color: darkMode ? '#ffffff' : '#000000' };
+    },
     singleValue: provided => ({
       ...provided,
       color: darkMode ? '#ffffff' : '#000000',
@@ -453,50 +467,7 @@ const WinningVsAverageBidChart = ({ darkMode = false }) => {
                     <DatePicker
                       value={startDate}
                       onChange={setStartDate}
-                      slotProps={{
-                        textField: {
-                          size: 'small',
-                          fullWidth: true,
-                          sx: darkMode
-                            ? {
-                                '& .MuiOutlinedInput-root': {
-                                  backgroundColor: '#2c2c2c',
-                                  color: '#ffffff',
-                                  '& fieldset': { borderColor: '#555555' },
-                                  '&:hover fieldset': { borderColor: '#777777' },
-                                  '&.Mui-focused fieldset': { borderColor: '#9370db' },
-                                },
-                                '& .MuiInputAdornment-root .MuiButtonBase-root': {
-                                  color: '#ffffff',
-                                },
-                              }
-                            : {},
-                        },
-                        popper: {
-                          sx: darkMode
-                            ? {
-                                '& .MuiPaper-root': {
-                                  backgroundColor: '#2c2c2c',
-                                  color: '#ffffff',
-                                },
-                                '& .MuiPickersDay-root': {
-                                  color: '#ffffff',
-                                  '&:hover': { backgroundColor: '#444444' },
-                                  '&.Mui-selected': { backgroundColor: '#9370db' },
-                                },
-                                '& .MuiPickersCalendarHeader-label': {
-                                  color: '#ffffff',
-                                },
-                                '& .MuiIconButton-root': {
-                                  color: '#ffffff',
-                                },
-                                '& .MuiDayCalendar-weekDayLabel': {
-                                  color: '#aaaaaa',
-                                },
-                              }
-                            : {},
-                        },
-                      }}
+                      slotProps={getDatePickerSlotProps(darkMode)}
                     />
                   </LocalizationProvider>
                 </FormGroup>
@@ -514,50 +485,7 @@ const WinningVsAverageBidChart = ({ darkMode = false }) => {
                     <DatePicker
                       value={endDate}
                       onChange={setEndDate}
-                      slotProps={{
-                        textField: {
-                          size: 'small',
-                          fullWidth: true,
-                          sx: darkMode
-                            ? {
-                                '& .MuiOutlinedInput-root': {
-                                  backgroundColor: '#2c2c2c',
-                                  color: '#ffffff',
-                                  '& fieldset': { borderColor: '#555555' },
-                                  '&:hover fieldset': { borderColor: '#777777' },
-                                  '&.Mui-focused fieldset': { borderColor: '#9370db' },
-                                },
-                                '& .MuiInputAdornment-root .MuiButtonBase-root': {
-                                  color: '#ffffff',
-                                },
-                              }
-                            : {},
-                        },
-                        popper: {
-                          sx: darkMode
-                            ? {
-                                '& .MuiPaper-root': {
-                                  backgroundColor: '#2c2c2c',
-                                  color: '#ffffff',
-                                },
-                                '& .MuiPickersDay-root': {
-                                  color: '#ffffff',
-                                  '&:hover': { backgroundColor: '#444444' },
-                                  '&.Mui-selected': { backgroundColor: '#9370db' },
-                                },
-                                '& .MuiPickersCalendarHeader-label': {
-                                  color: '#ffffff',
-                                },
-                                '& .MuiIconButton-root': {
-                                  color: '#ffffff',
-                                },
-                                '& .MuiDayCalendar-weekDayLabel': {
-                                  color: '#aaaaaa',
-                                },
-                              }
-                            : {},
-                        },
-                      }}
+                      slotProps={getDatePickerSlotProps(darkMode)}
                     />
                   </LocalizationProvider>
                 </FormGroup>
@@ -669,12 +597,14 @@ const WinningVsAverageBidChart = ({ darkMode = false }) => {
               </div>
             )}
 
-            {loading ? (
+            {loading && (
               <div className={styles.loadingContainer}>
                 <Spinner color="primary" />
                 <p className={darkMode ? styles.darkText : ''}>Loading chart data...</p>
               </div>
-            ) : chartData ? (
+            )}
+
+            {!loading && chartData && (
               <div className={styles.chartContainer}>
                 <Bar
                   data={chartData}
@@ -683,7 +613,9 @@ const WinningVsAverageBidChart = ({ darkMode = false }) => {
                   plugins={[ChartDataLabels]}
                 />
               </div>
-            ) : (
+            )}
+
+            {!loading && !chartData && (
               <div className={styles.emptyState}>
                 <p className={darkMode ? styles.darkText : ''}>
                   No data available. Please adjust your filters and try again.

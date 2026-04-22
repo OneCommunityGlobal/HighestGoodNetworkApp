@@ -12,8 +12,6 @@
   background-clip: padding-box;
   border: 1px solid #ced4da;
   border-radius: 0.25rem;
-
-  -webkit-transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
@@ -30,13 +28,11 @@
   background-clip: padding-box;
   border: 1px solid #ced4da;
   border-radius: 0.25rem;
-
-  -webkit-transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
 .customEdit {
-  display: 'flex';
+  display: flex;
   margin: 2px;
   padding: 0.25em 0.4em;
   height: calc(1.5em + 0.75rem + 2px);
@@ -57,8 +53,6 @@
   white-space: nowrap;
   vertical-align: baseline;
   border-radius: 0.25rem;
-  -webkit-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
-    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
     border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   color: #fff;
@@ -78,23 +72,13 @@
   background-clip: padding-box;
   border: 1px solid #ced4da;
   border-radius: 0.25rem;
-
-  -webkit-transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-}
-
-.popover__title {
-  text-align: center;
-}
-
-.popover__title p {
-  margin: 0.3em 0;
 }
 
 /* Profile Image Modal - Suggested Profile Links Grid */
 .suggestedProfileLinks {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3 columns of images */
+  grid-template-columns: repeat(3, 1fr);
   gap: 10px;
   text-align: center;
   margin-top: 20px;
@@ -102,9 +86,9 @@
 
 /* Scrollable container for images */
 .scrollable-container {
-  max-height: 300px; /* Limit height to make it scrollable */
-  overflow-y: auto;  /* Enable vertical scroll if content overflows */
-  padding-right: 10px; /* Add padding for better look when scrolling */
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 10px;
 }
 
 /* Individual profile tile */
@@ -130,7 +114,7 @@
 
 /* Highlight selected image with a border */
 .suggestedProfileTile.selected img {
-  border: 2px solid #007bff; /* Primary blue border for selected image */
+  border: 2px solid #007bff;
 }
 
 /* General Button Styling for All Modal Buttons */
@@ -138,7 +122,7 @@
   flex: 1;
   padding: 10px;
   margin-right: 10px;
-  background-color: #007bff; /* Primary Blue for Set Image or Confirm */
+  background-color: #007bff;
   border: none;
   color: white;
   border-radius: 5px;
@@ -146,19 +130,19 @@
   transition: background-color 0.3s ease;
 }
 
-/* Last button (either Set Image or Cancel) should not have a right margin */
+/* Last button should not have a right margin */
 .modal-button:last-child {
   margin-right: 0;
 }
 
 /* Hover effect for modal buttons */
 .modal-button:hover {
-  background-color: #0056b3; /* Darker blue on hover */
+  background-color: #0056b3;
 }
 
 /* Specific Styling for Remove Button */
 .remove-button {
-  background-color: #dc3545; /* Bootstrap Danger Color */
+  background-color: #dc3545;
   border: none;
   padding: 10px 20px;
   color: white;
@@ -169,7 +153,7 @@
 }
 
 .remove-button:hover {
-  background-color: #c82333; /* Darker red for hover effect */
+  background-color: #c82333;
 }
 
 /* Button group for confirm/cancel modal */
@@ -179,27 +163,27 @@
   margin-top: 20px;
 }
 
-/* Specific Close button styling (can use modal-button class as well) */
+/* Specific Close button styling */
 .close-button {
   flex: 1;
-  background-color: #6c757d; /* Bootstrap Secondary Color */
+  background-color: #6c757d;
   border: none;
   padding: 10px;
   color: white;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  margin-right: 10px; /* Ensure proper spacing */
+  margin-right: 10px;
 }
 
 .close-button:hover {
-  background-color: #5a6268; /* Darker gray for hover effect */
+  background-color: #5a6268;
 }
 
 /* Set Image Button */
 .set-image-button {
   flex: 1;
-  background-color: #007bff; /* Bootstrap Primary Color */
+  background-color: #007bff;
   border: none;
   padding: 10px;
   color: white;
@@ -209,5 +193,5 @@
 }
 
 .set-image-button:hover {
-  background-color: #0056b3; /* Darker blue for hover effect */
+  background-color: #0056b3;
 }
