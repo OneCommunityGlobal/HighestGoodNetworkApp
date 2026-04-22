@@ -17,6 +17,7 @@ import { format } from 'date-fns';
 import { getUserTimezone, formatEventTimeWithTimezone } from '../../utils/timezoneUtils';
 import styles from './CPDashboard.module.css';
 import { ENDPOINTS } from '../../utils/URL';
+import { Link } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { toast } from 'react-toastify';
@@ -38,9 +39,7 @@ const FixedRatioImage = ({ src, alt, fallback }) => (
       alt={alt}
       loading="lazy"
       onError={e => {
-        if (e.currentTarget.src !== fallback) {
-          e.currentTarget.src = fallback;
-        }
+        if (e.currentTarget.src !== fallback) e.currentTarget.src = fallback;
       }}
       style={{
         width: '100%',
@@ -134,7 +133,6 @@ export function CPDashboard() {
           total: response.data.events?.length || 0,
         }));
       } catch (err) {
-        console.error('Failed to load events:', err);
         setError('Failed to load events');
       } finally {
         setIsLoading(false);
@@ -192,7 +190,7 @@ export function CPDashboard() {
       // Format: "Saturday, February 15"
       return format(date, 'EEEE, MMMM d');
     } catch (err) {
-      console.error('Error formatting date:', err);
+      setError('Error formatting date.');
       return 'Date TBD';
     }
   };
@@ -203,7 +201,7 @@ export function CPDashboard() {
       const userTimezone = getUserTimezone();
       return formatEventTimeWithTimezone(eventDate, timeStr, userTimezone);
     } catch (err) {
-      console.error('Error formatting time:', err);
+      setError('Error formatting time.');
       return 'Time TBD';
     }
   };
@@ -231,7 +229,7 @@ export function CPDashboard() {
         return `${year}-${month}-${day}`;
       }
     } catch (err) {
-      console.error('Error parsing event date:', err);
+      setError('Error parsing event date.');
     }
     return null;
   };
@@ -274,24 +272,8 @@ export function CPDashboard() {
     pagination.currentPage * pagination.limit,
   );
 
-  const isFiltered = Boolean(searchQuery);
-  const totalFilteredCount = filteredEvents.length;
-
-  let eventCountText = 'Showing all events';
-
-  if (isFiltered) {
-    if (totalFilteredCount > 0) {
-      eventCountText = `Showing ${totalFilteredCount} event${totalFilteredCount !== 1 ? 's' : ''}`;
-    } else {
-      eventCountText = 'No events found';
-    }
-  }
-
   const goToPage = newPage => {
-    if (newPage < 1 || newPage > totalPages) {
-      return;
-    }
-
+    if (newPage < 1 || newPage > totalPages) return;
     setPagination(prev => ({ ...prev, currentPage: newPage }));
   };
 
@@ -316,40 +298,49 @@ export function CPDashboard() {
   if (displayedEvents.length > 0) {
     eventsContent = displayedEvents.map(event => (
       <Col md={4} key={event.id} className={styles.eventCardCol}>
-        <Card className={styles.eventCard}>
-          <div className={styles.eventCardImgContainer}>
-            <FixedRatioImage src={event.image} alt={event.title} fallback={FALLBACK_IMG} />
-          </div>
-          <CardBody>
-            <h5 className={styles.eventTitle}>{event.title}</h5>
-            <div className={styles.eventDate}>
-              <FaCalendarAlt className={styles.eventIcon} />
-              <div>
-                <div>{formatDate(event.date)}</div>
-                {event.startTime && (
-                  <div className={styles.eventTime}>{formatTime(event.date, event.startTime)}</div>
-                )}
-              </div>
+        <Link
+          className={styles.eventCardLink}
+          to={`/communityportal/Activities/Register/${event._id}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Card className={styles.eventCard}>
+            <div className={styles.eventCardImgContainer}>
+              <FixedRatioImage src={event.coverImage} alt={event.title} fallback={FALLBACK_IMG} />
             </div>
-            <p className={styles.eventLocation}>
-              <FaMapMarkerAlt className={styles.eventIcon} /> {getDisplayLocation(event.location)}
-            </p>
-            <p className={styles.eventOrganizer}>
-              {event.organizerLogo && !failedLogos.has(event._id) ? (
-                <img
-                  src={event.organizerLogo}
-                  alt={normalizeOrganizer(event.organizer) || 'Organizer'}
-                  className={styles.organizerLogo}
-                  onError={() => handleLogoError(event._id)}
-                  loading="lazy"
-                />
-              ) : (
-                <FaUserAlt className={styles.eventIcon} aria-hidden="true" />
-              )}{' '}
-              <span>{normalizeOrganizer(event.organizer) || 'Organizer TBD'}</span>
-            </p>
-          </CardBody>
-        </Card>
+            <CardBody>
+              <h5 className={styles.eventTitle}>{event.title}</h5>
+              <div className={styles.eventDate}>
+                <FaCalendarAlt className={styles.eventIcon} />
+                <div>
+                  <div>{formatDate(event.date)}</div>
+                  {event.startTime && (
+                    <div className={styles.eventTime}>
+                      {formatTime(event.date, event.startTime)}
+                    </div>
+                  )}
+                </div>
+              </div>
+              <p className={styles.eventLocation}>
+                <FaMapMarkerAlt className={styles.eventIcon} /> {getDisplayLocation(event.location)}
+              </p>
+              <p className={styles.eventOrganizer}>
+                {event.organizerLogo && !failedLogos.has(event._id) ? (
+                  <img
+                    src={event.organizerLogo}
+                    alt={normalizeOrganizer(event.organizer) || 'Organizer'}
+                    className={styles.organizerLogo}
+                    onError={() => handleLogoError(event._id)}
+                    loading="lazy"
+                  />
+                ) : (
+                  <FaUserAlt className={styles.eventIcon} aria-hidden="true" />
+                )}{' '}
+                <span>{normalizeOrganizer(event.organizer) || 'Organizer TBD'}</span>
+              </p>
+            </CardBody>
+          </Card>
+        </Link>
       </Col>
     ));
   } else {
@@ -413,8 +404,7 @@ export function CPDashboard() {
       <Row>
         <Col md={3} className={`${styles.dashboardSidebar} ${darkMode ? styles.darkSidebar : ''}`}>
           <div className={styles.filterSection}>
-            <h4>Search Filters</h4>
-
+            <h4 className={styles.sidebarTitle}>Search Filters</h4>
             <div className={styles.filterSectionDivider}>
               <div className={styles.filterItem}>
                 <div className={styles.filterSectionHeader}>Dates</div>
@@ -432,7 +422,6 @@ export function CPDashboard() {
                       Tomorrow
                     </Label>
                   </FormGroup>
-
                   <FormGroup check className={styles.radioGroup + ' d-flex align-items-center'}>
                     <Input
                       id="date-weekend"
@@ -496,21 +485,21 @@ export function CPDashboard() {
 
               <div className={styles.filterItem}>
                 <label htmlFor="branches">Branches</label>
-                <Input id="branches" type="select">
+                <Input type="select">
                   <option>Select branches</option>
                 </Input>
               </div>
 
               <div className={styles.filterItem}>
                 <label htmlFor="themes">Themes</label>
-                <Input id="themes" type="select">
+                <Input type="select">
                   <option>Select themes</option>
                 </Input>
               </div>
 
               <div className={styles.filterItem}>
                 <label htmlFor="categories">Categories</label>
-                <Input id="categories" type="select">
+                <Input type="select">
                   <option>Select categories</option>
                 </Input>
               </div>
@@ -518,21 +507,8 @@ export function CPDashboard() {
           </div>
         </Col>
 
-        <Col md={9} className={`${styles.dashboardMain} ${darkMode ? styles.darkMain : ''}`}>
-          <div className={styles.eventsHeader}>
-            <h2 className={styles.sectionTitle}>Events</h2>
-            <Button color="primary" className={styles.showPastEventsBtn}>
-              Show Past Events
-            </Button>
-          </div>
-
-          <p className={styles['event-count-text']}>
-            {isFiltered
-              ? totalFilteredCount > 0
-                ? `Showing ${totalFilteredCount} event${totalFilteredCount !== 1 ? 's' : ''}`
-                : 'No events found'
-              : 'Showing all events'}
-          </p>
+        <Col md={9} className={`${styles.dashboardMain}`}>
+          <h2 className={styles.sectionTitle}>Events</h2>
 
           <Row>{eventsContent}</Row>
 
