@@ -1,74 +1,73 @@
-import { useState, useEffect, useMemo, React, useRef } from 'react';
-import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
-import { getWeeklySummaries } from '~/actions/weeklySummaries';
-import { Link, useLocation, useHistory } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { connect, useDispatch } from 'react-redux';
+import { Link, useHistory, useLocation } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import {
-  Collapse,
-  Navbar,
-  NavbarToggler,
-  Nav,
-  NavItem,
-  NavLink,
-  UncontrolledDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
   Button,
   Card,
+  NavbarToggler,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  Nav,
+  Navbar,
+  NavItem,
+  NavLink,
+  UncontrolledDropdown
 } from 'reactstrap';
+import { getWeeklySummaries } from '~/actions/weeklySummaries';
 import PopUpBar from '~/components/PopUpBar';
 import { fetchTaskEditSuggestions } from '~/components/TaskEditSuggestions/thunks';
-import { toast } from 'react-toastify';
+import { ENDPOINTS } from '~/utils/URL';
 import { getHeaderData } from '../../actions/authActions';
-import { getAllRoles } from '../../actions/role';
-import Timer from '../Timer/Timer';
-import OwnerMessage from '../OwnerMessage/OwnerMessage';
-import {
-  DASHBOARD,
-  TIMELOG,
-  REPORTS,
-  WEEKLY_SUMMARIES_REPORT,
-  TEAM_LOCATIONS,
-  OTHER_LINKS,
-  USER_MANAGEMENT,
-  BADGE_MANAGEMENT,
-  PROJECTS,
-  TEAMS,
-  WELCOME,
-  VIEW_PROFILE,
-  UPDATE_PASSWORD,
-  LOGOUT,
-  PERMISSIONS_MANAGEMENT,
-  SEND_EMAILS,
-  TOTAL_ORG_SUMMARY,
-  TOTAL_ORG_SUMMARY_EMAIL,
-  TOTAL_CONSTRUCTION_SUMMARY,
-  PR_PROMOTIONS,
-  ACTUAL_COST_BREAKDOWN,
-  BLUE_SQUARE_EMAIL_MANAGEMENT,
-  JOB_ANALYTICS_REPORT,
-} from '../../languages/en/ui';
-import Logout from '../Logout/Logout';
-import '../../App.module.css';
-import styles from './Header.module.css';
-import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import {
   getUnreadUserNotifications,
   resetNotificationError,
 } from '../../actions/notificationAction';
-import NotificationCard from '../Notification/notificationCard';
-import DarkModeButton from './DarkModeButton';
-import BellNotification from './BellNotification';
+import { getAllRoles } from '../../actions/role';
 import { getUserProfile } from '../../actions/userProfile';
+import '../../App.module.css';
+import {
+  ACTUAL_COST_BREAKDOWN,
+  BADGE_MANAGEMENT,
+  BLUE_SQUARE_EMAIL_MANAGEMENT,
+  DASHBOARD,
+  JOB_ANALYTICS_REPORT,
+  LOGOUT,
+  OTHER_LINKS,
+  PERMISSIONS_MANAGEMENT,
+  PR_PROMOTIONS,
+  PROJECTS,
+  REPORTS,
+  SEND_EMAILS,
+  TEAM_LOCATIONS,
+  TEAMS,
+  TIMELOG,
+  TOTAL_CONSTRUCTION_SUMMARY,
+  TOTAL_ORG_SUMMARY,
+  TOTAL_ORG_SUMMARY_EMAIL,
+  UPDATE_PASSWORD,
+  USER_MANAGEMENT,
+  VIEW_PROFILE,
+  WEEKLY_SUMMARIES_REPORT,
+  WELCOME,
+} from '../../languages/en/ui';
+import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import PermissionWatcher from '../Auth/PermissionWatcher';
+import Logout from '../Logout/Logout';
+import NotificationCard from '../Notification/notificationCard';
+import OwnerMessage from '../OwnerMessage/OwnerMessage';
 import DisplayBox from '../PRPromotions/DisplayBox';
-import PropTypes from 'prop-types';
+import Timer from '../Timer/Timer';
+import BellNotification from './BellNotification';
+import DarkModeButton from './DarkModeButton';
+import styles from './Header.module.css';
 
 export function Header(props) {
   const location = useLocation();
@@ -157,6 +156,9 @@ export function Header(props) {
   
   // Blue Square Email Management
   const canAccessBlueSquareEmailManagement = props.hasPermission('resendBlueSquareAndSummaryEmails', !isAuthUser);
+  // PR Dashboard
+  const canAccessPRDashboard = props.hasPermission('accessPRTeamDashboard', !isAuthUser);
+
 
   const userId = user.userid;
   const [isModalVisible, setModalVisible] = useState(false);
@@ -168,7 +170,6 @@ export function Header(props) {
   const unreadNotifications = props.notification?.unreadNotifications; // List of unread notifications
   const dispatch = useDispatch();
   const history = useHistory();
-
   const [showProjectDropdown, setShowProjectDropdown] = useState(false);
 
   useEffect(() => {
@@ -251,11 +252,12 @@ export function Header(props) {
     if (roles.length === 0 && isAuthenticated) {
       props.getAllRoles();
     }
-    // Fetch unread notification
-    if (isAuthenticated && displayUserId) {
-      dispatch(getUnreadUserNotifications(displayUserId));
+    // Fetch unread notification - always use the logged-in user's ID,
+    // not displayUserId, which may be a viewed user (causing a 403 error)
+    if (isAuthenticated && user.userid) {
+      dispatch(getUnreadUserNotifications(user.userid));
     }
-  }, [isAuthenticated, displayUserId, roles.length]);
+  }, [isAuthenticated, user.userid, roles.length]);
 
   useEffect(() => {
     if (props.notification?.error) {
@@ -265,8 +267,8 @@ export function Header(props) {
   }, [props.notification?.error]);
 
   const toggle = () => {
-    setIsOpen(prevIsOpen => !prevIsOpen);
-  };
+  setIsOpen(prevIsOpen => !prevIsOpen);
+};
 
   const openModal = () => {
     setLogoutPopup(true);
@@ -379,25 +381,25 @@ export function Header(props) {
     setShowProjectDropdown(location.pathname.startsWith('/bmdashboard/projects/'));
   }, [location.pathname]);
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        collapseRef.current && 
-        !collapseRef.current.contains(event.target) &&
-        !toggleRef.current?.contains(event.target)
-      ) {
-        setIsOpen(false);
-      }
-    };
+ useEffect(() => {
+  if (!isOpen) return;
 
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
+  const handleClickOutside = (event) => {
+    if (collapseRef.current?.contains(event.target)) return;
+    if (toggleRef.current?.contains(event.target)) return;
+    setIsOpen(false);
+  };
 
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isOpen]);
+  // Defer adding listener until after current click event finishes
+  const timer = setTimeout(() => {
+    document.addEventListener('click', handleClickOutside);
+  }, 0);
+
+  return () => {
+    clearTimeout(timer);
+    document.removeEventListener('click', handleClickOutside);
+  };
+}, [isOpen]);
 
   const fontColor = darkMode ? `${styles.darkDropdownText} ${styles.darkDropdownItem}` : `${styles.mobileDropdownText} ${styles.mobileDropdownItem}`;
 
@@ -419,8 +421,17 @@ export function Header(props) {
               {isAuthenticated && <OwnerMessage />}
             </div>
             <div className={styles.rightSection}>
-            <Collapse isOpen={isOpen} navbar ref={collapseRef}>
-            <Nav className={`ml-auto ${styles.menuContainer} mr-3`} navbar>
+            <NavbarToggler onClick={toggle} ref={toggleRef} className={styles.navbarToggler} />
+            <div
+              ref={collapseRef}
+              className={`${styles.navCollapse} ${isOpen ? styles.navCollapseOpen : styles.navCollapseHidden}`}
+              role="menu"
+              tabIndex={-1}
+              onKeyDown={(e) => {
+                if (e.key === 'Escape') setIsOpen(false);
+              }}
+            >
+            <Nav className={`${styles.menuContainer} mr-3`} navbar>
                 <NavItem className={styles.showInMobile}>
                   <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
                     <img
@@ -443,6 +454,7 @@ export function Header(props) {
                       darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
                     }`}
                   >
+                      
                     <DropdownItem
                       tag={Link}
                       to={`/userprofile/${displayUserId}`}
@@ -757,15 +769,6 @@ export function Header(props) {
                           </DropdownItem>
                         </>
                       )}
-                      <DropdownItem divider className={styles.hideInMobile} />
-                      <DropdownItem
-                        tag={Link}
-                        to="/pr-dashboard/overview"
-                        className={fontColor}
-                        disabled={headerDisabled}
-                      >
-                        PR Team Analytics
-                      </DropdownItem>
                       {canAccessBlueSquareEmailManagement && (
                         <DropdownItem
                           tag={Link}
@@ -779,10 +782,75 @@ export function Header(props) {
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 )}
-  
+
+                {canAccessPRDashboard && (
+                  <UncontrolledDropdown nav inNavbar>
+                    <DropdownToggle nav caret>
+                      <span>PR Dashboard</span>
+                    </DropdownToggle>
+                    <DropdownMenu
+                      className={`${styles.noMaxHeight} ${
+                        darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
+                      }`}
+                    >
+                      <DropdownItem
+                        tag={Link}
+                        to="/pr-dashboard"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        PR Team Analysis Dashboard
+                      </DropdownItem>
+                      <DropdownItem divider />
+                      <DropdownItem
+                        tag={Link}
+                        to="/pr-dashboard/analytics"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        PR Team Analytics
+                      </DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/pr-dashboard/analytics"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        PR Analytics
+                      </DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/pr-dashboard/promotion-eligibility"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        Promotion Eligibility
+                      </DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/pr-dashboard/top-reviewed-prs"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        Top Reviewed PRs
+                      </DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/pr-dashboard/details"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        PR Details
+                      </DropdownItem>
+                    </DropdownMenu>
+                  </UncontrolledDropdown>
+                )}
+
                 <NavItem className={styles.hideInMobile}>
                   <BellNotification userId={displayUserId} />
                 </NavItem>
+  
+                
   
                 <NavItem className={styles.hideInMobile}>
                   <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
@@ -847,7 +915,7 @@ export function Header(props) {
                   </DropdownMenu>
                 </UncontrolledDropdown>
               </Nav>
-            </Collapse>
+              </div>
           </div>
         </div>
       </Navbar>
@@ -898,9 +966,13 @@ export function Header(props) {
           </Card>
         </div>
       )}
-      {props.auth.isAuthenticated && unreadNotifications?.length > 0 ? (
-        <NotificationCard notification={unreadNotifications[0]} />
-      ) : null}
+      {props.auth.isAuthenticated && (
+        <div className={styles.notificationOverlay}>
+          {unreadNotifications?.length > 0 ? (
+            <NotificationCard notification={unreadNotifications[0]} />
+          ) : null}
+        </div>
+      )}
       <div className={darkMode ? styles.headerMargin : styles.headerMarginLight} />
     </div>
   );  
@@ -943,3 +1015,4 @@ export default connect(mapStateToProps, {
   getWeeklySummaries,
   getUserProfile,
 })(Header);
+

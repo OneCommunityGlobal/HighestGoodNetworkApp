@@ -282,8 +282,16 @@
 
 .trackingRateValue {
   font-size: 0.9rem;
-  color: #f44336;
   display: inline-block;
+}
+.trackingRate .trackingRateValue span.trackingRateValuePositive,
+.trackingRateDark .trackingRateValue span.trackingRateValuePositive {
+  color: #f44336 !important;
+}
+
+.trackingRate .trackingRateValue span.trackingRateValueNegative,
+.trackingRateDark .trackingRateValue span.trackingRateValueNegative {
+  color: #008000 !important;
 }
 
 /* Tables */
@@ -330,12 +338,12 @@
 }
 
 .trackingRateGreen {
-  color: green;
+  color: green !important;
   font-weight: bold;
 }
 
 .trackingRateRed {
-  color: red;
+  color: red !important;
 }
 
 /* ---------- Insights Section ---------- */
@@ -538,7 +546,11 @@
 
 .insightsPercentageDark {
   font-size: 0.9rem;
-  color: red;
+  color: red !important;
+}
+
+.insightsDark .insightsPercentageDark {
+  color: red !important;
 }
 
 .tooltipWrapper {
@@ -680,7 +692,6 @@
   break-inside: avoid;
 }
 
-/* Use :global for data attributes and print styles */
 :global(html[data-exporting="true"]) .caseCards:global(.expanded),
 :global(html[data-exporting="true"]) .caseList:global(.expanded),
 :global(html[data-exporting="true"]) .trackingListContainer {
@@ -709,8 +720,6 @@
 .printOnly {
   display: none;
 }
-
-/* Print styles using global selectors */
 
 /* Print styles using global selectors */
 @media print {
@@ -747,7 +756,6 @@
 
   @page {
     size: auto;
-
     /* Use auto instead of Letter to allow multiple pages */
     margin: 0.5in;
   }
@@ -764,7 +772,6 @@
     }
   }
 
-  /* Critical: Remove all height restrictions for printing */
   :global(.my-cases-global),
   :global(.case-cards-global),
   :global(.case-list-global) {
@@ -774,7 +781,6 @@
     display: block !important;
   }
 
-  /* Ensure cards display properly in print with page breaks */
   :global(.case-cards-global) {
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
@@ -782,14 +788,12 @@
     break-inside: auto !important;
   }
 
-  /* Allow cards to break across pages */
   :global(.case-card-global) {
     break-inside: avoid-page !important;
     break-inside: avoid !important;
     height: auto !important;
   }
 
-  /* Allow list items to break across pages */
   :global(.case-list-global) {
     break-inside: auto !important;
   }
@@ -799,7 +803,6 @@
     break-inside: avoid !important;
   }
 
-  /* Remove scroll containers for print */
   .trackingListContainer,
   .trackingListContainerDark {
     max-height: none !important;
@@ -807,7 +810,6 @@
     height: auto !important;
   }
 
-  /* Avoid breaking elements */
   :global(.tracking-table-global) tr {
     break-inside: avoid;
   }
@@ -816,7 +818,6 @@
     break-inside: avoid;
   }
 
-  /* Hide non-print elements */
   :global(.view-switcher-global),
   :global(.filter-wrapper-global),
   :global(.create-new-global),
@@ -829,9 +830,8 @@
     margin-bottom: 8px;
   }
 
-  /* Ensure table headers are visible */
-  :global(.tracking-table-global) thead th {
-    background: #f4f4f4 !important;
+  :global(.tracking-table-global) thead th { 
+    background: #f4f4f4 !important; 
     color: #333 !important;
   }
 
@@ -922,7 +922,6 @@
     color: #9b59b6 !important;
   }
 
-  /* Rate colors for print */
   .trackingRateGreen {
     color: green !important;
     font-weight: bold !important;
@@ -944,8 +943,7 @@
   .participationLandingPageDark .eventNameDark,
   .participationLandingPageDark .eventTimeDark,
   .participationLandingPageDark .attendeesCountDark,
-  .participationLandingPageDark .insightsLabelDark,
-  .participationLandingPageDark .insightsPercentageDark {
+  .participationLandingPageDark .insightsLabelDark {
     color: #fff !important;
   }
 }
@@ -961,4 +959,151 @@
 /* Hover effect dark mode */
 .insightsTabDarkMode:hover {
   background-color: #374151;
+}
+
+/* ---------- Get List Button ---------- */
+.getListBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+/* ---------- Modal ---------- */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background: #ffffff;
+  width: 420px;
+  max-height: 80vh;
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.modalContentDark {
+  background: #1C2541;
+  color: #ffffff;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.modalSubHeader {
+  font-size: 0.85rem;
+  margin: 8px 0 12px;
+  opacity: 0.8;
+}
+
+.modalList {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.selectAll {
+  font-weight: bold;
+}
+
+.userRow {
+  display: grid;
+  grid-template-columns: auto auto 1fr auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.userAvatar {
+  font-size: 16px;
+}
+
+.userName {
+  font-size: 0.85rem;
+}
+
+.userEmail {
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+.modalFooter {
+  margin-top: 12px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.sendEmailBtn {
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: none;
+  background: #007bff;
+  color: white;
+  cursor: pointer;
+}
+
+.sendEmailBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ===== Dark mode fixes ===== */
+
+.participationLandingPageDark :global(button) {
+  color: #ffffff !important;
+}
+
+.participationLandingPageDark :global(.btn),
+.participationLandingPageDark :global(.btn-light),
+.participationLandingPageDark :global(.btn-outline-secondary) {
+  color: #ffffff !important;
+  background-color: #3a506b !important;
+  border-color: #3a506b !important;
+}
+
+.participationLandingPageDark :global(.btn-primary),
+.participationLandingPageDark :global(.active) {
+  color: #ffffff !important;
+}
+
+.trackingContainerDark .trackingFilters select {
+  background-color: #3A506B;
+  color: #ffffff;
+  border: 1px solid #3A506B;
+}
+
+.insightsDark .insightsFilters select {
+  background-color: #3A506B;
+  color: #ffffff;
+  border: 1px solid #3A506B;
+}
+
+.insightsDark .insightsTab {
+  background-color: #3A506B;
+  color: #ffffff;
+  border-right: 1px solid #555;
+}
+
+.insightsDark .insightsTab.activeTab {
+  background-color: #007bff;
+  color: #ffffff;
 }
