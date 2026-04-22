@@ -137,6 +137,7 @@ import LessonsLearntChart from './components/BMDashboard/LessonsLearnt/LessonsLe
 import UtilizationChart from './components/BMDashboard/UtilizationChart/UtilizationChart';
 import InjuriesDonutChart from './components/InjuriesAnalytics/InjuriesDonutChart';
 import CostPredictionPage from './components/BMDashboard/CostPrediction/CostPredictionPage';
+import ProjectRiskProfileOverview from './components/BMDashboard/WeeklyProjectSummary/ProjectRiskProfileOverview';
 //import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChart';
 import JobsHitsApplicationsChart from './components/JobAnalytics/JobsHitsApplicationsChart/JobsHitsApplicationsChart';
 
@@ -361,6 +362,11 @@ export default (
         <ProtectedRoute path="/weekly-summary" exact component={WeeklySummaryPage} />
         <ProtectedRoute path="/hgnhelp" exact component={HelpPage} />
         <ProtectedRoute path="/dashboard" exact component={Dashboard} />
+        <ProtectedRoute
+          path="/dashboard/project-risk-profile"
+          exact
+          component={ProjectRiskProfileOverview}
+        />
         <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
         <Route path="/logattendance" component={AttendanceNoShow} />
         <ProtectedRoute path="/project/members/:projectId" fallback component={Members} />
