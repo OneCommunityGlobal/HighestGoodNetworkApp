@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Button } from 'reactstrap';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { Container, Button } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
-import { toast } from 'react-toastify';
 import styles from './StudentDashboard.module.css';
 import TaskCardView from './TaskCardView';
 import TaskListView from './TaskListView';
@@ -10,8 +9,19 @@ import SummaryCards from './SummaryCards';
 import { fetchStudentTasks, markStudentTaskAsDone } from '~/actions/studentTasks';
 import { fetchIntermediateTasks, markIntermediateTaskAsDone } from '~/actions/intermediateTasks';
 
+const ACTIVE_STATUSES = ['assigned', 'in_progress'];
+const PENDING_STATUSES = ['pending_review', 'submitted'];
+const COMPLETED_STATUSES = ['completed', 'graded'];
+
+const FILTER_TABS = [
+  { key: 'active', label: 'Active' },
+  { key: 'pending', label: 'Pending Review' },
+  { key: 'completed', label: 'Completed' },
+];
+
 const StudentDashboard = () => {
   const [viewMode, setViewMode] = useState('card'); // 'card' or 'list'
+  const [activeFilter, setActiveFilter] = useState('active');
   const [summaryData, setSummaryData] = useState({
     totalTimeLogged: '0h 0min',
     thisWeek: '0h 0min',
@@ -22,40 +32,66 @@ const StudentDashboard = () => {
   const [expandedTasks, setExpandedTasks] = useState({});
 
   const dispatch = useDispatch();
-  const authUser = useSelector(state => state.auth.user);
   const { taskItems: tasks, fetching: loading, error } = useSelector(state => state.studentTasks);
+
+  // Derived filtered task list — no unnecessary rendering of graded/completed tasks by default
+  const filteredTasks = useMemo(() => {
+    if (!tasks) return [];
+    switch (activeFilter) {
+      case 'active':
+        return tasks.filter(t => ACTIVE_STATUSES.includes(t.status));
+      case 'pending':
+        return tasks.filter(t => PENDING_STATUSES.includes(t.status));
+      case 'completed':
+        return tasks.filter(t => COMPLETED_STATUSES.includes(t.status));
+      default:
+        return tasks;
+    }
+  }, [tasks, activeFilter]);
+
+  // Tab counts for display
+  const tabCounts = useMemo(() => {
+    if (!tasks) return { active: 0, pending: 0, completed: 0 };
+    return {
+      active: tasks.filter(t => ACTIVE_STATUSES.includes(t.status)).length,
+      pending: tasks.filter(t => PENDING_STATUSES.includes(t.status)).length,
+      completed: tasks.filter(t => COMPLETED_STATUSES.includes(t.status)).length,
+    };
+  }, [tasks]);
 
   // Fetch tasks from API
   useEffect(() => {
     dispatch(fetchStudentTasks());
   }, [dispatch]);
 
-  // Fetch intermediate tasks for all parent tasks
+  // Fetch intermediate tasks only for currently visible (filtered) tasks
   useEffect(() => {
-    const fetchAllIntermediateTasks = async () => {
-      if (tasks && tasks.length > 0) {
-        const intermediateTasksData = {};
+    const fetchVisibleIntermediateTasks = async () => {
+      if (!filteredTasks || filteredTasks.length === 0) return;
 
-        // Fetch intermediate tasks for each parent task
-        for (const task of tasks) {
-          try {
-            const subTasks = await dispatch(fetchIntermediateTasks(task.id));
-            if (subTasks && subTasks.length > 0) {
-              intermediateTasksData[task.id] = subTasks;
-            }
-          } catch (error) {
-            console.error(`Error fetching intermediate tasks for task ${task.id}:`, error);
-          }
+      const intermediateTasksData = { ...intermediateTasks };
+      let changed = false;
+
+      for (const task of filteredTasks) {
+        if (intermediateTasksData[task.id] !== undefined) continue; // already fetched
+        try {
+          const subTasks = await dispatch(fetchIntermediateTasks(task.id));
+          intermediateTasksData[task.id] = subTasks || [];
+          changed = true;
+        } catch (err) {
+          intermediateTasksData[task.id] = [];
+          changed = true;
         }
-
-        setIntermediateTasks(intermediateTasksData);
       }
+
+      if (changed) setIntermediateTasks(intermediateTasksData);
     };
 
-    fetchAllIntermediateTasks();
-  }, [tasks, dispatch]);
+    fetchVisibleIntermediateTasks();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filteredTasks, dispatch]);
 
-  // Calculate summary data when tasks change
+  // Calculate summary data when tasks change (uses ALL tasks for accurate totals)
   useEffect(() => {
     if (tasks && tasks.length > 0) {
       calculateSummaryData(tasks);
@@ -64,17 +100,18 @@ const StudentDashboard = () => {
 
   // Calculate summary data from tasks
   const calculateSummaryData = tasksData => {
+    const formatTime = hrs => {
+      const wholeHours = Math.floor(hrs);
+      const minutes = Math.round((hrs - wholeHours) * 60);
+      return `${wholeHours}h ${minutes}min`;
+    };
+
     const totalHours = tasksData.reduce((sum, task) => sum + (task.logged_hours || 0), 0);
     const thisWeekHours = tasksData.reduce((sum, task) => {
-      // Check if task was logged this week (simplified logic)
       const taskDate = new Date(task.last_logged_date || task.created_at);
       const weekAgo = new Date();
       weekAgo.setDate(weekAgo.getDate() - 7);
-
-      if (taskDate >= weekAgo) {
-        return sum + (task.logged_hours || 0);
-      }
-      return sum;
+      return taskDate >= weekAgo ? sum + (task.logged_hours || 0) : sum;
     }, 0);
 
     const activeCourses = new Set(tasksData.map(task => task.course_id || task.course_name)).size;
@@ -88,50 +125,37 @@ const StudentDashboard = () => {
     });
   };
 
-  // Format time in hours and minutes
-  const formatTime = hours => {
-    const wholeHours = Math.floor(hours);
-    const minutes = Math.round((hours - wholeHours) * 60);
-    return `${wholeHours}h ${minutes}min`;
-  };
-
   // Handle mark as done
-  const handleMarkAsDone = async taskId => {
-    dispatch(markStudentTaskAsDone(taskId));
-  };
+  const handleMarkAsDone = useCallback(
+    taskId => {
+      dispatch(markStudentTaskAsDone(taskId));
+    },
+    [dispatch],
+  );
 
   // Handle mark intermediate task as done
-  const handleMarkIntermediateAsDone = async (intermediateTaskId, parentTaskId) => {
-    try {
-      await dispatch(markIntermediateTaskAsDone(intermediateTaskId));
-      // Refresh intermediate tasks for this parent
-      const tasks = await dispatch(fetchIntermediateTasks(parentTaskId));
-      setIntermediateTasks(prev => ({ ...prev, [parentTaskId]: tasks || [] }));
-    } catch (error) {
-      // Error is handled in the action
-    }
-  };
+  const handleMarkIntermediateAsDone = useCallback(
+    async (intermediateTaskId, parentTaskId) => {
+      try {
+        await dispatch(markIntermediateTaskAsDone(intermediateTaskId));
+        const subTasks = await dispatch(fetchIntermediateTasks(parentTaskId));
+        setIntermediateTasks(prev => ({ ...prev, [parentTaskId]: subTasks || [] }));
+      } catch (_err) {
+        // Error is handled in the action
+      }
+    },
+    [dispatch],
+  );
 
   // Toggle expand/collapse intermediate tasks
-  const toggleIntermediateTasks = async taskId => {
-    const isExpanded = expandedTasks[taskId];
-
-    // Just toggle the expanded state (tasks are already loaded)
-    setExpandedTasks(prev => ({
-      ...prev,
-      [taskId]: !isExpanded,
-    }));
-  };
-
-  // Toggle view mode
-  const toggleViewMode = () => {
-    setViewMode(prev => (prev === 'card' ? 'list' : 'card'));
-  };
+  const toggleIntermediateTasks = useCallback(taskId => {
+    setExpandedTasks(prev => ({ ...prev, [taskId]: !prev[taskId] }));
+  }, []);
 
   if (loading) {
     return (
       <div className={styles.loadingContainer}>
-        <div className={styles.spinner}></div>
+        <div className={styles.spinner} />
         <p>Loading your dashboard...</p>
       </div>
     );
@@ -148,6 +172,12 @@ const StudentDashboard = () => {
     );
   }
 
+  const emptyMessages = {
+    active: 'No active tasks right now.',
+    pending: 'No tasks pending review.',
+    completed: 'No completed tasks yet.',
+  };
+
   return (
     <div className={styles.dashboard}>
       <NavigationBar />
@@ -162,10 +192,29 @@ const StudentDashboard = () => {
         {/* Summary Cards */}
         <SummaryCards data={summaryData} />
 
-        {/* Recent Time Logs Section */}
+        {/* Tasks Section */}
         <div className={styles.timeLogsSection}>
+          {/* Section header row */}
           <div className={styles.sectionHeader}>
-            <h2 className={styles.sectionTitle}>Recent Time Logs</h2>
+            {/* Filter tabs */}
+            <div className={styles.filterTabs} role="tablist">
+              {FILTER_TABS.map(tab => (
+                <button
+                  key={tab.key}
+                  role="tab"
+                  aria-selected={activeFilter === tab.key}
+                  className={`${styles.filterTab} ${
+                    activeFilter === tab.key ? styles.filterTabActive : ''
+                  }`}
+                  onClick={() => setActiveFilter(tab.key)}
+                >
+                  {tab.label}
+                  <span className={styles.filterCount}>{tabCounts[tab.key]}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* View toggle */}
             <div className={styles.viewToggle}>
               <button
                 className={`${styles.toggleButton} ${viewMode === 'card' ? styles.active : ''}`}
@@ -211,9 +260,13 @@ const StudentDashboard = () => {
           </div>
 
           {/* Task Views */}
-          {viewMode === 'card' ? (
+          {filteredTasks.length === 0 ? (
+            <div className={styles.emptyState}>
+              <p>{emptyMessages[activeFilter]}</p>
+            </div>
+          ) : viewMode === 'card' ? (
             <TaskCardView
-              tasks={tasks}
+              tasks={filteredTasks}
               onMarkAsDone={handleMarkAsDone}
               intermediateTasks={intermediateTasks}
               expandedTasks={expandedTasks}
@@ -222,7 +275,7 @@ const StudentDashboard = () => {
             />
           ) : (
             <TaskListView
-              tasks={tasks}
+              tasks={filteredTasks}
               onMarkAsDone={handleMarkAsDone}
               intermediateTasks={intermediateTasks}
               expandedTasks={expandedTasks}
