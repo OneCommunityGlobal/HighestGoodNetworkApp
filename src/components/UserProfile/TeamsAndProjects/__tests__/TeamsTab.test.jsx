@@ -1,5 +1,6 @@
 import React from 'react';
 import { vi } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 
 // Add this with the other vi.mock() calls at the TOP, before any imports
 vi.mock('react-redux', () => ({
@@ -55,7 +56,6 @@ vi.mock('react-toastify', () => ({
   },
 }));
 
-import { render, screen, fireEvent } from '@testing-library/react';
 import TeamsTab from '../TeamsTab';
 import { addTeamMember, deleteTeamMember } from '../../../../actions/allTeamsAction';
 import { toast } from 'react-toastify';
@@ -118,28 +118,29 @@ describe('TeamsTab (unit)', () => {
     expect(screen.getByTestId('add-team-popup')).toHaveAttribute('data-open', 'false');
   });
 
-  it('6. calls onDeleteTeam and toast.success on delete', () => {
+  it('6. calls onDeleteTeam and toast.success on delete', async () => {
     render(<TeamsTab {...baseProps} />);
     fireEvent.doubleClick(screen.getByTestId('user-teams-table'));
-    expect(baseProps.onDeleteTeam).toHaveBeenCalledWith('TEAM123');
-    expect(toast.success).toHaveBeenCalledWith('Team Deleted successfully');
+    await waitFor(() => {
+      expect(baseProps.onDeleteTeam).toHaveBeenCalledWith('TEAM123');
+      expect(toast.success).toHaveBeenCalledWith('Team Deleted successfully');
+    });
   });
 
-  it('7. calls onAssignTeam, addTeamMember and toast.success on assign', () => {
+  it('7. calls onAssignTeam, addTeamMember and toast.success on assign', async () => {
     render(<TeamsTab {...baseProps} />);
-    // open popup so it's mounted with open=true
     fireEvent.click(screen.getByTestId('user-teams-table'));
-    // double-click popup to simulate assign
     fireEvent.doubleClick(screen.getByTestId('add-team-popup'));
-
-    expect(baseProps.onAssignTeam).toHaveBeenCalledWith({ _id: 'TEAM999' });
-    expect(addTeamMember).toHaveBeenCalledWith(
-      'TEAM999',
-      baseProps.userProfile._id,
-      baseProps.userProfile.firstName,
-      baseProps.userProfile.lastName,
-    );
-    expect(toast.success).toHaveBeenCalledWith('Team assigned successfully');
+    await waitFor(() => {
+      expect(baseProps.onAssignTeam).toHaveBeenCalledWith({ _id: 'TEAM999' });
+      expect(addTeamMember).toHaveBeenCalledWith(
+        'TEAM999',
+        baseProps.userProfile._id,
+        baseProps.userProfile.firstName,
+        baseProps.userProfile.lastName,
+      );
+      expect(toast.success).toHaveBeenCalledWith('Team assigned successfully');
+    });
   });
 
   it('8. runs the saved→useEffect and clears removedTeams', () => {
