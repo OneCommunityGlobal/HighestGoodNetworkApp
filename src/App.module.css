@@ -1,3 +1,5 @@
+
+
 html {
   overflow-x: hidden;
   height: 100%;
@@ -16,10 +18,23 @@ button {
 
 #root {
   height: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  background-color: #ffffff;
+}
 
-  /* background-color: var(--background-color); */
-  overflow: auto;
-  background-color: #fff;
+html {
+  background-color: #1a1d23 !important;
+}
+
+body {
+  background-color: #1a1d23 !important;
+}
+
+/* Dark mode override for #root */
+body.dark-mode #root,
+body.bm-dashboard-dark #root {
+  background-color: #1a1d23 !important;
 }
 
 .App {
@@ -256,4 +271,20 @@ input[type='checkbox']:not([disabled]):hover {
   justify-content: center;
   gap: 24px;
   padding: 20px;
+}
+
+/* Global dark mode background fix - NUCLEAR OPTION */
+body.dark-mode #root {
+  background-color: #1a1d23 !important;
+}
+
+body.dark-mode .bg-oxford-blue,
+body.dark-mode div[class*="bg-oxford-blue"],
+body.dark-mode .text-light {
+  background-color: #1a1d23 !important;
+}
+
+/* Override ANY inline styles */
+body.dark-mode [style*="background"] {
+  background-color: #1a1d23 !important;
 }

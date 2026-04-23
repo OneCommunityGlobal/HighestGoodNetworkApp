@@ -2,6 +2,9 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import logService from './logService';
 
+// Set base URL for API requests
+axios.defaults.baseURL = process.env.REACT_APP_API_URL || 'http://localhost:4500';
+
 if (axios.defaults && axios.defaults.headers && axios.defaults.headers.post) {
   axios.defaults.headers.post['Content-Type'] = 'application/json';
 }
