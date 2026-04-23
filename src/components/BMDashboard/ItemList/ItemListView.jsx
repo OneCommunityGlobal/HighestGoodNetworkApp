@@ -1,6 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 import BMError from '../shared/BMError';
 import SelectForm from './SelectForm';
@@ -8,14 +10,6 @@ import SelectItem from './SelectItem';
 import ItemsTable from './ItemsTable';
 import styles from './ItemListView.module.css';
 
-export function ItemListView({
-  itemType,
-  items,
-  errors,
-  UpdateItemModal,
-  dynamicColumns,
-  children,
-}) {
 export function ItemListView({
   itemType,
   items,
