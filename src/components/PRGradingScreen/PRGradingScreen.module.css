@@ -895,3 +895,15 @@
   color: #e2e3e5;
   border-color: #d6d8db;
 }
+
+.pr-grading-screen-summary-row {
+  background-color: #f8f9fa;
+}
+
+.pr-grading-screen-summary-row.dark-mode {
+  background-color: #1e2a3a;
+}
+
+.pr-grading-screen-summary-cell {
+  padding: 0.5rem 1rem !important;
+}
