@@ -1,15 +1,29 @@
 import { useEffect, useState } from 'react';
-import { Table, Button, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
+import { useDispatch } from 'react-redux';
+import {
+  Table,
+  Button,
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Input,
+} from 'reactstrap';
 import { BiPencil } from 'react-icons/bi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faSortDown,
   faSort,
   faSortUp,
-  faDownload,
   faFileCsv,
   faFilePdf,
 } from '@fortawesome/free-solid-svg-icons';
+import { toast } from 'react-toastify';
+import { fetchAllMaterials, postMaterialsBulkAction } from '~/actions/bmdashboard/materialsActions';
 import RecordsModal from './RecordsModal';
 import styles from './ItemListView.module.css';
 
@@ -22,6 +36,7 @@ export default function ItemsTable({
   darkMode = false,
   itemType = 'Items',
 }) {
+  const dispatch = useDispatch();
   const [sortedData, setData] = useState(filteredItems);
   const [modal, setModal] = useState(false);
   const [record, setRecord] = useState(null);
@@ -39,6 +54,10 @@ export default function ItemsTable({
   const [selectedItems, setSelectedItems] = useState(new Set());
   const [selectAll, setSelectAll] = useState(false);
   const [bulkActionsDropdownOpen, setBulkActionsDropdownOpen] = useState(false);
+  const [notesModalOpen, setNotesModalOpen] = useState(false);
+  const [bulkNotesValue, setBulkNotesValue] = useState('');
+  const [isBulkActionLoading, setIsBulkActionLoading] = useState(false);
+  const isMaterialsTable = itemType?.toLowerCase() === 'materials';
 
   useEffect(() => {
     setData(filteredItems);
@@ -55,6 +74,10 @@ export default function ItemsTable({
     setSelectAll(false);
   }, [filteredItems]);
 
+  useEffect(() => {
+    setSelectAll(sortedData.length > 0 && selectedItems.size === sortedData.length);
+  }, [selectedItems, sortedData]);
+
   const handleEditRecordsClick = (selectedEl, type) => {
     if (type === 'Update') {
       setUpdateModal(true);
@@ -69,6 +92,12 @@ export default function ItemsTable({
   };
 
   const handleSelectAll = () => {
+    if (!sortedData.length) {
+      setSelectedItems(new Set());
+      setSelectAll(false);
+      return;
+    }
+
     if (selectAll) {
       setSelectedItems(new Set());
       setSelectAll(false);
@@ -87,10 +116,33 @@ export default function ItemsTable({
       newSelected.add(itemId);
     }
     setSelectedItems(newSelected);
-    setSelectAll(newSelected.size === sortedData.length);
   };
 
-  const handleBulkAction = action => {
+  const applyServerBulkAction = async (action, payload = {}) => {
+    if (selectedItems.size === 0 || isBulkActionLoading) return;
+
+    setIsBulkActionLoading(true);
+    const response = await postMaterialsBulkAction({
+      materialIds: Array.from(selectedItems),
+      action,
+      ...payload,
+    });
+
+    if (response?.status >= 200 && response?.status < 300) {
+      toast.success(response.data?.result || 'Bulk action applied successfully.');
+      dispatch(fetchAllMaterials());
+      setSelectedItems(new Set());
+      setSelectAll(false);
+      setBulkActionsDropdownOpen(false);
+    } else {
+      const message = response?.data || 'Failed to apply bulk action.';
+      toast.error(typeof message === 'string' ? message : 'Failed to apply bulk action.');
+    }
+
+    setIsBulkActionLoading(false);
+  };
+
+  const handleBulkAction = async action => {
     const selectedData = sortedData.filter(item => selectedItems.has(item._id));
 
     switch (action) {
@@ -101,20 +153,35 @@ export default function ItemsTable({
         exportToPdf(selectedData);
         break;
       case 'markAsHold':
-        // TODO: Implement mark as hold
-        console.log('Mark as hold:', selectedData);
+        await applyServerBulkAction('hold');
         break;
       case 'markAsReviewed':
-        // TODO: Implement mark as reviewed
-        console.log('Mark as reviewed:', selectedData);
+        await applyServerBulkAction('review');
         break;
       case 'addUpdateNotes':
-        // TODO: Implement add/update notes
-        console.log('Add/update notes:', selectedData);
+        setBulkNotesValue('');
+        setNotesModalOpen(true);
         break;
       default:
-        console.log(`Unknown action: ${action}`);
+        break;
     }
+  };
+
+  const submitBulkNotes = () => {
+    const trimmedNotes = bulkNotesValue.trim();
+    if (!trimmedNotes) {
+      setNotesModalOpen(false);
+      return;
+    }
+
+    applyServerBulkAction('notes', { notes: trimmedNotes });
+    setNotesModalOpen(false);
+  };
+
+  const formatValue = value => {
+    if (typeof value === 'boolean') return value ? 'Yes' : 'No';
+    if (value === undefined || value === null || value === '') return '-';
+    return value;
   };
 
   const exportToCsv = data => {
@@ -127,7 +194,7 @@ export default function ItemsTable({
         [
           item.project?.name || '',
           item.itemType?.name || '',
-          ...dynamicColumns.map(col => getNestedValue(item, col.key) || ''),
+          ...dynamicColumns.map(col => formatValue(getNestedValue(item, col.key))),
           item.stockAvailable || '',
         ].join(','),
       ),
@@ -225,19 +292,47 @@ export default function ItemsTable({
         recordType={recordType}
       />
       <UpdateItemModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
+      <Modal isOpen={notesModalOpen} toggle={() => setNotesModalOpen(false)}>
+        <ModalHeader toggle={() => setNotesModalOpen(false)}>Add / Update Notes</ModalHeader>
+        <ModalBody>
+          <Input
+            type="textarea"
+            value={bulkNotesValue}
+            onChange={e => setBulkNotesValue(e.target.value)}
+            placeholder="Enter notes to apply to selected materials"
+            rows={5}
+          />
+        </ModalBody>
+        <ModalFooter>
+          <Button color="secondary" outline onClick={() => setNotesModalOpen(false)}>
+            Cancel
+          </Button>
+          <Button color="primary" onClick={submitBulkNotes}>
+            Apply Notes
+          </Button>
+        </ModalFooter>
+      </Modal>
 
       {/* Bulk Actions */}
-      {selectedItems.size > 0 && (
+      {isMaterialsTable && (
         <div className={`${styles.bulkActionsContainer} ${darkMode ? styles.darkBulkActions : ''}`}>
           <span className={styles.selectedCount}>
             {selectedItems.size} item{selectedItems.size !== 1 ? 's' : ''} selected
           </span>
           <Dropdown
+            disabled={selectedItems.size === 0 || isBulkActionLoading}
             isOpen={bulkActionsDropdownOpen}
-            toggle={() => setBulkActionsDropdownOpen(!bulkActionsDropdownOpen)}
+            toggle={() => {
+              if (selectedItems.size === 0 || isBulkActionLoading) return;
+              setBulkActionsDropdownOpen(!bulkActionsDropdownOpen);
+            }}
           >
-            <DropdownToggle caret className={styles.bulkActionsButton}>
-              Bulk Actions
+            <DropdownToggle
+              caret
+              className={styles.bulkActionsButton}
+              disabled={selectedItems.size === 0 || isBulkActionLoading}
+            >
+              {isBulkActionLoading ? 'Applying...' : 'Bulk Actions'}
             </DropdownToggle>
             <DropdownMenu>
               <DropdownItem onClick={() => handleBulkAction('markAsHold')}>
@@ -267,14 +362,16 @@ export default function ItemsTable({
         <Table className={darkMode ? styles.darkTable : ''}>
           <thead>
             <tr>
-              <th>
-                <input
-                  type="checkbox"
-                  checked={selectAll}
-                  onChange={handleSelectAll}
-                  aria-label="Select all items"
-                />
-              </th>
+              {isMaterialsTable && (
+                <th>
+                  <input
+                    type="checkbox"
+                    checked={selectAll}
+                    onChange={handleSelectAll}
+                    aria-label="Select all items"
+                  />
+                </th>
+              )}
               {selectedProject === 'all' ? (
                 <th onClick={() => sortData('ProjectName')}>
                   Project <FontAwesomeIcon icon={projectNameCol.iconsToDisplay} size="lg" />
@@ -292,6 +389,7 @@ export default function ItemsTable({
               {dynamicColumns.map(({ label }) => (
                 <th key={label}>{label}</th>
               ))}
+              {isMaterialsTable && <th>Bulk Status</th>}
               <th>Usage Record</th>
               <th>Updates</th>
               <th>Purchases</th>
@@ -302,21 +400,44 @@ export default function ItemsTable({
             {sortedData && sortedData.length > 0 ? (
               sortedData.map(el => {
                 const isSelected = selectedItems.has(el._id);
+                const hasHold = Boolean(el.stockHold);
+                const hasReview = Boolean(el.isReviewed);
+                const hasNote = Boolean(el.notes?.trim());
                 return (
                   <tr key={el._id} className={isSelected ? styles.selectedRow : ''}>
-                    <td>
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => handleSelectItem(el._id)}
-                        aria-label={`Select ${el.itemType?.name || 'item'}`}
-                      />
-                    </td>
+                    {isMaterialsTable && (
+                      <td>
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => handleSelectItem(el._id)}
+                          aria-label={`Select ${el.itemType?.name || 'item'}`}
+                        />
+                      </td>
+                    )}
                     <td>{el.project?.name}</td>
                     <td>{el.itemType?.name}</td>
                     {dynamicColumns.map(({ label, key }) => (
-                      <td key={label}>{getNestedValue(el, key)}</td>
+                      <td key={label}>{formatValue(getNestedValue(el, key))}</td>
                     ))}
+                    {isMaterialsTable && (
+                      <td>
+                        <div className={styles.bulkStatusCell}>
+                          {Boolean(el.stockHold) && (
+                            <span className={styles.bulkTagHold}>On Hold</span>
+                          )}
+                          {Boolean(el.isReviewed) && (
+                            <span className={styles.bulkTagReviewed}>Reviewed</span>
+                          )}
+                          {Boolean(el.notes?.trim()) && (
+                            <span className={styles.bulkTagNote}>Has Note</span>
+                          )}
+                          {!hasHold && !hasReview && !hasNote && (
+                            <span className={styles.bulkTagNone}>-</span>
+                          )}
+                        </div>
+                      </td>
+                    )}
                     <td className={`${styles.itemsCell}`}>
                       <button
                         type="button"
@@ -366,7 +487,7 @@ export default function ItemsTable({
               })
             ) : (
               <tr>
-                <td colSpan={12} style={{ textAlign: 'center' }}>
+                <td colSpan={isMaterialsTable ? 13 : 12} style={{ textAlign: 'center' }}>
                   No items data
                 </td>
               </tr>

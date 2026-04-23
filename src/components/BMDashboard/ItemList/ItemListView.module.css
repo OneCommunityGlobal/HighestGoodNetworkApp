@@ -99,6 +99,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
   padding: 10px 15px;
   background-color: #f8f9fa;
   border: 1px solid #dee2e6;
@@ -119,6 +121,11 @@
   background-color: #3b82f6;
 }
 
+.bulkActionsButton:disabled {
+  background-color: #9aa6b2;
+  cursor: not-allowed;
+}
+
 .selectedCount {
   font-weight: bold;
   color: #495057;
@@ -130,6 +137,48 @@
 
 .selectedRow:hover {
   background-color: #bbdefb !important;
+}
+
+.bulkStatusCell {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.bulkTagHold,
+.bulkTagReviewed,
+.bulkTagNote,
+.bulkTagNone {
+  font-size: 0.72rem;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.bulkTagHold {
+  background: #fff4e5;
+  color: #a44900;
+  border: 1px solid #ffcf99;
+}
+
+.bulkTagReviewed {
+  background: #e8f7ef;
+  color: #106c3f;
+  border: 1px solid #b8e6cb;
+}
+
+.bulkTagNote {
+  background: #eaf1ff;
+  color: #1f4ba8;
+  border: 1px solid #c5d6ff;
+}
+
+.bulkTagNone {
+  background: #f1f5f9;
+  color: #64748b;
+  border: 1px solid #d8e0e8;
 }
 
 .darkMode {
@@ -206,6 +255,30 @@
 
 .darkTable .selectedRow:hover {
   background-color: #4a5f7a !important;
+}
+
+.darkTable .bulkTagHold {
+  background: #5a3a12;
+  color: #ffd8a6;
+  border-color: #7a4b1a;
+}
+
+.darkTable .bulkTagReviewed {
+  background: #0f4a34;
+  color: #b7f7d7;
+  border-color: #166848;
+}
+
+.darkTable .bulkTagNote {
+  background: #203a69;
+  color: #d3e3ff;
+  border-color: #2d4f89;
+}
+
+.darkTable .bulkTagNone {
+  background: #334155;
+  color: #d1dae7;
+  border-color: #41556f;
 }
 
 .darkDatePickerInput {
