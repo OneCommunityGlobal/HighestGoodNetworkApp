@@ -1,3 +1,27 @@
+/* Light mode calendar override (counters dark globals from RentalChart.css) */
+:global(.customCalendar) {
+  background-color: #fff !important;
+  color: #000 !important;
+  border: 1px solid #aeaeae !important;
+}
+
+:global(.customCalendar .react-datepicker__header) {
+  background-color: #f0f0f0 !important;
+  border-bottom: 1px solid #aeaeae !important;
+}
+
+:global(.customCalendar .react-datepicker__current-month),
+:global(.customCalendar .react-datepicker__day-name),
+:global(.customCalendar .react-datepicker__day),
+:global(.customCalendar .react-datepicker__month-text),
+:global(.customCalendar .react-datepicker__year-text) {
+  color: #000 !important;
+}
+
+:global(.customCalendar .react-datepicker__navigation-icon::before) {
+  border-color: #000 !important;
+}
+
 /* Light mode for multi select*/
 :global(.customSelect__control) {
   background-color: #fff !important;
@@ -34,10 +58,10 @@
   background-color: #7d7e7f !important;
 }
 
-/* Hover day styling in dark theme */
+/* Hover day styling in light mode */
 :global(.customCalendar .react-datepicker__day:hover) {
-  background-color: #3b5a81 !important;
-  color: #fff !important;
+  background-color: #f0f0f0 !important;
+  color: #000 !important;
   border-radius: 50%;
 }
 
