@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setUserFollowUp } from '../../actions/followUpActions';
 import styles from './FollowUpCheckButton.module.css';
 
-function FollowupCheckButton({ moseoverText, user, task }) {
+function FollowupCheckButton({ mouseoverText, user, task }) {
   const dispatch = useDispatch();
   const userFollowUps = useSelector(state => state.userFollowUp?.followUps[user.personId] || []);
   const userFollowUpTask = userFollowUps.filter(ele => ele.taskId === task._id);
@@ -14,6 +14,10 @@ function FollowupCheckButton({ moseoverText, user, task }) {
   const [needFollowUp, setNeedFollowUp] = useState(false);
 
   const checkNeedFollowUp = () => {
+    if (isChecked) {
+      setNeedFollowUp(false);
+      return;
+    }
     const taskProgressPercentage =
       Number(((task.hoursLogged / task.estimatedHours) * 100).toFixed(2)) || 0;
 
@@ -54,16 +58,20 @@ function FollowupCheckButton({ moseoverText, user, task }) {
 
   useEffect(() => {
     checkNeedFollowUp();
-  }, [followUpPercentageDeadline]);
+  }, [followUpPercentageDeadline, task.hoursLogged, task.estimatedHours, isChecked]);
 
   const handleCheckboxFollowUp = () => {
-    const progressPersantage =
-      Number(((task.hoursLogged / task.estimatedHours) * 100).toFixed(2)) || 0;
+    const hoursLogged = Number(task.hoursLogged) || 0;
+    const estimatedHours = Number(task.estimatedHours) || 0;
+
+    const progressPercentage =
+      estimatedHours > 0 ? Number(((hoursLogged / estimatedHours) * 100).toFixed(2)) : 0;
 
     const data = {
-      followUpCheck: needFollowUp ? true : !isChecked,
-      followUpPercentageDeadline: progressPersantage,
+      followUpCheck: Boolean(!isChecked),
+      followUpPercentageDeadline: progressPercentage,
     };
+
     dispatch(setUserFollowUp(user.personId, task._id, data));
   };
 
@@ -71,7 +79,7 @@ function FollowupCheckButton({ moseoverText, user, task }) {
     <div className={styles['followup-box']}>
       <input
         type="checkbox"
-        title={moseoverText}
+        title={mouseoverText}
         className={`${styles['team-task-progress-follow-up']} ${
           needFollowUp ? styles['team-task-progress-follow-up-red'] : ''
         }`}
