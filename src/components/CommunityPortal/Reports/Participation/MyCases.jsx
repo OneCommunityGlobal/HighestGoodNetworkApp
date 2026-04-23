@@ -112,6 +112,15 @@ function MyCases() {
         expanded || isExporting ? styles.expanded : ''
       }`}
     >
+      <li
+        className={`${styles.caseListHeader} ${darkMode ? styles.caseListHeaderDark : ''}`}
+        aria-hidden="true"
+      >
+        <span className={styles.caseListHeaderLabel}>Event Type</span>
+        <span className={styles.caseListHeaderLabel}>Date &amp; Time</span>
+        <span className={styles.caseListHeaderLabel}>Event Name</span>
+        <span className={styles.caseListHeaderLabel}>Attendees</span>
+      </li>
       {visibleEvents.map(event => (
         <li
           className={`case-list-item-global ${styles.caseListItem} ${
