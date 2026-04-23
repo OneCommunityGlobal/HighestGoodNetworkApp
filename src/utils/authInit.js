@@ -9,7 +9,7 @@ const TOKEN_LIFETIME_BUFFER = 86400 * 2; // two days in seconds
 
 export default function initAuth() {
   const token = localStorage.getItem(config.tokenKey);
-  if (!token) return;
+  if (!token || typeof token !== 'string' || token.trim() === '') return;
 
   try {
     const decoded = jwtDecode(token);
