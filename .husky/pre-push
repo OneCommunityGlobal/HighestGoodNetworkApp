@@ -1,15 +1,25 @@
 #!/bin/sh
+
 # Load nvm if available
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-# Use Node 20 if available (or install if needed)
+
+# Use Node 20 if available
 if command -v nvm >/dev/null 2>&1 && [ -f .nvmrc ]; then
-  nvm use 20 2>/dev/null || nvm install 20 && nvm use 20
+  nvm use 20 2>/dev/null || {
+    nvm install 20
+    nvm use 20
+  }
 fi
 
-. "$(dirname "$0")/_/husky.sh"
+upstream_ref=$(git rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null)
 
-changed_files=$(git diff --name-only @{upstream}...HEAD 2>/dev/null)
+if [ -z "$upstream_ref" ]; then
+  echo "ℹ️  No upstream branch set. Skipping changed-file validation."
+  exit 0
+fi
+
+changed_files=$(git diff --name-only "$upstream_ref"...HEAD 2>/dev/null)
 
 if [ -z "$changed_files" ]; then
   echo "ℹ️  No outgoing changes to validate. Skipping pre-push checks."
@@ -44,7 +54,6 @@ if [ -n "$style_files" ]; then
   style_status=$?
 fi
 
-# Block push if either fails
 if [ $test_status -ne 0 ] || [ $lint_status -ne 0 ] || [ $style_status -ne 0 ]; then
   echo "❌ Push blocked: changed-file validation failed."
   exit 1
