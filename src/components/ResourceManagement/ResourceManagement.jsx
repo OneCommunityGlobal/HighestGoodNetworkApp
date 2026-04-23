@@ -1,389 +1,249 @@
-import { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import styles from './ResourceManagement.module.css';
 import { useSelector } from 'react-redux';
+import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react'; // Added Calendar icon
+import { MOCK_RESOURCES } from './MockData';
+import { toast } from 'react-toastify';
 
-function SearchBar({ onSearch }) {
-  const darkMode = useSelector(state => state.theme.darkMode);
-  const [searchTerm, setSearchTerm] = useState('');
-
-  const handleSearch = () => {
-    onSearch(searchTerm);
-  };
-
-  const handleKeyPress = e => {
-    if (e.key === 'Enter') {
-      handleSearch();
-    }
-  };
-
+function SearchBar({ onSortToggle, darkMode, searchTerm, onSearchTermChange }) {
   return (
-    <div className={`${darkMode ? styles.darkMode : ''}`}>
-      <div className={`${styles.searchBarContainer}`}>
-        <div className={`${styles.searchBarContainerLeft}`}>
-          <span className={`${styles.iconAdd}`}>+</span>
-          <span className={`${styles.iconLines}`}>=</span>
-          <span className={`${styles.iconToggle}`}>⇅</span>
-        </div>
-        <div className={`${styles.searchBarContainerRight}`}>
-          <input
-            type="text"
-            className={`${styles.searchInput}`}
-            placeholder="Search"
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-            onKeyPress={handleKeyPress}
-          />
-          <button type="button" className={`${styles.searchButton}`} onClick={handleSearch}>
-            Search
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function AddLogModal({ isOpen, onClose, onAdd }) {
-  const darkMode = useSelector(state => state.theme.darkMode);
-  const [formData, setFormData] = useState({
-    user: '',
-    timeDuration: '',
-    facilities: '',
-    materials: '',
-  });
-  const [validationError, setValidationError] = useState('');
-
-  const handleChange = e => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value,
-    }));
-    // Clear validation error when user starts typing
-    if (validationError) {
-      setValidationError('');
-    }
-  };
-
-  const handleSubmit = e => {
-    e.preventDefault();
-    if (formData.user && formData.timeDuration && formData.facilities && formData.materials) {
-      onAdd(formData);
-      setFormData({
-        user: '',
-        timeDuration: '',
-        facilities: '',
-        materials: '',
-      });
-      setValidationError('');
-      onClose();
-    } else {
-      setValidationError('Please fill in all fields');
-    }
-  };
-
-  const handleOverlayClick = e => {
-    // Only close if clicking directly on the overlay, not its children
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
-  };
-
-  const handleOverlayKeyDown = e => {
-    if (e.key === 'Escape') {
-      onClose();
-    }
-  };
-
-  useEffect(() => {
-    const handleEscKey = e => {
-      if (e.key === 'Escape' && isOpen) {
-        onClose();
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener('keydown', handleEscKey);
-    }
-
-    return () => {
-      document.removeEventListener('keydown', handleEscKey);
-    };
-  }, [isOpen, onClose]);
-
-  if (!isOpen) return null;
-
-  return (
-    <div className={`${darkMode ? styles.darkMode : ''}`}>
-      <div
-        className={`${styles.modalOverlay}`}
-        onClick={handleOverlayClick}
-        onKeyDown={handleOverlayKeyDown}
-        role="button"
-        tabIndex={0}
-        aria-label="Close modal"
-      >
-        <div
-          className={`${styles.modalContent}`}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="modal-title"
+    <div
+      className={`${styles.searchBarContainer} ${
+        darkMode ? styles.darkModeSearchBarContainer : ''
+      }`}
+    >
+      <div className={styles.searchBarContainerLeft}>
+        <span className={styles.iconAdd}>+</span>
+        <span className={styles.iconLines}>=</span>
+        <button
+          type="button"
+          className={styles.iconToggle}
+          onClick={onSortToggle}
+          aria-label="Toggle Global Sort Direction"
         >
-          <div className={`${styles.modalHeader}`}>
-            <h3 id="modal-title">Add New Log</h3>
-            <button type="button" className={`${styles.closeButton}`} onClick={onClose}>
-              ×
-            </button>
-          </div>
-          {validationError && (
-            <div className={`${styles.errorMessage}`} role="alert">
-              {validationError}
-            </div>
-          )}
-          <form onSubmit={handleSubmit}>
-            <div className={`${styles.formGroup}`}>
-              <label htmlFor="user">User:</label>
-              <input
-                id="user"
-                type="text"
-                name="user"
-                value={formData.user}
-                onChange={handleChange}
-                placeholder="First Last"
-              />
-            </div>
-            <div className={`${styles.formGroup}`}>
-              <label htmlFor="timeDuration">Time/Duration:</label>
-              <input
-                id="timeDuration"
-                type="text"
-                name="timeDuration"
-                value={formData.timeDuration}
-                onChange={handleChange}
-                placeholder="00:00:00"
-              />
-            </div>
-            <div className={`${styles.formGroup}`}>
-              <label htmlFor="facilities">Facilities:</label>
-              <input
-                id="facilities"
-                type="text"
-                name="facilities"
-                value={formData.facilities}
-                onChange={handleChange}
-                placeholder="e.g., Landing Page"
-              />
-            </div>
-            <div className={`${styles.formGroup}`}>
-              <label htmlFor="materials">Materials:</label>
-              <input
-                id="materials"
-                type="text"
-                name="materials"
-                value={formData.materials}
-                onChange={handleChange}
-                placeholder="e.g., Location"
-              />
-            </div>
-            <div className={`${styles.modalActions}`}>
-              <button type="button" className={`${styles.cancelButton}`} onClick={onClose}>
-                Cancel
-              </button>
-              <button type="submit" className={`${styles.submitButton}`}>
-                Add Log
-              </button>
-            </div>
-          </form>
-        </div>
+          ⇅
+        </button>
       </div>
-    </div>
-  );
-}
-
-function ResourceManagement() {
-  const darkMode = useSelector(state => state.theme.darkMode);
-  const [resources, setResources] = useState([
-    {
-      id: 1,
-      user: 'First Last',
-      timeDuration: '02:32:56',
-      facilities: 'Landing Page',
-      materials: 'Meadow Lane Oakland',
-      date: 'Just now',
-    },
-    {
-      id: 2,
-      user: 'First Last',
-      timeDuration: '02:32:56',
-      facilities: 'CRM Admin pages',
-      materials: 'Larry San Francisco',
-      date: 'A minute ago',
-    },
-    {
-      id: 3,
-      user: 'First Last',
-      timeDuration: '02:32:56',
-      facilities: 'Client Project',
-      materials: 'Bagwell Avenue Ocala',
-      date: '1 hour ago',
-    },
-    {
-      id: 4,
-      user: 'First Last',
-      timeDuration: '02:32:56',
-      facilities: 'Admin Dashboard',
-      materials: 'Washburn Baton Rouge',
-      date: 'Yesterday',
-    },
-    {
-      id: 5,
-      user: 'First Last',
-      timeDuration: '02:32:56',
-      facilities: 'App Landing page',
-      materials: 'Nest Lane Olivette',
-      date: 'Feb 2, 2024',
-    },
-    {
-      id: 6,
-      user: 'First Last',
-      timeDuration: '02:32:56',
-      facilities: 'Landing Page',
-      materials: 'Meadow Lane Oakland',
-      date: 'Just now',
-    },
-    {
-      id: 7,
-      user: 'First Last',
-      timeDuration: '02:32:56',
-      facilities: 'CRM Admin Pages',
-      materials: 'Larry San Francisco',
-      date: 'A minute ago',
-    },
-    {
-      id: 8,
-      user: 'First Last',
-      timeDuration: '02:32:56',
-      facilities: 'Client Project',
-      materials: 'Bagwell Avenue Ocala',
-      date: '1 hour ago',
-    },
-    {
-      id: 9,
-      user: 'First Last',
-      timeDuration: '02:32:56',
-      facilities: 'Admin Dashboard',
-      materials: 'Washburn Baton Rouge',
-      date: 'Yesterday',
-    },
-    {
-      id: 10,
-      user: 'First Last',
-      timeDuration: '02:32:56',
-      facilities: 'App Landing Page',
-      materials: 'Nest Lane Olivette',
-      date: 'Feb 2, 2024',
-    },
-  ]);
-
-  const [filteredResources, setFilteredResources] = useState(resources);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  useEffect(() => {
-    setFilteredResources(resources);
-  }, [resources]);
-
-  const handleSearch = searchTerm => {
-    if (!searchTerm.trim()) {
-      setFilteredResources(resources);
-      return;
-    }
-
-    const filtered = resources.filter(
-      resource =>
-        resource.user.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        resource.facilities.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        resource.materials.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        resource.date.toLowerCase().includes(searchTerm.toLowerCase()),
-    );
-    setFilteredResources(filtered);
-  };
-
-  const handleAddLog = newLog => {
-    const newResource = {
-      id: resources.length + 1,
-      ...newLog,
-      date: 'Just now',
-    };
-    setResources(prev => [newResource, ...prev]);
-  };
-
-  return (
-    <div className={`${darkMode ? styles.darkMode : ''}`}>
-      <div className={`${styles.resourceManagementDashboard}`}>
-        <div className={`${styles.dashboardTitle}`}>
-          <h2>Used Resources</h2>
-          <button
-            type="button"
-            className={`${styles.addLogButton}`}
-            onClick={() => setIsModalOpen(true)}
-          >
-            Add New Log
-          </button>
-        </div>
-
-        <SearchBar onSearch={handleSearch} />
-
-        <div className={`${styles.resourceList}`}>
-          <div className={`${styles.resourceHeading}`}>
-            <div className={`${styles.checkboxContainer}`}>
-              <input type="checkbox" />
-            </div>
-            <div className={`${styles.resourceHeadingItem}`}>User</div>
-            <div className={`${styles.resourceHeadingItem}`}>Time/Duration</div>
-            <div className={`${styles.resourceHeadingItem}`}>Facilities</div>
-            <div className={`${styles.resourceHeadingItem}`}>Materials</div>
-            <div className={`${styles.resourceHeadingItem}`}>Date</div>
-          </div>
-          <hr className={`${styles.lineSperator}`} />
-
-          {filteredResources.map(resource => (
-            <div key={resource.id}>
-              <div className={`${styles.resourceItem}`}>
-                <div className={`${styles.checkboxContainer}`}>
-                  <input type="checkbox" />
-                </div>
-                <div className={`${styles.resourceItemDetail}`}>{resource.user}</div>
-                <div className={`${styles.resourceItemDetail}`}>{resource.timeDuration}</div>
-                <div className={`${styles.resourceItemDetail}`}>{resource.facilities}</div>
-                <div className={`${styles.resourceItemDetail}`}>{resource.materials}</div>
-                <div className={`${styles.resourceItemDetail}`}>
-                  <span className={`${styles.calendarIcon}`}>📅</span> {resource.date}
-                </div>
-              </div>
-              <hr className={`${styles.lineSperator}`} />
-            </div>
-          ))}
-        </div>
-
-        <div className={`${styles.rmPagination}`}>
-          <button type="button" className={`${styles.arrowButton}`}>
-            ←
-          </button>
-          <button type="button">1</button>
-          <button type="button">2</button>
-          <button type="button">3</button>
-          <button type="button">4</button>
-          <button type="button">5</button>
-          <button type="button" className={`${styles.arrowButton}`}>
-            →
-          </button>
-        </div>
-
-        <AddLogModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onAdd={handleAddLog}
+      <div className={styles.searchBarContainerRight}>
+        <input
+          type="text"
+          className={styles.searchInput}
+          placeholder="Search ..."
+          value={searchTerm}
+          onChange={onSearchTermChange}
         />
       </div>
+    </div>
+  );
+}
+
+const Pagination = ({ totalPages, currentPage, setCurrentPage, darkMode }) => {
+  const getPaginationGroup = () => {
+    let pages = [];
+    const threshold = 5;
+    if (totalPages <= threshold) {
+      pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+    } else {
+      if (currentPage <= 3) {
+        pages = [1, 2, 3, 4, 5, '...', totalPages];
+      } else if (currentPage > totalPages - 3) {
+        pages = [
+          1,
+          '...',
+          totalPages - 4,
+          totalPages - 3,
+          totalPages - 2,
+          totalPages - 1,
+          totalPages,
+        ];
+      } else {
+        pages = [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
+      }
+    }
+    return pages;
+  };
+
+  return (
+    <div
+      className={`${styles.paginationContainer} ${
+        darkMode ? styles.darkModePaginationContainer : ''
+      }`}
+    >
+      <button
+        disabled={currentPage === 1}
+        onClick={() => setCurrentPage(prev => prev - 1)}
+        className={styles.paginationLeft}
+      >
+        <ChevronLeft size={20} />
+      </button>
+
+      {getPaginationGroup().map((value, index) => (
+        <button
+          key={index}
+          type="button"
+          className={value === currentPage ? styles.activePage : styles.paginationButtonIndexes}
+          onClick={() => {
+            if (typeof value === 'number') setCurrentPage(value);
+            else toast.info('Navigate using numbers or arrows.');
+          }}
+        >
+          {value}
+        </button>
+      ))}
+
+      <button
+        disabled={currentPage === totalPages}
+        onClick={() => setCurrentPage(prev => prev + 1)}
+        className={styles.paginationRight}
+      >
+        <ChevronRight size={20} />
+      </button>
+    </div>
+  );
+};
+
+function ResourceManagement() {
+  const [resources] = useState(MOCK_RESOURCES);
+  const [sortConfig, setSortConfig] = useState({ key: 'date', direction: 'desc' });
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
+  const onSearchTermChange = e => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1); // Reset to page 1 on search
+  };
+
+  const filteredResources = useMemo(() => {
+    const term = searchTerm.toLowerCase().trim();
+    if (!term) return resources;
+    return resources.filter(
+      r =>
+        r.user.toLowerCase().includes(term) ||
+        r.facilities.toLowerCase().includes(term) ||
+        r.materials.toLowerCase().includes(term),
+    );
+  }, [resources, searchTerm]);
+
+  const sortedResources = useMemo(() => {
+    let sortableItems = [...filteredResources];
+    sortableItems.sort((a, b) => {
+      let valA = sortConfig.key === 'date' ? a.timestamp : a[sortConfig.key]?.toLowerCase();
+      let valB = sortConfig.key === 'date' ? b.timestamp : b[sortConfig.key]?.toLowerCase();
+      if (valA < valB) return sortConfig.direction === 'asc' ? -1 : 1;
+      if (valA > valB) return sortConfig.direction === 'asc' ? 1 : -1;
+      return 0;
+    });
+    return sortableItems;
+  }, [filteredResources, sortConfig]);
+
+  const totalPages = Math.ceil(sortedResources.length / itemsPerPage);
+
+  const requestSort = key => {
+    let direction = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') direction = 'desc';
+    setSortConfig({ key, direction });
+  };
+
+  const toggleGlobalDirection = () => {
+    setSortConfig(prev => ({ ...prev, direction: prev.direction === 'asc' ? 'desc' : 'asc' }));
+  };
+
+  return (
+    <div
+      className={`${styles.resourceManagementDashboard} ${
+        darkMode ? styles.darkModeResourceManagementDashboard : ''
+      }`}
+    >
+      <div className={styles.dashboardTitle}>
+        <h2>Used Resources</h2>
+        <button type="button" className={styles.addLogButton}>
+          Add New Log
+        </button>
+      </div>
+
+      <SearchBar
+        onSortToggle={toggleGlobalDirection}
+        darkMode={darkMode}
+        searchTerm={searchTerm}
+        onSearchTermChange={onSearchTermChange}
+      />
+
+      <div className={styles.resourceList}>
+        <div className={styles.resourceTable}>
+          {/* THE HEADER ROW - SHARED COLUMN CLASSES */}
+          <div className={styles.resourceHeaderRow}>
+            <div className={styles.colCheck}>
+              <input type="checkbox" aria-label="Select all" />
+            </div>
+            <div className={styles.colUser}>
+              <button
+                type="button"
+                className={styles.headerSortButton}
+                onClick={() => requestSort('user')}
+              >
+                User {sortConfig.key === 'user' && (sortConfig.direction === 'asc' ? '🔼' : '🔽')}
+              </button>
+            </div>
+            <div className={styles.colDuration}>
+              <button
+                type="button"
+                className={styles.headerSortButton}
+                onClick={() => requestSort('timeDuration')}
+              >
+                Time/Duration{' '}
+                {sortConfig.key === 'timeDuration' &&
+                  (sortConfig.direction === 'asc' ? '🔼' : '🔽')}
+              </button>
+            </div>
+            <div className={styles.colFacilities}>Facilities</div>
+            <div className={styles.colMaterials}>Materials</div>
+            <div className={styles.colDate}>
+              <button
+                type="button"
+                className={styles.headerSortButton}
+                onClick={() => requestSort('date')}
+              >
+                Date {sortConfig.key === 'date' && (sortConfig.direction === 'asc' ? '🔼' : '🔽')}
+              </button>
+            </div>
+          </div>
+
+          {/* THE DATA ROWS */}
+          {sortedResources
+            .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+            .map(resource => (
+              <div key={resource.id} className={styles.resourceItem}>
+                <div className={styles.colCheck}>
+                  <input type="checkbox" aria-label={`Select ${resource.user}`} />
+                </div>
+                <div className={`${styles.resourceItemDetail} ${styles.colUser}`}>
+                  {resource.user}
+                </div>
+                <div className={`${styles.resourceItemDetail} ${styles.colDuration}`}>
+                  {resource.timeDuration}
+                </div>
+                <div className={`${styles.resourceItemDetail} ${styles.colFacilities}`}>
+                  {resource.facilities}
+                </div>
+                <div className={`${styles.resourceItemDetail} ${styles.colMaterials}`}>
+                  {resource.materials}
+                </div>
+                <div className={`${styles.resourceItemDetail} ${styles.colDate}`}>
+                  <Calendar size={14} className={styles.calendarIcon} /> {resource.date}
+                </div>
+              </div>
+            ))}
+        </div>
+      </div>
+
+      <Pagination
+        totalPages={totalPages}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        darkMode={darkMode}
+      />
     </div>
   );
 }
