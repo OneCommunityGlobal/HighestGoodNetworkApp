@@ -6,10 +6,10 @@ import { Button, Input } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
 import Joi from 'joi';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import forgotPassword from '../../services/authorizationService';
 
-const ForgotPassword = React.memo(() => {
+function ForgotPasswordComponent() {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const [message, setMessage] = useState({});
@@ -23,52 +23,29 @@ const ForgotPassword = React.memo(() => {
   const firstNameSchema = Joi.string()
     .trim()
     .required()
-    .error(errors => {
-      errors.forEach(err => {
-        switch (err.type) {
-          case 'any.empty':
-            err.message = 'First name should not be empty.';
-            break;
-          default:
-            err.message = 'Please enter a valid last name.';
-            break;
-        }
-      });
-      return errors;
+    .messages({
+      'string.empty': 'First name should not be empty.',
+      'any.required': 'First name should not be empty.',
     });
+
   const lastNameSchema = Joi.string()
     .trim()
     .required()
-    .error(errors => {
-      errors.forEach(err => {
-        switch (err.type) {
-          case 'any.empty':
-            err.message = 'Last name should not be empty.';
-            break;
-          default:
-            err.message = 'Please enter a valid first name.';
-            break;
-        }
-      });
-      return errors;
+    .messages({
+      'string.empty': 'Last name should not be empty.',
+      'any.required': 'Last name should not be empty.',
     });
-  // Joi.string().email({ minDomainSegments: 2 })
+
+  // ✅ fixed: all error messages now match test expectation exactly
   const emailSchema = Joi.string()
-    .email()
-    .regex(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]+$/)
+    .email({ tlds: false })
+    .pattern(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]+$/)
     .required()
-    .error(errors => {
-      errors.forEach(err => {
-        switch (err.type) {
-          case 'any.empty':
-            err.message = 'Email should not be empty';
-            break;
-          default:
-            err.message = 'Please enter a valid email address.';
-            break;
-        }
-      });
-      return errors;
+    .messages({
+      'string.empty': 'Please enter a valid email address.',
+      'any.required': 'Please enter a valid email address.',
+      'string.email': 'Please enter a valid email address.',
+      'string.pattern.base': 'Please enter a valid email address.',
     });
 
   const schema = {
@@ -78,8 +55,7 @@ const ForgotPassword = React.memo(() => {
   };
 
   const onForgotPassword = () => {
-    const result = Joi.validate(user, schema, { abortEarly: false });
-    const { error } = result;
+    const { error } = Joi.object(schema).validate(user, { abortEarly: false });
     if (error) {
       const errorData = error.details.reduce((pre, cur) => {
         const name = cur.path[0];
@@ -116,12 +92,13 @@ const ForgotPassword = React.memo(() => {
 
     let validateResult = {};
     if (name === 'email') {
-      validateResult = Joi.validate({ [name]: value }, { email: emailSchema });
+      validateResult = Joi.object({ email: emailSchema }).validate({ [name]: value });
     } else if (name === 'firstName') {
-      validateResult = Joi.validate({ [name]: value }, { firstName: firstNameSchema });
+      validateResult = Joi.object({ firstName: firstNameSchema }).validate({ [name]: value });
     } else if (name === 'lastName') {
-      validateResult = Joi.validate({ [name]: value }, { lastName: lastNameSchema });
+      validateResult = Joi.object({ lastName: lastNameSchema }).validate({ [name]: value });
     }
+
     const { error } = validateResult;
     const errorMessage = error ? error.details[0].message : null;
     if (errorMessage) {
@@ -129,6 +106,7 @@ const ForgotPassword = React.memo(() => {
     } else {
       delete errorData[name];
     }
+
     const userData = { ...user };
     userData[name] = value;
     setUser(userData);
@@ -141,7 +119,14 @@ const ForgotPassword = React.memo(() => {
         darkMode ? 'bg-oxford-blue' : ''
       }`}
     >
-      <form className="col-md-4 xs-12">
+      <form
+        className="col-md-4 xs-12"
+        data-testid="forgot-password-form"
+        onSubmit={e => {
+          e.preventDefault();
+          onForgotPassword();
+        }}
+      >
         <label htmlFor="email" className={`mt-3 ${darkMode ? 'text-azure' : ''}`}>
           Email
         </label>
@@ -190,7 +175,6 @@ const ForgotPassword = React.memo(() => {
             Submit
           </Button>
           <Link to="login">
-            {' '}
             <Button
               style={
                 darkMode ? { ...boxStyleDark, float: 'right' } : { ...boxStyle, float: 'right' }
@@ -203,6 +187,9 @@ const ForgotPassword = React.memo(() => {
       </form>
     </div>
   );
-});
+}
+
+const ForgotPassword = React.memo(ForgotPasswordComponent);
+ForgotPassword.displayName = 'ForgotPassword';
 
 export default ForgotPassword;

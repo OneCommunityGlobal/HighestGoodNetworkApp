@@ -1,19 +1,26 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+import { useSelector } from 'react-redux';
+
 import BMError from '../shared/BMError';
 import SelectForm from './SelectForm';
 import SelectItem from './SelectItem';
 import ItemsTable from './ItemsTable';
-import './ItemListView.css';
+import styles from './ItemListView.module.css';
 
-export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamicColumns }) {
+export function ItemListView({
+  itemType,
+  items,
+  errors,
+  UpdateItemModal,
+  dynamicColumns,
+  children,
+}) {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [filteredItems, setFilteredItems] = useState(items);
   const [selectedProject, setSelectedProject] = useState('all');
   const [selectedItem, setSelectedItem] = useState('all');
   const [isError, setIsError] = useState(false);
-  const [selectedTime, setSelectedTime] = useState(new Date());
 
   useEffect(() => {
     if (items) setFilteredItems([...items]);
@@ -22,6 +29,7 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
   useEffect(() => {
     let filterItems;
     if (!items) return;
+
     if (selectedProject === 'all' && selectedItem === 'all') {
       setFilteredItems([...items]);
     } else if (selectedProject !== 'all' && selectedItem === 'all') {
@@ -44,30 +52,24 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
 
   if (isError) {
     return (
-      <main className="items_list_container">
-        <h2>{itemType} List</h2>
+      <main className={`${styles.items_list_container} ${darkMode ? 'dark-mode dm-text' : ''}`}>
+        <h2 className={darkMode ? 'dm-text' : ''}>{itemType} List</h2>
         <BMError errors={errors} />
       </main>
     );
   }
 
   return (
-    <main className="items_list_container">
-      <h3>{itemType}</h3>
-      <section>
-        <span>
+    <main className={`${styles.items_list_container} ${darkMode ? 'dark-mode dm-text' : ''}`}>
+      <h3 className={darkMode ? 'dm-text dm-heading' : ''}>{itemType}</h3>
+
+      <section className={darkMode ? 'dm-bg dm-border dm-section-solid' : ''}>
+        <span
+          style={{ display: 'flex', margin: '5px' }}
+          className={darkMode ? 'dm-bg dm-filter-contrast dm-border dm-text' : ''}
+        >
           {items && (
-            <div className="select_input">
-              <label>Time:</label>
-              <DatePicker
-                selected={selectedTime}
-                onChange={date => setSelectedTime(date)}
-                showTimeSelect
-                timeFormat="HH:mm"
-                timeIntervals={15}
-                dateFormat="yyyy-MM-dd HH:mm:ss"
-                placeholderText="Select date and time"
-              />
+            <>
               <SelectForm
                 items={items}
                 setSelectedProject={setSelectedProject}
@@ -78,21 +80,15 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
                 selectedProject={selectedProject}
                 selectedItem={selectedItem}
                 setSelectedItem={setSelectedItem}
+                label={itemType === 'Materials' ? 'Material' : itemType}
+                darkMode={darkMode}
               />
-            </div>
+            </>
           )}
-          <div className="buttons-row">
-            <button type="button" className="btn-primary">
-              Add Material
-            </button>
-            <button type="button" className="btn-primary">
-              Edit Name/Measurement
-            </button>
-            <button type="button" className="btn-primary">
-              View Update History
-            </button>
-          </div>
         </span>
+
+        {children}
+
         {filteredItems && (
           <ItemsTable
             selectedProject={selectedProject}
@@ -100,6 +96,8 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
             filteredItems={filteredItems}
             UpdateItemModal={UpdateItemModal}
             dynamicColumns={dynamicColumns}
+            darkMode={darkMode}
+            itemType={itemType}
           />
         )}
       </section>
@@ -108,23 +106,29 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
 }
 
 ItemListView.propTypes = {
+  itemType: PropTypes.string.isRequired,
   items: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.number.isRequired,
+      id: PropTypes.number,
       name: PropTypes.string,
     }),
   ).isRequired,
   errors: PropTypes.shape({
     message: PropTypes.string,
   }),
+  UpdateItemModal: PropTypes.elementType.isRequired,
+  dynamicColumns: PropTypes.arrayOf(
+    PropTypes.shape({
+      label: PropTypes.string.isRequired,
+      key: PropTypes.string.isRequired,
+    }),
+  ).isRequired,
+  children: PropTypes.node,
 };
 
 ItemListView.defaultProps = {
   errors: {},
-};
-
-ItemListView.defaultProps = {
-  errors: {},
+  children: null,
 };
 
 export default ItemListView;

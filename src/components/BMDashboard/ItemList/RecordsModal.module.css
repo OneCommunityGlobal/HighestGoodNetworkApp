@@ -1,0 +1,129 @@
+.records_modal_table_container,
+.recordsModalTableContainer {
+  overflow: scroll;
+  height: 75vh;
+  text-align: center;
+  font-size: small;
+  white-space: nowrap;
+}
+
+:global(.dark-mode) .records_modal_table_container,
+:global(.dark-mode) .recordsModalTableContainer {
+  background-color: #3a506b;
+  color: #fff;
+}
+
+:global(.dark-mode) .records_modal_table_container a,
+:global(.dark-mode) .recordsModalTableContainer a {
+  color: #4fa3ff;
+  text-decoration: underline;
+}
+
+:global(.dark-mode) .records_modal_table_container a:hover,
+:global(.dark-mode) .recordsModalTableContainer a:hover {
+  color: #6bb6ff;
+}
+
+:global(.dark-mode) .records_modal_table_container thead tr th,
+:global(.dark-mode) .recordsModalTableContainer thead tr th {
+  background-color: #1c2541 !important;
+  color: #fff !important;
+  border-color: #3a506b !important;
+}
+
+:global(.dark-mode) .records_modal_table_container tbody tr td,
+:global(.dark-mode) .recordsModalTableContainer tbody tr td {
+  background-color: #3a506b !important;
+  color: #fff !important;
+  border-color: #1c2541 !important;
+}
+
+:global(.dark-mode) .records_modal_table_container tbody tr:hover td,
+:global(.dark-mode) .recordsModalTableContainer tbody tr:hover td {
+  background-color: #1c2541 !important;
+  color: #fff !important;
+}
+
+@media (width >= 1200px) {
+  .records_modal_table_container,
+  .recordsModalTableContainer {
+    font-size: medium;
+  }
+}
+
+.approve_button,
+.approveButton {
+  background-color: green;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-right: 8px;
+}
+
+.approveButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.reject_button,
+.rejectButton {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-right: 8px;
+}
+
+.rejectButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+:global(.dark-mode) .approve_button,
+:global(.dark-mode) .approveButton,
+:global(.dark-mode) .reject_button,
+:global(.dark-mode) .rejectButton {
+  background-color: #1c2541;
+  color: #fff;
+  border: 1px solid #3a506b;
+}
+
+:global(.dark-mode) .records_modal_table_container::-webkit-scrollbar,
+:global(.dark-mode) .recordsModalTableContainer::-webkit-scrollbar {
+  background: #1c2541;
+}
+
+:global(.dark-mode) .records_modal_table_container::-webkit-scrollbar-thumb,
+:global(.dark-mode) .recordsModalTableContainer::-webkit-scrollbar-thumb {
+  background: #3a506b;
+  border-radius: 6px;
+}
+
+:global(.dark-mode) .blue_link {
+  color: #4fa3ff !important;
+  text-decoration: none !important;
+}
+
+:global(.dark-mode) .blue_link:hover {
+  color: #6bb6ff !important;
+  text-decoration: none !important;
+}
+
+.statusApproved {
+  color: green;
+  font-weight: bold;
+}
+
+.statusRejected {
+  color: red;
+  font-weight: bold;
+}
+
+.statusPending {
+  color: #e6a800;
+  font-weight: bold;
+}
