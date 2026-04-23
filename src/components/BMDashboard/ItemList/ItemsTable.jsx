@@ -25,6 +25,7 @@ import {
 import { toast } from 'react-toastify';
 import { fetchAllMaterials, postMaterialsBulkAction } from '~/actions/bmdashboard/materialsActions';
 import RecordsModal from './RecordsModal';
+import styles from './ItemListView.module.css';
 
 export default function ItemsTable({
   selectedProject,
@@ -68,7 +69,6 @@ export default function ItemsTable({
   }, [selectedProject, selectedItem]);
 
   useEffect(() => {
-    // Reset selections when filtered items change
     setSelectedItems(new Set());
     setSelectAll(false);
   }, [filteredItems]);
@@ -213,7 +213,6 @@ export default function ItemsTable({
   const exportToPdf = data => {
     if (data.length === 0) return;
 
-    // Using jspdf for PDF export
     const { jsPDF } = require('jspdf');
     const doc = new jsPDF();
 
@@ -223,18 +222,14 @@ export default function ItemsTable({
     let yPosition = 40;
     data.forEach((item, index) => {
       if (yPosition > 270) {
-        // New page if needed
         doc.addPage();
         yPosition = 20;
       }
 
       doc.setFontSize(12);
-      doc.text(
-        `${index + 1}. ${item.itemType?.name || 'Unknown'} (${item.project?.name ||
-          'Unknown Project'})`,
-        20,
-        yPosition,
-      );
+      const itemLabel = item.itemType?.name || 'Unknown';
+      const projectLabel = item.project?.name || 'Unknown Project';
+      doc.text(`${index + 1}. ${itemLabel} (${projectLabel})`, 20, yPosition);
       yPosition += 10;
       doc.setFontSize(10);
       doc.text(`Available: ${item.stockAvailable || 0}`, 30, yPosition);
@@ -291,6 +286,7 @@ export default function ItemsTable({
         itemType={itemType}
       />
       <UpdateItemModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
+
       <Modal isOpen={notesModalOpen} toggle={() => setNotesModalOpen(false)}>
         <ModalHeader toggle={() => setNotesModalOpen(false)}>Add / Update Notes</ModalHeader>
         <ModalBody>
@@ -312,7 +308,6 @@ export default function ItemsTable({
         </ModalFooter>
       </Modal>
 
-      {/* Bulk Actions */}
       {isMaterialsTable && (
         <div className={`${styles.bulkActionsContainer} ${darkMode ? styles.darkBulkActions : ''}`}>
           <span className={styles.selectedCount}>
@@ -371,140 +366,38 @@ export default function ItemsTable({
                   />
                 </th>
               )}
-      {darkMode && (
-        <style>
-          {`
-            .dark-mode .items_table_container .table thead th {
-              background-color: #1C2541 !important;
-              color: #ffffff !important;
-              border-color: #555 !important;
-            }
-
-            .dark-mode .items_table_container .table thead tr {
-              background-color: #1C2541 !important;
-            }
-
-            .dark-mode .items_table_container .table tbody tr:hover {
-              background-color: #1C2541 !important;
-            }
-          `}
-        </style>
-      )}
-      <div
-        className={`items_table_container ${
-          darkMode ? 'items_table_container_dark dark-mode' : ''
-        }`}
-        style={darkMode ? { backgroundColor: '#3A506B' } : {}}
-      >
-        <Table
-          className={darkMode ? 'dark-table' : ''}
-          style={
-            darkMode ? { backgroundColor: '#3A506B', color: '#ffffff', borderColor: '#444' } : {}
-          }
-        >
-          <thead
-            className={darkMode ? 'dark-thead' : ''}
-            style={darkMode ? { backgroundColor: '#1C2541', color: '#ffffff' } : {}}
-          >
-            <tr style={darkMode ? { backgroundColor: '#1C2541' } : {}}>
               {selectedProject === 'all' ? (
-                <th
-                  className={darkMode ? 'dark-th' : ''}
-                  style={
-                    darkMode
-                      ? { backgroundColor: '#1C2541', color: '#ffffff', borderColor: '#555' }
-                      : {}
-                  }
-                  onClick={() => sortData('ProjectName')}
-                >
+                <th onClick={() => sortData('ProjectName')}>
                   Project <FontAwesomeIcon icon={projectNameCol.iconsToDisplay} size="lg" />
                 </th>
               ) : (
-                <th
-                  className={darkMode ? 'dark-th' : ''}
-                  style={
-                    darkMode
-                      ? { backgroundColor: '#1C2541', color: '#ffffff', borderColor: '#555' }
-                      : {}
-                  }
-                >
-                  Project
-                </th>
+                <th>Project</th>
               )}
               {selectedItem === 'all' ? (
-                <th
-                  className={darkMode ? 'dark-th' : ''}
-                  style={
-                    darkMode
-                      ? { backgroundColor: '#1C2541', color: '#ffffff', borderColor: '#555' }
-                      : {}
-                  }
-                  onClick={() => sortData('InventoryItemType')}
-                >
+                <th onClick={() => sortData('InventoryItemType')}>
                   Name <FontAwesomeIcon icon={inventoryItemTypeCol.iconsToDisplay} size="lg" />
                 </th>
               ) : (
-                <th
-                  className={darkMode ? 'dark-th' : ''}
-                  style={
-                    darkMode
-                      ? { backgroundColor: '#1C2541', color: '#ffffff', borderColor: '#555' }
-                      : {}
-                  }
-                >
-                  Name
-                </th>
+                <th>Name</th>
               )}
-              {dynamicColumns.map(({ label, key }) => (
-                <th
-                  className={darkMode ? 'dark-th' : ''}
-                  style={
-                    darkMode
-                      ? { backgroundColor: '#1C2541', color: '#ffffff', borderColor: '#555' }
-                      : {}
-                  }
-                  key={label}
-                >
-                  {label}
-                </th>
+              {dynamicColumns.map(({ label }) => (
+                <th key={label}>{label}</th>
               ))}
               {isMaterialsTable && <th>Bulk Status</th>}
               <th>Usage Record</th>
               <th>Updates</th>
               <th>Purchases</th>
-              <th
-                className={darkMode ? 'dark-th' : ''}
-                style={
-                  darkMode
-                    ? { backgroundColor: '#1C2541', color: '#ffffff', borderColor: '#555' }
-                    : {}
-                }
-              >
-                Updates
-              </th>
-              <th
-                className={darkMode ? 'dark-th' : ''}
-                style={
-                  darkMode
-                    ? { backgroundColor: '#1C2541', color: '#ffffff', borderColor: '#555' }
-                    : {}
-                }
-              >
-                Purchases
-              </th>
             </tr>
           </thead>
 
-          <tbody
-            className={darkMode ? 'dark-tbody' : ''}
-            style={darkMode ? { backgroundColor: '#3A506B', color: '#ffffff' } : {}}
-          >
+          <tbody>
             {sortedData && sortedData.length > 0 ? (
               sortedData.map(el => {
                 const isSelected = selectedItems.has(el._id);
                 const hasHold = Boolean(el.stockHold);
                 const hasReview = Boolean(el.isReviewed);
                 const hasNote = Boolean(el.notes?.trim());
+
                 return (
                   <tr key={el._id} className={isSelected ? styles.selectedRow : ''}>
                     {isMaterialsTable && (
@@ -525,25 +418,19 @@ export default function ItemsTable({
                     {isMaterialsTable && (
                       <td>
                         <div className={styles.bulkStatusCell}>
-                          {Boolean(el.stockHold) && (
-                            <span className={styles.bulkTagHold}>On Hold</span>
-                          )}
-                          {Boolean(el.isReviewed) && (
-                            <span className={styles.bulkTagReviewed}>Reviewed</span>
-                          )}
-                          {Boolean(el.notes?.trim()) && (
-                            <span className={styles.bulkTagNote}>Has Note</span>
-                          )}
+                          {hasHold && <span className={styles.bulkTagHold}>On Hold</span>}
+                          {hasReview && <span className={styles.bulkTagReviewed}>Reviewed</span>}
+                          {hasNote && <span className={styles.bulkTagNote}>Has Note</span>}
                           {!hasHold && !hasReview && !hasNote && (
                             <span className={styles.bulkTagNone}>-</span>
                           )}
                         </div>
                       </td>
                     )}
-                    <td className={`${styles.itemsCell}`}>
+                    <td className={styles.itemsCell}>
                       <button
                         type="button"
-                        onClick={() => handleEditRecordsClick(el, 'UsageRecord')}
+                        onClick={() => handleEditRecordsClick(el, 'Update')}
                         aria-label="Edit Record"
                       >
                         <BiPencil />
@@ -552,38 +439,14 @@ export default function ItemsTable({
                         color="primary"
                         outline
                         size="sm"
-                        onClick={() => handleViewRecordsClick(el, 'UsageRecord')}
+                        onClick={() => handleViewRecordsClick(el, 'Update')}
                       >
                         View
                       </Button>
-              sortedData.map(el => (
-                <tr
-                  key={el._id}
-                  className={darkMode ? 'dark-row' : ''}
-                  style={
-                    darkMode ? { backgroundColor: '#3A506B', borderBottom: '1px solid #333' } : {}
-                  }
-                >
-                  <td style={darkMode ? { color: '#ffffff' } : {}}>{el.project?.name}</td>
-                  <td style={darkMode ? { color: '#ffffff' } : {}}>{el.itemType?.name}</td>
-                  {dynamicColumns.map(({ label, key }) => (
-                    <td key={label} style={darkMode ? { color: '#ffffff' } : {}}>
-                      {getNestedValue(el, key)}
                     </td>
-                  ))}
-                  <td className="items_cell">
-                    <div
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '10px',
-                        flexWrap: 'nowrap',
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
+                    <td className={styles.itemsCell}>
                       <button
                         type="button"
-                        style={darkMode ? { color: '#4a90e2' } : {}}
                         onClick={() => handleEditRecordsClick(el, 'Update')}
                         aria-label="Edit Record"
                       >
@@ -591,28 +454,26 @@ export default function ItemsTable({
                       </button>
                       <Button
                         color="primary"
-                        outline={!darkMode}
-                        style={darkMode ? { borderColor: '#4a90e2', color: '#ffffff' } : {}}
+                        outline
                         size="sm"
                         onClick={() => handleViewRecordsClick(el, 'Update')}
                       >
                         View
                       </Button>
-                    </div>
-                  </td>
-                  <td>
-                    <Button
-                      color="primary"
-                      outline={!darkMode}
-                      style={darkMode ? { borderColor: '#4a90e2', color: '#ffffff' } : {}}
-                      size="sm"
-                      onClick={() => handleViewRecordsClick(el, 'Purchase')}
-                    >
-                      View
-                    </Button>
-                  </td>
-                </tr>
-              ))
+                    </td>
+                    <td>
+                      <Button
+                        color="primary"
+                        outline
+                        size="sm"
+                        onClick={() => handleViewRecordsClick(el, 'Purchase')}
+                      >
+                        View
+                      </Button>
+                    </td>
+                  </tr>
+                );
+              })
             ) : (
               <tr>
                 <td colSpan={isMaterialsTable ? 13 : 12} style={{ textAlign: 'center' }}>

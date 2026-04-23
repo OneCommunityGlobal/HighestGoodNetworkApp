@@ -35,8 +35,57 @@
   color: dimgray;
 }
 
+.itemsTableContainer {
+  overflow-x: auto;
+}
+
+.itemsCell button {
+  cursor: pointer;
+}
+
+.itemsCell svg {
+  width: 20px;
+  height: 20px;
+  margin-right: 6px;
+  color: dimgray;
+}
+
+.itemsCell svg:hover {
+  color: black;
+}
+
 .items_cell svg:hover {
   color: black;
+}
+
+.darkTableWrapper {
+  background-color: #1b2a41;
+  border: 1px solid #2f4157;
+  border-radius: 6px;
+}
+
+.darkTable {
+  background-color: #1b2a41;
+  color: #e8edf4;
+}
+
+.darkTable thead th {
+  background-color: #2f4157;
+  color: #f2f6ff !important;
+  border-color: #3f5269 !important;
+}
+
+.darkTable tbody td,
+.darkTable tbody th {
+  border-color: #2f4157 !important;
+}
+
+.darkTable tbody tr:nth-child(odd) {
+  background-color: #1f2e45;
+}
+
+.darkTable tbody tr:nth-child(even) {
+  background-color: #23375b;
 }
 
 .select_input {
@@ -49,7 +98,7 @@
 
 :global(.dark-mode) .items_list_container {
   background-color: #0d1117 !important;
-  color: #ffffff !important;
+  color: #fff !important;
   min-height: 100vh;
   padding-bottom: 2rem;
 }
@@ -60,19 +109,19 @@
 
 :global(.dark-mode) .items_list_container table {
   background-color: #161b22;
-  color: #ffffff;
+  color: #fff;
   border: 1px solid #30363d;
 }
 
 :global(.dark-mode) .items_list_container th {
   background-color: #1f2937;
-  color: #ffffff;
+  color: #fff;
   border-bottom: 1px solid #30363d;
 }
 
 :global(.dark-mode) .items_list_container td {
   border-bottom: 1px solid #30363d;
-  color: #ffffff;
+  color: #fff;
 }
 
 :global(.dark-mode) .items_list_container tr:hover {
@@ -80,29 +129,29 @@
 }
 
 :global(.dark-mode) .items_cell svg {
-  color: #ffffff;
+  color: #fff;
 }
 
 :global(.dark-mode) .items_cell svg:hover {
-  color: #ffffff;
+  color: #fff;
 }
 
 :global(.dark-mode) .select_input {
   background-color: #1e2632;
-  color: #ffffff;
+  color: #fff;
   border: 1px solid #30363d;
 }
 
 :global(.dark-mode) select,
 :global(.dark-mode) input {
   background-color: #1e2632;
-  color: #ffffff;
+  color: #fff;
   border: 1px solid #30363d;
 }
 
 :global(.dark-mode) option {
   background-color: #111827;
-  color: #ffffff;
+  color: #fff;
 }
 
 :global(.dark-mode) body,
@@ -113,13 +162,13 @@
 
 .items_list_container.dark_mode {
   background-color: #1b1f27 !important;
-  color: #ffffff !important;
+  color: #fff !important;
   border-color: #2a2f3a !important;
 }
 
 .dark-mode .items_table_container .table thead th {
   background-color: #1c2541 !important;
-  color: #ffffff !important;
+  color: #fff !important;
   border-color: #555 !important;
 }
 
@@ -129,4 +178,132 @@
 
 :global(.dark-mode) [class*='items_list_container'] {
   background-color: #1b2a41 !important;
+}
+
+.bulkActionsContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 10px 15px;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+
+.bulkActionsButton {
+  background-color: #468ef9;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.bulkActionsButton:hover {
+  background-color: #3b82f6;
+}
+
+.bulkActionsButton:disabled {
+  background-color: #9aa6b2;
+  cursor: not-allowed;
+}
+
+.selectedCount {
+  font-weight: bold;
+  color: #495057;
+}
+
+.selectedRow {
+  background-color: #e3f2fd !important;
+}
+
+.selectedRow:hover {
+  background-color: #bbdefb !important;
+}
+
+.bulkStatusCell {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.bulkTagHold,
+.bulkTagReviewed,
+.bulkTagNote,
+.bulkTagNone {
+  font-size: 0.72rem;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.bulkTagHold {
+  background: #fff4e5;
+  color: #a44900;
+  border: 1px solid #ffcf99;
+}
+
+.bulkTagReviewed {
+  background: #e8f7ef;
+  color: #106c3f;
+  border: 1px solid #b8e6cb;
+}
+
+.bulkTagNote {
+  background: #eaf1ff;
+  color: #1f4ba8;
+  border: 1px solid #c5d6ff;
+}
+
+.bulkTagNone {
+  background: #f1f5f9;
+  color: #64748b;
+  border: 1px solid #d8e0e8;
+}
+
+.darkBulkActions {
+  background-color: #2f4157;
+  border: 1px solid #3f5269;
+  color: #e8edf4;
+}
+
+.darkBulkActions .selectedCount {
+  color: #e8edf4;
+}
+
+.darkTable .selectedRow {
+  background-color: #3f5269 !important;
+}
+
+.darkTable .selectedRow:hover {
+  background-color: #4a5f7a !important;
+}
+
+.darkTable .bulkTagHold {
+  background: #5a3a12;
+  color: #ffd8a6;
+  border-color: #7a4b1a;
+}
+
+.darkTable .bulkTagReviewed {
+  background: #0f4a34;
+  color: #b7f7d7;
+  border-color: #166848;
+}
+
+.darkTable .bulkTagNote {
+  background: #203a69;
+  color: #d3e3ff;
+  border-color: #2d4f89;
+}
+
+.darkTable .bulkTagNone {
+  background: #334155;
+  color: #d1dae7;
+  border-color: #41556f;
 }
