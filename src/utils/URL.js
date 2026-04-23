@@ -587,6 +587,8 @@ export const ENDPOINTS = {
   //pull requests analysis
   PR_REVIEWS_INSIGHTS: `${APIEndpoint}/analytics/pr-review-insights`,
   PR_GRADING_CONFIG: `${APIEndpoint}/pr-grading-config`,
+  WEEKLY_GRADING: `${APIEndpoint}/weekly-grading`,
+  WEEKLY_GRADING_SAVE: `${APIEndpoint}/weekly-grading/save`,
 
   // Education Portal endpoints
   STUDENT_PROFILE: `${APIEndpoint}/student/profile`,
