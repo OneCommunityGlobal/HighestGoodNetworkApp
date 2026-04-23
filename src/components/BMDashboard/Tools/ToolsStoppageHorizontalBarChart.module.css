@@ -1,3 +1,27 @@
+/* Light mode calendar override (counters dark globals from RentalChart.css) */
+:global(.customCalendar) {
+  background-color: #fff !important;
+  color: #000 !important;
+  border: 1px solid #aeaeae !important;
+}
+
+:global(.customCalendar .react-datepicker__header) {
+  background-color: #f0f0f0 !important;
+  border-bottom: 1px solid #aeaeae !important;
+}
+
+:global(.customCalendar .react-datepicker__current-month),
+:global(.customCalendar .react-datepicker__day-name),
+:global(.customCalendar .react-datepicker__day),
+:global(.customCalendar .react-datepicker__month-text),
+:global(.customCalendar .react-datepicker__year-text) {
+  color: #000 !important;
+}
+
+:global(.customCalendar .react-datepicker__navigation-icon::before) {
+  border-color: #000 !important;
+}
+
 /* Light mode for multi select*/
 :global(.customSelect__control) {
   background-color: #fff !important;
@@ -11,13 +35,19 @@
   color: #000 !important;
 }
 
-:global(.datePickerInput) {
+.datepickerWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.datePickerInput {
   font-size: 10px !important;
   padding: 6px 8px;
   border-radius: 4px;
 }
 
-:global(.darkTheme .form-control .datePickerInput) {
+:global(.darkTheme) .datePickerInput {
   background-color: #2b3e59 !important;
   color: #fff !important;
   border: 1px solid #666 !important;
@@ -28,10 +58,10 @@
   background-color: #7d7e7f !important;
 }
 
-/* Hover day styling in dark theme */
+/* Hover day styling in light mode */
 :global(.customCalendar .react-datepicker__day:hover) {
-  background-color: #3b5a81 !important;
-  color: #fff !important;
+  background-color: #f0f0f0 !important;
+  color: #000 !important;
   border-radius: 50%;
 }
 
@@ -95,15 +125,27 @@
   background-color: #007bff!important;
 }
 
+/* Title styling */
+:global(.tools-chart-title) {
+  font-size: 1.5rem !important;
+  color: #333 !important;
+  font-weight: 600 !important;
+  margin-bottom: 1rem !important;
+}
+
+:global(.dark-mode .tools-chart-title) {
+  color: #e0e0e0 !important;
+}
+
 /* Filter controls layout for small screens */
 @media (max-width: 768px) {
-  :global(.datepickerWrapper) {
+  .datepickerWrapper {
     display: flex;
     flex-direction: column;
     align-items: stretch;
   }
 
-  :global(.datepickerWrapper .btn) {
+  .datepickerWrapper .btn {
     margin-top: 8px;
     width: 100%;
   }
