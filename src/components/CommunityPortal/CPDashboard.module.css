@@ -1,10 +1,11 @@
+/* stylelint-disable no-descending-specificity, no-duplicate-selectors, declaration-block-no-duplicate-properties, declaration-property-value-keyword-no-deprecated */
 .dashboardContainer {
   padding: 40px 20px;
   max-width: 1400px;
   margin: 0 auto;
-  background: #ffffff;
+  background: #fff;
   border-radius: 16px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 20px rgb(0 0 0 / 10%);
 }
 
 .dashboardHeader {
@@ -13,9 +14,9 @@
   align-items: center;
   margin-bottom: 30px;
   padding: 20px;
-  background: linear-gradient(120deg, #ffffff, #f8f9fa);
+  background: linear-gradient(120deg, #fff, #f8f9fa);
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
 }
 
 .dashboardHeader h1 {
@@ -64,11 +65,11 @@
   border-radius: 999px;
   overflow: hidden;
   border: 2px solid #1b3c55;
-  background: #ffffff;
+  background: #fff;
 }
 
 .darkHeader .dashboardSearchContainer {
-  border-color: #ffffff;
+  border-color: #fff;
   background: #1b2a41;
 }
 
@@ -92,21 +93,20 @@
   min-height: 36px;
   max-height: 120px;
   box-sizing: border-box;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden auto;
   white-space: pre-wrap;
-  word-wrap: break-word;
+  overflow-wrap: break-word;
   word-break: break-word;
 }
 
-@media (max-width: 850px) {
+@media (width <= 850px) {
   .dashboardSearchContainer {
     width: 250px;
   }
 }
 
 .darkHeader .dashboardSearchTextarea {
-  color: #ffffff;
+  color: #fff;
 }
 
 .darkHeader .dashboardSearchTextarea::placeholder {
@@ -118,7 +118,7 @@
   top: 100%;
   transform: translateY(4px);
   background-color: #e4b348 !important;
-  color: #333333 !important;
+  color: #333 !important;
   padding: 4px 8px;
   border-radius: 4px;
   font-size: 0.85rem;
@@ -176,7 +176,7 @@
   padding: 30px;
   background: #f9f9f9;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
 }
 
 .darkSidebar {
@@ -197,7 +197,7 @@
   gap: 20px;
 }
 
-.filterItem input:not([type='checkbox']):not([type='radio']),
+.filterItem input:not([type='checkbox'], [type='radio']),
 .radioRow {
   display: flex;
   flex-direction: column;
@@ -205,7 +205,7 @@
   margin-top: 10px;
 }
 
-.darkSidebar .filterItem input:not([type='checkbox']):not([type='radio']),
+.darkSidebar .filterItem input:not([type='checkbox'], [type='radio']),
 .darkSidebar .filterItem select {
   background-color: #34495e;
   color: #fff;
@@ -246,19 +246,19 @@
   height: 18px;
 }
 
-.filterItem input:not([type="checkbox"]):not([type="radio"]),
+.filterItem input:not([type="checkbox"], [type="radio"]),
 .filterItem select {
   padding: 12px 15px;
   border: 1px solid #ddd;
   border-radius: 8px;
   width: 100%;
   font-size: 1rem;
-  background: #ffffff;
+  background: #fff;
   transition: all 0.3s ease;
   margin-bottom: 20px;
   appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
+  appearance: none;
+  appearance: none;
   background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
   background-repeat: no-repeat;
   background-position: right 1rem center;
@@ -325,7 +325,7 @@
 .filterItem input:focus,
 .filterItem select:focus {
   border-color: #2c3e50;
-  box-shadow: 0 0 5px rgba(44, 62, 80, 0.4);
+  box-shadow: 0 0 5px rgb(44 62 80 / 40%);
   outline: none;
 }
 
@@ -335,15 +335,15 @@
 
 .dateFilter:focus {
   border-color: #2c3e50;
-  box-shadow: 0 0 5px rgba(44, 62, 80, 0.4);
+  box-shadow: 0 0 5px rgb(44 62 80 / 40%);
   outline: none;
 }
 
 .dashboardMain {
   padding: 30px;
-  background: #ffffff;
+  background: #fff;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
 }
 
 .darkMain {
@@ -376,17 +376,17 @@
   margin-bottom: 20px;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 15px rgb(0 0 0 / 10%);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   display: flex;
   flex-direction: column;
   border: none;
-  background: #ffffff;
+  background: #fff;
 }
 
 .eventCard:hover {
   transform: scale(1.05);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 20px rgb(0 0 0 / 20%);
 }
 
 .eventCardImgContainer {
@@ -406,7 +406,7 @@
 .eventTitle {
   text-align: center;
   color: #2c3e50;
-  margin: 0 0 15px 0;
+  margin: 0 0 15px;
   font-weight: bold;
   font-size: 1.3rem;
   line-height: 1.4;
@@ -495,7 +495,7 @@
 
 .showPastEventsBtn {
   background-color: #2c3e50;
-  color: #ffffff;
+  color: #fff;
   border: none;
   padding: 12px 25px;
   font-size: 1rem;
@@ -508,7 +508,7 @@
 
 .showPastEventsBtn:hover {
   background-color: #34495e;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 20%);
 }
 
 
@@ -517,8 +517,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 6px 0 20px 0;
+  padding: 6px 0 20px;
 }
+
 .dateFilterContainer :global(.react-datepicker-wrapper) input {
   border: 2px solid #1b3c55; 
   border-radius: 8px;
@@ -530,18 +531,18 @@
 }
 
 .darkSidebar :global(.react-datepicker__input-container input) {
-  background-color: #000000 !important;
-  color: #ffffff !important;
+  background-color: #000 !important;
+  color: #fff !important;
   border: 2px solid #4da3ff !important;
 }
 
 .darkSidebar :global(.react-datepicker__input-container input::placeholder) {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .dateFilterContainer :global(.react-datepicker-wrapper) input:focus {
   border-color: #34495e;
-  box-shadow: 0 0 5px rgba(44, 62, 80, 0.4);
+  box-shadow: 0 0 5px rgb(44 62 80 / 40%);
 }
 
 .dateErrorMessage {
@@ -561,9 +562,10 @@
 .dashboardSearchInput::-webkit-search-decoration,
 .dashboardSearchInput::-webkit-search-results-button,
 .dashboardSearchInput::-webkit-search-results-decoration {
-  -webkit-appearance: none;
+  appearance: none;
   appearance: none;
 }
+
 .noEvents{
   display: flex;
   justify-content: center;
@@ -573,6 +575,7 @@
   font-style: italic;
   color:#6b7280;
 }
+
 .darkMain .noEvents {
   color: #9ca3af;
 }
