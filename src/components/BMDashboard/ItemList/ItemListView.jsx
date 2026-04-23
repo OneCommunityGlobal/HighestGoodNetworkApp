@@ -1,15 +1,30 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+
 import BMError from '../shared/BMError';
 import SelectForm from './SelectForm';
 import SelectItem from './SelectItem';
 import ItemsTable from './ItemsTable';
 import styles from './ItemListView.module.css';
 
-export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamicColumns }) {
+export function ItemListView({
+  itemType,
+  items,
+  errors,
+  UpdateItemModal,
+  dynamicColumns,
+  children,
+}) {
+export function ItemListView({
+  itemType,
+  items,
+  errors,
+  UpdateItemModal,
+  dynamicColumns,
+  children,
+}) {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [filteredItems, setFilteredItems] = useState(items);
   const [selectedProject, setSelectedProject] = useState('all');
   const [selectedItem, setSelectedItem] = useState('all');
@@ -20,8 +35,6 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(25);
-
-  const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
     if (items) setFilteredItems([...items]);
@@ -190,6 +203,8 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
                 selectedProject={selectedProject}
                 selectedItem={selectedItem}
                 setSelectedItem={setSelectedItem}
+                label={itemType === 'Materials' ? 'Material' : itemType}
+                darkMode={darkMode}
               />
             </div>
           )}
@@ -234,6 +249,8 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
           </div>
         </div>
 
+        {children}
+
         {filteredItems && (
           <ItemsTable
             selectedProject={selectedProject}
@@ -260,6 +277,7 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
 }
 
 ItemListView.propTypes = {
+  itemType: PropTypes.string.isRequired,
   items: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
@@ -281,7 +299,6 @@ ItemListView.propTypes = {
   errors: PropTypes.shape({
     message: PropTypes.string,
   }),
-  itemType: PropTypes.string.isRequired,
   UpdateItemModal: PropTypes.elementType.isRequired,
   dynamicColumns: PropTypes.arrayOf(
     PropTypes.shape({
@@ -289,10 +306,12 @@ ItemListView.propTypes = {
       key: PropTypes.string.isRequired,
     }),
   ).isRequired,
+  children: PropTypes.node,
 };
 
 ItemListView.defaultProps = {
   errors: {},
+  children: null,
 };
 
 export default ItemListView;

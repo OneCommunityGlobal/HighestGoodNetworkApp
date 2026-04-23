@@ -1,3 +1,16 @@
+.messageUserNotFound {
+  text-align: center;
+  height: 100%;
+}
+
+.test{
+  background-color: #3a506b;
+  height: calc(100% - 25rem);
+  margin: 0 40px;
+  padding-top: 10px;
+  border-radius: 20px;
+}
+
 .desktop-profile-page {
   z-index: -100;
 }
@@ -123,7 +136,7 @@
 
 .profile-tab label {
   font-weight: 600;
-  margin : 0;
+  margin: 0;
 }
 
 .profile-tab p {
@@ -167,7 +180,7 @@
 }
 
 .profilePicture {
-  //this should fix the image formatting issue
+  /* this should fix the image formatting issue */
   display: flex;
   max-width: 240px;
   max-height: 240px;
@@ -225,14 +238,12 @@
 .profile-functions-tablet {
   display: none;
 }
-// Changed hover, focus and active class for the Stop Scheduler Button
+/* Changed hover, focus and active class for the Stop Scheduler Button */
 #stopSchedulerButton {
   background-color: #ffc107;
   border: #ffc107;
 
   &:hover {
-    // background-color: #fff3cd;
-    // border: #fff3cd ;
     background-color: #ffcd39;
     border: #ffcd39;
   }
@@ -247,7 +258,6 @@
   display: flex;
   flex-direction: column;
 }
-
 
 .isActive {
   display: flex;
@@ -264,7 +274,6 @@
 .isNotActive i {
   color: #dee2e6;
   margin-top: 10px;
-
 }
 
 .isNotActive {
@@ -311,7 +320,7 @@
   top: 10px;
 }
 
-.Job-Email-CC-tooltip{
+.Job-Email-CC-tooltip {
   visibility: hidden;
   background-color: white;
   color: black;
@@ -325,16 +334,16 @@
   top: 10px;
 }
 
-.Job-Email-CC-div{
-  height:6em;
+.Job-Email-CC-div {
+  height: 6em;
 }
 
 .Job-Email-CC-div:hover div {
   visibility: visible;
 }
 
-.Blue-Square-Email-BCC-div{
-  height:6em;
+.Blue-Square-Email-BCC-div {
+  height: 6em;
 }
 
 .Blue-Square-Email-BCC-div:hover div {
@@ -364,16 +373,13 @@
     display: block;
   }
 
-  .profile-functions-list {
-    display: flex;
-    flex-direction: column;
-    padding: 0;
-  }
-
-  .profile-functions-list {
-    margin-top: 16px;
-    border-top: 2px solid #0275d8;
-  }
+.profile-functions-list {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin-top: 16px;
+  border-top: 2px solid #0275d8;
+}
 
   .list-button {
     display: flex;
@@ -416,21 +422,20 @@
 }
 
 .btn-outline-primary:disabled {
-  margin-right:5px;
+  margin-right: 5px;
 }
 
 button.btn.btn-outline-primary {
-  margin-right:5px;
+  margin-right: 5px;
 }
-
 
 #containerProfile {
   display: grid;
   grid-template-columns: 1fr 2fr; /* Left = 1fr, Right = 2fr */
-  grid-template-rows: auto auto 1fr;/* Forces left columns to take only the required height */
-  grid-auto-rows: min-content; 
-  gap: 10px; 
-  align-items: start; 
+  grid-template-rows: auto auto 1fr; /* Forces left columns to take only the required height */
+  grid-auto-rows: min-content;
+  gap: 10px;
+  align-items: start;
 }
 
 .left-top {
@@ -453,14 +458,15 @@ button.btn.btn-outline-primary {
   align-self: stretch;
 }
 
-.left-dummy { /* This is the new empty space filler */
+.left-dummy {
+  /* This is the new empty space filler */
   grid-column: 1;
   grid-row: 3;
-  background-color: transparent; 
+  background-color: transparent;
 }
 
 /* Mobile & Tablet Layout */
-@media (max-width: 767px) { 
+@media (max-width: 767px) {
   #containerProfile {
     grid-template-columns: 1fr; /* Single-column layout */
     grid-template-rows: auto auto auto; /* Three stacked rows */
@@ -468,20 +474,20 @@ button.btn.btn-outline-primary {
 
   .left-top {
     grid-column: 1;
-    grid-row: 1; 
+    grid-row: 1;
   }
 
   .right-column {
     grid-column: 1;
-    grid-row: 2; 
+    grid-row: 2;
   }
 
   .left-bottom {
     grid-column: 1;
-    grid-row: 3; 
+    grid-row: 3;
   }
 
   .left-dummy {
-    display: none; 
+    display: none;
   }
 }
