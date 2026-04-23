@@ -1,5 +1,6 @@
-import { connect } from 'react-redux';
-import { useState } from 'react';
+import { connect, useSelector } from 'react-redux';
+import { useState, useCallback } from 'react';
+import { useHistory, Link } from 'react-router-dom';
 
 import Navbar from 'react-bootstrap/Navbar';
 import Container from 'react-bootstrap/Container';
@@ -7,45 +8,122 @@ import Nav from 'react-bootstrap/Nav';
 
 import { FiUser } from 'react-icons/fi';
 import { BsChat } from 'react-icons/bs';
-import { Link } from 'react-router-dom';
 import { IoNotificationsOutline } from 'react-icons/io5';
+
+import { FIXED_VILLAGES } from './Home/data.jsx';
+import itemStyles from './WishList/ItemOverview.module.css';
+
+const cx = (base, darkClass, darkMode) => `${base} ${darkMode ? darkClass : ''}`.trim();
 
 function LBDashboardHeader(props) {
   const [selectedVillage, setSelectedVillage] = useState('');
   const { authUser } = props;
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const history = useHistory();
+
+  const selectorWrapperStyle = darkMode
+    ? {
+        backgroundColor: '#1c2541',
+        border: '1px solid #2f3b59',
+      }
+    : undefined;
+
+  const selectorStyle = darkMode
+    ? {
+        backgroundColor: 'transparent',
+        color: '#ffffff',
+      }
+    : undefined;
+
+  const goButtonStyle = darkMode
+    ? {
+        backgroundColor: '#4f6fdc',
+        borderColor: '#89a2ff',
+      }
+    : undefined;
+
+  const handleGoClick = useCallback(() => {
+    const qs = selectedVillage ? `?village=${encodeURIComponent(selectedVillage)}` : '';
+    history.push(`/lbdashboard/listingshome${qs}`);
+  }, [history, selectedVillage]);
 
   return (
-    <Navbar expand="lg" className="item__navbar">
+    <Navbar
+      expand="lg"
+      className={cx(itemStyles.item__navbar, itemStyles['item__navbar--dark'], darkMode)}
+    >
       <Container fluid>
-        {/* Left Section - Village Selector */}
-        <div className="item__navbar-left">
-          <div className="item__selector">
-            <select value={selectedVillage} onChange={e => setSelectedVillage(e.target.value)}>
-              <option value="Village 1">Village 1</option>
-              <option value="Village 2">Village 2</option>
-              <option value="Village 3">Village 3</option>
+        <div className={itemStyles['item__navbar-left']}>
+          <div className={itemStyles.item__selector} style={selectorWrapperStyle}>
+            <select
+              value={selectedVillage}
+              onChange={e => setSelectedVillage(e.target.value)}
+              style={selectorStyle}
+              aria-label="Filter by village"
+            >
+              <option value="">Select village</option>
+              {FIXED_VILLAGES.map(v => (
+                <option key={v} value={v}>
+                  {v}
+                  {v !== 'City Center' ? ' Village' : ''}
+                </option>
+              ))}
             </select>
           </div>
-          <div className="item__button">
+          <button
+            type="button"
+            className={itemStyles.item__button}
+            style={goButtonStyle}
+            onClick={handleGoClick}
+          >
             <p>Go</p>
-          </div>
+          </button>
         </div>
 
-        {/* Right Section - User Info and Icons */}
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
-          <div className="item__navbar-right">
+          <div
+            className={cx(
+              itemStyles['item__navbar-right'],
+              itemStyles['item__navbar-right--dark'],
+              darkMode,
+            )}
+          >
             <h2>WELCOME {authUser?.name || 'USER_NAME'}</h2>
-            <div className="item__icons">
+            <div className={itemStyles.item__icons}>
               <Nav className="ml-auto">
-                <Nav.Link as={Link} to="/bidding" className="item__nav-link">
-                  <BsChat className="item__nav-icon" />
+                <Nav.Link
+                  as={Link}
+                  to="/lbdashboard/messaging"
+                  className={cx(
+                    itemStyles['item__nav-link'],
+                    itemStyles['item__nav-link--dark'],
+                    darkMode,
+                  )}
+                >
+                  <BsChat className={itemStyles['item__nav-icon']} />
                 </Nav.Link>
-                <Nav.Link as={Link} to="/bidding" className="item__nav-link">
-                  <IoNotificationsOutline className="item__nav-icon" />
+                <Nav.Link
+                  as={Link}
+                  to="/lbdashboard/bidding"
+                  className={cx(
+                    itemStyles['item__nav-link'],
+                    itemStyles['item__nav-link--dark'],
+                    darkMode,
+                  )}
+                >
+                  <IoNotificationsOutline className={itemStyles['item__nav-icon']} />
                 </Nav.Link>
-                <Nav.Link as={Link} to="/bidding" className="item__nav-link">
-                  <FiUser className="item__nav-icon" />
+                <Nav.Link
+                  as={Link}
+                  to={authUser?.userid ? `/userprofile/${authUser.userid}` : '/'}
+                  className={cx(
+                    itemStyles['item__nav-link'],
+                    itemStyles['item__nav-link--dark'],
+                    darkMode,
+                  )}
+                >
+                  <FiUser className={itemStyles['item__nav-icon']} />
                 </Nav.Link>
               </Nav>
             </div>

@@ -9,6 +9,7 @@
 
 .carouselWrapper {
   width: 100%;
+  min-height: 200px;
   overflow: hidden;
 }
 
@@ -29,7 +30,7 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgb(0 0 0 / 50%);
   color: white;
   border: none;
   padding: 10px;
@@ -38,11 +39,11 @@
   z-index: 10;
 }
 
-.left {
+.imgArrow.left {
   left: 10px;
 }
 
-.right {
+.imgArrow.right {
   right: 10px;
 }
 
@@ -63,6 +64,36 @@
   transition: background-color 0.3s ease;
 }
 
-.active {
+.indicator.active {
   background-color: #333;
+}
+
+/* Dark mode styles */
+.carouselContainer--dark {
+  /* Container dark mode styles if needed */
+}
+
+.imgArrow--dark {
+  background-color: rgb(255 255 255 / 70%) !important;
+  color: #000 !important;
+}
+
+.imgArrow--dark:hover {
+  background-color: rgb(255 255 255 / 90%) !important;
+}
+
+.indicator--dark {
+  background-color: #666 !important;
+}
+
+.indicator--dark:hover {
+  background-color: #888 !important;
+}
+
+.active--dark {
+  background-color: #fff !important;
+}
+
+.no-images--dark {
+  color: #e1e1e1 !important;
 }

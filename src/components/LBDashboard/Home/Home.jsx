@@ -22,7 +22,7 @@ import {
 import { BsSliders } from 'react-icons/bs';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import L from 'leaflet';
 import logo from '../../../assets/images/logo2.png';
 import { fetchVillages, fetchListings, fetchBiddings, FIXED_VILLAGES } from './data';
@@ -41,6 +41,51 @@ const unitIcon = new L.Icon({
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
 });
+
+const VILLAGE_SUFFIX = 'village';
+
+const stripVillageSuffix = value => {
+  const input = String(value || '').trim();
+  if (!input) return '';
+  const lower = input.toLowerCase();
+  if (!lower.endsWith(VILLAGE_SUFFIX)) return input;
+  return input.slice(0, -VILLAGE_SUFFIX.length).trim();
+};
+
+const buildApiFilters = (selectedVillage, dateRange) => {
+  const filters = {};
+  if (selectedVillage) filters.village = selectedVillage;
+  if (dateRange.startDate) filters.availableFrom = dateRange.startDate;
+  if (dateRange.endDate) filters.availableTo = dateRange.endDate;
+  return filters;
+};
+
+const withVillageFallback = async (
+  fetcher,
+  currentPage,
+  pageSize,
+  filters,
+  selectedVillage,
+  villageFilterCandidates,
+) => {
+  let response = await fetcher(currentPage, pageSize, filters);
+  if (!selectedVillage || (response.items || []).length > 0) return response;
+
+  const fallbackVillages = villageFilterCandidates(selectedVillage).filter(
+    v => v !== filters.village,
+  );
+  for (const villageCandidate of fallbackVillages) {
+    const retryResponse = await fetcher(currentPage, pageSize, {
+      ...filters,
+      village: villageCandidate,
+    });
+    if ((retryResponse.items || []).length > 0) {
+      response = retryResponse;
+      break;
+    }
+  }
+  return response;
+};
 
 function Home() {
   const [viewMode, setViewMode] = useState('Grid');
@@ -74,6 +119,28 @@ function Home() {
 
   const pageSizeOptions = [12, 24, 36, 48];
   const navigate = useHistory();
+  const location = useLocation();
+
+  const villageFilterCandidates = useCallback(village => {
+    const raw = String(village || '').trim();
+    if (!raw) return [];
+    const noSuffix = stripVillageSuffix(raw);
+    const withSuffix = `${noSuffix} Village`;
+    return Array.from(new Set([raw, noSuffix, withSuffix])).filter(Boolean);
+  }, []);
+
+  const normalizeVillageName = useCallback(
+    village => stripVillageSuffix(village).toLowerCase(),
+    [],
+  );
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const village = params.get('village');
+    if (village) {
+      setSelectedVillage(village);
+    }
+  }, [location.search]);
 
   useEffect(() => {
     const fetchVillagesData = async () => {
@@ -106,69 +173,77 @@ function Home() {
   );
 
   useEffect(() => {
+    const loadListings = async filters => {
+      const listingsData = await withVillageFallback(
+        fetchListings,
+        pagination.currentPage,
+        pagination.pageSize,
+        filters,
+        selectedVillage,
+        villageFilterCandidates,
+      );
+      setAllListings(listingsData.items || []);
+      setPagination(prev => ({
+        ...prev,
+        totalPages: listingsData.pagination.totalPages || 1,
+      }));
+    };
+
+    const loadBiddings = async filters => {
+      const biddingsData = await withVillageFallback(
+        fetchBiddings,
+        pagination.currentPage,
+        pagination.pageSize,
+        filters,
+        selectedVillage,
+        villageFilterCandidates,
+      );
+      setAllBiddings(biddingsData.items || []);
+      setPagination(prev => ({
+        ...prev,
+        totalPages: biddingsData.pagination.totalPages || 1,
+      }));
+    };
+
     const fetchData = async () => {
       try {
         setIsLoading(true);
-
-        const filters = {};
-        if (selectedVillage) filters.village = selectedVillage;
-        if (dateRange.startDate) filters.availableFrom = dateRange.startDate;
-        if (dateRange.endDate) filters.availableTo = dateRange.endDate;
-
-        if (activeTab === 'listings') {
-          try {
-            const listingsData = await fetchListings(
-              pagination.currentPage,
-              pagination.pageSize,
-              filters,
-            );
-            setAllListings(listingsData.items || []);
-            console.log('fetching listings', listingsData.items);
-            setPagination(prev => ({
-              ...prev,
-              totalPages: listingsData.pagination.totalPages || 1,
-            }));
-          } catch (error) {
-            console.error('API Error (Listings):', error);
-            setError('Failed to fetch listings. Please try again later.');
-
-            setAllListings([]);
-          }
-        } else {
-          console.log('fetching biddings');
-          try {
-            const biddingsData = await fetchBiddings(
-              pagination.currentPage,
-              pagination.pageSize,
-              filters,
-            );
-
-            setAllBiddings(biddingsData.items || []);
-
-            setPagination(prev => ({
-              ...prev,
-              totalPages: biddingsData.pagination.totalPages || 1,
-            }));
-          } catch (error) {
-            console.error('API Error (Biddings):', error);
-            setError('Failed to fetch biddings. Please try again later.');
-
-            setAllBiddings([]);
-          }
-        }
+        const filters = buildApiFilters(selectedVillage, dateRange);
+        if (activeTab === 'listings') await loadListings(filters);
+        else await loadBiddings(filters);
 
         setIsLoading(false);
-      } catch (err) {
+      } catch (error) {
+        console.error(`API Error (${activeTab}):`, error);
+        if (activeTab === 'listings') setAllListings([]);
+        else setAllBiddings([]);
         setError('Failed to load data. Please try again later.');
         setIsLoading(false);
       }
     };
 
     fetchData();
-  }, [pagination.currentPage, pagination.pageSize, selectedVillage, dateRange, activeTab]);
+  }, [
+    pagination.currentPage,
+    pagination.pageSize,
+    selectedVillage,
+    dateRange,
+    activeTab,
+    villageFilterCandidates,
+  ]);
 
-  const currentItems = activeTab === 'listings' ? allListings : allBiddings;
-  const allItems = activeTab === 'listings' ? allListings : allBiddings;
+  const baseItems = activeTab === 'listings' ? allListings : allBiddings;
+  const currentItems = useMemo(() => {
+    if (!selectedVillage) return baseItems;
+    const selectedKey = normalizeVillageName(selectedVillage);
+    const strictMatches = baseItems.filter(
+      item => normalizeVillageName(item.village) === selectedKey,
+    );
+    // If backend returns unresolved village ids/names that do not match dropdown labels,
+    // avoid showing an empty page while data actually exists.
+    return strictMatches.length > 0 ? strictMatches : baseItems;
+  }, [baseItems, normalizeVillageName, selectedVillage]);
+  const allItems = currentItems;
 
   const handlePageChange = useCallback(
     newPage => {
@@ -397,7 +472,14 @@ function Home() {
                 onClick={() => handlePropertySelect(unit)}
               >
                 <div className={`${styles.lbPropertyImage}`}>
-                  <img src={unit.images[0]} alt={unit.title} />
+                  <img
+                    src={unit.images[0]}
+                    alt={unit.title}
+                    onError={e => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = 'https://picsum.photos/seed/lb-fallback/600/400';
+                    }}
+                  />
                 </div>
                 <div className={`${styles.lbPropertyDetails}`}>
                   <div>

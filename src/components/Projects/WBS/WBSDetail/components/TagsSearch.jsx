@@ -4,7 +4,6 @@ import TagSent from './TagSent';
 import styles from './TagsSearch.module.css';
 import ReadOnlySectionWrapper from '../EditTask/ReadOnlySectionWrapper';
 import { findProjectMembers } from '../../../../../actions/projectMembers';
-import clsx from 'clsx';
 
 function TagsSearch(props) {
   const {
@@ -53,10 +52,7 @@ function TagsSearch(props) {
   };
 
   const filteredMembers = useMemo(() => {
-    const resourceNames = new Set(
-      (resourceItems || []).map(item => String(item?.name || '').toLowerCase()),
-    );
-
+    const resourceNames = new Set((resourceItems || []).map(item => String(item?.name || '').toLowerCase()));
     const baseList =
       Array.isArray(members) && members.length > 0
         ? members
@@ -64,13 +60,11 @@ function TagsSearch(props) {
           ? membersFromStore
           : [];
 
-    const applyFiltering = list =>
+    const applyFiltering = (list) =>
       list
-        .filter(m => m && m.isActive === true)
+        .filter(m => m && m.isActive === true) 
         .filter(member => {
-          const fullName = `${member.firstName || member.first || ''} ${
-            member.lastName || member.last || ''
-          }`
+          const fullName = `${member.firstName || member.first || ''} ${member.lastName || member.last || ''}`
             .trim()
             .toLowerCase();
 
@@ -108,22 +102,20 @@ function TagsSearch(props) {
   const shouldShowDropdown = isFocused && filteredMembers.length > 0;
 
   return (
-    <div className={clsx('d-flex flex-column px-0')}>
+    <div className="d-flex flex-column px-0">
       <div className="d-flex flex-column mb-1 px-0">
-        <div className="d-flex flex-column align-items-start justify-content-start w-100 px-0 position-relative">
+        <div className="align-items-start justify-content-start w-100 px-0 position-relative">
           {ReadOnlySectionWrapper(
             <input
               type="text"
               placeholder={placeholder}
-              className={clsx(
-                'border border-dark rounded form-control px-2',
-                darkMode ? 'bg-darkmode-liblack text-light border-0' : '',
-              )}
+              className={`border border-dark rounded form-control px-2 ${
+                darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+              }`}
               value={searchWord}
-              onChange={handleFilter}
+              onChange={e => handleFilter(e)}
               onFocus={handleFocus}
               onBlur={handleBlur}
-              style={{ textAlign: 'left' }}
             />,
             !disableInput,
             null,
@@ -131,28 +123,20 @@ function TagsSearch(props) {
           )}
 
           {shouldShowDropdown && (
-            <ul
-              className={clsx(
-                'dropdown-menu d-flex flex-column align-items-start justify-content-start w-100 shadow-lg rounded-3 position-absolute bg-light',
-                styles.scrollbar,
-                styles.scrollableMenu,
-              )}
-              style={{ top: '100%', left: 0 }}
-            >
+            <ul className={`my-element dropdown-menu d-flex flex-column align-items-start justify-content-start w-100 ${styles.scrollbar} shadow-lg rounded-3 position-absolute top-100 start-0 z-3 bg-light ${styles['scrollable-menu']}`}>
               {filteredMembers.map((member, index) => (
                 <li
-                  key={member._id || member.userID || index}
-                  className="dropdown-item border-bottom fs-6 w-100 p-1"
+                key={member._id || member.userID || index}
+                className="dropdown-item border-bottom fs-6 w-100 p-1"
+              >
+                <button
+                  type="button"
+                  className="btn w-100 text-start p-0 text-dark"
+                  onMouseDown={event => handleClick(event, member)}
                 >
-                  <button
-                    type="button"
-                    className="btn w-100 text-left p-0 text-dark"
-                    onMouseDown={event => handleClick(event, member)}
-                    style={{ textAlign: 'left' }}
-                  >
-                    {`${member.firstName || member.first} ${member.lastName || member.last}`}
-                  </button>
-                </li>
+                  {`${member.firstName || member.first} ${member.lastName || member.last}`}
+                </button>
+              </li>
               ))}
             </ul>
           )}
@@ -174,6 +158,7 @@ function TagsSearch(props) {
 }
 
 const mapStateToProps = state => ({
+  // ✅ do NOT overwrite `members` prop anymore
   membersFromStore: state.projectMembers.members,
   foundProjectMembers: state.projectMembers.foundProjectMembers,
 });

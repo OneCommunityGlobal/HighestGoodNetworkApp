@@ -2,6 +2,8 @@ import { ENDPOINTS } from '~/utils/URL';
 import httpService from '../../../services/httpService';
 
 const API_BASE_URL = ENDPOINTS.LB_LISTINGS_BASE;
+const VILLAGES_URL = `${ENDPOINTS.APIEndpoint()}/villages`;
+const OBJECT_ID_REGEX = /^[a-f\d]{24}$/i;
 
 export const FIXED_VILLAGES = [
   'Earthbag',
@@ -14,7 +16,7 @@ export const FIXED_VILLAGES = [
   'City Center',
 ];
 
-const DEFAULT_IMAGE = 'https://via.placeholder.com/300x200?text=Unit';
+const DEFAULT_IMAGE = 'https://picsum.photos/seed/lb-unit/600/400';
 
 /**
  * Transform API listing to match the frontend data format
@@ -71,9 +73,9 @@ export const fetchVillages = async () => {
   try {
     ensureAuthentication();
 
-    const response = await httpService.get(`${API_BASE_URL}/villages`);
-
-    const apiVillages = response.data.data || [];
+    const response = await httpService.get(VILLAGES_URL);
+    const rawVillages = Array.isArray(response.data) ? response.data : response.data?.data || [];
+    const apiVillages = rawVillages.map(v => (typeof v === 'string' ? v : v?.name)).filter(Boolean);
 
     const allVillages = [...new Set([...FIXED_VILLAGES, ...apiVillages])];
 
@@ -99,17 +101,18 @@ export const fetchVillages = async () => {
 export const fetchListings = async (page = 1, size = 12, filters = {}) => {
   try {
     ensureAuthentication();
+    const headers = {
+      page: String(page),
+      size: String(size),
+    };
+    if (filters.availableFrom) headers.availableFrom = filters.availableFrom;
+    if (filters.availableTo) headers.availableTo = filters.availableTo;
+    // Backend expects village ObjectId in header; ignore display names.
+    if (filters.village && OBJECT_ID_REGEX.test(String(filters.village))) {
+      headers.village = String(filters.village);
+    }
 
-    const params = new URLSearchParams({
-      page,
-      size,
-    });
-
-    if (filters.village) params.append('village', filters.village);
-    if (filters.availableFrom) params.append('availableFrom', filters.availableFrom);
-    if (filters.availableTo) params.append('availableTo', filters.availableTo);
-
-    const response = await httpService.get(`${API_BASE_URL}/listing?${params.toString()}`);
+    const response = await httpService.get(`${API_BASE_URL}/listings`, { headers });
 
     const responseData = response.data;
     const items = responseData.data?.items || responseData.items || [];
@@ -156,17 +159,17 @@ export const fetchListings = async (page = 1, size = 12, filters = {}) => {
 export const fetchBiddings = async (page = 1, size = 12, filters = {}) => {
   try {
     ensureAuthentication();
+    const headers = {
+      page: String(page),
+      size: String(size),
+    };
+    if (filters.availableFrom) headers.availableFrom = filters.availableFrom;
+    if (filters.availableTo) headers.availableTo = filters.availableTo;
+    if (filters.village && OBJECT_ID_REGEX.test(String(filters.village))) {
+      headers.village = String(filters.village);
+    }
 
-    const params = new URLSearchParams({
-      page,
-      size,
-    });
-
-    if (filters.village) params.append('village', filters.village);
-    if (filters.availableFrom) params.append('availableFrom', filters.availableFrom);
-    if (filters.availableTo) params.append('availableTo', filters.availableTo);
-
-    const response = await httpService.get(`${API_BASE_URL}/biddings?${params.toString()}`);
+    const response = await httpService.get(`${API_BASE_URL}/biddings`, { headers });
 
     const responseData = response.data;
     const items = responseData.data?.items || responseData.items || [];
