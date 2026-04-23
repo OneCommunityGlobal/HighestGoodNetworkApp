@@ -1,13 +1,20 @@
 import axios from 'axios';
-import { useState } from 'react';
+import PropTypes from 'prop-types';
+import { useEffect, useState } from 'react';
 import { Button, Card, Col, Container, Row } from 'react-bootstrap';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
+import {
+  getWeeklyGrading,
+  saveWeeklyGrading,
+} from '../../actions/prAnalytics/weeklyGradingActions';
 import styles from './PRGradingScreen.module.css';
 import PromotionConfirmationBox from './PromotionConfirmationBox';
 
 const PRGradingScreen = ({ teamData, reviewers }) => {
   const darkMode = useSelector(state => state.theme.darkMode);
+  const token = useSelector(state => state.auth.token);
+  const dispatch = useDispatch();
 
   const [reviewerData, setReviewerData] = useState(reviewers || []);
   const [activeInput, setActiveInput] = useState(null);
@@ -15,6 +22,39 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
   const [inputError, setInputError] = useState('');
   const [showGradingModal, setShowGradingModal] = useState(null);
   const [isFinalized, setIsFinalized] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveMessage, setSaveMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!teamData?.teamCode) return;
+
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const data = await dispatch(
+          getWeeklyGrading(teamData.teamCode, teamData.dateRange?.start, token),
+        );
+        if (data && data.length > 0) {
+          const mapped = data.map(entry => ({
+            id: uuidv4(),
+            reviewer: entry.reviewer,
+            prsNeeded: entry.prsNeeded,
+            prsReviewed: entry.prsReviewed,
+            gradedPrs: (entry.gradedPrs || []).map(pr => ({ ...pr, id: uuidv4() })),
+          }));
+          setReviewerData(mapped);
+        }
+      } catch {
+        // fallback to prop data
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [teamData?.teamCode]);
   const [promotionCandidate, setPromotionCandidate] = useState(null);
   const [confirmedPromotions, setConfirmedPromotions] = useState([]);
   const [selectedForPromotion, setSelectedForPromotion] = useState([]);
@@ -29,19 +69,10 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
   const validatePRNumber = value => {
     const trimmed = value.trim();
     const pattern = /^\d+(\s*\+\s*\d+)?$/;
-
-    if (!trimmed) {
-      return { isValid: false, error: 'PR number cannot be empty' };
-    }
-
-    if (!pattern.test(trimmed)) {
-      return { isValid: false, error: 'Format: 1070 or 1070 + 1256' };
-    }
-
+    if (!trimmed) return { isValid: false, error: 'PR number cannot be empty' };
+    if (!pattern.test(trimmed)) return { isValid: false, error: 'Format: 1070 or 1070 + 1256' };
     return { isValid: true, error: '' };
   };
-
-  const isBackendFrontendPair = value => value.includes('+');
 
   /* ---------------- ADD PR ---------------- */
 
@@ -54,7 +85,6 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
 
   const handleInputSubmit = reviewerId => {
     if (isFinalized) return;
-
     const validation = validatePRNumber(inputValue);
     if (!validation.isValid) {
       setInputError(validation.error);
@@ -62,8 +92,6 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
     }
 
     const trimmed = inputValue.trim();
-
-    // Duplicate check
     const normalize = str => str.replace(/\s/g, '').toLowerCase();
     const reviewer = reviewerData.find(r => r.id === reviewerId);
     const isDuplicate = reviewer?.gradedPrs.some(
@@ -71,26 +99,16 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
     );
 
     if (isDuplicate) {
-      setInputError(
-        'This PR already exists for this reviewer. Please enter a different PR number.',
-      );
+      setInputError('This PR already exists for this reviewer.');
       return;
     }
 
-    const newPREntry = {
-      id: uuidv4(),
-      prNumbers: trimmed,
-      grade: 'Okay',
-    };
+    const newPREntry = { id: uuidv4(), prNumbers: trimmed, grade: 'Okay' };
 
     setReviewerData(prev =>
       prev.map(r =>
         r.id === reviewerId
-          ? {
-              ...r,
-              gradedPrs: [...r.gradedPrs, newPREntry],
-              prsReviewed: r.gradedPrs.length + 1,
-            }
+          ? { ...r, gradedPrs: [...r.gradedPrs, newPREntry], prsReviewed: r.gradedPrs.length + 1 }
           : r,
       ),
     );
@@ -101,7 +119,6 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
   };
 
   const handleCancel = () => {
-    if (isFinalized) return;
     setActiveInput(null);
     setInputValue('');
     setInputError('');
@@ -116,7 +133,6 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
 
   const handleGradeChange = (reviewerId, prId, newGrade) => {
     if (isFinalized) return;
-
     setReviewerData(prev =>
       prev.map(r =>
         r.id === reviewerId
@@ -129,12 +145,31 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
     );
   };
 
-  const handleCloseGradingModal = () => {
-    setShowGradingModal(null);
-  };
+  const handleCloseGradingModal = () => setShowGradingModal(null);
 
-  const handleFinalize = () => {
-    setIsFinalized(true);
+  /* ---------------- SAVE / FINALIZE ---------------- */
+
+  const handleFinalize = async () => {
+    setIsSaving(true);
+    setSaveMessage('');
+    try {
+      const gradings = reviewerData.map(r => ({
+        reviewer: r.reviewer,
+        prsReviewed: r.gradedPrs.length,
+        prsNeeded: r.prsNeeded,
+        gradedPrs: r.gradedPrs.map(pr => ({ prNumbers: pr.prNumbers, grade: pr.grade })),
+      }));
+
+      await dispatch(
+        saveWeeklyGrading(teamData.teamCode, teamData.dateRange?.start, gradings, token),
+      );
+      setIsFinalized(true);
+      setSaveMessage('Grades saved successfully!');
+    } catch {
+      setSaveMessage('Error saving grades. Please try again.');
+    } finally {
+      setIsSaving(false);
+    }
   };
   /* ---------------- PROMOTION ---------------- */
 
@@ -214,6 +249,8 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
 
   /* ---------------- RENDER ---------------- */
 
+  if (isLoading) return <div className={styles['pr-grading-screen-container']}>Loading...</div>;
+
   return (
     <Container
       fluid
@@ -246,15 +283,19 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                     {teamData.teamName} - {teamData.dateRange.start} to {teamData.dateRange.end}
                   </div>
                 </div>
-
-                <Button
-                  variant={isFinalized ? 'secondary' : 'outline-dark'}
-                  disabled={isFinalized}
-                  onClick={handleFinalize}
-                  className={darkMode ? styles['dark-mode'] : ''}
-                >
-                  {isFinalized ? 'Finalized' : 'Done'}
-                </Button>
+                <div>
+                  {saveMessage && (
+                    <span className={styles['pr-grading-screen-save-message']}>{saveMessage}</span>
+                  )}
+                  <Button
+                    variant={isFinalized ? 'secondary' : 'outline-dark'}
+                    disabled={isFinalized || isSaving}
+                    onClick={handleFinalize}
+                    className={darkMode ? styles['dark-mode'] : ''}
+                  >
+                    {isSaving ? 'Saving...' : isFinalized ? 'Finalized' : 'Done'}
+                  </Button>
+                </div>
               </div>
             </Card.Header>
 
@@ -272,147 +313,156 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                     <th>PR Numbers</th>
                   </tr>
                 </thead>
-
                 <tbody>
                   {reviewerData.map(reviewer => (
-                    <tr key={reviewer.id}>
-                      <td>
-                        <div
-                          style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            gap: '6px',
-                          }}
-                        >
-                          <span>{reviewer.reviewer}</span>
-                          {!confirmedPromotions.includes(reviewer.reviewer) && (
-                            <input
-                              type="checkbox"
-                              title="Select for batch promotion"
-                              checked={selectedForPromotion.includes(reviewer.id)}
-                              onChange={() => handleCheckboxChange(reviewer.id)}
-                              style={{
-                                marginTop: '4px',
-                                cursor: 'pointer',
-                                width: '16px',
-                                height: '16px',
-                              }}
-                            />
-                          )}
-                          {!confirmedPromotions.includes(reviewer.reviewer) ? (
-                            <button
-                              type="button"
-                              onClick={() => handlePromoteClick(reviewer)}
-                              style={{
-                                fontSize: '0.75rem',
-                                padding: '3px 10px',
-                                borderRadius: '4px',
-                                border: 'none',
-                                background: '#ffc107',
-                                color: '#333',
-                                cursor: 'pointer',
-                                fontWeight: '600',
-                              }}
-                            >
-                              🏆 Promote
-                            </button>
-                          ) : (
+                    <>
+                      <tr key={reviewer.id}>
+                        <td>{reviewer.reviewer}</td>
+                        <td>
+                          <input
+                            type="number"
+                            value={reviewer.gradedPrs.length}
+                            readOnly
+                            disabled={isFinalized}
+                            className={`${styles['pr-grading-screen-pr-input']} ${
+                              darkMode ? styles['dark-mode'] : ''
+                            }`}
+                          />
+                        </td>
+                        <td>{reviewer.prsNeeded}</td>
+                        <td className={styles['pr-grading-screen-td-numbers']}>
+                          {reviewer.gradedPrs.map(pr => (
                             <span
-                              style={{ fontSize: '0.75rem', color: '#28a745', fontWeight: '600' }}
+                              key={pr.id}
+                              role="button"
+                              tabIndex={0}
+                              className={`${styles['pr-grading-screen-pr-number']} ${
+                                pr.prNumbers.includes('+') ? styles['pr-grading-screen-pair'] : ''
+                              } ${darkMode ? styles['dark-mode'] : ''}`}
+                              onClick={() => handlePRNumberClick(reviewer.id)}
+                              onKeyDown={e => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                  e.preventDefault();
+                                  handlePRNumberClick(reviewer.id);
+                                }
+                              }}
                             >
-                              ✅ Promoted
+                              {pr.prNumbers}
                             </span>
-                          )}
-                        </div>
-                      </td>
+                          ))}
 
-                      <td>
-                        <input
-                          type="number"
-                          value={reviewer.gradedPrs.length}
-                          readOnly
-                          disabled={isFinalized}
-                          className={`${styles['pr-grading-screen-pr-input']} ${
+                          {!isFinalized && activeInput !== reviewer.id && (
+                            <Button
+                              variant="success"
+                              size="sm"
+                              className={styles['pr-grading-screen-add-btn']}
+                              onClick={() => handleAddNewClick(reviewer.id)}
+                            >
+                              + Add new
+                            </Button>
+                          )}
+
+                          {!isFinalized && activeInput === reviewer.id && (
+                            <div className={styles['pr-grading-screen-input-container']}>
+                              <input
+                                type="text"
+                                value={inputValue}
+                                onChange={e => {
+                                  setInputValue(e.target.value);
+                                  setInputError('');
+                                }}
+                                className={`${styles['pr-grading-screen-pr-number-input']} ${
+                                  inputError ? styles['pr-grading-screen-input-error'] : ''
+                                } ${darkMode ? styles['dark-mode'] : ''}`}
+                                placeholder="1070 or 1070 + 1256"
+                              />
+                              <Button
+                                variant="primary"
+                                size="sm"
+                                onClick={() => handleInputSubmit(reviewer.id)}
+                              >
+                                Add
+                              </Button>
+                              <Button variant="secondary" size="sm" onClick={handleCancel}>
+                                Cancel
+                              </Button>
+                              {inputError && (
+                                <div
+                                  className={`${styles['pr-grading-screen-error-message']} ${
+                                    darkMode ? styles['dark-mode'] : ''
+                                  }`}
+                                >
+                                  {inputError}
+                                </div>
+                              )}
+                            </div>
+                          )}
+
+                          {reviewer.gradedPrs.length > 0 && (
+                            <Button
+                              variant="outline-secondary"
+                              size="sm"
+                              className={styles['pr-grading-screen-add-btn']}
+                              onClick={() => handlePRNumberClick(reviewer.id)}
+                            >
+                              Done
+                            </Button>
+                          )}
+                        </td>
+                      </tr>
+
+                      {/* Inline summary row per reviewer */}
+                      {reviewer.gradedPrs.length > 0 && (
+                        <tr
+                          key={`${reviewer.id}-summary`}
+                          className={`${styles['pr-grading-screen-summary-row']} ${
                             darkMode ? styles['dark-mode'] : ''
                           }`}
-                        />
-                      </td>
-
-                      <td>{reviewer.prsNeeded}</td>
-
-                      <td className={styles['pr-grading-screen-td-numbers']}>
-                        {reviewer.gradedPrs.map(pr => (
-                          <span
-                            key={pr.id}
-                            role="button"
-                            tabIndex={0}
-                            className={`${styles['pr-grading-screen-pr-number']} ${
-                              pr.prNumbers.includes('+') ? styles['pr-grading-screen-pair'] : ''
-                            } ${darkMode ? styles['dark-mode'] : ''}`}
-                            onClick={() => handlePRNumberClick(reviewer.id)}
-                            onKeyDown={e => {
-                              if (e.key === 'Enter' || e.key === ' ') {
-                                e.preventDefault();
-                                handlePRNumberClick(reviewer.id);
-                              }
-                            }}
-                          >
-                            {pr.prNumbers}
-                          </span>
-                        ))}
-
-                        {!isFinalized && activeInput !== reviewer.id && (
-                          <Button
-                            variant="success"
-                            size="sm"
-                            className={styles['pr-grading-screen-add-btn']}
-                            onClick={() => handleAddNewClick(reviewer.id)}
-                          >
-                            + Add new
-                          </Button>
-                        )}
-
-                        {!isFinalized && activeInput === reviewer.id && (
-                          <div className={styles['pr-grading-screen-input-container']}>
-                            <input
-                              type="text"
-                              value={inputValue}
-                              onChange={e => {
-                                setInputValue(e.target.value);
-                                setInputError('');
-                              }}
-                              className={`${styles['pr-grading-screen-pr-number-input']} ${
-                                inputError ? styles['pr-grading-screen-input-error'] : ''
-                              } ${darkMode ? styles['dark-mode'] : ''}`}
-                              placeholder="1070 or 1070 + 1256"
-                            />
-
-                            <Button
-                              variant="primary"
-                              size="sm"
-                              onClick={() => handleInputSubmit(reviewer.id)}
+                        >
+                          <td colSpan={4} className={styles['pr-grading-screen-summary-cell']}>
+                            <table
+                              className={`${styles['pr-grading-screen-summary-table']} ${
+                                darkMode ? styles['dark-mode'] : ''
+                              }`}
                             >
-                              Add
-                            </Button>
-
-                            <Button variant="secondary" size="sm" onClick={handleCancel}>
-                              Cancel
-                            </Button>
-
-                            {inputError && (
-                              <div
-                                className={`${styles['pr-grading-screen-error-message']} ${
-                                  darkMode ? styles['dark-mode'] : ''
-                                }`}
-                              >
-                                {inputError}
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </td>
-                    </tr>
+                              <thead>
+                                <tr>
+                                  <th>PR Number</th>
+                                  <th>Exceptional</th>
+                                  <th>Okay</th>
+                                  <th>Unsatisfactory</th>
+                                  <th>No Correct Image</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {reviewer.gradedPrs.map(pr => (
+                                  <tr key={pr.id}>
+                                    <td>{pr.prNumbers}</td>
+                                    {[
+                                      'Exceptional',
+                                      'Okay',
+                                      'Unsatisfactory',
+                                      'No Correct Image',
+                                    ].map(grade => (
+                                      <td key={grade}>
+                                        <input
+                                          type="checkbox"
+                                          disabled={isFinalized}
+                                          checked={pr.grade === grade}
+                                          onChange={() =>
+                                            handleGradeChange(reviewer.id, pr.id, grade)
+                                          }
+                                        />
+                                      </td>
+                                    ))}
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </td>
+                        </tr>
+                      )}
+                    </>
                   ))}
                 </tbody>
               </table>
@@ -445,7 +495,6 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                 ×
               </button>
             </div>
-
             <div
               className={`${styles['pr-grading-screen-modal-body']} ${
                 darkMode ? styles['dark-mode'] : ''
@@ -462,10 +511,9 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                     <th>Exceptional</th>
                     <th>Okay</th>
                     <th>Unsatisfactory</th>
-                    <th>Cannot find image</th>
+                    <th>No Correct Image</th>
                   </tr>
                 </thead>
-
                 <tbody>
                   {reviewerData
                     .find(r => r.id === showGradingModal)
@@ -504,9 +552,9 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                           <input
                             type="checkbox"
                             disabled={isFinalized}
-                            checked={pr.grade === 'Cannot find image'}
+                            checked={pr.grade === 'No Correct Image'}
                             onChange={() =>
-                              handleGradeChange(showGradingModal, pr.id, 'Cannot find image')
+                              handleGradeChange(showGradingModal, pr.id, 'No Correct Image')
                             }
                           />
                         </td>
@@ -514,7 +562,6 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                     ))}
                 </tbody>
               </table>
-
               <div
                 className={`${styles['pr-grading-screen-modal-footer']} ${
                   darkMode ? styles['dark-mode'] : ''
@@ -683,6 +730,26 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
       )}
     </Container>
   );
+};
+
+PRGradingScreen.propTypes = {
+  teamData: PropTypes.shape({
+    teamCode: PropTypes.string,
+    teamName: PropTypes.string,
+    dateRange: PropTypes.shape({
+      start: PropTypes.string,
+      end: PropTypes.string,
+    }),
+  }).isRequired,
+  reviewers: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string,
+      reviewer: PropTypes.string,
+      prsNeeded: PropTypes.number,
+      prsReviewed: PropTypes.number,
+      gradedPrs: PropTypes.array,
+    }),
+  ).isRequired,
 };
 
 export default PRGradingScreen;
