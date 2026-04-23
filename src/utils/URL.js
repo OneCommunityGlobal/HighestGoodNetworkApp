@@ -330,6 +330,7 @@ export const ENDPOINTS = {
   BM_CONSUMABLES_PURCHASE: `${APIEndpoint}/bm/consumables/purchase`,
   BM_UPDATE_CONSUMABLE_STATUS: `${APIEndpoint}/bm/updateConsumableStatus`,
   BM_REUSABLE_TYPES: `${APIEndpoint}/bm/invtypes/reusables`,
+  BM_REUSABLE_TYPE: `${APIEndpoint}/bm/invtypes/reusable`,
   BM_REUSABLES: `${APIEndpoint}/bm/reusables`,
   BM_PURCHASE_REUSABLES: `${APIEndpoint}/bm/reusables/purchase`,
   BM_EQUIPMENT_TYPES: `${APIEndpoint}/bm/invtypes/equipments`,

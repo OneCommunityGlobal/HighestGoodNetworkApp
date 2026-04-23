@@ -11,6 +11,9 @@ import GET_MATERIAL_TYPES, {
   POST_BUILDING_TOOL_INVENTORY_TYPE,
   POST_ERROR_BUILDING_TOOL_INVENTORY_TYPE,
   RESET_POST_BUILDING_TOOL_INVENTORY_TYPE,
+  POST_BUILDING_REUSABLE_INVENTORY_TYPE,
+  POST_ERROR_BUILDING_REUSABLE_INVENTORY_TYPE,
+  RESET_POST_BUILDING_REUSABLE_INVENTORY_TYPE,
   GET_INV_BY_TYPE,
   GET_TOOL_TYPES,
   GET_CONSUMABLE_TYPES,
@@ -145,6 +148,33 @@ export const bmInvTypeReducer = (state = defaultState, action) => {
         },
       };
     case RESET_POST_BUILDING_TOOL_INVENTORY_TYPE:
+      return {
+        ...state,
+        postedResult: {
+          result: null,
+          success: null,
+          error: null,
+        },
+      };
+    case POST_BUILDING_REUSABLE_INVENTORY_TYPE:
+      return {
+        ...state,
+        postedResult: {
+          result: action.payload,
+          success: true,
+          error: false,
+        },
+      };
+    case POST_ERROR_BUILDING_REUSABLE_INVENTORY_TYPE:
+      return {
+        ...state,
+        postedResult: {
+          result: action.payload,
+          success: false,
+          error: true,
+        },
+      };
+    case RESET_POST_BUILDING_REUSABLE_INVENTORY_TYPE:
       return {
         ...state,
         postedResult: {
