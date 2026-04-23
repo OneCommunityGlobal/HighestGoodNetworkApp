@@ -382,6 +382,7 @@
   flex-direction: column;
   border: none;
   background: #ffffff;
+  cursor: pointer;
 }
 
 .eventCard:hover {
