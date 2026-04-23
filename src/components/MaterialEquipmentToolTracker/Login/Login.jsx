@@ -1,24 +1,41 @@
-import { Form, Input, Button, FormFeedback, FormGroup } from 'reactstrap';
-import { User, Lock } from 'lucide-react';
 import { useEffect, useState } from 'react';
-
+import { useDispatch, useSelector } from 'react-redux';
+import { Form, Input, Button, FormFeedback, FormGroup } from 'reactstrap';
+import { Redirect, useHistory, useLocation } from 'react-router-dom';
+import { User, Lock } from 'lucide-react';
+import isEmail from 'validator/lib/isEmail';
+import { loginBMUser } from '~/actions/authActions';
 import styles from './Login.module.css';
 
 function Login() {
-  const [enteredUserName, setEnteredUserNAme] = useState('');
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const location = useLocation();
+  const auth = useSelector(state => state.auth);
+
+  const [enteredemail, setEnteredemail] = useState('');
   const [enteredPassword, setEnteredPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const supportEmail = process.env.REACT_APP_SUPPORT_EMAIL;
   const [showPassword, setShowPassword] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
+  const [touched, setTouched] = useState({ email: false, password: false });
+  const [backendError, setBackendError] = useState('');
+  const [hasAccess, setHasAccess] = useState(false);
+  const prevLocation = location?.state?.from || { pathname: '/bmdashboard' };
+
+  useEffect(() => {
+    if (hasAccess || auth.user.access?.canAccessBMPortal) {
+      history.push(prevLocation.pathname);
+    }
+  }, [hasAccess, auth.user.access, history, prevLocation.pathname]);
 
   //Live Validation
   const validateField = (name, value) => {
     value = value.trim();
-    if (name === 'username') {
-      if (!value) return 'Username is required';
-      // make backend call to check whether entered username is not used
-      if (value.length < 3) return 'Username must be at least 8 characters';
+    if (name === 'email') {
+      if (!value) return 'email is required';
+      if (!isEmail(value)) return 'Invalid email';
       return '';
     }
     if (name === 'password') {
@@ -30,23 +47,51 @@ function Login() {
 
   const handleChange = ({ target }) => {
     const { name, value } = target;
-    if (name === 'username') setEnteredUserNAme(value);
+    if (!touched[name]) setTouched(prev => ({ ...prev, [name]: true }));
+
+    if (name === 'email') setEnteredemail(value);
     if (name === 'password') setEnteredPassword(value);
 
     const errorMsg = validateField(name, value);
     setFieldErrors(prev => ({ ...prev, [name]: errorMsg }));
+
+    if (backendError && !errorMsg) setBackendError('');
   };
 
   const handleSubmit = async e => {
     e.preventDefault();
     // Final client-side validation
-    const userNameError = validateField('email', enteredUserName);
+    const emailError = validateField('email', enteredemail);
     const passwordError = validateField('password', enteredPassword);
-    if (userNameError || passwordError) {
-      setFieldErrors({ username: userNameError, password: passwordError });
+    if (emailError || passwordError) {
+      setFieldErrors({ email: emailError, password: passwordError });
+      setTouched({ email: true, password: true });
       return;
     }
+    setLoading(true);
+    // Dispatch login action
+    const res = await dispatch(loginBMUser({ email: enteredemail, password: enteredPassword }));
+    //Handle Backend errors
+    if (res.status !== 200) {
+      //Validation error
+      if (res.status === 422 && res.data?.label) {
+        setFieldErrors(prev => ({
+          ...prev,
+          [res.data.label]: res.data.message,
+        }));
+      } else {
+        setBackendError(res.data?.message || 'Something went wrong');
+      }
+      setLoading(false);
+      return;
+    }
+    setBackendError('');
+    setHasAccess(!!res.data.token);
   };
+  // push Dashboard if not authenticated
+  if (!auth.isAuthenticated) {
+    return <Redirect to={{ pathname: '/login', state: { from: location } }} />;
+  }
 
   return (
     <div className={styles.loginContainer}>
@@ -54,6 +99,12 @@ function Login() {
       <h1 className={styles.pageTitle}> Material Equipemnt Tool Tracker</h1>
       <div className={styles.formContainer}>
         <Form onSubmit={handleSubmit}>
+          {/* Backend/general error */}
+          {backendError && (
+            <div className="alert alert-danger" role="alert">
+              {backendError}
+            </div>
+          )}
           <User size="70" strokeWidth={1.5} aria-hidden="true" />
           <h2 className={styles.heading2}>Welcome to HGN</h2>
           <FormGroup>
@@ -61,21 +112,21 @@ function Login() {
               <User size="30" strokeWidth={1.5} aria-hidden="true" />
               <Input
                 type="text"
-                placeholder="username"
-                name="username"
-                id="username"
-                value={enteredUserName}
+                placeholder="email"
+                name="email"
+                id="email"
+                value={enteredemail}
                 className={styles.inputBox}
                 onChange={handleChange}
-                aria-label="Username input field"
-                invalid={!!fieldErrors.username}
-                aria-invalid={!!fieldErrors.username}
-                aria-describedby={!!fieldErrors.username ? 'username-error' : undefined}
+                aria-label="email input field"
+                invalid={touched.email && !!fieldErrors.email}
+                aria-invalid={touched.email && !!fieldErrors.email}
+                aria-describedby={touched.email && !!fieldErrors.email ? 'email-error' : undefined}
               />
             </div>
-            {fieldErrors.username && (
-              <FormFeedback style={{ display: 'block' }} id="username-error">
-                {fieldErrors.username}
+            {touched.email && fieldErrors.email && (
+              <FormFeedback style={{ display: 'block' }} id="email-error">
+                {fieldErrors.email}
               </FormFeedback>
             )}
           </FormGroup>
@@ -90,10 +141,12 @@ function Login() {
                 type={showPassword ? 'text' : 'password'}
                 value={enteredPassword}
                 onChange={handleChange}
-                invalid={!!fieldErrors.password}
-                aria-label="Password input field"
-                aria-invalid={!!fieldErrors.password}
-                aria-describedby={!!fieldErrors.password ? 'password-error' : undefined}
+                invalid={touched.password && !!fieldErrors.password}
+                aria-label="Password"
+                aria-invalid={touched.password && !!fieldErrors.password}
+                aria-describedby={
+                  touched.password && !!fieldErrors.password ? 'password-error' : undefined
+                }
               />
               <span
                 role="button"
@@ -108,7 +161,7 @@ function Login() {
                 <i className={showPassword ? 'fa fa-eye-slash' : 'fa fa-eye'} />
               </span>
             </div>
-            {fieldErrors.password && (
+            {touched.password && fieldErrors.password && (
               <FormFeedback id="password-error" className="d-block error">
                 {fieldErrors.password}
               </FormFeedback>
@@ -122,9 +175,9 @@ function Login() {
             <Button
               className={styles.logInBtn}
               disabled={
-                !enteredUserName ||
+                !enteredemail ||
                 !enteredPassword ||
-                //Object.values(fieldErrors).some(Boolean) ||
+                Object.values(fieldErrors).some(Boolean) ||
                 loading
               }
             >
@@ -141,4 +194,5 @@ function Login() {
     </div>
   );
 }
+
 export default Login;
