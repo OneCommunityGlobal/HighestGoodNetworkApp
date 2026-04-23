@@ -28,11 +28,14 @@
   width: 75%;
   padding: 2%;
   justify-content: space-between;
+  align-items: center;
+  margin: 0 auto;
 }
 
 .headerLeft {
   display: flex;
   gap: 10px;
+  align-items: center;
 }
 
 .headerRight {
@@ -40,32 +43,31 @@
   align-items: center;
 }
 
-.jobTitleInput {
-  padding: 5px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
+.jobTitleInput,
 .jobSelect {
-  padding: 5px;
+  padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  height: 40px;
+  box-sizing: border-box;
 }
 
 .goButton {
   background-color: #4caf50;
-  color: white;
+  color: #fff;
   border: none;
-  padding: 5px 10px;
+  padding: 10px 14px;
   border-radius: 5px;
   cursor: pointer;
+  height: 40px;
 }
 
 .formContainer {
   background-color: #f9f9f9;
   padding: 2%;
   width: 75%;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 10px rgb(0 0 0 / 10%);
+  margin: 0 auto;
 }
 
 .formTitle {
@@ -90,7 +92,7 @@
   gap: 15px;
   background-color: #d9d9d9;
   padding: 2%;
-  border-radius: 1%;
+  border-radius: 5px;
 }
 
 .formContentGroup {
@@ -109,33 +111,37 @@
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+  align-items: stretch;
 }
 
-.formProfileDetailGroup input {
+.formProfileDetailGroup input,
+.resumeWrapper {
+  height: 40px;
+  display: flex;
+}
+
+.formProfileDetailGroup input,
+.formGroup input {
   flex: 1;
   min-width: 200px;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  height: 40px;
+  box-sizing: border-box;
 }
 
 .formGroup h2 {
   margin-bottom: 5px;
   font-weight: bold;
   text-align: left;
-  color: black;
+  color: #000;
   font-size: medium;
-}
-
-.formGroup input {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
 }
 
 .submitButton {
   background-color: #4caf50;
-  color: white;
+  color: #fff;
   border: none;
   padding: 10px;
   border-radius: 5px;
@@ -143,13 +149,11 @@
   align-self: center;
 }
 
+/* POPUP */
 .popupOverlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(30, 41, 65, 0.7);
+  inset: 0;
+  background: rgb(30 41 65 / 70%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -164,7 +168,7 @@
   border-radius: 16px;
   max-width: 420px;
   min-width: 320px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.32);
+  box-shadow: 0 8px 32px rgb(0 0 0 / 32%);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -173,19 +177,16 @@
 
 .popupCloseBtn {
   position: absolute;
-  top: 12px;
-  right: 16px;
+  inset: 12px 16px auto auto;
   background: transparent;
   border: none;
   font-size: 1.5rem;
   color: #333;
   cursor: pointer;
-  transition: color 0.2s;
 }
 
 .popupCloseBtn:hover {
   color: #98cb03;
-  background-color: transparent;
 }
 
 .popupContent h2 {
@@ -202,162 +203,128 @@
   line-height: 1.5;
 }
 
+/* RESUME UPLOAD */
+.resumeWrapper {
+  display: flex;
+  align-items: stretch; 
+  gap: 6px;
+  flex: 1;
+  min-width: 200px;
+  height: 40px;
+}
+
 .resumeLabel {
-  display: inline-flex;
-  margin-bottom: 0;
+  display: flex;
   align-items: center;
-  gap: 10px;
-  cursor: pointer;
-  padding: 8px 12px;
-  border-radius: 8px;
-  background: #ffffff;
-  border: 1px solid #cfcfcf;
+  justify-content: space-between;
+  flex: 1;
+  min-width: 200px;
+  height: 40px;
+  padding: 0 10px;
+  border-radius: 5px;
+  background: #fff;
+  border: 1px solid #ccc;
   color: #222;
   font-size: 14px;
-  line-height: 1;
+  cursor: pointer;
   user-select: none;
-  transition: background 150ms ease, box-shadow 150ms ease, transform 120ms ease;
+  box-sizing: border-box;
+  transition: background 150ms ease, box-shadow 150ms ease;
 }
 
 .resumeLabel:hover {
   background: #f6f6f6;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
-  transform: translateY(-1px);
 }
 
 .resumeLabel input[type='file'] {
   display: none;
 }
 
-.resumeLabel .fileName {
-  font-size: 13px;
-  color: #555;
-  background: #f2f6f9;
-  padding: 4px 8px;
-  border-radius: 6px;
-  border: 1px solid #e6eef6;
+.fileName {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
+/* REMOVE BUTTON */
+.removeResumeBtn {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid #ccc;
+  color: #c62828;
+  cursor: pointer;
+}
+
+.removeResumeBtn:hover {
+  background: rgb(198 40 40 / 10%);
+}
+
+.resumeLabel.success {
+  border-color: #4caf50;
+}
+
+.resumeLabel.error {
+  border-color: #c62828;
+}
+
+/* DARK MODE */
 .darkMode {
   background: #1b2a41;
   color: #e0e0e0;
-  transition: background 0.3s, color 0.3s;
 }
 
 .darkMode .formContainer {
   background: #1c2541;
   color: #e0e0e0;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
-  transition: background 0.3s, color 0.3s;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 70%);
 }
 
 .darkMode .headerContent {
   background: #1c2541;
-  transition: background 0.3s;
-  z-index: 1;
 }
 
-.darkMode .jobTitleInput,
-.darkMode .jobSelect,
 .darkMode input,
 .darkMode select,
 .darkMode textarea {
   background: #181a1b;
   color: #f1f1f1;
   border: 1px solid #444;
-  transition: background 0.3s, color 0.3s, box-shadow 0.3s;
-}
-
-.darkMode .jobSelect {
-  background-image: url("data:image/svg+xml;utf8,<svg fill='lightgray' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  background-size: 18px 18px;
-  padding-right: 36px;
-}
-
-.darkMode .jobSelect:focus,
-.darkMode .jobSelect:active {
-  background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 15l5-5 5 5z'/></svg>");
-}
-
-.darkMode .submitButton,
-.darkMode .goButton,
-.darkMode .btn {
-  background: #225163;
-  color: #f1f1f1;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
-  transition: background 0.3s, color 0.3s;
 }
 
 .darkMode .form {
   background: #23272a;
-  border-radius: 8px;
-  transition: background 0.3s;
 }
 
 .darkMode .formTitle {
   color: #d9d9d9;
-  transition: color 0.3s;
-}
-
-.darkMode .popupOverlay {
-  background: rgba(30, 41, 65, 0.85);
-}
-
-.darkMode .popupContent {
-  background: #225163;
-  color: #f1f1f1;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
-}
-
-.darkMode .popupCloseBtn {
-  color: #f1f1f1;
-  background-color: transparent;
-}
-
-.darkMode .popupCloseBtn:hover {
-  color: #9c0;
-}
-
-.darkMode .popupContent h2 {
-  color: #9c0;
-}
-
-.darkMode .popupContent p {
-  color: #e0e0e0;
-}
-
-.darkMode a {
-  color: #9c0;
-  text-decoration: underline;
-  transition: color 0.3s;
-}
-
-.darkMode label {
-  color: #e0e0e0;
-  transition: color 0.3s;
-}
-
-.darkMode .formGroup h2 {
-  color: #9c0;
-  transition: color 0.3s;
 }
 
 .darkMode .resumeLabel {
   background: #1c2541;
-  border-color: #2b3f57;
+  border: 1px solid #444;
   color: #e6eef6;
-  box-shadow: none;
 }
 
 .darkMode .resumeLabel:hover {
   background: #22364e;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
 }
 
-.darkMode .resumeLabel .fileName {
-  background: rgba(255, 255, 255, 0.04);
+.darkMode .fileName {
   color: #cfe7ff;
-  border-color: rgba(255, 255, 255, 0.05);
+}
+
+.darkMode .removeResumeBtn {
+  border: 1px solid #444;
+  color: #ff6b6b;
+}
+
+.darkMode .removeResumeBtn:hover {
+  background: rgb(255 107 107 / 10%);
 }
