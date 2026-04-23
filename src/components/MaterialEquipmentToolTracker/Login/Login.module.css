@@ -77,3 +77,12 @@
     font-size: small;
     margin: 0 !important;
 }
+
+.formContainer .inputWrapper:focus-within {
+    outline: none;
+    box-shadow: 0 0 0 2px #cfd5e2;
+  }
+
+.formContainer .inputBox:focus{
+    box-shadow: none !important
+  }
