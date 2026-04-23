@@ -55,7 +55,7 @@
     "date-fns-tz": "^2.0.1",
     "dayjs": "^1.11.13",
     "diff": "^8.0.3",
-    "dompurify": "^3.3.2",
+    "dompurify": "^3.4.1",
     "elliptic": "^6.6.1",
     "font-awesome": "^4.7.0",
     "fs-extra": "^11.3.0",
