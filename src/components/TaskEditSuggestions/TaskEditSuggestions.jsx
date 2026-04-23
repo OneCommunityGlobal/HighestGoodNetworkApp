@@ -1,4 +1,4 @@
-import './TaskEditSuggestions.css';
+import styles from './TaskEditSuggestions.module.css';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Container, Table } from 'reactstrap';
@@ -51,7 +51,7 @@ function TaskEditSuggestions() {
   return (
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: '100%' }}>
       <Container>
-        <div className="task-edit-suggestions-title">
+        <div className={styles['task-edit-suggestions-title']}>
           <h1>Task Edit Suggestions</h1>
           <button
             aria-label="Load Task Edit Suggestions"

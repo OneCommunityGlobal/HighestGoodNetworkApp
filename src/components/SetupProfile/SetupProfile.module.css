@@ -1,18 +1,19 @@
 .invalid-token-container {
   width: 100vw;
   height: 100vh;
-  margin: 0px;
-  padding: 0px;
+  margin: 0;
+  padding: 0;
   display: grid;
-  align-items: center;
-  justify-items: center;
+  place-items: center center;
 }
+
 .invalid-token-card {
   max-width: 600px;
   display: grid;
   grid-template-rows: repeat(4, 1fr);
   grid-template-columns: 1fr;
 }
+
 .invalid-token-card-header {
   display: grid;
   justify-items: center;
@@ -29,9 +30,8 @@
   font-size: 2.4rem;
   display: grid;
   padding: 1rem;
-  padding-bottom: 0px;
-  justify-items: center;
-  align-items: center;
+  padding-bottom: 0;
+  place-items: center center;
 }
 
 .invalid-token-card-message {
@@ -43,6 +43,7 @@
   justify-items: center;
   text-align: center;
 }
+
 .invalid-token-card-company-name {
   font-weight: 500;
 }
