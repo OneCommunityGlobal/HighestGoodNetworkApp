@@ -9,9 +9,8 @@ import axios from 'axios';
 import styles from './UtilizationChart.module.css';
 import { useSelector } from 'react-redux';
 import { ENDPOINTS } from '../../../utils/URL';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
 
-ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Title, ChartDataLabels);
+ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Title);
 
 function UtilizationChart() {
   const [toolsData, setToolsData] = useState([]);
@@ -79,7 +78,7 @@ function UtilizationChart() {
       {
         label: 'Utilization (%)',
         data: toolsData.map(tool => tool.utilizationRate),
-        backgroundColor: darkMode ? '#007bff' : '#a0e7e5',
+        backgroundColor: '#007bff',
         borderRadius: 6,
       },
     ],
@@ -93,10 +92,11 @@ function UtilizationChart() {
         labels: { color: darkMode ? '#ffffff' : '#333' },
       },
       datalabels: {
-        color: darkMode ? '#ffffff' : '#333',
+        color: darkMode ? '#ffffff' : '#333333',
         anchor: 'end',
         align: 'end',
         font: {
+          weight: 'bold',
           size: 12,
         },
         formatter: (_, context) => {
@@ -105,13 +105,14 @@ function UtilizationChart() {
         },
       },
       tooltip: {
+        titleColor: '#ffffff',
+        bodyColor: '#ffffff',
         callbacks: {
           label: context => {
             const tool = toolsData[context.dataIndex];
             return `Utilization: ${tool.utilizationRate}%, Downtime: ${tool.downtime} hrs`;
           },
         },
-        footerColor: 'white',
       },
     },
     scales: {
@@ -174,7 +175,6 @@ function UtilizationChart() {
               selected={startDate}
               onChange={date => setStartDate(date)}
               placeholderText="Start Date"
-              maxDate={endDate || '' || new Date()}
               className={styles.datepickerWrapper}
             />
 
@@ -182,8 +182,6 @@ function UtilizationChart() {
               selected={endDate}
               onChange={date => setEndDate(date)}
               placeholderText="End Date"
-              minDate={startDate || ''}
-              maxDate={new Date()}
               className={styles.datepickerWrapper}
             />
 

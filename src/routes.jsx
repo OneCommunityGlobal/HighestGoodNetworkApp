@@ -23,6 +23,7 @@ import RoleInfoCollections from './components/UserProfile/EditableModal/RoleInfo
 import PRDashboard from './components/PRDashboard/PRDashboard';
 import ApplicationTimeChartPage from './components/ApplicationTimeChart';
 import ApplicationAnalyticsContainer from './components/ApplicationAnalytics';
+import CountryOfApplicationMapChart from './components/CountryOfApplicationMapChart';
 import UserSkillsProfile from './components/HGNSkillsDashboard/SkillsProfilePage/components/UserSkillsProfile';
 import WeeklySummaryPage from './components/VolunteerweeklysummaryBBC/WeeklySummaryPage';
 import EmailSubscribeForm from './components/EmailSubscribeForm';
@@ -138,7 +139,7 @@ import UtilizationChart from './components/BMDashboard/UtilizationChart/Utilizat
 import InjuriesDonutChart from './components/InjuriesAnalytics/InjuriesDonutChart';
 import CostPredictionPage from './components/BMDashboard/CostPrediction/CostPredictionPage';
 //import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChart';
-import { JobsHitsApplicationsChart } from './components/JobAnalytics/JobsHitsApplicationsChart/JobsHitsApplicationsChart';
+import JobsHitsApplicationsChart from './components/JobAnalytics/JobsHitsApplicationsChart/JobsHitsApplicationsChart';
 
 import RentalChart from './components/BMDashboard/RentalChart/RentalChart';
 import ReturnedLateChart from './components/BMDashboard/RentalChart/ReturnedLateChart';
@@ -542,6 +543,12 @@ export default (
           fallback
         />
         <ProtectedRoute
+          path="/country-application-map"
+          exact
+          component={CountryOfApplicationMapChart}
+          fallback
+        />
+        <ProtectedRoute
           path="/announcements"
           exact
           component={Announcements}
@@ -805,6 +812,7 @@ export default (
         <Route path="/communityportal/login" component={CPLogin} />
         {/* ----- Community Calendar Routing ----- */}
         <CPProtectedRoute path="/communityportal/calendar" exact component={CommunityCalendar} />
+        <CPProtectedRoute path="/communityportal/database/design" exact component={EventList} />
         <CPProtectedRoute path="/communityportal/activities" exact component={ActivityList} />
         <CPProtectedRoute
           path="/communityportal/profile/:userId"
@@ -852,7 +860,7 @@ export default (
           component={ActivityComments}
         />
         <CPProtectedRoute
-          path="/communityportal/activity/:activityId/Resources"
+          path="/communityportal/activity/:activityId/resourcesusage"
           exact
           component={ResourcesUsage}
         />
