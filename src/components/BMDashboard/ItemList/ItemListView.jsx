@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import BMError from '../shared/BMError';
@@ -10,18 +10,21 @@ import ItemsTable from './ItemsTable';
 import MaterialSummaryPanel from '../MaterialList/MaterialSummaryPanel';
 import styles from './ItemListView.module.css';
 
-/**
- * ItemListView Component
- * Main container for displaying filtered items with summary metrics and data table
- * Handles filtering, time selection, and layout of material list page
- */
-export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamicColumns }) {
+export function ItemListView({
+  itemType,
+  items,
+  errors,
+  UpdateItemModal,
+  dynamicColumns,
+  children,
+}) {
   const [filteredItems, setFilteredItems] = useState(items);
   const [selectedProject, setSelectedProject] = useState('all');
   const [selectedItem, setSelectedItem] = useState('all');
   const [isError, setIsError] = useState(false);
   const [selectedTime, setSelectedTime] = useState(new Date());
   const darkMode = useSelector(state => state.theme.darkMode);
+  const isMaterialsView = itemType === 'Materials';
 
   useEffect(() => {
     if (items) setFilteredItems([...items]);
@@ -95,24 +98,18 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
                 selectedProject={selectedProject}
                 selectedItem={selectedItem}
                 setSelectedItem={setSelectedItem}
+                label={itemType === 'Materials' ? 'Material' : itemType}
+                darkMode={darkMode}
               />
             </div>
           )}
-          <div className={`${styles.buttonsRow}`}>
-            <button type="button" className={`${styles.btnPrimary}`}>
-              Add Material
-            </button>
-            <button type="button" className={`${styles.btnPrimary}`}>
-              Edit Name/Measurement
-            </button>
-            <button type="button" className={`${styles.btnPrimary}`}>
-              View Update History
-            </button>
-          </div>
         </span>
+        {children}
         {filteredItems && (
           <>
-            <MaterialSummaryPanel materials={filteredItems} darkMode={darkMode} />
+            {isMaterialsView && (
+              <MaterialSummaryPanel materials={filteredItems} darkMode={darkMode} />
+            )}
             <ItemsTable
               selectedProject={selectedProject}
               selectedItem={selectedItem}
@@ -120,6 +117,7 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
               UpdateItemModal={UpdateItemModal}
               dynamicColumns={dynamicColumns}
               darkMode={darkMode}
+              itemType={itemType}
             />
           </>
         )}
@@ -159,10 +157,12 @@ ItemListView.propTypes = {
       key: PropTypes.string.isRequired,
     }),
   ).isRequired,
+  children: PropTypes.node,
 };
 
 ItemListView.defaultProps = {
   errors: {},
+  children: null,
 };
 
 export default ItemListView;

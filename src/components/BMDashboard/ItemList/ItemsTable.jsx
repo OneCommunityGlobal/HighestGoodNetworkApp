@@ -23,6 +23,7 @@ export default function ItemsTable({
   UpdateItemModal,
   dynamicColumns,
   darkMode = false,
+  itemType,
 }) {
   const [sortedData, setData] = useState(filteredItems);
   const [modal, setModal] = useState(false);
@@ -59,19 +60,16 @@ export default function ItemsTable({
 
   const handleViewRecordsClick = (data, type) => {
     if (type === 'UsageRecord') {
-      // For UsageRecord, show the chart directly
       const projectId = data.project?._id || data.projectId;
       if (projectId) {
         setChartProjectId(projectId);
         setShowChartModal(true);
       } else {
-        // If no project ID, fall back to the regular modal
         setModal(true);
         setRecord(data);
         setRecordType(type);
       }
     } else {
-      // For other record types, show the regular modal
       setModal(true);
       setRecord(data);
       setRecordType(type);
@@ -111,9 +109,15 @@ export default function ItemsTable({
     setData(newSortedData);
   };
 
+  const isMaterialsView = itemType === 'Materials';
+
   const getNestedValue = (obj, path) => {
+    if (!path) return null;
+    if (path === 'product id') return obj.productId;
     return path.split('.').reduce((acc, part) => (acc ? acc[part] : null), obj);
   };
+
+  const emptyStateColSpan = 4 + dynamicColumns.length + (isMaterialsView ? 4 : 2);
 
   return (
     <>
@@ -124,6 +128,7 @@ export default function ItemsTable({
         record={record}
         setRecord={setRecord}
         recordType={recordType}
+        itemType={itemType}
       />
 
       {/* Direct Chart Modal for Usage Records */}
@@ -150,16 +155,12 @@ export default function ItemsTable({
               ) : (
                 <th>Name</th>
               )}
-              <th>PID</th>
-              <th>Measurement</th>
-              <th>Bought</th>
-              <th>Used</th>
-              <th>Usage %</th>
-              <th>Available</th>
-              <th>Stock Health</th>
-              <th>Wasted</th>
-              <th>Hold</th>
-              <th>Usage Record</th>
+              {dynamicColumns.map(({ label, key }) => (
+                <th key={key}>{label}</th>
+              ))}
+              {isMaterialsView && <th>Usage %</th>}
+              {isMaterialsView && <th>Stock Health</th>}
+              {isMaterialsView && <th>Usage Record</th>}
               <th>Updates</th>
               <th>Purchases</th>
             </tr>
@@ -172,36 +173,31 @@ export default function ItemsTable({
                   <tr key={el._id}>
                     <td>{el.project?.name}</td>
                     <td>{el.itemType?.name}</td>
-                    <td>{el.productId || 'N/A'}</td>
-                    <td>{el.itemType?.unit || 'N/A'}</td>
-                    <td>{el.stockBought}</td>
-                    <td>{el.stockUsed}</td>
-                    <td>
-                      <UsagePercentageBar material={el} darkMode={darkMode} />
-                    </td>
-                    <td>{el.stockAvailable}</td>
-                    <td>
-                      <StockHealthIndicator material={el} darkMode={darkMode} />
-                    </td>
-                    <td>{el.stockWasted}</td>
-                    <td>{el.stockHold}</td>
-                    <td className={`${styles.itemsCell}`}>
-                      <button
-                        type="button"
-                        onClick={() => handleEditRecordsClick(el, 'UsageRecord')}
-                        aria-label="Edit Record"
-                      >
-                        <BiPencil />
-                      </button>
-                      <Button
-                        color="primary"
-                        outline
-                        size="sm"
-                        onClick={() => handleViewRecordsClick(el, 'UsageRecord')}
-                      >
-                        View
-                      </Button>
-                    </td>
+                    {dynamicColumns.map(({ label, key }) => (
+                      <td key={label}>{getNestedValue(el, key) ?? 'N/A'}</td>
+                    ))}
+                    {isMaterialsView && (
+                      <td>
+                        <UsagePercentageBar material={el} darkMode={darkMode} />
+                      </td>
+                    )}
+                    {isMaterialsView && (
+                      <td>
+                        <StockHealthIndicator material={el} darkMode={darkMode} />
+                      </td>
+                    )}
+                    {isMaterialsView && (
+                      <td>
+                        <Button
+                          color="primary"
+                          outline
+                          size="sm"
+                          onClick={() => handleViewRecordsClick(el, 'UsageRecord')}
+                        >
+                          View
+                        </Button>
+                      </td>
+                    )}
                     <td className={`${styles.itemsCell}`}>
                       <button
                         type="button"
@@ -234,7 +230,7 @@ export default function ItemsTable({
               })
             ) : (
               <tr>
-                <td colSpan={14} style={{ textAlign: 'center' }}>
+                <td colSpan={emptyStateColSpan} style={{ textAlign: 'center' }}>
                   No items data
                 </td>
               </tr>
