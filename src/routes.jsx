@@ -77,6 +77,7 @@ import TSAFormPage6 from './components/TSAForm/pages/TSAFormPage6';
 import TSAFormPage7 from './components/TSAForm/pages/TSAFormPage7';
 import TSAFormPage8 from './components/TSAForm/pages/TSAFormPage8';
 import PlannedCostDonutChart from './components/PlannedCostDonutChart';
+import TopCommunityMembers from './components/HGNForm/TopCommunityMembers';
 import HelpPage from './components/LandingPage/HelpPage';
 import TeamCard from './components/HGNHelpSkillsDashboard/TeamCard/TeamCard';
 import LandingPage from './components/HGNHelpSkillsDashboard/LandingPage';
@@ -1002,6 +1003,7 @@ export default (
           allowedRoles={[UserRole.Administrator, UserRole.CoreTeam, UserRole.Owner]}
           routePermissions={RoutePermissions.accessHgnSkillsDashboard}
         />
+        <ProtectedRoute path="/topcommunitymembers" exact component={TopCommunityMembers} />
         <ProtectedRoute
           path="/hgn-skills/profile/:userId?"
           exact

@@ -483,6 +483,8 @@ export const ENDPOINTS = {
   USER_STATE_SELECTIONS_BATCH: `${APIEndpoint}/userstate/selections/batch`,
   USER_STATE_CATALOG_USAGE: key => `${APIEndpoint}/userstate/catalog/${key}/usage`,
 
+  HGN_FORM_GET_TEAM_MEMBERS_BY_SKILL: skill => `${APIEndpoint}/userProfile/skills/${skill}`,
+
   CREATE_JOB_FORM: `${APIEndpoint}/jobforms`,
   UPDATE_JOB_FORM: `${APIEndpoint}/jobforms`,
   GET_JOB_FORM: formId => `${APIEndpoint}/jobforms/${formId}`,
