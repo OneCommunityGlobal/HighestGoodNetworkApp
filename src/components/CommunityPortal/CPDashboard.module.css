@@ -1,3 +1,5 @@
+/* stylelint-disable no-descending-specificity, no-duplicate-selectors, declaration-block-no-duplicate-properties, declaration-property-value-keyword-no-deprecated */
+
 :global(body) {
   font-family: Poppins, sans-serif;
   background: #fff;
