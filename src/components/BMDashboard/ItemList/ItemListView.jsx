@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+
 import BMError from '../shared/BMError';
 import SelectForm from './SelectForm';
 import SelectItem from './SelectItem';
@@ -18,12 +19,13 @@ export function ItemListView({
   dynamicColumns,
   children,
 }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [filteredItems, setFilteredItems] = useState(items);
   const [selectedProject, setSelectedProject] = useState('all');
   const [selectedItem, setSelectedItem] = useState('all');
   const [isError, setIsError] = useState(false);
   const [selectedTime, setSelectedTime] = useState(new Date());
-  const darkMode = useSelector(state => state.theme.darkMode);
+
   const isMaterialsView = itemType === 'Materials';
 
   useEffect(() => {
@@ -33,6 +35,7 @@ export function ItemListView({
   useEffect(() => {
     let filterItems;
     if (!items) return;
+
     if (selectedProject === 'all' && selectedItem === 'all') {
       setFilteredItems([...items]);
     } else if (selectedProject !== 'all' && selectedItem === 'all') {
@@ -55,24 +58,24 @@ export function ItemListView({
 
   if (isError) {
     return (
-      <main className={`${styles.itemsListContainer} ${darkMode ? styles.darkMode : ''}`}>
-        <h2>
-          {itemType}
-          {' List'}
-        </h2>
+      <main className={`${styles.items_list_container} ${darkMode ? 'dark-mode dm-text' : ''}`}>
+        <h2 className={darkMode ? 'dm-text' : ''}>{itemType} List</h2>
         <BMError errors={errors} />
       </main>
     );
   }
 
   return (
-    <main className={`${styles.itemsListContainer} ${darkMode ? styles.darkMode : ''}`}>
-      <h3>{itemType}</h3>
-      <section>
-        <span>
+    <main className={`${styles.items_list_container} ${darkMode ? 'dark-mode dm-text' : ''}`}>
+      <h3 className={darkMode ? 'dm-text dm-heading' : ''}>{itemType}</h3>
+
+      <section className={darkMode ? 'dm-bg dm-border dm-section-solid' : ''}>
+        <span
+          style={{ display: 'flex', margin: '5px' }}
+          className={darkMode ? 'dm-bg dm-filter-contrast dm-border dm-text' : ''}
+        >
           {items && (
-            <div className={`${styles.selectInput}`}>
-              <label htmlFor="itemListTime">Time:</label>
+            <>
               <DatePicker
                 selected={selectedTime}
                 onChange={date => setSelectedTime(date)}
@@ -81,12 +84,7 @@ export function ItemListView({
                 timeIntervals={15}
                 dateFormat="yyyy-MM-dd HH:mm:ss"
                 placeholderText="Select date and time"
-                inputId="itemListTime" // This is the key line
-                className={darkMode ? styles.darkDatePickerInput : styles.lightDatePickerInput}
-                calendarClassName={darkMode ? styles.darkDatePicker : styles.lightDatePicker}
-                popperClassName={
-                  darkMode ? styles.darkDatePickerPopper : styles.lightDatePickerPopper
-                }
+                className={darkMode ? 'form-control bg-yinmn-blue text-light' : 'form-control'}
               />
               <SelectForm
                 items={items}
@@ -98,13 +96,15 @@ export function ItemListView({
                 selectedProject={selectedProject}
                 selectedItem={selectedItem}
                 setSelectedItem={setSelectedItem}
-                label={itemType === 'Materials' ? 'Material' : itemType}
+                label={isMaterialsView ? 'Material' : itemType}
                 darkMode={darkMode}
               />
-            </div>
+            </>
           )}
         </span>
+
         {children}
+
         {filteredItems && (
           <>
             {isMaterialsView && (
@@ -127,9 +127,11 @@ export function ItemListView({
 }
 
 ItemListView.propTypes = {
+  itemType: PropTypes.string.isRequired,
   items: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      name: PropTypes.string,
       itemType: PropTypes.shape({
         name: PropTypes.string,
         unit: PropTypes.string,
@@ -149,7 +151,6 @@ ItemListView.propTypes = {
   errors: PropTypes.shape({
     message: PropTypes.string,
   }),
-  itemType: PropTypes.string.isRequired,
   UpdateItemModal: PropTypes.elementType.isRequired,
   dynamicColumns: PropTypes.arrayOf(
     PropTypes.shape({

@@ -5,7 +5,7 @@ import { capitalize } from 'lodash';
 import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
 import HistoryModal from './HistoryModal';
-import './timeTab.css';
+import styles from './VolunteeringTimeTab.module.css';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { formatDate, formatDateYYYYMMDD, formatDateMMDDYYYY, CREATED_DATE_CRITERIA } from '~/utils/formatDate';
 
@@ -385,18 +385,18 @@ const ViewTab = props => {
   }, [userProfile.startDate, userProfile.endDate]);
 
   return (
-    <div data-testid="volunteering-time-tab">
-      <Row className="volunteering-time-row">
+    <div data-testid="volunteering-time-tab" className={`${styles.volunteeringTimeTabDesktop} ${darkMode ? `bg-yinmn-blue ${styles.darkMode}` : ''}`}>
+      <Row className={`${styles.volunteeringTimeRow} ${darkMode ? styles.darkModeRow : ''}`}>
         <Col md="6">
-          <Label className={`hours-label ${darkMode ? 'text-light' : ''}`}>Account Created Date</Label>
+          <Label className={`${styles.hoursLabel} ${darkMode ? 'text-light' : ''}`}>Account Created Date</Label>
         </Col>
         <Col md="6">
         <p className={darkMode ? 'text-azure' : ''} style={{ textAlign: 'left' }}>{formatDateMMDDYYYY(userProfile.createdDate)}</p>
         </Col>
       </Row>
-      <Row className="volunteering-time-row">
+      <Row className={`${styles.volunteeringTimeRow} ${darkMode ? styles.darkModeRow : ''}`}>
         <Col md="6">
-          <Label className={`hours-label ${darkMode ? 'text-light' : ''}`}>Start Date</Label>
+          <Label className={`${styles.hoursLabel} ${darkMode ? 'text-light' : ''}`}>Start Date</Label>
         </Col>
         <Col md="6">
          <StartDate
@@ -412,9 +412,9 @@ const ViewTab = props => {
         </Col>
       </Row>
 
-      <Row className="volunteering-time-row">
+      <Row className={`${styles.volunteeringTimeRow} ${darkMode ? styles.darkModeRow : ''}`}>
         <Col md="6">
-          <Label className={`hours-label ${darkMode ? 'text-light' : ''}`}>End Date</Label>
+          <Label className={`${styles.hoursLabel} ${darkMode ? 'text-light' : ''}`}>End Date</Label>
         </Col>
         <Col md="6">
           <EndDate
@@ -429,22 +429,22 @@ const ViewTab = props => {
         </Col>
       </Row>
 
-      <Row className="volunteering-time-row">
+      <Row className={`${styles.volunteeringTimeRow} ${darkMode ? styles.darkModeRow : ''}`}>
         <Col md="6">
-          <Label className={`hours-label ${darkMode ? 'text-light' : ''}`}>
+          <Label className={`${styles.hoursLabel} ${darkMode ? 'text-light' : ''}`}>
             Total Tangible Hours This Week
           </Label>
         </Col>
         <Col md="6">
-          <p className={`hours-totalTangible-thisWeek ${darkMode ? 'text-azure' : ''}`} style={{textAlign: 'left'}}>
+          <p className={`${styles.hoursTotalTangibleThisWeek} ${darkMode ? 'text-azure' : ''}`} style={{textAlign: 'left'}}>
             {totalTangibleHoursThisWeek}
           </p>
         </Col>
       </Row>
 
-      <Row className="volunteering-time-row">
+      <Row className={`${styles.volunteeringTimeRow} ${darkMode ? styles.darkModeRow : ''}`}>
         <Col md="6">
-          <Label className={`hours-label ${darkMode ? 'text-light' : ''}`}>
+          <Label className={`${styles.hoursLabel} ${darkMode ? 'text-light' : ''}`}>
             Weekly Summary Options{' '}
           </Label>
         </Col>
@@ -458,9 +458,9 @@ const ViewTab = props => {
           />
         </Col>
       </Row>
-      <Row className="volunteering-time-row">
+      <Row className={`${styles.volunteeringTimeRow} ${darkMode ? styles.darkModeRow : ''}`}>
         <Col md="6">
-          <Label className={`hours-label ${darkMode ? 'text-light' : ''}`}>
+          <Label className={`${styles.hoursLabel} ${darkMode ? 'text-light' : ''}`}>
             Weekly Committed Hours{' '}
           </Label>
         </Col>
@@ -478,15 +478,15 @@ const ViewTab = props => {
             userName={userProfile.firstName}
             userHistory={userProfile.weeklycommittedHoursHistory}
           />
-          <span className="history-icon">
+          <span className={styles.historyIcon}>
             <i className="fa fa-history" aria-hidden="true" onClick={toggleHistoryModal}></i>
           </span>
         </Col>
       </Row>
       {userProfile.role === 'Core Team' && (
-        <Row className="volunteering-time-row">
+        <Row className={`${styles.volunteeringTimeRow} ${darkMode ? styles.darkModeRow : ''}`}>
           <Col md="6">
-            <Label className={`hours-label ${darkMode ? 'text-light' : ''}`}>
+            <Label className={`${styles.hoursLabel} ${darkMode ? 'text-light' : ''}`}>
               Additional Make-up Hours This Week{' '}
             </Label>
           </Col>
@@ -501,9 +501,9 @@ const ViewTab = props => {
           </Col>
         </Row>
       )}
-      <Row className="volunteering-time-row">
+      <Row className={`${styles.volunteeringTimeRow} ${darkMode ? styles.darkModeRow : ''}`}>
         <Col md="6">
-          <Label className={`hours-label ${darkMode ? 'text-light' : ''}`}>
+          <Label className={`${styles.hoursLabel} ${darkMode ? 'text-light' : ''}`}>
             Total Intangible Hours{' '}
           </Label>
         </Col>
@@ -516,14 +516,14 @@ const ViewTab = props => {
           />
         </Col>
       </Row>
-      <Row className="volunteering-time-row">
+      <Row className={`${styles.volunteeringTimeRow} ${darkMode ? styles.darkModeRow : ''}`}>
         <Col md="6">
-          <Label className={`hours-label ${darkMode ? 'text-light' : ''}`}>
+          <Label className={`${styles.hoursLabel} ${darkMode ? 'text-light' : ''}`}>
             Total Tangible Hours{' '}
           </Label>
         </Col>
-        <Col md="6" className="tangible-hrs-group">
-          <p className={`hours-totalTangible ${darkMode ? 'text-azure' : ''}`}>
+        <Col md="6" className={styles.tangibleHrsGroup}>
+          <p className={`${styles.hoursTotalTangible} ${darkMode ? 'text-azure' : ''}`}>
             {totalTangibleHours}
           </p>
           <Button
@@ -540,9 +540,9 @@ const ViewTab = props => {
       {props?.userProfile?.hoursByCategory
         ? Object.keys(userProfile.hoursByCategory).map(key => (
           <React.Fragment key={'hours-by-category-' + key}>
-            <Row className="volunteering-time-row">
+            <Row className={`${styles.volunteeringTimeRow} ${darkMode ? styles.darkModeRow : ''}`}>
               <Col md="6">
-                <Label className={`hours-label ${darkMode ? 'text-light' : ''}`}>
+                <Label className={`${styles.hoursLabel} ${darkMode ? 'text-light' : ''}`}>
                   {key !== 'unassigned' ? (
                     <>Total Tangible {capitalize(key)} Hours</>
                   ) : (
