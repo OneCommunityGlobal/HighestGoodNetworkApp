@@ -1,18 +1,16 @@
-import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { ARCHIVE } from './../../../languages/en/ui';
+import { useEffect, useState } from 'react';
 // old CSS removed
-// import styles from './../projects.module.css';
-import styles2 from './../projects.module.css';
-import { Link } from 'react-router-dom';
-import { NavItem } from 'reactstrap';
 import { connect } from 'react-redux';
-import hasPermission from '~/utils/permissions';
-import { boxStyle } from '~/styles';
+import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { modifyProject, clearError } from '../../../actions/projects';
-import ModalTemplate from './../../common/Modal';
+import { NavItem } from 'reactstrap';
+import { boxStyle } from '~/styles';
+import hasPermission from '~/utils/permissions';
+import { clearError, modifyProject } from '../../../actions/projects';
 import { CONFIRM_ARCHIVE, CONFIRM_UNARCHIVE } from './../../../languages/en/messages';
+import ModalTemplate from './../../common/Modal';
+import styles from './../projects.module.css';
 
 const Project = props => {
   const { darkMode, index } = props;

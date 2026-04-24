@@ -1,7 +1,6 @@
 /* eslint-disable testing-library/no-node-access */
 /* eslint-disable testing-library/no-container */
 import { vi } from 'vitest'
-import React from 'react'
 
 // Stub out the chart components to avoid d3-shape runtime errors
 vi.mock('../TeamReportCharts', () => ({
@@ -13,8 +12,8 @@ vi.mock('../TeamsReportCharts', () => ({
   default: () => <div data-testid="mock-teams-report-charts" />,
 }))
 
-import { render, screen } from '@testing-library/react'
 import '@testing-library/jest-dom/extend-expect'
+import { render, screen } from '@testing-library/react'
 import UserLoginPrivileges from '../UserLoginPrivileges'
 
 describe('UserLoginPrivileges Component', () => {
@@ -81,8 +80,8 @@ describe('UserLoginPrivileges Component', () => {
 
   test('Check if certain styles are applied correctly for mobile charts', () => {
     const { container } = render(<UserLoginPrivileges {...mockProps} />)
-    const mobileChart = container.querySelector('.mobile-chart')
-    expect(mobileChart).toHaveClass('mobile-chart')
+    const mobileChart = container.querySelector('[class*="mobile-chart"]')
+    expect(mobileChart).toBeTruthy()
     expect(mobileChart).toHaveStyle('display: flex')
     expect(mobileChart).toHaveStyle('gap: 16px')
   })

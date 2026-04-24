@@ -1,8 +1,7 @@
-import React from 'react';
-import { render, screen, fireEvent  } from '@testing-library/react';
-import TeamWeeklySummaries from '../TeamWeeklySummaries';
-import 'moment-timezone'; 
+import { render, screen } from '@testing-library/react';
 import moment from 'moment';
+import 'moment-timezone';
+import TeamWeeklySummaries from '../TeamWeeklySummaries';
 
 
 
@@ -54,7 +53,7 @@ describe('Test Suite for Team Weekly Summaries component', () => {
       const dateRangeElement = screen.getByText((content, element) => {
       return (
         element.tagName.toLowerCase() === 'h6' &&
-        element.classList.contains('team-weekly-header-date') &&
+        Array.from(element.classList).some(c => c.includes("team-weekly-header-date")) &&
         content.includes(fromDate) &&
         content.includes(toDate)
       );
