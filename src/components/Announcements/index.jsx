@@ -1,11 +1,8 @@
 /* Announcements/Announcements.jsx */
 import { useState } from 'react';
-import styles from './Announcements.module.css';
 import { useSelector } from 'react-redux';
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import classnames from 'classnames';
-import SocialMediaComposer from './SocialMediaComposer';
-import TruthSocialAutoPoster from '../AutoPoster/TruthSocialAutoPoster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faEnvelope,
@@ -16,8 +13,11 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { faFacebook, faLinkedin, faMedium } from '@fortawesome/free-brands-svg-icons';
 import ReactTooltip from 'react-tooltip';
-
-import EmailPanel from './platforms/email'; // ← new
+import styles from './Announcements.module.css';
+import SocialMediaComposer from './SocialMediaComposer';
+import TruthSocialAutoPoster from '../AutoPoster/TruthSocialAutoPoster';
+import EmailPanel from './platforms/email';
+import LinkedInAutoPoster from './platforms/linkedin';
 import SlashdotAutoPoster from './platforms/slashdot';
 
 function Announcements({ title, email: initialEmail }) {
@@ -146,6 +146,10 @@ function Announcements({ title, email: initialEmail }) {
             <SocialMediaComposer platform="weeklyreport" darkMode={darkMode} />
           </TabPane>
 
+          <TabPane tabId="linkedin">
+            <LinkedInAutoPoster darkMode={darkMode} />
+          </TabPane>
+
           <TabPane tabId="truthsocial">
             <TruthSocialAutoPoster darkMode={darkMode} />
           </TabPane>
@@ -153,7 +157,6 @@ function Announcements({ title, email: initialEmail }) {
           {[
             'x',
             'facebook',
-            'linkedin',
             'pinterest',
             'instagram',
             'threads',
@@ -171,7 +174,6 @@ function Announcements({ title, email: initialEmail }) {
             'livejournal',
             'slashdot',
             'blogger',
-            'truthsocial',
           ].map(platform => {
             const PlatformComposer =
               platform === 'slashdot' ? SlashdotAutoPoster : SocialMediaComposer;
