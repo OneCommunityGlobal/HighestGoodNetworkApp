@@ -8,7 +8,15 @@ if command -v nvm >/dev/null 2>&1 && [ -f .nvmrc ]; then
   nvm use 20 2>/dev/null || nvm install 20 && nvm use 20
 fi
 
-changed_files=$(git diff --name-only @{upstream}...HEAD 2>/dev/null)
+changed_files=$(
+  git log --first-parent --no-merges --format= --name-only @{upstream}..HEAD 2>/dev/null |
+    grep -v '^$' |
+    sort -u
+)
+
+if [ -z "$changed_files" ]; then
+  changed_files=$(git diff --name-only HEAD~1..HEAD 2>/dev/null)
+fi
 
 if [ -z "$changed_files" ]; then
   echo "No outgoing changes to validate. Skipping pre-push checks."
