@@ -5,6 +5,7 @@
   background-color: var(--bg-color, #f3f4f6);
   min-height: calc(100vh - 70px);
   transition: background-color 0.3s ease, color 0.3s ease;
+
   --bg-color: #f3f4f6;
   --text-color: #000;
   --card-bg: #fff;
@@ -15,6 +16,7 @@
   --input-text: #000;
   --input-border: #d1d5db;
   --accent-card: #f9fafb;
+
   display: block;
   visibility: visible;
 }
@@ -36,7 +38,7 @@
   font-size: 2rem;
   font-weight: 700;
   margin: 0;
-  padding: 28px 40px 24px 40px;
+  padding: 28px 40px 24px;
   color: var(--text-color);
   text-align: center;
   border-bottom: 1px solid var(--border-color);
