@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import { Form, FormGroup, Label, Input, Button, Badge } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import Joi from 'joi';
+import { toast } from 'react-toastify';
 import { boxStyle } from '../../../../styles';
 import styles from './CreateNewTeam.module.css';
 import { getUserProfileBasicInfo } from '../../../../actions/userManagement';
+import { postNewTeam, addTeamMember } from '../../../../actions/allTeamsAction';
 
 const initialFormState = {
   teamName: '',
@@ -17,6 +20,7 @@ export default function CreateNewTeam() {
   const [formData, setFormData] = useState(initialFormState);
   const [errors, setErrors] = useState({});
   const dispatch = useDispatch();
+  const history = useHistory();
   const userProfilesBasicInfo = useSelector(
     state => state.allUserProfilesBasicInfo?.userProfilesBasicInfo,
   );
@@ -42,7 +46,7 @@ export default function CreateNewTeam() {
 
   useEffect(() => {
     setMembers(userProfilesBasicInfo);
-  }, []);
+  }, [userProfilesBasicInfo]);
 
   const validationObj = {
     additionalInformation: Joi.string()
@@ -109,26 +113,24 @@ export default function CreateNewTeam() {
       return;
     }
 
-    const updatedFormData = {
-      ...formData,
-      teamMembers: assignedMembers,
-      tasks: assignedTasks,
-    };
+    try {
+      const res = await dispatch(postNewTeam(formData.teamName, true));
+      if (!res || res.status !== 200) {
+        const errMsg = res?.data?.error || res?.message || 'Failed to create team.';
+        toast.error(errMsg);
+        return;
+      }
 
-    // eslint-disable-next-line no-console
-    console.log('Form Submitted:', updatedFormData);
+      const newTeamId = res.data._id;
 
-    setSelectedMember('');
-    setAssignedMembers([]);
-    setSelectedTask('');
-    setAssignedTasks([]);
-    setFormData(initialFormState);
-    setErrors({});
-    setTouchedFields({
-      teamName: false,
-      assignedMembers: false,
-      additionalInformation: false,
-    });
+      // Assign each selected member to the newly created team
+      await Promise.all(assignedMembers.map(userId => dispatch(addTeamMember(newTeamId, userId))));
+
+      toast.success(`Team "${formData.teamName}" created successfully!`);
+      history.push('/teams');
+    } catch (err) {
+      toast.error('An unexpected error occurred. Please try again.');
+    }
   };
 
   const handleCancelClick = () => {
@@ -281,19 +283,21 @@ export default function CreateNewTeam() {
             <p className={styles.label}>Currently Assigned Members:</p>
           )}
           <div className={`${styles.badgeContainer}`}>
-            {assignedMembers.map((member, index) => {
+            {assignedMembers.map((memberId, index) => {
+              const user = members?.find(m => m.id === memberId);
+              const displayName = user ? `${user.firstName} ${user.lastName}` : memberId;
               return (
                 // eslint-disable-next-line react/no-array-index-key
                 <Badge key={index} pill color="info" className="mr-2">
-                  {member}
+                  {displayName}
                   <span
                     role="button"
                     tabIndex={0}
-                    onClick={() => handleRemoveMember(member)}
+                    onClick={() => handleRemoveMember(memberId)}
                     onKeyDown={e =>
-                      (e.key === 'Enter' || e.key === ' ') && handleRemoveMember(member)
+                      (e.key === 'Enter' || e.key === ' ') && handleRemoveMember(memberId)
                     }
-                    aria-label={`Remove member ${member}`}
+                    aria-label={`Remove member ${displayName}`}
                   >
                     X
                   </span>
@@ -342,11 +346,9 @@ export default function CreateNewTeam() {
                   <span
                     role="button"
                     tabIndex={0}
-                    onClick={() => handleRemoveMember(member)}
-                    onKeyDown={e =>
-                      (e.key === 'Enter' || e.key === ' ') && handleRemoveMember(member)
-                    }
-                    aria-label={`Remove member ${member}`}
+                    onClick={() => handleRemoveTask(task)}
+                    onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && handleRemoveTask(task)}
+                    aria-label={`Remove task ${task}`}
                   >
                     X
                   </span>
