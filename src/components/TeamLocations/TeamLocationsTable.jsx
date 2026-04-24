@@ -168,17 +168,26 @@ function TeamLocationsTable({ visible, filteredMapMarkers, setCurrentUser, darkM
                 />
               </td>
               <td className={styles['team-locations-table-data']}>
-                <span style={{ color: darkMode ? 'white' : 'black' }} className={styles['column-content']}>
+                <span
+                  style={{ color: darkMode ? 'white' : 'black' }}
+                  className={styles['column-content']}
+                >
                   {`${user.firstName} ${user.lastName.charAt(0)}.`}
                 </span>
               </td>
               <td className={styles['team-locations-table-data']}>
                 {user.location.city ? (
-                  <span style={{ color: darkMode ? 'white' : 'black' }} className={styles['column-content']}>
+                  <span
+                    style={{ color: darkMode ? 'white' : 'black' }}
+                    className={styles['column-content']}
+                  >
                     {`${user.location.city}, ${user.location.country}`}
                   </span>
                 ) : (
-                  <span style={{ color: darkMode ? 'white' : 'black' }} className={styles['column-content']}>
+                  <span
+                    style={{ color: darkMode ? 'white' : 'black' }}
+                    className={styles['column-content']}
+                  >
                     {`${user.location.country}`}
                   </span>
                 )}

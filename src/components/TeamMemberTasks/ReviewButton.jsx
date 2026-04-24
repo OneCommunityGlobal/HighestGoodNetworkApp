@@ -629,7 +629,10 @@ function ReviewButton({ user, task, updateTask }) {
         </ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           You are about to submit the following link for review:
-          <div className={styles['mt-2']} style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>
+          <div
+            className={styles['mt-2']}
+            style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}
+          >
             <span>{sanitizeText(link)}</span>
           </div>
           Please confirm if this is the correct link.

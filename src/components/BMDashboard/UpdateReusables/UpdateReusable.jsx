@@ -321,7 +321,11 @@ function UpdateReusable({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
               </Col>
 
               {validations.quantityUsed !== '' && (
-                <Label for="updateReusableQuantityUsedError" sm={12} className={styles.reusableFormError}>
+                <Label
+                  for="updateReusableQuantityUsedError"
+                  sm={12}
+                  className={styles.reusableFormError}
+                >
                   {validations.quantityUsed}
                 </Label>
               )}

@@ -1082,7 +1082,10 @@ function LeaderBoard({
                       <td className={styles['align-middle']} id={`id${item.personId}`}>
                         <span title="Tangible time">{item.tangibletime}</span>
                       </td>
-                      <td className={styles['align-middle']} aria-label="Description or purpose of the cell">
+                      <td
+                        className={styles['align-middle']}
+                        aria-label="Description or purpose of the cell"
+                      >
                         <Link
                           to={`/timelog/${item.personId}#currentWeek`}
                           title={`TangibleEffort: ${item.tangibletime} hours`}

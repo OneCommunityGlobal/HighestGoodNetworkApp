@@ -483,7 +483,11 @@ export default function SocialMediaComposer({ platform }) {
           {editingPostId && (
             <div className={styles['edit-banner']}>
               <span>✏️ Editing scheduled post</span>
-              <button type="button" onClick={handleCancelEdit} className={styles['btn-cancel-edit']}>
+              <button
+                type="button"
+                onClick={handleCancelEdit}
+                className={styles['btn-cancel-edit']}
+              >
                 Cancel Edit
               </button>
             </div>
@@ -511,7 +515,11 @@ export default function SocialMediaComposer({ platform }) {
             {uploadedImage && (
               <div>
                 <div className={styles['image-preview-container']}>
-                  <img src={uploadedImage.preview} alt="Upload preview" className={styles['image-preview']} />
+                  <img
+                    src={uploadedImage.preview}
+                    alt="Upload preview"
+                    className={styles['image-preview']}
+                  />
                   <button
                     type="button"
                     onClick={handleRemoveImage}
@@ -669,9 +677,15 @@ export default function SocialMediaComposer({ platform }) {
                   <div key={post._id} className={styles['post-card']}>
                     <div className={styles['post-card-content']}>
                       <p className={styles['post-text']}>{postText}</p>
-                      <p className={styles['post-meta']}>📅 {formatScheduledTime(post.scheduledTime)}</p>
+                      <p className={styles['post-meta']}>
+                        📅 {formatScheduledTime(post.scheduledTime)}
+                      </p>
                       {imageBase64 && (
-                        <img src={imageBase64} alt="Post thumbnail" className={styles['post-thumbnail']} />
+                        <img
+                          src={imageBase64}
+                          alt="Post thumbnail"
+                          className={styles['post-thumbnail']}
+                        />
                       )}
                     </div>
                     <div className={styles['post-card-actions']}>

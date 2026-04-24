@@ -21,10 +21,7 @@ const IntermediateTasksList = ({ intermediateTasks, styles, onMarkIntermediateAs
           {/* Progress Bar for Sub-task */}
           <div className="subTaskProgressSection">
             <div className="subTaskProgressBar">
-              <div
-                className="subTaskProgressFill"
-                style={{ width: `${subTaskProgress}%` }}
-              />
+              <div className="subTaskProgressFill" style={{ width: `${subTaskProgress}%` }} />
             </div>
             <span className="subTaskProgressText">{subTaskProgress}%</span>
           </div>

@@ -475,7 +475,10 @@ function ManageStatesModal({ isOpen, onClose, catalog, onCatalogChange, darkMode
               onClick={() => setIsReordering(prev => !prev)}
               style={boxStyling}
             >
-              <FontAwesomeIcon icon={isReordering ? faCheck : faArrowsUpDown} className={styles['mr-1']} />
+              <FontAwesomeIcon
+                icon={isReordering ? faCheck : faArrowsUpDown}
+                className={styles['mr-1']}
+              />
               {isReordering ? 'Done Reordering' : 'Reorder'}
             </Button>
           </div>

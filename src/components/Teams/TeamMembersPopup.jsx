@@ -258,10 +258,16 @@ export const TeamMembersPopup = React.memo(props => {
             <i className="fa fa-circle" aria-hidden="true" />
           </div>
         </td>
-        <td className={styles['def-width']} style={{ verticalAlign: 'middle', textAlign: 'center' }}>
+        <td
+          className={styles['def-width']}
+          style={{ verticalAlign: 'middle', textAlign: 'center' }}
+        >
           {index + 1}
         </td>
-        <td className={styles['def-width']} style={{ verticalAlign: 'middle', textAlign: 'center' }}>
+        <td
+          className={styles['def-width']}
+          style={{ verticalAlign: 'middle', textAlign: 'center' }}
+        >
           {nameCell}{' '}
           {hasVisibilityIconPermission && props?.selectedTeamName && user?.isVisible === false && (
             <i className="fa fa-eye-slash" title="User is invisible" />

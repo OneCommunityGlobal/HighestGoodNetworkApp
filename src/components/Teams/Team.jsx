@@ -129,7 +129,10 @@ export function Team({
       <td className={headerStyles.teamNameCol}>
         {props.name} ({total} | {activeCount} | {inactive})
       </td>
-      <td className={styles['teams__active--input']} style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+      <td
+        className={styles['teams__active--input']}
+        style={{ textAlign: 'center', verticalAlign: 'middle' }}
+      >
         <button
           data-testid="active-marker"
           type="button"
@@ -147,7 +150,10 @@ export function Team({
         </button>
       </td>
 
-      <td className={styles['centered-cell']} style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+      <td
+        className={styles['centered-cell']}
+        style={{ textAlign: 'center', verticalAlign: 'middle' }}
+      >
         <button
           style={darkMode ? {} : boxStyle}
           type="button"

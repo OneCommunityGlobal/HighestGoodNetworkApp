@@ -213,13 +213,15 @@ function ProjectLog({ projectId, darkMode }) {
                 onClick={() => handleSort('firstName')}
                 style={{ cursor: 'pointer', whiteSpace: 'nowrap' }}
               >
-                First Name <FontAwesomeIcon icon={getSortIcon('firstName')} className={styles['ml-1']} />
+                First Name{' '}
+                <FontAwesomeIcon icon={getSortIcon('firstName')} className={styles['ml-1']} />
               </th>
               <th
                 onClick={() => handleSort('lastName')}
                 style={{ cursor: 'pointer', whiteSpace: 'nowrap' }}
               >
-                Last Name <FontAwesomeIcon icon={getSortIcon('lastName')} className={styles['ml-1']} />
+                Last Name{' '}
+                <FontAwesomeIcon icon={getSortIcon('lastName')} className={styles['ml-1']} />
               </th>
               <th
                 onClick={() => handleSort('role')}
@@ -237,13 +239,15 @@ function ProjectLog({ projectId, darkMode }) {
                 onClick={() => handleSort('currentTask')}
                 style={{ cursor: 'pointer', whiteSpace: 'nowrap' }}
               >
-                Current Task <FontAwesomeIcon icon={getSortIcon('currentTask')} className={styles['ml-1']} />
+                Current Task{' '}
+                <FontAwesomeIcon icon={getSortIcon('currentTask')} className={styles['ml-1']} />
               </th>
               <th
                 onClick={() => handleSort('totalHrs')}
                 style={{ cursor: 'pointer', whiteSpace: 'nowrap' }}
               >
-                Total Hrs <FontAwesomeIcon icon={getSortIcon('totalHrs')} className={styles['ml-1']} />
+                Total Hrs{' '}
+                <FontAwesomeIcon icon={getSortIcon('totalHrs')} className={styles['ml-1']} />
               </th>
               <th
                 onClick={() => handleSort('todaysHrs')}

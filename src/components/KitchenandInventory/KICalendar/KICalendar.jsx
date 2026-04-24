@@ -211,7 +211,9 @@ function KICalendar({ auth, darkMode }) {
             <CardBody>
               <h6>{format(selectedDate, 'MMMM d, yyyy')}</h6>
               <hr />
-              {selectedDateEvents.length === 0 && <div className={styles['text-muted']}>No events</div>}
+              {selectedDateEvents.length === 0 && (
+                <div className={styles['text-muted']}>No events</div>
+              )}
               {selectedDateEvents.map(e => (
                 <div key={e.id} className={styles['mb-2']}>
                   <strong>{e.title}</strong>
@@ -363,7 +365,10 @@ function KICalendar({ auth, darkMode }) {
                           data-testid={`event-${event.id}`}
                         >
                           {moduleIcons[event.type] && (
-                            <FontAwesomeIcon icon={moduleIcons[event.type]} className={styles['me-2']} />
+                            <FontAwesomeIcon
+                              icon={moduleIcons[event.type]}
+                              className={styles['me-2']}
+                            />
                           )}{' '}
                           {event.title}
                         </button>
@@ -420,7 +425,10 @@ function KICalendar({ auth, darkMode }) {
                           }}
                         >
                           {moduleIcons[event.type] && (
-                            <FontAwesomeIcon icon={moduleIcons[event.type]} className={styles['me-2']} />
+                            <FontAwesomeIcon
+                              icon={moduleIcons[event.type]}
+                              className={styles['me-2']}
+                            />
                           )}{' '}
                           {event.title}
                         </button>

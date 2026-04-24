@@ -169,7 +169,9 @@ export default function PurchaseForm() {
           }}
         />
       </FormGroup>
-      <div className={styles['purchase-consumable-error']}>{validationError && <p>{validationError}</p>}</div>
+      <div className={styles['purchase-consumable-error']}>
+        {validationError && <p>{validationError}</p>}
+      </div>
       <div className={styles['purchase-consumable-buttons']}>
         <Button
           type="button"

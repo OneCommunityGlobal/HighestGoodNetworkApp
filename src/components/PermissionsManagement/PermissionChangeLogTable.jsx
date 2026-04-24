@@ -92,7 +92,11 @@ function PermissionChangeLogTable({ changeLogs, darkMode, roleNamesToHighlight =
           : filteredPermissions.slice(0, 5).join(', ') +
             (filteredPermissions.length > 5 ? ', ...' : '')}
         {filteredPermissions.length > 5 && (
-          <button className={styles['toggle-button']} onClick={() => toggleExpandRow(rowId)} type="button">
+          <button
+            className={styles['toggle-button']}
+            onClick={() => toggleExpandRow(rowId)}
+            type="button"
+          >
             {expandedRows[rowId] ? <FiChevronUp /> : <FiChevronDown />}
           </button>
         )}

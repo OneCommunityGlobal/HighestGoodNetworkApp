@@ -204,13 +204,21 @@ function PaidLaborCostDatePicker({
         >
           {/* Header */}
           <div className={styles['paid-labor-cost-calendar-header']}>
-            <button type="button" className={styles['paid-labor-cost-month-nav']} onClick={prevMonth}>
+            <button
+              type="button"
+              className={styles['paid-labor-cost-month-nav']}
+              onClick={prevMonth}
+            >
               &lt;
             </button>
             <div className={styles['paid-labor-cost-current-month']}>
               {format(calendarMonth, 'MMMM yyyy')}
             </div>
-            <button type="button" className={styles['paid-labor-cost-month-nav']} onClick={nextMonth}>
+            <button
+              type="button"
+              className={styles['paid-labor-cost-month-nav']}
+              onClick={nextMonth}
+            >
               &gt;
             </button>
           </div>

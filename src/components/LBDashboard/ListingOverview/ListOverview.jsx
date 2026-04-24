@@ -240,8 +240,12 @@ function ListOverview() {
                     {bookingState.loading ? 'Booking...' : 'Confirm Booking'}
                   </button>
                 )}
-                {bookingState.error && <div className={styles['error-message']}>{bookingState.error}</div>}
-                {bookingState.success && <div className={styles['text-success']}>Booking successful!</div>}
+                {bookingState.error && (
+                  <div className={styles['error-message']}>{bookingState.error}</div>
+                )}
+                {bookingState.success && (
+                  <div className={styles['text-success']}>Booking successful!</div>
+                )}
               </div>
             )}
             {showAvailability && (

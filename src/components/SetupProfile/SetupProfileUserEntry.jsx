@@ -989,7 +989,11 @@ function SetupProfileUserEntry({ token, userEmail }) {
                     </b>
                     .
                   </p>
-                  <button type="button" className={styles.close} onClick={toggleDeleteHomeCountryModal}>
+                  <button
+                    type="button"
+                    className={styles.close}
+                    onClick={toggleDeleteHomeCountryModal}
+                  >
                     <span aria-hidden="true">&times;</span>
                   </button>
                 </div>

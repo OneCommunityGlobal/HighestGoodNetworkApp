@@ -277,7 +277,9 @@ function InjuryChartForm({ dark }) {
       {/* No Data Display */}
       {!error && !loading && (!chartData || chartData.length === 0) && (
         <div className="text-center p-5 bg-white rounded shadow-sm">
-          <p className={styles['text-muted']}>No injury data available for the selected criteria.</p>
+          <p className={styles['text-muted']}>
+            No injury data available for the selected criteria.
+          </p>
         </div>
       )}
     </div>

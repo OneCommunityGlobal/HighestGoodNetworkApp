@@ -251,7 +251,11 @@ function CreateNewBadgePopup(props) {
             Category
           </Label>
           <i className="fa fa-info-circle" id="CategoryInfo" />
-          <UncontrolledTooltip placement="right" target="CategoryInfo" className={styles.badgeTooltip}>
+          <UncontrolledTooltip
+            placement="right"
+            target="CategoryInfo"
+            className={styles.badgeTooltip}
+          >
             <p className={styles.badge_info_icon_text}>
               Choosing a category is necessary if type is Total Hrs in Category in order to
               autoassign the badge. If no category is chosen, the category will automatically be
@@ -288,8 +292,14 @@ function CreateNewBadgePopup(props) {
             Hours
           </Label>
           <i className="fa fa-info-circle" id="TotalHrsInfo" />
-          <UncontrolledTooltip placement="right" target="TotalHrsInfo" className={styles.badgeTooltip}>
-            <p className={styles.badge_info_icon_text}>Choosing a the amount of Hours necessary for .</p>
+          <UncontrolledTooltip
+            placement="right"
+            target="TotalHrsInfo"
+            className={styles.badgeTooltip}
+          >
+            <p className={styles.badge_info_icon_text}>
+              Choosing a the amount of Hours necessary for .
+            </p>
           </UncontrolledTooltip>
           <Input
             type="number"
@@ -313,7 +323,9 @@ function CreateNewBadgePopup(props) {
           </Label>
           <i className="fa fa-info-circle" id="WeeksInfo" />
           <UncontrolledTooltip placement="right" target="WeeksInfo" className={styles.badgeTooltip}>
-            <p className={styles.badge_info_icon_text}>Choosing a the amount of Weeks necessary for .</p>
+            <p className={styles.badge_info_icon_text}>
+              Choosing a the amount of Weeks necessary for .
+            </p>
           </UncontrolledTooltip>
           <Input
             type="number"
@@ -336,8 +348,14 @@ function CreateNewBadgePopup(props) {
             Months
           </Label>
           <i className="fa fa-info-circle" id="MonthsInfo" />
-          <UncontrolledTooltip placement="right" target="MonthsInfo" className={styles.badgeTooltip}>
-            <p className={styles.badge_info_icon_text}>Choosing a the amount of Months necessary for .</p>
+          <UncontrolledTooltip
+            placement="right"
+            target="MonthsInfo"
+            className={styles.badgeTooltip}
+          >
+            <p className={styles.badge_info_icon_text}>
+              Choosing a the amount of Months necessary for .
+            </p>
           </UncontrolledTooltip>
           <Input
             type="number"
@@ -360,7 +378,11 @@ function CreateNewBadgePopup(props) {
             Multiple
           </Label>
           <i className="fa fa-info-circle" id="MultipleInfo" />
-          <UncontrolledTooltip placement="right" target="MultipleInfo" className={styles.badgeTooltip}>
+          <UncontrolledTooltip
+            placement="right"
+            target="MultipleInfo"
+            className={styles.badgeTooltip}
+          >
             <p className={styles.badge_info_icon_text}>
               Choosing a the amount of Multiple necessary for .
             </p>
@@ -386,8 +408,14 @@ function CreateNewBadgePopup(props) {
             People
           </Label>
           <i className="fa fa-info-circle" id="PeopleInfo" />
-          <UncontrolledTooltip placement="right" target="PeopleInfo" className={styles.badgeTooltip}>
-            <p className={styles.badge_info_icon_text}>Choosing a the amount of People necessary for .</p>
+          <UncontrolledTooltip
+            placement="right"
+            target="PeopleInfo"
+            className={styles.badgeTooltip}
+          >
+            <p className={styles.badge_info_icon_text}>
+              Choosing a the amount of People necessary for .
+            </p>
           </UncontrolledTooltip>
           <Input
             type="number"

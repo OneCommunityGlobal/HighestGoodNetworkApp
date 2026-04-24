@@ -300,7 +300,10 @@ function CustomTooltip({ active, payload, label, currency, darkMode }) {
             <span className={styles['tooltip-label']} style={{ color: textColor }}>
               {costLabel}:
             </span>
-            <span className={styles['tooltip-value']} style={{ fontWeight: 'bold', color: textColor }}>
+            <span
+              className={styles['tooltip-value']}
+              style={{ fontWeight: 'bold', color: textColor }}
+            >
               {`${currency}${entry.value.toLocaleString()}`}
             </span>
           </div>
