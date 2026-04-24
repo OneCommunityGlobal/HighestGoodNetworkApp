@@ -960,7 +960,7 @@ export default (
         <KIProtectedRoute path="/kitchenandinventory" exact component={KIDashboard} />
         <KIProtectedRoute path="/kitchenandinventory/inventory" exact component={KIINVENTORY} />
         <KIProtectedRoute path="/kitchenandinventory/calendar" exact component={KICalendar} />
-<KIProtectedRoute
+        <KIProtectedRoute
           path="/kitchenandinventory/animalmanagement"
           exact
           component={AnimalManagement}
