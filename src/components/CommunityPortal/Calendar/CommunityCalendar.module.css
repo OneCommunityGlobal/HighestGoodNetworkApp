@@ -220,7 +220,6 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 2px;
-
   width: 100%;
 }
 
@@ -236,10 +235,6 @@
 
 .reactCalendar :global(.react-calendar__tile.selectedDate) .tileEvents {
   color: #1a202c;
-}
-
-.reactCalendarDarkMode :global(.react-calendar__tile.selectedDate) .tileEvents {
-  color: #fff;
 }
 
 .reactCalendarDarkMode :global(.react-calendar__tile.selectedDate) .tileEvents {
@@ -683,8 +678,6 @@
   border: 1px solid #ccc;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
-  z-index: 10;
-  pointer-events: none;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -1369,21 +1362,6 @@
 .overflowPopupDark h4 {
   color: #e2e8f0;
   border-bottom-color: #4a5568;
-}
-
-.overflowPopup .eventItem {
-  margin-bottom: 8px;
-  font-size: 0.9rem;
-  padding: 6px 10px;
-  border-radius: 6px;
-  color: #fff;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-
-.overflowPopup .eventItem:hover {
-  transform: translateY(-1px);
 }
 
 .detailLabel {
