@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { ARCHIVE } from './../../../languages/en/ui';
 // old CSS removed
-// import './../projects.css';
-import styles from './../projects.module.css';
+// import styles from './../projects.module.css';
+import styles2 from './../projects.module.css';
 import { Link } from 'react-router-dom';
 import { NavItem } from 'reactstrap';
 import { connect } from 'react-redux';
@@ -191,7 +191,7 @@ const Project = props => {
           )}
         </td>
 
-        <td className="projects__category--input">
+        <td className={styles['projects__category--input']}>
           {canEditCategoryAndStatus || canPutProject ? (
             <select
               data-testid="projects__category--input" // added for unit test

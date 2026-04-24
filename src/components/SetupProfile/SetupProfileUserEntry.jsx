@@ -35,7 +35,7 @@ import ProfilePictureModal from './profilePictureModal';
 import DeleteHomeCountryModal from './deleteHomeCountryModal';
 import collaborationOptions from './collaborationSuggestionData';
 import 'react-phone-input-2/lib/style.css';
-import './SetupProfileUserEntry.css';
+import styles from './SetupProfileUserEntry.module.css';
 import logo from '../../assets/images/logo.png';
 import TimeZoneDropDown from '../UserProfile/TimeZoneDropDown';
 
@@ -603,9 +603,9 @@ function SetupProfileUserEntry({ token, userEmail }) {
   };
 
   return (
-    <div className="profile-setup-user-entry-container">
-      <div className="profile-setup-user-entry-header">
-        <img src={logo} alt="logo" className="profile-setup-user-entry-logo" />
+    <div className={styles['profile-setup-user-entry-container']}>
+      <div className={styles['profile-setup-user-entry-header']}>
+        <img src={logo} alt="logo" className={styles['profile-setup-user-entry-logo']} />
       </div>
       <div className="alert alert-info text-center">
         Welcome to the One Community Highest Good Network! To create your account, please provide
@@ -647,7 +647,7 @@ function SetupProfileUserEntry({ token, userEmail }) {
             <Col md="4" />
           </Row>
           <Row>
-            <Col md="3" className="text-md-right">
+            <Col md="3" className={styles['text-md-right']}>
               <Label>
                 Name<span style={{ color: 'red' }}>*</span>
               </Label>
@@ -686,7 +686,7 @@ function SetupProfileUserEntry({ token, userEmail }) {
             </Col>
           </Row>
           <Row>
-            <Col md="3" className="text-md-right">
+            <Col md="3" className={styles['text-md-right']}>
               <Label>
                 Password<span style={{ color: 'red' }}>*</span>
               </Label>
@@ -770,8 +770,8 @@ function SetupProfileUserEntry({ token, userEmail }) {
               </InputGroup>
             </Col>
           </Row>
-          <Row className="mt-3">
-            <Col md="3" className="text-md-right">
+          <Row className={styles['mt-3']}>
+            <Col md="3" className={styles['text-md-right']}>
               <Label>
                 Job Title<span style={{ color: 'red' }}>*</span>
               </Label>
@@ -794,7 +794,7 @@ function SetupProfileUserEntry({ token, userEmail }) {
             </Col>
           </Row>
           <Row>
-            <Col md="3" className="text-md-right">
+            <Col md="3" className={styles['text-md-right']}>
               <Label>
                 Email/Phone<span style={{ color: 'red' }}>*</span>
               </Label>
@@ -834,7 +834,7 @@ function SetupProfileUserEntry({ token, userEmail }) {
             </Col>
           </Row>
           <Row>
-            <Col md="3" className="text-md-right">
+            <Col md="3" className={styles['text-md-right']}>
               <Label>
                 Video Call Preference<span style={{ color: 'red' }}>*</span>
               </Label>
@@ -866,10 +866,10 @@ function SetupProfileUserEntry({ token, userEmail }) {
                           <DropdownItem
                             key={suggestion.name}
                             onClick={() => handleCollaborationSuggestionClick(suggestion.name)}
-                            className="collaboration-suggestion-dd-item"
+                            className={styles['collaboration-suggestion-dd-item']}
                           >
                             <img
-                              className="collaboration-suggestion-dd-item-logo"
+                              className={styles['collaboration-suggestion-dd-item-logo']}
                               src={suggestion.logo}
                               alt="Collaboration Suggestion"
                             />
@@ -885,7 +885,7 @@ function SetupProfileUserEntry({ token, userEmail }) {
             </Col>
           </Row>
           <Row>
-            <Col md="3" className="text-md-right">
+            <Col md="3" className={styles['text-md-right']}>
               <Label className="w-100  text-wrap">
                 Home Country Option
                 <i className="fa fa-info-circle ml-1" id="countryRep" />
@@ -919,8 +919,8 @@ function SetupProfileUserEntry({ token, userEmail }) {
               />
             </Col>
           </Row>
-          <Row className="mt-3">
-            <Col md="3" className="text-md-right">
+          <Row className={styles['mt-3']}>
+            <Col md="3" className={styles['text-md-right']}>
               <Label>
                 Location<span style={{ color: 'red' }}>*</span>
               </Label>
@@ -961,7 +961,7 @@ function SetupProfileUserEntry({ token, userEmail }) {
             </Col>
           </Row>
           <Row>
-            <Col md="3" className="text-md-right">
+            <Col md="3" className={styles['text-md-right']}>
               <Label>
                 Time Zone<span style={{ color: 'red' }}>*</span>
               </Label>
@@ -989,7 +989,7 @@ function SetupProfileUserEntry({ token, userEmail }) {
                     </b>
                     .
                   </p>
-                  <button type="button" className="close" onClick={toggleDeleteHomeCountryModal}>
+                  <button type="button" className={styles.close} onClick={toggleDeleteHomeCountryModal}>
                     <span aria-hidden="true">&times;</span>
                   </button>
                 </div>

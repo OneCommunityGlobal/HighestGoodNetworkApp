@@ -35,7 +35,7 @@ import TangibleInfoModal from './TangibleInfoModal';
 import ReminderModal from './ReminderModal';
 import TimeLogConfirmationModal from './TimeLogConfirmationModal';
 import { ENDPOINTS } from '../../../utils/URL';
-import '../../Header/index.css';
+import '../../Header/index.module.css';
 import styles from '../Timelog.module.css';
 
 import { updateIndividualTaskTime } from '../../TeamMemberTasks/actions';
@@ -726,7 +726,7 @@ function TimeEntryForm(props) {
                 }
               />
               {'dateOfWork' in errors && (
-                <div className="text-danger">
+                <div className={styles['text-danger']}>
                   <small>{errors.dateOfWork}</small>
                 </div>
               )}
@@ -771,7 +771,7 @@ function TimeEntryForm(props) {
                 </Col>
               </Row>
               {'time' in errors && (
-                <div className="text-danger">
+                <div className={styles['text-danger']}>
                   <small>{errors.time}</small>
                 </div>
               )}
@@ -796,7 +796,7 @@ function TimeEntryForm(props) {
                 {projectsAndTasksOptions}
               </Input>
               {'projectId' in errors && (
-                <div className="text-danger">
+                <div className={styles['text-danger']}>
                   <small>{errors.projectId}</small>
                 </div>
               )}
@@ -810,7 +810,7 @@ function TimeEntryForm(props) {
                 init={TINY_MCE_INIT_OPTIONS}
                 id="notes"
                 name="notes"
-                className="form-control"
+                className={styles['form-control']}
                 value={formValues.notes}
                 onEditorChange={handleEditorChange}
                 disabled={
@@ -819,7 +819,7 @@ function TimeEntryForm(props) {
               />
 
               {'notes' in errors && (
-                <div className="text-danger">
+                <div className={styles['text-danger']}>
                   <small>{errors.notes}</small>
                 </div>
               )}
@@ -850,7 +850,7 @@ function TimeEntryForm(props) {
           </Form>
         </ModalBody>
         <ModalFooter className={bodyBg}>
-          <small className="mr-auto">* All the fields are required</small>
+          <small className={styles['mr-auto']}>* All the fields are required</small>
           <Button onClick={clearForm} color="danger" style={darkMode ? boxStyleDark : boxStyle}>
             Clear Form
           </Button>

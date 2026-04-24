@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react';
 import { CircleMarker, Popup } from 'react-leaflet';
 import { Button } from 'reactstrap';
 import { boxStyle, boxStyleDark } from '~/styles';
-import './TeamLocations.css';
+import styles from './TeamLocations.module.css';
 
 function MarkerPopup({
   profile,
@@ -45,7 +45,7 @@ function MarkerPopup({
           {profile.jobTitle && <div>{`Title: ${profile.jobTitle}`}</div>}
           <div>{`Location: ${profile.location.city || profile.location.userProvided}`}</div>
           {isAbleToEdit ? (
-            <div className="mt-3">
+            <div className={styles['mt-3']}>
               <Button
                 color="Primary"
                 className="btn btn-outline-success mr-1 btn-sm"

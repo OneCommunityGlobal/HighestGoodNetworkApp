@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-unused-vars
 import { React, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import './TeamTable.css';
+import styles from './TeamTable.module.css';
 import { Input, FormGroup, FormFeedback } from 'reactstrap';
 import { connect } from 'react-redux';
 import hasPermission from '~/utils/permissions';
@@ -74,7 +74,7 @@ function TeamTable({ allTeams, auth, darkMode, refreshTeams }) {
     };
 
     return (
-      <div className="team-code-form-field">
+      <div className={styles['team-code-form-field']}>
         {canEditTeamCode ? (
           <div style={{ paddingRight: '5px' }}>
             <FormGroup>
@@ -113,13 +113,13 @@ function TeamTable({ allTeams, auth, darkMode, refreshTeams }) {
             {team.teamName}
           </Link>
         </td>
-        <td className="projects__active--input">
+        <td className={styles['projects__active--input']}>
           {team.isActive ? (
-            <div className="isActive" data-testid="team-is-active">
+            <div className={styles.isActive} data-testid="team-is-active">
               <i className="fa fa-circle" aria-hidden="true" />
             </div>
           ) : (
-            <div className="isNotActive" data-testid="team-is-inactive">
+            <div className={styles.isNotActive} data-testid="team-is-inactive">
               <i className="fa fa-circle-o" aria-hidden="true" />
             </div>
           )}

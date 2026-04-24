@@ -212,7 +212,7 @@ export function Header(props) {
                     <i className="badge badge-pill badge-danger badge-notify">
                       {/* Pull number of unread messages */}
                     </i>
-                    <span className="sr-only">unread messages</span>
+                    <span className={styles['sr-only']}>unread messages</span>
                   </i>
                 </NavLink>
               </NavItem>
@@ -275,7 +275,7 @@ export function Header(props) {
                     src={`${profilePic || '/pfp-default-header.png'}`}
                     alt=""
                     style={{ maxWidth: '60px', maxHeight: '60px' }}
-                    className="dashboardimg"
+                    className={styles.dashboardimg}
                   />
                 </NavLink>
               </NavItem>

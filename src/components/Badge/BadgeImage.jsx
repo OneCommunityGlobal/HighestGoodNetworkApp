@@ -31,7 +31,7 @@ function BadgeImage({ badgeData, time, index, personalBestMaxHrs, count, cssSuff
         toggle={toggle}
         target={`popover_${time}${index.toString()}`}
       >
-        <Card className="text-center">
+        <Card className={styles['text-center']}>
           <CardImg className={styles.badge_image_lg} src={badgeData?.imageUrl} />
           <CardBody>
             <CardTitle

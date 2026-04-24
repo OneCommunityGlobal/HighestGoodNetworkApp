@@ -668,7 +668,7 @@ function LessonList(props) {
           <Form.Group controlId="tagInput">
             <Form.Label>Tags:</Form.Label>
             {tags.length > 1 && (
-              <div className="mb-2" style={{ fontSize: '0.85rem' }}>
+              <div className={styles['mb-2']} style={{ fontSize: '0.85rem' }}>
                 <Form.Check
                   inline
                   type="radio"

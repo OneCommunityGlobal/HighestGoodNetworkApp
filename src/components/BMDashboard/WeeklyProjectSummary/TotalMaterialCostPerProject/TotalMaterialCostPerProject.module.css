@@ -6,7 +6,7 @@
 }
 
 .totalMaterialCostPerProjectChartTitleDark {
-  color: var(--text-color, #ffffff);
+  color: var(--text-color, #fff);
 }
 
 .selectValueContainerDark {

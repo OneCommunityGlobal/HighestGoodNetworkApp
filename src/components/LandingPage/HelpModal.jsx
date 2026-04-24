@@ -107,7 +107,7 @@ function HelpModal({ show, onHide, auth }) {
 
   const renderContent = () => {
     if (loading) return <div>Loading categories...</div>;
-    if (error) return <div className="text-danger">{error}</div>;
+    if (error) return <div className={styles['text-danger']}>{error}</div>;
 
     return (
       <>

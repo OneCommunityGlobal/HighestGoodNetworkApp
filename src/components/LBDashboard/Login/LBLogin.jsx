@@ -159,7 +159,7 @@ function LBLogin(props) {
                 </InputGroup>
 
                 {validationError && validationError.label === 'password' && (
-                  <FormFeedback className="d-block">{validationError.message}</FormFeedback>
+                  <FormFeedback className={styles['d-block']}>{validationError.message}</FormFeedback>
                 )}
               </FormGroup>
 

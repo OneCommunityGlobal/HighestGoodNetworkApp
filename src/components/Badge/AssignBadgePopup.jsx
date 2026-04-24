@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Table, Button, UncontrolledTooltip } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import AssignTableRow from './AssignTableRow';
-import './AssignBadgePopup.css';
+import styles from './AssignBadgePopup.module.css';
 import { clearSelected } from '../../actions/badgeManagement';
 
 function AssignBadgePopup(props) {
@@ -58,12 +58,12 @@ function AssignBadgePopup(props) {
                   target="SelectInfo"
                   className="bg-secondary text-light"
                 >
-                  <p className="badge_info_icon_text">
+                  <p className={styles.badge_info_icon_text}>
                     Check those boxes to select the badges you wish to assign a person. Click the
                     &quot;Confirm&quot; button at the bottom when you&apos;ve selected all you wish
                     to add.
                   </p>
-                  <p className="badge_info_icon_text">
+                  <p className={styles.badge_info_icon_text}>
                     Want to assign multiple of the same badge to a person? Repeat the process!
                   </p>
                 </UncontrolledTooltip>

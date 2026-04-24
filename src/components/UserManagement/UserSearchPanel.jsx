@@ -48,7 +48,7 @@ function UserSearchPanel({
           style={darkMode ? boxStyleDark : boxStyle}
           aria-label="Setup History"
         >
-          <FontAwesomeIcon className="bell_icon" icon={faBell} />
+          <FontAwesomeIcon className={styles.bell_icon} icon={faBell} />
         </button>
       </OverlayTrigger>
 
@@ -79,7 +79,7 @@ function UserSearchPanel({
       </button>
       
       <div className='d-flex flex-fill mb-2'>
-        <div className="input-group-prepend">
+        <div className={styles['input-group-prepend']}>
           <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>{SEARCH}</span>
         </div>
         <input
@@ -113,7 +113,7 @@ function UserSearchPanel({
         </select>
       </div>
 
-      <div className="input-group-append" />
+      <div className={styles['input-group-append']} />
     </div>
   );
 }

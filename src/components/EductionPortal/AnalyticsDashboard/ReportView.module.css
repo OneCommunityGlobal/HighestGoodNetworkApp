@@ -16,12 +16,12 @@
   font-size: 24px;
   font-weight: 700;
   color: #1a1a1a;
-  margin: 0 0 8px 0;
+  margin: 0 0 8px;
   letter-spacing: -0.5px;
 }
 
 .downloadSection.darkMode .downloadTitle {
-  color: #ffffff;
+  color: #fff;
 }
 
 .downloadSubtitle {
@@ -36,10 +36,10 @@
 }
 
 .downloadCard {
-  background: #ffffff;
+  background: #fff;
   border-radius: 16px;
   padding: 32px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 10%), 0 1px 2px rgb(0 0 0 / 6%);
   border: 1px solid #e5e7eb;
   transition: all 0.3s ease;
 }
@@ -47,7 +47,7 @@
 .downloadSection.darkMode .downloadCard {
   background: #1f2937;
   border-color: #374151;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 30%), 0 1px 2px rgb(0 0 0 / 20%);
 }
 
 .formatSelection {
@@ -91,21 +91,21 @@
   cursor: pointer;
   transition: all 0.2s ease;
   appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
+  appearance: none;
+  appearance: none;
   background-image: none;
 }
 
 .formatSelect:hover:not(:disabled) {
   border-color: #3b82f6;
-  background-color: #ffffff;
+  background-color: #fff;
 }
 
 .formatSelect:focus:not(:disabled) {
   border-color: #3b82f6;
   outline: none;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 10%);
+  background-color: #fff;
 }
 
 .formatSelect:disabled {
@@ -127,7 +127,7 @@
 
 .formatSelect.darkModeSelect:focus:not(:disabled) {
   background-color: #1f2937;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 20%);
 }
 
 .formatSelect.darkModeSelect:disabled {
@@ -138,7 +138,7 @@
 /* Style select dropdown options */
 .formatSelect option {
   padding: 12px;
-  background-color: #ffffff;
+  background-color: #fff;
   color: #1f2937;
   font-size: 15px;
 }
@@ -185,19 +185,19 @@
   cursor: pointer;
   transition: all 0.3s ease;
   min-height: 56px;
-  box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3), 0 2px 4px -1px rgba(59, 130, 246, 0.2);
+  box-shadow: 0 4px 6px -1px rgb(59 130 246 / 30%), 0 2px 4px -1px rgb(59 130 246 / 20%);
   letter-spacing: -0.2px;
 }
 
 .downloadButton:hover:not(:disabled) {
   background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
   transform: translateY(-2px);
-  box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.4), 0 4px 6px -2px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 10px 15px -3px rgb(59 130 246 / 40%), 0 4px 6px -2px rgb(59 130 246 / 30%);
 }
 
 .downloadButton:active:not(:disabled) {
   transform: translateY(0);
-  box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3), 0 2px 4px -1px rgba(59, 130, 246, 0.2);
+  box-shadow: 0 4px 6px -1px rgb(59 130 246 / 30%), 0 2px 4px -1px rgb(59 130 246 / 20%);
 }
 
 .downloadButton:disabled {
@@ -234,7 +234,7 @@
   display: inline-block;
   width: 16px;
   height: 16px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid rgb(255 255 255 / 30%);
   border-top-color: white;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
@@ -325,13 +325,14 @@
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-@media (min-width: 640px) {
+@media (width >= 640px) {
   .downloadCard {
     padding: 40px;
   }
@@ -346,7 +347,7 @@
   }
 }
 
-@media (min-width: 768px) {
+@media (width >= 768px) {
   .downloadTitle {
     font-size: 28px;
   }
@@ -368,7 +369,7 @@
   }
 }
 
-@media (max-width: 639px) {
+@media (width <= 639px) {
   .downloadCard {
     padding: 24px;
   }

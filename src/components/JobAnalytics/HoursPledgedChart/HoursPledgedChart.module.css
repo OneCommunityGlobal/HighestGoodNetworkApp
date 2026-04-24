@@ -1,8 +1,8 @@
 .hoursPledgedChart {
   font-family: Arial, sans-serif;
   padding: 20px;
-  background-color: #ffffff;
-  color: #000000;
+  background-color: #fff;
+  color: #000;
   min-height: 100vh;
   transition: background-color 0.3s, color 0.3s;
 }

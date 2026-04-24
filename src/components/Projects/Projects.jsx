@@ -1293,10 +1293,10 @@ const Projects = function(props) {
 
           {canPostProject ? <AddProject hasPermission={hasPermission} /> : null}
         </div>
-        {/* <div className="d-flex" style={{ gap: '10px' }}> */}
+        {/* <div className={styles['d-flex']} style={{ gap: '10px' }}> */}
           {/* <SearchProjectByPerson onSearch={handleSearchName} searchMode={searchMode} /> */}
-          <div className="input-group" style={{ maxWidth: '260px', maxHeight: '38px' }}>
-            <div className="input-group-prepend">
+          <div className={styles['input-group']} style={{ maxWidth: '260px', maxHeight: '38px' }}>
+            <div className={styles['input-group-prepend']}>
               <span
               className={`input-group-text ${darkMode ? 'bg-light-grey' : ''}`}
               >

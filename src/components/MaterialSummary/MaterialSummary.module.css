@@ -2,8 +2,8 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 16px;
-  background-color: var(--bg-color, #ffffff);
-  color: var(--text-color, #000000);
+  background-color: var(--bg-color, #fff);
+  color: var(--text-color, #000);
   min-height: 100vh;
 }
 
@@ -11,7 +11,7 @@
   font-size: 1.875rem;
   font-weight: bold;
   margin-bottom: 24px;
-  color: var(--title-color, #000000);
+  color: var(--title-color, #000);
 }
 
 .gridContainer {
@@ -19,7 +19,7 @@
   gap: 24px;
 }
 
-@media (min-width: 1024px) {
+@media (width >= 1024px) {
   .gridContainer {
     grid-template-columns: 1fr 3fr;
   }
@@ -34,7 +34,7 @@
 .filterCard {
   background: var(--card-bg, white);
   border-radius: 8px;
-  box-shadow: var(--shadow, 0 4px 6px -1px rgba(0, 0, 0, 0.1));
+  box-shadow: var(--shadow, 0 4px 6px -1px rgb(0 0 0 / 10%));
   padding: 16px;
 }
 
@@ -42,7 +42,7 @@
   font-size: 1.25rem;
   font-weight: 600;
   margin-bottom: 4px;
-  color: var(--title-color, #000000);
+  color: var(--title-color, #000);
 }
 
 .filterCardDesc {
@@ -66,7 +66,7 @@
   display: block;
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--label-color, #000000);
+  color: var(--label-color, #000);
 }
 
 .selectInput {
@@ -75,8 +75,8 @@
   border: 1px solid var(--border-color, #d1d5db);
   border-radius: 6px;
   outline: none;
-  background-color: var(--input-bg, #ffffff);
-  color: var(--text-color, #000000);
+  background-color: var(--input-bg, #fff);
+  color: var(--text-color, #000);
 }
 
 .selectInput:focus {
@@ -98,13 +98,13 @@
 .checkboxLabel {
   font-size: 0.875rem;
   cursor: pointer;
-  color: var(--text-color, #000000);
+  color: var(--text-color, #000);
 }
 
 .increaseCard {
   background: var(--card-bg, white);
   border-radius: 8px;
-  box-shadow: var(--shadow, 0 4px 6px -1px rgba(0, 0, 0, 0.1));
+  box-shadow: var(--shadow, 0 4px 6px -1px rgb(0 0 0 / 10%));
   padding: 16px;
 }
 
@@ -112,7 +112,7 @@
   font-size: 1.25rem;
   font-weight: 600;
   margin-bottom: 8px;
-  color: var(--title-color, #000000);
+  color: var(--title-color, #000);
 }
 
 .increaseTrendRow {
@@ -133,6 +133,7 @@
   background: #dcfce7;
   color: #166534;
 }
+
 .trendBadgeDecrease {
   background: #fee2e2;
   color: #991b1b;
@@ -141,20 +142,20 @@
 .increaseText {
   margin-left: 8px;
   font-size: 0.875rem;
-  color: var(--text-color, #000000);
+  color: var(--text-color, #000);
 }
 
 .chartPanel {
   background: var(--card-bg, white);
   border-radius: 8px;
-  box-shadow: var(--shadow, 0 4px 6px -1px rgba(0, 0, 0, 0.1));
+  box-shadow: var(--shadow, 0 4px 6px -1px rgb(0 0 0 / 10%));
   padding: 16px;
 }
 
 .chartPanelTitle {
   font-size: 1.25rem;
   font-weight: 600;
-  color: var(--title-color, #000000);
+  color: var(--title-color, #000);
 }
 
 .chartPanelDesc {
@@ -186,7 +187,7 @@
 }
 
 .loadingText {
-  color: var(--text-color, #000000);
+  color: var(--text-color, #000);
   margin: 0;
 }
 
@@ -199,6 +200,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -214,7 +216,7 @@
   font-size: 1.125rem;
   font-weight: 500;
   margin-bottom: 12px;
-  color: var(--title-color, #000000);
+  color: var(--title-color, #000);
 }
 
 .materialBreakdownGrid {
@@ -240,13 +242,13 @@
 
 .materialBreakdownName {
   font-weight: 500;
-  color: var(--text-color, #000000);
+  color: var(--text-color, #000);
 }
 
 .materialBreakdownValue {
   font-size: 1.5rem;
   font-weight: bold;
-  color: var(--text-color, #000000);
+  color: var(--text-color, #000);
 }
 
 .materialBreakdownUnit {
@@ -258,14 +260,14 @@
 /* ============ DARK MODE ============ */
 .dashboardWrapper.darkMode {
   --bg-color: #1b2a41;
-  --text-color: #ffffff;
-  --title-color: #ffffff;
+  --text-color: #fff;
+  --title-color: #fff;
   --text-secondary: #e0e0e0;
   --card-bg: #2b3e59;
   --input-bg: #3a506b;
   --border-color: #4a5a77;
   --focus-border-color: #e8a71c;
   --label-color: #e0e0e0;
-  --shadow: 0 4px 6px -1px rgba(255, 255, 255, 0.1);
+  --shadow: 0 4px 6px -1px rgb(255 255 255 / 10%);
   --breakdown-item-bg: #3a506b;
 }

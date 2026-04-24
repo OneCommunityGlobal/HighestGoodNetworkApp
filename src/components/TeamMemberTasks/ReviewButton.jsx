@@ -18,7 +18,7 @@ import dompurify from 'dompurify';
 import styles from './style.module.css';
 import style from './reviewButton.module.css';
 import { boxStyle, boxStyleDark } from '~/styles';
-import '../Header/index.css';
+import '../Header/index.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faPencilAlt, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 import httpService from '../../services/httpService';
@@ -140,7 +140,7 @@ function ReviewButton({ user, task, updateTask }) {
     if (editLinkState.isEditing) {
       return (
         <>
-          <Spinner size="sm" className="mr-2" /> Updating…
+          <Spinner size="sm" className={styles['mr-2']} /> Updating…
         </>
       );
     }
@@ -148,7 +148,7 @@ function ReviewButton({ user, task, updateTask }) {
     if (editLinkState.isSuccess) {
       return (
         <>
-          <FontAwesomeIcon icon={faCheck} className="mr-2" /> Updated!
+          <FontAwesomeIcon icon={faCheck} className={styles['mr-2']} /> Updated!
         </>
       );
     }
@@ -608,7 +608,7 @@ function ReviewButton({ user, task, updateTask }) {
               }
             }}
             color="primary"
-            className="float-left"
+            className={styles['float-left']}
             style={darkMode ? boxStyleDark : boxStyle}
           >
             {reviewStatus === 'Unsubmitted' ? `Submit` : `Complete`}
@@ -629,7 +629,7 @@ function ReviewButton({ user, task, updateTask }) {
         </ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           You are about to submit the following link for review:
-          <div className="mt-2" style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>
+          <div className={styles['mt-2']} style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>
             <span>{sanitizeText(link)}</span>
           </div>
           Please confirm if this is the correct link.
@@ -662,7 +662,7 @@ function ReviewButton({ user, task, updateTask }) {
           Please add link to related work:
           <Input type="text" required value={link} onChange={handleLink} />
           {editLinkState.error && (
-            <div className="text-danger">{sanitizeText(editLinkState.error)}</div>
+            <div className={styles['text-danger']}>{sanitizeText(editLinkState.error)}</div>
           )}
         </ModalBody>
         <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
@@ -691,7 +691,7 @@ function ReviewButton({ user, task, updateTask }) {
               }
             }}
             color="primary"
-            className="float-left"
+            className={styles['float-left']}
             style={darkMode ? boxStyleDark : boxStyle}
           >
             {reviewStatus === 'Unsubmitted' ? `Submit` : `Complete`}
@@ -715,14 +715,14 @@ function ReviewButton({ user, task, updateTask }) {
           <p>Update the link to your submitted work:</p>
           <Input type="text" required value={editLinkState.link} onChange={handleEditLinkChange} />
           {editLinkState.error && (
-            <div className="text-danger">{sanitizeText(editLinkState.error)}</div>
+            <div className={styles['text-danger']}>{sanitizeText(editLinkState.error)}</div>
           )}
         </ModalBody>
         <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
           <Button
             onClick={handleEditLink}
             color="primary"
-            className="float-left"
+            className={styles['float-left']}
             style={darkMode ? boxStyleDark : boxStyle}
             disabled={editLinkState.isEditing}
           >
@@ -758,9 +758,9 @@ function ReviewButton({ user, task, updateTask }) {
             </span>
           </div>
           <p>{sanitizeText(invalidDomainModal.errorMessage)}</p>
-          <div className="mt-3">
+          <div className={styles['mt-3']}>
             <strong>Acceptable link types:</strong>
-            <ul className="mt-2" style={{ paddingLeft: '25px' }}>
+            <ul className={styles['mt-2']} style={{ paddingLeft: '25px' }}>
               <li style={{ paddingLeft: '8px', marginBottom: '4px' }}>
                 Google Doc (docs.google.com)
               </li>

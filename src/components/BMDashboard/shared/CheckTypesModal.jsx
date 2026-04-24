@@ -12,7 +12,7 @@ function CheckTypesModal({ modal, setModal, type }) {
         {type === 'Equipments' ? 'Equipment' : type}
         <br />
         <i style={{ fontSize: '11px' }}>
-          <span className="text-secondary">
+          <span className={styles['text-secondary']}>
             This page displays the existing {type === 'Equipments' ? 'Equipment' : type} in the
             inventory.{' '}
           </span>

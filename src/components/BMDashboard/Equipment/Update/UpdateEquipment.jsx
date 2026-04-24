@@ -405,7 +405,7 @@ export default function UpdateEquipment() {
           <Col md={12}>
             <Alert
               color="danger"
-              className="mt-3"
+              className={styles['mt-3']}
               style={{
                 backgroundColor: darkMode ? '#5c1a1a' : '#f8d7da',
                 borderColor: darkMode ? '#f5c2c7' : '#f1aeb5',
@@ -424,7 +424,7 @@ export default function UpdateEquipment() {
           <Col md={12}>
             <Alert
               color="success"
-              className="mt-3"
+              className={styles['mt-3']}
               style={{
                 backgroundColor: darkMode ? '#0a3a27' : '#d1e7dd',
                 borderColor: darkMode ? '#badbcc' : '#a3cfbb',
@@ -437,7 +437,7 @@ export default function UpdateEquipment() {
                 You can continue editing or{' '}
                 <Button
                   color="link"
-                  className="p-0"
+                  className={styles['p-0']}
                   onClick={() => history.push(`/bmdashboard/tools/${equipmentId}`)}
                   style={{ color: darkMode ? '#0dcaf0' : '#0d6efd' }}
                 >
@@ -450,7 +450,7 @@ export default function UpdateEquipment() {
       )}
 
       {equipmentDetails && (
-        <Row className="mb-4">
+        <Row className={styles['mb-4']}>
           <Col md={3}>
             <Image
               name="equipment-image"
@@ -467,7 +467,7 @@ export default function UpdateEquipment() {
       )}
 
       <Form className={`${styles1.invForm}`} onSubmit={handleSubmit}>
-        <FormGroup className="background-from-db">
+        <FormGroup className={styles['background-from-db']}>
           <Row form>
             <Col md={4}>
               <Label for="itemName" style={formLabelStyle}>
@@ -546,7 +546,7 @@ export default function UpdateEquipment() {
                 onChange={e => setStatus(e.target.value)}
                 required
                 style={selectInputStyle}
-                className="custom-select"
+                className={styles['custom-select']}
               >
                 <option value="">Select status</option>
                 <option value="Working well">Working well</option>
@@ -571,7 +571,7 @@ export default function UpdateEquipment() {
                 onChange={e => setLastUsedBy(e.target.value)}
                 required
                 style={selectInputStyle}
-                className="custom-select"
+                className={styles['custom-select']}
               >
                 <option value="">Select user</option>
                 <option value="Jane Doe (Volunteer #1)">Jane Doe (Volunteer #1)</option>
@@ -588,7 +588,7 @@ export default function UpdateEquipment() {
                   placeholder="Please specify the name"
                   value={lastUsedByOther}
                   onChange={e => setLastUsedByOther(e.target.value)}
-                  className="mt-2"
+                  className={styles['mt-2']}
                   required
                   style={textInputStyle}
                 />
@@ -611,7 +611,7 @@ export default function UpdateEquipment() {
                 onChange={e => setLastUsedFor(e.target.value)}
                 required
                 style={selectInputStyle}
-                className="custom-select"
+                className={styles['custom-select']}
               >
                 <option value="">Select usage</option>
                 <option value="Kitchen - tiling">Kitchen - tiling</option>
@@ -628,7 +628,7 @@ export default function UpdateEquipment() {
                   placeholder="Please specify the task"
                   value={lastUsedForOther}
                   onChange={e => setLastUsedForOther(e.target.value)}
-                  className="mt-2"
+                  className={styles['mt-2']}
                   required
                   style={textInputStyle}
                 />
@@ -639,7 +639,7 @@ export default function UpdateEquipment() {
 
         <FormGroup>
           <Label
-            className="form-control-label"
+            className={styles['form-control-label']}
             for="replacementRequired-yes"
             style={formLabelStyle}
           >
@@ -669,7 +669,7 @@ export default function UpdateEquipment() {
           {hasUploadedFiles && (
             <Alert
               color="info"
-              className="mb-3"
+              className={styles['mb-3']}
               style={{
                 backgroundColor: darkMode ? '#0a3d4f' : '#d1ecf1',
                 borderColor: darkMode ? '#0dcaf0' : '#bee5eb',
@@ -685,7 +685,7 @@ export default function UpdateEquipment() {
           <DragAndDrop updateUploadedFiles={handleFileUpload} />
 
           {hasFilePreviews && (
-            <div className="mt-3">
+            <div className={styles['mt-3']}>
               <Label style={formLabelStyle}>Uploaded Images Preview:</Label>
               <div className="d-flex flex-wrap gap-3 mt-2">
                 {uploadedFilesPreview.map((file, index) => (
@@ -699,7 +699,7 @@ export default function UpdateEquipment() {
                 ))}
               </div>
 
-              <div className="mt-3">
+              <div className={styles['mt-3']}>
                 <Alert
                   color={hasNotSavedFiles ? 'warning' : 'info'}
                   style={
@@ -745,7 +745,7 @@ export default function UpdateEquipment() {
         </FormGroup>
 
         <FormGroup>
-          <Label className="form-control-label" for="sendNote-yes" style={formLabelStyle}>
+          <Label className={styles['form-control-label']} for="sendNote-yes" style={formLabelStyle}>
             Do you want to send a note for this update?
           </Label>
           <Radio
@@ -794,7 +794,7 @@ export default function UpdateEquipment() {
               color="primary"
               type="submit"
               disabled={isSubmitting}
-              className="position-relative"
+              className={styles['position-relative']}
               style={buttonStyle}
             >
               {isSubmitting ? (

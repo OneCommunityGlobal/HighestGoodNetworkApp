@@ -21,7 +21,7 @@ import BadgeTableFilter from './BadgeTableFilter';
 import EditBadgePopup from './EditBadgePopup';
 import DeleteBadgePopup from './DeleteBadgePopup';
 import hasPermission from '../../utils/permissions';
-import './Badge.css';
+import styles from './Badge.module.css';
 
 function BadgeDevelopmentTable(props) {
   const { darkMode } = props;
@@ -215,7 +215,7 @@ function BadgeDevelopmentTable(props) {
     // Returns true for all checked badges and false for all unchecked
     const checkValue = !!badgeValue.showReport;
     return (
-      <div className="badge_check">
+      <div className={styles.badge_check}>
         <input
           type="checkbox"
           id={badgeValue._id}
@@ -285,7 +285,7 @@ function BadgeDevelopmentTable(props) {
         <tbody>
           {filteredBadges.map(value => (
             <tr key={value._id}>
-              <td className="badge_image_sm">
+              <td className={styles.badge_image_sm}>
                 {' '}
                 <img
                   src={value.imageUrl}
@@ -295,7 +295,7 @@ function BadgeDevelopmentTable(props) {
                 />
                 <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
                   <Card className={`text-center ${darkMode ? 'bg-space-cadet text-light' : ''}`}>
-                    <CardImg className="badge_image_lg" src={value?.imageUrl} />
+                    <CardImg className={styles.badge_image_lg} src={value?.imageUrl} />
                     <CardBody>
                       <CardTitle
                         style={{
@@ -318,7 +318,7 @@ function BadgeDevelopmentTable(props) {
               <td className="d-xl-table-cell d-none">{detailsText(value)}</td>
               <td>{value.ranking || 0}</td>
               <td>
-                <span className="badgemanagement-actions-cell">
+                <span className={styles['badgemanagement-actions-cell']}>
                   <Button
                     outline
                     color="info"
@@ -329,7 +329,7 @@ function BadgeDevelopmentTable(props) {
                     Edit
                   </Button>{' '}
                 </span>
-                <span className="badgemanagement-actions-cell">
+                <span className={styles['badgemanagement-actions-cell']}>
                   <Button
                     outline
                     color="danger"

@@ -49,7 +49,7 @@ function DeleteInvTypeModal({ isOpen, toggle, itemType, category, isUnit = false
           Are you sure you want to delete{' '}
           <strong style={{ color: darkMode ? '#90EE90' : '#285739' }}>{getItemName()}</strong>?
         </p>
-        <p className="text-muted">
+        <p className={styles['text-muted']}>
           This action cannot be undone.{' '}
           {!isUnit && 'This type will be removed from all inventory records.'}
         </p>

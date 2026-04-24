@@ -22,7 +22,7 @@ import {
   DropdownItem,
 } from 'reactstrap';
 import { connect } from 'react-redux';
-import './Badge.css';
+import styles from './Badge.module.css';
 import FeaturedBadges from './FeaturedBadges';
 import BadgeReport from '../Badge/BadgeReport';
 import AssignBadgePopup from './AssignBadgePopup';
@@ -112,12 +112,12 @@ export const Badges = (props) => {
     <>
       <Card id="badgeCard" className={`badgeCard ${darkMode ? 'bg-space-cadet' : ''}`}>
         <CardHeader>
-          <div className="badge-header">
+          <div className={styles['badge-header']}>
 
             <span>
               Featured Badges
             </span>
-            <span className="badge-header-title">
+            <span className={styles['badge-header-title']}>
               <EditableInfoModal
                 areaName="FeaturedBadgesInfoPoint"
                 areaTitle="Featured Badges"
@@ -131,7 +131,7 @@ export const Badges = (props) => {
             <div className='d-flex'>
               {(props.canEdit || props.role == 'Owner' || props.role == 'Administrator' || canModifyBadgeAmount) && (
                 <>
-                  <Button className="btn--dark-sea-green" onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
+                  <Button className={styles['btn--dark-sea-green']} onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
                     Select Featured
                   </Button>
                   <Modal size="lg" isOpen={isOpen} toggle={toggle} className={darkMode ? 'text-light dark-mode' : ''}>
@@ -207,7 +207,7 @@ export const Badges = (props) => {
             )}
           </div>
           </span>
-          <span className="ml-2">
+          <span className={styles['ml-2']}>
             <EditableInfoModal
               areaName="NumberOfBadgesInfoPoint"
               areaTitle="Number of Badges"
@@ -224,7 +224,7 @@ export const Badges = (props) => {
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           <div>
             {/* --- DESKTOP VERSION OF MODAL --- */}
-            <div className="desktop">
+            <div className={styles.desktop}>
               <div style={{ overflowY: 'scroll', height: '75vh' }}>
                 <Table className={darkMode ? 'text-light dark-mode' : ''}>
                   <thead style={{ zIndex: '10' }}>
@@ -241,7 +241,7 @@ export const Badges = (props) => {
                       sortedBadges &&
                       sortedBadges.map(value => value && value.badge &&(
                         <tr key={value.badge._id}>
-                          <td className="badge_image_sm">
+                          <td className={styles.badge_image_sm}>
                             {' '}
                             <img
                               src={value.badge.imageUrl}
@@ -253,8 +253,8 @@ export const Badges = (props) => {
                             trigger="hover"
                             target={`popover_${value.badge._id}`}
                           >
-                            <Card className="text-center">
-                              <CardImg className="badge_image_lg" src={value?.badge?.imageUrl} />
+                            <Card className={styles['text-center']}>
+                              <CardImg className={styles.badge_image_lg} src={value?.badge?.imageUrl} />
                               <CardBody>
                                 <CardTitle
                                   style={{
@@ -279,7 +279,7 @@ export const Badges = (props) => {
                           <td style={{ display: 'flex', alignItems: 'center' }}>
                             <>
                               {' '}
-                              <UncontrolledDropdown className="me-2" direction="down">
+                              <UncontrolledDropdown className={styles['me-2']} direction="down">
                                 <DropdownToggle caret color="primary" style={darkMode ? boxStyleDark : boxStyle}>
                                   Dates
                                 </DropdownToggle>
@@ -325,7 +325,7 @@ export const Badges = (props) => {
               </div>
             </div>
             {/* --- TABLET VERSION OF MODAL --- */}
-            <div className="tablet">
+            <div className={styles.tablet}>
               <div style={{ overflow: 'auto', height: '68vh' }}>
                 <Table  className={darkMode ? 'text-light dark-mode' : ''}>
                   <thead style={{ zIndex: '10' }}>
@@ -341,7 +341,7 @@ export const Badges = (props) => {
                       sortedBadges &&
                       sortedBadges.map(value => value &&(
                         <tr key={value._id}>
-                          <td className="badge_image_sm">
+                          <td className={styles.badge_image_sm}>
                             {' '}
                             <img
                               src={value?.badge.imageUrl}
@@ -350,8 +350,8 @@ export const Badges = (props) => {
                             />
                           </td>
                           <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
-                            <Card className="text-center">
-                              <CardImg className="badge_image_lg" src={value?.badge?.imageUrl} />
+                            <Card className={styles['text-center']}>
+                              <CardImg className={styles.badge_image_lg} src={value?.badge?.imageUrl} />
                               <CardBody>
                                 <CardTitle
                                   style={{
@@ -390,7 +390,7 @@ export const Badges = (props) => {
           </div>
         </ModalBody>
         <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-          <div className="badge_summary_viz_footer">
+          <div className={styles.badge_summary_viz_footer}>
             <ReactStrapButton
               className="btn--dark-sea-green badge_summary_viz_button"
               onClick={toggleBadge}
@@ -405,22 +405,22 @@ export const Badges = (props) => {
         target="FeaturedBadgeInfo"
         style={{ backgroundColor: '#666', color: '#fff' }}
       >
-        <p className="badge_info_icon_text">
+        <p className={styles.badge_info_icon_text}>
           Holy Awesome, these are your profiles featured badges !!! Click &quot;Select
           Featured&quot; to bask in the glory of your COMPLETE LIST!
         </p>
-        <p className="badge_info_icon_text">
+        <p className={styles.badge_info_icon_text}>
           Have a number bigger than &quot;1&quot; in the bottom righthand corner of a badge?
           That&apos;s how many times you&apos;ve earned the same badge! Do your Happy Dance you
           Champion!!
         </p>
-        <p className="badge_info_icon_text">
+        <p className={styles.badge_info_icon_text}>
           No badges in this area? Uh, in that cases, everything said above is a bit premature. Sorry
           about that... Everyone must start somewhere, and in your case, that somewhere is with the
           big empty, desolate, bare and barren badge box below (BEDBABBBB). If we had a BEDBABBBB
           badge, you&apos;d earn it, but we don&apos;t, so this area is blank.
         </p>
-        <p className="badge_info_icon_text">
+        <p className={styles.badge_info_icon_text}>
           No worries though, we&apos;re sure there are other areas of your life where you are a
           Champion already. Stick with us long enough and this will be another one.
         </p>
@@ -430,11 +430,11 @@ export const Badges = (props) => {
         target="CountInfo"
         style={{ backgroundColor: '#666', color: '#fff' }}
       >
-        <p className="badge_info_icon_text">
+        <p className={styles.badge_info_icon_text}>
           This is the total number of badges you have earned. (Way to go Champion!) It increases if
           you earn the same badge multiple times too!
         </p>
-        <p className="badge_info_icon_text">
+        <p className={styles.badge_info_icon_text}>
           There are many things in life to be proud of. Some are even worth bragging about. If your
           number here is large, it definitely falls into the later category.
         </p>

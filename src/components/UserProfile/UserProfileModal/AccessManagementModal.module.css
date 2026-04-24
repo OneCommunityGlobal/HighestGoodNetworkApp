@@ -9,7 +9,7 @@
 }
 
 .accessManagementModal .appCard:hover {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
     transform: translateY(-1px);
 }
 
@@ -42,7 +42,7 @@
 .accessManagementModal .appCard .credentials {
     margin-top: 8px;
     padding: 8px;
-    background-color: #ffffff;
+    background-color: #fff;
     border: 1px solid #e9ecef;
     border-radius: 4px;
     font-size: 0.875rem;
@@ -130,7 +130,7 @@
 }
 
 .accessManagementModal.darkMode .detailItem strong {
-    color: #ffffff;
+    color: #fff;
 }
 
 .btnDetails {
@@ -221,7 +221,7 @@
 }
 
 .accessManagementModal.darkMode .detailKey {
-    color: #ffffff;
+    color: #fff;
     font-weight: bold;
 }
 
@@ -272,7 +272,7 @@
 }
 
 .accessManagementModal.darkMode .appCard:hover {
-    box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1);
+    box-shadow: 0 2px 8px rgb(255 255 255 / 10%);
 }
 
 .accessManagementModal.darkMode .appCard .appName {
@@ -336,7 +336,7 @@
     background-color: #495057 !important;
     border-color: #0d6efd !important;
     color: #f8f9fa !important;
-    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25) !important;
+    box-shadow: 0 0 0 0.2rem rgb(13 110 253 / 25%) !important;
 }
 
 .accessManagementModal.darkMode .uniformInput option {
@@ -353,7 +353,7 @@
     background-color: #495057;
     border-color: #0d6efd;
     color: #f8f9fa;
-    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    box-shadow: 0 0 0 0.2rem rgb(13 110 253 / 25%);
 }
 
 /* Make .text-muted readable in dark mode */
@@ -371,7 +371,7 @@
 /* Make .text-info strong tags readable in dark mode */
 .accessManagementModal.darkMode .textInfo strong,
 .accessManagementModal.darkMode .textInfo.small strong {
-    color: #ffffff !important;
+    color: #fff !important;
 }
 
 /* Keep FontAwesome icons in their original color in dark mode */
@@ -547,6 +547,7 @@
     min-width: 180px;
     flex: 1;
     border-radius: 0.375rem !important;
+
     /* Curved edges */
     border: 1px solid #ced4da !important;
     padding: 0.375rem 0.75rem !important;
@@ -554,6 +555,7 @@
     background-color: #fff !important;
     background-clip: padding-box !important;
     appearance: none !important;
+
     /* Remove default browser styling for selects */
 }
 
@@ -569,7 +571,7 @@
 .accessManagementModal .uniformInput:focus {
     border-color: #86b7fe !important;
     outline: 0 !important;
-    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
+    box-shadow: 0 0 0 0.25rem rgb(13 110 253 / 25%) !important;
 }
 
 /* Select dropdown arrow styling */
@@ -598,7 +600,7 @@
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (width <= 768px) {
     .accessManagementModal .appHeader {
         flex-direction: column;
         align-items: flex-start;
@@ -646,7 +648,7 @@
     }
 }
 
-@media (max-width: 576px) {
+@media (width <= 576px) {
     .accessManagementModal .modal {
         padding: 10px;
     }
@@ -783,7 +785,7 @@
     visibility: hidden;
     transition: opacity 0.1s ease, visibility 0.1s ease;
     pointer-events: none;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
 }
 
 .accessManagementModal .chipWrapper:hover .chipTooltip {
@@ -817,7 +819,7 @@
     display: inline-flex;
     align-items: center;
     padding: 4px 8px;
-    background-color: #ffffff;
+    background-color: #fff;
     border: 1px solid #ced4da;
     border-radius: 20px;
     font-size: 0.8rem;
@@ -838,7 +840,7 @@
 .accessManagementModal .chipSelected {
     background-color: #007bff;
     border-color: #007bff;
-    color: #ffffff;
+    color: #fff;
 }
 
 .accessManagementModal .chipSelected:hover {
@@ -866,7 +868,7 @@
 .accessManagementModal.darkMode .chipSelected {
     background-color: #0d6efd;
     border-color: #0d6efd;
-    color: #ffffff;
+    color: #fff;
 }
 
 .accessManagementModal.darkMode .chipSelected:hover {
@@ -877,7 +879,7 @@
 .accessManagementModal.darkMode .chipTooltip {
     background-color: #1a1a1a;
     color: #f8f9fa;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 2px 8px rgb(0 0 0 / 30%);
 }
 
 .accessManagementModal.darkMode .chipTooltip::after {
@@ -887,7 +889,7 @@
 /* Default team styles - keep chip same as others, only change tag color */
 .accessManagementModal .defaultBadge {
     background-color: #ff6b35;
-    color: #ffffff;
+    color: #fff;
     font-size: 0.65rem;
     padding: 1px 4px;
     border-radius: 3px;
@@ -907,7 +909,7 @@
 /* Dark mode default team styles */
 .accessManagementModal.darkMode .defaultBadge {
     background-color: #ff8c42;
-    color: #ffffff;
+    color: #fff;
 }
 
 .accessManagementModal.darkMode .defaultTooltip {
@@ -949,7 +951,7 @@
     background-color: #495057;
     border-color: #0d6efd;
     color: #f8f9fa;
-    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    box-shadow: 0 0 0 0.25rem rgb(13 110 253 / 25%);
 }
 
 .accessManagementModal.darkMode .clearSearch {

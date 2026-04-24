@@ -50,8 +50,8 @@ import {
   EVENT_DATABASE_DESIGN,
 } from '../../../languages/en/ui';
 import Logout from '../../Logout/Logout';
-// import './CPHeader.css';
-import styles from '../../Header/Header.module.css';
+// import styles from './CPHeader.module.css';
+import styles2 from '../../Header/Header.module.css';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../../utils/permissions';
 
 export function Header(props) {
@@ -78,7 +78,7 @@ export function Header(props) {
         src={profilePic || '/pfp-default-header.png'}
         alt=""
         style={{ maxWidth: '60px', maxHeight: '60px' }}
-        className="dashboardimg"
+        className={styles.dashboardimg}
       />
     </NavLink>
   );
@@ -232,7 +232,7 @@ export function Header(props) {
         {/* --------------------------------------------- */}
 
         <div ref={toggleRef}>
-          <NavbarToggler onClick={toggle} className="mr-3" />
+          <NavbarToggler onClick={toggle} className={styles['mr-3']} />
         </div>
 
         {isAuthenticated && (

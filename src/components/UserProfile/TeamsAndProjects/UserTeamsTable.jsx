@@ -1,19 +1,19 @@
 import { React, useState, useEffect, useRef } from 'react';
 import { Button, Col, Input } from 'reactstrap';
-import './TeamsAndProjects.css';
+import styles from './TeamsAndProjects.module.css';
 import hasPermission from '../../../utils/permissions';
-// import styles from './UserTeamsTable.css';
+// import styles2 from './UserTeamsTable.css';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { connect } from 'react-redux';
 import Switch from './Switch';
 
-import './UserTeamsTable.css';
+import styles3 from './UserTeamsTable.module.css';
 
 import { AutoCompleteTeamCode } from './AutoCompleteTeamCode';
 
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 
-import './../../Teams/Team.module.css';
+import styles4 from './../../Teams/Team.module.css';
 import { TeamMember } from './TeamMember';
 import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL.js';
@@ -164,7 +164,7 @@ const UserTeamsTable = props => {
       />
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         {props.canEditVisibility && (
-          <div className="row">
+          <div className={styles.row}>
             <Col
               md="7"
               xs="12"
@@ -174,7 +174,7 @@ const UserTeamsTable = props => {
                 marginBottom: '10px',
               }}
             >
-              <span className="teams-span">Visibility</span>
+              <span className={styles['teams-span']}>Visibility</span>
             </Col>
             <Col
               md="5"
@@ -196,7 +196,7 @@ const UserTeamsTable = props => {
             </Col>
           </div>
         )}
-        <div className="row">
+        <div className={styles.row}>
           <Col
             md="9"
             xs="12"
@@ -207,7 +207,7 @@ const UserTeamsTable = props => {
               height: '10%',
             }}
           >
-            <span className="teams-span">Teams</span>
+            <span className={styles['teams-span']}>Teams</span>
           </Col>
           <Col md="3" xs="12" style={{ padding: '0', marginBottom: '10px' }}>
             <Input
@@ -220,7 +220,7 @@ const UserTeamsTable = props => {
               disabled={!props.canEditTeamCode}
             />
           </Col>
-          <div className="row" style={{ display: 'flex', flexDirection: 'column' }}>
+          <div className={styles.row} style={{ display: 'flex', flexDirection: 'column' }}>
             <AutoCompleteTeamCode
               refDropdown={refDropdown}
               showDropdown={showDropdown}
@@ -240,7 +240,7 @@ const UserTeamsTable = props => {
               props.disabled ? (
                 <Button
                   id="teamCodeAssign"
-                  className="btn-addteam"
+                  className={styles['btn-addteam']}
                   color="primary"
                   style={boxStyle}
                   disabled
@@ -251,7 +251,7 @@ const UserTeamsTable = props => {
                 <>
                   <Button
                     id="teamCodeAssign"
-                    className="btn-addteam"
+                    className={styles['btn-addteam']}
                     color="primary"
                     onClick={() => {
                       props.onButtonClick();
@@ -269,7 +269,7 @@ const UserTeamsTable = props => {
       </div>
       <div style={{ maxHeight: '300px', overflow: 'auto' }}>
         <table className={`table table-bordered ${darkMode ? 'text-light' : ''}`}>
-          <thead className="user-team-head">
+          <thead className={styles['user-team-head']}>
             {props.role && (
               <tr>
                 <th className={darkMode ? 'bg-space-cadet' : ''}>#</th>

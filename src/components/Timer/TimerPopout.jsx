@@ -6,7 +6,7 @@ import cs from 'classnames';
 import { Provider } from 'react-redux';
 import DOMPurify from 'dompurify';
 import styles from './Timer.module.css';
-import './Countdown.module.css';
+import styles2 from './Countdown.module.css';
 import { store } from '../../store';
 
 function TimerPopout({ authUser, darkMode, TimerComponent }) {

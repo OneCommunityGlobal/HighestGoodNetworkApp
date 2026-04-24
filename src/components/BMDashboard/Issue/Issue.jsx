@@ -381,7 +381,7 @@ function Issue() {
           </Row>
         </FormGroup>
         <FormGroup>
-          <Row className="text-center">
+          <Row className={styles['text-center']}>
             <Col>
               <Button className={`${styles.issueFormButtonCancel}`} onClick={e => handleCancel(e)}>
                 Cancel

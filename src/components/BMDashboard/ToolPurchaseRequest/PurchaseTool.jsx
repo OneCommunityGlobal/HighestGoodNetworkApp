@@ -29,7 +29,7 @@ export default function PurchaseTool() {
   // error state
   if (isError) {
     return (
-      <main className="tools_list_container">
+      <main className={styles.tools_list_container}>
         <h2>Tools List</h2>
         <BMError errors={errors} />
       </main>
@@ -40,7 +40,7 @@ export default function PurchaseTool() {
     <main className={`${styles.purchaseToolContainer}`}>
       <header className={`${styles.purchaseToolHeader}`}>
         <h2>Purchase Request: Tools</h2>
-        <div className="inv-form-info">
+        <div className={styles['inv-form-info']}>
           <BsInfoCircle />
           Initiate a purchase request for approval/action by project admins.
         </div>

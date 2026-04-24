@@ -6,8 +6,8 @@ import { getUserProfile } from '~/actions/userProfile';
 import moment from 'moment';
 import { isEmpty } from 'lodash';
 import { deleteTimeEntry, editTimeEntry } from '~/actions/timeEntries';
-import './EditHistoryModal.css';
-import '../../Header/index.css'
+import styles from './EditHistoryModal.module.css';
+import '../../Header/index.module.css'
 import { toast } from 'react-toastify';
 
 function EditHistoryModal(props) {
@@ -293,7 +293,7 @@ function EditHistoryModal(props) {
                 className={darkMode ? "bg-darkmode-liblack text-light border-0 calendar-icon-dark" : ''}
               />
               {'dateOfWork' in errors && (
-                <div className="text-danger">
+                <div className={styles['text-danger']}>
                   <small>{errors.dateOfWork}</small>
                 </div>
               )}
@@ -329,7 +329,7 @@ function EditHistoryModal(props) {
                 </Col>
               </Row>
               {'time' in errors && (
-                <div className="text-danger">
+                <div className={styles['text-danger']}>
                   <small>{errors.time}</small>
                 </div>
               )}
@@ -379,11 +379,11 @@ function EditHistoryModal(props) {
         </Button>
       </ModalFooter>
     </Modal>
-    <div className='history-btn-div'>
-      <Button className='history-btn' color="primary" onClick={toggleEdit} style={boxStyling}>
+    <div className={styles['history-btn-div']}>
+      <Button className={styles['history-btn']} color="primary" onClick={toggleEdit} style={boxStyling}>
         Edit
       </Button>
-      <Button className='history-btn' color="danger" onClick={toggleDelete} style={boxStyling}>
+      <Button className={styles['history-btn']} color="danger" onClick={toggleDelete} style={boxStyling}>
         Delete
       </Button>
     </div>

@@ -59,7 +59,7 @@ function WishListItem(props) {
               <h1>{currWishlistItem.unit}</h1>
               <h1>{currWishlistItem.title}</h1>
             </div>
-            <div className="item__images">
+            <div className={styles.item__images}>
               <ImageCarousel images={currWishlistItem.images} />
             </div>
             <div className={styles['item__amenities']}>

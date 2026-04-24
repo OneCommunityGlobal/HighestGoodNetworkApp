@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { Dropdown, Input } from 'reactstrap';
-import './TeamsAndProjects.css';
+import styles from './TeamsAndProjects.module.css';
 import { useSelector } from 'react-redux';
 const TEAM_NAME_MAX_LENGTH = 100;
 
@@ -91,7 +91,7 @@ const AddTeamsAutoComplete = React.memo((props) => {
                // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
               <div
                 key={item._id}
-                className="team-auto-complete"
+                className={styles['team-auto-complete']}
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={() => handlePick(item)}
               >
@@ -103,7 +103,7 @@ const AddTeamsAutoComplete = React.memo((props) => {
           {showCreateNew && (
             // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
             <div
-              className="team-auto-complete"
+              className={styles['team-auto-complete']}
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => {
                 setIsOpen(false);

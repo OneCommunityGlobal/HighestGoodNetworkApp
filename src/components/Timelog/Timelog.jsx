@@ -800,7 +800,7 @@ return (
       ) : (
         <div className={`${!props.isDashboard ? timeLog.timelogPageContainer : 'ml-3 min-width-100'}`}>
           {timeLogState.summary ? (
-            <div className="my-2">
+            <div className={styles['my-2']}>
               <div id="weeklySum">
                 <WeeklySummary
                   displayUserId={displayUserId}
@@ -838,7 +838,7 @@ return (
                           darkMode={darkMode}
                         />
 
-                        <span className="mr-2" style={{ color: '#7cfc00', padding: '1px' }}>
+                        <span className={styles['mr-2']} style={{ color: '#7cfc00', padding: '1px' }}>
                         <ActiveCell
                             isActive={displayUserProfile.isActive}
                             endDate={displayUserProfile.endDate}
@@ -1161,7 +1161,7 @@ return (
                   >
                     {renderViewingTimeEntriesFrom()}
                     {timeLogState.activeTab === 4 && (
-                      <Form inline className="mb-2">
+                      <Form inline className={styles['mb-2']}>
                         <FormGroup className={`mr-2 ${timeLog.dateSelectorForm}`}>
                           <Label
                             for="fromDate"
@@ -1215,7 +1215,7 @@ return (
                         <Button
                           color="secondary"
                           onClick={downloadPeriodPdf}
-                          className="ml-2"
+                          className={styles['ml-2']}
                           style={darkMode ? boxStyleDark : boxStyle}
                           disabled={!Array.isArray(timeEntries?.period) || timeEntries.period.length === 0}
                           title="Download the filtered results as a PDF"

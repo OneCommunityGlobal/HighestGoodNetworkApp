@@ -1,4 +1,4 @@
-import './TeamWeeklySummaries.css';
+import styles from './TeamWeeklySummaries.module.css';
 import moment from 'moment';
 import parse from 'html-react-parser';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -23,8 +23,8 @@ function TeamWeeklySummaries({ name, i, data, darkMode }) {
   console.log('darkMode', darkMode);
   return (
     <div className={`team-weekly-summaries ${darkMode ? 'bg-space-cadet' : ''}`} data-testid="team-weekly-summaries">
-      <div className="team-weekly-header"  >
-        <h6 className="team-weekly-header-date">
+      <div className={styles['team-weekly-header']}  >
+        <h6 className={styles['team-weekly-header-date']}>
           {getWeekDates(i).fromDate} to {getWeekDates(i).toDate}
         </h6>{' '}
         <h6>
@@ -34,12 +34,12 @@ function TeamWeeklySummaries({ name, i, data, darkMode }) {
         </h6>
       </div>
       {data.summary && (
-        <div className="team-weekly-summary-container">
-          <div className="team-week-summary-text">  {darkMode?  parse('<span class=darkSpan >' + data.summary + "</span>") : parse(data.summary)}</div>
+        <div className={styles['team-weekly-summary-container']}>
+          <div className={styles['team-week-summary-text']}>  {darkMode?  parse('<span class=darkSpan >' + data.summary + "</span>") : parse(data.summary)}</div>
       
           <FontAwesomeIcon
             icon={faCopy}
-            className="copy-icon"
+            className={styles['copy-icon']}
             data-testid="copy-icon"
             onClick={() => {
               const parsedSummary = data.summary.replace(/<\/?[^>]+>|&nbsp;/g, '');

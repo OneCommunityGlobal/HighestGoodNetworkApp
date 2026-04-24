@@ -302,7 +302,7 @@ function TotalPeopleReport(props) {
               id={`tr_${person.userId}`}
               key={person.userId}
             >
-              <th className="teams__order--input" scope="row">
+              <th className={styles['teams__order--input']} scope="row">
                 <div>{index + 1}</div>
               </th>
               <td>

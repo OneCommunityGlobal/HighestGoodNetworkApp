@@ -12,7 +12,7 @@
 //   ];
 
 //   return (
-//     <div className="p-4">
+//     <div className={styles['p-4']}>
 //       {/* Header Tabs */}
 //       <div className="flex space-x-4 border-b-2 border-gray-300 mb-4">
 //         <button

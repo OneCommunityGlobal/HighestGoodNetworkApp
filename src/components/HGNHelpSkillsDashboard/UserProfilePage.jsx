@@ -197,7 +197,7 @@ const mockSkillsData = {
     },
   ],
 };
-import styles from './style/UserProfile.module.css';
+import styles2 from './style/UserProfile.module.css';
 
 // Custom tooltip for RadarChart
 function CustomTooltip({ active, payload }) {

@@ -74,9 +74,9 @@ function BMTimeLogSummary({ projectId }) {
 
   if (completedTimeLogs.length === 0) {
     return (
-      <Card className="my-4">
+      <Card className={styles['my-4']}>
         <CardHeader className="bg-primary text-white">
-          <h5 className="mb-0">Time Log Summary</h5>
+          <h5 className={styles['mb-0']}>Time Log Summary</h5>
         </CardHeader>
         <CardBody>
           <p className="text-muted mb-0">
@@ -88,12 +88,12 @@ function BMTimeLogSummary({ projectId }) {
   }
 
   return (
-    <Card className="my-4">
+    <Card className={styles['my-4']}>
       <CardHeader className="bg-primary text-white">
-        <h5 className="mb-0">Time Log Summary</h5>
+        <h5 className={styles['mb-0']}>Time Log Summary</h5>
       </CardHeader>
       <CardBody>
-        <div className="table-responsive">
+        <div className={styles['table-responsive']}>
           <Table striped hover>
             <thead>
               <tr>

@@ -13,11 +13,11 @@ function ActivitiesPage() {
 
       <ResourceMonitoring />
 
-      <div className="middle-section">
+      <div className={styles['middle-section']}>
         <RegistrationForm />
       </div>
 
-      <div className="main-content">
+      <div className={styles['main-content']}>
         <LatestRegistration />
         <MyEvent />
       </div>

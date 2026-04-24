@@ -3,7 +3,7 @@ import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
 import Loading from '~/components/common/Loading';
 import TeamStatsBarChart from './TeamStatsBarChart';
-import './TeamStats.css';
+import styles from './TeamStats.module.css';
 
 const activeMembersMinimumDropDownOptions = [2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30];
 
@@ -32,7 +32,7 @@ function TeamStats({ isLoading, usersInTeamStats, endDate }) {
   if (isLoading) {
     return (
       <div className="d-flex justify-content-center align-items-center">
-        <div className="w-100vh">
+        <div className={styles['w-100vh']}>
           <Loading />
         </div>
       </div>
@@ -70,8 +70,8 @@ function TeamStats({ isLoading, usersInTeamStats, endDate }) {
     <div>
       <TeamStatsBarChart data={data} yAxisLabel="name" />
       {teamsWithActiveMembers && (
-        <div className="team-stats-active-members">
-          <div className="team-stats-bar-chart-summary">
+        <div className={styles['team-stats-active-members']}>
+          <div className={styles['team-stats-bar-chart-summary']}>
             <span>
               {`${teamsWithActiveMembers.count} ${
                 teamsWithActiveMembers.count === 1 ? 'team' : 'teams'
@@ -79,7 +79,7 @@ function TeamStats({ isLoading, usersInTeamStats, endDate }) {
               <select
                 onChange={handleActiveMembersMinimumChange}
                 value={activeMembersMinimum}
-                className="team-stats-active-members-dropdown"
+                className={styles['team-stats-active-members-dropdown']}
               >
                 {activeMembersMinimumDropDownOptions.map(activeMembersMinimumOption => (
                   <option

@@ -59,14 +59,14 @@ const BlueSquareEmailManagement = ({
         }}
       >
         <div className="row justify-content-center">
-          <div className="col-md-8">
+          <div className={styles['col-md-8']}>
             <div
               className="card text-center"
               style={darkMode ? { backgroundColor: '#2d2d2d', borderColor: '#444' } : {}}
             >
-              <div className="card-body">
-                <h4 className="card-title">Access Denied</h4>
-                <p className="card-text">
+              <div className={styles['card-body']}>
+                <h4 className={styles['card-title']}>Access Denied</h4>
+                <p className={styles['card-text']}>
                   You do not have permission to access this page. Please contact an administrator if
                   you believe this is an error.
                 </p>
@@ -86,7 +86,7 @@ const BlueSquareEmailManagement = ({
         minHeight: '100%',
       }}
     >
-      <div className="row">
+      <div className={styles.row}>
         <div className="col-md-6 mb-3">
           <div
             className="card h-100"
@@ -165,14 +165,14 @@ const BlueSquareEmailManagement = ({
           <p>
             Are you sure you want to resend Blue Square emails for last week&apos;s infringements?
           </p>
-          <p className="text-muted">
+          <p className={styles['text-muted']}>
             <strong>This will:</strong>
           </p>
-          <ul className="text-muted" style={{ marginLeft: '20px', marginBottom: '10px' }}>
+          <ul className={styles['text-muted']} style={{ marginLeft: '20px', marginBottom: '10px' }}>
             <li>Send emails to all users with infringements from last week</li>
             <li>Include all emails in the BCC list</li>
           </ul>
-          <p className="text-info">This action can be safely repeated if needed.</p>
+          <p className={styles['text-info']}>This action can be safely repeated if needed.</p>
         </ModalBody>
         <ModalFooter>
           <button className="btn btn-secondary" onClick={() => setBlueSquareModalOpen(false)}>
@@ -195,14 +195,14 @@ const BlueSquareEmailManagement = ({
             Are you sure you want to trigger resend of last week&apos;s summary report to all admin
             recipients?
           </p>
-          <p className="text-muted">
+          <p className={styles['text-muted']}>
             <strong>This will:</strong>
           </p>
-          <ul className="text-muted" style={{ marginLeft: '20px', marginBottom: '10px' }}>
+          <ul className={styles['text-muted']} style={{ marginLeft: '20px', marginBottom: '10px' }}>
             <li>Send the weekly summary report to all configured recipients</li>
             <li>Include missed entries and weekly summaries</li>
           </ul>
-          <p className="text-info">This action can be safely repeated if needed.</p>
+          <p className={styles['text-info']}>This action can be safely repeated if needed.</p>
         </ModalBody>
         <ModalFooter>
           <button className="btn btn-secondary" onClick={() => setWeeklySummaryModalOpen(false)}>

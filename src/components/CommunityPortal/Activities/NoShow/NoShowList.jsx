@@ -156,7 +156,7 @@ function NoShowListModal({ isOpen, toggle, mockData }) {
                         onChange={() => handleSelectParticipant(participant.participantID)}
                       />
                     </Col>
-                    <Col className="text-primary">{participant.name}</Col>
+                    <Col className={styles['text-primary']}>{participant.name}</Col>
                     <Col>{participant.email}</Col>
                   </Row>
                 </ListGroupItem>

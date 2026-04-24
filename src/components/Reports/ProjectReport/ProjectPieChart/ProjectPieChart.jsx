@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { PieChart, Pie, Sector, ResponsiveContainer, LabelList} from 'recharts';
 import TwoWayToggleSwitch from '../../../common/TwoWayToggleSwitch/TwoWayToggleSwitch';
-import './ProjectPieChart.css';
+import styles from './ProjectPieChart.module.css';
 
 
 const generateRandomHexColor = () => {
@@ -119,7 +119,7 @@ export function ProjectPieChart  ({ userData, windowSize, darkMode }) {
 
   return (
     <div className={`position-relative ${darkMode ? 'text-light' : ''} h-100`}>
-      <div className="button-container">
+      <div className={styles['button-container']}>
         <TwoWayToggleSwitch isOn={showAllValues} handleToggle={toggleShowAllValues} />
       </div>
       <ResponsiveContainer maxWidth={640} maxHeight={640} minWidth={350} minHeight={350}>

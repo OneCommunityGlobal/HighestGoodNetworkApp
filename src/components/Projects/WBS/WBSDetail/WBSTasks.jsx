@@ -177,7 +177,7 @@ function WBSTasks(props) {
       <Button
         color="light"
         size="sm"
-        className="ml-2"
+        className={styles['ml-2']}
         onClick={() => setOpenAll(!openAll)}
         style={darkMode ? boxStyleDark : boxStyle}
         disabled={isLoading}
@@ -188,7 +188,7 @@ function WBSTasks(props) {
       <Button
         color="info"
         size="sm"
-        className="ml-2"
+        className={styles['ml-2']}
         onClick={() => setShowImport(!showImport)}
         style={darkMode ? boxStyleDark : boxStyle}
         disabled={isLoading}

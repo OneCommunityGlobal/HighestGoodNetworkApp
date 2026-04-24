@@ -229,7 +229,7 @@ function EmailsList({ summaries, auth }) {
               containing a maximum of 90 addresses.
             </Tooltip>
             <FontAwesomeIcon
-              className="mx-2"
+              className={styles['mx-2']}
               onClick={handleEmailButtonClick}
               icon={faMailBulk}
               size="lg"
@@ -641,11 +641,11 @@ function TotalValidWeeklySummaries({ summary, canEditSummaryCount, darkMode }) {
   return (
     <div className={styles.totalValidWrapper}>
       {weeklySummariesCount === 8 ? (
-        <div className="total-valid-text" style={style}>
+        <div className={styles['total-valid-text']} style={style}>
           <b>Total Valid Weekly Summaries:</b>{' '}
         </div>
       ) : (
-        <div className="total-valid-text">
+        <div className={styles['total-valid-text']}>
           <b>Total Valid Weekly Summaries:</b>
         </div>
       )}
@@ -809,8 +809,8 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
               <>
                 <img src={value.imageUrl} id={`popover_${value._id}`} alt="" />
                 <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
-                  <Card className="text-center">
-                    <CardImg className="badge_image_lg" src={value.imageUrl} />
+                  <Card className={styles['text-center']}>
+                    <CardImg className={styles.badge_image_lg} src={value.imageUrl} />
                     <CardBody>
                       <CardTitle
                         style={{
@@ -932,7 +932,7 @@ function Index({
     <>
       <b>Name: </b>
       <Link
-        className="ml-2"
+        className={styles['ml-2']}
         to={`/userProfile/${summary._id}`}
         style={{
           color:

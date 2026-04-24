@@ -23,7 +23,7 @@ const UserTableFooterComponent = (props) => {
       <PageSizeDropDown onSelectPageSize={onSelectPageSize}  darkMode={darkMode}/>
       <div id="ember745" className="table-nav col-md-6 col-sm-6 col-xs-6 ember-view">
         <div role="toolbar" className="btn-toolbar pull-right">
-          <div role="group" className="btn-group">
+          <div role="group" className={styles['btn-group']}>
             <button
               type="button"
               className={`btn btn-default ${darkMode ? 'text-light' : ''}`}
@@ -68,8 +68,8 @@ UserTableFooter.displayName = 'UserTableFooter';
 const PageSizeDropDownComponent = (props) => {
   return (
     <div className="col-md-2 col-sm-2 col-xs-2">
-      <div className="pull-right">
-        <div id="ember738" className="ember-view">
+      <div className={styles['pull-right']}>
+        <div id="ember738" className={styles['ember-view']}>
           <select
             id="ember739"
             className={`changePageSize form-control ember-view ${props.darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}

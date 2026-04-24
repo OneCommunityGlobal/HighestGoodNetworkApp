@@ -1,24 +1,24 @@
-import "./Switch.css"
+import styles from './Switch.module.css'
 const Switch = ({ isOn, handleToggle}) => {
   return (
-    <div className='switch-container'>
-      <p className='switch-title'>invisible</p>
+    <div className={styles['switch-container']}>
+      <p className={styles['switch-title']}>invisible</p>
       <input
         checked={isOn}
         onChange={handleToggle}
-        className="switch-checkbox"
+        className={styles['switch-checkbox']}
         id="switch"
         type="checkbox"
       />
       {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
       <label
         style={{ background: isOn ? "#0062cc" : " " }}
-        className="switch-label"
+        className={styles['switch-label']}
         htmlFor="switch"
       >
-        <span className="switch-button" />
+        <span className={styles['switch-button']} />
       </label>
-      <p className='switch-title'>visible</p>
+      <p className={styles['switch-title']}>visible</p>
     </div>
   );
 }

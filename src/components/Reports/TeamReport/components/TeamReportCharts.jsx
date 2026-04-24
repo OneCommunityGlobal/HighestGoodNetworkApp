@@ -1,10 +1,10 @@
 /* eslint-disable testing-library/no-node-access */
 import { React, useEffect } from 'react';
-import './ReportCharts.css';
+import styles from './ReportCharts.module.css';
 import * as d3 from 'd3';
 
 import { CHART_RADIUS, CHART_SIZE } from '../../../common/PieChart/constants';
-import styles from '../../../common/PieChart/PieChart.module.css';
+import styles2 from '../../../common/PieChart/PieChart.module.css';
 import PieChartInfoDetail from './PieChartInfoDetail';
 
 function TeamReportCharts({

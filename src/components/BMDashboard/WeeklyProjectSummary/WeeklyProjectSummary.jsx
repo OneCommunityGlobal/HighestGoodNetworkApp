@@ -218,7 +218,7 @@ function WeeklyProjectSummary() {
                     <span className={`${styles.weeklyStatusValue}`}>{button.value}</span>
                   </div>
                   <div
-                    className="weekly-status-change"
+                    className={styles['weekly-status-change']}
                     style={{ color: button.textColor }} // Dynamic Change Color
                   >
                     {button.change}

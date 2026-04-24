@@ -25,7 +25,7 @@ import {
   DropdownItem,
   DropdownToggle,
 } from 'reactstrap';
-import './WeeklySummary.css';
+import styles from './WeeklySummary.module.css';
 import { connect } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
@@ -780,7 +780,7 @@ export class WeeklySummary extends Component {
     if (fetchError) {
       return (
         <Container>
-          <Row className="align-self-center" data-testid="error">
+          <Row className={styles['align-self-center']} data-testid="error">
             <Col>
               <Alert color="danger">
                 Fetch error!
@@ -795,7 +795,7 @@ export class WeeklySummary extends Component {
     if (loading) {
       return (
         <Container fluid>
-          <Row className="text-center" data-testid="loading">
+          <Row className={styles['text-center']} data-testid="loading">
             <SkeletonLoading template="WeeklySummary" />
           </Row>
         </Container>
@@ -819,10 +819,10 @@ export class WeeklySummary extends Component {
         <h3>Weekly Summaries</h3>
         {/* Before clicking Save button, summariesCountShowing is 0 */}
         <Row className="w-100 ml-1">
-          <Col className="pl-0">
+          <Col className={styles['pl-0']}>
             Total submitted: {summariesCountShowing || formElements.weeklySummariesCount}
           </Col>
-          <Col className="text-right">
+          <Col className={styles['text-right']}>
             <Button
               className="btn--dark-sea-green responsive-font-size"
               onClick={this.handleClose}
@@ -832,7 +832,7 @@ export class WeeklySummary extends Component {
             </Button>
           </Col>
         </Row>
-        <Form className="mt-4">
+        <Form className={styles['mt-4']}>
           <Nav tabs className="border-0 responsive-font-size">
             {Object.values(summariesLabels).map((weekName, i) => {
               const tId = String(i + 1);
@@ -862,7 +862,7 @@ export class WeeklySummary extends Component {
                   <Row className="w-100 ml-1">
                     <Col>
                       <FormGroup>
-                        <Label for={summaryName} className="summary-instructions-row">
+                        <Label for={summaryName} className={styles['summary-instructions-row']}>
                           <div className={`${fontColor} responsive-font-size`}>
                             Enter your weekly summary below. (required)
                             <WeeklySummaryContentTooltip tabId={tId} />
@@ -874,7 +874,7 @@ export class WeeklySummary extends Component {
                               darkMode={darkMode}
                             />
                             {isNotAllowedToEdit && isNotAllowedToEdit === true ? null : (
-                              <UncontrolledDropdown className="summary-dropdown">
+                              <UncontrolledDropdown className={styles['summary-dropdown']}>
                                 <DropdownToggle
                                   className="btn--dark-sea-green w-100 responsive-font-size"
                                   caret
@@ -954,7 +954,7 @@ export class WeeklySummary extends Component {
             <Row className="w-100 ml-1">
               <Col>
                 {formElements.mediaUrl && !mediaFirstChange ? (
-                  <FormGroup className="media-url">
+                  <FormGroup className={styles['media-url']}>
                     <FontAwesomeIcon icon={faExternalLinkAlt} className=" text--silver" />
                     <Label for="mediaUrl" className="mt-1 ml-2 responsive-font-size">
                       <a href={formElements.mediaUrl} target="_blank" rel="noopener noreferrer">
@@ -988,7 +988,7 @@ export class WeeklySummary extends Component {
                       </FormGroup>
                       {formElements.mediaUrl && !errors.mediaUrl && (
                         <Col md={4}>
-                          <FormGroup className="media-url">
+                          <FormGroup className={styles['media-url']}>
                             <FontAwesomeIcon
                               icon={faExternalLinkAlt}
                               className="mx-1 text--silver responsive-font-size"
@@ -1146,9 +1146,9 @@ export class WeeklySummary extends Component {
                     )}
                   </Col>
                 </Row>
-                <Row className="mt-4">
+                <Row className={styles['mt-4']}>
                   <Col>
-                    <FormGroup className="mt-2">
+                    <FormGroup className={styles['mt-2']}>
                       <Button
                         className="px-5 btn--dark-sea-green"
                         disabled={Object.keys(this.validate()).length > 0}

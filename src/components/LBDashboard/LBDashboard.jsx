@@ -416,7 +416,7 @@ export function LBDashboard() {
       />
 
       <AnalysisSection title="By Village" darkMode={darkMode}>
-        <Row xs="1" md="3" className="g-3">
+        <Row xs="1" md="3" className={styles['g-3']}>
           <Col>
             <DemandOverTime
               compareType="villages"
@@ -468,7 +468,7 @@ export function LBDashboard() {
       </AnalysisSection>
 
       <AnalysisSection title="By Property" darkMode={darkMode}>
-        <Row xs="1" md="2" className="g-3">
+        <Row xs="1" md="2" className={styles['g-3']}>
           <Col>
             <DemandOverTime
               compareType="properties"
@@ -507,7 +507,7 @@ export function LBDashboard() {
       </AnalysisSection>
 
       <AnalysisSection title="Insights from Reviews" darkMode={darkMode}>
-        <Row xs="1" md="2" className="g-3">
+        <Row xs="1" md="2" className={styles['g-3']}>
           <Col>
             <SentimentBreakdownDonutChart darkMode={darkMode} />
           </Col>

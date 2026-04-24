@@ -40,7 +40,7 @@ export default function WorkDistributionBarChart({ isLoading, workDistributionSt
   if (isLoading) {
     return (
       <div className="d-flex justify-content-center align-items-center">
-        <div className="w-100vh">
+        <div className={styles['w-100vh']}>
           <Loading />
         </div>
       </div>
@@ -72,7 +72,7 @@ export default function WorkDistributionBarChart({ isLoading, workDistributionSt
 
   return (
     <div className={`${styles.workDistributionContainer}`}>
-      <div className="work-distribution-chart" style={{ minWidth: 500 }}>
+      <div className={styles['work-distribution-chart']} style={{ minWidth: 500 }}>
         <ResponsiveContainer width="100%" height="100%" minWidth={400} minHeight={430}>
           <BarChart
             data={data}

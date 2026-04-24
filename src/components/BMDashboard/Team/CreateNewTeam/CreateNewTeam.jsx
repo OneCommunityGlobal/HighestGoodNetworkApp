@@ -260,7 +260,7 @@ export default function CreateNewTeam() {
             <Button
               onClick={handleAddMember}
               // disabled={!selectedMember || isMemberAssigned}
-              className="add-member-button"
+              className={styles['add-member-button']}
             >
               Add
             </Button>
@@ -284,7 +284,7 @@ export default function CreateNewTeam() {
             {assignedMembers.map((member, index) => {
               return (
                 // eslint-disable-next-line react/no-array-index-key
-                <Badge key={index} pill color="info" className="mr-2">
+                <Badge key={index} pill color="info" className={styles['mr-2']}>
                   {member}
                   <span
                     role="button"
@@ -337,7 +337,7 @@ export default function CreateNewTeam() {
             {assignedTasks.map((task, index) => {
               return (
                 // eslint-disable-next-line react/no-array-index-key
-                <Badge key={index} pill color="info" className="mr-2">
+                <Badge key={index} pill color="info" className={styles['mr-2']}>
                   {task}{' '}
                   <span
                     role="button"

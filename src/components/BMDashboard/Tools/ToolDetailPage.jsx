@@ -169,7 +169,7 @@ function ToolDetailPage() {
       <header className={`${styles.toolDetailPage_header}`}>
         <h1>Tool Detail Page</h1>
       </header>
-      <main className="ToolDetailPage__content">
+      <main className={styles.ToolDetailPage__content}>
         <p>
           <img
             src={tool?.imageUrl}

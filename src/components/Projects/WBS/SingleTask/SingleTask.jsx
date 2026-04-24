@@ -74,7 +74,7 @@ function SingleTask(props) {
     <>
       <div className={`${darkMode ? 'bg-oxford-blue' : 'bg-white'} h-100`}>
         <ReactTooltip />
-        <div className="container-single-task">
+        <div className={styles['container-single-task']}>
           {canPostProject && (
             <nav aria-label="breadcrumb">
               <ol className={`breadcrumb mx-2 ${darkMode ? 'bg-space-cadet text-light' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>
@@ -204,12 +204,12 @@ function SingleTask(props) {
                               <a
                                 key={`res_${i}`}
                                 data-tip={elem.name}
-                                className="name"
+                                className={styles.name}
                                 href={`/userprofile/${elem.userID}`}
                                 target="_blank"
                                 rel="noreferrer"
                               >
-                                <img className="img-circle" src={elem.profilePic} alt="" />
+                                <img className={styles['img-circle']} src={elem.profilePic} alt="" />
                               </a>
                             );
                           }
@@ -217,12 +217,12 @@ function SingleTask(props) {
                             <a
                               key={`res_${i}`}
                               data-tip={elem.name}
-                              className="name"
+                              className={styles.name}
                               href={`/userprofile/${elem.userID}`}
                               target="_blank"
                               rel="noreferrer"
                             >
-                              <span className="dot">{elem.name.substring(0, 2)}</span>
+                              <span className={styles.dot}>{elem.name.substring(0, 2)}</span>
                             </a>
                           );
                         })}

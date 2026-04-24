@@ -85,7 +85,7 @@ export default function WeeklySummariesToggleFilter({
               <span className={`${styles.switchToggleSwitch}`} />
             </Label>
           </div>
-          <ReactTooltip id="filterTooltip" place="top" effect="solid" className="custom-tooltip">
+          <ReactTooltip id="filterTooltip" place="top" effect="solid" className={styles['custom-tooltip']}>
             <span
               style={{
                 whiteSpace: 'normal',

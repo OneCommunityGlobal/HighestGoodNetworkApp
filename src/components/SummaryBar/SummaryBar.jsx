@@ -426,7 +426,7 @@ const SummaryBar = React.forwardRef((props, ref) => {
             darkMode ? 'bg-yinmn-blue' : styles['bg--summary-purple']
           } d-flex justify-content-center align-items-center`}
         >
-          <span className="text-light">SUMMARY</span>
+          <span className={styles['text-light']}>SUMMARY</span>
         </div>
       );
     }
@@ -443,12 +443,12 @@ const SummaryBar = React.forwardRef((props, ref) => {
           onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && props.toggleSubmitForm()}
           aria-label="Submit weekly summary"
         >
-          <div className="py-1" />
+          <div className={styles['py-1']} />
           <div className="d-flex justify-content-center">
             <span className={`${styles.large_text_summary} text-danger`}>!</span>
           </div>
-          <span className="text-center">SUMMARY</span>
-          <div className="py-2" />
+          <span className={styles['text-center']}>SUMMARY</span>
+          <div className={styles['py-2']} />
         </div>
       );
     }
@@ -457,12 +457,12 @@ const SummaryBar = React.forwardRef((props, ref) => {
       <div
         className={`${styles['border-green']} col-4 ${styles['bg--dark-green']} d-flex flex-column justify-content-center`}
       >
-        <div className="py-1" />
+        <div className={styles['py-1']} />
         <div className="d-flex justify-content-center">
           <span className={`${styles.large_text_summary} ${styles['text--black']}`}>✓</span>
         </div>
-        <span className="text-center">SUMMARY</span>
-        <div className="py-2" />
+        <span className={styles['text-center']}>SUMMARY</span>
+        <div className={styles['py-2']} />
       </div>
     );
   };
@@ -525,12 +525,12 @@ const SummaryBar = React.forwardRef((props, ref) => {
           align="center"
         >
           <div>
-            <font className="align-middle" size="3">
+            <font className={styles['align-middle']} size="3">
               {' '}
               Activity for{' '}
             </font>
             <CardTitle className={`align-middle ${darkMode ? 'text-light' : 'text-dark'}`} tag="h3">
-              <div className="font-weight-bold">
+              <div className={styles['font-weight-bold']}>
                 <span
                   className={`${styles['name-segment']}`}
                   title={userProfile?.firstName || displayUserProfile.firstName}
@@ -562,7 +562,7 @@ const SummaryBar = React.forwardRef((props, ref) => {
               <div
                 className={`border border-danger col-4 ${darkMode ? 'bg-yinmn-blue' : 'bg-white'}`}
               >
-                <div className="py-1"> </div>
+                <div className={styles['py-1']}> </div>
                 <p
                   className={`${styles['text-center']} ${styles['large_text_summary']} text-danger`}
                 >
@@ -571,12 +571,12 @@ const SummaryBar = React.forwardRef((props, ref) => {
                 <font className={`${styles['text-center']}`} size="3">
                   HOURS
                 </font>
-                <div className="py-2"> </div>
+                <div className={styles['py-2']}> </div>
               </div>
             )}
             {totalEffort >= weeklyCommittedHours && (
               <div className={`${styles['border-green']} col-4 ${styles['bg--dark-green']}`}>
-                <div className="py-1"> </div>
+                <div className={styles['py-1']}> </div>
                 <p
                   className={`${styles['text-center']} ${styles.large_text_summary} ${styles['text--black']}`}
                 >
@@ -585,7 +585,7 @@ const SummaryBar = React.forwardRef((props, ref) => {
                 <font className={`${styles['text-center']}`} size="3">
                   HOURS
                 </font>
-                <div className="py-2"> </div>
+                <div className={styles['py-2']}> </div>
               </div>
             )}
 
@@ -596,7 +596,7 @@ const SummaryBar = React.forwardRef((props, ref) => {
               style={{ border: '1px solid black' }}
             >
               <div
-                className="align-items-center"
+                className={styles['align-items-center']}
                 id="timelogweeklychart"
                 style={{ whiteSpace: 'nowrap', padding: '0px 10px' }}
               >
@@ -651,7 +651,7 @@ const SummaryBar = React.forwardRef((props, ref) => {
                   <span>{tasks}</span>
                 </div>
               )}
-              {/* <div className="redBackgroup">
+              {/* <div className={styles.redBackgroup}>
                 <span>{tasks}</span>
               </div> */}
               {isAuthUser || canEditData() ? (
@@ -680,7 +680,7 @@ const SummaryBar = React.forwardRef((props, ref) => {
                   <span>{props.badgeCount}</span>
                 </div>
               )}
-              {/* <div className="redBackgroup">
+              {/* <div className={styles.redBackgroup}>
                 <span>{badges}</span>
                 <span>{props.badgeCount}</span>
               </div> */}

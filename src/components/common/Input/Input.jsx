@@ -43,7 +43,7 @@ const Input = ({ label, name, error, className, type, invalid, textColor, ...res
             className={`fa ${eye ? 'fa-eye-slash' : 'fa-eye'} ${styles.eyeIcon}`}
           />
           {invalid && (
-            <div className="text-danger" style={{ fontSize: '14px' }}>
+            <div className={styles['text-danger']} style={{ fontSize: '14px' }}>
               {invalid}
             </div>
           )}

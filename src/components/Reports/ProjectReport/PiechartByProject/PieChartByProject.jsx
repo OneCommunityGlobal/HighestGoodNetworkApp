@@ -1,7 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 import { useEffect, useState } from 'react';
 import {ProjectPieChart} from '../ProjectPieChart/ProjectPieChart';
-import './PieChartByProject.css';
+import styles from './PieChartByProject.module.css';
 import TriMembersStateToggleSwitch from '../TriMembersStateToggleSwitch/TriMembersStateToggleSwitch'
 import style from '../../../UserProfile/UserProfileEdit/ToggleSwitch/ToggleSwitch.module.scss';
 
@@ -211,7 +211,7 @@ export function PieChartByProject({
     <div className={`${darkMode ? 'text-light' : ''} w-100`}>
       <div className={`${darkMode ? 'text-light' : ''} pie-chart-title w-100`}><h4>Pie Charts</h4></div>
       <div><h5>{projectName}</h5></div>
-      <div className="pie-chart-description">
+      <div className={styles['pie-chart-description']}>
         <div>
         <label
           className={darkMode ? 'text-light' : ''}
@@ -221,7 +221,7 @@ export function PieChartByProject({
         </label>
           <input
             type="checkbox"
-            className="pie-chart-checkbox"
+            className={styles['pie-chart-checkbox']}
             checked={isChecked}
             onChange={handleShowPieChart}
           />
@@ -233,7 +233,7 @@ export function PieChartByProject({
         <div style={{ wordBreak: 'keep-all', color: darkMode ? 'white' : ''}}
           className={`d-flex flex-row align-items-center justify-content-between ${style.switchContainer}`}>
           <p className={darkMode ? 'text-light' : 'blue'}>Inactive Members</p>
-          <div className="pr-2">
+          <div className={styles['pr-2']}>
             <TriMembersStateToggleSwitch
               value={showMembers}
               onChange={handleShowMembersChange}

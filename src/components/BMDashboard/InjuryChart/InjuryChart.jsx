@@ -47,11 +47,11 @@ export default function InjuryChart() {
   return (
     <main className={`${styles.injuryChartContainer} p-4 ${darkMode ? styles.wrapperDark : ''}`}>
       <header className={`${styles.injuryChartHeader} mb-4 text-center`}>
-        <h2 className="h3"> Dashboard: Injury Tracking</h2>
+        <h2 className={styles.h3}> Dashboard: Injury Tracking</h2>
         <div
           className={`${styles.injuryChartInfo} text-muted d-flex align-items-center justify-content-center`}
         >
-          <BsInfoCircle className="me-2" />
+          <BsInfoCircle className={styles['me-2']} />
           <span>Track injuries over time by severity level across projects.</span>
         </div>
       </header>

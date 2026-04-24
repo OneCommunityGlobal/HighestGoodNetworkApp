@@ -361,7 +361,7 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
   const renderInvoiceField = () => (
     <FormGroup>
       <Label>
-        Invoice Number <span className="text-danger">*</span>
+        Invoice Number <span className={styles['text-danger']}>*</span>
       </Label>
       <Input
         type="text"
@@ -378,7 +378,7 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
     <div className={styles.formRow}>
       <FormGroup>
         <Label>
-          Unit Price <span className="text-danger">*</span>
+          Unit Price <span className={styles['text-danger']}>*</span>
         </Label>
         <Input
           type="number"
@@ -402,7 +402,7 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
       </FormGroup>
       <FormGroup>
         <Label>
-          Quantity <span className="text-danger">*</span>
+          Quantity <span className={styles['text-danger']}>*</span>
         </Label>
         <Input
           type="number"
@@ -471,8 +471,8 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
         </div>
       )}
       {mode === 'edit' && itemType?.images && uploadedFiles.length === 0 && (
-        <div className="mt-2">
-          <small className="text-muted">Current image:</small>
+        <div className={styles['mt-2']}>
+          <small className={styles['text-muted']}>Current image:</small>
           <img
             src={itemType.images}
             alt="current"
@@ -506,7 +506,7 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
   const renderEquipmentFields = () => (
     <FormGroup>
       <Label>
-        Fuel Type <span className="text-danger">*</span>
+        Fuel Type <span className={styles['text-danger']}>*</span>
       </Label>
       <Input
         type="select"
@@ -555,7 +555,7 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
       <div className={styles.formRow}>
         <FormGroup>
           <Label>
-            Purchase/Rental Date <span className="text-danger">*</span>
+            Purchase/Rental Date <span className={styles['text-danger']}>*</span>
           </Label>
           <Input
             type="date"
@@ -588,7 +588,7 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
     <>
       <FormGroup>
         <Label>
-          Unit <span className="text-danger">*</span>
+          Unit <span className={styles['text-danger']}>*</span>
         </Label>
         <Input
           type="select"
@@ -611,7 +611,7 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
 
       <FormGroup>
         <Label>
-          Purchase Date <span className="text-danger">*</span>
+          Purchase Date <span className={styles['text-danger']}>*</span>
         </Label>
         <Input
           type="date"
@@ -654,7 +654,7 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
         <Form onSubmit={handleSubmit}>
           <FormGroup>
             <Label>
-              Name <span className="text-danger">*</span>
+              Name <span className={styles['text-danger']}>*</span>
             </Label>
             <Input
               type="text"
@@ -668,7 +668,7 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
 
           <FormGroup>
             <Label>
-              Description <span className="text-danger">*</span>
+              Description <span className={styles['text-danger']}>*</span>
             </Label>
             <Input
               type="textarea"
@@ -679,7 +679,7 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
               placeholder="Enter description"
             />
             {errors.description && <div className="text-danger small">{errors.description}</div>}
-            <div className="text-end">
+            <div className={styles['text-end']}>
               <small className={formData.description.length > 500 ? 'text-danger' : 'text-muted'}>
                 {formData.description.length}/500
               </small>

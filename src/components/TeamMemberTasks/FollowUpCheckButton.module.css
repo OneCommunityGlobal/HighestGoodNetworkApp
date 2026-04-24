@@ -9,8 +9,8 @@
 /* the custom checkbox */
 .team-task-progress-follow-up {
   appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
+  appearance: none;
+  appearance: none;
   box-sizing: border-box;
   width: 100%;
   height: 100%;
@@ -38,11 +38,12 @@
 }
 
 /* mobile sizing to match your old media rule */
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .followup-box {
     width: 15px;
     height: 15px;
   }
+
   .team-task-progress-follow-up-check {
     font-size: 10px;
   }

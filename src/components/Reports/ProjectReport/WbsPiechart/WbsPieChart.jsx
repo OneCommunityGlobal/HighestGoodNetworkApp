@@ -1,7 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 import {  useEffect, useState } from 'react';
 import { ProjectPieChart } from '../ProjectPieChart/ProjectPieChart';
-import '../PiechartByProject/PieChartByProject.css';
+import '../PiechartByProject/PieChartByProject.module.css';
 
 export function WbsPieChart({
   projectMembers,

@@ -336,14 +336,14 @@ const UserProfileModal = props => {
                     </Label>
                     <Col>
                       <div style={{ display: 'flex', margin: '5px' }}>
-                        <div className="customTitle">Name</div>
-                        <div className="customTitle">Link URL</div>
+                        <div className={styles.customTitle}>Name</div>
+                        <div className={styles.customTitle}>Link URL</div>
                       </div>
 
                       {adminLinks.map((link, index) => (
                         <div key={index} style={{ display: 'flex', margin: '5px' }}>
                           <input
-                            className="customInput"
+                            className={styles.customInput}
                             value={link.Name}
                             onChange={e =>
                               dispatchAdminLinks({
@@ -354,7 +354,7 @@ const UserProfileModal = props => {
                             }
                           />
                           <input
-                            className="customInput"
+                            className={styles.customInput}
                             value={link.Link}
                             onChange={e =>
                               dispatchAdminLinks({
@@ -365,7 +365,7 @@ const UserProfileModal = props => {
                             }
                           />
                           <button
-                            className="closeButton"
+                            className={styles.closeButton}
                             color="danger"
                             onClick={() =>
                               dispatchAdminLinks({ type: 'remove', passedIndex: index })
@@ -377,24 +377,24 @@ const UserProfileModal = props => {
                       ))}
 
                       <div style={{ display: 'flex', margin: '5px' }}>
-                        <div className="customTitle">+ ADD LINK:</div>
+                        <div className={styles.customTitle}>+ ADD LINK:</div>
                       </div>
 
                       <div style={{ display: 'flex', margin: '5px' }}>
                         <input
-                          className="customEdit"
+                          className={styles.customEdit}
                           id="linkName"
                           placeholder="enter name"
                           onChange={e => setAdminLinkName(e.target.value)}
                         />
                         <input
-                          className="customEdit"
+                          className={styles.customEdit}
                           id="linkURL"
                           placeholder="enter link"
                           onChange={e => setAdminLinkURL(e.target.value.trim())}
                         />
                         <button
-                          className="addButton"
+                          className={styles.addButton}
                           onClick={() =>
                             dispatchAdminLinks({
                               type: 'add',
@@ -417,14 +417,14 @@ const UserProfileModal = props => {
                   </Label>
                   <Col>
                     <div style={{ display: 'flex', margin: '5px' }}>
-                      <div className="customTitle">Name</div>
-                      <div className="customTitle">Link URL</div>
+                      <div className={styles.customTitle}>Name</div>
+                      <div className={styles.customTitle}>Link URL</div>
                     </div>
 
                     {personalLinks.map((link, index) => (
                       <div key={index} style={{ display: 'flex', margin: '5px' }}>
                         <input
-                          className="customInput"
+                          className={styles.customInput}
                           value={link.Name}
                           onChange={e =>
                             dispatchPersonalLinks({
@@ -435,7 +435,7 @@ const UserProfileModal = props => {
                           }
                         />
                         <input
-                          className="customInput"
+                          className={styles.customInput}
                           value={link.Link}
                           onChange={e =>
                             dispatchPersonalLinks({
@@ -446,7 +446,7 @@ const UserProfileModal = props => {
                           }
                         />
                         <button
-                          className="closeButton"
+                          className={styles.closeButton}
                           color="danger"
                           onClick={() =>
                             dispatchPersonalLinks({ type: 'remove', passedIndex: index })
@@ -458,24 +458,24 @@ const UserProfileModal = props => {
                     ))}
 
                     <div style={{ display: 'flex', margin: '5px' }}>
-                      <div className="customTitle">+ ADD LINK:</div>
+                      <div className={styles.customTitle}>+ ADD LINK:</div>
                     </div>
 
                     <div style={{ display: 'flex', margin: '5px' }}>
                       <input
-                        className="customEdit"
+                        className={styles.customEdit}
                         id="linkName"
                         placeholder="enter name"
                         onChange={e => setLinkName(e.target.value)}
                       />
                       <input
-                        className="customEdit"
+                        className={styles.customEdit}
                         id="linkURL"
                         placeholder="enter link"
                         onChange={e => setLinkURL(e.target.value.trim())}
                       />
                       <button
-                        className="addButton"
+                        className={styles.addButton}
                         onClick={() =>
                           dispatchPersonalLinks({
                             type: 'add',
@@ -592,7 +592,7 @@ const UserProfileModal = props => {
         <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
           <div className="d-flex w-100 align-items-center">
             <div style={{ position: 'relative', display: 'inline-block' }}>
-              <Button color="secondary" onClick={openCc} style={boxStyling} className="mr-2">
+              <Button color="secondary" onClick={openCc} style={boxStyling} className={styles['mr-2']}>
                 CC List
               </Button>
               {ccCount > 0 && (

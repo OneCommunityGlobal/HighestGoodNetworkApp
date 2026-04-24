@@ -427,7 +427,7 @@ export function Header(props) {
                       src={`${profilePic || '/pfp-default-header.png'}`}
                       alt=""
                       style={{ maxWidth: '60px', maxHeight: '60px' }}
-                      className="dashboardimg"
+                      className={styles.dashboardimg}
                     />
                   </NavLink>
                 </NavItem>
@@ -805,7 +805,7 @@ export function Header(props) {
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat',
                       }}
-                      className="dashboardimg"
+                      className={styles.dashboardimg}
                     />
                   </NavLink>
                 </NavItem>
@@ -899,7 +899,7 @@ export function Header(props) {
       {props.auth.isAuthenticated && isModalVisible && (
         <div className={`${darkMode ? 'bg-oxford-blue' : ''} ${styles.cardWrapper}`}>
           <Card color="primary" className={styles.headerCard}>
-            <div className="close-button">
+            <div className={styles['close-button']}>
               <Button close onClick={closeModal} />
             </div>
             <div className={`${styles.cardContent}`}>{modalContent}</div>

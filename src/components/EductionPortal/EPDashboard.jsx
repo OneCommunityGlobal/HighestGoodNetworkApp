@@ -1,6 +1,6 @@
 import React from 'react';
 import StudentDashboard from './StudentDashboard/StudentDashboard';
-import './EPDashboard.module.css';
+import styles from './EPDashboard.module.css';
 
 export function EPDashboard() {
   return <StudentDashboard />;

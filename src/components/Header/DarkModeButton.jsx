@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import './index.css';
+import styles from './index.module.css';
 import { Tooltip } from 'reactstrap';
 import sunIcon from './images/sunIcon.png';
 import nightIcon from './images/nightIcon.png';
@@ -70,18 +70,18 @@ function DarkModeButton() {
         style={{ cursor: 'pointer', border: 'none', background: 'none', padding: 0 }}
       >
         {darkMode ? (
-          <div className="darkModeSliderContainer">
-            <img src={nightIcon} alt="Night Icon" className="nightIcon" />
-            <img src={sunIcon} alt="Sun Icon" className="sunHoverIcon" />
-            <span className="darkModeText">Dark Mode</span>
-            <span className="lightModeHoverText">Light Mode</span>
+          <div className={styles.darkModeSliderContainer}>
+            <img src={nightIcon} alt="Night Icon" className={styles.nightIcon} />
+            <img src={sunIcon} alt="Sun Icon" className={styles.sunHoverIcon} />
+            <span className={styles.darkModeText}>Dark Mode</span>
+            <span className={styles.lightModeHoverText}>Light Mode</span>
           </div>
         ) : (
-          <div className="lightModeSliderContainer">
-            <img src={sunIcon} alt="Sun Icon" className="sunIcon" />
-            <img src={nightIcon} alt="Night Icon" className="nightHoverIcon" />
-            <span className="lightModeText">Light Mode</span>
-            <span className="darkModeHoverText">Dark Mode</span>
+          <div className={styles.lightModeSliderContainer}>
+            <img src={sunIcon} alt="Sun Icon" className={styles.sunIcon} />
+            <img src={nightIcon} alt="Night Icon" className={styles.nightHoverIcon} />
+            <span className={styles.lightModeText}>Light Mode</span>
+            <span className={styles.darkModeHoverText}>Dark Mode</span>
           </div>
         )}
       </div>

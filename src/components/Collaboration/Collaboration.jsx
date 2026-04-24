@@ -183,7 +183,7 @@ function Collaboration() {
 
           {summaries.jobs?.length ? (
             summaries.jobs.map(job => (
-              <div key={job._id} className="job-summary-item">
+              <div key={job._id} className={styles['job-summary-item']}>
                 <h4>
                   <a href={job.jobDetailsLink}>{job.title}</a>
                 </h4>
@@ -299,13 +299,13 @@ function Collaboration() {
         {/* HEADINGS */}
         <div className={styles.headings}>
           <h1 className={styles.jobHead}>LIKE TO WORK WITH US? APPLY NOW!</h1>
-          <a className="btn" href="https://www.onecommunityglobal.org/collaboration/">
+          <a className={styles.btn} href="https://www.onecommunityglobal.org/collaboration/">
             ← Return to One Community Collaboration Page
           </a>
         </div>
 
         {/* QUERY TEXT */}
-        <div className="job-queries">
+        <div className={styles['job-queries']}>
           <p>
             {searchTerm
               ? `Listing results for '${searchTerm}'`

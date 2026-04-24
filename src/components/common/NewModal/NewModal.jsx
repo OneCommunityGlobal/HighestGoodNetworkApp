@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { Popup } from 'reactjs-popup';
-import './NewModal.css';
+import styles from './NewModal.module.css';
 
 // eslint-disable-next-line react/function-component-definition
 const NewModal = ({ header, children, trigger, darkMode }) => {
@@ -37,7 +37,7 @@ const NewModal = ({ header, children, trigger, darkMode }) => {
               }
             }}
             tabIndex={0}
-            className="close-icon"
+            className={styles['close-icon']}
             role="button"
           >
             &#x2715;
@@ -47,7 +47,7 @@ const NewModal = ({ header, children, trigger, darkMode }) => {
           {children}
         </div>
         <div className={`popup-modal-footer ${darkMode ? 'popup-footer-dark' : ''}`}>
-          <button type="button" className="popup-close-button" onClick={closePopup}>
+          <button type="button" className={styles['popup-close-button']} onClick={closePopup}>
             Close
           </button>
         </div>

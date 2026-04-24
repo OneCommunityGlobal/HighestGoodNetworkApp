@@ -368,8 +368,8 @@ export function TeamReport({ match }) {
     >
       <ReportPage.ReportBlock className={styles['team-report-main-info-wrapper']} darkMode={darkMode}>
         <div className={styles['team-report-main-info-id']}>
-          <div className="team-info-container" style={{ color: darkMode ? 'white' : '' }}>
-            <div className="team-report-id">
+          <div className={styles['team-info-container']} style={{ color: darkMode ? 'white' : '' }}>
+            <div className={styles['team-report-id']}>
               <span className={styles['team-report-star']}>&#9733;</span> Team ID: {team._id}
             </div>
             <div
@@ -403,7 +403,7 @@ export function TeamReport({ match }) {
               <label htmlFor="search-by-name" className={`text-left ${darkMode ? 'text-light' : ''}`}>
                 Name
               </label>
-              <div className="input-group">
+              <div className={styles['input-group']}>
                 <input
                   type="text"
                   className="form-control rounded-1"
@@ -412,7 +412,7 @@ export function TeamReport({ match }) {
                   value={searchInputValue}
                   onChange={event => setSearchInputValue(event.target.value)}
                 />
-                <div className="input-group-append">
+                <div className={styles['input-group-append']}>
                   <button
                     type="button"
                     className={`btn ${darkMode ? 'btn-outline-light' : 'btn-outline-secondary'}`}
@@ -536,7 +536,7 @@ export function TeamReport({ match }) {
               </tr>
             </thead>
 
-            <tbody className="table">
+            <tbody className={styles.table}>
               {allTeamsMembers && allTeamsMembers.length > 0 ? (
                 handleSearch().map((teamData, index) => (
                   <tr
@@ -578,7 +578,7 @@ export function TeamReport({ match }) {
   >
     {allTeamsMembers[index] && allTeamsMembers[index].length > 1 ? (
       allTeamsMembers[index].map(member => (
-        <div key={`${teamData?._id}-${member?._id}`} className="mb-1">
+        <div key={`${teamData?._id}-${member?._id}`} className={styles['mb-1']}>
           {member?.firstName} {member?.lastName}
         </div>
       ))
@@ -598,7 +598,7 @@ export function TeamReport({ match }) {
                 ))
               ) : (
                 <tr style={{ backgroundColor: darkMode ? '#3A506B' : 'white' }}>
-                  <td colSpan="7" className="text-center">
+                  <td colSpan="7" className={styles['text-center']}>
                     <strong className={darkMode ? 'text-light' : ''}>
                       {allTeamsMembers && allTeamsMembers.length === 0
                         ? 'No teams found. Please check your permissions or contact an administrator.'

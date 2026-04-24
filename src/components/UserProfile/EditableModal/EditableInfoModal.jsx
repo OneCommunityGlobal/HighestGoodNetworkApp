@@ -329,7 +329,7 @@ export class EditableInfoModal extends Component {
                   <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                     {CanEdit && this.state.editing && (
                       <Button
-                        className="saveBtn"
+                        className={styles.saveBtn}
                         onClick={this.handleSave}
                         color="primary"
                         style={darkMode ? boxStyleDark : boxStyle}

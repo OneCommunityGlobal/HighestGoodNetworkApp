@@ -794,8 +794,8 @@ const BasicInformationTab = props => {
           </Col>
           {desktopDisplay ? (
             <Col md="6" style={{paddingRight: 0}} className={darkMode ? 'bg-yinmn-blue' : ''}>
-              <Row className="ml-0">
-                <Col className="p-0">
+              <Row className={styles['ml-0']}>
+                <Col className={styles['p-0']}>
                   <Input
                     data-testid="location"
                     onChange={handleLocation}
@@ -809,7 +809,7 @@ const BasicInformationTab = props => {
                     block
                     onClick={onClickGetTimeZone}
                     style={darkMode ? boxStyleDark : boxStyle}
-                    className="px-0"
+                    className={styles['px-0']}
                   >
                     Get Time Zone
                   </Button>
@@ -825,7 +825,7 @@ const BasicInformationTab = props => {
                   block
                   size="sm"
                   onClick={onClickGetTimeZone}
-                  className="mt-2"
+                  className={styles['mt-2']}
                 >
                   Get Time Zone
                 </Button>

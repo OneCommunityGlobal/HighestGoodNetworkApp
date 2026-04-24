@@ -21,7 +21,7 @@ const MarkAsDoneButton = ({
     (intermediateTasks.length === 0 || intermediateTasks.every(t => t.status === 'completed'))
   ) {
     return (
-      <button className={styles.completedButton} disabled>
+      <button className="completedButton" disabled>
         <svg
           width={iconSize}
           height={iconSize}

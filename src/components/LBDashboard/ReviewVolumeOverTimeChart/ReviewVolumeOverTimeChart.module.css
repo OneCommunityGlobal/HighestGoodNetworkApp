@@ -4,11 +4,11 @@
   max-width: 960px;
   margin: 2rem auto;
   padding: 1.5rem;
-  background: #ffffff;
+  background: #fff;
   border-radius: 16px;
   box-shadow:
-    0 1px 0 rgba(0, 0, 0, 0.04),
-    0 12px 30px rgba(2, 6, 23, 0.08);
+    0 1px 0 rgb(0 0 0 / 4%),
+    0 12px 30px rgb(2 6 23 / 8%);
   display: flex;
   flex-direction: column;
 }
@@ -120,7 +120,7 @@
   border: 1px solid #d1d5db;
   padding: 0 0.5rem;
   font-size: 0.9rem;
-  background-color: #ffffff;
+  background-color: #fff;
   color: #111827;
 }
 
@@ -190,7 +190,7 @@
 .darkMonthCalendar :global(.react-datepicker__month-text--keyboard-selected),
 .darkMonthCalendar :global(.react-datepicker__month-text--selected) {
   background-color: #1d4ed8 !important;
-  color: #ffffff !important;
+  color: #fff !important;
   opacity: 1 !important;
 }
 
@@ -213,7 +213,7 @@
 }
 
 /* ~773px and similar tablet widths: title + legend on one row crushes the legend */
-@media (max-width: 900px) {
+@media (width <= 900px) {
   .header {
     flex-direction: column;
     align-items: stretch;
@@ -226,7 +226,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .chartContainer {
     margin: 1.25rem auto;
     padding: 1.25rem;

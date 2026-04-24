@@ -171,12 +171,12 @@
 }
 
 /* ===== RESPONSIVE - DESKTOP (≥992px) ===== */
-@media (min-width: 992px) {
+@media (width >= 992px) {
   /* Desktop: sidebar visible by default */
 }
 
 /* ===== RESPONSIVE - TABLET (768px - 991px) ===== */
-@media (max-width: 991px) {
+@media (width <= 991px) {
   .sidebar {
     width: 180px;
   }
@@ -219,7 +219,7 @@
 }
 
 /* ===== RESPONSIVE - MOBILE (≤767px) ===== */
-@media (max-width: 767px) {
+@media (width <= 767px) {
   .sidebar {
     position: fixed;
     left: 0;
@@ -356,12 +356,12 @@
     white-space: normal;
     overflow: visible;
     text-overflow: clip;
-    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
 }
 
 /* ===== RESPONSIVE - SMALL PHONES (≤480px) ===== */
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .sidebar {
     width: 220px;
   }
@@ -401,7 +401,7 @@
 }
 
 /* ===== RESPONSIVE - EXTRA SMALL (≤360px) ===== */
-@media (max-width: 359px) {
+@media (width <= 359px) {
   .sidebar {
     width: 200px;
   }
@@ -434,7 +434,7 @@
   }
 
   .menuLink {
-    padding: 10px 10px;
+    padding: 10px;
     font-size: 11px;
     gap: 6px;
     min-height: 44px;

@@ -27,7 +27,7 @@ export default function PurchaseConsumable() {
   // error state
   if (isError) {
     return (
-      <main className="consumables_list_container">
+      <main className={styles.consumables_list_container}>
         <h2>Consumables List</h2>
         <BMError errors={errors} />
       </main>
@@ -38,7 +38,7 @@ export default function PurchaseConsumable() {
     <main className={`${styles.purchaseConsumableContainer}`}>
       <header className={`${styles.purchaseConsumableHeader}`}>
         <h2>Purchase Request: Consumables</h2>
-        <div className="inv-form-info">
+        <div className={styles['inv-form-info']}>
           <BsInfoCircle />
           Initiate a purchase request for approval/action by project admins.
         </div>

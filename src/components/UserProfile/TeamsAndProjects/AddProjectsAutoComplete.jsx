@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Dropdown, Input } from 'reactstrap';
-import './TeamsAndProjects.css';
+import styles from './TeamsAndProjects.module.css';
 import { useSelector } from 'react-redux';
 
 // eslint-disable-next-line react/display-name
@@ -61,7 +61,7 @@ const AddProjectsAutoComplete = React.memo(props => {
             .map(item => (
               // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
               <div
-                className="project-auto-complete"
+                className={styles['project-auto-complete']}
                 key={item._id}
                 onClick={() => {
                   props.onInputChange(item.projectName);
@@ -78,7 +78,7 @@ const AddProjectsAutoComplete = React.memo(props => {
           ) && (
             // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
             <div
-              className="project-auto-complete"
+              className={styles['project-auto-complete']}
               onClick={() => {
                 toggle(false);
                 props.setIsOpenDropdown(true);

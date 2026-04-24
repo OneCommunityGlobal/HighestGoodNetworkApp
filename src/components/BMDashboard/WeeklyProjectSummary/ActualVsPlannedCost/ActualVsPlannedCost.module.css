@@ -42,7 +42,7 @@
   color: var(--text-color);
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .selectorsContainer {
     flex-direction: column;
     gap: 0.5rem;

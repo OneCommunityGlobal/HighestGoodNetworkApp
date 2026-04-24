@@ -3,8 +3,9 @@
 .containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer .recharts-wrapper tspan {
   fill: #000 !important;
   color: #000 !important;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.25), 0 0 2px #fff;
+  text-shadow: 1px 1px 3px rgb(0 0 0 / 25%), 0 0 2px #fff;
 }
+
 /* Chart and graph titles/text should be white in dark mode for visibility */
 .containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer h3,
 .containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer p,
@@ -12,6 +13,7 @@
 .containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer .volunteerStatusGrid h3 {
   color: #fff !important;
 }
+
 .containerTotalOrgWrapper {
   min-height: 100%;
   background-color: #fff;
@@ -25,7 +27,7 @@
 }
 
 /* Override Bootstrap py-3 and mb-5 classes on mobile */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .containerTotalOrgWrapper:global(.py-3) {
     padding-top: 10px !important;
     padding-bottom: 10px !important;
@@ -87,9 +89,9 @@
   box-sizing: border-box;
 }
 
-.containerTotalOrgWrapper *:not(script):not(style) {
+.containerTotalOrgWrapper *:not(script, style) {
   overflow-wrap: break-word;
-  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 /* Unified dark mode background */
@@ -109,13 +111,13 @@
   :global(.dropdown-toggle):hover {
   background-color: #5a359a !important;
   transform: translateY(-2px) !important;
-  box-shadow: 0 4px 12px rgba(111, 66, 193, 0.4) !important;
+  box-shadow: 0 4px 12px rgb(111 66 193 / 40%) !important;
 }
 
 .containerTotalOrgWrapper:global(.bg-oxford-blue) .reportHeaderActions :global(.dropdown-menu) {
   background-color: #34495e !important;
   border: 1px solid #6f42c1 !important;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: 0 8px 25px rgb(0 0 0 / 30%) !important;
 }
 
 .containerTotalOrgWrapper:global(.bg-oxford-blue) .reportHeaderActions :global(.dropdown-item) {
@@ -135,13 +137,13 @@
 .containerTotalOrgWrapper:global(.bg-oxford-blue) .reportHeaderActions button {
   background-color: #007bff !important;
   color: white !important;
-  box-shadow: 0 2px 6px rgba(0, 123, 255, 0.3) !important;
+  box-shadow: 0 2px 6px rgb(0 123 255 / 30%) !important;
 }
 
 .containerTotalOrgWrapper:global(.bg-oxford-blue) .reportHeaderActions button:hover {
   background-color: #0056b3 !important;
   transform: translateY(-2px) !important;
-  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4) !important;
+  box-shadow: 0 4px 12px rgb(0 123 255 / 40%) !important;
 }
 
 .containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer {
@@ -194,7 +196,7 @@
 
 .pageRow {
   width: 100% !important;
-  margin: 1px 10px 15px 10px;
+  margin: 1px 10px 15px;
 }
 
 /* Header section styles */
@@ -243,8 +245,9 @@
 
 /* Dark mode header styling */
 .containerTotalOrgWrapper:global(.bg-oxford-blue) .reportHeaderTitle h3 {
-  color: #ffffff !important;
+  color: #fff !important;
 }
+
 .reportHeaderActions {
   display: flex;
   align-items: center;
@@ -275,18 +278,18 @@
   min-width: 120px !important;
   background-color: #6f42c1 !important;
   color: white !important;
-  box-shadow: 0 2px 6px rgba(111, 66, 193, 0.3) !important;
+  box-shadow: 0 2px 6px rgb(111 66 193 / 30%) !important;
 }
 
 .reportHeaderActions :global(.dropdown-toggle):hover {
   background-color: #5a359a !important;
   transform: translateY(-2px) !important;
-  box-shadow: 0 4px 12px rgba(111, 66, 193, 0.4) !important;
+  box-shadow: 0 4px 12px rgb(111 66 193 / 40%) !important;
 }
 
 .reportHeaderActions :global(.dropdown-toggle):focus {
   outline: none !important;
-  box-shadow: 0 0 0 3px rgba(111, 66, 193, 0.3) !important;
+  box-shadow: 0 0 0 3px rgb(111 66 193 / 30%) !important;
 }
 
 /* Beautiful button styling */
@@ -304,7 +307,7 @@
   min-height: 44px !important;
   background-color: #007bff !important;
   color: white !important;
-  box-shadow: 0 2px 6px rgba(0, 123, 255, 0.3) !important;
+  box-shadow: 0 2px 6px rgb(0 123 255 / 30%) !important;
   text-transform: none !important;
   letter-spacing: 0.3px !important;
 }
@@ -312,7 +315,7 @@
 .reportHeaderActions button:hover {
   background-color: #0056b3 !important;
   transform: translateY(-2px) !important;
-  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4) !important;
+  box-shadow: 0 4px 12px rgb(0 123 255 / 40%) !important;
 }
 
 .reportHeaderActions button:disabled {
@@ -320,19 +323,19 @@
   cursor: not-allowed !important;
   opacity: 0.6 !important;
   transform: none !important;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%) !important;
 }
 
 .reportHeaderActions button:focus {
   outline: none !important;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.3) !important;
+  box-shadow: 0 0 0 3px rgb(0 123 255 / 30%) !important;
 }
 
 /* Enhanced dropdown menu styling */
 .reportHeaderActions :global(.dropdown-menu) {
   border: none !important;
   border-radius: 12px !important;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+  box-shadow: 0 8px 25px rgb(0 0 0 / 15%) !important;
   padding: 8px 0 !important;
   margin-top: 8px !important;
   min-width: 180px !important;
@@ -355,14 +358,15 @@
 }
 
 /* Dark mode dropdown consistency */
+
 /* Component containers - Clean borderless design */
 .componentContainer {
-  margin: 0 0 15px 0;
+  margin: 0 0 15px;
   padding: 20px;
   background-color: #fff;
   border-radius: 10px;
   border: 1.5px solid #e0e0e0;
-  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.1), 0 1.5px 4px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 16px rgb(37 99 235 / 10%), 0 1.5px 4px rgb(0 0 0 / 8%);
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -373,7 +377,7 @@
 .componentBorder {
   border: 1.5px solid #e0e0e0;
   border-radius: 10px;
-  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.1), 0 1.5px 4px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 16px rgb(37 99 235 / 10%), 0 1.5px 4px rgb(0 0 0 / 8%);
   background-color: #fff;
   overflow: hidden;
   height: 100%;
@@ -386,10 +390,11 @@
 .componentBorderLoose {
   overflow: visible;
 }
+
 .containerTotalOrgWrapper:global(.bg-oxford-blue) .componentBorder {
   background-color: #1c2541 !important;
   border: 1.5px solid #2f4157 !important;
-  box-shadow: 0 4px 24px rgba(255, 255, 255, 0.13), 0 1.5px 4px rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 4px 24px rgb(255 255 255 / 13%), 0 1.5px 4px rgb(255 255 255 / 10%) !important;
 }
 
 /* Grid layouts */
@@ -421,6 +426,7 @@
 }
 
 /* Report Header Styles */
+
 /* .totalOrgReportHeaderRow  {
   display: flex;
   justify-content: space-between;
@@ -462,7 +468,7 @@
 }
 
 /* Responsive design for better mobile experience */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .containerTotalOrgWrapper {
     padding: 10px !important;
     overflow-x: hidden;
@@ -500,7 +506,7 @@
     font-size: 24px;
     width: 100% !important;
     max-width: 100% !important;
-    word-wrap: break-word;
+    overflow-wrap: break-word;
     overflow-wrap: break-word;
   }
 
@@ -523,7 +529,7 @@
   .componentContainer,
   .componentBorder {
     padding: 15px;
-    margin: 0 0 15px 0;
+    margin: 0 0 15px;
     overflow-x: auto;
     max-width: 100%;
   }
@@ -570,10 +576,7 @@
 
   /* Fix AccordianWrapper margins on mobile */
   :global(.Collapsible) {
-    margin-top: 10px !important;
-    margin-bottom: 10px !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
+    margin: 10px 0 !important;
   }
 
   :global(.Collapsible__contentInner) {
@@ -581,7 +584,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .containerTotalOrgWrapper {
     padding: 8px !important;
     margin-left: 0 !important;
@@ -619,7 +622,7 @@
   .componentContainer,
   .componentBorder {
     padding: 12px;
-    margin: 0 0 12px 0;
+    margin: 0 0 12px;
   }
 
   .totalOrgChartTitle p {
@@ -656,10 +659,7 @@
 
   /* Fix AccordianWrapper margins on small mobile */
   :global(.Collapsible) {
-    margin-top: 8px !important;
-    margin-bottom: 8px !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
+    margin: 8px 0 !important;
   }
 
   :global(.Collapsible__contentInner) {

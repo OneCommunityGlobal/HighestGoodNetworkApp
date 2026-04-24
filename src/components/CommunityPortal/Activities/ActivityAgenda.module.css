@@ -6,8 +6,8 @@
 
 /* Light mode fallback */
 .activityAgendaPage {
-  --bg-color: #ffffff;
-  --text-color: #000000;
+  --bg-color: #fff;
+  --text-color: #000;
   --heading-color: navy;
 
   min-height: 100vh;
@@ -18,9 +18,9 @@
 /* Dark mode variables override */
 .activityAgendaDarkMode {
   --bg-color: #1b2a41;
-  --text-color: #ffffff;
+  --text-color: #fff;
   --heading-color: #e8a71c;
-  --card-shadow: rgba(255, 255, 255, 0.1);
+  --card-shadow: rgb(255 255 255 / 10%);
 }
 
 /* Apply shadow on image in dark mode */
@@ -59,13 +59,13 @@
 }
 
 /* Responsive */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .activityAgendaContainer {
     flex-direction: column;
   }
 
   .activityAgendaContent {
-    padding-left: 0px;
+    padding-left: 0;
     text-align: center;
   }
 
@@ -74,7 +74,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .activityAgendaContent h1 {
     font-size: 1.5rem;
   }

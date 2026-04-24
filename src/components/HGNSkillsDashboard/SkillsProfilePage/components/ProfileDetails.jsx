@@ -71,11 +71,11 @@ function ProfileDetails() {
         </span>
         {loggedInUserId === String(profileData?.userId) && (
           <div className={`${styles.editButtons}`}>
-            <button type="button" className="edit-button" onClick={handleEditSave}>
+            <button type="button" className={styles['edit-button']} onClick={handleEditSave}>
               {isEditing ? 'Save' : 'Edit'}
             </button>
             {isEditing && (
-              <button type="button" className="edit-button" onClick={handleCancel}>
+              <button type="button" className={styles['edit-button']} onClick={handleCancel}>
                 Cancel
               </button>
             )}

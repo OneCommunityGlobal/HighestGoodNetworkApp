@@ -1,0 +1,10 @@
+.container-box-shadow {
+  box-shadow: 2px 2px 4px 1px rgb(78 32 125 / 20%);
+}
+
+@media screen and (width <= 1100px) {
+  .custom-scrollbar {
+    overflow-y: scroll;
+    display: relative;
+  }
+}

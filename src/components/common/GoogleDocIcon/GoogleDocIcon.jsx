@@ -1,6 +1,6 @@
 import { toast } from 'react-toastify';
 import googleDocIconPng from '../../../assets/images/google_doc_icon.png';
-import './style.css';
+import styles from './style.module.css';
 
 export default function GoogleDocIcon({ link }) {
   const handleGoogleDocClick = () => {
@@ -32,7 +32,7 @@ export default function GoogleDocIcon({ link }) {
     >
       {/* inactive: image will be grey if no Google Doc link present */}
       <img
-        className={`google-doc-icon ${link ? '' : 'inactive'}`}
+        className={`${styles['google-doc-icon']} ${link ? '' : styles['inactive']}`}
         src={googleDocIconPng}
         alt="google_doc"
       />

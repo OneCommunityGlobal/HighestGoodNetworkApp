@@ -238,7 +238,7 @@ function FeedbackModal() {
 
       <ModalBody className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
         <div className={`${styles.feedbackForm}`}>
-          <FormGroup tag="fieldset" className="mb-4">
+          <FormGroup tag="fieldset" className={styles['mb-4']}>
             <legend>Were we able to help you last week?</legend>
             <FormGroup check>
               <Label check>
@@ -387,7 +387,7 @@ function FeedbackModal() {
       <ModalFooter className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
         <Button
           color="danger"
-          className="mr-auto"
+          className={styles['mr-auto']}
           onClick={handleCloseForever}
           disabled={isSubmitting}
         >

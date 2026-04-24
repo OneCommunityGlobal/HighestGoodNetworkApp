@@ -13,7 +13,7 @@ import {
   updateTimeOffRequestThunk,
 } from '../../../actions/timeOffRequestAction';
 import 'react-datepicker/dist/react-datepicker.css';
-import './ScheduleReasonModal.css';
+import styles from './ScheduleReasonModal.module.css';
 
 const ScheduleReasonModal = ({
   handleClose,
@@ -407,13 +407,13 @@ const ScheduleReasonModal = ({
       {checkIfUserCanScheduleTimeOff() && (
         <>
           <Modal.Header closeButton={true} className={darkMode ? 'bg-space-cadet' : ''}>
-            <Modal.Title className="centered-container">
+            <Modal.Title className={styles['centered-container']}>
               <div className="centered-text mt-0 p1">{editingRequest ? 'Edit Scheduled Time Off' : 'Choose to Use a Blue Square'}</div>
             </Modal.Title>
           </Modal.Header>
           <Form onSubmit={handleSaveReason}>
             <Modal.Body className={darkMode ? 'bg-yinmn-blue' : ''}>
-              <Form.Group className="mb-0" controlId="exampleForm.ControlTextarea1">
+              <Form.Group className={styles['mb-0']} controlId="exampleForm.ControlTextarea1">
                 <Form.Label className={`mb-3 ${darkMode ? 'text-light' : ''}`}>
                   {` Need to take time off for an emergency or vacation? That's no problem. The system
                   will still issue you a blue square but scheduling here will note this reason on it
@@ -436,7 +436,7 @@ const ScheduleReasonModal = ({
                   dateFormat="MM/dd/yyyy"
                   placeholderText="Select a Sunday"
                   id="dateOfLeave"
-                  className="form-control"
+                  className={styles['form-control']}
                   wrapperClassName="w-100"
                 />
                 <Form.Text className="text-danger pl-1">
@@ -465,7 +465,7 @@ const ScheduleReasonModal = ({
                 <Form.Label className={`mt-1 ${darkMode ? 'text-light' : ''}`}>
                   What is your reason for requesting this time off?
                 </Form.Label>
-                <span className="red-asterisk">* </span>
+                <span className={styles['red-asterisk']}>* </span>
                 <Form.Control
                   as="textarea"
                   rows={2}
@@ -506,13 +506,13 @@ const ScheduleReasonModal = ({
                 <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <Container>
                     <Row>
-                      <Col className="mb-1">
+                      <Col className={styles['mb-1']}>
                         The time off will be {editingRequest ? 'updated to cover' : 'scheduled for the following'}
                         {confirmationModalData.offTimeWeeks?.length > 1 ? ` weeks:` : ` week:`}
                       </Col>
                     </Row>
                     {confirmationModalData.offTimeWeeks?.length > 0 && (
-                      <Row className="pl-2">
+                      <Row className={styles['pl-2']}>
                         <Col className="mb-2 font-italic">
                           {confirmationModalData.offTimeWeeks.map((week, index) => (
                             <li key={index}>
@@ -529,7 +529,7 @@ const ScheduleReasonModal = ({
                     <Row>
                       <Col>Due to the reason of:</Col>
                     </Row>
-                    <Row className="pl-2">
+                    <Row className={styles['pl-2']}>
                       <Col className="mb-2 font-italic">
                         <li>{confirmationModalData.reasonForLeave}</li>
                       </Col>
@@ -537,7 +537,7 @@ const ScheduleReasonModal = ({
                     <Row>
                       <Col>The return day is:</Col>
                     </Row>
-                    <Row className="pl-2">
+                    <Row className={styles['pl-2']}>
                       <Col className="mb-2 font-italic">
                         <li>
                           <b>{`On `}</b>
@@ -592,7 +592,7 @@ const ScheduleReasonModal = ({
                   <Button
                       variant="primary"
                       onClick={()=>handleWeekStart(nextSunday)}
-                      className="w-100"
+                      className={styles['w-100']}
                       size="md"
                       style={darkMode ? boxStyleDark : boxStyle}
                     >
@@ -601,7 +601,7 @@ const ScheduleReasonModal = ({
                   <Button
                       variant="primary"
                       onClick={()=>handleWeekStart(currSunday)}
-                      className="w-100"
+                      className={styles['w-100']}
                       size="md"
                       style={darkMode ? boxStyleDark : boxStyle}
                     >
@@ -621,7 +621,7 @@ const ScheduleReasonModal = ({
             style={{ borderTop: '1px solid #dee2e6' }}
           >
             {' '}
-            <Modal.Title className="centered-container">
+            <Modal.Title className={styles['centered-container']}>
               <div className="centered-text mt-0">Scheduled Time Off</div>
             </Modal.Title>
           </Modal.Header>
@@ -650,14 +650,14 @@ const ScheduleReasonModal = ({
             <NestedModal isOpen={deleteConfirmationModal} toggle={toggleDeleteConfirmationModal}>
               <ModalBody>
                 <Container>
-                  <Row className="mt-3">
-                    <Col className="mb-1">
+                  <Row className={styles['mt-3']}>
+                    <Col className={styles['mb-1']}>
                       <b>Are you sure you want to delete the scheduled time off?</b>
                     </Col>
                   </Row>
                   <Row>
                     {' '}
-                    <Col className="mb-1">
+                    <Col className={styles['mb-1']}>
                       Once you confirm, an email will be sent to you and your manager to notify them
                       of the update.
                     </Col>

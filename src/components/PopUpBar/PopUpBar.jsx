@@ -23,7 +23,7 @@ function PopUpBar({
       data-testid="test-popup"
       style={{ color: textColor }}
     >
-      {isLoading ? <Loading /> : <p className="popup_message">{displayText}</p>}
+      {isLoading ? <Loading /> : <p className={styles.popup_message}>{displayText}</p>}
       <button type="button" className={`${styles.closeButton}`} onClick={onClickClose}>
         X
       </button>

@@ -36,11 +36,11 @@ function TotalValidSummaries(props) {
   return (
     <div className={styles.totalValidWrapper}>
       {weeklySummariesCount === 8 ? (
-        <div className="total-valid-text" style={style}>
+        <div className={styles['total-valid-text']} style={style}>
           <b>Total Valid Weekly Summaries:</b>{' '}
         </div>
       ) : (
-        <div className="total-valid-text">
+        <div className={styles['total-valid-text']}>
           <b style={style}>Total Valid Weekly Summaries:</b>{' '}
         </div>
       )}

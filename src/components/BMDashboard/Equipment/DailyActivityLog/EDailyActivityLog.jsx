@@ -297,7 +297,7 @@ function EDailyActivityLog(props) {
         `}</style>
       )}
 
-      <div className="container">
+      <div className={styles.container}>
         <h4 className="mb-4 pt-3">Daily Equipment Log</h4>
         {showConfirm && (
           <div
@@ -313,11 +313,11 @@ function EDailyActivityLog(props) {
             }
           >
             <span>Are you sure? This will update equipment availability.</span>
-            <div className="d-flex">
+            <div className={styles['d-flex']}>
               <Button
                 size="sm"
                 color="secondary"
-                className="mr-2"
+                className={styles['mr-2']}
                 onClick={() => setShowConfirm(false)}
               >
                 Cancel
@@ -331,7 +331,7 @@ function EDailyActivityLog(props) {
 
         {/* Header Row */}
         <div className="row mb-3 align-items-start">
-          <div className="col-md-3">
+          <div className={styles['col-md-3']}>
             <label
               className={`form-label fw-bold ${darkMode ? 'text-light' : 'text-dark'}`}
               htmlFor="date"
@@ -366,7 +366,7 @@ function EDailyActivityLog(props) {
             )}
           </div>
 
-          <div className="col-md-5">
+          <div className={styles['col-md-5']}>
             <label
               className={`form-label fw-bold ${darkMode ? 'text-light' : 'text-dark'}`}
               htmlFor="project-select"
@@ -388,7 +388,7 @@ function EDailyActivityLog(props) {
             )}
           </div>
 
-          <div className="col-md-4">
+          <div className={styles['col-md-4']}>
             <div
               className={`form-label fw-bold ${darkMode ? 'text-light' : 'text-dark'}`}
               id="log-type-label"
@@ -397,7 +397,7 @@ function EDailyActivityLog(props) {
               Log Type
             </div>
 
-            <div className="d-flex" role="group" aria-labelledby="log-type-label">
+            <div className={styles['d-flex']} role="group" aria-labelledby="log-type-label">
               <Button
                 color={logType === 'check-in' ? 'primary' : 'secondary'}
                 onClick={() => !hasNoEquipments && flipLogType('check-in')}

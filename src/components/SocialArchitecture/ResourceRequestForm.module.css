@@ -5,7 +5,7 @@
   background-color: #f9fbfc;
   border: 1px solid #dfe3e8;
   border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
 }
 
 .formTitle {
@@ -80,6 +80,7 @@ textarea {
   border-left: 5px solid transparent;
   border-right: 5px solid transparent;
   border-top: 5px solid #555;
+
   /* Arrow color */
   pointer-events: none;
 }

@@ -1,8 +1,8 @@
 .mfkContainer {
   padding: 1rem;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background-color: var(--bg-color, #ffffff);
-  color: var(--text-color, #000000);
+  font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--bg-color, #fff);
+  color: var(--text-color, #000);
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -69,8 +69,8 @@
   font-size: 0.8rem;
   border: 1px solid var(--border-color, #d1d5db);
   border-radius: 0.375rem;
-  background-color: var(--input-bg, #ffffff);
-  color: var(--text-color, #000000);
+  background-color: var(--input-bg, #fff);
+  color: var(--text-color, #000);
   transition: all 0.2s ease;
   cursor: pointer;
   box-sizing: border-box;
@@ -84,7 +84,7 @@
 .mfkDatepicker:focus {
   outline: none;
   border-color: var(--focus-border-color, #3b82f6);
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 2px rgb(59 130 246 / 10%);
 }
 
 /* Placeholder alignment */
@@ -92,15 +92,15 @@
   text-align: left;
 }
 
-.mfkDatepicker::-webkit-input-placeholder {
+.mfkDatepicker::input-placeholder {
   text-align: left;
 }
 
-.mfkDatepicker::-moz-placeholder {
+.mfkDatepicker::placeholder {
   text-align: left;
 }
 
-.mfkDatepicker:-ms-input-placeholder {
+.mfkDatepicker:input-placeholder {
   text-align: left;
 }
 
@@ -114,7 +114,7 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: var(--text-color, #000000);
+  color: var(--text-color, #000);
   font-size: 12px;
   transition: all 0.2s ease;
   margin-bottom: 2px;
@@ -157,7 +157,7 @@
 }
 
 /* Tablet responsive breakpoints */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .mfkContainer {
     padding: 0.75rem;
   }
@@ -188,7 +188,7 @@
 }
 
 /* Mobile responsive breakpoints */
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .mfkContainer {
     padding: 0.5rem;
   }
@@ -263,7 +263,7 @@
 /* React-select styles - consolidated */
 .mfkContainer :global(.data-select__control) {
   min-height: 32px !important;
-  background-color: #ffffff !important;
+  background-color: #fff !important;
   border-color: #d1d5db !important;
 }
 
@@ -281,13 +281,13 @@
 }
 
 .mfkContainer :global(.data-select__menu) {
-  background-color: #ffffff !important;
+  background-color: #fff !important;
   border: 1px solid #e2e8f0 !important;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 10%) !important;
 }
 
 .mfkContainer :global(.data-select__option) {
-  background-color: #ffffff !important;
+  background-color: #fff !important;
   color: #1e293b !important;
   font-size: 0.85rem !important;
 }
@@ -305,7 +305,7 @@
 }
 
 /* React-select mobile styles */
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .mfkContainer :global(.data-select__control) {
     min-height: 36px !important;
   }
@@ -357,7 +357,7 @@
 .mfkContainer.darkMode :global(.data-select__menu) {
   background-color: #1e293b !important;
   border: 1px solid #475569 !important;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 30%) !important;
 }
 
 .mfkContainer.darkMode :global(.data-select__option) {
@@ -376,25 +376,25 @@
 
 /* React-datepicker base styles (light mode) - improved contrast */
 .mfkContainer :global(.react-datepicker) {
-  background-color: #ffffff !important;
+  background-color: #fff !important;
   border: 1px solid #e2e8f0 !important;
   font-size: 0.8rem !important;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 10%), 0 4px 6px -2px rgb(0 0 0 / 5%) !important;
   border-radius: 0.75rem !important;
   overflow: hidden !important;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif !important;
   padding: 0 !important;
 }
 
 .mfkContainer :global(.react-datepicker__month-container) {
-  background-color: #ffffff !important;
+  background-color: #fff !important;
   border-radius: 0.75rem !important;
 }
 
 .mfkContainer :global(.react-datepicker__header) {
   background-color: #f8fafc !important;
   border-bottom: 1px solid #e2e8f0 !important;
-  padding: 0.75rem 0.75rem 0.5rem 0.75rem !important;
+  padding: 0.75rem 0.75rem 0.5rem !important;
   border-top-left-radius: 0.75rem !important;
   border-top-right-radius: 0.75rem !important;
 }
@@ -444,9 +444,9 @@
 
 .mfkContainer :global(.react-datepicker__day--selected) {
   background-color: #2563eb !important;
-  color: #ffffff !important;
+  color: #fff !important;
   font-weight: 500 !important;
-  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3) !important;
+  box-shadow: 0 2px 4px rgb(37 99 235 / 30%) !important;
 }
 
 .mfkContainer :global(.react-datepicker__day--selected:hover) {
@@ -474,10 +474,10 @@
 .mfkContainer :global(.react-datepicker__day--range-start),
 .mfkContainer :global(.react-datepicker__day--range-end) {
   background-color: #2563eb !important;
-  color: #ffffff !important;
+  color: #fff !important;
   font-weight: 500 !important;
   border-radius: 9999px !important;
-  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3) !important;
+  box-shadow: 0 2px 4px rgb(37 99 235 / 30%) !important;
 }
 
 .mfkContainer :global(.react-datepicker__day--outside-month) {
@@ -518,7 +518,7 @@
 
 .mfkContainer :global(.react-datepicker__close-icon::after) {
   background-color: #2563eb !important;
-  color: #ffffff !important;
+  color: #fff !important;
   font-size: 1rem !important;
   padding: 0.1rem 0.4rem !important;
   border-radius: 9999px !important;
@@ -538,7 +538,7 @@
 .mfkContainer.darkMode :global(.react-datepicker) {
   background-color: #0f172a !important;
   border-color: #334155 !important;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 50%), 0 10px 10px -5px rgb(0 0 0 / 30%) !important;
 }
 
 .mfkContainer.darkMode :global(.react-datepicker__month-container) {
@@ -570,8 +570,8 @@
 
 .mfkContainer.darkMode :global(.react-datepicker__day--selected) {
   background-color: #3b82f6 !important;
-  color: #ffffff !important;
-  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.5) !important;
+  color: #fff !important;
+  box-shadow: 0 2px 4px rgb(59 130 246 / 50%) !important;
 }
 
 .mfkContainer.darkMode :global(.react-datepicker__day--selected:hover) {
@@ -585,7 +585,7 @@
 
 .mfkContainer.darkMode :global(.react-datepicker__day--in-range) {
   background-color: #1e3a8a !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .mfkContainer.darkMode :global(.react-datepicker__day--in-selecting-range) {
@@ -596,8 +596,8 @@
 .mfkContainer.darkMode :global(.react-datepicker__day--range-start),
 .mfkContainer.darkMode :global(.react-datepicker__day--range-end) {
   background-color: #3b82f6 !important;
-  color: #ffffff !important;
-  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.5) !important;
+  color: #fff !important;
+  box-shadow: 0 2px 4px rgb(59 130 246 / 50%) !important;
 }
 
 .mfkContainer.darkMode :global(.react-datepicker__day--outside-month) {
@@ -618,11 +618,11 @@
 
 .mfkContainer.darkMode :global(.react-datepicker__close-icon::after) {
   background-color: #3b82f6 !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 /* Mobile-specific datepicker adjustments */
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .mfkContainer :global(.react-datepicker) {
     font-size: 0.65rem !important;
     width: 280px !important;
@@ -644,7 +644,7 @@
   }
   
   .mfkContainer :global(.react-datepicker__header) {
-    padding: 0.6rem 0.5rem 0.4rem 0.5rem !important;
+    padding: 0.6rem 0.5rem 0.4rem !important;
   }
   
   .mfkContainer :global(.react-datepicker__navigation) {

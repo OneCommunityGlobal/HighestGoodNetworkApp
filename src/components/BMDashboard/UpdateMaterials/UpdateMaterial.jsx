@@ -229,7 +229,7 @@ function UpdateMaterial({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
               </Col>
             </FormGroup>
 
-            <FormGroup row className="align-items-center">
+            <FormGroup row className={styles['align-items-center']}>
               <Label for="updateMaterialProject" sm={4} className={`${styles.materialFormLabel}`}>
                 Project Name
               </Label>

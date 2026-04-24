@@ -284,7 +284,7 @@ const TeamMemberTask = React.memo(
             )}
             <Table className={styles['no-bottom-margin']}>
               <tbody>
-                <tr className="remove-child-borders">
+                <tr className={styles['remove-child-borders']}>
                   {/* green if member has met committed hours for the week, red if not */}
                   <td colSpan={1} className={`${darkMode ? 'bg-yinmn-blue' : ''}`}>
                     <div style={{ display: 'flex', flexWrap: 'wrap', flexDirection: 'column' }}>
@@ -341,7 +341,7 @@ const TeamMemberTask = React.memo(
                           </div>
                           {user.role !== 'Volunteer' && (
                             <div
-                              className="user-role"
+                              className={styles['user-role']}
                               style={{
                                 fontSize: '14px',
                                 color: darkMode ? 'lightgray' : 'gray',
@@ -427,7 +427,7 @@ const TeamMemberTask = React.memo(
 
                             {user.role !== 'Volunteer' ? (
                               <div
-                                className="user-role"
+                                className={styles['user-role']}
                                 style={{ fontSize: '14px', color: darkMode ? 'lightgray' : 'gray' }}
                               >
                                 {user.role}
@@ -761,7 +761,7 @@ const TeamMemberTask = React.memo(
                           Jump to personal Dashboard
                         </ModalHeader>
                         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-                          <p className="title-dashboard">
+                          <p className={styles['title-dashboard']}>
                             Are you sure you wish to view the dashboard for {user.name}?
                           </p>
                         </ModalBody>

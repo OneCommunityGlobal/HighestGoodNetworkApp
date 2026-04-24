@@ -28,7 +28,7 @@ import hasPermission from '~/utils/permissions';
 import { getTaskAndProjectStats, getTotalOrgSummary } from '~/actions/totalOrgSummary';
 
 import { clsx } from 'clsx';
-import '../Header/index.css';
+import '../Header/index.module.css';
 import AccordianWrapper from './AccordianWrapper/AccordianWrapper';
 import AnniversaryCelebrated from './AnniversaryCelebrated/AnniversaryCelebrated';
 import BlueSquareStats from './BlueSquareStats/BlueSquareStats';
@@ -548,7 +548,7 @@ ${
       <div ref={rootRef} data-pdf-root>
         <Row className={styles.totalOrgReportHeaderRow} data-pdf-title-row>
           <div className={styles.reportHeaderTitle} data-pdf-title-col>
-            <h3 className="my-0">Total Org Summary</h3>
+            <h3 className={styles['my-0']}>Total Org Summary</h3>
           </div>
           <div className={styles.reportHeaderActions}>
             <Dropdown
@@ -614,7 +614,7 @@ ${
                     id="start-date"
                     selected={startDate}
                     onChange={date => setStartDate(date)}
-                    className="form-control"
+                    className={styles['form-control']}
                     dateFormat="MM/dd/yyyy"
                     placeholderText="Select start date"
                   />
@@ -630,7 +630,7 @@ ${
                     id="end-date"
                     selected={endDate}
                     onChange={date => setEndDate(date)}
-                    className="form-control"
+                    className={styles['form-control']}
                     dateFormat="MM/dd/yyyy"
                     placeholderText="Select end date"
                     minDate={startDate}
@@ -782,7 +782,7 @@ ${
                 >
                   <p>Task Completed</p>
                 </div>
-                <div className="mt-4">
+                <div className={styles['mt-4']}>
                   <TaskCompletedBarChart
                     isLoading={isLoading}
                     data={volunteerStats?.tasksStats}
@@ -805,7 +805,7 @@ ${
                 >
                   <p>Hours Completed</p>
                 </div>
-                <div className="mt-4">
+                <div className={styles['mt-4']}>
                   <HoursCompletedBarChart
                     isLoading={isLoading}
                     data={volunteerStats?.taskAndProjectStats}

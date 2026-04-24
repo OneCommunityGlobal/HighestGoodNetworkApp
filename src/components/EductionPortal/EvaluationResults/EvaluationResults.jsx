@@ -104,7 +104,7 @@ const EvaluationResults = ({ auth }) => {
     return (
       <Container className={styles.container}>
         <Alert color="warning" className={styles.noDataAlert}>
-          <FontAwesomeIcon icon={faExclamationTriangle} className="me-2" />
+          <FontAwesomeIcon icon={faExclamationTriangle} className={styles['me-2']} />
           No evaluation results available at this time.
         </Alert>
       </Container>
@@ -567,7 +567,7 @@ const EvaluationResults = ({ auth }) => {
           </ModalBody>
           <ModalFooter className={styles.modalFooter}>
             <Button color="primary" onClick={closeFeedbackModal}>
-              <FontAwesomeIcon icon={faTimes} className="me-2" />
+              <FontAwesomeIcon icon={faTimes} className={styles['me-2']} />
               Close
             </Button>
           </ModalFooter>

@@ -18,8 +18,8 @@ export function TeamTableSearchPanelBase(props) {
     inputRef.current.focus(); // Programmatically focus the input
   }, []);
   return (
-    <div className="input-group" id="new_team">
-      <div className="input-group-prepend" style={{ marginLeft: '10px' }}>
+    <div className={styles['input-group']} id="new_team">
+      <div className={styles['input-group-prepend']} style={{ marginLeft: '10px' }}>
         <span className={`input-group-text ${darkMode ? styles.searchLabelDark : ''}`}>
           {SEARCH}
         </span>

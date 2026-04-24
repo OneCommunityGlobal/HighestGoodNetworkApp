@@ -94,14 +94,14 @@ const PRGradingTest = () => {
 
   return (
     <Container style={{ padding: '40px 20px' }} className={darkMode ? 'dark-mode' : ''}>
-      <Row className="justify-content-center">
+      <Row className={styles['justify-content-center']}>
         <Col md={8}>
           <Card className={darkMode ? 'bg-dark text-light border-secondary' : ''}>
             <Card.Header className={darkMode ? 'bg-dark border-secondary' : ''}>
               <div className="d-flex justify-content-between align-items-center">
                 <div>
                   <h2 className={darkMode ? 'text-light' : ''}>PR Grading Screen Test</h2>
-                  <p className="mb-0" style={{ color: darkMode ? '#9ca3af' : undefined }}>
+                  <p className={styles['mb-0']} style={{ color: darkMode ? '#9ca3af' : undefined }}>
                     Select a team configuration to test the component
                   </p>
                 </div>
@@ -118,7 +118,7 @@ const PRGradingTest = () => {
               ) : (
                 <div className="d-grid gap-3">
                   {allTeams.map(team => (
-                    <div key={team.id} className="position-relative">
+                    <div key={team.id} className={styles['position-relative']}>
                       <button
                         type="button"
                         onClick={() => handleTeamSelect(team.id)}

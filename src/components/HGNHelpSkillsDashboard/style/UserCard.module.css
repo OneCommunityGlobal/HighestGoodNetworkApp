@@ -5,10 +5,10 @@
   max-width: 100%;
   min-height: 500px;
   padding: 30px 24px;
-  background: #ffffff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35), 0 2px 6px rgba(0, 0, 0, 0.25);
+  background: #fff;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 35%), 0 2px 6px rgb(0 0 0 / 25%);
   border-radius: 8px;
-  font-family: 'Roboto', sans-serif;
+  font-family: Roboto, sans-serif;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -111,7 +111,7 @@
   font-weight: 400;
   color: #616161;
   line-height: 22px;
-  word-wrap: break-word;
+  overflow-wrap: break-word;
   max-height: 60px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -122,22 +122,22 @@
 .darkMode {
   background-color: #1e1e1e;
   color: #f0f0f0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 50%);
 }
 
 .userCard.darkMode {
   background-color: #2a2a2a;
-  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2), 0 2px 6px rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 12px rgb(255 255 255 / 20%), 0 2px 6px rgb(255 255 255 / 10%);
   border-radius: 8px;
   color: #f0f0f0;
 }
 
 .darkMode .userName {
-  color: #ffffff;
+  color: #fff;
 }
 
 .darkMode .contactLine {
-  color: #cccccc;
+  color: #ccc;
 }
 
 .darkMode .skillsText {
@@ -145,7 +145,7 @@
 }
 
 .darkMode .scoreMax {
-  color: #ffffff;
+  color: #fff;
 }
 
 .darkMode .scoreValue.scoreHigh,

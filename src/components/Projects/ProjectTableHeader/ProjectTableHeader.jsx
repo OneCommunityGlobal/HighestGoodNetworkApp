@@ -1,5 +1,5 @@
 import React from 'react';
-import './../projects.module.css';
+import styles from './../projects.module.css';
 import {
   PROJECT_NAME,
   ACTIVE,
@@ -70,7 +70,7 @@ const ProjectTableHeader = props => {
       <th scope="col" id="projects__inv" className='align-middle'>
         <span className='d-flex justify-content-between'>
           {INVENTORY}
-          <Button size="sm" className="ml-2" id="SortingByRecentEditedInventory" onClick={props.handleSort}>
+          <Button size="sm" className={styles['ml-2']} id="SortingByRecentEditedInventory" onClick={props.handleSort}>
           <FontAwesomeIcon
             icon={props.sorted === "SortingByRecentEditedInventory" ? faSort : faSortDown}
             pointerEvents="none"
@@ -96,14 +96,14 @@ const ProjectTableHeader = props => {
       </th>
       <th scope="col" id="projects__wbs" className='align-middle'>
         <div className="d-flex align-items-center">
-          <span className="mr-2">{WBS}</span>
+          <span className={styles['mr-2']}>{WBS}</span>
           <EditableInfoModal
             areaName="ProjectTableHeaderWBS"
             areaTitle="WBS"
             fontSize={24}
             isPermissionPage={true}
             role={role}
-            className="p-2" // Add Bootstrap padding class to the EditableInfoModal
+            className={styles['p-2']} // Add Bootstrap padding class to the EditableInfoModal
             darkMode={darkMode}
           />
         </div>

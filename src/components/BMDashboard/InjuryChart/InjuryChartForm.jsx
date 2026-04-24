@@ -109,7 +109,7 @@ function InjuryChartForm({ dark }) {
     return (
       <div className="text-center p-5">
         <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden" />
+          <span className={styles['visually-hidden']} />
         </div>
       </div>
     );
@@ -124,7 +124,7 @@ function InjuryChartForm({ dark }) {
         } rounded shadow-sm`}
       >
         <div className="row g-3">
-          <div className="col-md-4">
+          <div className={styles['col-md-4']}>
             <FormGroup>
               <Label for="project" className={dark ? styles.wrapperDark : ''}>
                 Project
@@ -140,7 +140,7 @@ function InjuryChartForm({ dark }) {
             </FormGroup>
           </div>
 
-          <div className="ol-md-4">
+          <div className={styles['ol-md-4']}>
             <FormGroup>
               <Label className={dark ? styles.wrapperDark : ''}>Start Date</Label>
               <DatePicker
@@ -149,13 +149,13 @@ function InjuryChartForm({ dark }) {
                 selectsStart
                 startDate={startDate}
                 endDate={endDate}
-                className="form-control"
+                className={styles['form-control']}
                 dateFormat="yyyy-MM-dd"
               />
             </FormGroup>
           </div>
 
-          <div className="col-md-4">
+          <div className={styles['col-md-4']}>
             <FormGroup>
               <Label className={dark ? styles.wrapperDark : ''}>End Date</Label>
               <DatePicker
@@ -165,7 +165,7 @@ function InjuryChartForm({ dark }) {
                 startDate={startDate}
                 endDate={endDate}
                 minDate={startDate}
-                className="form-control"
+                className={styles['form-control']}
                 dateFormat="yyyy-MM-dd"
               />
             </FormGroup>
@@ -277,7 +277,7 @@ function InjuryChartForm({ dark }) {
       {/* No Data Display */}
       {!error && !loading && (!chartData || chartData.length === 0) && (
         <div className="text-center p-5 bg-white rounded shadow-sm">
-          <p className="text-muted">No injury data available for the selected criteria.</p>
+          <p className={styles['text-muted']}>No injury data available for the selected criteria.</p>
         </div>
       )}
     </div>

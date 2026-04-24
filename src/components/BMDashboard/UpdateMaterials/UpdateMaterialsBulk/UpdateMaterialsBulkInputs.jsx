@@ -34,7 +34,7 @@ function UpdateMaterialsBulkInputs({ date, setDate, project, setProject }) {
   };
 
   return (
-    <div className="container">
+    <div className={styles.container}>
       <Form>
         <Row className={`align-items-center ${styles.logMaterialInputRow}`}>
           <Col lg={6} md={12} className={`${styles.logMaterialInputCol}`}>

@@ -358,7 +358,7 @@ const IntermediateTaskList = () => {
                 <strong>{deleteModal.task.title}</strong>
               </p>
             )}
-            <p className="text-muted">This action cannot be undone.</p>
+            <p className={styles['text-muted']}>This action cannot be undone.</p>
           </ModalBody>
           <ModalFooter>
             <Button color="secondary" onClick={cancelDelete}>

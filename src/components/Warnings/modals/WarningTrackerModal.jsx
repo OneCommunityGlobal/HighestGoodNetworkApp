@@ -254,7 +254,7 @@ function WarningTrackerModal({
       toggle={() => setToggleWarningTrackerModal(false)}
       className={styles.warnings__tracker__modal}
     >
-      <ModalHeader className="modal__header">
+      <ModalHeader className={styles.modal__header}>
         Current Warning Descriptions
         <OverlayTrigger
           placement="right"
@@ -346,7 +346,7 @@ function WarningTrackerModal({
             <Button onClick={handleSaveEditedWarning} color="success">
               Save
             </Button>
-            <Button onClick={handleCancelEdit} color="danger" className="cancel__btn">
+            <Button onClick={handleCancelEdit} color="danger" className={styles.cancel__btn}>
               Cancel
             </Button>
           </div>

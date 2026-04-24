@@ -28,9 +28,9 @@ function BMTimeLogger() {
   }, [errors]);
 
   return (
-    <Container className="justify-content-center">
+    <Container className={styles['justify-content-center']}>
       <header className={`${styles.bmTimelogger_header}`}>
-        <Row className="mx-auto">
+        <Row className={styles['mx-auto']}>
           <h1>Member Group Check In</h1>
         </Row>
       </header>

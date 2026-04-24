@@ -175,7 +175,7 @@ function UserPermissionsPopUp({
           style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '5px' }}
         >
           <h4 className={styles['user-permissions-pop-up__title']}>
-            User name<span className="red-asterisk">* </span>:
+            User name<span className={styles['red-asterisk']}>* </span>:
           </h4>
           <Button
             type="button"

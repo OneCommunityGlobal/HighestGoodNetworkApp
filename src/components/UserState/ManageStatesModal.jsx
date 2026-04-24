@@ -467,7 +467,7 @@ function ManageStatesModal({ isOpen, onClose, catalog, onCatalogChange, darkMode
                 }}
                 style={boxStyling}
               >
-                <FontAwesomeIcon icon={faPlus} className="mr-1" /> Add New State
+                <FontAwesomeIcon icon={faPlus} className={styles['mr-1']} /> Add New State
               </Button>
             )}
             <Button
@@ -475,11 +475,11 @@ function ManageStatesModal({ isOpen, onClose, catalog, onCatalogChange, darkMode
               onClick={() => setIsReordering(prev => !prev)}
               style={boxStyling}
             >
-              <FontAwesomeIcon icon={isReordering ? faCheck : faArrowsUpDown} className="mr-1" />
+              <FontAwesomeIcon icon={isReordering ? faCheck : faArrowsUpDown} className={styles['mr-1']} />
               {isReordering ? 'Done Reordering' : 'Reorder'}
             </Button>
           </div>
-          <div className="ml-auto">
+          <div className={styles['ml-auto']}>
             <Button color="primary" onClick={handleClose} style={boxStyling}>
               Close
             </Button>

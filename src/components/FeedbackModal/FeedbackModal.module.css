@@ -9,7 +9,7 @@
   border-radius: 5px;
   padding: 15px;
   margin-bottom: 20px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 5px rgb(0 0 0 / 10%);
 }
 
 .memberRatingRow {
@@ -102,7 +102,7 @@
   padding: 6px 16px !important;
   font-size: 14px !important;
   margin-top: 15px !important;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%) !important;
   min-width: 150px;
 }
 
@@ -113,7 +113,8 @@
 
 .textCenter {
   text-align: center;
-  /* margin-top: 10px; this broke the existing pages. Please use only unique classnames and not common class names for styling.*/
+
+  /* margin-top: 10px; this broke the existing pages. Please use only unique classnames and not common class names for styling. */
 }
 
 .suggestionsLink {
@@ -135,7 +136,7 @@
 }
 
 .darkMode .commentsSection textarea {
-  background-color: #ffffff !important;
+  background-color: #fff !important;
   border-color: #666 !important;
   color: #333 !important;
 }
@@ -163,7 +164,7 @@
   color: white;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .memberRatingRow {
     flex-direction: column;
     align-items: flex-start;

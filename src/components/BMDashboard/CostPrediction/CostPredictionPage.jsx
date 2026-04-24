@@ -199,7 +199,7 @@ const processDataForChart = costData => {
 function ChartMarker({ color, isPredicted }) {
   return isPredicted ? (
     <span
-      className="tooltip-marker"
+      className={styles['tooltip-marker']}
       style={{
         backgroundColor: color,
         width: '6px',
@@ -210,7 +210,7 @@ function ChartMarker({ color, isPredicted }) {
     />
   ) : (
     <span
-      className="tooltip-marker"
+      className={styles['tooltip-marker']}
       style={{
         backgroundColor: color,
         width: '8px',
@@ -256,7 +256,7 @@ function CustomTooltip({ active, payload, label, currency, darkMode }) {
 
   return (
     <div
-      className="cost-chart-tooltip"
+      className={styles['cost-chart-tooltip']}
       style={{
         backgroundColor: darkMode ? DARK.cardBg : LIGHT.bg,
         border: `1px solid ${darkMode ? DARK.border : LIGHT.border}`,
@@ -268,13 +268,13 @@ function CustomTooltip({ active, payload, label, currency, darkMode }) {
       }}
     >
       <p
-        className="tooltip-date"
+        className={styles['tooltip-date']}
         style={{ margin: '0 0 4px 0', fontWeight: 'bold', color: textColor }}
       >
         {label}
       </p>
       <p
-        className="tooltip-type"
+        className={styles['tooltip-type']}
         style={{ margin: '0 0 4px 0', fontSize: '10px', color: textColor, opacity: 0.8 }}
       >
         {displayType}
@@ -287,7 +287,7 @@ function CustomTooltip({ active, payload, label, currency, darkMode }) {
         return (
           <div
             key={`tooltip-${entry.dataKey}-${entry.value}`}
-            className="tooltip-item"
+            className={styles['tooltip-item']}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -297,10 +297,10 @@ function CustomTooltip({ active, payload, label, currency, darkMode }) {
             }}
           >
             <ChartMarker color={entry.color} isPredicted={isPredicted} />
-            <span className="tooltip-label" style={{ color: textColor }}>
+            <span className={styles['tooltip-label']} style={{ color: textColor }}>
               {costLabel}:
             </span>
-            <span className="tooltip-value" style={{ fontWeight: 'bold', color: textColor }}>
+            <span className={styles['tooltip-value']} style={{ fontWeight: 'bold', color: textColor }}>
               {`${currency}${entry.value.toLocaleString()}`}
             </span>
           </div>

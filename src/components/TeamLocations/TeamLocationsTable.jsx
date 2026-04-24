@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import './TeamLocations.css';
+import styles from './TeamLocations.module.css';
 
 function TeamLocationsTable({ visible, filteredMapMarkers, setCurrentUser, darkMode }) {
   const [sortOrder, setSortOrder] = useState({ field: null, direction: 'dsc' });
@@ -86,7 +86,7 @@ function TeamLocationsTable({ visible, filteredMapMarkers, setCurrentUser, darkM
           <tr className={darkMode ? 'bg-space-cadet' : ''}>
             <th className="team-locations-table-header small-column" scope="col">
               <div
-                className="cursor-pointer"
+                className={styles['cursor-pointer']}
                 role="button"
                 tabIndex={0}
                 onClick={() => toggleSortOrder('setActiveUsers')}
@@ -101,19 +101,19 @@ function TeamLocationsTable({ visible, filteredMapMarkers, setCurrentUser, darkM
             </th>
             <th className="team-locations-table-header medium-column">
               <div
-                className="cursor-pointer"
+                className={styles['cursor-pointer']}
                 onClick={() => toggleSortOrder('name')}
                 onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && toggleSortOrder('name')}
                 role="button"
                 tabIndex={0}
               >
-                <span className="column-header">Team Member</span>
+                <span className={styles['column-header']}>Team Member</span>
                 <i className={`fa fa-caret-${nameSortOrder === 'asc' ? 'down' : 'up'}`} />
               </div>
             </th>
             <th className="team-locations-table-header large-column">
               <div
-                className="cursor-pointer"
+                className={styles['cursor-pointer']}
                 onClick={() => toggleSortOrder('location')}
                 onKeyDown={e => {
                   if (e.key === 'Enter' || e.key === ' ') {
@@ -123,19 +123,19 @@ function TeamLocationsTable({ visible, filteredMapMarkers, setCurrentUser, darkM
                 role="button"
                 tabIndex={0}
               >
-                <span className="column-header">Location</span>
+                <span className={styles['column-header']}>Location</span>
                 <i className={`fa fa-caret-${locationSortOrder === 'asc' ? 'down' : 'up'}`} />
               </div>
             </th>
             <th className="team-locations-table-header small-column">
-              <div className="cursor-pointer" aria-label="Cursor Pointer">
+              <div className={styles['cursor-pointer']} aria-label="Cursor Pointer">
                 <i onClick={toggleShowSearchBar} className="fa fa-search" aria-hidden="true" />
               </div>
             </th>
           </tr>
           {showSearchBar && (
             <tr className={darkMode ? 'bg-space-cadet' : ''}>
-              <th colSpan="4" className="team-locations-table-header">
+              <th colSpan="4" className={styles['team-locations-table-header']}>
                 <div
                   aria-label="Search Bar"
                   className={`search-bar ${showSearchBar ? 'visible' : ''}`}
@@ -160,30 +160,30 @@ function TeamLocationsTable({ visible, filteredMapMarkers, setCurrentUser, darkM
                 index % 2 === 0 ? 'team-locations-table-row-even' : ''
               } ${darkMode ? 'bg-space-cadet' : ''}`}
             >
-              <td className="team-locations-table-data">
+              <td className={styles['team-locations-table-data']}>
                 <i
                   className="fa fa-circle"
                   aria-hidden="true"
                   style={{ color: user.isActive ? 'green' : 'red' }}
                 />
               </td>
-              <td className="team-locations-table-data">
-                <span style={{ color: darkMode ? 'white' : 'black' }} className="column-content">
+              <td className={styles['team-locations-table-data']}>
+                <span style={{ color: darkMode ? 'white' : 'black' }} className={styles['column-content']}>
                   {`${user.firstName} ${user.lastName.charAt(0)}.`}
                 </span>
               </td>
-              <td className="team-locations-table-data">
+              <td className={styles['team-locations-table-data']}>
                 {user.location.city ? (
-                  <span style={{ color: darkMode ? 'white' : 'black' }} className="column-content">
+                  <span style={{ color: darkMode ? 'white' : 'black' }} className={styles['column-content']}>
                     {`${user.location.city}, ${user.location.country}`}
                   </span>
                 ) : (
-                  <span style={{ color: darkMode ? 'white' : 'black' }} className="column-content">
+                  <span style={{ color: darkMode ? 'white' : 'black' }} className={styles['column-content']}>
                     {`${user.location.country}`}
                   </span>
                 )}
               </td>
-              <td className="team-locations-table-data" />
+              <td className={styles['team-locations-table-data']} />
             </tr>
           ))}
         </tbody>

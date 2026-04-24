@@ -206,16 +206,16 @@ function KICalendar({ auth, darkMode }) {
       <p>View and manage all events across Garden, Orchard, Animals and Kitchen modules</p>
       <Row>
         {/* ---------- Left Panel ---------- */}
-        <Col md="12" lg="4" xl="3" className="mb-3">
+        <Col md="12" lg="4" xl="3" className={styles['mb-3']}>
           <Card>
             <CardBody>
               <h6>{format(selectedDate, 'MMMM d, yyyy')}</h6>
               <hr />
-              {selectedDateEvents.length === 0 && <div className="text-muted">No events</div>}
+              {selectedDateEvents.length === 0 && <div className={styles['text-muted']}>No events</div>}
               {selectedDateEvents.map(e => (
-                <div key={e.id} className="mb-2">
+                <div key={e.id} className={styles['mb-2']}>
                   <strong>{e.title}</strong>
-                  <div className="mb-2">
+                  <div className={styles['mb-2']}>
                     <span
                       className={`mr-2 ${styles.eventTag} ${styles[e.type?.toLowerCase()]} ${
                         styles.smallText
@@ -247,7 +247,7 @@ function KICalendar({ auth, darkMode }) {
           {/* Controls */}
           <Row className="mb-3 align-items-center">
             <Col xs="12" md="6" className="mb-2 mb-md-0">
-              <ButtonGroup className="mr-3">
+              <ButtonGroup className={styles['mr-3']}>
                 <Button
                   color={view === 'month' ? 'success' : darkMode ? '' : 'light'}
                   onClick={() => setView('month')}
@@ -309,7 +309,7 @@ function KICalendar({ auth, darkMode }) {
                 >
                   <i className="fa fa-angle-left"></i>
                 </Button>
-                <div className="mx-4">
+                <div className={styles['mx-4']}>
                   <strong>
                     {`${format(weekDays[0], 'MMM d')} – ${format(weekDays[6], 'MMM d, yyyy')}`}
                   </strong>
@@ -363,7 +363,7 @@ function KICalendar({ auth, darkMode }) {
                           data-testid={`event-${event.id}`}
                         >
                           {moduleIcons[event.type] && (
-                            <FontAwesomeIcon icon={moduleIcons[event.type]} className="me-2" />
+                            <FontAwesomeIcon icon={moduleIcons[event.type]} className={styles['me-2']} />
                           )}{' '}
                           {event.title}
                         </button>
@@ -401,7 +401,7 @@ function KICalendar({ auth, darkMode }) {
                     }`}
                     onClick={() => setSelectedDate(day)}
                   >
-                    <div className="mb-3">
+                    <div className={styles['mb-3']}>
                       <div>
                         <b>{format(day, 'EEE')}</b>
                       </div>
@@ -420,13 +420,13 @@ function KICalendar({ auth, darkMode }) {
                           }}
                         >
                           {moduleIcons[event.type] && (
-                            <FontAwesomeIcon icon={moduleIcons[event.type]} className="me-2" />
+                            <FontAwesomeIcon icon={moduleIcons[event.type]} className={styles['me-2']} />
                           )}{' '}
                           {event.title}
                         </button>
                       ))
                     ) : (
-                      <p className="text-muted">No events</p>
+                      <p className={styles['text-muted']}>No events</p>
                     )}
                   </Col>
                 );
@@ -460,21 +460,21 @@ function KICalendar({ auth, darkMode }) {
           </div>
         </ModalHeader>
         <ModalBody>
-          <p className="mb-0">
+          <p className={styles['mb-0']}>
             <b>Date:</b>
           </p>
           <p>
             {selectedEvent?.date && format(parseISO(selectedEvent?.date), 'eeee, MMMM d, yyyy')}
           </p>
-          <p className="mb-0">
+          <p className={styles['mb-0']}>
             <b>Description:</b>
           </p>
           <p>{selectedEvent?.description}</p>
-          <p className="mb-0">
+          <p className={styles['mb-0']}>
             <b>Assigned To:</b>
           </p>
           <p>{selectedEvent?.assignedTo || 'Unassigned'}</p>
-          <p className="mb-0">
+          <p className={styles['mb-0']}>
             <b>Related Item</b>
           </p>
           <p>{selectedEvent?.relatedItem || 'None'}</p>

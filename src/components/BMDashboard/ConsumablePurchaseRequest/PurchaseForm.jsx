@@ -73,7 +73,7 @@ export default function PurchaseForm() {
   };
 
   return (
-    <Form className="purchase-consumable-form" onSubmit={handleSubmit}>
+    <Form className={styles['purchase-consumable-form']} onSubmit={handleSubmit}>
       <FormGroup>
         <Label for="select-project">
           Project <span className={`${styles.mandatory}`}>*</span>
@@ -121,7 +121,7 @@ export default function PurchaseForm() {
           ))}
         </Input>
       </FormGroup>
-      <div className="purchase-consumable-flex-group">
+      <div className={styles['purchase-consumable-flex-group']}>
         <FormGroup className={`${styles.flexGroupQty}`}>
           <Label for="input-quantity">
             Quantity<span className={`${styles.mandatory}`}>*</span>
@@ -169,8 +169,8 @@ export default function PurchaseForm() {
           }}
         />
       </FormGroup>
-      <div className="purchase-consumable-error">{validationError && <p>{validationError}</p>}</div>
-      <div className="purchase-consumable-buttons">
+      <div className={styles['purchase-consumable-error']}>{validationError && <p>{validationError}</p>}</div>
+      <div className={styles['purchase-consumable-buttons']}>
         <Button
           type="button"
           id="cancel-button"

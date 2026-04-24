@@ -161,7 +161,7 @@ function UpdateConsumable({ record, setModal }) {
               </Col>
             </FormGroup>
 
-            <FormGroup row className="align-items-center">
+            <FormGroup row className={styles['align-items-center']}>
               <Label
                 for="updateConsumableProject"
                 sm={4}

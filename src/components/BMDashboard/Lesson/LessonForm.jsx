@@ -352,13 +352,13 @@ function LessonForm() {
           onMouseDownCapture={clearSelectionGlobal}
           onTouchStartCapture={clearSelectionGlobal}
         >
-          <div className="WriteLessonAndTagDiv">
+          <div className={styles.WriteLessonAndTagDiv}>
             {/* Title Input */}
-            <Form.Group className="LessonFrom" controlId="exampleForm.ControlTextarea1">
+            <Form.Group className={styles.LessonFrom} controlId="exampleForm.ControlTextarea1">
               <Form.Label className={`${styles.lessonLabel} ${darkMode ? 'text-light' : ''}`}>
                 Lesson Title
               </Form.Label>
-              <span className="red-asterisk">* </span>
+              <span className={styles['red-asterisk']}>* </span>
               <Form.Control
                 required
                 ref={lessonTitleRef}
@@ -379,11 +379,11 @@ function LessonForm() {
             </Form.Group>
 
             {/* Content Input */}
-            <Form.Group className="LessonForm" controlId="exampleForm.ControlTextarea1">
+            <Form.Group className={styles.LessonForm} controlId="exampleForm.ControlTextarea1">
               <Form.Label className={`${styles.lessonLabel} ${darkMode ? 'text-light' : ''}`}>
                 Write a Lesson
               </Form.Label>
-              <span className="red-asterisk">* </span>
+              <span className={styles['red-asterisk']}>* </span>
               <Form.Control
                 required
                 ref={lessonTextRef}
@@ -501,7 +501,7 @@ function LessonForm() {
           </div>
 
           {/* File Upload / Drag & Drop Zone */}
-          <div className="DragAndDropFormGroup">
+          <div className={styles.DragAndDropFormGroup}>
             <Form.Group controlId="exampleForm.ControlFile1">
               <Form.Label className={darkMode ? 'text-light' : ''}>Upload Appendix</Form.Label>
               <input

@@ -27,7 +27,7 @@ import { boxStyle, boxStyleDark } from '~/styles';
 import { formatDate } from '~/utils/formatDate';
 import hasPermission from '../../utils/permissions';
 import { changeBadgesByUserID } from '../../actions/badgeManagement';
-import './BadgeReport.module.css';
+import styles from './BadgeReport.module.css';
 import { getUserProfile } from '../../actions/userProfile';
 import { PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from '~/utils/constants';
 import BadgeImage from './BadgeImage';
@@ -373,7 +373,7 @@ function BadgeReport(props) {
 
   return (
     <div>
-      <div className="desktop">
+      <div className={styles.desktop}>
         <div style={{ overflowY: 'auto', height: '75vh' }}>
           <Table className={darkMode ? 'text-light' : ''}>
             <thead
@@ -397,7 +397,7 @@ function BadgeReport(props) {
               {sortBadges && sortBadges.length ? (
                 sortBadges.map((value, index) => (
                   <tr key={index}>
-                    <td className="badge_image_sm">
+                    <td className={styles.badge_image_sm}>
                       {' '}
                       <BadgeImage
                         personalBestMaxHrs={props.personalBestMaxHrs}
@@ -420,7 +420,7 @@ function BadgeReport(props) {
                     <td style={{ display: 'flex', alignItems: 'center' }}>
                       <>
                         {' '}
-                        <UncontrolledDropdown className="me-2" direction="down">
+                        <UncontrolledDropdown className={styles['me-2']} direction="down">
                           <DropdownToggle
                             caret
                             color="primary"
@@ -428,7 +428,7 @@ function BadgeReport(props) {
                           >
                             Dates
                           </DropdownToggle>
-                          <DropdownMenu className="badge_dropdown">
+                          <DropdownMenu className={styles.badge_dropdown}>
                             {value.earnedDate.map((date, i) => {
                               return <DropdownItem key={i}>{date}</DropdownItem>;
                             })}
@@ -553,7 +553,7 @@ function BadgeReport(props) {
           </ModalFooter>
         </Modal>
       </div>
-      <div className="tablet">
+      <div className={styles.tablet}>
         <div style={{ overflow: 'auto', height: '68vh' }}>
           <Table className={darkMode ? 'text-light' : ''}>
             <thead style={{ zIndex: '10' }}>
@@ -572,7 +572,7 @@ function BadgeReport(props) {
               {sortBadges && sortBadges.length ? (
                 sortBadges.map((value, index) => (
                   <tr key={index}>
-                    <td className="badge_image_sm">
+                    <td className={styles.badge_image_sm}>
                       {' '}
                       <BadgeImage
                         personalBestMaxHrs={props.personalBestMaxHrs}
@@ -594,7 +594,7 @@ function BadgeReport(props) {
                     <td>
                       {' '}
                       {/* Add Dates */}
-                      <UncontrolledDropdown className="me-2" direction="down">
+                      <UncontrolledDropdown className={styles['me-2']} direction="down">
                         <DropdownToggle
                           caret
                           color="primary"
@@ -607,7 +607,7 @@ function BadgeReport(props) {
                         >
                           Dates
                         </DropdownToggle>
-                        <DropdownMenu className="badge_dropdown">
+                        <DropdownMenu className={styles.badge_dropdown}>
                           {value.earnedDate.map((date, i) => (
                             <DropdownItem key={i}>{date}</DropdownItem>
                           ))}

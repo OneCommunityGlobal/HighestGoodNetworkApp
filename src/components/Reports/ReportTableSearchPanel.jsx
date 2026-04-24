@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { SEARCH } from '../../languages/en/ui';
-import './reportsPage.css';
+import styles from './reportsPage.module.css';
 
 /**
  * The search panel stateless component for Report grid
@@ -62,8 +62,8 @@ function ReportTableSearchPanel({ onSearch, wildCardSearchText, onSearchClick })
 
   return (
     <div>
-      <div className="input-group" id="new_team">
-        <div className="input-group-prepend">
+      <div className={styles['input-group']} id="new_team">
+        <div className={styles['input-group-prepend']}>
           <button
             type="button"
             className={`btn ${darkMode ? 'bg-yinmn-blue text-light' : 'btn-secondary'}`}

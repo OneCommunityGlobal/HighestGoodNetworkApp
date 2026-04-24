@@ -105,7 +105,7 @@ function ProjectsList() {
       className="ml-0 text-center mt-5"
       style={{ width: '100%', display: 'flex', justifyContent: 'center', flexDirection: 'column' }}
     >
-      <Col md="8" lg="6" className="mb-3" style={{ margin: '0 auto' }}>
+      <Col md="8" lg="6" className={styles['mb-3']} style={{ margin: '0 auto' }}>
         <Select
           isMulti
           options={projectOptions}

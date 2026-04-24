@@ -596,18 +596,18 @@ class PeopleReport extends Component {
                 </ReportPage.ReportBlock>
               </div>
               {/* {tangibleHoursReportedThisWeek === 0 ? (
-            <div className="report-no-log-message">No task has been logged this week...</div>
+            <div className={styles['report-no-log-message']}>No task has been logged this week...</div>
           ) : (
-            <div className="mobile-people-table">
+            <div className={styles['mobile-people-table']}>
               <ReportPage.ReportBlock>
-                <div className="intro_date">
+                <div className={styles.intro_date}>
                   <h4>Tasks contributed</h4>
                 </div>
 
                 <PeopleDataTable />
 
-                <div className="Infringementcontainer">
-                  <div className="InfringementcontainerInner">
+                <div className={styles.Infringementcontainer}>
+                  <div className={styles.InfringementcontainerInner}>
                     <UserProject userProjects={userProjects} />
                     <Infringements
                       infringements={infringements}
@@ -615,25 +615,25 @@ class PeopleReport extends Component {
                       toDate={toDate}
                       timeEntries={timeEntries}
                     />
-                    <div className="visualizationDiv">
+                    <div className={styles.visualizationDiv}>
                       <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} />
                     </div>
-                    <div className="visualizationDiv">
+                    <div className={styles.visualizationDiv}>
                       <InfringementsViz
                         infringements={infringements}
                         fromDate={fromDate}
                         toDate={toDate}
                       />
                     </div>
-                    <div className="visualizationDivRow">
-                      <div className="BadgeSummaryDiv">
+                    <div className={styles.visualizationDivRow}>
+                      <div className={styles.BadgeSummaryDiv}>
                         <BadgeSummaryViz
                           authId={auth.user.userid}
                           userId={match.params.userId}
                           badges={userProfile.badgeCollection}
                         />
                       </div>
-                      <div className="BadgeSummaryPreviewDiv">
+                      <div className={styles.BadgeSummaryPreviewDiv}>
                         <BadgeSummaryPreview badges={userProfile.badgeCollection} />
                       </div>
                     </div>

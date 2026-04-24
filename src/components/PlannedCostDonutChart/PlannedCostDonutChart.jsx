@@ -341,7 +341,7 @@ const PlannedCostDonutChart = () => {
       </div>
 
       {error && (
-        <Alert color="danger" className="mt-3">
+        <Alert color="danger" className={styles['mt-3']}>
           {error}
         </Alert>
       )}

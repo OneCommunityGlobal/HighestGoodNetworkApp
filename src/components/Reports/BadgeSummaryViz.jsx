@@ -17,7 +17,7 @@ import { useSelector } from 'react-redux';
 import BadgeImage from '~/components/Badge/BadgeImage';
 import { boxStyle, boxStyleDark } from '../../styles';
 import '../Badge/BadgeReport.module.css';
-import './BadgeSummaryViz.css';
+import styles from './BadgeSummaryViz.module.css';
 
 function BadgeSummaryViz({ authId, userId, badges, dashboard, personalBestMaxHrs }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -67,7 +67,7 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard, personalBestMaxHrs
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           <div>
             {/* --- DESKTOP VERSION OF MODAL --- */}
-            <div className="desktop">
+            <div className={styles.desktop}>
               <div style={{ overflowY: 'scroll', height: '75vh' }}>
                 <Table className={darkMode ? 'text-light dark-mode' : ''}>
                   <thead style={{ zIndex: '10' }}>
@@ -86,7 +86,7 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard, personalBestMaxHrs
                         (value, index) =>
                           value && (
                             <tr key={value.badge._id}>
-                              <td className="badge_image_sm">
+                              <td className={styles.badge_image_sm}>
                                 {' '}
                                 <BadgeImage
                                   personalBestMaxHrs={personalBestMaxHrs}
@@ -105,7 +105,7 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard, personalBestMaxHrs
                               </td>
                               <td style={{ display: 'flex', alignItems: 'center' }}>
                                 {' '}
-                                <UncontrolledDropdown className="me-2" direction="down">
+                                <UncontrolledDropdown className={styles['me-2']} direction="down">
                                   <DropdownToggle
                                     caret
                                     color="primary"
@@ -160,7 +160,7 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard, personalBestMaxHrs
               </div>
             </div>
             {/* --- TABLET VERSION OF MODAL --- */}
-            <div className="tablet">
+            <div className={styles.tablet}>
               <div style={{ overflow: 'auto', height: '68vh' }}>
                 <Table className={darkMode ? 'text-light dark-mode' : ''}>
                   <thead style={{ zIndex: '10' }}>
@@ -178,7 +178,7 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard, personalBestMaxHrs
                         (value, index) =>
                           value && (
                             <tr key={value._id}>
-                              <td className="badge_image_sm">
+                              <td className={styles.badge_image_sm}>
                                 {' '}
                                 <BadgeImage
                                   personalBestMaxHrs={personalBestMaxHrs}
@@ -213,7 +213,7 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard, personalBestMaxHrs
           </div>
         </ModalBody>
         <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-          <div className="badge_summary_viz_footer">
+          <div className={styles.badge_summary_viz_footer}>
             <ReactStrapButton
               className="btn--dark-sea-green badge_summary_viz_button"
               onClick={toggle}

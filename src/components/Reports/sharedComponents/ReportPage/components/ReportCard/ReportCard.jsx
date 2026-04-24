@@ -1,11 +1,11 @@
 /* eslint-disable import/prefer-default-export */
 import { ReportBlock } from '../ReportBlock';
-import './ReportCard.css';
+import styles from './ReportCard.module.css';
 
 export function ReportCard() {
   return (
     <ReportBlock>
-      <div className="report-card">
+      <div className={styles['report-card']}>
         <h3>100</h3>
         <p>Here is the card name</p>
       </div>

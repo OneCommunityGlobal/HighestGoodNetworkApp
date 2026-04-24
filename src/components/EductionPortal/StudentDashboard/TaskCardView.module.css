@@ -16,7 +16,7 @@
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .cardView {
     grid-template-columns: 1fr;
     gap: 1rem;

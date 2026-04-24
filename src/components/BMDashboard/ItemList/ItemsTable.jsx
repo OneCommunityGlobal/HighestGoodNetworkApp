@@ -316,7 +316,7 @@ export default function ItemsTable({
                           }
                         >
                           {el.isLowStock && (
-                            <Badge color="danger" pill className="mr-2">
+                            <Badge color="danger" pill className={styles['mr-2']}>
                               Low
                             </Badge>
                           )}

@@ -98,7 +98,7 @@ export default function ListingAvailability({ listingId, availability, loading, 
       </button>
       <h2 className={`${styles.headingCalendar}`}>Availability Calendar</h2>
       {loading && <div>Loading...</div>}
-      {!loading && error && <div className="error-message">{error}</div>}
+      {!loading && error && <div className={styles['error-message']}>{error}</div>}
       {!loading && !error && availability && (
         <>
           <div className={`${styles.calendarNav}`}>

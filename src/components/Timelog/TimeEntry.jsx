@@ -142,9 +142,9 @@ function TimeEntry(props) {
           maxWidth: 'calc(100% - 12px)',
         }}
       >
-        <Row className="mx-0">
+        <Row className={styles['mx-0']}>
           <Col md={3} className={`${styles.dateBlock} px-0`}>
-            <div className="date-div">
+            <div className={styles['date-div']}>
               <div>
                 <h4 className={darkMode ? `${styles['text-light']} text-light` : ''}>{moment(dateOfWork).format('MMM D')}</h4>
                 {displayYear && <h5 className={darkMode ? `${styles['text-light']} text-light` : ''}>{moment(dateOfWork).format('YYYY')}</h5>}
@@ -152,7 +152,7 @@ function TimeEntry(props) {
               </div>
             </div>
           </Col>
-          <Col md={4} className="px-0">
+          <Col md={4} className={styles['px-0']}>
             <h4 className={darkMode ? `${styles['dark-text-info']} dark-text-info` : `${styles['text-success']} text-success`}>
               {hours}h {minutes}m
             </h4>
@@ -166,7 +166,7 @@ function TimeEntry(props) {
   {taskName && `\u2003 ↳ ${taskName}`}
 </p>
 
-            <div className="mb-3">
+            <div className={styles['mb-3']}>
               {canEditTangibility ? (
                 <>
                   <span className={darkMode ? `${styles['dark-text-muted']} dark-text-muted` : `${styles['text-muted']} text-muted`}>Tangible:&nbsp;</span>
@@ -180,7 +180,7 @@ function TimeEntry(props) {
                   {isProcessing ? <span> Processing... </span> : null}
                 </>
               ) : (
-                <span className="font-italic">{isTangible ? 'Tangible' : 'Intangible'}</span>
+                <span className={styles['font-italic']}>{isTangible ? 'Tangible' : 'Intangible'}</span>
               )}
             </div>
           </Col>

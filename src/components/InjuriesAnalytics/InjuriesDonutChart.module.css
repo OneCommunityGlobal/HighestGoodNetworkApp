@@ -13,7 +13,7 @@
   background: #fff;
   border-radius: 12px;
   margin: 20px auto;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 10px rgb(0 0 0 / 5%);
   max-width: 900px;
   position: relative;
 }
@@ -30,7 +30,7 @@
   margin-bottom: 24px;
   font-size: 1.6rem;
   font-weight: 600;
-  color: #000000;
+  color: #000;
 }
 
 .dark .title {
@@ -57,7 +57,7 @@
 /* Filter labels */
 .filter-item label {
   font-weight: 600;
-  color: #000000;
+  color: #000;
   font-size: 0.9rem;
 }
 
@@ -93,7 +93,7 @@
   padding: 8px 20px;
   border: 1px solid #ccc;
   background-color: #f8f9fa;
-  color: #000000;
+  color: #000;
   border-radius: 6px;
   cursor: pointer;
   font-weight: 600;
@@ -135,7 +135,7 @@
   padding: 12px 24px;
   border-radius: 8px;
   border: 1px solid #eee;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 5%);
 }
 
 .dark .total-summary {
@@ -159,7 +159,7 @@
 }
 
 /* Adjust title for small screens */
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .title {
     font-size: 1.2rem;
     margin-bottom: 15px;
@@ -197,6 +197,7 @@
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
 .dark .loading {
   color: #e0e0e0;
 }
@@ -217,7 +218,7 @@
 
 .error {
   background-color: #ffe6e6;
-  border: 1px solid #ffcccc;
+  border: 1px solid #fcc;
   border-radius: 6px;
   margin: 20px 0;
 }
@@ -241,7 +242,7 @@
 /* Label text styling for consistency */
 .label-text {
   font-weight: 600;
-  color: #000000;
+  color: #000;
   font-size: 0.9rem;
   margin-bottom: 4px;
 }

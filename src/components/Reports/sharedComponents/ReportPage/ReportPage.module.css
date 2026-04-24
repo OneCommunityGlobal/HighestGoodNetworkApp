@@ -28,10 +28,9 @@
   width: 100%;
 }
 
-@media (max-width: 435px) {
-
+@media (width <= 435px) {
   .report-page-content {
-    padding: 0px;
+    padding: 0;
   }
 
   .report-page-wrapper {
@@ -41,7 +40,7 @@
 
 .project-header {
   font-size: 32px;
-  padding: 5px 5px;
+  padding: 5px;
   text-align: center;
   background-color: white;
   border-radius: 20px;

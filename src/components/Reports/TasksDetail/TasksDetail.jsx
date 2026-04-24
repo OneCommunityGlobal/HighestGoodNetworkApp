@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
 import Collapse from 'react-bootstrap/Collapse';
 import EditTaskModal from '../../Projects/WBS/WBSDetail/EditTask/EditTaskModal';
-import './TasksDetail.css';
+import styles from './TasksDetail.module.css';
 
 
 
@@ -79,17 +79,17 @@ export function TasksDetail(props) {
   const tasksList = filteredTasks.map((task, index) => (
     <tr key={task._id} className={darkMode ? 'dark-mode-row' : ''}>
       <td>{index + 1}</td>
-      <td className="tasks-detail-task-name">{truncate(task.taskName, 20)}</td>
-      <td className="collapse-column">{task.priority}</td>
+      <td className={styles['tasks-detail-task-name']}>{truncate(task.taskName, 20)}</td>
+      <td className={styles['collapse-column']}>{task.priority}</td>
       <td>{task.status}</td>
-      <td className="tasks-detail-center-cells">
+      <td className={styles['tasks-detail-center-cells']}>
         {task.resources.length <= 2 ? (
           task.resources.map((resource) => <div key={resource._id}>{resource.name}</div>)
         ) : (
           <ShowCollapse resources={task.resources} />
         )}
       </td>
-      <td className="tasks-detail-center-cells">
+      <td className={styles['tasks-detail-center-cells']}>
   {task.resources.length <= 2 ? (
     task.resources.map((resource, innerIndex) => (
       <span key={resource._id}>
@@ -106,9 +106,9 @@ export function TasksDetail(props) {
         {task.isAssigned ? <div>Assign</div> : <div>Not Assign</div>}
       </td>
       <td className="tasks-detail-center-cells collapse-column">{task.classification}</td>
-      <td className="tasks-detail-center-cells">{task.estimatedHours.toFixed(2)}</td>
-      <td className="collapse-column">{formatDate(task.startedDatetime)}</td>
-      <td className="collapse-column">{formatDate(task.dueDatetime)}</td>
+      <td className={styles['tasks-detail-center-cells']}>{task.estimatedHours.toFixed(2)}</td>
+      <td className={styles['collapse-column']}>{formatDate(task.startedDatetime)}</td>
+      <td className={styles['collapse-column']}>{formatDate(task.dueDatetime)}</td>
       <td>
         {props.toggleEditTasks && (
           <EditTaskModal
@@ -132,19 +132,19 @@ export function TasksDetail(props) {
     <div>
       <div className={`tasks-detail-total ${darkMode ? 'text-light' : ''}`}>Total: {tasksList.length}</div>
       <table className={`tasks-detail-table ${darkMode ? 'dark-mode-table' : ''}`}>
-        <thead className='tasks-detail-table-head'>
+        <thead className={styles['tasks-detail-table-head']}>
           <tr className={darkMode ? 'bg-space-cadet text-light' : ''}>
             <th>#</th>
             <th>Task</th>
-            <th className="collapse-column">Priority</th>
+            <th className={styles['collapse-column']}>Priority</th>
             <th>Status</th>
-            <th className="tasks-detail-center-cells">Resources</th>
-            <th className="tasks-detail-center-cells">Active</th>
+            <th className={styles['tasks-detail-center-cells']}>Resources</th>
+            <th className={styles['tasks-detail-center-cells']}>Active</th>
             <th className="tasks-detail-center-cells collapse-column">Assign</th>
             <th className="tasks-detail-center-cells collapse-column">Class</th>
-            <th className="tasks-detail-center-cells">Estimated Hours</th>
-            <th className="collapse-column">Start Date</th>
-            <th className="collapse-column">End Date</th>
+            <th className={styles['tasks-detail-center-cells']}>Estimated Hours</th>
+            <th className={styles['collapse-column']}>Start Date</th>
+            <th className={styles['collapse-column']}>End Date</th>
             <th>Actions</th>
           </tr>
         </thead>

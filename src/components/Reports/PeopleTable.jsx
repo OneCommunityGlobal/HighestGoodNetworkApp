@@ -1,6 +1,6 @@
 import '../Teams/Team.module.css';
 import { Link } from 'react-router-dom';
-import './reports.css';
+import styles from './reports.module.css';
 import moment from 'moment';
 import { boxStyle, boxStyleDark } from '~/styles';
 
@@ -12,7 +12,7 @@ function PeopleTable({ userProfiles, darkMode }) {
       .sort((a, b) => a.firstName.localeCompare(b.firstName))
       .map((person, index) => (
         <tr
-          className="teams__tr"
+          className={styles.teams__tr}
           id={`tr_${person._id}`}
           key={person._id}
           data-testid={`tr_${person._id}`}
@@ -29,11 +29,11 @@ function PeopleTable({ userProfiles, darkMode }) {
           </td>
           <td>
             {person.isActive ? (
-              <div className="isActive">
+              <div className={styles.isActive}>
                 <i className="fa fa-circle" data-testid="status-icon" aria-hidden="true" />
               </div>
             ) : (
-              <div className="isNotActive">
+              <div className={styles.isNotActive}>
                 <i className="fa fa-circle-o" data-testid="status-icon" aria-hidden="true" />
               </div>
             )}
@@ -51,7 +51,7 @@ function PeopleTable({ userProfiles, darkMode }) {
   }
 
   return (
-    <div className="custom-scrollbar">
+    <div className={styles['custom-scrollbar']}>
       <table
         className={`table ${darkMode ? 'bg-yinmn-blue' : 'table-bordered'}`}
         style={darkMode ? boxStyleDark : boxStyle}

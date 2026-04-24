@@ -272,7 +272,7 @@ function TotalProjectReport(props) {
               id={`tr_${project.projectId}`}
               key={project.projectId}
             >
-              <th className="teams__order--input" scope="row">
+              <th className={styles['teams__order--input']} scope="row">
                 <div>{index + 1}</div>
               </th>
               <td>

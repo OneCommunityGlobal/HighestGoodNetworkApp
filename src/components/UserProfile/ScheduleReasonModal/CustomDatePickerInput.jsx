@@ -8,19 +8,19 @@ import styles from './CustomDatePickerInput.css';
 const CustomDatePickerInput = forwardRef(({ value, onClick }, ref) => (
   <Form.Group>
     <Form.Label>Choose the Sunday of the week you&apos;ll return:</Form.Label>
-    <div className="input-group">
+    <div className={styles['input-group']}>
       <FormControl
         value={value}
         readOnly
         ref={ref}
-        className="form-control" // Use 'form-control' class for Bootstrap styling
+        className={styles['form-control']} // Use 'form-control' class for Bootstrap styling
         placeholder="Select a Sunday"
       />
-      <div className="input-group-append">
+      <div className={styles['input-group-append']}>
         <Button
           onClick={onClick}
           variant="outline-secondary"
-          className="btn-icon"
+          className={styles['btn-icon']}
           style={{ borderColor: 'lightgrey' }}
         >
           <FaCalendarAlt style={{ transform: 'translateY(-1px)' }} />

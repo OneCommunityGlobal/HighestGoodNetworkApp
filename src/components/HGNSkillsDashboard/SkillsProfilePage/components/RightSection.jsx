@@ -62,7 +62,7 @@ function RightSection() {
         {renderContent()}
       </div>
 
-      <div className="workExperience-and-additionalInfo">
+      <div className={styles['workExperience-and-additionalInfo']}>
         <AdditionalInfo profileData={profileData} />
       </div>
     </section>

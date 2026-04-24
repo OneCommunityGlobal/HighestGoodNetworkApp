@@ -42,7 +42,7 @@ function ProjectDetails() {
   if (!currProject) {
     return (
       <Container className={`${styles['project-details']} text-center mt-5`}>
-        <h2 className="text-danger">Project Not Found</h2>
+        <h2 className={styles['text-danger']}>Project Not Found</h2>
         <p>Please check if the project exists or try selecting another project.</p>
       </Container>
     );
@@ -53,7 +53,7 @@ function ProjectDetails() {
       fluid
       className={`${darkMode ? styles['project-details-dark'] : styles['project-details']}`}
     >
-      <Row className="justify-content-center">
+      <Row className={styles['justify-content-center']}>
         <Col xs="12" lg="10">
           <h1
             className={`${
@@ -65,11 +65,11 @@ function ProjectDetails() {
 
           <LogBar projectId={projectId} />
 
-          <Row className="mt-4">
-            <Col md="6" className="mb-4">
+          <Row className={styles['mt-4']}>
+            <Col md="6" className={styles['mb-4']}>
               <RentedToolsDisplay projectId={projectId} />
             </Col>
-            <Col md="6" className="mb-4">
+            <Col md="6" className={styles['mb-4']}>
               <MaterialsDisplay projectId={projectId} />
             </Col>
           </Row>

@@ -140,10 +140,10 @@ const RoleInfoModal = ({ info, auth, roleName}) => {
                 />}
             </ModalBody>
             <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-              <Row className="no-gutters" style={{ gap: '10px', justifyContent: 'flex-end' }}>
+              <Row className={styles['no-gutters']} style={{ gap: '10px', justifyContent: 'flex-end' }}>
                 {canEditInfoModal && isEditing && (
                   <Col xs="auto">
-                    <Button className="saveBtn" onClick={handleSave} style={darkMode ? boxStyleDark : boxStyle}>
+                    <Button className={styles.saveBtn} onClick={handleSave} style={darkMode ? boxStyleDark : boxStyle}>
                       Save
                     </Button>
                   </Col>

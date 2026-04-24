@@ -12,7 +12,7 @@ import {
 } from 'reactstrap';
 import hasPermission from '~/utils/permissions';
 import { boxStyle, boxStyleDark } from '~/styles';
-import '../Header/index.css';
+import '../Header/index.module.css';
 import styles from './TeamMembersPopup.module.css';
 import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -217,7 +217,7 @@ export const TeamMembersPopup = React.memo(props => {
 
   const emptyState = (
     <tr className={darkMode ? styles.noHover : ''}>
-      <td colSpan={canAssignTeamToUsers ? 6 : 5} className="empty-data-message">
+      <td colSpan={canAssignTeamToUsers ? 6 : 5} className={styles['empty-data-message']}>
         There are no users on this team.
       </td>
     </tr>
@@ -258,10 +258,10 @@ export const TeamMembersPopup = React.memo(props => {
             <i className="fa fa-circle" aria-hidden="true" />
           </div>
         </td>
-        <td className="def-width" style={{ verticalAlign: 'middle', textAlign: 'center' }}>
+        <td className={styles['def-width']} style={{ verticalAlign: 'middle', textAlign: 'center' }}>
           {index + 1}
         </td>
-        <td className="def-width" style={{ verticalAlign: 'middle', textAlign: 'center' }}>
+        <td className={styles['def-width']} style={{ verticalAlign: 'middle', textAlign: 'center' }}>
           {nameCell}{' '}
           {hasVisibilityIconPermission && props?.selectedTeamName && user?.isVisible === false && (
             <i className="fa fa-eye-slash" title="User is invisible" />
@@ -333,7 +333,7 @@ export const TeamMembersPopup = React.memo(props => {
 
         <div className={darkMode ? 'bg-space-cadet' : ''}>
           {canAssignTeamToUsers && (
-            <div className="input-group-prepend" style={{ margin: '10px' }}>
+            <div className={styles['input-group-prepend']} style={{ margin: '10px' }}>
               <MembersAutoComplete
                 userProfileData={props.usersdata}
                 existingMembers={validation}
@@ -402,14 +402,14 @@ export const TeamMembersPopup = React.memo(props => {
                 </th>
 
                 <th
-                  className="def-width"
+                  className={styles['def-width']}
                   style={{ width: 56, textAlign: 'center', verticalAlign: 'middle' }}
                 >
                   #
                 </th>
 
                 <th
-                  className="def-width"
+                  className={styles['def-width']}
                   style={{ minWidth: 220, textAlign: 'center', verticalAlign: 'middle' }}
                 >
                   User Name

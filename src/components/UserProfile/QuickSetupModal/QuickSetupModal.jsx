@@ -10,9 +10,9 @@ import AddNewTitleModal from './AddNewTitleModal';
 import EditTitlesModal from './EditTitlesModal';
 import { getAllTitle } from '../../../actions/title';
 import { setTeamCodes } from '../../../actions/teamCodes';
-import './QuickSetupModal.css';
-import '../../Header/index.css';
-import styles from '../../SummaryBar/SummaryBar.module.css'
+import styles from './QuickSetupModal.module.css';
+import '../../Header/index.module.css';
+import styles2 from '../../SummaryBar/SummaryBar.module.css'
 
 function QuickSetupModal(props) {
   const darkMode = useSelector(state => state.theme.darkMode);

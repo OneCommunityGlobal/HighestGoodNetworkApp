@@ -562,7 +562,7 @@ export default function AddMaterialForm() {
             {uploadedFiles.length > 0 && (
               <div className={`${styles.filePreviewContainer}`}>
                 {uploadedFiles.map((file, index) => (
-                  <div key={`${file.name} - ${file.lastModified}`} className="file-preview">
+                  <div key={`${file.name} - ${file.lastModified}`} className={styles['file-preview']}>
                     <img src={URL.createObjectURL(file)} alt={`preview-${index}`} />
                     <Button color="danger" onClick={() => handleRemoveFile(index)}>
                       X

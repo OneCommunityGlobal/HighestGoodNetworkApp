@@ -173,10 +173,10 @@ function InjuryCategoryBarChart() {
 
   return (
     <div className={`injury-chart-container ${darkMode && 'darkMode'}`}>
-      <div className="injury-chart-header">
-        <h3 className="injury-chart-title">Injury Severity by Category of Worker Injured</h3>
+      <div className={styles['injury-chart-header']}>
+        <h3 className={styles['injury-chart-title']}>Injury Severity by Category of Worker Injured</h3>
 
-        <div className="injury-chart-filters">
+        <div className={styles['injury-chart-filters']}>
           <div className="filter injury-filter">
             <label style={{ pointerEvents: 'none' }} htmlFor="project-names-select">
               Projects
@@ -238,7 +238,7 @@ function InjuryCategoryBarChart() {
               endDate={endDate}
               maxDate={endDate || undefined}
               placeholderText="Start date"
-              className="injury-date-input"
+              className={styles['injury-date-input']}
             />
           </div>
 
@@ -255,14 +255,14 @@ function InjuryCategoryBarChart() {
               endDate={endDate}
               minDate={startDate || undefined}
               placeholderText="End date"
-              className="injury-date-input"
+              className={styles['injury-date-input']}
             />
           </div>
         </div>
       </div>
 
       {loading && <p>Loading…</p>}
-      {!loading && error && <p className="error">Error: {String(error)}</p>}
+      {!loading && error && <p className={styles.error}>Error: {String(error)}</p>}
 
       {!loading && !error && chartData.length > 0 && (
         <ResponsiveContainer width="100%" height={420}>
@@ -341,7 +341,7 @@ function InjuryCategoryBarChart() {
       )}
 
       {!loading && !error && chartData.length === 0 && (
-        <div className="empty">No data for selected filters.</div>
+        <div className={styles.empty}>No data for selected filters.</div>
       )}
     </div>
   );

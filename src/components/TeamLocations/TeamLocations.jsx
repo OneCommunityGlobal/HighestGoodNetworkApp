@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, forwardRef } from 'react';
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
 import MarkerClusterGroup from '@changey/react-leaflet-markercluster';
 import { Button, Container, Spinner } from 'reactstrap';
-import './TeamLocations.css';
+import styles from './TeamLocations.module.css';
 
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -270,7 +270,7 @@ const TeamLocations = forwardRef(() => {
         </>
       )}
       <div className="py-2 d-flex justify-content-between flex-column flex-md-row">
-        <div className="text-and-table-icon-container">
+        <div className={styles['text-and-table-icon-container']}>
           <h5>
             Total Countries:
             {totalUniqueCountries}
@@ -291,7 +291,7 @@ const TeamLocations = forwardRef(() => {
         {isAbleToEdit ? (
           <div className="d-flex align-center">
             <div className="d-flex align-center pr-5 flex-column flex-md-row  position-relative">
-              <div className="input-group-prepend">
+              <div className={styles['input-group-prepend']}>
                 <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
                   {SEARCH}
                 </span>

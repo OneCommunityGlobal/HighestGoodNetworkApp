@@ -95,7 +95,7 @@ function JobCCDashboard() {
       style={{ height: '100%' }}
     >
       <h1 className={`${styles.dashboardTitle}`}>Job CC Dashboard</h1>
-      <div className="filters-container">
+      <div className={styles['filters-container']}>
         <FormGroup>
           <Label for="filter" className={`${darkMode ? 'text-light' : 'text-dark'}`}>
             Filter by Category

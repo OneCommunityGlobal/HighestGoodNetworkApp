@@ -51,10 +51,10 @@ function DonutChart(props) {
         <div className={styles.donutChart}>
           <Doughnut data={chartData} options={options} plugins={[ChartDataLabels]} />
           <div className={styles.donutCenter}>
-            <h5 className="donut-heading" style={{ color: darkMode ? 'white' : 'black' }}>
+            <h5 className={styles['donut-heading']} style={{ color: darkMode ? 'white' : 'black' }}>
               {title}
             </h5>
-            <h4 className="donut-count">{totalCount}</h4>
+            <h4 className={styles['donut-count']}>{totalCount}</h4>
             {comparisonType !== 'No Comparison' && (
               <h6
                 className={styles.donutComparisonPercent}

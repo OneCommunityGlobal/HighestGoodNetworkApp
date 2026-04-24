@@ -267,7 +267,7 @@ function BMTimeLogStopWatch({ projectId, memberId }) {
   return (
     <CardBody style={{ width: '100%' }}>
       <Container className={`${styles.stopwatchContainer}`}>
-        <Row className="justify-content-center">
+        <Row className={styles['justify-content-center']}>
           <Col xs="auto">
             <Button className={`${styles.memberStopwatch} mb-2 px-3`}>
               {hr.toString().padStart(2, '0')}:{min.toString().padStart(2, '0')}:
@@ -291,8 +291,8 @@ function BMTimeLogStopWatch({ projectId, memberId }) {
             <b className={`${styles.fontColorGray}`}>{currentTime}</b>
           </Col>
         </Row>
-        {/* <Row className="mb-2">Task: </Row> */}
-        <Row className="justify-content-center">
+        {/* <Row className={styles['mb-2']}>Task: </Row> */}
+        <Row className={styles['justify-content-center']}>
           <Button className={`${styles.memberClear}`} onClick={clear}>
             <b>CLEAR</b>
           </Button>

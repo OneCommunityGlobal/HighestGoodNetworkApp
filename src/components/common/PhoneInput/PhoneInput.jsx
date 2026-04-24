@@ -9,7 +9,7 @@ export function PhoneInput({ areaCode, setAreaCode, phoneNumber, setPhoneNumber 
       <InputGroup className={`${styles.phoneInputContent}`}>
         <Row>
           {/* Area code */}
-          <Col xs="auto" className="pr-1">
+          <Col xs="auto" className={styles['pr-1']}>
             <Input
               type="select"
               value={areaCode}

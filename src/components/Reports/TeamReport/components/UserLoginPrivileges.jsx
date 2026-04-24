@@ -4,7 +4,7 @@ import TeamReportLogs from './TeamReportLogs';
 import TeamsReportLogs from './TeamsReportLogs';
 import TeamReportCharts from './TeamReportCharts';
 import TeamsReportCharts from './TeamsReportCharts';
-import './ReportCharts.css';
+import styles from './ReportCharts.module.css';
 
 function UserLoginPrivileges({
   role,
@@ -92,7 +92,7 @@ function UserLoginPrivileges({
 
   // Check if the user has admin privileges
   return (
-    <div className="team-report-main-info">
+    <div className={styles['team-report-main-info']}>
       <TeamReportLogs
         title={teamName}
         teamMembers={teamMembers}
@@ -110,7 +110,7 @@ function UserLoginPrivileges({
           gap: '16px',
         }}
       >
-        <ReportPage.ReportBlock className="team-chart-container" darkMode={darkMode}>
+        <ReportPage.ReportBlock className={styles['team-chart-container']} darkMode={darkMode}>
           <TeamReportCharts
             title="Breakdown of Weekly Hours So Far This Week"
             pieChartId="chart1"
@@ -129,13 +129,13 @@ function UserLoginPrivileges({
       />
       {/* Two cards with pie charts with data */}
       <div
-        className="mobile-chart"
+        className={styles['mobile-chart']}
         style={{
           display: 'flex',
           gap: '16px',
         }}
       >
-        <ReportPage.ReportBlock className="team-chart-container" darkMode={darkMode}>
+        <ReportPage.ReportBlock className={styles['team-chart-container']} darkMode={darkMode}>
           <TeamsReportCharts
             title="Weekly Committed Hours"
             pieChartId="chart2"
@@ -143,7 +143,7 @@ function UserLoginPrivileges({
             darkMode={darkMode}
           />
         </ReportPage.ReportBlock>
-        <ReportPage.ReportBlock className="team-chart-container" darkMode={darkMode}>
+        <ReportPage.ReportBlock className={styles['team-chart-container']} darkMode={darkMode}>
           <TeamsReportCharts
             title="Hours Worked In Current Week"
             pieChartId="chart3"

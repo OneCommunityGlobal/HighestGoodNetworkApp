@@ -5,7 +5,7 @@
 import { useState, useEffect, useRef } from 'react';
 import '../../Teams/Team.module.css';
 import 'react-datepicker/dist/react-datepicker.css';
-import './TasksTable.css';
+import styles from './TasksTable.module.css';
 import Select from 'react-select';
 import { Checkbox } from '~/components/common/Checkbox';
 import TextSearchBox from '~/components/UserManagement/TextSearchBox';
@@ -71,9 +71,9 @@ export function TasksTable({ darkMode, tasks, projectId }) {
   return (
     <div className={darkMode ? 'text-light' : ''}>
       <div>
-        <h4 className="tasks-table-header">Tasks</h4>
+        <h4 className={styles['tasks-table-header']}>Tasks</h4>
       </div>
-      <div className="tasks-table-filters-wrapper">
+      <div className={styles['tasks-table-filters-wrapper']}>
         <div className={`tasks-table-filters ${darkMode ? 'text-dark' : ''}`}>
           <Select
             ref={userRef}
@@ -106,7 +106,7 @@ export function TasksTable({ darkMode, tasks, projectId }) {
           />
           <TextSearchBox
             placeholder="Estimated hours"
-            className="tasks-table-text-search-box"
+            className={styles['tasks-table-text-search-box']}
             searchCallback={() => { }}
           />
           <Checkbox
@@ -127,7 +127,7 @@ export function TasksTable({ darkMode, tasks, projectId }) {
 
         <div className='d-flex'>
           <button
-            className="tasks-table-edit-tasks-button"
+            className={styles['tasks-table-edit-tasks-button']}
             onClick={() => setToggleEditTasks(!toggleEditTasks)}
             style={darkMode ? boxStyleDark : boxStyle}
           >
@@ -135,7 +135,7 @@ export function TasksTable({ darkMode, tasks, projectId }) {
           </button>
 
           <button
-            className="tasks-table-clear-filter-button"
+            className={styles['tasks-table-clear-filter-button']}
             onClick={() => resetAllFilters()}
             style={darkMode ? boxStyleDark : boxStyle}
           >

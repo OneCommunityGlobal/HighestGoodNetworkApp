@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './EHistory.module.css';
+import styles from './EHistory.module.css';
 import { fetchBMProjects } from '~/actions/bmdashboard/projectActions';
 import { fetchAllEquipments } from '~/actions/bmdashboard/equipmentActions';
 import { useDispatch, useSelector } from 'react-redux';
@@ -141,7 +141,7 @@ export default function EquipmentUpdateLog() {
           </div>
         </div>
 
-        <div className="table-responsive">
+        <div className={styles['table-responsive']}>
           <table
             className={`table ${
               darkMode ? 'equipment-table-dark ' : 'equipment-table'
@@ -186,7 +186,7 @@ export default function EquipmentUpdateLog() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={9} className="text-center">
+                  <td colSpan={9} className={styles['text-center']}>
                     {selectedProject?.value && selectedProject.value !== '0'
                       ? 'No equipment history records found for the selected project.'
                       : 'No equipment history records found. Please select a project to view history.'}

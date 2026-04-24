@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from '~/languages/en/messages';
 import { DayPicker } from 'react-day-picker';
-import 'react-day-picker/dist/style.css';
+import 'react-day-picker/dist/style.module.css';
 import dateFnsFormat from 'date-fns/format';
 import dateFnsParse from 'date-fns/parse';
 import parseISO from 'date-fns/parseISO';
@@ -19,7 +19,7 @@ import { toast } from 'react-toastify';
 import UserSearch from './UserSearch';
 import UserTag from './UserTag';
 import ReadOnlySectionWrapper from './ReadOnlySectionWrapper';
-import '../../../../Header/index.css';
+import '../../../../Header/index.module.css';
 import styles from '../wbs.module.css';
 import TagsSearch from '../components/TagsSearch';
 
@@ -491,7 +491,7 @@ function EditTaskModal(props) {
   }, [startedDate, dueDate]);
 
   return (
-    <div className="text-center">
+    <div className={styles['text-center']}>
       <Modal isOpen={modal} toggle={toggle} className={darkMode ? 'dark-mode text-light' : ''}>
         <ReactTooltip delayShow={300} />
         <ModalHeader toggle={toggle} className={darkMode ? 'bg-space-cadet' : ''}>
@@ -517,7 +517,7 @@ function EditTaskModal(props) {
               <tr>
                 {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td id="edit-modal-td" scope="col">
-                  Task Name<span className="red-asterisk">* </span>
+                  Task Name<span className={styles['red-asterisk']}>* </span>
                 </td>
                 <td id="edit-modal-td">
                   {ReadOnlySectionWrapper(
@@ -639,7 +639,7 @@ function EditTaskModal(props) {
                 <td id="edit-modal-td">
                   {ReadOnlySectionWrapper(
                     <div className="fd-flex  flex-column">
-                      <div className="d-flex">
+                      <div className={styles['d-flex']}>
                         {' '}
                         {/* Added: New div to group Active and Not Started */}
                         <div className="form-check form-check-inline mr-5 mw-4">
@@ -737,7 +737,7 @@ function EditTaskModal(props) {
                   Hours
                 </td>
                 {/* eslint-disable-next-line jsx-a11y/scope */}
-                <td id="edit-modal-td" scope="col" className="w-100">
+                <td id="edit-modal-td" scope="col" className={styles['w-100']}>
                   <div className="py-2 flex-responsive">
                     <label
                       htmlFor="bestCase"
@@ -764,7 +764,7 @@ function EditTaskModal(props) {
                       { componentOnly: true },
                     )}
                   </div>
-                    <div className="warning">
+                    <div className={styles.warning}>
                       {hoursWarning ? 'The number of hours must be less than other cases' : ''}
                     </div>
                   
@@ -793,7 +793,7 @@ function EditTaskModal(props) {
                       { componentOnly: true },
                     )}
                   </div>
-                    <div className="warning">
+                    <div className={styles.warning}>
                       {hoursWarning ? 'The number of hours must be higher than other cases' : ''}
                     </div>
                   
@@ -822,7 +822,7 @@ function EditTaskModal(props) {
                       { componentOnly: true },
                     )}
                   </div>
-                    <div className="warning">
+                    <div className={styles.warning}>
                       {hoursWarning
                         ? 'The number of hours must range between best and worst cases'
                         : ''}
@@ -854,7 +854,7 @@ function EditTaskModal(props) {
                   </div>
                 </td>
               </tr>
-              <tr className='text-break'>
+              <tr className={styles['text-break']}>
                 {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td id="edit-modal-td" scope="col">
                   Links
@@ -876,7 +876,7 @@ function EditTaskModal(props) {
                         disabled={!editable}
                       />
                       <button
-                        className="task-resouces-btn"
+                        className={styles['task-resouces-btn']}
                         type="button"
                         data-tip="Add Link"
                         onClick={addLink}
@@ -905,7 +905,7 @@ function EditTaskModal(props) {
                           )}
                           <a
                             href={link}
-                            className="task-link"
+                            className={styles['task-link']}
                             target="_blank"
                             data-tip={link}
                             rel="noreferrer"
@@ -1012,7 +1012,7 @@ function EditTaskModal(props) {
                 </td>
                 <td id="edit-modal-td">
                   {ReadOnlySectionWrapper(
-                    <div className="text-dark">
+                    <div className={styles['text-dark']}>
                       <DateInput
                         id="start-date-input"
                         ariaLabel="Start Date"
@@ -1041,7 +1041,7 @@ function EditTaskModal(props) {
                 </td>
                 <td id="edit-modal-td">
                   {ReadOnlySectionWrapper(
-                    <div className="text-dark">
+                    <div className={styles['text-dark']}>
                       <DateInput
                         id="end-date-input"
                         ariaLabel="End Date"

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import './TriMembersStateToggleSwitch.css';
+import styles from './TriMembersStateToggleSwitch.module.css';
 
 function TriMembersStateToggleSwitch({ onChange }) {
   const [position, setPosition] = useState('default');
@@ -31,7 +31,7 @@ function TriMembersStateToggleSwitch({ onChange }) {
 
   return (
     <div className={`toggle-switch bg-${bgColor}`}>
-      <div className="knob-area">
+      <div className={styles['knob-area']}>
         <div
           role="button"
           tabIndex={0}

@@ -180,7 +180,7 @@ export default function Warning({ personId, username, userRole, displayUser }) {
 
         {canEditWarning && (
           <Button
-            className="btn"
+            className={styles.btn}
             size="sm"
             onClick={() => setToggleWarningTrackerModal(prev => !prev)}
           >

@@ -6,7 +6,7 @@ import Select from 'react-select';
 import axios from 'axios';
 import ToolsHorizontalBarChart from './ToolsHorizontalBarChart';
 import { ENDPOINTS } from '../../../../utils/URL';
-import './ToolsAvailabilityPage.module.css';
+import styles from './ToolsAvailabilityPage.module.css';
 
 function ToolsAvailabilityPage() {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -107,17 +107,17 @@ function ToolsAvailabilityPage() {
   // Render project selection based on loading and error states
   const renderProjectSelection = () => {
     if (loading) {
-      return <div className="select-loading">Loading projects...</div>;
+      return <div className={styles['select-loading']}>Loading projects...</div>;
     }
 
     if (error) {
-      return <div className="select-error">{error}</div>;
+      return <div className={styles['select-error']}>{error}</div>;
     }
 
     return (
       <Select
         id="project-select"
-        className="project-select"
+        className={styles['project-select']}
         classNamePrefix="select"
         value={selectedProject}
         onChange={handleProjectChange}
@@ -162,19 +162,19 @@ function ToolsAvailabilityPage() {
       className={`tools-availability-page ${darkMode ? 'dark-mode' : ''}`}
       style={darkModeStyles}
     >
-      <div className="tools-availability-content" style={darkModeStyles}>
-        <div className="tools-chart-filters">
-          <div className="filter-group">
+      <div className={styles['tools-availability-content']} style={darkModeStyles}>
+        <div className={styles['tools-chart-filters']}>
+          <div className={styles['filter-group']}>
             <label htmlFor="project-select">Project</label>
             {renderProjectSelection()}
           </div>
-          <div className="filter-group">
+          <div className={styles['filter-group']}>
             <label htmlFor="tools-start-date">Date Range (Optional)</label>
-            <div className="date-picker-group">
+            <div className={styles['date-picker-group']}>
               <input
                 id="tools-start-date"
                 type="date"
-                className="date-picker"
+                className={styles['date-picker']}
                 value={startDate}
                 onChange={handleStartDateChange}
                 placeholder="Start date"
@@ -183,7 +183,7 @@ function ToolsAvailabilityPage() {
               <span>to</span>
               <input
                 type="date"
-                className="date-picker"
+                className={styles['date-picker']}
                 value={endDate}
                 onChange={handleEndDateChange}
                 placeholder="End date"
@@ -192,7 +192,7 @@ function ToolsAvailabilityPage() {
               {(startDate || endDate) && (
                 <button
                   type="button"
-                  className="clear-dates-btn"
+                  className={styles['clear-dates-btn']}
                   onClick={handleClearDates}
                   aria-label="Clear date filters"
                   title="Clear date filters"

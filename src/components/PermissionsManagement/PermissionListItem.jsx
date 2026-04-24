@@ -199,7 +199,7 @@ function PermissionListItem(props) {
           {label}
         </p>
         <div className={styles.iconButtonContainer}>
-          <div className="infos">
+          <div className={styles.infos}>
             <i
               data-toggle="tooltip"
               data-placement="center"
@@ -294,7 +294,7 @@ function PermissionListItem(props) {
         </ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>{modalContent}</ModalBody>
         <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-          <Button onClick={toggleInfoRoleModal} color="secondary" className="float-left">
+          <Button onClick={toggleInfoRoleModal} color="secondary" className={styles['float-left']}>
             {' '}
             Ok{' '}
           </Button>

@@ -191,7 +191,7 @@ function MasterPlan() {
           </div>
           <div className={`${styles.villageDetails}`}>
             {selectedVillage && (
-              <div className="village-details-content">
+              <div className={styles['village-details-content']}>
                 <h3>{selectedVillage.name}</h3>
                 <p>{selectedVillage.description}</p>
               </div>

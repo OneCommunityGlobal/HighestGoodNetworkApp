@@ -120,11 +120,11 @@ function AdditionalInfo() {
     <div className={`${styles.AdditionalInfoBox} ${darkMode ? 'dark-mode' : ''}`}>
       <div className={styles.workExpInfoBox}>
         <h3> Work Experience and Additional Info: </h3>
-        <button type="button" className="edit-button" onClick={handleEditSave}>
+        <button type="button" className={styles['edit-button']} onClick={handleEditSave}>
           {isEditing ? 'Save' : 'Edit'}
         </button>
       </div>
-      <hr className="horizontal-separator" />
+      <hr className={styles['horizontal-separator']} />
       {!!questions &&
         questions
           .slice(0, 3)

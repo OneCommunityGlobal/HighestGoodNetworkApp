@@ -37,8 +37,8 @@ import axios from 'axios';
 import { getUserProfile } from '~/actions/userProfile';
 import { useDispatch, useSelector } from 'react-redux';
 import { boxStyleDark } from '../../styles';
-import '../Header/index.css';
-import '../UserProfile/TeamsAndProjects/autoComplete.css';
+import '../Header/index.module.css';
+import '../UserProfile/TeamsAndProjects/autoComplete.module.css';
 import { ENDPOINTS } from '~/utils/URL';
 
 function useDeepEffect(effectFunc, deps) {
@@ -547,7 +547,7 @@ function LeaderBoard({
     <div>
       <h3>
         <div className="d-flex align-items-center">
-          <span className="mr-2">Leaderboard</span>
+          <span className={styles['mr-2']}>Leaderboard</span>
           <i
             data-toggle="tooltip"
             data-placement="right"
@@ -598,7 +598,7 @@ function LeaderBoard({
                     <div className='overflow-auto scrollAutoComplete border-bottom border-top border-light-subtle'
                      style={{ height: teams.length > 8? '30rem' : 'auto', width: '100%' }}
                      >
-                    <h5 className="text-center">My Teams</h5>
+                    <h5 className={styles['text-center']}>My Teams</h5>
 
                     {teams.map(team => {
                       return (
@@ -642,7 +642,7 @@ function LeaderBoard({
 
             {teams.length === 0 ? (
               <Link to="/teams">
-                <Button color="success" className="fw-bold" boxstyle={boxStyle}>
+                <Button color="success" className={styles['fw-bold']} boxstyle={boxStyle}>
                   Create Team
                 </Button>
               </Link>
@@ -701,14 +701,14 @@ function LeaderBoard({
               } ${isAbbreviatedView ? 'abbreviated-mode' : ''}`}
               style={{ width: '100%', tableLayout: isAbbreviatedView ? 'fixed' : 'auto' }}
             >
-              <thead className="responsive-font-size">
+              <thead className={styles['responsive-font-size']}>
                 <tr className={darkMode ? 'bg-space-cadet' : ''} style={darkModeStyle}>
                   <th style={darkModeStyle}>
                     <span>{isAbbreviatedView ? 'Stat.' : 'Status'}</span>
                   </th>
                   <th style={darkModeStyle}>
                     <div className="d-flex align-items-center">
-                      <span className="mr-2">{isAbbreviatedView ? 'Name' : 'Name'}</span>
+                      <span className={styles['mr-2']}>{isAbbreviatedView ? 'Name' : 'Name'}</span>
                       <span
                         style={{
                           position: 'relative',
@@ -723,7 +723,7 @@ function LeaderBoard({
                           fontSize={isAbbreviatedView ? 13 : 18}
                           isPermissionPage
                           darkMode={darkMode}
-                          className="p-2"
+                          className={styles['p-2']}
                         />
                       </span>
                     </div>
@@ -778,7 +778,7 @@ function LeaderBoard({
                   ) : (
                     <>
                       <td aria-label="Placeholder" />
-                      <td className="leaderboard-totals-container">
+                      <td className={styles['leaderboard-totals-container']}>
                         <span>{stateOrganizationData.name}</span>
                         <br />
                         {viewZeroHouraMembers(loggedInUser.role) && (
@@ -792,15 +792,15 @@ function LeaderBoard({
                     </>
                   )}
 
-                  <td className="align-middle" aria-label="Description" />
-                  <td className="align-middle">
+                  <td className={styles['align-middle']} aria-label="Description" />
+                  <td className={styles['align-middle']}>
                     <span title="Tangible time">
                       {filteredUsers
                         .reduce((total, user) => total + user.tangibletime, 0)
                         .toFixed(2)}
                     </span>
                   </td>
-                  <td className="align-middle" aria-label="Description">
+                  <td className={styles['align-middle']} aria-label="Description">
                     <Progress
                       title={`TangibleEffort: ${filteredUsers
                         .reduce((total, user) => total + user.tangibletime, 0)
@@ -816,7 +816,7 @@ function LeaderBoard({
                       color="primary"
                     />
                   </td>
-                  <td className="align-middle">
+                  <td className={styles['align-middle']}>
                     <span title="Tangible + Intangible time = Total time">
                       {filteredUsers
                         .reduce((total, user) => total + parseFloat(user.totaltime), 0)
@@ -843,7 +843,7 @@ function LeaderBoard({
                       key={item.personId}
                       className={darkMode ? 'dark-leaderboard-row' : 'light-leaderboard-row'}
                     >
-                      <td className="align-middle">
+                      <td className={styles['align-middle']}>
                         <div>
                           <Modal
                             isOpen={isDashboardOpen === item.personId}
@@ -950,7 +950,7 @@ function LeaderBoard({
                         </div>
                         {/* </Link> */}
                       </td>
-                      <td className="align-middle">
+                      <td className={styles['align-middle']}>
                         <Link
                           to={`/userprofile/${item.personId}`}
                           title="View Profile"
@@ -1039,12 +1039,12 @@ function LeaderBoard({
                           </span>
                         )}
                       </td>
-                      <td className="align-middle">
+                      <td className={styles['align-middle']}>
                         <span title={mouseoverTextValue} id="Days left" style={{ color: 'red' }}>
                           {displayDaysLeft(item.endDate)}
                         </span>
                       </td>
-                      <td className="align-middle">
+                      <td className={styles['align-middle']}>
                         <div
                           style={{
                             display: 'flex',
@@ -1071,7 +1071,7 @@ function LeaderBoard({
                                 width="22"
                                 height="19"
                                 viewBox="0 0 448 512"
-                                className="show-time-off-calender-svg"
+                                className={styles['show-time-off-calender-svg']}
                               >
                                 <path d="M128 0c17.7 0 32 14.3 32 32V64H288V32c0-17.7 14.3-32 32-32s32 14.3 32 32V64h48c26.5 0 48 21.5 48 48v48H0V112C0 85.5 21.5 64 48 64H96V32c0-17.7 14.3-32 32-32zM0 192H448V464c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V192zm64 80v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm128 0v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H208c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H336zM64 400v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H208zm112 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H336c-8.8 0-16 7.2-16 16z" />
                               </svg>
@@ -1079,10 +1079,10 @@ function LeaderBoard({
                           )}
                         </div>
                       </td>
-                      <td className="align-middle" id={`id${item.personId}`}>
+                      <td className={styles['align-middle']} id={`id${item.personId}`}>
                         <span title="Tangible time">{item.tangibletime}</span>
                       </td>
-                      <td className="align-middle" aria-label="Description or purpose of the cell">
+                      <td className={styles['align-middle']} aria-label="Description or purpose of the cell">
                         <Link
                           to={`/timelog/${item.personId}#currentWeek`}
                           title={`TangibleEffort: ${item.tangibletime} hours`}
@@ -1090,7 +1090,7 @@ function LeaderBoard({
                           <Progress value={item.barprogress} color={item.barcolor} />
                         </Link>
                       </td>
-                      <td className="align-middle">
+                      <td className={styles['align-middle']}>
                         <span
                           title={mouseoverTextValue}
                           id="Total time"

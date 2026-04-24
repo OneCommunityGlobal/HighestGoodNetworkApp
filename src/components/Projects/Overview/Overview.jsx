@@ -9,7 +9,7 @@ import styles from "./Overview.module.css"
 
 const Overview = props => {
   return (
-    <div className="projects__overview--top">
+    <div className={styles['projects__overview--top']}>
       <div className={`${styles["card_project"]} m-2`} id="card_project">
         <div className={`${styles["card-body"]} card-body`}>
           <h6 className={`${styles["card-text"]} card-text ml-3`}>

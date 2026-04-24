@@ -64,6 +64,7 @@
   font-size: 1.2rem;
   border: 2px solid #ddd;
   border-radius: 8px;
+
   /* overflow: hidden; */
   background-color: #fff;
   padding: 2rem;
@@ -71,7 +72,7 @@
 
 .reactCalendarDarkMode {
   background-color: #1b2a41;
-  color: #ffffff;
+  color: #fff;
   border: 1px solid #444;
 }
 
@@ -149,7 +150,7 @@
 .reactCalendar :global(.react-calendar__navigation) {
   background-color: #f9f9f9;
   border-bottom: 1px solid #ddd;
-  margin-bottom: 0px !important;
+  margin-bottom: 0 !important;
   
 }
 
@@ -169,9 +170,10 @@
   padding: 4px;
   color: #1a202c;
 }
+
 .reactCalendarDarkMode :global(.react-calendar__tile) {
   background: transparent;
-  color: #ffffff;
+  color: #fff;
 }
 
 .reactCalendar :global(.react-calendar__tile):hover {
@@ -196,16 +198,16 @@
 .reactCalendarDarkMode :global(.react-calendar__tile.selectedDate):hover {
   background-color: #1a2332 !important;
   border-color: #4a9eff;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .reactCalendarDarkMode :global(.react-calendar__tile.selectedDate):hover :global(abbr),
 .reactCalendarDarkMode :global(.react-calendar__tile.selectedDate):hover :global(span) {
-  color: #ffffff !important;
+  color: #fff !important;
   font-weight: 900 !important;
   font-size: 1.2em !important;
-  text-shadow: 0 0 8px rgba(255, 255, 255, 1), 0 0 10px rgba(255, 255, 255, 0.9),
-    0 2px 4px rgba(0, 0, 0, 1), 0 4px 8px rgba(0, 0, 0, 0.9) !important;
+  text-shadow: 0 0 8px rgb(255 255 255 / 100%), 0 0 10px rgb(255 255 255 / 90%),
+    0 2px 4px rgb(0 0 0 / 100%), 0 4px 8px rgb(0 0 0 / 90%) !important;
   filter: brightness(1.8) contrast(1.5) !important;
 }
 
@@ -243,7 +245,7 @@
 }
 
 .reactCalendarDarkMode :global(.react-calendar__tile.selectedDate) .tileEvents {
-  color: #ffffff;
+  color: #fff;
 }
 
 .reactCalendar :global(.eventItem) {
@@ -255,7 +257,6 @@
   border-radius: 3px;
   background-color: #e0f7fa;
   cursor: pointer;
-
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -263,7 +264,7 @@
 
 /* Ensure event items are readable in dark mode */
 .reactCalendarDarkMode .eventItem {
-  color: #ffffff;
+  color: #fff;
   font-weight: 600;
 }
 
@@ -311,7 +312,7 @@
 .reactCalendar .eventItem.clickable:hover {
   transform: scale(1.05) !important;
   z-index: 10;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
 }
 
 .moreEvents {
@@ -380,11 +381,11 @@
 }
 
 .reactCalendarDarkMode :global(.react-calendar__tile.hasEvents.selectedDate) :global(abbr) {
-  color: #ffffff !important;
+  color: #fff !important;
   font-weight: 900 !important;
   font-size: 1.1em !important;
-  text-shadow: 0 0 6px rgba(255, 255, 255, 1), 0 0 8px rgba(255, 255, 255, 0.8),
-    0 2px 4px rgba(0, 0, 0, 1), 0 4px 8px rgba(0, 0, 0, 0.8) !important;
+  text-shadow: 0 0 6px rgb(255 255 255 / 100%), 0 0 8px rgb(255 255 255 / 80%),
+    0 2px 4px rgb(0 0 0 / 100%), 0 4px 8px rgb(0 0 0 / 80%) !important;
   filter: brightness(1.5) contrast(1.3) !important;
 }
 
@@ -441,9 +442,9 @@
 .selectedEventCard {
   border: 1px solid #e2e8f0;
   border-radius: 12px;
-  background-color: #ffffff;
+  background-color: #fff;
   padding: 16px 20px;
-  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 4px 16px rgb(15 23 42 / 6%);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -451,12 +452,12 @@
   background-color: #1f2937;
   border-color: #374151;
   color: #f9fafb;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 16px rgb(0 0 0 / 40%);
 }
 
 .selectedEventCardActive {
   border-color: #3182ce;
-  box-shadow: 0 6px 20px rgba(49, 130, 206, 0.2);
+  box-shadow: 0 6px 20px rgb(49 130 206 / 20%);
 }
 
 .selectedEventHeader {
@@ -491,7 +492,7 @@
 .eventDetailButton {
   border: none;
   background-color: #1e40af;
-  color: #ffffff;
+  color: #fff;
   padding: 8px 14px;
   border-radius: 6px;
   font-size: 0.85rem;
@@ -543,10 +544,10 @@
   margin-bottom: 5px;
   width: 220px;
   padding: 10px;
-  background-color: #ffffff;
+  background-color: #fff;
   border: 1px solid #ccc;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
   z-index: 10;
   pointer-events: none;
   display: flex;
@@ -559,11 +560,11 @@
   background-color: #1a202c;
   color: #f7fafc;
   border: 1px solid #4a5568;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 6px 18px rgb(0 0 0 / 60%);
 }
 
 .eventTooltipDark strong {
-  color: #ffffff;
+  color: #fff;
 }
 
 .eventTooltipDark small {
@@ -577,11 +578,8 @@
 /* Event Modal Styles */
 .eventModalOverlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  inset: 0;
+  background-color: rgb(0 0 0 / 50%);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -593,6 +591,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -601,7 +600,7 @@
 .eventModal {
   background: white;
   border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 40px rgb(0 0 0 / 20%);
   max-width: 500px;
   width: 90%;
   max-height: 80vh;
@@ -616,6 +615,7 @@
     opacity: 0;
     transform: translateY(-20px) scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -650,7 +650,7 @@
 }
 
 .eventModalDark .modalHeader h2 {
-  color: #ffffff;
+  color: #fff;
 }
 
 .modalClose {
@@ -680,12 +680,13 @@
 
 .eventModalDark .modalClose:hover {
   background-color: #4a5568;
-  color: #ffffff;
+  color: #fff;
 }
 
 .modalContent {
   padding: 20px 24px;
 }
+
 .eventModalDark .modalContent {
   background: #1a202c;
 }
@@ -736,7 +737,7 @@
 }
 
 .eventModalDark .detailItem span {
-  color: #ffffff;
+  color: #fff;
 }
 
 .eventDescription {
@@ -816,7 +817,7 @@
 
 .eventModalDark .btnSecondary {
   background-color: #4a5568;
-  color: #ffffff;
+  color: #fff;
   border-color: #718096;
 }
 
@@ -825,18 +826,21 @@
   transform: translateY(-1px);
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .eventModal {
     width: 95%;
     max-height: 90vh;
   }
+
   .eventDetailsGrid {
     grid-template-columns: 1fr;
     gap: 12px;
   }
+
   .modalActions {
     flex-direction: column;
   }
+
   .btnPrimary,
   .btnSecondary {
     width: 100%;
@@ -930,12 +934,12 @@
 
 /* Override for selected date - must be pure white with maximum visibility */
 .reactCalendarDarkMode :global(.react-calendar__tile.selectedDate) :global(abbr) {
-  color: #ffffff !important;
+  color: #fff !important;
   font-weight: 900 !important;
   font-size: 1.1em !important;
-  text-shadow: 0 0 6px rgba(255, 255, 255, 1), 0 0 8px rgba(255, 255, 255, 0.8),
-    0 2px 4px rgba(0, 0, 0, 1), 0 4px 8px rgba(0, 0, 0, 0.8) !important;
-  -webkit-text-stroke: 0.5px rgba(255, 255, 255, 1);
+  text-shadow: 0 0 6px rgb(255 255 255 / 100%), 0 0 8px rgb(255 255 255 / 80%),
+    0 2px 4px rgb(0 0 0 / 100%), 0 4px 8px rgb(0 0 0 / 80%) !important;
+  -webkit-text-stroke: 0.5px rgb(255 255 255 / 100%);
   filter: brightness(1.5) contrast(1.3) !important;
   background-color: #0f172a !important;
   padding: 2px 4px;
@@ -955,24 +959,25 @@
 .reactCalendarDarkMode :global(.react-calendar__tile--active.selectedDate),
 .reactCalendarDarkMode :global(.react-calendar__tile.selectedDate.react-calendar__tile--active) {
   background-color: #1a2332 !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .reactCalendarDarkMode :global(.react-calendar__tile--active.selectedDate) :global(abbr),
 .reactCalendarDarkMode
   :global(.react-calendar__tile.selectedDate.react-calendar__tile--active)
   :global(abbr) {
-  color: #ffffff !important;
+  color: #fff !important;
   font-weight: 900 !important;
   font-size: 1.2em !important;
-  text-shadow: 0 0 8px rgba(255, 255, 255, 1), 0 0 10px rgba(255, 255, 255, 0.9),
-    0 2px 4px rgba(0, 0, 0, 1), 0 4px 8px rgba(0, 0, 0, 0.9) !important;
+  text-shadow: 0 0 8px rgb(255 255 255 / 100%), 0 0 10px rgb(255 255 255 / 90%),
+    0 2px 4px rgb(0 0 0 / 100%), 0 4px 8px rgb(0 0 0 / 90%) !important;
   filter: brightness(1.8) contrast(1.5) !important;
 }
 
 .reactCalendarDarkMode :global(.react-calendar__tile--now) :global(abbr) {
   color: #fff !important;
 }
+
 .reactCalendarDarkMode :global(.react-calendar__navigation__label) {
   color: #fff;
 }
@@ -1029,12 +1034,12 @@
 .reactCalendarDarkMode.reactCalendar :global(.react-calendar__tile.selectedDate) :global(abbr),
 .reactCalendarDarkMode :global(.react-calendar__tile.selectedDate abbr),
 .reactCalendarDarkMode :global(.react-calendar__tile.selectedDate span) {
-  color: #ffffff !important;
+  color: #fff !important;
   font-weight: 900 !important;
   font-size: 1.2em !important;
-  text-shadow: 0 0 8px rgba(255, 255, 255, 1), 0 0 10px rgba(255, 255, 255, 0.9),
-    0 2px 4px rgba(0, 0, 0, 1), 0 4px 8px rgba(0, 0, 0, 0.9) !important;
-  -webkit-text-stroke: 0.6px rgba(255, 255, 255, 1);
+  text-shadow: 0 0 8px rgb(255 255 255 / 100%), 0 0 10px rgb(255 255 255 / 90%),
+    0 2px 4px rgb(0 0 0 / 100%), 0 4px 8px rgb(0 0 0 / 90%) !important;
+  -webkit-text-stroke: 0.6px rgb(255 255 255 / 100%);
   filter: brightness(1.8) contrast(1.5) !important;
 }
 
@@ -1042,11 +1047,11 @@
 .reactCalendarDarkMode :global(.react-calendar__tile.selectedDate) :global(abbr),
 .reactCalendarDarkMode :global(.react-calendar__tile.selectedDate) :global(button),
 .reactCalendarDarkMode :global(.react-calendar__tile.selectedDate) :global(div) {
-  color: #ffffff !important;
+  color: #fff !important;
   font-weight: 900 !important;
   font-size: 1.2em !important;
-  text-shadow: 0 0 8px rgba(255, 255, 255, 1), 0 0 10px rgba(255, 255, 255, 0.9),
-    0 2px 4px rgba(0, 0, 0, 1), 0 4px 8px rgba(0, 0, 0, 0.9) !important;
+  text-shadow: 0 0 8px rgb(255 255 255 / 100%), 0 0 10px rgb(255 255 255 / 90%),
+    0 2px 4px rgb(0 0 0 / 100%), 0 4px 8px rgb(0 0 0 / 90%) !important;
   filter: brightness(1.8) contrast(1.5) !important;
 }
 
@@ -1055,11 +1060,11 @@
 .reactCalendarDarkMode :global(.react-calendar__tile.selectedDate):hover,
 .reactCalendarDarkMode :global(.react-calendar__tile.selectedDate):hover :global(span),
 .reactCalendarDarkMode :global(.react-calendar__tile.selectedDate):hover :global(*) {
-  color: #ffffff !important;
+  color: #fff !important;
   font-weight: 900 !important;
   background-color: #0f1f3a !important;
-  text-shadow: 0 0 6px rgba(255, 255, 255, 1), 0 0 8px rgba(255, 255, 255, 0.8),
-    0 2px 4px rgba(0, 0, 0, 1), 0 4px 8px rgba(0, 0, 0, 0.8) !important;
+  text-shadow: 0 0 6px rgb(255 255 255 / 100%), 0 0 8px rgb(255 255 255 / 80%),
+    0 2px 4px rgb(0 0 0 / 100%), 0 4px 8px rgb(0 0 0 / 80%) !important;
   filter: brightness(1.5) contrast(1.3) !important;
 }
 
@@ -1074,7 +1079,7 @@
   left: 50%;
   transform: translate(-50%, -50%);
   background: white;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 20px rgb(0 0 0 / 30%);
   border-radius: 10px;
   z-index: 1500;
   width: 400px;
@@ -1121,6 +1126,7 @@
 .overflowPopup .eventItem:hover {
   transform: translateY(-1px);
 }
+
 .detailLabel {
   font-size: 0.8rem;
   font-weight: 600;
@@ -1133,7 +1139,7 @@
 
 
 
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
   .calendarContainer{
     flex-direction: column;
   } 

@@ -91,7 +91,7 @@ function ProjectTeams() {
 
   return (
     <Container fluid className={styles['project-details']}>
-      <Row className="mb-4">
+      <Row className={styles['mb-4']}>
         <Col>
           <Button
             color="secondary"
@@ -103,11 +103,11 @@ function ProjectTeams() {
         </Col>
       </Row>
 
-      <Row className="justify-content-center">
+      <Row className={styles['justify-content-center']}>
         <Col xs="12" lg="10">
-          <h2 className="mb-4">Teams working on {currProject.name}</h2>
+          <h2 className={styles['mb-4']}>Teams working on {currProject.name}</h2>
 
-          <div className="table-responsive">
+          <div className={styles['table-responsive']}>
             <Table hover>
               <thead className={darkMode ? styles['dark-table-header'] : ''}>
                 <tr>
@@ -125,9 +125,9 @@ function ProjectTeams() {
                       </td>
                       <td>
                         {team.isActive ? (
-                          <span className="text-success">Active</span>
+                          <span className={styles['text-success']}>Active</span>
                         ) : (
-                          <span className="text-muted">Inactive</span>
+                          <span className={styles['text-muted']}>Inactive</span>
                         )}
                       </td>
                       <td>
@@ -140,7 +140,7 @@ function ProjectTeams() {
                 ) : (
                   <tr>
                     <td colSpan="3" className="text-center p-4">
-                      <h6 className="text-muted">
+                      <h6 className={styles['text-muted']}>
                         No active teams are currently assigned to this building.
                       </h6>
                     </td>

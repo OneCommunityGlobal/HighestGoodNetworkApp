@@ -113,7 +113,7 @@ function RequestResources() {
 
         <div className={styles.formGroup}>
           <label htmlFor="organizerPhone">Organizer Phone Number</label>
-          <div className="phone-input">
+          <div className={styles['phone-input']}>
             <input
               type="text"
               id="countryCode"

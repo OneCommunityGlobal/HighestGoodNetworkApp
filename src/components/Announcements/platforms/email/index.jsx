@@ -159,7 +159,7 @@ export default function EmailPanel({ title, initialEmail }) {
             }}
           />
         )}
-        <div className="send-buttons" style={{ marginTop: '1rem' }}>
+        <div className={styles['send-buttons']} style={{ marginTop: '1rem' }}>
           <button type="button" onClick={handleBroadcastEmails} className={styles.sendButton}>
             Broadcast Weekly Update
           </button>
@@ -172,7 +172,7 @@ export default function EmailPanel({ title, initialEmail }) {
           style={darkMode ? boxStyleDark : boxStyle}
         >
           <label htmlFor="email-list-input" className={darkMode ? 'text-light' : 'text-dark'}>
-            Email List (comma-separated)<span className="red-asterisk">* </span>:
+            Email List (comma-separated)<span className={styles['red-asterisk']}>* </span>:
           </label>
           <input
             type="text"

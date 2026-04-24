@@ -12,7 +12,7 @@ import AddTeamsAutoComplete from './AddTeamsAutoComplete';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import '../../Header/index.css';
+import '../../Header/index.module.css';
 import { postNewTeam, getAllUserTeams } from '../../../../src/actions/allTeamsAction';
 import axios, { CancelToken } from 'axios';
 

@@ -8,7 +8,7 @@ import {
   fetchAllReusables,
 } from '~/actions/bmdashboard/reusableActions';
 import { toast } from 'react-toastify';
-import './UpdateReusable.module.css';
+import styles from './UpdateReusable.module.css';
 
 function UpdateReusable({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
   const dispatch = useDispatch();
@@ -175,7 +175,7 @@ function UpdateReusable({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
             onKeyDown={handleKeyDown}
           />
           {validations.quantityUsed !== '' && (
-            <div className="reusableFormTableError">{validations.quantityUsed}</div>
+            <div className={styles.reusableFormTableError}>{validations.quantityUsed}</div>
           )}
         </td>
         <td>
@@ -202,7 +202,7 @@ function UpdateReusable({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
             onKeyDown={handleKeyDown}
           />
           {validations.quantityWasted !== '' && (
-            <div className="reusableFormTableError">{validations.quantityWasted}</div>
+            <div className={styles.reusableFormTableError}>{validations.quantityWasted}</div>
           )}
         </td>
         <td>
@@ -224,40 +224,40 @@ function UpdateReusable({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
         </td>
       </tr>
       <tr>
-        <td colSpan={7} className="reusableFormTableError">
+        <td colSpan={7} className={styles.reusableFormTableError}>
           {validations.quantityTogether}
         </td>
       </tr>
     </>
   ) : (
-    <Container fluid className="updateReusableContainer">
-      <div className="updateReusablePage">
-        <div className="updateReusable">
+    <Container fluid className={styles.updateReusableContainer}>
+      <div className={styles.updateReusablePage}>
+        <div className={styles.updateReusable}>
           <Form>
-            {/* <img className="reusableImage" alt='reusableImage' src={riversand} /> */}
+            {/* <img className={styles.reusableImage} alt='reusableImage' src={riversand} /> */}
             <FormGroup row className="align-items-center justify-content-start">
-              <Label for="updateReusableName" sm={4} className="reusableFormLabel">
+              <Label for="updateReusableName" sm={4} className={styles.reusableFormLabel}>
                 Reusable
               </Label>
-              <Col sm={6} className="reusableFormValue">
+              <Col sm={6} className={styles.reusableFormValue}>
                 <b>{record?.itemType?.name}</b>
               </Col>
             </FormGroup>
 
-            <FormGroup row className="align-items-center">
-              <Label for="updateReusableProject" sm={4} className="reusableFormLabel">
+            <FormGroup row className={styles['align-items-center']}>
+              <Label for="updateReusableProject" sm={4} className={styles.reusableFormLabel}>
                 Project Name
               </Label>
-              <Col sm={8} className="reusableFormValue">
+              <Col sm={8} className={styles.reusableFormValue}>
                 {record?.project.name}
               </Col>
             </FormGroup>
 
             <FormGroup row className="align-items-center justify-content-start">
-              <Label for="updateReusableDate" sm={4} className="reusableFormLabel">
+              <Label for="updateReusableDate" sm={4} className={styles.reusableFormLabel}>
                 Date
               </Label>
-              <Col sm={6} className="reusableFormValue">
+              <Col sm={6} className={styles.reusableFormValue}>
                 <Input
                   id="updateReusableDate"
                   name="date"
@@ -269,20 +269,20 @@ function UpdateReusable({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
             </FormGroup>
 
             <FormGroup row className="align-items-center justify-content-start">
-              <Label for="updateReusableUnit" sm={4} className="reusableFormLabel">
+              <Label for="updateReusableUnit" sm={4} className={styles.reusableFormLabel}>
                 Available
               </Label>
-              <Col sm={6} className="reusableFormValue">
+              <Col sm={6} className={styles.reusableFormValue}>
                 {record?.stockAvailable}
               </Col>
             </FormGroup>
 
             {updateRecord.newAvailable !== undefined && (
               <FormGroup row className="align-items-center justify-content-start">
-                <Label for="updateReusableUnit" sm={4} className="reusableFormLabel">
+                <Label for="updateReusableUnit" sm={4} className={styles.reusableFormLabel}>
                   New Available
                 </Label>
-                <Col sm={6} className="reusableFormValue">
+                <Col sm={6} className={styles.reusableFormValue}>
                   <span
                     className={updateRecord.newAvailable < 0 ? 'reusableFormErrorClr' : undefined}
                   >
@@ -293,10 +293,10 @@ function UpdateReusable({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
             )}
 
             <FormGroup row>
-              <Label for="updateReusableQuantityUsed" sm={4} className="reusableFormLabel">
+              <Label for="updateReusableQuantityUsed" sm={4} className={styles.reusableFormLabel}>
                 Quantity Used
               </Label>
-              <Col sm={4} className="reusableFormValue">
+              <Col sm={4} className={styles.reusableFormValue}>
                 <Input
                   id="updateReusableQuantityUsed"
                   name="quantityUsed"
@@ -307,7 +307,7 @@ function UpdateReusable({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
                   min={0}
                 />
               </Col>
-              <Col sm={{ size: 4 }} className="reusableFormValue">
+              <Col sm={{ size: 4 }} className={styles.reusableFormValue}>
                 <Input
                   id="updateReusableQtyUsedLogUnitSelect"
                   name="QtyUsedLogUnit"
@@ -321,16 +321,16 @@ function UpdateReusable({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
               </Col>
 
               {validations.quantityUsed !== '' && (
-                <Label for="updateReusableQuantityUsedError" sm={12} className="reusableFormError">
+                <Label for="updateReusableQuantityUsedError" sm={12} className={styles.reusableFormError}>
                   {validations.quantityUsed}
                 </Label>
               )}
             </FormGroup>
             <FormGroup row>
-              <Label for="updateReusablequantityWasted" sm={4} className="reusableFormLabel">
+              <Label for="updateReusablequantityWasted" sm={4} className={styles.reusableFormLabel}>
                 Quantity Wasted
               </Label>
-              <Col sm={4} className="reusableFormValue">
+              <Col sm={4} className={styles.reusableFormValue}>
                 <Input
                   id="updateReusablequantityWasted"
                   name="quantityWasted"
@@ -341,7 +341,7 @@ function UpdateReusable({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
                   min={0}
                 />
               </Col>
-              <Col sm={{ size: 4 }} className="reusableFormValue">
+              <Col sm={{ size: 4 }} className={styles.reusableFormValue}>
                 <Input
                   id="updateReusableQtyWastedLogUnitSelect"
                   name="QtyWastedLogUnit"
@@ -357,7 +357,7 @@ function UpdateReusable({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
                 <Label
                   for="updateReusableQuantityWastedError"
                   sm={12}
-                  className="reusableFormError"
+                  className={styles.reusableFormError}
                 >
                   {validations.quantityWasted}
                 </Label>
@@ -369,7 +369,7 @@ function UpdateReusable({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
                 <Label
                   for="updateReusableQuantityTogetherError"
                   sm={12}
-                  className="reusableFormError"
+                  className={styles.reusableFormError}
                 >
                   {validations.quantityTogether}
                 </Label>
@@ -379,7 +379,7 @@ function UpdateReusable({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
             <FormGroup row className="d-flex justify-content-right">
               <Button
                 disabled={postReusableUpdateResult.loading || updateRecord.newAvailable < 0}
-                className="reusableButtonBg"
+                className={styles.reusableButtonBg}
                 onClick={e => submitHandler(e)}
               >
                 Update Reusable

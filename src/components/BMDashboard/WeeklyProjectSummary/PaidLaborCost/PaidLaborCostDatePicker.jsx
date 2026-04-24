@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Info } from 'lucide-react';
 import { format, startOfDay, isAfter, isBefore, isEqual } from 'date-fns';
-import './PaidLaborCost.module.css';
+import styles from './PaidLaborCost.module.css';
 
 function PaidLaborCostDatePicker({
   startDate,
@@ -154,32 +154,32 @@ function PaidLaborCostDatePicker({
   return (
     <div ref={wrapperRef} className={`paid-labor-cost-custom-date-range-picker ${className}`}>
       {/* Input + Info */}
-      <div className="paid-labor-cost-input-wrapper">
+      <div className={styles['paid-labor-cost-input-wrapper']}>
         <button
           type="button"
-          className="paid-labor-cost-date-range-input"
+          className={styles['paid-labor-cost-date-range-input']}
           onClick={e => {
             e.stopPropagation();
             setIsOpen(o => !o);
           }}
         >
-          <div className="paid-labor-cost-date-range-text">{formatDisplayDate()}</div>
-          <div className="paid-labor-cost-date-range-icon">📅</div>
+          <div className={styles['paid-labor-cost-date-range-text']}>{formatDisplayDate()}</div>
+          <div className={styles['paid-labor-cost-date-range-icon']}>📅</div>
         </button>
         <div
-          className="paid-labor-cost-info-wrapper"
+          className={styles['paid-labor-cost-info-wrapper']}
           onMouseEnter={() => setShowInfo(true)}
           onMouseLeave={() => setShowInfo(false)}
         >
           <button
             type="button"
-            className="paid-labor-cost-info-button"
+            className={styles['paid-labor-cost-info-button']}
             aria-label="Date picker info"
           >
             <Info size={16} />
           </button>
           {showInfo && (
-            <div className="paid-labor-cost-info-tooltip">
+            <div className={styles['paid-labor-cost-info-tooltip']}>
               <p>
                 <strong>Date Range Picker</strong>
               </p>
@@ -197,35 +197,35 @@ function PaidLaborCostDatePicker({
       {/* Calendar */}
       {isOpen && (
         <div
-          className="paid-labor-cost-date-range-calendar"
+          className={styles['paid-labor-cost-date-range-calendar']}
           role="presentation"
           onMouseLeave={handleMouseLeave}
           onClick={e => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="paid-labor-cost-calendar-header">
-            <button type="button" className="paid-labor-cost-month-nav" onClick={prevMonth}>
+          <div className={styles['paid-labor-cost-calendar-header']}>
+            <button type="button" className={styles['paid-labor-cost-month-nav']} onClick={prevMonth}>
               &lt;
             </button>
-            <div className="paid-labor-cost-current-month">
+            <div className={styles['paid-labor-cost-current-month']}>
               {format(calendarMonth, 'MMMM yyyy')}
             </div>
-            <button type="button" className="paid-labor-cost-month-nav" onClick={nextMonth}>
+            <button type="button" className={styles['paid-labor-cost-month-nav']} onClick={nextMonth}>
               &gt;
             </button>
           </div>
 
           {/* Weekdays */}
-          <div className="paid-labor-cost-calendar-weekdays">
+          <div className={styles['paid-labor-cost-calendar-weekdays']}>
             {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => (
-              <div key={d} className="paid-labor-cost-weekday">
+              <div key={d} className={styles['paid-labor-cost-weekday']}>
                 {d}
               </div>
             ))}
           </div>
 
           {/* Days grid */}
-          <div className="paid-labor-cost-calendar-days">
+          <div className={styles['paid-labor-cost-calendar-days']}>
             {calendarDays.map(date => {
               const isCurrMonth = date.getMonth() === calendarMonth.getMonth();
               const isStart = tempStartDate && isEqual(startOfDay(date), startOfDay(tempStartDate));
@@ -258,10 +258,10 @@ function PaidLaborCostDatePicker({
           </div>
 
           {/* Footer */}
-          <div className="paid-labor-cost-calendar-footer">
+          <div className={styles['paid-labor-cost-calendar-footer']}>
             <button
               type="button"
-              className="paid-labor-cost-reset-button"
+              className={styles['paid-labor-cost-reset-button']}
               onClick={() => {
                 setTempStartDate(null);
                 setTempEndDate(null);
@@ -272,7 +272,7 @@ function PaidLaborCostDatePicker({
             >
               Reset
             </button>
-            <div className="paid-labor-cost-selection-text">
+            <div className={styles['paid-labor-cost-selection-text']}>
               {selectionStage === 'START_DATE' ? 'Select start date' : 'Select end date'}
             </div>
           </div>

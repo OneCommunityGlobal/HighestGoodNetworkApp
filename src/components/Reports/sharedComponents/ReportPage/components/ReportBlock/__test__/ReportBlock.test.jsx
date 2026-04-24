@@ -11,7 +11,7 @@ describe('ReportBlock component', () => {
   });
 
   it('applies custom class names correctly', () => {
-    render(<ReportBlock className="custom-class" />);
+    render(<ReportBlock className={styles['custom-class']} />);
     const wrapper = screen.getByTestId('report-block-wrapper');
     expect(wrapper).toHaveClass(`${styles['report-block-wrapper']} custom-class`);
   });

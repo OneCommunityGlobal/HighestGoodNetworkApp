@@ -8,9 +8,9 @@ import {
   deleteTask,
   deleteChildrenTasks,
 } from '../../../../../actions/task.js';
-import './tagcolor.css';
-import styles from './task.module.css';
-import '../../../../Header/index.css'
+import styles from './tagcolor.module.css';
+import styles2 from './task.module.css';
+import '../../../../Header/index.module.css'
 import { Editor } from '@tinymce/tinymce-react';
 import { getPopupById } from './../../../../../actions/popupEditorAction';
 import { boxStyle, boxStyleDark } from '~/styles';
@@ -198,7 +198,7 @@ function Task(props) {
                   alignItems: 'center'
                 }}
               >
-                <span className="action-edit-btn">EDIT</span>
+                <span className={styles['action-edit-btn']}>EDIT</span>
                 {controllerRow ? <BsFillCaretUpFill /> : <BsFillCaretDownFill />}
               </Button>
             </td>

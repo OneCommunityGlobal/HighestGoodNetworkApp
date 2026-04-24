@@ -17,7 +17,7 @@ import {
  
 import Member from './Member';
 import FoundUser from './FoundUser';
-import './members.css';
+import styles from './members.module.css';
 import hasPermission from '~/utils/permissions';
 import { boxStyle, boxStyleDark } from '~/styles';
 import ToggleSwitch from '~/components/UserProfile/UserProfileEdit/ToggleSwitch';
@@ -131,7 +131,7 @@ const Members = props => {
     <React.Fragment>
       <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: "100%" }}>
         <div className={`container pt-2 ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
-          <nav aria-label="breadcrumb" className="w-100">
+          <nav aria-label="breadcrumb" className={styles['w-100']}>
             <div
               className={`d-flex align-items-center justify-content-center breadcrumb ${darkMode ? 'bg-space-cadet' : ''}`}
               style={{
@@ -176,8 +176,8 @@ const Members = props => {
 
           </nav>
           {canAssignProjectToUsers ? (
-            <div className="input-group" id="new_project">
-              <div className="input-group-prepend">
+            <div className={styles['input-group']} id="new_project">
+              <div className={styles['input-group-prepend']}>
                 <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>Find user</span>
               </div>
 
@@ -198,7 +198,7 @@ const Members = props => {
                 }}
               // disabled={showActiveMembersOnly}
               />
-              <div className="input-group-append">
+              <div className={styles['input-group-append']}>
                 <button
                   className="btn btn-primary"
                   type="button"

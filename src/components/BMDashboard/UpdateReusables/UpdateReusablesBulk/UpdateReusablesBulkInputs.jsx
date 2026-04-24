@@ -34,7 +34,7 @@ function UpdateReusablesBulkInputs({ date, setDate, project, setProject }) {
   };
 
   return (
-    <div className="container">
+    <div className={styles.container}>
       <Form>
         <Row className={`align-items-center ${styles.logReusableInputRow}`}>
           <Col lg={6} md={12} className={`${styles.logReusableInputCol}`}>

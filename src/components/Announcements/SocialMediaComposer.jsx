@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import CharacterCounter from './CharacterCounter';
 import ConfirmationModal from './ConfirmationModal';
-import './SocialMediaComposer.module.css';
+import styles from './SocialMediaComposer.module.css';
 
 const PREFS_KEY = 'mastodon_composer_prefs';
 
@@ -463,10 +463,10 @@ export default function SocialMediaComposer({ platform }) {
   };
 
   return (
-    <div className="social-media-composer">
-      <h3 className="platform-title">{platform}</h3>
+    <div className={styles['social-media-composer']}>
+      <h3 className={styles['platform-title']}>{platform}</h3>
 
-      <div className="tabs-container">
+      <div className={styles['tabs-container']}>
         {tabOrder.map(({ id, label }) => (
           <button
             key={id}
@@ -479,11 +479,11 @@ export default function SocialMediaComposer({ platform }) {
       </div>
 
       {activeSubTab === 'composer' && (
-        <div className="composer-content">
+        <div className={styles['composer-content']}>
           {editingPostId && (
-            <div className="edit-banner">
+            <div className={styles['edit-banner']}>
               <span>✏️ Editing scheduled post</span>
-              <button type="button" onClick={handleCancelEdit} className="btn-cancel-edit">
+              <button type="button" onClick={handleCancelEdit} className={styles['btn-cancel-edit']}>
                 Cancel Edit
               </button>
             </div>
@@ -493,12 +493,12 @@ export default function SocialMediaComposer({ platform }) {
             value={postContent}
             onChange={e => setPostContent(e.target.value)}
             placeholder={`Write your ${platform} post here...`}
-            className="post-textarea"
+            className={styles['post-textarea']}
           />
           <CharacterCounter currentLength={postContent.length} maxLength={charLimit} />
 
-          <div className="upload-section">
-            <label htmlFor="image-upload" className="section-label">
+          <div className={styles['upload-section']}>
+            <label htmlFor="image-upload" className={styles['section-label']}>
               Add Image (optional):
             </label>
             <input
@@ -506,23 +506,23 @@ export default function SocialMediaComposer({ platform }) {
               type="file"
               accept="image/*"
               onChange={handleImageUpload}
-              className="file-input"
+              className={styles['file-input']}
             />
             {uploadedImage && (
               <div>
-                <div className="image-preview-container">
-                  <img src={uploadedImage.preview} alt="Upload preview" className="image-preview" />
+                <div className={styles['image-preview-container']}>
+                  <img src={uploadedImage.preview} alt="Upload preview" className={styles['image-preview']} />
                   <button
                     type="button"
                     onClick={handleRemoveImage}
-                    className="remove-image-btn"
+                    className={styles['remove-image-btn']}
                     title="Remove image"
                   >
                     ✕
                   </button>
                 </div>
-                <div className="alt-text-section">
-                  <label htmlFor="alt-text" className="section-label">
+                <div className={styles['alt-text-section']}>
+                  <label htmlFor="alt-text" className={styles['section-label']}>
                     Alt Text (for accessibility):
                   </label>
                   <input
@@ -531,7 +531,7 @@ export default function SocialMediaComposer({ platform }) {
                     value={imageAltText}
                     onChange={e => setImageAltText(e.target.value)}
                     placeholder="Describe the image for screen readers..."
-                    className="alt-text-input"
+                    className={styles['alt-text-input']}
                     maxLength={1500}
                   />
                   <div style={{ fontSize: '0.75rem', color: '#666', marginTop: '0.25rem' }}>
@@ -542,29 +542,29 @@ export default function SocialMediaComposer({ platform }) {
             )}
           </div>
 
-          <div className="schedule-section">
-            <label htmlFor="schedule-date" className="section-label">
+          <div className={styles['schedule-section']}>
+            <label htmlFor="schedule-date" className={styles['section-label']}>
               Schedule for later (optional):
             </label>
-            <div className="datetime-inputs">
+            <div className={styles['datetime-inputs']}>
               <input
                 id="schedule-date"
                 type="date"
                 value={scheduleDate}
                 onChange={e => setScheduleDate(e.target.value)}
-                className="datetime-input"
+                className={styles['datetime-input']}
               />
               <input
                 id="schedule-time"
                 type="time"
                 value={scheduleTime}
                 onChange={e => setScheduleTime(e.target.value)}
-                className="datetime-input"
+                className={styles['datetime-input']}
               />
             </div>
           </div>
 
-          <div className="action-buttons">
+          <div className={styles['action-buttons']}>
             <button
               type="button"
               onClick={handleShowPreview}
@@ -596,7 +596,7 @@ export default function SocialMediaComposer({ platform }) {
                 : 'Schedule Post'}
             </button>
 
-            <div className="crosspost-container">
+            <div className={styles['crosspost-container']}>
               <button
                 type="button"
                 onClick={() => setShowCrossPost(!showCrossPost)}
@@ -605,8 +605,8 @@ export default function SocialMediaComposer({ platform }) {
                 Also post to {showCrossPost ? '▴' : '▾'}
               </button>
               {showCrossPost && (
-                <div className="crosspost-dropdown">
-                  <label className="crosspost-option">
+                <div className={styles['crosspost-dropdown']}>
+                  <label className={styles['crosspost-option']}>
                     <input
                       type="checkbox"
                       checked={crossPostPlatforms.facebook}
@@ -614,7 +614,7 @@ export default function SocialMediaComposer({ platform }) {
                     />
                     <span>Facebook</span>
                   </label>
-                  <label className="crosspost-option">
+                  <label className={styles['crosspost-option']}>
                     <input
                       type="checkbox"
                       checked={crossPostPlatforms.linkedin}
@@ -622,7 +622,7 @@ export default function SocialMediaComposer({ platform }) {
                     />
                     <span>LinkedIn</span>
                   </label>
-                  <label className="crosspost-option">
+                  <label className={styles['crosspost-option']}>
                     <input
                       type="checkbox"
                       checked={crossPostPlatforms.instagram}
@@ -630,7 +630,7 @@ export default function SocialMediaComposer({ platform }) {
                     />
                     <span>Instagram</span>
                   </label>
-                  <label className="crosspost-option">
+                  <label className={styles['crosspost-option']}>
                     <input
                       type="checkbox"
                       checked={crossPostPlatforms.x}
@@ -638,7 +638,7 @@ export default function SocialMediaComposer({ platform }) {
                     />
                     <span>X (Twitter)</span>
                   </label>
-                  <p className="crosspost-note">
+                  <p className={styles['crosspost-note']}>
                     Note: Cross-posting functionality coming soon. Currently shows selection only.
                   </p>
                 </div>
@@ -649,12 +649,12 @@ export default function SocialMediaComposer({ platform }) {
       )}
 
       {activeSubTab === 'scheduled' && (
-        <div className="scheduled-content">
+        <div className={styles['scheduled-content']}>
           <h4>Scheduled Posts for {platform}</h4>
           {isLoadingScheduled && <p>Loading...</p>}
           {!isLoadingScheduled && scheduledPosts.length === 0 && <p>No scheduled posts yet.</p>}
           {!isLoadingScheduled && scheduledPosts.length > 0 && (
-            <div className="posts-list">
+            <div className={styles['posts-list']}>
               {scheduledPosts.map(post => {
                 let postText = '';
                 try {
@@ -666,15 +666,15 @@ export default function SocialMediaComposer({ platform }) {
                 const imageBase64 = getScheduledPostImage(post);
 
                 return (
-                  <div key={post._id} className="post-card">
-                    <div className="post-card-content">
-                      <p className="post-text">{postText}</p>
-                      <p className="post-meta">📅 {formatScheduledTime(post.scheduledTime)}</p>
+                  <div key={post._id} className={styles['post-card']}>
+                    <div className={styles['post-card-content']}>
+                      <p className={styles['post-text']}>{postText}</p>
+                      <p className={styles['post-meta']}>📅 {formatScheduledTime(post.scheduledTime)}</p>
                       {imageBase64 && (
-                        <img src={imageBase64} alt="Post thumbnail" className="post-thumbnail" />
+                        <img src={imageBase64} alt="Post thumbnail" className={styles['post-thumbnail']} />
                       )}
                     </div>
-                    <div className="post-card-actions">
+                    <div className={styles['post-card-actions']}>
                       <button
                         type="button"
                         onClick={() => handleEditScheduled(post)}
@@ -709,29 +709,29 @@ export default function SocialMediaComposer({ platform }) {
       )}
 
       {activeSubTab === 'history' && (
-        <div className="history-content">
+        <div className={styles['history-content']}>
           <h4>Post History for {platform}</h4>
           {isLoadingHistory && <p>Loading...</p>}
           {!isLoadingHistory && postHistory.length === 0 && <p>No posts found in history.</p>}
           {!isLoadingHistory && postHistory.length > 0 && (
-            <div className="posts-list">
+            <div className={styles['posts-list']}>
               {postHistory.map(post => (
-                <div key={post.id} className="post-card">
-                  <div className="post-card-full">
-                    <p className="post-text">{stripHtml(post.content)}</p>
-                    <p className="post-meta">📅 {formatScheduledTime(post.created_at)}</p>
-                    <div className="post-stats">
+                <div key={post.id} className={styles['post-card']}>
+                  <div className={styles['post-card-full']}>
+                    <p className={styles['post-text']}>{stripHtml(post.content)}</p>
+                    <p className={styles['post-meta']}>📅 {formatScheduledTime(post.created_at)}</p>
+                    <div className={styles['post-stats']}>
                       <span>❤️ {post.favourites_count}</span>
                       <span>🔄 {post.reblogs_count}</span>
                     </div>
                     {post.media_attachments?.length > 0 && (
-                      <div className="post-media">
+                      <div className={styles['post-media']}>
                         {post.media_attachments.map((media, idx) => (
                           <img
                             key={idx}
                             src={media.preview_url || media.url}
                             alt="Post media"
-                            className="post-thumbnail"
+                            className={styles['post-thumbnail']}
                           />
                         ))}
                       </div>
@@ -740,7 +740,7 @@ export default function SocialMediaComposer({ platform }) {
                       href={post.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="post-link"
+                      className={styles['post-link']}
                     >
                       View on Mastodon →
                     </a>
@@ -753,7 +753,7 @@ export default function SocialMediaComposer({ platform }) {
       )}
 
       {activeSubTab === 'details' && (
-        <div className="details-content">
+        <div className={styles['details-content']}>
           <p>
             <strong>{platform}-Specific Details</strong>
           </p>
@@ -812,8 +812,8 @@ export default function SocialMediaComposer({ platform }) {
         <ModalHeader toggle={() => setPreviewOpen(false)}>Post Preview</ModalHeader>
         <ModalBody>
           {previewData && (
-            <div className="preview-container">
-              <div className="preview-header">
+            <div className={styles['preview-container']}>
+              <div className={styles['preview-header']}>
                 <img
                   src="https://cdn-icons-png.flaticon.com/512/6295/6295417.png"
                   alt="Mastodon"
@@ -834,7 +834,7 @@ export default function SocialMediaComposer({ platform }) {
                 </div>
               </div>
               <div
-                className="preview-content"
+                className={styles['preview-content']}
                 style={{
                   marginTop: '1rem',
                   whiteSpace: 'pre-wrap',

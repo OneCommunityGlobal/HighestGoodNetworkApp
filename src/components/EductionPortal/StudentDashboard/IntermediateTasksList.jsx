@@ -3,7 +3,7 @@ import { canMarkIntermediateTaskAsDone, getMarkIntermediateAsDoneTooltip } from 
 
 const IntermediateTasksList = ({ intermediateTasks, styles, onMarkIntermediateAsDone }) => {
   if (intermediateTasks.length === 0) {
-    return <p className={styles.noIntermediateTasks}>No sub-tasks available</p>;
+    return <p className="noIntermediateTasks">No sub-tasks available</p>;
   }
 
   return intermediateTasks.map(subTask => {
@@ -12,28 +12,28 @@ const IntermediateTasksList = ({ intermediateTasks, styles, onMarkIntermediateAs
     const intermediateTooltip = getMarkIntermediateAsDoneTooltip(subTask);
 
     return (
-      <div key={subTask._id || subTask.id} className={styles.intermediateTaskItem}>
-        <div className={styles.intermediateTaskContent}>
-          <h4 className={styles.intermediateTaskTitle}>{subTask.title}</h4>
+      <div key={subTask._id || subTask.id} className="intermediateTaskItem">
+        <div className="intermediateTaskContent">
+          <h4 className="intermediateTaskTitle">{subTask.title}</h4>
           {subTask.description && (
-            <p className={styles.intermediateTaskDescription}>{subTask.description}</p>
+            <p className="intermediateTaskDescription">{subTask.description}</p>
           )}
           {/* Progress Bar for Sub-task */}
-          <div className={styles.subTaskProgressSection}>
-            <div className={styles.subTaskProgressBar}>
+          <div className="subTaskProgressSection">
+            <div className="subTaskProgressBar">
               <div
-                className={styles.subTaskProgressFill}
+                className="subTaskProgressFill"
                 style={{ width: `${subTaskProgress}%` }}
               />
             </div>
-            <span className={styles.subTaskProgressText}>{subTaskProgress}%</span>
+            <span className="subTaskProgressText">{subTaskProgress}%</span>
           </div>
-          <div className={styles.intermediateTaskMeta}>
-            <span className={styles.intermediateTaskHours}>
+          <div className="intermediateTaskMeta">
+            <span className="intermediateTaskHours">
               {subTask.logged_hours || 0} / {subTask.expected_hours || 0}h
             </span>
             {subTask.due_date && (
-              <span className={styles.intermediateTaskDueDate}>
+              <span className="intermediateTaskDueDate">
                 Due: {new Date(subTask.due_date).toLocaleDateString()}
               </span>
             )}

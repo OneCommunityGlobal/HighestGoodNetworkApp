@@ -96,7 +96,7 @@ function UpdateMaterialsBulkTable({ date, setDate, project, setProject }) {
           </tr>
         </thead>
         <thead className={`${styles.logMTableHeaderLine}`}>
-          <tr className="table-light">
+          <tr className={styles['table-light']}>
             <th> Project </th>
             <th>Name</th>
             <th>Available</th>
@@ -133,7 +133,7 @@ function UpdateMaterialsBulkTable({ date, setDate, project, setProject }) {
         style={{ marginRight: '0px', marginLeft: '0px' }}
         className="row justify-content-between "
       >
-        <Button size="md" className="logMButtons" outline onClick={cancelHandler}>
+        <Button size="md" className={styles.logMButtons} outline onClick={cancelHandler}>
           Cancel
         </Button>
         <Button

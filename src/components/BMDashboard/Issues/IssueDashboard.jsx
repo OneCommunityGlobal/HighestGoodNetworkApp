@@ -250,14 +250,14 @@ export default function IssueDashboard() {
       <div>
         <IssueHeader />
       </div>
-      <Row className="mb-3">
+      <Row className={styles['mb-3']}>
         <Col>
           <h4 className={`fw-semibold ${darkMode ? 'text-light' : ''}`}>Issue Dashboard</h4>
         </Col>
         <Col className="d-flex justify-content-end">
           <UncontrolledDropdown>
             <DropdownToggle tag="button" className="btn btn-sm btn-primary" type="button">
-              <FiDownload className="me-2" />
+              <FiDownload className={styles['me-2']} />
               Export
             </DropdownToggle>
             <DropdownMenu end className={`${darkMode ? styles.exportDropdownMenuDark : ''}`}>
@@ -339,7 +339,7 @@ export default function IssueDashboard() {
                               setMenuOpen(null);
                             }}
                           >
-                            <FiEdit size={14} className="me-2" />
+                            <FiEdit size={14} className={styles['me-2']} />
                             Rename
                           </button>
                           <button
@@ -350,7 +350,7 @@ export default function IssueDashboard() {
                               setMenuOpen(null);
                             }}
                           >
-                            <FiCopy size={14} className="me-2" />
+                            <FiCopy size={14} className={styles['me-2']} />
                             Copy
                           </button>
                           <button
@@ -361,7 +361,7 @@ export default function IssueDashboard() {
                               setMenuOpen(null);
                             }}
                           >
-                            <FiTrash2 size={14} className="me-2" />
+                            <FiTrash2 size={14} className={styles['me-2']} />
                             Delete
                           </button>
                         </div>

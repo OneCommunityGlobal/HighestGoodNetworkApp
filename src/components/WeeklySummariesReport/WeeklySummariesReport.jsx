@@ -1769,21 +1769,21 @@ const WeeklySummariesReport = props => {
         <Col lg={{ size: 10, offset: 1 }}>
           <h3 className="mt-3 mb-5">
             <div className="d-flex align-items-center">
-              <span className="mr-2">Weekly Summaries Reports page</span>
+              <span className={styles['mr-2']}>Weekly Summaries Reports page</span>
               <EditableInfoModal
                 areaName="WeeklySummariesReport"
                 areaTitle="Weekly Summaries Report"
                 role={role}
                 fontSize={24}
                 isPermissionPage
-                className="p-2"
+                className={styles['p-2']}
                 darkMode={darkMode}
               />
             </div>
           </h3>
         </Col>
       </Row>
-      <Row className="mb-2">
+      <Row className={styles['mb-2']}>
         <Col lg={{ size: 10, offset: 1 }}>
           <div className="d-flex justify-content-end">
             {authEmailWeeklySummaryRecipient === 'jae@onecommunityglobal.org' && (
@@ -1801,7 +1801,7 @@ const WeeklySummariesReport = props => {
             <Button
               color={darkMode ? 'light' : 'primary'}
               outline
-              className="mx-1"
+              className={styles['mx-1']}
               type="button"
               onClick={() => setSelectFilterModalOpen(true)}
             >
@@ -1809,7 +1809,7 @@ const WeeklySummariesReport = props => {
             </Button>
             {permissionState.canManageFilter && (
               <ButtonDropdown
-                className="ml-1"
+                className={styles['ml-1']}
                 isOpen={saveFilterDropdownOpen}
                 toggle={toggleSaveFilterDropdown}
               >
@@ -1990,7 +1990,7 @@ const WeeklySummariesReport = props => {
                 maxHeight: '100px',
                 overflowY: 'auto',
               }}
-              className="my-3"
+              className={styles['my-3']}
             >
               {filterChoices.map(filter => (
                 <div
@@ -2130,7 +2130,7 @@ const WeeklySummariesReport = props => {
         </Col>
       </Row>
       <Row className={styles['mx-max-sm-0']}>
-        <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 12 }} className="mb-3">
+        <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 12 }} className={styles['mb-3']}>
           <div>Select Extra Members</div>
           <MultiSelect
             className={`${styles['report-multi-select-filter']} ${styles.textDark} 
@@ -2249,7 +2249,7 @@ const WeeklySummariesReport = props => {
                 ) : (
                   <>
                     <Row className={styles['mx-max-sm-0']}>
-                      <Col sm="12" md="6" className="mb-2">
+                      <Col sm="12" md="6" className={styles['mb-2']}>
                         From <b>{weekDates[index].fromDate}</b> to <b>{weekDates[index].toDate}</b>
                       </Col>
                       <Col
@@ -2275,7 +2275,7 @@ const WeeklySummariesReport = props => {
                               {state.loadBadges ? 'Hide Badges' : 'Load Badges'}
                             </Button>
                             <Button
-                              className="btn--dark-sea-green"
+                              className={styles['btn--dark-sea-green']}
                               style={darkMode ? boxStyleDark : boxStyle}
                               onClick={() =>
                                 setState(prev => ({ ...prev, loadTrophies: !state.loadTrophies }))

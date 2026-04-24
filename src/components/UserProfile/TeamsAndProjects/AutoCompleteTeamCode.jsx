@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Spinner, ListGroup, ListGroupItem } from 'reactstrap';
 import { IoReload } from 'react-icons/io5';
-import './autoComplete.css';
+import styles from './autoComplete.module.css';
 
 export const AutoCompleteTeamCode = props => {
   const {

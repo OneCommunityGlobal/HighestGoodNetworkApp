@@ -71,7 +71,7 @@ function EventCard(props) {
         <img src={event.coverImage} alt={event.title} className={styles['event-cover-image']} />
       </div>
 
-      <div className="p-3">
+      <div className={styles['p-3']}>
         {/* Title and Status */}
         <div className="d-flex justify-content-between align-items-start">
           <div className="d-flex flex-column">
@@ -91,30 +91,30 @@ function EventCard(props) {
               icon={faTag}
               className={`me-2 ${darkMode ? 'text-light' : 'text-muted'}`}
             />
-            <span className="text-muted">Type:</span>
-            <span className="ms-2">{type}</span>
+            <span className={styles['text-muted']}>Type:</span>
+            <span className={styles['ms-2']}>{type}</span>
           </div>
           <div className="d-flex align-items-center mb-2">
             <FontAwesomeIcon icon={faMapMarkerAlt} className="me-2 text-muted" />
-            <span className="text-muted">Location:</span>
+            <span className={styles['text-muted']}>Location:</span>
             <span className={`ms-2 ${styles['attendee-tag']} ${styles[getLocationTag(location)]}`}>
               {location}
             </span>
           </div>
           <div className={`${styles['event-description']} mb-2`}>
-            <span className="text-muted">Description:</span>
+            <span className={styles['text-muted']}>Description:</span>
             <p className="mt-1 mb-0">{description}</p>
           </div>
         </div>
 
         {/* Date and Time */}
-        <div className="mb-4">
+        <div className={styles['mb-4']}>
           <div className="d-flex align-items-center mb-2">
-            <FontAwesomeIcon icon={faCalendar} className="me-2" />
+            <FontAwesomeIcon icon={faCalendar} className={styles['me-2']} />
             <span>{format(new Date(date), 'MMM dd, yyyy')}</span>
           </div>
           <div className="d-flex align-items-center mb-2">
-            <FontAwesomeIcon icon={faClock} className="me-2" />
+            <FontAwesomeIcon icon={faClock} className={styles['me-2']} />
             <span>
               {formatDateTime(startTime)} - {formatDateTime(endTime)}
             </span>
@@ -122,9 +122,9 @@ function EventCard(props) {
         </div>
 
         {/* Attendance Stats */}
-        <div className="mb-4">
+        <div className={styles['mb-4']}>
           <h3 className="h5 mb-3">Attendance</h3>
-          <p className="mb-2">Attendance rate: {attendanceRate}%</p>
+          <p className={styles['mb-2']}>Attendance rate: {attendanceRate}%</p>
           <div className={styles['attendance-progress']}>
             <div className={styles['attendance-bar']} style={{ width: `${attendanceRate}%` }} />
           </div>
@@ -133,7 +133,7 @@ function EventCard(props) {
         {/* Attendees List */}
         <div className={styles['attendees-section']}>
           <div className="d-flex align-items-center mb-3">
-            <FontAwesomeIcon icon={faUsers} className="me-2" />
+            <FontAwesomeIcon icon={faUsers} className={styles['me-2']} />
             <span>
               Attendees ({currentAttendees}/{maxAttendees})
             </span>
@@ -172,7 +172,7 @@ function EventCard(props) {
         </div>
 
         {/* Action Buttons */}
-        <div className="mt-3">
+        <div className={styles['mt-3']}>
           <button
             type="button"
             className={`${styles['action-button']} ${styles['primary-button']}`}

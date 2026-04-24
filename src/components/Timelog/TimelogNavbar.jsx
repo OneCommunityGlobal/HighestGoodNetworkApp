@@ -46,7 +46,7 @@ function TimelogNavbar({ userId }) {
                 striped={totalEffort < weeklycommittedHours}
               />
             </NavItem>
-            <NavItem className="mt-3">
+            <NavItem className={styles['mt-3']}>
               <NavLink tag={Link} href={`/userprofile/${userId}`} to={`/userprofile/${userId}`}>
                 View Profile
               </NavLink>

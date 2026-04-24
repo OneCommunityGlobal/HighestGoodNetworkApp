@@ -199,7 +199,7 @@ function ProjectLog({ projectId, darkMode }) {
           </Button>
         )}
       </div>
-      <div className="table-responsive">
+      <div className={styles['table-responsive']}>
         <Table hover striped responsive>
           <thead>
             <tr>
@@ -207,50 +207,50 @@ function ProjectLog({ projectId, darkMode }) {
                 onClick={() => handleSort('id')}
                 style={{ cursor: 'pointer', whiteSpace: 'nowrap' }}
               >
-                ID <FontAwesomeIcon icon={getSortIcon('id')} className="ml-1" />
+                ID <FontAwesomeIcon icon={getSortIcon('id')} className={styles['ml-1']} />
               </th>
               <th
                 onClick={() => handleSort('firstName')}
                 style={{ cursor: 'pointer', whiteSpace: 'nowrap' }}
               >
-                First Name <FontAwesomeIcon icon={getSortIcon('firstName')} className="ml-1" />
+                First Name <FontAwesomeIcon icon={getSortIcon('firstName')} className={styles['ml-1']} />
               </th>
               <th
                 onClick={() => handleSort('lastName')}
                 style={{ cursor: 'pointer', whiteSpace: 'nowrap' }}
               >
-                Last Name <FontAwesomeIcon icon={getSortIcon('lastName')} className="ml-1" />
+                Last Name <FontAwesomeIcon icon={getSortIcon('lastName')} className={styles['ml-1']} />
               </th>
               <th
                 onClick={() => handleSort('role')}
                 style={{ cursor: 'pointer', whiteSpace: 'nowrap' }}
               >
-                Role <FontAwesomeIcon icon={getSortIcon('role')} className="ml-1" />
+                Role <FontAwesomeIcon icon={getSortIcon('role')} className={styles['ml-1']} />
               </th>
               <th
                 onClick={() => handleSort('team')}
                 style={{ cursor: 'pointer', whiteSpace: 'nowrap' }}
               >
-                Team <FontAwesomeIcon icon={getSortIcon('team')} className="ml-1" />
+                Team <FontAwesomeIcon icon={getSortIcon('team')} className={styles['ml-1']} />
               </th>
               <th
                 onClick={() => handleSort('currentTask')}
                 style={{ cursor: 'pointer', whiteSpace: 'nowrap' }}
               >
-                Current Task <FontAwesomeIcon icon={getSortIcon('currentTask')} className="ml-1" />
+                Current Task <FontAwesomeIcon icon={getSortIcon('currentTask')} className={styles['ml-1']} />
               </th>
               <th
                 onClick={() => handleSort('totalHrs')}
                 style={{ cursor: 'pointer', whiteSpace: 'nowrap' }}
               >
-                Total Hrs <FontAwesomeIcon icon={getSortIcon('totalHrs')} className="ml-1" />
+                Total Hrs <FontAwesomeIcon icon={getSortIcon('totalHrs')} className={styles['ml-1']} />
               </th>
               <th
                 onClick={() => handleSort('todaysHrs')}
                 style={{ cursor: 'pointer', whiteSpace: 'nowrap' }}
               >
                 Today&apos;s Hrs{' '}
-                <FontAwesomeIcon icon={getSortIcon('todaysHrs')} className="ml-1" />
+                <FontAwesomeIcon icon={getSortIcon('todaysHrs')} className={styles['ml-1']} />
               </th>
             </tr>
             <tr>

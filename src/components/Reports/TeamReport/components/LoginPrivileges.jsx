@@ -1,11 +1,11 @@
 // eslint-disable-next-line no-unused-vars
 import React from 'react';
-import './LoginPrivileges.css';
+import styles from './LoginPrivileges.module.css';
 
 function LoginPrivileges({ selectedInput, handleInputChange }) {
   return (
     <form>
-      <div className="login-privileges-container">
+      <div className={styles['login-privileges-container']}>
         <div>
           <label htmlFor="isManager">
             <input

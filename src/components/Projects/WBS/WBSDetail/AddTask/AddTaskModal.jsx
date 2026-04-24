@@ -7,7 +7,7 @@ import dateFnsParse from 'date-fns/parse';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DayPicker } from 'react-day-picker';
-import 'react-day-picker/dist/style.css';
+import 'react-day-picker/dist/style.module.css';
 import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
@@ -17,10 +17,10 @@ import {
   END_DATE_ERROR_MESSAGE,
   START_DATE_ERROR_MESSAGE
 } from '../../../../../languages/en/messages';
-import '../../../../Header/index.css';
+import '../../../../Header/index.module.css';
 import TagsSearch from '../components/TagsSearch';
 import styles from '../wbs.module.css';
-// import styles from './AddTaskModal.module.css';
+// import styles2 from './AddTaskModal.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { getProjectDetail } from '../../../../../actions/project';
 import { fetchAllMembers } from '../../../../../actions/projectMembers';
@@ -1067,7 +1067,7 @@ useEffect(() => {
                   <div className="flex-row d-inline align-items-center">
                     <div className="form-check form-check-inline">
                       <input
-                        className="form-check-input"
+                        className={styles['form-check-input']}
                         type="radio"
                         id="assigned-yes"
                         name="Assigned"
@@ -1081,7 +1081,7 @@ useEffect(() => {
                     </div>
                     <div className="form-check form-check-inline">
                       <input
-                        className="form-check-input"
+                        className={styles['form-check-input']}
                         type="radio"
                         id="assigned-no"
                         name="Assigned"
@@ -1103,7 +1103,7 @@ useEffect(() => {
                   <div className="d-flex align-items-center flex-wrap">
                     <span className="form-check form-check-inline mr-5">
                       <input
-                        className="form-check-input"
+                        className={styles['form-check-input']}
                         type="radio"
                         id="active"
                         name="status"
@@ -1115,9 +1115,9 @@ useEffect(() => {
                         Active
                       </label>
                     </span>
-                    <span className="form-check">
+                    <span className={styles['form-check']}>
                       <input
-                        className="form-check-input"
+                        className={styles['form-check-input']}
                         type="radio"
                         id="notStarted"
                         name="status"
@@ -1133,7 +1133,7 @@ useEffect(() => {
                   <div className="d-flex align-items-center flex-wrap">
                     <span className="form-check form-check-inline mr-5">
                       <input
-                        className="form-check-input"
+                        className={styles['form-check-input']}
                         type="radio"
                         id="paused"
                         name="status"
@@ -1147,7 +1147,7 @@ useEffect(() => {
                     </span>
                     <span className="form-check form-check-inline">
                       <input
-                        className="form-check-input"
+                        className={styles['form-check-input']}
                         type="radio"
                         id="complete"
                         name="status"
@@ -1187,7 +1187,7 @@ useEffect(() => {
                     />
                   </div>
                   {hoursWarning && (
-                    <div className="warning">The number of hours must be less than other cases</div>
+                    <div className={styles.warning}>The number of hours must be less than other cases</div>
                   )}
                   <div className="py-2 d-flex align-items-center justify-content-sm-around">
                     <label
@@ -1210,7 +1210,7 @@ useEffect(() => {
                     />
                   </div>
                   {hoursWarning && (
-                    <div className="warning">
+                    <div className={styles.warning}>
                       The number of hours must be higher than other cases
                     </div>
                   )}
@@ -1235,7 +1235,7 @@ useEffect(() => {
                     />
                   </div>
                   {hoursWarning && (
-                    <div className="warning">
+                    <div className={styles.warning}>
                       The number of hours must range between best and worst cases
                     </div>
                   )}
@@ -1258,7 +1258,7 @@ useEffect(() => {
                       aria-label="Estimated hours"
                     />
                   </div>
-                  <div className="warning">
+                  <div className={styles.warning}>
                     {hasNegativeHours ? 'Negative hours are not allowed.' : ''}
                   </div>
                 </div>
@@ -1275,13 +1275,13 @@ useEffect(() => {
                       id="linkInput"
                       aria-label="Link Input"
                       placeholder="Link"
-                      className="task-resouces-input"
+                      className={styles['task-resouces-input']}
                       onChange={e => setLink(e.target.value)}
                       value={link}
                     />
                     <button
                       type="button"
-                      className="task-resouces-btn"
+                      className={styles['task-resouces-btn']}
                       aria-label="Add Link"
                       onClick={addLink}
                     >
@@ -1300,14 +1300,14 @@ useEffect(() => {
                   </div>
                   <div>
                     {links.map((link, i) => (
-                      <div key={i} className="link-item" style={{
+                      <div key={i} className={styles['link-item']} style={{
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'flex-start', 
                         gap: '8px',
                         marginBottom: '4px',
                       }}>
-                        <a href={link} className="task-link" target="_blank" rel="noreferrer">
+                        <a href={link} className={styles['task-link']} target="_blank" rel="noreferrer">
                           {link}
                         </a>
                         <button
@@ -1419,7 +1419,7 @@ useEffect(() => {
                     <div className="warning text-danger">
                       {startDateFormatError && 'Please enter date in MM/dd/yy format'}
                     </div>
-                    <div className="warning">{startDateError ? START_DATE_ERROR_MESSAGE : ''}</div>
+                    <div className={styles.warning}>{startDateError ? START_DATE_ERROR_MESSAGE : ''}</div>
                   </div>
                 </span>
               </div>
@@ -1446,7 +1446,7 @@ useEffect(() => {
                   <div className="warning text-danger">
                     {endDateFormatError && 'Please enter date in MM/dd/yy format'}
                   </div>
-                  <div className="warning">{endDateError ? END_DATE_ERROR_MESSAGE : ''}</div>
+                  <div className={styles.warning}>{endDateError ? END_DATE_ERROR_MESSAGE : ''}</div>
                 </span>
               </div>
             </div>
@@ -1501,7 +1501,7 @@ useEffect(() => {
       </Modal>
       <Button
         color="primary"
-        className="controlBtn"
+        className={styles.controlBtn}
         size="sm"
         onClick={openModal}
         style={darkMode ? boxStyleDark : boxStyle}

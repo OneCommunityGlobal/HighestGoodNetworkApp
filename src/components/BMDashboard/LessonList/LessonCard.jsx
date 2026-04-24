@@ -176,7 +176,7 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
                 {currentUserId === lesson.author?.id && (
                   <div>
                     <button
-                      className="text-muted"
+                      className={styles['text-muted']}
                       type="button"
                       onClick={() => handleEdit(lesson._id, lesson.content)}
                     >
@@ -184,7 +184,7 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
                     </button>
                     <button
                       onClick={() => handleDeletePopup(lesson._id)}
-                      className="text-muted"
+                      className={styles['text-muted']}
                       type="button"
                     >
                       Delete
@@ -204,7 +204,7 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
                     style={{ outline: 'none' }}
                   >
                     <FontAwesomeIcon
-                      className="ml-2"
+                      className={styles['ml-2']}
                       icon={faHeart}
                       size="sm"
                       style={{

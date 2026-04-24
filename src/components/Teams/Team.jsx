@@ -119,7 +119,7 @@ export function Team({
       id={`tr_${teamIdKey}`}
     >
       <th
-        className="teams__order--input"
+        className={styles['teams__order--input']}
         scope="row"
         style={{ textAlign: 'center', verticalAlign: 'middle' }}
       >
@@ -129,7 +129,7 @@ export function Team({
       <td className={headerStyles.teamNameCol}>
         {props.name} ({total} | {activeCount} | {inactive})
       </td>
-      <td className="teams__active--input" style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+      <td className={styles['teams__active--input']} style={{ textAlign: 'center', verticalAlign: 'middle' }}>
         <button
           data-testid="active-marker"
           type="button"
@@ -147,7 +147,7 @@ export function Team({
         </button>
       </td>
 
-      <td className="centered-cell" style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+      <td className={styles['centered-cell']} style={{ textAlign: 'center', verticalAlign: 'middle' }}>
         <button
           style={darkMode ? {} : boxStyle}
           type="button"

@@ -40,7 +40,7 @@
   width: min-content;
 }
 
-@media (max-width: 500px) {
+@media (width <= 500px) {
   .chartContainer {
     justify-content: start;
     overflow: scroll;

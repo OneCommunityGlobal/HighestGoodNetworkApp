@@ -12,11 +12,11 @@ function WishList(props) {
   const { wishlists } = props;
 
   return (
-    <div className="item">
-      <div className="item__container">
+    <div className={styles.item}>
+      <div className={styles.item__container}>
         <Header />
         <div className={`item__location ${styles.list_location}`}>
-          <FaMapMarkerAlt className="item__icon" />
+          <FaMapMarkerAlt className={styles.item__icon} />
           <a href="/">View on Property Map</a>
         </div>
         <h1 className={`${styles.list_title}`}>Wish List</h1>
@@ -30,7 +30,7 @@ function WishList(props) {
                 </div>
                 <img
                   key={item.images[0]}
-                  className="carousel-image"
+                  className={styles['carousel-image']}
                   src={item.images[0]}
                   alt="House"
                 />
@@ -41,11 +41,11 @@ function WishList(props) {
                     {item.title}
                   </span>
                 </div>
-                <div className="item__details">
+                <div className={styles.item__details}>
                   <span className={`${styles.list_itemTitle} ${styles.itemTitleWrapperDesktop}`}>
                     {item.unit}
                   </span>
-                  <div className="list_item__amenities">
+                  <div className={styles.list_item__amenities}>
                     <div>
                       <span className={`${styles.font600}`}>Available amenities in this unit:</span>
                       <ol>

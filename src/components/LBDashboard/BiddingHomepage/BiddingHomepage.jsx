@@ -554,8 +554,8 @@ function BiddingHomepage() {
         )}
 
         {/* Results info */}
-        <Row className="mb-3">
-          <Col xs={12} className="text-center">
+        <Row className={styles['mb-3']}>
+          <Col xs={12} className={styles['text-center']}>
             <small className={`text-muted ${darkMode ? 'text-light' : ''}`}>
               Showing {startIndex + 1}-{Math.min(endIndex, filteredProperties.length)} of{' '}
               {filteredProperties.length} properties

@@ -97,7 +97,7 @@ function ListOverview() {
   }, [dispatch]);
 
   if (loading) return <div>Loading...</div>;
-  if (error) return <div className="error-message">{error}</div>;
+  if (error) return <div className={styles['error-message']}>{error}</div>;
   if (!listing) return <div>No listing found.</div>;
 
   return (
@@ -198,7 +198,7 @@ function ListOverview() {
               </button>
             </div>
             {bookingError && (
-              <div className="error-message">
+              <div className={styles['error-message']}>
                 <h6>{bookingError}</h6>
               </div>
             )}
@@ -240,8 +240,8 @@ function ListOverview() {
                     {bookingState.loading ? 'Booking...' : 'Confirm Booking'}
                   </button>
                 )}
-                {bookingState.error && <div className="error-message">{bookingState.error}</div>}
-                {bookingState.success && <div className="text-success">Booking successful!</div>}
+                {bookingState.error && <div className={styles['error-message']}>{bookingState.error}</div>}
+                {bookingState.success && <div className={styles['text-success']}>Booking successful!</div>}
               </div>
             )}
             {showAvailability && (

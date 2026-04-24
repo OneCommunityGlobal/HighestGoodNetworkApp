@@ -83,7 +83,7 @@ function BiddingOverview() {
       <div className={`${styles.boxContainer}`}>
         <header className={`${styles.biddingHeader}`}>
           <div className={`${styles.headerLeft}`}>
-            <div className="village-selector">
+            <div className={styles['village-selector']}>
               <select
                 id="village"
                 className={`${styles.villageSelect}`}
@@ -261,7 +261,7 @@ function BiddingOverview() {
                   />
                 </div>
 
-                <div className="submit-button-container">
+                <div className={styles['submit-button-container']}>
                   <button type="submit" className={`${styles.submitButton1}`}>
                     Proceed to submit with details{' '}
                   </button>

@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import PropTypes from "prop-types";
 import { Button, Col, UncontrolledTooltip } from 'reactstrap';
-import './TeamsAndProjects.css';
+import styles from './TeamsAndProjects.module.css';
 import hasPermission from '../../../utils/permissions';
-// import styles from './UserProjectsTable.css';
+// import styles2 from './UserProjectsTable.css';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { useLocation , Link } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -123,9 +123,9 @@ const removeOrAddTaskFromUser = (task, method) => {
 
   return (
     <div>
-      <div className="desktop" data-testid='userProjectTest'>
+      <div className={styles.desktop} data-testid='userProjectTest'>
         <div className={`projecttable-container ${darkMode ? 'bg-yinmn-blue' : ''}`}>
-          <div className="container">
+          <div className={styles.container}>
             <div className="row mr-auto">
               <Col
                 md='12'
@@ -170,14 +170,14 @@ const removeOrAddTaskFromUser = (task, method) => {
                     {canPostTask && 
                     <th style={{width: '100px'}}>
                       <div className="d-flex align-items-center">
-                        <span className="mr-2">WBS</span>
+                        <span className={styles['mr-2']}>WBS</span>
                           <EditableInfoModal
                             areaName="ProjectTableHeaderWBS"
                             areaTitle="WBS"
                             fontSize={24}
                             isPermissionPage={true}
                             role={props.role}
-                            className="p-2"
+                            className={styles['p-2']}
                             darkMode={darkMode}
                           />
                       </div>
@@ -191,7 +191,7 @@ const removeOrAddTaskFromUser = (task, method) => {
                   tasksByProject?.map((project, index) => (
                     <tr key={project.projectId} className={darkMode ? 'bg-yinmn-blue' : ''}>
                       <td>{index + 1}</td>
-                      <td className="taskName">{project.projectName}</td>
+                      <td className={styles.taskName}>{project.projectName}</td>
                       {props.role && canPostTask && (
                         <td className='table-cell'>
                           <Link to={`/project/wbs/${project.projectId}`}>
@@ -240,7 +240,7 @@ const removeOrAddTaskFromUser = (task, method) => {
         </div>
         {!isUserProfilePage && (
           <>
-            <div className="projecttable-container">
+            <div className={styles['projecttable-container']}>
               <Col
                 md={'12'}
                 className={`projects-and-tasks-header d-flex flex-row ${darkMode  ? 'bg-space-cadet' : ''}`}
@@ -301,7 +301,7 @@ const removeOrAddTaskFromUser = (task, method) => {
                             <td className='taskName'>
                               <span className='opacity-70'>{project.projectName} </span>
                               <br />
-                              <a className="fs-18" href={`/wbs/tasks/${task._id}`}>
+                              <a className={styles['fs-18']} href={`/wbs/tasks/${task._id}`}>
                                 {task.taskName && `\u2003 ↳ ${task.taskName}`}
                               </a>
                             </td>
@@ -342,7 +342,7 @@ const removeOrAddTaskFromUser = (task, method) => {
           </>
         )}
       </div>
-      <div className="tablet">
+      <div className={styles.tablet}>
         <div className={`projecttable-container ${darkMode ? 'bg-yinmn-blue' : ''}`}>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <Col
@@ -352,16 +352,16 @@ const removeOrAddTaskFromUser = (task, method) => {
               <span className="projects-span mr-auto pt-2">Projects</span>
               {props.edit && props.role && (
               <div
-                className="pt-2"
+                className={styles['pt-2']}
               >
                 {canAssignProjectToUsers && (
                     <div
-                      className="div-addproject"
+                      className={styles['div-addproject']}
                       title="Please save changes before assign project"
                       display={props.disabled ? "none" : "block"}
                     >
                       <Button
-                        className="btn-addproject"
+                        className={styles['btn-addproject']}
                         color="primary"
                         disabled={props.disabled ? true : false}
                         onClick={() => {
@@ -393,7 +393,7 @@ const removeOrAddTaskFromUser = (task, method) => {
                   filteredTasks?.map((project, index) => (
                     <tr key={project.projectId}>
                       <td>{index + 1}</td>
-                      <td className="taskName">{`${project.projectName}`}</td>
+                      <td className={styles.taskName}>{`${project.projectName}`}</td>
                       {props.edit && props.role && canDeleteProjects && (
                         <td className='table-cell'>
                           <Button
@@ -419,7 +419,7 @@ const removeOrAddTaskFromUser = (task, method) => {
         </div>
         {!isUserProfilePage && (
           <>
-            <div className="projecttable-container">
+            <div className={styles['projecttable-container']}>
               <div>
                 <Col
                   md={'12'}

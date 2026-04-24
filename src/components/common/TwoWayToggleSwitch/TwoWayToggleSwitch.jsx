@@ -1,22 +1,22 @@
-import './TwoWayToggleSwitch.css'; // Asegúrate de crear este archivo CSS
+import styles from './TwoWayToggleSwitch.module.css'; // Asegúrate de crear este archivo CSS
 
 function TwoWayToggleSwitch({ isOn, handleToggle }) {
   return (
-    <div className="two-way-toggle-switch">
+    <div className={styles['two-way-toggle-switch']}>
       <input
         checked={isOn}
         onChange={handleToggle}
-        className="toggle-switch-checkbox"
+        className={styles['toggle-switch-checkbox']}
         id="toggle-switch-new"
         type="checkbox"
       />
       <label
-        className="toggle-switch-label"
+        className={styles['toggle-switch-label']}
         htmlFor="toggle-switch-new"
         aria-label="Toggle setting"
       >
-        <span className="toggle-switch-inner" />
-        <span className="toggle-switch-switch" />
+        <span className={styles['toggle-switch-inner']} />
+        <span className={styles['toggle-switch-switch']} />
       </label>
     </div>
   );

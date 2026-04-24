@@ -96,7 +96,7 @@ const SkeletonLoading = ({ template, className }) => {
               <Col lg={{ size: 10, offset: 1 }} xs={{ size: 12 }}>
                 <h3 className="mt-3 mb-5">
                   <div className="d-flex align-items-center">
-                    <span className="mr-2">Weekly Summaries Reports page</span>
+                    <span className={styles['mr-2']}>Weekly Summaries Reports page</span>
                   </div>
                 </h3>
 
@@ -123,7 +123,7 @@ const SkeletonLoading = ({ template, className }) => {
               />
               <div className={styles['skeleton-loading-user-profile-picture']} />
             </div>
-            <div className="mx-5" style={{ marginTop: '6rem' }}>
+            <div className={styles['mx-5']} style={{ marginTop: '6rem' }}>
               {[...Array(15)].map(() => (
                 <div
                   key={uuidv4()}

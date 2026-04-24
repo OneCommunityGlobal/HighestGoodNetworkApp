@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { useState } from 'react';
+import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 
-import { boxStyle, boxStyleDark } from '~/styles';
-import styles from './style.module.css';
-import '../Header/index.css';
 import { useSelector } from 'react-redux';
+import { boxStyle, boxStyleDark } from '~/styles';
+import '../Header/index.module.css';
 import infoTaskIconContent from './infoTaskIconContent';
+import styles from './style.module.css';
 
 const TeamMemberTaskInfo = React.memo(() => {
   const darkMode = useSelector(state => state.theme.darkMode);

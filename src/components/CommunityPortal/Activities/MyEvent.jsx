@@ -106,7 +106,7 @@ function MyEvent() {
   );
 
   const displayCalendarView = () => (
-    <div className="calendarView">
+    <div className={styles.calendarView}>
       <h3>Calendar View</h3>
       <p>Events displayed in a calendar format will go here.</p>
     </div>
@@ -162,7 +162,7 @@ function MyEvent() {
           </button>
         </div>
       </div>
-      <div className="eventDisplayOption">
+      <div className={styles.eventDisplayOption}>
         {view === 'list' ? displayListView() : displayCalendarView()}
       </div>
     </div>

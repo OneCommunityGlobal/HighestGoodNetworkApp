@@ -250,7 +250,7 @@ function OwnerMessage({
             disabled={disableTextInput}
             className={styles.inputs}
           />
-          <p className="paragraph" style={{ marginTop: '1rem' }}>
+          <p className={styles.paragraph} style={{ marginTop: '1rem' }}>
             Or upload a picture:
           </p>
           <span style={{ marginTop: '-1.25rem', marginBottom: '1rem', fontSize: '.8rem' }}>

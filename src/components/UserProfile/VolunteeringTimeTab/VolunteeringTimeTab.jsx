@@ -529,7 +529,7 @@ const ViewTab = props => {
           <Button
             size="sm"
             color="info"
-            className="refresh-btn"
+            className={styles['refresh-btn']}
             onClick={() => props.loadUserProfile()}
             style={darkMode ? boxStyleDark : boxStyle}
           >

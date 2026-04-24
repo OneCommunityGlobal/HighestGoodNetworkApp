@@ -219,7 +219,7 @@ function EquipmentsTable({ equipment, project }) {
                     <td>{new Date(rec.rentedOnDate).toLocaleDateString()}</td>
                     <td>{new Date(rec.rentalDueDate).toLocaleDateString()}</td>
 
-                    <td className="materials_cell">
+                    <td className={styles.materials_cell}>
                       <button
                         type="button"
                         onClick={() => handleOpenModal(rec, 'UpdatesEdit')}

@@ -96,7 +96,7 @@ const SetupNewUserPopupComponent = (props) => {
               htmlFor="email"
               className={darkMode ? 'text-light' : ''}
             >
-              Email<span className="red-asterisk">* </span>
+              Email<span className={styles['red-asterisk']}>* </span>
             </label>
 
             <input

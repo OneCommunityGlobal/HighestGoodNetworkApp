@@ -250,7 +250,7 @@ function TotalMaterialCostPerProject() {
         </>
       ) : (
         <div className="d-flex justify-content-center align-items-center">
-          <div className="w-100vh">
+          <div className={styles['w-100vh']}>
             <Loading />
           </div>
         </div>
