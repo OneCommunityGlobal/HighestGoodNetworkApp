@@ -53,8 +53,8 @@ function TestEventRegistration() {
   const [locationFilter, setLocationFilter] = useState('');
   const [dateFilter, setDateFilter] = useState('');
 
-  // Enhanced email regex validation following RFC 5322 standards
-  const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+  // Email regex requiring a valid TLD (at least 2 alpha chars after the last dot)
+  const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}$/;
 
   function normalizeDigits(v = '') {
     return v.replace(/\D/g, '');
@@ -152,6 +152,8 @@ function TestEventRegistration() {
           errs.emailAddress = 'Email address must contain a domain (e.g., .com, .org).';
         } else if (email.includes('..')) {
           errs.emailAddress = 'Email address cannot contain consecutive dots.';
+        } else if (!/\.[a-zA-Z]{2,}$/.test(email.split('@')[1] || '')) {
+          errs.emailAddress = 'Email domain must have a valid extension (e.g., .com, .org).';
         } else {
           errs.emailAddress = 'Please enter a valid email address (e.g., user@example.com).';
         }
@@ -249,7 +251,7 @@ function TestEventRegistration() {
       return;
     }
 
-    const eventDate = currentEvent?.date || 'TBD';
+    const eventDate = (currentEvent?.eventTime ? extractDate(currentEvent.eventTime) : '') || 'TBD';
     const eventLocation =
       currentEvent?.location ||
       [formValues.city, formValues.state, formValues.country].filter(Boolean).join(', ');
@@ -383,9 +385,6 @@ function TestEventRegistration() {
 
         <p className={`${styles.subheading} ${darkMode ? styles.textLight : ''}`}>
           Please fill the information carefully!
-        </p>
-        <p className={styles.sectionLink} id="personal-info">
-          Personal Information
         </p>
         <p className={`${styles.requiredNote} ${darkMode ? styles.textLight : ''}`}>
           * Indicates required question

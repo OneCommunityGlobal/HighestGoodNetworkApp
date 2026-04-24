@@ -134,8 +134,8 @@
 
 .buttonsRow {
   display: flex;
-  justify-content: space-between;
-  gap: 1rem;
+  justify-content: center;
+  gap: 0.75rem;
   padding-top: 0.25rem;
 }
 .cancelBtn {
@@ -245,27 +245,27 @@
 }
 
 .inputDark {
-  background: #1b2a41;
-  color: #ffffff;
-  border-color: #3a506b;
+  background: #0f1e30;
+  color: #f0f4f8;
+  border-color: #5a7fa0;
 }
 
 .inputDark::placeholder {
-  color: #b8c5d1;
+  color: #8ca8c0;
 }
 
 .inputDark:focus {
-  background: #23344f;
-  border-color: #4a6072;
+  background: #162333;
+  border-color: #6a9fc0;
   outline: none;
-  box-shadow: 0 0 0 0.2rem rgba(74, 96, 114, 0.25);
+  box-shadow: 0 0 0 0.2rem rgba(106, 159, 192, 0.3);
 }
 
 /* Dark mode for date input */
 .darkMode input[type="date"] {
-  background: #1b2a41;
-  color: #ffffff;
-  border-color: #3a506b;
+  background: #0f1e30;
+  color: #f0f4f8;
+  border-color: #5a7fa0;
   color-scheme: dark;
 }
 
@@ -401,9 +401,9 @@
 }
 
 .darkMode .filterInput {
-  background: #1b2a41;
-  color: #ffffff;
-  border-color: #3a506b;
+  background: #0f1e30;
+  color: #f0f4f8;
+  border-color: #5a7fa0;
 }
 
 .darkMode .filterInput:focus {
@@ -462,21 +462,21 @@
 
 /* Dark mode for select dropdowns */
 .darkMode select {
-  background: #1b2a41;
-  color: #ffffff;
-  border-color: #3a506b;
+  background: #0f1e30;
+  color: #f0f4f8;
+  border-color: #5a7fa0;
 }
 
 .darkMode select:focus {
-  background: #23344f;
-  border-color: #4a6072;
+  background: #162333;
+  border-color: #6a9fc0;
   outline: none;
-  box-shadow: 0 0 0 0.2rem rgba(74, 96, 114, 0.25);
+  box-shadow: 0 0 0 0.2rem rgba(106, 159, 192, 0.3);
 }
 
 .darkMode option {
-  background: #1b2a41;
-  color: #ffffff;
+  background: #0f1e30;
+  color: #f0f4f8;
 }
 
 /* Ensure all text is visible in dark mode */
@@ -503,50 +503,63 @@
 }
 
 /* Dark mode for phone input component */
-.darkMode .react-tel-input .flag-dropdown {
-  background: #1b2a41 !important;
-  border-color: #3a506b !important;
+.darkMode :global(.react-tel-input .flag-dropdown) {
+  background: #0f1e30 !important;
+  border-color: #5a7fa0 !important;
 }
 
-.darkMode .react-tel-input .selected-flag {
-  background: #1b2a41 !important;
-  border-right: 1px solid #3a506b !important;
+.darkMode :global(.react-tel-input .selected-flag) {
+  background: #0f1e30 !important;
+  border-right: 1px solid #5a7fa0 !important;
 }
 
-.darkMode .react-tel-input .selected-flag:hover,
-.darkMode .react-tel-input .flag-dropdown:hover {
-  background: #23344f !important;
+.darkMode :global(.react-tel-input .selected-flag:hover),
+.darkMode :global(.react-tel-input .flag-dropdown:hover) {
+  background: #162333 !important;
 }
 
-.darkMode .react-tel-input .country-list {
-  background: #1b2a41 !important;
-  border-color: #3a506b !important;
+.darkMode :global(.react-tel-input .country-list) {
+  background: #0f1e30 !important;
+  border-color: #5a7fa0 !important;
 }
 
-.darkMode .react-tel-input .country-list .country {
-  background: #1b2a41 !important;
-  color: #ffffff !important;
+.darkMode :global(.react-tel-input .country-list .country) {
+  background: #0f1e30 !important;
+  color: #f0f4f8 !important;
 }
 
-.darkMode .react-tel-input .country-list .country:hover {
-  background: #23344f !important;
+.darkMode :global(.react-tel-input .country-list .country:hover) {
+  background: #162333 !important;
 }
 
-.darkMode .react-tel-input .form-control {
-  background: #1b2a41 !important;
-  color: #ffffff !important;
-  border-color: #3a506b !important;
-  /* Include bottom border to avoid duplicate selector later */
-  border-bottom: 1px solid #3a506b !important;
+.darkMode :global(.react-tel-input .form-control) {
+  background: #0f1e30 !important;
+  color: #f0f4f8 !important;
+  border-color: #5a7fa0 !important;
+  border-bottom: 1px solid #5a7fa0 !important;
 }
 
-.darkMode .react-tel-input .form-control:focus {
-  background: #23344f !important;
-  border-color: #4a6072 !important;
-  box-shadow: 0 0 0 0.2rem rgba(74, 96, 114, 0.25) !important;
+.darkMode :global(.react-tel-input .form-control:focus) {
+  background: #162333 !important;
+  border-color: #6a9fc0 !important;
+  box-shadow: 0 0 0 0.2rem rgba(106, 159, 192, 0.3) !important;
 }
 
-/* Removed duplicate .darkMode .react-tel-input .form-control selector (merged above) */
+/* Dark mode for phone dropdown search box */
+.darkMode :global(.react-tel-input .search) {
+  background: #0f1e30 !important;
+  padding: 4px !important;
+}
+
+.darkMode :global(.react-tel-input .search-box) {
+  background: #0f1e30 !important;
+  color: #f0f4f8 !important;
+  border-color: #5a7fa0 !important;
+}
+
+.darkMode :global(.react-tel-input .search-box::placeholder) {
+  color: #8ca8c0 !important;
+}
 
 /* Dark mode button styles */
 .darkMode .submitBtn {
