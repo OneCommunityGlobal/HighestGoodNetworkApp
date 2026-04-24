@@ -42,10 +42,10 @@ export default defineConfig(({ mode }) => {
     ],
     test: {
       environment: 'jsdom',
-      css: {
-        modules: {
-          classNameStrategy: 'non-scoped',
-        },
+      setupFiles: ['./src/setupTests.js'],
+      css: true,
+      moduleNameMapper: {
+        '\\.module\\.(css|less|scss|sass)$': '<rootDir>/src/__mocks__/styleMock.js',
       },
     },
     optimizeDeps: {

@@ -13,7 +13,8 @@ describe('ReportBlock component', () => {
   it('applies custom class names correctly', () => {
     render(<ReportBlock className={styles['custom-class']} />);
     const wrapper = screen.getByTestId('report-block-wrapper');
-    expect(wrapper).toHaveClass(`${styles['report-block-wrapper']} custom-class`);
+    expect(wrapper.className).toMatch(/report-block-wrapper/);
+    expect(wrapper.className).toMatch(/custom-class/);
   });
 
   it('renders with linear gradient when secondColor prop is provided', () => {
