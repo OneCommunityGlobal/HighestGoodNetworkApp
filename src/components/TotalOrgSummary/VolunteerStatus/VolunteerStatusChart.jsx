@@ -2,9 +2,16 @@ import { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import Loading from '~/components/common/Loading';
 import VolunteerStatusPieChart from './VolunteerStatusPieChart';
+import MentorStatusPieChart from './MentorStatusPieChart';
+import styles from './VolunteerStatusChart.module.css';
 
-function VolunteerStatusChart({ isLoading, volunteerNumberStats, comparisonType }) {
-  const chartData = useMemo(() => {
+function VolunteerStatusChart({
+  isLoading,
+  volunteerNumberStats,
+  mentorNumberStats,
+  comparisonType,
+}) {
+  const volunteerChartData = useMemo(() => {
     if (!volunteerNumberStats) {
       return null;
     }
@@ -42,8 +49,43 @@ function VolunteerStatusChart({ isLoading, volunteerNumberStats, comparisonType 
     };
   }, [volunteerNumberStats]);
 
+  const mentorChartData = useMemo(() => {
+    if (!mentorNumberStats) {
+      return null;
+    }
+
+    const {
+      donutChartData,
+      activeMentors,
+      deactivatedMentors,
+      newMentors,
+      totalMentors,
+    } = mentorNumberStats;
+
+    let chartDataValues;
+    if (donutChartData && donutChartData.existingActive !== undefined) {
+      chartDataValues = [
+        { label: 'Existing Active', value: donutChartData.existingActive.count },
+        { label: 'New Active', value: donutChartData.newActive.count },
+        { label: 'Deactivated', value: donutChartData.deactivated.count },
+      ];
+    } else {
+      chartDataValues = [
+        { label: 'Active', value: activeMentors.count },
+        { label: 'New', value: newMentors.count },
+        { label: 'Deactivated This Week', value: deactivatedMentors.count },
+      ];
+    }
+
+    return {
+      totalMentors: totalMentors.count,
+      percentageChange: Number(totalMentors.comparisonPercentage) || 0,
+      data: chartDataValues,
+    };
+  }, [mentorNumberStats]);
+
   return (
-    <section className="mt-4">
+    <section className={styles.chartRoot}>
       {isLoading ? (
         <div className="d-flex justify-content-center align-items-center">
           <div className="w-100vh">
@@ -51,7 +93,28 @@ function VolunteerStatusChart({ isLoading, volunteerNumberStats, comparisonType 
           </div>
         </div>
       ) : (
-        <VolunteerStatusPieChart data={chartData} comparisonType={comparisonType} />
+        <>
+          <div className={styles.volunteerMentorChartsWrapper}>
+            <div className={styles.volunteerChartSection}>
+              {volunteerChartData && (
+                <VolunteerStatusPieChart
+                  data={volunteerChartData}
+                  comparisonType={comparisonType}
+                />
+              )}
+            </div>
+            {mentorChartData && (
+              <div className={styles.mentorChartSection}>
+                <MentorStatusPieChart data={mentorChartData} comparisonType={comparisonType} />
+              </div>
+            )}
+          </div>
+          {(volunteerChartData || mentorChartData) && (
+            <p className={styles.volunteerMentorFootnote}>
+              *Does not include the “Mentor” members shown in the graph to the right.
+            </p>
+          )}
+        </>
       )}
     </section>
   );
@@ -82,6 +145,32 @@ VolunteerStatusChart.propTypes = {
       count: PropTypes.number,
     }),
     totalVolunteers: PropTypes.shape({
+      count: PropTypes.number,
+      comparisonPercentage: PropTypes.number,
+    }),
+  }),
+  mentorNumberStats: PropTypes.shape({
+    donutChartData: PropTypes.shape({
+      existingActive: PropTypes.shape({
+        count: PropTypes.number,
+      }),
+      newActive: PropTypes.shape({
+        count: PropTypes.number,
+      }),
+      deactivated: PropTypes.shape({
+        count: PropTypes.number,
+      }),
+    }),
+    activeMentors: PropTypes.shape({
+      count: PropTypes.number,
+    }),
+    newMentors: PropTypes.shape({
+      count: PropTypes.number,
+    }),
+    deactivatedMentors: PropTypes.shape({
+      count: PropTypes.number,
+    }),
+    totalMentors: PropTypes.shape({
       count: PropTypes.number,
       comparisonPercentage: PropTypes.number,
     }),

@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
+import badgeBg from './Badges.module.css';
+
 import {
   Container,
   Row,
@@ -117,7 +119,7 @@ function Badge(props) {
         <Row
           className={`${
             darkMode
-              ? `${styles['badge-box-shadow-dark']} bg-space-cadet`
+              ? `${styles['badge-box-shadow-dark']} ${badgeBg.bgSpaceCadet}`
               : `${styles['bagde-box-shadow']}`
           }`}
           style={{ minWidth: '100%', marginLeft: '2px' }}
@@ -197,7 +199,7 @@ function Badge(props) {
         toggle={toggleTypes}
         className={darkMode ? 'text-light dark-mode' : ''}
       >
-        <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={toggleTypes}>
+        <ModalHeader className={darkMode ? badgeBg.bgSpaceCadet : ''} toggle={toggleTypes}>
           Badge Types and Assignment
         </ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
