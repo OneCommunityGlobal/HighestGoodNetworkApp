@@ -18,6 +18,7 @@ import {
 
 import DemandOverTime from './LbAnalytics/DemandOverTime/DemandOverTime';
 import ReviewWordCloud from './ReviewWordCloud/ReviewWordCloud';
+import CancellationImpactOnVacancy from './LbAnalytics/CancellationImpactOnVacancy/CancellationImpactOnVacancy';
 import SentimentBreakdownDonutChart from './SentimentBreakdownDonutChart/SentimentBreakdownDonutChart';
 import ReviewVolumeOverTimeChart from './ReviewVolumeOverTimeChart/ReviewVolumeOverTimeChart';
 import { CompareBarGraph } from './BarGraphs/CompareGraphs';
@@ -305,12 +306,17 @@ export function LBDashboard() {
     };
   }, []);
 
-  const dateRange = [
-    moment()
-      .subtract(1, 'year')
-      .startOf('month'),
-    moment().endOf('month'),
-  ];
+  // Stable reference so opening metric dropdowns does not retrigger DemandOverTime's effect
+  // (which would regenerate random series and make the line charts appear to "jump").
+  const dateRange = useMemo(
+    () => [
+      moment()
+        .subtract(1, 'year')
+        .startOf('month'),
+      moment().endOf('month'),
+    ],
+    [],
+  );
 
   const getMetricLabel = () => {
     const all = Object.values(METRIC_OPTIONS).flat();
@@ -502,6 +508,14 @@ export function LBDashboard() {
                 { label: 'Properties', value: 'ALL' },
               ]}
             />
+          </Col>
+        </Row>
+      </AnalysisSection>
+
+      <AnalysisSection title="Vacancy Rate and Cancellation Rate" darkMode={darkMode}>
+        <Row>
+          <Col>
+            <CancellationImpactOnVacancy darkMode={darkMode} />
           </Col>
         </Row>
       </AnalysisSection>

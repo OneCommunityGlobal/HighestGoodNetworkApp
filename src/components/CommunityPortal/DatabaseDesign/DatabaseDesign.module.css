@@ -250,15 +250,16 @@
   color: #1e40af;
 }
 
+.inPersonEvent .formatBadge {
+  background: #d1fae5;
+  color: #065f46;
+}
+
 .darkMode .virtualEvent .formatBadge {
   background: #1e3a8a;
   color: #bfdbfe;
 }
 
-.inPersonEvent .formatBadge {
-  background: #d1fae5;
-  color: #065f46;
-}
 
 .darkMode .inPersonEvent .formatBadge {
   background: #064e3b;
@@ -383,14 +384,6 @@
   gap: 6px;
 }
 
-.actionButton:hover:not(:disabled) {
-  background: #2563eb;
-}
-
-.actionButton:active:not(:disabled) {
-  background: #1d4ed8;
-}
-
 .actionButton:disabled {
   opacity: 0.6;
   cursor: not-allowed;
@@ -398,6 +391,15 @@
 
 .darkMode .actionButton {
   background: #1e40af;
+}
+
+
+.actionButton:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.actionButton:active:not(:disabled) {
+  background: #1d4ed8;
 }
 
 .darkMode .actionButton:hover:not(:disabled) {
@@ -594,4 +596,25 @@
   .actionButton {
     width: 100%;
   }
+}
+
+.waitlistBadge {
+  background-color: #f0ad4e;
+  color: white;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  margin-left: 8px;
+}
+
+.waitlistPosition {
+  font-size: 13px;
+  color: #6c757d;
+  margin-top: 4px;
+}
+
+.waitlistAvailable {
+  font-size: 13px;
+  color: #f0ad4e;
+  margin-top: 4px;
 }

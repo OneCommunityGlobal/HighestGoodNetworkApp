@@ -9,7 +9,7 @@ import {
   fetchListingAvailability,
   fetchListingById,
   resetBooking,
-} from '../../../actions/lbDashboard/listOverviewAction';
+} from '../../../actions/lbdashboard/listOverviewAction';
 import logo from '../../../assets/images/logo2.png';
 import mapIcon from '../../../assets/images/mapIcon.png';
 

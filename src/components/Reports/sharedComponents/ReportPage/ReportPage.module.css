@@ -9,14 +9,17 @@
   padding-right: 24px;
 }
 
+.report-page-wrapper-dark {
+  background-color: #0b1d3a !important;
+}
+
 .report-page-content {
   display: flex;
   flex-direction: column;
   row-gap: 32px;
   width: 100%;
-  min-width: 0; /* allow children to shrink if needed */
+  min-width: 0;
 }
-
 
 .report-page-profile {
   border-radius: 25px;

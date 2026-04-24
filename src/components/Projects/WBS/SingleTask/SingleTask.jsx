@@ -72,7 +72,7 @@ function SingleTask(props) {
 
   return (
     <>
-      <div className={`${darkMode ? 'bg-oxford-blue' : 'bg-white'} h-100`}>
+      <div className={`${darkMode ? 'bg-oxford-blue' : 'bg-white'} h-100`} style={{ minHeight: '400px' }}>
         <ReactTooltip />
         <div className={styles['container-single-task']}>
           {canPostProject && (
