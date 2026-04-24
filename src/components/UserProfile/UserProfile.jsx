@@ -766,7 +766,7 @@ setUpdatedTasks(prev => {
           description: summary,
           createdDate: moment().format('YYYY-MM-DD'),
           authorFirstName: first,
-          authorLastName: last
+          authorLastName: last,
           // Track manual assignment - note: backend uses 'manullyAssigned' (typo in field name)
           manullyAssigned: true,
           manullyAssignedBy: requestorId,
