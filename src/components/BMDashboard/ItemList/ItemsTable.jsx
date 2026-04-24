@@ -4,8 +4,6 @@ import { BiPencil } from 'react-icons/bi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSortDown, faSort, faSortUp } from '@fortawesome/free-solid-svg-icons';
 import RecordsModal from './RecordsModal';
-import MaterialUsageChart from '../MaterialUsage/MaterialUsageChart';
-import styles from './ItemListView.module.css';
 
 export default function ItemsTable({
   selectedProject,
@@ -22,8 +20,6 @@ export default function ItemsTable({
   const [recordType, setRecordType] = useState('');
   const [updateModal, setUpdateModal] = useState(false);
   const [updateRecord, setUpdateRecord] = useState(null);
-  const [showChartModal, setShowChartModal] = useState(false);
-  const [chartProjectId, setChartProjectId] = useState(null);
   const [projectNameCol, setProjectNameCol] = useState({
     iconsToDisplay: faSort,
     sortOrder: 'default',
@@ -32,13 +28,6 @@ export default function ItemsTable({
     iconsToDisplay: faSort,
     sortOrder: 'default',
   });
-
-  const [boughtCol, setBoughtCol] = useState({ iconsToDisplay: faSort, sortOrder: 'default' });
-  const [usedCol, setUsedCol] = useState({ iconsToDisplay: faSort, sortOrder: 'default' });
-  const [availableCol, setAvailableCol] = useState({
-    iconsToDisplay: faSort,
-  });
-  const [wastedCol, setWastedCol] = useState({ iconsToDisplay: faSort, sortOrder: 'default' });
 
   useEffect(() => {
     setData(filteredItems);
@@ -57,24 +46,9 @@ export default function ItemsTable({
   };
 
   const handleViewRecordsClick = (data, type) => {
-    if (type === 'UsageRecord') {
-      // For UsageRecord, show the chart directly
-      const projectId = data.project?._id || data.projectId;
-      if (projectId) {
-        setChartProjectId(projectId);
-        setShowChartModal(true);
-      } else {
-        // If no project ID, fall back to the regular modal
-        setModal(true);
-        setRecord(data);
-        setRecordType(type);
-      }
-    } else {
-      // For other record types, show the regular modal
-      setModal(true);
-      setRecord(data);
-      setRecordType(type);
-    }
+    setModal(true);
+    setRecord(data);
+    setRecordType(type);
   };
 
   const sortData = columnName => {
@@ -106,70 +80,15 @@ export default function ItemsTable({
       }
       setProjectNameCol({ iconsToDisplay: faSort, sortOrder: 'default' });
     }
-    // Sorting for Bought
-    if (columnName === 'Bought') {
-      if (boughtCol.sortOrder === 'default' || boughtCol.sortOrder === 'desc') {
-        newSortedData.sort((a, b) => (a.stockBought || 0) - (b.stockBought || 0));
-        setBoughtCol({ iconsToDisplay: faSortUp, sortOrder: 'asc' });
-      } else {
-        newSortedData.sort((a, b) => (b.stockBought || 0) - (a.stockBought || 0));
-        setBoughtCol({ iconsToDisplay: faSortDown, sortOrder: 'desc' });
-      }
-      resetOtherDynamicColumns('Bought');
-    }
 
-    // Sorting for Used
-    if (columnName === 'Used') {
-      if (usedCol.sortOrder === 'default' || usedCol.sortOrder === 'desc') {
-        newSortedData.sort((a, b) => (a.stockUsed || 0) - (b.stockUsed || 0));
-        setUsedCol({ iconsToDisplay: faSortUp, sortOrder: 'asc' });
-      } else {
-        newSortedData.sort((a, b) => (b.stockUsed || 0) - (a.stockUsed || 0));
-        setUsedCol({ iconsToDisplay: faSortDown, sortOrder: 'desc' });
-      }
-      resetOtherDynamicColumns('Used');
-    }
-
-    // Sorting for Available
-    if (columnName === 'Available') {
-      if (availableCol.sortOrder === 'default' || availableCol.sortOrder === 'desc') {
-        newSortedData.sort((a, b) => (a.stockAvailable || 0) - (b.stockAvailable || 0));
-        setAvailableCol({ iconsToDisplay: faSortUp, sortOrder: 'asc' });
-      } else {
-        newSortedData.sort((a, b) => (b.stockAvailable || 0) - (a.stockAvailable || 0));
-        setAvailableCol({ iconsToDisplay: faSortDown, sortOrder: 'desc' });
-      }
-      resetOtherDynamicColumns('Available');
-    }
-
-    // Sorting for Wasted
-    if (columnName === 'Wasted') {
-      if (wastedCol.sortOrder === 'default' || wastedCol.sortOrder === 'desc') {
-        newSortedData.sort((a, b) => (a.stockWasted || 0) - (b.stockWasted || 0));
-        setWastedCol({ iconsToDisplay: faSortUp, sortOrder: 'asc' });
-      } else {
-        newSortedData.sort((a, b) => (b.stockWasted || 0) - (a.stockWasted || 0));
-        setWastedCol({ iconsToDisplay: faSortDown, sortOrder: 'desc' });
-      }
-      resetOtherDynamicColumns('Wasted');
-    }
     setData(newSortedData);
   };
 
-  const getNestedValue = (obj, path) => {
-    return path.split('.').reduce((acc, part) => (acc ? acc[part] : null), obj);
-  };
-
-  const resetOtherDynamicColumns = active => {
-    if (active !== 'Bought') setBoughtCol({ iconsToDisplay: faSort, sortOrder: 'default' });
-    if (active !== 'Used') setUsedCol({ iconsToDisplay: faSort, sortOrder: 'default' });
-    if (active !== 'Available') setAvailableCol({ iconsToDisplay: faSort, sortOrder: 'default' });
-    if (active !== 'Wasted') setWastedCol({ iconsToDisplay: faSort, sortOrder: 'default' });
-  };
+  const getNestedValue = (obj, path) =>
+    path.split('.').reduce((acc, part) => (acc ? acc[part] : null), obj);
 
   return (
     <>
-      {/* Regular Records Modal for Update and Purchase records */}
       <RecordsModal
         modal={modal}
         setModal={setModal}
@@ -178,82 +97,160 @@ export default function ItemsTable({
         recordType={recordType}
         itemType={itemType}
       />
-
-      {/* Direct Chart Modal for Usage Records */}
-      {showChartModal && chartProjectId && (
-        <MaterialUsageChart projectId={chartProjectId} toggle={() => setShowChartModal(false)} />
-      )}
-
       <UpdateItemModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
-      <div className={`${styles.itemsTableContainer} ${darkMode ? styles.darkTableWrapper : ''}`}>
-        <Table className={darkMode ? styles.darkTable : ''}>
-          <thead>
-            <tr>
+      {darkMode && (
+        <style>
+          {`
+            .dark-mode .items_table_container .table thead th {
+              background-color: #1C2541 !important;
+              color: #ffffff !important;
+              border-color: #555 !important;
+            }
+
+            .dark-mode .items_table_container .table thead tr {
+              background-color: #1C2541 !important;
+            }
+
+            .dark-mode .items_table_container .table tbody tr:hover {
+              background-color: #1C2541 !important;
+            }
+          `}
+        </style>
+      )}
+      <div
+        className={`items_table_container ${
+          darkMode ? 'items_table_container_dark dark-mode' : ''
+        }`}
+        style={darkMode ? { backgroundColor: '#3A506B' } : {}}
+      >
+        <Table
+          className={darkMode ? 'dark-table' : ''}
+          style={
+            darkMode ? { backgroundColor: '#3A506B', color: '#ffffff', borderColor: '#444' } : {}
+          }
+        >
+          <thead
+            className={darkMode ? 'dark-thead' : ''}
+            style={darkMode ? { backgroundColor: '#1C2541', color: '#ffffff' } : {}}
+          >
+            <tr style={darkMode ? { backgroundColor: '#1C2541' } : {}}>
               {selectedProject === 'all' ? (
-                <th onClick={() => sortData('ProjectName')}>
+                <th
+                  className={darkMode ? 'dark-th' : ''}
+                  style={
+                    darkMode
+                      ? { backgroundColor: '#1C2541', color: '#ffffff', borderColor: '#555' }
+                      : {}
+                  }
+                  onClick={() => sortData('ProjectName')}
+                >
                   Project <FontAwesomeIcon icon={projectNameCol.iconsToDisplay} size="lg" />
                 </th>
               ) : (
-                <th>Project</th>
+                <th
+                  className={darkMode ? 'dark-th' : ''}
+                  style={
+                    darkMode
+                      ? { backgroundColor: '#1C2541', color: '#ffffff', borderColor: '#555' }
+                      : {}
+                  }
+                >
+                  Project
+                </th>
               )}
               {selectedItem === 'all' ? (
-                <th onClick={() => sortData('InventoryItemType')}>
+                <th
+                  className={darkMode ? 'dark-th' : ''}
+                  style={
+                    darkMode
+                      ? { backgroundColor: '#1C2541', color: '#ffffff', borderColor: '#555' }
+                      : {}
+                  }
+                  onClick={() => sortData('InventoryItemType')}
+                >
                   Name <FontAwesomeIcon icon={inventoryItemTypeCol.iconsToDisplay} size="lg" />
                 </th>
               ) : (
-                <th>Name</th>
+                <th
+                  className={darkMode ? 'dark-th' : ''}
+                  style={
+                    darkMode
+                      ? { backgroundColor: '#1C2541', color: '#ffffff', borderColor: '#555' }
+                      : {}
+                  }
+                >
+                  Name
+                </th>
               )}
-              {dynamicColumns.map(({ label }) => {
-                const stateMap = {
-                  Bought: boughtCol,
-                  Used: usedCol,
-                  Available: availableCol,
-                  Wasted: wastedCol,
-                };
-
-                return (
-                  <th key={label} onClick={() => sortData(label)}>
-                    {label}{' '}
-                    <FontAwesomeIcon icon={stateMap[label]?.iconsToDisplay || faSort} size="lg" />
-                  </th>
-                );
-              })}
-              <th>Usage Record</th>
-              <th>Updates</th>
-              <th>Purchases</th>
+              {dynamicColumns.map(({ label, key }) => (
+                <th
+                  className={darkMode ? 'dark-th' : ''}
+                  style={
+                    darkMode
+                      ? { backgroundColor: '#1C2541', color: '#ffffff', borderColor: '#555' }
+                      : {}
+                  }
+                  key={label}
+                >
+                  {label}
+                </th>
+              ))}
+              <th
+                className={darkMode ? 'dark-th' : ''}
+                style={
+                  darkMode
+                    ? { backgroundColor: '#1C2541', color: '#ffffff', borderColor: '#555' }
+                    : {}
+                }
+              >
+                Updates
+              </th>
+              <th
+                className={darkMode ? 'dark-th' : ''}
+                style={
+                  darkMode
+                    ? { backgroundColor: '#1C2541', color: '#ffffff', borderColor: '#555' }
+                    : {}
+                }
+              >
+                Purchases
+              </th>
             </tr>
           </thead>
 
-          <tbody>
+          <tbody
+            className={darkMode ? 'dark-tbody' : ''}
+            style={darkMode ? { backgroundColor: '#3A506B', color: '#ffffff' } : {}}
+          >
             {sortedData && sortedData.length > 0 ? (
-              sortedData.map(el => {
-                return (
-                  <tr key={el._id}>
-                    <td>{el.project?.name}</td>
-                    <td>{el.itemType?.name}</td>
-                    {dynamicColumns.map(({ label, key }) => (
-                      <td key={label}>{getNestedValue(el, key)}</td>
-                    ))}
-                    <td className={`${styles.itemsCell}`}>
-                      <button
-                        type="button"
-                        onClick={() => handleEditRecordsClick(el, 'UsageRecord')}
-                        aria-label="Edit Record"
-                      >
-                        <BiPencil />
-                      </button>
-                      <Button
-                        color="primary"
-                        outline
-                        size="sm"
-                        onClick={() => handleViewRecordsClick(el, 'UsageRecord')}
-                      >
-                        View
-                      </Button>
+              sortedData.map(el => (
+                <tr
+                  key={el._id}
+                  className={darkMode ? 'dark-row' : ''}
+                  style={
+                    darkMode ? { backgroundColor: '#3A506B', borderBottom: '1px solid #333' } : {}
+                  }
+                >
+                  <td style={darkMode ? { color: '#ffffff' } : {}}>{el.project?.name}</td>
+                  <td style={darkMode ? { color: '#ffffff' } : {}}>{el.itemType?.name}</td>
+                  {dynamicColumns.map(({ label, key }) => (
+                    <td key={label} style={darkMode ? { color: '#ffffff' } : {}}>
+                      {getNestedValue(el, key)}
                     </td>
-                    <td className={`${styles.itemsCell}`}>
+                  ))}
+                  <td className="items_cell">
+                    <div
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '10px',
+                        flexWrap: 'nowrap',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
                       <button
                         type="button"
+                        style={darkMode ? { color: '#4a90e2' } : {}}
                         onClick={() => handleEditRecordsClick(el, 'Update')}
                         aria-label="Edit Record"
                       >
@@ -261,26 +258,28 @@ export default function ItemsTable({
                       </button>
                       <Button
                         color="primary"
-                        outline
+                        outline={!darkMode}
+                        style={darkMode ? { borderColor: '#4a90e2', color: '#ffffff' } : {}}
                         size="sm"
                         onClick={() => handleViewRecordsClick(el, 'Update')}
                       >
                         View
                       </Button>
-                    </td>
-                    <td>
-                      <Button
-                        color="primary"
-                        outline
-                        size="sm"
-                        onClick={() => handleViewRecordsClick(el, 'Purchase')}
-                      >
-                        View
-                      </Button>
-                    </td>
-                  </tr>
-                );
-              })
+                    </div>
+                  </td>
+                  <td>
+                    <Button
+                      color="primary"
+                      outline={!darkMode}
+                      style={darkMode ? { borderColor: '#4a90e2', color: '#ffffff' } : {}}
+                      size="sm"
+                      onClick={() => handleViewRecordsClick(el, 'Purchase')}
+                    >
+                      View
+                    </Button>
+                  </td>
+                </tr>
+              ))
             ) : (
               <tr>
                 <td colSpan={11} style={{ textAlign: 'center' }}>

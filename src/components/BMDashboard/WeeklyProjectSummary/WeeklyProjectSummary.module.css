@@ -1,9 +1,10 @@
+/* stylelint-disable no-descending-specificity */
+
 /* ---------------- PAGE CONTAINER ---------------- */
 .weeklyProjectSummaryContainer {
   min-height: 100vh;
   background-color: var(--bg-color);
   color: var(--text-color);
-  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .weeklyProjectSummaryContainer html,
@@ -13,6 +14,7 @@
   padding: 0;
 }
 
+/* ---------------- DASHBOARD CONTAINER ---------------- */
 .weeklyProjectSummaryDashboardContainer {
   width: 95%;
   margin: auto;
@@ -23,11 +25,6 @@
 
 .weeklyProjectSummaryHeaderWrapper {
   background-color: var(--bg-color) !important;
-  transition: background-color 0.3s ease;
-}
-
-.weeklyProjectSummaryContainer * {
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 /* ---------------- HEADER ---------------- */
@@ -35,71 +32,72 @@
   display: flex;
   justify-content: center;
   width: 100%;
-  background-color: var(--bg-color);
 }
 
+/* Header Container */
 .weeklySummaryHeaderContainer {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   justify-content: space-between;
-  width: 80%;
-  padding: 16px;
+  width: 88%;
+  max-width: 1280px;
+  padding: 12px 16px;
   background: var(--section-bg);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
   border-radius: 8px;
-  transition: all 0.3s ease;
-  min-height: 80px;
+  gap: 12px;
 }
 
+/* Title */
 .weeklySummaryHeaderTitle {
-  padding-top: 5px;
+  margin: 0;
+  line-height: 1.2;
   color: var(--text-color);
-  font-size: x-large;
-  text-align: center;
-  flex-wrap: wrap;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  font-size: 32px;
+  font-weight: 700;
+  text-align: left;
+  flex: 0 0 auto;
 }
 
-.weeklySummaryHeaderSubtitle {
-  font-size: 14px;
-  opacity: 0.7;
-  font-weight: normal;
-}
-
+/* Header Controls */
 .weeklySummaryHeaderControls {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  margin-left: auto;
+  min-width: 0; /* allow selects to shrink instead of crushing the button */
 }
 
-/* Fix for select dropdown arrows */
+/* Reactstrap Input adds .form-control — match box model to the Share PDF button */
+.weeklySummaryHeaderControls :global(.form-control) {
+  box-sizing: border-box;
+  height: 38px !important;
+  min-height: 38px;
+  padding: 0 12px !important;
+  margin: 0 !important;
+  line-height: 1.25 !important;
+  font-size: 14px;
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 220px;
+}
+
+/* Dropdown Styling */
 .weeklySummaryHeaderControls select {
-  padding: 8px 32px 8px 12px;
+  height: 38px;
+  min-height: 38px;
+  padding: 0 12px;
   border: 1px solid var(--border-color, #ccc);
   border-radius: 6px;
-  min-width: 200px;
+  min-width: 128px;
   font-size: 14px;
   background: var(--section-bg);
   color: var(--text-color);
-  transition: all 0.3s ease;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
-  background-repeat: no-repeat;
-  background-position: right 8px center;
-  background-size: 16px;
-}
-
-.darkMode .weeklySummaryHeaderControls select {
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
-  background-color: var(--card-bg) !important;
-  color: var(--text-color) !important;
-  border-color: var(--card-shadow) !important;
+  box-sizing: border-box;
+  line-height: 1.25;
+  vertical-align: middle;
 }
 
 .weeklySummaryHeaderControls select:focus {
@@ -107,57 +105,81 @@
   border-color: var(--focus-border-color, #3b82f6);
 }
 
+/* Dropdown Hover */
 .weeklySummaryHeaderControls select:hover {
   background-color: var(--section-title-hover) !important;
 }
 
-.darkMode select option {
-  background-color: var(--card-bg);
-  color: var(--text-color);
-}
+/* Share Button — override Bootstrap .btn so it lines up with .form-control selects */
 
-/* Share PDF Button - Fixed */
+/* Bootstrap .btn defaults to flex-shrink: 1; when the row is tight the button shrinks and
+   the label overflows outside the painted background (overlapping the last dropdown). */
 .weeklySummaryShareBtn {
+  height: 38px !important;
+  min-height: 38px;
+  min-width: 7.25rem;
+  padding: 0 14px !important;
+  margin: 0 !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.25 !important;
+  box-sizing: border-box;
+  border-width: 1px;
+  vertical-align: middle;
+  align-self: center;
+  flex: 0 0 auto;
+  flex-shrink: 0;
   background-color: var(--button-bg) !important;
   color: white;
   font-family: inherit;
   white-space: nowrap;
-  border-radius: 8px !important;
+  border-radius: 6px !important;
   transition: background 0.2s ease-in-out;
-  padding: 8px 16px;
-  border: none;
-  cursor: pointer;
-  font-weight: 500;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 100px;
-  font-size: 14px;
-  line-height: 1.5;
 }
 
-.weeklySummaryShareBtn:hover {
+/* Bootstrap .btn can add vertical offset; align with selects */
+.weeklySummaryHeaderControls :global(button.btn) {
+  margin: 0 !important;
+  vertical-align: middle;
+}
+
+.weeklySummaryShareBtn:hover:not(:disabled) {
   background-color: var(--button-hover) !important;
 }
 
-.weeklySummaryShareBtn:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
-}
-
 .weeklySummaryShareBtn:disabled {
-  opacity: 0.6;
+  opacity: 0.7;
   cursor: not-allowed;
 }
 
-/* ---------------- DASHBOARD ---------------- */
+/* Spinner for PDF generation */
+.spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgb(255 255 255 / 30%);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 0.8s linear infinite;
+  margin-right: 8px;
+  vertical-align: middle;
+}
 
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------------- GRID ---------------- */
 .weeklyProjectSummaryDashboardGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 15px;
 }
 
+/* .weeklyProjectSummaryDashboardSection options */
 .full {
   grid-column: span 4;
 }
@@ -175,62 +197,18 @@
 }
 
 /* ---------------- CARDS ---------------- */
+
 .weeklyProjectSummaryCard {
+  background: var(--card-bg);
   padding: 10px;
   border-radius: 6px;
   text-align: center;
   box-shadow: 0 2px 5px var(--card-shadow);
-  transition: all 0.3s ease;
-  background: var(--card-bg);
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
 }
 
 .darkMode .weeklyProjectSummaryCard {
   background: var(--card-bg);
-  box-shadow: 0 2px 5px rgba(255, 255, 255, 0.1);
-}
-
-.weeklyProjectSummaryCard :global(.container) {
-  background: #ffffff !important;
-  width: 100% !important;
-  height: 100% !important;
-  padding: 0 !important;
-  border: none !important;
-  box-shadow: none !important;
-}
-
-.darkMode .weeklyProjectSummaryCard :global(.container) {
-  background: #1e293b !important;
-}
-
-.weeklyProjectSummaryCard :global(.recharts-wrapper) {
-  width: 100% !important;
-  height: 100% !important;
-}
-
-.weeklyProjectSummaryCard :global(.recharts-surface) {
-  overflow: visible !important;
-}
-
-.weeklyProjectSummaryCard :global(.chartContainer) {
-  flex: 1;
-  min-height: 280px;
-  position: relative;
-}
-
-.weeklyProjectSummaryCard :global(.recharts-bar-rectangle) {
-  shape-rendering: geometricPrecision !important;
-}
-
-.weeklyProjectSummaryCard :global(.recharts-cartesian-axis-tick-value) {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
-}
-
-.weeklyProjectSummaryCard :global(.recharts-cartesian-grid-horizontal line) {
-  stroke-dasharray: 3 3 !important;
+  box-shadow: 0 2px 5px rgb(255 255 255 / 10%);
 }
 
 .financialSmall {
@@ -247,7 +225,7 @@
   padding: 0;
   background: white;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
   overflow: hidden;
   margin-bottom: 20px;
 }
@@ -278,8 +256,7 @@
 
 .normalCard {
   width: 100%;
-  min-height: 300px;
-  padding: 15px;
+  min-height: 250px;
 }
 
 .mapCard {
@@ -290,28 +267,12 @@
   grid-column: span 4;
 }
 
-/* ---------------- DASHBOARD SECTIONS ---------------- */
+/* ---------------- SECTION ---------------- */
 .weeklyProjectSummaryDashboardSection {
   background: var(--section-bg);
   border-radius: 8px;
   padding: 10px;
   box-shadow: 0 2px 4px var(--card-shadow);
-  transition: all 0.3s ease;
-}
-
-/* Fix for double arrows - ensure no pseudo-elements add extra arrows */
-.weeklyProjectSummaryDashboardCategoryTitle::before,
-.weeklyProjectSummaryDashboardCategoryTitle::after {
-  display: none !important;
-  content: none !important;
-}
-
-/* Ensure the button only shows our arrow span */
-.weeklyProjectSummaryDashboardCategoryTitle span {
-  display: inline-block;
-  margin-left: 8px;
-  font-size: 16px;
-  font-weight: bold;
 }
 
 .weeklyProjectSummaryDashboardCategoryTitle {
@@ -324,10 +285,6 @@
   justify-content: space-between;
   align-items: center;
   color: var(--text-color);
-  border: none;
-  width: 100%;
-  transition: all 0.3s ease;
-  font-weight: 600;
 }
 
 .weeklyProjectSummaryDashboardCategoryTitle:hover {
@@ -335,18 +292,16 @@
 }
 
 .weeklyProjectSummaryDashboardCategoryContent {
-  padding: 20px;
-  width: 100%;
+  padding: 15px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
   border-top: 1px solid var(--card-shadow);
   animation: fadeIn 0.3s ease-in-out;
   background: var(--section-bg);
-  transition: all 0.3s ease;
 }
 
-.weeklyProjectSummaryDashboardCategoryContent > * {
-  width: 100%;
-}
-
+/* Adjust grid columns based on section size */
 .weeklyProjectSummaryDashboardSection.half .weeklyProjectSummaryDashboardCategoryContent {
   grid-template-columns: repeat(2, 1fr);
 }
@@ -355,97 +310,25 @@
   grid-template-columns: 1fr;
 }
 
-/* ---------------- LESSONS LEARNED SECTION ---------------- */
-.lessonsLearnedGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  width: 100%;
-  align-items: stretch;
-  min-height: 600px;
-}
-
-.lessonsCard {
-  min-height: 600px;
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px var(--card-shadow);
-  transition: all 0.3s ease;
-}
-
-/* ---------------- TOOLS TRACKING LAYOUT ---------------- */
-.toolsTrackingLayout {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-  width: 100%;
-}
-
-.toolsDonutWrap {
-  grid-column: span 1;
-  min-height: 300px;
-}
-
-/* ---------------- FINANCIALS GRID ---------------- */
-.financialsGrid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 15px;
-  width: 100%;
-}
-
-.financialsGrid .financialBig {
-  grid-column: span 4;
-  min-height: 400px;
-}
-
-/* ---------------- LABOR TIME GRID ---------------- */
-.laborTimeGrid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-  width: 100%;
-}
-
-/* ---------------- FINANCIALS TRACKING GRID ---------------- */
-.financialsTrackingGrid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 15px;
-  width: 100%;
-}
-
-/* ---------------- LIGHT MODE VARIABLES ---------------- */
+/* ---------------- DARK MODE VARIABLES ---------------- */
 :root {
-  --bg-color: #ffffff;
-  --text-color: #000000;
-  --text-secondary: #666666;
-  --card-bg: #ffffff;
-  --card-shadow: rgba(0, 0, 0, 0.1);
-  --section-bg: #ffffff;
-  --section-title-bg: #f8fafc;
-  --section-title-hover: #f1f5f9;
+  --bg-color: #fff;
+  --text-color: #000;
+  --card-bg: #fafafa;
+  --card-shadow: rgb(0 0 0 / 10%);
+  --section-bg: white;
+  --section-title-bg: white;
+  --section-title-hover: #e0e0e0;
   --button-bg: black;
   --button-hover: #333;
-  --border-color: #e5e7eb;
-  --pos-color: #15803d;
-  --neg-color: #b91c1c;
-  --neutral-change: rgba(0, 0, 0, 0.65);
-  --card-elev: rgba(0, 0, 0, 0.15);
-  --card-elev-hover: rgba(0, 0, 0, 0.18);
 }
 
-/* ---------------- DARK MODE VARIABLES ---------------- */
+/* ---------------- DARK MODE STYLES ---------------- */
 .darkMode {
   --bg-color: #1b2a41;
-  --text-color: #ffffff;
-  --text-secondary: #94a3b8;
+  --text-color: #fff;
   --card-bg: #2b3e59;
-  --card-shadow: rgba(255, 255, 255, 0.1);
+  --card-shadow: rgb(255 255 255 / 10%);
   --section-bg: #253342;
   --section-title-bg: #2d4059;
   --section-title-hover: #3a506b;
@@ -453,25 +336,29 @@
   --button-hover: #f5b13a;
   --border-color: #4a5a77;
   --focus-border-color: #e8a71c;
-  --pos-color: #22c55e;
-  --neg-color: #ef4444;
-  --neutral-change: rgba(255, 255, 255, 0.75);
-  --card-elev: rgba(0, 0, 0, 0.45);
-  --card-elev-hover: rgba(0, 0, 0, 0.6);
 }
 
+/* MERGED: keep background + FORCE all title text visible in dark mode */
 .darkMode .weeklyProjectSummaryDashboardCategoryTitle {
-  color: #ffffff;
   background: #2d4059;
+  color: #fff;
 }
 
 .darkMode .weeklyProjectSummaryDashboardCategoryTitle:hover {
   background: #3a506b;
 }
 
+.darkMode .weeklyProjectSummaryDashboardCategoryTitle span {
+  color: #fff;
+}
+
+.darkMode .weeklyProjectSummaryDashboardCategoryTitle * {
+  color: #fff;
+}
+
 .darkMode .weeklyProjectSummaryDashboardCategoryContent {
   background-color: var(--section-bg);
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  border-top: 1px solid rgb(255 255 255 / 20%);
 }
 
 .darkMode .weeklySummaryHeaderContainer {
@@ -479,66 +366,98 @@
   color: var(--text-color);
 }
 
-.darkMode .weeklySummaryShareBtn {
-  background-color: var(--button-bg) !important;
-}
-
-.darkMode .weeklySummaryShareBtn:hover {
-  background-color: var(--button-hover) !important;
-}
-
-.darkMode .statusCard {
-  background: var(--card-bg) !important;
-  color: var(--text-color) !important;
-  border-color: rgba(255, 255, 255, 0.1) !important;
-}
-
-.darkMode .weeklyCardTitle,
-.darkMode .weeklyStatusValue,
-.darkMode .weekly-status-change {
-  color: var(--text-color) !important;
-}
-
-/* Tooltip styles */
+/* ---------------- TOOLTIP SCROLL FIX ---------------- */
 .quantityOfMaterialsUsedChartTooltip {
   max-height: 80vh !important;
   overflow-y: auto !important;
   padding-right: 15px !important;
+
+  /* Firefox */
   scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.1);
+  scrollbar-color: rgb(0 0 0 / 30%) rgb(0 0 0 / 10%);
 }
 
+/* Chrome/Safari scrollbar */
 .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar {
   width: 8px;
 }
 
 .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.1);
+  background: rgb(0 0 0 / 10%);
   border-radius: 4px;
 }
 
 .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.3);
+  background: rgb(0 0 0 / 30%);
   border-radius: 4px;
 }
 
+/* Additional adjustments for dark mode if needed */
 .darkMode .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgb(255 255 255 / 10%);
 }
 
 .darkMode .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgb(255 255 255 / 30%);
 }
 
-/* Animation */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
+.darkMode .quantityOfMaterialsUsedChartTooltip {
+  scrollbar-color: rgb(255 255 255 / 30%) rgb(255 255 255 / 10%);
+}
+
+/* ---------------- RESPONSIVE DESIGN ---------------- */
+@media (width <= 1024px) {
+  .weeklySummaryHeaderContainer {
+    flex-direction: column;
+    align-items: stretch;
+    width: 95%;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+
+  .weeklySummaryHeaderControls {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  .weeklyProjectSummaryDashboardGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (width <= 768px) {
+  .weeklySummaryHeaderContainer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .weeklySummaryHeaderControls {
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .weeklySummaryHeaderControls select {
+    width: 100%;
+    max-width: none;
+  }
+
+  .weeklySummaryHeaderControls :global(.form-control) {
+    max-width: none;
+  }
+
+  .weeklySummaryShareBtn {
+    width: 100%;
+  }
+
+  .weeklyProjectSummaryDashboardGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .weeklyProjectSummaryDashboardSection.full,
+  .weeklyProjectSummaryDashboardSection.large,
+  .weeklyProjectSummaryDashboardSection.half,
+  .weeklyProjectSummaryDashboardSection.small {
+    grid-column: span 1;
   }
 }
 
@@ -553,14 +472,15 @@
   max-width: 284px;
   height: 190px;
   text-align: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 8px rgb(0 0 0 / 15%);
   padding: 20px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid rgb(0 0 0 / 10%);
   position: relative;
-  transition: all 0.3s ease;
 }
 
 /* ---------------- RESPONSIVE GRID LAYOUT ---------------- */
+
+/* MERGED: keep ONLY one projectStatusGrid */
 .projectStatusGrid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -572,6 +492,13 @@
   margin: auto;
 }
 
+/* .projectStatusGrid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(2, auto);
+  gap: 10px;
+} */
+
 /* ---------------- OVAL STATUS BUTTON ---------------- */
 .weeklyStatusButton {
   width: 130px;
@@ -580,296 +507,49 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 5px rgb(0 0 0 / 15%);
   margin: 12px 0;
-  transition: all 0.3s ease;
 }
 
 .weeklyCardTitle {
   color: #000;
   font-size: clamp(14px, 1.4vw, 18px);
   font-weight: 600;
-  transition: color 0.3s ease;
-}
-
-.darkMode .weeklyCardTitle {
-  color: var(--text-color) !important;
 }
 
 .weeklyStatusValue {
   color: #000;
   font-size: 40px;
   font-weight: 600;
-  transition: color 0.3s ease;
-}
-
-.darkMode .weeklyStatusValue {
-  color: var(--text-color) !important;
-}
-
-.weekly-status-change {
-  transition: color 0.3s ease;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.darkMode .weekly-status-change {
-  color: var(--text-color) !important;
 }
 
 /* ---------------- RESPONSIVE BREAKPOINTS ---------------- */
-
-/* Large Screens */
-@media (min-width: 1400px) {
-  .lessonsLearnedGrid {
-    min-height: 650px;
-  }
-  
-  .lessonsCard {
-    min-height: 650px;
-  }
-}
-
-@media (max-width: 1399px) and (min-width: 1200px) {
-  .lessonsLearnedGrid {
-    min-height: 600px;
-  }
-  
-  .lessonsCard {
-    min-height: 600px;
-  }
-}
-
-@media (max-width: 1199px) and (min-width: 992px) {
-  .lessonsLearnedGrid {
-    min-height: 550px;
-    gap: 20px;
-  }
-  
-  .lessonsCard {
-    min-height: 550px;
-  }
-}
-
-@media (max-width: 991px) and (min-width: 769px) {
-  .lessonsLearnedGrid {
-    min-height: 500px;
-    gap: 16px;
-  }
-  
-  .lessonsCard {
-    min-height: 500px;
-  }
-}
-
-/* Medium Screens */
-@media (max-width: 1024px) {
-  .weeklySummaryHeaderContainer {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .weeklySummaryHeaderControls {
-    flex-wrap: wrap;
-    justify-content: center;
-    width: 100%;
-  }
-
-  .weeklyProjectSummaryDashboardGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-/* Small Screens */
-@media (max-width: 768px) {
-  .weeklySummaryHeaderContainer {
-    flex-direction: column;
-    align-items: center;
-    width: 95%;
-  }
-
-  .weeklySummaryHeaderControls {
-    flex-direction: column;
-    gap: 10px;
-    width: 100%;
-  }
-
-  .weeklySummaryHeaderControls select {
-    width: 100%;
-  }
-
-  .weeklySummaryShareBtn {
-    width: 100%;
-    margin-top: 5px;
-  }
-
-  .weeklyProjectSummaryDashboardGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .weeklyProjectSummaryDashboardSection.full,
-  .weeklyProjectSummaryDashboardSection.large,
-  .weeklyProjectSummaryDashboardSection.half,
-  .weeklyProjectSummaryDashboardSection.small {
-    grid-column: span 1;
-  }
-
-  .projectStatusGrid {
-    grid-template-columns: 1fr;
-  }
-  
-  .weeklyProjectSummaryDashboardSection.half .weeklyProjectSummaryDashboardCategoryContent {
-    grid-template-columns: 1fr;
-  }
-  
-  .weeklyProjectSummaryCard :global(.chartContainer) {
-    min-height: 240px;
-  }
-  
-  .normalCard {
-    min-height: 280px;
-  }
-
-  .lessonsLearnedGrid {
-    grid-template-columns: 1fr;
-    gap: 16px;
-    min-height: auto;
-  }
-  
-  .lessonsCard {
-    min-height: 500px;
-  }
-  
-  .toolsTrackingLayout {
-    grid-template-columns: 1fr;
-  }
-  
-  .toolsDonutWrap {
-    grid-column: span 1;
-  }
-  
-  .financialsGrid {
-    grid-template-columns: 1fr;
-  }
-  
-  .financialsGrid .financialBig {
-    grid-column: span 1;
-  }
-  
-  .laborTimeGrid {
-    grid-template-columns: 1fr;
-  }
-  
-  .financialsTrackingGrid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Extra Small Screens */
-@media (max-width: 480px) {
-  .lessonsCard {
-    min-height: 450px;
-  }
-  
-  .weeklyProjectSummaryCard :global(.chartContainer) {
-    min-height: 220px;
-  }
-  
-  .normalCard {
-    min-height: 260px;
-  }
-  
-  .weeklySummaryHeaderTitle {
-    font-size: large;
-    flex-direction: column;
-    gap: 5px;
-  }
-}
-
-/* Status Grid Responsive */
-@media (min-width: 1600px) {
+@media (width >= 1600px) {
   .projectStatusGrid {
     grid-template-columns: repeat(6, 1fr);
   }
 }
 
-@media (max-width: 1400px) {
+@media (width <= 1400px) {
   .projectStatusGrid {
     grid-template-columns: repeat(4, 1fr);
   }
 }
 
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
   .projectStatusGrid {
     grid-template-columns: repeat(3, 1fr);
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .projectStatusGrid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (max-width: 576px) {
+@media (width <= 576px) {
   .projectStatusGrid {
     grid-template-columns: repeat(1, 1fr);
-  }
-  
-  .weeklyProjectSummaryCard :global(.chartContainer) {
-    min-height: 220px;
-  }
-  
-  .normalCard {
-    min-height: 260px;
-  }
-}
-
-/* Dark mode fixes */
-.darkMode .weeklyProjectSummaryContainer {
-  background-color: var(--bg-color);
-  color: var(--text-color);
-}
-
-.darkMode .weeklyProjectSummaryDashboardContainer {
-  background-color: var(--bg-color);
-}
-
-.darkMode .weeklyProjectSummaryDashboardSection {
-  background: var(--section-bg);
-}
-
-.darkMode * {
-  color: inherit;
-}
-
-.darkMode .lessonsCard {
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-}
-
-/* Print styles */
-@media print {
-  .weeklyProjectSummaryCard {
-    break-inside: avoid;
-    page-break-inside: avoid;
-  }
-  
-  .weeklyProjectSummaryCard :global(.container) {
-    box-shadow: none;
-    border: 1px solid #ddd;
-  }
-  
-  .lessonsLearnedGrid,
-  .toolsTrackingLayout,
-  .financialsGrid,
-  .laborTimeGrid,
-  .financialsTrackingGrid {
-    break-inside: avoid;
-    page-break-inside: avoid;
-  }
-  
-  .weeklySummaryShareBtn,
-  .weeklySummaryHeaderControls select {
-    display: none;
   }
 }

@@ -8,7 +8,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Modal, ModalBody, ModalFooter, ModalHeader, Progress, Table } from 'reactstrap';
 import CopyToClipboard from '~/components/common/Clipboard/CopyToClipboard';
 import UserStateDisplay from '../UserState/UserStateDisplay';
@@ -49,9 +49,10 @@ const TeamMemberTask = React.memo(
     onTimeOff,
     goingOnTimeOff,
     displayUser,
-    userStateCatalog,
-    userStateSelection,
-    canManageUserStateIndicator,
+    userStateCatalog = [],
+    onCatalogChange,
+    userStateSelection = [],
+    onSelectionChange,
   }) => {
     const darkMode = useSelector(state => state.theme.darkMode);
     const taskCounts = useSelector(state => state.dashboard?.taskCounts ?? {});
@@ -61,10 +62,12 @@ const TeamMemberTask = React.memo(
     const canSeeFollowUpCheckButton = userRole !== 'Volunteer';
 
     const [isDashboardModalOpen, setIsDashboardModalOpen] = useState(false);
-    const dashboardToggle = item => setIsDashboardOpen(item.personId);
     const manager = 'Manager';
     const adm = 'Administrator';
     const owner = 'Owner';
+    const isOwnerOrAdmin = ['Owner', 'Administrator'].includes(userRole);
+
+    useEffect(() => {}, [userStateSelection]);
 
     const handleDashboardAccess = () => {
       // null checks
@@ -388,15 +391,23 @@ const TeamMemberTask = React.memo(
                       )}
                     </div>
                   </td>
-                  <td colSpan={2} className={`${darkMode ? 'bg-yinmn-blue' : ''}`}>
-                    <Table borderless className={styles['team-member-tasks-subtable']}>
+                  <td
+                    colSpan={2}
+                    className={`${darkMode ? 'bg-yinmn-blue' : ''}`}
+                    style={{ textAlign: 'center' }}
+                  >
+                    <Table
+                      borderless
+                      className={styles['team-member-tasks-subtable']}
+                      style={{ margin: '0 auto', width: '100%' }}
+                    >
                       <tbody>
-                        <tr
-                          style={{
-                            width: '500px',
-                          }}
-                        >
-                          <td className={styles['team-member-tasks-user-name']}>
+                        <tr style={{ width: '500px' }}>
+                          <td
+                            colSpan={2}
+                            className={styles['team-member-tasks-user-name']}
+                            style={{ textAlign: 'center' }}
+                          >
                             <Link
                               className={styles['team-member-tasks-user-name-link']}
                               to={`/userprofile/${user.personId}`}
@@ -503,34 +514,30 @@ const TeamMemberTask = React.memo(
                               personId={user.personId}
                               displayUser={displayUser}
                             />
-                          </td>
-                          <td
-                            data-label="Time"
-                            style={{
-                              textAlign: 'center',
-                              verticalAlign: 'middle',
-                              width: '50%',
-                              whiteSpace: 'nowrap',
-                            }}
-                            className={`${styles['team-clocks']} ${darkMode ? 'text-light' : ''}`}
-                          >
-                            <div style={{ display: 'block' }}>
-                              <u className={darkMode ? styles['dashboard-team-clocks'] : ''}>
-                                {user.weeklycommittedHours ? user.weeklycommittedHours : 0}
-                              </u>{' '}
-                              /
-                              <font color="green">
-                                {' '}
-                                {thisWeekHours ? thisWeekHours.toFixed(1) : 0}
-                              </font>{' '}
-                              /<font color="red"> {totalHoursRemaining.toFixed(1)}</font>
-                            </div>
-                            <div style={{ display: 'block', marginTop: '4px' }}>
+                            <div
+                              style={{ textAlign: 'center', marginTop: '8px' }}
+                              className={`${styles['team-clocks']} ${darkMode ? 'text-light' : ''}`}
+                            >
+                              <div style={{ display: 'block', whiteSpace: 'nowrap' }}>
+                                <u className={darkMode ? styles['dashboard-team-clocks'] : ''}>
+                                  {user.weeklycommittedHours ? user.weeklycommittedHours : 0}
+                                </u>{' '}
+                                /
+                                <font color="green">
+                                  {' '}
+                                  {thisWeekHours ? thisWeekHours.toFixed(1) : 0}
+                                </font>{' '}
+                                /<font color="red"> {totalHoursRemaining.toFixed(1)}</font>
+                              </div>
                               <UserStateDisplay
                                 userId={user.personId}
+                                userName={user.name}
+                                canEdit={displayUser?.email === 'jae@onecommunityglobal.org'}
+                                canManage={isOwnerOrAdmin}
                                 catalog={userStateCatalog}
-                                selectedFromParent={userStateSelection}
-                                canEdit={canManageUserStateIndicator}
+                                onCatalogChange={onCatalogChange}
+                                initialSelected={userStateSelection}
+                                onSelectionChange={onSelectionChange}
                               />
                             </div>
                           </td>
@@ -634,7 +641,12 @@ const TeamMemberTask = React.memo(
                                       </div>
 
                                       {/* Review Button */}
-                                      <div className={styles['team-member-task-review-button']}>
+                                      <div
+                                        className={styles['team-member-task-review-button']}
+                                        style={
+                                          onTimeOff ? { opacity: 0.4, pointerEvents: 'none' } : {}
+                                        }
+                                      >
                                         <ReviewButton
                                           user={user}
                                           userId={userId}
@@ -815,19 +827,10 @@ TeamMemberTask.propTypes = {
   userRole: PropTypes.string.isRequired,
   userId: PropTypes.string.isRequired,
   displayUser: PropTypes.object,
-  userStateCatalog: PropTypes.arrayOf(
-    PropTypes.shape({
-      key: PropTypes.string,
-      label: PropTypes.string,
-    }),
-  ),
-  userStateSelection: PropTypes.arrayOf(
-    PropTypes.shape({
-      key: PropTypes.string,
-      selectedAt: PropTypes.string,
-    }),
-  ),
-  canManageUserStateIndicator: PropTypes.bool,
+  userStateCatalog: PropTypes.array,
+  onCatalogChange: PropTypes.func,
+  userStateSelection: PropTypes.array,
+  onSelectionChange: PropTypes.func,
 };
 
 TeamMemberTask.displayName = 'TeamMemberTask';
