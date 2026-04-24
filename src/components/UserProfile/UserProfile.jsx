@@ -280,7 +280,7 @@ function UserProfile(props) {
     const currentManager = user;
   
     if (!teamId) {
-      return `This week’s summary was managed by ${currentManager.firstName} ${currentManager.lastName} and includes .
+      return `This week's summary was managed by ${currentManager.firstName} ${currentManager.lastName} and includes .
        These people did NOT provide a summary .
        <Insert the proofread and single-paragraph summary created by ChatGPT>`;
     }
@@ -470,19 +470,6 @@ function UserProfile(props) {
         setOriginalProjects(fallback);
         setResetProjects(fallback);
       }
-
-      // keep userProfile in sync for Save/Cancel logic
-      // membershipProjects is not defined, so this line should be removed or replaced if needed
-      // newUserProfile.projects = membershipProjects || [];
-      // If you need to assign something, ensure membershipProjects is defined above
-      // Otherwise, remove this line
-      // Removed as it causes a reference error
-      // } catch (e) {
-      //   // fallback to whatever the profile returned (may be empty)
-      //   setProjects(newUserProfile.projects || []);
-      //   setOriginalProjects(newUserProfile.projects || []);
-      //   setResetProjects(newUserProfile.projects || []);
-      // }
 
       const profileWithFormattedDates = {
         ...newUserProfile,
@@ -752,9 +739,11 @@ setUpdatedTasks(prev => {
    * @param {String} id Id of the blue square
    * @param {String} dateStamp
    * @param {String} summary
+   * @param {String} firstName first name of the blue square author
+   * @param {String} lastName last name of the blue square author
    * @param {String} operation 'add' | 'update' | 'delete'
    */
-  const modifyBlueSquares = async (id, dateStamp, summary, operation) => {
+  const modifyBlueSquares = async (id, dateStamp, summary, first, last, operation) => {
     setShowModal(false);
     if (operation === 'add') {
       /* peizhou: check that the date of the blue square is not future or empty. */
@@ -775,11 +764,9 @@ setUpdatedTasks(prev => {
         const newBlueSquare = {
           date: dateStamp,
           description: summary,
-          // createdDate: moment
-          //   .tz('America/Los_Angeles')
-          //   .toISOString()
-          //   .split('T')[0],
           createdDate: moment().format('YYYY-MM-DD'),
+          authorFirstName: first,
+          authorLastName: last,
           // Track manual assignment - note: backend uses 'manullyAssigned' (typo in field name)
           manullyAssigned: true,
           manullyAssignedBy: requestorId,
@@ -1250,8 +1237,9 @@ setUpdatedTasks(prev => {
   const canEditVisibility = props.hasPermission('toggleInvisibility');
   const canSeeReports = props.hasPermission('getReports');
   const { role: userRole } = userProfile;
+  // CONFLICT RESOLVED: use 'resetPassword' permission from carlos branch
   const canResetPassword =
-    props.hasPermission('updatePassword')&& !(userProfile.role === 'Administrator' || userProfile.role === 'Owner');
+    props.hasPermission('resetPassword') && !(userRole === 'Administrator' || userRole === 'Owner');
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
   const canEditUserProfile = targetIsDevAdminUneditable
     ? false
@@ -1336,7 +1324,9 @@ setUpdatedTasks(prev => {
           userProfile={userProfile}
           id={id}
           handleLinkModel={props.handleLinkModel}
-          role={requestorRole}      
+          // CONFLICT RESOLVED: keep both auth (carlos) and handleLogWarning/specialWarnings (development)
+          role={requestorRole}
+          auth={props.auth}
           handleLogWarning={handleLogWarning}
           specialWarnings={specialWarnings}
         />
@@ -1430,19 +1420,8 @@ setUpdatedTasks(prev => {
             ) : (
               <></>
             )}
-            {/*
-              {((userProfile?.profilePic==undefined ||
-                userProfile?.profilePic==null ||
-                userProfile?.profilePic=="")&&
-                (userProfile?.suggestedProfilePics!==undefined &&
-                  userProfile?.suggestedProfilePics!==null &&
-                  userProfile?.suggestedProfilePics.length!==0
-                ))?
-                <Button color="primary" onClick={toggleModal}>Suggested Profile Image</Button>
-                :null} */}
           </div>
 
-          {/* {userProfile!==undefined && userProfile.suggestedProfilePics!==undefined?<ProfileImageModal isOpen={isModalOpen} toggleModal={toggleModal} userProfile={userProfile}/>:<></>} */}
           <ConfirmRemoveModal
             isOpen={isRemoveModalOpen}
             toggleModal={toggleRemoveModal}
@@ -1876,8 +1855,8 @@ setUpdatedTasks(prev => {
                     if (targetIsDevAdminUneditable) {
                       // eslint-disable-next-line no-alert
                       alert(
-                        'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. ' +
-                          'You shouldn’t even be using this account except to create your own accounts to use. ' +
+                        'STOP! YOU SHOULDN\'T BE TRYING TO CHANGE THIS PASSWORD. ' +
+                          'You shouldn\'t even be using this account except to create your own accounts to use. ' +
                           'Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now.',
                       );
                       return `#`;
@@ -2010,8 +1989,8 @@ setUpdatedTasks(prev => {
                             if (targetIsDevAdminUneditable) {
                               // eslint-disable-next-line no-alert
                               alert(
-                                'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. ' +
-                                  'You shouldn’t even be using this account except to create your own accounts to use. ' +
+                                'STOP! YOU SHOULDN\'T BE TRYING TO CHANGE THIS PASSWORD. ' +
+                                  'You shouldn\'t even be using this account except to create your own accounts to use. ' +
                                   'Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now.',
                               );
                               return `#`;

@@ -18,6 +18,11 @@ import { boxStyle, boxStyleDark } from '~/styles';
 import styles from '../../Header/DarkMode.module.css';
 import hasPermission from '~/utils/permissions';
 import { connect, useSelector } from 'react-redux';
+// carlos: needed for fetching author name
+import axios from 'axios';
+import { ENDPOINTS } from '~/utils/URL';
+import { formatYYYYMMDDToMMDDYY } from '~/utils/formatDate';
+// development: needed for warning system and CC list
 import { OverlayTrigger, Popover } from 'react-bootstrap';
 import WarningModal from '../../Warnings/modals/WarningModal';
 import BlueSquareEmailCCPopup from '../BlueSquareEmailCCPopup';
@@ -99,6 +104,9 @@ const UserProfileModal = props => {
     type,
     userProfile,
     id,
+    // carlos: needed to fetch logged-in user's name when adding blue square
+    auth,
+    // development: needed for warning system
     specialWarnings,
     handleLogWarning,
   } = props;
@@ -132,6 +140,10 @@ const UserProfileModal = props => {
     const today = new Date();
     return today.toLocaleDateString('en-CA').split('T')[0];
   };
+
+  function getLastInitial(lastName) {
+    return lastName != "System" ? lastName.charAt(0).toUpperCase() : lastName;
+  }
 
   if (blueSquare.length === 0) {
     blueSquare = [
@@ -227,6 +239,19 @@ const UserProfileModal = props => {
     }
   };
 
+  // carlos: author name state and fetch
+  const [firstName, setFirstName] = useState(blueSquare[0]?.authorFirstName || "");
+  const [lastName, setLastName] = useState(blueSquare[0]?.authorLastName || "");
+  useEffect(() => {
+    if (type === 'addBlueSquare' && auth?.user?.userid) {
+      axios.get(ENDPOINTS.USER_PROFILE(auth.user.userid)).then(response => {
+        setFirstName(response.data.firstName);
+        setLastName(response.data.lastName);
+      });
+    }
+  }, []);
+
+  // development: warning system handlers
   const handleWarningChange = (warningTitle, warn, color) => {
     setWarningSelections(prevData => {
       const updatedData = {
@@ -252,7 +277,7 @@ const UserProfileModal = props => {
   const handleSubmitWarning = (warningData = warningSelections) => {
     setShowWarningSpinner(true);
     handleLogWarning(warningData);
-    modifyBlueSquares(id, dateStamp, summary, 'delete');
+    modifyBlueSquares(id, dateStamp, summary, '', '', 'delete');
   };
 
   const handleLoggingBothWarnings = () => {
@@ -311,7 +336,7 @@ const UserProfileModal = props => {
     setShowWarningSpinner(true);
     setWarningType('');
     handleLogWarning(warningData);
-    modifyBlueSquares(id, dateStamp, summary, 'delete');
+    modifyBlueSquares(id, dateStamp, summary, '', '', 'delete');
   };
 
   function checkFields(field1, field2) {
@@ -329,6 +354,8 @@ const UserProfileModal = props => {
 
   const boxStyling = darkMode ? boxStyleDark : boxStyle;
   const fontColor = darkMode ? 'text-light' : '';
+  const darkInputStyle = darkMode ? { backgroundColor: '#2d3748', borderColor: '#4a5568', color: '#fff' } : {};
+  const darkDateStyle = darkMode ? { ...darkInputStyle, colorScheme: 'dark' } : {};
 
   const [ccModalOpen, setCcModalOpen] = useState(false);
   const allUsers = useSelector(state => state.allUserProfiles?.userProfiles) || [];
@@ -562,19 +589,27 @@ const UserProfileModal = props => {
                 <Label className={fontColor} for="date">
                   Date
                 </Label>
-                <Input type="date" name="date" id="date" value={dateStamp} onChange={handleChange} />
+                <Input type="date" name="date" id="date" value={dateStamp} onChange={handleChange} style={darkDateStyle} />
               </FormGroup>
 
               <FormGroup hidden={summaryFieldView}>
                 <Label className={fontColor} for="report">
                   Summary
                 </Label>
+                {/* carlos: show who is assigning the blue square */}
+                <Input
+                  id="asignment"
+                  readOnly
+                  className={fontColor}
+                  value={`Assigned by ${firstName} ${getLastInitial(lastName)} ${formatYYYYMMDDToMMDDYY(dateStamp)}:`}
+                  style={darkInputStyle}
+                />
                 <Input
                   type="textarea"
                   id="summary"
                   onChange={handleChange}
                   value={summary}
-                  style={{ minHeight: '200px', overflow: 'hidden' }}
+                  style={{ minHeight: '200px', overflow: 'hidden', ...darkInputStyle }}
                   onInput={e => adjustTextareaHeight(e.target)}
                 />
               </FormGroup>
@@ -588,7 +623,12 @@ const UserProfileModal = props => {
                   Date:
                 </Label>
                 {canEditInfringements ? (
-                  <Input type="date" onChange={e => setDateStamp(e.target.value)} value={dateStamp} />
+                  <Input
+                    type="date"
+                    onChange={e => setDateStamp(e.target.value)}
+                    value={dateStamp}
+                    style={darkDateStyle}
+                  />
                 ) : (
                   <span> {blueSquare[0]?.date}</span>
                 )}
@@ -608,17 +648,25 @@ const UserProfileModal = props => {
                 <Label className={fontColor} for="report">
                   Summary
                 </Label>
+                {/* carlos: show who assigned the blue square */}
+                <Input
+                  id="asignment"
+                  readOnly
+                  className={fontColor}
+                  value={`Assigned by ${firstName} ${getLastInitial(lastName)} ${formatYYYYMMDDToMMDDYY(dateStamp)}:`}
+                  style={darkInputStyle}
+                />
                 {canEditInfringements ? (
                   <Input
                     type="textarea"
                     id="summary"
                     onChange={handleChange}
                     value={summary}
-                    style={{ minHeight: '200px', overflow: 'hidden' }}
+                    style={{ minHeight: '200px', overflow: 'hidden', ...darkInputStyle }}
                     onInput={e => adjustTextareaHeight(e.target)}
                   />
                 ) : (
-                  <p>{blueSquare[0]?.description}</p>
+                  <p className={fontColor}>{blueSquare[0]?.description}</p>
                 )}
                 <CcUserList users={blueSquare[0]?.ccdUsers} />
               </FormGroup>
@@ -648,6 +696,8 @@ const UserProfileModal = props => {
                 <Label className={fontColor} for="description">
                   Summary
                 </Label>
+                {/* carlos: show who assigned the blue square */}
+                <p className={fontColor}>{`Assigned by ${firstName} ${getLastInitial(lastName)} ${formatYYYYMMDDToMMDDYY(dateStamp)}:`}</p>
                 <p className={fontColor}>{blueSquare[0]?.description}</p>
                 <CcUserList users={blueSquare[0]?.ccdUsers} />
               </FormGroup>
@@ -695,7 +745,7 @@ const UserProfileModal = props => {
                   id="addBlueSquare"
                   disabled={addButton}
                   onClick={() => {
-                    modifyBlueSquares('', dateStamp, summary, 'add');
+                    modifyBlueSquares('', dateStamp, summary, firstName, lastName, 'add');
                   }}
                   style={boxStyling}
                 >
@@ -709,7 +759,7 @@ const UserProfileModal = props => {
                     <Button
                       color="info"
                       onClick={() => {
-                        modifyBlueSquares(id, dateStamp, summary, 'update');
+                        modifyBlueSquares(id, dateStamp, summary, firstName, lastName, 'update');
                       }}
                       style={{ ...boxStyling, width: '25%' }}
                     >
@@ -721,7 +771,7 @@ const UserProfileModal = props => {
                     <Button
                       color="danger"
                       onClick={() => {
-                        modifyBlueSquares(id, dateStamp, summary, 'delete');
+                        modifyBlueSquares(id, dateStamp, summary, firstName, lastName, 'delete');
                       }}
                       style={{ ...boxStyling, width: '25%' }}
                     >
