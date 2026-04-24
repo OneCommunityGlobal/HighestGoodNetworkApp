@@ -1,5 +1,3 @@
-/* stylelint-disable no-descending-specificity, no-duplicate-selectors, declaration-block-single-line-max-declarations, declaration-block-no-duplicate-properties */
-
 /* ---------- General Styling ---------- */
 .body {
   font-family: Arial, sans-serif;
@@ -274,6 +272,7 @@
   border-radius: 10px;
   width: 48%;
   padding: 10px;
+  color: #fff;
 }
 
 .trackingRateDark .trackingRateSubheading span,
@@ -285,7 +284,6 @@
   font-size: 0.9rem;
   display: inline-block;
 }
-
 .trackingRate .trackingRateValue span.trackingRateValuePositive,
 .trackingRateDark .trackingRateValue span.trackingRateValuePositive {
   color: #f44336 !important;
@@ -340,12 +338,12 @@
 }
 
 .trackingRateGreen {
-  color: green;
+  color: green !important;
   font-weight: bold;
 }
 
 .trackingRateRed {
-  color: red;
+  color: red !important;
 }
 
 /* ---------- Insights Section ---------- */
@@ -405,10 +403,13 @@
 .insightsTabs {
   flex: 1;
   display: flex;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  overflow: hidden;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  padding: 4px;
+  gap: 2px;
   max-width: 60%;
+  border: none;
+  overflow: visible;
 }
 
 .insightsTabsContainer{
@@ -426,11 +427,14 @@
 .insightsTab {
   flex: 1;
   text-align: center;
-  padding: 10px 0;
+  padding: 6px 12px;
   font-size: 0.9rem;
   border: none;
+  border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.3s, color 0.3s;
+  background-color: transparent;
+  color: #374151 !important;
+  transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
 }
 
 .insightsTabLight{
@@ -452,33 +456,42 @@
 }
 
 .insightsTab:not(:last-child) {
-  border-right: 1px solid #ccc;
+  border-right: none;
 }
 
 .insightsTab.activeTab {
-  border-radius: 4px;
-  background-color: #007bff;
-  color: #fff;
-  font-weight: bold;
-}
-
-.insightsTab:hover {
-  background-color: #e0e0e0;
+  background-color: #fff;
+  color: #111 !important;
+  font-weight: 600;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 15%);
 }
 
 .insightsDark .insightsTab {
-  background-color: #3A506B;
-  color: #fff;
-  border-right: 1px solid #555;
+  background-color: transparent;
+  color: #94a3b8 !important;
+  border-right: none;
 }
 
-.insightsDark .insightsTab:hover {
-  background-color: #4A607B;
+.insightsTab:hover:not(.activeTab) {
+  background-color: #e4e4e4;
+}
+
+.insightsDark .insightsTab:hover:not(.activeTabDarkMode) {
+  background-color: rgb(255 255 255 / 8%);
 }
 
 .insightsDark .insightsTab.activeTab {
-  background-color: #007bff;
-  color: #fff;
+  background-color: #e2e8f0;
+  color: #1e293b !important;
+  font-weight: 600;
+  box-shadow: 0 1px 6px rgb(0 0 0 / 50%);
+}
+
+.insightsDark .insightsTab.activeTabDarkMode {
+  background-color: #e2e8f0 !important;
+  color: #1e293b !important;
+  font-weight: 600;
+  box-shadow: 0 1px 6px rgb(0 0 0 / 50%);
 }
 
 .insightsContent {
@@ -526,15 +539,19 @@
   transition: width 0.3s ease-in-out;
 }
 
-.insightPercentage {
+.insightsPercentage {
   font-size: 0.9rem;
-  font-weight: bold;
-  color: #333;
+  color: red;
 }
 
 .insightsPercentageDark {
-    color: #fff;
-  }
+  font-size: 0.9rem;
+  color: red !important;
+}
+
+.insightsDark .insightsPercentageDark {
+  color: red !important;
+}
 
 .tooltipWrapper {
   position: relative;
@@ -663,9 +680,17 @@
 
 
 /* ---------- PDF/Print helpers ---------- */
-.pageBreakBefore { break-before: page; break-before: always; }
-.pageBreakAfter  { break-after: page;  break-after: always; }
-.avoidBreak       { break-inside: avoid; break-inside: avoid; }
+.pageBreakBefore {
+  break-before: page;
+}
+
+.pageBreakAfter {
+  break-after: page;
+}
+
+.avoidBreak {
+  break-inside: avoid;
+}
 
 :global(html[data-exporting="true"]) .caseCards:global(.expanded),
 :global(html[data-exporting="true"]) .caseList:global(.expanded),
@@ -677,35 +702,50 @@
 
 /* Dark mode container */
 .insightsTabsDarkMode {
-  border: 1px solid #555;
-  background-color: #1e293b; /* Dark background */
+  border: none;
+  background-color: #334155;
 }
 
 /* Dark mode tab */
 .insightsTabDarkMode {
-  color: #ddd;
-  background-color: #1e293b;
+  color: #94a3b8 !important;
+  background-color: transparent;
 }
 
 /* Dark mode divider */
 .insightsTabDarkMode:not(:last-child) {
-  border-right: 1px solid #555;
+  border-right: none;
 }
 
 .printOnly {
   display: none;
 }
 
+/* Print styles using global selectors */
 @media print {
-/* Hide everything except the participation component */
-:global(body > *:not(#root)) {
-  display: none !important;
-}
+  /* Hide everything except the participation component */
+  :global(body > *:not(#root)) {
+    display: none !important;
+  }
 
-:global(#root > *:not(.participation-landing-page-global)) {
-  display: none !important;
-}
+  :global(#root > *:not(.participation-landing-page-global)) {
+    display: none !important;
+  }
 
+  /* Force proper backgrounds for all elements */
+  .participationLandingPage,
+  .participationLandingPage * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Light mode styles for print */
+  .participationLandingPage {
+    background: white !important;
+    color: #333 !important;
+  }
+
+  /* Sonar fix: avoid duplicate selector by scoping the print version */
   :global(#root) .participationLandingPage {
     max-width: 100% !important;
     margin: 0 !important;
@@ -714,9 +754,10 @@
     overflow: visible !important;
   }
 
-  @page { 
+  @page {
     size: auto;
-    margin: 0.5in; 
+    /* Use auto instead of Letter to allow multiple pages */
+    margin: 0.5in;
   }
 
   @supports (-webkit-print-color-adjust: exact) {
@@ -771,11 +812,9 @@
 
   :global(.tracking-table-global) tr {
     break-inside: avoid;
-    break-inside: avoid;
   }
 
   .insightItem {
-    break-inside: avoid;
     break-inside: avoid;
   }
 
@@ -805,16 +844,6 @@
     display: block !important;
   }
 
-  .participationLandingPage,
-  .participationLandingPage * {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-
-  .participationLandingPage {
-    background: white !important;
-  }
-  
   :global(#root) .case-card-global {
     background: white !important;
     color: #333 !important;
@@ -914,17 +943,17 @@
   .participationLandingPageDark .eventNameDark,
   .participationLandingPageDark .eventTimeDark,
   .participationLandingPageDark .attendeesCountDark,
-  .participationLandingPageDark .insightsLabelDark,
-  .participationLandingPageDark .insightsPercentageDark {
+  .participationLandingPageDark .insightsLabelDark {
     color: #fff !important;
   }
 }
 
 /* Active tab dark mode */
 .activeTabDarkMode {
-  background-color: #3b82f6;
-  color: #fff;
-  font-weight: bold;
+  background-color: #e2e8f0;
+  color: #1e293b !important;
+  font-weight: 600;
+  box-shadow: 0 1px 6px rgb(0 0 0 / 50%);
 }
 
 /* Hover effect dark mode */
@@ -944,7 +973,7 @@
 .modalOverlay {
   position: fixed;
   inset: 0;
-  background: rgb(0 0 0 / 45%);
+  background: rgba(0, 0, 0, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -952,7 +981,7 @@
 }
 
 .modalContent {
-  background: #fff;
+  background: #ffffff;
   width: 420px;
   max-height: 80vh;
   border-radius: 10px;
@@ -963,7 +992,7 @@
 
 .modalContentDark {
   background: #1C2541;
-  color: #fff;
+  color: #ffffff;
 }
 
 .modalHeader {
@@ -1040,41 +1069,41 @@
 /* ===== Dark mode fixes ===== */
 
 .participationLandingPageDark :global(button) {
-  color: #fff !important;
+  color: #ffffff !important;
 }
 
 .participationLandingPageDark :global(.btn),
 .participationLandingPageDark :global(.btn-light),
 .participationLandingPageDark :global(.btn-outline-secondary) {
-  color: #fff !important;
+  color: #ffffff !important;
   background-color: #3a506b !important;
   border-color: #3a506b !important;
 }
 
 .participationLandingPageDark :global(.btn-primary),
 .participationLandingPageDark :global(.active) {
-  color: #fff !important;
+  color: #ffffff !important;
 }
 
 .trackingContainerDark .trackingFilters select {
   background-color: #3A506B;
-  color: #fff;
+  color: #ffffff;
   border: 1px solid #3A506B;
 }
 
 .insightsDark .insightsFilters select {
   background-color: #3A506B;
-  color: #fff;
+  color: #ffffff;
   border: 1px solid #3A506B;
 }
 
 .insightsDark .insightsTab {
   background-color: #3A506B;
-  color: #fff;
+  color: #ffffff;
   border-right: 1px solid #555;
 }
 
 .insightsDark .insightsTab.activeTab {
   background-color: #007bff;
-  color: #fff;
+  color: #ffffff;
 }
