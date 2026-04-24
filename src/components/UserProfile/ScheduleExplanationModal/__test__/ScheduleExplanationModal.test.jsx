@@ -52,7 +52,7 @@ describe('SchedulerExplanationModal', () => {
     expect(screen.getByText('INFRINGEMENTS:')).toBeInTheDocument();
 
     // eslint-disable-next-line testing-library/no-node-access, testing-library/no-container
-    const infringementsSection = container.querySelector('.Schedule-explanation-modal-list-marker');
+    const infringementsSection = container.querySelector('[class*="Schedule-explanation-modal-list-marker"]');
     // eslint-disable-next-line testing-library/no-node-access, testing-library/no-container
     const boldText = infringementsSection.querySelectorAll('b');
     expect(boldText[0]).toHaveTextContent('Date:');
@@ -93,7 +93,7 @@ describe('SchedulerExplanationModal', () => {
     );
     expect(screen.getByText(/Blue squares expire after 1 calendar year from their issuance date./i)).toBeInTheDocument();
     // eslint-disable-next-line testing-library/no-node-access, testing-library/no-container
-    const modalFooter = container.querySelector('.modal-footer');    
+    const modalFooter = container.querySelector('[class*="modal-footer"]');    
     const closeButton = within(modalFooter).getByRole('button', { name: /Close/i });
     await userEvent.click(closeButton);
     expect(mockHandleClose).toHaveBeenCalledTimes(1);

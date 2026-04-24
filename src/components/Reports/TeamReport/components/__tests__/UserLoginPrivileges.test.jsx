@@ -72,7 +72,7 @@ describe('UserLoginPrivileges Component', () => {
 
   test('Check if certain styles are applied correctly for chart container', () => {
     const { container } = render(<UserLoginPrivileges {...mockProps} />)
-    const chartContainers = container.querySelectorAll('.team-chart-container')
+    const chartContainers = container.querySelectorAll('[class*="team-chart-container"]')
     chartContainers.forEach(c => {
       expect(c).toHaveStyle('display: block')
     })

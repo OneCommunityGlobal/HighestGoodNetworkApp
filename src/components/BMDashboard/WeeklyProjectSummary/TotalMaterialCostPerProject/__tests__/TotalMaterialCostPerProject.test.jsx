@@ -90,7 +90,7 @@ describe('TotalMaterialCostPerProject', () => {
     // eslint-disable-next-line testing-library/no-debugging-utils
     screen.debug();
 
-    const control = document.querySelector('.select__control');
+    const control = document.querySelector('[class*="select__control"]');
 
     expect(control).toBeInTheDocument();
     expect(within(control).getByText('Project A')).toBeInTheDocument();

@@ -75,7 +75,7 @@ describe('ImportTask', () => {
       screen.getByRole('button', { name: /import tasks/i })
     ).toBeInTheDocument();
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-    expect(container.querySelector('.modal')).toBeNull();
+    expect(container.querySelector('[class*="modal"]')).toBeNull();
   });
 
   it('opens the modal when the button is clicked', async () => {
@@ -132,7 +132,7 @@ describe('ImportTask', () => {
     fireEvent.click(uploadBtn);
 
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-    expect(document.querySelector('.spinner-grow')).toBeInTheDocument();
+    expect(document.querySelector('[class*="spinner-grow"]')).toBeInTheDocument();
   });
 
   it('shows an error if a member in the sheet is not found', async () => {

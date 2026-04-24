@@ -87,7 +87,7 @@ describe('EditLinkModal with admin links and personal links', () => {
 
   it('should add new admin link when add button is clicked', () => {
     // eslint-disable-next-line testing-library/no-node-access
-    const newAdminLinkContainer = document.querySelector('.new-admin-links')
+    const newAdminLinkContainer = document.querySelector('[class*="new-admin-links"]')
     const nameInput = within(newAdminLinkContainer).getByPlaceholderText('enter name');
     const linkInput = within(newAdminLinkContainer).getByPlaceholderText('enter link');
     // eslint-disable-next-line testing-library/prefer-screen-queries

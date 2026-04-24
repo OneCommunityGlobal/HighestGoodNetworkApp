@@ -199,7 +199,7 @@ describe('PeopleTableDetails component', () => {
     expect(toggleButton).toBeInTheDocument();
 
     // eslint-disable-next-line testing-library/no-node-access
-    const extraDiv = toggleButton.parentElement.querySelector('.extra');
+    const extraDiv = toggleButton.parentElement.querySelector('[class*="extra"]');
     expect(extraDiv).toBeInTheDocument();
 
     fireEvent.click(toggleButton);

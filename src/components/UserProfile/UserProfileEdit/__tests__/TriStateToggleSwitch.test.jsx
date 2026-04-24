@@ -8,7 +8,7 @@ describe('TriStateToggleSwitch Component', () => {
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
     const wrapper = container.querySelector('[class*="toggle-switch"]');
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-    const knob = container.querySelector('.knob');
+    const knob = container.querySelector('[class*="knob"]');
     
     expect(wrapper).toHaveClass('toggle-switch', 'bg-blue');
     expect(knob).toHaveClass('posted');
@@ -16,13 +16,13 @@ describe('TriStateToggleSwitch Component', () => {
     rerender(<TriStateToggleSwitch pos="default" />);
     expect(wrapper).toHaveClass('toggle-switch', 'bg-darkgray');
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-    expect(container.querySelector('.knob')).toHaveClass('default');
+    expect(container.querySelector('[class*="knob"]')).toHaveClass('default');
 
     
     rerender(<TriStateToggleSwitch pos="requested" />);
     expect(wrapper).toHaveClass('toggle-switch', 'bg-green');
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-    expect(container.querySelector('.knob')).toHaveClass('requested');
+    expect(container.querySelector('[class*="knob"]')).toHaveClass('requested');
   });
 
   it('calls onChange and updates state and bgColor on click for all states', () => {
@@ -38,7 +38,7 @@ describe('TriStateToggleSwitch Component', () => {
     expect(handleChange).toHaveBeenCalledWith('posted');
     expect(wrapper).toHaveClass('bg-blue');
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-    expect(container.querySelector('.knob')).toHaveClass('posted');
+    expect(container.querySelector('[class*="knob"]')).toHaveClass('posted');
 
     
     handleChange.mockClear();
@@ -46,7 +46,7 @@ describe('TriStateToggleSwitch Component', () => {
     expect(handleChange).toHaveBeenCalledWith('default');
     expect(wrapper).toHaveClass('bg-darkgray');
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-    expect(container.querySelector('.knob')).toHaveClass('default');
+    expect(container.querySelector('[class*="knob"]')).toHaveClass('default');
 
    
     handleChange.mockClear();
@@ -54,7 +54,7 @@ describe('TriStateToggleSwitch Component', () => {
     expect(handleChange).toHaveBeenCalledWith('requested');
     expect(wrapper).toHaveClass('bg-green');
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-    expect(container.querySelector('.knob')).toHaveClass('requested');
+    expect(container.querySelector('[class*="knob"]')).toHaveClass('requested');
   });
 
   it('does not throw if onChange is not provided', () => {
@@ -68,7 +68,7 @@ describe('TriStateToggleSwitch Component', () => {
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
     expect(wrapper).toHaveClass('bg-blue');
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-    expect(container.querySelector('.knob')).toHaveClass('posted');
+    expect(container.querySelector('[class*="knob"]')).toHaveClass('posted');
   });
 
   it('does not call onChange on mount or prop change', () => {
@@ -127,7 +127,7 @@ describe('TriStateToggleSwitch Component', () => {
       const expected = ['posted', 'default', 'requested'][idx];
       expect(handleChange).toHaveBeenLastCalledWith(expected);
       // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-      expect(container.querySelector('.knob')).toHaveClass(expected);
+      expect(container.querySelector('[class*="knob"]')).toHaveClass(expected);
     });
   });
 

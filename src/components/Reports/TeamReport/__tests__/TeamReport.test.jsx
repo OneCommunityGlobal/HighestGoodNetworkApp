@@ -64,7 +64,7 @@ describe("Team Report component",()=>{
 
     const {container} = render(<Provider store={store}><TeamReport match={match}/></Provider>)
     await waitFor(()=>{
-      expect(container.querySelector('.report-page-profile')).toBeInTheDocument()
+      expect(container.querySelector('[class*="report-page-profile"]')).toBeInTheDocument()
     })
   })
   //  Below five test cases are failing when we are making direct api call in component instead of getting from redux
@@ -204,7 +204,7 @@ describe("Team Report component",()=>{
     });
     const {container} = render(<Provider store={store}><TeamReport match={match}/></Provider>)
     await waitFor(()=>{
-      expect(container.querySelector('.report-page-profile')).toBeInTheDocument()
+      expect(container.querySelector('[class*="report-page-profile"]')).toBeInTheDocument()
     })
     const datePickerElement = container.querySelector('[id="search-by-startDate"]')
     fireEvent.change(datePickerElement, { target: { value: '05/29/2024' } });
@@ -218,7 +218,7 @@ describe("Team Report component",()=>{
     });
     const {container} = render(<Provider store={store}><TeamReport match={match}/></Provider>)
     await waitFor(()=>{
-      expect(container.querySelector('.report-page-profile')).toBeInTheDocument()
+      expect(container.querySelector('[class*="report-page-profile"]')).toBeInTheDocument()
     })
     const datePickerElement = container.querySelector('[id="search-by-startDate"]')
     fireEvent.change(datePickerElement, { target: { value: '02/31/2024' } });
@@ -232,7 +232,7 @@ describe("Team Report component",()=>{
     });
     const {container} = render(<Provider store={store}><TeamReport match={match}/></Provider>)
     await waitFor(()=>{
-      expect(container.querySelector('.report-page-profile')).toBeInTheDocument()
+      expect(container.querySelector('[class*="report-page-profile"]')).toBeInTheDocument()
     })
     const activeCheckbox = container.querySelector('[id="active"]')
     expect(activeCheckbox).not.toBeChecked()
@@ -246,7 +246,7 @@ describe("Team Report component",()=>{
     });
     const {container} = render(<Provider store={store}><TeamReport match={match}/></Provider>)
     await waitFor(()=>{
-      expect(container.querySelector('.report-page-profile')).toBeInTheDocument()
+      expect(container.querySelector('[class*="report-page-profile"]')).toBeInTheDocument()
     })
     const inActiveCheckbox = container.querySelector('[id="inactive"]')
     expect(inActiveCheckbox).not.toBeChecked()
@@ -270,7 +270,7 @@ describe("Team Report component",()=>{
     });
     const {container} = render(<Provider store={store}><TeamReport match={match}/></Provider>)
     await waitFor(()=>{
-      expect(container.querySelector('.report-page-profile')).toBeInTheDocument()
+      expect(container.querySelector('[class*="report-page-profile"]')).toBeInTheDocument()
     })
     const inputElement = container.querySelector('[id="search-by-name"]')
     fireEvent.change(inputElement, { target: { value: 'team 1' } });

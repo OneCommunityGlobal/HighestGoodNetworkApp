@@ -115,7 +115,7 @@ describe('WBSTasks component', () => {
         </Router>,
       );
       // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-      const linkElement = container.querySelector('.nav-item');
+      const linkElement = container.querySelector('[class*="nav-item"]');
       const hrefElement = linkElement.getAttribute('href');
       expect(hrefElement).toBe(`/project/wbs/${projectId}`);
     });

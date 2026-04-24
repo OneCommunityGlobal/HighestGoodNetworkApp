@@ -75,7 +75,7 @@ describe("BlueSquaresTable component unit tests", () => {
   it('applies darkmode styling when darkmode is true', () => {
     const { container } = renderComponent(true, false, true, true);
     // eslint-disable-next-line testing-library/no-node-access, testing-library/no-container
-    expect(container.querySelector('.user-profile-blue-square-div-header')).toHaveClass('bg-space-cadet');
+    expect(container.querySelector('[class*="user-profile-blue-square-div-header"]')).toHaveClass('bg-space-cadet');
   });
 
   it('calls handleUserProfile when toggleClass is clicked', () => {
