@@ -159,7 +159,7 @@ const ConversionFunnelChart = ({ data, darkMode }) => {
         pad: 32,
         thickness: 20,
         line: {
-          color: darkMode ? '#1a1a1a' : '#ffffff',
+          color: darkMode ? '#1c2541' : '#ffffff',
           width: 2,
         },
         x: nodePositions.x,
@@ -203,8 +203,8 @@ const ConversionFunnelChart = ({ data, darkMode }) => {
       color: darkMode ? '#ffffff' : '#222222',
       family: 'Arial, sans-serif',
     },
-    plot_bgcolor: darkMode ? '#1a1a1a' : '#ffffff',
-    paper_bgcolor: darkMode ? '#1a1a1a' : '#ffffff',
+    plot_bgcolor: darkMode ? '#1c2541' : '#ffffff',
+    paper_bgcolor: darkMode ? '#1c2541' : '#ffffff',
     margin: {
       l: 20,
       r: 20,

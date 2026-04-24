@@ -21,8 +21,8 @@
 }
 
 .darkFiltersContainer {
-  background-color: #2a2a2a;
-  border-color: #404040;
+  background-color: #1c2541;
+  border-color: #2e3f5c;
 }
 
 .filterGroup {
@@ -84,9 +84,9 @@
 }
 
 .darkDatePicker {
-  background-color: #333;
+  background-color: #1c2541;
   color: #ffffff;
-  border-color: #555;
+  border-color: #2e3f5c;
 }
 
 .darkDatePicker:focus {
@@ -127,13 +127,13 @@
 }
 
 .darkCategoryButton {
-  background-color: #333;
+  background-color: #1c2541;
   color: #ffffff;
-  border-color: #555;
+  border-color: #2e3f5c;
 }
 
 .darkCategoryButton:hover {
-  background-color: #444;
+  background-color: #2e3f5c;
 }
 
 .darkCategoryButton.categoryButtonActive {
@@ -149,12 +149,84 @@
 
 .darkMultiSelect {
   /* Dark mode styles for react-multi-select-component */
-  --rmsc-main: #333;
-  --rmsc-hover: #444;
+  --rmsc-main: #5DBEAF;
+  --rmsc-hover: #2e3f5c;
   --rmsc-selected: #5DBEAF;
-  --rmsc-border: #555;
+  --rmsc-border: #2e3f5c;
   --rmsc-gray: #aaa;
-  --rmsc-bg: #333;
+  --rmsc-bg: #1c2541;
+}
+
+/* Dark mode: dropdown trigger */
+.darkMultiSelect :global(.dropdown-container) {
+  background-color: #1c2541 !important;
+  border-color: #2e3f5c !important;
+  color: #ffffff !important;
+}
+
+.darkMultiSelect :global(.dropdown-heading) {
+  background-color: #1c2541 !important;
+  color: #ffffff !important;
+}
+
+.darkMultiSelect :global(.dropdown-heading-value span) {
+  color: #ffffff !important;
+}
+
+/* Dark mode: dropdown panel */
+.darkMultiSelect :global(.dropdown-content) {
+  background-color: #1c2541 !important;
+  border-color: #2e3f5c !important;
+}
+
+.darkMultiSelect :global(.panel-content) {
+  background-color: #1c2541 !important;
+  border-color: #2e3f5c !important;
+}
+
+/* Dark mode: search input */
+.darkMultiSelect :global(.search input) {
+  background-color: #162032 !important;
+  color: #ffffff !important;
+  border-color: #2e3f5c !important;
+}
+
+.darkMultiSelect :global(.search input::placeholder) {
+  color: #aaa !important;
+}
+
+/* Dark mode: options list */
+.darkMultiSelect :global(.options) {
+  background-color: #1c2541 !important;
+}
+
+.darkMultiSelect :global(.option) {
+  background-color: #1c2541 !important;
+  color: #ffffff !important;
+}
+
+.darkMultiSelect :global(.option:hover),
+.darkMultiSelect :global(.option.selected) {
+  background-color: #2e3f5c !important;
+}
+
+/* Dark mode: select-all item */
+.darkMultiSelect :global(.select-item) {
+  background-color: #1c2541 !important;
+  color: #ffffff !important;
+}
+
+.darkMultiSelect :global(.select-item:hover) {
+  background-color: #2e3f5c !important;
+}
+
+/* Dark mode: clear button / arrow icon */
+.darkMultiSelect :global(.dropdown-heading .clear-selected-button) {
+  color: #aaa !important;
+}
+
+.darkMultiSelect :global(.dropdown-heading svg) {
+  fill: #aaa !important;
 }
 
 /* Chart Container */
@@ -225,13 +297,13 @@
 
 /* Override react-datepicker dark mode styles */
 .darkContainer :global(.react-datepicker) {
-  background-color: #333;
-  border-color: #555;
+  background-color: #1c2541;
+  border-color: #2e3f5c;
 }
 
 .darkContainer :global(.react-datepicker__header) {
-  background-color: #2a2a2a;
-  border-bottom-color: #555;
+  background-color: #162032;
+  border-bottom-color: #2e3f5c;
 }
 
 .darkContainer :global(.react-datepicker__current-month),

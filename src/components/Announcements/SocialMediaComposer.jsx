@@ -1,652 +1,477 @@
-/* eslint-disable jsx-a11y/label-has-associated-control, no-console, no-alert */
-import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
+import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
+import CharacterCounter from './CharacterCounter';
+import ConfirmationModal from './ConfirmationModal';
+import './SocialMediaComposer.module.css';
 
-// --- DEBOUNCE HOOK ---
-function useDebounce(value, delay) {
-  const [debouncedValue, setDebouncedValue] = useState(value);
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delay);
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [value, delay]);
-  return debouncedValue;
-}
+const PREFS_KEY = 'mastodon_composer_prefs';
 
-// --- HTML PARSER ---
-const parseContentForEdit = htmlContent => {
-  const imgTagMatch = htmlContent.match(/<img\s[^>]*>/i);
-  if (imgTagMatch) {
-    const imgTag = imgTagMatch[0];
-    const srcMatch = imgTag.match(/src="([^"]+)"/i);
-    const altMatch = imgTag.match(/alt="([^"]*)"/i);
-    const imageSrc = srcMatch ? srcMatch[1] : null;
-    const altText = altMatch ? altMatch[1] : '';
-    const textContent = htmlContent
-      .replace(/<img\s[^>]*>/gi, '')
-      .replace(/<br\s*\/?>/g, '\n')
-      .trim();
-    return { hasImage: !!imageSrc, imageSrc, altText, textContent };
-  }
-  return {
-    hasImage: false,
-    imageSrc: null,
-    altText: '',
-    textContent: htmlContent.replace(/<br\s*\/?>/g, '\n'),
+export default function SocialMediaComposer({ platform }) {
+  const PLATFORM_CHAR_LIMITS = {
+    mastodon: 500,
+    x: 280,
+    facebook: 63206,
+    linkedin: 3000,
+    instagram: 2200,
+    threads: 500,
   };
-};
-// --- MODAL COMPONENTS ---
-const DeleteModal = ({ show, onClose, onDelete, theme, buttonStyles }) => {
-  if (!show) return null;
-  return (
-    <div
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0,0,0,0.5)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 10001,
-      }}
-    >
-      <div
-        style={{
-          backgroundColor: theme.modalBg,
-          padding: '24px',
-          borderRadius: '12px',
-          width: '90%',
-          maxWidth: '400px',
-          border: `1px solid ${theme.border}`,
-        }}
-      >
-        <h3 style={{ color: theme.text, marginTop: 0 }}>Delete Scheduled Post</h3>
-        <p style={{ color: theme.subText }}>Are you sure?</p>
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
-          <button onClick={onClose} style={buttonStyles.secondary}>
-            Cancel
-          </button>
-          <button onClick={onDelete} style={buttonStyles.danger}>
-            Delete
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
 
-const PostNowModal = ({ show, onClose, onPost, theme, buttonStyles }) => {
-  if (!show) return null;
-  return (
-    <div
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0,0,0,0.5)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 10001,
-      }}
-    >
-      <div
-        style={{
-          backgroundColor: theme.modalBg,
-          padding: '24px',
-          borderRadius: '12px',
-          width: '90%',
-          maxWidth: '400px',
-          border: `1px solid ${theme.border}`,
-        }}
-      >
-        <h3 style={{ color: theme.text, marginTop: 0 }}>Post Now</h3>
-        <p style={{ color: theme.subText }}>Post this immediately?</p>
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
-          <button onClick={onClose} style={buttonStyles.secondary}>
-            Cancel
-          </button>
-          <button onClick={onPost} style={{ ...buttonStyles.success, padding: '8px 16px' }}>
-            Post Now
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
+  const charLimit = PLATFORM_CHAR_LIMITS[platform] || 500;
 
-const ToastNotification = ({ show, message, type, theme }) => {
-  if (!show) return null;
-  return (
-    <div
-      style={{
-        position: 'fixed',
-        top: '20px',
-        right: '20px',
-        backgroundColor: type === 'success' ? theme.success : theme.danger,
-        color: 'white',
-        padding: '16px 24px',
-        borderRadius: '8px',
-        zIndex: 10000,
-      }}
-    >
-      {message}
-    </div>
-  );
-};
-export default function SocialMediaComposer({ platform, darkMode = false }) {
-  // --- STATE ---
-  const [localContentValue, setLocalContentValue] = useState('');
-  const postContent = useDebounce(localContentValue, 300);
+  const [postContent, setPostContent] = useState('');
   const [activeSubTab, setActiveSubTab] = useState('composer');
-  const [ljUsername, setLjUsername] = useState('');
-  const [ljPassword, setLjPassword] = useState('');
-  const [ljSubject, setLjSubject] = useState('');
-  const [ljSecurity, setLjSecurity] = useState('public');
-  const [ljTags, setLjTags] = useState('');
+  const [isPosting, setIsPosting] = useState(false);
   const [scheduleDate, setScheduleDate] = useState('');
   const [scheduleTime, setScheduleTime] = useState('');
   const [scheduledPosts, setScheduledPosts] = useState([]);
-  const [postHistory, setPostHistory] = useState([]);
-  const [isPosting, setIsPosting] = useState(false);
-  const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [imagePreview, setImagePreview] = useState(null);
+  const [isLoadingScheduled, setIsLoadingScheduled] = useState(false);
+  const [uploadedImage, setUploadedImage] = useState(null);
   const [imageAltText, setImageAltText] = useState('');
-  const [showCrossPostDropdown, setShowCrossPostDropdown] = useState(false);
-  const crossPostDropdownRef = useRef(null);
+  const [postHistory, setPostHistory] = useState([]);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(false);
   const [crossPostPlatforms, setCrossPostPlatforms] = useState({
     facebook: false,
-    instagram: false,
     linkedin: false,
-    pinterest: false,
+    instagram: false,
+    x: false,
   });
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showPostNowModal, setShowPostNowModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [selectedPostId, setSelectedPostId] = useState(null);
-  const [editingPost, setEditingPost] = useState(null);
-  const [editImageData, setEditImageData] = useState({
-    hasImage: false,
-    imageSrc: null,
-    altText: '',
+  const [showCrossPost, setShowCrossPost] = useState(false);
+  const [editingPostId, setEditingPostId] = useState(null);
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalConfig, setModalConfig] = useState({
+    title: '',
+    message: '',
+    onConfirm: () => {},
+    confirmText: 'Confirm',
+    confirmColor: 'primary',
+    showDontShowAgain: false,
+    preferenceKey: null,
   });
 
-  const isLiveJournal = platform?.toLowerCase() === 'livejournal';
-  const charLimit = 60000;
-  const charCount = localContentValue.length;
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewData, setPreviewData] = useState(null);
 
-  // --- THEME DEFINITION ---
-  const theme = {
-    bg: darkMode ? '#121212' : '#ffffff',
-    text: darkMode ? '#e0e0e0' : '#212529',
-    subText: darkMode ? '#aaaaaa' : '#6c757d',
-    border: darkMode ? '#444444' : '#dee2e6',
-    inputBg: darkMode ? '#2d2d2d' : '#ffffff',
-    panelBg: darkMode ? '#1e1e1e' : '#f8f9fa',
-    modalBg: darkMode ? '#252525' : '#ffffff',
-    tabActiveBg: darkMode ? '#0d6efd' : '#e7f1ff',
-    tabActiveText: darkMode ? '#ffffff' : '#0d6efd',
-    tabInactiveBg: darkMode ? '#2d2d2d' : '#f8f9fa',
-    tabInactiveText: darkMode ? '#aaaaaa' : '#495057',
-    success: '#28a745',
-    danger: '#dc3545',
-    primary: '#0d6efd',
-  };
+  const [preferences, setPreferences] = useState(() => {
+    const saved = localStorage.getItem(PREFS_KEY);
+    return saved
+      ? JSON.parse(saved)
+      : {
+          confirmDeleteScheduled: true,
+          confirmPostNow: true,
+        };
+  });
 
-  // --- EFFECTS ---
-  const loadScheduledPosts = async () => {
-    try {
-      const response = await axios.get('/api/livejournal/scheduled');
-      if (response.data.success) setScheduledPosts(response.data.posts || []);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  const loadPostHistory = async () => {
-    try {
-      const response = await axios.get('/api/livejournal/history');
-      if (response.data.success) setPostHistory(response.data.posts || []);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  const tabOrder = [
+    { id: 'composer', label: '📝 Make Post' },
+    { id: 'scheduled', label: '⏰ Scheduled Post' },
+    { id: 'history', label: '📜 Post History' },
+    { id: 'details', label: '🧩 Details' },
+  ];
 
   useEffect(() => {
-    if (isLiveJournal) {
-      const savedUsername = localStorage.getItem('lj_username');
-      if (savedUsername) setLjUsername(savedUsername);
+    if (activeSubTab === 'scheduled' && platform === 'mastodon') {
       loadScheduledPosts();
+    } else if (activeSubTab === 'history' && platform === 'mastodon') {
       loadPostHistory();
     }
-  }, [isLiveJournal]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeSubTab, platform]);
 
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (crossPostDropdownRef.current && !crossPostDropdownRef.current.contains(event.target)) {
-        setShowCrossPostDropdown(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  // --- HANDLERS ---
-  const showToast = (message, type = 'success') => {
-    setToast({ show: true, message, type });
-    setTimeout(() => setToast({ show: false, message: '', type: 'success' }), 3000);
+  const updatePreference = (key, value) => {
+    const newPrefs = { ...preferences, [key]: value };
+    setPreferences(newPrefs);
+    localStorage.setItem(PREFS_KEY, JSON.stringify(newPrefs));
   };
-  const handleImageSelect = e => {
+
+  const loadScheduledPosts = async () => {
+    setIsLoadingScheduled(true);
+    try {
+      const response = await fetch('/api/mastodon/schedule');
+      if (response.ok) {
+        const data = await response.json();
+        setScheduledPosts(data || []);
+      }
+    } catch (err) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error loading scheduled posts:', err);
+      }
+    } finally {
+      setIsLoadingScheduled(false);
+    }
+  };
+
+  const loadPostHistory = async () => {
+    setIsLoadingHistory(true);
+    try {
+      const response = await fetch('/api/mastodon/history?limit=20');
+      if (response.ok) {
+        const data = await response.json();
+        setPostHistory(data || []);
+      } else {
+        toast.error('Failed to load post history');
+      }
+    } catch (err) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error loading post history:', err);
+      }
+      toast.error('Error loading post history');
+    } finally {
+      setIsLoadingHistory(false);
+    }
+  };
+
+  const showModal = config => {
+    setModalConfig(config);
+    setModalOpen(true);
+  };
+
+  const handleImageUpload = e => {
     const file = e.target.files[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        showToast('Image must be under 5MB', 'error');
-        return;
-      }
-      setSelectedImage(file);
-      const reader = new FileReader();
-      reader.onloadend = () => setImagePreview(reader.result);
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please upload an image file');
+      return;
     }
-  };
-  const removeImage = () => {
-    setSelectedImage(null);
-    setImagePreview(null);
-    setImageAltText('');
-  };
-  const handleCrossPostToggle = key => {
-    setCrossPostPlatforms(prev => ({ ...prev, [key]: !prev[key] }));
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image size must be less than 5MB');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64String = reader.result.split(',')[1];
+      setUploadedImage({
+        base64: base64String,
+        preview: reader.result,
+        name: file.name,
+      });
+      toast.success('Image uploaded successfully!');
+    };
+    reader.onerror = () => {
+      toast.error('Failed to read image file');
+    };
+    reader.readAsDataURL(file);
   };
 
-  const handlePost = async () => {
-    if (!isLiveJournal) return;
-    if (!ljUsername || !ljPassword) {
-      showToast('Please enter credentials', 'error');
+  const handleRemoveImage = () => {
+    setUploadedImage(null);
+    setImageAltText('');
+    const fileInput = document.getElementById('image-upload');
+    if (fileInput) fileInput.value = '';
+  };
+
+  const handleCrossPostToggle = platformName => {
+    setCrossPostPlatforms(prev => ({
+      ...prev,
+      [platformName]: !prev[platformName],
+    }));
+  };
+
+  const handleShowPreview = () => {
+    if (!postContent.trim()) {
+      toast.error('Post cannot be empty!');
       return;
     }
-    if (!postContent.trim() && !selectedImage) {
-      showToast('Content cannot be empty', 'error');
+
+    const selectedPlatforms = Object.keys(crossPostPlatforms).filter(p => crossPostPlatforms[p]);
+
+    setPreviewData({
+      content: postContent,
+      image: uploadedImage,
+      altText: imageAltText,
+      scheduledTime: scheduleDate && scheduleTime ? `${scheduleDate}T${scheduleTime}` : null,
+      crossPostTo: selectedPlatforms,
+    });
+    setPreviewOpen(true);
+  };
+
+  const clearComposer = () => {
+    setPostContent('');
+    setScheduleDate('');
+    setScheduleTime('');
+    setUploadedImage(null);
+    setImageAltText('');
+    setCrossPostPlatforms({ facebook: false, linkedin: false, instagram: false, x: false });
+    setEditingPostId(null);
+    setPreviewOpen(false);
+  };
+
+  const handlePostNow = async () => {
+    if (!postContent.trim()) {
+      toast.error('Post cannot be empty!');
       return;
     }
+    if (postContent.length > charLimit) {
+      toast.error(`Post exceeds ${charLimit} character limit.`);
+      return;
+    }
+
+    const selectedPlatforms = Object.keys(crossPostPlatforms).filter(p => crossPostPlatforms[p]);
+
     setIsPosting(true);
     try {
-      const formData = new FormData();
-      formData.append('username', ljUsername);
-      formData.append('password', ljPassword);
-      formData.append('subject', ljSubject || 'Untitled');
-      formData.append('content', postContent);
-      formData.append('security', ljSecurity);
-      formData.append('tags', ljTags);
-      if (selectedImage) {
-        formData.append('image', selectedImage);
-        formData.append('altText', imageAltText);
-      }
-      const response = await axios.post('/api/livejournal/post', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+      const response = await fetch('/api/mastodon/createPin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: 'Mastodon Post',
+          description: postContent.trim(),
+          imgType: uploadedImage ? 'FILE' : 'URL',
+          mediaItems: uploadedImage ? `data:image/png;base64,${uploadedImage.base64}` : '',
+          mediaAltText: imageAltText || null,
+          crossPostTo: selectedPlatforms,
+        }),
       });
-      if (response.data.success) {
-        showToast('Posted successfully!', 'success');
-        setLocalContentValue('');
-        setLjSubject('');
-        setLjTags('');
-        removeImage();
-        loadPostHistory();
-        setCrossPostPlatforms({
-          facebook: false,
-          instagram: false,
-          linkedin: false,
-          pinterest: false,
-        });
+
+      if (response.ok) {
+        let message = `Successfully posted to ${platform}!`;
+        if (selectedPlatforms.length > 0) {
+          message += ` (Selected for: ${selectedPlatforms.join(', ')})`;
+        }
+        toast.success(message, { autoClose: 5000 });
+        clearComposer();
+        if (activeSubTab === 'history') {
+          loadPostHistory();
+        }
       } else {
-        showToast(response.data.message || 'Failed', 'error');
+        toast.error(`Failed to post to ${platform}.`);
       }
-    } catch (error) {
-      showToast('Error posting', 'error');
+    } catch (err) {
+      toast.error(`Error while posting to ${platform}.`);
     } finally {
       setIsPosting(false);
     }
   };
 
-  const handleSchedule = async () => {
-    if (!ljUsername || !ljPassword || !scheduleDate || !scheduleTime) {
-      showToast('Missing fields', 'error');
+  const handleSchedulePost = async () => {
+    if (!postContent.trim()) {
+      toast.error('Post cannot be empty!');
       return;
     }
+    if (postContent.length > charLimit) {
+      toast.error(`Post exceeds ${charLimit} character limit.`);
+      return;
+    }
+    if (!scheduleDate || !scheduleTime) {
+      toast.error('Please select both date and time.');
+      return;
+    }
+
     const scheduledDateTime = new Date(`${scheduleDate}T${scheduleTime}`);
     if (scheduledDateTime <= new Date()) {
-      showToast('Time must be in future', 'error');
+      toast.error('Scheduled time must be in the future.');
       return;
     }
+
+    const selectedPlatforms = Object.keys(crossPostPlatforms).filter(p => crossPostPlatforms[p]);
+
     setIsPosting(true);
     try {
-      const formData = new FormData();
-      formData.append('username', ljUsername);
-      formData.append('password', ljPassword);
-      formData.append('subject', ljSubject || 'Untitled');
-      formData.append('content', postContent);
-      formData.append('security', ljSecurity);
-      formData.append('tags', ljTags);
-      formData.append('scheduledDateTime', scheduledDateTime.toISOString());
-      if (selectedImage) {
-        formData.append('image', selectedImage);
-        formData.append('altText', imageAltText);
+      // If editing, delete the old version first
+      if (editingPostId) {
+        await fetch(`/api/mastodon/schedule/${editingPostId}`, { method: 'DELETE' });
       }
-      const response = await axios.post('/api/livejournal/schedule', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+
+      const response = await fetch('/api/mastodon/schedule', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: 'Mastodon Scheduled Post',
+          description: postContent.trim(),
+          imgType: uploadedImage ? 'FILE' : 'URL',
+          mediaItems: uploadedImage ? `data:image/png;base64,${uploadedImage.base64}` : '',
+          mediaAltText: imageAltText || null,
+          scheduledTime: scheduledDateTime.toISOString(),
+          crossPostTo: selectedPlatforms,
+        }),
       });
-      if (response.data.success) {
-        showToast('Scheduled!', 'success');
-        setLocalContentValue('');
-        setLjSubject('');
-        setLjTags('');
-        setScheduleDate('');
-        setScheduleTime('');
-        removeImage();
-        loadScheduledPosts();
+
+      if (response.ok) {
+        toast.success(
+          editingPostId ? 'Post updated successfully!' : 'Post scheduled successfully!',
+        );
+        clearComposer();
+        if (activeSubTab === 'scheduled') {
+          loadScheduledPosts();
+        }
+      } else {
+        toast.error('Failed to schedule post.');
       }
-    } catch (error) {
-      showToast('Error scheduling', 'error');
+    } catch (err) {
+      toast.error('Error while scheduling post.');
     } finally {
       setIsPosting(false);
     }
   };
 
-  const openEditModal = post => {
-    const parsed = parseContentForEdit(post.content);
-    setEditingPost({
-      ...post,
-      _id: post._id,
-      content: parsed.textContent,
-      scheduledFor: new Date(post.scheduledFor),
-    });
-    setEditImageData({
-      hasImage: parsed.hasImage,
-      imageSrc: parsed.imageSrc,
-      altText: parsed.altText,
-    });
-    setShowEditModal(true);
-  };
-
-  const saveEdit = async () => {
+  const handleEditScheduled = post => {
     try {
-      let finalContent = editingPost.content.replace(/\n/g, '<br/>');
-      if (editImageData.hasImage && editImageData.imageSrc) {
-        const alt = editImageData.altText ? editImageData.altText.replace(/"/g, '&quot;') : '';
-        const imgHtml = `<img src="${editImageData.imageSrc}" alt="${alt}" title="${alt}" style="max-width:100%;" />`;
-        finalContent = finalContent ? `${imgHtml}<br/><br/>${finalContent}` : imgHtml;
+      const postData = JSON.parse(post.postData);
+
+      // Load post content
+      setPostContent(postData.status || '');
+
+      // Load image if exists
+      if (postData.local_media_base64) {
+        setUploadedImage({
+          base64: postData.local_media_base64.replace(/^data:image\/\w+;base64,/, ''),
+          preview: postData.local_media_base64,
+          name: 'scheduled-image.png',
+        });
       }
-      await axios.put(`/api/livejournal/schedule/${editingPost._id}`, {
-        subject: editingPost.subject,
-        content: finalContent,
-        security: editingPost.security,
-        tags: editingPost.tags,
-        scheduledDateTime: editingPost.scheduledFor.toISOString(),
-      });
-      showToast('Updated!', 'success');
-      loadScheduledPosts();
-      setShowEditModal(false);
-    } catch (error) {
-      console.error(error);
-      showToast('Error updating', 'error');
+
+      // Load alt text if exists
+      setImageAltText(postData.mediaAltText || '');
+
+      // Load scheduled time
+      const scheduledTime = new Date(post.scheduledTime);
+      const dateStr = scheduledTime.toISOString().split('T')[0];
+      const timeStr = scheduledTime.toTimeString().slice(0, 5);
+      setScheduleDate(dateStr);
+      setScheduleTime(timeStr);
+
+      // Set editing mode
+      setEditingPostId(post._id);
+
+      // Switch to composer tab
+      setActiveSubTab('composer');
+
+      toast.info('Editing scheduled post. Modify and click "Schedule Post" to update.');
+    } catch (err) {
+      toast.error('Failed to load post for editing');
+      console.error('Edit error:', err);
     }
   };
 
-  const formatDate = d =>
-    new Date(d).toLocaleString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true,
-    });
+  const handleCancelEdit = () => {
+    clearComposer();
+    toast.info('Edit cancelled');
+  };
 
-  // --- COMMON STYLES ---
-  const inputStyle = {
-    width: '100%',
-    padding: '10px',
-    borderRadius: '6px',
-    border: `1px solid ${theme.border}`,
-    backgroundColor: theme.inputBg,
-    color: theme.text,
+  const handleDeleteScheduled = async (postId, skipConfirmation = false) => {
+    const performDelete = async () => {
+      try {
+        const response = await fetch(`/api/mastodon/schedule/${postId}`, {
+          method: 'DELETE',
+        });
+        if (response.ok) {
+          toast.success('Scheduled post deleted!');
+          loadScheduledPosts();
+        } else {
+          toast.error('Failed to delete post.');
+        }
+      } catch (err) {
+        toast.error('Error deleting post.');
+      }
+    };
+
+    if (skipConfirmation || !preferences.confirmDeleteScheduled) {
+      await performDelete();
+    } else {
+      showModal({
+        title: 'Delete Scheduled Post',
+        message: 'Are you sure you want to delete this scheduled post?',
+        onConfirm: performDelete,
+        confirmText: 'Delete',
+        confirmColor: 'danger',
+        showDontShowAgain: true,
+        preferenceKey: 'confirmDeleteScheduled',
+      });
+    }
   };
-  const labelStyle = {
-    display: 'block',
-    marginBottom: '8px',
-    fontWeight: '500',
-    color: theme.text,
+
+  const handlePostScheduledNow = async post => {
+    const performPost = async () => {
+      try {
+        const postData = JSON.parse(post.postData);
+        const response = await fetch('/api/mastodon/createPin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: 'Mastodon Post',
+            description: postData.status,
+            imgType: postData.local_media_base64 ? 'FILE' : 'URL',
+            mediaItems: postData.local_media_base64 || '',
+            mediaAltText: postData.mediaAltText || null,
+          }),
+        });
+
+        if (response.ok) {
+          toast.success('Posted successfully!');
+          await handleDeleteScheduled(post._id, true);
+        } else {
+          toast.error('Failed to post.');
+        }
+      } catch (err) {
+        toast.error('Error posting.');
+      }
+    };
+
+    if (!preferences.confirmPostNow) {
+      await performPost();
+    } else {
+      showModal({
+        title: 'Post Immediately',
+        message:
+          'This will post immediately to Mastodon and remove it from your scheduled posts. Continue?',
+        onConfirm: performPost,
+        confirmText: 'Post Now',
+        confirmColor: 'success',
+        showDontShowAgain: true,
+        preferenceKey: 'confirmPostNow',
+      });
+    }
   };
-  const buttonBase = {
-    padding: '12px 24px',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    fontWeight: '500',
+
+  const handleDontShowAgainChange = preferenceKey => {
+    updatePreference(preferenceKey, false);
+    toast.info('Preference saved! This confirmation will not show again.', { autoClose: 3000 });
   };
-  const primaryButton = { ...buttonBase, backgroundColor: theme.primary, color: '#ffffff' };
-  const successButton = { ...buttonBase, backgroundColor: theme.success, color: '#ffffff' };
-  const dangerButton = {
-    ...buttonBase,
-    backgroundColor: theme.danger,
-    color: '#ffffff',
-    padding: '6px 12px',
-    fontSize: '14px',
+
+  const formatScheduledTime = isoString => {
+    try {
+      return new Date(isoString).toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true,
+      });
+    } catch {
+      return isoString;
+    }
   };
-  const secondaryButton = {
-    ...buttonBase,
-    backgroundColor: theme.inputBg,
-    color: theme.text,
-    border: `1px solid ${theme.border}`,
-    padding: '8px 16px',
+
+  const getScheduledPostImage = post => {
+    try {
+      const postData = JSON.parse(post.postData);
+      return postData.local_media_base64 || null;
+    } catch {
+      return null;
+    }
+  };
+
+  const stripHtml = html => {
+    const tmp = document.createElement('DIV');
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || '';
   };
 
   return (
-    <div
-      style={{ padding: '1rem', color: theme.text, backgroundColor: theme.bg, minHeight: '100%' }}
-    >
-      <ToastNotification
-        show={toast.show}
-        message={toast.message}
-        type={toast.type}
-        theme={theme}
-      />
-      <DeleteModal
-        show={showDeleteModal}
-        onClose={() => setShowDeleteModal(false)}
-        onDelete={async () => {
-          try {
-            await axios.delete(`/api/livejournal/schedule/${selectedPostId}`);
-            showToast('Deleted!', 'success');
-            loadScheduledPosts();
-          } catch {
-            showToast('Error', 'error');
-          } finally {
-            setShowDeleteModal(false);
-          }
-        }}
-        theme={theme}
-        buttonStyles={{ secondary: secondaryButton, danger: dangerButton }}
-      />
+    <div className="social-media-composer">
+      <h3 className="platform-title">{platform}</h3>
 
-      <PostNowModal
-        show={showPostNowModal}
-        onClose={() => setShowPostNowModal(false)}
-        onPost={async () => {
-          try {
-            await axios.post(`/api/livejournal/post-scheduled/${selectedPostId}`);
-            showToast('Posted!', 'success');
-            loadScheduledPosts();
-            loadPostHistory();
-          } catch {
-            showToast('Error', 'error');
-          } finally {
-            setShowPostNowModal(false);
-          }
-        }}
-        theme={theme}
-        buttonStyles={{ secondary: secondaryButton, success: successButton }}
-      />
-
-      {showEditModal && editingPost && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0,0,0,0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 10001,
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: theme.modalBg,
-              padding: '24px',
-              borderRadius: '12px',
-              width: '100%',
-              maxWidth: '600px',
-              maxHeight: '90vh',
-              overflow: 'auto',
-              border: `1px solid ${theme.border}`,
-            }}
-          >
-            <h3 style={{ color: theme.text, marginTop: 0 }}>Edit Post</h3>
-            <div style={{ marginBottom: '16px' }}>
-              <label style={labelStyle}>Subject</label>
-              <input
-                type="text"
-                value={editingPost.subject}
-                onChange={e => setEditingPost(prev => ({ ...prev, subject: e.target.value }))}
-                style={inputStyle}
-              />
-            </div>
-            <div style={{ marginBottom: '16px' }}>
-              <label style={labelStyle}>Content</label>
-              {editImageData.hasImage && (
-                <div
-                  style={{
-                    marginBottom: '12px',
-                    padding: '12px',
-                    border: `1px solid ${theme.border}`,
-                    borderRadius: '4px',
-                    backgroundColor: theme.panelBg,
-                  }}
-                >
-                  <img
-                    src={editImageData.imageSrc}
-                    alt={editImageData.altText}
-                    style={{ maxWidth: '100%', marginBottom: '8px' }}
-                  />
-                  <div style={{ marginBottom: '8px' }}>
-                    <label
-                      style={{
-                        fontSize: '12px',
-                        display: 'block',
-                        color: theme.subText,
-                        marginBottom: '4px',
-                      }}
-                    >
-                      Alt Text
-                    </label>
-                    <input
-                      type="text"
-                      value={editImageData.altText}
-                      onChange={e =>
-                        setEditImageData(prev => ({ ...prev, altText: e.target.value }))
-                      }
-                      style={{ ...inputStyle, padding: '6px', fontSize: '13px' }}
-                    />
-                  </div>
-                  <button
-                    onClick={() =>
-                      setEditImageData({ hasImage: false, imageSrc: null, altText: '' })
-                    }
-                    style={dangerButton}
-                  >
-                    Remove Image
-                  </button>
-                </div>
-              )}
-              <textarea
-                value={editingPost.content}
-                onChange={e => setEditingPost(prev => ({ ...prev, content: e.target.value }))}
-                style={{ ...inputStyle, height: '150px', resize: 'vertical' }}
-              />
-            </div>
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1fr',
-                gap: '12px',
-                marginBottom: '16px',
-              }}
-            >
-              <div>
-                <label style={labelStyle}>Security</label>
-                <select
-                  value={editingPost.security}
-                  onChange={e => setEditingPost(prev => ({ ...prev, security: e.target.value }))}
-                  style={inputStyle}
-                >
-                  <option value="public">Public</option>
-                  <option value="private">Private</option>
-                  <option value="friends">Friends Only</option>
-                </select>
-              </div>
-              <div>
-                <label style={labelStyle}>Tags</label>
-                <input
-                  type="text"
-                  value={editingPost.tags}
-                  onChange={e => setEditingPost(prev => ({ ...prev, tags: e.target.value }))}
-                  style={inputStyle}
-                />
-              </div>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
-              <button onClick={() => setShowEditModal(false)} style={secondaryButton}>
-                Cancel
-              </button>
-              <button onClick={saveEdit} style={{ ...primaryButton, padding: '8px 16px' }}>
-                Save
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <h3 style={{ color: theme.text, marginTop: 0 }}>{platform}</h3>
-
-      <div
-        style={{ display: 'flex', borderBottom: `1px solid ${theme.border}`, marginBottom: '1rem' }}
-      >
-        {['composer', 'scheduled', 'history', 'details'].map(id => (
+      <div className="tabs-container">
+        {tabOrder.map(({ id, label }) => (
           <button
             key={id}
             onClick={() => setActiveSubTab(id)}
-            style={{
-              padding: '10px 16px',
-              backgroundColor: activeSubTab === id ? theme.tabActiveBg : theme.tabInactiveBg,
-              color: activeSubTab === id ? theme.tabActiveText : theme.tabInactiveText,
-              border: 'none',
-              borderBottom:
-                activeSubTab === id ? `3px solid ${theme.primary}` : `1px solid ${theme.border}`,
-              cursor: 'pointer',
-              flex: 1,
-              fontWeight: '500',
-            }}
+            className={`tab-button ${activeSubTab === id ? 'active' : ''}`}
           >
             {id.charAt(0).toUpperCase() + id.slice(1)}
           </button>
@@ -654,218 +479,168 @@ export default function SocialMediaComposer({ platform, darkMode = false }) {
       </div>
 
       {activeSubTab === 'composer' && (
-        <div>
-          {isLiveJournal && (
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1fr',
-                gap: '12px',
-                marginBottom: '16px',
-              }}
-            >
-              <input
-                type="text"
-                value={ljUsername}
-                onChange={e => setLjUsername(e.target.value)}
-                placeholder="Username"
-                style={inputStyle}
-              />
-              <input
-                type="password"
-                value={ljPassword}
-                onChange={e => setLjPassword(e.target.value)}
-                placeholder="Password"
-                style={inputStyle}
-              />
+        <div className="composer-content">
+          {editingPostId && (
+            <div className="edit-banner">
+              <span>✏️ Editing scheduled post</span>
+              <button type="button" onClick={handleCancelEdit} className="btn-cancel-edit">
+                Cancel Edit
+              </button>
             </div>
           )}
-          {isLiveJournal && (
-            <div style={{ marginBottom: '16px' }}>
-              <label style={labelStyle}>Subject</label>
-              <input
-                type="text"
-                value={ljSubject}
-                onChange={e => setLjSubject(e.target.value)}
-                style={inputStyle}
-              />
-            </div>
-          )}
+
           <textarea
-            value={localContentValue}
-            onChange={e => setLocalContentValue(e.target.value.slice(0, charLimit))}
-            placeholder="Write your post..."
-            style={{ ...inputStyle, height: '200px', resize: 'vertical', marginBottom: '8px' }}
+            value={postContent}
+            onChange={e => setPostContent(e.target.value)}
+            placeholder={`Write your ${platform} post here...`}
+            className="post-textarea"
           />
-          <div
-            style={{
-              textAlign: 'right',
-              fontSize: '12px',
-              color: charCount > 55000 ? theme.danger : theme.success,
-              marginBottom: '16px',
-            }}
-          >
-            {charCount} / {charLimit}
-          </div>
-          {isLiveJournal && (
-            <div
-              style={{
-                marginBottom: '16px',
-                border: `1px dashed ${theme.border}`,
-                padding: '16px',
-                borderRadius: '8px',
-                backgroundColor: theme.panelBg,
-              }}
-            >
-              <label style={labelStyle}>Image & Alt Text</label>
-              {!imagePreview ? (
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageSelect}
-                  style={{ display: 'block', marginTop: '8px', color: theme.text }}
-                />
-              ) : (
-                <div style={{ marginTop: '8px' }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                    <img
-                      src={imagePreview}
-                      alt="Preview"
-                      style={{
-                        maxWidth: '100px',
-                        borderRadius: '4px',
-                        border: `1px solid ${theme.border}`,
-                      }}
-                    />
-                    <div style={{ flex: 1 }}>
-                      <input
-                        type="text"
-                        value={imageAltText}
-                        onChange={e => setImageAltText(e.target.value)}
-                        placeholder="Enter Alt Text (Description)"
-                        style={{ ...inputStyle, marginBottom: '8px' }}
-                      />
-                      <button onClick={removeImage} style={dangerButton}>
-                        Remove
-                      </button>
-                    </div>
+          <CharacterCounter currentLength={postContent.length} maxLength={charLimit} />
+
+          <div className="upload-section">
+            <label htmlFor="image-upload" className="section-label">
+              Add Image (optional):
+            </label>
+            <input
+              id="image-upload"
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="file-input"
+            />
+            {uploadedImage && (
+              <div>
+                <div className="image-preview-container">
+                  <img src={uploadedImage.preview} alt="Upload preview" className="image-preview" />
+                  <button
+                    type="button"
+                    onClick={handleRemoveImage}
+                    className="remove-image-btn"
+                    title="Remove image"
+                  >
+                    ✕
+                  </button>
+                </div>
+                <div className="alt-text-section">
+                  <label htmlFor="alt-text" className="section-label">
+                    Alt Text (for accessibility):
+                  </label>
+                  <input
+                    id="alt-text"
+                    type="text"
+                    value={imageAltText}
+                    onChange={e => setImageAltText(e.target.value)}
+                    placeholder="Describe the image for screen readers..."
+                    className="alt-text-input"
+                    maxLength={1500}
+                  />
+                  <div style={{ fontSize: '0.75rem', color: '#666', marginTop: '0.25rem' }}>
+                    {imageAltText.length} / 1500 characters
                   </div>
                 </div>
-              )}
-            </div>
-          )}
-          {isLiveJournal && (
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1fr',
-                gap: '12px',
-                marginBottom: '16px',
-              }}
-            >
-              <div>
-                <label style={labelStyle}>Security</label>
-                <select
-                  value={ljSecurity}
-                  onChange={e => setLjSecurity(e.target.value)}
-                  style={inputStyle}
-                >
-                  <option value="public">Public</option>
-                  <option value="private">Private</option>
-                  <option value="friends">Friends</option>
-                </select>
               </div>
-              <div>
-                <label style={labelStyle}>Tags</label>
-                <input
-                  type="text"
-                  value={ljTags}
-                  onChange={e => setLjTags(e.target.value)}
-                  placeholder="comma, separated"
-                  style={inputStyle}
-                />
-              </div>
-            </div>
-          )}
-          {isLiveJournal && (
-            <div style={{ marginBottom: '16px' }}>
-              <label style={labelStyle}>Schedule (Optional)</label>
-              <div style={{ display: 'flex', gap: '12px' }}>
-                <input
-                  type="date"
-                  value={scheduleDate}
-                  onChange={e => setScheduleDate(e.target.value)}
-                  style={inputStyle}
-                />
-                <input
-                  type="time"
-                  value={scheduleTime}
-                  onChange={e => setScheduleTime(e.target.value)}
-                  style={inputStyle}
-                />
-              </div>
-            </div>
-          )}
-          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-            <button
-              onClick={handlePost}
-              disabled={isPosting}
-              style={{ ...primaryButton, opacity: isPosting ? 0.6 : 1 }}
-            >
-              {isPosting ? 'Posting...' : 'Post Now'}
-            </button>
-            {isLiveJournal && (
-              <button
-                onClick={handleSchedule}
-                disabled={isPosting}
-                style={{ ...successButton, opacity: isPosting ? 0.6 : 1 }}
-              >
-                Schedule
-              </button>
             )}
-            <div style={{ position: 'relative' }} ref={crossPostDropdownRef}>
+          </div>
+
+          <div className="schedule-section">
+            <label htmlFor="schedule-date" className="section-label">
+              Schedule for later (optional):
+            </label>
+            <div className="datetime-inputs">
+              <input
+                id="schedule-date"
+                type="date"
+                value={scheduleDate}
+                onChange={e => setScheduleDate(e.target.value)}
+                className="datetime-input"
+              />
+              <input
+                id="schedule-time"
+                type="time"
+                value={scheduleTime}
+                onChange={e => setScheduleTime(e.target.value)}
+                className="datetime-input"
+              />
+            </div>
+          </div>
+
+          <div className="action-buttons">
+            <button
+              type="button"
+              onClick={handleShowPreview}
+              disabled={!postContent.trim()}
+              className="btn btn-info"
+            >
+              Preview
+            </button>
+            <button
+              type="button"
+              onClick={handlePostNow}
+              disabled={isPosting}
+              className="btn btn-primary"
+            >
+              {isPosting ? 'Posting…' : 'Post Now'}
+            </button>
+            <button
+              type="button"
+              onClick={handleSchedulePost}
+              disabled={isPosting}
+              className="btn btn-success"
+            >
+              {isPosting
+                ? editingPostId
+                  ? 'Updating…'
+                  : 'Scheduling…'
+                : editingPostId
+                ? 'Update Post'
+                : 'Schedule Post'}
+            </button>
+
+            <div className="crosspost-container">
               <button
-                onClick={() => setShowCrossPostDropdown(!showCrossPostDropdown)}
-                style={{ ...buttonBase, backgroundColor: theme.subText, color: '#ffffff' }}
+                type="button"
+                onClick={() => setShowCrossPost(!showCrossPost)}
+                className="btn btn-secondary"
               >
-                Also post to ▾
+                Also post to {showCrossPost ? '▴' : '▾'}
               </button>
-              {showCrossPostDropdown && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    bottom: '100%',
-                    left: 0,
-                    marginBottom: '4px',
-                    backgroundColor: theme.modalBg,
-                    border: `1px solid ${theme.border}`,
-                    borderRadius: '4px',
-                    boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-                    padding: '8px',
-                    width: '150px',
-                    zIndex: 10,
-                  }}
-                >
-                  {Object.keys(crossPostPlatforms).map(key => (
-                    <label
-                      key={key}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        padding: '4px',
-                        cursor: 'pointer',
-                        color: theme.text,
-                      }}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={crossPostPlatforms[key]}
-                        onChange={() => handleCrossPostToggle(key)}
-                      />
-                      <span style={{ textTransform: 'capitalize' }}>{key}</span>
-                    </label>
-                  ))}
+              {showCrossPost && (
+                <div className="crosspost-dropdown">
+                  <label className="crosspost-option">
+                    <input
+                      type="checkbox"
+                      checked={crossPostPlatforms.facebook}
+                      onChange={() => handleCrossPostToggle('facebook')}
+                    />
+                    <span>Facebook</span>
+                  </label>
+                  <label className="crosspost-option">
+                    <input
+                      type="checkbox"
+                      checked={crossPostPlatforms.linkedin}
+                      onChange={() => handleCrossPostToggle('linkedin')}
+                    />
+                    <span>LinkedIn</span>
+                  </label>
+                  <label className="crosspost-option">
+                    <input
+                      type="checkbox"
+                      checked={crossPostPlatforms.instagram}
+                      onChange={() => handleCrossPostToggle('instagram')}
+                    />
+                    <span>Instagram</span>
+                  </label>
+                  <label className="crosspost-option">
+                    <input
+                      type="checkbox"
+                      checked={crossPostPlatforms.x}
+                      onChange={() => handleCrossPostToggle('x')}
+                    />
+                    <span>X (Twitter)</span>
+                  </label>
+                  <p className="crosspost-note">
+                    Note: Cross-posting functionality coming soon. Currently shows selection only.
+                  </p>
                 </div>
               )}
             </div>
@@ -874,155 +649,258 @@ export default function SocialMediaComposer({ platform, darkMode = false }) {
       )}
 
       {activeSubTab === 'scheduled' && (
-        <div>
-          {scheduledPosts.map(post => (
-            <div
-              key={post._id}
-              style={{
-                border: `1px solid ${theme.border}`,
-                padding: '12px',
-                borderRadius: '8px',
-                marginBottom: '8px',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                backgroundColor: theme.panelBg,
-              }}
-            >
-              <div>
-                <strong style={{ color: theme.text }}>{post.subject}</strong>
-                <div style={{ fontSize: '12px', color: theme.subText }}>
-                  {formatDate(post.scheduledFor)}
-                </div>
-              </div>
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <button
-                  onClick={() => openEditModal(post)}
-                  style={{ ...primaryButton, padding: '6px 12px', fontSize: '14px' }}
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => {
-                    setSelectedPostId(post._id);
-                    setShowPostNowModal(true);
-                  }}
-                  style={{ ...successButton, padding: '6px 12px', fontSize: '14px' }}
-                >
-                  Post Now
-                </button>
-                <button
-                  onClick={() => {
-                    setSelectedPostId(post._id);
-                    setShowDeleteModal(true);
-                  }}
-                  style={dangerButton}
-                >
-                  Delete
-                </button>
-              </div>
+        <div className="scheduled-content">
+          <h4>Scheduled Posts for {platform}</h4>
+          {isLoadingScheduled && <p>Loading...</p>}
+          {!isLoadingScheduled && scheduledPosts.length === 0 && <p>No scheduled posts yet.</p>}
+          {!isLoadingScheduled && scheduledPosts.length > 0 && (
+            <div className="posts-list">
+              {scheduledPosts.map(post => {
+                let postText = '';
+                try {
+                  const postData = JSON.parse(post.postData);
+                  postText = postData.status || 'No content';
+                } catch {
+                  postText = 'Invalid post data';
+                }
+                const imageBase64 = getScheduledPostImage(post);
+
+                return (
+                  <div key={post._id} className="post-card">
+                    <div className="post-card-content">
+                      <p className="post-text">{postText}</p>
+                      <p className="post-meta">📅 {formatScheduledTime(post.scheduledTime)}</p>
+                      {imageBase64 && (
+                        <img src={imageBase64} alt="Post thumbnail" className="post-thumbnail" />
+                      )}
+                    </div>
+                    <div className="post-card-actions">
+                      <button
+                        type="button"
+                        onClick={() => handleEditScheduled(post)}
+                        className="action-btn edit"
+                        title="Edit"
+                      >
+                        ✏️
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handlePostScheduledNow(post)}
+                        className="action-btn success"
+                        title="Post now"
+                      >
+                        ✓
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteScheduled(post._id)}
+                        className="action-btn danger"
+                        title="Delete"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-          ))}
+          )}
         </div>
       )}
 
       {activeSubTab === 'history' && (
-        <div>
-          {postHistory.map(post => (
-            <div
-              key={post._id}
-              style={{
-                border: `1px solid ${theme.border}`,
-                padding: '12px',
-                borderRadius: '8px',
-                marginBottom: '8px',
-                backgroundColor: theme.panelBg,
-              }}
-            >
-              <div
-                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-              >
-                <strong style={{ color: theme.text }}>{post.subject}</strong>
-                {post.status === 'failed' && (
-                  <span
-                    style={{
-                      backgroundColor: theme.danger,
-                      color: 'white',
-                      padding: '2px 8px',
-                      borderRadius: '4px',
-                      fontSize: '12px',
-                      fontWeight: 'bold',
-                    }}
-                  >
-                    Failed
-                  </span>
-                )}
-              </div>
-              <div style={{ fontSize: '12px', color: theme.subText }}>
-                {formatDate(post.createdAt)}
-              </div>
-              {post.ljUrl && (
-                <a
-                  href={post.ljUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ fontSize: '14px', color: theme.primary, textDecoration: 'none' }}
-                >
-                  View Post
-                </a>
-              )}
+        <div className="history-content">
+          <h4>Post History for {platform}</h4>
+          {isLoadingHistory && <p>Loading...</p>}
+          {!isLoadingHistory && postHistory.length === 0 && <p>No posts found in history.</p>}
+          {!isLoadingHistory && postHistory.length > 0 && (
+            <div className="posts-list">
+              {postHistory.map(post => (
+                <div key={post.id} className="post-card">
+                  <div className="post-card-full">
+                    <p className="post-text">{stripHtml(post.content)}</p>
+                    <p className="post-meta">📅 {formatScheduledTime(post.created_at)}</p>
+                    <div className="post-stats">
+                      <span>❤️ {post.favourites_count}</span>
+                      <span>🔄 {post.reblogs_count}</span>
+                    </div>
+                    {post.media_attachments?.length > 0 && (
+                      <div className="post-media">
+                        {post.media_attachments.map((media, idx) => (
+                          <img
+                            key={idx}
+                            src={media.preview_url || media.url}
+                            alt="Post media"
+                            className="post-thumbnail"
+                          />
+                        ))}
+                      </div>
+                    )}
+                    <a
+                      href={post.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="post-link"
+                    >
+                      View on Mastodon →
+                    </a>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
+          )}
         </div>
       )}
 
       {activeSubTab === 'details' && (
-        <div>
-          {isLiveJournal ? (
-            <div>
-              <div
-                style={{
-                  backgroundColor: theme.panelBg,
-                  padding: '16px',
-                  borderRadius: '8px',
-                  marginBottom: '16px',
-                  border: `1px solid ${theme.border}`,
-                }}
-              >
-                <h5 style={{ marginTop: 0, color: theme.text }}>Character Limits</h5>
-                <ul style={{ margin: 0, paddingLeft: '20px', color: theme.text }}>
-                  <li>Subject: 255 characters</li>
-                  <li>Content: 60,000 characters</li>
-                  <li>Tags: Unlimited (comma-separated)</li>
-                </ul>
-              </div>
-              <div
-                style={{
-                  backgroundColor: theme.panelBg,
-                  padding: '16px',
-                  borderRadius: '8px',
-                  border: `1px solid ${theme.border}`,
-                }}
-              >
-                <h5 style={{ marginTop: 0, color: theme.text }}>Security Options</h5>
-                <ul style={{ margin: 0, paddingLeft: '20px', color: theme.text }}>
-                  <li>
-                    <strong>Public:</strong> Visible to everyone
-                  </li>
-                  <li>
-                    <strong>Private:</strong> Only visible to you
-                  </li>
-                  <li>
-                    <strong>Friends Only:</strong> Visible to your friends list
-                  </li>
-                </ul>
-              </div>
-            </div>
-          ) : (
-            <p style={{ color: theme.text }}>Platform details here</p>
-          )}
+        <div className="details-content">
+          <p>
+            <strong>{platform}-Specific Details</strong>
+          </p>
+          <ul>
+            <li>Max characters: {charLimit}</li>
+            <li>Supports hashtags: Yes</li>
+            <li>Image support: Yes</li>
+            <li>Alt text support: Yes (up to 1500 characters)</li>
+            <li>Recommended dimensions: 1200x675 px</li>
+            <li>Max image size: 5MB</li>
+          </ul>
+          <div
+            style={{
+              marginTop: '1.5rem',
+              padding: '1rem',
+              background: 'var(--card-bg, #f8f9fa)',
+              borderRadius: '6px',
+            }}
+          >
+            <h5>Confirmation Preferences</h5>
+            <label style={{ display: 'block', marginBottom: '0.5rem' }}>
+              <input
+                type="checkbox"
+                checked={preferences.confirmDeleteScheduled}
+                onChange={e => updatePreference('confirmDeleteScheduled', e.target.checked)}
+                style={{ marginRight: '0.5rem' }}
+              />
+              Show confirmation when deleting scheduled posts
+            </label>
+            <label style={{ display: 'block' }}>
+              <input
+                type="checkbox"
+                checked={preferences.confirmPostNow}
+                onChange={e => updatePreference('confirmPostNow', e.target.checked)}
+                style={{ marginRight: '0.5rem' }}
+              />
+              Show confirmation when posting scheduled posts immediately
+            </label>
+          </div>
         </div>
       )}
+
+      <ConfirmationModal
+        isOpen={modalOpen}
+        toggle={() => setModalOpen(false)}
+        title={modalConfig.title}
+        message={modalConfig.message}
+        onConfirm={modalConfig.onConfirm}
+        confirmText={modalConfig.confirmText}
+        confirmColor={modalConfig.confirmColor}
+        showDontShowAgain={modalConfig.showDontShowAgain}
+        onDontShowAgainChange={() => handleDontShowAgainChange(modalConfig.preferenceKey)}
+      />
+
+      <Modal isOpen={previewOpen} toggle={() => setPreviewOpen(false)} size="lg" centered>
+        <ModalHeader toggle={() => setPreviewOpen(false)}>Post Preview</ModalHeader>
+        <ModalBody>
+          {previewData && (
+            <div className="preview-container">
+              <div className="preview-header">
+                <img
+                  src="https://cdn-icons-png.flaticon.com/512/6295/6295417.png"
+                  alt="Mastodon"
+                  style={{
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '50%',
+                    marginRight: '12px',
+                  }}
+                />
+                <div>
+                  <div style={{ fontWeight: 'bold', fontSize: '1rem' }}>Your Account</div>
+                  <div style={{ fontSize: '0.875rem', color: '#666' }}>
+                    {previewData.scheduledTime
+                      ? `Scheduled for ${formatScheduledTime(previewData.scheduledTime)}`
+                      : 'Posting now'}
+                  </div>
+                </div>
+              </div>
+              <div
+                className="preview-content"
+                style={{
+                  marginTop: '1rem',
+                  whiteSpace: 'pre-wrap',
+                  fontSize: '1rem',
+                  lineHeight: '1.5',
+                }}
+              >
+                {previewData.content}
+              </div>
+              {previewData.image && (
+                <div style={{ marginTop: '1rem' }}>
+                  <img
+                    src={previewData.image.preview}
+                    alt={previewData.altText || 'Post preview'}
+                    style={{ maxWidth: '100%', borderRadius: '8px', border: '1px solid #ddd' }}
+                  />
+                  {previewData.altText && (
+                    <div
+                      style={{
+                        marginTop: '0.5rem',
+                        padding: '0.5rem',
+                        background: '#f0f0f0',
+                        borderRadius: '4px',
+                        fontSize: '0.875rem',
+                      }}
+                    >
+                      <strong>Alt text:</strong> {previewData.altText}
+                    </div>
+                  )}
+                </div>
+              )}
+              {previewData.crossPostTo.length > 0 && (
+                <div
+                  style={{
+                    marginTop: '1rem',
+                    padding: '0.75rem',
+                    background: '#e7f3ff',
+                    borderRadius: '6px',
+                    fontSize: '0.875rem',
+                  }}
+                >
+                  <strong>📤 Will also be selected for:</strong>{' '}
+                  {previewData.crossPostTo.join(', ')}
+                </div>
+              )}
+              <div style={{ marginTop: '1rem', fontSize: '0.875rem', color: '#666' }}>
+                <strong>Character count:</strong> {previewData.content.length} / {charLimit}
+              </div>
+            </div>
+          )}
+        </ModalBody>
+        <ModalFooter>
+          <Button color="secondary" onClick={() => setPreviewOpen(false)}>
+            Close
+          </Button>
+          {previewData?.scheduledTime ? (
+            <Button color="success" onClick={handleSchedulePost} disabled={isPosting}>
+              {isPosting ? 'Scheduling...' : 'Schedule Post'}
+            </Button>
+          ) : (
+            <Button color="primary" onClick={handlePostNow} disabled={isPosting}>
+              {isPosting ? 'Posting...' : 'Post Now'}
+            </Button>
+          )}
+        </ModalFooter>
+      </Modal>
     </div>
   );
 }
