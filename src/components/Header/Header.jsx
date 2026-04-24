@@ -110,7 +110,8 @@ export function Header(props) {
     props.hasPermission('deleteUserProfile', !isAuthUser ) ||
     props.hasPermission('changeUserStatus', !isAuthUser ) ||
     props.hasPermission('getUserProfiles', !isAuthUser ) ||
-    props.hasPermission('setFinalDay', !isAuthUser);
+    props.hasPermission('setFinalDay', !isAuthUser) ||
+    props.hasPermission('interactWithPauseUserButton', !isAuthUser);
 
   // Badges
   const canAccessBadgeManagement =
