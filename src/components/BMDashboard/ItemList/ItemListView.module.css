@@ -108,7 +108,7 @@ table td {
   position: sticky;
   top: 0;
   z-index: 2;
-  background: #ffffff;
+  background: #fff;
   border-bottom: 1px solid #e5e7eb;
 }
 
@@ -128,7 +128,7 @@ table td {
   gap: 15px;
   width: 100%;
   max-width: 1200px;
-  margin: 0 auto 10px auto;
+  margin: 0 auto 10px;
   overflow: visible;
 }
 
@@ -243,9 +243,28 @@ table td {
 .darkMode {
   color: #e8edf4;
   background-color: #0d1117 !important;
+
 /*   color: #fff !important; */
   min-height: 100vh;
   padding-bottom: 2rem;
+}
+
+.darkTable tbody td,
+.darkTable tbody th {
+  border-color: #2f4157 !important;
+}
+
+.darkTable tbody tr:nth-child(odd) {
+  background-color: #1f2e45;
+}
+
+.darkTable tbody tr:nth-child(even) {
+  background-color: #23375b;
+}
+
+.darkTable .stickyThead th {
+  background-color: #2f4157;
+  border-bottom: 1px solid #3f5269;
 }
 
 :global(.dark-mode) .items_table_container {
@@ -305,25 +324,6 @@ table td {
   background-color: #0d1117 !important;
 }
 
-
-.darkTable .stickyThead th {
-  background-color: #2f4157;
-  border-bottom: 1px solid #3f5269;
-}
-
-.darkTable tbody td,
-.darkTable tbody th {
-  border-color: #2f4157 !important;
-}
-
-.darkTable tbody tr:nth-child(odd) {
-  background-color: #1f2e45;
-}
-
-.darkTable tbody tr:nth-child(even) {
-  background-color: #23375b;
-}
-
 .darkMode .searchBox input {
   background-color: #2a3f5f;
   color: #e8edf4;
@@ -335,7 +335,7 @@ table td {
 }
 
 .darkMode .clearSearch:hover {
-  color: #ffffff;
+  color: #fff;
 }
 
 .darkMode .paginationBar {
@@ -396,7 +396,7 @@ table td {
 .darkDatePicker .react-datepicker__day--keyboard-selected,
 .darkDatePicker .react-datepicker__time-list-item--selected {
   background-color: #468ef9 !important;
-  color: #ffffff !important;
+  color: #fff !important;
   border-color: #468ef9 !important;
 }
 
@@ -420,12 +420,12 @@ table td {
 .darkDatePicker :global(.react-datepicker__time-list-item:hover),
 .darkDatePicker :global(.react-datepicker__time-list-item:focus) {
   background-color: #3a506b !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .darkDatePicker :global(.react-datepicker__time-list-item--selected) {
   background-color: #468ef9 !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .darkDatePickerPopper .react-datepicker__triangle {
@@ -433,13 +433,13 @@ table td {
 }
 
 .lightDatePickerInput {
-  background-color: #ffffff !important;
+  background-color: #fff !important;
   color: #111827 !important;
   border: 1px solid #d1d5db !important;
 }
 
 .lightDatePicker {
-  background-color: #ffffff !important;
+  background-color: #fff !important;
   color: #111827 !important;
   border: 1px solid #d1d5db !important;
 }
@@ -465,26 +465,26 @@ table td {
 .lightDatePicker .react-datepicker__day--keyboard-selected,
 .lightDatePicker .react-datepicker__time-list-item--selected {
   background-color: #468ef9 !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .lightDatePicker .react-datepicker__time-container {
   border-color: #d1d5db !important;
-  background-color: #ffffff !important;
+  background-color: #fff !important;
 }
 
 .lightDatePicker .react-datepicker__time-container .react-datepicker__time {
-  background-color: #ffffff !important;
+  background-color: #fff !important;
   border-color: #d1d5db !important;
 }
 
 .lightDatePicker .react-datepicker__time-container .react-datepicker__time-box {
-  background-color: #ffffff !important;
+  background-color: #fff !important;
   border-color: #d1d5db !important;
 }
 
 .lightDatePicker .react-datepicker__time-container .react-datepicker__time-list {
-  background-color: #ffffff !important;
+  background-color: #fff !important;
   color: #1f2937 !important;
   border-color: #d1d5db !important;
 }
@@ -496,13 +496,13 @@ table td {
   :global(.react-datepicker__time-container
     .react-datepicker__time-box
     ul.react-datepicker__time-list) {
-  background-color: #ffffff !important;
+  background-color: #fff !important;
   border-color: #d1d5db !important;
   color: #1f2937 !important;
 }
 
 .lightDatePicker :global(.react-datepicker__time-list-item) {
-  background-color: #ffffff !important;
+  background-color: #fff !important;
   color: #1f2937 !important;
 }
 
@@ -514,7 +514,9 @@ table td {
 
 .lightDatePicker :global(.react-datepicker__time-list-item--selected) {
   background-color: #468ef9 !important;
-  color: #ffffff !important;
+  color: #fff !important;
+}
+
 .items_list_container.dark_mode {
   background-color: #1b1f27 !important;
   color: #fff !important;
@@ -531,7 +533,7 @@ table td {
   display: none;
 }
 
-@media (max-width: 900px) {
+@media (width <= 900px) {
   .selectInput {
     grid-template-columns: 1fr;
     max-width: 100%;
