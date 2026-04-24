@@ -161,6 +161,7 @@
   background-color: #2a3f5f;
   border: 1px solid #555;
 }
+
 .background-red {
   background-color: #ff4d4f;
 }
@@ -168,6 +169,7 @@
 :global(.dark.rmsc ) {
   --rmsc-border: none;
   --rmsc-bg: none;
+
   border:transparent;
 }
 
@@ -186,6 +188,7 @@
 :global(.dark.rmsc .select-item.selected) {
   background-color: #253246;
 }
+
 :global(.rmsc.dark .options) {
   background-color: #2a3f5f;
   color: #fff;
@@ -196,6 +199,7 @@
   background-color: #2a3f5f;
   color: #fff;
 }
+
 :global(.rmsc.dark .search input:focus) {
   background-color: #223653;
 }

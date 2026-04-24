@@ -179,24 +179,28 @@
 
 .calendarCard {
   width: 100%;
-  background: #fff;
-  border-radius: 18px;
-  padding: 18px;
-  border: 1px solid #f0f0f0;
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background-color: white;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 5%);
+  outline: none;
 }
 
-.calendarHeader {
-  text-align: center;
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: 14px;
-  color: #111827;
+.card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgb(0 0 0 / 10%);
+  padding: 24px;
+  margin-bottom: 24px;
 }
 
-.calendarGrid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 8px;
+.chartsCard {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgb(0 0 0 / 10%);
+  padding: 24px;
 }
 
 .calendarDayName {
@@ -338,16 +342,9 @@
   display: inline-block;
 }
 
-.sectionCard {
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 24px;
-  padding: 24px;
-  margin-top: 24px;
-  box-shadow: 0 6px 20px rgb(15 23 42 / 4%);
-}
-
-.sectionTitle {
+.statusValue {
+  font-size: 18px;
+  font-weight: 600;
   margin: 0;
   font-size: 18px;
   font-weight: 700;
@@ -447,22 +444,41 @@
   outline: none;
 }
 
-.filterInput {
-  flex: 1;
-  min-width: 260px;
+.upcomingChartsCard {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgb(0 0 0 / 10%);
+  padding: 24px;
+  text-align: center;
 }
 
 .filterSelect {
   min-width: 180px;
 }
 
-.tableWrap {
-  overflow-x: auto;
+@media (width >= 768px) {
+  .chartsContainer {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .chartWrapper {
+    width: 48%;
+  }
 }
 
-.table {
-  width: 100%;
-  border-collapse: collapse;
+@media (width <= 480px) {
+  .pageTitle {
+    font-size: 20px;
+  }
+
+  .cardTitle {
+    font-size: 20px;
+  }
+
+  .chartSectionTitle {
+    font-size: 16px;
+  }
 }
 
 .table th {
@@ -489,14 +505,13 @@
   font-weight: 600;
 }
 
-.attendedStatus {
-  background: #dcfce7;
-  color: #15803d;
-}
-
-.noShowStatus {
-  background: #fee2e2;
-  color: #dc2626;
+:global(.dark-mode) .card,
+:global(.dark-mode) .chartsCard,
+:global(.dark-mode) .upcomingChartsCard,
+:global(.dark-mode) .upcomingContainer {
+  background-color: #1f2937; /* Darker card background */
+  box-shadow: 0 4px 6px rgb(0 0 0 / 30%);
+  color: #f9fafb;
 }
 
 .noRows {

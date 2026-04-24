@@ -94,7 +94,7 @@
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .recipesContainer {
     padding: 1rem;
   }
