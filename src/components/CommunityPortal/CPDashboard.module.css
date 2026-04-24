@@ -1,19 +1,16 @@
-/* stylelint-disable no-descending-specificity, no-duplicate-selectors, declaration-block-no-duplicate-properties, declaration-property-value-keyword-no-deprecated */
-
 :global(body) {
-  font-family: Poppins, sans-serif;
+  font-family: 'Poppins', sans-serif;
   background: #fff;
   margin: 0;
   padding: 0;
 }
 
 .dashboardContainer {
-  padding: 40px 20px;
-  max-width: 1400px;
+  padding: 40px 10px;
   margin: 0 auto;
-  background: #fff;
+  background: #ffffff;
   border-radius: 16px;
-  box-shadow: 0 6px 20px rgb(0 0 0 / 10%);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
   font-size: 16px;
   line-height: 1.6;
   letter-spacing: 0.2px;
@@ -31,9 +28,13 @@
   align-items: center;
   margin-bottom: 30px;
   padding: 16px 24px;
-  background: linear-gradient(120deg, #fff, #f8f9fa);
+  background: linear-gradient(120deg, #ffffff, #f8f9fa);
   border-radius: 12px;
-  box-shadow: 0 3px 10px rgb(0 0 0 / 10%);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.darkHeader {
+  background: #1b2a41;
 }
 
 .dashboardHeader h1 {
@@ -43,56 +44,13 @@
   margin: 0;
 }
 
-.darkHeader {
-  background: #1b2a41;
-}
-
-
-.dashboardClearBtn {
-  position: static;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  font-size: 0.9rem;
-  color: #1b3c55;
+.dashboardControls {
   display: flex;
   align-items: center;
-  padding: 4px 6px;
-  flex-shrink: 0;
+  gap: 15px;
 }
 
-
-.dashboardSearchIconBtn {
-  position: static;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  border: 2px solid #1b3c55;
-  cursor: pointer;
-  background: transparent;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #1b3c55;
-  font-size: 0.9rem;
-  flex-shrink: 0;
-}
-
-.dashboardSearchContainer {
-  position: relative;
-  width: 400px;
-  border-radius: 999px;
-  overflow: hidden;
-  border: 2px solid #1b3c55;
-  background: #fff;
-  outline: none;
-}
-
-.darkHeader .dashboardSearchContainer {
-  border-color: #fff;
-  background: #1b2a41;
-}
-
+/* pill input */
 .dashboardSearchInput {
   width: 100%;
   border-radius: 999px;
@@ -102,12 +60,122 @@
 }
 
 
+/* clear X button */
+.dashboardClearBtn {
+  position: absolute;
+  right: 35px;
+  top: 45%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #1b3c55;
+}
+
+/* blue circular search button inside the bar */
+.dashboardSearchIconBtn {
+  position: absolute;
+  right: 1%;
+  top: 48%;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  cursor: pointer;
+  background: transparent; /* 🔹 icon background now white */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1b3c55; /* blue magnifying-glass icon */
+  font-size: 0.9rem;
+}
+
+.dashboardSearchContainer {
+  position: relative;
+  width: 400px;
+  border-radius: 999px;
+  overflow: hidden;
+   border: 2px solid #1b3c55;
+  background: #ffffff;
+}
+.darkHeader .dashboardSearchContainer {
+  border-color: #ffffff;   /* white when NOT focused */
+  background: #1b2a41;
+}
+
+.dashboardSearchTextarea {
+  width: 100%;
+  resize: none;
+  border: none;
+  outline: none;
+  background: transparent;
+
+  font-size: 1rem;
+  line-height: 1.5;
+
+  /* IMPORTANT */
+  padding: 10px 96px 10px 18px;
+
+  min-height: 36px;
+  max-height: 120px;
+
+  box-sizing: border-box;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  white-space: pre-wrap;      /* ✅ Brave-like wrapping */
+  word-wrap: break-word;      /* ✅ prevents overflow */
+  word-break: break-word;     /* ✅ fixes long strings */
+}
+
+
+
+
+@media (max-width: 850px) {
+  .dashboardSearchContainer {
+    width: 250px;
+  }
+}
+
+
+.darkHeader .dashboardSearchTextarea {
+  color: #ffffff;
+}
+.darkHeader .dashboardSearchTextarea::placeholder {
+  color: #cbd5e1;
+}
+
+.charCountWarning {
+  position: absolute;
+  top: 100%;
+  transform: translateY(4px);
+  background-color: #e4b348 !important;
+  color: #333333 !important;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+/* icon wrapper */
+.dashboardSearchButtons {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+
+
 .dashboardSearchContainer:focus,
 .dashboardSearchContainer:focus-visible {
   outline: none;
 }
-
-
 .dashboardSearchContainer input {
   outline: none;
 }
@@ -122,80 +190,38 @@
   border-color: #4da3ff;
   box-shadow: none;
 }
-
 .dashboardSearchContainer:focus-within:not(:focus-visible) {
   outline: none;
 }
-
-.dashboardSearchTextarea {
-  width: 100%;
-  resize: none;
-  border: none;
+.dashboardSearchContainer,
+.dashboardSearchContainer:focus,
+.dashboardSearchContainer:focus-visible {
   outline: none;
-  background: transparent;
-  font-size: 1rem;
-  line-height: 1.5;
+}
 
-  /* IMPORTANT: right padding reserves space for clear + search buttons */
-  padding: 8px 86px 8px 18px;
-  min-height: 36px;
-  max-height: 120px;
-  box-sizing: border-box;
-  overflow: auto hidden;
-  white-space: pre-wrap; /* Brave-like wrapping */
-  overflow-wrap: break-word; /* prevents overflow */
-  word-break: break-all; /* fixes long strings */
+.dashboardSearchContainer input,
+.dashboardSearchContainer input:focus,
+.dashboardSearchContainer input:focus-visible {
+  outline: none;
+  box-shadow: none;
 }
 
 
 
 
-.darkHeader .dashboardSearchTextarea {
-  color: #fff;
-}
 
-.darkHeader .dashboardSearchTextarea::placeholder {
-  color: #cbd5e1;
-}
-
-@media (width <= 850px) {
-  .dashboardSearchContainer {
-    width: 250px;
-  }
-}
-
-.charCountWarning {
-  position: absolute;
-  top: 100%;
-  transform: translateY(4px);
-  background-color: #e4b348 !important;
-  color: #333 !important;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 0.85rem;
-  white-space: nowrap;
-}
-
-/* icon wrapper — anchors the buttons on the right side of the search container */
-.dashboardSearchButtons {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
 
 .centeredRow {
   padding: 30px;
 }
 
 .dashboardSidebar {
-  padding: 30px;
-  background: #f9f9f9;
+  padding: 20px;
+  display: flex;
+  justify-content: flex-start;
+  background: #ffffff;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .darkSidebar {
@@ -206,7 +232,6 @@
   font-size: 1.8rem;
   color: #2c3e50;
   font-weight: 600;
-  margin-bottom: 20px;
 }
 
 .filterSectionDivider {
@@ -216,8 +241,59 @@
   gap: 20px;
 }
 
-.filterItem {
-  position: relative;
+.filterItem input:not([type='checkbox']):not([type='radio']),
+.radioRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.darkSidebar .filterItem input:not([type='checkbox']):not([type='radio']),
+.darkSidebar .filterItem select {
+  background-color: #34495e;
+  color: #fff;
+  border: 1px solid #4a6572;
+}
+
+.darkSidebar .filterItem label {
+  color: #ecf0f1;
+}
+
+.darkSidebar input[type="date"] {
+  color-scheme: dark;
+}
+
+.radioGroup {
+  margin-right: 8px;
+}
+
+.radioInput {
+  margin-right: 6px;
+}
+
+.radioLabel {
+  margin-bottom: 0;
+  vertical-align: middle;
+}
+
+.filterItem input:not([type="checkbox"]):not([type="radio"]),
+.filterItem select {
+  padding: 12px 15px;
+  margin-top: 10px;
+  border-radius: 8px;
+  width: 100%;
+  height: auto;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1em;
 }
 
 .filterItem label {
@@ -227,187 +303,66 @@
   margin-bottom: 8px;
 }
 
-.filterItem input:not([type='checkbox'], [type='radio']),
-.radioRow {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 10px;
-}
-
-.filterItem input:not([type='checkbox'], [type='radio']),
-.filterItem select {
-  padding: 12px 15px;
-  margin-top: 10px;
-  border-radius: 8px;
-  width: 100%;
-  height: auto;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-  margin-bottom: 8px;
-  appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-  background-repeat: no-repeat;
-  background-position: right 1rem center;
-  background-size: 1em;
-}
-
 .filterItem input[type='radio'],
 .filterItem input[type='checkbox'] {
-  display: inline-block; /* keeps input on same line as text */
+  display: inline-block; /* <– keeps input on same line as text */
   width: auto;
   padding: 0;
-  margin: 5px 0 0 120px; /* top margin to line up under "Dates" */
+  margin: 5px 0px 0px 120px; /* top margin to line up under "Dates" */
   vertical-align: middle;
 }
 
 .filterItem input:focus,
 .filterItem select:focus {
   border-color: #2c3e50;
-  box-shadow: 0 0 5px rgb(44 62 80 / 40%);
-  outline: none;
-}
-
-.darkSidebar .filterItem input:not([type='checkbox'], [type='radio']),
-.darkSidebar .filterItem select {
-  background-color: #34495e;
-  color: #fff;
-  border: 1px solid #4a6572;
-}
-
-.darkSidebar .filterItem label,
-.darkSidebar .filterSectionHeader {
-  color: #ecf0f1;
-}
-
-.darkSidebar input[type='date'] {
-  color-scheme: dark;
-}
-
-.radioGroup {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 0;
-}
-
-.checkboxGroup {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 10px;
-  flex-wrap: nowrap;
-}
-
-.radioInput,
-.checkboxInput {
-  margin: 0;
-  flex-shrink: 0;
-  min-width: 18px;
-  min-height: 18px;
-  width: 18px;
-  height: 18px;
-}
-
-.filterSectionHeader {
-  font-weight: 600;
-  color: #34495e;
-  margin-bottom: 8px;
-  font-size: 1rem;
-}
-
-.radioLabel {
-  margin-bottom: 0;
-  margin-left: 0;
-  vertical-align: middle;
-  font-weight: 400;
-  white-space: nowrap;
-}
-
-/* Prevent Bootstrap/Reactstrap form-check from causing overlap; keep label on same row as control */
-.filterSection .radioGroup .radioLabel,
-.filterSection .checkboxGroup .radioLabel {
-  padding-left: 0;
-  display: inline;
-  margin-bottom: 0;
-}
-
-.filterSection .radioGroup,
-.filterSection .checkboxGroup {
-  position: relative;
-  padding-left: 0 !important;
-}
-
-.filterSection .radioGroup input,
-.filterSection .checkboxGroup input {
-  position: static;
-  margin-left: 0 !important;
-}
-
-.dateFilter {
-  margin-top: 15px;
-}
-
-.dateFilter:focus {
-  border-color: #2c3e50;
   box-shadow: 0 0 5px rgba(44, 62, 80, 0.4);
   outline: none;
 }
 
-
 .dashboardMain {
+  width: 65%;
   padding: 30px;
-  background: #ffffff;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .darkMain {
   background: #2b3e59;
 }
 
-.eventsHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  width: 100%;
-}
-
 .sectionTitle {
   font-size: 2.2rem;
   color: #2c3e50;
-  margin-bottom: 0;
+  margin-bottom: 30px;
   font-weight: bold;
-  text-align: left;
+  text-align: center;
 }
 
 .eventCardCol {
   display: flex;
-  margin-bottom: 20px;
-}
-
-.eventCard {
-  width: 100%;
-  margin-bottom: 20px;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  display: flex;
-  flex-direction: column;
-  border: none;
-  background: #fff;
-}
-
-.eventCard:hover {
-  transform: scale(1.05);
-  box-shadow: 0 8px 20px rgb(0 0 0 / 20%);
+  margin-bottom: 1.5rem;
 }
 
 .eventCard:hover {
   transform: scale(1.05);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.eventCardImgContainer img {
+  width: 100%;
+  height: auto;
+}
+
+.eventCard {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  border: none;
+  background: #ffffff;
 }
 
 .eventCardImgContainer {
@@ -418,19 +373,25 @@
   position: relative;
 }
 
-.eventCardImgContainer img {
-  width: 100%;
-  height: auto;
-  border-bottom: 3px solid #34495e;
+.eventCardBody {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding: 20px;
+  min-height: 180px;
 }
 
 .eventTitle {
   text-align: center;
   color: #2c3e50;
-  margin: 0 0 15px;
+  margin: 0 0 15px 0;
   font-weight: bold;
   font-size: 1.3rem;
   line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: default;
 }
 
 .eventDate,
@@ -439,49 +400,9 @@
   font-size: 1rem;
   color: #555;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 8px;
   margin: 8px 0;
-  line-height: 1.5;
-}
-
-.eventDate > svg,
-.eventLocation > svg,
-.eventOrganizer > svg {
-  flex-shrink: 0;
-  width: 16px;
-  height: 16px;
-  margin-top: 3px;
-  align-self: flex-start;
-}
-
-.eventDate > div {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  flex: 1;
-  min-width: 0;
-}
-
-.eventDate > div > div:first-child {
-  line-height: 1.4;
-}
-
-.eventTime {
-  font-size: 0.9rem;
-  color: #777;
-  font-weight: 500;
-  line-height: 1.4;
-}
-
-.organizerLogo {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  object-fit: cover;
-  flex-shrink: 0;
-  background-color: #f0f0f0;
-  border: 1px solid #e0e0e0;
 }
 
 .eventIcon {
@@ -491,22 +412,6 @@
   font-size: 1rem;
 }
 
-/* Dark mode: ensure date, time, location and organizer are readable */
-.darkMain .eventDate,
-.darkMain .eventDate .eventTime,
-.darkMain .eventLocation,
-.darkMain .eventOrganizer {
-  color: #e4e6eb;
-}
-
-.darkMain .eventTime {
-  color: #b0b3b8;
-}
-
-.darkMain .eventIcon {
-  color: #e4e6eb;
-}
-
 .noEvents {
   text-align: center;
   padding: 40px;
@@ -514,9 +419,14 @@
   font-size: 1.2rem;
 }
 
-.showPastEventsBtn {
+.dashboardActions {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.dashboardActions button {
   background-color: #2c3e50;
-  color: #fff;
+  color: #ffffff;
   border: none;
   padding: 12px 25px;
   font-size: 1rem;
@@ -524,52 +434,12 @@
   cursor: pointer;
   transition: all 0.3s ease;
   font-weight: bold;
-  white-space: nowrap;
 }
 
-.showPastEventsBtn:hover {
+.dashboardActions button:hover {
   background-color: #34495e;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 20%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
-
-
-
-.dateFilterContainer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 6px 0 20px 0;
-}
-.dateFilterContainer :global(.react-datepicker-wrapper) input {
-  border: 2px solid #1b3c55; 
-  border-radius: 8px;
-  padding: 8px 12px;
-  width: 100%;
-  outline: none;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-}
-
-.darkSidebar :global(.react-datepicker__input-container input) {
-  background-color: #000000 !important;
-  color: #ffffff !important;
-  border: 2px solid #4da3ff !important;
-}
-
-.darkSidebar :global(.react-datepicker__input-container input::placeholder) {
-  color: #ffffff !important;
-}
-
-.dateFilterContainer :global(.react-datepicker-wrapper) input:focus {
-  border-color: #34495e;
-  box-shadow: 0 0 5px rgba(44, 62, 80, 0.4);
-}
-
-.dateErrorMessage {
-  color: red;
-  margin-top: 5px;
-}
-
 
 .paginationContainer {
   margin-top: 20px;
@@ -578,10 +448,12 @@
   gap: 12px;
 }
 
+/* Hide browser's built-in clear icon for search inputs */
 .dashboardSearchInput::-webkit-search-cancel-button,
 .dashboardSearchInput::-webkit-search-decoration,
 .dashboardSearchInput::-webkit-search-results-button,
 .dashboardSearchInput::-webkit-search-results-decoration {
+  -webkit-appearance: none;
   appearance: none;
 }
 
@@ -591,29 +463,14 @@
 }
 
 .darkSearchTextarea {
-  color: #fff;
+  color: #ffffff;
 }
 
 .darkSearchTextarea::placeholder {
-  color: rgb(255 255 255 / 70%);
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .darkSearchContainer .dashboardClearBtn,
 .darkSearchContainer .dashboardSearchIconBtn {
-  color: #fff;
-  border-color: #fff;
-}
-
-.noEvents {
-  display: flex;
-  justify-content: center;
-  text-align: center;
-  width: 100%;
-  font-size: 1.25rem;
-  font-style: italic;
-  color: #6b7280;
-}
-
-.darkMain .noEvents {
-  color: #9ca3af;
+  color: #ffffff;
 }
