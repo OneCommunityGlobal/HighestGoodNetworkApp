@@ -3,7 +3,12 @@ import { Table, Button } from 'reactstrap';
 import { BiPencil } from 'react-icons/bi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSortDown, faSort, faSortUp } from '@fortawesome/free-solid-svg-icons';
+
 import RecordsModal from './RecordsModal';
+import MaterialUsageChart from '../MaterialUsage/MaterialUsageChart';
+import StockHealthIndicator from '../MaterialList/StockHealthIndicator';
+import UsagePercentageBar from '../MaterialList/UsagePercentageBar';
+import styles from './ItemListView.module.css';
 
 export default function ItemsTable({
   selectedProject,
@@ -20,6 +25,8 @@ export default function ItemsTable({
   const [recordType, setRecordType] = useState('');
   const [updateModal, setUpdateModal] = useState(false);
   const [updateRecord, setUpdateRecord] = useState(null);
+  const [showChartModal, setShowChartModal] = useState(false);
+  const [chartProjectId, setChartProjectId] = useState(null);
   const [projectNameCol, setProjectNameCol] = useState({
     iconsToDisplay: faSort,
     sortOrder: 'default',
@@ -28,6 +35,8 @@ export default function ItemsTable({
     iconsToDisplay: faSort,
     sortOrder: 'default',
   });
+
+  const isMaterialsView = itemType === 'Materials';
 
   useEffect(() => {
     setData(filteredItems);
@@ -46,6 +55,16 @@ export default function ItemsTable({
   };
 
   const handleViewRecordsClick = (data, type) => {
+    if (type === 'UsageRecord') {
+      const projectId = data.project?._id || data.projectId;
+
+      if (projectId) {
+        setChartProjectId(projectId);
+        setShowChartModal(true);
+        return;
+      }
+    }
+
     setModal(true);
     setRecord(data);
     setRecordType(type);
@@ -62,6 +81,7 @@ export default function ItemsTable({
         newSortedData.sort((a, b) => (b.project?.name || '').localeCompare(a.project?.name || ''));
         setProjectNameCol({ iconsToDisplay: faSortDown, sortOrder: 'desc' });
       }
+
       setInventoryItemTypeCol({ iconsToDisplay: faSort, sortOrder: 'default' });
     } else if (columnName === 'InventoryItemType') {
       if (
@@ -78,14 +98,20 @@ export default function ItemsTable({
         );
         setInventoryItemTypeCol({ iconsToDisplay: faSortDown, sortOrder: 'desc' });
       }
+
       setProjectNameCol({ iconsToDisplay: faSort, sortOrder: 'default' });
     }
 
     setData(newSortedData);
   };
 
-  const getNestedValue = (obj, path) =>
-    path.split('.').reduce((acc, part) => (acc ? acc[part] : null), obj);
+  const getNestedValue = (obj, path) => {
+    if (!path) return null;
+    if (path === 'product id') return obj.productId ?? 'N/A';
+    return path.split('.').reduce((acc, part) => (acc ? acc[part] : null), obj);
+  };
+
+  const emptyStateColSpan = 4 + dynamicColumns.length + (isMaterialsView ? 3 : 0);
 
   return (
     <>
@@ -97,7 +123,11 @@ export default function ItemsTable({
         recordType={recordType}
         itemType={itemType}
       />
+      {showChartModal && chartProjectId && (
+        <MaterialUsageChart projectId={chartProjectId} toggle={() => setShowChartModal(false)} />
+      )}
       <UpdateItemModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
+
       {darkMode && (
         <style>
           {`
@@ -117,8 +147,9 @@ export default function ItemsTable({
           `}
         </style>
       )}
+
       <div
-        className={`items_table_container ${
+        className={`${styles.items_table_container} ${
           darkMode ? 'items_table_container_dark dark-mode' : ''
         }`}
         style={darkMode ? { backgroundColor: '#3A506B' } : {}}
@@ -190,11 +221,47 @@ export default function ItemsTable({
                       ? { backgroundColor: '#1C2541', color: '#ffffff', borderColor: '#555' }
                       : {}
                   }
-                  key={label}
+                  key={key}
                 >
                   {label}
                 </th>
               ))}
+              {isMaterialsView && (
+                <th
+                  className={darkMode ? 'dark-th' : ''}
+                  style={
+                    darkMode
+                      ? { backgroundColor: '#1C2541', color: '#ffffff', borderColor: '#555' }
+                      : {}
+                  }
+                >
+                  Usage %
+                </th>
+              )}
+              {isMaterialsView && (
+                <th
+                  className={darkMode ? 'dark-th' : ''}
+                  style={
+                    darkMode
+                      ? { backgroundColor: '#1C2541', color: '#ffffff', borderColor: '#555' }
+                      : {}
+                  }
+                >
+                  Stock Health
+                </th>
+              )}
+              {isMaterialsView && (
+                <th
+                  className={darkMode ? 'dark-th' : ''}
+                  style={
+                    darkMode
+                      ? { backgroundColor: '#1C2541', color: '#ffffff', borderColor: '#555' }
+                      : {}
+                  }
+                >
+                  Usage Record
+                </th>
+              )}
               <th
                 className={darkMode ? 'dark-th' : ''}
                 style={
@@ -235,10 +302,33 @@ export default function ItemsTable({
                   <td style={darkMode ? { color: '#ffffff' } : {}}>{el.itemType?.name}</td>
                   {dynamicColumns.map(({ label, key }) => (
                     <td key={label} style={darkMode ? { color: '#ffffff' } : {}}>
-                      {getNestedValue(el, key)}
+                      {getNestedValue(el, key) ?? 'N/A'}
                     </td>
                   ))}
-                  <td className="items_cell">
+                  {isMaterialsView && (
+                    <td style={darkMode ? { color: '#ffffff' } : {}}>
+                      <UsagePercentageBar material={el} darkMode={darkMode} />
+                    </td>
+                  )}
+                  {isMaterialsView && (
+                    <td style={darkMode ? { color: '#ffffff' } : {}}>
+                      <StockHealthIndicator material={el} darkMode={darkMode} />
+                    </td>
+                  )}
+                  {isMaterialsView && (
+                    <td style={darkMode ? { color: '#ffffff' } : {}}>
+                      <Button
+                        color="primary"
+                        outline={!darkMode}
+                        style={darkMode ? { borderColor: '#4a90e2', color: '#ffffff' } : {}}
+                        size="sm"
+                        onClick={() => handleViewRecordsClick(el, 'UsageRecord')}
+                      >
+                        View
+                      </Button>
+                    </td>
+                  )}
+                  <td className={styles.items_cell}>
                     <div
                       style={{
                         display: 'inline-flex',
@@ -282,7 +372,7 @@ export default function ItemsTable({
               ))
             ) : (
               <tr>
-                <td colSpan={11} style={{ textAlign: 'center' }}>
+                <td colSpan={emptyStateColSpan} style={{ textAlign: 'center' }}>
                   No items data
                 </td>
               </tr>

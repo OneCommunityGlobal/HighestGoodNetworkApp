@@ -1,11 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 import BMError from '../shared/BMError';
 import SelectForm from './SelectForm';
 import SelectItem from './SelectItem';
 import ItemsTable from './ItemsTable';
+import MaterialSummaryPanel from '../MaterialList/MaterialSummaryPanel';
 import styles from './ItemListView.module.css';
 
 export function ItemListView({
@@ -21,6 +24,9 @@ export function ItemListView({
   const [selectedProject, setSelectedProject] = useState('all');
   const [selectedItem, setSelectedItem] = useState('all');
   const [isError, setIsError] = useState(false);
+  const [selectedTime, setSelectedTime] = useState(new Date());
+
+  const isMaterialsView = itemType === 'Materials';
 
   useEffect(() => {
     if (items) setFilteredItems([...items]);
@@ -70,6 +76,16 @@ export function ItemListView({
         >
           {items && (
             <>
+              <DatePicker
+                selected={selectedTime}
+                onChange={date => setSelectedTime(date)}
+                showTimeSelect
+                timeFormat="HH:mm"
+                timeIntervals={15}
+                dateFormat="yyyy-MM-dd HH:mm:ss"
+                placeholderText="Select date and time"
+                className={darkMode ? 'form-control bg-yinmn-blue text-light' : 'form-control'}
+              />
               <SelectForm
                 items={items}
                 setSelectedProject={setSelectedProject}
@@ -80,7 +96,7 @@ export function ItemListView({
                 selectedProject={selectedProject}
                 selectedItem={selectedItem}
                 setSelectedItem={setSelectedItem}
-                label={itemType === 'Materials' ? 'Material' : itemType}
+                label={isMaterialsView ? 'Material' : itemType}
                 darkMode={darkMode}
               />
             </>
@@ -90,15 +106,20 @@ export function ItemListView({
         {children}
 
         {filteredItems && (
-          <ItemsTable
-            selectedProject={selectedProject}
-            selectedItem={selectedItem}
-            filteredItems={filteredItems}
-            UpdateItemModal={UpdateItemModal}
-            dynamicColumns={dynamicColumns}
-            darkMode={darkMode}
-            itemType={itemType}
-          />
+          <>
+            {isMaterialsView && (
+              <MaterialSummaryPanel materials={filteredItems} darkMode={darkMode} />
+            )}
+            <ItemsTable
+              selectedProject={selectedProject}
+              selectedItem={selectedItem}
+              filteredItems={filteredItems}
+              UpdateItemModal={UpdateItemModal}
+              dynamicColumns={dynamicColumns}
+              darkMode={darkMode}
+              itemType={itemType}
+            />
+          </>
         )}
       </section>
     </main>
@@ -109,8 +130,22 @@ ItemListView.propTypes = {
   itemType: PropTypes.string.isRequired,
   items: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.number,
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
       name: PropTypes.string,
+      itemType: PropTypes.shape({
+        name: PropTypes.string,
+        unit: PropTypes.string,
+      }),
+      project: PropTypes.shape({
+        _id: PropTypes.string,
+        name: PropTypes.string,
+      }),
+      stockAvailable: PropTypes.number,
+      stockBought: PropTypes.number,
+      stockUsed: PropTypes.number,
+      stockWasted: PropTypes.number,
+      stockHold: PropTypes.number,
+      productId: PropTypes.string,
     }),
   ).isRequired,
   errors: PropTypes.shape({

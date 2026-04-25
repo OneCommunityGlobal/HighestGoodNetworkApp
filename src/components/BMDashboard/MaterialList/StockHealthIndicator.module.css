@@ -1,0 +1,130 @@
+/* Stock Health Indicator Styles */
+
+.indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: help;
+  transition: all 0.2s ease;
+}
+
+.icon {
+  font-size: 1.2rem;
+  line-height: 1;
+  display: inline-block;
+}
+
+.label {
+  white-space: nowrap;
+}
+
+/* Stock Health Colors - Light Mode */
+.indicator.green {
+  background-color: #d1fae5;
+  color: #065f46;
+  border: 1px solid #6ee7b7;
+}
+
+.indicator.green:hover {
+  background-color: #a7f3d0;
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+}
+
+.indicator.yellow {
+  background-color: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fcd34d;
+}
+
+.indicator.yellow:hover {
+  background-color: #fde68a;
+  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.2);
+}
+
+.indicator.red {
+  background-color: #fee2e2;
+  color: #7f1d1d;
+  border: 1px solid #fca5a5;
+}
+
+.indicator.red:hover {
+  background-color: #fecaca;
+  box-shadow: 0 2px 4px rgba(220, 38, 38, 0.2);
+}
+
+.indicator.gray {
+  background-color: #f3f4f6;
+  color: #6b7280;
+  border: 1px solid #d1d5db;
+}
+
+.indicator.gray:hover {
+  background-color: #e5e7eb;
+  box-shadow: 0 2px 4px rgba(107, 114, 128, 0.2);
+}
+
+/* Dark Mode Styles */
+.darkMode.indicator.green {
+  background-color: rgba(16, 185, 129, 0.2);
+  color: #a7f3d0;
+  border: 1px solid #10b981;
+}
+
+.darkMode.indicator.green:hover {
+  background-color: rgba(16, 185, 129, 0.3);
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
+}
+
+.darkMode.indicator.yellow {
+  background-color: rgba(245, 158, 11, 0.2);
+  color: #fde68a;
+  border: 1px solid #f59e0b;
+}
+
+.darkMode.indicator.yellow:hover {
+  background-color: rgba(245, 158, 11, 0.3);
+  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3);
+}
+
+.darkMode.indicator.red {
+  background-color: rgba(220, 38, 38, 0.2);
+  color: #fecaca;
+  border: 1px solid #dc2626;
+}
+
+.darkMode.indicator.red:hover {
+  background-color: rgba(220, 38, 38, 0.3);
+  box-shadow: 0 2px 4px rgba(220, 38, 38, 0.3);
+}
+
+.darkMode.indicator.gray {
+  background-color: rgba(107, 114, 128, 0.2);
+  color: #d1d5db;
+  border: 1px solid #6b7280;
+}
+
+.darkMode.indicator.gray:hover {
+  background-color: rgba(107, 114, 128, 0.3);
+  box-shadow: 0 2px 4px rgba(107, 114, 128, 0.3);
+}
+
+/* Tooltip Styles */
+:global(.tooltip-inner) {
+  max-width: 200px;
+  padding: 0.75rem;
+  text-align: left;
+  line-height: 1.5;
+}
+
+:global(.darkMode .tooltip-inner) {
+  background-color: #1f2e45;
+  color: #e8edf4;
+}
+
+:global(.tooltip.show) {
+  z-index: 1000;
+}
