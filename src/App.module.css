@@ -1,11 +1,13 @@
 /* stylelint-disable no-descending-specificity */
 html {
   overflow-x: hidden;
+  height: 100%;
 }
 
 body {
   display: grid;
   grid-template-columns: auto 0;
+  height: 100%;
 }
 
 button {
@@ -18,6 +20,7 @@ button {
   overflow: auto hidden;
 
   /* background-color: var(--background-color); */
+  overflow: auto;
   background-color: #fff;
 }
 
@@ -25,9 +28,7 @@ button {
   text-align: center;
 }
 
-/* .close{
-  visibility: hidden
-} */
+/* .close { visibility: hidden } */
 
 .newProfilePic {
   visibility: hidden;
@@ -50,7 +51,7 @@ button {
 }
 
 .accordion-toggle::after {
-  font-family: FontAwesome,  sans-serif;
+  font-family: FontAwesome, sans-serif;
   content: '\f054';
   float: right;
 }
@@ -71,9 +72,8 @@ button {
 }
 
 .bg-super {
-  background-color: #0000cd !important;
-
   /* medium blue #0000CD */
+  background-color: #00d !important;
 }
 
 .bg-awesome {
@@ -89,9 +89,8 @@ button {
 }
 
 .bg-orange {
-  background-color: #ffa500 !important;
-
   /*  brighter orange */
+  background-color: #fa5 !important;
 }
 
 .bg--dark-sea-green {
@@ -114,37 +113,17 @@ button {
   background-color: #1b2a41 !important;
 }
 
-/* .bg-oxford-blue:hover{
-  background-color: #1B2A41 !important;
-  color:black;
-} */
-
 .bg-space-cadet {
   background-color: #1c2541 !important;
 }
-
-/* .bg-space-cadet:hover{
-  background-color: #1C2541 !important;
-  color:black;
-} */
 
 .bg-yinmn-blue {
   background-color: #3a506b !important;
 }
 
-/* .bg-yinmn-blue:hover{
-  background-color: #3A506B !important;
-  color: black;
-} */
-
 .bg-yinmn-blue-light {
   background-color: #2f4157;
 }
-
-/* .bg-yinmn-blue-light:hover{
-  background-color:#2f4157;
-  color: black;
-} */
 
 .bg-darkmode-liblack {
   background-color: #1c1c1c !important;
@@ -180,6 +159,7 @@ button {
 
 .text-custom-grey {
   color: rgb(192 192 192) !important;
+  color: #c0c0c0 !important;
 }
 
 .box-shadow-dark {
@@ -245,6 +225,10 @@ input[type='checkbox']:not([disabled]):hover {
   cursor: pointer;
 }
 
+.tox-tbtn {
+  padding: 2px 4px !important;
+}
+
 .tox .tox-toolbar__group {
   display: flex !important;
   flex-wrap: nowrap !important;
@@ -255,10 +239,6 @@ input[type='checkbox']:not([disabled]):hover {
   min-width: auto !important;
   padding: 4px 6px !important;
   font-size: 14px !important;
-}
-
-.tox-tbtn {
-  padding: 2px 4px !important;
 }
 
 .tox .tox-toolbar {

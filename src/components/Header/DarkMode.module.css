@@ -1,4 +1,6 @@
 /* stylelint-disable  */
+/* stylelint-disable no-descending-specificity, no-duplicate-selectors, declaration-block-single-line-max-declarations */
+
 /* --- Root Wrapper --- */
 .darkModeButton {
   display: inline-block;
@@ -23,9 +25,9 @@
 
 .sliderContainerDark { background-color: #1C2541; }
 
-.sliderContainerLight { 
-  background-color: #e3e3e3; 
-  border: 1px solid #d4d4d4; 
+.sliderContainerLight {
+  background-color: #e3e3e3;
+  border: 1px solid #d4d4d4;
 }
 
 /* --- Icons --- */

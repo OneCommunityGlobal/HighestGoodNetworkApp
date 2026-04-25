@@ -26,6 +26,49 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 1rem;
+}
+
+.headerControls {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+}
+
+.mockWeekControl {
+  min-width: 220px;
+}
+
+.mockWeekLabel {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-family: inherit;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #4b5563;
+}
+
+.mockWeekSelect {
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  background-color: #fff;
+  color: #1f2937;
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: inherit;
+}
+
+.mockWeekMeta {
+  margin-top: 0.4rem;
+  margin-bottom: 0;
+  font-size: 0.8rem;
+  font-family: inherit;
+  color: #6b7280;
+  text-align: right;
 }
 
 .title {
@@ -184,6 +227,20 @@
   color: #d1d5db;
 }
 
+:global(.dark-mode) .mockWeekLabel {
+  color: #d1d5db;
+}
+
+:global(.dark-mode) .mockWeekSelect {
+  background-color: #111827;
+  border-color: #374151;
+  color: #f9fafb;
+}
+
+:global(.dark-mode) .mockWeekMeta {
+  color: #9ca3af;
+}
+
 :global(.dark-mode) .loadingContainer {
   background-color: #111827;
 }
@@ -224,3 +281,21 @@
   border-top-color: transparent;
 }
 
+@media (width <= 768px) {
+  .headerContent {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .headerControls {
+    width: 100%;
+  }
+
+  .mockWeekControl {
+    width: 100%;
+  }
+
+  .mockWeekMeta {
+    text-align: left;
+  }
+}

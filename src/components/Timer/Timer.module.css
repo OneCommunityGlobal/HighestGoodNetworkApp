@@ -11,6 +11,8 @@
 .btnDiv {
   border: none;
   padding: 0;
+  background: transparent;
+  line-height: 0;
 }
 
 .previewContainer {

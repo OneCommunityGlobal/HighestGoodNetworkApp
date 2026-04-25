@@ -169,8 +169,8 @@
   font-size: 1.5rem;
   line-height: 1;
   margin-top: 0;
+}
 
-=======
 .suggestion-item {
   padding: 8px;
   cursor: pointer;
@@ -219,5 +219,4 @@ tr:hover {
     flex: 1 1 auto;
     width: 50%;
   }
-}
 }

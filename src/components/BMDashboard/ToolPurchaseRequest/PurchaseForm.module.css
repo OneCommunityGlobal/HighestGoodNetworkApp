@@ -42,6 +42,122 @@
   color: red;
 }
 
+.toolInsightPanel {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border: 1px solid rgb(214 223 239);
+  border-radius: 0.75rem;
+  background: rgb(247 250 255);
+}
+
+.toolInsightHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.toolInsightHeader h3,
+.confirmationSummary h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.toolInsightPriority {
+  padding: 0.25rem 0.625rem;
+  border-radius: 999px;
+  background: rgb(225 236 255);
+  color: rgb(37 99 235);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.toolInsightGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 0;
+}
+
+.toolInsightGrid div {
+  min-width: 0;
+}
+
+.toolInsightGrid dt {
+  margin-bottom: 0.25rem;
+  color: rgb(71 85 105);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.toolInsightGrid dd {
+  margin: 0;
+  color: rgb(15 23 42);
+}
+
+.toolWarning {
+  margin: 1rem 0 0;
+  padding: 0.75rem 1rem;
+  border-radius: 0.625rem;
+  background: rgb(255 247 237);
+  color: rgb(154 52 18);
+}
+
+.confirmationSummary {
+  margin: 0 0 1.5rem;
+  padding: 1rem;
+  border-left: 4px solid rgb(37 99 235);
+  border-radius: 0.75rem;
+  background: rgb(248 250 252);
+}
+
+.confirmationSummary p {
+  margin: 0.5rem 0 0;
+}
+
+:global(body.dark-mode) .toolInsightPanel,
+:global(body.bm-dashboard-dark) .toolInsightPanel {
+  border-color: rgb(71 85 105);
+  background: rgb(30 41 59);
+}
+
+:global(body.dark-mode) .toolInsightHeader h3,
+:global(body.dark-mode) .toolInsightGrid dd,
+:global(body.dark-mode) .confirmationSummary h3,
+:global(body.dark-mode) .confirmationSummary p,
+:global(body.bm-dashboard-dark) .toolInsightHeader h3,
+:global(body.bm-dashboard-dark) .toolInsightGrid dd,
+:global(body.bm-dashboard-dark) .confirmationSummary h3,
+:global(body.bm-dashboard-dark) .confirmationSummary p {
+  color: rgb(226 232 240);
+}
+
+:global(body.dark-mode) .toolInsightGrid dt,
+:global(body.bm-dashboard-dark) .toolInsightGrid dt {
+  color: rgb(148 163 184);
+}
+
+:global(body.dark-mode) .toolInsightPriority,
+:global(body.bm-dashboard-dark) .toolInsightPriority {
+  background: rgb(30 64 175);
+  color: rgb(219 234 254);
+}
+
+:global(body.dark-mode) .toolWarning,
+:global(body.bm-dashboard-dark) .toolWarning {
+  background: rgb(120 53 15);
+  color: rgb(255 237 213);
+}
+
+:global(body.dark-mode) .confirmationSummary,
+:global(body.bm-dashboard-dark) .confirmationSummary {
+  border-left-color: rgb(96 165 250);
+  background: rgb(15 23 42);
+}
+
 @media screen and (width <= 640px) {
   .purchaseToolFlexGroup {
     display: block;
@@ -49,5 +165,19 @@
 
   .flexGroupQty {
     width: auto;
+  }
+
+  .toolInsightHeader,
+  .toolInsightGrid {
+    display: block;
+  }
+
+  .toolInsightPriority {
+    display: inline-block;
+    margin-top: 0.5rem;
+  }
+
+  .toolInsightGrid div + div {
+    margin-top: 0.75rem;
   }
 }

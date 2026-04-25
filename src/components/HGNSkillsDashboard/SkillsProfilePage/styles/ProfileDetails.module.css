@@ -54,16 +54,11 @@ strong {
   color: #0f2f4a;
 }
 
-.teamInfo .value,
-.contactsInfo .value {
-  font-weight: bold;
-}
-
-=======
 .value {
   color: #111827;
   display: inline-block;
   font-family: Arial, sans-serif;
+  font-weight: bold;
 }
 
 strong {
@@ -72,7 +67,6 @@ strong {
   font-size: 1rem;
 }
 
->>>>>>> 8a4b98ab6a93571d5bb6f6c5b38d85d3cace01b3
 .githubLink {
   color: #1a73e8;
   text-decoration: none;

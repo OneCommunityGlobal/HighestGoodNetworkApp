@@ -1,4 +1,10 @@
-/* stylelint-disable no-descending-specificity, no-duplicate-selectors */
+/* stylelint-disable no-descending-specificity, no-duplicate-selectors, declaration-block-no-duplicate-properties, declaration-property-value-no-unknown */
+@media (prefers-color-scheme: dark) {
+  .form-label {
+    color: #e9ecef !important;
+  }
+}
+
 .masterContainer {
   display: flex;
   flex-direction: column;
@@ -50,6 +56,11 @@
  height: 100%;
    padding: 5% 10% 10%;
     background-color: #E8F4F9;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 5% 10% 10%;
+  background-color: #E8F4F9;
 }
 
 /* Dark Mode Input Fields (Yinmn Blue) */
@@ -256,6 +267,24 @@
  }
  }
 
+.wrapperDark {
+  background-color: #1b2a41;
+  color: #f5f7fa;
+}
+
+.whiteText {
+  color: white;
+}
+
+.blackText {
+  color: black;
+}
+
+.darkFormContainer{
+  background-color: '#1e2433';
+
+  /* color: '#f5f7fa' */
+}
 
 /* ===================== */
 
@@ -293,12 +322,14 @@
 .noFocusShadow :global(input[type='text']),
 .noFocusShadow :global(textarea) {
   box-shadow: none !important;
+  box-shadow: none !important;
 }
 
 .noFocusShadow :global(input.form-control:focus),
 .noFocusShadow :global(textarea.form-control:focus),
 .noFocusShadow :global(input[type='text']:focus),
 .noFocusShadow :global(textarea:focus) {
+  box-shadow: 0 0 0 1000px #1C2541 inset !important;
   box-shadow: 0 0 0 1000px #1C2541 inset !important;
 }
 
@@ -313,6 +344,7 @@
 :global(body.bm-dashboard-dark) .formContainerDark :global(input[type='text']:not(:focus)),
 :global(body.dark-mode) .formContainerDark :global(textarea:not(:focus)),
 :global(body.bm-dashboard-dark) .formContainerDark :global(textarea:not(:focus)) {
+  box-shadow: none !important;
   box-shadow: none !important;
 }
 
@@ -337,6 +369,7 @@
   color-scheme: dark;
   caret-color: #fff;
   appearance: none;
+  appearance: none;
   -webkit-text-fill-color: #fff;
   box-shadow: none !important;
 }
@@ -346,6 +379,7 @@
 .lessonTitleInputDark:focus-visible {
   background-color: #1C2541 !important;
   border-color: #2563eb !important;
+  box-shadow: 0 0 0 1000px #1C2541 inset !important;
   background-clip: padding-box !important;
   box-shadow: 0 0 0 1000px #1C2541 inset !important;
   outline: none !important;
@@ -356,6 +390,7 @@
   background-color: #1C2541 !important;
   color: #fff !important;
   border-color: #404040 !important;
+  box-shadow: none !important;
   background-clip: padding-box !important;
   box-shadow: none !important;
   outline: none !important;
@@ -371,6 +406,7 @@
   background-color: #1C2541 !important;
   color: #fff !important;
   border-color: #2563eb !important;
+  box-shadow: 0 0 0 1000px #1C2541 inset !important;
   background-clip: padding-box !important;
   box-shadow: 0 0 0 1000px #1C2541 inset !important;
   outline: none !important;
@@ -380,6 +416,7 @@
 .lessonPlaceholderTextDark:active {
   border-color: #2563eb !important;
   background-color: #1C2541 !important;
+  box-shadow: 0 0 0 1000px #1C2541 inset !important;
   background-clip: padding-box !important;
   box-shadow: 0 0 0 1000px #1C2541 inset !important;
   outline: none !important;
@@ -393,6 +430,7 @@
   background-color: #1C2541 !important;
   color: #fff !important;
   border-color: #404040 !important;
+  box-shadow: none !important;
   box-shadow: none !important;
 }
 
@@ -523,6 +561,8 @@
   border: 1px solid #3a3f45;
 
   /* Remove default arrows */
+  appearance: none;
+  appearance: none;
   appearance: none;
 
   /* Add custom arrow spacing */

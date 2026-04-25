@@ -1,15 +1,16 @@
 /* stylelint-disable no-descending-specificity */
 
 /* ===========================
-   Issue Charts Module CSS
-   =========================== */
+Issue Charts Module CSS
+=========================== */
 
 /* ----- Containers ----- */
 .issueChartContainer,
 .issueChartEventContainer {
   width: 100%;
+  max-width: 100%;
   margin: 0;
-  padding: 20px 40px;
+  padding: 30px 40px;
   background: #f9f9f9;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgb(0 0 0 / 10%);
@@ -24,7 +25,7 @@
   max-width: 100%;
   margin: 0;
   padding: 30px 40px;
-    background:#1B2A41;
+  background:#1B2A41;
   border-radius: 0;
   box-shadow: none;
   color: #ccd1dc;
@@ -88,7 +89,7 @@
 
 .chartWrapperDark {
   background: #1a1c20;
-   width:100%;
+  width:100%;
   padding: 25px;
   border-radius: 12px;
   box-shadow: 0 2px 6px rgb(0 0 0 / 60%);
@@ -96,7 +97,7 @@
 
 /* ----- Labels & Select Controls ----- */
 .issueChartLabel {
-   width:100%;
+  width:100%;
   font-size: 16px;
   color: #555;
   margin-right: 10px;
@@ -107,7 +108,7 @@
 }
 
 .selectContainer {
-   width:100%;
+  width:100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -133,6 +134,27 @@
   color: #cfd7e3;
 }
 
+.filterSelect,
+.issueChartSelect {
+  height: 60px;
+  padding: 8px 12px;
+  font-size: 15px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e0;
+  background-color: #fff;
+  color: #2d3748;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.filterSelectDark,
+.issueChartSelectDark {
+  background-color: #2d3748;
+  border: 1px solid #4a5568;
+  color: #edf2f7;
+}
+
+
 .issueChartSelect:focus,
 .issueChartSelectDark:focus {
   border-color: #4caf50;
@@ -141,7 +163,7 @@
 /* ----- Filters ----- */
 .filtersContainer {
   display: flex;
-  gap: 16px;
+  gap: 45px;
   margin-top: 10px;
   margin-bottom: 25px;
   flex-wrap: wrap;
@@ -157,6 +179,10 @@
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.projectFilter{
+  width: 220px;
 }
 
 .filterSelect {
@@ -194,28 +220,6 @@
   height: 38px;
 }
 
-/* ---------- Select / input base styles ---------- */
-
-.filterSelect,
-.issueChartSelect {
-  height: 60px;
-  padding: 8px 12px;
-  font-size: 15px;
-  border-radius: 6px;
-  border: 1px solid #cbd5e0;
-  background-color: #fff;
-  color: #2d3748;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.filterSelectDark,
-.issueChartSelectDark {
-  background-color: #2d3748;
-  border: 1px solid #4a5568;
-  color: #edf2f7;
-}
-
 .filterSelect:focus,
 .issueChartSelect:focus {
   border-color: #4caf50;
@@ -226,10 +230,9 @@
 
 /* ----- Chart Container ----- */
 .chartContainer {
-  margin: 0 auto;
+  margin: 20px;
   width: 100%;
   height: 400px;
-  background: white;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
