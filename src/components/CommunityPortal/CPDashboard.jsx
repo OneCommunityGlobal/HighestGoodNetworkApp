@@ -183,7 +183,7 @@ export function CPDashboard() {
   const filteredEvents = events.filter(event => {
     // Filter by online only if checkbox is checked
     if (onlineOnly) {
-      const isOnlineEvent = event.location?.toLowerCase() === 'virtual';
+      const isOnlineEvent = (event.location || '').toLowerCase() === 'virtual';
       if (!isOnlineEvent) return false;
     }
 
@@ -202,6 +202,7 @@ export function CPDashboard() {
 
     // Filter by search query if provided
     if (!searchQuery) return true;
+
     const term = searchQuery.toLowerCase();
 
     return (
@@ -257,8 +258,10 @@ export function CPDashboard() {
           <div className={styles.eventCardImgContainer}>
             <FixedRatioImage src={event.image} alt={event.title} fallback={FALLBACK_IMG} />
           </div>
-          <CardBody>
-            <h5 className={styles.eventTitle}>{event.title}</h5>
+          <CardBody className={styles.eventCardBody}>
+            <h5 className={styles.eventTitle} title={event.title}>
+              {event.title}
+            </h5>
             <p className={styles.eventDate}>
               <FaCalendarAlt className={styles.eventIcon} /> {formatDate(event.date)}
             </p>
@@ -334,6 +337,23 @@ export function CPDashboard() {
         <Col md={3} className={`${styles.dashboardSidebar} ${darkMode ? styles.darkSidebar : ''}`}>
           <div className={styles.filterSection}>
             <h4>Search Filters</h4>
+
+            <div className={`${styles.filterItem} ${styles.searchFilter}`}>
+              <label htmlFor="search-events">Search Events</label>
+              <div className={styles.inputGroup}>
+                <span className={styles.inputGroupText}>
+                  <FaSearch />
+                </span>
+                <input
+                  type="text"
+                  id="search-events"
+                  placeholder="Search events..."
+                  value={searchInput}
+                  onChange={e => setSearchInput(e.target.value)}
+                />
+              </div>
+            </div>
+
             <div className={styles.filterSectionDivider}>
               <div className={styles.filterItem}>
                 <label htmlFor="date-tomorrow"> Dates</label>
@@ -373,6 +393,7 @@ export function CPDashboard() {
                     </Label>
                   </FormGroup>
                 </div>
+
                 <div className={styles.dashboardActions}>
                   <Button
                     color="primary"

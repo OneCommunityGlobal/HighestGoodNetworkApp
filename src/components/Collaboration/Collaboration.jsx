@@ -1,5 +1,6 @@
 // src/pages/Collaboration/Collaboration.jsx
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
+import { useHistory } from 'react-router-dom';
 import styles from './Collaboration.module.css';
 import { toast } from 'react-toastify';
 import { ApiEndpoint } from '~/utils/URL';
@@ -7,7 +8,6 @@ import { useSelector } from 'react-redux';
 import OneCommunityImage from '../../assets/images/logo2.png';
 
 const ADS_PER_PAGE = 18;
-const ENABLE_JOB_DUPLICATION = true; // TEMP: set false before production
 
 function Collaboration() {
   const [query, setQuery] = useState('');
@@ -19,8 +19,15 @@ function Collaboration() {
   const [totalPages, setTotalPages] = useState(1);
   const [categories, setCategories] = useState([]);
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
+  const [showPositionDropdown, setShowPositionDropdown] = useState(false);
   const [summaries, setSummaries] = useState(null);
+  // const [positions, setPositions] = useState([]);
+  const [selectedPosition, setSelectedPosition] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const categoryRef = useRef(null);
+  const positionRef = useRef(null);
 
+  const history = useHistory();
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const slugify = s =>
@@ -36,40 +43,21 @@ function Collaboration() {
       const url =
         `${ApiEndpoint}/jobs` +
         `?search=${encodeURIComponent(searchTerm || '')}` +
-        `&category=${encodeURIComponent(categoriesSelected.join(',') || '')}`;
+        `&category=${encodeURIComponent(selectedCategory || '')}`;
 
       const res = await fetch(url);
-      if (!res.ok) throw new Error('Fetch failed');
-
       const data = await res.json();
-      const jobs = data.jobs || [];
-      // let finalJobs = jobs;
-
-      // if (ENABLE_JOB_DUPLICATION && jobs.length > 0) {
-      //   const MULTIPLIER = 15; // 3 × 10 = 30 jobs
-      //   finalJobs = Array.from({ length: MULTIPLIER }).flatMap((_, i) =>
-      //     jobs.map(job => ({
-      //       ...job,
-      //       _id: `${job._id}-dup-${i}`, // ensure unique key
-      //     })),
-      //   );
-      // }
-
-      setAllJobs(jobs);
-
-      const calculatedPages = Math.ceil(jobs.length / ADS_PER_PAGE);
-      setTotalPages(Math.max(calculatedPages, 2));
+      setAllJobs(data.jobs || []);
     } catch {
       toast.error('Error fetching jobs');
     }
   };
 
-  /* ================= FETCH CATEGORIES ================= */
   const fetchCategories = async () => {
     try {
       const res = await fetch(`${ApiEndpoint}/jobs/categories`);
       const data = await res.json();
-      setCategories((data.categories || []).sort());
+      setCategories((data.categories || []).sort((a, b) => a.localeCompare(b)));
     } catch {
       toast.error('Error fetching categories');
     }
@@ -83,13 +71,61 @@ function Collaboration() {
   useEffect(() => {
     setCurrentPage(1);
     fetchJobs();
-  }, [searchTerm, categoriesSelected]);
+  }, [searchTerm, selectedCategory]);
+
+  const filteredJobs = useMemo(() => {
+    if (!selectedPosition) return allJobs;
+
+    return allJobs.filter(job =>
+      (job.position || job.title || '').toLowerCase().includes(selectedPosition.toLowerCase()),
+    );
+  }, [allJobs, selectedPosition]);
+
+  const positions = useMemo(() => {
+    const uniquePositions = [
+      ...new Set(
+        allJobs
+          .filter(
+            job =>
+              !selectedCategory || job.category?.toLowerCase() === selectedCategory.toLowerCase(),
+          )
+          .map(job => job.position || job.title)
+          .filter(Boolean),
+      ),
+    ];
+
+    return uniquePositions.sort((a, b) => a.localeCompare(b));
+  }, [allJobs, selectedCategory]);
 
   useEffect(() => {
     const start = (currentPage - 1) * ADS_PER_PAGE;
-    const end = start + ADS_PER_PAGE;
-    setJobAds(allJobs.slice(start, end));
-  }, [allJobs, currentPage]);
+    setJobAds(filteredJobs.slice(start, start + ADS_PER_PAGE));
+
+    const calculatedPages = Math.ceil(filteredJobs.length / ADS_PER_PAGE);
+    setTotalPages(Math.max(calculatedPages, 1));
+  }, [filteredJobs, currentPage]);
+
+  useEffect(() => {
+    // no-op placeholder; keep hook list stable if needed in future
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = event => {
+      if (categoryRef.current && !categoryRef.current.contains(event.target)) {
+        setShowCategoryDropdown(false);
+      }
+
+      if (positionRef.current && !positionRef.current.contains(event.target)) {
+        setShowPositionDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   /* ================= HANDLERS ================= */
   const handleSubmit = e => {
@@ -97,19 +133,39 @@ function Collaboration() {
     setSearchTerm(query);
   };
 
+  const handleClearAllFilters = () => {
+    setSelectedCategory('');
+    setSelectedPosition('');
+    setSearchTerm('');
+    setQuery('');
+    setCurrentPage(1);
+  };
+
   const handleShowSummaries = async () => {
     try {
-      const url =
-        `${ApiEndpoint}/jobs/summaries` +
-        `?search=${encodeURIComponent(searchTerm || '')}` +
-        `&category=${encodeURIComponent(categoriesSelected.join(',') || '')}`;
-
-      const res = await fetch(url);
-      const data = await res.json();
-      setSummaries(data);
+      const res = await fetch(
+        `${ApiEndpoint}/jobs/summaries?search=${searchTerm}&category=${selectedCategory}`,
+      );
+      setSummaries(await res.json());
     } catch {
       toast.error('Error fetching summaries');
     }
+  };
+
+  const handleJobClick = ad => {
+    const title = ad.title || '';
+    const search = title ? `?jobTitle=${encodeURIComponent(title)}` : '';
+    history.push({
+      pathname: '/job-application',
+      search,
+      state: {
+        jobId: ad._id,
+        jobTitle: title,
+        jobDescription: ad.description || '',
+        requirements: ad.requirements || [],
+        category: ad.category || 'General',
+      },
+    });
   };
 
   /* ================= SUMMARIES VIEW ================= */
@@ -122,15 +178,15 @@ function Collaboration() {
           </a>
         </div>
 
-        <div className={styles.userCollaborationContainer}>
+        <div className={`${styles.userCollaborationContainer} ${darkMode ? styles.dark : ''}`}>
           <h2>Job Summaries</h2>
 
           {summaries.jobs?.length ? (
             summaries.jobs.map(job => (
               <div key={job._id} className="job-summary-item">
-                <h3>
+                <h4>
                   <a href={job.jobDetailsLink}>{job.title}</a>
-                </h3>
+                </h4>
                 <p>{job.description}</p>
               </div>
             ))
@@ -165,107 +221,125 @@ function Collaboration() {
               value={query}
               onChange={e => setQuery(e.target.value)}
             />
-            <button className="btn btn-secondary" type="submit">
-              Go
-            </button>
+            <button className="btn btn-secondary">Go</button>
           </form>
 
-          <button
-            type="button"
-            aria-haspopup="true"
-            aria-expanded={showCategoryDropdown}
-            onClick={() => setShowCategoryDropdown(prev => !prev)}
-          >
-            Select Categories ▼
-          </button>
-        </nav>
-        {showCategoryDropdown && (
-          <div
-            role="menu"
-            style={{
-              position: 'absolute',
-              // top: '100%',
-              marginTop: '7px',
-              right: 0,
-              background: 'rgba(0, 0, 0, 0.75)',
-              border: '1px solid #444',
-              borderRadius: '8px',
-              padding: '12px',
-              zIndex: 1000,
-              boxShadow: '0 8px 20px rgba(0,0,0,0.4)',
-              minWidth: '260px',
-              color: '#ffffff',
-            }}
-          >
-            {categories.map(cat => (
-              <label
-                key={cat}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  marginBottom: '8px',
-                  cursor: 'pointer',
-                  color: '#ffffff',
-                }}
-              >
-                <input
-                  type="checkbox"
-                  aria-label={cat}
-                  checked={categoriesSelected.includes(cat)}
-                  onChange={() => {
-                    setCategoriesSelected(prev =>
-                      prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat],
-                    );
-                    setCurrentPage(1);
-                  }}
-                />
-                {cat}
-              </label>
-            ))}
-          </div>
-        )}
+          <div className={styles.dropdownWrapper} ref={categoryRef}>
+            <button
+              type="button"
+              onClick={() => {
+                setShowCategoryDropdown(prev => !prev);
+                setShowPositionDropdown(false);
+              }}
+              aria-expanded={showCategoryDropdown}
+            >
+              {selectedCategory || 'Select Categories'} ▼
+            </button>
 
-        {/* HEADING */}
+            {showCategoryDropdown && (
+              <div className={styles.jobSelect}>
+                {categories.map(cat => (
+                  <button
+                    key={cat}
+                    type="button"
+                    className={styles.dropdownItem}
+                    onClick={() => {
+                      setSelectedCategory(cat);
+                      setSelectedPosition('');
+                      setShowCategoryDropdown(false);
+                      setCurrentPage(1);
+                    }}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className={styles.dropdownWrapper} ref={positionRef}>
+            <button
+              type="button"
+              disabled={!selectedCategory}
+              onClick={() => {
+                if (!selectedCategory) return;
+                setShowPositionDropdown(prev => !prev);
+                setShowCategoryDropdown(false);
+              }}
+              aria-expanded={showPositionDropdown}
+            >
+              {selectedPosition || 'Select Positions'} ▼
+            </button>
+
+            {showPositionDropdown && selectedCategory && (
+              <div className={styles.jobSelect}>
+                {positions.length > 0 ? (
+                  positions.map(pos => (
+                    <button
+                      key={pos}
+                      type="button"
+                      className={styles.dropdownItem}
+                      onClick={() => {
+                        setSelectedPosition(pos);
+                        setShowPositionDropdown(false);
+                        setCurrentPage(1);
+                      }}
+                    >
+                      {pos}
+                    </button>
+                  ))
+                ) : (
+                  <div className={styles.dropdownItem}>No positions found</div>
+                )}
+              </div>
+            )}
+          </div>
+        </nav>
+
+        {/* HEADINGS */}
         <div className={styles.headings}>
           <h1 className={styles.jobHead}>LIKE TO WORK WITH US? APPLY NOW!</h1>
-          <p>
-            <a className="btn" href="https://www.onecommunityglobal.org/collaboration/">
-              ← Return to One Community Collaboration Page
-            </a>
-          </p>
+          <a className="btn" href="https://www.onecommunityglobal.org/collaboration/">
+            ← Return to One Community Collaboration Page
+          </a>
         </div>
 
-        {/* LISTING TEXT + SUMMARY BUTTON */}
+        {/* QUERY TEXT */}
         <div className="job-queries">
-          <p className="job-query">
-            {searchTerm || categoriesSelected.length > 0
-              ? `Listing results for ${
-                  searchTerm && categoriesSelected.length > 0
-                    ? `'${searchTerm}' + '${categoriesSelected.join(', ')}'`
-                    : `'${searchTerm || categoriesSelected.join(', ')}'`
-                }`
+          <p>
+            {searchTerm
+              ? `Listing results for '${searchTerm}'`
+              : selectedPosition
+              ? `Listing results for '${selectedPosition}' in '${selectedCategory}'`
+              : selectedCategory
+              ? `Listing results for '${selectedCategory}'`
               : 'Listing all job ads.'}
           </p>
-
-          <button className="btn btn-secondary" type="button" onClick={handleShowSummaries}>
+          <button className="btn btn-secondary" onClick={handleShowSummaries}>
             Show Summaries
           </button>
         </div>
-        {categoriesSelected.length > 0 && (
+
+        {/* FILTER CHIPS */}
+        {(selectedCategory || selectedPosition) && (
           <div className={styles.jobQueries}>
-            {categoriesSelected.map(cat => (
-              <span key={cat} className={styles.chip}>
-                {cat}
-              </span>
-            ))}
+            {selectedCategory && <span className={styles.chip}>{selectedCategory}</span>}
+            {selectedPosition && <span className={styles.chip}>{selectedPosition}</span>}
+            <button className={styles.clearAllButton} onClick={handleClearAllFilters}>
+              Clear All
+            </button>
           </div>
         )}
 
         {/* JOB GRID */}
         <div className={styles.jobList}>
           {jobAds.map(ad => (
-            <div key={ad._id} className={styles.jobAd}>
+            <button
+              key={ad._id}
+              type="button"
+              className={styles.jobAd}
+              onClick={() => handleJobClick(ad)}
+            >
               <img
                 src={
                   ad.imageUrl ||
@@ -273,54 +347,24 @@ function Collaboration() {
                 }
                 alt={ad.title}
               />
-              <a
-                href={`https://www.onecommunityglobal.org/collaboration/seeking-${slugify(
-                  ad.category,
-                )}`}
-              >
-                <h3>{ad.title}</h3>
-              </a>
-            </div>
+              <h3>{ad.title}</h3>
+            </button>
           ))}
         </div>
 
         {/* PAGINATION */}
         <div className={styles.pagination}>
-          <button disabled={currentPage === 1} onClick={() => setCurrentPage(1)}>
-            «
-          </button>
-          <button
-            type="button"
-            disabled={currentPage === 1}
-            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-          >
-            ‹
-          </button>
-
-          {(() => {
-            const pagesToRender = Math.max(totalPages, 2);
-            return Array.from({ length: pagesToRender }, (_, i) => (
-              <button
-                key={i + 1}
-                type="button"
-                aria-current={currentPage === i + 1 ? 'page' : undefined}
-                disabled={currentPage === i + 1}
-                className={
-                  currentPage === i + 1 ? styles.paginationButtonActive : styles.paginationButton
-                }
-                onClick={() => setCurrentPage(i + 1)}
-              >
-                {i + 1}
-              </button>
-            ));
-          })()}
-
-          <button type="button" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}>
-            ›
-          </button>
-          <button type="button" onClick={() => setCurrentPage(totalPages)}>
-            »
-          </button>
+          {Array.from({ length: totalPages }, (_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrentPage(i + 1)}
+              className={
+                currentPage === i + 1 ? styles.paginationButtonActive : styles.paginationButton
+              }
+            >
+              {i + 1}
+            </button>
+          ))}
         </div>
       </div>
     </div>

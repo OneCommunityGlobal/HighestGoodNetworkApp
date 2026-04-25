@@ -24,6 +24,7 @@ import httpService from '../../services/httpService';
 import { ApiEndpoint } from '../../utils/URL';
 
 import styles from './LBDashboard.module.css';
+import ConversionFunnel from './LbAnalytics/ConversionFunnel/ConversionFunnel';
 
 const METRIC_OPTIONS = {
   DEMAND: [
@@ -502,6 +503,14 @@ export function LBDashboard() {
             />
           </Col>
         </Row>
+      </AnalysisSection>
+
+      <AnalysisSection title="Conversion Funnel" darkMode={darkMode}>
+        <div className={styles.chartRow}>
+          <div className={styles.fullWidthChartCol}>
+            <ConversionFunnel darkMode={darkMode} />
+          </div>
+        </div>
       </AnalysisSection>
 
       <AnalysisSection title="Insights from Reviews" darkMode={darkMode}>
