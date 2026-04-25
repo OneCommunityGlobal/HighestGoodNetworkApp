@@ -4,7 +4,6 @@ import { BiPencil } from 'react-icons/bi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSortDown, faSort, faSortUp } from '@fortawesome/free-solid-svg-icons';
 import RecordsModal from './RecordsModal';
-import styles from './ItemListView.module.css';
 
 export default function ItemsTable({
   selectedProject,
@@ -13,6 +12,7 @@ export default function ItemsTable({
   UpdateItemModal,
   dynamicColumns,
   darkMode = false,
+  itemType,
 }) {
   const [sortedData, setData] = useState(filteredItems);
   const [modal, setModal] = useState(false);
@@ -84,9 +84,8 @@ export default function ItemsTable({
     setData(newSortedData);
   };
 
-  const getNestedValue = (obj, path) => {
-    return path.split('.').reduce((acc, part) => (acc ? acc[part] : null), obj);
-  };
+  const getNestedValue = (obj, path) =>
+    path.split('.').reduce((acc, part) => (acc ? acc[part] : null), obj);
 
   return (
     <>
@@ -96,65 +95,162 @@ export default function ItemsTable({
         record={record}
         setRecord={setRecord}
         recordType={recordType}
+        itemType={itemType}
       />
       <UpdateItemModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
-      <div className={`${styles.itemsTableContainer} ${darkMode ? styles.darkTableWrapper : ''}`}>
-        <Table className={darkMode ? styles.darkTable : ''}>
-          <thead>
-            <tr>
+      {darkMode && (
+        <style>
+          {`
+            .dark-mode .items_table_container .table thead th {
+              background-color: #1C2541 !important;
+              color: #ffffff !important;
+              border-color: #555 !important;
+            }
+
+            .dark-mode .items_table_container .table thead tr {
+              background-color: #1C2541 !important;
+            }
+
+            .dark-mode .items_table_container .table tbody tr:hover {
+              background-color: #1C2541 !important;
+            }
+          `}
+        </style>
+      )}
+      <div
+        className={`items_table_container ${
+          darkMode ? 'items_table_container_dark dark-mode' : ''
+        }`}
+        style={darkMode ? { backgroundColor: '#3A506B' } : {}}
+      >
+        <Table
+          className={darkMode ? 'dark-table' : ''}
+          style={
+            darkMode ? { backgroundColor: '#3A506B', color: '#ffffff', borderColor: '#444' } : {}
+          }
+        >
+          <thead
+            className={darkMode ? 'dark-thead' : ''}
+            style={darkMode ? { backgroundColor: '#1C2541', color: '#ffffff' } : {}}
+          >
+            <tr style={darkMode ? { backgroundColor: '#1C2541' } : {}}>
               {selectedProject === 'all' ? (
-                <th onClick={() => sortData('ProjectName')}>
+                <th
+                  className={darkMode ? 'dark-th' : ''}
+                  style={
+                    darkMode
+                      ? { backgroundColor: '#1C2541', color: '#ffffff', borderColor: '#555' }
+                      : {}
+                  }
+                  onClick={() => sortData('ProjectName')}
+                >
                   Project <FontAwesomeIcon icon={projectNameCol.iconsToDisplay} size="lg" />
                 </th>
               ) : (
-                <th>Project</th>
+                <th
+                  className={darkMode ? 'dark-th' : ''}
+                  style={
+                    darkMode
+                      ? { backgroundColor: '#1C2541', color: '#ffffff', borderColor: '#555' }
+                      : {}
+                  }
+                >
+                  Project
+                </th>
               )}
               {selectedItem === 'all' ? (
-                <th onClick={() => sortData('InventoryItemType')}>
+                <th
+                  className={darkMode ? 'dark-th' : ''}
+                  style={
+                    darkMode
+                      ? { backgroundColor: '#1C2541', color: '#ffffff', borderColor: '#555' }
+                      : {}
+                  }
+                  onClick={() => sortData('InventoryItemType')}
+                >
                   Name <FontAwesomeIcon icon={inventoryItemTypeCol.iconsToDisplay} size="lg" />
                 </th>
               ) : (
-                <th>Name</th>
+                <th
+                  className={darkMode ? 'dark-th' : ''}
+                  style={
+                    darkMode
+                      ? { backgroundColor: '#1C2541', color: '#ffffff', borderColor: '#555' }
+                      : {}
+                  }
+                >
+                  Name
+                </th>
               )}
-              {dynamicColumns.map(({ label }) => (
-                <th key={label}>{label}</th>
+              {dynamicColumns.map(({ label, key }) => (
+                <th
+                  className={darkMode ? 'dark-th' : ''}
+                  style={
+                    darkMode
+                      ? { backgroundColor: '#1C2541', color: '#ffffff', borderColor: '#555' }
+                      : {}
+                  }
+                  key={label}
+                >
+                  {label}
+                </th>
               ))}
-              <th>Usage Record</th>
-              <th>Updates</th>
-              <th>Purchases</th>
+              <th
+                className={darkMode ? 'dark-th' : ''}
+                style={
+                  darkMode
+                    ? { backgroundColor: '#1C2541', color: '#ffffff', borderColor: '#555' }
+                    : {}
+                }
+              >
+                Updates
+              </th>
+              <th
+                className={darkMode ? 'dark-th' : ''}
+                style={
+                  darkMode
+                    ? { backgroundColor: '#1C2541', color: '#ffffff', borderColor: '#555' }
+                    : {}
+                }
+              >
+                Purchases
+              </th>
             </tr>
           </thead>
 
-          <tbody>
+          <tbody
+            className={darkMode ? 'dark-tbody' : ''}
+            style={darkMode ? { backgroundColor: '#3A506B', color: '#ffffff' } : {}}
+          >
             {sortedData && sortedData.length > 0 ? (
-              sortedData.map(el => {
-                return (
-                  <tr key={el._id}>
-                    <td>{el.project?.name}</td>
-                    <td>{el.itemType?.name}</td>
-                    {dynamicColumns.map(({ label, key }) => (
-                      <td key={label}>{getNestedValue(el, key)}</td>
-                    ))}
-                    <td className={`${styles.itemsCell}`}>
-                      <button
-                        type="button"
-                        onClick={() => handleEditRecordsClick(el, 'UsageRecord')}
-                        aria-label="Edit Record"
-                      >
-                        <BiPencil />
-                      </button>
-                      <Button
-                        color="primary"
-                        outline
-                        size="sm"
-                        onClick={() => handleViewRecordsClick(el, 'UsageRecord')}
-                      >
-                        View
-                      </Button>
+              sortedData.map(el => (
+                <tr
+                  key={el._id}
+                  className={darkMode ? 'dark-row' : ''}
+                  style={
+                    darkMode ? { backgroundColor: '#3A506B', borderBottom: '1px solid #333' } : {}
+                  }
+                >
+                  <td style={darkMode ? { color: '#ffffff' } : {}}>{el.project?.name}</td>
+                  <td style={darkMode ? { color: '#ffffff' } : {}}>{el.itemType?.name}</td>
+                  {dynamicColumns.map(({ label, key }) => (
+                    <td key={label} style={darkMode ? { color: '#ffffff' } : {}}>
+                      {getNestedValue(el, key)}
                     </td>
-                    <td className={`${styles.itemsCell}`}>
+                  ))}
+                  <td className="items_cell">
+                    <div
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '10px',
+                        flexWrap: 'nowrap',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
                       <button
                         type="button"
+                        style={darkMode ? { color: '#4a90e2' } : {}}
                         onClick={() => handleEditRecordsClick(el, 'Update')}
                         aria-label="Edit Record"
                       >
@@ -162,26 +258,28 @@ export default function ItemsTable({
                       </button>
                       <Button
                         color="primary"
-                        outline
+                        outline={!darkMode}
+                        style={darkMode ? { borderColor: '#4a90e2', color: '#ffffff' } : {}}
                         size="sm"
                         onClick={() => handleViewRecordsClick(el, 'Update')}
                       >
                         View
                       </Button>
-                    </td>
-                    <td>
-                      <Button
-                        color="primary"
-                        outline
-                        size="sm"
-                        onClick={() => handleViewRecordsClick(el, 'Purchase')}
-                      >
-                        View
-                      </Button>
-                    </td>
-                  </tr>
-                );
-              })
+                    </div>
+                  </td>
+                  <td>
+                    <Button
+                      color="primary"
+                      outline={!darkMode}
+                      style={darkMode ? { borderColor: '#4a90e2', color: '#ffffff' } : {}}
+                      size="sm"
+                      onClick={() => handleViewRecordsClick(el, 'Purchase')}
+                    >
+                      View
+                    </Button>
+                  </td>
+                </tr>
+              ))
             ) : (
               <tr>
                 <td colSpan={11} style={{ textAlign: 'center' }}>

@@ -2,11 +2,20 @@ import { Link } from 'react-router-dom';
 import { useEffect, useState, useMemo, useCallback } from 'react';
 import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
-import './TotalReport.css';
+import styles from './TotalReport.module.css';
 import { Button } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
 import TotalReportBarGraph from './TotalReportBarGraph';
 import Loading from '../../common/Loading';
+import { generateBarData as generateBarDataUtil } from './generateBarData';
+import {
+  getCachedDataLength,
+  setCachedData,
+  validateUserList,
+  logApiRequest,
+  logApiResponse,
+  compareWithCache,
+} from './cacheUtils';
 
 function TotalProjectReport(props) {
   const { startDate, endDate, userProfiles, projects, darkMode } = props;
@@ -19,51 +28,103 @@ function TotalProjectReport(props) {
   const [projectInYear, setProjectInYear] = useState([]);
   const [showMonthly, setShowMonthly] = useState(false);
   const [showYearly, setShowYearly] = useState(false);
+  // Added state to show warning if month gap is less than one month
+  const [showWarning, setShowWarning] = useState(false);
 
   const fromDate = useMemo(() => startDate.toLocaleDateString('en-CA'), [startDate]);
   const toDate = useMemo(() => endDate.toLocaleDateString('en-CA'), [endDate]);
-  const userList = useMemo(() => userProfiles.map(user => user._id), [userProfiles]);
-  const projectList = useMemo(() => projects.map(proj => proj._id), [projects]);
+  const userList = useMemo(() => {
+    const list = userProfiles?.map(user => user._id) || [];
+    // eslint-disable-next-line no-console
+    console.log('TotalProjectReport userList created:', {
+      userProfilesLength: userProfiles?.length,
+      userListLength: list.length,
+    });
+    return list;
+  }, [userProfiles]);
+  const projectList = useMemo(() => {
+    const list = projects?.map(proj => proj._id) || [];
+    // eslint-disable-next-line no-console
+    console.log('TotalProjectReport projectList created:', {
+      projectsLength: projects?.length,
+      projectListLength: list.length,
+    });
+    return list;
+  }, [projects]);
 
   const loadTimeEntriesForPeriod = useCallback(
     async controller => {
+      const reportName = 'TotalProjectReport';
+      const url = ENDPOINTS.TIME_ENTRIES_REPORTS;
+
+      // Validate userList
+      if (!validateUserList(userList, userProfiles, reportName)) {
+        setTotalProjectReportDataLoading(false);
+        setAllTimeEntries([]);
+        return;
+      }
+
+      // Check cache length for comparison (but always fetch fresh data)
+      const cacheKey = `${reportName}_${fromDate}_${toDate}`;
+      const cachedDataLength = getCachedDataLength(cacheKey, reportName);
+
       try {
-        const url = ENDPOINTS.TIME_ENTRIES_REPORTS;
+        logApiRequest(reportName, url, { users: userList, fromDate, toDate }, {
+          usersCount: userList?.length,
+          projectsCount: projectList?.length,
+        });
+
         const timeEntries = await axios
           .post(url, { users: userList, fromDate, toDate }, { signal: controller.signal })
-          .then(res =>
-            res.data.map(entry => ({
+          .then(res => {
+            logApiResponse(`${reportName} (timeEntries)`, res.data?.length);
+            return res.data.map(entry => ({
               projectId: entry.projectId,
               projectName: entry.projectName,
               hours: entry.hours,
               minutes: entry.minutes,
               isTangible: entry.isTangible,
               date: entry.dateOfWork,
-            })),
-          );
+            }));
+          });
 
-        const projUrl = ENDPOINTS.TIME_ENTRIES_LOST_PROJ_LIST;
+        logApiRequest(`${reportName} (lost projects)`, ENDPOINTS.TIME_ENTRIES_LOST_PROJ_LIST, {
+          projects: projectList,
+          fromDate,
+          toDate,
+        });
+
         const projTimeEntries = await axios
-          .post(projUrl, { projects: projectList, fromDate, toDate }, { signal: controller.signal })
-          .then(res =>
-            res.data.map(entry => ({
+          .post(
+            ENDPOINTS.TIME_ENTRIES_LOST_PROJ_LIST,
+            { projects: projectList, fromDate, toDate },
+            { signal: controller.signal },
+          )
+          .then(res => {
+            logApiResponse(`${reportName} (lost projects)`, res.data?.length);
+            return res.data.map(entry => ({
               projectId: entry.projectId,
               projectName: entry.projectName,
               hours: entry.hours,
               minutes: entry.minutes,
               isTangible: entry.isTangible,
               date: entry.dateOfWork,
-            })),
-          );
+            }));
+          });
 
         if (!controller.signal.aborted) {
-          setAllTimeEntries([...timeEntries, ...projTimeEntries]);
+          const allEntries = [...timeEntries, ...projTimeEntries];
+          compareWithCache(reportName, allEntries.length, cachedDataLength);
+          setAllTimeEntries(allEntries);
+          setCachedData(cacheKey, allEntries, reportName, cachedDataLength);
         }
       } catch (err) {
-        // console.log(err);
+        // eslint-disable-next-line no-console
+        console.error(`${reportName} API Error:`, err);
+        setTotalProjectReportDataLoading(false);
       }
     },
-    [fromDate, toDate, userList, projectList],
+    [fromDate, toDate, userList, projectList, userProfiles],
   );
 
   const sumByProject = useCallback((objectArray, property) => {
@@ -123,25 +184,7 @@ function TotalProjectReport(props) {
 
   const generateBarData = useCallback(
     (groupedDate, isYear = false) => {
-      if (isYear) {
-        const startMonth = startDate.getMonth();
-        const endMonth = endDate.getMonth();
-        const sumData = groupedDate.map(range => ({
-          label: range.timeRange,
-          value: range.projectsOfTime.length,
-          months: 12,
-        }));
-        if (sumData.length > 1) {
-          sumData[0].months = 12 - startMonth;
-          sumData[sumData.length - 1].months = endMonth + 1;
-        }
-        const filteredData = sumData.filter(data => data.value > 0);
-        return filteredData;
-      }
-      return groupedDate.map(range => ({
-        label: range.timeRange,
-        value: range.projectsOfTime.length,
-      }));
+      return generateBarDataUtil(groupedDate, isYear, startDate, endDate, 'projectsOfTime');
     },
     [startDate, endDate],
   );
@@ -152,12 +195,26 @@ function TotalProjectReport(props) {
     if (diffDate > oneMonth) {
       setProjectInMonth(generateBarData(summaryOfTimeRange('month')));
       setProjectInYear(generateBarData(summaryOfTimeRange('year'), true));
-      if (diffDate <= oneMonth * 12) setShowMonthly(true);
-      if (startDate.getFullYear() !== endDate.getFullYear()) setShowYearly(true);
+      if (diffDate <= oneMonth * 12) { setShowMonthly(true); setShowWarning(false);}
+      if (startDate.getFullYear() !== endDate.getFullYear()) {setShowYearly(true);setShowWarning(false);}
     }
+     // if timedifference is one month
+     if (diffDate <= oneMonth) {
+        setShowWarning(true);
+      }
   }, [endDate, startDate, generateBarData, summaryOfTimeRange]);
 
   useEffect(() => {
+    // Only make API call if userList has data
+    if (!userList || userList.length === 0) {
+      // eslint-disable-next-line no-console
+      console.log('TotalProjectReport: Waiting for userProfiles to load...', {
+        userProfilesLength: userProfiles?.length,
+        userListLength: userList?.length,
+      });
+      return;
+    }
+
     setTotalProjectReportDataReady(false);
     const controller = new AbortController();
 
@@ -171,7 +228,7 @@ function TotalProjectReport(props) {
     return () => {
       controller.abort();
     };
-  }, [loadTimeEntriesForPeriod, startDate, endDate]);
+  }, [loadTimeEntriesForPeriod, startDate, endDate, userList]);
 
   useEffect(() => {
     if (!totalProjectReportDataLoading && totalProjectReportDataReady) {
@@ -242,9 +299,9 @@ function TotalProjectReport(props) {
       return acc + Number(obj.tangibleTime);
     }, 0);
     return (
-      <div className={`total-container ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
-        <div className={`total-title ${darkMode ? 'text-azure' : ''}`}>Total Project Report</div>
-        <div className="total-period">
+      <div className={`${styles.totalContainer} ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+        <div className={`${styles.totalTitle} ${darkMode ? 'text-azure' : ''}`}>Total Project Report</div>
+        <div className={styles.totalPeriod}>
           In the period from{' '}
           {startDate.toLocaleDateString('en-US', {
             month: '2-digit',
@@ -259,13 +316,13 @@ function TotalProjectReport(props) {
           })}
           :
         </div>
-        <div className="total-item">
-          <span className="total-number">{allProject.length}</span>
-          <span className="total-text">projects have been worked on more than 1 hours.</span>
+        <div className={styles.totalItem}>
+          <span className={styles.totalNumber}>{allProject.length}</span>
+          <span className={styles.totalText}>projects have been worked on more than 1 hours.</span>
         </div>
-        <div className="total-item">
-          <span className="total-number">{totalTangibleTime.toFixed(2)}</span>
-          <span className="total-text">hours of tangible time have been logged.</span>
+        <div className={styles.totalItem}>
+          <span className={styles.totalNumber}>{totalTangibleTime.toFixed(2)}</span>
+          <span className={styles.totalText}>hours of tangible time have been logged.</span>
         </div>
         <div>
           {showMonthly && projectInMonth.length > 0 ? (
@@ -274,9 +331,10 @@ function TotalProjectReport(props) {
           {showYearly && projectInYear.length > 0 ? (
             <TotalReportBarGraph barData={projectInYear} range="year" />
           ) : null}
+          {showWarning && <div className={styles.totalWarning}>Graphs are shown only if the selected date range is greater than one month.</div>}
         </div>
         {allProject.length ? (
-          <div className="total-detail">
+          <div className={styles.totalDetail}>
             {/* eslint-disable-next-line no-unused-vars */}
             <Button onClick={e => onClickTotalProjectDetail()}>
               {showTotalProjectTable ? 'Hide Details' : 'Show Details'}
@@ -321,7 +379,7 @@ function TotalProjectReport(props) {
       ) : (
         <div>
           <div>{totalProjectInfo(allProject)}</div>
-          <div className='tables'>{showTotalProjectTable ? totalProjectTable(allProject) : null}</div>
+          <div className={styles.tables}>{showTotalProjectTable ? totalProjectTable(allProject) : null}</div>
         </div>
       )}
     </div>
