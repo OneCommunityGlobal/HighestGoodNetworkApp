@@ -44,6 +44,100 @@ const MONTHS = [
   'December',
 ];
 
+/* ---------- helper functions to keep processChartData simple ---------- */
+
+const filterRentalData = (data, selectedProject, selectedTool, dateRange) =>
+  data.filter(item => {
+    if (selectedProject !== 'All' && item.projectId !== selectedProject) {
+      return false;
+    }
+    if (selectedTool !== 'All' && item.toolName !== selectedTool) {
+      return false;
+    }
+    const itemDate = new Date(item.date);
+    return itemDate >= dateRange.startDate && itemDate <= dateRange.endDate;
+  });
+
+const buildMonthsRange = dateRange => {
+  const startYear = dateRange.startDate.getFullYear();
+  const endYear = dateRange.endDate.getFullYear();
+  const startMonth = dateRange.startDate.getMonth();
+  const endMonth = dateRange.endDate.getMonth();
+
+  const totalMonths = (endYear - startYear) * 12 + (endMonth - startMonth) + 1;
+
+  const labels = [];
+  const monthsInRange = [];
+
+  for (let i = 0; i < totalMonths; i += 1) {
+    const year = startYear + Math.floor((startMonth + i) / 12);
+    const month = (startMonth + i) % 12;
+    labels.push(`${MONTHS[month]} ${year}`);
+    monthsInRange.push({ year, month });
+  }
+
+  return { labels, monthsInRange, totalMonths };
+};
+
+const aggregateDataByGroup = (filteredData, monthsInRange, totalMonths, groupBy, chartType) => {
+  const groupMap = new Map();
+
+  for (const item of filteredData) {
+    const groupKey = groupBy === 'project' ? item.projectId : item.toolName;
+    const date = new Date(item.date);
+    const year = date.getFullYear();
+    const month = date.getMonth();
+
+    const monthIndex = monthsInRange.findIndex(m => m.year === year && m.month === month);
+    if (monthIndex === -1) {
+      continue;
+    }
+
+    const value =
+      chartType === 'percentage'
+        ? (item.rentalCost / item.totalMaterialCost) * 100
+        : item.rentalCost;
+
+    if (!groupMap.has(groupKey)) {
+      groupMap.set(groupKey, {
+        key: groupKey,
+        dataPoints: new Array(totalMonths).fill(undefined),
+        monthsWithData: new Set(),
+      });
+    }
+
+    const group = groupMap.get(groupKey);
+    const currentValue = group.dataPoints[monthIndex];
+    const newValue = currentValue === undefined ? value : currentValue + value;
+
+    group.dataPoints[monthIndex] = newValue;
+    group.monthsWithData.add(monthIndex);
+  }
+
+  return groupMap;
+};
+
+const buildDatasetsFromGroupMap = (groupMap, groupBy) =>
+  Array.from(groupMap.values()).map((group, index) => {
+    const colorIndex = index % PROJECT_COLORS.length;
+    const label = groupBy === 'project' ? `Project ${group.key.substring(0, 8)}...` : group.key;
+
+    return {
+      label,
+      data: group.dataPoints,
+      borderColor: PROJECT_COLORS[colorIndex].borderColor,
+      backgroundColor: PROJECT_COLORS[colorIndex].backgroundColor,
+      marginRight: 20,
+      tension: 0.4,
+      fill: false,
+      pointRadius: ctx => (group.monthsWithData.has(ctx.dataIndex) ? 5 : 0),
+      pointHoverRadius: 8,
+      spanGaps: true,
+    };
+  });
+
+/* ---------------------------------------------------------------------- */
+
 export default function RentalChart() {
   const chartRef = useRef(null);
   const [chartData, setChartData] = useState({
@@ -67,117 +161,21 @@ export default function RentalChart() {
   const [availableTools, setAvailableTools] = useState([]);
   const [rawData, setRawData] = useState([]);
 
-  // Function to process data for the chart
   const processChartData = data => {
-    // apply all data
-    let filteredData = data;
+    const filteredData = filterRentalData(data, selectedProject, selectedTool, dateRange);
+    const { labels, monthsInRange, totalMonths } = buildMonthsRange(dateRange);
+    const groupMap = aggregateDataByGroup(
+      filteredData,
+      monthsInRange,
+      totalMonths,
+      groupBy,
+      chartType,
+    );
+    const datasets = buildDatasetsFromGroupMap(groupMap, groupBy);
 
-    // filter by project
-    if (selectedProject !== 'All') {
-      filteredData = filteredData.filter(item => item.projectId === selectedProject);
-    }
-
-    // filter by tool
-    if (selectedTool !== 'All') {
-      filteredData = filteredData.filter(item => item.toolName === selectedTool);
-    }
-
-    // Filter by date range
-    filteredData = filteredData.filter(item => {
-      const itemDate = new Date(item.date);
-      return itemDate >= dateRange.startDate && itemDate <= dateRange.endDate;
-    });
-
-    // Determine date range for x-axis
-    const startYear = dateRange.startDate.getFullYear();
-    const endYear = dateRange.endDate.getFullYear();
-    const startMonth = dateRange.startDate.getMonth();
-    const endMonth = dateRange.endDate.getMonth();
-
-    // total number of months in the range
-    const totalMonths = (endYear - startYear) * 12 + (endMonth - startMonth) + 1;
-
-    // label generating for each month
-    const labels = [];
-    const monthsInRange = [];
-
-    for (let i = 0; i < totalMonths; i += 1) {
-      const year = startYear + Math.floor((startMonth + i) / 12);
-      const month = (startMonth + i) % 12;
-      labels.push(`${MONTHS[month]} ${year}`);
-      monthsInRange.push({ year, month });
-    }
-
-    // group by project ID OR group name
-    const groupMap = new Map();
-
-    filteredData.forEach(item => {
-      // determine the group key
-      const groupKey = groupBy === 'project' ? item.projectId : item.toolName;
-      const date = new Date(item.date);
-      const year = date.getFullYear();
-      const month = date.getMonth();
-
-      // find index if in range
-      const monthIndex = monthsInRange.findIndex(m => m.year === year && m.month === month);
-      if (monthIndex === -1) return;
-
-      const value =
-        chartType === 'percentage'
-          ? ((item.rentalCost / item.totalMaterialCost) * 100).toFixed(1)
-          : item.rentalCost;
-
-      if (!groupMap.has(groupKey)) {
-        groupMap.set(groupKey, {
-          key: groupKey,
-          dataPoints: Array(totalMonths).fill(undefined),
-          monthsWithData: new Set(),
-        });
-      }
-
-      // If multiple entries exist for the same group and month, sum them up
-      const currentValue = groupMap.get(groupKey).dataPoints[monthIndex];
-      const newValue =
-        currentValue === undefined ? parseFloat(value) : currentValue + parseFloat(value);
-
-      // store value we have this month to track data
-      groupMap.get(groupKey).dataPoints[monthIndex] = newValue;
-      groupMap.get(groupKey).monthsWithData.add(monthIndex);
-    });
-
-    // convert map to datasets
-    const datasets = Array.from(groupMap.values()).map((group, index) => {
-      const colorIndex = index % PROJECT_COLORS.length;
-
-      // Format the label based on what we're grouping by
-      const label = groupBy === 'project' ? `Project ${group.key.substring(0, 8)}...` : group.key;
-
-      return {
-        label,
-        data: group.dataPoints,
-        borderColor: PROJECT_COLORS[colorIndex].borderColor,
-        backgroundColor: PROJECT_COLORS[colorIndex].backgroundColor,
-        tension: 0.4,
-        fill: false,
-        pointRadius: ctx => {
-          const monthIndex = ctx.dataIndex;
-          return group.monthsWithData.has(monthIndex) ? 5 : 0;
-        },
-        pointHoverRadius: 8,
-        spanGaps: true,
-      };
-    });
-
-    // create transformed data
-    const transformedData = {
-      labels,
-      datasets,
-    };
-
-    setChartData(transformedData);
+    setChartData({ labels, datasets });
   };
 
-  // only fetch and store data once
   useEffect(() => {
     const fetchRentalData = async () => {
       try {
@@ -185,18 +183,14 @@ export default function RentalChart() {
         const response = await axios.get(ENDPOINTS.BM_RENTAL_CHART);
         if (response.data.success) {
           const { data } = response.data;
-          // Store the raw data
           setRawData(data);
 
-          // unique project IDs for dropdown
           const projectIds = [...new Set(data.map(item => item.projectId))];
           setAvailableProjects(projectIds);
 
-          // unique tool names for dropdown
           const toolNames = [...new Set(data.map(item => item.toolName))];
           setAvailableTools(toolNames);
 
-          // process data for chart
           processChartData(data);
         } else {
           setError('Failed to fetch data');
@@ -212,9 +206,9 @@ export default function RentalChart() {
     };
 
     fetchRentalData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // get dynamic chart generated
   function generateChartTitle() {
     let title = 'Rental Costs';
 
@@ -230,21 +224,18 @@ export default function RentalChart() {
       }
     }
 
-    // Format dates for the title
-    const formatDate = date => {
-      return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
-    };
+    const formatDate = date => `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
 
     title += ` (${formatDate(dateRange.startDate)} - ${formatDate(dateRange.endDate)})`;
 
     return title;
   }
 
-  // process data if filter is changed
   useEffect(() => {
     if (rawData.length > 0) {
       processChartData(rawData);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chartType, selectedProject, selectedTool, dateRange, groupBy, rawData]);
 
   const options = useMemo(() => {
@@ -289,6 +280,39 @@ export default function RentalChart() {
           titleFont: { size: 18 },
           bodyFont: { size: 16 },
         },
+        datalabels: {
+          color: darkMode ? '#e0e0e0' : '#333333',
+          // move each dataset to a slightly different side of the point
+          anchor: ctx => {
+            // horizontal side of the point
+            if (ctx.datasetIndex === 0) return 'end'; // right
+            if (ctx.datasetIndex === 1) return 'start'; // left
+            return 'center'; // 3rd stays centered if any
+          },
+
+          align: ctx => {
+            // vertical side of the anchor
+            if (ctx.datasetIndex === 0) return 'bottom'; // slightly below
+            if (ctx.datasetIndex === 1) return 'top'; // slightly above
+            return 'top';
+          },
+          offset: 8, // distance in px away from the point (same for all is fine)
+          font: {
+            size: 12,
+          },
+
+          formatter: value => {
+            if (value == null || Number.isNaN(value)) return '';
+
+            // percentage mode → whole-number percent
+            if (chartType === 'percentage') {
+              return `${value.toFixed(0)}%`; // e.g., 348%
+            }
+
+            // cost mode → dollars (you can use 0 or 2 decimals as you like)
+            return `$${value.toFixed(2)}`; // e.g., $175.00
+          },
+        },
       },
       scales: {
         x: {
@@ -314,8 +338,9 @@ export default function RentalChart() {
           grid: { color: gridYColor },
         },
       },
-    };
-  }, [darkMode, chartType, generateChartTitle]);
+    }),
+    [darkMode, chartType, dateRange, selectedProject, selectedTool],
+  );
 
   const handleTypeChange = e => {
     setChartType(e.target.value);
@@ -330,17 +355,25 @@ export default function RentalChart() {
   };
 
   const handleStartDateChange = date => {
-    setDateRange(prev => ({
-      startDate: date,
-      endDate: prev.endDate < date ? date : prev.endDate,
-    }));
+    setDateRange(prev => {
+      const newStart = date;
+      const newEndTime = Math.max(newStart.getTime(), prev.endDate.getTime());
+      return {
+        startDate: newStart,
+        endDate: new Date(newEndTime),
+      };
+    });
   };
 
   const handleEndDateChange = date => {
-    setDateRange(prev => ({
-      startDate: prev.startDate > date ? date : prev.startDate,
-      endDate: date,
-    }));
+    setDateRange(prev => {
+      const newEnd = date;
+      const newStartTime = Math.min(prev.startDate.getTime(), newEnd.getTime());
+      return {
+        startDate: new Date(newStartTime),
+        endDate: newEnd,
+      };
+    });
   };
 
   const renderChartContent = () => {

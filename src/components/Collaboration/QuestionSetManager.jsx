@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
-import styles from './QuestionSetManager.module.css';
 import QuestionEditModal from './QuestionEditModal';
+import styles from './QuestionEditModal.module.css';
 
 function QuestionSetManager({ formFields, setFormFields, onImportQuestions }) {
   const [templates, setTemplates] = useState([]);
@@ -16,6 +16,7 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions }) {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState(null);
   const [editingIndex, setEditingIndex] = useState(null);
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
 
   const api = {
     // Get all templates
@@ -339,11 +340,11 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions }) {
   };
 
   return (
-    <div className={styles.questionSetManager}>
+    <div className={`${styles.questionSetManager}`}>
       <h3>Question Set Templates</h3>
-      {error && <div className={styles.errorMessage}>{error}</div>}
-      <div className={styles.templateActions}>
-        <div className={styles.saveTemplate}>
+      {error && <div className={`${styles.errorMessage}`}>{error}</div>}
+      <div className={`${styles.templateActions}`}>
+        <div className={`${styles.saveTemplate}`}>
           <input
             type="text"
             placeholder="Template Name"
@@ -354,13 +355,13 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions }) {
           <button
             type="button"
             onClick={saveTemplate}
-            className={styles.saveTemplateButton}
+            className={`${styles.saveTemplateButton}`}
             disabled={isLoading}
           >
             {isLoading ? 'Saving...' : 'Save Current set'}
           </button>
         </div>
-        <div className={styles.loadTemplate}>
+        <div className={`${styles.loadTemplate}`}>
           <select
             value={selectedTemplate}
             onChange={e => setSelectedTemplate(e.target.value)}
@@ -376,15 +377,33 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions }) {
           <button
             type="button"
             onClick={loadTemplate}
-            className={styles.loadTemplateButton}
+            className={`${styles.loadTemplateButton}`}
             disabled={isLoading || !selectedTemplate}
           >
             {isLoading ? 'Loading...' : 'Clone with Template'}
           </button>
           <button
             type="button"
+            onClick={() => {
+              if (formFields.length > 0) {
+                const confirmClear = window.confirm(
+                  'Are you sure you want to clear all the fields in this template? This action cannot be undone.',
+                );
+                if (confirmClear) {
+                  handleClearTemplate();
+                }
+              }
+            }}
+            className={styles.clearTemplateButton}
+            disabled={formFields.length === 0}
+            title="Remove all fields and reset the template to a clean state"
+          >
+            Clear Template
+          </button>
+          <button
+            type="button"
             onClick={appendTemplate}
-            className={styles.appendTemplateButton}
+            className={`${styles.appendTemplateButton}`}
             disabled={isLoading || !selectedTemplate}
           >
             {isLoading ? 'Appending...' : 'Append Template'}
@@ -392,7 +411,7 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions }) {
           <button
             type="button"
             onClick={deleteTemplate}
-            className={styles.deleteTemplateButton}
+            className={`${styles.deleteTemplateButton}`}
             disabled={isLoading || !selectedTemplate}
           >
             {isLoading ? 'Deleting...' : 'Delete Template'}

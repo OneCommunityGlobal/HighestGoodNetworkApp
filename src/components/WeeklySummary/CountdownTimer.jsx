@@ -3,77 +3,71 @@ import { useEffect, useState } from 'react';
 import { isEmpty } from 'lodash';
 import { toast } from 'react-toastify';
 
-// Use named export in order for automated tests to work properly.
 export default function CountdownTimer({ date, darkMode }) {
-  const calcTimeLeft = () => {
-    const difference = +date - +new Date();
+  const [timeLeft, setTimeLeft] = useState({});
 
-    let timeLeft = {};
+  useEffect(() => {
+    const calcTimeLeft = () => {
+      const difference = +date - +new Date();
+      if (difference <= 0) return {};
 
-    if (difference > 0) {
-      timeLeft = {
+      return {
         Days: Math.floor(difference / (1000 * 60 * 60 * 24)),
         Hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
         Min: Math.floor((difference / 1000 / 60) % 60),
         Sec: Math.floor((difference / 1000) % 60),
       };
-    }
+    };
 
-    return timeLeft;
-  };
+    const interval = setInterval(() => {
+      const newTimeLeft = calcTimeLeft();
+      setTimeLeft(newTimeLeft);
 
-  const [timeLeft, setTimeLeft] = useState(calcTimeLeft());
+      if (isEmpty(newTimeLeft)) {
+        clearInterval(interval);
+        toast('✔ Time is up!', {
+          toastId: 'toast-times-up',
+          pauseOnFocusLoss: false,
+          autoClose: 4000,
+          onClose: () => window.location.reload(true),
+        });
+      }
+    }, 1000);
 
-  const timer = setTimeout(() => {
+    // Initial call
     setTimeLeft(calcTimeLeft());
-  }, 1000);
 
-  useEffect(() => () => clearTimeout(timer));
+    return () => clearInterval(interval);
+  }, [date]);
 
-  const addLeadingZeros = interval => {
-    let tli = String(timeLeft[interval]);
-    while (tli.length < 2) {
-      tli = `0${tli}`;
+  const addLeadingZeros = value => {
+    return String(value).padStart(2, '0');
+  };
+
+  const pluralOrSingle = (label, value) => {
+    if (value === 1) {
+      if (label === 'Days') return 'Day';
+      if (label === 'Hours') return 'Hour';
     }
-    return tli;
-  };
-
-  const pluralOrSingle = interval => {
-    let tempInterval = interval;
-    if (timeLeft[interval] === 1 && interval === 'Days') tempInterval = 'Day';
-    else if (timeLeft[interval] === 1 && interval === 'Hours') tempInterval = 'Hour';
-    return tempInterval;
-  };
-
-  // Providing a custom toast id to prevent duplicate.
-  const toastCustomId = 'toast-times-up';
-
-  const whenTimeIsUp = () => {
-    clearTimeout(timer);
-
-    toast('✔ Time is up!', {
-      toastId: toastCustomId,
-      pauseOnFocusLoss: false,
-      autoClose: 4000,
-      onClose: () => window.location.reload(true),
-    });
-
-    return <span className="countdown__times-up">Time&apos;s up!</span>;
+    return label;
   };
 
   return (
-    <div className={`countdown ${darkMode ? 'text-light' : ''}`}>
-      {!isEmpty(timeLeft)
-        ? Object.keys(timeLeft).map(interval => (
-            // eslint-disable-next-line react/jsx-indent
-            <span key={interval} className="countdown__col">
-              <span className="countdown__col__element">
-                <strong>{addLeadingZeros(interval)}</strong>
-                <span>{pluralOrSingle(interval)}</span>
-              </span>
+    <div className={`countdown ${darkMode ? 'text-white' : 'text-black'}`}>
+      {!isEmpty(timeLeft) ? (
+        Object.entries(timeLeft).map(([interval, value]) => (
+          <span key={interval} className="countdown__col">
+            <span className="countdown__col__element">
+              <strong className={darkMode ? 'text-white' : 'text-black'}>
+                {addLeadingZeros(value)}
+              </strong>
+              <span>{pluralOrSingle(interval, value)}</span>
             </span>
-          ))
-        : whenTimeIsUp()}
+          </span>
+        ))
+      ) : (
+        <span className="countdown__times-up">Time&apos;s up!</span>
+      )}
     </div>
   );
 }
@@ -84,4 +78,6 @@ CountdownTimer.propTypes = {
     _isAMomentObject: PropTypes.bool.isRequired,
     _isValid: PropTypes.bool.isRequired,
   }).isRequired,
+  // eslint-disable-next-line react/require-default-props
+  darkMode: PropTypes.bool,
 };
