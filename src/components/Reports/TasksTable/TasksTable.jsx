@@ -5,7 +5,7 @@
 import { useState, useEffect, useRef } from 'react';
 import '../../Teams/Team.module.css';
 import 'react-datepicker/dist/react-datepicker.css';
-import './TasksTable.css';
+// import './TasksTable.css';
 import Select from 'react-select';
 import { Checkbox } from '~/components/common/Checkbox';
 import TextSearchBox from '~/components/UserManagement/TextSearchBox';
@@ -90,10 +90,8 @@ export function TasksTable({ darkMode, tasks, projectId }) {
     input: (base) => ({ ...base, color: '#ffffff' }),
   } : {};
   return (
-    // added by shreya P — outer wrapper dark text
     <div className={darkMode ? 'text-light' : ''}>
       <div>
-        {/* added by shreya P — h4 title color switches in dark mode */}
         <h4 className="tasks-table-header" style={{ color: darkMode ? '#ffffff' : '' }}>Tasks</h4>
       </div>
       <div className="tasks-table-filters-wrapper">
@@ -158,11 +156,7 @@ export function TasksTable({ darkMode, tasks, projectId }) {
           <button
             className="tasks-table-edit-tasks-button"
             onClick={() => setToggleEditTasks(!toggleEditTasks)}
-            style={
-              darkMode
-                ? { ...boxStyleDark, color: '#ffffff' } // Added by Shreya
-                : boxStyle
-            }
+            style={darkMode ? { ...boxStyleDark, color: '#ffffff' } : boxStyle}
           >
             Edit Tasks
           </button>
@@ -170,11 +164,7 @@ export function TasksTable({ darkMode, tasks, projectId }) {
           <button
             className="tasks-table-clear-filter-button"
             onClick={() => resetAllFilters()}
-            style={
-              darkMode
-                ? { ...boxStyleDark, color: '#ffffff' } // Added by Shreya
-                : boxStyle
-            }
+            style={darkMode ? { ...boxStyleDark, color: '#ffffff' } : boxStyle}
             >
               Clear filters
           </button>

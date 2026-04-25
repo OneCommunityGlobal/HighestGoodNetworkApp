@@ -34,11 +34,6 @@
   width: 20px;
 }
 
-/* Keep overview layout global for now (likely used in Overview.jsx) */
-/* .projects__overview--top {
-  background: gray;
-} */
-
 :global(.projects__overview--top .card) {
   width: 200px;
   float: left;
@@ -103,7 +98,7 @@
   background: #e9f6ff;
 }
 
-@media (max-width: 375px) {
+@media (width <= 375px) {
   :global(#new_project .form-control) {
     flex: 1 1 auto;
     width: 50%;
@@ -170,20 +165,14 @@
 }
 
 /* ================= DARK MODE FIXES ================= */
-/* Added by Shreya */
 
-.dark-mode tr:hover,
-.bg-yinmn-blue tr:hover {
+:global(.bg-yinmn-blue) :global(tr:hover),
+:global(.dark-mode) :global(tr:hover) {
   background: #1c2541 !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
-.dark-mode .suggestions-list {
+:global(.dark-mode) :global(.suggestions-list) {
   background-color: #1c2541;
-  color: #ffffff;
-}
-
-.dark-mode .projects__name--input input:hover {
-  background-color: #1c2541;
-  color: #ffffff;
+  color: #fff;
 }

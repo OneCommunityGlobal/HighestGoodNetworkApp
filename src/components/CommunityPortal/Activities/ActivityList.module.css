@@ -8,14 +8,6 @@
   padding-bottom: 40px;
 }
 
-/* .heading {
-  text-align: center;
-  margin: 20px 0;
-  color: #1e3a8a;
-  font-size: 2.5em;
-  font-weight: 600;
-} */
-
 .heading {
   text-align: center;
   margin: 20px 0;
@@ -25,7 +17,7 @@
 }
 
 .headingDark {
-  color: #ffffff;
+  color: #fff;
 }
 
 .filters {
@@ -180,7 +172,7 @@
   margin: 20px 0;
 }
 
-.clearButtonWrapper{
+.clearButtonWrapper {
   display: flex;
   justify-content: center;
   gap: 30px;
@@ -212,7 +204,6 @@
   background-color: #f9fafb;
 }
 
-
 .clearFiltersButtonDark {
   border: 1px solid #fff;
   background: #0f172a;
@@ -222,7 +213,6 @@
 .clearFiltersButtonDark:hover:not(:disabled) {
   background: #111c33;
 }
-
 
 /* Suggestions */
 .suggestions {
@@ -252,12 +242,12 @@
   color: #1f2937;
 }
 
-.darkSuggestions .suggestionItem {
-  color: #e2e8f0;
-}
-
 .suggestionItem:hover {
   background-color: #f3f4f6;
+}
+
+.darkSuggestions .suggestionItem {
+  color: #e2e8f0;
 }
 
 .darkSuggestions .suggestionItem:hover {
@@ -284,17 +274,17 @@
   accent-color: #3b82f6;
 }
 
-.showPastToggle input[type="checkbox"]:focus-visible {
-  outline: none;
-  border-radius: 4px;
-}
-
 .darkShowPastToggle {
   color: #f1f5f9;
 }
 
 .darkShowPastToggle input[type="checkbox"] {
   accent-color: #60a5fa;
+}
+
+.showPastToggle input[type="checkbox"]:focus-visible {
+  outline: none;
+  border-radius: 4px;
 }
 
 /* Responsive */

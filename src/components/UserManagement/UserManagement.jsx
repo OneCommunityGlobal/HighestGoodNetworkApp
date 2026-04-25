@@ -724,7 +724,7 @@ class UserManagement extends React.PureComponent {
                 darkMode ? 'text-light bg-yinmn-blue' : ''
               }`}
             >
-              <thead>
+              <thead className={darkMode ? 'dark-mode' : ''}>
                 <UserTableHeader
                   authRole={this.props.state.auth.user.role}
                   roleSearchText={this.state.roleSearchText}

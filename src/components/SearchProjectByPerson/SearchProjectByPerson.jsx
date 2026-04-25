@@ -38,34 +38,41 @@ export default function SearchProjectByPerson({
       <form className="input-group mb-2" onSubmit={e => e.preventDefault()}>
         <div className="input-group-prepend">
           <span
-            className={`input-group-text search-field-container ${
-              darkMode ? 'bg-light-grey text-light' : ''
-            }`}
+            className="input-group-text search-field-container"
+            style={
+              darkMode
+                ? { backgroundColor: '#1c2541', color: '#ffffff', borderColor: '#3a506b' }
+                : {}
+            }
           >
             Search
           </span>
         </div>
         <input
           type="text"
-          className={`form-control ${darkMode ? 'bg-white' : ''}`}
+          className="form-control"
           placeholder={searchMode === 'person' ? 'Search by Person Name' : 'Search by Project Name'}
           value={inputValue}
-          onChange={handleInputChange} // Trigger input change
+          onChange={handleInputChange}
+          style={
+            darkMode ? { backgroundColor: '#1c2541', color: '#ffffff', borderColor: '#3a506b' } : {}
+          }
         />
         <div>
           {/* <button type="submit" className="archived-button" onClick={handleFetchArchivedProjects}>
             {showArchived ? 'Hide Archived' : 'Show Archived'}
           </button> */}
           <button
-            type="button"
-            onClick={handleFetchArchivedProjects}
-            className={`btn ${
-              showArchived
-                ? 'btn-warning'
-                : darkMode
-                ? 'btn-outline-light'
-                : 'btn-outline-secondary'
-            }`}
+            className={`btn ${showArchived ? 'btn-warning' : 'btn-outline-secondary'}`}
+            style={
+              darkMode && !showArchived
+                ? {
+                    backgroundColor: '#1c2541',
+                    color: '#ffffff',
+                    borderColor: '#3a506b',
+                  }
+                : {}
+            }
           >
             {showArchived ? 'Hide Archived' : 'Show Archived'}
           </button>

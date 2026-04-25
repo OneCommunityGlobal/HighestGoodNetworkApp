@@ -80,10 +80,18 @@ function UserSearchPanel({
       
       <div className='d-flex flex-fill mb-2'>
         <div className="input-group-prepend">
-          <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>{SEARCH}</span>
+          <span
+            className="input-group-text"
+            style={
+              darkMode
+                ? { backgroundColor: '#1c2541', color: '#ffffff', borderColor: '#3a506b' }
+                : {}
+            }
+          >
+            {SEARCH}
+          </span>
         </div>
         <input
-          // autoFocus
           type="text"
           className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
           aria-label="Search"
@@ -93,14 +101,31 @@ function UserSearchPanel({
           onChange={e => {
             onSearch(e.target.value);
           }}
-          style={{marginRight: "5px"}}
+          style={
+            darkMode
+              ? { marginRight: '5px', backgroundColor: '#1c2541', color: '#ffffff', borderColor: '#3a506b' }
+              : { marginRight: '5px' }
+          }
         />
       </div>
       <div className="input-group-prepend mb-2">
-        <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>{SHOW}</span>
+        <span
+          className="input-group-text"
+          style={
+            darkMode
+              ? { backgroundColor: '#1c2541', color: '#ffffff', borderColor: '#3a506b' }
+              : {}
+          }
+        >
+          {SHOW}
+        </span>
         <select
           id="active-filter-dropdown"
-          style={{marginBottom: "0px"}}
+          style={
+            darkMode
+              ? { marginBottom: '0px', backgroundColor: '#1c2541', color: '#ffffff', borderColor: '#3a506b' }
+              : { marginBottom: '0px' }
+          }
           onChange={e => {
             onActiveFilter(e.target.value);
           }}

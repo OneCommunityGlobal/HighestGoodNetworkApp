@@ -26,6 +26,7 @@ class DropDownSearchBox extends React.PureComponent {
           cursor: 'pointer',
           width: this.props.width,
           height: '1.81em',
+          ...this.props.style,
         }}
         className={this.props.className}
       >
