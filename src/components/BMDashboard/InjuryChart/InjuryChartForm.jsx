@@ -120,13 +120,13 @@ function InjuryChartForm({ dark }) {
       {/* Filter Form */}
       <div
         className={`${styles.filterForm} mb-4 p-3  ${
-          dark ? styles.wrapperDark : 'bg-white'
+          dark ? styles.wrapperDark : styles.lightBackground
         } rounded shadow-sm`}
       >
         <div className="row g-3">
           <div className="col-md-4">
             <FormGroup>
-              <Label for="project" className={dark ? styles.wrapperDark : ''}>
+              <Label for="project" htmlFor="project" className={dark ? styles.wrapperDark : ''}>
                 Project
               </Label>
               <Input id="project" type="select" value={projectId} onChange={handleProjectChange}>
@@ -140,7 +140,7 @@ function InjuryChartForm({ dark }) {
             </FormGroup>
           </div>
 
-          <div className="ol-md-4">
+          <div className="col-md-4">
             <FormGroup>
               <Label className={dark ? styles.wrapperDark : ''}>Start Date</Label>
               <DatePicker
@@ -184,7 +184,7 @@ function InjuryChartForm({ dark }) {
       {!error && chartData && chartData.length > 0 && (
         <div
           className={`${styles.injuryChartContainer} ${
-            dark ? styles.wrapperDark : 'bg-white'
+            dark ? styles.wrapperDark : styles.lightBackground
           } p-4 rounded shadow-sm`}
         >
           <div className="d-flex justify-content-end mb-2">
@@ -276,7 +276,11 @@ function InjuryChartForm({ dark }) {
 
       {/* No Data Display */}
       {!error && !loading && (!chartData || chartData.length === 0) && (
-        <div className="text-center p-5 bg-white rounded shadow-sm">
+        <div
+          className={`text-center p-5 rounded shadow-sm ${
+            dark ? styles.wrapperDark : styles.lightBackground
+          }`}
+        >
           <p className="text-muted">No injury data available for the selected criteria.</p>
         </div>
       )}
