@@ -134,8 +134,6 @@
 
 /* DARK MODE (MORE SPECIFIC — MUST COME AFTER) */
 
-
-
 .popupDark .button:disabled {
   border: 1px solid #4b5563;
   background-color: #2d3748;
