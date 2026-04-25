@@ -434,9 +434,14 @@ const SummaryBar = React.forwardRef((props, ref) => {
     if (!isCompleted) {
       return (
         <div
-          className={`border border-danger col-4 ${
+          role="button"
+          tabIndex={0}
+          className={`${styles['summary-incomplete']} border border-danger col-4 ${
             darkMode ? 'bg-yinmn-blue' : 'bg-white'
           } d-flex flex-column justify-content-center`}
+          onClick={props.toggleSubmitForm}
+          onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && props.toggleSubmitForm()}
+          aria-label="Submit weekly summary"
         >
           <div className="py-1" />
           <div className="d-flex justify-content-center">
@@ -572,12 +577,8 @@ const SummaryBar = React.forwardRef((props, ref) => {
             {totalEffort >= weeklyCommittedHours && (
               <div className={`${styles['border-green']} col-4 ${styles['bg--dark-green']}`}>
                 <div className="py-1"> </div>
-                <p
-                  className={`${styles['text-center']} ${styles.large_text_summary} ${styles['text--black']}`}
-                >
-                  ✓
-                </p>
-                <font className={`${styles['text-center']}`} size="3">
+                <p className="text-center large_text_summary">✓</p>
+                <font className="text-center" size="3">
                   HOURS
                 </font>
                 <div className="py-2"> </div>
@@ -617,14 +618,14 @@ const SummaryBar = React.forwardRef((props, ref) => {
               }`}
               style={{ border: '1px solid black' }}
             >
-              <div className={`m-auto p-2 ${styles['text-center']}`}>
+              <div className="w-100 p-2 text-center">
                 <span
                   role="button"
                   tabIndex={0}
                   onClick={props.toggleSubmitForm}
                   onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && props.toggleSubmitForm()}
                   className={`${styles['summary-toggle']}`}
-                  style={{ cursor: 'pointer', fontSize: '1.1rem' }}
+                  style={{ cursor: 'pointer', fontSize: '1.1rem', display: 'inline-block' }}
                 >
                   {renderSummaryMessage()}
                 </span>

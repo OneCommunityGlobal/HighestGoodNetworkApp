@@ -1,30 +1,32 @@
 html {
   overflow-x: hidden;
+  height: 100%;
 }
 
 body {
   display: grid;
-  grid-template-columns: auto 0px;
+  grid-template-columns: auto 0;
+  height: 100%;
 }
+
 button {
   border: none;
   background-color: transparent;
 }
+
 #root {
   height: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
+
   /* background-color: var(--background-color); */
-  background-color: #ffffff;
+  overflow: auto;
+  background-color: #fff;
 }
 
 .App {
   text-align: center;
 }
 
-/* .close{
-  visibility: hidden
-} */
+/* .close { visibility: hidden } */
 
 .newProfilePic {
   visibility: hidden;
@@ -46,14 +48,13 @@ button {
   width: 180px;
 }
 
-.accordion-toggle:after {
-  font-family: 'FontAwesome',  sans-serif;
+.accordion-toggle::after {
+  font-family: FontAwesome, sans-serif;
   content: '\f054';
   float: right;
 }
 
-.accordion-toggle.collapsed:after {
-  /* symbol for down chevron*/
+.accordion-toggle.collapsed::after {
   content: '\f078';
 }
 
@@ -63,28 +64,23 @@ button {
 }
 
 .hgn-leaderboard {
-  /*background-color:#FFCCBC */
   background-color: black;
 }
 
 .bg-super {
-  background-color: #0000cd !important;
-  /* medium blue #0000CD*/
+  background-color: #00d !important;
 }
 
 .bg-awesome {
-  background-color: #990099 !important;
-  /*  violet */
+  background-color: #909 !important;
 }
 
 .bg-super-awesome {
-  background-color: #660099 !important;
-  /*  purple */
+  background-color: #609 !important;
 }
 
 .bg-orange {
-  background-color: #ffa500 !important;
-  /*  brighter orange */
+  background-color: #fa5 !important;
 }
 
 .bg--dark-sea-green {
@@ -92,57 +88,35 @@ button {
 }
 
 .bg-bright-red {
-  background-color: #ff3300 !important;
-  /*  bright-red */
+  background-color: #f30 !important;
 }
 
 .bg-almost-red {
-  background-color: #cc3366 !important;
-  /*  90%to100%-red */
+  background-color: #c36 !important;
 }
 
 .bg-oxford-blue {
   background-color: #1b2a41 !important;
 }
 
-/* .bg-oxford-blue:hover{
-  background-color: #1B2A41 !important;
-  color:black;
-} */
-
 .bg-space-cadet {
   background-color: #1c2541 !important;
 }
-
-/* .bg-space-cadet:hover{
-  background-color: #1C2541 !important;
-  color:black;
-} */
 
 .bg-yinmn-blue {
   background-color: #3a506b !important;
 }
 
-/* .bg-yinmn-blue:hover{
-  background-color: #3A506B !important;
-  color: black;
-} */
-
 .bg-yinmn-blue-light {
   background-color: #2f4157;
 }
-
-/* .bg-yinmn-blue-light:hover{
-  background-color:#2f4157;
-  color: black;
-} */
 
 .bg-darkmode-liblack {
   background-color: #1c1c1c !important;
 }
 
 .bg-darkmode-black {
-  background-color: #000000 !important;
+  background-color: #000 !important;
 }
 
 .bg-azure {
@@ -170,7 +144,7 @@ button {
 }
 
 .text-custom-grey {
-  color: rgb(192, 192, 192) !important;
+  color: #c0c0c0 !important;
 }
 
 .box-shadow-dark {
@@ -194,7 +168,7 @@ button {
 }
 
 nav ul.navbar-nav li:last-child > div {
-  transform: translate3d(-26px, 40px, 0px) !important;
+  transform: translate3d(-26px, 40px, 0) !important;
 }
 
 .calendar-icon-dark {
@@ -205,7 +179,9 @@ nav ul.navbar-nav li:last-child > div {
   text-decoration: none;
   padding: 10px;
   margin: 10px;
+
   --offset: 100px;
+
   margin-top: calc(100vh + var(--offset));
   font-family: sans-serif;
   color: #fff;
@@ -234,6 +210,10 @@ input[type='checkbox']:not([disabled]):hover {
   cursor: pointer;
 }
 
+.tox-tbtn {
+  padding: 2px 4px !important;
+}
+
 .tox .tox-toolbar__group {
   display: flex !important;
   flex-wrap: nowrap !important;
@@ -244,10 +224,6 @@ input[type='checkbox']:not([disabled]):hover {
   min-width: auto !important;
   padding: 4px 6px !important;
   font-size: 14px !important;
-}
-
-.tox-tbtn {
-  padding: 2px 4px !important;
 }
 
 .tox .tox-toolbar {
@@ -273,6 +249,7 @@ input[type='checkbox']:not([disabled]):hover {
 .pdrl-1 {
   padding: 0 1em !important;
 }
+
 .user-card-container {
   display: flex;
   flex-wrap: wrap;

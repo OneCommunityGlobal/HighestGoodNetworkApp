@@ -4,22 +4,37 @@
 
 .jobLanding {
   width: 100%;
-  min-height: 100%;
+  min-height: 100vh;
+  padding: 32px 0 48px;
 }
 
 .userCollaborationContainer {
-  width: 90%;
+  width: 92%;
+  max-width: 1200px;
   margin: 0 auto;
-  background-color: #ffffff;
-  border-radius: 10px;
-  padding-bottom: 24px;
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 24px 24px 32px;
+  box-shadow: 0 8px 20px rgb(15 23 42 / 8%);
 }
 
-/* ================= DARK MODE – BASE ================= */
+/* ================= DARK MODE VARIABLES ================= */
+
+.dark {
+  --bg-main: #020617;
+  --bg-surface: #0f172a;
+  --bg-card: #111827;
+  --border: #334155;
+  --text-primary: #e5e7eb;
+  --text-secondary: #94a3b8;
+  --accent: #65a30d;
+
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+}
 
 .dark .userCollaborationContainer {
-  background-color: #0f172a; /* deep slate */
-  color: #e5e7eb;
+  background-color: var(--bg-surface);
 }
 
 /* ======================================================
@@ -39,6 +54,21 @@
 }
 
 /* ======================================================
+   MODAL – ACTIONS
+   ====================================================== */
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 28px;
+}
+
+.modalActions button {
+  min-width: 120px;
+}
+
+/* ======================================================
    NAVBAR
    ====================================================== */
 
@@ -50,6 +80,7 @@
   background-color: #9c0;
   padding: 12px;
   gap: 12px;
+  overflow: visible;
 }
 
 .searchForm {
@@ -57,80 +88,121 @@
   gap: 8px;
 }
 
+/* Buttons FIRST to avoid specificity issues */
+.dropdownWrapper button {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.dropdownWrapper button:hover {
+  background-color: #f5f5f5;
+}
+
+.dropdownWrapper button:disabled {
+  background-color: #e5e7eb;
+  color: #9ca3af;
+  border: 1px solid #d1d5db;
+  cursor: not-allowed;
+  opacity: 0.9;
+}
+
 /* ================= DARK MODE – NAVBAR ================= */
 
 .dark .navbar {
-  background-color: #1e293b;
+  background-color: #84cc16;
+}
+
+.dark .navbar button,
+.dark .navbar input {
+  color: #020617;
 }
 
 .dark .searchForm input {
-  background-color: #0f172a;
-  color: #e5e7eb;
-  border: 1px solid #334155;
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
 }
 
 .dark .searchForm input::placeholder {
-  color: #94a3b8;
+  color: var(--text-secondary);
+}
+
+.dark .dropdownWrapper button {
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+
+.dark .dropdownWrapper button:disabled {
+  background-color: #1e293b;
+  color: #64748b;
+  border: 1px solid #334155;
 }
 
 /* ======================================================
-   CATEGORY DROPDOWN
+   DROPDOWN
    ====================================================== */
 
 .jobSelect {
   position: absolute;
-  top: 100%;
-  right: 12px;
-  margin-top: 6px;
-  background-color: #ffffff;
-  padding: 8px 12px;
-  border-radius: 6px;
+  top: calc(100% + 6px);
+  left: 0;
+  width: max-content;
+  max-width: min(100%, 280px);
+  min-width: 180px;
+  max-height: 300px;
+  overflow-y: auto;
+  background-color: #fff;
+  padding: 8px 0;
+  border-radius: 8px;
   border: 1px solid #ccc;
-  z-index: 1500;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-  animation: fadeInDropdown 0.12s ease-in-out;
+  z-index: 2000;
+  box-shadow: 0 8px 20px rgb(0 0 0 / 20%);
 }
 
-@keyframes fadeInDropdown {
-  from {
-    opacity: 0;
-    transform: translateY(-3px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.dropdownWrapper {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
 }
 
 .dropdownItem {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 6px 4px;
+  width: 100%;
+  text-align: left;
+  padding: 10px 14px;
   cursor: pointer;
   font-size: 14px;
+  background: transparent;
+  border: none;
+  outline: none;
   color: #333;
-  border-radius: 4px;
+  transition: background 0.2s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .dropdownItem:hover {
-  background-color: #f0f0f0;
+  background-color: #f3f4f6;
 }
 
 /* ================= DARK MODE – DROPDOWN ================= */
 
 .dark .jobSelect {
-  background-color: #020617;
-  color: #e5e7eb;
-  border: 1px solid #334155;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
 }
 
 .dark .dropdownItem {
-  color: #e5e7eb;
+  color: var(--text-primary);
 }
 
 .dark .dropdownItem:hover {
-  background-color: #1e293b;
+  background-color: var(--bg-surface);
 }
 
 /* ======================================================
@@ -147,10 +219,8 @@
   font-weight: 800;
 }
 
-/* ================= DARK MODE – HEADINGS ================= */
-
 .dark .jobHead {
-  color: #e5e7eb;
+  color: var(--text-primary);
 }
 
 /* ======================================================
@@ -159,13 +229,13 @@
 
 .jobList {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 20px;
-  padding: 20px;
+  padding: 24px 20px 8px;
 }
 
 .jobAd {
-  background: #ffffff;
+  background: #fff;
   border-radius: 12px;
   border: 1px solid #ddd;
   padding: 14px;
@@ -176,7 +246,7 @@
 
 .jobAd:hover {
   transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 6px 12px rgb(0 0 0 / 20%);
 }
 
 .jobAd img {
@@ -193,8 +263,8 @@
 /* ================= DARK MODE – JOB GRID ================= */
 
 .dark .jobAd {
-  background-color: #020617;
-  border: 1px solid #334155;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
 }
 
 .dark .jobAd h3 {
@@ -216,7 +286,7 @@
   padding: 6px 12px;
   border-radius: 6px;
   border: 1px solid #ccc;
-  background-color: #ffffff;
+  background-color: #fff;
   cursor: pointer;
 }
 
@@ -229,19 +299,19 @@
 /* ================= DARK MODE – PAGINATION ================= */
 
 .dark .paginationButton {
-  background-color: #020617;
-  color: #e5e7eb;
-  border: 1px solid #334155;
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
 }
 
 .dark .paginationButtonActive {
-  background-color: #65a30d;
-  border-color: #65a30d;
+  background-color: var(--accent);
+  border-color: var(--accent);
   color: #020617;
 }
 
 /* ======================================================
-   SELECTED FILTER CHIPS
+   FILTER CHIPS
    ====================================================== */
 
 .jobQueries {
@@ -270,13 +340,13 @@
 /* ================= DARK MODE – CHIPS ================= */
 
 .dark .chip {
-  background-color: #65a30d;
+  background-color: var(--accent);
   color: #020617;
 }
 
 .dark .clearAllButton {
-  border-color: #94a3b8;
-  color: #e5e7eb;
+  border: 1px solid var(--border);
+  color: var(--text-primary);
 }
 
 /* ======================================================
@@ -286,7 +356,7 @@
 .modalOverlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgb(0 0 0 / 55%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -295,19 +365,23 @@
 
 .modal {
   position: relative;
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 10px;
   padding: 28px;
   max-width: 520px;
   width: 90%;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 35%);
 }
 
 /* ================= DARK MODE – MODAL ================= */
 
+.dark .modalOverlay {
+  background: rgb(0 0 0 / 70%);
+}
+
 .dark .modal {
-  background-color: #020617;
-  color: #e5e7eb;
+  background-color: var(--bg-card);
+  color: var(--text-primary);
 }
 
 /* ======================================================
@@ -331,20 +405,6 @@
 }
 
 .dark .closeButton {
-  color: #e5e7eb;
+  color: var(--text-primary);
 }
 
-/* ======================================================
-   MODAL – ACTIONS
-   ====================================================== */
-
-.modalActions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 16px;
-  margin-top: 28px;
-}
-
-.modalActions button {
-  min-width: 120px;
-}
