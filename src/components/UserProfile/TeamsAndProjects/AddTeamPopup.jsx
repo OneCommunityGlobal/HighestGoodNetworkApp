@@ -40,6 +40,64 @@ function handleEditInputChange(nextValue, ctx) {
   setDuplicateTeam(!!existingTeam);
 }
 
+const extractTeams = (payload) => {
+  if (!payload) return [];
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload.allTeams)) return payload.allTeams;
+  if (payload.data && Array.isArray(payload.data.allTeams)) return payload.data.allTeams;
+  if (Array.isArray(payload.data)) return payload.data;
+  return [];
+};
+
+function runConfirmStrategy(params) {
+  const {
+    searchText,
+    selectedTeam,
+    isTeamManagement,
+    onNewTeamValidation,
+    onValidation,
+    findExact,
+    setDuplicateTeam,
+    setIsNotDisplayAlert,
+    onAssignTeam,
+    findCandidates,
+  } = params;
+
+  if (!searchText && !selectedTeam) {
+    if (isTeamManagement) onNewTeamValidation(false);
+    else onValidation(false);
+    return;
+  }
+
+  const exact = findExact();
+  if (selectedTeam || exact) {
+    onValidation(true);
+    if (isTeamManagement) {
+      setDuplicateTeam(true);
+      setIsNotDisplayAlert(true);
+    } else {
+      setIsNotDisplayAlert(true);
+      onAssignTeam(selectedTeam || exact);
+    }
+    return;
+  }
+
+  const matches = findCandidates();
+  if (matches.length === 1) {
+    onValidation(true);
+    if (isTeamManagement) {
+      setDuplicateTeam(true);
+      setIsNotDisplayAlert(true);
+    } else {
+      setIsNotDisplayAlert(true);
+      onAssignTeam(matches[0]);
+    }
+    return;
+  }
+
+  setIsNotDisplayAlert(false);
+}
+
 // eslint-disable-next-line react/display-name
 const AddTeamPopup = React.memo((props) => {
   const { darkMode, isEdit, teamName, teamId, teamCode, isActive, onUpdateTeam, isTeamManagement } = props;
@@ -130,14 +188,7 @@ const AddTeamPopup = React.memo((props) => {
     source.cancel();
   };
 
-  const extractTeams = (payload) => {
-    if (!payload) return [];
-    if (Array.isArray(payload)) return payload;
-    if (Array.isArray(payload.allTeams)) return payload.allTeams;
-    if (payload.data && Array.isArray(payload.data.allTeams)) return payload.data.allTeams;
-    if (Array.isArray(payload.data)) return payload.data;
-    return [];
-  };
+
 
   const refreshTeams = async () => {
     try {
@@ -181,8 +232,9 @@ const AddTeamPopup = React.memo((props) => {
         if (!isNotDisplayAlert) setIsNotDisplayAlert(true);
         await refreshTeams();
         toast.success('Team created successfully');
+        const list = extractTeams(response);
         const created =
-          extractTeams(response)?.find((t) => normalize(t.teamName) === normalize(newTeamName)) ||
+          list?.find((t) => normalize(t.teamName) === normalize(newTeamName)) ||
           allTeams.find((t) => normalize(t.teamName) === normalize(newTeamName)) ||
           response?.data;
         setIsLoading(false);
@@ -191,49 +243,27 @@ const AddTeamPopup = React.memo((props) => {
         setIsLoading(false);
         handleCreateTeamError(response);
       }
-    } catch (e) {
+    } catch (error) {
       clearTimeout(timeout);
+      console.error('Error creating team:', error);
       setIsLoading(false);
       toast.error('Error occurred while creating team');
     }
   };
 
   const onConfirm = () => {
-    if (!searchText && !selectedTeam) {
-      if (isTeamManagement) {
-        onNewTeamValidation(false);
-      } else {
-        onValidation(false);
-      }
-      return;
-    }
-
-    if (selectedTeam || findExact()) {
-      onValidation(true);
-      if (isTeamManagement) {
-        setDuplicateTeam(true);
-        setIsNotDisplayAlert(true);
-      } else {
-        if (!isNotDisplayAlert) setIsNotDisplayAlert(true);
-        onAssignTeam(selectedTeam || findExact());
-      }
-      return;
-    }
-
-    const matches = findCandidates();
-    if (matches.length === 1) {
-      onValidation(true);
-      if (isTeamManagement) {
-        setDuplicateTeam(true);
-        setIsNotDisplayAlert(true);
-      } else {
-        if (!isNotDisplayAlert) setIsNotDisplayAlert(true);
-        onAssignTeam(matches[0]);
-      }
-      return;
-    }
-
-    setIsNotDisplayAlert(false);
+    runConfirmStrategy({
+      searchText,
+      selectedTeam,
+      isTeamManagement,
+      onNewTeamValidation,
+      onValidation,
+      findExact,
+      setDuplicateTeam,
+      setIsNotDisplayAlert,
+      onAssignTeam,
+      findCandidates,
+    });
   };
 
   useEffect(() => {
@@ -306,6 +336,7 @@ const AddTeamPopup = React.memo((props) => {
       setIsLoading(false);
       applyEditResult(result);
     } catch (error) {
+      console.error('Error updating team:', error);
       setIsLoading(false);
       toast.error('An unexpected error occurred while updating the team');
     }

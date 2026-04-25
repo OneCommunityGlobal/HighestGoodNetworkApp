@@ -322,6 +322,7 @@ class Teams extends React.PureComponent {
               await this.props.getAllUserTeams();
               await this.props.getAllUserProfile();
             } catch (error) {
+              console.error('Error updating team list:', error);
               toast.error('Error updating team list. Please refresh the page.');
             }
           }}
