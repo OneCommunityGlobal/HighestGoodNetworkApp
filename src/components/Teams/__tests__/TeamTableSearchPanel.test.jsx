@@ -87,7 +87,7 @@ describe('TeamTableSearchPanelBase', () => {
       </Provider>,
     );
 
-    const searchInput = screen.getByPlaceholderText('Search Teams');
+    const searchInput = screen.getByPlaceholderText('Search Text');
     fireEvent.change(searchInput, { target: { value: 'search query' } });
     expect(initialProps.onSearch).toHaveBeenCalledWith('search query');
   });
