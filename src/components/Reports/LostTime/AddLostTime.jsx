@@ -3,12 +3,12 @@ import { useDispatch, connect, useSelector } from 'react-redux';
 import MemberAutoComplete from '~/components/Teams/MembersAutoComplete';
 import AddProjectsAutoComplete from '~/components/UserProfile/TeamsAndProjects/AddProjectsAutoComplete';
 import AddTeamsAutoComplete from '~/components/UserProfile/TeamsAndProjects/AddTeamsAutoComplete';
-import "../reportsPage.css";
+import styles from "../reportsPage.module.css";
 import { Editor } from '@tinymce/tinymce-react';
 import moment from 'moment-timezone';
 import { Button, Col, Form, FormGroup, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
 import { getFontColor, getBoxStyling } from '~/styles';
-import '../../Header/DarkMode.css'
+import '../../Header/index.css'
 import { isEmpty, isEqual } from 'lodash';
 import { getUserProfile } from '~/actions/userProfile';
 import { postTimeEntry } from '~/actions/timeEntries';
@@ -366,8 +366,8 @@ function AddLostTime(props) {
             <Label for="entryType" className={fontColor} >Type</Label>
             <span className="red-asterisk">* </span>
             <br/>
-            <div className={`type-container ${fontColor}`}>
-              <div className='type-item' style={{paddingLeft: '20px'}} >
+            <div className={`${styles['type-container']} ${fontColor}`}>
+              <div className={styles['type-item']} style={{paddingLeft: '20px'}} >
                 <Input
                   type="radio"
                   id="project"
@@ -377,7 +377,7 @@ function AddLostTime(props) {
                 />
                 <Label htmlFor="project" className={fontColor}>Project</Label>
               </div>
-              <div className='type-item'>
+              <div className={styles['type-item']}>
                 <Input  
                   type="radio"
                   id="person"
@@ -387,7 +387,7 @@ function AddLostTime(props) {
                 />
                 <Label htmlFor="person" className={fontColor}>Person</Label>
               </div>
-              <div className='type-item'>
+              <div className={styles['type-item']}>
                 <Input
                   type="radio"
                   id="team"

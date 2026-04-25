@@ -1,64 +1,316 @@
-import React, { useState, useEffect, useRef , useMemo, useCallback } from 'react';
-import PropTypes from 'prop-types';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Row, Col } from 'reactstrap';
-import { connect } from 'react-redux';
-import ReactTooltip from 'react-tooltip';
-import { DayPicker } from 'react-day-picker';
-import 'react-day-picker/dist/style.css';
+import { faMinusCircle, faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import { Editor } from '@tinymce/tinymce-react';
+import { clsx } from 'clsx';
+import { isValid } from 'date-fns';
 import dateFnsFormat from 'date-fns/format';
 import dateFnsParse from 'date-fns/parse';
-import { isValid } from 'date-fns';
+import PropTypes from 'prop-types';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { DayPicker } from 'react-day-picker';
+import 'react-day-picker/dist/style.css';
+import { connect } from 'react-redux';
+import ReactTooltip from 'react-tooltip';
+import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { addNewTask } from '../../../../../actions/task';
-import { faPlusCircle, faMinusCircle } from '@fortawesome/free-solid-svg-icons';
-import { DUE_DATE_MUST_GREATER_THAN_START_DATE ,
-  START_DATE_ERROR_MESSAGE,
+import {
   END_DATE_ERROR_MESSAGE,
+  START_DATE_ERROR_MESSAGE
 } from '../../../../../languages/en/messages';
-import clsx from 'clsx';
-import '../../../../Header/DarkMode.css';
+import '../../../../Header/index.css';
 import TagsSearch from '../components/TagsSearch';
 import styles from '../wbs.module.css';
 // import styles from './AddTaskModal.module.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { getProjectDetail } from '../../../../../actions/project';
 import { fetchAllMembers } from '../../../../../actions/projectMembers';
 import { fetchAllProjects } from '../../../../../actions/projects';
-import { getProjectDetail } from '../../../../../actions/project';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-/** small v8 DateInput - manual control without useInput **/
-function DateInput({ id, ariaLabel, placeholder, value, onChange, disabled }) {
+// Replace the darkModeStyles with this:
+const darkModeStyles = `
+  /* Only target dark mode elements */
+  .dark-mode .modal-content,
+  .dark-mode .modal-header,
+  .dark-mode .modal-body,
+  .dark-mode .modal-footer {
+    background-color: #1a2639 !important;
+    color: #fff !important;
+  }
+
+  .dark-mode .modal-header {
+    border-bottom-color: #2d3a5a !important;
+  }
+
+  .dark-mode .modal-footer {
+    border-top-color: #2d3a5a !important;
+  }
+
+  /* Form elements */
+  .dark-mode input,
+  .dark-mode textarea,
+  .dark-mode select {
+    background-color: #1e2b4a !important;
+    color: #fff !important;
+    border-color: #2d3a5a !important;
+  }
+    .dark-mode select option {
+    background-color: #1e2b4a !important;
+    color: #fff !important;
+  }
+
+  .dark-mode select option:hover,
+  .dark-mode select option:focus,
+  .dark-mode select option:checked {
+    background-color: #3b82f6 !important;
+    color: #fff !important;
+  }
+
+  .dark-mode label,
+  .dark-mode span:not(.badge) {
+    color: #fff !important;
+  }
+
+  /* Borders */
+  .dark-mode .border,
+  .dark-mode .border-left,
+  .dark-mode .border-right,
+  .dark-mode .border-top,
+  .dark-mode .border-bottom {
+    border-color: #2d3a5a !important;
+  }
+
+  /* Warning text */
+  .dark-mode .warning {
+    color: #ff6b6b !important;
+  }
+
+  /* Buttons */
+  .dark-mode .btn-primary {
+    background-color: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+  }
+
+  .dark-mode .btn-danger {
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+  }
+  
+  .dark-mode .tox-tinymce {
+    background-color: #1e2b4a !important;
+    border-color: #2d3a5a !important;
+  }
+
+  .dark-mode .tox-editor-container {
+    background-color: #1e2b4a !important;
+  }
+
+  .dark-mode .tox-edit-area {
+    background-color: #1e2b4a !important;
+  }
+
+  .dark-mode .tox-edit-area iframe {
+    background-color: #1e2b4a !important;
+  }
+
+  .dark-mode .tox-toolbar {
+    background-color: #1a2639 !important;
+    border-bottom-color: #2d3a5a !important;
+  }
+
+  .dark-mode .tox-toolbar__primary {
+    background-color: #1a2639 !important;
+  }
+
+  .dark-mode .tox-tbtn {
+    color: #fff !important;
+  }
+
+  .dark-mode .tox-tbtn:hover {
+    background-color: #2d3a5a !important;
+  }
+
+  .dark-mode .tox-tbtn--enabled {
+    background-color: #3b82f6 !important;
+  }
+  
+  .dark-mode .tox .tox-tbtn svg {
+    fill: #fff !important;
+  }
+
+  .dark-mode .tox .tox-tbtn:hover svg {
+    fill: #fff !important;
+  }
+
+  .dark-mode .tox .tox-tbtn--enabled svg {
+    fill: #fff !important;
+  }
+
+  .dark-mode .tox .tox-split-button svg {
+    fill: #fff !important;
+  }
+
+  .dark-mode .tox-statusbar {
+    background-color: #1a2639 !important;
+    border-top-color: #2d3a5a !important;
+    color: #aaa !important;
+  }
+
+  /* Date inputs */
+  .dark-mode [class*="form-date"] {
+    color: #fff !important;
+  }
+
+  /* Remove any white backgrounds */
+  .dark-mode div[style*="background-color: white"] {
+    background-color: #1a2639 !important;
+  }
+  
+  .dark-mode hr,
+  .dark-mode .divider,
+  .dark-mode [class*="separator"] {
+    border-color: #2d3a5a !important;
+    background-color: #2d3a5a !important;
+  }
+
+  /* Fix table borders and lines */
+  .dark-mode .table,
+  .dark-mode .table-bordered,
+  .dark-mode .table-bordered th,
+  .dark-mode .table-bordered td,
+  .dark-mode .table td,
+  .dark-mode .table th {
+    border-color: #2d3a5a !important;
+  }
+
+  /* Fix all text to be white in dark mode */
+  .dark-mode,
+  .dark-mode *,
+  .dark-mode .text-dark,
+  .dark-mode .text-body,
+  .dark-mode p,
+  .dark-mode span,
+  .dark-mode div,
+  .dark-mode h1,
+  .dark-mode h2,
+  .dark-mode h3,
+  .dark-mode h4,
+  .dark-mode h5,
+  .dark-mode h6,
+  .dark-mode label,
+  .dark-mode .form-label,
+  .dark-mode .add_new_task_form-label,
+  .dark-mode [class*="form-label"],
+  .dark-mode [class*="add_new_task_form-label"] {
+    color: #fff !important;
+  }
+
+  /* Fix input placeholders */
+  .dark-mode input::placeholder,
+  .dark-mode textarea::placeholder {
+    color: #aaa !important;
+    opacity: 1 !important;
+  }
+
+  /* Fix the WBS # text */
+  .dark-mode [data-tip="WBS ID"] {
+    color: #fff !important;
+  }
+
+  /* Fix the Add Task button */
+  .dark-mode .controlBtn {
+    background-color: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+    color: #fff !important;
+  }
+
+  /* Fix radio buttons and checkboxes */
+  .dark-mode .form-check-input {
+    background-color: #1e2b4a !important;
+    border-color: #2d3a5a !important;
+  }
+
+  .dark-mode .form-check-input:checked {
+    background-color: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+  }
+
+  /* Fix the RT button */
+  .dark-mode [class*="replicate-btn"] {
+    background-color: #1e2b4a !important;
+    border-color: #2d3a5a !important;
+    color: #fff !important;
+  }
+
+  .dark-mode [class*="replicate-btn"]:hover {
+    background-color: #2d3a5a !important;
+  }
+
+  /* Fix the Close button in date picker */
+  .dark-mode .rdp button {
+    color: #fff !important;
+  }
+
+  .dark-mode .rdp-head_cell {
+    color: #fff !important;
+  }
+  
+    /* Add this after the .tox-statusbar styles */
+  .dark-mode .tox .tox-tbtn--select {
+    width: auto !important;
+  }
+
+.dark-mode .tox .tox-tbtn__select-label {
+  color: #fff !important;
+}
+
+.dark-mode .tox .tox-collection__item {
+  color: #fff !important;
+  background-color: #1e2b4a !important;
+}
+
+.dark-mode .tox .tox-collection__item--active {
+  background-color: #3b82f6 !important;
+}
+
+.dark-mode .tox-tbtn--enabled {
+    background-color: #3b82f6 !important;
+  }
+`;
+
+
+function parseSelectedDate(value, FORMAT) {
+  if (!value) return undefined;
+  try {
+    const date = value.includes('T') 
+      ? new Date(value) 
+      : dateFnsParse(value, FORMAT, new Date());
+    return isValid(date) ? date : undefined;
+  } catch {
+    return undefined;
+  }
+}
+let datePickerCounter = 0;
+
+function DateInput({ id, ariaLabel, placeholder, value, onChange, disabled, darkMode }) {
   const FORMAT = 'MM/dd/yy';
   const [isOpen, setIsOpen] = React.useState(false);
+
+const darkModeColor = darkMode ? '#1e2b4a' : 'white';
+const inputBgColor = disabled ? '#e9ecef' : darkModeColor;
+const popupShadow = darkMode ? '0 4px 12px rgba(0, 0, 0, 0.5)' : '0 2px 8px rgba(0,0,0,0.15)';
   
-  // Parse the value properly - it could be in MM/dd/yy format or empty
-  let selectedDate;
-  if (value) {
-    try {
-      if (value.includes('T')) {
-        // ISO format
-        selectedDate = new Date(value);
-      } else {
-        // MM/dd/yy format
-        selectedDate = dateFnsParse(value, FORMAT, new Date());
-      }
-      // Validate the parsed date
-      if (!isValid(selectedDate)) {
-        selectedDate = undefined;
-      }
-    } catch (error) {
-      selectedDate = undefined;
-    }
-  }
+  const selectedDate = parseSelectedDate(value, FORMAT);
 
   const handleDaySelect = (date) => {
     if (date) {
-      // format back to your MM/dd/yy
       const f = dateFnsFormat(date, FORMAT);
       onChange(f);
       setIsOpen(false);
     }
   };
+
+  // eslint-disable-next-line no-plusplus
+  const datePickerClass = `custom-datepicker-${++datePickerCounter}`;
 
   return (
     <div style={{ position: 'relative' }}>
@@ -70,31 +322,68 @@ function DateInput({ id, ariaLabel, placeholder, value, onChange, disabled }) {
         onFocus={() => !disabled && setIsOpen(true)}
         readOnly
         disabled={disabled}
-        className="form-control"
+        className={`form-control ${datePickerClass}-input`}
         style={{ 
           cursor: disabled ? 'default' : 'pointer',
-          backgroundColor: disabled ? '#e9ecef' : 'white',
-          opacity: 1
+          backgroundColor: inputBgColor,
+          color: darkMode ? '#e0e0e0' : '#000',
+          borderColor: darkMode ? '#2d3a5a' : '#ced4da',
         }}
       />
       {isOpen && !disabled && (
-        <div style={{ position: 'absolute', right: 0, overflow: 'auto', zIndex: 10, backgroundColor: 'white', boxShadow: '0 2px 8px rgba(0,0,0,0.15)', borderRadius: '4px' }}>
+        <div 
+          className={`${datePickerClass}-popup`}
+          style={{ 
+            position: 'absolute', 
+            right: 0, 
+            overflow: 'auto', 
+            zIndex: 9999, 
+            backgroundColor: darkMode ? '#1a2639' : 'white', 
+            boxShadow: popupShadow,
+            borderRadius: '4px',
+            border: darkMode ? '1px solid #2d3a5a' : 'none'
+          }}
+        >
+          <style>{`
+            .${datePickerClass}-popup .rdp {
+              --rdp-cell-size: 40px !important;
+              --rdp-accent-color: #3b82f6 !important;
+              margin: 0 !important;
+            }
+            
+            .${datePickerClass}-popup {
+              background-color: ${darkMode ? '#1a2639' : 'white'} !important;
+              color: ${darkMode ? '#fff' : '#000'} !important;
+            }
+
+            .${datePickerClass}-popup .rdp-head_cell {
+              background-color: #2d3a5a !important;
+              color: #fff !important;
+            }
+          `}</style>
+          
           <DayPicker 
             mode="single"
             selected={selectedDate}
             onSelect={handleDaySelect}
-            className={styles['datePicker']}
+            styles={{
+              head_cell: { color: darkMode ? '#fff' : '#000' },
+              caption_label: { color: darkMode ? '#fff' : '#000' },
+              nav_button: { color: darkMode ? '#fff' : '#000' },
+              day: { color: darkMode ? '#fff' : '#000' },
+            }}
           />
+          
           <button
             type="button"
             onClick={() => setIsOpen(false)}
             style={{ 
               width: '100%', 
-              padding: '8px', 
+              padding: '10px', 
               border: 'none', 
-              borderTop: '1px solid #ddd',
-              background: '#f5f5f5',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              fontSize: '14px',
+              fontWeight: 500
             }}
           >
             Close
@@ -105,19 +394,37 @@ function DateInput({ id, ariaLabel, placeholder, value, onChange, disabled }) {
   );
 }
 
-const TINY_MCE_INIT_OPTIONS = {
+DateInput.propTypes = {
+  id: PropTypes.string.isRequired,
+  ariaLabel: PropTypes.string.isRequired,
+  placeholder: PropTypes.string,
+  value: PropTypes.string,
+  onChange: PropTypes.func.isRequired,
+  disabled: PropTypes.bool,
+  darkMode: PropTypes.bool,
+};
+
+DateInput.defaultProps = {
+  placeholder: '',
+  value: '',
+  disabled: false,
+  darkMode: false,
+};
+
+const getTinyMCEOptions = (darkMode) => ({
   license_key: 'gpl',
   menubar: false,
   plugins: 'advlist autolink autoresize lists link charmap table help',
   toolbar:
-    'bold italic  underline numlist   |  removeformat link bullist  outdent indent |\
-                    styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
-                    subscript superscript charmap  | help',
+    'bold italic underline numlist | removeformat link bullist outdent indent |\
+    styleselect fontsizeselect | table | strikethrough forecolor backcolor |\
+    subscript superscript charmap | help',
   branding: false,
   min_height: 280,
   max_height: 300,
   autoresize_bottom_margin: 1,
-};
+  ...(darkMode && { skin: 'oxide-dark', content_css: 'dark' }),
+});
 
 function AddTaskModal(props) {
   /*
@@ -155,16 +462,7 @@ function AddTaskModal(props) {
   // states from hooks
   const activeMembers = useMemo(() => {
     const members = Array.isArray(allMembers) ? allMembers : [];
-    const filtered = members.filter(u => {
-      if (!u) return false;
-      // Treat only explicit "inactive" as excluded; accept truthy/unknown as active
-      const isInactive =
-        u.status === 'Inactive' ||
-        u.isActive === false ||
-        String(u?.isActive).toLowerCase() === 'false';
-      return !isInactive;
-    });
-    return filtered.length ? filtered : members; // fallback so the list isn't empty
+    return members.filter(m => m && m.isActive === true);
   }, [allMembers]);
 
   const projectsList = Array.isArray(allProjects?.projects) ? allProjects.projects : [];
@@ -201,7 +499,7 @@ function AddTaskModal(props) {
   const [category, setCategory] = useState('Unspecified');
   const [whyInfo, setWhyInfo] = useState('');
   const [intentInfo, setIntentInfo] = useState('');
-  const [startedDate, setStartedDate] = useState('');
+  const [startedDate, setStartedDate] = useState(() => dateFnsFormat(new Date(), 'MM/dd/yy'));
   const [endstateInfo, setEndstateInfo] = useState('');
   const [startDateError, setStartDateError] = useState(false);
   const [endDateError, setEndDateError] = useState(false);
@@ -211,7 +509,6 @@ function AddTaskModal(props) {
   const [modal, setModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [newTaskNum, setNewTaskNum] = useState('1');
-  const [dateWarning, setDateWarning] = useState(false);
   const [hoursWarning, setHoursWarning] = useState(false);
   const [showReplicateConfirm, setShowReplicateConfirm] = useState(false);
   const [isReplicating, setIsReplicating] = useState(false);
@@ -243,20 +540,26 @@ function AddTaskModal(props) {
   };
 
   const openReplicateConfirm = () => {
-    if (!resourceItems?.length) {
-      globalThis?.toast?.error?.('Select at least one Resource to replicate to.') || alert('Select at least one Resource to replicate to.');
-      return;
+  if (!resourceItems?.length) {
+    if (globalThis?.toast?.error) {
+      globalThis.toast.error('Select at least one Resource to replicate to.');
     }
-    if (!taskName?.trim()) {
-      globalThis?.toast?.error?.('Task Name is required to replicate.') || alert('Task Name is required to replicate.');
-      return;
+    return;
+  }
+  if (!taskName?.trim()) {
+    if (globalThis?.toast?.error) {
+      globalThis.toast.error('Task Name is required to replicate.');
     }
-    if (hoursWarning || hasNegativeHours || startDateError || endDateError || startDateFormatError || endDateFormatError) {
-      globalThis?.toast?.error?.('Fix validation errors before replicating.') || alert('Fix validation errors before replicating.');
-      return;
+    return;
+  }
+  if (hoursWarning || hasNegativeHours || startDateError || endDateError || startDateFormatError || endDateFormatError) {
+    if (globalThis?.toast?.error) {
+      globalThis.toast.error('Fix validation errors before replicating.');
     }
-    setShowReplicateConfirm(true);
-  };
+    return;
+  }
+  setShowReplicateConfirm(true);
+};
 
   const doReplicate = async () => {
     setIsReplicating(true);
@@ -366,22 +669,6 @@ function AddTaskModal(props) {
     setAssigned(true);
   };
 
-  const formatDate = (date, format, locale) => dateFnsFormat(date, format, { locale });
-
-  const parseDate = (str, format, locale) => {
-    // Allow empty string for partial typing
-    if (!str || str.trim() === '') return undefined;
-    
-    try {
-      const parsed = dateFnsParse(str, format, new Date(), { locale });
-      if (isValid(parsed)) {
-        return parsed;
-      }
-    } catch (error) {
-      // Return undefined for invalid dates while typing
-    }
-    return undefined;
-  };
 
   const validateDateFormat = (dateString) => {
     if (!dateString || dateString.trim() === '') return true;
@@ -394,7 +681,7 @@ function AddTaskModal(props) {
     try {
       const parsed = dateFnsParse(dateString, FORMAT, new Date());
       return isValid(parsed);
-    } catch (error) {
+    } catch {
       return false;
     }
   };
@@ -479,22 +766,24 @@ function AddTaskModal(props) {
 
   // Validate date formats when dates change
   useEffect(() => {
-    if (startedDate) {
-      const isValidFormat = validateDateFormat(startedDate);
-      setStartDateFormatError(!isValidFormat);
-    } else {
-      setStartDateFormatError(false);
-    }
-  }, [startedDate]);
+  if (startedDate) {
+    const isValidFormat = validateDateFormat(startedDate);
+    setStartDateFormatError(!isValidFormat);
+  } else {
+    setStartDateFormatError(false);
+  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [startedDate]);
 
-  useEffect(() => {
-    if (dueDate) {
-      const isValidFormat = validateDateFormat(dueDate);
-      setEndDateFormatError(!isValidFormat);
-    } else {
-      setEndDateFormatError(false);
-    }
-  }, [dueDate]);
+useEffect(() => {
+  if (dueDate) {
+    const isValidFormat = validateDateFormat(dueDate);
+    setEndDateFormatError(!isValidFormat);
+  } else {
+    setEndDateFormatError(false);
+  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [dueDate]);
 
   const addLink = () => {
     setLinks([...links, link]);
@@ -515,7 +804,7 @@ function AddTaskModal(props) {
     setHoursWorst(0);
     setHoursMost(0);
     setHoursEstimate(0);
-    setStartedDate('');
+    setStartedDate(dateFnsFormat(new Date(), 'MM/dd/yy'));
     setDueDate('');
     setLinks([]);
     setWhyInfo('');
@@ -596,6 +885,7 @@ function AddTaskModal(props) {
       setNewTaskNum(getNewNum());
     }
     // setNewTaskNum(getNewNum());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modal, tasksList.length, props.taskId, props.level, props.taskNum]);
 
   useEffect(() => {
@@ -610,11 +900,12 @@ function AddTaskModal(props) {
     } else {
       clear();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [error, tasksList.length]);
 
   useEffect(() => {
     if (!modal) {
-      setStartedDate('');
+      setStartedDate(dateFnsFormat(new Date(), 'MM/dd/yy'));
       setDueDate('');
       setStartDateError(false);
       setEndDateError(false);
@@ -628,6 +919,7 @@ function AddTaskModal(props) {
           // Fetch for this project whenever modal opens (or project changes)
           props.fetchAllMembers(props.projectId ?? '');
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
       }, [modal, props.projectId]);
 
   useEffect(() => {
@@ -641,6 +933,7 @@ function AddTaskModal(props) {
     if (!categoryKnownFromProjectById && !categoryKnownFromAllProjects) {
       props.getProjectDetail(props.projectId);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modal, props.projectId, projectById, projectsList]);
 
   useEffect(() => {
@@ -653,6 +946,7 @@ function AddTaskModal(props) {
 
   return (
     <>
+    {darkMode && <style>{darkModeStyles}</style>}
       <Modal isOpen={modal} toggle={toggle} className={darkMode ? 'text-light dark-mode' : ''}>
         <ModalHeader
           toggle={toggle}
@@ -714,6 +1008,7 @@ function AddTaskModal(props) {
                     id="priority"
                     onChange={e => setPriority(e.target.value)}
                     ref={priorityRef}
+                    className={darkMode ? 'dark-select' : ''}
                   >
                     <option value="Primary">Primary</option>
                     <option value="Secondary">Secondary</option>
@@ -1053,6 +1348,7 @@ function AddTaskModal(props) {
                     id="category-select"
                     value={category}
                     onChange={e => setCategory(e.target.value)}
+                    className={darkMode ? 'dark-select' : ''}
                     aria-label="Category"
                   >
                     {categoryOptions.map(cla => (
@@ -1069,7 +1365,7 @@ function AddTaskModal(props) {
                   <Editor
                     tinymceScriptSrc="/tinymce/tinymce.min.js"
                     licenseKey="gpl"
-                    init={TINY_MCE_INIT_OPTIONS}
+                    init={getTinyMCEOptions(darkMode)}
                     name="why-info"
                     className="why-info form-control"
                     value={whyInfo}
@@ -1083,7 +1379,7 @@ function AddTaskModal(props) {
                   <Editor
                     tinymceScriptSrc="/tinymce/tinymce.min.js"
                     licenseKey="gpl"
-                    init={TINY_MCE_INIT_OPTIONS}
+                    init={getTinyMCEOptions(darkMode)}
                     name="intent-info"
                     className="intent-info form-control"
                     value={intentInfo}
@@ -1097,7 +1393,7 @@ function AddTaskModal(props) {
                   <Editor
                     tinymceScriptSrc="/tinymce/tinymce.min.js"
                     licenseKey="gpl"
-                    init={TINY_MCE_INIT_OPTIONS}
+                    init={getTinyMCEOptions(darkMode)}
                     name="endstate-info"
                     className="endstate-info form-control"
                     value={endstateInfo}
@@ -1117,7 +1413,8 @@ function AddTaskModal(props) {
                       placeholder={dateFnsFormat(new Date(), FORMAT)}
                       value={startedDate}
                       onChange={changeDateStart}
-                      disabled={false} // always enabled here
+                      disabled={false}
+                      darkMode={darkMode}
                     />
                     <div className="warning text-danger">
                       {startDateFormatError && 'Please enter date in MM/dd/yy format'}
@@ -1144,6 +1441,7 @@ function AddTaskModal(props) {
                     value={dueDate}
                     onChange={changeDateEnd}
                     disabled={false}
+                    darkMode={darkMode}
                   />
                   <div className="warning text-danger">
                     {endDateFormatError && 'Please enter date in MM/dd/yy format'}
@@ -1176,7 +1474,7 @@ function AddTaskModal(props) {
           {/* [RT] Confirmation modal */}
           <Modal isOpen={showReplicateConfirm} 
             toggle={closeConfirm} 
-            lassName={clsx(darkMode && 'text-light dark-mode')}
+            className={clsx(darkMode && 'text-light dark-mode')}
             contentClassName={clsx(darkMode && styles.confirmContentDark)}
             backdropClassName={clsx(darkMode && styles.confirmBackdropDark)}
             >

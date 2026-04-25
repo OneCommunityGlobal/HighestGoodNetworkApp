@@ -33,6 +33,7 @@ const StudentDashboard = () => {
 
   const dispatch = useDispatch();
   const { taskItems: tasks, fetching: loading, error } = useSelector(state => state.studentTasks);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   // Derived filtered task list — no unnecessary rendering of graded/completed tasks by default
   const filteredTasks = useMemo(() => {
@@ -180,17 +181,21 @@ const StudentDashboard = () => {
 
   return (
     <div className={styles.dashboard}>
-      <NavigationBar />
+      <NavigationBar darkMode={darkMode} />
 
       <Container className={styles.mainContainer}>
         {/* Header */}
         <div className={styles.header}>
-          <h1 className={styles.title}>Student Dashboard</h1>
-          <p className={styles.subtitle}>Track your learning progress and manage your logs</p>
+          <div className={styles.headerContent}>
+            <div className={styles.headerText}>
+              <h1 className={styles.title}>Student Dashboard</h1>
+              <p className={styles.subtitle}>Track your learning progress and manage your logs</p>
+            </div>
+          </div>
         </div>
 
         {/* Summary Cards */}
-        <SummaryCards data={summaryData} />
+        <SummaryCards data={summaryData} darkMode={darkMode} />
 
         {/* Tasks Section */}
         <div className={styles.timeLogsSection}>
@@ -272,6 +277,7 @@ const StudentDashboard = () => {
               expandedTasks={expandedTasks}
               onToggleIntermediateTasks={toggleIntermediateTasks}
               onMarkIntermediateAsDone={handleMarkIntermediateAsDone}
+              darkMode={darkMode}
             />
           ) : (
             <TaskListView
@@ -281,6 +287,7 @@ const StudentDashboard = () => {
               expandedTasks={expandedTasks}
               onToggleIntermediateTasks={toggleIntermediateTasks}
               onMarkIntermediateAsDone={handleMarkIntermediateAsDone}
+              darkMode={darkMode}
             />
           )}
         </div>
