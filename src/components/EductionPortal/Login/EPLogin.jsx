@@ -20,12 +20,19 @@ function EPLogin(props) {
 
   // push to dashboard if user is authenticated
   useEffect(() => {
-    if (auth.user.access && auth.user.access.canAccessGEPortal) {
+    if (auth.user.access) {
+      const access = auth.user.access;
+      const hasGEFlag = Object.hasOwn(access, 'canAccessGEPortal');
+      const canAccessEP = hasGEFlag ? access.canAccessGEPortal : access.canAccessBMPortal;
+      if (!canAccessEP) return;
+
+      sessionStorage.removeItem('gePortalLoggedOut');
       history.push(prevLocation.pathname);
     }
-  }, []);
+  }, [auth.user.access, history, prevLocation.pathname]);
   useEffect(() => {
     if (hasAccess) {
+      sessionStorage.removeItem('gePortalLoggedOut');
       history.push(prevLocation.pathname);
     }
   }, [hasAccess, history, prevLocation.pathname]);
@@ -78,6 +85,7 @@ function EPLogin(props) {
       });
     }
     // initiate push to BM Dashboard if validated (ie received token)
+    sessionStorage.removeItem('gePortalLoggedOut');
     return setHasAccess(!!res.data.token);
   };
 

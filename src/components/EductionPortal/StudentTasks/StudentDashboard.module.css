@@ -1,5 +1,4 @@
 .pageLayout {
-  display: flex;
   min-height: calc(100vh - 72px);
   background: #f9fafb;
 }

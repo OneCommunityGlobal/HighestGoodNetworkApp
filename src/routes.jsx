@@ -189,7 +189,7 @@ import InsightWidget from './components/EductionPortal/AnalyticsDashboard/Insigh
 import StudentDashboard from './components/EductionPortal/StudentTasks/StudentDashboard';
 import StudentTasks from './components/EductionPortal/StudentTasks/StudentTasks';
 import TaskDetails from './components/EductionPortal/StudentTasks/TaskDetails';
-
+import EducatorReports from './components/EductionPortal/EducatorReports';
 import PRReviewTeamAnalytics from './components/HGNPRDashboard/PRReviewTeamAnalytics';
 import PRDashboardOverview from './components/HGNPRDashboard/PRDashboardOverview';
 import PRDashboardPromotionEligibility from './components/HGNPRDashboard/PRDashboardPromotionEligibility';
@@ -910,12 +910,17 @@ export default (
           component={EvaluationResultsWrapper}
         />
         <Route path="/educationportal/login" component={EPLogin} />
-        <Route path="/educationportal/InsightWidget" component={InsightWidget} />
-        <Route path="/educationportal/lesson-library" exact component={BrowseLessonPlan} />
+        <EPProtectedRoute path="/educationportal/InsightWidget" component={InsightWidget} />
+        <EPProtectedRoute
+          path="/educationportal/lesson-library"
+          exact
+          component={BrowseLessonPlan}
+        />
         <EPProtectedRoute path="/educationportal/assignAtoms" exact component={AssignAtoms} />
         <EPProtectedRoute path="/educationportal/tasks/upload" exact component={WriteTaskUpload} />
-        <Route path="/educationportal/reportButton" component={ReportDownloadButton} />
-        <Route path="/educator/groups" exact component={GroupList} />
+        <EPProtectedRoute path="/educationportal/reportButton" component={ReportDownloadButton} />
+        <EPProtectedRoute path="/educationportal/groups" exact component={GroupList} />
+        <EPProtectedRoute path="/educationportal/reports" exact component={EducatorReports} />
         <EPProtectedRoute
           path="/educationportal/tasks/intermediate"
           exact

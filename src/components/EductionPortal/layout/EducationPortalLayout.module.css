@@ -1,0 +1,127 @@
+/* ── Light mode base ─────────────────────────────────────────── */
+
+.shell {
+  min-height: 100vh;
+  display: block;
+  background: var(--ep-bg-0);
+  color: var(--ep-ink);
+  font-family: var(--ep-font);
+}
+
+.main {
+  position: relative;
+  min-width: 0;
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  background: #ffffffb0;
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid #0000001a;
+}
+
+.headerTitle {
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  color: #1e2332f2;
+  white-space: nowrap;
+}
+
+.content {
+  min-height: 100vh;
+  padding: 28px 28px 64px;
+}
+
+.content > :global(*) {
+  max-width: 100%;
+}
+
+.mobileMenuButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid #00000020;
+  background: #00000010;
+  color: var(--ep-ink);
+  box-shadow: 0 10px 24px #00000018;
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+}
+
+.mobileMenuButton:focus-visible {
+  outline: 3px solid #56b4d0;
+  outline-offset: 3px;
+}
+
+.mobileMenuButton:hover {
+  background: #00000018;
+}
+
+.mobileMenuIcon {
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  align-items: center;
+  justify-content: center;
+  background: #c8e8f5;
+  border: 1px solid #a0cce0;
+  line-height: 1;
+}
+
+.mobileMenuLabel {
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+@media (max-width: 960px) {
+  .content {
+    padding: 22px 18px 56px;
+  }
+  .header {
+    padding: 10px 14px;
+  }
+}
+
+/* ── Dark mode overrides ─────────────────────────────────────── */
+
+.darkMode .shell {
+  background: #1b2a41;
+}
+
+.darkMode .header {
+  background: #1b2a41;
+  border-bottom-color: #2a2a38;
+}
+
+.darkMode .headerTitle {
+  color: #eaf0ff;
+}
+
+.darkMode .mobileMenuButton {
+  border-color: #2a2a3a;
+  background: #1e1e2a;
+  box-shadow: 0 10px 24px #00000047;
+}
+
+.darkMode .mobileMenuButton:focus-visible {
+  outline-color: #56b4d088;
+}
+
+.darkMode .mobileMenuButton:hover {
+  background: #252532;
+}
+
+.darkMode .mobileMenuIcon {
+  background: #1a2e42;
+  border-color: #2a4058;
+}

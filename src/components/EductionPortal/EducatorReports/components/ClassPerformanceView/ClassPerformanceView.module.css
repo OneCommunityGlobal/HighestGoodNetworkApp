@@ -1,0 +1,801 @@
+/* ClassPerformanceView.module.css */
+
+.classPerformance {
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.classPerformance.darkMode {
+  color: #ffffff;
+}
+
+/* Empty State */
+.emptyState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  padding: 2rem;
+}
+
+.emptyState.darkMode {
+  color: #ffffff;
+}
+
+.emptyContent {
+  text-align: center;
+  max-width: 400px;
+}
+
+.emptyContent i {
+  font-size: 4rem;
+  color: #d1d5db;
+  margin-bottom: 1rem;
+}
+
+.darkMode .emptyContent i {
+  color: #6b7280;
+}
+
+.emptyContent h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.darkMode .emptyContent h3 {
+  color: #f9fafb;
+}
+
+.emptyContent p {
+  color: #6b7280;
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.darkMode .emptyContent p {
+  color: #9ca3af;
+}
+
+/* Metrics Row */
+.metricsRow {
+  margin-bottom: 2rem;
+}
+
+.metricCol {
+  margin-bottom: 1rem;
+}
+
+/* Report Cards */
+.reportCard {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+/* Reactstrap <CardBody> wrapper */
+
+.darkMode .cardBody {
+  background-color: #0f172a;
+}
+
+.reportCard.darkMode {
+  background-color: #1f2937;
+  border-color: #374151;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.reportCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.darkMode .reportCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Card Headers */
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.darkMode .cardHeader {
+  border-bottom-color: #374151;
+}
+
+.cardTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.darkMode .cardTitle {
+  color: #f9fafb;
+}
+
+/* Chart Styles */
+.chartCol {
+  margin-bottom: 30px;
+}
+
+/* Table Styles (match ReportsView) */
+.tableContainer {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.performanceTable {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.performanceTable th {
+  background-color: #f9fafb;
+  color: #374151;
+  font-weight: 600;
+  border: none;
+  padding: 1rem 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.75rem;
+}
+
+.darkMode .performanceTable th {
+  background-color: #374151;
+  color: #d1d5db;
+}
+
+.performanceTable td {
+  padding: 1rem 0.75rem;
+  border-top: 1px solid #e5e7eb;
+  vertical-align: middle;
+}
+
+.darkMode .performanceTable td {
+  border-top-color: #374151;
+  color: #d1d5db;
+}
+
+.performanceTable tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+.darkMode .performanceTable tbody tr:hover {
+  background-color: #374151;
+}
+
+.subjectCell {
+  font-weight: 500;
+  color: #111827;
+}
+
+.darkMode .subjectCell {
+  color: #f9fafb;
+}
+
+.performanceCell {
+  font-size: 0.875rem;
+}
+
+.performanceBar {
+  position: relative;
+  height: 20px;
+  background-color: #e5e7eb;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.darkMode .performanceBar {
+  background-color: rgba(255, 255, 255, 0.12);
+}
+
+.performanceFill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.6s ease;
+}
+
+.performanceText {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 12px;
+  font-weight: 600;
+  color: #111827;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.65);
+}
+
+.darkMode .performanceText {
+  color: #f9fafb;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.6);
+}
+
+.visualCell {
+  text-align: center;
+}
+
+.chartContainer {
+  position: relative;
+  margin: 20px 0;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.darkMode .legend {
+  border-top-color: #374151;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.darkMode .legendItem {
+  color: #d1d5db;
+}
+
+.legendColor {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+.legendColor.highlyEffective {
+  background-color: #10b981;
+}
+
+.legendColor.effective {
+  background-color: #3b82f6;
+}
+
+.legendColor.needsImprovement {
+  background-color: #ef4444;
+}
+
+.legendColor.veryGood {
+  background-color: #10b981;
+}
+
+.legendColor.good {
+  background-color: #10b981;
+}
+
+.legendColor.moderate {
+  background-color: #fbbf24;
+}
+
+.legendColor.low {
+  background-color: #fbbf24;
+}
+
+/* Loading States */
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: #6b7280;
+}
+
+.darkMode .loading {
+  color: #9ca3af;
+}
+
+.loading i {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.loading p {
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Insights Section */
+.insightsContainer {
+  margin-top: 1rem;
+}
+
+.insightAlert {
+  border: none;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Alert variants (match ReportsView behavior)
+   Use combined selectors so we reliably override reactstrap's `.alert-*` rules. */
+.insightAlert.insightAlertInfo {
+  background-color: #e0f2fe;
+  border: 1px solid #bae6fd;
+  color: #075985;
+}
+
+.insightAlert.insightAlertSuccess {
+  background-color: #dcfce7;
+  border: 1px solid #bbf7d0;
+  color: #14532d;
+}
+
+.insightAlert.insightAlertWarning {
+  background-color: #fef9c3;
+  border: 1px solid #fde68a;
+  color: #713f12;
+}
+
+.insightAlert.insightAlertDanger {
+  background-color: #fee2e2;
+  border: 1px solid #fecaca;
+  color: #7f1d1d;
+}
+
+.insightAlert.insightAlertPrimary {
+  background-color: #dbeafe;
+  border: 1px solid #bfdbfe;
+  color: #1e3a8a;
+}
+
+.darkMode .insightAlert {
+  color: #111827;
+  background-color: #e5e7eb;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(17, 24, 39, 0.16);
+}
+
+.darkMode .insightAlert.insightAlertInfo {
+  background-color: #bcdde4;
+  border-color: #9acbd5;
+  color: #0c5460;
+}
+
+.darkMode .insightAlert.insightAlertSuccess {
+  background-color: #c3e0ca;
+  border-color: #a8d6b2;
+  color: #155724;
+}
+
+.darkMode .insightAlert.insightAlertWarning {
+  background-color: #f2e2b6;
+  border-color: #e9d28f;
+  color: #856404;
+}
+
+.darkMode .insightAlert.insightAlertDanger {
+  background-color: #e8c1c5;
+  border-color: #d9a1a7;
+  color: #721c24;
+}
+
+.darkMode .insightAlert.insightAlertPrimary {
+  background-color: #b7d6ff;
+  border-color: #94c5ff;
+  color: #004085;
+}
+
+.darkMode .insightAlert.insightAlertInfo *,
+.darkMode .insightAlert.insightAlertSuccess *,
+.darkMode .insightAlert.insightAlertWarning *,
+.darkMode .insightAlert.insightAlertDanger *,
+.darkMode .insightAlert.insightAlertPrimary * {
+  color: inherit;
+}
+
+.insightAlert:last-child {
+  margin-bottom: 0;
+}
+
+.insightContent {
+  line-height: 1.6;
+}
+
+.insightHeader {
+  margin-bottom: 0.5rem;
+}
+
+.insightHeader strong {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.insightMessage {
+  margin-bottom: 1rem;
+  color: #374151;
+}
+
+.darkMode .insightMessage {
+  color: #d1d5db;
+}
+
+.insightAction {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.darkMode .insightAction {
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+.actionButton {
+  background-color: #4f46e5;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.actionButton:hover {
+  background-color: #3730a3;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(79, 70, 229, 0.3);
+}
+
+.actionButton:active {
+  transform: translateY(0);
+}
+
+.darkMode .actionButton {
+  background-color: #4338ca;
+}
+
+.darkMode .actionButton:hover {
+  background-color: #3730a3;
+}
+
+/* Keep buttons high-contrast on colored alerts */
+.insightAlertInfo .actionButton {
+  background: #0ea5e9;
+}
+
+.insightAlertInfo .actionButton:hover {
+  background: #0284c7;
+}
+
+.insightAlertSuccess .actionButton {
+  background: #22c55e;
+}
+
+.insightAlertSuccess .actionButton:hover {
+  background: #16a34a;
+}
+
+.insightAlertWarning .actionButton {
+  background: #b45309;
+  color: #fff;
+}
+
+.insightAlertWarning .actionButton:hover {
+  background: #9a3412;
+}
+
+.insightAlertDanger .actionButton {
+  background: #ef4444;
+}
+
+.insightAlertDanger .actionButton:hover {
+  background: #dc2626;
+}
+
+.darkMode .insightAlert .actionButton {
+  color: #fff;
+}
+
+.darkMode .insightAlert.insightAlertInfo .actionButton {
+  background: #0284c7;
+}
+
+.darkMode .insightAlert.insightAlertInfo .actionButton:hover {
+  background: #0369a1;
+}
+
+.darkMode .insightAlert.insightAlertSuccess .actionButton {
+  background: #16a34a;
+}
+
+.darkMode .insightAlert.insightAlertSuccess .actionButton:hover {
+  background: #15803d;
+}
+
+.darkMode .insightAlert.insightAlertWarning .actionButton {
+  background: #b45309;
+}
+
+.darkMode .insightAlert.insightAlertWarning .actionButton:hover {
+  background: #9a3412;
+}
+
+.darkMode .insightAlert.insightAlertDanger .actionButton {
+  background: #dc2626;
+}
+
+.darkMode .insightAlert.insightAlertDanger .actionButton:hover {
+  background: #b91c1c;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .classPerformance {
+    padding: 1rem;
+  }
+
+  .metricsRow {
+    margin-bottom: 1.5rem;
+  }
+
+  .chartCol {
+    margin-bottom: 1.5rem;
+  }
+
+  .legend {
+    gap: 0.75rem;
+  }
+
+  .legendItem {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .classPerformance {
+    padding: 0.5rem;
+  }
+
+  .reportCard {
+    margin: 0 -0.5rem 1.5rem -0.5rem;
+  }
+
+  .cardTitle {
+    font-size: 1.125rem;
+  }
+
+  .legend {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .legendItem {
+    justify-content: center;
+  }
+
+  .metricCol {
+    margin-bottom: 1rem;
+  }
+
+  .insightAction {
+    justify-content: center;
+  }
+
+  .actionButton {
+    width: 100%;
+    max-width: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .emptyContent i {
+    font-size: 3rem;
+  }
+
+  .emptyContent h3 {
+    font-size: 1.25rem;
+  }
+
+  .emptyContent p {
+    font-size: 0.9rem;
+  }
+
+  .cardTitle {
+    font-size: 1rem;
+  }
+
+  .legendColor {
+    width: 10px;
+    height: 10px;
+  }
+
+  .legendItem {
+    font-size: 0.75rem;
+  }
+
+  .actionButton {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Print Styles */
+@media print {
+  .classPerformance {
+    background: white !important;
+    color: black !important;
+  }
+
+  .reportCard {
+    background: white !important;
+    box-shadow: none;
+    border: 1px solid #ccc;
+    break-inside: avoid;
+    margin-bottom: 1rem;
+  }
+
+  .legend {
+    display: none;
+  }
+
+  .insightAlert {
+    background: transparent !important;
+    border: 1px solid currentColor;
+  }
+
+  .actionButton {
+    background: transparent !important;
+    color: black !important;
+    border: 1px solid black;
+  }
+}
+
+/* Accessibility */
+.reportCard:focus-within {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
+}
+
+.darkMode .reportCard:focus-within {
+  outline-color: #818cf8;
+}
+
+.actionButton:focus {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
+}
+
+.darkMode .actionButton:focus {
+  outline-color: #818cf8;
+}
+
+/* Chart-specific adjustments */
+.chartContainer canvas {
+  max-height: 350px;
+}
+
+/* Strategy effectiveness colors for consistency */
+.strategyBar.highlyEffective {
+  background-color: #10b981;
+}
+
+.strategyBar.effective {
+  background-color: #3b82f6;
+}
+
+.strategyBar.needsImprovement {
+  background-color: #ef4444;
+}
+
+/* Impact colors for life strategies */
+.impactBar.veryGood {
+  background-color: #10b981;
+}
+
+.impactBar.good {
+  background-color: #10b981;
+}
+
+.impactBar.moderate {
+  background-color: #fbbf24;
+}
+
+.impactBar.low {
+  background-color: #fbbf24;
+}
+
+/* Status Badge Styles */
+.statusBadge {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  min-width: 80px;
+  border: 1px solid transparent;
+}
+
+.statusBadge.excellent {
+  background-color: #dcfce7;
+  color: #15803d;
+  border-color: #bbf7d0;
+}
+
+.statusBadge.good {
+  background-color: #fefce8;
+  color: #a16207;
+  border-color: #fef08a;
+}
+
+.statusBadge.needsImprovement,
+.statusBadge.needs-improvement {
+  background-color: #fff7ed;
+  color: #c2410c;
+  border-color: #fed7aa;
+}
+
+.statusBadge.critical {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  border-color: #fecaca;
+}
+
+.darkMode .statusBadge.excellent {
+  background-color: rgba(21, 128, 61, 0.15);
+  color: #4ade80 !important;
+  border-color: rgba(74, 222, 128, 0.25);
+}
+
+.darkMode .statusBadge.good {
+  background-color: rgba(161, 98, 7, 0.15);
+  color: #fcd34d !important;
+  border-color: rgba(252, 211, 77, 0.25);
+}
+
+.darkMode .statusBadge.needsImprovement,
+.darkMode .statusBadge.needs-improvement {
+  background-color: rgba(194, 65, 12, 0.15);
+  color: #fb923c !important;
+  border-color: rgba(251, 146, 60, 0.25);
+}
+
+.darkMode .statusBadge.critical {
+  background-color: rgba(185, 28, 28, 0.15);
+  color: #fca5a5 !important;
+  border-color: rgba(252, 165, 165, 0.25);
+}
+
+.visualIndicator {
+  font-size: 18px;
+  display: inline-block;
+}

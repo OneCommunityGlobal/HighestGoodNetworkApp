@@ -2,6 +2,7 @@
 import { Redirect, Route } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Suspense } from 'react';
+import EducationPortalLayout from '~/components/EductionPortal/layout/EducationPortalLayout';
 
 // eslint-disable-next-line react/function-component-definition
 const EPProtectedRoute = ({ component: Component, render, auth, fallback, ...rest }) => {
@@ -12,15 +13,41 @@ const EPProtectedRoute = ({ component: Component, render, auth, fallback, ...res
         if (!auth.isAuthenticated) {
           return <Redirect to={{ pathname: '/login', state: { from: props.location } }} />;
         }
-        if (auth.user.access && !auth.user.access.canAccessBMPortal) {
+
+        // If the user explicitly logged out of the Education Portal, require EP login again.
+        const epLoggedOut =
+          typeof window !== 'undefined' && window.sessionStorage
+            ? window.sessionStorage.getItem('gePortalLoggedOut') === 'true'
+            : false;
+        if (epLoggedOut) {
           return (
             <Redirect
               to={{ pathname: '/educationportal/login', state: { from: props.location } }}
             />
           );
         }
+
+        // Only enforce portal access check once access flags are available.
+        // Some environments expose EP access as `canAccessGEPortal`, others as `canAccessBMPortal`.
+        if (auth.user.access) {
+          const access = auth.user.access;
+          const hasGEFlag = Object.prototype.hasOwnProperty.call(access, 'canAccessGEPortal');
+          const canAccessEP = hasGEFlag ? access.canAccessGEPortal : access.canAccessBMPortal;
+
+          if (!canAccessEP) {
+            return (
+              <Redirect
+                to={{ pathname: '/educationportal/login', state: { from: props.location } }}
+              />
+            );
+          }
+        }
+
+        const Page = Component ? <Component {...props} /> : render(props);
+        const Wrapped = <EducationPortalLayout>{Page}</EducationPortalLayout>;
+
         // eslint-disable-next-line no-nested-ternary
-        return Component && fallback ? (
+        return fallback ? (
           <Suspense
             fallback={
               // eslint-disable-next-line react/jsx-wrap-multilines
@@ -29,12 +56,10 @@ const EPProtectedRoute = ({ component: Component, render, auth, fallback, ...res
               </div>
             }
           >
-            <Component {...props} />
+            {Wrapped}
           </Suspense>
-        ) : Component ? (
-          <Component {...props} />
         ) : (
-          render(props)
+          Wrapped
         );
       }}
     />

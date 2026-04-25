@@ -1,0 +1,46 @@
+.dashboardLayout {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.mainContent {
+  flex: 1;
+  margin-left: 0;
+  min-height: 100vh;
+  overflow-x: auto;
+}
+
+.contentWrapper {
+  padding: 0 20px;
+  max-width: 100%;
+}
+
+@media (max-width: 768px) {
+  .dashboardLayout {
+    flex-direction: column;
+    margin-top: 0;
+    min-height: 100vh;
+  }
+
+  .mainContent {
+    margin-left: 0;
+    width: 100%;
+    min-height: auto;
+    order: 2;
+  }
+
+  .contentWrapper {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .contentWrapper {
+    padding: 12px;
+  }
+}
+
+.darkMode .dashboardLayout {
+  background-color: grey;
+}
