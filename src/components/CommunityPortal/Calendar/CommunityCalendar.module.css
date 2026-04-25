@@ -1,3 +1,4 @@
+/* stylelint-disable no-descending-specificity, keyframes-name-pattern */
 .calendarContainer {
   display: flex;
   flex-direction: row;
@@ -14,6 +15,7 @@
 
 .calendarActivitySection,
 .calendarSection {
+  position: relative;
   flex: 1;
   border-radius: 8px;
   padding: 20px;
@@ -59,11 +61,14 @@
 }
 
 .reactCalendar {
+  position: relative;
+  z-index: 1;
   width: 100%;
   height: auto;
   font-size: 1.2rem;
   border: 2px solid #ddd;
   border-radius: 8px;
+
   /* overflow: hidden; */
   background-color: #fff;
   padding: 2rem;
@@ -71,7 +76,7 @@
 
 .reactCalendarDarkMode {
   background-color: #1b2a41;
-  color: #ffffff;
+  color: #fff;
   border: 1px solid #444;
 }
 
@@ -142,16 +147,16 @@
   height: 80px;
   overflow: auto;
   border: 1px solid #555454;
-  box-sizing: border-box; 
+  box-sizing: border-box;
+  vertical-align: top;
+  padding: 2px;
 }
 
 .reactCalendar :global(.react-calendar__navigation) {
   background-color: #f9f9f9;
   border-bottom: 1px solid #ddd;
-  margin-bottom: 0px !important;
-  
+  margin-bottom: 0 !important;
 }
-
 
 .reactCalendar :global(.react-calendar__tile) {
   display: grid;
@@ -164,9 +169,10 @@
   padding: 4px;
   color: #1a202c;
 }
+
 .reactCalendarDarkMode :global(.react-calendar__tile) {
   background: transparent;
-  color: #ffffff;
+  color: #fff;
 }
 
 .reactCalendar :global(.react-calendar__tile):hover {
@@ -191,16 +197,16 @@
 .reactCalendarDarkMode :global(.react-calendar__tile.selectedDate):hover {
   background-color: #1a2332 !important;
   border-color: #4a9eff;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .reactCalendarDarkMode :global(.react-calendar__tile.selectedDate):hover :global(abbr),
 .reactCalendarDarkMode :global(.react-calendar__tile.selectedDate):hover :global(span) {
-  color: #ffffff !important;
+  color: #fff !important;
   font-weight: 900 !important;
   font-size: 1.2em !important;
-  text-shadow: 0 0 8px rgba(255, 255, 255, 1), 0 0 10px rgba(255, 255, 255, 0.9),
-    0 2px 4px rgba(0, 0, 0, 1), 0 4px 8px rgba(0, 0, 0, 0.9) !important;
+  text-shadow: 0 0 8px rgb(255 255 255 / 100%), 0 0 10px rgb(255 255 255 / 90%),
+    0 2px 4px rgb(0 0 0 / 100%), 0 4px 8px rgb(0 0 0 / 90%) !important;
   filter: brightness(1.8) contrast(1.5) !important;
 }
 
@@ -210,38 +216,37 @@
 }
 
 .reactCalendar :global(.react-calendar__tile) .tileEvents {
-  font-size: 0.9rem;
-  color: #555;
-  margin-top: 4px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 2px;
-  line-height: 1.1;
+  width: 100%;
 }
 
-.reactCalendar :global(.react-calendar__tile) :global(.eventItem) {
-  background-color: #e0f7fa;
-  padding: 5px;
-  border-radius: 4px;
-  margin-bottom: 5px;
-  white-space: nowrap;
+.tileEvents {
+  position: relative; 
 }
 
 /* Ensure tileEvents text is readable on selected date */
-.reactCalendar :global(.react-calendar__tile.selectedDate) .tileEvents {
-  color: #1a202c;
-}
 
 .reactCalendarDarkMode :global(.react-calendar__tile) .tileEvents {
   color: #e2e8f0;
 }
 
-.reactCalendarDarkMode :global(.react-calendar__tile.selectedDate) .tileEvents {
-  color: #ffffff;
+.reactCalendar :global(.react-calendar__tile.selectedDate) .tileEvents {
+  color: #1a202c;
 }
 
+.reactCalendarDarkMode :global(.react-calendar__tile.selectedDate) .tileEvents {
+  color: #fff;
+}
 
+.eventItem {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
 .reactCalendar .eventItem {
   display: block;
@@ -252,10 +257,20 @@
   border-radius: 3px;
   background-color: #e0f7fa;
   cursor: pointer;
+}
 
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.reactCalendar :global(.eventItem) {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+  padding: 2px 6px;
+  margin-bottom: 2px; 
+  border-radius: 999px; 
+  font-size: 0.7rem;
+  font-weight: 600;
+  background-color: #e0f7fa;
+  cursor: pointer; 
 }
 
 .reactCalendar :global(.react-calendar__tile) .eventItem.statusNew {
@@ -288,7 +303,7 @@
 
 
 .reactCalendarDarkMode :global(.react-calendar__tile) .eventItem {
-  color: #ffffff;
+  color: #fff;
   font-weight: 600;
 }
 
@@ -296,14 +311,17 @@
   background-color: #065666;
   color: #e6fffa;
 }
+
 .reactCalendarDarkMode :global(.react-calendar__tile) .eventItem.statusNeedsAttendees {
   background-color: #6a1b9a;
   color: #f3e5f5;
 }
+
 .reactCalendarDarkMode :global(.react-calendar__tile) .eventItem.statusFillingFast {
   background-color: #856404;
   color: #fff9e6;
 }
+
 .reactCalendarDarkMode :global(.react-calendar__tile) .eventItem.statusFull {
   background-color: #721c24;
   color: #fce7e7;
@@ -344,7 +362,7 @@
 
 /* Ensure event items are readable in dark mode */
 .reactCalendarDarkMode .eventItem {
-  color: #ffffff;
+  color: #fff;
   font-weight: 600;
 }
 
@@ -389,10 +407,25 @@
   color: #ffcdd2;
 }
 
-.reactCalendar .eventItem.clickable:hover {
-  transform: scale(1.05) !important;
+.overflowPopup .eventItem {
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  padding: 6px 10px;
+  border-radius: 6px;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.overflowPopup .eventItem:hover {
+  transform: translateY(-1px);
+}
+
+.reactCalendar .eventItem:hover {
+  transform: translate(-1px);
   z-index: 10;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
 }
 
 .moreEvents {
@@ -461,11 +494,11 @@
 }
 
 .reactCalendarDarkMode :global(.react-calendar__tile.hasEvents.selectedDate) :global(abbr) {
-  color: #ffffff !important;
+  color: #fff !important;
   font-weight: 900 !important;
   font-size: 1.1em !important;
-  text-shadow: 0 0 6px rgba(255, 255, 255, 1), 0 0 8px rgba(255, 255, 255, 0.8),
-    0 2px 4px rgba(0, 0, 0, 1), 0 4px 8px rgba(0, 0, 0, 0.8) !important;
+  text-shadow: 0 0 6px rgb(255 255 255 / 100%), 0 0 8px rgb(255 255 255 / 80%),
+    0 2px 4px rgb(0 0 0 / 100%), 0 4px 8px rgb(0 0 0 / 80%) !important;
   filter: brightness(1.5) contrast(1.3) !important;
 }
 
@@ -496,6 +529,18 @@
   align-items: flex-start;
 }
 
+.modalHeader h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.calendarActivitySectionDarkMode h2 {
+  color: #fff;
+  margin-bottom: 10px;
+}
+
 .selectedDatePanelDarkMode .selectedDateHeader h2 {
   color: #f7fafc;
 }
@@ -522,9 +567,9 @@
 .selectedEventCard {
   border: 1px solid #e2e8f0;
   border-radius: 12px;
-  background-color: #ffffff;
+  background-color: #fff;
   padding: 16px 20px;
-  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 4px 16px rgb(15 23 42 / 6%);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -532,12 +577,12 @@
   background-color: #1f2937;
   border-color: #374151;
   color: #f9fafb;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 16px rgb(0 0 0 / 40%);
 }
 
 .selectedEventCardActive {
   border-color: #3182ce;
-  box-shadow: 0 6px 20px rgba(49, 130, 206, 0.2);
+  box-shadow: 0 6px 20px rgb(49 130 206 / 20%);
 }
 
 .selectedEventHeader {
@@ -577,7 +622,7 @@
 .eventDetailButton {
   border: none;
   background-color: #1e40af;
-  color: #ffffff;
+  color: #fff;
   padding: 8px 14px;
   border-radius: 6px;
   font-size: 0.85rem;
@@ -623,33 +668,33 @@
 
 .eventTooltip {
   position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  margin-bottom: 5px;
+  top: 0;
+  left: 100%;
+  transform: translate(8px, -10px);
+  z-index: 999;
   width: 220px;
   padding: 10px;
-  background-color: #ffffff;
+  background-color: #fff;
   border: 1px solid #ccc;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  z-index: 10;
-  pointer-events: none;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
   display: flex;
   flex-direction: column;
   gap: 4px;
-  color: #333;
+  font-size: 0.75rem;
+  line-height: 1.3;
+  pointer-events: none;
 }
 
 .eventTooltipDark {
   background-color: #1a202c;
   color: #f7fafc;
   border: 1px solid #4a5568;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 6px 18px rgb(0 0 0 / 60%);
 }
 
 .eventTooltipDark strong {
-  color: #ffffff;
+  color: #fff;
 }
 
 .eventTooltipDark small {
@@ -663,22 +708,20 @@
 /* Event Modal Styles */
 .eventModalOverlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  inset: 0;
+  background-color: rgb(0 0 0 / 50%);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  animation: fadeIn 0.2s ease-out;
+  animation: fade-in 0.2s ease-out;
 }
 
-@keyframes fadeIn {
+@keyframes fade-in {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -687,7 +730,7 @@
 .eventModal {
   background: white;
   border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 40px rgb(0 0 0 / 20%);
   max-width: 500px;
   width: 90%;
   max-height: 80vh;
@@ -697,22 +740,24 @@
   z-index: 2;
 }
 
-@keyframes slideIn {
+@keyframes slide-in {
   from {
     opacity: 0;
     transform: translateY(-20px) scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
   }
 }
 
-/* .eventModalDark {
+.eventModalDark {
   background: #1a202c;
   color: #e2e8f0;
   border: 1px solid #4a5568;
-} */
+  box-shadow: 0 10px 40px rgb(0 0 0 / 60%);
+}
 
 .modalHeader {
   display: flex;
@@ -728,15 +773,8 @@
   border-radius: 12px 12px 0 0;
 }
 
-.modalHeader h2 {
-  margin: 0;
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #2d3748;
-}
-
 .eventModalDark .modalHeader h2 {
-  color: #ffffff;
+  color: #fff;
 }
 
 .modalClose {
@@ -766,12 +804,13 @@
 
 .eventModalDark .modalClose:hover {
   background-color: #4a5568;
-  color: #ffffff;
+  color: #fff;
 }
 
 .modalContent {
   padding: 20px 24px;
 }
+
 .eventModalDark .modalContent {
   background: #1a202c;
 }
@@ -831,28 +870,28 @@
 
 /* Full - Deep Emerald */
 .darkModeStatusBadge.Full {
-  background-color: rgba(6, 78, 59, 0.4); 
+  background-color: rgb(6 78 59 / 40%); 
   border-color: #10b981;                
   color: #d1fae5;                       
 }
 
 /* Filling Fast - Deep Burnt Orange */
 .darkModeStatusBadge.FillingFast {
-  background-color: rgba(124, 45, 18, 0.4); 
+  background-color: rgb(124 45 18 / 40%); 
   border-color: #f97316;                    
   color: #ffedd5;                           
 }
 
 /* New - Deep Crimson */
 .darkModeStatusBadge.New {
-  background-color: rgba(127, 29, 29, 0.4); 
+  background-color: rgb(127 29 29 / 40%); 
   border-color: #ef4444;                    
   color: #fee2e2;                           
 }
 
 /* Needs Attendees - Deep Royal Blue */
 .darkModeStatusBadge.NeedsAttendees {
-  background-color: rgba(30, 58, 138, 0.4); 
+  background-color: rgb(30 58 138 / 40%); 
   border-color: #3b82f6;                    
   color: #dbeafe;                          
 }
@@ -878,6 +917,16 @@
   letter-spacing: 0.5px;
 }
 
+.eventDescription label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #718096;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
 .eventModalDark .detailItem label {
   color: #cbd5e0;
 }
@@ -889,21 +938,11 @@
 }
 
 .eventModalDark .detailItem span {
-  color: #ffffff;
+  color: #fff;
 }
 
 .eventDescription {
   margin-bottom: 24px;
-}
-
-.eventDescription label {
-  display: block;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #718096;
-  margin-bottom: 8px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 .eventModalDark .eventDescription label {
@@ -915,6 +954,11 @@
   font-size: 1rem;
   line-height: 1.6;
   color: #4a5568;
+}
+
+.activityNoEventsMessage p {
+  margin: 0;
+  font-size: 1rem;
 }
 
 .eventModalDark .eventDescription p {
@@ -969,7 +1013,7 @@
 
 .eventModalDark .btnSecondary {
   background-color: #4a5568;
-  color: #ffffff;
+  color: #fff;
   border-color: #718096;
 }
 
@@ -983,24 +1027,26 @@
   background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
 }
 
-/* Better dark mode contrast for all text elements */
 .eventModalDark * {
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  text-shadow: 0 1px 2px rgb(0 0 0 / 10%);
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .eventModal {
     width: 95%;
     max-height: 90vh;
   }
+
   .eventDetailsGrid {
     grid-template-columns: 1fr;
     gap: 12px;
   }
+
   .modalActions {
     flex-direction: column;
   }
+
   .btnPrimary,
   .btnSecondary {
     width: 100%;
@@ -1015,11 +1061,6 @@
 
 .activityHeaderDark {
   color: #f7fafc;
-}
-
-.calendarActivitySectionDarkMode h2 {
-  color: #fff;
-  margin-bottom: 10px;
 }
 
 .calendarActivityList {
@@ -1066,6 +1107,47 @@
   color: #fff;
 }
 
+.eventButton {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.eventButton:hover {
+  background-color: #f0f0f0;
+}
+
+.calendarActivityItemDarkMode .eventButton:hover {
+  background-color: #4a5568;
+}
+
+.calendarActivityItem.clickable {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.calendarActivityItem.clickable:hover {
+  background-color: #f0f0f0;
+}
+
+.calendarActivityItemDarkMode.clickable:hover {
+  background-color: #4a5568;
+}
+
+.activityNoEventsMessage {
+  padding: 20px;
+  text-align: center;
+  color: #666;
+}
+
+.calendarActivitySectionDarkMode .activityNoEventsMessage {
+  color: #cbd5e0;
+}
+
 .activityMessage {
   margin: 0 0 4px;
   color: #1a202c;
@@ -1094,12 +1176,12 @@
 
 /* Override for selected date - must be pure white with maximum visibility */
 .reactCalendarDarkMode :global(.react-calendar__tile.selectedDate) :global(abbr) {
-  color: #ffffff !important;
+  color: #fff !important;
   font-weight: 900 !important;
   font-size: 1.1em !important;
-  text-shadow: 0 0 6px rgba(255, 255, 255, 1), 0 0 8px rgba(255, 255, 255, 0.8),
-    0 2px 4px rgba(0, 0, 0, 1), 0 4px 8px rgba(0, 0, 0, 0.8) !important;
-  -webkit-text-stroke: 0.5px rgba(255, 255, 255, 1);
+  text-shadow: 0 0 6px rgb(255 255 255 / 100%), 0 0 8px rgb(255 255 255 / 80%),
+    0 2px 4px rgb(0 0 0 / 100%), 0 4px 8px rgb(0 0 0 / 80%) !important;
+  -webkit-text-stroke: 0.5px rgb(255 255 255 / 100%);
   filter: brightness(1.5) contrast(1.3) !important;
   background-color: #0f172a !important;
   padding: 2px 4px;
@@ -1119,24 +1201,25 @@
 .reactCalendarDarkMode :global(.react-calendar__tile--active.selectedDate),
 .reactCalendarDarkMode :global(.react-calendar__tile.selectedDate.react-calendar__tile--active) {
   background-color: #1a2332 !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .reactCalendarDarkMode :global(.react-calendar__tile--active.selectedDate) :global(abbr),
 .reactCalendarDarkMode
   :global(.react-calendar__tile.selectedDate.react-calendar__tile--active)
   :global(abbr) {
-  color: #ffffff !important;
+  color: #fff !important;
   font-weight: 900 !important;
   font-size: 1.2em !important;
-  text-shadow: 0 0 8px rgba(255, 255, 255, 1), 0 0 10px rgba(255, 255, 255, 0.9),
-    0 2px 4px rgba(0, 0, 0, 1), 0 4px 8px rgba(0, 0, 0, 0.9) !important;
+  text-shadow: 0 0 8px rgb(255 255 255 / 100%), 0 0 10px rgb(255 255 255 / 90%),
+    0 2px 4px rgb(0 0 0 / 100%), 0 4px 8px rgb(0 0 0 / 90%) !important;
   filter: brightness(1.8) contrast(1.5) !important;
 }
 
 .reactCalendarDarkMode :global(.react-calendar__tile--now) :global(abbr) {
   color: #fff !important;
 }
+
 .reactCalendarDarkMode :global(.react-calendar__navigation__label) {
   color: #fff;
 }
@@ -1146,6 +1229,16 @@
 }
 
 .reactCalendarDarkMode :global(.react-calendar__navigation) {
+  background-color: #1b2a41;
+  border-bottom: 1px solid #444;
+}
+
+.reactCalendarDarkMode :global(.react-calendar__navigation button) {
+  color: #fff;
+}
+
+.reactCalendarDarkMode :global(.react-calendar__navigation button:enabled:hover),
+.reactCalendarDarkMode :global(.react-calendar__navigation button:enabled:focus) {
   background-color: #2d3748;
   border-bottom-color: #4a5568;
 }
@@ -1193,12 +1286,12 @@
 .reactCalendarDarkMode.reactCalendar :global(.react-calendar__tile.selectedDate) :global(abbr),
 .reactCalendarDarkMode :global(.react-calendar__tile.selectedDate abbr),
 .reactCalendarDarkMode :global(.react-calendar__tile.selectedDate span) {
-  color: #ffffff !important;
+  color: #fff !important;
   font-weight: 900 !important;
   font-size: 1.2em !important;
-  text-shadow: 0 0 8px rgba(255, 255, 255, 1), 0 0 10px rgba(255, 255, 255, 0.9),
-    0 2px 4px rgba(0, 0, 0, 1), 0 4px 8px rgba(0, 0, 0, 0.9) !important;
-  -webkit-text-stroke: 0.6px rgba(255, 255, 255, 1);
+  text-shadow: 0 0 8px rgb(255 255 255 / 100%), 0 0 10px rgb(255 255 255 / 90%),
+    0 2px 4px rgb(0 0 0 / 100%), 0 4px 8px rgb(0 0 0 / 90%) !important;
+  -webkit-text-stroke: 0.6px rgb(255 255 255 / 100%);
   filter: brightness(1.8) contrast(1.5) !important;
 }
 
@@ -1206,11 +1299,11 @@
 .reactCalendarDarkMode :global(.react-calendar__tile.selectedDate) :global(abbr),
 .reactCalendarDarkMode :global(.react-calendar__tile.selectedDate) :global(button),
 .reactCalendarDarkMode :global(.react-calendar__tile.selectedDate) :global(div) {
-  color: #ffffff !important;
+  color: #fff !important;
   font-weight: 900 !important;
   font-size: 1.2em !important;
-  text-shadow: 0 0 8px rgba(255, 255, 255, 1), 0 0 10px rgba(255, 255, 255, 0.9),
-    0 2px 4px rgba(0, 0, 0, 1), 0 4px 8px rgba(0, 0, 0, 0.9) !important;
+  text-shadow: 0 0 8px rgb(255 255 255 / 100%), 0 0 10px rgb(255 255 255 / 90%),
+    0 2px 4px rgb(0 0 0 / 100%), 0 4px 8px rgb(0 0 0 / 90%) !important;
   filter: brightness(1.8) contrast(1.5) !important;
 }
 
@@ -1219,11 +1312,11 @@
 .reactCalendarDarkMode :global(.react-calendar__tile.selectedDate):hover,
 .reactCalendarDarkMode :global(.react-calendar__tile.selectedDate):hover :global(span),
 .reactCalendarDarkMode :global(.react-calendar__tile.selectedDate):hover :global(*) {
-  color: #ffffff !important;
+  color: #fff !important;
   font-weight: 900 !important;
   background-color: #0f1f3a !important;
-  text-shadow: 0 0 6px rgba(255, 255, 255, 1), 0 0 8px rgba(255, 255, 255, 0.8),
-    0 2px 4px rgba(0, 0, 0, 1), 0 4px 8px rgba(0, 0, 0, 0.8) !important;
+  text-shadow: 0 0 6px rgb(255 255 255 / 100%), 0 0 8px rgb(255 255 255 / 80%),
+    0 2px 4px rgb(0 0 0 / 100%), 0 4px 8px rgb(0 0 0 / 80%) !important;
   filter: brightness(1.5) contrast(1.3) !important;
 }
 
@@ -1238,7 +1331,7 @@
   left: 50%;
   transform: translate(-50%, -50%);
   background: white;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 20px rgb(0 0 0 / 30%);
   border-radius: 10px;
   z-index: 1500;
   width: 400px;
@@ -1271,20 +1364,6 @@
   border-bottom-color: #4a5568;
 }
 
-.overflowPopup .eventItem {
-  margin-bottom: 8px;
-  font-size: 0.9rem;
-  padding: 6px 10px;
-  border-radius: 6px;
-  color: #fff;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-
-.overflowPopup .eventItem:hover {
-  transform: translateY(-1px);
-}
 .detailLabel {
   font-size: 0.8rem;
   font-weight: 600;
@@ -1295,9 +1374,25 @@
   display: block;
 }
 
+/* Week Grid Styles */
+.weekGridContainer {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  height: 700px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
 
+.weekGridBody {
+  flex: 1;
+  overflow-y: scroll;
+  background: #fff;
+}
 
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
   .calendarContainer{
     flex-direction: column;
   } 
@@ -1308,3 +1403,136 @@
 
 }
 
+.dateLabel {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.hourRow {
+  display: grid;
+  grid-template-columns: 80px repeat(7, 1fr);
+  min-height: 80px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.timeLabel {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  text-align: right;
+  padding-right: 12px;
+  padding-top: 8px;
+  font-weight: 500;
+  border-right: 1px solid #e2e8f0;
+}
+
+.gridCell {
+  border-left: 1px solid #f1f5f9;
+  position: relative;
+  padding: 4px;
+  transition: background 0.2s;
+}
+
+.gridCell:hover {
+  background-color: #f8fafc;
+}
+
+.gridEvent {
+  background: #dcfce7;
+  border-left: 4px solid #22c55e;
+  border-radius: 6px;
+  padding: 6px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 5%);
+  margin-bottom: 4px;
+}
+
+.gridEventTitle {
+  font-weight: 600;
+  color: #166534;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Dark Mode Support */
+.weekGridContainerDark {
+  background: #1a2332;
+  border-color: #2d3748;
+}
+
+.weekGridContainerDark .weekGridBody {
+  background: #0f172a;
+}
+
+.weekGridHeaderDark {
+  background: #232d3f;
+  border-bottom-color: #2d3748;
+}
+
+.dayLabelDark {
+  color: #a0aec0;
+}
+
+.dateLabelDark {
+  color: #fff;
+}
+
+.hourRowDark {
+  border-bottom-color: #2d3748;
+}
+
+.timeLabelDark {
+  color: #718096;
+  border-right-color: #2d3748;
+}
+
+.gridCellDark {
+  border-left-color: #2d3748;
+}
+
+.gridCellDark:hover {
+  background-color: rgb(255 255 255 / 3%);
+}
+
+.gridEventDark {
+  background: #064e3b;
+  border-left: 4px solid #10b981;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 30%);
+}
+
+.gridEventTitleDark {
+  color: #d1fae5;
+}
+
+.gridEventTimeDark {
+  color: #a7f3d0;
+}
+
+.eventContent {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  overflow: hidden;
+}
+
+.eventIcon {
+  font-size: 0.75rem;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+}
+
+.eventTitleText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.statusInline {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+}

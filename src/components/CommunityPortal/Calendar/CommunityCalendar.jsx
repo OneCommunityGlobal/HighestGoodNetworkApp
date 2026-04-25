@@ -2,175 +2,93 @@ import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import ReactCalendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
+import axios from 'axios';
+import { ENDPOINTS } from '../../../utils/URL';
 import CalendarActivitySection from './CalendarActivitySection';
 import styles from './CommunityCalendar.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClock, faLocationDot, faTag, faCircleCheck } from '@fortawesome/free-solid-svg-icons';
 
-const mockEvents = [
-  {
-    id: 1,
-    title: 'Event 1',
-    type: 'Workshop',
-    location: 'Virtual',
-    time: '10:00 AM',
-    date: new Date(2025, 0, 27),
-    status: 'New',
-    description: 'Detailed description of Event 1.',
-    registeredCount: 1,
-    capacity: 20,
-  },
-  {
-    id: 2,
-    title: 'Event 2',
-    type: 'Meeting',
-    location: 'In person',
-    time: '2:00 PM',
-    date: new Date(2025, 0, 31),
-    status: 'Needs Attendees',
-    description: 'Detailed description of Event 2.',
-    registeredCount: 2,
-    capacity: 10,
-  },
-  {
-    id: 3,
-    title: 'Event 3',
-    type: 'Workshop',
-    location: 'Virtual',
-    time: '12:00 PM',
-    date: new Date(2025, 0, 28),
-    status: 'New',
-    description: 'Detailed description of Event 3.',
-    registeredCount: 1,
-    capacity: 100,
-  },
-  {
-    id: 4,
-    title: 'Event 4 (Full)',
-    type: 'Webinar',
-    location: 'Virtual',
-    time: '3:00 AM',
-    date: new Date(2025, 0, 3),
-    status: 'Full',
-    description: 'Detailed description of Event 4.',
-    registeredCount: 10,
-    capacity: 10,
-  },
-  {
-    id: 5,
-    title: 'Event 5',
-    type: 'Social Gathering',
-    location: 'In person',
-    time: '11:00 AM',
-    date: new Date(2025, 0, 28),
-    status: 'Filling Fast',
-    description: 'Detailed description of Event 5.',
-    registeredCount: 49,
-    capacity: 50,
-  },
-];
+const MOCK_EVENTS = [];
 
-const STATUSES = ['New', 'Needs Attendees', 'Filling Fast', 'Full Event'];
-const EVENT_TYPES = ['Workshop', 'Webinar', 'Meeting', 'Social Gathering'];
-const LOCATIONS = ['Virtual', 'In person'];
-const TIMES = ['10:00 AM', '1:00 PM', '3:00 PM', '5:00 PM'];
+const normalizeStatus = status => {
+  if (!status) return 'New';
 
-function CommunityCalendar() {
+  const s = status.toLowerCase();
+
+  if (s.includes('need')) return 'Needs Attendees';
+  if (s.includes('fill')) return 'Filling Fast';
+  if (s.includes('full')) return 'Full Event';
+  if (s.includes('new')) return 'New';
+
+  return 'New';
+};
+
+export default function CommunityCalendar() {
+  const [events, setEvents] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [filter, setFilter] = useState({ type: 'all', location: 'all', status: 'all' });
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showEventModal, setShowEventModal] = useState(false);
-  const [events, setEvents] = useState(mockEvents);
+  const [hoveredEventId, setHoveredEventId] = useState(null);
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const currentDate = new Date();
 
-  // Derive status from count/capacity
-  const getDerivedStatus = useCallback(event => {
-    if (event.registeredCount === undefined || !event.capacity) {
-      return event.status;
-    }
+  useEffect(() => {
+    const fetchEvents = async () => {
+      setIsLoading(true);
+      try {
+        const response = await axios.get(ENDPOINTS.EVENTS);
 
-    const count = event.registeredCount;
-    const capacity = event.capacity;
+        const apiEvents = response.data?.events || response.data || [];
 
-    if (count >= capacity) return 'Full'; // max capacity
-    if (count >= capacity * 0.7) return 'Filling Fast'; // 70% threshold
-    if (capacity * 0.1 < count && count <= capacity * 0.2) return 'Needs Attendees'; // between 10% and 20% of capacity
-
-    return 'New';
-  }, []);
-
-  const getDerivedStatusClassNames = event => {
-    const status = getDerivedStatus(event);
-    if (status === 'Full') return 'Full';
-    if (status === 'Filling Fast') return 'FillingFast';
-    if (status === 'Needs Attendees') return 'NeedsAttendees';
-    if (status === 'New') return 'New';
-    return '';
-  };
-
-  // Function to determine the CSS class based on the derived status
-  const getEventStatusClass = useCallback(dynamicStatus => {
-    let statusClassName;
-
-    switch (dynamicStatus) {
-      case 'Full':
-        statusClassName = styles.statusFull;
-        break;
-      case 'Filling Fast':
-        statusClassName = styles.statusFillingFast;
-        break;
-      case 'New':
-        statusClassName = styles.statusNew;
-        break;
-      case 'Needs Attendees':
-        statusClassName = styles.statusNeedsAttendees;
-        break;
-      default:
-        statusClassName = '';
-    }
-    return statusClassName;
-  }, []);
-
-  // Handler for registration button click
-  const handleRegister = useCallback(
-    eventToRegister => {
-      if (getDerivedStatus(eventToRegister) === 'Full') {
-        alert('This event is full!');
-        return;
+        if (!apiEvents || apiEvents.length === 0) {
+          console.warn('API returned empty → using mock events');
+          setEvents(MOCK_EVENTS);
+        } else {
+          setEvents(apiEvents);
+        }
+      } catch (err) {
+        console.warn('API failed → using mock events');
+        setEvents(MOCK_EVENTS);
+      } finally {
+        setIsLoading(false);
       }
+    };
 
-      const updatedEvent = {
-        ...eventToRegister,
-        registeredCount: (eventToRegister.registeredCount || 0) + 1,
+    fetchEvents();
+  }, []);
+
+  const mappedEvents = useMemo(() => {
+    return events.map(event => {
+      const eventDate = new Date(event.date);
+      const timeString = eventDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      return {
+        ...event,
+        id: event.id || `${event.title}-${eventDate.getTime()}`,
+        date: eventDate,
+        type: event.type || 'General',
+        status: normalizeStatus(event.status),
+        time: event.time || timeString,
+        description: event.description || `Join us for ${event.title}`,
+        location: event.location || 'Online',
       };
+    });
+  }, [events]);
 
-      // Changing event status to "Full" when capacity is reached and Event Title to match it
-      if (updatedEvent.registeredCount === updatedEvent.capacity) {
-        updatedEvent.status = 'Full';
-        updatedEvent.title = updatedEvent.title + ' (Full)';
-      }
-
-      setEvents(prevEvents =>
-        prevEvents.map(ev => (ev.id === eventToRegister.id ? updatedEvent : ev)),
-      );
-
-      setSelectedEvent(updatedEvent);
-
-      console.log(
-        `Registered for ${updatedEvent.title}! Count updated to ${updatedEvent.registeredCount}.`,
-      );
-    },
-    [getDerivedStatus],
+  const filteredEvents = useMemo(
+    () =>
+      mappedEvents.filter(
+        e =>
+          (filter.type === 'all' || e.type === filter.type) &&
+          (filter.location === 'all' || e.location === filter.location) &&
+          (filter.status === 'all' || e.status === filter.status),
+      ),
+    [mappedEvents, filter],
   );
-
-  // Memoized filtered events - only recalculates when filter or events change
-  const filteredEvents = useMemo(() => {
-    return events.filter(
-      event =>
-        (filter.type === 'all' || event.type === filter.type) &&
-        (filter.location === 'all' || event.location === filter.location) &&
-        (filter.status === 'all' || getDerivedStatus(event) === filter.status),
-    );
-  }, [filter, events, getDerivedStatus]);
 
   // Enhanced event caching by date - memoized for performance
   const eventCache = useMemo(() => {
@@ -192,18 +110,6 @@ function CommunityCalendar() {
     return map;
   }, [filteredEvents]);
 
-  // Memoized unique filter values for dropdowns
-  const uniqueFilterValues = useMemo(() => {
-    const types = [...new Set(events.map(event => event.type))];
-    const locations = [...new Set(events.map(event => event.location))];
-
-    // Use the dynamic statuses for the filter dropdown
-    const dynamicStatuses = ['Full', 'Filling Fast', 'Open', 'New', 'Needs Attendees'];
-    const statuses = [...new Set(dynamicStatuses)];
-
-    return { types, locations, statuses };
-  }, [events]);
-
   const handleFilterChange = useCallback(
     filterType => e => {
       setFilter(prev => ({
@@ -219,7 +125,8 @@ function CommunityCalendar() {
   // Memoized helper function to get events for a specific date
   const getEventsForDate = useCallback(
     date => {
-      return eventCache.get(date.toDateString()) || [];
+      if (!date) return [];
+      return eventCache.get(new Date(date).toDateString()) || [];
     },
     [eventCache],
   );
@@ -257,22 +164,13 @@ function CommunityCalendar() {
     },
     [getEventsForDate],
   );
-
   const handleEventClick = useCallback(event => {
+    setSelectedDate(new Date(event.date));
+
     setSelectedEvent(event);
+
     setShowEventModal(true);
   }, []);
-
-  const handleEventKeyPress = useCallback(
-    (e, event) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        handleEventClick(event);
-      }
-    },
-    [handleEventClick],
-  );
-
   const closeEventModal = useCallback(() => {
     setShowEventModal(false);
     setSelectedEvent(null);
@@ -305,24 +203,20 @@ function CommunityCalendar() {
 
   useEffect(() => {
     const eventsForDate = getEventsForDate(selectedDate);
+
     if (eventsForDate.length === 0) {
       if (selectedEvent !== null) {
         setSelectedEvent(null);
-      }
-      if (showEventModal) {
-        setShowEventModal(false);
       }
       return;
     }
 
     const hasSelectedEvent = eventsForDate.some(event => event.id === selectedEvent?.id);
+
     if (!hasSelectedEvent) {
       setSelectedEvent(eventsForDate[0]);
-      if (showEventModal) {
-        setShowEventModal(false);
-      }
     }
-  }, [getEventsForDate, selectedDate, selectedEvent, showEventModal]);
+  }, [getEventsForDate, selectedDate]);
 
   const statusMap = {
     New: 'statusNew',
@@ -331,43 +225,183 @@ function CommunityCalendar() {
     'Full Event': 'statusFull',
   };
 
-  // Memoized tile content function
+  const statusIconMap = {
+    New: '⭐',
+    'Needs Attendees': '🙋',
+    'Filling Fast': '⚡',
+    'Full Event': '⛔',
+    Full: '⛔',
+  };
+
+  function WeeklyTimeGrid({ events, selectedDate, onEventClick, darkMode }) {
+    const hours = Array.from({ length: 24 }, (_, i) => i);
+
+    const startOfWeek = useMemo(() => {
+      const d = new Date(selectedDate);
+      d.setDate(d.getDate() - d.getDay());
+      return d;
+    }, [selectedDate]);
+
+    const weekDays = useMemo(() => {
+      return Array.from({ length: 7 }, (_, i) => {
+        const day = new Date(startOfWeek);
+        day.setDate(startOfWeek.getDate() + i);
+        return day;
+      });
+    }, [startOfWeek]);
+
+    return (
+      <div
+        className={`${styles.weekGridContainer} ${darkMode ? styles.weekGridContainerDark : ''}`}
+      >
+        <div className={`${styles.weekGridHeader} ${darkMode ? styles.weekGridHeaderDark : ''}`}>
+          <div className={styles.timeGutter} />
+          {weekDays.map(date => (
+            <div key={date.toString()} className={styles.dayColumnHeader}>
+              <div className={`${styles.dayLabel} ${darkMode ? styles.dayLabelDark : ''}`}>
+                {date.toLocaleDateString('en-US', { weekday: 'short' })}
+              </div>
+              <div className={`${styles.dateLabel} ${darkMode ? styles.dateLabelDark : ''}`}>
+                {date.getDate()}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className={styles.weekGridBody}>
+          {hours.map(hour => (
+            <div key={hour} className={`${styles.hourRow} ${darkMode ? styles.hourRowDark : ''}`}>
+              <div className={`${styles.timeLabel} ${darkMode ? styles.timeLabelDark : ''}`}>
+                {hour === 0
+                  ? '12 AM'
+                  : hour > 12
+                  ? `${hour - 12} PM`
+                  : hour === 12
+                  ? '12 PM'
+                  : `${hour} AM`}
+              </div>
+
+              {weekDays.map(date => {
+                const cellEvents = events.filter(e => {
+                  const eventDate = new Date(e.date);
+                  const [hStr] = e.time.split(':');
+                  let h = parseInt(hStr, 10);
+                  const isPM = e.time.toLowerCase().includes('pm');
+                  const isAM = e.time.toLowerCase().includes('am');
+                  if (isPM && h !== 12) h += 12;
+                  if (isAM && h === 12) h = 0;
+
+                  return eventDate.toDateString() === date.toDateString() && h === hour;
+                });
+
+                return (
+                  <div
+                    key={date.toString()}
+                    className={`${styles.gridCell} ${darkMode ? styles.gridCellDark : ''}`}
+                  >
+                    {cellEvents.map(ev => (
+                      <button
+                        key={ev.id}
+                        type="button"
+                        className={`${styles.gridEvent} ${darkMode ? styles.gridEventDark : ''}`}
+                        onClick={() => onEventClick(ev)}
+                        aria-label={`Open event ${ev.title} at ${ev.time}`}
+                      >
+                        <div
+                          className={`${styles.gridEventTime} ${
+                            darkMode ? styles.gridEventTimeDark : ''
+                          }`}
+                        >
+                          {ev.time}
+                        </div>
+                        <div
+                          className={`${styles.gridEventTitle} ${
+                            darkMode ? styles.gridEventTitleDark : ''
+                          }`}
+                        >
+                          {ev.title}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Render event tiles
   const tileContent = useCallback(
     ({ date, view }) => {
-      if (view === 'month') {
-        const eventsForTile = getEventsForDate(date).map(event => {
-          const statusClass = getEventStatusClass(getDerivedStatus(event));
-          return (
-            <div
-              key={event.id}
-              className={`${styles.eventItem} ${styles.clickable} ${statusClass}`}
-              onClick={() => handleEventClick(event)}
-              onKeyDown={e => handleEventKeyPress(e, event)}
-              role="button"
-              tabIndex={0}
-              aria-label={`Click to view details for ${event.title}`}
-              style={{
-                borderRadius: '4px',
-                padding: '2px 6px',
-              }}
+      if (view !== 'month') return null;
+      const events = getEventsForDate(date);
+      if (!events.length) return null;
+
+      const visible = events.slice(0, 3);
+      const hiddenCount = events.length - 3;
+
+      return (
+        <div className={styles.tileEvents}>
+          {visible.map(e => {
+            const statusKey = statusMap[e.status] || 'statusNew';
+
+            return (
+              <button
+                key={e.id}
+                type="button"
+                className={`${styles.eventItem} ${styles[statusKey] || ''}`}
+                onClick={e_obj => {
+                  e_obj.stopPropagation();
+                  handleEventClick(e);
+                }}
+                onMouseEnter={() => setHoveredEventId(e.id)}
+                onMouseLeave={() => setHoveredEventId(null)}
+                aria-label={`Click to view details for ${e.title}`}
+              >
+                <span className={styles.eventContent}>
+                  <span className={styles.eventIcon} aria-label={e.status} title={e.status}>
+                    {statusIconMap[e.status] || '⭐'}
+                  </span>
+                  <span className={styles.eventTitleText}>{e.title}</span>
+                </span>
+
+                {hoveredEventId === e.id && (
+                  <div
+                    className={`${styles.eventTooltip} ${darkMode ? styles.eventTooltipDark : ''}`}
+                  >
+                    <strong>{e.title}</strong>
+                    <span className={styles.tooltipDetail}>
+                      <strong>Time:</strong> {e.time}
+                    </span>
+                    <span className={styles.tooltipDetail}>
+                      <strong>Location:</strong> {e.location}
+                    </span>
+                    <span className={styles.tooltipDetail}>
+                      <strong>Status:</strong> {e.status}
+                    </span>
+                    <small>Click for more details</small>
+                  </div>
+                )}
+              </button>
+            );
+          })}
+          {hiddenCount > 0 && (
+            <button
+              type="button"
+              className={styles.moreEvents}
+              onClick={() => setOverflowDate(date)}
+              title="View all events"
             >
-              {event.title}
-            </div>
-          );
-        });
-        return eventsForTile.length > 0 ? (
-          <div className={styles.tileEvents}>{eventsForTile}</div>
-        ) : null;
-      }
-      return null;
+              +{hiddenCount} more
+            </button>
+          )}
+        </div>
+      );
     },
-    [
-      getEventsForDate,
-      handleEventClick,
-      handleEventKeyPress,
-      getEventStatusClass,
-      getDerivedStatus,
-    ],
+    [getEventsForDate, handleEventClick, darkMode, hoveredEventId],
   );
 
   // Memoized tile class name function
@@ -390,12 +424,14 @@ function CommunityCalendar() {
     setFilter(prev => ({ ...prev, type: e.target.value }));
   }, []); */
 
-  /*   const handleLocationFilterChange = useCallback(e => {
-    setFilter(prev => ({ ...prev, location: e.target.value }));
-  }, []); */
-
-  // Memoized dark mode selector
-  const darkMode = useSelector(state => state.theme.darkMode);
+  const uniqueFilterValues = useMemo(
+    () => ({
+      types: [...new Set(mappedEvents.map(e => e.type))],
+      locations: [...new Set(mappedEvents.map(e => e.location))],
+      statuses: [...new Set(mappedEvents.map(e => e.status))],
+    }),
+    [mappedEvents],
+  );
 
   // Memoized CSS classes
   const calendarClasses = useMemo(
@@ -537,7 +573,11 @@ function CommunityCalendar() {
       <main className={calendarClasses.main}>
         <div className={calendarClasses.calendarContainer}>
           <div className={calendarClasses.activitySection}>
-            <CalendarActivitySection />
+            <CalendarActivitySection
+              selectedDate={selectedDate}
+              events={selectedDateEvents}
+              onEventClick={handleEventClick}
+            />
           </div>
           <div className={calendarClasses.calendarSection}>
             <ReactCalendar
@@ -546,7 +586,6 @@ function CommunityCalendar() {
               tileClassName={tileClassName}
               onClickDay={handleDateSelect}
               value={selectedDate}
-              minDate={new Date()}
             />
             <section
               className={`${styles.selectedDatePanel} ${
@@ -583,7 +622,7 @@ function CommunityCalendar() {
                           <header className={styles.selectedEventHeader}>
                             <div>
                               <h3>{event.title}</h3>
-                              <div className={styles.selectedEventMeta}>
+                              <div>
                                 <ul className={styles.selectedEventMeta}>
                                   <li className={styles.metaItem}>
                                     <FontAwesomeIcon icon={faClock} className={styles.metaIcon} />
@@ -608,7 +647,9 @@ function CommunityCalendar() {
                                       icon={faCircleCheck}
                                       className={styles.metaIcon}
                                     />
-                                    <span>{event.status}</span>
+                                    <span className={styles.statusInline}>
+                                      {statusIconMap[event.status] || ''} {event.status}
+                                    </span>
                                   </li>
                                 </ul>
                               </div>
@@ -649,11 +690,16 @@ function CommunityCalendar() {
               <button
                 key={e.id}
                 type="button"
-                className={`${styles.eventItem} ${styles[statusMap[e.status]]}`}
+                className={`${styles.eventItem} ${styles[statusMap[e.status]] || styles.statusNew}`}
                 onClick={() => handleEventClick(e)}
                 title={e.title}
               >
-                {e.title}
+                <span className={styles.eventContent}>
+                  <span className={styles.eventIcon} aria-label={e.status} title={e.status}>
+                    {statusIconMap[e.status] || '⭐'}
+                  </span>
+                  <span className={styles.eventTitleText}>{e.title}</span>
+                </span>
               </button>
             ))}
           </div>
@@ -685,65 +731,43 @@ function CommunityCalendar() {
             </div>
 
             <div className={styles.modalContent}>
-              <div className={styles.modalContent}>
-                <div className={styles.eventStatus}>
-                  <span
-                    className={`${styles.statusBadge} ${
-                      styles[getDerivedStatusClassNames(selectedEvent)]
-                    } ${darkMode ? styles.darkModeStatusBadge : ''}`}
-                  >
-                    {getDerivedStatus(selectedEvent)}
-                  </span>
-                </div>
-
-                <div className={styles.eventDetailsGrid}>
-                  <div className={styles.detailItem}>
-                    <label htmlFor="event-type">Type:</label>
-                    <span id="event-type">{selectedEvent.type}</span>
-                  </div>
-                  <div className={styles.detailItem}>
-                    <label htmlFor="event-location">Location:</label>
-                    <span id="event-location">{selectedEvent.location}</span>
-                  </div>
-                  <div className={styles.detailItem}>
-                    <label htmlFor="event-date">Date:</label>
-                    <span id="event-date">{selectedEvent.date.toLocaleDateString()}</span>
-                  </div>
-                  <div className={styles.detailItem}>
-                    <label htmlFor="event-time">Time:</label>
-                    <span id="event-time">{selectedEvent.time}</span>
-                  </div>
-                  {/* Display count/capacity for context */}
-                  <div className={styles.detailItem}>
-                    <label htmlFor="event-registrations">Attendees:</label>
-                    <span id="event-registrations">
-                      {selectedEvent.registeredCount || 0} / {selectedEvent.capacity || 'N/A'}
-                    </span>
-                  </div>
-                </div>
-
-                <div className={styles.eventDescription}>
-                  <label htmlFor="event-description">Description:</label>
-                  <p id="event-description">{selectedEvent.description}</p>
-                </div>
-              </div>
-
-              <div className={styles.modalActions}>
-                <button
-                  className={styles.btnPrimary}
-                  // Call the handler with the selected event
-                  onClick={() => handleRegister(selectedEvent)}
-                  // Disable if the derived status is 'Full'
-                  disabled={getDerivedStatus(selectedEvent) === 'Full'}
-                  style={{
-                    cursor: getDerivedStatus(selectedEvent) === 'Full' ? 'not-allowed' : 'pointer',
-                    opacity: getDerivedStatus(selectedEvent) === 'Full' ? 0.6 : 1,
-                  }}
+              <div className={styles.eventStatus}>
+                <span
+                  className={`${styles.statusBadge} ${styles[statusMap[selectedEvent.status]] ||
+                    ''} ${darkMode ? styles.darkModeStatusBadge : ''}`}
                 >
-                  {getDerivedStatus(selectedEvent) === 'Full' ? 'Event Full' : 'Register for Event'}
-                </button>
-                <button className={styles.btnSecondary}>Add to Calendar</button>
+                  {statusIconMap[selectedEvent.status] || ''} {selectedEvent.status}
+                </span>
               </div>
+
+              <div className={styles.eventDetailsGrid}>
+                <div className={styles.detailItem}>
+                  <span>Type:</span>
+                  <span>{selectedEvent.type}</span>
+                </div>
+                <div className={styles.detailItem}>
+                  <span>Location:</span>
+                  <span>{selectedEvent.location}</span>
+                </div>
+                <div className={styles.detailItem}>
+                  <span>Date:</span>
+                  <span>{selectedEvent.date.toLocaleDateString()}</span>
+                </div>
+                <div className={styles.detailItem}>
+                  <span>Time:</span>
+                  <span>{selectedEvent.time}</span>
+                </div>
+              </div>
+
+              <div className={styles.eventDescription}>
+                <span>Description:</span>
+                <p>{selectedEvent.description}</p>
+              </div>
+            </div>
+
+            <div className={styles.modalActions}>
+              <button className={styles.btnPrimary}>Register for Event</button>
+              <button className={styles.btnSecondary}>Add to Calendar</button>
             </div>
           </div>
         </div>
@@ -751,5 +775,3 @@ function CommunityCalendar() {
     </div>
   );
 }
-
-export default CommunityCalendar;
