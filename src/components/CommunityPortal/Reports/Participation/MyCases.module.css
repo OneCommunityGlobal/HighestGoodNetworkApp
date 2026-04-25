@@ -1,6 +1,8 @@
+/* stylelint-disable no-descending-specificity, no-duplicate-selectors */
+
 /* ---------- General Styles ---------- */
 .body {
-  font-family: 'Arial', sans-serif;
+  font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -8,10 +10,10 @@
 
 .myCasesPage {
   padding: 20px;
-  background-color: #ffffff;
+  background-color: #fff;
   border: 1px solid #ddd;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
 }
 
 .myCasesPageDark {
@@ -19,7 +21,7 @@
   background-color: #1c2541;
   border: 1px solid #ddd;
   border-radius: 6px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
 }
 
 /* ---------- Header ---------- */
@@ -34,11 +36,12 @@
   justify-content: space-between;
   align-items: center;
   background-color: #1c2541;
-  color: #ffffff;
+  color: #fff;
 }
 
 .myCasesPageDark .headerActions {
   gap: 20px;
+
   /* more room between dropdowns/buttons */
 }
 
@@ -53,7 +56,7 @@
   font-size: 24px;
   font-weight: bold;
   background-color: #1c2541;
-  color: #ffffff !important;
+  color: #fff !important;
   margin: 0;
 }
 
@@ -67,6 +70,7 @@
 .viewSwitcher {
   display: flex;
   gap: 12px;
+
   /* clean space between buttons */
 }
 
@@ -127,7 +131,7 @@
 
 .myCasesPageDark .filterDropdown {
   background-color: #3A506B;
-  color: #ffffff;
+  color: #fff;
   border: 1px solid #555;
 }
 
@@ -180,8 +184,9 @@
 
 .myCasesPageDark .createNew {
   background-color: #3A506B;
+
   /* Matches other dark elements */
-  color: #ffffff;
+  color: #fff;
   border: 1px solid #555;
 }
 
@@ -201,7 +206,7 @@
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 15px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -209,11 +214,11 @@
 
 .caseCardDark {
   background-color: #3a506b;
-  color: #ffffff;
+  color: #fff;
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 15px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -236,8 +241,8 @@
 }
 
 .eventBadge[data-type='Cooking Workshop'] {
-  background-color: #fdecea;
-  color: #e74c3c;
+  background-color: #eaeafd;
+  color: #3c3ce7;
 }
 
 .eventBadge[data-type='Dance Class'] {
@@ -252,27 +257,27 @@
 
 
 .caseCardDark .eventBadge {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgb(255 255 255 / 10%);
   color: #e2e8f0;
 }
 
 .caseCardDark .eventBadge[data-type='Yoga Class'] {
-  background-color: rgba(40, 167, 69, 0.2);
+  background-color: rgb(40 167 69 / 20%);
   color: #8fd19e;
 }
 
 .caseCardDark .eventBadge[data-type='Cooking Workshop'] {
-  background-color: rgba(231, 76, 60, 0.2);
-  color: #f1948a;
+  background-color: rgb(4 0 255 / 20%);
+  color: #8a8af1;
 }
 
 .caseCardDark .eventBadge[data-type='Dance Class'] {
-  background-color: rgba(243, 156, 18, 0.2);
+  background-color: rgb(243 156 18 / 20%);
   color: #f7dc6f;
 }
 
 .caseCardDark .eventBadge[data-type='Fitness Bootcamp'] {
-  background-color: rgba(155, 89, 182, 0.2);
+  background-color: rgb(155 89 182 / 20%);
   color: #d2b4de;
 }
 
@@ -284,7 +289,7 @@
 
 .eventTimeDark {
   font-size: 14px;
-  color: #ffffff !important;
+  color: #fff !important;
   margin-bottom: 10px;
 }
 
@@ -299,7 +304,7 @@
   font-size: 16px;
   font-weight: bold;
   margin-bottom: 15px;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .attendeesInfo {
@@ -312,7 +317,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .avatars img {
@@ -330,7 +335,7 @@
 
 .attendeesCountDark {
   font-size: 14px;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .rates {
@@ -352,7 +357,7 @@
   align-items: center;
   padding: 15px;
   background-color: #fff;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 10px rgb(0 0 0 / 10%);
 }
 
 .caseListItemDark {
@@ -361,7 +366,7 @@
   align-items: center;
   padding: 15px;
   background-color: #3a506b;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 10px rgb(0 0 0 / 10%);
 }
 
 .caseListItem span {
@@ -373,7 +378,7 @@
 .caseListItemDark span {
   margin-right: 15px;
   font-size: 14px;
-  color: #ffffff;
+  color: #fff;
 }
 
 .eventType {
@@ -390,7 +395,7 @@
   text-align: center;
   font-size: 16px;
   color: #555;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
 }
 
 .calendarViewDark {
@@ -400,8 +405,8 @@
   border-radius: 8px;
   text-align: center;
   font-size: 16px;
-  color: #ffffff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  color: #fff;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
 }
 
 /* ---------- More button ---------- */
@@ -424,19 +429,21 @@
 .caseCards.expanded,
 .caseList.expanded {
   max-height: 500px;
+
   /* enough space to show ~30 events */
   overflow-y: auto;
   padding-right: 8px;
 }
 
 /* Print styles for case cards */
+
 /* Print styles for case cards */
 @media print {
   .myCasesPage {
     overflow: visible !important;
     height: auto !important;
     max-height: none !important;
-    page-break-inside: auto !important;
+    break-inside: auto !important;
   }
 
   .caseCards {
@@ -446,7 +453,7 @@
     max-height: none !important;
     height: auto !important;
     overflow: visible !important;
-    page-break-inside: auto !important;
+    break-inside: auto !important;
   }
 
   .caseCard {
@@ -456,34 +463,34 @@
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
     break-inside: avoid-page !important;
-    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
 
   .caseCardDark {
     background: #3a506b !important;
-    color: #ffffff !important;
+    color: #fff !important;
     border: 1px solid #555 !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
     break-inside: avoid-page !important;
-    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
 
   .caseList {
     max-height: none !important;
     height: auto !important;
     overflow: visible !important;
-    page-break-inside: auto !important;
+    break-inside: auto !important;
   }
 
   .caseListItem {
     break-inside: avoid-page !important;
-    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
 
   .caseListItemDark {
     break-inside: avoid-page !important;
-    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
 
   .eventBadge {
@@ -515,22 +522,22 @@
 .myCasesPageDark .viewSwitcher button,
 .myCasesPageDark .createNew {
   background-color: #3A506B;
-  color: #ffffff;
+  color: #fff;
   border: 1px solid #3A506B;
 }
 
 .myCasesPageDark .viewSwitcher button.active {
   background-color: #007bff;
-  color: #ffffff;
+  color: #fff;
 }
 
 .myCasesPageDark .filterDropdown {
   background-color: #3A506B;
-  color: #ffffff;
+  color: #fff;
   border: 1px solid #3A506B;
 }
 
 .myCasesPageDark .filterDropdown option {
   background-color: #3A506B;
-  color: #ffffff;
+  color: #fff;
 }

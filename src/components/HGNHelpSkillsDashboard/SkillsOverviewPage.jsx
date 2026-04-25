@@ -39,7 +39,11 @@ function SkillsOverviewPage() {
 
       {/* Skill Filters */}
       <Accordion title="Filter by Skills" defaultOpen darkMode={darkMode}>
-        <SkillFilterButtons selectedSkills={selectedSkills} setSelectedSkills={setSelectedSkills} />
+        <SkillFilterButtons
+          selectedSkills={selectedSkills}
+          setSelectedSkills={setSelectedSkills}
+          darkMode={darkMode}
+        />
       </Accordion>
 
       {/* Preference Filters */}
@@ -47,6 +51,7 @@ function SkillsOverviewPage() {
         <PreferenceFilterButtons
           selectedPreferences={selectedPreferences}
           setSelectedPreferences={setSelectedPreferences}
+          darkMode={darkMode}
         />
       </Accordion>
 

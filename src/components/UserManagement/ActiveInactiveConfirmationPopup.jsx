@@ -9,7 +9,7 @@ import {
   ModalFooter,
 } from 'reactstrap';
 import '../Header/index.module.css';
-import { InactiveReason } from '../../utils/enums';
+import { InactiveReason } from '../../utils/enums.js';
 
 const ActiveInactiveConfirmationPopup = React.memo((props) => {
   const darkMode = useSelector(state => state.theme.darkMode);

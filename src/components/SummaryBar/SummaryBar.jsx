@@ -447,7 +447,7 @@ const SummaryBar = React.forwardRef((props, ref) => {
           <div className="d-flex justify-content-center">
             <span className={`${styles.large_text_summary} text-danger`}>!</span>
           </div>
-          <span className={styles['text-center']}>SUMMARY</span>
+          <span className="text-center">SUMMARY</span>
           <div className="py-2" />
         </div>
       );
@@ -461,7 +461,7 @@ const SummaryBar = React.forwardRef((props, ref) => {
         <div className="d-flex justify-content-center">
           <span className={`${styles.large_text_summary} ${styles['text--black']}`}>✓</span>
         </div>
-        <span className={styles['text-center']}>SUMMARY</span>
+        <span className="text-center">SUMMARY</span>
         <div className="py-2" />
       </div>
     );
@@ -577,12 +577,8 @@ const SummaryBar = React.forwardRef((props, ref) => {
             {totalEffort >= weeklyCommittedHours && (
               <div className={`${styles['border-green']} col-4 ${styles['bg--dark-green']}`}>
                 <div className="py-1"> </div>
-                <p
-                  className={`${styles['text-center']} ${styles.large_text_summary} ${styles['text--black']}`}
-                >
-                  ✓
-                </p>
-                <font className={`${styles['text-center']}`} size="3">
+                <p className="text-center large_text_summary">✓</p>
+                <font className="text-center" size="3">
                   HOURS
                 </font>
                 <div className="py-2"> </div>
@@ -651,7 +647,7 @@ const SummaryBar = React.forwardRef((props, ref) => {
                   <span>{tasks}</span>
                 </div>
               )}
-              {/* <div className={styles.redBackgroup}>
+              {/* <div className="redBackgroup">
                 <span>{tasks}</span>
               </div> */}
               {isAuthUser || canEditData() ? (
@@ -680,7 +676,7 @@ const SummaryBar = React.forwardRef((props, ref) => {
                   <span>{props.badgeCount}</span>
                 </div>
               )}
-              {/* <div className={styles.redBackgroup}>
+              {/* <div className="redBackgroup">
                 <span>{badges}</span>
                 <span>{props.badgeCount}</span>
               </div> */}

@@ -17,6 +17,7 @@ import { getUsersTotalHoursForSpecifiedPeriod } from '../../actions/timeEntries'
 import { getUserProfileBasicInfo } from '../../actions/userManagement';
 import Loading from '../common/Loading';
 import '../Header/index.module.css';
+import styles from './reportsPage.module.css';
 import peopleImage from './images/People.svg';
 import projectsImage from './images/Projects.svg';
 import teamsImage from './images/Teams.svg';
@@ -25,7 +26,6 @@ import LostTimeHistory from './LostTime/LostTimeHistory';
 import PeopleTable from './PeopleTable';
 import ProjectTable from './ProjectTable';
 import ReportFilter from './ReportFilter/ReportFilter';
-import './reportsPage.module.css';
 import TeamTable from './TeamTable';
 import TotalContributorsReport from './TotalReport/TotalContributorsReport';
 import TotalPeopleReport from './TotalReport/TotalPeopleReport';
@@ -522,9 +522,9 @@ endDate: moment()
     const boxStyling = darkMode ? boxStyleDark : boxStyle;
 
     return (
-      <Container fluid className={`mb-5 container-component-wrapper ${isOxfordBlue}`} style={darkMode ? { backgroundColor: '#1C2B3A' } : {}}>
+      <Container fluid className={`mb-5 ${styles['container-component-wrapper']} ${isOxfordBlue}`} style={darkMode ? { backgroundColor: '#1C2B3A' } : {}}>
         <div
-          className={`category-data-container ${isOxfordBlue} ${
+          className={`${styles['category-data-container']} ${isOxfordBlue} ${
             this.state.showPeople ||
             this.state.showProjects ||
             this.state.showTeams ||
@@ -537,16 +537,16 @@ endDate: moment()
             this.state.showAddProjHistory ||
             this.state.showContributorsReport
               ? ''
-              : 'no-active-selection'
+              : styles['no-active-selection']
           }`}
           style={darkMode ? { backgroundColor: '#1C2B3A' } : {}}
           type="button"
         >
-          <div className="container-component-category">
+          <div className={styles['container-component-category']}>
             <h2 className="mt-3 ">
               {/* Loading spinner at the top */}
               {this.state.loading && (
-                <div className="loading-spinner-top">
+                <div className={styles['loading-spinner-top']}>
                   <Loading align="center" darkMode={darkMode} />
                 </div>
               )}
@@ -566,12 +566,12 @@ endDate: moment()
             <div>
               <p >Select a Category</p>
             </div>
-            <div className='report-container-data'>
-              <div className='data-container' style={this.state.showCharts ? {width: '50%'} : {width: '100%'}}>
-                <div className="category-container">
+            <div className={styles['report-container-data']}>
+              <div className={styles['data-container']} style={this.state.showCharts ? {width: '50%'} : {width: '100%'}}>
+                <div className={styles['category-container']}>
                   <button
                     type="button"
-                    className={`card-category-item ${this.state.showProjects ? 'selected' : ''
+                    className={`${styles['card-category-item']} ${this.state.showProjects ? styles.selected : ''
                       } ${isYinmnBlue}`}
                     style={{
                       ...(darkMode ? boxStyleDark : boxStyle),
@@ -579,8 +579,8 @@ endDate: moment()
                     }}
                     onClick={this.showProjectTable}
                   >
-                    <h3 className="card-category-item-title"> Projects</h3>
-                    <h3 className="card-category-item-number">
+                    <h3 className={styles['card-category-item-title']}> Projects</h3>
+                    <h3 className={styles['card-category-item-number']}>
                       {this.state.projectSearchData.length}
                       {' '}
                     </h3>
@@ -588,7 +588,7 @@ endDate: moment()
                   </button>
                   <button
                     type="button"
-                    className={`card-category-item ${this.state.showPeople ? 'selected' : ''
+                    className={`${styles['card-category-item']} ${this.state.showPeople ? styles.selected : ''
                       } ${isYinmnBlue}`}
                     style={{
                       ...(darkMode ? boxStyleDark : boxStyle),
@@ -596,15 +596,15 @@ endDate: moment()
                     }}
                     onClick={this.showPeopleTable}
                   >
-                    <h3 className="card-category-item-title"> People </h3>
-                    <h3 className="card-category-item-number">
+                    <h3 className={styles['card-category-item-title']}> People </h3>
+                    <h3 className={styles['card-category-item-number']}>
                       {this.state.peopleSearchData.length}
                     </h3>
                     <img src={peopleImage} alt="that representes the people" />
                   </button>
                   <button
                     type="button"
-                    className={`card-category-item ${this.state.showTeams ? 'selected' : ''
+                    className={`${styles['card-category-item']} ${this.state.showTeams ? styles.selected : ''
                       } ${isYinmnBlue}`}
                     style={{
                       ...(darkMode ? boxStyleDark : boxStyle),
@@ -612,8 +612,8 @@ endDate: moment()
                     }}
                     onClick={this.showTeamsTable}
                   >
-                    <h3 className="card-category-item-title"> Teams </h3>
-                    <h3 className="card-category-item-number">{this.state.teamSearchData?.length}</h3>
+                    <h3 className={styles['card-category-item-title']}> Teams </h3>
+                    <h3 className={styles['card-category-item-number']}>{this.state.teamSearchData?.length}</h3>
                     <img src={teamsImage} alt="that representes the teams" />
                   </button>
                 </div>
@@ -637,8 +637,8 @@ endDate: moment()
                     onDateChange={this.onDateChange}
                     darkMode={darkMode}
                   />
-                  <div className="total-report-container">
-                    <div className="total-report-item">
+                  <div className={styles['total-report-container']}>
+                    <div className={styles['total-report-item']}>
                       <Button type="button" color="info" onClick={this.showTotalProject}>
                         {this.state.showTotalProject
                           ? 'Hide Total Project Report'
@@ -655,7 +655,7 @@ endDate: moment()
                         />
                       </div>
                     </div>
-                    <div className="total-report-item">
+                    <div className={styles['total-report-item']}>
                       <Button type="button" color="info" onClick={this.showTotalPeople}>
                         {this.state.showTotalPeople
                           ? 'Hide Total People Report'
@@ -672,7 +672,7 @@ endDate: moment()
                         />
                       </div>
                     </div>
-                    <div className="total-report-item">
+                    <div className={styles['total-report-item']}>
                       <Button color="info" onClick={this.showTotalTeam}>
                         {this.state.showTotalTeam
                           ? 'Hide Total Team Report'
@@ -690,7 +690,7 @@ endDate: moment()
                       </div>
 
                     </div>
-                    <div className="total-report-item">
+                    <div className={styles['total-report-item']}>
                       <Button
                         type="button"
                         color="info"
@@ -714,8 +714,8 @@ endDate: moment()
                     </div>
                   </div>
                   {myRole !== 'Owner' && (
-                    <div className="lost-time-container">
-                      <div className="lost-time-item">
+                    <div className={styles['lost-time-container']}>
+                      <div className={styles['lost-time-item']}>
                         <Button color="info" onClick={this.showAddProjHistory}>
                           {this.state.showAddProjHistory
                             ? 'Hide Project Lost Time'
@@ -732,7 +732,7 @@ endDate: moment()
                           />
                         </div>
                       </div>
-                      <div className="lost-time-item">
+                      <div className={styles['lost-time-item']}>
                         <Button color="info" onClick={this.showAddPersonHistory}>
                           {this.state.showAddPersonHistory
                             ? 'Hide Person Lost Time'
@@ -749,7 +749,7 @@ endDate: moment()
                           />
                         </div>
                       </div>
-                      <div className="lost-time-item">
+                      <div className={styles['lost-time-item']}>
                         <Button color="info" onClick={this.showAddTeamHistory}>
                           {this.state.showAddTeamHistory
                             ? 'Hide Team Lost Time'
@@ -775,8 +775,8 @@ endDate: moment()
                     className={`mt-4 p-3 rounded-lg ${darkMode ? 'bg-yinmn-blue' : 'bg-white'}`}
                     style={darkMode ? boxStyleDark : boxStyle}
                   >
-                    <div className="lost-time-container">
-                      <div className="lost-time-item">
+                    <div className={styles['lost-time-container']}>
+                      <div className={styles['lost-time-item']}>
                         <Button color="success" onClick={this.setAddTime}>
                           Add Lost Time
                         </Button>
@@ -792,8 +792,8 @@ endDate: moment()
                         </div>
                       </div>
                     </div>
-                    <div className="lost-time-container">
-                      <div className="lost-time-item">
+                    <div className={styles['lost-time-container']}>
+                      <div className={styles['lost-time-item']}>
                         <Button color="info" onClick={this.showAddProjHistory}>
                           {this.state.showAddProjHistory
                             ? 'Hide Project Lost Time'
