@@ -1,11 +1,12 @@
 // eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { Provider } from 'react-redux';
+import { Provider, useSelector } from 'react-redux';
 import { configureStore } from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import Warning from '../Warnings';
 import * as warningActions from '../../../actions/warnings';
+// need to add handling for darkmode
 
 vi.mock('../../../actions/warnings', () => ({
   getWarningsByUserId: vi.fn(() => () => Promise.resolve([])),
@@ -58,6 +59,12 @@ describe('Warning Component', () => {
   test('toggles warnings display on button click', async () => {
     warningActions.getWarningsByUserId.mockImplementation(() => () =>
       Promise.resolve([{ title: 'Warning 1', warnings: [] }]),
+    );
+
+    useSelector.mockImplementation(selector =>
+      selector({
+        theme: { darkMode: false },
+      }),
     );
 
     render(
