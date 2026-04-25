@@ -18,13 +18,13 @@ import {
 
 import DemandOverTime from './LbAnalytics/DemandOverTime/DemandOverTime';
 import ReviewWordCloud from './ReviewWordCloud/ReviewWordCloud';
-import SentimentBreakdownDonutChart from './SentimentBreakdownDonutChart/SentimentBreakdownDonutChart';
 import { CompareBarGraph } from './BarGraphs/CompareGraphs';
 
 import httpService from '../../services/httpService';
 import { ApiEndpoint } from '../../utils/URL';
 
 import styles from './LBDashboard.module.css';
+import ConversionFunnel from './LbAnalytics/ConversionFunnel/ConversionFunnel';
 
 const METRIC_OPTIONS = {
   DEMAND: [
@@ -505,15 +505,16 @@ export function LBDashboard() {
         </Row>
       </AnalysisSection>
 
+      <AnalysisSection title="Conversion Funnel" darkMode={darkMode}>
+        <div className={styles.chartRow}>
+          <div className={styles.fullWidthChartCol}>
+            <ConversionFunnel darkMode={darkMode} />
+          </div>
+        </div>
+      </AnalysisSection>
+
       <AnalysisSection title="Insights from Reviews" darkMode={darkMode}>
-        <Row xs="1" md="2" className="g-3">
-          <Col>
-            <SentimentBreakdownDonutChart darkMode={darkMode} />
-          </Col>
-          <Col>
-            <ReviewWordCloud darkMode={darkMode} />
-          </Col>
-        </Row>
+        <ReviewWordCloud darkMode={darkMode} />
       </AnalysisSection>
     </Container>
   );

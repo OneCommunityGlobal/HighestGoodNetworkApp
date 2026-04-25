@@ -1,12 +1,9 @@
-import { useEffect, useState, useMemo } from 'react';
-import { Table, Button, Badge } from 'reactstrap';
+import { useEffect, useState } from 'react';
+import { Table, Button } from 'reactstrap';
 import { BiPencil } from 'react-icons/bi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSortDown, faSort, faSortUp } from '@fortawesome/free-solid-svg-icons';
 import RecordsModal from './RecordsModal';
-import MaterialUsageChart from '../MaterialUsage/MaterialUsageChart';
-import MaterialSummaryCards from '../MaterialList/MaterialSummaryCards';
-import styles from './ItemListView.module.css';
 
 export default function ItemsTable({
   selectedProject,
@@ -23,8 +20,6 @@ export default function ItemsTable({
   const [recordType, setRecordType] = useState('');
   const [updateModal, setUpdateModal] = useState(false);
   const [updateRecord, setUpdateRecord] = useState(null);
-  const [showChartModal, setShowChartModal] = useState(false);
-  const [chartProjectId, setChartProjectId] = useState(null);
   const [projectNameCol, setProjectNameCol] = useState({
     iconsToDisplay: faSort,
     sortOrder: 'default',
@@ -33,13 +28,6 @@ export default function ItemsTable({
     iconsToDisplay: faSort,
     sortOrder: 'default',
   });
-  const [boughtCol, setBoughtCol] = useState({ iconsToDisplay: faSort, sortOrder: 'default' });
-  const [usedCol, setUsedCol] = useState({ iconsToDisplay: faSort, sortOrder: 'default' });
-  const [availableCol, setAvailableCol] = useState({
-    iconsToDisplay: faSort,
-    sortOrder: 'default',
-  });
-  const [wastedCol, setWastedCol] = useState({ iconsToDisplay: faSort, sortOrder: 'default' });
 
   useEffect(() => {
     setData(filteredItems);
@@ -50,14 +38,6 @@ export default function ItemsTable({
     setProjectNameCol({ iconsToDisplay: faSort, sortOrder: 'default' });
   }, [selectedProject, selectedItem]);
 
-  const summaryStats = useMemo(() => {
-    if (itemType !== 'Materials') return null;
-    const activeMaterials = sortedData.length;
-    const lowStockCount = sortedData.filter(m => m.isLowStock).length;
-    const totalWasted = sortedData.reduce((acc, m) => acc + (Number(m.stockWasted) || 0), 0);
-    return { activeMaterials, lowStockCount, totalWasted: totalWasted.toFixed(2) };
-  }, [sortedData, itemType]);
-
   const handleEditRecordsClick = (selectedEl, type) => {
     if (type === 'Update') {
       setUpdateModal(true);
@@ -66,25 +46,9 @@ export default function ItemsTable({
   };
 
   const handleViewRecordsClick = (data, type) => {
-    if (type === 'UsageRecord') {
-      const projectId = data.project?._id || data.projectId;
-      if (projectId) {
-        setChartProjectId(projectId);
-        setShowChartModal(true);
-        return;
-      }
-    }
-
     setModal(true);
     setRecord(data);
     setRecordType(type);
-  };
-
-  const resetOtherDynamicColumns = active => {
-    if (active !== 'Bought') setBoughtCol({ iconsToDisplay: faSort, sortOrder: 'default' });
-    if (active !== 'Used') setUsedCol({ iconsToDisplay: faSort, sortOrder: 'default' });
-    if (active !== 'Available') setAvailableCol({ iconsToDisplay: faSort, sortOrder: 'default' });
-    if (active !== 'Wasted') setWastedCol({ iconsToDisplay: faSort, sortOrder: 'default' });
   };
 
   const sortData = columnName => {
@@ -94,7 +58,7 @@ export default function ItemsTable({
       if (projectNameCol.sortOrder === 'default' || projectNameCol.sortOrder === 'desc') {
         newSortedData.sort((a, b) => (a.project?.name || '').localeCompare(b.project?.name || ''));
         setProjectNameCol({ iconsToDisplay: faSortUp, sortOrder: 'asc' });
-      } else {
+      } else if (projectNameCol.sortOrder === 'asc') {
         newSortedData.sort((a, b) => (b.project?.name || '').localeCompare(a.project?.name || ''));
         setProjectNameCol({ iconsToDisplay: faSortDown, sortOrder: 'desc' });
       }
@@ -108,105 +72,20 @@ export default function ItemsTable({
           (a.itemType?.name || '').localeCompare(b.itemType?.name || ''),
         );
         setInventoryItemTypeCol({ iconsToDisplay: faSortUp, sortOrder: 'asc' });
-      } else {
+      } else if (inventoryItemTypeCol.sortOrder === 'asc') {
         newSortedData.sort((a, b) =>
           (b.itemType?.name || '').localeCompare(a.itemType?.name || ''),
         );
         setInventoryItemTypeCol({ iconsToDisplay: faSortDown, sortOrder: 'desc' });
       }
       setProjectNameCol({ iconsToDisplay: faSort, sortOrder: 'default' });
-    } else if (columnName === 'Bought') {
-      newSortedData.sort((a, b) =>
-        boughtCol.sortOrder === 'asc'
-          ? b.stockBought - a.stockBought
-          : a.stockBought - b.stockBought,
-      );
-      setBoughtCol({
-        iconsToDisplay: boughtCol.sortOrder === 'asc' ? faSortDown : faSortUp,
-        sortOrder: boughtCol.sortOrder === 'asc' ? 'desc' : 'asc',
-      });
-      resetOtherDynamicColumns('Bought');
-    } else if (columnName === 'Used') {
-      newSortedData.sort((a, b) =>
-        usedCol.sortOrder === 'asc' ? b.stockUsed - a.stockUsed : a.stockUsed - b.stockUsed,
-      );
-      setUsedCol({
-        iconsToDisplay: usedCol.sortOrder === 'asc' ? faSortDown : faSortUp,
-        sortOrder: usedCol.sortOrder === 'asc' ? 'desc' : 'asc',
-      });
-      resetOtherDynamicColumns('Used');
-    } else if (columnName === 'Available') {
-      newSortedData.sort((a, b) =>
-        availableCol.sortOrder === 'asc'
-          ? b.stockAvailable - a.stockAvailable
-          : a.stockAvailable - b.stockAvailable,
-      );
-      setAvailableCol({
-        iconsToDisplay: availableCol.sortOrder === 'asc' ? faSortDown : faSortUp,
-        sortOrder: availableCol.sortOrder === 'asc' ? 'desc' : 'asc',
-      });
-      resetOtherDynamicColumns('Available');
-    } else if (columnName === 'Wasted') {
-      newSortedData.sort((a, b) =>
-        wastedCol.sortOrder === 'asc'
-          ? b.stockWasted - a.stockWasted
-          : a.stockWasted - b.stockWasted,
-      );
-      setWastedCol({
-        iconsToDisplay: wastedCol.sortOrder === 'asc' ? faSortDown : faSortUp,
-        sortOrder: wastedCol.sortOrder === 'asc' ? 'desc' : 'asc',
-      });
-      resetOtherDynamicColumns('Wasted');
     }
+
     setData(newSortedData);
   };
 
   const getNestedValue = (obj, path) =>
     path.split('.').reduce((acc, part) => (acc ? acc[part] : null), obj);
-
-  const stickyHeaderStyle = {
-    position: 'sticky',
-    top: 0,
-    zIndex: 10,
-    backgroundColor: darkMode ? '#343a40' : '#f8f9fa',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-    verticalAlign: 'middle',
-  };
-
-  const numericHeaderStyle = { ...stickyHeaderStyle, textAlign: 'right', cursor: 'pointer' };
-  const numericCellStyle = { textAlign: 'right', verticalAlign: 'middle' };
-
-  const actionHeaderStyle = {
-    ...stickyHeaderStyle,
-    borderLeft: '2px solid #dee2e6',
-    textAlign: 'center',
-  };
-  const actionCellStyle = {
-    borderLeft: '2px solid #dee2e6',
-    textAlign: 'center',
-    verticalAlign: 'middle',
-  };
-
-  const renderActionCell = (el, type, cellStyle, showEdit = true) => (
-    <td style={cellStyle}>
-      <div className="d-flex justify-content-center">
-        {showEdit && (
-          <button
-            type="button"
-            className="btn btn-sm btn-link p-1"
-            onClick={() => handleEditRecordsClick(el, type)}
-            aria-label="Edit Record"
-            style={{ fontSize: '1.2em' }}
-          >
-            <BiPencil />
-          </button>
-        )}
-        <Button color="primary" outline size="sm" onClick={() => handleViewRecordsClick(el, type)}>
-          View
-        </Button>
-      </div>
-    </td>
-  );
 
   return (
     <>
@@ -218,149 +97,187 @@ export default function ItemsTable({
         recordType={recordType}
         itemType={itemType}
       />
-
-      {showChartModal && chartProjectId && (
-        <MaterialUsageChart projectId={chartProjectId} toggle={() => setShowChartModal(false)} />
-      )}
-
       <UpdateItemModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
+      {darkMode && (
+        <style>
+          {`
+            .dark-mode .items_table_container .table thead th {
+              background-color: #1C2541 !important;
+              color: #ffffff !important;
+              border-color: #555 !important;
+            }
 
-      {itemType === 'Materials' && summaryStats && <MaterialSummaryCards stats={summaryStats} />}
+            .dark-mode .items_table_container .table thead tr {
+              background-color: #1C2541 !important;
+            }
 
+            .dark-mode .items_table_container .table tbody tr:hover {
+              background-color: #1C2541 !important;
+            }
+          `}
+        </style>
+      )}
       <div
-        className={`${styles.itemsTableContainer} ${darkMode ? styles.darkTableWrapper : ''}`}
-        style={{ maxHeight: '75vh', overflowY: 'auto', position: 'relative' }}
+        className={`items_table_container ${
+          darkMode ? 'items_table_container_dark dark-mode' : ''
+        }`}
+        style={darkMode ? { backgroundColor: '#3A506B' } : {}}
       >
-        <Table className={darkMode ? styles.darkTable : ''} hover responsive>
-          <thead>
-            <tr>
+        <Table
+          className={darkMode ? 'dark-table' : ''}
+          style={
+            darkMode ? { backgroundColor: '#3A506B', color: '#ffffff', borderColor: '#444' } : {}
+          }
+        >
+          <thead
+            className={darkMode ? 'dark-thead' : ''}
+            style={darkMode ? { backgroundColor: '#1C2541', color: '#ffffff' } : {}}
+          >
+            <tr style={darkMode ? { backgroundColor: '#1C2541' } : {}}>
               {selectedProject === 'all' ? (
                 <th
+                  className={darkMode ? 'dark-th' : ''}
+                  style={
+                    darkMode
+                      ? { backgroundColor: '#1C2541', color: '#ffffff', borderColor: '#555' }
+                      : {}
+                  }
                   onClick={() => sortData('ProjectName')}
-                  style={{ ...stickyHeaderStyle, cursor: 'pointer' }}
                 >
                   Project <FontAwesomeIcon icon={projectNameCol.iconsToDisplay} size="lg" />
                 </th>
               ) : (
-                <th style={stickyHeaderStyle}>Project</th>
+                <th
+                  className={darkMode ? 'dark-th' : ''}
+                  style={
+                    darkMode
+                      ? { backgroundColor: '#1C2541', color: '#ffffff', borderColor: '#555' }
+                      : {}
+                  }
+                >
+                  Project
+                </th>
               )}
               {selectedItem === 'all' ? (
                 <th
+                  className={darkMode ? 'dark-th' : ''}
+                  style={
+                    darkMode
+                      ? { backgroundColor: '#1C2541', color: '#ffffff', borderColor: '#555' }
+                      : {}
+                  }
                   onClick={() => sortData('InventoryItemType')}
-                  style={{ ...stickyHeaderStyle, cursor: 'pointer' }}
                 >
                   Name <FontAwesomeIcon icon={inventoryItemTypeCol.iconsToDisplay} size="lg" />
                 </th>
               ) : (
-                <th style={stickyHeaderStyle}>Name</th>
+                <th
+                  className={darkMode ? 'dark-th' : ''}
+                  style={
+                    darkMode
+                      ? { backgroundColor: '#1C2541', color: '#ffffff', borderColor: '#555' }
+                      : {}
+                  }
+                >
+                  Name
+                </th>
               )}
-              {dynamicColumns.map(({ label, key }) => {
-                const stateMap = {
-                  Bought: boughtCol,
-                  Used: usedCol,
-                  Available: availableCol,
-                  Wasted: wastedCol,
-                };
-                const isNumeric = [
-                  'stockBought',
-                  'stockUsed',
-                  'stockAvailable',
-                  'stockWasted',
-                ].includes(key);
-
-                return (
-                  <th
-                    key={label}
-                    onClick={() => sortData(label)}
-                    style={isNumeric ? numericHeaderStyle : stickyHeaderStyle}
-                  >
-                    {label}{' '}
-                    <FontAwesomeIcon icon={stateMap[label]?.iconsToDisplay || faSort} size="lg" />
-                  </th>
-                );
-              })}
-              <th style={actionHeaderStyle} title="View usage history and charts">
-                Usage Record
-              </th>
-              <th style={stickyHeaderStyle} title="View history of manual updates">
+              {dynamicColumns.map(({ label, key }) => (
+                <th
+                  className={darkMode ? 'dark-th' : ''}
+                  style={
+                    darkMode
+                      ? { backgroundColor: '#1C2541', color: '#ffffff', borderColor: '#555' }
+                      : {}
+                  }
+                  key={label}
+                >
+                  {label}
+                </th>
+              ))}
+              <th
+                className={darkMode ? 'dark-th' : ''}
+                style={
+                  darkMode
+                    ? { backgroundColor: '#1C2541', color: '#ffffff', borderColor: '#555' }
+                    : {}
+                }
+              >
                 Updates
               </th>
-              <th style={stickyHeaderStyle} title="View procurement history">
+              <th
+                className={darkMode ? 'dark-th' : ''}
+                style={
+                  darkMode
+                    ? { backgroundColor: '#1C2541', color: '#ffffff', borderColor: '#555' }
+                    : {}
+                }
+              >
                 Purchases
               </th>
             </tr>
           </thead>
-          <tbody>
+
+          <tbody
+            className={darkMode ? 'dark-tbody' : ''}
+            style={darkMode ? { backgroundColor: '#3A506B', color: '#ffffff' } : {}}
+          >
             {sortedData && sortedData.length > 0 ? (
               sortedData.map(el => (
-                <tr key={el._id}>
-                  <td style={{ verticalAlign: 'middle' }}>{el.project?.name}</td>
-                  <td style={{ verticalAlign: 'middle' }}>{el.itemType?.name}</td>
-                  {dynamicColumns.map(({ label, key }) => {
-                    const value = getNestedValue(el, key);
-                    const isNumeric = [
-                      'stockBought',
-                      'stockUsed',
-                      'stockAvailable',
-                      'stockWasted',
-                    ].includes(key);
-
-                    if (itemType === 'Materials' && key === 'stockAvailable') {
-                      return (
-                        <td
-                          key={label}
-                          style={
-                            el.isLowStock
-                              ? { ...numericCellStyle, backgroundColor: 'rgba(220, 53, 69, 0.1)' }
-                              : numericCellStyle
-                          }
-                        >
-                          {el.isLowStock && (
-                            <Badge color="danger" pill className="mr-2">
-                              Low
-                            </Badge>
-                          )}
-                          {value}
-                        </td>
-                      );
-                    }
-                    if (itemType === 'Materials' && key === 'wastePct') {
-                      const wasteNum = parseFloat(value);
-                      return (
-                        <td
-                          key={label}
-                          style={
-                            wasteNum > 15
-                              ? { ...numericCellStyle, color: '#dc3545', fontWeight: 'bold' }
-                              : numericCellStyle
-                          }
-                        >
-                          {value}
-                        </td>
-                      );
-                    }
-                    return (
-                      <td
-                        key={label}
-                        style={isNumeric ? numericCellStyle : { verticalAlign: 'middle' }}
+                <tr
+                  key={el._id}
+                  className={darkMode ? 'dark-row' : ''}
+                  style={
+                    darkMode ? { backgroundColor: '#3A506B', borderBottom: '1px solid #333' } : {}
+                  }
+                >
+                  <td style={darkMode ? { color: '#ffffff' } : {}}>{el.project?.name}</td>
+                  <td style={darkMode ? { color: '#ffffff' } : {}}>{el.itemType?.name}</td>
+                  {dynamicColumns.map(({ label, key }) => (
+                    <td key={label} style={darkMode ? { color: '#ffffff' } : {}}>
+                      {getNestedValue(el, key)}
+                    </td>
+                  ))}
+                  <td className="items_cell">
+                    <div
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '10px',
+                        flexWrap: 'nowrap',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      <button
+                        type="button"
+                        style={darkMode ? { color: '#4a90e2' } : {}}
+                        onClick={() => handleEditRecordsClick(el, 'Update')}
+                        aria-label="Edit Record"
                       >
-                        {value}
-                      </td>
-                    );
-                  })}
-                  {renderActionCell(el, 'UsageRecord', actionCellStyle, true)}
-                  {renderActionCell(
-                    el,
-                    'Update',
-                    { textAlign: 'center', verticalAlign: 'middle' },
-                    true,
-                  )}
-                  {renderActionCell(
-                    el,
-                    'Purchase',
-                    { textAlign: 'center', verticalAlign: 'middle' },
-                    false,
-                  )}
+                        <BiPencil />
+                      </button>
+                      <Button
+                        color="primary"
+                        outline={!darkMode}
+                        style={darkMode ? { borderColor: '#4a90e2', color: '#ffffff' } : {}}
+                        size="sm"
+                        onClick={() => handleViewRecordsClick(el, 'Update')}
+                      >
+                        View
+                      </Button>
+                    </div>
+                  </td>
+                  <td>
+                    <Button
+                      color="primary"
+                      outline={!darkMode}
+                      style={darkMode ? { borderColor: '#4a90e2', color: '#ffffff' } : {}}
+                      size="sm"
+                      onClick={() => handleViewRecordsClick(el, 'Purchase')}
+                    >
+                      View
+                    </Button>
+                  </td>
                 </tr>
               ))
             ) : (
