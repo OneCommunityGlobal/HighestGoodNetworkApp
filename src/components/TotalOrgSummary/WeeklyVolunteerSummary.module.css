@@ -166,13 +166,13 @@
   display: block;
   font-weight: 400;
   text-decoration: none;
-  color: #333333;
   position: relative;
   border: 1px solid white;
   padding: 10px;
   background: #00ac9d;
   color: white;
 }
+
 .Collapsible__trigger:after {
   font-family: 'FontAwesome', sans-serif;
   content: '\f107';

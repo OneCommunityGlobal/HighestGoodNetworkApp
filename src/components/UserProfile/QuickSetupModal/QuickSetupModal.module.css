@@ -1,7 +1,7 @@
 #qsc-outer-wrapper {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px; /* Adds space between the buttons */
+  gap: 8px; 
 }
 
 .role-button {
@@ -38,8 +38,6 @@
     color: #ddd;
     top:30px;
     left: 30px;
-    /* height: 2rem;
-    width: 150px; */
     display: none;
     white-space: nowrap;
     z-index: 10;
