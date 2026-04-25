@@ -4,10 +4,10 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
 import { getMessagingSocket } from '../../utils/messagingSocket';
-import {
-  clearDBNotifications,
-  clearNotifications,
-} from '../../actions/lbdashboard/messagingActions';
+// import {
+//   clearDBNotifications,
+//   clearNotifications,
+// } from '../../actions/lbDashboard/messagingActions.js';
 import { ENDPOINTS } from '../../utils/URL';
 
 // Import getUserTasks action for fetching user-specific tasks
@@ -56,6 +56,7 @@ export default function BellNotification({ userId }) {
   const [isDataReady, setIsDataReady] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
   const notificationRef = useRef(null);
+  const bellRef = useRef(null);
 
   const [dbNotifications, setDbNotifications] = useState([]); // DB notifications
   const [messageNotifications, setMessageNotifications] = useState([]);
@@ -300,19 +301,27 @@ export default function BellNotification({ userId }) {
   const hasTaskAlerts = taskHoursAlerts.length > 0;
 
   // ---------- DB + socket notifications ----------
+
   useEffect(() => {
-    if (!userId) return;
-    const fetchDbNotifications = async () => {
-      try {
-        const { data } = await axios.get(`${ENDPOINTS.NOTIFICATIONS}/unread/user/${userId}`);
-        setDbNotifications(data);
-        if (data.length > 0) setHasMessageNotification(true);
-      } catch (error) {
-        console.error('Error fetching notifications from DB:', error);
+  if (!userId) return;
+  const fetchDbNotifications = async () => {
+    try {
+      const response = await axios.get(`${ENDPOINTS.NOTIFICATIONS}/unread/user/${userId}`);
+      const notificationsData = response?.data || [];
+      // Ensure it's always an array
+      setDbNotifications(Array.isArray(notificationsData) ? notificationsData : []);
+      if (Array.isArray(notificationsData) && notificationsData.length > 0) {
+        setHasMessageNotification(true);
       }
-    };
-    fetchDbNotifications();
-  }, [userId]);
+    } catch (error) {
+      console.error('Error fetching notifications from DB:', error);
+      // Ensure we set an empty array on error
+      setDbNotifications([]);
+    }
+  };
+  fetchDbNotifications();
+}, [userId]);
+
 
   useEffect(() => {
     if (notifications.length > 0) {
@@ -346,7 +355,10 @@ export default function BellNotification({ userId }) {
     };
   }, [messageNotifications]);
 
-  const allNotifications = [...(dbNotifications || []), ...messageNotifications];
+    const allNotifications = [
+    ...(Array.isArray(dbNotifications) ? dbNotifications : []),
+    ...messageNotifications
+  ];
 
   // Ready after first mount
   useEffect(() => setIsDataReady(true), []);
@@ -356,7 +368,7 @@ export default function BellNotification({ userId }) {
 
     if (!showNotification) {
       try {
-        const notificationIds = dbNotifications.map(n => n._id);
+        const notificationIds = (Array.isArray(dbNotifications) ? dbNotifications : []).map(n => n._id);
         if (notificationIds.length > 0) {
           await axios.post(`${ENDPOINTS.MSG_NOTIFICATION}/mark-as-read`, { notificationIds });
         }
@@ -386,8 +398,8 @@ export default function BellNotification({ userId }) {
 
     // Clear any message notifications if needed
     try {
-      dispatch(clearNotifications());
-      dispatch(clearDBNotifications());
+      // dispatch(clearNotifications());
+      // dispatch(clearDBNotifications());
     } catch (e) {
       console.error('Error clearing notifications:', e);
     }
@@ -401,8 +413,8 @@ export default function BellNotification({ userId }) {
     setShowNotification(false);
     setHasMessageNotification(false);
     try {
-      dispatch(clearNotifications());
-      dispatch(clearDBNotifications());
+      // dispatch(clearNotifications());
+      // dispatch(clearDBNotifications());
     } catch (e) {
       console.error('Error clearing notifications:', e);
     }
@@ -410,7 +422,7 @@ export default function BellNotification({ userId }) {
 
   useEffect(() => {
     const handleClickOutside = event => {
-      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+      if (notificationRef.current && !notificationRef.current.contains(event.target) && !bellRef.current.contains(event.target)) {
         //to close notification panel without marking as read
         setShowNotification(false);
       }
@@ -446,6 +458,7 @@ export default function BellNotification({ userId }) {
     <>
       {isDataReady && (
         <button
+          ref={bellRef}
           type="button"
           onClick={handleMessageNotificationClick}
           className={`fa fa-bell i-large ${bellHasDot ? 'has-notification' : ''}`}
@@ -483,7 +496,7 @@ export default function BellNotification({ userId }) {
           ref={notificationRef}
           style={{
             position: 'absolute',
-            top: '75%',
+            top: '4rem',
             right: '5%',
             transform: 'translateX(0)',
             backgroundColor: darkMode ? '#3A506B' : 'white',
