@@ -88,7 +88,16 @@ function WarningTrackerModal({
     if (title === 'info') {
       return (
         <Popover id="details">
-          <Popover.Title as="h4">Information</Popover.Title>
+          <Popover.Title
+            as="h4"
+            className={
+              darkMode
+                ? `${styles.modal__information} ${styles.darkMode}`
+                : styles.modal__information
+            }
+          >
+            Information
+          </Popover.Title>
           <Popover.Content>
             <p
               className={
@@ -347,67 +356,69 @@ function WarningTrackerModal({
         </Alert>
       )}
       <ModalBody>
-        {warningDescriptions.map((warning, index) => (
-          <div
-            className={styles.warnings__descriptions}
-            key={warning._id}
-            onDragStart={() => handleDragStart(index)}
-            onDragOver={e => handleDragOver(e, index)}
-          >
-            <img src={reorder} alt="reorder" className={styles.warning__reorder} />
-            {warning.activeWarning ? (
-              <OverlayTrigger
-                placement="top"
-                delay={{ show: 100, hide: 250 }}
-                overlay={handleOverlayTrigger('deactive')}
-              >
-                <Button
-                  color="warning"
-                  className={styles.warning__descriptions__btn}
-                  onClick={() => handleDeactivate(warning._id)}
-                  disabled={!canDeactivateWarningTracker}
-                >
-                  <i className="fa fa-minus" />
-                </Button>
-              </OverlayTrigger>
-            ) : (
-              <OverlayTrigger
-                placement="top"
-                delay={{ show: 100, hide: 250 }}
-                overlay={handleOverlayTrigger('activate')}
-              >
-                <Button
-                  color="success"
-                  className={styles.warning__descriptions__btn}
-                  onClick={() => handleDeactivate(warning._id)}
-                  disabled={!canReactivateWarningTracker}
-                >
-                  <i className="fa fa-plus" />
-                </Button>
-              </OverlayTrigger>
-            )}
-
-            <Button
-              color="danger"
-              className={styles.warning__descriptions__btn}
-              onClick={() => handleTriggerDeleteWarningDescription(warning)}
-              disabled={!canDeleteWarningTracker}
+        <ul>
+          {warningDescriptions.map((warning, index) => (
+            <li
+              className={styles.warnings__descriptions}
+              key={warning._id}
+              onDragStart={() => handleDragStart(index)}
+              onDragOver={e => handleDragOver(e, index)}
             >
-              <FontAwesomeIcon icon={faTimes} />
-            </Button>
+              <img src={reorder} alt="reorder" className={styles.warning__reorder} />
+              {warning.activeWarning ? (
+                <OverlayTrigger
+                  placement="top"
+                  delay={{ show: 100, hide: 250 }}
+                  overlay={handleOverlayTrigger('deactive')}
+                >
+                  <Button
+                    color="warning"
+                    className={styles.warning__descriptions__btn}
+                    onClick={() => handleDeactivate(warning._id)}
+                    disabled={!canDeactivateWarningTracker}
+                  >
+                    <i className="fa fa-minus" />
+                  </Button>
+                </OverlayTrigger>
+              ) : (
+                <OverlayTrigger
+                  placement="top"
+                  delay={{ show: 100, hide: 250 }}
+                  overlay={handleOverlayTrigger('activate')}
+                >
+                  <Button
+                    color="success"
+                    className={styles.warning__descriptions__btn}
+                    onClick={() => handleDeactivate(warning._id)}
+                    disabled={!canReactivateWarningTracker}
+                  >
+                    <i className="fa fa-plus" />
+                  </Button>
+                </OverlayTrigger>
+              )}
 
-            <textarea
-              type="text"
-              onChange={e => handleEditWarningDescription(e, warning._id)}
-              value={warning.warningTitle}
-              disabled={warning?.disabled || warning.isPermanent}
-              placeholder="warning title"
-              className={`${styles.warnings__descriptions__title} ${
-                warning.activeWarning ? '' : styles['warnings__descriptions__title--gray']
-              } ${darkMode ? styles.darkMode : ''}`}
-            />
-          </div>
-        ))}
+              <Button
+                color="danger"
+                className={styles.warning__descriptions__btn}
+                onClick={() => handleTriggerDeleteWarningDescription(warning)}
+                disabled={!canDeleteWarningTracker}
+              >
+                <FontAwesomeIcon icon={faTimes} />
+              </Button>
+
+              <textarea
+                type="text"
+                onChange={e => handleEditWarningDescription(e, warning._id)}
+                value={warning.warningTitle}
+                disabled={warning?.disabled || warning.isPermanent}
+                placeholder="warning title"
+                className={`${styles.warnings__descriptions__title} ${
+                  warning.activeWarning ? '' : styles['warnings__descriptions__title--gray']
+                } ${darkMode ? styles.darkMode : ''}`}
+              />
+            </li>
+          ))}
+        </ul>
         {(warningEdited || warningsEdited) && (
           <div className={styles.btn__container} style={{ gap: '5px' }}>
             <Button

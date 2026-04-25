@@ -233,6 +233,39 @@ input[type='text'] {
   color: black !important;
 }
 
+.icon {
+  border: 1px solid black;
+  border-radius: 50%;
+  width: 10px;
+  height: 10px;
+  margin: 0em 0.175em;
+  color: white;
+}
+
+.icon.warningColorRed {
+  color: red !important;
+}
+
+.icon.warningColorBlue {
+  color: blue !important;
+}
+
+.icon.warningColorYellow {
+  color: #ffc107 !important;
+}
+
+.icon path {
+  color: inherit !important;
+}
+
+.popover {
+  background-color: black !important;
+}
+
+.popover h4 {
+  background-color: rgb(109, 109, 109) !important;
+}
+
 /* Media query for screens smaller than 767px */
 @media (max-width: 767px) {
   .warnings-container {
