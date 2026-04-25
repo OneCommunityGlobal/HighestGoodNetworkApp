@@ -57,6 +57,8 @@ export const ENDPOINTS = {
   USER_ALL_TEAM_CODE: `${APIEndpoint}/userProfile/teamCode/list`,
   LOGIN: `${APIEndpoint}/login`,
   PROJECTS: `${APIEndpoint}/projects`,
+  PROJECTS_COMMITTED_HOURS: `${APIEndpoint}/projects/committed-hours`,
+  TEAMS_COMMITTED_HOURS: `${APIEndpoint}/team/committed-hours`,
   ARCHIVEDPROJECTS: `${APIEndpoint}/archivedProjects`,
   TEAM: `${APIEndpoint}/team`,
   TEAM_DATA: teamId => `${APIEndpoint}/team/${teamId}`,
@@ -246,11 +248,9 @@ export const ENDPOINTS = {
     if (startDate) params.append('startDate', startDate);
     if (endDate) params.append('endDate', endDate);
     if (groupBy) params.append('groupBy', groupBy);
-    
     const queryString = params.toString();
     return queryString ? `${url}?${queryString}` : url;
   },
-  
   INJURY_PROJECTS: () => `${APIEndpoint}/injuries/projects`,
 
   PRESETS: () => `${APIEndpoint}/rolePreset`,
@@ -409,8 +409,8 @@ export const ENDPOINTS = {
   BM_ORGS_WITH_LOCATION: `${APIEndpoint}/bm/orgLocation`,
   ORG_DETAILS: projectId => `${APIEndpoint}/bm/orgLocation/${projectId}`,
   BM_PROJECT_MEMBERS: projectId => `${APIEndpoint}/bm/project/${projectId}/users`,
-  BM_UPDATE_NAME_AND_UNIT :invtypeId => `${APIEndpoint}/bm/invtypes/material/${invtypeId}`,
-  BM_ITEM_UPDATE_HISTORY: invtypeId =>`${APIEndpoint}/bm/invtypes/${invtypeId}/history`,
+  BM_UPDATE_NAME_AND_UNIT: invtypeId => `${APIEndpoint}/bm/invtypes/material/${invtypeId}`,
+  BM_ITEM_UPDATE_HISTORY: invtypeId => `${APIEndpoint}/bm/invtypes/${invtypeId}/history`,
 
   PROJECT_GLOBAL_DISTRIBUTION: `${APIEndpoint}/projectglobaldistribution`,
 
@@ -613,10 +613,10 @@ export const ENDPOINTS = {
   KI_CALENDAR_EVENTS: (month, year) => `${APIEndpoint}/kitchenandinventory/calendar?month=${month}&year=${year}`,
 
   // Help Request & Feedback Modal endpoints
-HGN_FORM_RANKED: `${APIEndpoint}/hgnform/ranked`,
-HELP_REQUEST_CHECK_MODAL: userId => `${APIEndpoint}/helprequest/check-modal/${userId}`,
-FEEDBACK_CLOSE_PERMANENTLY: `${APIEndpoint}/feedback/close-permanently`,
-FEEDBACK_SUBMIT: `${APIEndpoint}/feedback/submit`,
+  HGN_FORM_RANKED: `${APIEndpoint}/hgnform/ranked`,
+  HELP_REQUEST_CHECK_MODAL: userId => `${APIEndpoint}/helprequest/check-modal/${userId}`,
+  FEEDBACK_CLOSE_PERMANENTLY: `${APIEndpoint}/feedback/close-permanently`,
+  FEEDBACK_SUBMIT: `${APIEndpoint}/feedback/submit`,
   // application time analytics
   APPLICATION_TIME_DATA: (startDate, endDate, roles) => {
     let url = `${APIEndpoint}/analytics/application-time?`;
