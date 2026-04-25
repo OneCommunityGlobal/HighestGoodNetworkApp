@@ -115,7 +115,7 @@ export default function CreateNewTeam() {
 
     try {
       const res = await dispatch(postNewTeam(formData.teamName, true));
-      if (!res || res.status !== 200) {
+      if (res?.status !== 200) {
         const errMsg = res?.data?.error || res?.message || 'Failed to create team.';
         toast.error(errMsg);
         return;
@@ -129,7 +129,11 @@ export default function CreateNewTeam() {
       toast.success(`Team "${formData.teamName}" created successfully!`);
       history.push('/teams');
     } catch (err) {
-      toast.error('An unexpected error occurred. Please try again.');
+      const errMsg =
+        err?.response?.data?.error ||
+        err?.message ||
+        'An unexpected error occurred. Please try again.';
+      toast.error(errMsg);
     }
   };
 
