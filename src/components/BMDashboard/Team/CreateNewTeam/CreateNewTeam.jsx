@@ -37,12 +37,14 @@ export default function CreateNewTeam() {
   });
 
   useEffect(() => {
-    dispatch(getUserProfileBasicInfo());
+    dispatch(getUserProfileBasicInfo({ source: 'CreateNewTeam' }));
   }, [dispatch]);
 
   useEffect(() => {
-    setMembers(userProfilesBasicInfo);
-  }, []);
+    if (userProfilesBasicInfo) {
+      setMembers(userProfilesBasicInfo);
+    }
+  }, [userProfilesBasicInfo]);
 
   const validationObj = {
     additionalInformation: Joi.string()
@@ -186,23 +188,15 @@ export default function CreateNewTeam() {
   // const isMemberAssigned = assignedMembers.includes(selectedMember);
 
   const handleTaskChange = e => {
-    setSelectedTask(e.target.value);
-    setTaskErrorMessage('');
-  };
-
-  const handleAddTask = () => {
-    // if (!selectedTask) {
-    //   setTaskErrorMessage('Please select a Task!');
-    //   return;
-    // }
-    if (assignedTasks.includes(selectedTask)) {
-      setTaskErrorMessage('This task is already assigned!'); // Error for duplicate addition
+    const task = e.target.value;
+    if (!task) return;
+    if (assignedTasks.includes(task)) {
+      setTaskErrorMessage('This task is already assigned!');
       return;
     }
-    if (selectedTask && !assignedTasks.includes(selectedTask)) {
-      setAssignedTasks([...assignedTasks, selectedTask]);
-      setSelectedTask('');
-    }
+    setAssignedTasks([...assignedTasks, task]);
+    setSelectedTask('');
+    setTaskErrorMessage('');
   };
 
   const handleRemoveTask = task => {
@@ -258,6 +252,7 @@ export default function CreateNewTeam() {
               ))}
             </Input>
             <Button
+              type="button"
               onClick={handleAddMember}
               // disabled={!selectedMember || isMemberAssigned}
               className="add-member-button"
@@ -314,15 +309,8 @@ export default function CreateNewTeam() {
                 </option>
               ))}
             </Input>
-            <Button
-              onClick={handleAddTask}
-              // disabled={!selectedTask || isTaskAssigned}
-              style={{ marginTop: '10px' }}
-            >
-              Add
-            </Button>
           </div>
-          {errorMessage && (
+          {taskErrorMessage && (
             <Label className={`${styles.teamFormError}`} style={{ color: 'red' }}>
               {taskErrorMessage}
             </Label>
@@ -342,11 +330,9 @@ export default function CreateNewTeam() {
                   <span
                     role="button"
                     tabIndex={0}
-                    onClick={() => handleRemoveMember(member)}
-                    onKeyDown={e =>
-                      (e.key === 'Enter' || e.key === ' ') && handleRemoveMember(member)
-                    }
-                    aria-label={`Remove member ${member}`}
+                    onClick={() => handleRemoveTask(task)}
+                    onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && handleRemoveTask(task)}
+                    aria-label={`Remove task ${task}`}
                   >
                     X
                   </span>
@@ -373,10 +359,16 @@ export default function CreateNewTeam() {
           )}
         </FormGroup>
         <div className={`${styles.addTeamButtons}`}>
-          <Button id="cancel-button" outline style={boxStyle} onClick={handleCancelClick}>
+          <Button
+            id="cancel-button"
+            type="button"
+            outline
+            style={boxStyle}
+            onClick={handleCancelClick}
+          >
             Cancel
           </Button>
-          <Button id="submit-button" style={boxStyle}>
+          <Button id="submit-button" type="submit" style={boxStyle}>
             Submit
           </Button>
         </div>
