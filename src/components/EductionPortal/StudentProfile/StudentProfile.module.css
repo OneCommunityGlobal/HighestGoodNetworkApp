@@ -605,3 +605,162 @@
     font-size: 1.5rem;
   }
 }
+
+/* ===== Dark Mode ===== */
+.container.dark {
+  background-color: #1b2a41;
+  color: #e0e0e0;
+}
+
+.container.dark .loading p,
+.container.dark .error p {
+  color: #b5bac5;
+}
+
+.container.dark .spinner {
+  border-color: #2b3b50;
+  border-top-color: #3498db;
+}
+
+.header.dark {
+  background: #1e293b;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.header.dark .studentName {
+  color: #f1f5f9;
+}
+
+.header.dark .studentId {
+  color: #b5bac5;
+}
+
+.header.dark .viewPortfolioBtn {
+  background-color: #1e293b;
+  border-color: #3498db;
+  color: #3498db;
+}
+
+.header.dark .viewPortfolioBtn:hover {
+  background-color: #3498db;
+  color: #fff;
+}
+
+.header.dark .infoIcon {
+  filter: grayscale(0%) brightness(0.8);
+  opacity: 1;
+}
+
+.header.dark .infoLabel {
+  color: #94a3b8;
+}
+
+.header.dark .infoValue {
+  color: #f1f5f9;
+}
+
+.tabs.dark {
+  background: #1e293b;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.tab.dark {
+  color: #94a3b8;
+}
+
+.tab.dark:hover {
+  background-color: #2b3b50;
+  color: #f1f5f9;
+}
+
+.tabActive.dark {
+  background-color: #3498db;
+  color: #fff !important;
+}
+
+.progressSection.dark {
+  background: #1e293b;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.progressSection.dark .sectionTitle {
+  color: #f1f5f9;
+}
+
+.progressSection.dark .sectionSubtitle {
+  color: #94a3b8;
+}
+
+.progressSection.dark .noData {
+  color: #94a3b8;
+}
+
+.subjectCard.dark {
+  background: #1e293b;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  color: #e0e0e0;
+}
+
+.subjectCard.dark:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+}
+
+.subjectCard.dark .subjectName {
+  color: #f1f5f9;
+}
+
+.subjectCard.dark .stats {
+  color: #94a3b8;
+}
+
+.subjectCard.dark .bar {
+  background-color: #2b3b50;
+}
+
+.statCard.dark {
+  background: #1e293b;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.statCard.dark h3 {
+  color: #94a3b8;
+}
+
+.modal.dark {
+  background: #1e293b;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+  color: #e0e0e0;
+}
+
+.modal.dark .modalHeader h2 {
+  color: #f1f5f9;
+}
+
+.modal.dark .closeBtn {
+  background: #2b3b50;
+  color: #94a3b8;
+}
+
+.modal.dark .closeBtn:hover {
+  background: #334155;
+  color: #f1f5f9;
+}
+
+.chartContainer.dark .svg {
+  filter: none;
+}
+
+.tooltip.dark {
+  background: #1e293b;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  color: #e0e0e0;
+  border: 1px solid #2b3b50;
+}
+
+.tooltip.dark h4 {
+  color: #f1f5f9;
+}
+
+.tooltip.dark p {
+  color: #94a3b8;
+}

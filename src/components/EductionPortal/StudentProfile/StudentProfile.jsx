@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { getEducatorStudentProgress } from '../../../services/educationService';
 import styles from './StudentProfile.module.css';
 
-const SubjectCard = ({ subject, completed, inProgress, remaining, onClick }) => {
+const SubjectCard = ({ subject, completed, inProgress, remaining, onClick, darkMode }) => {
   const total = completed + inProgress + remaining;
   const getSubjectDisplayName = name => {
     if (name.toLowerCase().includes('arts') && name.toLowerCase().includes('trade')) {
@@ -125,7 +126,7 @@ const SubjectCard = ({ subject, completed, inProgress, remaining, onClick }) => 
 
   return (
     <div
-      className={styles.subjectCard}
+      className={`${styles.subjectCard}${darkMode ? ` ${styles.dark}` : ''}`}
       onClick={onClick}
       onKeyPress={e => e.key === 'Enter' && onClick()}
       role="button"
@@ -167,7 +168,7 @@ const SubjectCard = ({ subject, completed, inProgress, remaining, onClick }) => 
   );
 };
 
-const MoleculeChart = ({ subject, completedAtoms, inProgressAtoms, notStartedAtoms }) => {
+const MoleculeChart = ({ subject, completedAtoms, inProgressAtoms, notStartedAtoms, darkMode }) => {
   const [tooltip, setTooltip] = useState(null);
   const TOTAL_MOLECULES = 25;
   const createMolecules = () => {
@@ -239,9 +240,9 @@ const MoleculeChart = ({ subject, completedAtoms, inProgressAtoms, notStartedAto
   const positions = getPositions(TOTAL_MOLECULES);
 
   return (
-    <div className={styles.chartContainer}>
+    <div className={`${styles.chartContainer}${darkMode ? ` ${styles.dark}` : ''}`}>
       <svg viewBox="0 0 300 300" className={styles.svg}>
-        <circle cx="150" cy="150" r="140" fill="#E8F5E9" stroke="#D4EDDA" strokeWidth="1" />
+        <circle cx="150" cy="150" r="140" fill={darkMode ? '#162032' : '#E8F5E9'} stroke={darkMode ? '#1e293b' : '#D4EDDA'} strokeWidth="1" />
 
         {allAtoms.map((atom, i) => {
           const pos = positions[i];
@@ -321,7 +322,7 @@ const MoleculeChart = ({ subject, completedAtoms, inProgressAtoms, notStartedAto
       </svg>
 
       {tooltip && (
-        <div className={styles.tooltip} style={{ left: tooltip.x, top: tooltip.y }}>
+        <div className={`${styles.tooltip}${darkMode ? ` ${styles.dark}` : ''}`} style={{ left: tooltip.x, top: tooltip.y }}>
           <h4>{tooltip.atom.name}</h4>
           <p>Status: {tooltip.atom.status.replace('_', ' ')}</p>
           {tooltip.atom.difficulty && <p>Difficulty: {tooltip.atom.difficulty}</p>}
@@ -334,6 +335,7 @@ const MoleculeChart = ({ subject, completedAtoms, inProgressAtoms, notStartedAto
 const StudentProfile = () => {
   const { studentId } = useParams();
   const history = useHistory();
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [loading, setLoading] = useState(true);
   const [studentData, setStudentData] = useState(null);
   const [error, setError] = useState(null);
@@ -396,7 +398,7 @@ const StudentProfile = () => {
 
   if (loading) {
     return (
-      <div className={styles.container}>
+      <div className={`${styles.container}${darkMode ? ` ${styles.dark}` : ''}`}>
         <div className={styles.loading}>
           <div className={styles.spinner}></div>
           <p>Loading student progress...</p>
@@ -407,7 +409,7 @@ const StudentProfile = () => {
 
   if (error || !studentData) {
     return (
-      <div className={styles.container}>
+      <div className={`${styles.container}${darkMode ? ` ${styles.dark}` : ''}`}>
         <div className={styles.error}>
           <h2>Error</h2>
           <p>{error || 'Student data not found'}</p>
@@ -447,9 +449,9 @@ const StudentProfile = () => {
   const subjects = Array.from(allSubjects);
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container}${darkMode ? ` ${styles.dark}` : ''}`}>
       {/* Header Section */}
-      <div className={styles.header}>
+      <div className={`${styles.header}${darkMode ? ` ${styles.dark}` : ''}`}>
         <button onClick={() => history.goBack()} className={styles.backLink}>
           ← Back
         </button>
@@ -546,15 +548,15 @@ const StudentProfile = () => {
       </div>
 
       {/* Tabs Section */}
-      <div className={styles.tabs}>
-        <button className={`${styles.tab} ${styles.tabActive}`}>Educational Progress</button>
-        <button className={styles.tab}>Completed Lessons</button>
-        <button className={styles.tab}>Current Tasks</button>
-        <button className={styles.tab}>Student Interests</button>
+      <div className={`${styles.tabs}${darkMode ? ` ${styles.dark}` : ''}`}>
+        <button className={`${styles.tab} ${styles.tabActive}${darkMode ? ` ${styles.dark}` : ''}`}>Educational Progress</button>
+        <button className={`${styles.tab}${darkMode ? ` ${styles.dark}` : ''}`}>Completed Lessons</button>
+        <button className={`${styles.tab}${darkMode ? ` ${styles.dark}` : ''}`}>Current Tasks</button>
+        <button className={`${styles.tab}${darkMode ? ` ${styles.dark}` : ''}`}>Student Interests</button>
       </div>
 
       {/* Progress Overview Section */}
-      <div className={styles.progressSection}>
+      <div className={`${styles.progressSection}${darkMode ? ` ${styles.dark}` : ''}`}>
         <h2 className={styles.sectionTitle}>Educational Progress Overview</h2>
         <p className={styles.sectionSubtitle}>
           Visual representation of learning progress across subjects
@@ -570,6 +572,7 @@ const StudentProfile = () => {
                 inProgress={(inProgressBySubject[subject] || []).length}
                 remaining={(notStartedBySubject[subject] || []).length}
                 onClick={() => handleSubjectClick(subject)}
+                darkMode={darkMode}
               />
             ))
           ) : (
@@ -582,19 +585,19 @@ const StudentProfile = () => {
 
       {/* Summary Stats */}
       <div className={styles.summarySection}>
-        <div className={styles.statCard}>
+        <div className={`${styles.statCard}${darkMode ? ` ${styles.dark}` : ''}`}>
           <h3>Total Completed</h3>
           <p className={styles.statNumber}>{summary.totalCompleted}</p>
         </div>
-        <div className={styles.statCard}>
+        <div className={`${styles.statCard}${darkMode ? ` ${styles.dark}` : ''}`}>
           <h3>In Progress</h3>
           <p className={styles.statNumber}>{summary.totalInProgress}</p>
         </div>
-        <div className={styles.statCard}>
+        <div className={`${styles.statCard}${darkMode ? ` ${styles.dark}` : ''}`}>
           <h3>Remaining</h3>
           <p className={styles.statNumber}>{summary.totalNotStarted}</p>
         </div>
-        <div className={styles.statCard}>
+        <div className={`${styles.statCard}${darkMode ? ` ${styles.dark}` : ''}`}>
           <h3>Total Atoms</h3>
           <p className={styles.statNumber}>{summary.totalAtoms}</p>
         </div>
@@ -614,7 +617,7 @@ const StudentProfile = () => {
             aria-label="Close modal"
             type="button"
           />
-          <div className={styles.modal}>
+          <div className={`${styles.modal}${darkMode ? ` ${styles.dark}` : ''}`}>
             <div className={styles.modalHeader}>
               <h2 id="modal-title">{selectedSubject} Educational Progress</h2>
               <button onClick={handleCloseModal} className={styles.closeBtn}>
@@ -626,6 +629,7 @@ const StudentProfile = () => {
               completedAtoms={completedBySubject[selectedSubject] || []}
               inProgressAtoms={inProgressBySubject[selectedSubject] || []}
               notStartedAtoms={notStartedBySubject[selectedSubject] || []}
+              darkMode={darkMode}
             />
           </div>
         </div>
