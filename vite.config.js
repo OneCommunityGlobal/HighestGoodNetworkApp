@@ -5,26 +5,51 @@ import react from '@vitejs/plugin-react';
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   return {
+    base: '/',
     resolve: {
       alias: {
         '@': resolve('src/'),
         '~': resolve('src/'),
       },
     },
-    // https://stackoverflow.com/a/77824845
+    server: {
+      port: 5173,
+      proxy: {
+        '/api': {
+          target: 'http://localhost:4500',
+          changeOrigin: true,
+          secure: false,
+          rewrite: path => path.replace(/^\/api/, ''),
+        },
+      },
+    },
     define: {
       ...Object.keys(env).reduce((prev, key) => {
         const sanitizedKey = key.replace(/[^a-zA-Z0-9_]/g, '_');
-
         // eslint-disable-next-line no-param-reassign
         prev[`process.env.${sanitizedKey}`] = JSON.stringify(env[key]);
-
         return prev;
       }, {}),
     },
     build: {
       outDir: 'build',
     },
-    plugins: [react()],
+    plugins: [
+      react({
+        babel: {
+          plugins: ['@babel/plugin-transform-logical-assignment-operators'],
+        },
+      }),
+    ],
+    optimizeDeps: {
+      include: [
+        'react-popper',
+        'react-datepicker',
+        'react-tooltip',
+        'react-bootstrap',
+        'libphonenumber-js/max',
+      ],
+      force: true, // force re-bundle after cache issues; set to false once deps load
+    },
   };
 });
