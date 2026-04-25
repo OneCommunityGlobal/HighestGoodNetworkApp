@@ -158,7 +158,7 @@ function CommunityCalendar() {
   const handleAddToCalendar = useCallback(() => {
     if (!selectedEvent) return;
 
-    const timeMatch = selectedEvent.time.match(/(\d+):(\d+)\s*(AM|PM)/);
+    const timeMatch = selectedEvent.time.match(/^(\d{1,2}):(\d{2})\s?(AM|PM)$/);
     const start = new Date(selectedEvent.date);
 
     if (timeMatch) {
