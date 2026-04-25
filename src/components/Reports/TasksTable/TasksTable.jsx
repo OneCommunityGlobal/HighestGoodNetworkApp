@@ -5,7 +5,7 @@
 import { useState, useEffect, useRef } from 'react';
 import '../../Teams/Team.module.css';
 import 'react-datepicker/dist/react-datepicker.css';
-import './TasksTable.css';
+import './TasksTable.module.css';
 import Select from 'react-select';
 import { Checkbox } from '~/components/common/Checkbox';
 import TextSearchBox from '~/components/UserManagement/TextSearchBox';

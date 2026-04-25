@@ -37,7 +37,7 @@ function DescriptionItem({ label, value, title }) {
 
   return (
     <div>
-      <Button onClick={toggle} color="link" className="descriptionItem_button">
+      <Button onClick={toggle} color="link" className={styles.descriptionItem_button}>
         {label}
       </Button>
       <EquipmentModal modal={modal} toggle={toggle} title={title} value={value} />

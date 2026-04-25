@@ -1,6 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 import { useEffect, useState } from 'react';
-import './ProjectMemberTable.css';
+import './ProjectMemberTable.module.css';
 import { Link } from 'react-router-dom';
 import CopyToClipboard from '~/components/common/Clipboard/CopyToClipboard';
 import { Stub } from '../../common/Stub';

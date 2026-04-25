@@ -1,7 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 import { useEffect, useState } from 'react';
 import {ProjectPieChart} from '../ProjectPieChart/ProjectPieChart';
-import './PieChartByProject.css';
+import './PieChartByProject.module.css';
 import TriMembersStateToggleSwitch from '../TriMembersStateToggleSwitch/TriMembersStateToggleSwitch'
 import style from '../../../UserProfile/UserProfileEdit/ToggleSwitch/ToggleSwitch.module.scss';
 

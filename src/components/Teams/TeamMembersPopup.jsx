@@ -12,7 +12,7 @@ import {
 } from 'reactstrap';
 import hasPermission from '~/utils/permissions';
 import { boxStyle, boxStyleDark } from '~/styles';
-import '../Header/index.css';
+import '../Header/index.module.css';
 import styles from './TeamMembersPopup.module.css';
 import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

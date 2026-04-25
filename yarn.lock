@@ -10802,7 +10802,7 @@ pkg-dir@^4.2.0:
   dependencies:
     find-up "^4.0.0"
 
-plotly.js@^3.3.1:
+plotly.js@^3.5.0:
   version "3.5.0"
   resolved "https://registry.npmjs.org/plotly.js/-/plotly.js-3.5.0.tgz"
   integrity sha512-a3AYQIMG7OdZmrJ/fJ65HSt3g1l5qDeludKqjjafU1dh5E+fwqDhsEBndW7VCYwjlducCfN6KtPdWdiWFcoBWw==

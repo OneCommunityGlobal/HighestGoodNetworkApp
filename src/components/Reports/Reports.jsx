@@ -16,7 +16,7 @@ import { fetchAllTasks } from '../../actions/task';
 import { getUsersTotalHoursForSpecifiedPeriod } from '../../actions/timeEntries';
 import { getUserProfileBasicInfo } from '../../actions/userManagement';
 import Loading from '../common/Loading';
-import '../Header/index.css';
+import '../Header/index.module.css';
 import styles from './reportsPage.module.css';
 import peopleImage from './images/People.svg';
 import projectsImage from './images/Projects.svg';
