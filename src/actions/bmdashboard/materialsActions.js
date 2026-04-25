@@ -158,6 +158,17 @@ export const postMaterialUpdateBulk = payload => {
   };
 };
 
+export const postMaterialsBulkAction = async payload => {
+  return axios
+    .post(ENDPOINTS.BM_MATERIALS_BULK_ACTIONS, payload)
+    .then(res => res)
+    .catch(err => {
+      if (err.response) return err.response;
+      if (err.request) return err.request;
+      return err.message;
+    });
+};
+
 export const purchaseMaterial = async body => {
   return axios
     .post(ENDPOINTS.BM_MATERIALS, body)

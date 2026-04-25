@@ -4,6 +4,16 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
+  const sanitizedEnvDefines = Object.keys(env).reduce((prev, key) => {
+    const normalizedKey = key.replace(/[^a-zA-Z0-9_]/g, '_');
+    const sanitizedKey = /^[0-9]/.test(normalizedKey) ? `_${normalizedKey}` : normalizedKey;
+
+    // eslint-disable-next-line no-param-reassign
+    prev[`process.env.${sanitizedKey}`] = JSON.stringify(env[key]);
+
+    return prev;
+  }, {});
+
   return {
     base: '/',
     resolve: {
@@ -23,12 +33,7 @@ export default defineConfig(({ mode }) => {
       },
     },
     define: {
-      ...Object.keys(env).reduce((prev, key) => {
-        const sanitizedKey = key.replace(/[^a-zA-Z0-9_]/g, '_');
-        // eslint-disable-next-line no-param-reassign
-        prev[`process.env.${sanitizedKey}`] = JSON.stringify(env[key]);
-        return prev;
-      }, {}),
+      ...sanitizedEnvDefines,
     },
     build: {
       outDir: 'build',
