@@ -82,7 +82,7 @@
     "object-hash": "^3.0.0",
     "path-browserify": "^1.0.1",
     "pdfmake": "^0.2.20",
-    "plotly.js": "^3.3.1",
+    "plotly.js": "^3.5.0",
     "popper.js": "^1.16.1",
     "prop-types": "^15.7.2",
     "rc-slider": "^11.1.8",

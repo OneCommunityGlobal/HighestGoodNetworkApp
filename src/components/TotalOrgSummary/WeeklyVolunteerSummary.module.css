@@ -68,9 +68,7 @@
 }
 
 .countdown__col__element {
-  display: inline-block;
   margin: 0 9px;
-  display: flex;
   flex-direction: column;
 }
 
@@ -176,7 +174,7 @@
   color: white;
 }
 .Collapsible__trigger:after {
-  font-family: 'FontAwesome';
+  font-family: 'FontAwesome', sans-serif;
   content: '\f107';
   position: absolute;
   right: 10px;
