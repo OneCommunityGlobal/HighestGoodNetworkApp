@@ -155,6 +155,18 @@ const AddTeamPopup = React.memo((props) => {
     }
   };
 
+  const handleCreateTeamError = (response) => {
+    const messageToastError =
+      response?.status === 500
+        ? 'No response received from the server'
+        : 'Error occurred while creating team';
+    if (response?.status === 403) {
+      setDuplicateTeam(true);
+    } else {
+      toast.error(messageToastError);
+    }
+  };
+
   const onCreateTeam = async () => {
     if (!searchText?.trim()) {
       onNewTeamValidation(false);
@@ -165,37 +177,24 @@ const AddTeamPopup = React.memo((props) => {
     const timeout = setTimeout(() => axiosResponseExceededTimeout(source), 20000);
     try {
       setIsLoading(true);
-      const teamName = searchText.trim();
-      const response = await dispatch(postNewTeam(teamName, true, source));
+      const newTeamName = searchText.trim();
+      const response = await dispatch(postNewTeam(newTeamName, true, source));
       clearTimeout(timeout);
 
       if (response?.status === 200) {
         setDuplicateTeam(false);
         if (!isNotDisplayAlert) setIsNotDisplayAlert(true);
-
         await refreshTeams();
-
         toast.success('Team created successfully');
-
         const created =
-          extractTeams(response)?.find((t) => normalize(t.teamName) === normalize(teamName)) ||
-          allTeams.find((t) => normalize(t.teamName) === normalize(teamName)) ||
+          extractTeams(response)?.find((t) => normalize(t.teamName) === normalize(newTeamName)) ||
+          allTeams.find((t) => normalize(t.teamName) === normalize(newTeamName)) ||
           response?.data;
-
         setIsLoading(false);
         onAssignTeam(created);
       } else {
         setIsLoading(false);
-        const messageToastError =
-          response?.status === 500
-            ? 'No response received from the server'
-            : 'Error occurred while creating team';
-
-        if (response?.status === 403) {
-          setDuplicateTeam(true);
-        } else {
-          toast.error(messageToastError);
-        }
+        handleCreateTeamError(response);
       }
     } catch (e) {
       clearTimeout(timeout);
@@ -431,7 +430,11 @@ const AddTeamPopup = React.memo((props) => {
                 flexShrink: 0,
               }}
             >
-              {isLoading ? <Spinner color="light" size="sm" /> : isEdit ? 'OK' : 'Confirm'}
+              {/* eslint-disable-next-line no-nested-ternary */}
+              {(() => {
+                if (isLoading) return <Spinner color="light" size="sm" />;
+                return isEdit ? 'OK' : 'Confirm';
+              })()}
             </Button>
           </div>
 

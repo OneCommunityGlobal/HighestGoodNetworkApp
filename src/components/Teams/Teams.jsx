@@ -28,7 +28,6 @@ import TeamMembersPopup from './TeamMembersPopup';
 import DeleteTeamPopup from './DeleteTeamPopup';
 import TeamStatusPopup from './TeamStatusPopup';
 import AddTeamPopup from '../UserProfile/TeamsAndProjects/AddTeamPopup';
-import { getCachedTeamMembers } from './teamMembersCache';
 // constants
 const FILTER_ALL = 'all';
 const FILTER_ACTIVE = 'active';

@@ -58,14 +58,12 @@ export function TeamTableSearchPanelBase(props) {
 TeamTableSearchPanelBase.propTypes = {
   darkMode: PropTypes.bool,
   hasPermission: PropTypes.func.isRequired,
-  searchText: PropTypes.string,
   onSearch: PropTypes.func.isRequired,
   onCreateNewTeamClick: PropTypes.func.isRequired,
 };
 
 TeamTableSearchPanelBase.defaultProps = {
   darkMode: false,
-  searchText: '',
 };
 
 export default connect(null, { hasPermission })(TeamTableSearchPanelBase);
