@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { PieChart, Pie, Sector, ResponsiveContainer, LabelList} from 'recharts';
 import TwoWayToggleSwitch from '../../../common/TwoWayToggleSwitch/TwoWayToggleSwitch';
-import './ProjectPieChart.css';
+import './ProjectPieChart.module.css';
 
 
 const generateRandomHexColor = () => {

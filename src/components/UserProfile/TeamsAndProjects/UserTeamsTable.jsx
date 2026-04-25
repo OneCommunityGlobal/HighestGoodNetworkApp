@@ -1,13 +1,13 @@
 import { React, useState, useEffect, useRef } from 'react';
 import { Button, Col, Input } from 'reactstrap';
-import './TeamsAndProjects.css';
+import './TeamsAndProjects.module.css';
 import hasPermission from '../../../utils/permissions';
 // import styles from './UserTeamsTable.css';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { connect } from 'react-redux';
 import Switch from './Switch';
 
-import './UserTeamsTable.css';
+import './UserTeamsTable.module.css';
 
 import { AutoCompleteTeamCode } from './AutoCompleteTeamCode';
 

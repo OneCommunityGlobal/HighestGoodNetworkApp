@@ -17,7 +17,7 @@ import {
  
 import Member from './Member';
 import FoundUser from './FoundUser';
-import './members.css';
+import './members.module.css';
 import hasPermission from '~/utils/permissions';
 import { boxStyle, boxStyleDark } from '~/styles';
 import ToggleSwitch from '~/components/UserProfile/UserProfileEdit/ToggleSwitch';

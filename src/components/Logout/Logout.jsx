@@ -2,7 +2,7 @@ import { Redirect, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { boxStyle, boxStyleDark } from '~/styles';
-import '../Header/index.css';
+import '../Header/index.module.css';
 import { logoutUser } from '../../actions/authActions';
 
 function Logout({ setLogoutPopup, open }) {

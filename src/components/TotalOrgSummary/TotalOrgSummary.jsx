@@ -28,7 +28,7 @@ import hasPermission from '~/utils/permissions';
 import { getTaskAndProjectStats, getTotalOrgSummary } from '~/actions/totalOrgSummary';
 
 import { clsx } from 'clsx';
-import '../Header/index.css';
+import '../Header/index.module.css';
 import AccordianWrapper from './AccordianWrapper/AccordianWrapper';
 import AnniversaryCelebrated from './AnniversaryCelebrated/AnniversaryCelebrated';
 import BlueSquareStats from './BlueSquareStats/BlueSquareStats';

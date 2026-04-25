@@ -1,7 +1,7 @@
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import React, { useState } from 'react';
 import { boxStyle, boxStyleDark } from '~/styles';
-import '../../Header/index.css';
+import '../../Header/index.module.css';
 import { toast } from 'react-toastify';
 
 const TaskCompletedModal = React.memo(props => {

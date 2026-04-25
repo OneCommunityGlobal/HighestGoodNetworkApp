@@ -8,7 +8,7 @@ import {
   ModalBody,
   ModalFooter,
 } from 'reactstrap';
-import '../Header/index.css';
+import '../Header/index.module.css';
 import { InactiveReason } from '../../utils/enums';
 
 const ActiveInactiveConfirmationPopup = React.memo((props) => {

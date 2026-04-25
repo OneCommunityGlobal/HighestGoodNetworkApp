@@ -14,7 +14,7 @@ import { boxStyle, boxStyleDark } from '~/styles';
 import DurationFilter from './DurationFilter';
 import styles from './PRReviewTeamAnalytics.module.css';
 import PRData from './PRData';
-import '../Header/index.css';
+import '../Header/index.module.css';
 
 const DURATION_OPTIONS = [
   { label: 'Last Week', value: 'last_week' },

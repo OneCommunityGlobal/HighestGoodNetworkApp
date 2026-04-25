@@ -1,4 +1,4 @@
-import './TwoWayToggleSwitch.css'; // Asegúrate de crear este archivo CSS
+import './TwoWayToggleSwitch.module.css'; // Asegúrate de crear este archivo CSS
 
 function TwoWayToggleSwitch({ isOn, handleToggle }) {
   return (

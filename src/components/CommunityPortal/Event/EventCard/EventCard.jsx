@@ -91,18 +91,18 @@ function EventCard(props) {
               icon={faTag}
               className={`me-2 ${darkMode ? 'text-light' : 'text-muted'}`}
             />
-            <span className="text-muted">Type:</span>
+            <span className={styles['text-muted']}>Type:</span>
             <span className="ms-2">{type}</span>
           </div>
           <div className="d-flex align-items-center mb-2">
             <FontAwesomeIcon icon={faMapMarkerAlt} className="me-2 text-muted" />
-            <span className="text-muted">Location:</span>
+            <span className={styles['text-muted']}>Location:</span>
             <span className={`ms-2 ${styles['attendee-tag']} ${styles[getLocationTag(location)]}`}>
               {location}
             </span>
           </div>
           <div className={`${styles['event-description']} mb-2`}>
-            <span className="text-muted">Description:</span>
+            <span className={styles['text-muted']}>Description:</span>
             <p className="mt-1 mb-0">{description}</p>
           </div>
         </div>

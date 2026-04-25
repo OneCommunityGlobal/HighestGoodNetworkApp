@@ -447,7 +447,7 @@ const SummaryBar = React.forwardRef((props, ref) => {
           <div className="d-flex justify-content-center">
             <span className={`${styles.large_text_summary} text-danger`}>!</span>
           </div>
-          <span className="text-center">SUMMARY</span>
+          <span className={styles['text-center']}>SUMMARY</span>
           <div className="py-2" />
         </div>
       );
@@ -461,7 +461,7 @@ const SummaryBar = React.forwardRef((props, ref) => {
         <div className="d-flex justify-content-center">
           <span className={`${styles.large_text_summary} ${styles['text--black']}`}>✓</span>
         </div>
-        <span className="text-center">SUMMARY</span>
+        <span className={styles['text-center']}>SUMMARY</span>
         <div className="py-2" />
       </div>
     );
@@ -651,7 +651,7 @@ const SummaryBar = React.forwardRef((props, ref) => {
                   <span>{tasks}</span>
                 </div>
               )}
-              {/* <div className="redBackgroup">
+              {/* <div className={styles.redBackgroup}>
                 <span>{tasks}</span>
               </div> */}
               {isAuthUser || canEditData() ? (
@@ -680,7 +680,7 @@ const SummaryBar = React.forwardRef((props, ref) => {
                   <span>{props.badgeCount}</span>
                 </div>
               )}
-              {/* <div className="redBackgroup">
+              {/* <div className={styles.redBackgroup}>
                 <span>{badges}</span>
                 <span>{props.badgeCount}</span>
               </div> */}

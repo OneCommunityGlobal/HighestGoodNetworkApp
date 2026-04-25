@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Dropdown, Input } from 'reactstrap';
-import './TeamsAndProjects.css';
+import './TeamsAndProjects.module.css';
 import { useSelector } from 'react-redux';
 
 // eslint-disable-next-line react/display-name

@@ -546,7 +546,7 @@ export default function UpdateEquipment() {
                 onChange={e => setStatus(e.target.value)}
                 required
                 style={selectInputStyle}
-                className="custom-select"
+                className={styles['custom-select']}
               >
                 <option value="">Select status</option>
                 <option value="Working well">Working well</option>
@@ -571,7 +571,7 @@ export default function UpdateEquipment() {
                 onChange={e => setLastUsedBy(e.target.value)}
                 required
                 style={selectInputStyle}
-                className="custom-select"
+                className={styles['custom-select']}
               >
                 <option value="">Select user</option>
                 <option value="Jane Doe (Volunteer #1)">Jane Doe (Volunteer #1)</option>
@@ -611,7 +611,7 @@ export default function UpdateEquipment() {
                 onChange={e => setLastUsedFor(e.target.value)}
                 required
                 style={selectInputStyle}
-                className="custom-select"
+                className={styles['custom-select']}
               >
                 <option value="">Select usage</option>
                 <option value="Kitchen - tiling">Kitchen - tiling</option>

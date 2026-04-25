@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import './index.css';
+import './index.module.css';
 import { Tooltip } from 'reactstrap';
 import sunIcon from './images/sunIcon.png';
 import nightIcon from './images/nightIcon.png';

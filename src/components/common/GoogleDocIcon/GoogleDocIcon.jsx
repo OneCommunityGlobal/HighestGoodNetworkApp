@@ -1,6 +1,6 @@
 import { toast } from 'react-toastify';
 import googleDocIconPng from '../../../assets/images/google_doc_icon.png';
-import './style.css';
+import './style.module.css';
 
 export default function GoogleDocIcon({ link }) {
   const handleGoogleDocClick = () => {
