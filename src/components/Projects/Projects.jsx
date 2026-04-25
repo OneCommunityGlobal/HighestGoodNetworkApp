@@ -94,9 +94,12 @@ const Projects = function(props) {
 
   const onClickArchiveBtn = projectData => {
     setProjectTarget(projectData);
+    const archiveMessage = projectData.isArchived
+      ? `<p style="${darkMode ? 'color: white' : 'color: black'}">Do you want to unarchive <b>${projectData.projectName}</b>? This will restore it and its tasks.</p>`
+      : `<p style="${darkMode ? 'color: white' : 'color: black'}"><b>Hold on!</b><br/>Archiving <b>${projectData.projectName}</b> will deactivate all its WBS, tasks, and time entries, and remove it from all team members' profiles.<br/><b>Sure about this?</b></p>`;
     setModalData({
       showModal: true,
-      modalMessage: `<p style="${darkMode ? 'color: white' : 'color: black'}">Do you want to ${projectData.isArchived ? 'unarchive' : 'archive'} ${projectData.projectName}?</p>`,
+      modalMessage: archiveMessage,
       modalTitle: projectData.isArchived ? 'Confirm Unarchive' : CONFIRM_ARCHIVE,
       hasConfirmBtn: true,
       hasInactiveBtn: false,
@@ -431,7 +434,7 @@ const Projects = function(props) {
         darkMode={darkMode}
         confirmButtonText={isArchiving
           ? (projectTarget.isArchived ? 'Unarchiving...' : 'Archiving...') 
-          : (projectTarget.isArchived ? 'Unarchive' : 'Confirm')
+          : (projectTarget.isArchived ? 'Unarchive' : 'Yes, archive it')
         }
         isConfirmDisabled={isArchiving}
         setInactiveButton={isChangingStatus ? 'Setting Inactive' : 'Yes, hide it all'}

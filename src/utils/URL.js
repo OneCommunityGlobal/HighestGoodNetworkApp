@@ -301,6 +301,34 @@ export const ENDPOINTS = {
   PERMISSION_CHANGE_LOGS: userId => `${APIEndpoint}/permissionChangeLogs/${userId}`,
 
   GET_TOTAL_COUNTRY_COUNT: () => `${APIEndpoint}/getTotalCountryCount`,
+  
+  ANALYTICS_AVAILABLE_ROLES: () => `${APIEndpoint}/analytics/roles`,
+
+  // Country Application Map Chart endpoints
+  COUNTRY_APPLICATION_DATA: (params = {}) => {
+    let url = `${APIEndpoint}/analytics/country-applications`;
+    const queryParams = new URLSearchParams();
+    
+    if (params.roles && params.roles.length > 0) {
+      queryParams.append('roles', params.roles.join(','));
+    }
+    // Include ALL so the API uses filter=all; omit timeFrame when startDate/endDate define the range
+    if (params.timeFrame) {
+      queryParams.append('timeFrame', params.timeFrame);
+    }
+    if (params.startDate) {
+      queryParams.append('startDate', params.startDate);
+    }
+    if (params.endDate) {
+      queryParams.append('endDate', params.endDate);
+    }
+    if (params.customDateRange) {
+      queryParams.append('customDateRange', 'true');
+    }
+    
+    const queryString = queryParams.toString();
+    return queryString ? `${url}?${queryString}` : url;
+  },
 
   GET_ALL_FOLLOWUPS: () => `${APIEndpoint}/followup`,
 
@@ -454,6 +482,8 @@ export const ENDPOINTS = {
   USER_STATE_SELECTION: userId => `${APIEndpoint}/userstate/selection/${userId}`,
   USER_STATE_SELECTIONS_BATCH: `${APIEndpoint}/userstate/selections/batch`,
   USER_STATE_CATALOG_USAGE: key => `${APIEndpoint}/userstate/catalog/${key}/usage`,
+
+  HGN_FORM_GET_TEAM_MEMBERS_BY_SKILL: skill => `${APIEndpoint}/userProfile/skills/${skill}`,
 
   CREATE_JOB_FORM: `${APIEndpoint}/jobforms`,
   UPDATE_JOB_FORM: `${APIEndpoint}/jobforms`,
