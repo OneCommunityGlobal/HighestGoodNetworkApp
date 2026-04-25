@@ -1,3 +1,5 @@
+/* stylelint-disable no-descending-specificity */
+
 /* ---------------- PAGE CONTAINER ---------------- */
 .weeklyProjectSummaryContainer {
   min-height: 100vh;
@@ -12,6 +14,7 @@
   padding: 0;
 }
 
+/* ---------------- DASHBOARD CONTAINER ---------------- */
 .weeklyProjectSummaryDashboardContainer {
   width: 95%;
   margin: auto;
@@ -41,7 +44,7 @@
   max-width: 1280px;
   padding: 12px 16px;
   background: var(--section-bg);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
   border-radius: 8px;
   gap: 12px;
 }
@@ -108,6 +111,7 @@
 }
 
 /* Share Button — override Bootstrap .btn so it lines up with .form-control selects */
+
 /* Bootstrap .btn defaults to flex-shrink: 1; when the row is tight the button shrinks and
    the label overflows outside the painted background (overlapping the last dropdown). */
 .weeklySummaryShareBtn {
@@ -154,7 +158,7 @@
   display: inline-block;
   width: 14px;
   height: 14px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid rgb(255 255 255 / 30%);
   border-radius: 50%;
   border-top-color: white;
   animation: spin 0.8s linear infinite;
@@ -168,8 +172,7 @@
   }
 }
 
-/* ---------------- DASHBOARD ---------------- */
-
+/* ---------------- GRID ---------------- */
 .weeklyProjectSummaryDashboardGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -205,7 +208,7 @@
 
 .darkMode .weeklyProjectSummaryCard {
   background: var(--card-bg);
-  box-shadow: 0 2px 5px rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 5px rgb(255 255 255 / 10%);
 }
 
 .financialSmall {
@@ -215,7 +218,6 @@
   grid-column: span 1;
 }
 
-
 .weekly-project-summary-card.financial-big {
   grid-column: span 4;
   min-height: 600px;
@@ -223,7 +225,7 @@
   padding: 0;
   background: white;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
   overflow: hidden;
   margin-bottom: 20px;
 }
@@ -233,7 +235,6 @@
   margin: 0;
   font-weight: normal;
   font-size: 24px;
-
 }
 
 .fullCard {
@@ -266,6 +267,7 @@
   grid-column: span 4;
 }
 
+/* ---------------- SECTION ---------------- */
 .weeklyProjectSummaryDashboardSection {
   background: var(--section-bg);
   border-radius: 8px;
@@ -310,10 +312,10 @@
 
 /* ---------------- DARK MODE VARIABLES ---------------- */
 :root {
-  --bg-color: #ffffff;
-  --text-color: #000000;
+  --bg-color: #fff;
+  --text-color: #000;
   --card-bg: #fafafa;
-  --card-shadow: rgba(0, 0, 0, 0.1);
+  --card-shadow: rgb(0 0 0 / 10%);
   --section-bg: white;
   --section-title-bg: white;
   --section-title-hover: #e0e0e0;
@@ -324,9 +326,9 @@
 /* ---------------- DARK MODE STYLES ---------------- */
 .darkMode {
   --bg-color: #1b2a41;
-  --text-color: #ffffff;
+  --text-color: #fff;
   --card-bg: #2b3e59;
-  --card-shadow: rgba(255, 255, 255, 0.1);
+  --card-shadow: rgb(255 255 255 / 10%);
   --section-bg: #253342;
   --section-title-bg: #2d4059;
   --section-title-hover: #3a506b;
@@ -336,18 +338,27 @@
   --focus-border-color: #e8a71c;
 }
 
+/* MERGED: keep background + FORCE all title text visible in dark mode */
 .darkMode .weeklyProjectSummaryDashboardCategoryTitle {
-  color: #ffffff;
   background: #2d4059;
+  color: #fff;
 }
 
 .darkMode .weeklyProjectSummaryDashboardCategoryTitle:hover {
   background: #3a506b;
 }
 
+.darkMode .weeklyProjectSummaryDashboardCategoryTitle span {
+  color: #fff;
+}
+
+.darkMode .weeklyProjectSummaryDashboardCategoryTitle * {
+  color: #fff;
+}
+
 .darkMode .weeklyProjectSummaryDashboardCategoryContent {
   background-color: var(--section-bg);
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  border-top: 1px solid rgb(255 255 255 / 20%);
 }
 
 .darkMode .weeklySummaryHeaderContainer {
@@ -355,47 +366,47 @@
   color: var(--text-color);
 }
 
-/* First, set a max-height and make it scrollable */
+/* ---------------- TOOLTIP SCROLL FIX ---------------- */
 .quantityOfMaterialsUsedChartTooltip {
-  max-height: 80vh !important; /* Limit to 80% of viewport height */
-  overflow-y: auto !important; /* Enable vertical scrolling */
-  padding-right: 15px !important; /* Add some padding for the scrollbar */
-  /* Support for Firefox */
+  max-height: 80vh !important;
+  overflow-y: auto !important;
+  padding-right: 15px !important;
+
+  /* Firefox */
   scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.1);
+  scrollbar-color: rgb(0 0 0 / 30%) rgb(0 0 0 / 10%);
 }
 
-/* Style the scrollbar for better visibility - Webkit browsers */
+/* Chrome/Safari scrollbar */
 .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar {
   width: 8px;
 }
 
 .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.1);
+  background: rgb(0 0 0 / 10%);
   border-radius: 4px;
 }
 
 .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.3);
+  background: rgb(0 0 0 / 30%);
   border-radius: 4px;
 }
 
 /* Additional adjustments for dark mode if needed */
 .darkMode .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgb(255 255 255 / 10%);
 }
 
 .darkMode .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgb(255 255 255 / 30%);
 }
 
 .darkMode .quantityOfMaterialsUsedChartTooltip {
-  scrollbar-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.1);
+  scrollbar-color: rgb(255 255 255 / 30%) rgb(255 255 255 / 10%);
 }
-/* ---------------- RESPONSIVE DESIGN ---------------- */
 
-/* Medium Screens - Wrap Items */
-@media (max-width: 1024px) {
+/* ---------------- RESPONSIVE DESIGN ---------------- */
+@media (width <= 1024px) {
   .weeklySummaryHeaderContainer {
     flex-direction: column;
     align-items: stretch;
@@ -413,8 +424,7 @@
   }
 }
 
-/* Small Screens - Make Dropdowns Vertical */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .weeklySummaryHeaderContainer {
     flex-direction: column;
     align-items: stretch;
@@ -426,7 +436,6 @@
     width: 100%;
   }
 
-  /* Make Dropdowns Full Width */
   .weeklySummaryHeaderControls select {
     width: 100%;
     max-width: none;
@@ -436,7 +445,6 @@
     max-width: none;
   }
 
-  /* Make Button Full Width */
   .weeklySummaryShareBtn {
     width: 100%;
   }
@@ -451,10 +459,6 @@
   .weeklyProjectSummaryDashboardSection.small {
     grid-column: span 1;
   }
-
-  .projectStatusGrid {
-    grid-template-columns: 1fr;
-  }
 }
 
 /* ---------------- STATUS CARD ---------------- */
@@ -468,13 +472,15 @@
   max-width: 284px;
   height: 190px;
   text-align: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 8px rgb(0 0 0 / 15%);
   padding: 20px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid rgb(0 0 0 / 10%);
   position: relative;
 }
 
 /* ---------------- RESPONSIVE GRID LAYOUT ---------------- */
+
+/* MERGED: keep ONLY one projectStatusGrid */
 .projectStatusGrid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -485,6 +491,7 @@
   max-width: 1600px;
   margin: auto;
 }
+
 /* .projectStatusGrid {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
@@ -500,7 +507,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 5px rgb(0 0 0 / 15%);
   margin: 12px 0;
 }
 
@@ -517,31 +524,31 @@
 }
 
 /* ---------------- RESPONSIVE BREAKPOINTS ---------------- */
-@media (min-width: 1600px) {
+@media (width >= 1600px) {
   .projectStatusGrid {
     grid-template-columns: repeat(6, 1fr);
   }
 }
 
-@media (max-width: 1400px) {
+@media (width <= 1400px) {
   .projectStatusGrid {
     grid-template-columns: repeat(4, 1fr);
   }
 }
 
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
   .projectStatusGrid {
     grid-template-columns: repeat(3, 1fr);
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .projectStatusGrid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (max-width: 576px) {
+@media (width <= 576px) {
   .projectStatusGrid {
     grid-template-columns: repeat(1, 1fr);
   }
