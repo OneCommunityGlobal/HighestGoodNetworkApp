@@ -242,7 +242,14 @@ const MoleculeChart = ({ subject, completedAtoms, inProgressAtoms, notStartedAto
   return (
     <div className={`${styles.chartContainer}${darkMode ? ` ${styles.dark}` : ''}`}>
       <svg viewBox="0 0 300 300" className={styles.svg}>
-        <circle cx="150" cy="150" r="140" fill={darkMode ? '#162032' : '#E8F5E9'} stroke={darkMode ? '#1e293b' : '#D4EDDA'} strokeWidth="1" />
+        <circle
+          cx="150"
+          cy="150"
+          r="140"
+          fill={darkMode ? '#162032' : '#E8F5E9'}
+          stroke={darkMode ? '#1e293b' : '#D4EDDA'}
+          strokeWidth="1"
+        />
 
         {allAtoms.map((atom, i) => {
           const pos = positions[i];
@@ -322,7 +329,10 @@ const MoleculeChart = ({ subject, completedAtoms, inProgressAtoms, notStartedAto
       </svg>
 
       {tooltip && (
-        <div className={`${styles.tooltip}${darkMode ? ` ${styles.dark}` : ''}`} style={{ left: tooltip.x, top: tooltip.y }}>
+        <div
+          className={`${styles.tooltip}${darkMode ? ` ${styles.dark}` : ''}`}
+          style={{ left: tooltip.x, top: tooltip.y }}
+        >
           <h4>{tooltip.atom.name}</h4>
           <p>Status: {tooltip.atom.status.replace('_', ' ')}</p>
           {tooltip.atom.difficulty && <p>Difficulty: {tooltip.atom.difficulty}</p>}
@@ -549,10 +559,18 @@ const StudentProfile = () => {
 
       {/* Tabs Section */}
       <div className={`${styles.tabs}${darkMode ? ` ${styles.dark}` : ''}`}>
-        <button className={`${styles.tab} ${styles.tabActive}${darkMode ? ` ${styles.dark}` : ''}`}>Educational Progress</button>
-        <button className={`${styles.tab}${darkMode ? ` ${styles.dark}` : ''}`}>Completed Lessons</button>
-        <button className={`${styles.tab}${darkMode ? ` ${styles.dark}` : ''}`}>Current Tasks</button>
-        <button className={`${styles.tab}${darkMode ? ` ${styles.dark}` : ''}`}>Student Interests</button>
+        <button className={`${styles.tab} ${styles.tabActive}${darkMode ? ` ${styles.dark}` : ''}`}>
+          Educational Progress
+        </button>
+        <button className={`${styles.tab}${darkMode ? ` ${styles.dark}` : ''}`}>
+          Completed Lessons
+        </button>
+        <button className={`${styles.tab}${darkMode ? ` ${styles.dark}` : ''}`}>
+          Current Tasks
+        </button>
+        <button className={`${styles.tab}${darkMode ? ` ${styles.dark}` : ''}`}>
+          Student Interests
+        </button>
       </div>
 
       {/* Progress Overview Section */}
