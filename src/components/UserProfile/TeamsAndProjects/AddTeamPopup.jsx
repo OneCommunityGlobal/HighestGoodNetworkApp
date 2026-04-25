@@ -42,7 +42,7 @@ function handleEditInputChange(nextValue, ctx) {
 
 // eslint-disable-next-line react/display-name
 const AddTeamPopup = React.memo((props) => {
-  const { darkMode, isEdit, teamName, teamId, teamCode, isActive, onUpdateTeam } = props;
+  const { darkMode, isEdit, teamName, teamId, teamCode, isActive, onUpdateTeam, isTeamManagement } = props;
   const dispatch = useDispatch();
 
   const [teams, setTeams] = useState(() => props.teamsData?.allTeams ?? []);
@@ -200,30 +200,36 @@ const AddTeamPopup = React.memo((props) => {
 
   const onConfirm = () => {
     if (!searchText && !selectedTeam) {
-      onValidation(false);
+      if (isTeamManagement) {
+        onNewTeamValidation(false);
+      } else {
+        onValidation(false);
+      }
       return;
     }
 
-    if (selectedTeam) {
+    if (selectedTeam || findExact()) {
       onValidation(true);
-      if (!isNotDisplayAlert) setIsNotDisplayAlert(true);
-      onAssignTeam(selectedTeam);
-      return;
-    }
-
-    const exact = findExact();
-    if (exact) {
-      onValidation(true);
-      if (!isNotDisplayAlert) setIsNotDisplayAlert(true);
-      onAssignTeam(exact);
+      if (isTeamManagement) {
+        setDuplicateTeam(true);
+        setIsNotDisplayAlert(true);
+      } else {
+        if (!isNotDisplayAlert) setIsNotDisplayAlert(true);
+        onAssignTeam(selectedTeam || findExact());
+      }
       return;
     }
 
     const matches = findCandidates();
     if (matches.length === 1) {
       onValidation(true);
-      if (!isNotDisplayAlert) setIsNotDisplayAlert(true);
-      onAssignTeam(matches[0]);
+      if (isTeamManagement) {
+        setDuplicateTeam(true);
+        setIsNotDisplayAlert(true);
+      } else {
+        if (!isNotDisplayAlert) setIsNotDisplayAlert(true);
+        onAssignTeam(matches[0]);
+      }
       return;
     }
 
@@ -444,7 +450,16 @@ const AddTeamPopup = React.memo((props) => {
 
           {!isNotDisplayAlert && !isEdit && (
             <>
-              <Alert color="danger" style={{ marginBottom: 0 }}>
+              <Alert
+                color="danger"
+                style={{
+                  marginBottom: 0,
+                  backgroundColor: darkMode ? 'rgba(220, 38, 38, 0.15)' : undefined,
+                  color: darkMode ? '#f87171' : '#721c24',
+                  border: darkMode ? '1px solid #ef4444' : undefined,
+                  fontWeight: darkMode ? 600 : 'normal',
+                }}
+              >
                 {findCandidates().length > 1
                   ? 'More than one team matches your text. Please refine or pick from the dropdown.'
                   : 'Oops, this team does not exist! Create it if you want it.'}
@@ -461,7 +476,7 @@ const AddTeamPopup = React.memo((props) => {
                 <Button color="info" onClick={onCreateTeam}>
                   <b>Create Team</b>
                 </Button>
-                <Button color="danger" onClick={() => setIsNotDisplayAlert(true)}>
+                <Button color="danger" onClick={closePopup}>
                   <b>Cancel Team Creation</b>
                 </Button>
               </div>
@@ -469,19 +484,46 @@ const AddTeamPopup = React.memo((props) => {
           )}
 
           {!isValidTeam && !searchText && !selectedTeam && (
-            <Alert color="danger" style={{ marginBottom: 0 }}>
+            <Alert
+              color="danger"
+              style={{
+                marginBottom: 0,
+                backgroundColor: darkMode ? 'rgba(220, 38, 38, 0.15)' : undefined,
+                color: darkMode ? '#f87171' : '#721c24',
+                border: darkMode ? '1px solid #ef4444' : undefined,
+                fontWeight: darkMode ? 600 : 'normal',
+              }}
+            >
               {isEdit ? 'Team name cannot be empty.' : 'Hey, you need to pick a team first!'}
             </Alert>
           )}
 
           {!isValidNewTeam && !isDuplicateTeam && (
-            <Alert color="danger" style={{ marginBottom: 0 }}>
+            <Alert
+              color="danger"
+              style={{
+                marginBottom: 0,
+                backgroundColor: darkMode ? 'rgba(220, 38, 38, 0.15)' : undefined,
+                color: darkMode ? '#f87171' : '#721c24',
+                border: darkMode ? '1px solid #ef4444' : undefined,
+                fontWeight: darkMode ? 600 : 'normal',
+              }}
+            >
               {isEdit ? 'Team name cannot be empty.' : 'Please enter a team name.'}
             </Alert>
           )}
 
           {isDuplicateTeam && (
-            <Alert color="danger" style={{ marginBottom: 0 }}>
+            <Alert
+              color="danger"
+              style={{
+                marginBottom: 0,
+                backgroundColor: darkMode ? 'rgba(220, 38, 38, 0.15)' : undefined,
+                color: darkMode ? '#f87171' : '#721c24',
+                border: darkMode ? '1px solid #ef4444' : undefined,
+                fontWeight: darkMode ? 600 : 'normal',
+              }}
+            >
               {isEdit
                 ? 'A team with this name already exists'
                 : 'A team with this name already exists.'}
@@ -519,6 +561,7 @@ AddTeamPopup.propTypes = {
   teamCode: PropTypes.string,
   isActive: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
   onUpdateTeam: PropTypes.func,
+  isTeamManagement: PropTypes.bool,
 };
 
 AddTeamPopup.defaultProps = {
@@ -532,6 +575,7 @@ AddTeamPopup.defaultProps = {
   teamCode: '',
   isActive: '',
   onUpdateTeam: undefined,
+  isTeamManagement: false,
 };
 
 export default AddTeamPopup;
