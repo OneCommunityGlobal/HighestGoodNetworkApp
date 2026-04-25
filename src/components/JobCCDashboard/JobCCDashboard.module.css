@@ -1,10 +1,16 @@
 .jobCcDashboard {
   padding: 20px;
   font-family: 'Arial', sans-serif;
+  background-color: #ffffff;
+  color: #000000;
 }
 
-.darkModeJobCcDashboard {
-  /*  #2c2f33 */
+.darkMode {
+  background-color: #1b2a41;
+  color: #ffffff;
+}
+
+.darkMode .jobCcDashboard {
   background-color: #1b2a41;
   color: #ffffff;
 }
@@ -23,7 +29,7 @@
   margin-bottom: 30px;
 }
 
-.darkModeJobCcDashboard .formContainer {
+.darkMode .formContainer {
   background-color: #3c3f44;
   color: #ffffff;
 }
@@ -45,8 +51,9 @@
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.darkModeJobCcDashboard .ccListContainer {
+.darkMode .ccListContainer {
   background-color: #3c3f44;
+  color: #ffffff;
 }
 
 .jobCcDashboardTable {
@@ -58,14 +65,142 @@
   color: #ffffff;
 }
 
-.darkModeJobCcDashboard .jobCcDashboardTable th {
+.darkMode .jobCcDashboardTable th {
   background-color: #0056b3;
+  color: #ffffff;
 }
 
 .jobCcDashboardTable td {
   vertical-align: middle;
 }
 
+.darkMode .jobCcDashboardTable td {
+  color: #ffffff;
+}
 .jobCcDashboardTable button {
   font-size: 0.85rem;
+}
+
+.darkMode .formContainer label {
+  color: #ffffff;
+}
+
+.darkMode .formContainer input,
+.darkMode .formContainer select {
+  background-color: #1b1b1b;
+  color: #ffffff;
+  border: 1px solid #555555;
+}
+
+.darkMode .dashboardTitle {
+  filter: brightness(1.5);
+}
+
+.modalWrapper {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+.darkModeModel {
+  background-color: #2b2e33;
+  color: #ffffff;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #dee2e6;
+  padding: 1rem;
+}
+
+.darkModeModel .modalHeader {
+  border-bottom: 1px solid #555;
+}
+
+.modalTitle {
+  margin: 0;
+}
+
+.modalBody {
+  padding: 1rem;
+  background-color: #fff;
+  color: #000;
+}
+
+.darkModeModel .modalBody {
+  background-color: #2b2e33;
+  color: #fff;
+}
+
+.modalFooter {
+  padding: 1rem;
+  border-top: 1px solid #dee2e6;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.label {
+  font-weight: 500;
+}
+
+.input {
+  background-color: #ffffff;
+  color: #000000;
+  border: 1px solid #ccc;
+}
+
+.darkModeModel input,
+.darkModeModel table,
+.darkModeModel label {
+  background-color: #2b2e33;
+  color: #fff;
+  border-color: #555;
+}
+
+.darkModeModel input:focus {
+  background-color: black;
+  color: #fff;
+}
+
+.darkModeModel table th,
+.darkModeModel table td {
+  border-color: #555;
+  color: #fff;
+}
+.selectInput {
+  background-color: #ffffff;
+  color: #000000;
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+
+.selectInput:focus {
+  background-color: #f0f0f0;
+  outline: none;
+}
+
+.darkModeModel .selectInput {
+  background-color: #2b2e33;
+  color: #fff;
+  border-color: #555;
+}
+
+.darkModeModel .selectInput:focus {
+  background-color: #1e1e2e;
+  color: #fff;
+}
+
+.modalCloseButton {
+  font-size: 1.5rem;
+  padding: 0 0.5rem;
+  line-height: 1;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.modalCloseButton:hover {
+  background: rgba(255, 0, 0, 0.1);
 }
