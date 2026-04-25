@@ -31,26 +31,40 @@ export const peopleTasksPieChartViewData = (state) => {
   const userId = state.userProfile?._id;
 
   const period = Array.isArray(timeEntries?.period) ? timeEntries.period : [];
-  console.log(period)
-  const userEntries = period.filter(
-    e => (e.personId ?? e.userId) === userId && e.isActive === false
+
+  const allUserEntries = period.filter(
+    e => (e.personId ?? e.userId) === userId
   );
 
-  const entries = userEntries;
+  const completedUserEntries = allUserEntries.filter(e => e.isActive === true);
 
   const projectHours = {};
-  entries.forEach(entry => {
-    const { projectId } = entry;
-    if (!projectId) return;
+  const projectNames = {};
+
+  allUserEntries.forEach(entry => {
+    const { projectId, taskId, projectName } = entry;
+    if (!projectId || taskId) return;
     const time = (entry.hours || 0) + (entry.minutes || 0) / 60;
     projectHours[projectId] = (projectHours[projectId] || 0) + time;
+    if (projectName) projectNames[projectId] = projectName;
   });
 
+  const hoursLoggedToProjectsOnly = Object.entries(projectHours).map(([projectId, totalTime]) => {
+    const project = (userProjects?.projects || []).find(p => p.projectId === projectId);
+    return {
+      projectId,
+      projectName: project?.projectName || projectNames[projectId] || `Unknown (${projectId.slice(-6)})`,
+      totalTime,
+    };
+  });
+
+  const userTasks = state.userTask?.tasks || [];
+
   const taskHours = {};
-  entries.forEach(entry => {
-    if (entry.wbsId == null) return;   
-    const taskKey = entry.wbsId;       
-    const taskName = entry.taskName || 'Unnamed Task';
+  allUserEntries.forEach(entry => {
+    if (entry.taskId == null) return;
+    const taskKey = entry.taskId;
+    const taskName = entry.taskName || `Task in "${entry.projectName || 'Unknown Project'}"`;
     const time = (entry.hours || 0) + (entry.minutes || 0) / 60;
 
     if (!taskHours[taskKey]) {
@@ -59,30 +73,24 @@ export const peopleTasksPieChartViewData = (state) => {
     taskHours[taskKey].totalTime += time;
   });
 
-  const hoursLoggedToProjectsOnly = (userProjects?.projects || []).map(project => ({
-    projectId: project.projectId,
-    projectName: project.projectName,
-    totalTime: projectHours[project.projectId] || 0,
-  }));
-
-  const resultArray2 = Object.keys(taskHours).map(taskId => {
+  const tasksArray = Object.keys(taskHours).map(taskId => {
     const t = taskHours[taskId];
     return {
-      projectId: taskId,           
+      projectId: taskId,   
       projectName: t.taskName,
       totalTime: t.totalTime,
     };
   });
 
-  const tasksWithLoggedHoursById = resultArray2;
-  const tasksLegend = resultArray2;
+  const tasksWithLoggedHoursById = tasksArray;
+  const tasksLegend = tasksArray;
 
   return {
     hoursLoggedToProjectsOnly,
     tasksWithLoggedHoursById,
     tasksLegend,
     showTasksPieChart: tasksWithLoggedHoursById.length > 0,
-    showProjectsPieChart: hoursLoggedToProjectsOnly.length > 0,
+    showProjectsPieChart: hoursLoggedToProjectsOnly.some(p => p.totalTime > 0),
     displayedTasksWithLoggedHoursById: {},
     displayedTasksLegend: {},
     showViewAllTasksButton: false,

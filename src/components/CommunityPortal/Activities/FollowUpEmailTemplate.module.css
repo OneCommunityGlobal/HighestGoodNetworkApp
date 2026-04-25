@@ -1,0 +1,166 @@
+/* stylelint-disable no-descending-specificity */
+.emailTemplateContainer {
+  max-width: 600px;
+  margin: auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 2px 2px 12px rgb(0 0 0 / 10%);
+  background-color: #fff;
+}
+
+.emailTemplateContainerDark {
+  background-color: #1c2541 !important;
+  border: 1px solid #3a506b !important;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 45%) !important;
+  color: #fff !important;
+}
+
+.textLight {
+  color: #fff !important;
+}
+
+.linkSoftDark a {
+  color: #9fc1ff !important;
+}
+
+.emailLogo {
+  display: block;
+  margin: 0 auto;
+  max-width: 150px;
+  height: auto;
+}
+
+.h2 {
+  text-align: left;
+  color: #333;
+}
+
+.emailTemplateContainerDark .h2 {
+  color: #fff !important;
+}
+
+.p {
+  font-size: 16px;
+  color: #555;
+  margin: 5px 0;
+  line-height: 1.3;
+}
+
+.emailTemplateContainerDark .p {
+  color: #fff !important;
+}
+
+.feedbackLink {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 45px;
+  margin-top: 10px;
+  padding: 10px 15px;
+  background-color: #007bff;
+  color: #fff;
+  font-size: 16px;
+  text-align: center;
+  text-decoration: none;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feedbackLinkDark {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  height: 45px !important;
+  background-color: #3a506b !important;
+  color: #fff !important;
+  border: none !important;
+}
+
+.feedbackLink:hover {
+  background-color: #39f;
+  box-shadow: 0 4px 10px rgb(0 123 255 / 20%);
+}
+
+.feedbackLinkDark:hover {
+  background-color: #5b7ca6 !important;
+}
+
+.feedbackLink:active {
+  background-color: #0056b3;
+  box-shadow: none;
+}
+
+.ul {
+  padding-left: 20px;
+}
+
+.ul li {
+  margin-bottom: 5px;
+}
+
+.socialIcons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin: 10px 0;
+}
+
+.socialIconsDark .socialIcon {
+  color: #fff !important;
+}
+
+.socialIcon {
+  font-size: 28px;
+  color: #333;
+  transition: color 0.3s ease;
+}
+
+.linkedin:hover {
+  color: #0077b5;
+}
+
+.instagram:hover {
+  color: #e4405f;
+}
+
+.facebook:hover {
+  color: #07a3db;
+}
+
+.footerLinksContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.footerLinks {
+  margin: 5px 0;
+  padding: 0 8px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #555;
+  text-decoration: none;
+}
+
+.footerLinks:hover {
+  text-decoration: underline;
+}
+
+.emailDivider {
+  width: 95%;
+  height: 1px;
+  margin: 10px auto;
+  background-color: #ddd;
+  border: none;
+}
+
+.emailDividerDark {
+  background-color: #3a506b !important;
+}

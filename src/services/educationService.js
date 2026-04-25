@@ -11,6 +11,11 @@ export const getEducatorStudentProgress = async studentId => {
     const response = await axios.get(ENDPOINTS.PROGRESS_EDUCATOR_STUDENT(studentId));
     return response.data;
   } catch (error) {
+    if (error.response && error.response.status === 401) {
+      const authError = new Error('Unauthorized');
+      authError.status = 401;
+      throw authError;
+    }
     throw new Error('Failed to fetch student progress data');
   }
 };
