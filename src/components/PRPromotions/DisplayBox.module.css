@@ -1,3 +1,7 @@
+/* ======================================================
+   OVERLAY
+   ====================================================== */
+
 .overlay {
   position: fixed;
   inset: 0;
@@ -7,6 +11,10 @@
   justify-content: center;
   background-color: rgb(0 0 0 / 60%);
 }
+
+/* ======================================================
+   POPUP CONTAINER
+   ====================================================== */
 
 .popup {
   width: 90%;
@@ -20,12 +28,30 @@
   box-shadow: 0 8px 24px rgb(0 0 0 / 25%);
 }
 
+.popupDark {
+  border: 1px solid #4b5563;
+  background-color: #1f2937;
+  color: #f9fafb;
+}
+
+/* ======================================================
+   HEADING
+   ====================================================== */
+
 .popupHeading {
   margin-bottom: 16px;
-  color: #111827;
   font-size: 20px;
   text-align: center;
+  color: #111827;
 }
+
+.popupHeadingDark {
+  color: #f9fafb;
+}
+
+/* ======================================================
+   TABLE
+   ====================================================== */
 
 .popupTable {
   width: 100%;
@@ -38,9 +64,38 @@
 .popupTable td {
   padding: 10px;
   border: 1px solid #d1d5db;
-  color: #111827;
   text-align: left;
+  color: #111827;
 }
+
+/* DARK TABLE FIRST (fixes specificity rule) */
+
+.popupTableDark {
+  background-color: #1f2937;
+}
+
+.popupTableDark th,
+.popupTableDark td {
+  border: 1px solid #4b5563;
+  color: #f9fafb;
+  background-color: #1f2937;
+}
+
+.popupTableDark thead th {
+  background-color: #374151;
+  color: #f9fafb;
+}
+
+/* LIGHT TABLE HEADER AFTER */
+
+.popupTable thead th {
+  font-weight: 600;
+  background-color: #f3f4f6;
+}
+
+/* ======================================================
+   BUTTONS
+   ====================================================== */
 
 .buttonRow {
   display: flex;
@@ -58,37 +113,7 @@
   transition: background-color 0.2s ease;
 }
 
-.popupDark {
-  border: 1px solid #4b5563;
-  color: #f9fafb;
-  background-color: #1f2937;
-}
-
-.popupHeadingDark {
-  color: #f9fafb;
-}
-
-.popupTableDark {
-  background-color: #1f2937;
-}
-
-.popupTableDark th,
-.popupTableDark td {
-  color: #f9fafb;
-  border: 1px solid #4b5563;
-  background-color: #1f2937;
-}
-
-.popupTableDark thead th {
-  color: #f9fafb;
-  background-color: #374151;
-}
-
-.popupDark .button {
-  border: 1px solid #6b7280;
-  color: #f9fafb;
-  background-color: #374151;
-}
+/* BASE STATES FIRST */
 
 .button:disabled {
   opacity: 0.8;
@@ -97,29 +122,41 @@
   background-color: #d1d5db;
 }
 
+.popupDark .button {
+  border: 1px solid #6b7280;
+  background-color: #374151;
+  color: #f9fafb;
+}
+
 .button:hover:not(:disabled) {
   background-color: #e5e7eb;
 }
 
+/* DARK MODE (MORE SPECIFIC — MUST COME AFTER) */
+
 .popupDark .button:disabled {
   border: 1px solid #4b5563;
-  color: #9ca3af;
-  background-color: #374151;
+  background-color: #2d3748;
+  color: #6b7280;
 }
 
 .popupDark .button:hover:not(:disabled) {
   background-color: #4b5563;
 }
 
+/* ======================================================
+   CHECKBOXES
+   ====================================================== */
+
 .popupDark input[type='checkbox'] {
   accent-color: #60a5fa;
+  background-color: #1f2937;
+  border: 1px solid #6b7280;
 }
 
-.popupTable thead th {
-  font-weight: 600;
-  color: #111827;
-  background-color: #f3f4f6;
-}
+/* ======================================================
+   PR BADGES
+   ====================================================== */
 
 .prCountBadge {
   display: inline-flex;
@@ -132,6 +169,12 @@
   font-size: 12px;
   font-weight: bold;
 }
+
+.popupDark .prCountBadge {
+  filter: brightness(0.9);
+}
+
+/* COLORS (fixed hex shorthand) */
 
 .color0 {
   color: #fff;
