@@ -95,7 +95,7 @@ export function IssueHeader(props) {
               </DropdownItem>
             </DropdownMenu>
           </UncontrolledDropdown>
-          <Link to="/bmdashboard/projects" style={{ textDecoration: 'none' }}>
+          <Link to="/bmdashboard" style={{ textDecoration: 'none' }}>
             <button className={darkMode ? styles.backButtonDark : styles.backButton} type="button">
               Back to Projects
             </button>
