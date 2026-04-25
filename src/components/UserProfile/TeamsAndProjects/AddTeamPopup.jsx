@@ -14,7 +14,7 @@ import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import darkModeStyles from '../../Header/DarkMode.module.css';
-import { postNewTeam, getAllUserTeams } from '../../../../src/actions/allTeamsAction';
+import { postNewTeam, getAllUserTeams } from '../../../actions/allTeamsAction';
 import axios, { CancelToken } from 'axios';
 
 function generateValidTeamCode(name) {
@@ -133,14 +133,9 @@ const AddTeamPopup = React.memo((props) => {
   const extractTeams = (payload) => {
     if (!payload) return [];
     if (Array.isArray(payload)) return payload;
-    if (Array.isArray(payload.data)) return payload.data;
     if (Array.isArray(payload.allTeams)) return payload.allTeams;
     if (payload.data && Array.isArray(payload.data.allTeams)) return payload.data.allTeams;
-    if (Array.isArray(payload.data?.allTeams)) return payload.data.allTeams;
-    if (payload.status && Array.isArray(payload.data)) return payload.data;
-    if (payload.status && payload.data && Array.isArray(payload.data.allTeams)) {
-      return payload.data.allTeams;
-    }
+    if (Array.isArray(payload.data)) return payload.data;
     return [];
   };
 
@@ -306,9 +301,6 @@ const AddTeamPopup = React.memo((props) => {
       applyEditResult(result);
     } catch (error) {
       setIsLoading(false);
-      if (process.env.NODE_ENV !== 'production') {
-        console.error('Error updating team:', error);
-      }
       toast.error('An unexpected error occurred while updating the team');
     }
   };

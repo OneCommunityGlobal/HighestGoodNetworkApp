@@ -54,8 +54,6 @@ class Teams extends React.PureComponent {
       // Features from HEAD
       addTeamPopupOpen: false,
       isEdit: false,
-
-      initialMembersForPopup: [],
       membersFetching: false,
       selectedTeamMembers: [],
     };
@@ -214,8 +212,6 @@ class Teams extends React.PureComponent {
               onSearch={this.onWildCardSearch}
               onCreateNewTeamClick={this.onCreateNewTeamShow}
               darkMode={darkMode}
-              teamsData={{ allTeams }}
-              searchText={this.state.wildCardSearchText}
             />
 
             {this.renderTable(tableClass, darkMode)}
@@ -275,7 +271,6 @@ class Teams extends React.PureComponent {
   renderPopups = allTeams => {
     const {
       selectedTeamId,
-      // initialMembersForPopup,
       membersFetching,
       selectedTeam,
       teamMembersPopupOpen,
@@ -328,9 +323,6 @@ class Teams extends React.PureComponent {
               await this.props.getAllUserProfile();
             } catch (error) {
               toast.error('Error updating team list. Please refresh the page.');
-              if (process.env.NODE_ENV !== 'production') {
-                console.error('AddTeamPopup onSelectAssignTeam error:', error);
-              }
             }
           }}
           handleSubmit={() => {}}
