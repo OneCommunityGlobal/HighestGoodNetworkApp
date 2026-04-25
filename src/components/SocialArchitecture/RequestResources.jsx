@@ -17,14 +17,21 @@ function RequestResources() {
 
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState('');
+  const [fileInputKey, setFileInputKey] = useState(0);
+
+  const today = new Date().toISOString().split('T')[0];
 
   const handleChange = e => {
     const { name, value } = e.target;
 
-    // Update form data
-    setFormData({ ...formData, [name]: value });
+    const updatedFormData = { ...formData, [name]: value };
 
-    // Clear error for this specific field when user types or selects a valid value
+    if (name === 'requestedDate' && formData.returnDate && value > formData.returnDate) {
+      updatedFormData.returnDate = '';
+    }
+
+    setFormData(updatedFormData);
+
     if (errors[name]) {
       setErrors(prevErrors => {
         const updatedErrors = { ...prevErrors };
@@ -38,29 +45,6 @@ function RequestResources() {
     setFormData({ ...formData, materialImage: e.target.files[0] });
   };
 
-  const handleSubmit = e => {
-    e.preventDefault();
-    if (!validateForm()) return;
-    alert('Form validated successfully!');
-    if (validateForm()) {
-      console.log(formData);
-      setSuccessMessage('Your resource request has been submitted successfully.');
-      setFormData({
-        eventName: '',
-        organizerName: '',
-        itemName: '',
-        requestQuantity: '',
-        requestedDate: '',
-        returnDate: '',
-        countryCode: '+1',
-        phoneNumber: '',
-        notes: '',
-        materialImage: null,
-      });
-      setErrors({});
-    }
-  };
-
   const validateForm = () => {
     const newErrors = {};
     if (!formData.eventName) newErrors.eventName = 'Event name is required';
@@ -72,6 +56,28 @@ function RequestResources() {
     if (!formData.phoneNumber) newErrors.phoneNumber = 'Phone number is required';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = e => {
+    e.preventDefault();
+    if (!validateForm()) return;
+
+    console.log(formData);
+    setSuccessMessage('Your resource request has been submitted successfully.');
+    setFormData({
+      eventName: '',
+      organizerName: '',
+      itemName: '',
+      requestQuantity: '',
+      requestedDate: '',
+      returnDate: '',
+      countryCode: '+1',
+      phoneNumber: '',
+      notes: '',
+      materialImage: null,
+    });
+    setFileInputKey(prev => prev + 1);
+    setErrors({});
   };
 
   return (
@@ -140,6 +146,7 @@ function RequestResources() {
             name="requestedDate"
             value={formData.requestedDate}
             onChange={handleChange}
+            min={today}
           />
           {errors.requestedDate && <p className={styles.error}>{errors.requestedDate}</p>}
         </div>
@@ -152,13 +159,14 @@ function RequestResources() {
             name="returnDate"
             value={formData.returnDate}
             onChange={handleChange}
+            min={formData.requestedDate || today}
           />
           {errors.returnDate && <p className={styles.error}>{errors.returnDate}</p>}
         </div>
 
         <div className={styles.formGroup}>
           <label htmlFor="organizerPhone">Organizer Phone Number</label>
-          <div className="phone-input">
+          <div className={styles.phoneInput}>
             <input
               type="text"
               id="countryCode"
@@ -185,6 +193,7 @@ function RequestResources() {
           <label htmlFor="materialImage" className={styles.uploadBox}>
             Drag and drop your picture here
             <input
+              key={fileInputKey}
               type="file"
               id="materialImage"
               name="materialImage"
