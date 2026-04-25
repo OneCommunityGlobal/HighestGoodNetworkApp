@@ -59,6 +59,8 @@ const TeamMemberTask = React.memo(
     const ref = useRef(null);
     const currentDate = moment.tz('America/Los_Angeles').startOf('day');
     const dispatch = useDispatch();
+
+    // Role-based access control flags
     const canSeeFollowUpCheckButton = userRole !== 'Volunteer';
 
     const [isDashboardModalOpen, setIsDashboardModalOpen] = useState(false);
@@ -131,6 +133,11 @@ const TeamMemberTask = React.memo(
         ),
     );
 
+    const completedTasks = user.tasks.filter(task =>
+      task.resources?.some(resource => resource.userID === user.personId && resource.completedTask),
+    );
+
+    // UI state management
     const canTruncate = activeTasks.length > NUM_TASKS_SHOW_TRUNCATE;
     const [isTruncated, setIsTruncated] = useState(canTruncate);
     const [isTimeOffContentOpen, setIsTimeOffContentOpen] = useState(
@@ -139,9 +146,6 @@ const TeamMemberTask = React.memo(
     const [showChangeLogModal, setShowChangeLogModal] = useState(false);
     const [selectedTaskForChangeLog, setSelectedTaskForChangeLog] = useState(null);
 
-    const completedTasks = user.tasks.filter(task =>
-      task.resources?.some(resource => resource.userID === user.personId && resource.completedTask),
-    );
     const thisWeekHours = user.totaltangibletime_hrs;
 
     const rolesAllowedToResolveTasks = ['Administrator', 'Owner'];
@@ -155,8 +159,12 @@ const TeamMemberTask = React.memo(
       rolesAllowedToResolveTasks.includes(userRole) || dispatch(hasPermission('getReports'));
     const canUpdateTask = dispatch(hasPermission('updateTask'));
     const canDeleteTask = dispatch(hasPermission('canDeleteTask'));
+    const canUnassignTask =
+      dispatch(hasPermission('removeUserFromTask')) ||
+      dispatch(hasPermission('deleteDashboardTask'));
     const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
 
+    // Role-based color mapping for visual hierarchy
     const colorsObjs = {
       'Assistant Manager': '#849ced', // blue
       Manager: '#90e766', // green
@@ -194,6 +202,8 @@ const TeamMemberTask = React.memo(
         .toUpperCase();
       return initials;
     }
+
+    // Event handlers
     const handleTruncateTasksButtonClick = () => {
       if (!isTruncated) {
         ref.current?.scrollIntoView({ behavior: 'smooth' });
@@ -625,7 +635,7 @@ const TeamMemberTask = React.memo(
                                           />
                                         )}
 
-                                        {(canUpdateTask || canDeleteTask) && (
+                                        {(canUpdateTask || canDeleteTask || canUnassignTask) && (
                                           <FontAwesomeIcon
                                             className={styles['team-member-task-remove']}
                                             icon={faTimesCircle}
