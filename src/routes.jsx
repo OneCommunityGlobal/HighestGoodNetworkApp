@@ -906,7 +906,7 @@ export default (
         {/* Good Education  Portal Routes */}
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
         <Route path="/educationportal/login" component={EPLogin} />
-        <EPProtectedRoute
+        <ProtectedRoute
           path="/educationportal/student/:studentId"
           exact
           component={StudentProfile}
