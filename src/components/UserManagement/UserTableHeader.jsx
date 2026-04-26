@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faSave } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { getAllUserProfile } from '../../actions/userManagement';
+import { getAllUserProfile , clearUserInformation} from '../../actions/userManagement';
 import { ENDPOINTS } from '~/utils/URL';
 import userTableDataPermissions from '../../utils/userTableDataPermissions';
 import PropTypes from 'prop-types';
@@ -29,13 +29,24 @@ import styles from './usermanagement.module.css';
  */
 const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser, enableEditUserInfo, disableEditUserInfo, isMobile, mobileFontSize }) => {
     const dispatch = useDispatch();
-    const [editFlag, setEditFlag] = useState(editUser);
+    const defaultEditFlags = {
+       first: 1,
+       last: 1,
+       role: 1,
+       jobTitle: 1,
+       email: 1,
+       weeklycommittedHours: 1,
+       startDate: 1,
+       endDate: 1,
+   };
+    const [editFlag, setEditFlag] = useState(editUser ? editUser : defaultEditFlags);
     const updatedUserData = useSelector(state => state.userProfileEdit.newUserData);
     const saveUserInformation = async updatedData => {
       try {
         const response = await axios.patch(ENDPOINTS.USER_PROFILE_UPDATE, updatedData);
         if (response.status === 200) {
           const toastId = toast.success(' Saving Data...', { autoClose: false });
+          await dispatch(clearUserInformation());
           await dispatch(getAllUserProfile());
           toast.update(toastId, {
             render: 'Data Updated successfully !',
