@@ -357,9 +357,6 @@ function ActivityComments() {
 
   // Mock API function to simulate fetching more comments
   const fetchMoreComments = async page => {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
     // Generate unique users pool for variety
     const usersPool = [
       { id: 1, name: 'Michael Johnson', profilePic: '/profilepic.webp' },
