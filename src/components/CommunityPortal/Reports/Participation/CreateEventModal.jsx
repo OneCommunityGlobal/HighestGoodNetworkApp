@@ -120,6 +120,10 @@ function CreateEventModal({ isOpen, toggle }) {
       newErrors.maxAttendees = 'Max attendees must be at least 1';
     }
 
+    if (formData.maxAttendees < 0 || !Number.isInteger(formData.maxAttendees)) {
+      newErrors.maxAttendees = 'Max Attendees must be a Positive Integer';
+    }
+
     // Validate that end time is after start time
     if (formData.startTime && formData.endTime) {
       const start = moment(`${formData.date} ${formData.startTime}`, 'YYYY-MM-DD HH:mm');
