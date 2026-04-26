@@ -358,8 +358,8 @@ export function CPDashboard() {
               <div className={styles.filterItem}>
                 <label htmlFor="date-tomorrow"> Dates</label>
                 <div className={styles.radioRow}>
-                  <FormGroup check className={styles.radioGroup + ' d-flex align-items-center'}>
-                    <Input
+                  <div className={styles.radioGroup}>
+                    <input
                       id="date-tomorrow"
                       type="radio"
                       name="dates"
@@ -367,16 +367,12 @@ export function CPDashboard() {
                       onChange={() => setDateFilter('tomorrow')}
                       className={styles.radioInput}
                     />
-                    <Label
-                      htmlFor="date-tomorrow"
-                      check
-                      className={styles.radioLabel + ' ms-2 mb-0'}
-                    >
+                    <label htmlFor="date-tomorrow" className={styles.radioLabel}>
                       Tomorrow
-                    </Label>
-                  </FormGroup>
-                  <FormGroup check className={styles.radioGroup + ' d-flex align-items-center'}>
-                    <Input
+                    </label>
+                  </div>
+                  <div className={styles.radioGroup}>
+                    <input
                       id="date-weekend"
                       type="radio"
                       name="dates"
@@ -384,14 +380,10 @@ export function CPDashboard() {
                       onChange={() => setDateFilter('weekend')}
                       className={styles.radioInput}
                     />
-                    <Label
-                      htmlFor="date-weekend"
-                      check
-                      className={styles.radioLabel + ' ms-2 mb-0'}
-                    >
+                    <label htmlFor="date-weekend" className={styles.radioLabel}>
                       This Weekend
-                    </Label>
-                  </FormGroup>
+                    </label>
+                  </div>
                 </div>
 
                 <div className={styles.dashboardActions}>
@@ -417,17 +409,22 @@ export function CPDashboard() {
 
               <div className={styles.filterItem}>
                 <label htmlFor="online-only">Online</label>
-                <div>
-                  <Input
-                    type="checkbox"
-                    id="online-only"
-                    checked={onlineOnly}
-                    onChange={e => {
-                      setOnlineOnly(e.target.checked);
-                      setPagination(prev => ({ ...prev, currentPage: 1 }));
-                    }}
-                  />{' '}
-                  Online Only
+                <div className={styles.radioRow}>
+                  <div className={styles.radioGroup}>
+                    <input
+                      type="checkbox"
+                      id="online-only"
+                      checked={onlineOnly}
+                      onChange={e => {
+                        setOnlineOnly(e.target.checked);
+                        setPagination(prev => ({ ...prev, currentPage: 1 }));
+                      }}
+                      className={styles.radioInput}
+                    />
+                    <label htmlFor="online-only" className={styles.radioLabel}>
+                      Online Only
+                    </label>
+                  </div>
                 </div>
               </div>
 
