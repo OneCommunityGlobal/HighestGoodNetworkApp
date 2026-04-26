@@ -13,16 +13,14 @@ export const ENDPOINTS = {
   ADD_BLUE_SQUARE: userId => `${APIEndpoint}/userprofile/${userId}/addInfringement`,
 
   TOP_CONVERTED: (limit, startDate, endDate) =>
-    `${APIEndpoint}/job-analytics/top-converted?limit=${limit}${
-      startDate && endDate
-        ? `&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`
-        : ''
+    `${APIEndpoint}/job-analytics/top-converted?limit=${limit}${startDate && endDate
+      ? `&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`
+      : ''
     }`,
   LEAST_CONVERTED: (limit, startDate, endDate) =>
-    `${APIEndpoint}/job-analytics/least-converted?limit=${limit}${
-      startDate && endDate
-        ? `&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`
-        : ''
+    `${APIEndpoint}/job-analytics/least-converted?limit=${limit}${startDate && endDate
+      ? `&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`
+      : ''
     }`,
 
   MODIFY_BLUE_SQUARE: (userId, blueSquareId) =>
@@ -140,10 +138,9 @@ export const ENDPOINTS = {
     `${APIEndpoint}/userProfile/authorizeUser/weeeklySummaries`,
   TOTAL_ORG_SUMMARY: (startDate, endDate, comparisonStartDate, comparisonEndDate) =>
     `${APIEndpoint}/reports/volunteerstats?startDate=${startDate}&endDate=${endDate}&comparisonStartDate=${comparisonStartDate ||
-      ''}&comparisonEndDate=${comparisonEndDate || ''}`,
+    ''}&comparisonEndDate=${comparisonEndDate || ''}`,
   VOLUNTEER_TRENDS: (timeFrame, offset, customStartDate, customEndDate) =>
-    `${APIEndpoint}/reports/volunteertrends?timeFrame=${timeFrame}&offset=${offset}${
-      customStartDate ? `&customStartDate=${customStartDate}` : ''
+    `${APIEndpoint}/reports/volunteertrends?timeFrame=${timeFrame}&offset=${offset}${customStartDate ? `&customStartDate=${customStartDate}` : ''
     }${customEndDate ? `&customEndDate=${customEndDate}` : ''}`,
   HOURS_TOTAL_ORG_SUMMARY: (startDate, endDate) =>
     `${APIEndpoint}/reports/overviewsummaries/taskandprojectstats?startDate=${startDate}&endDate=${endDate}`,
@@ -488,6 +485,7 @@ export const ENDPOINTS = {
   LB_LISTING_AVAILABILITY: `${APIEndpoint}/lb/listing/availability`,
   LB_LISTING_BOOK: `${APIEndpoint}/lb/listing/availability/booking`,
   HELP_CATEGORIES: `${APIEndpoint}/help-categories`,
+  HELP_REQUEST_CREATE: `${APIEndpoint}/helprequest/create`,
   APPLICANT_SOURCES: `${APIEndpoint}/applicant-analytics/applicant-sources`,
 
   // job analytics
