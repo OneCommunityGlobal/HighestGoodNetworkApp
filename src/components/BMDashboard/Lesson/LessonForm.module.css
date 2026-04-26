@@ -19,6 +19,7 @@
 
 .formContainer {
   padding: 5%;
+  background-color: #FFF;
   border-radius: 1%;
 }
 
@@ -50,6 +51,11 @@
 }
 
 .masterContainer{
+ display: flex;
+ flex-direction: column;
+ height: 100%;
+   padding: 5% 10% 10%;
+    background-color: #E8F4F9;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -262,8 +268,8 @@
  }
 
 .wrapperDark {
-  background-color: #1b2a41; 
-  color: #f5f7fa; 
+  background-color: #1b2a41;
+  color: #f5f7fa;
 }
 
 .whiteText {
