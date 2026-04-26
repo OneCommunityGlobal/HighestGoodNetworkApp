@@ -32,6 +32,16 @@ const hasPermission = (action, viewingUser = false) => {
 };
 
 /**
+ * Check if user has a specific permission
+ * @param {Array} userPermissions array of user's permissions
+ * @param {String} requiredPermission permission to check for
+ * @returns {boolean} true if user has the permission
+ */
+export const hasPermissionSimple = (userPermissions, requiredPermission) => {
+  return Array.isArray(userPermissions) && userPermissions.includes(requiredPermission);
+};
+
+/**
  * Return true if the user is not allowed to update the protected accounts
  * @param {String} devAdminEmail target user email
  * @param {String} authEmail logged in user email

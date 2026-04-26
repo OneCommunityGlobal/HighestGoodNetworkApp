@@ -6,15 +6,22 @@ import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import styles from './JobFormBuilder.module.css';
 import { ENDPOINTS } from '~/utils/URL';
+import { hasPermissionSimple } from '~/utils/permissions';
 import OneCommunityImage from './One-Community-Horizontal-Homepage-Header-980x140px-2.png';
 import QuestionSetManager from './QuestionSetManager';
 import QuestionFieldActions from './QuestionFieldActions';
 import QuestionEditModal from './QuestionEditModal';
 import FormPreviewModal from './FormPreviewModal';
+import { JOB_FORM_POSITION_OPTIONS } from '../JobFormManagement/jobFormPositions';
 
 function JobFormBuilder() {
-  const { role } = useSelector(state => state.auth.user);
+  const { auth } = useSelector(state => state);
+  const userPermissions = auth?.user?.permissions?.frontPermissions || [];
+  const userRole = auth?.user?.role;
   const darkMode = useSelector(state => state.theme.darkMode);
+
+  const canManageJobForms = () =>
+    hasPermissionSimple(userPermissions, 'manageJobForms') || userRole === 'Owner';
   const [formFields, setFormFields] = useState([]);
   const [initialFormFields, setInitialFormFields] = useState([]);
   const [templateName, setTemplateName] = useState('');
@@ -36,48 +43,7 @@ function JobFormBuilder() {
   };
 
   const [jobTitle, setJobTitle] = useState('Please Choose an option');
-  const jobPositions = [
-    'APPLIED THROUGH SITE - SEEKING SOFTWARE POSITION',
-    'APPLIED THROUGH SITE - GENERAL',
-    'APPLIED THROUGH SITE - ADMINISTRATIVE ASSISTANT',
-    'APPLIED THROUGH SITE - GRAPHIC DESIGNER',
-    'SEEKING SOFTWARE POSITION',
-    'SEEKING ADMINISTRATIVE ASSISTANT',
-    'EARTHBAG 4-DOME CLUSTER PLUMBING DESIGNS',
-    'PLUMBING ENGINEER/MEP FOR EARTHBAG VILLAGE',
-    'CIVIL ENGINEER FOR COST ANALYSIS OF FOOD PRODUCTION STRUCTURES',
-    'CIVIL ENGINEER TO FINALIZE TEST MATERIALS AND EQUIPMENT FOR FOOD PRODUCTION STRUCTURES',
-    'MECHANICAL ENGINEER FOR HVAC FOR FOOD PRODUCTION STRUCTURES',
-    'CITY CENTER PLUMBING DESIGNS',
-    'ELECTRICAL DESIGNER FOR EARTHBAG VILLAGE',
-    'ELECTRICAL DESIGNER FOR STRAW BALE CLASSROOM',
-    'ELECTRICAL ENGINEER/DESIGNER FOR DUPLICABLE CITY CENTER',
-    'CITY CENTER GEODESIC DOME AUTODESK INVENTOR SIMULATIONS',
-    '4-DOME CLUSTER ELECTRICAL DESIGN',
-    'PHOTOSHOP/GRAPHIC DESIGNER',
-    'PASSIVE GREENHOUSE DESIGN',
-    'LANDSCAPE ARCHITECT FOR AQUAPINI/WALIPINI STRUCTURES',
-    'SEEKING VIRTUAL ASSISTANT',
-    'FUNDRAISING HELP',
-    'STRAW BALE CLASSROOM STRUCTURAL',
-    'PERMACULTURALIST FOR SOIL AMENDMENT',
-    'NUTRITIONIST FOR NUTRITION CALCULATIONS AND MENU PLANNING',
-    'CHEF OR CULINARY PROFESSIONAL FOR MENU IMPLEMENTATION TUTORIALS',
-    'CHEF OR CULINARY PROFESSIONAL TO HELP WITH REMOTE/DISASTER KITCHEN SUPPLY AND STORAGE PLAN',
-    'LUMION 2024.1.1 OR HIGHER FOR CITY CENTER',
-    'GENERAL',
-    'VERMICULTURE',
-    'MASTER CARPENTER',
-    'FINAL CUT PRO VIDEO EDITOR',
-    'INDUSTRIAL DESIGNER FOR DORMER',
-    'LANDSCAPE ARCHITECT FOR SKETCHUP AND LUMION RENDER HELP',
-    'T.A.S.T. - NEED RESUME & WORK SAMPLES',
-    'T.A.S.T. - ENGINEER/ARCHITECT OFFERING POSITION',
-    'T.A.S.T. - HGN',
-    'ADMIN OF PR REVIEW TEAM AND FRONTEND TESTER',
-    'ADMIN OF PR REVIEW TEAM AND FRONTEND TESTER - APPLIED THROUGH SITE',
-    'DATA ANALYST APPLICATION',
-  ];
+  const jobPositions = JOB_FORM_POSITION_OPTIONS;
 
   const [newOption, setNewOption] = useState('');
   const [editModalOpen, setEditModalOpen] = useState(false);
@@ -107,9 +73,10 @@ function JobFormBuilder() {
     const loadFirstAvailableForm = async () => {
       try {
         const response = await axios.get(ENDPOINTS.GET_ALL_JOB_FORMS);
+        const forms = response.data?.forms ?? (Array.isArray(response.data) ? response.data : []);
 
-        if (response.data && response.data.length > 0) {
-          const firstForm = response.data[0];
+        if (forms.length > 0) {
+          const firstForm = forms[0];
           const formId = firstForm._id || firstForm.id;
 
           setCurrentFormId(formId);
@@ -334,6 +301,10 @@ function JobFormBuilder() {
         title: jobTitle,
         questions: formFields,
         description: '',
+        requestor: {
+          requestorId: auth.user.userid,
+          role: userRole,
+        },
       });
 
       console.log('Form updated successfully');
@@ -375,9 +346,8 @@ function JobFormBuilder() {
             </select>
           </div>
         </div>
-        {console.log(role)}
         <h1 className={styles.jobformTitle}>FORM CREATION</h1>
-        {role === 'Owner' || role === 'Administrator' ? (
+        {canManageJobForms() ? (
           <div className={styles.customForm}>
             <p className={styles.jobformDesc}>
               Fill the form with questions about a specific position you want to create an ad for.
@@ -564,7 +534,18 @@ function JobFormBuilder() {
               />
             )}
           </div>
-        ) : null}
+        ) : (
+          <div className={styles.customForm}>
+            <div className="alert alert-warning" role="alert">
+              <h4 className="alert-heading">Access restricted</h4>
+              <p>
+                You do not have permission to manage job application forms. An Owner can grant
+                &quot;Manage Job Forms&quot; or related job form permissions in Permissions
+                Management.
+              </p>
+            </div>
+          </div>
+        )}
         <FormPreviewModal
           isOpen={showPreviewModal}
           onClose={() => setShowPreviewModal(false)}

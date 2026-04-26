@@ -1,0 +1,343 @@
+/* Extends visual language of Collaboration/JobFormBuilder.module.css */
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+  align-items: center;
+}
+
+.toolbar button {
+  background: #e8e8e8;
+  border: 1px solid #bbb;
+  border-radius: 5px;
+  padding: 8px 14px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.toolbar button:hover:not(:disabled) {
+  background: #ddd;
+}
+
+.toolbar button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.positionField {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.fixedGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px 16px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .fixedGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.fixedGroup {
+  margin-bottom: 20px;
+}
+
+.fixedGroupHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.fixedGroupHeader input[type='checkbox'] {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.fixedCellLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+/* Layout only — colors come from Collaboration jobformInput / darkMode rules */
+.fixedCellInput {
+  width: 100% !important;
+  max-width: 100%;
+  pointer-events: none;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.questionBlock {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  padding: 8px 0;
+  border-bottom: 1px solid #ccc;
+}
+
+.questionBlockDark {
+  border-bottom-color: #3d4d63;
+}
+
+.questionBlock:last-of-type {
+  border-bottom: none;
+}
+
+.questionCheckbox {
+  width: 20px;
+  height: 20px;
+  margin-top: 28px;
+  flex-shrink: 0;
+}
+
+.questionBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.questionLabel {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 6px;
+  font-size: 15px;
+}
+
+.removeQuestion {
+  background: transparent;
+  border: none;
+  color: #c62828;
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+  margin-top: 4px;
+}
+
+.addQuestionSection {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 2px dashed #aaa;
+}
+
+.addQuestionRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+  margin-bottom: 12px;
+}
+
+.addQuestionRow input,
+.addQuestionRow select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background: #fff;
+}
+
+.addQuestionRowDark input,
+.addQuestionRowDark select {
+  background: #1c1c1c;
+  border-color: #444;
+  color: #e8e8e8;
+}
+
+.addQuestionRow input[type='text'] {
+  flex: 1;
+  min-width: 180px;
+}
+
+.addPlusWrap {
+  display: flex;
+  justify-content: center;
+  margin: 16px 0 8px;
+}
+
+.addPlusButton {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  background: #4caf50;
+  color: #fff;
+  font-size: 32px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  transition: background 0.2s, transform 0.15s;
+}
+
+.addPlusButton:hover:not(:disabled) {
+  background: #45a049;
+  transform: scale(1.05);
+}
+
+.addPlusButton:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.optionDraftRow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.optionDraftRow input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background: #fff;
+}
+
+.optionDraftRowDark input {
+  background: #1c1c1c;
+  border-color: #444;
+  color: #e8e8e8;
+}
+
+.advancedPanel {
+  margin-top: 16px;
+  padding: 16px;
+  background: #e8e8e8;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.advancedPanel h6 {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+.proceedRow {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 28px;
+  padding-top: 16px;
+}
+
+.proceedButton {
+  background: #4caf50;
+  color: #fff;
+  border: none;
+  padding: 14px 28px;
+  font-size: 17px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  transition: background 0.2s;
+}
+
+.proceedButton:hover:not(:disabled) {
+  background: #45a049;
+}
+
+.proceedButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.responsePlaceholder {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background: #fff;
+  color: #888;
+}
+
+/* Avoid forcing white behind dark-themed inputs from parent .darkMode */
+.responsePlaceholderDark {
+  background: #1c1c1c !important;
+  border-color: #444 !important;
+  color: #aaa !important;
+}
+
+.textareaPreview {
+  min-height: 72px;
+  resize: vertical;
+}
+
+.goButton {
+  padding: 11px 16px;
+  margin: 8px 10px;
+  border: none;
+  background-color: #cccccc;
+  color: #333;
+  font-size: 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.goButton:hover {
+  background-color: #b0b0b0;
+}
+
+.selectPosition {
+  min-width: 220px;
+  max-width: 100%;
+}
+
+.navbarLeft {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.navbarLeft input {
+  min-width: 200px;
+}
+
+/* Dark mode (applied with jb.darkMode on page wrapper) */
+.darkToolbar button {
+  background: #2a3441;
+  border-color: #444;
+  color: #e8e8e8;
+}
+
+.darkToolbar button:hover:not(:disabled) {
+  background: #3d4d63;
+}
+
+.darkText {
+  color: #e8e8e8;
+}
+
+.darkAdvanced {
+  background: #232b3a;
+  border-color: #444;
+}
+
+.darkAdvanced h6 {
+  color: #e8e8e8;
+}
+
+.darkInput {
+  background: #1c1c1c !important;
+  border-color: #444 !important;
+  color: #aaa !important;
+}
+
+.darkChoiceInput {
+  accent-color: #97ca02;
+}
