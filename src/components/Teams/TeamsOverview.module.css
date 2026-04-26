@@ -37,6 +37,7 @@
   align-items: center;
   justify-content: center;
   margin-top: 5px;
+  font-size: 14px;
 }
 
 .cardTextIcon {
@@ -55,6 +56,22 @@
   color: #dee2e6;
 }
 
+/* Dark mode styles */
+.darkMode.totalCard {
+  background: linear-gradient(to bottom, #2c3e50, #34495e, #2c3e50);
+  color: #ecf0f1;
+}
+
+.darkMode.activeCard {
+  background: linear-gradient(to bottom, #e67e22, #d35400, #e74c3c);
+  color: #ecf0f1;
+}
+
+.darkMode.inactiveCard {
+  background: linear-gradient(to bottom, #7d3c98, #6c3483, #5b2c6f) !important;
+  color: #ecf0f1;
+}
+
 /* If you still use this class elsewhere, we can keep it here too */
 .teamNameCol {
   width: 40%;
@@ -69,4 +86,30 @@
   gap: 16px;
   align-items: center;
   margin: 25px 0;
+}
+
+/* Media queries for responsive design */
+@media (width <= 768px) {
+  .card {
+    width: 250px;
+  }
+  
+  .cardText {
+    font-size: 12px;
+  }
+  
+  .overviewTop {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+@media (width <= 575px) {
+  .card {
+    width: 200px;
+  }
+  
+  .cardText {
+    font-size: 11px;
+  }
 }
