@@ -330,6 +330,11 @@
                 "label": "Unassign Team Members from Tasks",
                 "key": "deleteDashboardTask",
                 "description": "Gives the user permission to UNASSIGN tasks from only their TEAM members through the Dashboard -> task -> red X."
+              },
+              {
+                "label": "See # of Times Time Added to Task",
+                "key": "seeNumberOfTimesTimeAdded",
+                "description": "Gives the user permission to see how many times a time entry has been added to a task. \"Admin/Owner Login\" -> \"Dashboard\" -> \"Tasks tab\" -> \"Task Details\" -> \"# of Times Time Added\""
               }
             ]
           }
