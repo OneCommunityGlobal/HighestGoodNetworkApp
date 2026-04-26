@@ -670,7 +670,7 @@ function ActivityComments() {
     });
 
   return (
-    <div>
+    <div className={styles.container}>
       {/* Event Card */}
       <div className={styles.eventCard}>
         <div>
