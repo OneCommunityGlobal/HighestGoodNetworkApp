@@ -242,10 +242,18 @@ export const deleteTimeEntry = timeEntry => {
   };
 };
 
+
 const updateTimeEntries = (timeEntry, oldDateOfWork) => {
   const startOfWeek = moment().startOf('week');
+  
+  return async (dispatch, getState) => {
+    const state = getState();
+    const currentlyViewedUserId = state.userProfile._id;
 
-  return async dispatch => {
+    if (timeEntry.personId !== currentlyViewedUserId) {
+      return; // Don't update Redux if viewing a different user's page
+    }
+
     if (oldDateOfWork) {
       const oldOffset = Math.ceil(startOfWeek.diff(oldDateOfWork, 'week', true));
       dispatch(getTimeEntriesForWeek(timeEntry.personId, oldOffset));
@@ -258,6 +266,25 @@ const updateTimeEntries = (timeEntry, oldDateOfWork) => {
     }
   };
 };
+
+
+
+// const updateTimeEntries = (timeEntry, oldDateOfWork) => {
+//   const startOfWeek = moment().startOf('week');
+
+//   return async dispatch => {
+//     if (oldDateOfWork) {
+//       const oldOffset = Math.ceil(startOfWeek.diff(oldDateOfWork, 'week', true));
+//       dispatch(getTimeEntriesForWeek(timeEntry.personId, oldOffset));
+//     }
+
+//     const offset = Math.ceil(startOfWeek.diff(timeEntry.dateOfWork, 'week', true));
+
+//     if (offset <= 2 && offset >= 0) {
+//       dispatch(getTimeEntriesForWeek(timeEntry.personId, offset));
+//     }
+//   };
+// };
 
 // export const setTimeEntriesForWeek = (data, offset) => ({
 //   type: GET_TIME_ENTRIES_WEEK,
