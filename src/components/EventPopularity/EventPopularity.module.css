@@ -1,0 +1,36 @@
+.infotooltipHover {
+  position: relative;
+  display: inline-block;
+}
+
+.infotooltipheading {
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 1000;
+  margin-bottom: 5px;
+}
+
+.infotooltiptext {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid #333;
+}
+
+.infotooltipHover:hover .infotooltipheading,
+.infotooltipHover:hover .infotooltiptext {
+  opacity: 1;
+  visibility: visible;
+}
+
