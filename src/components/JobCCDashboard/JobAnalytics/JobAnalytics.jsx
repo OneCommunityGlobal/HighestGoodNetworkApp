@@ -44,6 +44,7 @@ const ROLE_OPTIONS = [
   'Product Manager',
   'UX Designer',
 ];
+
 // ======================== CONFIG ========================
 const CONFIG = {
   API: {
@@ -93,7 +94,6 @@ function useMediaQuery(query) {
     const m = window.matchMedia(query);
     const listener = () => setMatches(m.matches);
     m.addEventListener?.('change', listener);
-    // fallback for older
     m.addListener?.(listener);
     return () => {
       m.removeEventListener?.('change', listener);
@@ -103,7 +103,7 @@ function useMediaQuery(query) {
   return matches;
 }
 
-// ======================== API SERVICE (Mock + Secure RNG) ========================
+// ======================== API SERVICE ========================
 class AnalyticsService {
   static getAuthToken() {
     return localStorage.getItem('token') || '';
@@ -115,11 +115,6 @@ class AnalyticsService {
 
   static async fetchData(dateRange, comparisonPeriod, role) {
     try {
-      // TODO: Replace with real API when ready
-      // const response = await fetch(`${CONFIG.API.ENDPOINTS.ANALYTICS}`, { ... });
-      // if (!response.ok) throw new Error('Failed to fetch analytics data');
-      // return await response.json();
-
       await this.simulateApiDelay();
       return this.generateMockAnalyticsData(dateRange, comparisonPeriod, role);
     } catch (err) {
@@ -129,7 +124,7 @@ class AnalyticsService {
     }
   }
 
-  // ✅ Secure pseudo-random helper for UI demo analytics data only.
+  // Secure pseudo-random helper for UI demo analytics data only.
   // NOTE: Not used for authentication, cryptography, or access control.
   static secureRandom(min, max) {
     const array = new Uint32Array(1);
@@ -169,8 +164,6 @@ class AnalyticsService {
         data.push({
           date: date.toISOString().split('T')[0],
           displayDate: date.toLocaleDateString('en-US', CONFIG.DATE_FORMAT.display),
-
-          // ✅ Secure dummy simulation values:
           users: this.secureRandom(700 + offset + roleOffset, 1000 + offset + roleOffset),
           pageViews: this.secureRandom(
             4000 + offset * 5 + roleOffset * 10,
@@ -201,11 +194,11 @@ class AnalyticsService {
       previousPeriod: genSeries(start, end, 0),
       metrics: {
         current: {
-          totalUsers: 23456 + (role === 'All Roles' ? 0 : this.secureRandom(1000, 3000)), // Simulate role-based user count
-          totalPageViews: 145678 + (role === 'All Roles' ? 0 : this.secureRandom(5000, 15000)), // Simulate role-based page views
-          totalSessions: 18934 + (role === 'All Roles' ? 0 : this.secureRandom(800, 2000)), // Simulate role-based sessions
-          avgBounceRate: 42.3 + (role === 'All Roles' ? 0 : this.secureRandom(-5, 5)), // Simulate role-based bounce rate
-          avgSessionDuration: 245 + (role === 'All Roles' ? 0 : this.secureRandom(-30, 30)), // Simulate role-based session duration
+          totalUsers: 23456 + (role === 'All Roles' ? 0 : this.secureRandom(1000, 3000)),
+          totalPageViews: 145678 + (role === 'All Roles' ? 0 : this.secureRandom(5000, 15000)),
+          totalSessions: 18934 + (role === 'All Roles' ? 0 : this.secureRandom(800, 2000)),
+          avgBounceRate: 42.3 + (role === 'All Roles' ? 0 : this.secureRandom(-5, 5)),
+          avgSessionDuration: 245 + (role === 'All Roles' ? 0 : this.secureRandom(-30, 30)),
         },
         previous: {
           totalUsers: 21234 + (role === 'All Roles' ? 0 : this.secureRandom(1000, 3000)),
@@ -249,10 +242,16 @@ function useAnalyticsData(dateRange, comparisonPeriod, selectedRole) {
       setLoading(false);
     }
   }, [dateRange, comparisonPeriod, selectedRole]);
+
+  // FIX: trigger fetch whenever dependencies (dateRange, role, period) change
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
   return { data, loading, error, refetch: fetchData };
 }
 
-// ======================== SMALL REUSABLE UIs (Module CSS) ========================
+// ======================== SMALL REUSABLE UIs ========================
 function LoadingSpinner({ message = 'Loading...' }) {
   return (
     <div className={styles.loading}>
@@ -370,10 +369,10 @@ const DATE_RANGE_PRESETS = {
 
 function DateRangeSelector({ dateRange, setDateRange, comparisonPeriod, setComparisonPeriod }) {
   const [active, setActive] = useState('last30Days');
+
   useEffect(() => {
     if (!dateRange) {
-      const preset = DATE_RANGE_PRESETS.last30Days.getValue();
-      setDateRange(preset);
+      setDateRange(DATE_RANGE_PRESETS.last30Days.getValue());
     }
   }, [dateRange, setDateRange]);
 
@@ -442,11 +441,6 @@ function DateRangeSelector({ dateRange, setDateRange, comparisonPeriod, setCompa
 
 // ======================== MAIN ========================
 function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
-  // Theme attribute for global CSS
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light');
-  }, [darkMode]);
-
   // Permission check (uncomment when backend is ready)
   // const canViewAnalytics = hasPerm('getJobReports');
   // if (!canViewAnalytics) return <AccessDenied />;
@@ -456,16 +450,12 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
   const [dateRange, setDateRange] = useState(null);
   const [comparisonPeriod, setComparisonPeriod] = useState('previous-month');
   const [selectedRole, setSelectedRole] = useState(ROLE_OPTIONS[0]);
+
   const { data: analyticsData, loading, error, refetch } = useAnalyticsData(
     dateRange,
     comparisonPeriod,
     selectedRole,
   );
-
-  useEffect(() => {
-    // Refetch data when role changes
-    refetch();
-  }, [selectedRole, refetch]);
 
   const mergedData = useMemo(() => {
     if (!analyticsData?.currentPeriod || !analyticsData?.previousPeriod) return [];
@@ -503,47 +493,68 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
     const multiplier =
       selectedRole === 'All Roles' ? 1 : 1 + ROLE_OPTIONS.indexOf(selectedRole) * 0.05;
     const dateFactor = dateRange ? 1 + AnalyticsService.secureRandom(0, 10) / 100 : 1;
-
     return analyticsData.deviceBreakdown.map(d => ({
       ...d,
       value: Math.round(d.value * multiplier * dateFactor),
       previousValue: Math.round(d.previousValue * multiplier * dateFactor),
       sessions: Math.round(d.sessions * multiplier * dateFactor),
     }));
-  }, [analyticsData, selectedRole, dateRange, comparisonPeriod]);
+  }, [analyticsData, selectedRole, dateRange]);
 
   const filteredTrafficSources = useMemo(() => {
     if (!analyticsData?.trafficSources) return [];
     const multiplier =
       selectedRole === 'All Roles' ? 1 : 1 + ROLE_OPTIONS.indexOf(selectedRole) * 0.05;
     const dateFactor = dateRange ? 1 + AnalyticsService.secureRandom(0, 10) / 100 : 1;
-
     return analyticsData.trafficSources.map(t => ({
       ...t,
       current: Math.round(t.current * multiplier * dateFactor),
       previous: Math.round(t.previous * multiplier * dateFactor),
     }));
-  }, [analyticsData, selectedRole, dateRange, comparisonPeriod]);
+  }, [analyticsData, selectedRole, dateRange]);
 
   const handleResetAndRefresh = () => {
-    const last30 = DATE_RANGE_PRESETS.last30Days.getValue();
-
     setSelectedRole('All Roles');
-    setDateRange(last30);
+    setDateRange(DATE_RANGE_PRESETS.last30Days.getValue());
     setComparisonPeriod('previous-month');
-
     refetch();
   };
 
+  // Chart colors driven by darkMode prop — already correct
   const colors = darkMode ? CONFIG.CHART_COLORS.dark : CONFIG.CHART_COLORS;
 
+  // Recharts injects inline styles into its tooltip, so CSS classes have no effect.
+  // Pass these props to every <Tooltip> so it respects dark mode.
+  const tooltipStyle = darkMode
+    ? {
+        contentStyle: {
+          background: '#1f2937',
+          border: '1px solid #374151',
+          borderRadius: 8,
+          color: '#f9fafb',
+        },
+        labelStyle: { color: '#9ca3af' },
+        itemStyle: { color: '#f9fafb' },
+      }
+    : {
+        contentStyle: {
+          background: '#fff',
+          border: '1px solid #e5e7eb',
+          borderRadius: 8,
+          color: '#111827',
+        },
+        labelStyle: { color: '#6b7280' },
+        itemStyle: { color: '#111827' },
+      };
+
   return (
-    <div className={styles.page}>
+    // FIX: darkMode applied as a CSS class on the root div (same pattern as HoursPledgedChart).
+    // Removed the document.documentElement side-effect — that bleeds into other pages.
+    <div className={`${styles.page} ${darkMode ? styles.darkMode : ''}`}>
       <header className={styles.header}>
         <h2 className={styles.title}>Job Analytics</h2>
 
         <div className={styles.headerActions}>
-          {/* Role Dropdown */}
           <select
             className={`${styles.input} ${styles.select}`}
             value={selectedRole}
@@ -558,7 +569,6 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
             ))}
           </select>
 
-          {/* Refresh Button */}
           <button
             className={`${styles.btn} ${styles.btnPrimary}`}
             onClick={handleResetAndRefresh}
@@ -584,7 +594,6 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
         <LoadingSpinner message="Loading analytics data..." />
       ) : (
         <>
-          {/* Metrics */}
           <section className={styles.metricsGrid}>
             <MetricCard
               icon={Users}
@@ -612,7 +621,6 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
             />
           </section>
 
-          {/* Charts */}
           <section className={styles.chartsGrid} data-mobile={isMobile ? '1' : '0'}>
             <ChartCard title="User Trend Comparison" icon={TrendingUp}>
               <ResponsiveContainer width="100%" height={320}>
@@ -620,7 +628,7 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
                   <CartesianGrid strokeDasharray="3 3" className={styles.gridStroke} />
                   <XAxis dataKey="displayDate" tick={{ fontSize: 12 }} />
                   <YAxis tick={{ fontSize: 12 }} domain={['dataMin - 100', 'dataMax + 100']} />
-                  <Tooltip />
+                  <Tooltip {...tooltipStyle} />
                   <Legend />
                   <Line
                     type="monotone"
@@ -659,7 +667,7 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
                   <CartesianGrid strokeDasharray="3 3" className={styles.gridStroke} />
                   <XAxis dataKey="displayDate" tick={{ fontSize: 12 }} />
                   <YAxis tick={{ fontSize: 12 }} domain={['dataMin - 500', 'dataMax + 500']} />
-                  <Tooltip />
+                  <Tooltip {...tooltipStyle} />
                   <Legend />
                   <Area
                     type="monotone"
@@ -688,7 +696,7 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
                     height={60}
                   />
                   <YAxis tick={{ fontSize: 12 }} domain={[0, 'dataMax + 500']} />
-                  <Tooltip />
+                  <Tooltip {...tooltipStyle} />
                   <Legend />
                   <Bar
                     dataKey="current"
@@ -728,11 +736,11 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
                       />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  <Tooltip {...tooltipStyle} />
                 </PieChart>
               </ResponsiveContainer>
             </ChartCard>
-            {/* Sessions & Bounce Rate Combined Chart */}
+
             <ChartCard
               title="Sessions & Bounce Rate Analysis"
               icon={Activity}
@@ -756,7 +764,7 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
                     tick={{ fontSize: 12 }}
                     domain={[0, 100]}
                   />
-                  <Tooltip />
+                  <Tooltip {...tooltipStyle} />
                   <Legend />
                   <Line
                     yAxisId="left"
