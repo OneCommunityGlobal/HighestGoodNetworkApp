@@ -246,11 +246,11 @@ export const ENDPOINTS = {
     if (startDate) params.append('startDate', startDate);
     if (endDate) params.append('endDate', endDate);
     if (groupBy) params.append('groupBy', groupBy);
-    
+
     const queryString = params.toString();
     return queryString ? `${url}?${queryString}` : url;
   },
-  
+
   INJURY_PROJECTS: () => `${APIEndpoint}/injuries/projects`,
 
   PRESETS: () => `${APIEndpoint}/rolePreset`,
@@ -301,14 +301,14 @@ export const ENDPOINTS = {
   PERMISSION_CHANGE_LOGS: userId => `${APIEndpoint}/permissionChangeLogs/${userId}`,
 
   GET_TOTAL_COUNTRY_COUNT: () => `${APIEndpoint}/getTotalCountryCount`,
-  
+
   ANALYTICS_AVAILABLE_ROLES: () => `${APIEndpoint}/analytics/roles`,
 
   // Country Application Map Chart endpoints
   COUNTRY_APPLICATION_DATA: (params = {}) => {
     let url = `${APIEndpoint}/analytics/country-applications`;
     const queryParams = new URLSearchParams();
-    
+
     if (params.roles && params.roles.length > 0) {
       queryParams.append('roles', params.roles.join(','));
     }
@@ -325,7 +325,7 @@ export const ENDPOINTS = {
     if (params.customDateRange) {
       queryParams.append('customDateRange', 'true');
     }
-    
+
     const queryString = queryParams.toString();
     return queryString ? `${url}?${queryString}` : url;
   },
@@ -437,8 +437,8 @@ export const ENDPOINTS = {
   BM_ORGS_WITH_LOCATION: `${APIEndpoint}/bm/orgLocation`,
   ORG_DETAILS: projectId => `${APIEndpoint}/bm/orgLocation/${projectId}`,
   BM_PROJECT_MEMBERS: projectId => `${APIEndpoint}/bm/project/${projectId}/users`,
-  BM_UPDATE_NAME_AND_UNIT :invtypeId => `${APIEndpoint}/bm/invtypes/material/${invtypeId}`,
-  BM_ITEM_UPDATE_HISTORY: invtypeId =>`${APIEndpoint}/bm/invtypes/${invtypeId}/history`,
+  BM_UPDATE_NAME_AND_UNIT: invtypeId => `${APIEndpoint}/bm/invtypes/material/${invtypeId}`,
+  BM_ITEM_UPDATE_HISTORY: invtypeId => `${APIEndpoint}/bm/invtypes/${invtypeId}/history`,
 
   PROJECT_GLOBAL_DISTRIBUTION: `${APIEndpoint}/projectglobaldistribution`,
 
@@ -567,6 +567,7 @@ export const ENDPOINTS = {
   LB_LISTING_AVAILABILITY: `${APIEndpoint}/lb/listing/availability`,
   LB_LISTING_BOOK: `${APIEndpoint}/lb/listing/availability/booking`,
   HELP_CATEGORIES: `${APIEndpoint}/help-categories`,
+  HELP_REQUEST_CREATE: `${APIEndpoint}/helprequest/create`,
   APPLICANT_SOURCES: `${APIEndpoint}/applicant-analytics/applicant-sources`,
 
   // job analytics
@@ -645,10 +646,10 @@ export const ENDPOINTS = {
   KI_CALENDAR_EVENTS: (month, year) => `${APIEndpoint}/kitchenandinventory/calendar?month=${month}&year=${year}`,
 
   // Help Request & Feedback Modal endpoints
-HGN_FORM_RANKED: `${APIEndpoint}/hgnform/ranked`,
-HELP_REQUEST_CHECK_MODAL: userId => `${APIEndpoint}/helprequest/check-modal/${userId}`,
-FEEDBACK_CLOSE_PERMANENTLY: `${APIEndpoint}/feedback/close-permanently`,
-FEEDBACK_SUBMIT: `${APIEndpoint}/feedback/submit`,
+  HGN_FORM_RANKED: `${APIEndpoint}/hgnform/ranked`,
+  HELP_REQUEST_CHECK_MODAL: userId => `${APIEndpoint}/helprequest/check-modal/${userId}`,
+  FEEDBACK_CLOSE_PERMANENTLY: `${APIEndpoint}/feedback/close-permanently`,
+  FEEDBACK_SUBMIT: `${APIEndpoint}/feedback/submit`,
   // application time analytics
   APPLICATION_TIME_DATA: (startDate, endDate, roles) => {
     let url = `${APIEndpoint}/analytics/application-time?`;
