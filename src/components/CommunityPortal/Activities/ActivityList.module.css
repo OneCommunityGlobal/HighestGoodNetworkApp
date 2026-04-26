@@ -1,3 +1,4 @@
+/* stylelint-disable no-descending-specificity */
 .activityListContainer {
   padding: 20px;
   min-height: calc(100vh - 140px);
@@ -70,6 +71,17 @@
   color-scheme: dark;
 }
 
+.filters select {
+  padding: 10px;
+  height: 48px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  margin-top: 5px;
+  font-size: 1rem;
+  background: #fff;
+}
+
+/* Dark mode date input - style the calendar icon */
 .darkModeInput[type="date"]::-webkit-calendar-picker-indicator {
   filter: invert(1);
   cursor: pointer;
@@ -132,6 +144,11 @@
   border: 1px solid #3a4a5c !important;
   color: #fff !important;
   border-radius: 0;
+}
+
+.activityList.darkActivityList li strong {
+  color: #00f3ff;
+  font-size: 1.2rem;
 }
 
 .activityList li:hover {

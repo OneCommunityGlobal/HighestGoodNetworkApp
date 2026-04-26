@@ -1,3 +1,4 @@
+/* stylelint-disable no-duplicate-selectors */
 .oneCommunityGlobalImg {
   height: auto;
   max-width: 1000px;
@@ -12,7 +13,7 @@
   align-items: center;
   border-radius: 10px;
   padding: 5px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
 }
 
 .pageWrapper {
@@ -59,7 +60,7 @@
   padding: 11px 13px;
   margin: 8px 10px;
   border: none;
-  background-color: #cccccc;
+  background-color: #ccc;
   color: white;
   font-size: 16px;
   border-radius: 5px;
@@ -159,13 +160,13 @@
   align-items: flex-start;
   margin: 0;
   gap: 10px;
-  word-wrap: break-word;
+  overflow-wrap: break-word;
   white-space: normal;
   padding: 2px;
 }
 
 .optionsSection input {
-  margin: 0 12px 0;
+  margin: 0 12px;
 }
 
 .optionItem input[type='checkbox'],
@@ -258,7 +259,7 @@
 .darkMode .jobformSelect {
   background-color: #1c1c1c;
   color: #f1f1f1;
-  border: 1px solid #444444;
+  border: 1px solid #444;
 }
 
 .darkMode .jobformInput::placeholder {
@@ -288,7 +289,7 @@
 
 .darkMode .formDiv {
   background: linear-gradient(135deg, #23272a, #181a1b);
-  border-color: #333333;
+  border-color: #333;
   border-radius: 5px;
   margin-bottom: 10px;
   padding: 10px;
@@ -309,25 +310,25 @@
 .darkMode .addFieldButton,
 .darkMode .addOptionButton,
 .darkMode .jobSubmitButton {
-  background-color: #333333;
+  background-color: #333;
   color: #f1f1f1;
-  border: 1px solid #444444;
+  border: 1px solid #444;
 }
 
 .darkMode .addFieldButton:hover,
 .darkMode .addOptionButton:hover,
 .darkMode .jobSubmitButton:hover {
-  background-color: #555555;
+  background-color: #555;
 }
 
 .darkMode .goButton {
-  background-color: #333333;
+  background-color: #333;
   color: #f1f1f1;
-  border: 1px solid #444444;
+  border: 1px solid #444;
 }
 
 .darkMode .goButton:hover {
-  background-color: #555555;
+  background-color: #555;
 }
 
 .darkMode .optionsList h4 {
@@ -362,7 +363,7 @@
   border-radius: 6px;
   cursor: pointer;
   text-align: left;
-  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 0 rgb(0 0 0 / 8%);
 }
 
 .previewTextButton:hover {

@@ -89,19 +89,27 @@ function DropOffTracking() {
 
       <div className={styles.trackingSummary}>
         <div className={`${styles.trackingRate} ${darkMode ? styles.trackingRateDark : ''}`}>
-          <p className={styles.trackingRateValue}>
-            +5% <span>Last week</span>
-          </p>
           <p className={styles.trackingRateSubheading}>
-            <span> Drop-off rate</span>
+            <span>
+              <b>Drop-off rate</b>
+            </span>
+          </p>
+          <p className={styles.trackingRateValue}>
+            <span className={styles.trackingRateValuePositive}>+5%</span>{' '}
+            <span>since Last week</span>
           </p>
         </div>
         <div className={`${styles.trackingRate} ${darkMode ? styles.trackingRateDark : ''}`}>
-          <p className={styles.trackingRateValue}>
-            +5% <span>Last week</span>
-          </p>
           <p className={styles.trackingRateSubheading}>
-            <span> No-show rate </span>
+            <span>
+              <b>No-show rate</b>
+            </span>
+          </p>
+          <p className={styles.trackingRateValue}>
+            <span className={styles.trackingRateValueNegative}>
+              <b>-5%</b>
+            </span>{' '}
+            <span>since Last week</span>
           </p>
         </div>
       </div>
@@ -128,8 +136,12 @@ function DropOffTracking() {
             {filteredEvents.map(event => (
               <tr key={event.id}>
                 <td>{event.eventName}</td>
-                <td className={styles.trackingRateGreen}>{event.noShowRate}</td>
-                <td className={styles.trackingRateRed}>{event.dropOffRate}</td>
+                <td className={styles.trackingRateGreen} style={{ color: 'green' }}>
+                  {event.noShowRate}
+                </td>
+                <td className={styles.trackingRateRed} style={{ color: 'red' }}>
+                  {event.dropOffRate}
+                </td>
                 <td>
                   <button
                     type="button"
@@ -201,7 +213,6 @@ function DropOffTracking() {
                 className={styles.sendEmailBtn}
                 disabled={selectedUsers.length === 0}
                 onClick={() => {
-                  console.log('Send email to:', selectedUsers);
                   handleCloseModal();
                 }}
               >
