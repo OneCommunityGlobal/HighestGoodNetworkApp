@@ -13,7 +13,6 @@ export function HeaderRenderer(props) {
   const location = useLocation();
   const isKitchenAndInventory = location.pathname.startsWith('/kitchenandinventory');
   const isCommunityPortal = location.pathname.startsWith('/communityportal');
-  const isKitchenInterface = location.pathname.startsWith('/kitchenandinventory');
   const isEducationEvaluation = location.pathname.startsWith('/educationportal/evaluation-results');
 
   // Hide header or education portal evaluation results page
@@ -21,19 +20,9 @@ export function HeaderRenderer(props) {
     return null;
   }
 
-<<<<<<< HEAD
-  if (isKitchenInterface) {
-    return (
-      <>
-        <Header {...props} />
-        <KitchenHeader />
-      </>
-    );
-=======
   if (isKitchenAndInventory) {
     // eslint-disable-next-line react/jsx-props-no-spreading
     return <KIHeader {...props} />;
->>>>>>> development
   }
 
 // eslint-disable-next-line react/jsx-props-no-spreading
