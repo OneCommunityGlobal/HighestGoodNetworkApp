@@ -1,6 +1,5 @@
-/* stylelint-disable declaration-property-value-keyword-no-deprecated, no-descending-specificity, no-duplicate-selectors */
 :global(body) {
-  font-family: Poppins, sans-serif;
+  font-family: 'Poppins', sans-serif;
   background: #fff;
   margin: 0;
   padding: 0;
@@ -11,7 +10,7 @@
   margin: 0 auto;
   background: #fff;
   border-radius: 16px;
-  box-shadow: 0 6px 20px rgb(0 0 0 / 10%);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
   font-size: 16px;
   line-height: 1.6;
   letter-spacing: 0.2px;
@@ -27,15 +26,12 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
   margin-bottom: 30px;
-  border-radius: 12px;
   padding: 16px 24px;
-  background: linear-gradient(120deg, #fff, #f8f9fa);
-  box-shadow: 0 3px 10px rgb(0 0 0 / 10%);
-}
-
-.darkHeader {
-  background: #1b2a41;
+  background: linear-gradient(120deg, #ffffff, #f8f9fa);
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
 }
 
 .dashboardHeader h1 {
@@ -43,6 +39,11 @@
   font-weight: bold;
   color: #2c3e50;
   margin: 0;
+}
+
+.darkHeader {
+  background: #1b2a41;
+  color: #fff;
 }
 
 .dashboardControls {
@@ -97,12 +98,11 @@
   width: 400px;
   border-radius: 999px;
   overflow: hidden;
-   border: 2px solid #1b3c55;
-  background: #fff;
+  border: 2px solid #1b3c55;
+  background: #ffffff;
 }
-
 .darkHeader .dashboardSearchContainer {
-  border-color: #fff;   /* white when NOT focused */
+  border-color: #ffffff;   /* white when NOT focused */
   background: #1b2a41;
 }
 
@@ -112,21 +112,30 @@
   border: none;
   outline: none;
   background: transparent;
+
   font-size: 1rem;
   line-height: 1.5;
 
   /* IMPORTANT */
   padding: 10px 96px 10px 18px;
+
   min-height: 36px;
   max-height: 120px;
+
   box-sizing: border-box;
-  overflow: hidden auto;
-  white-space: pre-wrap;
-  overflow-wrap: break-word;
-  word-break: break-word;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  white-space: pre-wrap;      /* ✅ Brave-like wrapping */
+  word-wrap: break-word;      /* ✅ prevents overflow */
+  word-break: break-word;     /* ✅ fixes long strings */
 }
 
-@media (width <= 850px) {
+
+
+
+@media (max-width: 850px) {
   .dashboardSearchContainer {
     width: 250px;
   }
@@ -134,9 +143,8 @@
 
 
 .darkHeader .dashboardSearchTextarea {
-  color: #fff;
+  color: #ffffff;
 }
-
 .darkHeader .dashboardSearchTextarea::placeholder {
   color: #cbd5e1;
 }
@@ -146,7 +154,7 @@
   top: 100%;
   transform: translateY(4px);
   background-color: #e4b348 !important;
-  color: #333 !important;
+  color: #333333 !important;
   padding: 4px 8px;
   border-radius: 4px;
   font-size: 0.85rem;
@@ -170,7 +178,6 @@
 .dashboardSearchContainer:focus-visible {
   outline: none;
 }
-
 .dashboardSearchContainer input {
   outline: none;
 }
@@ -185,11 +192,9 @@
   border-color: #4da3ff;
   box-shadow: none;
 }
-
 .dashboardSearchContainer:focus-within:not(:focus-visible) {
   outline: none;
 }
-
 .dashboardSearchContainer,
 .dashboardSearchContainer:focus,
 .dashboardSearchContainer:focus-visible {
@@ -203,11 +208,6 @@
   box-shadow: none;
 }
 
-
-
-
-
-
 .centeredRow {
   padding: 30px;
 }
@@ -216,13 +216,45 @@
   padding: 20px;
   display: flex;
   justify-content: flex-start;
-  background: #fff;
+  background: #ffffff;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .darkSidebar {
   background: #1b2a41;
+}
+
+.darkSidebar .filterItem input:not([type='checkbox']):not([type='radio']),
+.darkSidebar .filterItem select {
+  background-color: #34495e;
+  color: #fff;
+  border: 1px solid #4a6572;
+}
+
+.darkSidebar .filterItem label {
+  color: #ecf0f1;
+}
+
+.darkSidebar input[type="date"] {
+  color-scheme: dark;
+}
+
+.darkSidebar .inputGroup {
+  background-color: #34495e;
+  border-color: #4da3ff;
+}
+
+.darkSidebar .inputGroup input {
+  color: #ffffff;
+}
+
+.darkSidebar .inputGroup input::placeholder {
+  color: #cbd5e1;
+}
+
+.darkSidebar .inputGroupText {
+  color: #cbd5e1;
 }
 
 .filterSection h4 {
@@ -238,19 +270,12 @@
   gap: 20px;
 }
 
-.filterItem input:not([type='checkbox'], [type='radio']),
+.filterItem input:not([type='checkbox']):not([type='radio']),
 .radioRow {
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
   margin-top: 10px;
-}
-
-.darkSidebar .filterItem input:not([type='checkbox'], [type='radio']),
-.darkSidebar .filterItem select {
-  background-color: #34495e;
-  color: #fff;
-  border: 1px solid #4a6572;
 }
 
 .darkSidebar .filterItem label {
@@ -274,18 +299,39 @@
   vertical-align: middle;
 }
 
-.filterItem input:not([type="checkbox"], [type="radio"]),
+.filterItem input:not([type="checkbox"]):not([type="radio"]),
 .filterItem select {
   padding: 12px 15px;
   margin-top: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  width: 100%;
+  font-size: 1rem;
+  background: #fff;
+  transition: all 0.3s ease;
+}
+
+.filterOptionsVertical {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.dateFilter {
+  margin-top: 10px;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
   border-radius: 8px;
   width: 100%;
   height: auto;
   font-size: 1rem;
-  background: #fff;
   transition: all 0.3s ease;
   margin-bottom: 20px;
   appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
   background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
   background-repeat: no-repeat;
   background-position: right 1rem center;
@@ -297,6 +343,8 @@
   font-weight: 600;
   color: #34495e;
   margin-bottom: 8px;
+  background: #fff;
+  transition: all 0.3s ease;
 }
 
 .filterItem input[type='radio'],
@@ -304,33 +352,21 @@
   display: inline-block; /* <– keeps input on same line as text */
   width: auto;
   padding: 0;
-  margin: 5px 0 0 120px; /* top margin to line up under "Dates" */
+  margin: 5px 0px 0px 120px; /* top margin to line up under "Dates" */
   vertical-align: middle;
 }
 
 .filterItem input:focus,
 .filterItem select:focus {
   border-color: #2c3e50;
-  box-shadow: 0 0 5px rgb(44 62 80 / 40%);
-  outline: none;
-}
-
-.dateFilter {
-  margin-top: 15px;
-}
-
-.dateFilter:focus {
-  border-color: #2c3e50;
-  box-shadow: 0 0 5px rgb(44 62 80 / 40%);
+  box-shadow: 0 0 5px rgba(44, 62, 80, 0.4);
   outline: none;
 }
 
 .dashboardMain {
   width: 65%;
   padding: 30px;
-  background: #fff;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
 }
 
 .darkMain {
@@ -347,25 +383,12 @@
 
 .eventCardCol {
   display: flex;
-  margin-bottom: 20px;
-}
-
-.eventCard {
-  width: 100%;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 6px 15px rgb(0 0 0 / 10%);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  display: flex;
-  flex-direction: column;
-  border: none;
-  background: #fff;
   margin-bottom: 1.5rem;
 }
 
 .eventCard:hover {
   transform: scale(1.05);
-  box-shadow: 0 8px 20px rgb(0 0 0 / 20%);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
 .eventCardImgContainer img {
@@ -378,12 +401,12 @@
   height: 100%;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   display: flex;
   flex-direction: column;
   border: none;
-  background: #fff;
+  background: #ffffff;
 }
 
 .eventCardImgContainer {
@@ -402,10 +425,15 @@
   min-height: 180px;
 }
 
+.eventCardImg {
+  width: 100%;
+  height: auto;
+}
+
 .eventTitle {
   text-align: center;
   color: #2c3e50;
-  margin: 0 0 15px;
+  margin: 10px 0;
   font-weight: bold;
   font-size: 1.3rem;
   line-height: 1.4;
@@ -431,6 +459,21 @@
   margin-top: 2px;
   flex-shrink: 0;
   font-size: 1rem;
+}
+
+.darkMain .eventDate,
+.darkMain .eventDate .eventTime,
+.darkMain .eventLocation,
+.darkMain .eventOrganizer {
+  color: #e4e6eb;
+}
+
+.darkMain .eventTime {
+  color: #b0b3b8;
+}
+
+.darkMain .eventIcon {
+  color: #e4e6eb;
 }
 
 .noEvents {
@@ -459,48 +502,8 @@
 
 .dashboardActions button:hover {
   background-color: #34495e;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 20%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
-
-
-
-.dateFilterContainer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 6px 0 20px;
-}
-
-.dateFilterContainer :global(.react-datepicker-wrapper) input {
-  border: 2px solid #1b3c55;
-  border-radius: 8px;
-  padding: 8px 12px;
-  width: 100%;
-  outline: none;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-}
-
-.darkSidebar :global(.react-datepicker__input-container input) {
-  background-color: #000 !important;
-  color: #fff !important;
-  border: 2px solid #4da3ff !important;
-}
-
-.darkSidebar :global(.react-datepicker__input-container input::placeholder) {
-  color: #fff !important;
-}
-
-.dateFilterContainer :global(.react-datepicker-wrapper) input:focus {
-  border-color: #34495e;
-  box-shadow: 0 0 5px rgb(44 62 80 / 40%);
-}
-
-.dateErrorMessage {
-  color: red;
-  margin-top: 5px;
-}
-
 
 .paginationContainer {
   margin-top: 20px;
@@ -514,21 +517,8 @@
 .dashboardSearchInput::-webkit-search-decoration,
 .dashboardSearchInput::-webkit-search-results-button,
 .dashboardSearchInput::-webkit-search-results-decoration {
+  -webkit-appearance: none;
   appearance: none;
-}
-
-.noEvents{
-  display: flex;
-  justify-content: center;
-  text-align: center;
-  width: 100%;
-  font-size: 1.25rem;
-  font-style: italic;
-  color:#6b7280;
-}
-
-.darkMain .noEvents {
-  color: #9ca3af;
 }
 
 .darkSearchContainer {
@@ -537,14 +527,43 @@
 }
 
 .darkSearchTextarea {
-  color: #fff;
+  color: #ffffff;
 }
 
 .darkSearchTextarea::placeholder {
-  color: rgb(255 255 255 / 70%);
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .darkSearchContainer .dashboardClearBtn,
 .darkSearchContainer .dashboardSearchIconBtn {
-  color: #fff;
+  color: #ffffff;
+}
+.darkMain .noEvents {
+  color: #9ca3af;
+}
+
+.searchFilter {
+  margin-bottom: 1.5rem;
+}
+
+/* --- Search Input Container --- */
+.inputGroup {
+  display: flex;
+  align-items: center;
+  border: 2px solid #d1d5db;
+  border-radius: 999px;
+  overflow: hidden;
+  background-color: #fff;
+  padding: 0 10px;
+}
+
+.inputGroupText {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+  background-color: #fff;
+  border: none;
+  color: #555;
+  font-size: 1.1rem;
 }

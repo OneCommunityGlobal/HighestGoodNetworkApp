@@ -21,13 +21,36 @@
 }
 
 .disconnected {
-  font-size: 1.2rem;
-  font-weight: bold;
-  width: fit-content;
+  width: 140px;
+  min-height: 42px;
   background-color: rgb(82 92 102 / 100%);
   color: rgb(238 10 10);
   border-radius: 0 0 0.5rem 0.5rem;
-  padding: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  font-size: 1rem;
+  font-weight: bold;
+  box-sizing: border-box;
+  white-space: nowrap;
+}
+
+.disconnectedRefreshBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.disconnectedRefreshBtn:hover {
+  color: #ed688a;
 }
 
 .preview {
