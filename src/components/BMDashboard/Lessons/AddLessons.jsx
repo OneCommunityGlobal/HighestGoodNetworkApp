@@ -4,8 +4,8 @@ import { Form, Button, DropdownButton, Dropdown } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import './AddLessons.css';
 import { useSelector } from 'react-redux';
+import styles from './AddLessons.module.css';
 
 function AddLessons() {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -88,8 +88,8 @@ function AddLessons() {
   };
 
   return (
-    <div className={darkMode ? 'dark-page-wrapper' : ''}>
-      <div className={`add-lesson-form-container ${darkMode ? 'bg-dark text-light' : ''}`}>
+    <div className={darkMode ? styles.darkPageWrapper : ''}>
+      <div className={`${styles.formContainer} ${darkMode ? 'bg-dark text-light' : ''}`}>
         <h5 className="mb-4">Write a Lesson</h5>
 
         <Form.Group controlId="lessonContent" className="mb-3">
@@ -115,11 +115,11 @@ function AddLessons() {
           />
           <div className="mt-2 d-flex flex-wrap">
             {tags.map(tag => (
-              <span key={tag} className="badge bg-secondary add-tag-badge">
+              <span key={tag} className={`badge bg-secondary ${styles.tagBadge}`}>
                 {tag}
                 <button
                   type="button"
-                  className="tag-delete-btn ms-2"
+                  className={`${styles.tagDeleteButton} ms-2`}
                   onClick={() => handleDeleteTag(tag)}
                 >
                   &times;
@@ -177,7 +177,7 @@ function AddLessons() {
               const droppedFile = e.dataTransfer.files[0];
               setFile(droppedFile);
             }}
-            className={`add-lesson-file-upload-box ${
+            className={`${styles.fileUploadBox} ${
               darkMode ? 'bg-dark text-light border-secondary' : ''
             }`}
             onClick={() => document.getElementById('fileInput').click()}

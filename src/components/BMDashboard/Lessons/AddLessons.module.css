@@ -1,4 +1,4 @@
-.add-lesson-form-container {
+.formContainer {
   max-width: 600px;
   margin: auto;
   background: #f7f9fc;
@@ -6,7 +6,7 @@
   padding: 1.5rem;
 }
 
-.add-tag-badge {
+.tagBadge {
   padding: 4px 10px;
   font-size: 0.85rem;
   border-radius: 12px;
@@ -18,8 +18,7 @@
   line-height: 1;
 }
 
-
-.add-lesson-file-upload-box {
+.fileUploadBox {
   border: 2px dashed #6c757d;
   border-radius: 10px;
   padding: 30px;
@@ -29,7 +28,7 @@
   cursor: pointer;
 }
 
-.tag-delete-btn {
+.tagDeleteButton {
   background: none;
   border: none;
   color: #fff;
@@ -44,18 +43,18 @@
   justify-content: center;
 }
 
-.tag-delete-btn:hover {
+.tagDeleteButton:hover {
   color: black;
   background-color: #6c757d;
 }
 
-
-.dark-page-wrapper {
+.darkPageWrapper {
   background-color: #1B2A41;
   min-height: 100vh;
   padding: 2rem 0;
 }
-.dark-page-wrapper .add-lesson-form-container {
+
+.darkPageWrapper .formContainer {
   background-color: #162e4a;
   color: #f0f0f0;
   border-radius: 10px;
@@ -63,23 +62,22 @@
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
 }
 
-.dark-page-wrapper .form-control,
-.dark-page-wrapper .dropdown-menu {
+.darkPageWrapper :global(.form-control),
+.darkPageWrapper :global(.dropdown-menu) {
   background-color: #1B2A41;
   color: #fff;
   border-color: #555;
 }
 
-.dark-page-wrapper .form-label,
-.dark-page-wrapper .text {
+.darkPageWrapper :global(.form-label),
+.darkPageWrapper :global(.text) {
   color: #ccc;
 }
 
-.dark-page-wrapper .dropdown-item {
+.darkPageWrapper :global(.dropdown-item) {
   color: #fff;
 }
 
-.dark-page-wrapper .dropdown-item:hover {
+.darkPageWrapper :global(.dropdown-item:hover) {
   background-color: #444;
 }
-
