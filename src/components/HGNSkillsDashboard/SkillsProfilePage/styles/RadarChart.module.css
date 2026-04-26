@@ -1,16 +1,242 @@
+/* stylelint-disable  */
 .radarChart {
   flex: 1;
   display: flex;
+  flex-direction: column;
   justify-content: center;
-}
-
-.radarChart canvas {
-  max-width: 500px;
+  align-items: center;
+  padding: 18px;
+  background: linear-gradient(145deg, #fff 0%, #f8f9fa 100%);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgb(0 0 0 / 8%);
+  border: 1px solid rgb(62 160 203 / 10%);
+  min-height: 420px;
   max-height: 500px;
+  position: relative;
 }
 
-@media (max-width: 768px) {
+.radarChart.compact {
+  padding: 8px;
+  background: transparent;
+  box-shadow: none;
+  border: none;
+  min-height: auto;
+  align-items: stretch;
+}
+
+.chartTitle {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+  padding: 12px 16px;
+}
+
+.chartTitle h4 {
+  color: #3ea0cb;
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 10%);
+}
+
+.chartTitle p {
+  color: #666;
+  font-size: 14px;
+  margin: 0;
+  font-style: italic;
+}
+
+.chartContainer {
+  width: 100%;
+  max-width: clamp(280px, 38vw, 460px);
+  aspect-ratio: 1 / 1;
+  height: auto;
+  position: relative;
+  margin: 0 auto;
+  transition: max-width 0.25s ease;
+}
+
+.chartContainer canvas {
+  width: 100% !important;
+  height: 100% !important;
+  filter: drop-shadow(0 2px 8px rgb(62 160 203 / 15%));
+}
+
+.chartLegend {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #555;
+  font-weight: 500;
+}
+
+.legendColor {
+  width: 18px;
+  height: 18px;
+  background: linear-gradient(135deg, rgb(62 160 203 / 80%) 0%, rgb(62 160 203 / 60%) 100%);
+  border: 2px solid rgb(62 160 203 / 100%);
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
+}
+
+/* Loading state */
+.radarChart.loading {
+  justify-content: center;
+  align-items: center;
+}
+
+.loadingSpinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgb(62 160 203 / 20%);
+  border-left: 4px solid #3ea0cb;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Error state */
+.errorState {
+  text-align: center;
+  color: #dc3545;
+  padding: 40px 20px;
+}
+
+.errorState h4 {
+  color: #dc3545;
+  margin-bottom: 10px;
+}
+
+.errorState p {
+  color: #666;
+  font-size: 14px;
+}
+
+/* Responsive breakpoints */
+@media (width <= 768px) {
   .radarChart {
-    margin-top: 0px;
+    padding: 10px 0;
   }
+
+  .radarChart canvas {
+    max-height: 460px;
+  }
+}
+
+@media (width <= 480px) {
+  .radarChart {
+    padding: 8px;
+    min-height: 320px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .chartTitle h4 {
+    font-size: 16px;
+  }
+
+  .chartTitle p {
+    font-size: 11px;
+  }
+
+  .chartContainer {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .chartLegend {
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .legendItem {
+    font-size: 11px;
+  }
+
+  .legendColor {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+@media (width <= 360px) {
+  .radarChart {
+    padding: 5px;
+    min-height: 280px;
+  }
+
+  .chartTitle h4 {
+    font-size: 14px;
+  }
+}
+
+/* High DPI displays */
+@media (resolution >= 192dpi) {
+  .chartContainer canvas {
+    image-rendering: crisp-edges;
+  }
+}
+
+/* Dark theme support */
+.dark {
+  background: #1f1f1f;
+  border-color: #2a2a2a;
+  box-shadow: none;
+}
+
+.dark .chartTitle h4 {
+  color: #e6e6e6;
+}
+
+.dark .chartTitle p {
+  color: #bfbfbf;
+}
+
+.dark .legendItem {
+  color: #e2e8f0;
+}
+
+:global(.dark-mode) .radarChart {
+  background: linear-gradient(145deg, #2a2f3e 0%, #1e2330 100%);
+  border-color: rgb(62 160 203 / 30%);
+  box-shadow: 0 4px 20px rgb(0 0 0 / 30%);
+}
+
+:global(.dark-mode) .chartTitle h4 {
+  color: #63b3ed;
+}
+
+:global(.dark-mode) .chartTitle p {
+  color: #a0aec0;
+}
+
+:global(.dark-mode) .legendItem {
+  color: #e2e8f0;
+}
+
+:global(.dark-mode) .loadingSpinner {
+  border-color: rgb(62 160 203 / 30%);
+  border-left-color: #63b3ed;
+}
+
+:global(.dark-mode) .errorState h4 {
+  color: #ff6b6b;
+}
+
+:global(.dark-mode) .errorState p {
+  color: #a0aec0;
 }

@@ -1,10 +1,13 @@
+/* stylelint-disable no-descending-specificity */
+
 /* Chart labels stay dark in dark mode for readability against light label chips */
 .containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer .recharts-wrapper text,
 .containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer .recharts-wrapper tspan {
   fill: #000 !important;
   color: #000 !important;
-  text-shadow: 1px 1px 3px rgba(0,0,0,0.25), 0 0 2px #fff;
+  text-shadow: 1px 1px 3px rgb(0 0 0 / 25%), 0 0 2px #fff;
 }
+
 /* Chart and graph titles/text should be white in dark mode for visibility */
 .containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer h3,
 .containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer p,
@@ -12,12 +15,84 @@
 .containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer .volunteerStatusGrid h3 {
   color: #fff !important;
 }
+
 .containerTotalOrgWrapper {
   min-height: 100%;
   background-color: #fff;
-  margin: 0;
+  margin: 0 !important;
   padding: 20px;
-  width: 100%;
+  width: 100% !important;
+  max-width: 100vw !important;
+  overflow-x: hidden !important;
+  box-sizing: border-box;
+  position: relative;
+}
+
+/* Override Bootstrap py-3 and mb-5 classes on mobile */
+@media (width <= 768px) {
+  .containerTotalOrgWrapper:global(.py-3) {
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+  }
+  
+  .containerTotalOrgWrapper:global(.mb-5) {
+    margin-bottom: 20px !important;
+  }
+}
+
+/* Ensure Container fluid doesn't cause overflow */
+.containerTotalOrgWrapper :global(.container-fluid) {
+  max-width: 100% !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  overflow-x: hidden !important;
+  width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+/* Override reactstrap Container default padding */
+.containerTotalOrgWrapper:global(.container-fluid) {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* Ensure the root PDF wrapper doesn't overflow */
+.containerTotalOrgWrapper [data-pdf-root] {
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+  box-sizing: border-box !important;
+}
+
+/* Ensure all images, svg, and charts are responsive */
+.containerTotalOrgWrapper img,
+.containerTotalOrgWrapper svg,
+.containerTotalOrgWrapper canvas {
+  max-width: 100% !important;
+  height: auto !important;
+}
+
+/* Ensure hr doesn't cause overflow */
+.containerTotalOrgWrapper hr {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  max-width: 100% !important;
+}
+
+/* Fix Row component negative margins that can cause overflow */
+.containerTotalOrgWrapper :global(.row) {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+/* Ensure all child elements respect container bounds */
+.containerTotalOrgWrapper * {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.containerTotalOrgWrapper *:not(script, style) {
+  overflow-wrap: break-word;
 }
 
 /* Unified dark mode background */
@@ -32,16 +107,18 @@
   color: white !important;
 }
 
-.containerTotalOrgWrapper:global(.bg-oxford-blue) .reportHeaderActions :global(.dropdown-toggle):hover {
+.containerTotalOrgWrapper:global(.bg-oxford-blue)
+  .reportHeaderActions
+  :global(.dropdown-toggle):hover {
   background-color: #5a359a !important;
   transform: translateY(-2px) !important;
-  box-shadow: 0 4px 12px rgba(111, 66, 193, 0.4) !important;
+  box-shadow: 0 4px 12px rgb(111 66 193 / 40%) !important;
 }
 
 .containerTotalOrgWrapper:global(.bg-oxford-blue) .reportHeaderActions :global(.dropdown-menu) {
   background-color: #34495e !important;
   border: 1px solid #6f42c1 !important;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: 0 8px 25px rgb(0 0 0 / 30%) !important;
 }
 
 .containerTotalOrgWrapper:global(.bg-oxford-blue) .reportHeaderActions :global(.dropdown-item) {
@@ -49,7 +126,9 @@
   color: #fff !important;
 }
 
-.containerTotalOrgWrapper:global(.bg-oxford-blue) .reportHeaderActions :global(.dropdown-item):hover {
+.containerTotalOrgWrapper:global(.bg-oxford-blue)
+  .reportHeaderActions
+  :global(.dropdown-item):hover {
   background-color: #6f42c1 !important;
   color: #fff !important;
   transform: translateX(4px) !important;
@@ -59,13 +138,13 @@
 .containerTotalOrgWrapper:global(.bg-oxford-blue) .reportHeaderActions button {
   background-color: #007bff !important;
   color: white !important;
-  box-shadow: 0 2px 6px rgba(0, 123, 255, 0.3) !important;
+  box-shadow: 0 2px 6px rgb(0 123 255 / 30%) !important;
 }
 
 .containerTotalOrgWrapper:global(.bg-oxford-blue) .reportHeaderActions button:hover {
   background-color: #0056b3 !important;
   transform: translateY(-2px) !important;
-  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4) !important;
+  box-shadow: 0 4px 12px rgb(0 123 255 / 40%) !important;
 }
 
 .containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer {
@@ -83,7 +162,9 @@
 
 .containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer :global(.recharts-text),
 .containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer :global(.recharts-label),
-.containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer :global(.recharts-cartesian-axis-tick-value),
+.containerTotalOrgWrapper:global(.bg-oxford-blue)
+  .componentContainer
+  :global(.recharts-cartesian-axis-tick-value),
 .containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer text,
 .containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer tspan {
   fill: #fff !important;
@@ -92,7 +173,9 @@
 
 .containerTotalOrgWrapper:global(.bg-oxford-blue) :global(.recharts-text) tspan,
 .containerTotalOrgWrapper:global(.bg-oxford-blue) :global(.recharts-label) tspan,
-.containerTotalOrgWrapper:global(.bg-oxford-blue) :global(.recharts-cartesian-axis-tick-value) tspan,
+.containerTotalOrgWrapper:global(.bg-oxford-blue)
+  :global(.recharts-cartesian-axis-tick-value)
+  tspan,
 .containerTotalOrgWrapper:global(.bg-oxford-blue) text tspan {
   fill: #fff !important;
 }
@@ -101,8 +184,6 @@
 .containerTotalOrgWrapper:global(.bg-oxford-blue) :global(.Collapsible__trigger) {
   color: #fff;
 }
-
-
 
 .containerTotalOrgWrapper:global(.bg-oxford-blue) :global(.recharts-text),
 .containerTotalOrgWrapper:global(.bg-oxford-blue) :global(.recharts-label),
@@ -116,11 +197,11 @@
 
 .pageRow {
   width: 100% !important;
-  margin: 1px 10px 15px 10px;
+  margin: 1px 10px 15px;
 }
 
 /* Header section styles */
-.totalOrgReportHeaderRow  {
+.totalOrgReportHeaderRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -132,6 +213,8 @@
   overflow: visible;
   flex-wrap: wrap;
   gap: 20px;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .reportHeaderTitle {
@@ -141,6 +224,9 @@
   flex: 1;
   min-height: 50px;
   overflow: visible;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* Beautiful header title styling */
@@ -160,13 +246,17 @@
 
 /* Dark mode header styling */
 .containerTotalOrgWrapper:global(.bg-oxford-blue) .reportHeaderTitle h3 {
-  color: #ffffff !important;
+  color: #fff !important;
 }
+
 .reportHeaderActions {
   display: flex;
   align-items: center;
   gap: 15px;
   flex-wrap: wrap;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* Beautiful dropdown styling */
@@ -189,18 +279,18 @@
   min-width: 120px !important;
   background-color: #6f42c1 !important;
   color: white !important;
-  box-shadow: 0 2px 6px rgba(111, 66, 193, 0.3) !important;
+  box-shadow: 0 2px 6px rgb(111 66 193 / 30%) !important;
 }
 
 .reportHeaderActions :global(.dropdown-toggle):hover {
   background-color: #5a359a !important;
   transform: translateY(-2px) !important;
-  box-shadow: 0 4px 12px rgba(111, 66, 193, 0.4) !important;
+  box-shadow: 0 4px 12px rgb(111 66 193 / 40%) !important;
 }
 
 .reportHeaderActions :global(.dropdown-toggle):focus {
   outline: none !important;
-  box-shadow: 0 0 0 3px rgba(111, 66, 193, 0.3) !important;
+  box-shadow: 0 0 0 3px rgb(111 66 193 / 30%) !important;
 }
 
 /* Beautiful button styling */
@@ -218,7 +308,7 @@
   min-height: 44px !important;
   background-color: #007bff !important;
   color: white !important;
-  box-shadow: 0 2px 6px rgba(0, 123, 255, 0.3) !important;
+  box-shadow: 0 2px 6px rgb(0 123 255 / 30%) !important;
   text-transform: none !important;
   letter-spacing: 0.3px !important;
 }
@@ -226,7 +316,7 @@
 .reportHeaderActions button:hover {
   background-color: #0056b3 !important;
   transform: translateY(-2px) !important;
-  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4) !important;
+  box-shadow: 0 4px 12px rgb(0 123 255 / 40%) !important;
 }
 
 .reportHeaderActions button:disabled {
@@ -234,19 +324,19 @@
   cursor: not-allowed !important;
   opacity: 0.6 !important;
   transform: none !important;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%) !important;
 }
 
 .reportHeaderActions button:focus {
   outline: none !important;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.3) !important;
+  box-shadow: 0 0 0 3px rgb(0 123 255 / 30%) !important;
 }
 
 /* Enhanced dropdown menu styling */
 .reportHeaderActions :global(.dropdown-menu) {
   border: none !important;
   border-radius: 12px !important;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+  box-shadow: 0 8px 25px rgb(0 0 0 / 15%) !important;
   padding: 8px 0 !important;
   margin-top: 8px !important;
   min-width: 180px !important;
@@ -269,37 +359,43 @@
 }
 
 /* Dark mode dropdown consistency */
+
 /* Component containers - Clean borderless design */
 .componentContainer {
-  margin: 0 0 15px 0;
+  margin: 0 0 15px;
   padding: 20px;
   background-color: #fff;
   border-radius: 10px;
   border: 1.5px solid #e0e0e0;
-  box-shadow: 0 4px 16px rgba(37,99,235,0.10), 0 1.5px 4px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 16px rgb(37 99 235 / 10%), 0 1.5px 4px rgb(0 0 0 / 8%);
   height: 100%;
   display: flex;
   flex-direction: column;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .componentBorder {
   border: 1.5px solid #e0e0e0;
   border-radius: 10px;
-  box-shadow: 0 4px 16px rgba(37,99,235,0.10), 0 1.5px 4px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 16px rgb(37 99 235 / 10%), 0 1.5px 4px rgb(0 0 0 / 8%);
   background-color: #fff;
   overflow: hidden;
   height: 100%;
   display: flex;
   flex-direction: column;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .componentBorderLoose {
   overflow: visible;
 }
+
 .containerTotalOrgWrapper:global(.bg-oxford-blue) .componentBorder {
   background-color: #1c2541 !important;
   border: 1.5px solid #2f4157 !important;
-  box-shadow: 0 4px 24px rgba(255,255,255,0.13), 0 1.5px 4px rgba(255,255,255,0.10) !important;
+  box-shadow: 0 4px 24px rgb(255 255 255 / 13%), 0 1.5px 4px rgb(255 255 255 / 10%) !important;
 }
 
 /* Grid layouts */
@@ -309,6 +405,8 @@
   gap: 1.5rem;
   width: 100%;
   margin-top: 15px;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .componentPieChartLabel {
@@ -329,6 +427,7 @@
 }
 
 /* Report Header Styles */
+
 /* .totalOrgReportHeaderRow  {
   display: flex;
   justify-content: space-between;
@@ -366,30 +465,58 @@
 }
 
 .whiteSmoke {
-  background-color: #f5f5f5;   
+  background-color: #f5f5f5;
 }
 
 /* Responsive design for better mobile experience */
-@media (max-width: 768px) {
+@media (width <= 768px) {
+  .containerTotalOrgWrapper {
+    padding: 10px !important;
+    overflow-x: hidden;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  .containerTotalOrgWrapper:global(.container-fluid) {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+
   .totalOrgReportHeaderRow {
     flex-direction: column;
     align-items: stretch;
     gap: 15px;
-    padding: 15px;
+    padding: 15px 5px !important;
+    margin-bottom: 15px;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
   }
 
   .reportHeaderTitle {
     justify-content: center;
     text-align: center;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
   }
 
   .reportHeaderTitle h3 {
-    font-size: 28px;
+    font-size: 24px;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-wrap: break-word;
   }
 
   .reportHeaderActions {
     justify-content: center;
     gap: 12px;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
   }
 
   .reportHeaderActions :global(.dropdown-toggle),
@@ -398,9 +525,89 @@
     padding: 10px 16px !important;
     font-size: 13px !important;
   }
+
+  .componentContainer,
+  .componentBorder {
+    padding: 15px;
+    margin: 0 0 15px;
+    overflow-x: auto;
+    max-width: 100%;
+  }
+
+  .totalOrgChartTitle p {
+    font-size: 1.4rem !important;
+    margin: 8px;
+  }
+
+  .volunteerStatusGrid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem;
+  }
+
+  /* Ensure all charts and content scale properly */
+  .componentContainer :global(.recharts-wrapper),
+  .componentBorder :global(.recharts-wrapper) {
+    max-width: 100% !important;
+    overflow: visible !important;
+  }
+
+  .componentContainer :global(canvas),
+  .componentBorder :global(canvas) {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  /* Ensure Row and Col don't cause overflow */
+  .containerTotalOrgWrapper :global(.row) {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .containerTotalOrgWrapper :global(.col),
+  .containerTotalOrgWrapper :global([class*='col-']) {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Fix AccordianWrapper margins on mobile */
+  :global(.Collapsible) {
+    margin: 10px 0 !important;
+  }
+
+  :global(.Collapsible__contentInner) {
+    padding: 10px 5px !important;
+  }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
+  .containerTotalOrgWrapper {
+    padding: 8px !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  .containerTotalOrgWrapper:global(.container-fluid) {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+
+  .totalOrgReportHeaderRow {
+    padding: 10px 4px !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .reportHeaderTitle h3 {
+    font-size: 20px;
+  }
+
   .reportHeaderActions {
     flex-direction: column;
     width: 100%;
@@ -410,5 +617,57 @@
   .reportHeaderActions button {
     width: 100% !important;
     min-width: unset !important;
+  }
+
+  .componentContainer,
+  .componentBorder {
+    padding: 12px;
+    margin: 0 0 12px;
+  }
+
+  .totalOrgChartTitle p {
+    font-size: 1.2rem !important;
+    margin: 6px;
+  }
+
+  /* Ensure all charts and content scale properly on small screens */
+  .componentContainer :global(.recharts-wrapper),
+  .componentBorder :global(.recharts-wrapper) {
+    max-width: 100% !important;
+    overflow: visible !important;
+  }
+
+  .componentContainer :global(canvas),
+  .componentBorder :global(canvas) {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  :global(.row) {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  .containerTotalOrgWrapper :global(.col),
+  .containerTotalOrgWrapper :global([class*='col-']) {
+    padding-left: 4px !important;
+    padding-right: 4px !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Fix AccordianWrapper margins on small mobile */
+  :global(.Collapsible) {
+    margin: 8px 0 !important;
+  }
+
+  :global(.Collapsible__contentInner) {
+    padding: 8px 4px !important;
+  }
+
+  :global(.Collapsible__trigger) {
+    font-size: 24px !important;
+    padding-left: 1% !important;
   }
 }

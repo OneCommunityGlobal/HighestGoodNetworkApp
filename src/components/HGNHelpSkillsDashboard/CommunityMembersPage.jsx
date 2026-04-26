@@ -1,43 +1,50 @@
-import React, { useState, useMemo } from 'react';
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import Accordion from './Accordion';
+import { PreferenceFilterButtons, SkillFilterButtons } from './FilterButtons';
 import RankedUserList from './RankedUserList';
-
-const availableSkills = ['React', 'Redux', 'HTML', 'CSS', 'MongoDB', 'Database', 'Agile'];
+import SearchBar from './SearchBar';
+import styles from './style/CommunityMembersPage.module.css';
 
 function CommunityMembersPage() {
   const [selectedSkills, setSelectedSkills] = useState([]);
+  const [selectedPreferences, setSelectedPreferences] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const darkMode = useSelector(state => state.theme.darkMode);
 
-  const handleCheckboxChange = skill => {
-    setSelectedSkills(prev =>
-      prev.includes(skill) ? prev.filter(s => s !== skill) : [...prev, skill],
-    );
-  };
-
-  // EFFECTIVE SKILLS = what we pass to RankedUserList
-  const effectiveSkills = useMemo(() => {
-    return selectedSkills.length > 0 ? selectedSkills : availableSkills;
-  }, [selectedSkills]);
+  const hasFilters =
+    selectedSkills.length > 0 || selectedPreferences.length > 0 || searchQuery.trim().length > 0;
 
   return (
-    <div>
-      <h1>Community Members</h1>
+    <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
+      <h1 className={`${styles.title}`}>Community Member Filters</h1>
 
-      <div style={{ marginBottom: 16 }}>
-        <strong>Filter by skills:</strong>
-        <div style={{ display: 'flex', gap: 10, marginTop: 8, flexWrap: 'wrap' }}>
-          {availableSkills.map(skill => (
-            <label key={skill} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <input
-                type="checkbox"
-                checked={selectedSkills.includes(skill)}
-                onChange={() => handleCheckboxChange(skill)}
-              />
-              {skill}
-            </label>
-          ))}
-        </div>
+      <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} darkMode={darkMode} />
+
+      <Accordion title="Filter by Skills" defaultOpen darkMode={darkMode}>
+        <SkillFilterButtons selectedSkills={selectedSkills} setSelectedSkills={setSelectedSkills} />
+      </Accordion>
+
+      <Accordion title="Filter by Preferences" darkMode={darkMode}>
+        <PreferenceFilterButtons
+          selectedPreferences={selectedPreferences}
+          setSelectedPreferences={setSelectedPreferences}
+        />
+      </Accordion>
+
+      <div>
+        {hasFilters ? (
+          <RankedUserList
+            selectedSkills={selectedSkills}
+            selectedPreferences={selectedPreferences}
+            searchQuery={searchQuery.trim()}
+          />
+        ) : (
+          <p className={`${styles.message}`}>
+            Search or select skills and preferences above to see filtered members.
+          </p>
+        )}
       </div>
-
-      <RankedUserList selectedSkills={effectiveSkills} />
     </div>
   );
 }

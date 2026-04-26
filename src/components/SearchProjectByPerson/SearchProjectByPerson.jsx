@@ -6,6 +6,8 @@ export default function SearchProjectByPerson({
   suggestions,
   onSelectSuggestion,
   searchMode,
+  handleFetchArchivedProjects,
+  showArchived,
 }) {
   const [inputValue, setInputValue] = useState(''); // Keep track of input value
   const [showSuggestions, setShowSuggestions] = useState(false); // Control whether suggestions are shown
