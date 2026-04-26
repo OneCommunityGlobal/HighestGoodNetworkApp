@@ -6,11 +6,21 @@
 }
 
 .fileUploadInput {
-  display: none;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
-.fileUploadLabel {
+/* Container with dotted border */
+.dragDropContainer {
   height: 100%;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -20,10 +30,63 @@
   border-style: dashed;
   border-color: #cbd5e1;
   background-color: #ffffff;
+  color: #374151;
+  transition: all 0.2s ease;
 }
 
-.dragActive {
+.dragDropContainer.darkMode {
+  background-color: #2d2d2d;
+  border-color: #4b5563;
+  color: #e5e7eb;
+}
+
+.dragDropContainer:hover {
+  border-color: #0d6efd;
   background-color: #f8fafc;
+}
+
+.dragDropContainer.darkMode:hover {
+  border-color: #0dcaf0;
+  background-color: #374151;
+}
+
+.dragDropContainer.dragActive {
+  background-color: #f8fafc;
+  border-color: #0d6efd;
+}
+
+.dragDropContainer.darkMode.dragActive {
+  background-color: #374151;
+  border-color: #0dcaf0;
+}
+
+/* Button inside the container */
+.uploadButton {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  outline: none;
+  padding: 0;
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+.uploadButton:focus {
+  outline: 2px solid #0d6efd;
+  outline-offset: 2px;
+  border-radius: 1rem;
+}
+
+.dragDropContainer.darkMode .uploadButton:focus {
+  outline: 2px solid #0dcaf0;
+}
+
+.uploadButton:hover {
+  background: transparent;
 }
 
 .dragFileElement {
@@ -35,22 +98,81 @@
   right: 0;
   bottom: 0;
   left: 0;
+  background-color: rgba(248, 250, 252, 0.5);
+  pointer-events: none;
 }
 
-.uploadButton {
-  cursor: pointer;
-  padding: 0.25rem;
-  font-size: 1rem;
-  border: none;
-  font-family: 'Oswald', sans-serif;
-  background-color: transparent;
-}
-
-.uploadButton:hover {
-  text-decoration-line: underline;
+.dragFileElementDark {
+  background-color: rgba(55, 65, 81, 0.5);
 }
 
 .fileUploadIcon {
   font-size: 2rem;
   margin-bottom: 8px;
+  color: inherit;
+}
+
+.browseLink {
+  color: #0d6efd;
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: 600;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+.browseLink:hover,
+.browseLink:focus {
+  color: #0a58ca;
+  text-decoration: none;
+  outline: 2px solid #0d6efd;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.dragDropContainer.darkMode .browseLink {
+  color: #0dcaf0;
+}
+
+.dragDropContainer.darkMode .browseLink:hover,
+.dragDropContainer.darkMode .browseLink:focus {
+  color: #0ba5d8;
+  outline: 2px solid #0dcaf0;
+}
+
+.uploadIndicator {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #6c757d;
+  font-size: 0.875rem;
+}
+
+.dragDropContainer.darkMode .uploadIndicator {
+  color: #adb5bd;
+}
+
+/* Focus styles for better accessibility */
+.uploadButton:focus-visible {
+  outline: 2px solid #0d6efd;
+  outline-offset: 2px;
+  border-radius: 1rem;
+}
+
+.dragDropContainer.darkMode .uploadButton:focus-visible {
+  outline: 2px solid #0dcaf0;
+}
+
+/* Dark mode support for file upload icon */
+:global(.dark-mode) .fileUploadIcon {
+  color: #e5e7eb;
+}
+
+/* For form labels in dark mode */
+:global(.dark-mode) :global(.form-label) {
+  color: #ffffff !important;
 }

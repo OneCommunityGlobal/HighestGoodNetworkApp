@@ -53,22 +53,22 @@
   .container {
     padding: 10px;
   }
-  
+
   .chart {
     height: 300px;
   }
 }
 
 .darkContainer {
-  background: #1C2541;
+  background: #1c2541;
   color: #fff;
 }
 
 .darkChartCard {
-  background: #243B5A;
-  border-color: #3A506B;
+  background: #243b5a;
+  border-color: #3a506b;
   color: #fff;
-  box-shadow: 0 4px 16px #1C1C1C;
+  box-shadow: 0 4px 16px #1c1c1c;
 }
 
 .chartTitle {
