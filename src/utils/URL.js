@@ -246,11 +246,11 @@ export const ENDPOINTS = {
     if (startDate) params.append('startDate', startDate);
     if (endDate) params.append('endDate', endDate);
     if (groupBy) params.append('groupBy', groupBy);
-    
+
     const queryString = params.toString();
     return queryString ? `${url}?${queryString}` : url;
   },
-  
+
   INJURY_PROJECTS: () => `${APIEndpoint}/injuries/projects`,
 
   PRESETS: () => `${APIEndpoint}/rolePreset`,
@@ -301,14 +301,14 @@ export const ENDPOINTS = {
   PERMISSION_CHANGE_LOGS: userId => `${APIEndpoint}/permissionChangeLogs/${userId}`,
 
   GET_TOTAL_COUNTRY_COUNT: () => `${APIEndpoint}/getTotalCountryCount`,
-  
+
   ANALYTICS_AVAILABLE_ROLES: () => `${APIEndpoint}/analytics/roles`,
 
   // Country Application Map Chart endpoints
   COUNTRY_APPLICATION_DATA: (params = {}) => {
     let url = `${APIEndpoint}/analytics/country-applications`;
     const queryParams = new URLSearchParams();
-    
+
     if (params.roles && params.roles.length > 0) {
       queryParams.append('roles', params.roles.join(','));
     }
@@ -325,7 +325,7 @@ export const ENDPOINTS = {
     if (params.customDateRange) {
       queryParams.append('customDateRange', 'true');
     }
-    
+
     const queryString = queryParams.toString();
     return queryString ? `${url}?${queryString}` : url;
   },

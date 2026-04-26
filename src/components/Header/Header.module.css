@@ -1,3 +1,5 @@
+/* stylelint-disable no-descending-specificity, selector-type-no-unknown */
+
 /* General Styling */
 .headerWrapper {
   height: fit-content;
@@ -71,11 +73,20 @@
   }
 }
 
+/*
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 12px;
+} */
+
 /* Timer Message Section */
 .timer-message-section {
   display: flex;
   align-items: center;
   justify-content: space-between;
+
+  /* flex-wrap: wrap; */
   width: 100%;
   gap: 1rem;
 }
@@ -95,7 +106,8 @@
   margin: 0;
 }
 
-.headerCard {
+.headerCard { /* Remove left margin */ /* Remove right margin */
+  /* Use full viewport width */
   margin-left: 0;
   margin-right: 0;
   width: 100vw;
@@ -103,12 +115,16 @@
   box-sizing: border-box;
   overflow: hidden;
   position: relative;
+
+  /* Ensure card extends to full width */
   left: 0;
   right: 0;
 }
 
 .cardWrapper {
   padding: 1rem 0;
+
+  /* Ensure wrapper uses full width */
   width: 100%;
   margin: 0;
   box-sizing: border-box;
@@ -204,6 +220,12 @@
   }
 }
 
+@media screen and (width <= 1199px) {
+  .menuContainer {
+    align-items: start;
+    flex-direction: column !important;
+
+    /* width: 100%; */
 .navbarToggler {
   display: none;
   margin-left: 1rem;
@@ -239,9 +261,6 @@
     transition: max-height 0.25s ease-in;
   }
 
-  .menuContainer {
-    align-items: start;
-    flex-direction: column !important;
     padding-left: 50px;
     max-height: 80vh;
     overflow-y: auto;
@@ -252,10 +271,12 @@
     border: none !important;
   }
 
-  .mobileDropdownText {
+  .mobileDropdownText{
     color: rgb(255 255 255 / 50%) !important;
   }
 
+  .mobileDropdownItem:hover{
+  .mobileDropdownText {
   .mobileDropdownItem:hover {
     background-color: #343a40 !important;
     color: rgb(255 255 255 / 75%) !important;
@@ -349,6 +370,8 @@
   min-width: fit-content;
 }
 
+/* Responsive behavior - prevent icon overlap on smaller screens */
+
 /* max-width: 1200px */
 @media (width <= 1200px) {
   .left-section,
@@ -374,6 +397,8 @@
   }
 }
 
+/* Medium screens - better balance */
+
 /* max-width: 900px */
 @media (width <= 900px) {
   .center-section {
@@ -381,6 +406,8 @@
     font-size: 0.9rem;
   }
 }
+
+/* Mobile specific - stack vertically to prevent overlap */
 
 /* max-width: 768px */
 @media (width <= 768px) {
@@ -396,4 +423,7 @@
     width: 100% !important;
     justify-content: center !important;
   }
+}
+
+}}
 }

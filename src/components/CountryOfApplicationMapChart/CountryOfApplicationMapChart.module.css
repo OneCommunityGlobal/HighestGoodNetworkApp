@@ -229,20 +229,20 @@
   .container {
     padding: 15px;
   }
-  
+
   .title {
     font-size: 20px;
   }
-  
+
   .filters {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .filterGroup {
     min-width: auto;
   }
-  
+
   .mapContainer {
     margin: 10px 0 6px;
     gap: 8px;
@@ -254,12 +254,12 @@
     gap: 10px;
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  
+
   .legendScale {
     flex-wrap: wrap;
     justify-content: center;
   }
-  
+
   .legendItem {
     margin: 5px;
   }
@@ -269,15 +269,15 @@
   .container {
     padding: 10px;
   }
-  
+
   .title {
     font-size: 18px;
   }
-  
+
   .summaryStats {
     grid-template-columns: 1fr;
   }
-  
+
   .legendScale {
     gap: 10px;
   }
@@ -777,4 +777,3 @@
 .container.darkMode .statLabel {
   color: #a0aec0;
 }
-
