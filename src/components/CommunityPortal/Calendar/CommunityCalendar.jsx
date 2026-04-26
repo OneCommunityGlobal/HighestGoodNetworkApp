@@ -8,6 +8,7 @@ import CalendarActivitySection from './CalendarActivitySection';
 import styles from './CommunityCalendar.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClock, faLocationDot, faTag, faCircleCheck } from '@fortawesome/free-solid-svg-icons';
+import { toast } from 'react-toastify';
 
 const MOCK_EVENTS = [];
 
@@ -151,6 +152,94 @@ export default function CommunityCalendar() {
     });
   }, [selectedDate]);
 
+  const [registeredEventIds, setRegisteredEventIds] = useState(new Set());
+  const [isRegistering, setIsRegistering] = useState(false);
+
+  const closeEventModal = useCallback(() => {
+    setShowEventModal(false);
+    setSelectedEvent(null);
+  }, []);
+
+  const handleRegister = useCallback(async () => {
+    if (!selectedEvent) return;
+
+    if (registeredEventIds.has(selectedEvent.id)) {
+      toast.info(`You are already registered for "${selectedEvent.title}".`, {
+        position: 'top-right',
+        autoClose: 3000,
+      });
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `Register for "${
+        selectedEvent.title
+      }"?\n\nDate: ${selectedEvent.date.toDateString()}\nTime: ${selectedEvent.time}`,
+    );
+    if (!confirmed) return;
+
+    setIsRegistering(true);
+
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      setRegisteredEventIds(prev => {
+        const nextSet = new Set(prev);
+        nextSet.add(selectedEvent.id);
+        return nextSet;
+      });
+
+      toast.success(`✓ Registered for "${selectedEvent.title}"!`, {
+        position: 'top-right',
+        autoClose: 4000,
+      });
+
+      setTimeout(() => {
+        closeEventModal();
+      }, 500);
+    } catch (error) {
+      toast.error('Registration failed. Please try again.', {
+        position: 'top-right',
+        autoClose: 3000,
+      });
+    } finally {
+      setIsRegistering(false);
+    }
+  }, [selectedEvent, registeredEventIds, closeEventModal]);
+
+  const handleAddToCalendar = useCallback(() => {
+    if (!selectedEvent) return;
+
+    const timeMatch = selectedEvent.time.match(/^(\d{1,2}):(\d{2})\s?(AM|PM)$/);
+    const start = new Date(selectedEvent.date);
+
+    if (timeMatch) {
+      const hour = (Number(timeMatch[1]) % 12) + (timeMatch[3] === 'PM' ? 12 : 0);
+      start.setHours(hour, Number(timeMatch[2]), 0, 0);
+    }
+
+    const end = new Date(start);
+    end.setHours(end.getHours() + 1);
+
+    const formatDate = d =>
+      d
+        .toISOString()
+        .replace(/[-:.]/g, '')
+        .split('.')[0] + 'Z';
+
+    const url =
+      'https://www.google.com/calendar/render?action=TEMPLATE' +
+      `&text=${encodeURIComponent(selectedEvent.title)}` +
+      `&dates=${formatDate(start)}/${formatDate(end)}` +
+      `&details=${encodeURIComponent(selectedEvent.description)}` +
+      `&location=${encodeURIComponent(selectedEvent.location)}`;
+
+    const opened = window.open(url, '_blank', 'noopener,noreferrer');
+    if (!opened) {
+      toast.info('Please allow pop-ups to add this event to your calendar.');
+    }
+  }, [selectedEvent]);
+
   const handleDateSelect = useCallback(
     date => {
       setSelectedDate(date);
@@ -171,10 +260,16 @@ export default function CommunityCalendar() {
 
     setShowEventModal(true);
   }, []);
-  const closeEventModal = useCallback(() => {
-    setShowEventModal(false);
-    setSelectedEvent(null);
-  }, []);
+
+  const handleEventKeyPress = useCallback(
+    (e, event) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        handleEventClick(event);
+      }
+    },
+    [handleEventClick],
+  );
 
   // Close on ESC
   useEffect(() => {
@@ -766,8 +861,22 @@ export default function CommunityCalendar() {
             </div>
 
             <div className={styles.modalActions}>
-              <button className={styles.btnPrimary}>Register for Event</button>
-              <button className={styles.btnSecondary}>Add to Calendar</button>
+              <button
+                type="button"
+                className={styles.btnPrimary}
+                onClick={handleRegister}
+                disabled={isRegistering || registeredEventIds.has(selectedEvent?.id)}
+              >
+                {registeredEventIds.has(selectedEvent?.id)
+                  ? 'Already Registered'
+                  : isRegistering
+                  ? 'Registering...'
+                  : 'Register for Event'}
+              </button>
+
+              <button type="button" className={styles.btnSecondary} onClick={handleAddToCalendar}>
+                Add to Calendar
+              </button>
             </div>
           </div>
         </div>
