@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 // import 'react-calendar/dist/Calendar.css';
 import styles from './Register.module.css';
 import EventDescription from './EventDescription';
+import ShareAvailability from './ShareAvailability';
 
 function Register() {
   const { activityId } = useParams();
@@ -495,6 +496,11 @@ function Register() {
                   </span>
                 </p>
               </div>
+              <ShareAvailability
+                activity={activity}
+                availability={availability}
+                activityId={activityId}
+              />
             </div>
           </div>
 
