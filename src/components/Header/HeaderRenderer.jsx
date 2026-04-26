@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { getWeeklySummaries } from '~/actions/weeklySummaries';
 import { Header } from './Header';
+import KitchenHeader from '../KitchenInterfaces/KitchenHeader';
 import { getHeaderData } from '../../actions/authActions';
 import { getAllRoles } from '../../actions/role';
 import hasPermission from '../../utils/permissions';
@@ -14,7 +15,7 @@ export function HeaderRenderer(props) {
   const isCommunityPortal = location.pathname.startsWith('/communityportal');
   const isEducationEvaluation = location.pathname.startsWith('/educationportal/evaluation-results');
 
-  // Hide header for education portal evaluation results page
+  // Hide header or education portal evaluation results page
   if (isEducationEvaluation) {
     return null;
   }
