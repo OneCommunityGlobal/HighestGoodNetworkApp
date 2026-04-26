@@ -1,8 +1,9 @@
+/* stylelint-disable no-descending-specificity */
 .pie-chart-wrapper {
-    display: flex; 
+    display: flex;
     align-items: center;
     justify-content: flex-start;
-    
+
     /* overflow: hidden; */
   }
 
@@ -23,7 +24,7 @@
     margin-right: 32px;
     height: 100%;
   }
-  
+
   .pie-chart-legend-header {
     display: flex;
     justify-content: space-between;
@@ -31,7 +32,7 @@
     font-weight: 500;
     padding-bottom: 8px;
   }
-  
+
   .pie-chart-legend-item {
     position: relative;
     margin: 12px 0;
@@ -40,7 +41,7 @@
     text-align: start;
     font-size: 14px;
   }
-  
+
   .data-legend-color {
     position: absolute;
     top: 2px;
@@ -52,24 +53,24 @@
     margin-right: 12px;
     border-radius: 50%;
   }
-  
+
   .data-legend-info {
     width: 240px;
     display: flex;
     justify-content: space-between;
     color: rgb(0 0 0 / 50%);
   }
-  
+
   .data-legend-info-part:not(:last-child) {
     margin-right: 24px;
   }
-  
+
   @media (width <= 670px) {
     .pie-chart-wrapper {
       flex-direction: column;
     }
   }
-  
+
   div.tooltip-donut {
     position: absolute;
     text-align: center;
@@ -82,11 +83,11 @@
     overflow-wrap: break-word;
     white-space: normal;
   }
-  
+
   div.pie-chart-legend-container {
     min-width: 150px;
   }
-  
+
   /* Toggle Switch */
   .switch {
     position: relative;
@@ -94,13 +95,13 @@
     width: 34px;
     height: 20px;
   }
-  
+
   .switch input {
     opacity: 0;
     width: 0;
     height: 0;
   }
-  
+
   .slider {
     position: absolute;
     cursor: pointer;
@@ -109,19 +110,27 @@
     transition: 0.4s;
     border-radius: 34px;
   }
-  
+
   .slider::before {
-  position: absolute;
-  content: "";
-  height: 14px;
-  width: 14px;
-  left: 3px;
-  bottom: 3px;
-  background-color: white;
-  transition: 0.4s;
-  border-radius: 50%;
-}
-  
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background-color: rgb(15 15 15);
+    transition: 0.4s;
+    border-radius: 50%;
+  }
+
+  input:checked + .slider {
+    background-color: #2196F3;
+  }
+
+  input:checked + .slider::before {
+    transform: translateX(14px);
+  }
+
   /* Optional: Dark mode adjustments */
   .text-light .slider {
     background-color: #555;
@@ -131,26 +140,18 @@
     background-color: #fff;
   }
 
-  input:checked + .slider {
-    background-color: #2196f3;
-  }
-
-  input:checked + .slider::before {
-    transform: translateX(14px);
-  }
-  
   .pie-chart-legend-container {
-    margin-top: 20px; 
+    margin-top: 20px;
     height: 100%;
     width: 60%;
-    
+
   }
-  
+
   .pie-chart-legend-table-wrapper {
     width: 100%;
     overflow-y: auto;
   }
-  
+
   .pie-chart-legend-table {
     width: 100%;
     table-layout: auto;
@@ -162,8 +163,8 @@
     padding: 8px;
     text-align: left;
   }
-  
- 
+
+
   .pie-chart-legend-table th {
     font-weight: bold;
     background: none;
@@ -187,8 +188,8 @@
     text-align: left;
     color:rgb(236 233 233)
   }
-  
- 
+
+
   .pie-chart-legend-table-dark th {
     font-weight: bold;
     background: none;
@@ -197,7 +198,7 @@
   }
 
   .pie-chart-legend-table-dark tr{
-    background-color: #1f2a40; 
+    background-color: #1f2a40;
     color: white;
   }
 
@@ -212,7 +213,7 @@
     font-weight: bold;
     margin-top: 10px;
   }
-  
+
   .data-total-value {
   font-weight: bold;
   margin-top: 10px;
@@ -225,7 +226,7 @@
 
   @media (width <= 671px) {
     .pie-chart-legend-table-wrapper {
-      max-height: 200px; 
+      max-height: 200px;
     }
   }
 
