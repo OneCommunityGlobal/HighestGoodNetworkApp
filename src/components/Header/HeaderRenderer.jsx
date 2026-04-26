@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { getWeeklySummaries } from '~/actions/weeklySummaries';
 import { Header } from './Header';
+import KitchenHeader from '../KitchenInterfaces/KitchenHeader';
 import { getHeaderData } from '../../actions/authActions';
 import { getAllRoles } from '../../actions/role';
 import hasPermission from '../../utils/permissions';
