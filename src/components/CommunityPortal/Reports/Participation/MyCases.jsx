@@ -12,45 +12,56 @@ function MyCases() {
 
   const isExporting =
     typeof document !== 'undefined' && document.documentElement?.dataset?.exporting === 'true'; // Sonar: prefer .dataset
-
   const filterEvents = events => {
     const now = new Date();
+    // Create a clean "today" at midnight to avoid hour/minute comparison issues
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-    const nowTime = now.getTime();
-
+    // First, only take events that haven't happened yet (Today or later)
     const upcomingEvents = events.filter(event => {
-      const eventTime = new Date(event.eventDate).getTime();
-      return eventTime >= nowTime;
+      const eventDate = new Date(event.eventDate);
+      return eventDate >= startOfToday;
     });
 
     if (filter === 'today') {
       return upcomingEvents.filter(event => {
-        const eventDate = new Date(event.eventDate);
-        return (
-          eventDate.getDate() === now.getDate() &&
-          eventDate.getMonth() === now.getMonth() &&
-          eventDate.getFullYear() === now.getFullYear()
-        );
+        const eDate = new Date(event.eventDate);
+        return eDate.toDateString() === startOfToday.toDateString();
       });
     }
+
     if (filter === 'thisWeek') {
-      const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
+      // 1. Calculate days to subtract to get to Monday
+      // (now.getDay() || 7) treats Sun as 7 instead of 0
+      // Week starts from Monday(0) and ends on Sunday(7)
+      const dayOfWeek = now.getDay();
+      const diffToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+
+      const startOfWeek = new Date(startOfToday);
+      startOfWeek.setDate(startOfToday.getDate() - diffToMonday);
+
+      // 2. Calculate Sunday (Monday + 6 days)
       const endOfWeek = new Date(startOfWeek);
-      endOfWeek.setDate(endOfWeek.getDate() + 6);
+      endOfWeek.setDate(startOfWeek.getDate() + 6);
+      endOfWeek.setHours(23, 59, 59, 999); // End of Sunday
+
       return upcomingEvents.filter(event => {
-        const eventDate = new Date(event.eventTime);
-        return eventDate >= startOfWeek && eventDate <= endOfWeek;
+        const eDate = new Date(event.eventDate);
+        // Because we use 'upcomingEvents', this naturally returns [Today -> Sunday]
+        return eDate >= startOfWeek && eDate <= endOfWeek;
       });
     }
+
     if (filter === 'thisMonth') {
-      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-      const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+
       return upcomingEvents.filter(event => {
-        const eventDate = new Date(event.eventTime);
-        return eventDate >= startOfMonth && eventDate <= endOfMonth;
+        const eDate = new Date(event.eventDate);
+        return eDate <= endOfMonth;
       });
     }
-    return upcomingEvents;
+
+    return upcomingEvents; // 'all' returns all future events
   };
 
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -61,10 +72,23 @@ function MyCases() {
   // Sonar: extract nested ternary into independent statement
   let visibleEvents = filteredEvents;
   if (!isExporting) {
-    visibleEvents = expanded ? filteredEvents.slice(0, 40) : filteredEvents.slice(0, 10);
+    // Limt to 10 events by default, but show all if when user clicks "More" or when exporting
+    visibleEvents = expanded
+      ? filteredEvents.slice(0, filteredEvents.length)
+      : filteredEvents.slice(0, 10);
   }
 
   const placeholderAvatar = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+
+  const isEventToday = dateString => {
+    const eventDate = new Date(dateString);
+    const now = new Date();
+    return (
+      eventDate.getDate() === now.getDate() &&
+      eventDate.getMonth() === now.getMonth() &&
+      eventDate.getFullYear() === now.getFullYear()
+    );
+  };
 
   const renderCardView = () => (
     <div
@@ -72,7 +96,7 @@ function MyCases() {
         expanded || isExporting ? styles.expanded : ''
       }`}
     >
-      {visibleEvents.map(event => (
+      {visibleEvents?.map(event => (
         <div
           className={`case-card-global ${styles.caseCard} ${darkMode ? styles.caseCardDark : ''}`}
           key={event.id}
@@ -83,9 +107,10 @@ function MyCases() {
           <span className={`${styles.eventTime} ${darkMode ? styles.eventTimeDark : ''}`}>
             {event.eventTime}
           </span>
-          <div className={`${styles.eventName} ${darkMode ? styles.eventNameDark : ''}`}>
+          <span className={`${styles.eventName} ${darkMode ? styles.eventNameDark : ''}`}>
+            {isEventToday(event.eventDate) ? "Today's " : ''}
             {event.eventName}
-          </div>
+          </span>
           <div className={`${styles.attendeesInfo} ${darkMode ? styles.attendeesInfoDark : ''}`}>
             <div className={styles.avatars}>
               <img
@@ -112,7 +137,7 @@ function MyCases() {
         expanded || isExporting ? styles.expanded : ''
       }`}
     >
-      {visibleEvents.map(event => (
+      {visibleEvents?.map(event => (
         <li
           className={`case-list-item-global ${styles.caseListItem} ${
             darkMode ? styles.caseListItemDark : ''
@@ -181,6 +206,7 @@ function MyCases() {
               <option value="thisMonth">This Month</option>
             </select>
           </div>
+
           <button
             type="button"
             className={`${styles.createNew} ${darkMode ? styles.createNewDarkMode : ''}`}
