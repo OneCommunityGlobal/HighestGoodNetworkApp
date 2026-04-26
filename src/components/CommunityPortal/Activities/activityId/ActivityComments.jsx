@@ -300,7 +300,7 @@ function ActivityComments() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [hasMoreComments, setHasMoreComments] = useState(true);
-  const [totalComments, setTotalComments] = useState(20);
+  const [totalComments, setTotalComments] = useState(5); // Start with initial 5
   const commentsPerPage = 5;
 
   // Reply states
@@ -378,11 +378,12 @@ function ActivityComments() {
       usersPool[(startIdx + 1) % usersPool.length],
     ];
 
-    // Generate 2 comments for pagination
+    // Generate 2 comments for pagination - use unique IDs
     const baseCommentNum = 6; // Start after initial 5 comments
+    const uniqueOffset = (page - 1) * 1000; // Ensure unique IDs per page
     const additionalComments = [
       {
-        id: 100 + page * 10 + 1,
+        id: uniqueOffset + (page * 2 - 1),
         name: pageUsers[0].name,
         profilePic: pageUsers[0].profilePic,
         createdAt: new Date(Date.now() - (page + 5) * 60 * 60 * 1000),
@@ -394,7 +395,7 @@ function ActivityComments() {
         replies: [],
       },
       {
-        id: 100 + page * 10 + 2,
+        id: uniqueOffset + page * 2,
         name: pageUsers[1].name,
         profilePic: pageUsers[1].profilePic,
         createdAt: new Date(Date.now() - (page + 6) * 60 * 60 * 1000),
@@ -410,7 +411,7 @@ function ActivityComments() {
     return {
       comments: additionalComments,
       hasMore: page < 10,
-      total: 20,
+      total: baseCommentNum + (page - 1) * 2 + 2, // Accurate cumulative total
     };
   };
 
@@ -423,10 +424,21 @@ function ActivityComments() {
       const nextPage = currentPage + 1;
       const result = await fetchMoreComments(nextPage);
 
-      setComments(prevComments => [...prevComments, ...result.comments]);
-      setCurrentPage(nextPage);
-      setHasMoreComments(result.hasMore);
-      setTotalComments(result.total);
+      // Filter out duplicates by ID before appending
+      const existingIds = new Set(comments.map(c => c.id));
+      const newComments = result.comments.filter(c => !existingIds.has(c.id));
+
+      // Only append if there are genuinely new comments
+      if (newComments.length > 0) {
+        setComments(prevComments => [...prevComments, ...newComments]);
+        setCurrentPage(nextPage);
+        setHasMoreComments(result.hasMore);
+        // Accumulate total comments rather than replacing
+        setTotalComments(prevTotal => prevTotal + newComments.length);
+      } else {
+        // No new comments - we've reached the end
+        setHasMoreComments(false);
+      }
     } catch (error) {
       // console.error('Error loading more comments:', error);
       // In a real app, you might show an error message to the user
