@@ -547,8 +547,12 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Responsive Design */
@@ -556,44 +560,44 @@
   .tasksHeader {
     padding: 1rem;
   }
-  
+
   .headerContent {
     flex-direction: column;
     gap: 1rem;
     align-items: flex-start;
   }
-  
+
   .filterControls {
     flex-direction: column;
     gap: 0.75rem;
     align-items: stretch;
   }
-  
+
   .taskHeader {
     flex-direction: column;
     gap: 1rem;
     align-items: stretch;
   }
-  
+
   .taskInfo {
     gap: 0.75rem;
   }
-  
+
   .taskSummary {
     justify-content: space-between;
     gap: 1rem;
   }
-  
+
   .taskDetails {
     padding: 1rem;
   }
-  
+
   .rubricItem {
     flex-direction: column;
     align-items: stretch;
     gap: 0.25rem;
   }
-  
+
   .rubricCriteria {
     min-width: auto;
   }
@@ -605,11 +609,11 @@
     align-items: flex-start;
     gap: 0.5rem;
   }
-  
+
   .scoreDisplay {
     min-width: auto;
   }
-  
+
   .statusSection {
     min-width: auto;
     align-items: flex-start;

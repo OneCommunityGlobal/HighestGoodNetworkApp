@@ -1,0 +1,329 @@
+/* src/components/InjuriesAnalytics/InjuriesDonutChart.module.css */
+
+.full-screen-dark {
+  background-color: #1b2a41; /* Oxford Blue */
+  color: #e0e0e0;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* Chart card */
+.injuries-donut-chart {
+  padding: 24px;
+  background: #fff;
+  border-radius: 12px;
+  margin: 20px auto;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  max-width: 900px;
+  position: relative;
+}
+
+.dark {
+  background: #1c2541; /* Space Cadet */
+  color: #e0e0e0;
+  border: none;
+}
+
+/* Title */
+.title {
+  text-align: center;
+  margin-bottom: 24px;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #000000;
+}
+
+.dark .title {
+  color: #e0e0e0;
+}
+
+/* Filters section */
+.filters {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  margin-bottom: 24px;
+  align-items: flex-end;
+}
+
+.filter-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 200px;
+}
+
+/* Filter labels */
+.filter-item label {
+  font-weight: 600;
+  color: #000000;
+  font-size: 0.9rem;
+}
+
+.dark .filter-item label {
+  color: #e0e0e0;
+}
+
+/* Date picker styling */
+.filter-item :global(.react-datepicker-wrapper) {
+  width: 100%;
+}
+
+.filter-item :global(.react-datepicker__input-container) input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.dark .filter-item :global(.react-datepicker__input-container) input {
+  background-color: #2a3552;
+  border: 1px solid #444;
+  color: #e0e0e0;
+}
+
+.dark .filter-item :global(.react-datepicker__input-container) input::placeholder {
+  color: #aaa;
+}
+
+/* Reset button */
+.reset-btn {
+  padding: 8px 20px;
+  border: 1px solid #ccc;
+  background-color: #f8f9fa;
+  color: #000000;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  height: fit-content;
+  margin-bottom: 8px;
+}
+
+.reset-btn:hover {
+  background-color: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.dark .reset-btn {
+  background-color: #3A506B;
+  color: #e0e0e0;
+  border: 1px solid #555;
+}
+
+.dark .reset-btn:hover {
+  background-color: #4c688a;
+}
+
+/* Chart container */
+.chart-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 0;
+}
+
+.total-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 15px;
+  background-color: #f8f9fa;
+  padding: 12px 24px;
+  border-radius: 8px;
+  border: 1px solid #eee;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.dark .total-summary {
+  background-color: #2a3552;
+  border-color: #3d4b6e;
+}
+
+.total-count {
+  font-size: 1.8rem; /* Slightly smaller for mobile */
+  font-weight: 800;
+  color: #007bff;
+  line-height: 1;
+}
+
+.total-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+/* Adjust title for small screens */
+@media (max-width: 480px) {
+  .title {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+  }
+  
+  .total-count {
+    font-size: 1.5rem;
+  }
+}
+
+.loading {
+  text-align: center;
+  padding: 60px 20px;
+  min-height: 400px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loadingSpinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.dark .loadingSpinner {
+  border: 4px solid #2a3552;
+  border-top: 4px solid #007bff;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.dark .loading {
+  color: #e0e0e0;
+}
+
+/* Empty and error states */
+.empty,
+.error {
+  text-align: center;
+  padding: 60px 20px;
+  font-size: 1rem;
+  color: #666;
+}
+
+.dark .empty,
+.dark .error {
+  color: #e0e0e0;
+}
+
+.error {
+  background-color: #ffe6e6;
+  border: 1px solid #ffcccc;
+  border-radius: 6px;
+  margin: 20px 0;
+}
+
+.dark .error {
+  background-color: #2a1c1c;
+  border: 1px solid #5c3a3a;
+  color: #e0e0e0;
+}
+
+.retry-btn {
+  margin-left: 10px;
+  padding: 4px 12px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Label text styling for consistency */
+.label-text {
+  font-weight: 600;
+  color: #000000;
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+}
+
+.dark .label-text {
+  color: #e0e0e0;
+}
+
+/* Screen reader only class for accessibility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* React Select dark mode styles */
+.dark :global(.injuries-chart__select__control) {
+  background-color: #2a3552 !important;
+  border: 1px solid #444 !important;
+}
+
+.dark :global(.injuries-chart__select__single-value) {
+  color: #e0e0e0 !important;
+}
+
+.dark :global(.injuries-chart__select__input) {
+  color: #e0e0e0 !important;
+}
+
+.dark :global(.injuries-chart__select__menu) {
+  background-color: #2a3552 !important;
+  border: 1px solid #444 !important;
+}
+
+.dark :global(.injuries-chart__select__option) {
+  background-color: #2a3552 !important;
+  color: #e0e0e0 !important;
+}
+
+.dark :global(.injuries-chart__select__option--is-focused) {
+  background-color: #3a506b !important;
+}
+
+.dark :global(.injuries-chart__select__option--is-selected) {
+  background-color: #1c2541 !important;
+}
+
+/* Group by toggle buttons */
+.toggle-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.toggle-btn {
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.toggle-btn.active {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.dark .toggle-btn {
+  background-color: #2a3552;
+  border: 1px solid #444;
+  color: #e0e0e0;
+}
+
+.dark .toggle-btn.active {
+  background-color: #007bff;
+  color: #e0e0e0;
+}

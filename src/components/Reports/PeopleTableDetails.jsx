@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import 'reactjs-popup/dist/index.css';
 import { Container } from 'reactstrap';
-import './PeopleTableDetails.css';
+import './PeopleTableDetails.module.css';
 import NewModal from '../common/NewModal';
 import TableFilter from './TableFilter/TableFilter';
 

@@ -36,7 +36,7 @@
 }
 
 .darkWordCloudBox {
-  background-color: #1C2541;
+  background-color: #1c2541;
   border-color: #225163;
 }
 
@@ -52,7 +52,7 @@
 }
 
 .darkFilterLabel {
-  color: #6C757D;
+  color: #6c757d;
 }
 
 .select {
@@ -71,7 +71,7 @@
 }
 
 .darkCloudContainer {
-  background-color: #3A506B;
+  background-color: #3a506b;
   box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.2);
 }
 
@@ -90,14 +90,14 @@
 }
 
 .darkNoData {
-  color: #6C757D;
+  color: #6c757d;
 }
 
 @media (max-width: 768px) {
   .wordCloudsContainer {
     flex-direction: column;
   }
-  
+
   .wordCloudBox {
     width: 100%;
   }

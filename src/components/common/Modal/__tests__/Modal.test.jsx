@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import { configureStore } from 'redux-mock-store';
 import '@testing-library/jest-dom';
 import ModalExample from '../Modal';
-
+import { vi } from 'vitest';
 const mockStore = configureStore([]);
 const initialState = {
   theme: { darkMode: false },
@@ -79,18 +79,35 @@ describe('ModalExample Component', () => {
     expect(screen.getByText('Add')).toBeDisabled();
   });
 
+  // it('calls setInactiveModal when "Set inactive" button is clicked', () => {
+  //   const setInactiveModalMock = vi.fn();
+  //   render(
+  //     <Provider store={store}>
+  //       <ModalExample
+  //         isOpen
+  //         closeModal={() => {}}
+  //         setInactiveModal={setInactiveModalMock}
+  //         setInactiveButton="Yes, hide it all"
+  //         modalTitle="Test Modal"
+  //       />
+  //     </Provider>,
+  //   );
+
+  //   fireEvent.click(screen.getByText(/yes, hide it all/i));
+  //   expect(setInactiveModalMock).toHaveBeenCalled();
+  // });
+  // updated test
   it('calls setInactiveModal when "Set inactive" button is clicked', () => {
     const setInactiveModalMock = vi.fn();
     render(
-      <Provider store={store}>
-        <ModalExample
-          isOpen
-          closeModal={() => {}}
-          setInactiveModal={setInactiveModalMock}
-          setInactiveButton="Yes, hide it all"
-          modalTitle="Test Modal"
-        />
-      </Provider>,
+      <ModalExample
+        isOpen={true}
+        closeModal={vi.fn()}
+        setInactiveModal={setInactiveModalMock}
+        hasInactiveBtn={true} // This is crucial!
+        setInactiveButton="Yes, hide it all"
+        modalTitle="Test Modal"
+      />,
     );
 
     fireEvent.click(screen.getByText(/yes, hide it all/i));

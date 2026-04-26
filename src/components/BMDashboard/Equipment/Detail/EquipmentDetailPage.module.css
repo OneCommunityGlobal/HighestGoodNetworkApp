@@ -5,6 +5,11 @@
 }
 
 .equipmentDetailPageHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
   margin-bottom: 1.5rem;
 }
 
@@ -70,40 +75,171 @@ button.descriptionItem_button:hover {
   margin-top: 1rem;
 }
 
-.valuePill {
-  background-color: #e2f3ea;
-  border: 1px solid #c1e0ce;
+.editBtn {
+  white-space: nowrap;
+}
+
+/* Editable section */
+
+.editableSection {
+  background-color: #f7faf9;
+  border: 1px solid #d4e4da;
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.editableField {
+  margin-bottom: 0.85rem;
+}
+
+.editableField:last-child {
+  margin-bottom: 0;
+}
+
+.editableFieldLabel {
+  font-weight: 600;
+  color: #27333c;
+  margin-bottom: 0.25rem;
+  display: block;
+}
+
+.editableFieldInput {
+  max-width: 340px;
   border-radius: 6px;
-  padding: 0.35rem 0.65rem;
-  min-height: 2rem;
+}
+
+/* Hide native select arrow to prevent double-chevron; use single custom arrow */
+.editableField select {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='%23495057'%3E%3Cpath d='M6 8L1 3h10z'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 0.75rem center !important;
+  padding-right: 2rem !important;
+}
+
+.radioGroup {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.15rem;
+}
+
+.radioLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 500;
+  cursor: pointer;
+  color: #27333c;
+}
+
+.fieldError {
+  color: #dc3545;
+  font-size: 0.8rem;
+  margin-top: 0.2rem;
+}
+
+/* Action buttons */
+
+.actionButtons {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.saveBtn {
+  min-width: 140px;
   display: inline-flex;
   align-items: center;
-  color: #1f3b2d;
-  font-weight: 600;
+  justify-content: center;
+  gap: 0.4rem;
 }
 
-.valuePillMuted {
-  background-color: #e7ecf2;
-  border-color: #cfd7e1;
-  color: #2f3a45;
+.cancelBtn {
+  min-width: 100px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :global(.EquipmentDetailPage__span) {
-    background-color: #2d3b4a;
-    border-color: #40536a;
-    color: #e7f0ff;
-  }
+/* Dark mode - use body class (matches app toggle) */
+:global(body.dark-mode) .equipmentDetailPage,
+:global(body.bm-dashboard-dark) .equipmentDetailPage {
+  color: #e0eaf5;
+}
 
-  .valuePill {
-    background-color: #2d3b4a;
-    border-color: #40536a;
-    color: #e7f0ff;
-  }
+:global(body.dark-mode) .equipmentDetailPageHeader h1,
+:global(body.bm-dashboard-dark) .equipmentDetailPageHeader h1 {
+  color: #ffffff;
+}
 
-  .valuePillMuted {
-    background-color: #374759;
-    border-color: #4a5d76;
-    color: #dce6f5;
-  }
+:global(body.dark-mode) :global(.EquipmentDetailPage__dashed_line),
+:global(body.bm-dashboard-dark) :global(.EquipmentDetailPage__dashed_line) {
+  border-color: #5a6d7a;
+}
+
+:global(body.dark-mode) button.descriptionItem_button,
+:global(body.bm-dashboard-dark) button.descriptionItem_button {
+  color: #74c0fc;
+}
+
+:global(body.dark-mode) .equipmentDetailPageContent,
+:global(body.bm-dashboard-dark) .equipmentDetailPageContent {
+  background-color: #1b2a41;
+}
+
+:global(body.dark-mode) :global(.EquipmentDetailPage__detail_item),
+:global(body.bm-dashboard-dark) :global(.EquipmentDetailPage__detail_item) {
+  color: #e0eaf5;
+}
+
+:global(body.dark-mode) :global(.EquipmentDetailPage__span),
+:global(body.bm-dashboard-dark) :global(.EquipmentDetailPage__span) {
+  background-color: #2d3b4a;
+  border-color: #40536a;
+  color: #e7f0ff;
+}
+
+:global(body.dark-mode) .editableSection,
+:global(body.bm-dashboard-dark) .editableSection {
+  background-color: #1e2a36;
+  border-color: #3a4d60;
+}
+
+:global(body.dark-mode) .editableFieldLabel,
+:global(body.bm-dashboard-dark) .editableFieldLabel {
+  color: #d0dbe8;
+}
+
+:global(body.dark-mode) .editableFieldInput,
+:global(body.bm-dashboard-dark) .editableFieldInput,
+:global(body.dark-mode) .editableField select,
+:global(body.bm-dashboard-dark) .editableField select {
+  background-color: #263240;
+  border-color: #3a4d60;
+  color: #e0eaf5;
+}
+
+/* Single arrow in dark mode - white chevron for visibility */
+:global(body.dark-mode) .editableField select,
+:global(body.bm-dashboard-dark) .editableField select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='%23e0eaf5'%3E%3Cpath d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+}
+
+:global(body.dark-mode) .radioLabel,
+:global(body.bm-dashboard-dark) .radioLabel {
+  color: #d0dbe8;
+}
+
+:global(body.dark-mode) .backBtn,
+:global(body.bm-dashboard-dark) .backBtn {
+  color: #e0eaf5 !important;
+  border-color: #e0eaf5 !important;
 }

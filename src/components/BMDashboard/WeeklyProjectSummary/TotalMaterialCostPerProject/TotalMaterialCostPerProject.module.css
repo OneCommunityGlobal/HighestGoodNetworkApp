@@ -9,7 +9,6 @@
   color: var(--text-color, #ffffff);
 }
 
-
 .selectValueContainerDark {
   background-color: var(--section-bg);
   border-color: var(--section-title-bg);
@@ -48,5 +47,3 @@
 .selectOptionHoverDark {
   background-color: var(--accent-color, #0d55b3);
 }
-
-

@@ -24,7 +24,7 @@
   --glass: rgba(96, 165, 250, 0.08);
   --surface-border: #23272a;
   --text: #f3f4f6;
-  --shadow: 0 6px 20px rgba(0,0,0,0.25);
+  --shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
 }
 
 .dark .container {
@@ -67,7 +67,7 @@
 
 .dark .editButton:hover,
 .dark .cancel:hover {
-  background: rgba(255,255,255,0.04);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .dark .danger {
@@ -103,7 +103,7 @@
 }
 
 .dark .checkItem:hover {
-  background: rgba(255,255,255,0.04);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .dark .fieldError {
@@ -112,7 +112,8 @@
 
 .container {
   padding: 1.25rem;
-  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    sans-serif;
   color: var(--text);
   background: var(--bg);
   max-width: var(--container-max);
@@ -255,8 +256,14 @@
 }
 
 @keyframes pop {
-  from { transform: translateY(8px) scale(.995); opacity: 0; }
-  to { transform: translateY(0) scale(1); opacity: 1; }
+  from {
+    transform: translateY(8px) scale(0.995);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
 }
 
 .head {
@@ -351,7 +358,7 @@
 }
 
 .checkItem:hover {
-  background: rgba(0,0,0,0.03);
+  background: rgba(0, 0, 0, 0.03);
 }
 
 .checkLabel {

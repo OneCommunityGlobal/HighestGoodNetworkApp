@@ -27,7 +27,7 @@
   flex-wrap: wrap;
   gap: 15px;
   font-size: 16px;
-  color: #333;
+  color: #1f2933;
   margin-bottom: 10px;
 }
 
@@ -36,20 +36,10 @@
   white-space: nowrap;
 }
 
-.teamInfo strong,
-.contactsInfo strong {
-  color: #869aa3;
-}
-
-.teamInfo .value,
-.contactsInfo .value {
-  font-weight: bold;
-}
-
 .value {
-  color: #666;
+  color: #111827;
   display: inline-block;
-  font-family: 'Arial', sans-serif;
+  font-family: Arial, sans-serif;
 }
 
 strong {
@@ -58,12 +48,22 @@ strong {
   font-size: 1rem;
 }
 
+.teamInfo strong,
+.contactsInfo strong {
+  color: #0f2f4a;
+}
+
+.teamInfo .value,
+.contactsInfo .value {
+  font-weight: bold;
+}
+
 .githubLink {
   color: #1a73e8;
   text-decoration: none;
   font-weight: 500;
   font-size: 1rem;
-  padding: 2px 2px;
+  padding: 2px;
   border-radius: 10px;
   transition: background-color 0.2s ease, color 0.2s ease; /* Smooth hover effect */
 }
@@ -75,19 +75,55 @@ strong {
 }
 
 /* Responsive adjustments */
-@media (max-width: 600px) {
+@media (width <= 600px) {
   .githubLink {
     padding: 1px 4px;
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .profileDetails {
     width: 100%;
   }
+
   .teamInfo,
   .contactsInfo {
     flex-direction: column;
     gap: 5px;
   }
+}
+
+:global(.dark-mode) .profileDetails h3 {
+  color: #fff;
+}
+
+:global(.dark-mode) .profileDetails h4 {
+  color: #fff;
+}
+
+:global(.dark-mode) .horizontalSeparator {
+  border-top-color: #444;
+}
+
+:global(.dark-mode) .teamInfo,
+:global(.dark-mode) .contactsInfo {
+  color: #ccc;
+}
+
+:global(.dark-mode) .teamInfo strong,
+:global(.dark-mode) .contactsInfo strong {
+  color: #a6bace;
+}
+
+:global(.dark-mode) .value {
+  color: #ccc;
+}
+
+:global(.dark-mode) .githubLink {
+  color: #8ab4f8;
+}
+
+:global(.dark-mode) .githubLink:hover {
+  background-color: #333;
+  color: #adc8ff;
 }

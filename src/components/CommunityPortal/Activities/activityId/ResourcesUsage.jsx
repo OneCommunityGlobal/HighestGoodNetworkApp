@@ -40,46 +40,40 @@ function ResourcesUsage() {
   ];
 
   return (
-    <div className={styles.resourcesUsage}>
-      <h2 className={styles.resourceTitle}>Resource Usage Monitoring</h2>
-
-      {/* header for column */}
-      <div className={`${styles.resourceRow} ${darkMode ? styles.headerDark : styles.header}`}>
-        <div className={styles.column}>S.No</div>
-        <div className={styles.column}>Name</div>
-        <div className={styles.column}>Materials</div>
-        <div className={styles.column}>Facilities</div>
-        <div className={styles.column}>Status</div>
-        <div className={styles.column}>Due Date</div>
-        <div className={styles.column}>Actions</div>
-      </div>
-
-      {/* data for each row */}
-      {data.map(row => (
-        <div key={row.sNo} className={styles.resourceRow}>
-          <div className={styles.column}>{row.sNo}</div>
-          <div className={styles.column}>{row.name}</div>
-          <div className={styles.column}>{row.materials}</div>
-          <div className={styles.column}>{row.facilities}</div>
-          <div className={`${styles.column} ${styles[`status${row.status.color}`]}`}>
-            {row.status.text}
-          </div>
-          <div className={styles.column}>{row.dueDate}</div>
-          <div className={`${styles.column} ${styles.actionColumn}`}>
-            <button
-              type="button"
-              className={`${darkMode ? styles.viewDetailsButtonDark : styles.viewDetails}`}
-            >
-              View Details
-            </button>
-          </div>
+    <div className={`${darkMode ? styles.darkMode : ''}`}>
+      <div className={`${styles.resourcesUsage}`}>
+        <h2 className={`${styles.resourceTitle}`}>Resource Usage Monitoring</h2>
+        <div className={`${styles.resourceRow}`}>
+          <div className={`${styles.column}`}>S.No</div>
+          <div className={`${styles.column}`}>Name</div>
+          <div className={`${styles.column}`}>Materials</div>
+          <div className={`${styles.column}`}>Facilities</div>
+          <div className={`${styles.column}`}>Status</div>
+          <div className={`${styles.column}`}>Due Date</div>
+          <div className={`${styles.column}`}>Actions</div>
         </div>
-      ))}
-
-      <div className={styles.tickBox}>
-        <label className={styles.tickLabel}>
-          <input type="checkbox" id="tickAll" /> Tick off All Selected Items
-        </label>
+        {data.map(row => (
+          <div key={row.sNo} className={`${styles.resourceRow}`}>
+            <div className={`${styles.column}`}>{row.sNo}</div>
+            <div className={`${styles.column}`}>{row.name}</div>
+            <div className={`${styles.column}`}>{row.materials}</div>
+            <div className={`${styles.column}`}>{row.facilities}</div>
+            <div className={`${styles.column} ${styles[`status${row.status.color}`]}`}>
+              {row.status.text}
+            </div>
+            <div className={`${styles.column}`}>{row.dueDate}</div>
+            <div className={`${styles.column} ${styles.actionColumn}`}>
+              <button type="button" className={`${styles.viewDetailsButton}`}>
+                View Details
+              </button>
+            </div>
+          </div>
+        ))}
+        <div className={`${styles.tickBox}`}>
+          <label className={`${styles.tickLabel}`}>
+            <input type="checkbox" id="tickAll" /> Tick off All Selected Items
+          </label>
+        </div>
       </div>
     </div>
   );

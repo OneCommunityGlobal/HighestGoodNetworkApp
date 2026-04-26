@@ -33,16 +33,64 @@
   color: #168dc0;
 }
 
-@media (max-width: 768px) {
+@media (width <= 1100px) {
   .skills {
     width: 100%;
-    flex-direction: column;
     align-items: center;
   }
 
   .skills button {
     width: 100%;
-    max-width: 80%;
-    font-size: 14x;
+    max-width: 460px;
   }
+}
+
+@media (width <= 768px) {
+  .skills {
+    width: 100%;
+    flex-flow: row wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .skills button {
+    width: auto;
+    max-width: none;
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+  
+  .skills h3 {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (width <= 480px) {
+  .skills {
+    gap: 6px;
+  }
+  
+  .skills button {
+    font-size: 13px;
+    padding: 6px 10px;
+  }
+}
+
+:global(.dark-mode) .skills h3 {
+  color: #fff;
+}
+
+:global(.dark-mode) .skills button {
+  background-color: #333;
+  color: #fff;
+}
+
+:global(.dark-mode) .skills button:hover {
+  background-color: #444;
+}
+
+:global(.dark-mode) .skills button.selected {
+  color: #8ab4f8;
 }

@@ -1,0 +1,26 @@
+.teamStatsBarChart {
+  position: relative;
+  width: 100%;
+  margin-top: 20px;
+  margin-bottom: 55px;
+}
+
+.teamStatsTitle {
+  text-align: center;
+  margin-bottom: 20px;
+  color: black;
+  position: relative;
+}
+
+.teamStatsValue {
+  font-weight: bolder;
+}
+
+.teamStatsBarChartSummary span {
+  font-weight: 700;
+}
+
+.teamStatsYAxis {
+  color: black;
+  font-weight: 500;
+}

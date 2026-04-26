@@ -1,0 +1,75 @@
+.metricCard {
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: 4px 0px 10px rgba(54, 54, 54, 0.1), -4px 0px 10px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  background-color: rgb(251, 252, 254);
+}
+.metricCardHeader {
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: 12px;
+  margin-left: 10px;
+}
+.metricCardBody {
+  margin-left: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 2rem;
+}
+.metricCardIcon {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  margin-right: 20px;
+  color: var(--icon-color)
+}
+.darkModeCard {
+  background-color: #032c50;
+  box-shadow: 4px 0px 10px rgba(0, 0, 0, 0.2), -4px 0px 10px rgba(0, 0, 0, 0.2);
+}
+.darkModeIcon svg{
+  fill: var(--icon-color);
+}
+
+@media screen and (max-width:480px) {
+  .metricCard {
+    max-height: 90px;
+    padding: 4px;
+  }
+  .metricCardBody {
+    font-size: 1.5rem;
+    justify-content: space-between;
+  }
+  .metricCardIcon{
+    font-size: 1.2rem;
+  }
+}
+@media screen and (max-width: 735px){
+  .metricCard {
+    max-height: 90px;
+    padding: 4px;
+  }
+  .metricCardBody {
+    font-size: 1.5rem;
+    justify-content: space-between;
+  }
+  .metricCardIcon{
+    font-size: 1.2rem;
+  }
+}
+@media screen and (max-width: 1024px) and (min-width: 736px){
+  .metricCard {
+    max-height: 100px;
+    padding: 8px;
+  }
+  .metricCardBody {
+    font-size: 1.8rem;
+    justify-content: space-between;
+  }
+  .metricCardIcon{
+    font-size: 1.5rem;
+  }
+}

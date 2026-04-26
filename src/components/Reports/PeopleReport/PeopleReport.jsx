@@ -488,11 +488,10 @@ class PeopleReport extends Component {
 
           <div xs="12" md="9" lg="9" className={`${styles.peopleReportLeft}`} >
             <ReportPage darkMode={darkMode}>
-              
-                <div className={`${styles.peopleReportTimeLogsWrapper} ${
-                  boxCount === 3 ? styles.threeBoxes : 
+              <div className={`${styles.peopleReportTimeLogsWrapper} ${
+                boxCount === 3 ? styles.threeBoxes :
                 ''}`}
-                >
+              >
 
                 <ReportPage.ReportBlock
                   firstColor="#ff5e82"

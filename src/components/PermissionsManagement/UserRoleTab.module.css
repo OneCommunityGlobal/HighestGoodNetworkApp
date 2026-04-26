@@ -1,0 +1,255 @@
+.userRoleTabContainer {
+  padding: 0.5rem 1rem;
+  width: 60%;
+  min-width: 400px;
+  margin: 0 auto;
+}
+
+@media only screen and (max-width: 1065px) {
+  .userRoleTabContainer {
+    width: 100%;
+  }
+}
+
+.userRoleTabBackBtn {
+  -webkit-appearance: button;
+  -moz-appearance: button;
+  appearance: button;
+  text-decoration: none;
+  color: white;
+  background-color: rgb(0, 123, 255);
+  padding: 0.3rem 2rem;
+  border-radius: 0.5rem;
+}
+
+.userRoleTabPermissionList {
+  display: flex;
+  flex-direction: column;
+  padding-left: 0;
+}
+
+.userRoleTabNameContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nameContainerRoleName {
+  display: grid;
+  align-items: center;
+}
+
+.nameContainerBtnColumns {
+  display: flex;
+  flex-direction: row;
+  column-gap: 0.5rem;
+}
+
+.nameContainerEditable {
+  display: flex;
+  row-gap: 1rem;
+}
+
+.nameContainerBtns {
+  display: flex;
+  flex-direction: column;
+  row-gap: 1rem;
+}
+
+.nameContainerBtns > button {
+  min-width: 80px;
+  border-radius: 4px;
+}
+
+.userRoleTabAlert {
+  margin: 1rem 0;
+}
+
+.userRoleTabH1 {
+  font-size: 1.8rem;
+  margin-right: 5px;
+  margin-bottom: 0;
+}
+
+.userRoleTabH2 {
+  font-size: 1.5rem;
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.userRoleTabPermissions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid lightgrey;
+}
+
+.userRoleTabPermissions > button {
+  padding: 0 0.5rem;
+  min-width: 80px;
+}
+
+.userRoleTabPermissions > p {
+  margin: 0;
+}
+
+.userRoleTabIcon {
+  padding-top: 5px;
+  color: grey;
+  cursor: pointer;
+}
+
+.warningIcon {
+  color: red;
+  margin-right: 0.6rem;
+}
+
+.iconButtonContainer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.iconButtonContainer i {
+  display: flex;
+  align-items: center; /* This ensures vertical alignment with the button */
+  margin-right: 10px; /* Optional: Adds some spacing between the icon and the button */
+}
+
+.iconButton {
+  /* This is the new class */
+  height: 40px; /* You can adjust this value */
+  width: 80px;
+  line-height: 40px; /* This should be the same as the height */
+  padding: 0px 10px; /* Optional: Adds some padding inside the button */
+}
+
+.iconButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #f5f5f5;
+  color: #999;
+}
+
+.iconButton:disabled:hover {
+  background-color: #f5f5f5;
+  color: #999;
+}
+
+.infosNameContainer {
+  display: flex;
+  margin-left: auto;
+  text-align: center;
+  align-items: center;
+}
+
+.infoButton {
+  height: 40px;
+  width: 80px;
+  padding: 0px;
+}
+
+.btnPreset {
+  height: 4rem;
+  width: 8rem;
+}
+
+.btnSaveDelete {
+  height: 4rem;
+}
+
+.iconButtonRole {
+  display: block;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.iconButtonRoleContainer i {
+  display: block;
+  align-items: center; /* This ensures vertical alignment with the button */
+  margin-right: 10px; /* Optional: Adds some spacing between the icon and the button */
+}
+.btnSave {
+  height: 60px;
+  width: 150px;
+}
+
+.permissionChangeLogTableCell {
+  vertical-align: top;
+}
+
+.permissionChangeLogTableCell.permissions {
+  width: 400px;
+}
+
+.permissionChangeLogTableCell.expanded {
+  white-space: normal;
+}
+
+.permissionsCell {
+  display: flex;
+  align-items: center;
+}
+
+.toggleButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: 10px;
+  color: inherit;
+}
+
+.permissionLabel {
+  /* Add styles if needed */
+}
+
+@media only screen and (max-width: 683px) {
+  .responsiveFontSize {
+    font-size: 0.75rem !important;
+  }
+  .userRoleTabH1 {
+    font-size: 1.65rem !important;
+    width: 70%;
+  }
+  .nameContainerRoleName {
+    width: 40%;
+  }
+  .btnSave {
+    height: 70px;
+    width: 80px;
+    padding: 10px 0;
+  }
+  .userRoleTabNameContainer {
+    justify-content: center;
+  }
+  .permissionLabel {
+    font-size: 0.75rem;
+  }
+  .iconButton {
+    font-size: 0.75rem;
+    padding: 0px 4px;
+  }
+}
+
+@media only screen and (max-width: 400px) {
+  .iconButtonContainer {
+    font-size: 0.75rem;
+  }
+  .userRoleTabPermissions {
+    padding-right: 15px;
+  }
+}
+
+@media only screen and (max-width: 455px) {
+  .userRoleTabH1 {
+    font-size: 1.25rem !important;
+    width: 70%;
+  }
+}

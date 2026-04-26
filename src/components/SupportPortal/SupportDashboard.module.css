@@ -1,0 +1,110 @@
+/* src/components/SupportPortal/SupportDashboard.module.css */
+
+.container {
+  padding: 2rem;
+  background-color: #f9fafc;
+  min-height: 100vh;
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  gap: 0.75rem;
+}
+
+.title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.searchBar {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  width: 260px;
+  max-width: 100%;
+  font-size: 0.95rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.searchBar:focus {
+  border-color: #1976d2;
+  box-shadow: 0 0 3px rgba(25, 118, 210, 0.4);
+  outline: none;
+}
+
+.errorBanner {
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  background-color: #ffe5e5;
+  color: #a10000;
+  font-size: 0.9rem;
+}
+
+/* ==== Student List ==== */
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.listItem {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  transition: box-shadow 0.2s ease, transform 0.1s ease;
+  cursor: pointer;
+}
+
+.listItem:hover {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+
+.studentName {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #1976d2;
+  text-decoration: none;
+}
+
+.studentName:hover {
+  text-decoration: underline;
+}
+
+.studentInfo {
+  margin-top: 0.25rem;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* ==== Empty State ==== */
+.emptyState {
+  text-align: center;
+  color: #999;
+  font-size: 1rem;
+  margin-top: 3rem;
+}
+
+/* ==== Responsive ==== */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .searchBar {
+    width: 100%;
+  }
+}

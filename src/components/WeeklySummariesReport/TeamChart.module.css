@@ -7,13 +7,13 @@ table {
   margin-bottom: 20px;
 }
 
-.theadDark th{
-background-color: #1C2A41;
-color: white
+.theadDark th {
+  background-color: #1c2a41;
+  color: white;
 }
-.theadLight th{
-background-color: #F6F6F3;
-color: black;
+.theadLight th {
+  background-color: #f6f6f3;
+  color: black;
 }
 
 /* Style for table headers */
@@ -21,7 +21,6 @@ th {
   text-align: center;
   padding: 8px;
 }
-
 
 /* Style for table data cells */
 td {

@@ -46,7 +46,7 @@
   font-weight: 500;
 }
 
-.formGroup input[type="text"],
+.formGroup input[type='text'],
 .formGroup select,
 .formGroup textarea {
   padding: 8px;
@@ -55,7 +55,7 @@
   font-size: 1rem;
 }
 
-.formGroup input[type="checkbox"] {
+.formGroup input[type='checkbox'] {
   margin-right: 5px;
 }
 
@@ -138,12 +138,13 @@
     width: 95%;
     padding: 15px;
   }
-  
+
   .modalButtons {
     flex-direction: column;
   }
-  
-  .saveButton, .cancelButton {
+
+  .saveButton,
+  .cancelButton {
     width: 100%;
   }
 }

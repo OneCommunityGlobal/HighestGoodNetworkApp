@@ -225,7 +225,7 @@
   transform: translateY(-1px);
 }
 
-.resumeLabel input[type="file"] {
+.resumeLabel input[type='file'] {
   display: none;
 }
 
@@ -261,7 +261,7 @@
 .darkMode .jobSelect,
 .darkMode input,
 .darkMode select,
-.darkMode textarea{
+.darkMode textarea {
   background: #181a1b;
   color: #f1f1f1;
   border: 1px solid #444;

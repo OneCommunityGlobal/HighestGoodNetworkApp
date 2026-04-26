@@ -71,8 +71,12 @@
   transition: background 0.15s ease;
 }
 
-.navItem:hover { background: var(--pill-hover); }
-.active { background: var(--pill); }
+.navItem:hover {
+  background: var(--pill-hover);
+}
+.active {
+  background: var(--pill);
+}
 
 .bottom {
   position: sticky;
@@ -101,13 +105,31 @@
   cursor: pointer;
 }
 
-.bottomIcon:hover { background: var(--pill-hover); }
+.bottomIcon:hover {
+  background: var(--pill-hover);
+}
 
 /* ===== Dark mode for sidebar ===== */
-.sidebarDark { background: #0f172a; border-right: 1px solid #1f2937; }
-.sidebarDark .icon { color: #e5e7eb; }
-.sidebarDark .navItem:hover { background: #111827; }
-.sidebarDark .active { background: #1f2937; }
-.sidebarDark .bottom { background: #0f172a; border-top: 1px solid #1f2937; }
-.sidebarDark .bottomIcon { color: #e5e7eb; }
-.sidebarDark .bottomIcon:hover { background: #111827; }
+.sidebarDark {
+  background: #0f172a;
+  border-right: 1px solid #1f2937;
+}
+.sidebarDark .icon {
+  color: #e5e7eb;
+}
+.sidebarDark .navItem:hover {
+  background: #111827;
+}
+.sidebarDark .active {
+  background: #1f2937;
+}
+.sidebarDark .bottom {
+  background: #0f172a;
+  border-top: 1px solid #1f2937;
+}
+.sidebarDark .bottomIcon {
+  color: #e5e7eb;
+}
+.sidebarDark .bottomIcon:hover {
+  background: #111827;
+}

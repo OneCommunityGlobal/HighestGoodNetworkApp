@@ -57,6 +57,32 @@
   font-size: 1.2rem;
 }
 
+.name-container__btn_columns {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.name-container__btns {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.btn-with-info {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-with-info .info-icon {
+  cursor: pointer;
+  line-height: 1;
+  font-size: 18px;
+  margin: 0;
+}
+
 .user-role-tab__permission {
   border-bottom: solid 1px #ced4da;
   display: flex;
@@ -127,8 +153,19 @@
 }
 
 .role-btn {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent;
   text-align: center;
   flex-grow: 1;
+}
+
+.role-btn:focus,
+.role-btn:active,
+.role-btn:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 .infos {

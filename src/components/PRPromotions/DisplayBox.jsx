@@ -1,7 +1,8 @@
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 import styles from './DisplayBox.module.css';
 
-export default function DisplayBox({ onClose }) {
+export default function DisplayBox({ onClose, darkMode = false }) {
   const mockPromotionData = [
     {
       prReviewer: 'Akshay - Jayram',
@@ -44,13 +45,17 @@ export default function DisplayBox({ onClose }) {
     setCheckedItems(new Array(mockPromotionData.length).fill(!allChecked));
   };
 
+  const popupClass = `${styles.popup} ${darkMode ? styles['popup-dark'] : ''}`;
+
   return (
     <div className={styles.overlay}>
-      <div className={styles.popup}>
-        <h2 className={styles['popup-heading']}>
+      <div className={popupClass}>
+        <h2
+          className={`${styles['popup-heading']} ${darkMode ? styles['popup-heading-dark'] : ''}`}
+        >
           Are you sure you want to promote these PR reviewers?
         </h2>
-        <table className={styles['popup-table']}>
+        <table className={`${styles['popup-table']} ${darkMode ? styles['popup-table-dark'] : ''}`}>
           <thead>
             <tr>
               <th>
@@ -63,7 +68,7 @@ export default function DisplayBox({ onClose }) {
               </th>
               <th>PR Reviewer</th>
               <th>Team Code</th>
-              <th>Team Reviewer Name</th>
+              <th>Team Leader Name</th>
               <th>Weekly PR Counts</th>
             </tr>
           </thead>
@@ -107,3 +112,12 @@ export default function DisplayBox({ onClose }) {
     </div>
   );
 }
+
+DisplayBox.propTypes = {
+  onClose: PropTypes.func.isRequired,
+  darkMode: PropTypes.bool,
+};
+
+DisplayBox.defaultProps = {
+  darkMode: false,
+};

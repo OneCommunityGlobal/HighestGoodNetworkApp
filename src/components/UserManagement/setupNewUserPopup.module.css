@@ -1,0 +1,21 @@
+.setupNewUserSection {
+  width: 80%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.setupNewUserRow {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.setupNewUserActions {
+  margin-top: 4px;
+}
+
+.setupNewUserAlert {
+  min-height: 20px; /* prevents jump when message appears */
+}

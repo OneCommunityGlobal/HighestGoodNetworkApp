@@ -1,0 +1,319 @@
+.grayBorder {
+  border: 1px solid #ddd !important;
+}
+
+.darkMode .dropdownItem:hover {
+  background-color: #073054 !important;
+}
+
+.calendar {
+  width: 100%;
+  height: auto;
+  font-size: 1.2rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #fff;
+  padding: 2px;
+}
+
+.calendarDay {
+  display: flex;
+  flex-direction: column;
+  height: 120px;
+  text-align: left !important;
+}
+
+.calendar :global(.react-calendar__tile) {
+  box-shadow: inset 0 0 0 1px #ddd;
+  border: 1px solid #ffffff !important;
+  border-radius: 10px;
+}
+
+.calendar :global(.react-calendar__tile--now) {
+  background-color: #f0f8ff !important;
+  /* box-shadow: inset 0 0 0 1px #007bff !important; */
+  color: #007bff !important
+}
+
+.calendar :global(.react-calendar__tile--active) {
+  background-color: #f0f8ff !important;
+  box-shadow: inset 0 0 0 1px #007bff !important;
+  color: black !important
+}
+
+.calendar :global(.react-calendar__tile--hasActive) {
+  background-color: #f0f8ff !important;
+  box-shadow: inset 0 0 0 1px #007bff !important;
+  color: black !important
+}
+
+.calendar :global(.react-calendar__navigation__label:hover) {
+  background-color: #f0f8ff !important;
+}
+
+.calendar :global(.react-calendar__navigation__label) {
+  background-color: white !important;
+}
+
+.calendar :global(.react-calendar__tile:hover) {
+  background-color: #f0f8ff !important;
+}
+
+.calendar :global(.react-calendar__navigation__arrow) {
+  background-color: white !important;
+}
+
+.calendar :global(.react-calendar__navigation__arrow:hover) {
+  background-color: #f0f8ff !important;
+}
+
+.darkMode .calendar {
+  background-color: #1b2a41;
+  color: #eee;
+}
+
+.darkMode .calendar :global(.react-calendar__tile) {
+  box-shadow: inset 0 0 0 1px #ddd;
+  border: 1px solid #1b2a41 !important;
+  border-radius: 10px;
+}
+
+.darkMode .calendar :global(.react-calendar__tile:hover) {
+  background-color: #073054 !important;
+}
+
+.darkMode .calendar :global(.react-calendar__tile--now) {
+  background-color: #073054 !important;
+  color: #66a3ff !important
+}
+
+.darkMode .calendar :global(.react-calendar__tile--active) {
+  background-color: #073054 !important;
+  box-shadow: inset 0 0 0 1px #007bff !important;
+  color: white !important
+}
+
+.darkMode .calendar :global(.react-calendar__tile--hasActive) {
+  background-color: #073054 !important;
+  box-shadow: inset 0 0 0 1px #007bff !important;
+  color: white !important
+}
+
+.darkMode .calendarDay {
+  color: white;
+}
+.darkMode :global(.react-calendar__month-view__days__day--neighboringMonth) {
+  color: rgb(185, 185, 185);
+}
+
+.darkMode :global(.react-calendar__month-view__days__day--weekend) {
+  color: rgb(255, 162, 162);
+}
+.darkMode :global(.react-calendar__navigation__label) {
+  background-color: #1b2a41 !important;
+}
+.darkMode :global(.react-calendar__navigation__label:hover) {
+  background-color: #073054 !important;
+}
+
+.darkMode :global(.react-calendar__navigation__arrow) {
+  color: white;
+  background-color: #1b2a41 !important;
+}
+
+.darkMode :global(.react-calendar__navigation__arrow:hover) {
+  background-color: #073054 !important;
+}
+
+
+.smallText {
+  font-size: 0.7rem;
+}
+
+.eventTitle {
+  padding: 1px 5px;
+  border-radius: 5px;
+  margin-bottom: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.eventTag {
+  padding: 2px 10px;
+  border-radius: 5px;
+  margin-bottom: 1px;
+  width: fit-content;
+}
+
+.weeklyEventTitle {
+  padding: 1px 2px;
+  border-radius: 5px;
+  margin-bottom: 5px;
+}
+
+.garden {
+  background-color: #caffdb;
+  color: #1d7e3a;
+}
+.garden:hover {
+  border: 1px solid #1d7e3a;
+}
+.darkMode .garden {
+  background-color: #1d7e3a;
+  color: #caffdb;
+}
+.darkMode .garden:hover {
+  border: 1px solid #caffdb;
+}
+
+.animals {
+  background-color: #ffe0cb;
+  color: #935425;
+}
+.animals:hover {
+  border: 1px solid #935425;
+}
+.darkMode .animals {
+  background-color: #935425;
+  color: #ffe0cb;
+}
+.darkMode .animals:hover {
+  border: 1px solid #ffe0cb;
+}
+
+.kitchen {
+  background-color: #dde4ff;
+  color: #1a3bc0;
+}
+.kitchen:hover {
+  border: 1px solid #1a3bc0;
+}
+.darkMode .kitchen {
+  background-color: #1a3bc0;
+  color: #dde4ff;
+}
+.darkMode .kitchen:hover {
+  border: 1px solid #dde4ff;
+}
+
+.orchard {
+  background-color: #efd2ff;
+  color:#7820a6;
+}
+.orchard:hover {
+  border: 1px solid #7820a6;
+}
+.darkMode .orchard {
+  background-color: #7820a6;
+  color: #efd2ff;
+}
+.darkMode .orchard:hover {
+  border: 1px solid #efd2ff;
+}
+
+.gardenText {
+  color: #1d7e3a;
+}
+.darkMode .gardenText {
+  color: #caffdb;
+}
+
+.animalsText {
+  color: #935425;
+}
+.darkMode .animalsText {
+  color: #ffe0cb;
+}
+
+.kitchenText {
+  color: #1a3bc0;
+}
+.darkMode .kitchenText {
+  color: #dde4ff;
+}
+
+.orchardText {
+  color:#7820a6;
+}
+.darkMode .orchardText {
+  color: #efd2ff;
+}
+
+.linkText {
+  cursor: pointer;
+  color: #007bff;
+}
+
+.linkText:hover {
+  color: #005cbe;
+}
+
+.darkMode .linkText {
+  color: #66a3ff;
+}
+.darkMode .linkText:hover {
+  color: #99c2ff;
+}
+
+.blueText {
+  cursor: pointer;
+  color: #007bff;
+}
+
+.weekDay {
+  background-color: #f5f5f5;
+  border-radius: 10px;
+  margin: 2px;
+  width: 14% !important;
+  cursor: pointer;
+  min-height: 140px;
+  padding: 5px !important;
+}
+
+.selectedWeekDay {
+  background-color: #f0f8ff;
+  border: 1px solid #007bff;
+}
+.currentWeekDay {
+  background-color: #f0f8ff !important;
+}
+
+.darkMode .weekDay {
+  background-color: #1b2a41;
+  border: 1px solid #ddd;
+}
+
+.darkMode .weekDay:hover {
+  background-color: #073054 !important;
+}
+
+.darkMode .selectedWeekDay {
+  background-color: #073054;
+  border: 1px solid #007bff;
+}
+
+.darkMode .currentWeekDay {
+  background-color: #073054 !important;
+  color: #66a3ff !important;
+}
+
+@media screen and (max-width: 768px) {
+  .weekRow {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .weekDay {
+    width: 95% !important;
+    flex-direction: column;
+    display: flex;
+    min-height: auto;
+  }
+
+  .calendarDay {
+    height: 80px;
+  }
+}

@@ -582,3 +582,77 @@
 .dark-mode .pr-review-analytics-container .pr-review-analytics-empty {
   color: #f8fafc;
 }
+
+/* Insights Panel Styles */
+.pr-insights-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1.25rem;
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid #cbd5e0;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.pr-insights-item {
+  flex: 1 1 calc(33.333% - 1rem);
+  min-width: 150px;
+  padding: 1rem;
+  border-radius: 6px;
+  text-align: center;
+  transition: transform 0.2s ease;
+}
+
+.pr-insights-item:hover {
+  transform: translateY(-2px);
+}
+
+.pr-insights-item-highlight {
+  box-shadow: 0 2px 8px rgba(5, 44, 101, 0.12);
+}
+
+.pr-insights-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #052c65;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.pr-insights-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #052c65;
+  line-height: 1;
+}
+
+.pr-insights-value-highlight {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #052c65;
+  line-height: 1.2;
+  margin-bottom: 0.25rem;
+}
+
+.pr-insights-subtext {
+  font-size: 0.75rem;
+  color: #052c65;
+  margin-top: 0.25rem;
+  font-weight: 500;
+}
+
+/* Responsive design for insights panel */
+@media (max-width: 768px) {
+  .pr-insights-panel {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .pr-insights-item {
+    flex: 1 1 100%;
+    min-width: auto;
+  }
+}

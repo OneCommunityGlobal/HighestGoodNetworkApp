@@ -34,7 +34,7 @@
 .filterCard {
   background: var(--card-bg, white);
   border-radius: 8px;
-  box-shadow: var(--shadow, 0 4px 6px -1px rgba(0,0,0,0.1));
+  box-shadow: var(--shadow, 0 4px 6px -1px rgba(0, 0, 0, 0.1));
   padding: 16px;
 }
 
@@ -104,7 +104,7 @@
 .increaseCard {
   background: var(--card-bg, white);
   border-radius: 8px;
-  box-shadow: var(--shadow, 0 4px 6px -1px rgba(0,0,0,0.1));
+  box-shadow: var(--shadow, 0 4px 6px -1px rgba(0, 0, 0, 0.1));
   padding: 16px;
 }
 
@@ -147,7 +147,7 @@
 .chartPanel {
   background: var(--card-bg, white);
   border-radius: 8px;
-  box-shadow: var(--shadow, 0 4px 6px -1px rgba(0,0,0,0.1));
+  box-shadow: var(--shadow, 0 4px 6px -1px rgba(0, 0, 0, 0.1));
   padding: 16px;
 }
 
@@ -196,8 +196,12 @@
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .materialBreakdown {
@@ -215,7 +219,7 @@
 
 .materialBreakdownGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 16px;
 }
 

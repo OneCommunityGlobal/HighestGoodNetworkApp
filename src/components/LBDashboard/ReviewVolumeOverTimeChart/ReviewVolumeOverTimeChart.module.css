@@ -1,0 +1,251 @@
+.chartContainer {
+  position: relative;
+  width: 100%;
+  max-width: 960px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.04),
+    0 12px 30px rgba(2, 6, 23, 0.08);
+  display: flex;
+  flex-direction: column;
+}
+
+.dark {
+  background: #0f172a;
+  color: #e5e7eb;
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  flex: 1 1 auto;
+  min-width: min(100%, 12rem);
+}
+
+.legendDots {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem 0.75rem;
+  font-size: 0.85rem;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.legendDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+}
+
+.legendPositive {
+  background: #22c55e;
+}
+
+.legendNeutral {
+  background: #9ca3af;
+}
+
+.legendNegative {
+  background: #ef4444;
+}
+
+.filters {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.darkFilters {
+  background: #020617;
+  border-color: #1f2937;
+}
+
+.filterGroup {
+  min-width: 180px;
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.filterLabel {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #4b5563;
+  margin-bottom: 0;
+}
+
+.select {
+  /* react-select outer container wrapper */
+  background-color: transparent;
+  border: none;
+  padding: 0;
+}
+
+.dateSelect {
+  width: 100%;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  padding: 0 0.5rem;
+  font-size: 0.9rem;
+  background-color: #ffffff;
+  color: #111827;
+}
+
+.darkDateSelect {
+  background-color: #020617;
+  border-color: #374151;
+  color: #e5e7eb;
+}
+
+.datePickerPopper {
+  z-index: 20;
+}
+
+.monthCalendar {
+  border: 1px solid #e5e7eb;
+}
+
+.monthCalendar :global(.react-datepicker__month-text) {
+  color: #111827;
+}
+
+.monthCalendar :global(.react-datepicker__month-text:hover),
+.monthCalendar :global(.react-datepicker__month-text--keyboard-selected),
+.monthCalendar :global(.react-datepicker__month-text--selected) {
+  background-color: #dbeafe !important;
+  color: #111827 !important;
+  opacity: 1 !important;
+}
+
+.darkMonthCalendar {
+  background-color: #111827;
+  border: 1px solid #374151;
+}
+
+.darkMonthCalendar :global(.react-datepicker__header) {
+  background-color: #1f2937;
+  border-bottom: 1px solid #374151;
+}
+
+.darkMonthCalendar :global(.react-datepicker__current-month),
+.darkMonthCalendar :global(.react-datepicker__navigation-icon::before),
+.darkMonthCalendar :global(.react-datepicker__month-text) {
+  color: #f8fafc !important;
+}
+
+/* Month-year picker header: make year text/arrow high contrast in dark mode */
+.darkMonthCalendar :global(.react-datepicker__year-read-view),
+.darkMonthCalendar :global(.react-datepicker__year-read-view--selected-year),
+.darkMonthCalendar :global(.react-datepicker__year-dropdown-container),
+.darkMonthCalendar :global(.react-datepicker__month-read-view),
+.darkMonthCalendar :global(.react-datepicker__month-read-view--selected-month) {
+  color: #f8fafc !important;
+}
+
+.darkMonthCalendar :global(.react-datepicker__year-read-view--down-arrow),
+.darkMonthCalendar :global(.react-datepicker__month-read-view--down-arrow) {
+  border-top-color: #f8fafc !important;
+}
+
+/* Force all header text (including bare spans) to white in dark mode */
+.darkMonthCalendar :global(.react-datepicker__header),
+.darkMonthCalendar :global(.react-datepicker__header span) {
+  color: #f8fafc !important;
+}
+
+.darkMonthCalendar :global(.react-datepicker__month-text:hover),
+.darkMonthCalendar :global(.react-datepicker__month-text--keyboard-selected),
+.darkMonthCalendar :global(.react-datepicker__month-text--selected) {
+  background-color: #1d4ed8 !important;
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+.darkMonthCalendar :global(.react-datepicker__month-text--disabled),
+.monthCalendar :global(.react-datepicker__month-text--disabled) {
+  opacity: 0.45;
+}
+
+.chartWrapper {
+  width: 100%;
+  height: 320px;
+}
+
+.emptyState {
+  display: grid;
+  place-items: center;
+  height: 240px;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+/* ~773px and similar tablet widths: title + legend on one row crushes the legend */
+@media (max-width: 900px) {
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .legendDots {
+    justify-content: flex-start;
+    align-self: flex-start;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .chartContainer {
+    margin: 1.25rem auto;
+    padding: 1.25rem;
+  }
+
+  .legendDots {
+    font-size: 0.8rem;
+  }
+
+  .filters {
+    flex-direction: column;
+  }
+
+  .filterGroup {
+    min-width: 100%;
+  }
+
+  .chartWrapper {
+    height: 260px;
+  }
+}
+

@@ -7,18 +7,21 @@ import KitchenHeader from '../KitchenInterfaces/KitchenHeader';
 import { getHeaderData } from '../../actions/authActions';
 import { getAllRoles } from '../../actions/role';
 import hasPermission from '../../utils/permissions';
+import KIHeader from '../KitchenandInventory/KIHeader/KIHeader';
 
 export function HeaderRenderer(props) {
   const location = useLocation();
+  const isKitchenAndInventory = location.pathname.startsWith('/kitchenandinventory');
   const isCommunityPortal = location.pathname.startsWith('/communityportal');
   const isKitchenInterface = location.pathname.startsWith('/kitchenandinventory');
   const isEducationEvaluation = location.pathname.startsWith('/educationportal/evaluation-results');
 
-  // Hide header for education portal evaluation results page
+  // Hide header or education portal evaluation results page
   if (isEducationEvaluation) {
     return null;
   }
 
+<<<<<<< HEAD
   if (isKitchenInterface) {
     return (
       <>
@@ -26,6 +29,11 @@ export function HeaderRenderer(props) {
         <KitchenHeader />
       </>
     );
+=======
+  if (isKitchenAndInventory) {
+    // eslint-disable-next-line react/jsx-props-no-spreading
+    return <KIHeader {...props} />;
+>>>>>>> development
   }
 
 // eslint-disable-next-line react/jsx-props-no-spreading

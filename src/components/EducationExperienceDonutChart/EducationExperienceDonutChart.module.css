@@ -1,0 +1,157 @@
+.page {
+  width: 100%;
+  min-height: 100vh;
+  background: #f8fafc;
+  padding: 32px 12px;
+}
+
+.pageDark {
+  background: #0f172a;
+}
+
+.wrapper {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px 16px 24px;
+  background-color: #ffffff;
+  color: #1f2937;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+}
+
+.wrapperDark {
+  background-color: #111827;
+  color: #e5e7eb;
+  box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.08);
+}
+
+.heading {
+  text-align: center;
+  color: #1d4ed8;
+  margin: 0 0 12px;
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+.headingDark {
+  color: #bfdbfe;
+}
+
+.filters {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 20px 0;
+  align-items: center;
+}
+
+.filtersMobile {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.section {
+  min-width: 180px;
+}
+
+.sectionFull {
+  width: 100%;
+}
+
+.sectionTitle {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.sectionTitleDark {
+  color: #e0e7ff;
+}
+
+.datePickers {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.datePicker {
+  min-width: 160px;
+}
+
+.chartWrapper {
+  width: 100%;
+  height: 500px;
+}
+
+.chartWrapperMobile {
+  height: 360px;
+}
+
+.message {
+  padding: 24px;
+  text-align: center;
+}
+
+.error {
+  padding: 16px;
+  text-align: center;
+}
+
+.mobileList {
+  margin-top: 12px;
+  padding-inline: 8px;
+}
+
+.mobileRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  margin: 4px 0;
+}
+
+.mobileLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mobileValue {
+  font-weight: 500;
+}
+
+.swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+:global(.hgn-datepicker-dark) {
+  background-color: #1f2937 !important;
+  border: 1px solid #3b82f6 !important;
+  color: #e5e7eb !important;
+}
+
+:global(.hgn-datepicker-dark::placeholder) {
+  color: #94a3b8 !important;
+}
+
+:global(.hgn-datepicker-dark-calendar) {
+  background-color: #0f172a;
+  color: #e5e7eb;
+}
+
+:global(.hgn-datepicker-dark-calendar .react-datepicker__header) {
+  background-color: #1e293b;
+  border-bottom: 1px solid #334155;
+}
+
+:global(.hgn-datepicker-dark-calendar .react-datepicker__day) {
+  color: #e5e7eb;
+}
+
+:global(.hgn-datepicker-dark-calendar .react-datepicker__day--selected),
+:global(.hgn-datepicker-dark-calendar .react-datepicker__day--keyboard-selected) {
+  background-color: #3b82f6;
+}

@@ -1,0 +1,363 @@
+.loadingContainer {
+  min-height: 100vh;
+  background-color: #f9fafb;
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: Arial, sans-serif;
+}
+
+.loadingTextContainer {
+  text-align: center;
+}
+
+.loadingText {
+  font-size: 18px;
+  color: #6b7280;
+}
+
+.errorContainer {
+  min-height: 100vh;
+  background-color: #f9fafb;
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: Arial, sans-serif;
+}
+
+.errorTextContainer {
+  text-align: center;
+}
+
+.errorText {
+  font-size: 18px;
+  color: #6b7280;
+}
+
+.errorMessage {
+  font-size: 14px;
+  color: #9ca3af;
+  margin-top: 8px;
+}
+
+.pageContainer {
+  min-height: 100vh;
+  background-color: #f9fafb;
+  padding: 16px;
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  color: #333;
+}
+
+.contentWrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.pageTitle {
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  color: #111827;
+  margin-bottom: 24px;
+}
+
+.alertContainer {
+  background-color: #fef3c7;
+  border: 1px solid #fbbf24;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.alertText {
+  font-size: 14px;
+  color: #92400e;
+  margin: 0;
+}
+
+.selectorContainer {
+  margin-bottom: 24px;
+}
+
+.eventSelect {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background-color: white;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  outline: none;
+}
+
+.card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.chartsCard {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+}
+
+.cardTitle {
+  font-size: 24px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 24px;
+}
+
+.detailsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.detailItem {
+  margin-bottom: 8px;
+}
+
+.detailLabel {
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.detailValue {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.link {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2563eb;
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.link:hover,
+.link:focus {
+  text-decoration: underline;
+}
+
+.statusContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.statusDot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.statusValue {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.liveMetricsNote {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 4px;
+  font-style: italic;
+}
+
+.liveBadge {
+  margin-left: 6px;
+  font-size: 10px;
+  color: #3b82f6;
+}
+
+.upcomingContainer {
+  grid-column: 1 / -1;
+  background-color: #f3f4f6;
+  border-radius: 6px;
+  padding: 12px;
+  margin-top: 8px;
+}
+
+.upcomingText {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+  font-style: italic;
+}
+
+.liveDataBadge {
+  font-size: 14px;
+  font-weight: 400;
+  color: #3b82f6;
+  margin-left: 12px;
+}
+
+.chartsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.chartWrapper {
+  width: 100%;
+}
+
+.chartSectionTitle {
+  font-size: 18px;
+  font-weight: 500;
+  color: #111827;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.chartLiveBadge {
+  font-size: 12px;
+  font-weight: 400;
+  color: #6b7280;
+  display: block;
+  margin-top: 4px;
+}
+
+.chartContainer {
+  height: 300px;
+  width: 100%;
+}
+
+.upcomingChartsCard {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  text-align: center;
+}
+
+.upcomingChartsText {
+  font-size: 16px;
+  color: #6b7280;
+  margin: 0;
+}
+
+@media (min-width: 768px) {
+  .chartsContainer {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  .chartWrapper {
+    width: 48%;
+  }
+}
+
+@media (max-width: 480px) {
+  .pageTitle {
+    font-size: 20px;
+  }
+  .cardTitle {
+    font-size: 20px;
+  }
+  .chartSectionTitle {
+    font-size: 16px;
+  }
+}
+
+/* Dark Mode Overrides */
+:global(.dark-mode) .pageContainer,
+:global(.dark-mode) .loadingContainer,
+:global(.dark-mode) .errorContainer {
+  background-color: #111827; /* Dark background */
+  color: #f9fafb;
+}
+
+:global(.dark-mode) .pageTitle,
+:global(.dark-mode) .cardTitle,
+:global(.dark-mode) .chartSectionTitle,
+:global(.dark-mode) .detailValue,
+:global(.dark-mode) .loadingText,
+:global(.dark-mode) .errorText {
+  color: #f9fafb;
+}
+
+:global(.dark-mode) .detailLabel,
+:global(.dark-mode) .upcomingText,
+:global(.dark-mode) .upcomingChartsText,
+:global(.dark-mode) .chartLiveBadge,
+:global(.dark-mode) .liveMetricsNote {
+  color: #9ca3af;
+}
+
+:global(.dark-mode) .card,
+:global(.dark-mode) .chartsCard,
+:global(.dark-mode) .upcomingChartsCard,
+:global(.dark-mode) .upcomingContainer {
+  background-color: #1f2937; /* Darker card background */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  color: #f9fafb;
+}
+
+:global(.dark-mode) .upcomingContainer {
+  background-color: #374151; /* slightly different for distinction */
+}
+
+:global(.dark-mode) .eventSelect {
+  background-color: #374151;
+  color: #f9fafb;
+  border-color: #4b5563;
+}
+
+:global(.dark-mode) .link {
+  color: #60a5fa; /* Lighter blue for dark mode */
+}
+
+:global(.dark-mode) .alertContainer {
+  background-color: #78350f; /* Dark orange/brown */
+  border-color: #b45309;
+}
+
+:global(.dark-mode) .alertText {
+  color: #fef3c7;
+}
+
+/* Scrollbar customization for dark mode if needed */
+:global(.dark-mode) ::-webkit-scrollbar-track {
+  background: #111827;
+}
+
+:global(.dark-mode) ::-webkit-scrollbar-thumb {
+  background: #374151;
+}
+
+/* Tooltip Customization */
+.chartTooltip {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.chartTooltipItem {
+  color: #333;
+}
+
+:global(.dark-mode) .chartTooltip {
+  background-color: #1f2937 !important;
+  border: 1px solid #4b5563 !important;
+  border-radius: 6px !important;
+}
+
+:global(.dark-mode) .chartTooltipItem {
+  color: #f9fafb !important;
+}

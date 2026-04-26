@@ -1,0 +1,7 @@
+.darkModeRow:hover {
+  background: #2f4157 !important;
+}
+
+.noHover:hover {
+  background: none !important;
+}

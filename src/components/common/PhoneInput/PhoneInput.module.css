@@ -1,0 +1,9 @@
+.phoneInputContainer {
+  width: 100%;
+}
+
+.phoneInputContent {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
