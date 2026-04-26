@@ -5,7 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import ApplicantsChart from './components/ApplicantsChart';
 import EducationExperienceDonutChart from './components/EducationExperienceDonutChart/EducationExperienceDonutChart';
 import AutoUpdate from './components/AutoUpdate';
-import AnimalManagement from './components/KitchenandInventory/AnimalManagement';
+
 import TaskEditSuggestions from './components/TaskEditSuggestions/TaskEditSuggestions';
 import RoutePermissions from './utils/routePermissions';
 import hasPermission from './utils/permissions';
@@ -375,11 +375,7 @@ export default (
           component={ProcessingLandingPage}
           fallback
         />
-        <ProtectedRoute
-          path="/kitchenandinventory/animalmanagement"
-          component={AnimalManagement}
-          fallback
-        />
+
         <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
         <Route path="/logattendance" component={AttendanceNoShow} />
         <ProtectedRoute path="/project/members/:projectId" fallback component={Members} />
