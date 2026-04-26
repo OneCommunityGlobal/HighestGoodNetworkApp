@@ -15,7 +15,6 @@ function MyCases() {
 
   const filterEvents = events => {
     const now = new Date();
-
     const nowTime = now.getTime();
 
     const upcomingEvents = events.filter(event => {
@@ -34,19 +33,26 @@ function MyCases() {
       });
     }
     if (filter === 'thisWeek') {
-      const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
+      const startOfWeek = new Date(now);
+      startOfWeek.setDate(now.getDate() - now.getDay());
+      startOfWeek.setHours(0, 0, 0, 0);
+
       const endOfWeek = new Date(startOfWeek);
       endOfWeek.setDate(endOfWeek.getDate() + 6);
+      endOfWeek.setHours(23, 59, 59, 999);
+
       return upcomingEvents.filter(event => {
-        const eventDate = new Date(event.eventTime);
+        const eventDate = new Date(event.eventDate);
         return eventDate >= startOfWeek && eventDate <= endOfWeek;
       });
     }
     if (filter === 'thisMonth') {
       const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
       const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      endOfMonth.setHours(23, 59, 59, 999);
+
       return upcomingEvents.filter(event => {
-        const eventDate = new Date(event.eventTime);
+        const eventDate = new Date(event.eventDate);
         return eventDate >= startOfMonth && eventDate <= endOfMonth;
       });
     }
