@@ -91,6 +91,6 @@
   background-color: #444;
 }
 
-:global(.dark-mode) .skills button.selected {
-  color: #8ab4f8;
+.darkMode button.selected {
+  color: #8ab4f8 !important;
 }
