@@ -1,0 +1,168 @@
+.pieChartTitle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: auto;
+  flex-direction: row;
+  width: 100%;
+  margin-bottom: 16px;
+  padding: 0;
+  background-color: transparent;
+  color: white;
+  margin-top: 15px;
+}
+
+.pieChartHeading {
+  margin-bottom: 0;
+}
+
+:global(.dark-mode) .pieChartTitle h4 {
+  color: white;
+}
+
+.pieChartDescription {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: auto;
+  flex-direction: row;
+  width: 100%;
+  margin-bottom: 16px;
+  padding: 0;
+  background-color: transparent;
+  color: white;
+}
+
+.toggleRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggleLabel {
+  padding-right: 1rem;
+  margin-bottom: 0;
+  font-size: 14px;
+}
+
+.checkbox {
+  margin-left: 8px;
+}
+
+.details {
+  text-align: left;
+  margin: auto;
+}
+
+.membersLabel {
+  text-align: center;
+}
+
+.switchWrapper {
+  width: 100%;
+}
+
+.switchRow {
+  word-break: keep-all;
+}
+
+.switchLabel {
+  margin-bottom: 1rem;
+}
+
+.stat {
+  font-weight: bold;
+  font-size: 13px;
+  margin-bottom: 0.25rem;
+}
+
+.chartContainer {
+  width: 100%;
+  height: 32rem;
+}
+
+:global(.dark-mode) .pieChartDescription {
+  background-color: transparent;
+  color: white;
+}
+
+:global(.dark-mode) label,
+:global(.dark-mode) h5,
+:global(.dark-mode) p {
+  color: white !important;
+}
+
+:global(.dark-mode) .switchContainer {
+  color: white;
+}
+
+@media screen and (max-width: 768px) {
+  .pieChartDescription {
+    flex-direction: column;
+    padding: 0 10px;
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .pieChartTitle h4 {
+    font-size: 18px;
+  }
+
+  .pieChartDescription {
+    align-items: flex-start;
+  }
+
+  .toggleRow {
+    display: block;
+  }
+
+  .toggleLabel {
+    display: block;
+    padding-right: 0.5rem;
+    margin-bottom: 8px;
+    font-size: 12px;
+  }
+
+  .checkbox {
+    margin-left: 0;
+    transform: scale(1.1);
+  }
+
+  .switchRow {
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px 0;
+  }
+
+  .switchLabel {
+    font-size: 12px;
+    margin-bottom: 0;
+  }
+
+  .stat {
+    font-size: 11px;
+    margin-bottom: 0.2rem;
+  }
+
+  .chartContainer {
+    height: 24rem;
+  }
+}
+
+@media screen and (max-width: 400px) {
+  .pieChartTitle h4 {
+    font-size: 16px;
+  }
+
+  .toggleLabel {
+    font-size: 11px;
+  }
+
+  .stat {
+    font-size: 10px;
+  }
+
+  .chartContainer {
+    height: 20rem;
+  }
+}
