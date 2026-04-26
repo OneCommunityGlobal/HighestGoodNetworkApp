@@ -101,6 +101,7 @@ import FeedbackRatingEntry from './components/FeedbackActivityModal/FeedbackActi
 import TeamLocations from './components/TeamLocations';
 import Inventory from './components/Inventory';
 import Collaboration from './components/Collaboration';
+import AddLessons from './components/BMDashboard/Lessons/AddLessons';
 import SuggestedJobsList from './components/Collaboration/SuggestedJobsList';
 import TestEventRegistration from './components/EventRegistration/TestEventRegistration';
 import MemberList from './components/QuestionnaireDashboard/MemberList';
@@ -762,6 +763,7 @@ export default (
         <BMProtectedRoute path="/bmdashboard/tools/:toolId" component={ToolDetailPage} />
         <BMProtectedRoute path="/bmdashboard/lessonform/:projectId" component={LessonForm} />
         <BMProtectedRoute path="/bmdashboard/lessonform/" component={LessonForm} />
+        <BMProtectedRoute path="/bmdashboard/lessons/add" component={AddLessons} />
         <BMProtectedRoute
           path="/bmdashboard/inventorytypes"
           fallback
