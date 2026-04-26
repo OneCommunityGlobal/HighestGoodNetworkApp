@@ -26,7 +26,7 @@ import {
   FaChevronLeft,
   FaChevronRight,
 } from 'react-icons/fa';
-import './BiddingHomepage.css';
+import styles from './BiddingHomepage.module.css';
 import logo from '../../Collaboration/One-Community-Horizontal-Homepage-Header-980x140px-2.png';
 
 const propertyListings = [
@@ -345,17 +345,28 @@ function BiddingHomepage() {
   };
 
   return (
-    <div className={`bidding-bg ${darkMode ? 'dark-mode' : ''}`}>
-      <div className="logo-container">
-        <img src={logo} alt="One Community - For The Highest Good Of All" className="main-logo" />
+    <div className={`${styles.biddingBg} ${darkMode ? 'dark-mode' : ''}`}>
+      <div className={styles.logoContainer}>
+        <img
+          src={logo}
+          alt="One Community - For The Highest Good Of All"
+          className={styles.mainLogo}
+        />
       </div>
-      <Container fluid className={`bidding-homepage-container ${darkMode ? 'dark-mode' : ''}`}>
-        <div className={`bidding-header ${darkMode ? 'dark-mode' : ''}`}>
-          <Row className="align-items-center w-100">
-            <Col md={6} className="d-flex align-items-center gap-2">
-              <Dropdown isOpen={dropdownOpen} toggle={toggle} className="village-filter">
-                <DropdownToggle caret>{selectedFilter}</DropdownToggle>
-                <DropdownMenu>
+      <Container
+        fluid
+        className={`${styles.containerFluid} ${styles.biddingHomepageContainer} ${
+          darkMode ? 'dark-mode' : ''
+        }`}
+      >
+        <div className={`${styles.biddingHeader} ${darkMode ? 'dark-mode' : ''}`}>
+          <Row className={styles.rowCustom}>
+            <Col md={6} className={styles.colCustom}>
+              <Dropdown isOpen={dropdownOpen} toggle={toggle} className={styles.villageFilter}>
+                <DropdownToggle caret className={styles.dropdownToggle}>
+                  {selectedFilter}
+                </DropdownToggle>
+                <DropdownMenu className={styles.dropdownMenu}>
                   <DropdownItem onClick={() => setSelectedFilter('Filter by Village')}>
                     All Villages
                   </DropdownItem>
@@ -376,48 +387,48 @@ function BiddingHomepage() {
                   </DropdownItem>
                 </DropdownMenu>
               </Dropdown>
-              <InputGroup className="search-bar">
+              <InputGroup className={styles.searchBar}>
                 <Input
                   placeholder="Search..."
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                 />
-                <Button className="go-button">Go</Button>
+                <Button className={styles.goButton}>Go</Button>
               </InputGroup>
             </Col>
-            <Col md={6} className="text-right d-flex align-items-center justify-content-end gap-3">
-              <span className="user-welcome">WELCOME USER_NAME</span>
-              <div className="user-controls">
-                <div className="messages">
+            <Col md={6} className={styles.colRightAligned}>
+              <span className={styles.userWelcome}>WELCOME USER_NAME</span>
+              <div className={styles.userControls}>
+                <div className={styles.messages}>
                   <FaComment />
                 </div>
-                <div className="notifications">
+                <div className={styles.notifications}>
                   <FaBell />
-                  <span className="notification-badge">1</span>
+                  <span className={styles.notificationBadge}>1</span>
                 </div>
-                <div className="user-profile">
+                <div className={styles.userProfile}>
                   <FaUser />
                 </div>
               </div>
             </Col>
           </Row>
         </div>
-        <div className={`navigation-tabs ${darkMode ? 'dark-mode' : ''}`}>
-          <div className="filter-by-date d-flex align-items-center gap-3">
+        <div className={`${styles.navigationTabs} ${darkMode ? 'dark-mode' : ''}`}>
+          <div className={`${styles.filterByDate} d-flex align-items-center gap-3`}>
             <Dropdown
               isOpen={dateFilterDropdownOpen}
               toggle={toggleDateFilterDropdown}
-              className="date-filter"
+              className={styles.dateFilter}
             >
-              <DropdownToggle caret className="date-dropdown-toggle">
-                <FaFilter className="filter-icon-inline" />
+              <DropdownToggle caret className={styles.dateDropdownToggle}>
+                <FaFilter className={styles.filterIconInline} />
                 Filter by Date
-                {(startDate || endDate) && <span className="filter-active-indicator">●</span>}
+                {(startDate || endDate) && <span className={styles.filterActiveIndicator}>●</span>}
               </DropdownToggle>
-              <DropdownMenu className="date-dropdown-menu">
-                <div className="date-inputs-container">
-                  <div className="date-input-group">
-                    <Label for="startDate" className="date-label">
+              <DropdownMenu className={styles.dateDropdownMenu}>
+                <div className={styles.dateInputsContainer}>
+                  <div className={styles.dateInputGroup}>
+                    <Label for="startDate" className={styles.dateLabel}>
                       Start Date:
                     </Label>
                     <Input
@@ -429,11 +440,11 @@ function BiddingHomepage() {
                         setStartDate(e.target.value);
                         setCurrentPage(1);
                       }}
-                      className="date-input"
+                      className={styles.dateInput}
                     />
                   </div>
-                  <div className="date-input-group">
-                    <Label for="endDate" className="date-label">
+                  <div className={styles.dateInputGroup}>
+                    <Label for="endDate" className={styles.dateLabel}>
                       End Date:
                     </Label>
                     <Input
@@ -445,16 +456,16 @@ function BiddingHomepage() {
                         setEndDate(e.target.value);
                         setCurrentPage(1);
                       }}
-                      className="date-input"
+                      className={styles.dateInput}
                     />
                   </div>
                   {(startDate || endDate) && (
-                    <div className="reset-btn-container">
+                    <div className={styles.resetBtnContainer}>
                       <Button
                         color="secondary"
                         size="sm"
                         onClick={handleDateReset}
-                        className="reset-date-btn"
+                        className={styles.resetDateBtn}
                       >
                         Reset Dates
                       </Button>
@@ -464,17 +475,18 @@ function BiddingHomepage() {
               </DropdownMenu>
             </Dropdown>
           </div>
-          <div className="tabs-container">
-            <Link to="/lbdashboard/listOverview" className="tab tab-inactive">
+          <div className={styles.tabsContainer}>
+            <Link to="/lbdashboard/listOverview" className={`${styles.tab} ${styles.tabInactive}`}>
               Listings Page
             </Link>
-            <Link to="/lbdashboard/bidding" className="tab tab-active">
+            <Link to="/lbdashboard/bidding" className={`${styles.tab} ${styles.tabActive}`}>
               Bidding Page
             </Link>
           </div>
-          <div className="map-link">
-            <Link to="/lbdashboard/masterplan" className="property-map-link">
-              <span className="map-icon" style={{ color: '#e53935' }}>
+
+          <div className={styles.mapLink}>
+            <Link to="/lbdashboard/masterplan" className={styles.propertyMapLink}>
+              <span className={styles.mapIcon} style={{ color: '#e53935' }}>
                 <FaMapMarkerAlt />
               </span>{' '}
               Property Map
@@ -482,24 +494,24 @@ function BiddingHomepage() {
           </div>
         </div>
 
-        <Row className="property-listings mb-3">
+        <Row className={`${styles.propertyListings} mb-3`}>
           {currentProperties.length > 0 ? (
             currentProperties.map(property => (
-              <Col md={4} key={property.id} className="property-card-col">
-                <div className={`property-card property-card-gray ${darkMode ? 'dark-mode' : ''}`}>
-                  <div className="property-image">
+              <Col md={4} key={property.id} className={styles.propertyCardCol}>
+                <div className={`${styles.propertyCardGray} ${darkMode ? 'dark-mode' : ''}`}>
+                  <div className={styles.propertyImage}>
                     <img src={property.image} alt={property.title} />
                   </div>
-                  <div className="property-info">
-                    <div className="property-title-bold">
+                  <div className={styles.propertyInfo}>
+                    <div className={styles.propertyTitleBold}>
                       {property.type} {property.id}, {property.title}
                     </div>
-                    <div className="property-bid-info">
+                    <div className={styles.propertyBidInfo}>
                       Current bid:{' '}
-                      <span className="property-bid-amount">${property.currentBid}/night</span>
+                      <span className={styles.propertyBidAmount}>${property.currentBid}/night</span>
                     </div>
                     <Link to={`/lbdashboard/bidoverview?propertyId=${property.id}`}>
-                      <Button className="bid-more-btn">Bid more</Button>
+                      <Button className={styles.bidMoreBtn}>Bid more</Button>
                     </Link>
                   </div>
                 </div>
@@ -518,7 +530,7 @@ function BiddingHomepage() {
         {filteredProperties.length > itemsPerPage && (
           <Row className="justify-content-center mb-4">
             <Col xs="auto">
-              <Pagination className={`custom-pagination ${darkMode ? 'dark-mode' : ''}`}>
+              <Pagination className={`${styles.customPagination} ${darkMode ? 'dark-mode' : ''}`}>
                 <PaginationItem disabled={currentPage === 1}>
                   <PaginationLink onClick={handlePrevPage}>
                     <FaChevronLeft />

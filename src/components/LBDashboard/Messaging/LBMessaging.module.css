@@ -1,0 +1,699 @@
+/* Main container styles */
+.containerMainMsg {
+  background-color: #e0e0e0;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  margin: 20px 40px 30px;
+  padding: 0;
+  width: auto;
+  min-height: 560px;
+  height: 560px;
+  align-items: stretch;
+}
+
+.mainContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #e0e0e0;
+  width: 100%;
+  min-height: 100vh;
+  padding: 0 20px 20px;
+  overflow: hidden;
+}
+
+.logoContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 0;
+  background: #e5e5e5;
+  width: 100%
+}
+
+.logoContainer img {
+  max-width: 30%;
+  height: auto;
+  min-width: 250px;
+}
+
+.contentContainer {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  width: 85%;
+  box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
+  height: max-content;
+}
+
+/* Contacts section */
+.lbMessagingContacts {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  width: 30%;
+}
+
+
+.containerTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 60px;
+  background-color: #9dd425;
+}
+
+.msg {
+  position: relative;
+}
+
+.lbMessagingContact {
+  display: flex;
+  align-items: center;
+  padding: 6px 8px;
+  margin: 2px;
+  cursor: pointer;
+  background-color: white;
+  border-radius: 5px;
+  gap: 8px;
+}
+
+.lbMessagingContact:hover {
+  background-color: #e9e3e3;
+}
+
+.lbMessagingContact img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.lbMessagingContactInfo {
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.lbMessagingContactsHeader {
+  background-color: #8b8888;
+  height: 12.5%;
+  max-height: 70px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px;
+}
+
+.lbMessagingContactsHeaderMobile {
+  background-color: #8b8888;
+  max-height: 70px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px;
+}
+
+.lbMessagingSearchIconsMobile {
+  height: 33px;
+  aspect-ratio: 1/1;
+}
+
+.lbMsgIconMobile {
+  height: 100%;
+  width: auto !important;
+  color: black !important;
+}
+
+.lbMobileHamMenuHeader {
+  display: flex;
+  position: absolute;
+  top: 0;
+  right: 0;
+  flex-direction: column;
+  margin-top: 60px;
+  width: 220px;
+  background-color: #e9e3e3;
+  z-index: 10;
+}
+
+.black {
+  color: black;
+}
+
+.lbMessagingContactsBody {
+  height: 87.5%;
+  max-height: 480px;
+  overflow-y: auto;
+  display: none;
+}
+
+.activeInlbMessagingContactsBody  {
+  display: block;
+}
+
+/* Chat window section */
+.lbMessagingMessageWindow {
+  width: 80%;
+  height: 100%;
+  flex: 1;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 0;
+}
+
+.lbMessagingMessageWindowHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #e0e0e0;
+  height: 12.5%;
+  max-height: 70px;
+  font-size: 15px;
+  font-weight: bold;
+  gap: 10px;
+}
+
+.lbMessagingMessageWindowHeader img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.lbMessagingMessageWindowBody {
+  flex: 1;
+  min-height: 0;
+  padding: 10px 0 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.lbMessagingMessageWindowFooter {
+  display: flex;
+  background-color: #e0e0e0;
+  color: black;
+  height: 12%;
+  padding: 10px 16px;
+  max-height: 50px;
+  align-items: center;
+  width: 100%;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.lbMessagingTextarea {
+  height: 38px;
+  flex: 1;
+  width: auto;
+  padding: 0 14px;
+  border: 1px solid #b8b8b8;
+  border-radius: 18px;
+  outline: none;
+  color: black;
+  overflow: hidden;
+  background-color: #f2ecec;
+  resize: none;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.messageList {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  padding: 0 12px 12px;
+}
+
+.messageSpacer {
+  flex-grow: 1;
+}
+
+.messageItem {
+  margin: 5px 0;
+  display: flex;
+}
+
+.messageText {
+  background-color: #e0e0e0;
+  margin: 0;
+  padding: 2px 10px;
+  max-width: 50%;
+  text-wrap: wrap;
+  border-radius: 10px;
+  text-align: left;
+}
+
+.sent {
+  justify-content: flex-end;
+  margin-right: 10px;
+}
+
+
+.received {
+  justify-content: flex-start !important;
+  margin-left: 10px;
+}
+
+/* Notification Settings Dialog Box */
+.lgMessagingNotificationWrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.lgMessagingNotificationWrapper input {
+  width: fit-content;
+}
+
+.lbSearchInput {
+  width: 75%;
+  background-color: #8b8888;
+  color: #000;
+  outline: none;
+  border: 1px solid #000;
+  border-radius: 5px;
+  padding: 1px 0 1px 5px;
+}
+
+.lbSearchInput::placeholder {
+  color: #000;
+}
+
+.lbMessagingSearchIcons {
+  height: 33px;
+  aspect-ratio: 1/1;
+}
+
+.lbMessagingHeaderIcons {
+  position: relative;
+}
+
+.lbTopBarBell {
+  margin-left: auto;
+  margin-right: 10px;
+}
+
+.lbTopBarMenuButton {
+  background: transparent;
+  border: none;
+  color: #000;
+  font-size: 32px;
+  line-height: 1;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+.lgMessagingNotificationBell {
+  font-size: 30px;
+  cursor: pointer;
+  margin: 0 15px;
+  color: #000;
+}
+
+.lbContactMsgs {
+  color: #000;
+  margin: 0;
+}
+
+.lbMsgIcon {
+  height: 100%;
+  width: 75% !important;
+}
+
+.lgMessagingBellSelectDropdown {
+  position: absolute;
+  top: 110%;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
+  display: none;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  z-index: 100;
+  padding: 10px 12px;
+  gap: 6px;
+  min-width: 220px;
+  box-sizing: border-box;
+}
+
+.activeInlgMessagingBellSelectDropdown{
+  display: flex;
+}
+
+.lbNotificationBadge {
+  position: absolute;
+  top: -6px;
+  right: -2px;
+  background-color: #e04f4f;
+  color: #fff;
+  border-radius: 10px;
+  font-size: 10px;
+  line-height: 1;
+  padding: 4px 6px;
+  min-width: 18px;
+  text-align: center;
+}
+
+.lgMessagingSectionTitle {
+  font-size: 12px;
+  font-weight: 600;
+  color: #333;
+  width: 100%;
+}
+
+.lgMessagingDivider {
+  height: 1px;
+  width: 100%;
+  background-color: #e3e3e3;
+  margin: 4px 0;
+}
+
+.lgMessagingSmsCheckbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  width: 100%;
+}
+
+.lgMessagingSmsField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+.lgMessagingSmsLabel {
+  font-size: 12px;
+  color: #333;
+}
+
+.lgMessagingSmsInput {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 13px;
+  box-sizing: border-box;
+}
+
+.lgMessagingSmsMask {
+  font-size: 11px;
+  color: #666;
+}
+
+.lgMessagingSmsSaveButton {
+  align-self: flex-start;
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+.lgMessagingBellSelectDropdown label {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  width: 100%;
+  cursor: pointer;
+}
+
+.lgMessagingBellSelectDropdown input {
+  width: fit-content !important;
+}
+
+.lgMessagingField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  margin-top: 6px;
+}
+
+.lgMessagingFieldLabel {
+  font-size: 12px;
+  color: #333;
+}
+
+.lgMessagingPhoneInput {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.lgMessagingPhoneInput:disabled {
+  background-color: #f2f2f2;
+  color: #777;
+}
+
+.lbNoMsgText {
+  text-align: center;
+}
+
+.lgMessagingSubmitButton {
+  margin-top: 10px;
+  padding: 8px 12px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  align-self: flex-end;
+  transition: background-color 0.2s ease;
+}
+
+.lgMessagingSubmitButton:hover {
+  background-color: #0056b3;
+}
+
+.sendButton {
+  cursor: pointer;
+  width: 36px;
+  height: 36px;
+  padding: 8px;
+  border-radius: 50%;
+  background-color: #4db7ab;
+  color: #fff;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.sendButton:hover {
+  background-color: #3ca79b;
+  transform: translateY(-1px);
+}
+
+.startMsg {
+  text-align: center;
+}
+
+.lbMobileMessagingMenu {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  padding: 10px;
+}
+
+.lbMobileHeader {
+  display: flex;
+  height: 100%;
+  align-items: center;
+  justify-content: space-between;
+  color: #fff;
+  padding: 12px 16px;
+  border-radius: 8px;
+}
+
+.lbHamBtn {
+  font-size: 30px;
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+}
+
+.lbMessagingMobileSearchIcons {
+  height: 35px;
+  aspect-ratio: 1/1;
+  margin-left: 10px;
+}
+
+.lbMsgMobileIcon {
+  height: 100%;
+  width: auto !important;
+  color: black !important;
+}
+
+.lbMobileTitle {
+  margin: 0;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.lbMobileContactsPanel {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgb(0 0 0 / 5%);
+  margin-top: 10px;
+  padding: 10px;
+}
+
+.lbMobileContactsPanel .lbMessagingContact {
+  display: flex;
+  align-items: center;
+  padding: 6px 8px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+}
+
+.lbMobileContactsPanel .lbMessagingContact img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  margin-right: 10px;
+  object-fit: cover;
+}
+
+.lbMessagingContactName {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+:global(.dark-mode) .mainContainer,
+:global(.dark-mode) .containerMainMsg {
+  background-color: #141414;
+}
+
+:global(.dark-mode) .logoContainer {
+  background-color: #1b1b1b;
+}
+
+:global(.dark-mode) .contentContainer {
+  background-color: #1f1f1f;
+  border-color: #2a2a2a;
+  box-shadow: 0 4px 10px rgb(0 0 0 / 45%);
+}
+
+:global(.dark-mode) .containerTop {
+  background-color: #88c814;
+}
+
+:global(.dark-mode) .lbMessagingContactsHeader,
+:global(.dark-mode) .lbMessagingContactsHeaderMobile {
+  background-color: #2a2a2a;
+}
+
+:global(.dark-mode) .lbContactMsgs,
+:global(.dark-mode) .lbMsgIcon,
+:global(.dark-mode) .lbMsgIconMobile {
+  color: #f1f1f1 !important;
+}
+
+:global(.dark-mode) .lbMessagingContactsBody {
+  background-color: #1f1f1f;
+}
+
+:global(.dark-mode) .lbMessagingContact {
+  background-color: #2a2a2a;
+}
+
+:global(.dark-mode) .lbMessagingContact:hover {
+  background-color: #343434;
+}
+
+:global(.dark-mode) .lbMessagingContactName,
+:global(.dark-mode) .lbMessagingContactInfo,
+:global(.dark-mode) .black {
+  color: #f1f1f1;
+}
+
+:global(.dark-mode) .lbMessagingMessageWindow {
+  background-color: #1f1f1f;
+}
+
+:global(.dark-mode) .lbMessagingMessageWindowHeader {
+  background-color: #2a2a2a;
+  color: #f1f1f1;
+}
+
+:global(.dark-mode) .lbMessagingMessageWindowBody {
+  background-color: #1f1f1f;
+}
+
+:global(.dark-mode) .lbMessagingMessageWindowFooter {
+  background-color: #2a2a2a;
+  color: #f1f1f1;
+}
+
+:global(.dark-mode) .lbMessagingTextarea {
+  background-color: #2b2b2b;
+  border-color: #3a3a3a;
+  color: #f1f1f1;
+}
+
+:global(.dark-mode) .messageText {
+  background-color: #2f2f2f;
+  color: #f1f1f1;
+}
+
+:global(.dark-mode) .lbSearchInput {
+  background-color: #2a2a2a;
+  color: #f1f1f1;
+  border-color: #444;
+}
+
+:global(.dark-mode) .lbSearchInput::placeholder {
+  color: #c9c9c9;
+}
+
+:global(.dark-mode) .lgMessagingBellSelectDropdown {
+  background-color: #1f1f1f;
+  border-color: #333;
+  color: #f1f1f1;
+}
+
+:global(.dark-mode) .lgMessagingSectionTitle,
+:global(.dark-mode) .lgMessagingSmsLabel,
+:global(.dark-mode) .lgMessagingSmsMask,
+:global(.dark-mode) .lgMessagingFieldLabel {
+  color: #d2d2d2;
+}
+
+:global(.dark-mode) .lgMessagingSmsInput,
+:global(.dark-mode) .lgMessagingPhoneInput {
+  background-color: #2b2b2b;
+  color: #f1f1f1;
+  border-color: #3a3a3a;
+}
+
+:global(.dark-mode) .lgMessagingPhoneInput:disabled {
+  background-color: #262626;
+  color: #a0a0a0;
+}
+
+:global(.dark-mode) .lbTopBarMenuButton {
+  color: #0d0d0d;
+}
+
+:global(.dark-mode) .lbNoMsgText,
+:global(.dark-mode) .startMsg {
+  color: #d0d0d0;
+}
