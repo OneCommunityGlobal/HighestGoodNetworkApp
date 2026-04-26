@@ -95,6 +95,8 @@ import ResourcesUsage from './components/CommunityPortal/Activities/activityId/R
 import EventParticipation from './components/CommunityPortal/Reports/Participation/EventParticipation';
 import NoShowList from './components/CommunityPortal/Activities/NoShow/NoShowList';
 
+import { EventPageOrganizer as EventManagementPage } from './components/CommunityPortal/Activities/activityId/EventPageOrganizer/EventPageOrganizer';
+
 import MaterialSummary from './components/MaterialSummary/MaterialSummary';
 // Activity Feedback Modal
 import FeedbackRatingEntry from './components/FeedbackActivityModal/FeedbackActivityEntry';
@@ -856,6 +858,11 @@ export default (
           exact
           component={Register}
         />
+        <CPProtectedRoute
+          path="/communityportal/activity/:activityId/event"
+          exact
+          component={EventManagementPage}
+        />
         <CPProtectedRoute path="/communityportal/ActivityAgenda" exact component={ActivityAgenda} />
         <CPProtectedRoute
           path="/communityportal/activity/:activityId/engagement/Comments"
@@ -875,6 +882,7 @@ export default (
           routePermissions={RoutePermissions.resourceManagement}
         />
         {/* Listing and Bidding Routes - Additional routes with parameters */}
+        <LBProtectedRoute path="/lbdashboard" exact component={LBDashboard} />
         <LBProtectedRoute path="/lbdashboard/listOverview/:id" exact component={ListOveriew} />
         <LBProtectedRoute path="/lbdashboard/masterplan" exact component={MasterPlan} />
         <Route path="/lbdashboard/login" component={LBLogin} />

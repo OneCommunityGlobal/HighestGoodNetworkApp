@@ -224,7 +224,7 @@
 }
 
 .tileEvents {
-  position: relative; 
+  position: relative;
 }
 
 /* Ensure tileEvents text is readable on selected date */
@@ -265,12 +265,12 @@
   gap: 4px;
   max-width: 100%;
   padding: 2px 6px;
-  margin-bottom: 2px; 
-  border-radius: 999px; 
+  margin-bottom: 2px;
+  border-radius: 999px;
   font-size: 0.7rem;
   font-weight: 600;
   background-color: #e0f7fa;
-  cursor: pointer; 
+  cursor: pointer;
 }
 
 .reactCalendar :global(.react-calendar__tile) .eventItem.statusNew {
