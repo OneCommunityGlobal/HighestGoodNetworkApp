@@ -292,7 +292,7 @@ function ActivityComments() {
 
   const [activeTab, setActiveTab] = useState('Engagement');
   const [commentTab, setCommentTab] = useState('Comment');
-  const [comments, setComments] = useState(loadStoredComments);
+  const [comments, setComments] = useState(mockComments);
   const [commentInput, setCommentInput] = useState('');
   const [sortType, setSortType] = useState('Newest');
 
@@ -300,7 +300,7 @@ function ActivityComments() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [hasMoreComments, setHasMoreComments] = useState(true);
-  const [totalComments, setTotalComments] = useState(loadStoredComments().length + 10); // Simulating more comments exist
+  const [totalComments, setTotalComments] = useState(20);
   const commentsPerPage = 5;
 
   // Reply states
@@ -329,13 +329,13 @@ function ActivityComments() {
   ];
 
   // Save comments to localStorage whenever they change
-  useEffect(() => {
-    try {
-      localStorage.setItem('activityComments', JSON.stringify(comments));
-    } catch (error) {
-      // Failed to save to localStorage - continue without persistence
-    }
-  }, [comments]);
+  // useEffect(() => {
+  //   try {
+  //     localStorage.setItem('activityComments', JSON.stringify(comments));
+  //   } catch (error) {
+  //     // Failed to save to localStorage - continue without persistence
+  //   }
+  // }, [comments]);
 
   // Save feedbacks to localStorage whenever they change
   useEffect(() => {
@@ -360,15 +360,37 @@ function ActivityComments() {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    // Generate additional mock comments for pagination
+    // Generate unique users pool for variety
+    const usersPool = [
+      { id: 1, name: 'Michael Johnson', profilePic: '/profilepic.webp' },
+      { id: 2, name: 'Jennifer Smith', profilePic: '/pfp-default.png' },
+      { id: 3, name: 'Patricia Davis', profilePic: '/pfp-default-header.png' },
+      { id: 4, name: 'Robert Wilson', profilePic: '/Portrait_Placeholder.png' },
+      { id: 5, name: 'Amanda Lee', profilePic: '/pfp-default.png' },
+      { id: 6, name: 'David Brown', profilePic: '/profilepic.webp' },
+      { id: 7, name: 'Michelle Kim', profilePic: '/pfp-default-header.png' },
+      { id: 8, name: 'Christopher Martinez', profilePic: '/Portrait_Placeholder.png' },
+      { id: 9, name: 'Rachel Green', profilePic: '/pfp-default.png' },
+      { id: 10, name: 'Thomas Anderson', profilePic: '/profilepic.webp' },
+    ];
+
+    // Get 2 unique users for this page
+    const startIdx = ((page - 1) * 2) % usersPool.length;
+    const pageUsers = [
+      usersPool[startIdx % usersPool.length],
+      usersPool[(startIdx + 1) % usersPool.length],
+    ];
+
+    // Generate 2 comments for pagination
+    const baseCommentNum = 6; // Start after initial 5 comments
     const additionalComments = [
       {
         id: 100 + page * 10 + 1,
-        name: 'Michael Johnson',
-        profilePic: '/profilepic.webp',
+        name: pageUsers[0].name,
+        profilePic: pageUsers[0].profilePic,
         createdAt: new Date(Date.now() - (page + 5) * 60 * 60 * 1000),
         fixedTimestamp: `${page + 5} hours ago`,
-        text: `This is an additional comment from page ${page}. The discussion continues with more insights and perspectives from the community.`,
+        text: `Comment ${(page - 1) * 2 + baseCommentNum} - Really enjoyed the event!`,
         visibility: 'Public',
         upvotes: getSecureRandomInt(0, 10),
         downvotes: getSecureRandomInt(0, 3),
@@ -376,44 +398,22 @@ function ActivityComments() {
       },
       {
         id: 100 + page * 10 + 2,
-        name: 'Jennifer Smith',
-        profilePic: '/pfp-default.png',
+        name: pageUsers[1].name,
+        profilePic: pageUsers[1].profilePic,
         createdAt: new Date(Date.now() - (page + 6) * 60 * 60 * 1000),
         fixedTimestamp: `${page + 6} hours ago`,
-        text: `Another perspective on this topic. I found the event very educational and would recommend it to others in our field.`,
+        text: `Comment ${(page - 1) * 2 + baseCommentNum + 1} - Thanks for organizing this!`,
         visibility: 'Public',
         upvotes: getSecureRandomInt(5, 15),
         downvotes: getSecureRandomInt(0, 2),
-        replies: [
-          {
-            id: 200 + page * 10 + 1,
-            name: 'Robert Wilson',
-            profilePic: '/Portrait_Placeholder.png',
-            createdAt: new Date(Date.now() - (page + 5) * 60 * 60 * 1000),
-            fixedTimestamp: `${page + 5} hours ago`,
-            text: 'I completely agree! Thanks for sharing your thoughts.',
-            visibility: 'Public',
-          },
-        ],
-      },
-      {
-        id: 100 + page * 10 + 3,
-        name: 'Patricia Davis',
-        profilePic: '/pfp-default-header.png',
-        createdAt: new Date(Date.now() - (page + 7) * 60 * 60 * 1000),
-        fixedTimestamp: `${page + 7} hours ago`,
-        text: `Great follow-up discussion! Looking forward to implementing some of these ideas in my own work.`,
-        visibility: 'Public',
-        upvotes: getSecureRandomInt(1, 8),
-        downvotes: 0,
         replies: [],
       },
     ];
 
     return {
       comments: additionalComments,
-      hasMore: page < 3, // Simulate having 3 pages total
-      total: 20, // Simulate total of 20 comments
+      hasMore: page < 10,
+      total: 20,
     };
   };
 
