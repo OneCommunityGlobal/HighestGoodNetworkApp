@@ -1,14 +1,5 @@
 /* stylelint-disable  */
 /* Root Page Container */
-.page {
-  min-height: 100vh;
-  padding: 24px;
-  background: var(--bg);
-  color: var(--fg);
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-/* Light Theme Defaults */
 :root {
   --bg: #f9fafb;
   --fg: #111827;
@@ -25,7 +16,6 @@
   --grid-stroke: #e5e7eb;
 }
 
-/* Dark Theme Support */
 [data-theme='dark'] {
   --bg: #111827;
   --fg: #f9fafb;
@@ -39,6 +29,23 @@
   --danger: #f87171;
   --purple: #a78bfa;
   --gray: #cbd5e1;
+  --grid-stroke: #374151;
+}
+
+.page {
+  min-height: 100vh;
+  padding: 24px;
+  background-color: var(--bg);
+  color: var(--fg);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Global body class integration for external sync */
+:global(body.dark-mode) .page {
+  --bg: #111827;
+  --fg: #f9fafb;
+  --card: #1f2937;
+  --card-border: #374151;
   --grid-stroke: #374151;
 }
 
