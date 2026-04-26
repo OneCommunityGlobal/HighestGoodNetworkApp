@@ -1,6 +1,6 @@
 /* stylelint-disable  */
 /* Container styling */
-.eventContainer {
+.event-container {
     max-width: 900px;
     margin: 0 auto;
     padding: 20px;
@@ -10,23 +10,22 @@
   }
   
   /* Title styling */
-  .eventTitle {
+  .event-title {
     text-align: center;
     font-size: 24px;
     color: #333;
-    margin: 10px 0;
-    font-weight: 700;   
+    margin-bottom: 20px;
   }
   
   /* Button group */
-  .buttonGroup {
+  .button-group {
     display: flex;
     justify-content: center;
     margin-bottom: 20px;
   }
   
   /* Buttons */
-  .chartButton {
+  .chart-button {
     padding: 10px 20px;
     margin: 0 10px;
     border: 2px solid #888;
@@ -38,7 +37,7 @@
     transition: all 0.3s ease;
   }
 
-  .chartButton.active {
+  .chart-button.active {
     background-color: #4CAF50;
     color: white;
     border-color: #4CAF50;
@@ -47,7 +46,7 @@
   
   
   /* Chart wrapper */
-  .chartWrapper {
+  .chart-wrapper {
     padding: 20px;
     background: #fff;
     border-radius: 8px;
@@ -61,7 +60,7 @@
     /* margin-right: 10px; this broke the existing pages. Please use only unique classnames and not tag names for styling. */
   }
 
-  .selectContainer {
+  .select-container {
     display: flex;
     align-items: center;
     justify-content: center;
