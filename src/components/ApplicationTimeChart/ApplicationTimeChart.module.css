@@ -1,539 +1,391 @@
-/* stylelint-disable  */
-/* ApplicationTimeChart.module.css */
 
-.pageContainer {
-  padding: 20px;
+.atc {
+  --atc-bg:           #f0f2f5;
+
+  /* fix: #ffffff → #fff (color-hex-length) */
+  --atc-card-bg:      #fff;
+  --atc-card-border:  #4285f4;
+  --atc-text:         #3c4043;
+  --atc-muted:        #5f6368;
+  --atc-axis:         #9aa0a6;
+  --atc-grid:         #e0e0e0;
+  --atc-bar:          #93c47d;
+  --atc-bar-border:   #6aa84f;
+  --atc-bar-value:    #2d5016;
+
+  /* fix: #ffffff → #fff (color-hex-length) */
+  --atc-filter-bg:    #fff;
+  --atc-filter-border:#dadce0;
+  --atc-filter-label: #3c4043;
+  --atc-summary-bg:   #f8f9fa;
+  --atc-shadow:       0 1px 3px rgb(0 0 0 / 8%);
+  --atc-label-col:    160px;
+
+  color: var(--atc-text);
+  background: var(--atc-bg);
+  padding: 24px;
   min-height: 100vh;
-  background-color: #f8f9fa;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
-.pageContainer.darkMode {
-  background-color: #1B2A41;
-  color: #e0e0e0;
+/* ── Dark mode — override custom properties only ─────────────────── */
+.atc.dark {
+  --atc-bg:           #1b2a41;
+  --atc-card-bg:      #1e293b;
+  --atc-card-border:  #5dade2;
+  --atc-text:         #e5e7eb;
+  --atc-muted:        #9aa4b2;
+  --atc-axis:         #334155;
+  --atc-grid:         #334155;
+  --atc-bar:          #58d68d;
+  --atc-bar-border:   #27ae60;
+  --atc-bar-value:    #fff;
+  --atc-filter-bg:    #1e293b;
+  --atc-filter-border:#334155;
+  --atc-filter-label: #e5e7eb;
+  --atc-summary-bg:   #0f172a;
+  --atc-shadow:       0 1px 3px rgb(0 0 0 / 40%);
 }
 
-.container {
+
+.atc.dark::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: var(--atc-bg);
+  z-index: -1;
+}
+
+/* ── Page layout ─────────────────────────────────────────────────── */
+.atcMain {
   display: flex;
+  flex-direction: row;
   align-items: flex-start;
-  gap: 20px;
+  gap: 24px;
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0;
-  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 @media (width <= 768px) {
-  .pageContainer {
-    padding: 15px;
+  .atcMain {
+    flex-direction: column;
   }
 }
 
-@media (width <= 480px) {
-  .pageContainer {
-    padding: 10px;
-  }
-}
-
-/* Dark theme support */
-.container.darkMode {
-  background-color: #1B2A41;
-  color: #e0e0e0;
-}
-
-.chartCard {
-  flex: 1;
-  border: 2px solid #4285f4;
-  border-radius: 8px;
-  background-color: #fff;
-  padding: 20px;
-  overflow: visible;
-  transition: background-color 0.3s ease, border-color 0.3s ease;
-}
-
-.chartCard.darkMode {
-  background-color: #2c3e50;
-  border-color: #5dade2;
-}
-
-.title {
-  font-size: 20px;
-  font-weight: 400;
-  color: #5f6368;
-  margin: 0 0 30px;
-  font-family: Arial, sans-serif;
-  transition: color 0.3s ease;
-}
-
-.title.darkMode {
-  color: #e0e0e0;
-}
-
-.chartArea {
-  min-height: 400px;
-  position: relative;
-  padding: 20px 108px 40px 140px;
-
-  /* Room for value labels placed to the right of each bar (not on the bar) */
-}
-
-/* Responsive design for mobile */
-@media (width <= 768px) {
-  .chartArea {
-    padding-left: 100px;
-    padding-right: 88px;
-    min-height: 300px;
-  }
-}
-
-@media (width <= 480px) {
-  .chartArea {
-    padding-left: 80px;
-    padding-right: 72px;
-    min-height: 250px;
-  }
-}
-
-.grid {
-  position: absolute;
-  inset: 20px 108px 40px 140px;
-  background-image: linear-gradient(to right, #e0e0e0 1px, transparent 1px),
-    linear-gradient(to bottom, #e0e0e0 1px, transparent 1px);
-  opacity: 0.5;
-  transition: opacity 0.3s ease;
-}
-
-.grid.darkMode {
-  background-image:
-    linear-gradient(to right, #5a6c7d 1px, transparent 1px),
-    linear-gradient(to bottom, #5a6c7d 1px, transparent 1px);
-}
-
-@media (width <= 768px) {
-  .grid {
-    left: 100px;
-    right: 88px;
-  }
-}
-
-@media (width <= 480px) {
-  .grid {
-    left: 80px;
-    right: 72px;
-  }
-}
-
-.yAxis {
-  position: absolute;
-  left: 0;
-  top: 20px;
-  bottom: 40px;
-  width: 130px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-@media (width <= 768px) {
-  .yAxis {
-    width: 90px;
-  }
-}
-
-@media (width <= 480px) {
-  .yAxis {
-    width: 70px;
-  }
-}
-
-.yAxisItem {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding-right: 10px;
-  font-size: 12px;
-  color: #5f6368;
-  border-right: 1px solid #9aa0a6;
-  transition: color 0.3s ease, border-color 0.3s ease;
-}
-
-.yAxisItem.darkMode {
-  color: #e0e0e0;
-  border-right-color: #5a6c7d;
-}
-
-@media (width <= 480px) {
-  .yAxisItem {
-    font-size: 10px;
-    padding-right: 5px;
-  }
-}
-
-.xAxis {
-  position: absolute;
-  left: 140px;
-  right: 108px;
-  bottom: 0;
-  height: 40px;
-  border-top: 1px solid #9aa0a6;
-  display: flex;
-  align-items: flex-start;
-  padding-top: 5px;
-  transition: border-color 0.3s ease;
-}
-
-.xAxis.darkMode {
-  border-top-color: #5a6c7d;
-}
-
-@media (width <= 768px) {
-  .xAxis {
-    left: 100px;
-    right: 88px;
-  }
-}
-
-@media (width <= 480px) {
-  .xAxis {
-    left: 80px;
-    right: 72px;
-  }
-}
-
-.bars {
-  position: absolute;
-  inset: 20px 108px 40px 140px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-@media (width <= 768px) {
-  .bars {
-    left: 100px;
-    right: 88px;
-  }
-}
-
-@media (width <= 480px) {
-  .bars {
-    left: 80px;
-    right: 72px;
-  }
-}
-
-.barRow {
-  display: flex;
-  align-items: center;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  overflow: visible;
-}
-
-.bar {
-  height: 60%;
-  background-color: #93c47d;
-  border: 1px solid #6aa84f;
-  border-radius: 0 4px 4px 0;
-  position: relative;
-  min-width: 2px;
-  flex-shrink: 0;
-  overflow: visible;
-  transition: background-color 0.3s ease, border-color 0.3s ease;
-}
-
-.bar.darkMode {
-  background-color: #58d68d;
-  border-color: #27ae60;
-}
-
-.dataLabel {
-  position: absolute;
-  left: 100%;
-  margin-left: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 14px;
-  font-weight: 600;
-  color: #2d5016;
-  white-space: nowrap;
-  pointer-events: none;
-  transition: color 0.3s ease;
-}
-
-.dataLabel.darkMode {
-  color: #f1f5f9;
-  text-shadow: 0 1px 2px rgb(0 0 0 / 45%);
-}
-
-@media (width <= 480px) {
-  .dataLabel {
-    font-size: 12px;
-    margin-left: 8px;
-  }
-}
-
-.xAxisLabel {
-  position: absolute;
-  bottom: -25px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 12px;
-  color: #5f6368;
-  transition: color 0.3s ease;
-}
-
-.xAxisLabel.darkMode {
-  color: #e0e0e0;
-}
-
-@media (width <= 480px) {
-  .xAxisLabel {
-    font-size: 10px;
-    bottom: -20px;
-  }
-}
-
-.noData {
+/* ── Loading / error ─────────────────────────────────────────────── */
+.atcLoading {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 400px;
-  color: #5f6368;
+  min-height: 300px;
   font-size: 16px;
-  transition: color 0.3s ease;
+  color: var(--atc-muted);
 }
 
-.noData.darkMode {
-  color: #e0e0e0;
-}
-
-@media (width <= 768px) {
-  .noData {
-    height: 300px;
-    font-size: 14px;
-  }
-}
-
-@media (width <= 480px) {
-  .noData {
-    height: 250px;
-    font-size: 12px;
-  }
-}
-
-.summary {
-  margin-top: 20px;
-  padding: 15px;
-  background-color: #f8f9fa;
-  border-radius: 4px;
-  font-size: 14px;
-  color: #5f6368;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.summary.darkMode {
-  background-color: #34495e;
-  color: #e0e0e0;
-}
-
-@media (width <= 480px) {
-  .summary {
-    font-size: 12px;
-    padding: 10px;
-  }
-}
-
-.filters {
+/* ── Chart card ──────────────────────────────────────────────────── */
+.atcCard {
+  flex: 1;
+  min-width: 0;
+  border: 2px solid var(--atc-card-border);
+  border-radius: 8px;
+  background: var(--atc-card-bg);
+  padding: 24px 24px 16px;
+  box-sizing: border-box;
+  min-height: 480px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  min-width: 150px;
+  box-shadow: var(--atc-shadow);
+  transition: background 0.3s ease, border-color 0.3s ease;
 }
 
-@media (width <= 768px) {
-  .filters {
-    min-width: 120px;
-    gap: 15px;
-  }
-}
-
-@media (width <= 480px) {
-  .filters {
-    min-width: 100px;
-    gap: 10px;
-  }
-}
-
-.filterCard {
-  border: 1px solid #dadce0;
-  border-radius: 4px;
-  padding: 12px;
-  background-color: #fff;
-  transition: background-color 0.3s ease, border-color 0.3s ease;
-}
-
-.filterCard.darkMode {
-  background-color: #2c3e50;
-  border-color: #5a6c7d;
-}
-
-@media (width <= 480px) {
-  .filterCard {
-    padding: 8px;
-  }
-}
-
-.filterTitle {
-  font-size: 14px;
-  font-weight: 500;
-  color: #3c4043;
-  margin-bottom: 8px;
+.atcTitle {
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--atc-muted);
+  margin: 0 0 20px;
   transition: color 0.3s ease;
 }
 
-.filterTitle.darkMode {
-  color: #e0e0e0;
+.atc.dark .atcTitle {
+  color: #93c5fd;
 }
 
-@media (width <= 480px) {
-  .filterTitle {
-    font-size: 12px;
-    margin-bottom: 6px;
-  }
+/* ── Empty state ─────────────────────────────────────────────────── */
+.atcEmpty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
 }
 
-.select {
-  width: 100%;
-  padding: 4px 8px;
-  border: 1px solid #dadce0;
+.atcEmptyText {
+  font-size: 15px;
+  color: var(--atc-muted);
+  margin: 0;
+}
+
+.atcResetBtn {
+  padding: 10px 28px;
+  background-color: #4285f4;
+  color: #fff;
+  border: none;
   border-radius: 4px;
   font-size: 14px;
-  background-color: #fff;
-  color: #3c4043;
-  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: Arial, sans-serif;
+  transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
-.select.darkMode {
-  background-color: #34495e;
-  border-color: #5a6c7d;
-  color: #e0e0e0;
+.atcResetBtn:hover {
+  background-color: #3367d6;
 }
 
-/* Native <option> is often white-on-white in dark mode without explicit colors */
-.select option {
-  background-color: #fff;
-  color: #3c4043;
+.atcResetBtn:active {
+  transform: scale(0.97);
 }
 
-.select.darkMode option {
-  background-color: #1e293b;
-  color: #f1f5f9;
+/* ── Chart wrapper ───────────────────────────────────────────────── */
+.atcChart {
+  position: relative;
+  width: 100%;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
 }
 
-@media (width <= 480px) {
-  .select {
-    font-size: 12px;
-    padding: 3px 6px;
-  }
+/* ── Vertical grid lines ─────────────────────────────────────────── */
+.atcGrid {
+  position: absolute;
+  inset: 0 0 0 var(--atc-label-col);
+  background-image: linear-gradient(to right, var(--atc-grid) 1px, transparent 1px);
+  background-size: 20% 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.6;
 }
 
-/* Responsive layout adjustments */
-@media (width <= 1024px) {
-  .container {
-    max-width: 100%;
-  }
+/* ── Bars list ───────────────────────────────────────────────────── */
+.atcBars {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+/* ── Each row = label + track ────────────────────────────────────── */
+.atcRow {
+  display: grid;
+  grid-template-columns: var(--atc-label-col) 1fr;
+  align-items: center;
+  gap: 0;
+}
+
+/* ── Role label ──────────────────────────────────────────────────── */
+
+.atcLabel {
+  text-align: right;
+  padding-right: 12px;
+  font-size: 13px;
+  color: var(--atc-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  border-right: 1px solid var(--atc-axis);
+  box-sizing: border-box;
+}
+
+/* ── Bar track ───────────────────────────────────────────────────── */
+.atcTrack {
+  height: 44px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  padding: 6px 0;
+  box-sizing: border-box;
+}
+
+/* ── The bar itself ──────────────────────────────────────────────── */
+.atcBar {
+  height: 100%;
+  background: var(--atc-bar);
+  border: 1px solid var(--atc-bar-border);
+  border-radius: 0 4px 4px 0;
+  min-width: 4px;
+  flex-shrink: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  transition: background 0.3s ease, border-color 0.3s ease, width 160ms ease;
+}
+
+/* ── Value label inside bar ──────────────────────────────────────── */
+
+.atcBarValue {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--atc-bar-value);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.atcBarValue[data-outside='true'] {
+  right: auto;
+  left: calc(100% + 6px);
+  color: var(--atc-muted);
+}
+
+/* ── X-axis ticks ────────────────────────────────────────────────── */
+.atcXaxis {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--atc-muted);
+  margin-top: 8px;
+  margin-left: var(--atc-label-col);
+  border-top: 1px solid var(--atc-axis);
+  padding-top: 4px;
+}
+
+/* ── X-axis label ────────────────────────────────────────────────── */
+.atcXaxisLabel {
+  text-align: center;
+  font-size: 12px;
+  color: var(--atc-muted);
+  margin-top: 6px;
+  margin-bottom: 16px;
+  margin-left: var(--atc-label-col);
+}
+
+/* ── Summary footer ──────────────────────────────────────────────── */
+.atcFooter {
+  margin-top: 12px;
+  padding: 12px 16px;
+  background: var(--atc-summary-bg);
+  border-radius: 4px;
+  font-size: 14px;
+  color: var(--atc-muted);
+  line-height: 1.7;
+  transition: background 0.3s ease;
+}
+
+/* stylelint-disable-next-line no-descending-specificity */
+.atcFooter strong {
+  color: var(--atc-text);
+  font-weight: 600;
+}
+
+/* ── Filters sidebar ─────────────────────────────────────────────── */
+.atcFilters {
+  flex: 0 0 180px;
+  width: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 @media (width <= 768px) {
-  .container {
-    flex-direction: column;
-    gap: 15px;
-    padding: 0;
-  }
-  
-  .chartCard {
-    order: 1;
-    padding: 15px;
+  .atcFilters {
+    flex: 0 0 auto;
+    flex-flow: row wrap;
     width: 100%;
   }
-  
-  .title {
-    font-size: 18px;
-    margin-bottom: 20px;
+}
+
+/* ── Individual filter card ──────────────────────────────────────── */
+.atcFilter {
+  border: 1px solid var(--atc-filter-border);
+  border-radius: 6px;
+  padding: 14px 16px;
+  background: var(--atc-filter-bg);
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.atcFilterLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--atc-filter-label);
+  margin: 0 0 8px;
+  transition: color 0.3s ease;
+}
+
+.atcSelect {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--atc-filter-border);
+  border-radius: 4px;
+  font-size: 14px;
+  background: var(--atc-filter-bg);
+  color: var(--atc-text);
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+.atcSelect:focus {
+  outline: none;
+  border-color: #4285f4;
+  box-shadow: 0 0 0 2px rgb(66 133 244 / 20%);
+}
+
+.atc.dark .atcSelect {
+  color-scheme: dark;
+}
+
+/* ── No-match state ──────────────────────────────────────────────── */
+.atcSelectNoMatch {
+  border-color: #fbbc04;
+  color: #7a5800;
+  background-color: #fffde7;
+}
+
+.atc.dark .atcSelectNoMatch {
+  border-color: #f9a825;
+  color: #fdd835;
+  background-color: #2c2a00;
+}
+
+
+@media (width <= 600px) {
+  .atc {
+    --atc-label-col: 110px;
+
+    padding: 12px;
   }
-  
-  .filters {
-    order: 2;
-    flex-direction: row;
-    justify-content: space-between;
-    min-width: auto;
-    width: 100%;
-    gap: 15px;
+
+  .atcTitle {
+    font-size: 15px;
   }
-  
-  .filterCard {
-    flex: 1;
+
+  .atcLabel {
+    font-size: 11px;
+  }
+
+  .atcBarValue {
+    font-size: 11px;
   }
 }
 
 @media (width <= 480px) {
-  .container {
-    gap: 10px;
-  }
-  
-  .chartCard {
-    padding: 12px;
-  }
-  
-  .title {
-    font-size: 16px;
-    margin-bottom: 15px;
-  }
-  
-  .filters {
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .filterCard {
-    width: 100%;
-  }
-}
+  .atc {
+    --atc-label-col: 80px;
 
-@media (width <= 320px) {
-  .title {
-    font-size: 14px;
-  }
-  
-  .chartArea {
-    padding-left: 60px;
-    padding-right: 20px;
-    min-height: 200px;
-  }
-  
-  .yAxis {
-    width: 55px;
-  }
-  
-  .yAxisItem {
-    font-size: 9px;
-    padding-right: 3px;
-  }
-  
-  .bars {
-    left: 60px;
-    right: 20px;
-  }
-  
-  .grid {
-    left: 60px;
-    right: 20px;
-  }
-  
-  .xAxis {
-    left: 60px;
-    right: 20px;
+    padding: 8px;
   }
 }
