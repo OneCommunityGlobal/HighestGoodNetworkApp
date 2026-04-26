@@ -4,7 +4,7 @@
   border: 1px solid #c0c0c0;
   border-radius: 15px;
   background-color: #fff;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
 }
 
 .darkContainer {
@@ -13,14 +13,14 @@
   color: #fff;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .frontendBackendQuestions {
     width: 80%;
     margin: 10px auto;
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .frontendBackendQuestions {
     width: 90%;
   }
@@ -42,6 +42,14 @@
   margin-bottom: 0;
 }
 
+.darkContainer p {
+  color: #b3bfca;
+}
+
+.darkContainer label {
+  color: #e5eef6;
+}
+
 .frontendBackendQuestions hr {
   border: none;
   border-top: 2px solid #ddd;
@@ -61,7 +69,9 @@
   text-align: center;
 }
 
-.darkStrip { background-color: #3a506b; }
+.darkStrip {
+  background-color: #3a506b;
+}
 
 .question {
   color: #2f5061;
@@ -70,12 +80,9 @@
   margin-bottom: 10px;
 }
 
-.darkContainer .question { color: #93c5fd; }
-.darkContainer p { color: #b3bfca; }
-.darkContainer label { color: #e5eef6; }
-
-/* Buttons */
-.darkContainer .buttonContainer button { border-color: #3a506b; color: #ffffff; }
+.darkContainer .question {
+  color: #93c5fd;
+}
 
 .frontendBackendRating {
   display: flex;
@@ -95,29 +102,29 @@
   margin-bottom: 2px;
 }
 
-@media screen and (max-width: 1024px) {
+@media screen and (width <= 1024px) {
   .frontendBackendRating div {
     width: 30%;
   }
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (width <= 768px) {
   .frontendBackendRating div {
     width: 45%;
   }
 }
 
-@media screen and (max-width: 480px) {
+@media screen and (width <= 480px) {
   .frontendBackendRating div {
     width: 100%;
   }
 }
 
-.questionContainer{
-  width:100%;
+.questionContainer {
+  width: 100%;
 }
 
-.editQuestionContainer {  
+.editQuestionContainer {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -126,16 +133,16 @@
   border: 1px solid #5082a7;
   border-radius: 10px;
   width: 95%;
-  margin-left:auto;
-  margin-right:auto;
-  padding:10px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 10px;
 }
 
 .editTitle {
   font-size: 1rem;
   font-weight: bold;
   margin-bottom: 0.5rem;
-  margin-top:0.5rem;
+  margin-top: 0.5rem;
   color: #2f5061;
 }
 
@@ -153,12 +160,12 @@
   transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
   width: 100%;
   margin: 5px;
-  margin-left:0;
+  margin-left: 0;
 }
 
 .editInput:focus {
   border-color: #007bff;
-  box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
+  box-shadow: 0 0 4px rgb(0 123 255 / 50%);
   outline: none;
 }
 
@@ -193,11 +200,10 @@
   transform: scale(1.1);
 }
 
-
 .buttonContainer {
   display: flex;
   justify-content: space-between;
-  margin:10px;
+  margin: 10px;
 }
 
 .buttonContainer button {
@@ -210,27 +216,54 @@
   font-size: medium;
 }
 
+.darkContainer .buttonContainer button {
+  border-color: #3a506b;
+  color: #fff;
+  background-color: #2e5163;
+}
+
 .hgnReturnButton {
   color: white;
-  background-color:#2e5163 ;
+  background-color: #2e5163;
   border-radius: 10px;
   width: 20%;
-  margin-left:0;
+  margin-left: 0;
+}
+
+.darkContainer .hgnReturnButton {
+  background-color: #2e5163;
+  color: #fff;
+  border-color: #3a506b;
 }
 
 .hgnReturnButton:hover {
-  background-color:#4e748d;
-  border-color: #4e748d ;
+  background-color: #4e748d;
+  border-color: #4e748d;
+}
+
+.darkContainer .hgnReturnButton:hover {
+  background-color: #4e748d;
+  border-color: #4e748d;
 }
 
 .nextButton {
   background-color: #2e5163;
   border-radius: 10px;
   width: 20%;
-  color: #ffffff;
+  color: #fff;
+}
+
+.darkContainer .nextButton {
+  background-color: #2e5163;
+  color: #fff;
 }
 
 .nextButton:hover {
+  background-color: #4e748d;
+  border-color: #4e748d;
+}
+
+.darkContainer .nextButton:hover {
   background-color: #4e748d;
   border-color: #4e748d;
 }
@@ -246,7 +279,16 @@
   border-radius: 10px;
 }
 
+.darkContainer .submitButton {
+  background-color: #2e5163;
+  color: #fff;
+}
+
 .submitButton:hover {
   background-color: #21618a;
-  /* color: white; */
+}
+
+.darkContainer .submitButton:hover {
+  background-color: #4e748d;
+  border-color: #4e748d;
 }
