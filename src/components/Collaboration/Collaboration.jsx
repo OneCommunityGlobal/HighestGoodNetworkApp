@@ -19,15 +19,12 @@ function Collaboration() {
   const [totalPages, setTotalPages] = useState(1);
   const [categories, setCategories] = useState([]);
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
-  const [showPositionDropdown, setShowPositionDropdown] = useState(false);
   const [summaries, setSummaries] = useState(null);
-  // const [positions, setPositions] = useState([]);
   const [selectedPosition, setSelectedPosition] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const categoryRef = useRef(null);
-  const positionRef = useRef(null);
 
-  const history = useHistory();
+  const dropdownRef = useRef(null);
+  const [selectedJob, setSelectedJob] = useState(null);
+
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const slugify = s =>
@@ -43,7 +40,7 @@ function Collaboration() {
       const url =
         `${ApiEndpoint}/jobs` +
         `?search=${encodeURIComponent(searchTerm || '')}` +
-        `&category=${encodeURIComponent(selectedCategory || '')}`;
+        `&category=${encodeURIComponent(JSON.stringify(categoriesSelected))}`;
 
       const res = await fetch(url);
       const data = await res.json();
@@ -71,8 +68,9 @@ function Collaboration() {
   useEffect(() => {
     setCurrentPage(1);
     fetchJobs();
-  }, [searchTerm, selectedCategory]);
+  }, [searchTerm, categoriesSelected]);
 
+  /* ================= FILTERED JOBS ================= */
   const filteredJobs = useMemo(() => {
     if (!selectedPosition) return allJobs;
 
@@ -81,22 +79,7 @@ function Collaboration() {
     );
   }, [allJobs, selectedPosition]);
 
-  const positions = useMemo(() => {
-    const uniquePositions = [
-      ...new Set(
-        allJobs
-          .filter(
-            job =>
-              !selectedCategory || job.category?.toLowerCase() === selectedCategory.toLowerCase(),
-          )
-          .map(job => job.position || job.title)
-          .filter(Boolean),
-      ),
-    ];
-
-    return uniquePositions.sort((a, b) => a.localeCompare(b));
-  }, [allJobs, selectedCategory]);
-
+  /* ================= PAGINATION ================= */
   useEffect(() => {
     const start = (currentPage - 1) * ADS_PER_PAGE;
     setJobAds(filteredJobs.slice(start, start + ADS_PER_PAGE));
@@ -105,26 +88,24 @@ function Collaboration() {
     setTotalPages(Math.max(calculatedPages, 1));
   }, [filteredJobs, currentPage]);
 
+  /* ================= ESC CLOSE MODAL ================= */
   useEffect(() => {
-    // no-op placeholder; keep hook list stable if needed in future
-  }, []);
+    if (!selectedJob) return;
+    const esc = e => e.key === 'Escape' && setSelectedJob(null);
+    window.addEventListener('keydown', esc);
+    return () => window.removeEventListener('keydown', esc);
+  }, [selectedJob]);
 
+  /* ================= CLICK OUTSIDE DROPDOWN ================= */
   useEffect(() => {
     const handleClickOutside = event => {
-      if (categoryRef.current && !categoryRef.current.contains(event.target)) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowCategoryDropdown(false);
-      }
-
-      if (positionRef.current && !positionRef.current.contains(event.target)) {
-        setShowPositionDropdown(false);
       }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   /* ================= HANDLERS ================= */
@@ -134,7 +115,7 @@ function Collaboration() {
   };
 
   const handleClearAllFilters = () => {
-    setSelectedCategory('');
+    setCategoriesSelected([]);
     setSelectedPosition('');
     setSearchTerm('');
     setQuery('');
@@ -144,7 +125,9 @@ function Collaboration() {
   const handleShowSummaries = async () => {
     try {
       const res = await fetch(
-        `${ApiEndpoint}/jobs/summaries?search=${searchTerm}&category=${selectedCategory}`,
+        `${ApiEndpoint}/jobs/summaries?search=${searchTerm}&category=${encodeURIComponent(
+          JSON.stringify(categoriesSelected),
+        )}`,
       );
       setSummaries(await res.json());
     } catch {
@@ -183,7 +166,7 @@ function Collaboration() {
 
           {summaries.jobs?.length ? (
             summaries.jobs.map(job => (
-              <div key={job._id} className="job-summary-item">
+              <div key={job._id}>
                 <h4>
                   <a href={job.jobDetailsLink}>{job.title}</a>
                 </h4>
@@ -224,73 +207,27 @@ function Collaboration() {
             <button className="btn btn-secondary">Go</button>
           </form>
 
-          <div className={styles.dropdownWrapper} ref={categoryRef}>
-            <button
-              type="button"
-              onClick={() => {
-                setShowCategoryDropdown(prev => !prev);
-                setShowPositionDropdown(false);
-              }}
-              aria-expanded={showCategoryDropdown}
-            >
-              {selectedCategory || 'Select Categories'} ▼
+          <div ref={dropdownRef} style={{ position: 'relative' }}>
+            <button type="button" onClick={() => setShowCategoryDropdown(p => !p)}>
+              Select Categories ▼
             </button>
 
             {showCategoryDropdown && (
               <div className={styles.jobSelect}>
                 {categories.map(cat => (
-                  <button
-                    key={cat}
-                    type="button"
-                    className={styles.dropdownItem}
-                    onClick={() => {
-                      setSelectedCategory(cat);
-                      setSelectedPosition('');
-                      setShowCategoryDropdown(false);
-                      setCurrentPage(1);
-                    }}
-                  >
+                  <label key={cat} className={styles.dropdownItem}>
+                    <input
+                      type="checkbox"
+                      checked={categoriesSelected.includes(cat)}
+                      onChange={() =>
+                        setCategoriesSelected(prev =>
+                          prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat],
+                        )
+                      }
+                    />
                     {cat}
-                  </button>
+                  </label>
                 ))}
-              </div>
-            )}
-          </div>
-
-          <div className={styles.dropdownWrapper} ref={positionRef}>
-            <button
-              type="button"
-              disabled={!selectedCategory}
-              onClick={() => {
-                if (!selectedCategory) return;
-                setShowPositionDropdown(prev => !prev);
-                setShowCategoryDropdown(false);
-              }}
-              aria-expanded={showPositionDropdown}
-            >
-              {selectedPosition || 'Select Positions'} ▼
-            </button>
-
-            {showPositionDropdown && selectedCategory && (
-              <div className={styles.jobSelect}>
-                {positions.length > 0 ? (
-                  positions.map(pos => (
-                    <button
-                      key={pos}
-                      type="button"
-                      className={styles.dropdownItem}
-                      onClick={() => {
-                        setSelectedPosition(pos);
-                        setShowPositionDropdown(false);
-                        setCurrentPage(1);
-                      }}
-                    >
-                      {pos}
-                    </button>
-                  ))
-                ) : (
-                  <div className={styles.dropdownItem}>No positions found</div>
-                )}
               </div>
             )}
           </div>
@@ -299,20 +236,17 @@ function Collaboration() {
         {/* HEADINGS */}
         <div className={styles.headings}>
           <h1 className={styles.jobHead}>LIKE TO WORK WITH US? APPLY NOW!</h1>
-          <a className="btn" href="https://www.onecommunityglobal.org/collaboration/">
-            ← Return to One Community Collaboration Page
-          </a>
         </div>
 
         {/* QUERY TEXT */}
-        <div className="job-queries">
+        <div>
           <p>
             {searchTerm
               ? `Listing results for '${searchTerm}'`
               : selectedPosition
-              ? `Listing results for '${selectedPosition}' in '${selectedCategory}'`
-              : selectedCategory
-              ? `Listing results for '${selectedCategory}'`
+              ? `Listing results for '${selectedPosition}'`
+              : categoriesSelected.length
+              ? 'Listing results for selected categories'
               : 'Listing all job ads.'}
           </p>
           <button className="btn btn-secondary" onClick={handleShowSummaries}>
@@ -321,10 +255,13 @@ function Collaboration() {
         </div>
 
         {/* FILTER CHIPS */}
-        {(selectedCategory || selectedPosition) && (
+        {(categoriesSelected.length > 0 || selectedPosition) && (
           <div className={styles.jobQueries}>
-            {selectedCategory && <span className={styles.chip}>{selectedCategory}</span>}
-            {selectedPosition && <span className={styles.chip}>{selectedPosition}</span>}
+            {categoriesSelected.map(cat => (
+              <span key={cat} className={styles.chip}>
+                {cat}
+              </span>
+            ))}
             <button className={styles.clearAllButton} onClick={handleClearAllFilters}>
               Clear All
             </button>
@@ -367,6 +304,23 @@ function Collaboration() {
           ))}
         </div>
       </div>
+
+      {/* MODAL */}
+      {selectedJob && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
+            <button className={styles.closeButton} onClick={() => setSelectedJob(null)}>
+              ×
+            </button>
+
+            <h2>{selectedJob.title}</h2>
+            <p>
+              <strong>Category:</strong> {selectedJob.category}
+            </p>
+            <p>{selectedJob.description}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
