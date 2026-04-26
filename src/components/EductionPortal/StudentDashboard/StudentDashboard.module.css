@@ -1,8 +1,8 @@
 .dashboard {
   min-height: 100vh;
   background-color: #f8f9fa;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
-    'Cantarell', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+    Cantarell, sans-serif;
 }
 
 .mainContainer {
@@ -39,7 +39,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .sectionTitle {
@@ -49,13 +51,81 @@
   margin: 0;
 }
 
+/* Filter tabs */
+.filterTabs {
+  display: flex;
+  gap: 0.25rem;
+  background-color: #f3f4f6;
+  border-radius: 8px;
+  padding: 4px;
+  flex-wrap: wrap;
+}
+
+.filterTab {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.9rem;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.filterTab:hover {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+.filterTabActive {
+  background-color: #fff;
+  color: #1a1a1a;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
+}
+
+.filterCount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  background-color: #e5e7eb;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.filterTabActive .filterCount {
+  background-color: #3b82f6;
+  color: #fff;
+}
+
+/* Empty state for filtered tabs */
+.emptyState {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #6b7280;
+  font-size: 1rem;
+}
+
+.emptyState p {
+  margin: 0;
+}
+
 .viewToggle {
   display: flex;
   gap: 0.5rem;
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 8px;
   padding: 4px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
 }
 
 .toggleButton {
@@ -79,8 +149,8 @@
 
 .toggleButton.active {
   background-color: #3b82f6;
-  color: #ffffff;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  color: #fff;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 10%);
 }
 
 .loadingContainer {
@@ -106,6 +176,7 @@
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
@@ -127,23 +198,55 @@
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .mainContainer {
-    padding: 1rem 0.5rem;
+    padding: 1rem 0.75rem;
   }
 
   .title {
-    font-size: 2rem;
+    font-size: 1.75rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+  }
+
+  .header {
+    margin-bottom: 2rem;
   }
 
   .sectionHeader {
     flex-direction: column;
-    gap: 1rem;
     align-items: flex-start;
+  }
+
+  .filterTabs {
+    width: 100%;
+  }
+
+  .filterTab {
+    flex: 1;
+    justify-content: center;
+    padding: 0.4rem 0.5rem;
+    font-size: 0.8rem;
   }
 
   .viewToggle {
     align-self: flex-end;
+  }
+}
+
+@media (width <= 480px) {
+  .mainContainer {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .filterTab {
+    font-size: 0.75rem;
   }
 }
 
@@ -153,7 +256,7 @@
 }
 
 :global(.dark-mode) .title {
-  color: #ffffff;
+  color: #fff;
 }
 
 :global(.dark-mode) .subtitle {
@@ -161,12 +264,44 @@
 }
 
 :global(.dark-mode) .sectionTitle {
-  color: #ffffff;
+  color: #fff;
+}
+
+:global(.dark-mode) .filterTabs {
+  background-color: #2d2d2d;
+}
+
+:global(.dark-mode) .filterTab {
+  color: #9ca3af;
+}
+
+:global(.dark-mode) .filterTab:hover {
+  background-color: #363636;
+  color: #d1d5db;
+}
+
+:global(.dark-mode) .filterTabActive {
+  background-color: #404040;
+  color: #fff;
+}
+
+:global(.dark-mode) .filterCount {
+  background-color: #4b5563;
+  color: #d1d5db;
+}
+
+:global(.dark-mode) .filterTabActive .filterCount {
+  background-color: #2563eb;
+  color: #fff;
+}
+
+:global(.dark-mode) .emptyState {
+  color: #9ca3af;
 }
 
 :global(.dark-mode) .viewToggle {
   background-color: #2d2d2d;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 30%);
 }
 
 :global(.dark-mode) .toggleButton {
@@ -180,7 +315,7 @@
 
 :global(.dark-mode) .toggleButton.active {
   background-color: #2563eb;
-  color: #ffffff;
+  color: #fff;
 }
 
 :global(.dark-mode) .loadingContainer {

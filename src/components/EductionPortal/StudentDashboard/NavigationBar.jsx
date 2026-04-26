@@ -3,9 +3,15 @@ import styles from './NavigationBar.module.css';
 
 const NavigationBar = ({ darkMode = false }) => {
   const [activeDropdown, setActiveDropdown] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const toggleDropdown = dropdown => {
     setActiveDropdown(activeDropdown === dropdown ? null : dropdown);
+  };
+
+  const toggleMenu = () => {
+    setMenuOpen(prev => !prev);
+    setActiveDropdown(null);
   };
 
   const navigationItems = [
@@ -88,42 +94,80 @@ const NavigationBar = ({ darkMode = false }) => {
   return (
     <nav className={styles.navigationBar}>
       <div className={styles.navContainer}>
-        {navigationItems.map((item, index) => (
-          <div key={index} className={styles.navItem}>
-            <button
-              className={styles.navButton}
-              onClick={() => item.hasDropdown && toggleDropdown(item.name)}
+        {/* Hamburger button — visible only on mobile */}
+        <button
+          className={styles.hamburger}
+          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+          aria-expanded={menuOpen}
+          onClick={toggleMenu}
+        >
+          {menuOpen ? (
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
             >
-              {getIcon(item.icon)}
-              <span className={styles.navText}>{item.name}</span>
-              {item.hasDropdown && (
-                <svg
-                  width="12"
-                  height="12"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  className={`${styles.dropdownArrow} ${
-                    activeDropdown === item.name ? styles.rotated : ''
-                  }`}
-                >
-                  <polyline points="6,9 12,15 18,9" />
-                </svg>
-              )}
-            </button>
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          ) : (
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          )}
+        </button>
 
-            {item.hasDropdown && activeDropdown === item.name && (
-              <div className={styles.dropdown}>
-                <div className={styles.dropdownContent}>
-                  <button className={styles.dropdownItem}>Option 1</button>
-                  <button className={styles.dropdownItem}>Option 2</button>
-                  <button className={styles.dropdownItem}>Option 3</button>
+        {/* Desktop nav items */}
+        <div className={`${styles.navItems} ${menuOpen ? styles.navItemsOpen : ''}`}>
+          {navigationItems.map((item, index) => (
+            <div key={index} className={styles.navItem}>
+              <button
+                className={styles.navButton}
+                onClick={() => item.hasDropdown && toggleDropdown(item.name)}
+              >
+                {getIcon(item.icon)}
+                <span className={styles.navText}>{item.name}</span>
+                {item.hasDropdown && (
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    className={`${styles.dropdownArrow} ${
+                      activeDropdown === item.name ? styles.rotated : ''
+                    }`}
+                  >
+                    <polyline points="6,9 12,15 18,9" />
+                  </svg>
+                )}
+              </button>
+
+              {item.hasDropdown && activeDropdown === item.name && (
+                <div className={styles.dropdown}>
+                  <div className={styles.dropdownContent}>
+                    <button className={styles.dropdownItem}>Option 1</button>
+                    <button className={styles.dropdownItem}>Option 2</button>
+                    <button className={styles.dropdownItem}>Option 3</button>
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
-        ))}
+              )}
+            </div>
+          ))}
+        </div>
       </div>
     </nav>
   );

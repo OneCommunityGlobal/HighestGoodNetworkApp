@@ -39,7 +39,6 @@ const SubmissionCard = ({ submission }) => {
   const { studentName, taskType, status, submittedAt, dueAt, grade } = submission;
 
   const statusDetails = useMemo(() => {
-    // const isLate = submittedAt && dueAt && new Date(submittedAt) > new Date(dueAt);
     const isLate =
       submittedAt &&
       dueAt &&

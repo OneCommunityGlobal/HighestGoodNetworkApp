@@ -52,7 +52,6 @@ const TaskSubmissionsPage = () => {
       if (!sub.lessonPlanId || !sub.taskName) return;
 
       const classId = sub.lessonPlanId;
-      // const className = sub.lessonPlanTitle || `Class ${classId.slice(-6)}`;
       const className = sub.lessonPlanTitle || `Class ${String(classId).slice(-6)}`;
 
       if (!data[classId]) {
@@ -73,12 +72,6 @@ const TaskSubmissionsPage = () => {
   const filteredTasks = useMemo(() => {
     const filtered = {};
     Object.entries(activeClassTasks).forEach(([taskName, subs]) => {
-      // const filteredSubs = subs.filter(sub => {
-      //   if (filterStatus === 'all') return true;
-      //   if (filterStatus === 'pending_review' && sub.status === 'Pending Review') return true;
-      //   if (filterStatus === 'graded' && sub.status === 'Graded') return true;
-      //   return false;
-      // });
       const filteredSubs = subs.filter(sub => {
         const status = sub.status?.toLowerCase();
         if (filterStatus === 'all') return true;
@@ -241,13 +234,6 @@ const TaskSubmissionsPage = () => {
               </div>
               {expandedTasks[taskName] && (
                 <div className={styles.cardsGrid}>
-                  {/* {subs.map(submission => (
-                    //<SubmissionCard key={submission._id} submission={submission} />
-                    <SubmissionCard
-                      key={submission._id || `${submission.studentEmail}-${submission.taskName}`}
-                      submission={submission}
-                    />
-                    ))} */}
                   {subs.map(submission => (
                     <SubmissionCard
                       key={
