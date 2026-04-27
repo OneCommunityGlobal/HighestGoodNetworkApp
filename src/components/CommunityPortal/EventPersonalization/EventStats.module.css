@@ -306,6 +306,10 @@
   margin-top: 4px;
 }
 
+.pEStatsDark .pETrendUp { color: #4caf50 !important; }
+.pEStatsDark .pETrendDown { color: #f44336 !important; }
+.pEStatsDark .pETrendStable { color: #ff9800 !important; }
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .pEHeaderContainer {
