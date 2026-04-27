@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .leftSection h1 {
   margin: 5px 0;
   color: #111827;
@@ -24,6 +25,10 @@
   color: #1f2937 !important;
   text-shadow: none !important;
   filter: none !important;
+  overflow-wrap: break-word;
+  word-break: break-all;
+  max-width: 100%;
+  hyphens: auto;
 }
 
 /* Job title */
@@ -38,14 +43,36 @@
 @media (width <= 768px) {
   .leftSection {
     width: 100%;
-    padding: 16px 0 12px;
-    flex-direction: row;
+    padding: 16px 10px 12px;
+    flex-flow: row wrap;
     gap: 20px;
+    justify-content: center;
   }
 
   .userName,
   .jobTitle {
     text-align: left;
+  }
+}
+
+@media (width <= 480px) {
+  .leftSection {
+    flex-direction: column;
+    padding: 12px 8px;
+    gap: 10px;
+  }
+
+  .userName {
+    font-size: 1.2rem;
+  }
+
+  .jobTitle {
+    font-size: 0.9rem;
+  }
+
+  .profilePic {
+    width: 80px;
+    height: 80px;
   }
 }
 

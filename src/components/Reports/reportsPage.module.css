@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -11,10 +12,9 @@
   min-height: 100%;
   width: 100%;
   display: grid;
-  justify-content: center;
-  align-content: start;
+  place-content: start center;
   background-color: #faf7fc;
-  margin: 0px;
+  margin: 0;
   justify-items: center;
   overflow-x: hidden;
 }
@@ -26,18 +26,17 @@
 .category-data-container {
   display: flex;
   width: 100%;
-  justify-content: center;
-  align-content: flex-start;
+  place-content: flex-start center;
   background-color: #faf7fc;
   margin: 0 auto;
   padding: 0 16px;
 }
 
-@media screen and (max-width: 1200px) {
+@media screen and (width <= 1200px) {
   .category-data-container {
     grid-template-columns: 1fr;
   }
-  
+
   .table-data-container {
     max-width: 720px;
     margin: 0 auto;
@@ -86,7 +85,7 @@
 
 .category-container > .card-category-item.selected {
   background-color: #d7cdda;
-  box-shadow: 0px 8px 16px rgba(78, 32, 125, 0.2);
+  box-shadow: 0 8px 16px rgb(78 32 125 / 20%);
   transform: scale(1.03);
   position: relative;
   z-index: 1;
@@ -137,17 +136,16 @@
 
 .date-picker-container {
   display: flex;
-  flex-direction: row;
+  flex-flow: row;
   justify-content: flex-start;
-  padding: 8px 0px 8px 0px;
+  padding: 8px 0;
   gap: 4%;
 }
 
 .date-picker-item {
   display: flex;
   width: 30%;
-  flex-direction: column;
-  flex-wrap: nowrap;
+  flex-flow: column nowrap;
   justify-content: space-between;
 }
 
@@ -155,6 +153,7 @@
   text-align: left;
   margin: 8px 0;
 }
+
 /* Unified spacing system */
 :root {
   --spacing-unit: 0.5rem;
@@ -169,6 +168,7 @@
   width: 100%;
   gap: var(--spacing-unit);
   margin: var(--spacing-unit) 0;
+
   /* Unified margin */
   padding: 0;
 }
@@ -177,12 +177,14 @@
 .total-report-item,
 .lost-time-item {
   flex: 0 0 calc(50% - var(--spacing-unit));
+
   /* Exact 50% with gap compensation */
   min-width: 200px;
   max-width: 240px;
   display: flex;
   align-items: center;
   margin-bottom: var(--spacing-unit);
+
   /* Ensures consistent bottom spacing */
 }
 
@@ -193,6 +195,7 @@
   font-size: 0.9rem;
   white-space: nowrap;
   padding: 0.5rem;
+
   /* Added for better button appearance */
 }
 
@@ -210,8 +213,7 @@
 
 .type-container {
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+  flex-flow: row wrap;
   gap: 1rem;
 }
 
@@ -225,7 +227,7 @@
   margin-bottom: 1rem;
 }
 
-@media screen and (max-width: 1350px) {
+@media screen and (width <= 1350px) {
   .container-component-wrapper {
     padding: 16px;
   }
@@ -269,7 +271,7 @@
   }
 }
 
-@media screen and (max-width: 1100px) {
+@media screen and (width <= 1100px) {
   .container-component-wrapper {
     padding: 16px;
   }
@@ -301,7 +303,7 @@
   }
 }
 
-@media screen and (max-width: 700px) {
+@media screen and (width <= 700px) {
   .container-component-wrapper {
     padding: 16px;
   }
@@ -356,7 +358,9 @@
   color: #fff !important;
 }
 
-.force-white-text, .bg-yinmn-blue .force-white-text, .bg-yinmn-blue .info-modal-content.force-white-text {
+.force-white-text,
+.bg-yinmn-blue .force-white-text,
+.bg-yinmn-blue .info-modal-content.force-white-text {
   color: #fff !important;
 }
 

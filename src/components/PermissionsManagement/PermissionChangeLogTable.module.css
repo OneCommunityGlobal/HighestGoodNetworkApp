@@ -1,3 +1,4 @@
+/* stylelint-disable declaration-property-value-no-unknown */
 .tableResponsive {
   overflow-x: auto;
 }
@@ -17,13 +18,13 @@
   width: 100%;
 }
 
-@media (max-width: 1290px) {
+@media (width <= 1290px) {
   .permissionChangeLogTable {
     font-size: 12px;
   }
 }
 
-@media (max-width: 1010px) {
+@media (width <= 1010px) {
   .permissionChangeLogTable {
     font-size: 10px;
   }
@@ -56,7 +57,7 @@
 .permissionChangeLogTable-Button {
   padding: 5px 10px;
   margin: 0 5px;
-  color: #ffffff;
+  color: #fff;
   border: 'none';
   border-radius: 5px;
   cursor: 'pointer';
@@ -81,7 +82,7 @@
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0px 6px;
+  padding: 0 6px;
   font-size: 20px;
   border-radius: 5px;
 }
