@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .rightSection {
   width: 78%;
   padding: 0 20px;
@@ -32,9 +33,28 @@ h3 {
 
 @media (width <= 768px) {
   .rightSection {
-    padding: 0 0 10px;
+    width: 100%;
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+  .skillsAndChart {
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
   }
   .skillsAndChart > *:first-child { flex: 0 0 auto; }
+
+  .skillsAndChart > *:last-child {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+@media (width <= 480px) {
+  .skillsAndChart {
+    gap: 12px;
+  }
 }
 
 :global(.dark-mode) h3 {

@@ -385,6 +385,25 @@
   border-color: #3a4460;
 }
 
+.dashboardDark .tabNav {
+  border-bottom-color: #3a4460;
+}
+
+.dashboardDark .tabLink {
+  color: #b0b3b8;
+}
+
+.dashboardDark .tabLink:hover {
+  color: #5b9bd5;
+  background-color: rgba(91, 155, 213, 0.1);
+}
+
+.dashboardDark .tabLinkActive {
+  color: #5b9bd5 !important;
+  border-bottom-color: #5b9bd5 !important;
+  background-color: #242b3d !important;
+}
+
 
 
 
