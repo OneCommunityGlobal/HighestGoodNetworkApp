@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import {
   BarChart,
@@ -45,28 +45,68 @@ const allData = {
 
 const allInsights = {
   'This Week': [
-    { title: 'Most waste event type', value: 'Kids event', color: '#dcfce7' },
-    { title: 'Most vulnerable materials', value: 'Flower', color: '#f3e8ff' },
-    { title: 'Top rated venues', value: 'Kevin building', color: '#dcfce7' },
-    { title: 'Lowest rated venues', value: 'Community centers', color: '#ffe4e6' },
-    { title: 'Highest cost venues/hr', value: 'Kevin building', color: '#dcfce7' },
-    { title: 'Most vulnerable equipment', value: 'Chair', color: '#ffe4e6' },
+    { title: 'Most waste event type', value: 'Kids event', color: '#b0d9cb', textColor: '#1a5c3a' },
+    { title: 'Most vulnerable materials', value: 'Flower', color: '#c3b8e8', textColor: '#4a2f8a' },
+    { title: 'Top rated venues', value: 'Kevin building', color: '#b0d9cb', textColor: '#1a5c3a' },
+    {
+      title: 'Lowest rated venues',
+      value: 'Community centers',
+      color: '#fdcdb6',
+      textColor: '#8b1a2a',
+    },
+    {
+      title: 'Highest cost venues/hr',
+      value: 'Kevin building',
+      color: '#b0d9cb',
+      textColor: '#1a5c3a',
+    },
+    { title: 'Most vulnerable equipment', value: 'Chair', color: '#fdcdb6', textColor: '#8b1a2a' },
   ],
   'Last Week': [
-    { title: 'Most waste event type', value: 'Sports event', color: '#dcfce7' },
-    { title: 'Most vulnerable materials', value: 'Paper', color: '#f3e8ff' },
-    { title: 'Top rated venues', value: 'Sports center', color: '#dcfce7' },
-    { title: 'Lowest rated venues', value: 'Old hall', color: '#ffe4e6' },
-    { title: 'Highest cost venues/hr', value: 'Sports center', color: '#dcfce7' },
-    { title: 'Most vulnerable equipment', value: 'Table', color: '#ffe4e6' },
+    {
+      title: 'Most waste event type',
+      value: 'Sports event',
+      color: '#b0d9cb',
+      textColor: '#1a5c3a',
+    },
+    { title: 'Most vulnerable materials', value: 'Paper', color: '#c3b8e8', textColor: '#4a2f8a' },
+    { title: 'Top rated venues', value: 'Sports center', color: '#b0d9cb', textColor: '#1a5c3a' },
+    { title: 'Lowest rated venues', value: 'Old hall', color: '#fdcdb6', textColor: '#8b1a2a' },
+    {
+      title: 'Highest cost venues/hr',
+      value: 'Sports center',
+      color: '#b0d9cb',
+      textColor: '#1a5c3a',
+    },
+    { title: 'Most vulnerable equipment', value: 'Table', color: '#fdcdb6', textColor: '#8b1a2a' },
   ],
   'This Month': [
-    { title: 'Most waste event type', value: 'Community event', color: '#dcfce7' },
-    { title: 'Most vulnerable materials', value: 'Plastic', color: '#f3e8ff' },
-    { title: 'Top rated venues', value: 'Community hall', color: '#dcfce7' },
-    { title: 'Lowest rated venues', value: 'Small rooms', color: '#ffe4e6' },
-    { title: 'Highest cost venues/hr', value: 'Community hall', color: '#dcfce7' },
-    { title: 'Most vulnerable equipment', value: 'Microphone', color: '#ffe4e6' },
+    {
+      title: 'Most waste event type',
+      value: 'Community event',
+      color: '#b0d9cb',
+      textColor: '#1a5c3a',
+    },
+    {
+      title: 'Most vulnerable materials',
+      value: 'Plastic',
+      color: '#c3b8e8',
+      textColor: '#4a2f8a',
+    },
+    { title: 'Top rated venues', value: 'Community hall', color: '#b0d9cb', textColor: '#1a5c3a' },
+    { title: 'Lowest rated venues', value: 'Small rooms', color: '#fdcdb6', textColor: '#8b1a2a' },
+    {
+      title: 'Highest cost venues/hr',
+      value: 'Community hall',
+      color: '#b0d9cb',
+      textColor: '#1a5c3a',
+    },
+    {
+      title: 'Most vulnerable equipment',
+      value: 'Microphone',
+      color: '#fdcdb6',
+      textColor: '#8b1a2a',
+    },
   ],
 };
 
@@ -81,6 +121,10 @@ const insightDefinitions = {
   'Lowest rated venues': 'Venue with the lowest average rating for the selected period.',
   'Highest cost venues/hr': 'Venue with the highest hourly cost during the selected period.',
 };
+
+function filterDataByDate(data, timePeriod) {
+  return data;
+}
 
 function CustomTooltip({ active, payload, darkMode }) {
   if (!active || !payload || !payload.length) return null;
@@ -120,10 +164,21 @@ export default function ResourceUsage() {
   const [insights, setInsights] = useState(allInsights['Last Week']);
 
   const darkMode = useSelector(state => state.theme.darkMode);
+  const badgeRefs = useRef([]);
 
   useEffect(() => {
-    setData(allData[resourceType.toLowerCase()]);
-  }, [resourceType]);
+    badgeRefs.current.forEach(badge => {
+      if (badge) {
+        badge.style.setProperty('color', '#000');
+      }
+    });
+  }, [insights, darkMode]);
+
+  useEffect(() => {
+    const resourceTypeKey = resourceType.toLowerCase();
+    const filteredData = filterDataByDate(allData[resourceTypeKey], timePeriod);
+    setData(filteredData);
+  }, [resourceType, timePeriod, allData]);
 
   useEffect(() => {
     setInsights(allInsights[insightsTimePeriod]);
@@ -172,51 +227,64 @@ export default function ResourceUsage() {
             Amount
           </div>
 
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data} margin={{ top: 20, right: 30, left: 30, bottom: 80 }}>
-              <CartesianGrid
-                strokeDasharray="3 3"
-                stroke={darkMode ? '#3A506B' : '#eee'}
-                vertical={false}
-              />
+          {data && data.length > 0 ? (
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={data} margin={{ top: 20, right: 30, left: 30, bottom: 80 }}>
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke={darkMode ? '#3A506B' : '#eee'}
+                  vertical={false}
+                />
 
-              <XAxis
-                dataKey="name"
-                axisLine={false}
-                tickLine={false}
-                tick={{
-                  fill: darkMode ? '#ffffff' : '#666',
-                  fontWeight: 700,
-                  fontSize: 12,
-                }}
-              />
+                <XAxis
+                  dataKey="name"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{
+                    fill: darkMode ? '#ffffff' : '#666',
+                    fontWeight: 700,
+                    fontSize: 12,
+                  }}
+                />
 
-              <YAxis
-                axisLine={false}
-                tickLine={false}
-                tick={{
-                  fill: darkMode ? '#ffffff' : '#666',
-                  fontWeight: 700,
-                  fontSize: 12,
-                }}
-              />
+                <YAxis
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{
+                    fill: darkMode ? '#ffffff' : '#666',
+                    fontWeight: 700,
+                    fontSize: 12,
+                  }}
+                />
 
-              <Tooltip content={<CustomTooltip darkMode={darkMode} />} />
+                <Tooltip content={<CustomTooltip darkMode={darkMode} />} />
 
-              <Legend
-                align="right"
-                verticalAlign="top"
-                iconType="circle"
-                iconSize={8}
-                wrapperStyle={{
-                  color: darkMode ? '#ffffff' : '#666',
-                }}
-              />
+                <Legend
+                  align="right"
+                  verticalAlign="top"
+                  iconType="circle"
+                  iconSize={8}
+                  wrapperStyle={{
+                    color: darkMode ? '#ffffff' : '#666',
+                  }}
+                />
 
-              <Bar dataKey="returned" stackId="a" fill="#22c55e" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="loaned" stackId="a" fill="#fca5a5" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
+                <Bar dataKey="returned" stackId="a" fill="#22c55e" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="loaned" stackId="a" fill="#fca5a5" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100%',
+              }}
+            >
+              <p>No data available for the selected time period and resource type.</p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -224,7 +292,6 @@ export default function ResourceUsage() {
       <div className={`${styles.insightsSection} ${darkMode ? styles.darkInsightsSection : ''}`}>
         <div className={styles.insightsHeader}>
           <h2>Insights</h2>
-
           <Dropdown>
             <Dropdown.Toggle className={styles.customDropdown}>
               {insightsTimePeriod}
@@ -249,25 +316,28 @@ export default function ResourceUsage() {
               key={idx}
               className={`${styles.insightCard} ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
             >
-              {/* 🔹 ADD THIS LINE RIGHT HERE */}
+              <div className={styles.insightContent}>
+                <div
+                  className={styles.insightTitle}
+                  title={insightDefinitions[insight.title]}
+                  style={{ color: darkMode ? '#e5e7eb' : '#6b7280', fontWeight: 600 }}
+                >
+                  {insight.title}
+                </div>
+
+                <div
+                  ref={el => (badgeRefs.current[idx] = el)}
+                  className={styles.insightBadge}
+                  style={{ backgroundColor: insight.color, color: insight.textColor }}
+                >
+                  {insight.value}
+                </div>
+
+                <div className={styles.insightMeta}>Based on returned vs loaned comparison</div>
+              </div>
+
+              {/* Tooltip */}
               <div className={styles.insightTooltip}>{insightDefinitions[insight.title]}</div>
-
-              <div
-                className={styles.insightTitle}
-                title={insightDefinitions[insight.title]}
-                style={{ color: darkMode ? '#342d2dff' : '#6b7280', fontWeight: 600 }}
-              >
-                {insight.title}
-              </div>
-
-              <div
-                className={`${styles.insightBadge} ${darkMode ? 'text-dark' : ''}`}
-                style={{ backgroundColor: insight.color }}
-              >
-                {insight.value}
-              </div>
-
-              <div className={styles.insightMeta}>Based on returned vs loaned comparison</div>
             </div>
           ))}
         </div>

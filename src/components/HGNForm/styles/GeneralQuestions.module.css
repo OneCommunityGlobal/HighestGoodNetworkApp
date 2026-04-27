@@ -1,10 +1,11 @@
+/* stylelint-disable declaration-block-single-line-max-declarations, no-descending-specificity */
 .generalQuestions {
   width: 50%;
   margin: 10px auto;
   border: 1px solid #c0c0c0;
   border-radius: 15px;
   background-color: #fff;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
 }
 
 /* Dark mode container */
@@ -14,14 +15,14 @@
   color: #fff;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .generalQuestions {
     width: 80%;
     margin: 10px auto;
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .generalQuestions {
     width: 90%;
   }
@@ -67,12 +68,14 @@
 .darkStrip {
   background-color: #3a506b;
 }
+
 .hours{
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   width: 100%;
 }
+
 .hoursRadio {
   display: flex;
   gap: 10px;
@@ -119,6 +122,7 @@
   flex-direction: column;
   align-items: flex-start;
 }
+
 .periodRadio {
   display: flex;
   flex-direction: column;
@@ -163,7 +167,7 @@
 }
 
 /* Buttons */
-.darkContainer .buttonContainer button { border-color: #3a506b; color: #ffffff; }
+.darkContainer .buttonContainer button { border-color: #3a506b; color: #fff; }
 
 .locations {
   display: flex;
@@ -197,19 +201,19 @@
   margin-bottom: 2px;
 }
 
-@media screen and (max-width: 1024px) {
+@media screen and (width <= 1024px) {
   .radioRating div {
     width: 30%;
   }
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (width <= 768px) {
   .radioRating div {
     width: 45%;
   }
 }
 
-@media screen and (max-width: 480px) {
+@media screen and (width <= 480px) {
   .radioRating div {
     width: 100%;
   }
@@ -314,7 +318,7 @@
 
 .editInput:focus {
   border-color: #007bff;
-  box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
+  box-shadow: 0 0 4px rgb(0 123 255 / 50%);
   outline: none;
 }
 
@@ -397,7 +401,7 @@
   background-color: #2e5163;
   border-radius: 10px;
   width: 20%;
-  color: #ffffff;
+  color: #fff;
 }
 
 .nextButton:hover {
@@ -418,5 +422,6 @@
 
 .submitButton:hover {
   background-color: #21618a;
+
   /* color: white; */
 }

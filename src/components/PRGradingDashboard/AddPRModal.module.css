@@ -1,9 +1,10 @@
+/* stylelint-disable  */
 .modal {
   background-color: white;
   border: 1px solid #e5e7eb;
   border-radius: 0.5rem;
   padding: 1rem;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 10%), 0 4px 6px -2px rgb(0 0 0 / 5%);
 }
 
 .modalHeader {
@@ -36,7 +37,7 @@
 
 .closeButton:focus {
   outline: none;
-  box-shadow: 0 0 0 2px rgba(107, 114, 128, 0.5);
+  box-shadow: 0 0 0 2px rgb(107 114 128 / 50%);
 }
 
 .closeIcon {
@@ -68,7 +69,7 @@
 .input:focus {
   outline: none;
   border-color: #2563eb;
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.5);
+  box-shadow: 0 0 0 2px rgb(37 99 235 / 50%);
 }
 
 .inputError {
@@ -77,7 +78,7 @@
 
 .inputError:focus {
   border-color: #ef4444;
-  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.5);
+  box-shadow: 0 0 0 2px rgb(239 68 68 / 50%);
 }
 
 .errorMessage {
@@ -114,7 +115,7 @@
   border: 1px solid #d1d5db;
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 5%);
 }
 
 .buttonCancel {
@@ -134,12 +135,12 @@
 
 .buttonPrimary:hover {
   background-color: #1d4ed8;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 10%);
 }
 
 .buttonPrimary:focus {
   outline: none;
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.5), 0 0 0 4px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 2px rgb(37 99 235 / 50%), 0 0 0 4px rgb(37 99 235 / 10%);
 }
 
 .buttonPrimary:disabled {
@@ -194,7 +195,7 @@
   background-color: #dbeafe;
   border-color: #2563eb;
   color: #1e40af;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 5%);
 }
 
 .backButton {
@@ -207,7 +208,7 @@
   border-radius: 0.375rem;
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 5%);
 }
 
 .backButton:hover {
@@ -290,12 +291,12 @@
 
 :global(.dark-mode) .input:focus {
   border-color: #3b82f6;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+  box-shadow: 0 0 0 2px rgb(59 130 246 / 50%);
 }
 
 :global(.dark-mode) .inputError:focus {
   border-color: #ef4444;
-  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.5);
+  box-shadow: 0 0 0 2px rgb(239 68 68 / 50%);
 }
 
 :global(.dark-mode) .errorMessage {

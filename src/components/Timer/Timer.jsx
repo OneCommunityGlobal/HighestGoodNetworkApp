@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Progress } from 'reactstrap';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
-import { BsAlarmFill } from 'react-icons/bs';
+import { BsAlarmFill, BsArrowClockwise } from 'react-icons/bs';
 import {
   FaPlusCircle,
   FaMinusCircle,
@@ -226,6 +226,10 @@ function Timer({ authUser, darkMode, isPopout }) {
     },
     [timerState],
   );
+
+  const handleRefreshTimer = useCallback(() => {
+    window.location.reload();
+  }, []);
 
   // Initialize session ID on component mount
   useEffect(() => {
@@ -874,6 +878,7 @@ function Timer({ authUser, darkMode, isPopout }) {
               readyState={customReadyState}
               message={message}
               toggleTimer={() => window.close()}
+              handleRefreshTimer={handleRefreshTimer}
             />
           )}
         </div>
@@ -900,6 +905,7 @@ function Timer({ authUser, darkMode, isPopout }) {
           <BsAlarmFill fontSize="2rem" title="Open timer dropdown" />
         </div>
       </button>
+
       <div className={css.previewContainer} title="Open timer dropdown">
         <Progress multi style={{ height: '6px' }}>
           <Progress bar value={100 * (1 - remaining / goal)} color="success" animated={running} />
@@ -916,7 +922,18 @@ function Timer({ authUser, darkMode, isPopout }) {
             {moment.utc(remaining).format('HH:mm:ss')}
           </button>
         ) : (
-          <div className={css.disconnected}>Disconnected</div>
+          <div className={css.disconnected}>
+            <span>Disconnected</span>
+            <button
+              type="button"
+              onClick={handleRefreshTimer}
+              className={css.disconnectedRefreshBtn}
+              aria-label="Reload timer"
+              title="Reload timer"
+            >
+              <BsArrowClockwise />
+            </button>
+          </div>
         )}
       </div>
       {customReadyState === ReadyState.OPEN && (
@@ -1069,6 +1086,7 @@ function Timer({ authUser, darkMode, isPopout }) {
                 readyState={customReadyState}
                 message={message}
                 toggleTimer={toggleTimer}
+                handleRefreshTimer={handleRefreshTimer}
               />
             )}
           </div>
