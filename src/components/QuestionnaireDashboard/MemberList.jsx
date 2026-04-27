@@ -24,9 +24,7 @@ function MemberList() {
     return dummyMembers.filter(member => {
       const skillMatch =
         selectedSkills.length === 0 || selectedSkills.some(skill => member.skills.includes(skill));
-
       const scoreMatch = member.score >= minScore && member.score <= maxScore;
-
       return skillMatch && scoreMatch;
     });
   }, [selectedSkills, minScore, maxScore]);
