@@ -19,6 +19,8 @@ import Loading from '../common/Loading';
 import '../Header/index.css';
 import styles from './reportsPage.module.css';
 import peopleImage from './images/People.svg';
+import './reportsPage.module.css';
+
 import projectsImage from './images/Projects.svg';
 import teamsImage from './images/Teams.svg';
 import AddLostTime from './LostTime/AddLostTime';
