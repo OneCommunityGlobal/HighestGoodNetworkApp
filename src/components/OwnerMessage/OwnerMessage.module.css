@@ -1,0 +1,175 @@
+/* stylelint-disable  */
+.messageContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-width: 0;
+  z-index: 10;
+  gap: 8px;
+  flex-wrap: nowrap;
+}
+
+.message {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  color: white;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-style: italic;
+}
+
+.iconWrapper {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-left: 0;
+  padding: 0;
+  border-radius: 4px;
+}
+
+.inputs:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.ownerMessageImg {
+  width: auto;
+  max-width: 100%;
+  min-width: 0;
+  height: 50px;
+  flex-shrink: 1;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+.ownerMessageButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background: none;
+}
+
+.buttonImg {
+  width: 18px;
+  height: 18px;
+}
+
+.buttonImg:hover {
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+.modalBody {
+  display: flex;
+  flex-direction: column;
+}
+
+.ownerHistorySmallColumn {
+  max-width: 150px;
+  overflow-wrap: break-word;
+}
+
+.ownerHistoryTable {
+  border-collapse: collapse;
+}
+
+.ownerHistoryTable th,
+.ownerHistoryTable td {
+  border-bottom: 1px solid #858585 !important;
+}
+
+.showInTablet {
+  display: none;
+}
+
+@media (width <= 990px) {
+  .ownerHistorySmallColumn {
+    max-width: 100%;
+    overflow-wrap: break-word;
+  }
+
+  .ownerHistoryTable thead {
+    display: none;
+  }
+
+  .ownerHistoryTable .table,
+  .ownerHistoryTable tbody,
+  .ownerHistoryTable tr,
+  .ownerHistoryTable td {
+    display: block;
+    width: 100%;
+    text-align: left !important;
+  }
+
+  .ownerHistoryTable th,
+  .ownerHistoryTable td {
+    border-bottom: none !important;
+  }
+
+  .ownerHistoryTable tr {
+    border-bottom: 1px solid #858585 !important;
+  }
+
+  .showInTablet {
+    display: block;
+  }
+}
+
+@media (width <= 768px) {
+  .ownerMessageImg {
+    height: 36px;
+  }
+}
+
+@media (width <= 480px) {
+  .ownerMessageImg {
+    height: 28px;
+  }
+}
+
+@media (width <= 1400px) {
+  .messageContainer {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+}
+
+@media print {
+  .ownerMessageButton {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: auto !important;
+    height: auto !important;
+    min-width: max-content !important;
+    min-height: max-content !important;
+    transform: none !important;
+    transform-origin: 0 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .ownerMessageButton img {
+    position: relative !important;
+    display: block !important;
+    width: 24px !important;
+    min-width: 24px !important;
+    height: 24px !important;
+    min-height: 24px !important;
+    transform: none !important;
+    transform-origin: 0 0 !important;
+    object-fit: contain !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}

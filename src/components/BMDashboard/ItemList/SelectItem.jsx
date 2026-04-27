@@ -1,5 +1,4 @@
 import { Form, FormGroup, Label, Input } from 'reactstrap';
-import styles from './ItemListView.module.css';
 
 export default function SelectItem({
   items,
@@ -7,23 +6,16 @@ export default function SelectItem({
   selectedItem,
   setSelectedItem,
   label,
+  darkMode,
 }) {
   let itemSet = [];
-  if (items?.length) {
+  if (items.length) {
     if (selectedProject === 'all') {
-      itemSet = [
-        ...new Set(
-          items
-            .filter(m => m.itemType?.name) // Filter out items with null/undefined names
-            .map(m => m.itemType.name),
-        ),
-      ];
+      itemSet = [...new Set(items.map(m => m.itemType?.name))];
     } else {
       itemSet = [
         ...new Set(
-          items
-            .filter(mat => mat.project?.name === selectedProject && mat.itemType?.name)
-            .map(m => m.itemType.name),
+          items.filter(mat => mat.project?.name === selectedProject).map(m => m.itemType?.name),
         ),
       ];
     }
@@ -31,8 +23,11 @@ export default function SelectItem({
 
   return (
     <Form>
-      <FormGroup className={`${styles.selectInput}`}>
-        <Label htmlFor="select-material" style={{ marginLeft: '10px' }}>
+      <FormGroup className="select_input">
+        <Label
+          htmlFor="select-material"
+          style={{ marginLeft: '10px', color: darkMode ? 'white' : 'inherit' }}
+        >
           {label ? `${label}:` : 'Material:'}
         </Label>
         <Input
@@ -45,17 +40,15 @@ export default function SelectItem({
         >
           {items.length ? (
             <>
-              <option value="all" key="all-option">
-                All
-              </option>
-              {itemSet.map(item => (
-                <option key={`item-${item.id || item.name}`} value={item.name}>
-                  {item.name}
+              <option value="all">All</option>
+              {itemSet.map(name => (
+                <option key={name} value={name}>
+                  {name}
                 </option>
               ))}
             </>
           ) : (
-            <option key="no-data">No data</option>
+            <option>No data</option>
           )}
         </Input>
       </FormGroup>

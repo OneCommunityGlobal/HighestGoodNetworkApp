@@ -1,62 +1,157 @@
-/* Light defaults (keep current look) */
-.member-list-container {
-  /* Light (default) design tokens */
-  --bg: #ffffff;
-  --text: #1f2937;
-  --muted: #374151;
-  --cardBg: #fdfdfd;
-  --cardBorder: #cccccc;
-  --btnBg: #ffffff;
-  --btnText: #1f2937;
-  --btnBorder: #aaaaaa;
-
-  background: var(--bg);
-  color: var(--text);
-  min-height: calc(100vh - 140px); /* fill under the top nav */
+/* stylelint-disable declaration-property-value-keyword-no-deprecated */
+.memberListContainer {
   padding: 20px;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
-/* Toggle this class from JSX when the app is in dark mode */
-.darkOn {
-  --bg: #0b1220;
-  --text: #e5e7eb;
-  --muted: #cbd5e1;
-  --cardBg: #111827;
-  --cardBorder: #374151;
-  --btnBg: #111827;
-  --btnText: #e5e7eb;
-  --btnBorder: #374151;
+.filterBar {
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 0 0 30px;
+  width: 100%;
+  box-sizing: border-box;
+  background: transparent;
 }
 
-/* layout */
-.cards {
+.filterSection {
+  margin-bottom: 20px;
+}
+
+.filterSection:last-child {
+  margin-bottom: 0;
+}
+
+.filterLabel {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.skillTags {
   display: flex;
-  gap: 16px;
-  justify-content: center;
-  align-items: center;
   flex-wrap: wrap;
+  gap: 8px;
+}
+
+.skillTag {
+  padding: 6px 12px;
+  border: 1px solid #007bff;
+  border-radius: 16px;
+  background: transparent;
+  color: #007bff;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.skillTag:hover {
+  background: rgb(0 123 255 / 10%);
+}
+
+.skillTagActive {
+  background: #007bff;
+  color: #fff;
+}
+
+.scoreRange {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.scoreInput {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.scoreInput label {
+  font-size: 14px;
+}
+
+.scoreField {
+  width: 60px;
+  padding: 6px 8px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 14px;
+  background: transparent;
+}
+
+.scoreSeparator {
+  font-size: 14px;
+}
+
+.filterActions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.clearButton {
+  padding: 8px 16px;
+  background: #6c757d;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.clearButton:hover {
+  background: #5a6268;
+}
+
+.resultCount {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.noResults {
+  width: 100%;
+  text-align: center;
+  padding: 40px;
+  font-size: 16px;
+  grid-column: 1 / -1;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  width: 100%;
+  justify-items: center;
 }
 
 .memberCard {
-  background: var(--cardBg);
-  color: var(--text);
-  border: 1px solid var(--cardBorder);
+  border: 1px solid #ccc;
   padding: 16px;
-  width: 245px;
+  width: 100%;
   border-radius: 8px;
-  word-wrap: break-word;
   word-break: break-word;
   overflow-wrap: break-word;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-/* ensure typical text inside the card uses the current theme color */
-.memberCard p,
-.memberCard b,
-.memberCard u,
-.memberCard i,
-.memberCard a {
-  color: var(--text);
+.memberCard h3 {
+  margin: 0 0 8px;
+  font-size: 1.1rem;
+  line-height: 1.3;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  text-align: center;
+}
+
+.memberCard p {
+  margin: 4px 0;
 }
 
 .memberAvatar {
@@ -64,32 +159,104 @@
   height: 100px;
   object-fit: cover;
   border-radius: 50%;
-  margin: 8px 0;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.scoreGreen {
+  color: #28a745;
+  font-weight: 600;
+}
+
+.scoreRed {
+  color: #dc3545;
+  font-weight: 600;
 }
 
 .paginationControls {
   margin-top: 20px;
   display: flex;
+  gap: 8px;
   justify-content: center;
   align-items: center;
-  gap: 8px;
 }
 
-.paginationControls button {
+.pageButton {
   padding: 8px 12px;
   border-radius: 4px;
-  background: var(--btnBg);
-  border: 1px solid var(--btnBorder);
-  color: var(--btnText);
+  border: 1px solid #aaa;
+  background-color: transparent;
   cursor: pointer;
 }
 
-.paginationControls button.active {
+.pageButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.pageButton.active {
   background-color: #007bff;
-  color: #ffffff;
+  color: #fff;
   font-weight: bold;
 }
 
-/* keep score colors as-is; if you use classes for scores, keep them unchanged */
-.scoreGreen { color: #22c55e; }
-.scoreRed { color: #ef4444; }
+:global(.dark-mode) .pageButton {
+  color: #fff;
+  border-color: #6c757d;
+}
+
+:global(.dark-mode) .pageButton.active {
+  background-color: #007bff;
+  color: #fff;
+  border-color: #007bff;
+}
+
+:global(.dark-mode) .memberCard .scoreGreen {
+  color: #48c774 !important;
+}
+
+:global(.dark-mode) .memberCard .scoreRed {
+  color: #ff6b6b !important;
+}
+
+:global(.dark-mode) .scoreField {
+  color: #fff;
+  border-color: #6c757d;
+}
+
+:global(.dark-mode) .filterBar {
+  border-color: #6c757d;
+}
+
+@media (width <= 768px) {
+  .cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .skillTags {
+    gap: 6px;
+  }
+
+  .skillTag {
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+
+  .scoreRange {
+    flex-wrap: wrap;
+  }
+
+  .filterActions {
+    flex-wrap: wrap;
+  }
+
+  .paginationControls {
+    flex-wrap: wrap;
+  }
+}
+
+@media (width <= 480px) {
+  .cards {
+    grid-template-columns: 1fr;
+  }
+}
