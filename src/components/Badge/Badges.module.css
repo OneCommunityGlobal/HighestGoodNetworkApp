@@ -1,0 +1,12 @@
+/* stylelint-disable  */
+.bgSpaceCadet {
+  background-color: #1c2541 !important;
+}
+
+.bgSpaceCadet:hover {
+  background-color: #1c2541 !important;
+}
+
+:global(.bg-space-cadet) {
+  background-color: #1c2541 !important;
+}

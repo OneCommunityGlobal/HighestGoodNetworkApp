@@ -1,38 +1,70 @@
+import axios from 'axios';
 import PropTypes from 'prop-types';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import styles from './style/RankedUserList.module.css';
 import UserCard from './UserCard';
-import styles from './style/UserCard.module.css';
 
-function RankedUserList({ users, loading, error, emptyMessage }) {
-  if (loading) {
-    return <p>Loading community members...</p>;
-  }
+function RankedUserList({ selectedSkills, selectedPreferences, searchQuery }) {
+  const [allUsers, setAllUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
-  if (error) {
-    return <p className="text-danger">{error}</p>;
-  }
+  useEffect(() => {
+    const fetchUsers = async () => {
+      setLoading(true);
+      try {
+        const params = {};
+        if (selectedSkills && selectedSkills.length > 0) params.skills = selectedSkills.join(',');
+        if (selectedPreferences && selectedPreferences.length > 0)
+          params.preferences = selectedPreferences.join(',');
 
-  if (!users.length) {
-    return <p>{emptyMessage}</p>;
-  }
+        const response = await axios.get(`${process.env.REACT_APP_APIENDPOINT}/hgnform/ranked`, {
+          params,
+        });
+        setAllUsers(response.data);
+      } catch (err) {
+        // error handled silently
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedSkills, selectedPreferences]);
+
+  // Client-side filter by searchQuery on top of API results
+  const filteredUsers = searchQuery
+    ? allUsers.filter(user => {
+        const name = (user.name || '').toLowerCase();
+        const skills = (user.topSkills || []).join(' ').toLowerCase();
+        return (
+          name.includes(searchQuery.toLowerCase()) || skills.includes(searchQuery.toLowerCase())
+        );
+      })
+    : allUsers;
+
+  if (loading) return <p className={`${styles.message}`}>Loading ranked users...</p>;
+  if (!filteredUsers.length) return <p className={`${styles.message}`}>No users found.</p>;
 
   return (
-    <div className={styles.containerGrid}>
-      {users.map(user => (
-        <UserCard key={user._id || user.email || user.name} user={user} />
-      ))}
+    <div className={darkMode ? `${styles.darkMode}` : ''}>
+      <div className={`${styles.container}`}>
+        {filteredUsers.map(user => (
+          <div key={user._id} className={`${styles.userWrapper}`}>
+            <UserCard user={user} />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
 
 RankedUserList.propTypes = {
-  users: PropTypes.arrayOf(PropTypes.object).isRequired,
-  loading: PropTypes.bool.isRequired,
-  error: PropTypes.string,
-  emptyMessage: PropTypes.string.isRequired,
-};
-
-RankedUserList.defaultProps = {
-  error: null,
+  selectedSkills: PropTypes.arrayOf(PropTypes.string),
+  selectedPreferences: PropTypes.arrayOf(PropTypes.string),
+  searchQuery: PropTypes.string,
 };
 
 export default RankedUserList;

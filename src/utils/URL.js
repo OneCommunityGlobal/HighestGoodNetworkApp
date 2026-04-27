@@ -1,9 +1,10 @@
 const APIEndpoint =
-  process.env.REACT_APP_APIENDPOINT || 'https://hgn-rest-beta.azurewebsites.net/api';
+  process.env.REACT_APP_APIENDPOINT || 'http://localhost:4500/api';
 
 export const ENDPOINTS = {
   APIEndpoint: () => APIEndpoint,
   USER_PROFILE: userId => `${APIEndpoint}/userprofile/${userId}`,
+  USER_PROFILE_FIXED: userId => `${APIEndpoint}/userProfile/${userId}`,
   USER_PROFILE_PROPERTY: userId => `${APIEndpoint}/userprofile/${userId}/property`,
   USER_PROFILES: `${APIEndpoint}/userprofile/`,
   UPDATE_REHIREABLE_STATUS: userId => `${APIEndpoint}/userprofile/${userId}/rehireable`,
@@ -11,17 +12,29 @@ export const ENDPOINTS = {
   USER_PROFILE_UPDATE: `${APIEndpoint}/userprofile/update`,
   ADD_BLUE_SQUARE: userId => `${APIEndpoint}/userprofile/${userId}/addInfringement`,
 
-  TOP_CONVERTED: (limit, startDate, endDate) =>
-    `${APIEndpoint}/job-analytics/top-converted?limit=${limit}${startDate && endDate ? `&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}` : ''}`,
-  LEAST_CONVERTED: (limit, startDate, endDate) =>
-    `${APIEndpoint}/job-analytics/least-converted?limit=${limit}${startDate && endDate ? `&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}` : ''}`,
+  TOP_CONVERTED: (limit, startDate, endDate) => {
+    const dateParams =
+      startDate && endDate
+        ? `&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`
+        : '';
+    return `${APIEndpoint}/job-analytics/top-converted?limit=${limit}${dateParams}`;
+  },
+  LEAST_CONVERTED: (limit, startDate, endDate) => {
+    const dateParams =
+      startDate && endDate
+        ? `&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`
+        : '';
+    return `${APIEndpoint}/job-analytics/least-converted?limit=${limit}${dateParams}`;
+  },
 
   MODIFY_BLUE_SQUARE: (userId, blueSquareId) =>
     `${APIEndpoint}/userprofile/${userId}/infringements/${blueSquareId}`,
 
   // Blue Square Email Triggers
-  BLUE_SQUARE_RESEND_INFRINGEMENT_EMAILS: () => `${APIEndpoint}/blueSquare/resend-infringement-emails-only`,
-  BLUE_SQUARE_RESEND_WEEKLY_SUMMARY_EMAILS: () => `${APIEndpoint}/blueSquare/resend-weekly-summary-emails`,
+  BLUE_SQUARE_RESEND_INFRINGEMENT_EMAILS: () =>
+    `${APIEndpoint}/blueSquare/resend-infringement-emails-only`,
+  BLUE_SQUARE_RESEND_WEEKLY_SUMMARY_EMAILS: () =>
+    `${APIEndpoint}/blueSquare/resend-weekly-summary-emails`,
   USERS_ALLTEAMCODE_CHANGE: `${APIEndpoint}/AllTeamCodeChanges`,
   REPLACE_TEAM_CODE: `${APIEndpoint}/userProfile/replaceTeamCode`,
 
@@ -29,7 +42,7 @@ export const ENDPOINTS = {
 
   USERS_REMOVE_PROFILE_IMAGE: `${APIEndpoint}/userProfile/profileImage/remove`,
   USERS_UPDATE_PROFILE_FROM_WEBSITE: `${APIEndpoint}/userProfile/profileImage/imagefromwebsite`,
-  USER_PROFILE_BASIC_INFO: `${APIEndpoint}/userProfile/basicInfo`,
+  USER_PROFILE_BASIC_INFO: source => `${APIEndpoint}/userProfile/basicInfo/${source}`,
   USER_AUTOCOMPLETE: searchText => `${APIEndpoint}/userProfile/autocomplete/${searchText}`,
   SEARCH_USER: `${APIEndpoint}/users/search`,
   TOGGLE_BIO_STATUS: userId => `${APIEndpoint}/userProfile/${userId}/toggleBio`,
@@ -44,6 +57,7 @@ export const ENDPOINTS = {
   USER_ALL_TEAM_CODE: `${APIEndpoint}/userProfile/teamCode/list`,
   LOGIN: `${APIEndpoint}/login`,
   PROJECTS: `${APIEndpoint}/projects`,
+  ARCHIVEDPROJECTS: `${APIEndpoint}/archivedProjects`,
   TEAM: `${APIEndpoint}/team`,
   TEAM_DATA: teamId => `${APIEndpoint}/team/${teamId}`,
   TEAM_USERS: teamId => `${APIEndpoint}/team/${teamId}/users`,
@@ -110,6 +124,7 @@ export const ENDPOINTS = {
   UPDATE_PARENT_TASKS: wbsId => `${APIEndpoint}/task/updateAllParents/${wbsId}`,
   MOVE_TASKS: wbsId => `${APIEndpoint}/tasks/moveTasks/${wbsId}`,
   WEEKLY_SUMMARIES_REPORT: () => `${APIEndpoint}/reports/weeklysummaries`,
+  WEEKLY_SUMMARIES_TEAM_CODES: () => `${APIEndpoint}/reports/weeklysummaries/teamcodes`,
   WEEKLY_SUMMARIES_FILTERS: `${APIEndpoint}/weeklySummariesFilters`,
   WEEKLY_SUMMARIES_FILTER_BY_ID: filterId => `${APIEndpoint}/weeklySummariesFilters/${filterId}`,
   WEEKLY_SUMMARIES_FILTER_REPLACE_CODES: `${APIEndpoint}/weeklySummariesFilters/replaceTeamcodes`,
@@ -150,6 +165,8 @@ export const ENDPOINTS = {
   BADGE_ASSIGN_MULTIPLE: `${APIEndpoint}/badge/assign`,
   BADGE_ASSIGN: userId => `${APIEndpoint}/badge/assign/${userId}`,
   BADGE_BY_ID: badgeId => `${APIEndpoint}/badge/${badgeId}`,
+  ADMIN_LIST: () => `${APIEndpoint}/reports/getAdminList`,
+  SEND_EMAIL_REPORT: () => `${APIEndpoint}/reports/sendEmailReport`,
 
   TEAM_MEMBER_TASKS: userId => `${ENDPOINTS.APIEndpoint()}/user/${userId}/teams/tasks`,
   CREATE_OR_UPDATE_TASK_NOTIFICATION: taskId =>
@@ -169,6 +186,20 @@ export const ENDPOINTS = {
   },
   POPULARITY_ROLES: `${APIEndpoint}/popularity/roles`,
 
+  ENHANCED_POPULARITY: (range, roles, start, end, includeLowVolume) => {
+    let url = `${APIEndpoint}/popularity-enhanced/timeline?`;
+    if (range) url += `range=${range}&`;
+    if (roles && roles.length > 0) {
+      url += `roles=${encodeURIComponent(roles.join(','))}&`;
+    }
+    if (start) url += `start=${encodeURIComponent(start)}&`;
+    if (end) url += `end=${encodeURIComponent(end)}&`;
+    if (includeLowVolume !== undefined) url += `includeLowVolume=${includeLowVolume}&`;
+    return url.slice(0, -1);
+  },
+  ENHANCED_POPULARITY_ROLES: `${APIEndpoint}/popularity-enhanced/roles-enhanced`,
+  ENHANCED_POPULARITY_PAIRS: roles =>
+    `${APIEndpoint}/popularity-enhanced/role-pairs?roles=${encodeURIComponent(roles.join(','))}`,
 
   // titles endpoints
   TITLES: () => `${APIEndpoint}/title`,
@@ -208,10 +239,25 @@ export const ENDPOINTS = {
     return url;
   },
 
+  INJURIES_DISTRIBUTION: (projectId, startDate, endDate, groupBy = 'severity') => {
+    let url = `${APIEndpoint}/injuries/distribution`;
+    const params = new URLSearchParams();
+    if (projectId && projectId !== 'all') params.append('projectId', projectId);
+    if (startDate) params.append('startDate', startDate);
+    if (endDate) params.append('endDate', endDate);
+    if (groupBy) params.append('groupBy', groupBy);
+
+    const queryString = params.toString();
+    return queryString ? `${url}?${queryString}` : url;
+  },
+
+  INJURY_PROJECTS: () => `${APIEndpoint}/injuries/projects`,
+
   PRESETS: () => `${APIEndpoint}/rolePreset`,
   PRESETS_BY_ID: roleNameOrPresetId => `${APIEndpoint}/rolePreset/${roleNameOrPresetId}`,
 
   OWNERMESSAGE: () => `${APIEndpoint}/ownerMessage`,
+  OWNER_MESSAGE_HISTORY: (page, limit) => `${APIEndpoint}/ownerMessageLogs?page=${page}&limit=${limit}`,
 
   AI_PROMPT: () => `${APIEndpoint}/dashboard/aiPrompt`,
   COPIED_AI_PROMPT: userId => `${APIEndpoint}/dashboard/aiPrompt/copied/${userId}`,
@@ -256,6 +302,34 @@ export const ENDPOINTS = {
 
   GET_TOTAL_COUNTRY_COUNT: () => `${APIEndpoint}/getTotalCountryCount`,
 
+  ANALYTICS_AVAILABLE_ROLES: () => `${APIEndpoint}/analytics/roles`,
+
+  // Country Application Map Chart endpoints
+  COUNTRY_APPLICATION_DATA: (params = {}) => {
+    let url = `${APIEndpoint}/analytics/country-applications`;
+    const queryParams = new URLSearchParams();
+
+    if (params.roles && params.roles.length > 0) {
+      queryParams.append('roles', params.roles.join(','));
+    }
+    // Include ALL so the API uses filter=all; omit timeFrame when startDate/endDate define the range
+    if (params.timeFrame) {
+      queryParams.append('timeFrame', params.timeFrame);
+    }
+    if (params.startDate) {
+      queryParams.append('startDate', params.startDate);
+    }
+    if (params.endDate) {
+      queryParams.append('endDate', params.endDate);
+    }
+    if (params.customDateRange) {
+      queryParams.append('customDateRange', 'true');
+    }
+
+    const queryString = queryParams.toString();
+    return queryString ? `${url}?${queryString}` : url;
+  },
+
   GET_ALL_FOLLOWUPS: () => `${APIEndpoint}/followup`,
 
   SET_USER_FOLLOWUP: (userId, taskId) => `${APIEndpoint}/followup/${userId}/${taskId}`,
@@ -279,8 +353,10 @@ export const ENDPOINTS = {
   BM_MATERIALS: `${APIEndpoint}/bm/materials`,
   BM_CONSUMABLES: `${APIEndpoint}/bm/consumables`,
   BM_UPDATE_CONSUMABLES: `${APIEndpoint}/bm/updateConsumablesRecord`,
+  BM_UPDATE_HISTORY: itemType => `${APIEndpoint}/bm/${itemType}/updateHistory`,
   BM_CONSUMABLE_TYPES: `${APIEndpoint}/bm/invtypes/consumables`,
   BM_CONSUMABLES_PURCHASE: `${APIEndpoint}/bm/consumables/purchase`,
+  BM_UPDATE_CONSUMABLE_STATUS: `${APIEndpoint}/bm/updateConsumableStatus`,
   BM_REUSABLE_TYPES: `${APIEndpoint}/bm/invtypes/reusables`,
   BM_REUSABLES: `${APIEndpoint}/bm/reusables`,
   BM_PURCHASE_REUSABLES: `${APIEndpoint}/bm/reusables/purchase`,
@@ -296,6 +372,7 @@ export const ENDPOINTS = {
   BM_UPDATE_MATERIAL: `${APIEndpoint}/bm/updateMaterialRecord`,
   BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`,
   BM_UPDATE_MATERIAL_STATUS: `${APIEndpoint}/bm/updateMaterialStatus`,
+  BM_MATERIAL_STOCK_OUT_RISK: `${APIEndpoint}/bm/materials/stock-out-risk`,
   BM_UPDATE_REUSABLE: `${APIEndpoint}/bm/updateReusableRecord`,
   BM_UPDATE_REUSABLE_BULK: `${APIEndpoint}/bm/updateReusableRecordBulk`,
   BM_TOOL_TYPES: `${APIEndpoint}/bm/invtypes/tools`,
@@ -306,27 +383,44 @@ export const ENDPOINTS = {
   BM_LESSON_LIKES: lessonId => `${APIEndpoint}/bm/lesson/${lessonId}/like`,
   BM_EXTERNAL_TEAM: `${APIEndpoint}/bm/externalTeam`,
   BM_INVENTORY_UNITS: `${APIEndpoint}/bm/inventoryUnits`,
+  BM_INVENTORY_UNIT_BY_ID: unitId => `${APIEndpoint}/bm/inventoryUnits/${unitId}`,
   BM_INVTYPE_ROOT: `${APIEndpoint}/bm/invtypes`,
+  BM_INVTYPE_BY_ID: typeId => `${APIEndpoint}/bm/invtypes/${typeId}`,
   BM_TOOLS: `${APIEndpoint}/bm/tools/`,
   BM_TOOL_BY_ID: singleToolId => `${APIEndpoint}/bm/tools/${singleToolId}`,
   BM_TOOL_AVAILABILITY: (toolId = '', projectId = '') =>
     `${APIEndpoint}/tools/availability?toolId=${toolId}&projectId=${projectId}`,
   BM_LOG_TOOLS: `${APIEndpoint}/bm/tools/log`,
   BM_EQUIPMENT_BY_ID: singleEquipmentId => `${APIEndpoint}/bm/equipment/${singleEquipmentId}`,
+  BM_EQUIPMENT_STATUS_UPDATE: (equipmentId) => `${APIEndpoint}/bm/equipment/${equipmentId}/status`,
   BM_EQUIPMENTS: `${APIEndpoint}/bm/equipments`,
   BM_INVTYPE_TYPE: type => `${APIEndpoint}/bm/invtypes/${type}`,
   BM_ISSUE_CHART: `${APIEndpoint}/bm/issue/issue-chart`,
-
+  BM_EQUIPMENT_INVTYPE: `${APIEndpoint}/bm/invtypes/equipment`,
+  BM_REUSABLES_INVTYPE: `${APIEndpoint}/bm/invtypes/reusables`,
   BM_ISSUE_FORM: `${APIEndpoint}/bm/issue/add`,
   BM_INJURY_CATEGORY_BREAKDOWN: `${APIEndpoint}/bm/injuries/category-breakdown`,
   BM_INJURY_SEVERITIES: `${APIEndpoint}/bm/injuries/injury-severities`,
   BM_INJURY_TYPES: `${APIEndpoint}/bm/injuries/injury-types`,
   BM_INJURY_PROJECTS: `${APIEndpoint}/bm/injuries/project-injury`,
+  BM_INJURY_OVER_TIME: `${APIEndpoint}/bm/injuries/over-time`,
   BM_INJURY_ISSUE: `${APIEndpoint}/bm/issues`,
   BM_INJURY_SEVERITY: `${APIEndpoint}/bm/injuries/severity-by-project`,
   BM_RENTAL_CHART: `${APIEndpoint}/bm/rentalChart`,
   BM_TOOLS_RETURNED_LATE: `${APIEndpoint}/bm/tools/returned-late`,
   BM_TOOLS_RETURNED_LATE_PROJECTS: `${APIEndpoint}/bm/tools/returned-late/projects`,
+
+  // Project cost tracking endpoints
+  PROJECT_COST_IDS: `${APIEndpoint}/bm/projects-cost/ids`,
+  PROJECT_COSTS_BY_ID: (projectId, categories, fromDate, toDate) => {
+    let url = `${APIEndpoint}/bm/projects/${projectId}/costs`;
+    const params = [];
+    if (categories) params.push(`categories=${categories}`);
+    if (fromDate) params.push(`fromDate=${fromDate}`);
+    if (toDate) params.push(`toDate=${toDate}`);
+    if (params.length > 0) url += `?${params.join('&')}`;
+    return url;
+  },
   TOOLS_AVAILABILITY_PROJECTS: `${APIEndpoint}/bm/tools-availability/projects`,
   TOOLS_AVAILABILITY_BY_PROJECT: (projectId, startDate, endDate) => {
     let url = `${APIEndpoint}/bm/projects/${projectId}/tools-availability`;
@@ -341,8 +435,12 @@ export const ENDPOINTS = {
   BM_TAGS_DELETE: `${APIEndpoint}/bm/tags`,
 
   BM_ORGS_WITH_LOCATION: `${APIEndpoint}/bm/orgLocation`,
-  ORG_DETAILS: (projectId) => `${APIEndpoint}/bm/orgLocation/${projectId}`,
+  ORG_DETAILS: projectId => `${APIEndpoint}/bm/orgLocation/${projectId}`,
   BM_PROJECT_MEMBERS: projectId => `${APIEndpoint}/bm/project/${projectId}/users`,
+  BM_UPDATE_NAME_AND_UNIT :invtypeId => `${APIEndpoint}/bm/invtypes/material/${invtypeId}`,
+  BM_ITEM_UPDATE_HISTORY: invtypeId =>`${APIEndpoint}/bm/invtypes/${invtypeId}/history`,
+
+  PROJECT_GLOBAL_DISTRIBUTION: `${APIEndpoint}/projectglobaldistribution`,
 
   // bm time logger endpoints
   TIME_LOGGER_START: (projectId, memberId) =>
@@ -353,6 +451,8 @@ export const ENDPOINTS = {
     `${APIEndpoint}/bm/timelogger/${projectId}/${memberId}/stop`,
   TIME_LOGGER_LOGS: (projectId, memberId) =>
     `${APIEndpoint}/bm/timelogger/${projectId}/${memberId}/logs`,
+  TIME_LOGGER_ALL_LOGS: projectId =>
+    `${APIEndpoint}/bm/timelogger/${projectId}/logs`,
 
   GET_TIME_OFF_REQUESTS: () => `${APIEndpoint}/getTimeOffRequests`,
   ADD_TIME_OFF_REQUEST: () => `${APIEndpoint}/setTimeOffRequest`,
@@ -372,6 +472,16 @@ export const ENDPOINTS = {
   HGN_FORM_UPDATE_QUESTION: id => `${APIEndpoint}/questions/${id}`,
   HGN_FORM_SUBMIT: `${APIEndpoint}/hgnform`,
   HGN_FORM_UPDATE_USER_SKILLS_FOLLOWUP_SUBMIT: `${APIEndpoint}/skills/profile/updateFollowUp/`,
+  SKILLS_PROFILE_UPDATE_YEARS_OF_EXPERIENCE: userId => `${APIEndpoint}/skills/profile/updateYearsOfExperience/${userId}`,
+  // HGN Skills Dashboard
+  SKILLS_PROFILE: userId => `${APIEndpoint}/skills/profile/${userId}`,
+  // User State Indicator endpoints
+  USER_STATE_CATALOG: `${APIEndpoint}/userstate/catalog`,
+  USER_STATE_CATALOG_REORDER: `${APIEndpoint}/userstate/catalog/reorder`,
+  USER_STATE_CATALOG_ITEM: key => `${APIEndpoint}/userstate/catalog/${key}`,
+  USER_STATE_SELECTION: userId => `${APIEndpoint}/userstate/selection/${userId}`,
+  USER_STATE_SELECTIONS_BATCH: `${APIEndpoint}/userstate/selections/batch`,
+  USER_STATE_CATALOG_USAGE: key => `${APIEndpoint}/userstate/catalog/${key}/usage`,
 
   HGN_FORM_GET_TEAM_MEMBERS_BY_SKILL: skill => `${APIEndpoint}/userProfile/skills/${skill}`,
 
@@ -408,8 +518,10 @@ export const ENDPOINTS = {
 
   // event endpoint
   EVENTS: `${APIEndpoint}/events`,
+  EVENT_BY_ID: id => `${APIEndpoint}/events/${id}`,
   EVENT_TYPES: `${APIEndpoint}/events/types`,
   EVENT_LOCATIONS: `${APIEndpoint}/events/locations`,
+  EVENT_ATTENDANCE_STATS: `${APIEndpoint}/events/attendance/stats`,
   LB_SEND_MESSAGE: `${APIEndpoint}/lb/messages`,
   LB_READ_MESSAGE: `${APIEndpoint}/lb/messages/conversation`,
   LB_UPDATE_MESSAGE_STATUS: `${APIEndpoint}/lb/messages/statuses`,
@@ -437,6 +549,9 @@ export const ENDPOINTS = {
   DROPBOX_CREATE_ADD: `${APIEndpoint}/dropbox/create-folder-and-invite`,
   ACCESS_MANAGEMENT: `${APIEndpoint}/accessManagement`,
 
+  // CP dashboard endpoints
+  CP_NOSHOW: `${APIEndpoint}/communityportal/sendFollowUpEmail`,
+
   // community portal
   CP_NOSHOW_VIZ_LOCATION: `${APIEndpoint}/communityportal/reports/participation/location`,
   CP_NOSHOW_VIZ_AGEGROUP: `${APIEndpoint}/communityportal/reports/participation/age-group`,
@@ -452,9 +567,11 @@ export const ENDPOINTS = {
   LB_LISTING_AVAILABILITY: `${APIEndpoint}/lb/listing/availability`,
   LB_LISTING_BOOK: `${APIEndpoint}/lb/listing/availability/booking`,
   HELP_CATEGORIES: `${APIEndpoint}/help-categories`,
+  APPLICANT_SOURCES: `${APIEndpoint}/applicant-analytics/applicant-sources`,
 
   // job analytics
   HOURS_PLEDGED: `${APIEndpoint}/analytics/hours-pledged`,
+  JOB_HITS_AND_APPLICATIONS: `${APIEndpoint}/analytics/job-hits-and-applications`,
 
   // Saved Filters endpoints
   SAVED_FILTERS: () => `${APIEndpoint}/savedFilters`,
@@ -470,18 +587,14 @@ export const ENDPOINTS = {
         ? `startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`
         : null,
 
-      roles && roles !== "All"
-        ? `roles=${encodeURIComponent(roles)}`
-        : null,
+      roles && roles !== 'All' ? `roles=${encodeURIComponent(roles)}` : null,
 
-      granularity
-        ? `granularity=${encodeURIComponent(granularity)}`
-        : null,
+      granularity ? `granularity=${encodeURIComponent(granularity)}` : null,
     ].filter(Boolean);
 
-    const qs = params.length ? `?${params.join("&")}` : "";
+    const qs = params.length ? `?${params.join('&')}` : '';
 
-    return `${APIEndpoint.replace("/api", "")}/job-analytics${qs}`;
+    return `${APIEndpoint.replace('/api', '')}/job-analytics${qs}`;
   },
 
   JOB_ANALYTICS_ROLES: `${APIEndpoint.replace('/api', '')}/job-analytics/roles`,
@@ -490,10 +603,60 @@ export const ENDPOINTS = {
   PROMOTION_ELIGIBILITY: `${APIEndpoint}/promotion-eligibility`,
   PROMOTE_MEMBERS: `${APIEndpoint}/promote-members`,
 
+  // LinkedIn autoposter endpoints
+  LINKEDIN_POST: `${APIEndpoint}/postToLinkedIn`,
+  LINKEDIN_SCHEDULED_POSTS: `${APIEndpoint}/scheduledPosts`,
+  LINKEDIN_SCHEDULED_POST_BY_ID: postId => `${APIEndpoint}/scheduledPosts/${postId}`,
+
+  // actual cost endpoints
+  ACTUAL_COST_BREAKDOWN: projectId => `${APIEndpoint}/projects/${projectId}/actual-cost-breakdown`,
+  MATERIAL_UTILIZATION: () => `${APIEndpoint}/materials/utilization`,
+  DISTINCT_PROJECTS: () => `${APIEndpoint}/materials/distinct-projects`,
+  DISTINCT_MATERIALS: () => `${APIEndpoint}/materials/distinct-materials`,
 
   //pull requests analysis
   PR_REVIEWS_INSIGHTS: `${APIEndpoint}/analytics/pr-review-insights`,
+  PR_GRADING_CONFIG: `${APIEndpoint}/pr-grading-config`,
+  WEEKLY_GRADING: `${APIEndpoint}/weekly-grading`,
+  WEEKLY_GRADING_SAVE: `${APIEndpoint}/weekly-grading/save`,
 
+  // Education Portal endpoints
+  STUDENT_PROFILE: `${APIEndpoint}/student/profile`,
+  STUDENT_SUBJECT_TASKS: subjectId => `${APIEndpoint}/student/profile/subject/${subjectId}`,
+  EDUCATOR_ASSIGN_ATOMS: () => `${APIEndpoint}/educator/assign-atoms`,
+
+  LESSON_PLANS: `${APIEndpoint}/education/lesson-plans`,
+  SAVE_INTEREST: `${APIEndpoint}/education/student/saved-interests`,
+  GET_SAVED: `${APIEndpoint}/education/student/saved-interests`,
+  REMOVE_INTEREST: `${APIEndpoint}/education/student/saved-interests`,
+  CHECK_IF_SAVED: `${APIEndpoint}/education/student/saved-interests/check`,
+  EDUCATOR_REPORT_EXPORT: (type, format, params = {}) => {
+    const { studentId, classId, startDate, endDate } = params;
+    let url = `${APIEndpoint}/educator/reports/export?type=${type}&format=${format}`;
+    if (studentId) url += `&studentId=${studentId}`;
+    if (classId) url += `&classId=${classId}`;
+    if (startDate) url += `&startDate=${encodeURIComponent(startDate)}`;
+    if (endDate) url += `&endDate=${encodeURIComponent(endDate)}`;
+    return url;
+  },
+
+  HGN_FORM_RESPONSES: () => `${APIEndpoint}/hgnform`,
+  // Kitchen and Inventory Management endpoints
+  KI_CALENDAR_EVENTS: (month, year) => `${APIEndpoint}/kitchenandinventory/calendar?month=${month}&year=${year}`,
+
+  // Help Request & Feedback Modal endpoints
+HGN_FORM_RANKED: `${APIEndpoint}/hgnform/ranked`,
+HELP_REQUEST_CHECK_MODAL: userId => `${APIEndpoint}/helprequest/check-modal/${userId}`,
+FEEDBACK_CLOSE_PERMANENTLY: `${APIEndpoint}/feedback/close-permanently`,
+FEEDBACK_SUBMIT: `${APIEndpoint}/feedback/submit`,
+  // application time analytics
+  APPLICATION_TIME_DATA: (startDate, endDate, roles) => {
+    let url = `${APIEndpoint}/analytics/application-time?`;
+    if (startDate) url += `startDate=${encodeURIComponent(startDate)}&`;
+    if (endDate) url += `endDate=${encodeURIComponent(endDate)}&`;
+    if (roles && roles.length > 0) url += `roles=${encodeURIComponent(roles.join(','))}&`;
+    return url.slice(0, -1);
+  },
 };
 
 export const ApiEndpoint = APIEndpoint;
