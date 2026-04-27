@@ -60,16 +60,17 @@
     border-color: #e53935;
   }
   
-  .teamFormError {
+  .addTeamForm .teamFormError {
     font-weight: 500;
     font-size: 11px !important;
-    color: red;
+    color: red !important;
     display: flex;
     justify-content: flex-start;
+    padding-left: 0;
   }
   
-  .fieldRequired{
-    color: red;
+  .addTeamForm .fieldRequired{
+    color: red !important;
   }
   
   .addTeamContainer{
