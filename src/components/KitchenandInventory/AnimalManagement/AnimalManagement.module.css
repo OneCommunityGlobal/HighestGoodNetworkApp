@@ -1,0 +1,444 @@
+/* ============================================================
+   AnimalManagement.module.css
+   Phase 6 - Kitchen Inventory Management - Animal Management
+   Earth-tone palette | Light + Dark mode | Responsive grid
+   ============================================================ */
+
+/* --- Page Container --- */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #3e3a36;
+  background-color: transparent;
+}
+
+.container.dark {
+  color: #e0ddd8;
+}
+
+/* --- Page Header --- */
+.pageHeader {
+  margin-bottom: 28px;
+}
+
+.pageTitle {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0 0 6px;
+  color: #4a6741;
+}
+
+.pageTitle.dark {
+  color: #8fbf85;
+}
+
+.pageSubtitle {
+  font-size: 0.95rem;
+  margin: 0;
+  color: #6b6560;
+}
+
+.pageSubtitle.dark {
+  color: #a09a94;
+}
+
+/* --- Dashboard Cards Grid --- */
+.dashboardGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+@media (width <= 900px) {
+  .dashboardGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (width <= 500px) {
+  .dashboardGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- Dashboard Card --- */
+.dashboardCard {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 20px;
+  border-radius: 12px;
+  background-color: #faf8f5;
+  border: 1px solid #e6e0d8;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.dashboardCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 8%);
+}
+
+.dashboardCard.dark {
+  background-color: #2a2825;
+  border-color: #3e3b37;
+}
+
+.dashboardCard.dark:hover {
+  box-shadow: 0 4px 12px rgb(0 0 0 / 30%);
+}
+
+.cardIcon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.cardContent {
+  display: flex;
+  flex-direction: column;
+}
+
+.cardValue {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.cardLabel {
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.75;
+}
+
+/* Card color accents */
+.card_green .cardValue {
+  color: #4a6741;
+}
+
+.card_amber .cardValue {
+  color: #b8860b;
+}
+
+.card_brown .cardValue {
+  color: #7a5c3e;
+}
+
+.card_red .cardValue {
+  color: #a94442;
+}
+
+.card_green.dark .cardValue {
+  color: #8fbf85;
+}
+
+.card_amber.dark .cardValue {
+  color: #e2b94e;
+}
+
+.card_brown.dark .cardValue {
+  color: #c49a6c;
+}
+
+.card_red.dark .cardValue {
+  color: #e87c79;
+}
+
+/* --- Section Navbar --- */
+.sectionNavbar {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 10px;
+  background-color: #f0ece6;
+  margin-bottom: 24px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.sectionNavbar.dark {
+  background-color: #2a2825;
+}
+
+.sectionTab {
+  flex: 1;
+  min-width: max-content;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #6b6560;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+  white-space: nowrap;
+}
+
+.sectionTab:hover {
+  background-color: #e6e0d8;
+  color: #3e3a36;
+}
+
+.sectionTab.dark {
+  color: #a09a94;
+}
+
+.sectionTab.dark:hover {
+  background-color: #3e3b37;
+  color: #e0ddd8;
+}
+
+.sectionTab.activeTab {
+  background-color: #4a6741;
+  color: #fff;
+}
+
+.sectionTab.activeTab.dark {
+  background-color: #5d8a52;
+  color: #fff;
+}
+
+/* --- Search Bar --- */
+.searchBar {
+  margin-bottom: 20px;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #d6d0c8;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  background-color: #faf8f5;
+  color: #3e3a36;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  box-sizing: border-box;
+}
+
+.searchInput:focus {
+  border-color: #4a6741;
+  box-shadow: 0 0 0 3px rgb(74 103 65 / 15%);
+}
+
+.searchInput.dark {
+  background-color: #2a2825;
+  border-color: #3e3b37;
+  color: #e0ddd8;
+}
+
+.searchInput.dark:focus {
+  border-color: #5d8a52;
+  box-shadow: 0 0 0 3px rgb(93 138 82 / 20%);
+}
+
+/* --- Animal Grid --- */
+.animalGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+@media (width <= 900px) {
+  .animalGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (width <= 560px) {
+  .animalGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- Animal Card --- */
+.animalCard {
+  background-color: #faf8f5;
+  border: 1px solid #e6e0d8;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.animalCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgb(0 0 0 / 7%);
+}
+
+.animalCard.dark {
+  background-color: #2a2825;
+  border-color: #3e3b37;
+}
+
+.animalCard.dark:hover {
+  box-shadow: 0 6px 16px rgb(0 0 0 / 30%);
+}
+
+.animalCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.animalName {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0;
+  color: #3e3a36;
+}
+
+.animalCard.dark .animalName {
+  color: #e0ddd8;
+}
+
+/* --- Health Tags --- */
+.healthTag {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+.health_healthy {
+  background-color: #e6f4e2;
+  color: #3a6e2e;
+}
+
+.health_healthy.dark {
+  background-color: rgb(74 103 65 / 25%);
+  color: #8fbf85;
+}
+
+.health_attention {
+  background-color: #fdf3dc;
+  color: #8b6914;
+}
+
+.health_attention.dark {
+  background-color: rgb(184 134 11 / 20%);
+  color: #e2b94e;
+}
+
+.health_critical {
+  background-color: #fde2e1;
+  color: #a94442;
+}
+
+.health_critical.dark {
+  background-color: rgb(169 68 66 / 20%);
+  color: #e87c79;
+}
+
+/* --- Animal Detail Rows --- */
+.animalDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.88rem;
+  padding: 4px 0;
+  border-bottom: 1px solid #ece7e0;
+}
+
+.detailRow:last-child {
+  border-bottom: none;
+}
+
+.animalCard.dark .detailRow {
+  border-bottom-color: #3e3b37;
+}
+
+.detailLabel {
+  color: #7a7570;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.animalCard.dark .detailLabel {
+  color: #a09a94;
+}
+
+.detailValue {
+  font-weight: 600;
+  text-align: right;
+  color: #3e3a36;
+}
+
+.animalCard.dark .detailValue {
+  color: #e0ddd8;
+}
+
+/* --- View Details Button --- */
+.viewDetailsBtn {
+  align-self: stretch;
+  padding: 10px 16px;
+  border: 1.5px solid #4a6741;
+  border-radius: 8px;
+  background: transparent;
+  color: #4a6741;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+  margin-top: auto;
+}
+
+.viewDetailsBtn:hover {
+  background-color: #4a6741;
+  color: #fff;
+}
+
+.viewDetailsBtn.dark {
+  border-color: #5d8a52;
+  color: #8fbf85;
+}
+
+.viewDetailsBtn.dark:hover {
+  background-color: #5d8a52;
+  color: #fff;
+}
+
+/* --- Placeholder / Empty States --- */
+.noResults {
+  text-align: center;
+  padding: 40px 20px;
+  font-size: 0.95rem;
+  color: #7a7570;
+}
+
+.noResults.dark {
+  color: #a09a94;
+}
+
+.placeholderSection {
+  text-align: center;
+  padding: 60px 20px;
+  font-size: 1rem;
+  color: #7a7570;
+  background-color: #f5f1eb;
+  border-radius: 12px;
+  border: 1px dashed #d6d0c8;
+}
+
+.placeholderSection.dark {
+  color: #a09a94;
+  background-color: #252320;
+  border-color: #3e3b37;
+}

@@ -81,8 +81,6 @@ export default function PopularEvents() {
   const [typeFilter, setTypeFilter] = useState('All');
   const [sortOption, setSortOption] = useState('HighToLow');
 
-  const calculatePercentage = (attended, enrolled) =>
-    enrolled ? Math.round((attended / enrolled) * 100) : 0;
 
   const getTrendIndicator = (currentPercentage, previousPercentage) => {
     if (currentPercentage > previousPercentage) {
@@ -105,6 +103,11 @@ export default function PopularEvents() {
       className: styles.pETrendStable,
     };
   };
+  const darkMode = useSelector(state => state.theme.darkMode);
+
+  // ✅ KEEP YOUR SAFE FIX
+  const calculatePercentage = (attended, enrolled) =>
+    enrolled === 0 ? 0 : Math.round((attended / enrolled) * 100);
 
   const getBarColor = percentage => {
     if (percentage > 60) return styles.pEBarGreen;
@@ -130,24 +133,31 @@ export default function PopularEvents() {
     return 0;
   });
 
-  const mostPopularEvent = filteredData.reduce(
-    (max, event) =>
-      calculatePercentage(event.attended, event.enrolled) >
-      calculatePercentage(max.attended, max.enrolled)
-        ? event
-        : max,
-    filteredData[0] || {},
-  );
+  const mostPopularEvent =
+    filteredData.length > 0
+      ? filteredData.reduce(
+          (max, event) =>
+            calculatePercentage(event.attended, event.enrolled) >
+            calculatePercentage(max.attended, max.enrolled)
+              ? event
+              : max,
+          filteredData[0],
+        )
+      : null;
 
-  const leastPopularEvent = filteredData.reduce(
-    (min, event) =>
-      calculatePercentage(event.attended, event.enrolled) <
-      calculatePercentage(min.attended, min.enrolled)
-        ? event
-        : min,
-    filteredData[0] || {},
-  );
-  const darkMode = useSelector(state => state.theme.darkMode);
+  const leastPopularEvent =
+    filteredData.length > 0
+      ? filteredData.reduce(
+          (min, event) =>
+            calculatePercentage(event.attended, event.enrolled) <
+            calculatePercentage(min.attended, min.enrolled)
+              ? event
+              : min,
+          filteredData[0],
+        )
+      : null;
+
+
   return (
     <div
       className={`${styles.popularEventsContainer} ${
@@ -171,10 +181,24 @@ export default function PopularEvents() {
             <option value="Afternoon">Afternoon</option>
             <option value="Night">Night</option>
           </select>
-          <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)}>
-            <option value="All">All</option>
-            <option value="Offline">Offline</option>
-            <option value="Online">Online</option>
+
+          <select
+            value={typeFilter}
+            onChange={e => setTypeFilter(e.target.value)}
+            className={`
+              ${styles.selectBase}
+              ${darkMode ? 'bg-space-cadet text-light border-light' : ''}
+            `}
+          >
+            <option className={darkMode ? 'bg-space-cadet text-light' : ''} value="All">
+              All
+            </option>
+            <option className={darkMode ? 'bg-space-cadet text-light' : ''} value="Offline">
+              Offline
+            </option>
+            <option className={darkMode ? 'bg-space-cadet text-light' : ''} value="Online">
+              Online
+            </option>
           </select>
           <select value={sortOption} onChange={e => setSortOption(e.target.value)}>
             <option value="HighToLow">Sort by Popularity: High → Low</option>
@@ -246,6 +270,7 @@ export default function PopularEvents() {
             {filteredData.reduce((acc, event) => acc + event.enrolled, 0)}
           </div>
         </div>
+
         {filteredData.length > 0 && (
           <>
             <div className={`${styles.pESummaryItem} ${darkMode ? styles.pESummaryItemDark : ''}`}>

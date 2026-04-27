@@ -6,16 +6,17 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Container } from 'reactstrap';
 import { toast } from 'react-toastify';
+import isEqual from 'lodash/isEqual';
 import { searchWithAccent } from '../../utils/search';
 import {
   getAllUserTeams,
-  postNewTeam,
   deleteTeam,
   updateTeam,
   getTeamMembers,
   deleteTeamMember,
   addTeamMember,
   updateTeamMemeberVisibility,
+  clearTeamMembers,
 } from '../../actions/allTeamsAction';
 import { getAllUserProfile } from '../../actions/userManagement';
 import Loading from '../common/Loading';
@@ -24,12 +25,9 @@ import Team from './Team';
 import TeamOverview from './TeamsOverview';
 import TeamTableSearchPanel from './TeamTableSearchPanel';
 import TeamMembersPopup from './TeamMembersPopup';
-import CreateNewTeamPopup from './CreateNewTeamPopup';
 import DeleteTeamPopup from './DeleteTeamPopup';
 import TeamStatusPopup from './TeamStatusPopup';
-import isEqual from 'lodash/isEqual';
-import { getCachedTeamMembers } from './teamMembersCache';
-
+import AddTeamPopup from '../UserProfile/TeamsAndProjects/AddTeamPopup';
 // constants
 const FILTER_ALL = 'all';
 const FILTER_ACTIVE = 'active';
@@ -42,7 +40,6 @@ class Teams extends React.PureComponent {
       teamNameSearchText: '',
       teamMembersPopupOpen: false,
       deleteTeamPopupOpen: false,
-      createNewTeamPopupOpen: false,
       teamStatusPopupOpen: false,
       wildCardSearchText: '',
       selectedTeamId: 0,
@@ -54,9 +51,11 @@ class Teams extends React.PureComponent {
       sortTeamNameState: 'none', // 'none' | 'ascending' | 'descending'
       sortTeamActiveState: 'none', // 'none' | 'ascending' | 'descending'
       selectedFilter: FILTER_ALL,
-
-      initialMembersForPopup: [],
+      // Features from HEAD
+      addTeamPopupOpen: false,
+      isEdit: false,
       membersFetching: false,
+      selectedTeamMembers: [],
     };
   }
 
@@ -252,7 +251,7 @@ class Teams extends React.PureComponent {
     }
 
     return (
-      <div className="table-responsive">
+      <div className="table-responsive mt-3">
         <table className={tableClass}>
           <thead>
             <TeamTableHeader
@@ -272,25 +271,16 @@ class Teams extends React.PureComponent {
   renderPopups = allTeams => {
     const {
       selectedTeamId,
-      initialMembersForPopup,
       membersFetching,
       selectedTeam,
       teamMembersPopupOpen,
-      createNewTeamPopupOpen,
       deleteTeamPopupOpen,
       teamStatusPopupOpen,
       isActive,
       selectedTeamCode,
     } = this.state;
 
-    // prefer cache → snapshot → slice
-    const cachedNow = getCachedTeamMembers(String(selectedTeamId));
-    const sliceMembers = this.props.state?.teamsTeamMembers || [];
-    const members =
-      (Array.isArray(cachedNow) && cachedNow) ||
-      (Array.isArray(initialMembersForPopup) && initialMembersForPopup) ||
-      (Array.isArray(sliceMembers) && sliceMembers) ||
-      [];
+    const members = this.state.selectedTeamMembers;
 
     const selectedTeamData = Array.isArray(allTeams)
       ? allTeams.filter(team => team.teamName === selectedTeam)
@@ -304,21 +294,48 @@ class Teams extends React.PureComponent {
           members={members}
           fetching={membersFetching}
           onDeleteClick={this.onDeleteTeamMember}
-          usersdata={this.props.state?.allUserProfiles || []}
+          usersdata={this.props.state?.allUserProfiles?.userProfiles || []}
           onAddUser={this.onAddUser}
           teamData={selectedTeamData}
           onUpdateTeamMemberVisibility={this.onUpdateTeamMemberVisibility}
           selectedTeamName={selectedTeam}
         />
-
-        <CreateNewTeamPopup
-          open={createNewTeamPopupOpen}
-          onClose={this.onCreateNewTeamClose}
-          onOkClick={this.addNewTeam}
-          teamName={selectedTeam}
-          teamId={selectedTeamId}
-          isActive={isActive}
+        <AddTeamPopup
+          open={this.state.addTeamPopupOpen}
+          onClose={this.onAddTeamPopupClose}
+          teamsData={{ allTeams }}
+          userTeamsById={[]}
+          onSelectAssignTeam={async () => {
+            try {
+              // Close the popup first
+              this.setState({
+                addTeamPopupOpen: false,
+                wildCardSearchText: '',
+                teamNameSearchText: '',
+                isEdit: false,
+                selectedTeam: '',
+                selectedTeamId: undefined,
+                selectedTeamCode: '',
+                isActive: '',
+              });
+              // Refresh the data from the server
+              await this.props.getAllUserTeams();
+              await this.props.getAllUserProfile();
+            } catch (error) {
+              console.error('Error updating team list:', error);
+              toast.error('Error updating team list. Please refresh the page.');
+            }
+          }}
+          handleSubmit={() => {}}
+          userProfile={{}}
+          darkMode={this.props.state.theme.darkMode}
+          isTeamManagement
           isEdit={this.state.isEdit}
+          teamName={this.state.selectedTeam}
+          teamId={this.state.selectedTeamId}
+          teamCode={this.state.selectedTeamCode}
+          isActive={this.state.isActive}
+          onUpdateTeam={this.props.updateTeam}
         />
         <DeleteTeamPopup
           open={deleteTeamPopupOpen}
@@ -345,34 +362,38 @@ class Teams extends React.PureComponent {
 
   // ───────────────────────── handlers ─────────────────────────
 
-  onAddUser = user => {
-    this.props.addTeamMember(
-      this.state.selectedTeamId,
-      user._id,
-      user.firstName,
-      user.lastName,
-      user.role,
-      Date.now(),
-    );
+  onAddUser = async user => {
+    await this.props.addTeamMember(this.state.selectedTeamId, user._id);
+    const freshMembers = await this.props.getTeamMembers(this.state.selectedTeamId);
+    this.setState({ selectedTeamMembers: freshMembers || [] });
+    toast.success('Member added successfully!');
   };
 
-  onUpdateTeamMemberVisibility = (userId, visibility) => {
-    this.props.updateTeamMemeberVisibility(this.state.selectedTeamId, userId, visibility);
+  onUpdateTeamMemberVisibility = async (userId, visibility) => {
+    await this.props.updateTeamMemeberVisibility(this.state.selectedTeamId, userId, visibility);
+    const freshMembers = await this.props.getTeamMembers(this.state.selectedTeamId);
+    this.setState({ selectedTeamMembers: freshMembers || [] });
   };
 
   // NOTE: Team component calls (id, name, code) and we open immediately
-  onTeamMembersPopupShow = (teamId, teamName, teamCode, initialSnapshot = []) => {
+  onTeamMembersPopupShow = async (teamId, teamName, teamCode) => {
     this.setState({
       teamMembersPopupOpen: true,
       selectedTeamId: teamId,
       selectedTeam: teamName,
       selectedTeamCode: teamCode,
-      initialMembersForPopup: Array.isArray(initialSnapshot) ? initialSnapshot : [],
+      selectedTeamMembers: [],
+      membersFetching: true,
     });
-    this.props.getTeamMembers(teamId); // refresh in background
+    const freshMembers = await this.props.getTeamMembers(teamId);
+    this.setState({
+      selectedTeamMembers: freshMembers || [],
+      membersFetching: false,
+    });
   };
 
   onTeamMembersPopupClose = () => {
+    this.props.clearTeamMembers();
     this.setState({
       selectedTeamId: undefined,
       selectedTeam: '',
@@ -380,13 +401,20 @@ class Teams extends React.PureComponent {
     });
   };
 
-  onDeleteTeamPopupShow = (deletedname, teamId, status, teamCode) => {
+  onDeleteTeamMember = async deletedUserId => {
+    await this.props.deleteTeamMember(this.state.selectedTeamId, deletedUserId);
+    const freshMembers = await this.props.getTeamMembers(this.state.selectedTeamId);
+    this.setState({ selectedTeamMembers: freshMembers || [] });
+    toast.success('Member removed successfully!');
+  };
+
+  onDeleteTeamPopupShow = (teamName, teamId, isActive, teamCode) => {
     this.setState({
       deleteTeamPopupOpen: true,
-      selectedTeam: deletedname,
+      selectedTeam: teamName,
       selectedTeamId: teamId,
-      isActive: status,
       selectedTeamCode: teamCode,
+      isActive,
     });
   };
 
@@ -399,22 +427,27 @@ class Teams extends React.PureComponent {
   };
 
   onCreateNewTeamShow = () => {
-    this.setState({ createNewTeamPopupOpen: true, selectedTeam: '' });
+    this.setState({
+      addTeamPopupOpen: true,
+      isEdit: false,
+      selectedTeam: '',
+      selectedTeamId: undefined,
+      selectedTeamCode: '',
+      isActive: '',
+    });
   };
 
-  onCreateNewTeamClose = () => {
+  onAddTeamPopupClose = () => {
     this.setState({
-      selectedTeamId: undefined,
+      addTeamPopupOpen: false,
       selectedTeam: '',
-      createNewTeamPopupOpen: false,
-      isEdit: false,
     });
   };
 
   onEidtTeam = (teamName, teamId, status, teamCode) => {
     this.setState({
+      addTeamPopupOpen: true,
       isEdit: true,
-      createNewTeamPopupOpen: true,
       selectedTeam: teamName,
       selectedTeamId: teamId,
       selectedTeamCode: teamCode,
@@ -436,35 +469,11 @@ class Teams extends React.PureComponent {
     this.setState({
       selectedTeamId: undefined,
       selectedTeam: '',
-      isEdit: false,
       teamStatusPopupOpen: false,
     });
   };
 
   onWildCardSearch = searchText => this.setState({ wildCardSearchText: searchText });
-
-  addNewTeam = async (name, isEdit) => {
-    if (isEdit) {
-      const res = await this.props.updateTeam(
-        name,
-        this.state.selectedTeamId,
-        this.state.isActive,
-        this.state.selectedTeamCode,
-      );
-      if (res.status === 200) toast.success('Team updated successfully');
-      else toast.error(res);
-    } else {
-      const res = await this.props.postNewTeam(name, true);
-      if (res.status === 200) toast.success('Team added successfully');
-      else toast.error(res);
-    }
-    this.setState({
-      selectedTeamId: undefined,
-      selectedTeam: '',
-      isEdit: false,
-      createNewTeamPopupOpen: false,
-    });
-  };
 
   onDeleteUser = async deletedId => {
     const res = await this.props.deleteTeam(deletedId, 'delete');
@@ -478,10 +487,6 @@ class Teams extends React.PureComponent {
     if (res.status === 200) toast.success('Status Updated Successfully');
     else toast.error(res);
     this.setState({ teamStatusPopupOpen: false, deleteTeamPopupOpen: false });
-  };
-
-  onDeleteTeamMember = deletedUserId => {
-    this.props.deleteTeamMember(this.state.selectedTeamId, deletedUserId);
   };
 
   toggleTeamNameSort = () => {
@@ -514,20 +519,27 @@ Teams.propTypes = {
     theme: PropTypes.shape({
       darkMode: PropTypes.bool,
     }),
-    teamsTeamMembers: PropTypes.array,
-    allUserProfiles: PropTypes.array,
+    teamsTeamMembers: PropTypes.shape({
+      teamMembers: PropTypes.array,
+      fetching: PropTypes.bool,
+      fetched: PropTypes.bool,
+      status: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    }),
+    allUserProfiles: PropTypes.shape({
+      userProfiles: PropTypes.array,
+    }),
   }).isRequired,
 
   // actions (all required by usage)
   getAllUserTeams: PropTypes.func.isRequired,
   getAllUserProfile: PropTypes.func.isRequired,
-  postNewTeam: PropTypes.func.isRequired,
   deleteTeam: PropTypes.func.isRequired,
   updateTeam: PropTypes.func.isRequired,
   getTeamMembers: PropTypes.func.isRequired,
   deleteTeamMember: PropTypes.func.isRequired,
   addTeamMember: PropTypes.func.isRequired,
   updateTeamMemeberVisibility: PropTypes.func.isRequired,
+  clearTeamMembers: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({ state });
@@ -535,11 +547,11 @@ const mapStateToProps = state => ({ state });
 export default connect(mapStateToProps, {
   getAllUserProfile,
   getAllUserTeams,
-  postNewTeam,
   deleteTeam,
   updateTeam,
   getTeamMembers,
   deleteTeamMember,
   addTeamMember,
   updateTeamMemeberVisibility,
+  clearTeamMembers,
 })(Teams);

@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Progress } from 'reactstrap';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
-import { BsAlarmFill } from 'react-icons/bs';
+import { BsAlarmFill, BsArrowClockwise } from 'react-icons/bs';
 import {
   FaPlusCircle,
   FaMinusCircle,
@@ -41,8 +41,8 @@ function Timer({ authUser, darkMode, isPopout }) {
     protocols: localStorage.getItem(config.tokenKey),
     onOpen: () => setCustomReadyState(ReadyState.OPEN),
     onClose: () => setCustomReadyState(ReadyState.CLOSED),
-    onError: error => {
-      throw new Error('WebSocket Error:', error);
+    onError: () => {
+      setCustomReadyState(ReadyState.CLOSED);
     },
   };
 
@@ -101,6 +101,8 @@ function Timer({ authUser, darkMode, isPopout }) {
 
   const [running, setRunning] = useState(false);
   const [confirmationResetModal, setConfirmationResetModal] = useState(false);
+  const [confirmSubmitModalOpen, setConfirmSubmitModalOpen] = useState(false);
+  const [pendingSubmitTime, setPendingSubmitTime] = useState({ hours: 0, minutes: 0 });
   const [logTimeEntryModal, setLogTimeEntryModal] = useState(false);
   const [inacModal, setInacModal] = useState(false);
   const [showTimer, setShowTimer] = useState(false);
@@ -224,6 +226,10 @@ function Timer({ authUser, darkMode, isPopout }) {
     },
     [timerState],
   );
+
+  const handleRefreshTimer = useCallback(() => {
+    window.location.reload();
+  }, []);
 
   // Initialize session ID on component mount
   useEffect(() => {
@@ -459,23 +465,18 @@ function Timer({ authUser, darkMode, isPopout }) {
   const handleStopButton = useCallback(() => {
     const timeToSubmit = { hours: logHours, minutes: logMinutes };
 
-    if (!validateTimeForSubmission(timeToSubmit)) {
-      return;
-    }
+    if (!validateTimeForSubmission(timeToSubmit)) return;
 
-    // Show confirmation dialog for longer sessions
+    // Show confirmation popup for longer sessions
     if (logHours >= 2) {
-      const confirmed = globalThis.confirm(
-        `Are you sure you want to submit ${logHours} hours and ${logMinutes} minutes? This action cannot be undone.`,
-      );
-      if (!confirmed) {
-        return;
-      }
+      setPendingSubmitTime(timeToSubmit);
+      setConfirmSubmitModalOpen(true);
+      return;
     }
 
     console.log('🛑 Stop button clicked - preparing to log time:', timeToSubmit);
     toggleLogTimeModal();
-  }, [logHours, logMinutes, validateTimeForSubmission]);
+  }, [logHours, logMinutes, validateTimeForSubmission, toggleLogTimeModal]);
 
   const updateRemaining = () => {
     if (!running) return;
@@ -524,9 +525,7 @@ function Timer({ authUser, darkMode, isPopout }) {
     }
     // Handle explicit week close pause action messages
     if (lastJsonMessage && lastJsonMessage.action === 'WEEK_CLOSE_PAUSE') {
-      if (running) {
-        handleWeekEndPause();
-      }
+      handleWeekEndPause();
       return; // Exit early to prevent other modal logic
     }
 
@@ -544,7 +543,7 @@ function Timer({ authUser, darkMode, isPopout }) {
     // Show inactivity or time-over modals based on message state
     setInacModal(forcedPauseLJM);
     setTimeIsOverModalIsOpen(chimingLJM && (customReadyState === ReadyState.OPEN || !weekEndModal));
-  }, [lastJsonMessage, customReadyState, running, message, weekEndModal]);
+  }, [lastJsonMessage, customReadyState, weekEndModal]);
 
   // This useEffect is to make sure that the WS connection is maintained by sending a heartbeat every 60 seconds
   useEffect(() => {
@@ -710,6 +709,50 @@ function Timer({ authUser, darkMode, isPopout }) {
     </>
   );
 
+  const renderConfirmSubmitModal = () => (
+    <Modal
+      isOpen={confirmSubmitModalOpen}
+      toggle={() => setConfirmSubmitModalOpen(false)}
+      centered
+      size="md"
+      className={cs(fontColor, darkMode ? 'dark-mode' : '')}
+    >
+      <ModalHeader
+        className={darkMode ? 'bg-space-cadet' : ''}
+        toggle={() => setConfirmSubmitModalOpen(false)}
+      >
+        Confirm submission
+      </ModalHeader>
+
+      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <div style={{ fontSize: '1rem', lineHeight: 1.4 }}>
+          <div style={{ fontWeight: 700, marginBottom: 8 }}>
+            Are you sure you want to submit{' '}
+            {pendingSubmitTime.hours ? `${pendingSubmitTime.hours} hour(s)` : ''}
+            {pendingSubmitTime.minutes ? ` ${pendingSubmitTime.minutes} minute(s)` : ''}?
+          </div>
+          <div style={{ opacity: 0.9 }}>This action cannot be undone.</div>
+        </div>
+      </ModalBody>
+
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <Button color="secondary" onClick={() => setConfirmSubmitModalOpen(false)}>
+          Cancel
+        </Button>
+
+        <Button
+          color="primary"
+          onClick={() => {
+            setConfirmSubmitModalOpen(false);
+            toggleLogTimeModal();
+          }}
+        >
+          Yes, submit
+        </Button>
+      </ModalFooter>
+    </Modal>
+  );
+
   const renderConfirmationResetModal = () => (
     <Modal
       isOpen={confirmationResetModal}
@@ -835,6 +878,7 @@ function Timer({ authUser, darkMode, isPopout }) {
               readyState={customReadyState}
               message={message}
               toggleTimer={() => window.close()}
+              handleRefreshTimer={handleRefreshTimer}
             />
           )}
         </div>
@@ -843,6 +887,7 @@ function Timer({ authUser, darkMode, isPopout }) {
         {renderConfirmationResetModal()}
         {renderInactivityModal()}
         {renderTimeCompleteModal()}
+        {renderConfirmSubmitModal()}
       </div>
     );
   }
@@ -860,6 +905,7 @@ function Timer({ authUser, darkMode, isPopout }) {
           <BsAlarmFill fontSize="2rem" title="Open timer dropdown" />
         </div>
       </button>
+
       <div className={css.previewContainer} title="Open timer dropdown">
         <Progress multi style={{ height: '6px' }}>
           <Progress bar value={100 * (1 - remaining / goal)} color="success" animated={running} />
@@ -876,7 +922,18 @@ function Timer({ authUser, darkMode, isPopout }) {
             {moment.utc(remaining).format('HH:mm:ss')}
           </button>
         ) : (
-          <div className={css.disconnected}>Disconnected</div>
+          <div className={css.disconnected}>
+            <span>Disconnected</span>
+            <button
+              type="button"
+              onClick={handleRefreshTimer}
+              className={css.disconnectedRefreshBtn}
+              aria-label="Reload timer"
+              title="Reload timer"
+            >
+              <BsArrowClockwise />
+            </button>
+          </div>
         )}
       </div>
       {customReadyState === ReadyState.OPEN && (
@@ -1029,6 +1086,7 @@ function Timer({ authUser, darkMode, isPopout }) {
                 readyState={customReadyState}
                 message={message}
                 toggleTimer={toggleTimer}
+                handleRefreshTimer={handleRefreshTimer}
               />
             )}
           </div>
@@ -1039,6 +1097,7 @@ function Timer({ authUser, darkMode, isPopout }) {
       {renderConfirmationResetModal()}
       {renderInactivityModal()}
       {renderTimeCompleteModal()}
+      {renderConfirmSubmitModal()}
     </div>
   );
 }
