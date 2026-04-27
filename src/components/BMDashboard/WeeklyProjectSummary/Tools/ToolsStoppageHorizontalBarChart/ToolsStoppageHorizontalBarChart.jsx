@@ -30,7 +30,7 @@ ChartJS.register(
 );
 
 const CHART_COLORS = {
-  usedForLifetime: '#2E7D32',
+  usedForLifetime: '#4589ff',
   damaged: '#C62828',
   lost: '#FFB300',
 };
@@ -185,7 +185,7 @@ const getChartOptions = darkMode => ({
     },
     tooltip: {
       enabled: true,
-      backgroundColor: darkMode ? '#2C3344' : '#FFFFFF',
+      backgroundColor: darkMode ? 'rgba(44, 51, 68, 0.75)' : 'rgba(255, 255, 255, 0.75)',
       titleColor: darkMode ? '#FFFFFF' : '#000000',
       bodyColor: darkMode ? '#FFFFFF' : '#000000',
       callbacks: {
