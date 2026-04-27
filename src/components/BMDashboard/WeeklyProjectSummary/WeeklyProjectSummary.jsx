@@ -1,3 +1,5 @@
+// export default WeeklyProjectSummary;
+
 /* eslint-disable import/no-unresolved */
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -161,7 +163,6 @@ export function WeeklyProjectSummaryContent() {
           : `${monthOverMonth > 0 ? '+' : ''}${monthOverMonth}% month over month`}
       </div>
 
-      {/* Tooltip for Additional Info */}
       {showTooltip && Object.keys(additionalInfo).length > 0 && (
         <div className="financial-card-tooltip">
           {Object.entries(additionalInfo).map(([key]) => (
@@ -185,6 +186,7 @@ function WeeklyProjectSummary() {
   const projectFilter = useSelector(state => state.weeklyProjectSummary?.projectFilter || '');
   const dateRangeFilter = useSelector(state => state.weeklyProjectSummary?.dateRangeFilter || '');
   const containerRef = useRef(null);
+
   useEffect(() => {
     if (materials.length === 0) {
       dispatch(fetchAllMaterials());
@@ -224,19 +226,16 @@ function WeeklyProjectSummary() {
                 <div
                   key={uniqueId}
                   className={`${styles.weeklyProjectSummaryCard} ${styles.statusCard}`}
-                  style={{ backgroundColor: button.bgColor }} // Dynamic Background
+                  style={{ backgroundColor: button.bgColor }}
                 >
                   <div className={`${styles.weeklyCardTitle}`}>{button.title}</div>
                   <div
                     className={`${styles.weeklyStatusButton}`}
-                    style={{ backgroundColor: button.buttonColor }} // Dynamic Oval Color
+                    style={{ backgroundColor: button.buttonColor }}
                   >
                     <span className={`${styles.weeklyStatusValue}`}>{button.value}</span>
                   </div>
-                  <div
-                    className="weekly-status-change"
-                    style={{ color: button.textColor }} // Dynamic Change Color
-                  >
+                  <div className="weekly-status-change" style={{ color: button.textColor }}>
                     {button.change}
                   </div>
                 </div>
@@ -245,7 +244,6 @@ function WeeklyProjectSummary() {
           </div>
         ),
       },
-      // New Issues Breakdown card
       {
         title: 'Issues Breakdown',
         key: 'Issues Breakdown',
@@ -463,7 +461,6 @@ function WeeklyProjectSummary() {
       // Clone the content
       const clonedContent = contentElement.cloneNode(true);
 
-      // Remove buttons and controls not needed in PDF
       clonedContent
         .querySelectorAll(
           'button, .weekly-project-summary-dropdown-icon, .no-print, .weekly-summary-header-controls',
@@ -538,7 +535,6 @@ function WeeklyProjectSummary() {
         : dateStr;
       const fileName = `weekly-project-summary-${projectName}-${dateRange}.pdf`;
 
-      // Save the PDF
       pdf.save(fileName);
 
       // Clean up
@@ -583,7 +579,9 @@ function WeeklyProjectSummary() {
   return (
     <div
       ref={containerRef}
-      className={`${styles.weeklyProjectSummaryContainer} ${darkMode ? styles.darkMode : ''}`}
+      className={`weekly-project-summary-container ${styles.weeklyProjectSummaryContainer} ${
+        darkMode ? styles.darkMode : ''
+      }`}
       data-testid="weekly-project-summary-container"
     >
       <WeeklyProjectSummaryHeader

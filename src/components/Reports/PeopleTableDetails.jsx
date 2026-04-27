@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import 'reactjs-popup/dist/index.css';
 import { Container } from 'reactstrap';
 import './PeopleTableDetails.module.css';
@@ -35,47 +35,30 @@ function PeopleTableDetails(props) {
   const [assign, setAssign] = useState('');
   const [estimatedHours, setEstimatedHours] = useState('');
   const [order, setOrder] = useState('');
-  const [startDate,updateStartDate] = useState(new Date('01/01/2010'));
+  const [startDate, updateStartDate] = useState(new Date('01/01/2010'));
   const [endDate, updateEndDate] = useState(new Date());
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  // State to track which task resource sections are expanded
+  const [expandedTasks, setExpandedTasks] = useState({});
 
   useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
-    }
+    };
     window.addEventListener('resize', handleResize);
     return () => {
       window.removeEventListener('resize', handleResize);
-    }
-  }, [])
+    };
+  }, []);
 
-  const onTaskNameSearch = text => {
-    setName(text);
-  };
-
-  const searchPriority = text => {
-    setPriority(text);
-  };
-
-  const searchEstimatedHours = text => {
-    setEstimatedHours(text);
-  };
-
-  const searchResources = text => {
-    setResources(text);
-  };
-
-  const searchStatus = text => {
-    setStatus(text);
-  };
-
-  const searchActive = text => {
-    setActive(text);
-  };
-
-  const searchAssign = text => {
-    setAssign(text);
-  };
+  const onTaskNameSearch = (text) => setName(text);
+  const searchPriority = (text) => setPriority(text);
+  const searchEstimatedHours = (text) => setEstimatedHours(text);
+  const searchResources = (text) => setResources(text);
+  const searchStatus = (text) => setStatus(text);
+  const searchActive = (text) => setActive(text);
+  const searchAssign = (text) => setAssign(text);
 
   const resetFilters = () => {
     setName('');
@@ -90,39 +73,21 @@ function PeopleTableDetails(props) {
     updateEndDate(new Date());
   };
 
-  const filterOptions = tasks => {
-    let filterTaskslist = tasks.filter(task => {
+  const filterOptions = (tasks) => {
+    return tasks.filter((task) => {
       return (
         task.taskName.toLowerCase().includes(name.toLowerCase()) &&
         task?.estimatedHours?.toLowerCase().includes(estimatedHours.toLowerCase())
       );
     });
-    // addtasknamelist
-    filterTaskslist = filterTaskslist.filter(task => {
-      const tasklist = []
-      for (let i = 0; i < task.taskName.length; i += 1) {
-        tasklist.push(task.taskName[i])
+  };
 
-      }
-      return tasklist
-    });
-    return filterTaskslist;
-  }
-
-  const filterTasks = tasks => {
-    // eslint-disable-next-line no-unused-vars
-    const simple = [];
-    // eslint-disable-next-line array-callback-return,consistent-return
-    let filteredList = tasks.filter(task => {
-      // Convert task dates to Date objects for comparison
+  const filterTasks = (tasks) => {
+    let filteredList = tasks.filter((task) => {
       const taskStartDate = new Date(task.startDate);
-      // const taskEndDate = new Date(task.endDate);
-      
-      // Check if dates are within the selected range
-      const isWithinDateRange = (!startDate || taskStartDate <= endDate) 
-      // && (!endDate || taskEndDate <= endDate);
+      const isWithinDateRange = !startDate || taskStartDate <= endDate;
 
-      if (
+      return (
         task.taskName.toLowerCase().includes(name.toLowerCase()) &&
         task?.priority?.toLowerCase().includes(priority.toLowerCase()) &&
         task?.status?.toLowerCase().includes(status.toLowerCase()) &&
@@ -130,13 +95,10 @@ function PeopleTableDetails(props) {
         task?.estimatedHours?.toLowerCase().includes(estimatedHours.toLowerCase()) &&
         task?.assign?.toLowerCase().includes(assign.toLowerCase()) &&
         isWithinDateRange
-      ) {
-        return true;
-      }
+      );
     });
 
-
-    filteredList = filteredList.filter(task => {
+    filteredList = filteredList.filter((task) => {
       let flag = false;
       for (let i = 0; i < task.resources[0].length; i += 1) {
         if (task.resources[0][i].name.toLowerCase().includes(resources.toLowerCase())) {
@@ -147,36 +109,26 @@ function PeopleTableDetails(props) {
       return flag;
     });
     return filteredList;
+  };
 
+  // REFACTORED: Toggle using state instead of direct DOM manipulation
+  const toggleMoreResources = (id) => {
+    setExpandedTasks((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
   };
-  let toggleMoreResourcesStatus = true;
-  const toggleMoreResources = id => {
-    const x = document.getElementById(id);
-    if (toggleMoreResourcesStatus) {
-      x.style.display = 'table-cell';
-    } else {
-      x.style.display = 'none';
-    }
-    toggleMoreResourcesStatus = !toggleMoreResourcesStatus;
-  };
+
   const { taskData, darkMode } = props;
   const filteredTasks = filterTasks(taskData);
-  const filteredOptions = filterOptions(taskData)
+  const filteredOptions = filterOptions(taskData);
 
-  const renderMobileFilteredTask = (value) => {
-    return (
-      <div className={`task-card ${darkMode ? 'text-dark' : ''}`}>
-        <div key={value._id} >
-          <div className='task-header'>
-            <div>
-              <div className='task-title people-report-task-name task-name-word-break'>
-                {value.taskName}
-              </div>  
-            </div>
-            
-            <div className='task-status'>
-              {value.status}
-            </div>
+  const renderMobileFilteredTask = (value) => (
+    <div className={`task-card ${darkMode ? 'text-dark' : ''}`}>
+      <div key={value._id}>
+        <div className="task-header">
+          <div className="task-title people-report-task-name task-name-word-break">
+            {value.taskName}
           </div>
           <div className='task-details'>
             <div className='task-info'>
@@ -200,38 +152,42 @@ function PeopleTableDetails(props) {
                   }
                   return null;
                 }),
-              )}</div>
+              )}
             </div>
-            <div className='task-info'>
-              <div className='sub-head'>Active</div>
-              <div>{value.active === 'Yes' ? <span>&#10003;</span> : <span>&#10060;</span>}</div>
-            </div>
-            <div className='task-info'>
-              <div className='sub-head'>Assign</div>
-              <div>{value.assign === 'Yes' ? <span>&#10003;</span> : <span>&#10060;</span>}</div>
-            </div>
-            <div className='task-info'>
-              <div className='sub-head'>Estimated Hours</div>
-              <div>{value.estimatedHours}</div>
-            </div>
-            <div className='task-info'>
-              <div className='sub-head'>Start Date</div>
-              <div>{value.startDate}</div>
-            </div>
-            <div className='task-info'>
-              <div className='sub-head'>End Date</div>
-              <div>{value.endDate}</div>
-            </div>
+          </div>
+          <div className="task-info">
+            <div className="sub-head">Active</div>
+            <div>{value.active === 'Yes' ? <span>&#10003;</span> : <span>&#10060;</span>}</div>
+          </div>
+          <div className="task-info">
+            <div className="sub-head">Assign</div>
+            <div>{value.assign === 'Yes' ? <span>&#10003;</span> : <span>&#10060;</span>}</div>
+          </div>
+          <div className="task-info">
+            <div className="sub-head">Estimated Hours</div>
+            <div>{value.estimatedHours}</div>
+          </div>
+          <div className="task-info">
+            <div className="sub-head">Start Date</div>
+            <div>{value.startDate}</div>
+          </div>
+          <div className="task-info">
+            <div className="sub-head">End Date</div>
+            <div>{value.endDate}</div>
           </div>
         </div>
       </div>
-    )
-  }
+    </div>
+    </div>
+  );
 
-  const renderFilteredTask = value => (
-    <div>
+  const renderFilteredTask = (value) => {
+    // Check if this specific row should be expanded
+    const isExpanded = !!expandedTasks[value._id];
+
+    return (
       <div key={value._id} className={`people-table-row people-table-body-row ${darkMode ? 'people-table-row-dark' : ''}`}>
-        <div className='people-report-task-name'>{value.taskName}</div>
+        <div className="people-report-task-name">{value.taskName}</div>
         <div>{value.priority}</div>
         <div>{value.status}</div>
         <div>
@@ -257,13 +213,22 @@ function PeopleTableDetails(props) {
                 key={`button-${outerIndex}`}
                 type="button"
                 className="name resourceMoreToggle"
-                onClick={() => toggleMoreResources(value._id)}
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevents Modal from opening when clicking the toggle
+                  toggleMoreResources(value._id);
+                }}
               >
                 <span className="dot">{res.length - 2}+</span>
               </button>
             ) : null,
           )}
-          <div id={value._id} className="extra">
+          {/* Style is now driven by React State, making it testable and Sonar-safe */}
+          <div
+            id={value._id}
+            className="extra"
+            data-testid={`extra-resources-${value._id}`}
+            style={{ display: isExpanded ? 'table-cell' : 'none' }}
+          >
             <div className="extra1">
               {value.resources?.map((res, outerIndex) =>
                 // eslint-disable-next-line array-callback-return,consistent-return
@@ -293,23 +258,19 @@ function PeopleTableDetails(props) {
         <div className="people-table-end-cell">{value.startDate}</div>
         <div className="people-table-end-cell">{value.endDate}</div>
       </div>
-    </div>
-  );
-
-  // const renderFilteredTask = () => (
-    
-  // )
+    );
+  };
 
   const renderModalContent = (value) => (
     <div>
       <div>Why This Task is important</div>
-      <textarea className="rectangle" type="text" value={value.whyInfo} />
+      <textarea className="rectangle" type="text" defaultValue={value.whyInfo} />
       <div>Design Intent</div>
-      <textarea className="rectangle" type="text" value={value.intentInfo} />
+      <textarea className="rectangle" type="text" defaultValue={value.intentInfo} />
       <div>End State</div>
-      <textarea className="rectangle" type="text" value={value.endstateInfo} />
+      <textarea className="rectangle" type="text" defaultValue={value.endstateInfo} />
     </div>
-  )
+  );
 
   return (
     <Container fluid className={`wrapper ${darkMode ? 'text-light' : ''}`}>

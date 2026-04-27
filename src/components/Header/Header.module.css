@@ -1,39 +1,62 @@
+/* stylelint-disable no-descending-specificity, selector-type-no-unknown */
+
 /* General Styling */
 .headerWrapper {
   height: fit-content;
   width: clamp(100vw, 0.1rem + 1vw, 100%);
 }
 
+.notificationOverlay {
+  position: fixed;
+  top: 72px;
+  left: 0;
+  right: 0;
+  z-index: 1200;
+  pointer-events: none;
+}
+
+.notificationOverlay :global(.container-fluid) {
+  padding-left: 0;
+  padding-right: 0;
+  pointer-events: auto;
+}
+
 .headerRow {
-  display: grid;
-  grid-template-columns: auto 1fr auto; 
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
   width: 100%;
+  gap: 0.5rem;
 }
 
 .leftSection {
-  justify-self: start;
   display: flex;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .centerSection {
-  justify-self: center;
   display: flex;
   align-items: center;
   justify-content: center;
-  text-align: center;
+  flex: 1 1 200px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .rightSection {
-  justify-self: end;
   display: flex;
   align-items: center;
+  flex-shrink: 0;
+  margin-left: auto;
+  position: relative;
 }
 
-@media (max-width: 768px) {
+/* max-width: 768px */
+@media (width <= 768px) {
   .headerRow {
-    grid-template-columns: auto auto; /* left | right */
+    grid-template-columns: auto auto;
     grid-template-rows: auto auto;
   }
 
@@ -56,61 +79,61 @@
   left: 0;
   padding: 12px;
 } */
+
 /* Timer Message Section */
 .timer-message-section {
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   /* flex-wrap: wrap; */
   width: 100%;
   gap: 1rem;
 }
 
 .cardContent {
-  padding: 15px;
-  padding-left: 40px;
-  padding-right: 40px; /* Match left padding for balance */
+  /* padding shorthand: top right bottom left */
+  padding: 15px 40px;
   white-space: pre-line;
   color: white;
   font-size: medium;
   line-height: 1.4;
-  word-wrap: break-word;
+
+  /* overflow-wrap replaces deprecated word-wrap */
   overflow-wrap: break-word;
   box-sizing: border-box;
   width: 100%;
-  margin: 0; /* Remove all margins */
+  margin: 0;
 }
 
-.headerCard {
-  margin-left: 0; /* Remove left margin */
-  margin-right: 0; /* Remove right margin */
+.headerCard { /* Remove left margin */ /* Remove right margin */
   /* Use full viewport width */
+  margin-left: 0;
+  margin-right: 0;
   width: 100vw;
   max-width: 100vw;
   box-sizing: border-box;
   overflow: hidden;
   position: relative;
+
   /* Ensure card extends to full width */
   left: 0;
   right: 0;
 }
 
 .cardWrapper {
-  padding-top: 1rem;
-  padding-bottom: 1rem;
+  padding: 1rem 0;
+
   /* Ensure wrapper uses full width */
   width: 100%;
   margin: 0;
-  padding-left: 0;
-  padding-right: 0;
   box-sizing: border-box;
 }
 
 .navbar {
   z-index: 100;
-  white-space: nowrap;
+  position: relative;
 }
-
 
 .redBackGroupHeader {
   z-index: 10;
@@ -174,58 +197,109 @@
 .hideInTablet {
   display: block;
 }
+
 .showInTablet {
   display: none;
 }
 
-@media (max-width: 1700px) {
+/* max-width: 1700px */
+@media (width <= 1700px) {
   .hideInTablet {
     display: none;
   }
+
   .showInTablet {
     display: block;
   }
 }
 
-
-@media screen and (max-width: 1151px) and (min-width: 992px) {
+/* max-width: 1151px and min-width: 992px */
+@media (992px <= width <= 1151px) {
   .dropdownMenu {
-      width: auto !important;
+    width: auto !important;
   }
 }
 
-@media screen and (max-width: 1199px) {
+@media screen and (width <= 1199px) {
   .menuContainer {
     align-items: start;
     flex-direction: column !important;
+
     /* width: 100%; */
-    padding-left: 50px;
+.navbarToggler {
+  display: none;
+  margin-left: 1rem;
+  flex-shrink: 0;
+}
+
+/* max-width: 1199px */
+@media (width <= 1199px) {
+  .navbarToggler {
+    display: flex !important;
+    align-items: center;
   }
+
+  .navCollapse {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    padding-left: 10px;
+    min-width: 220px;
+    background-color: #343a40;
+    border-radius: 0 0 6px 6px;
+
+    /* rgb() modern notation with alpha as percentage */
+    box-shadow: 0 6px 16px rgb(0 0 0 / 40%);
+    z-index: 999;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.25s ease-out;
+  }
+
+  .navCollapseOpen {
+    max-height: 600px;
+    transition: max-height 0.25s ease-in;
+  }
+
+    padding-left: 50px;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+
   .mobileMenuDropdown {
     background-color: #343a40 !important;
     border: none !important;
   }
+
   .mobileDropdownText{
-    color: rgba(255, 255, 255, 0.5) !important;
+    color: rgb(255 255 255 / 50%) !important;
   }
+
   .mobileDropdownItem:hover{
+  .mobileDropdownText {
+  .mobileDropdownItem:hover {
     background-color: #343a40 !important;
-    color: rgba(255, 255, 255, 0.75) !important;
+    color: rgb(255 255 255 / 75%) !important;
   }
+
   .darkMenuDropdown {
     background-color: #343a40 !important;
     border: none !important;
   }
+
   .darkDropdownText {
-    color: rgba(255, 255, 255, 0.5) !important;
+    color: rgb(255 255 255 / 50%) !important;
   }
+
   .darkDropdownItem:hover {
     background-color: #343a40 !important;
-    color: rgba(255, 255, 255, 0.75) !important;
+    color: rgb(255 255 255 / 75%) !important;
   }
+
   .hideInMobile {
     display: none;
   }
+
   .showInMobile {
     display: block;
   }
@@ -233,7 +307,7 @@
 
 .headerMargin {
   height: 20px;
-  background-color: #1B2A41;
+  background-color: #1b2a41;
 }
 
 .headerMarginLight {
@@ -242,19 +316,15 @@
 }
 
 @media print {
-  /* Reset all print styles */
   * {
     box-sizing: border-box !important;
   }
 
-  /* Set print scaling */
   @page {
     size: auto;
     margin: 0;
-    scale: 100%;
   }
 
-  /* Ensure navbar is compact and font size is correct */
   .navbar {
     padding: 0.5rem 1rem !important;
     min-height: auto !important;
@@ -265,7 +335,6 @@
     margin: 0 !important;
   }
 
-  /* Ensure all icons have correct size */
   .navbar img,
   .navbar svg {
     width: auto !important;
@@ -275,7 +344,6 @@
   }
 }
 
-/* Conservative Three Section Header Layout - Prevents icon overlap */
 .left-section {
   display: flex;
   align-items: center;
@@ -290,8 +358,8 @@
   justify-content: center;
   flex: 1;
   text-align: center;
-  min-width: 200px; /* Ensure minimum visibility */
-  overflow: hidden; /* Handle text overflow gracefully */
+  min-width: 200px;
+  overflow: hidden;
 }
 
 .right-section {
@@ -304,27 +372,25 @@
 
 /* Responsive behavior - prevent icon overlap on smaller screens */
 
-@media (max-width: 1200px) {
+/* max-width: 1200px */
+@media (width <= 1200px) {
   .left-section,
   .center-section,
   .right-section {
     flex-wrap: nowrap;
   }
-  
-  /* Ensure right section (navigation/icons) stays on the right */
+
   .right-section {
     margin-left: 0.5rem;
     flex-shrink: 0;
   }
-  
-  /* Give center section minimum space but allow some compression */
+
   .center-section {
     flex-shrink: 0.5;
-    min-width: 150px; /* Minimum width to stay visible */
-    margin: 0 0.5rem; /* Add some breathing room */
+    min-width: 150px;
+    margin: 0 0.5rem;
   }
-  
-  /* Keep left section stable but allow some compression */
+
   .left-section {
     flex-shrink: 0.5;
     margin-right: 0.5rem;
@@ -332,21 +398,25 @@
 }
 
 /* Medium screens - better balance */
-@media (max-width: 900px) {
+
+/* max-width: 900px */
+@media (width <= 900px) {
   .center-section {
-    min-width: 120px; /* Still visible but more compressed */
-    font-size: 0.9rem; /* Slightly smaller text */
+    min-width: 120px;
+    font-size: 0.9rem;
   }
 }
 
 /* Mobile specific - stack vertically to prevent overlap */
-@media (max-width: 768px) {
+
+/* max-width: 768px */
+@media (width <= 768px) {
   .navbar .d-flex {
     flex-direction: column !important;
     align-items: center !important;
     gap: 0.5rem !important;
   }
-  
+
   .left-section,
   .center-section,
   .right-section {
@@ -355,3 +425,5 @@
   }
 }
 
+}}
+}

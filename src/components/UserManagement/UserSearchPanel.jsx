@@ -25,6 +25,7 @@ function UserSearchPanel({
   onSearch,
   onActiveFilter,
   darkMode,
+  selectText,
 }) {
   const canCreateUsers = hasPermission('postUserProfile');
   const [tooltipCreateNewUserOpen, setTooltipCreateNewUserOpen] = useState(false);
@@ -77,33 +78,35 @@ function UserSearchPanel({
       >
         {CREATE_NEW_USER}
       </button>
-      
-      <div className='d-flex flex-fill mb-2'>
-        <div className="input-group-prepend">
-          <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>{SEARCH}</span>
-        </div>
-        <input
-          // autoFocus
-          type="text"
-          className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
-          aria-label="Search"
-          placeholder="Search Text"
-          id="user-profiles-wild-card-search"
-          value={searchText}
-          onChange={e => {
-            onSearch(e.target.value);
-          }}
-          style={{marginRight: "5px"}}
-        />
+      <div className="input-group-prepend">
+        <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+          {SEARCH}
+        </span>
       </div>
-      <div className="input-group-prepend mb-2">
-        <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>{SHOW}</span>
+      <input
+        // autoFocus
+        type="text"
+        className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
+        aria-label="Search"
+        placeholder="Search Text"
+        id="user-profiles-wild-card-search"
+        value={searchText}
+        onChange={e => {
+          onSearch(e.target.value);
+        }}
+        style={{ marginRight: '5px' }}
+      />
+      <div className="input-group-prepend">
+        <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+          {SHOW}
+        </span>
         <select
           id="active-filter-dropdown"
-          style={{marginBottom: "0px"}}
+          style={{ marginBottom: '0px' }}
           onChange={e => {
             onActiveFilter(e.target.value);
           }}
+          value={selectText}
           className={darkMode ? 'bg-darkmode-liblack text-light' : ''}
         >
           <option value="all">All</option>
