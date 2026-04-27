@@ -5,6 +5,8 @@ import styles from './CommunityCalendar.module.css';
 function CalendarActivitySection() {
   const [sortOption, setSortOption] = useState('newest');
 
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   const calendarActivities = [
     {
       id: 1,
@@ -28,8 +30,6 @@ function CalendarActivitySection() {
       timestamp: Date.now() - 10800000,
     },
   ];
-
-  const darkMode = useSelector(state => state.theme.darkMode);
 
   const getSortedActivities = () => {
     const activitiesCopy = [...calendarActivities];
@@ -60,6 +60,7 @@ function CalendarActivitySection() {
         <h2 className={`${styles.activityHeader} ${darkMode ? styles.activityHeaderDarkMode : ''}`}>
           Latest News
         </h2>
+
         <select
           value={sortOption}
           onChange={e => setSortOption(e.target.value)}
@@ -87,6 +88,7 @@ function CalendarActivitySection() {
             >
               <strong>{activity.author}</strong>: {activity.message}
             </p>
+
             <small
               className={`${styles.activityTime} ${darkMode ? styles.activityTimeDarkMode : ''}`}
             >
