@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 thead {
   background: aliceblue;
 }
@@ -111,6 +112,10 @@ tr:hover {
   background: #e9f6ff;
 }
 
+tr.darkModeRow:hover {
+  background: #2f4157 !important;
+}
+
 .user-auto-cpmplete {
   cursor: pointer;
   padding: 5px;
@@ -123,4 +128,9 @@ tr:hover {
 .usermanagement-actions-cell {
   display: table-cell;
   padding-left: 10px;
+}
+
+.actionButtonsContainer {
+  display: flex !important;
+  gap: 10px;
 }

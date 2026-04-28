@@ -77,6 +77,8 @@ class UserManagement extends React.PureComponent {
       isMobile: window.innerWidth <= 750,
       mobileFontSize: 10,
       mobileWidth: '100px',
+      isFilteringTable: false,
+      selectText: '',
       activeInactivePopupOpen: false,
       finalDayPopupOpen: false,
       selectedUser: null,
@@ -148,8 +150,9 @@ class UserManagement extends React.PureComponent {
       prevState.emailSearchText !== this.state.emailSearchText;
 
     const pageSizeChanged = prevState.pageSize !== this.state.pageSize;
-    const userProfilesChanged =
-      prevProps.state.allUserProfiles.userProfiles !== this.props.state.allUserProfiles.userProfiles;
+
+     //prettier-ignore
+    const userProfilesChanged = prevProps.state.allUserProfiles.userProfiles !== this.props.state.allUserProfiles.userProfiles;
 
     if (
       prevState.selectedPage !== this.state.selectedPage ||
@@ -309,7 +312,15 @@ class UserManagement extends React.PureComponent {
     return null;
   };
 
-  getFilteredData = (userProfiles, rolesPermissions, timeOffRequests, darkMode, editUser, isMobile, mobileFontSize) => {
+  getFilteredData = (
+    userProfiles,
+    rolesPermissions,
+    timeOffRequests,
+    darkMode,
+    editUser,
+    isMobile,
+    mobileFontSize,
+  ) => {
     this.setState({
       userTableItems: this.userTableElements(
         userProfiles,
@@ -320,6 +331,7 @@ class UserManagement extends React.PureComponent {
         isMobile,
         mobileFontSize,
       ),
+      isFilteringTable: false,
     });
   };
 
@@ -337,7 +349,8 @@ class UserManagement extends React.PureComponent {
       const trimmedFirstNameSearch = firstNameSearch.trim();
       const trimmedLastNameSearch = lastNameSearch.trim();
 
-      const isFirstNameExactMatch = firstNameSearch.endsWith(' ') && trimmedFirstNameSearch.length > 0;
+      const isFirstNameExactMatch =
+        firstNameSearch.endsWith(' ') && trimmedFirstNameSearch.length > 0;
       const isLastNameExactMatch = lastNameSearch.endsWith(' ') && trimmedLastNameSearch.length > 0;
 
       let firstNameMatches = true;
@@ -384,10 +397,11 @@ class UserManagement extends React.PureComponent {
         (this.state.weeklyHrsSearchText === '' ||
           user.weeklycommittedHours === Number(this.state.weeklyHrsSearchText)) &&
         ((this.state.allSelected && true) ||
-          (this.state.isActive === undefined || user.isActive === this.state.isActive)) &&
+          this.state.isActive === undefined ||
+          user.isActive === this.state.isActive) &&
         ((this.state.allSelected && true) ||
-          (this.state.isPaused === false ||
-            (user.reactivationDate && new Date(user.reactivationDate) > new Date())))
+          this.state.isPaused === false ||
+          (user.reactivationDate && new Date(user.reactivationDate) > new Date()))
       );
     });
   };
@@ -542,7 +556,6 @@ class UserManagement extends React.PureComponent {
     });
 
     if (deleteType === UserDeleteType.Inactive) {
-      this.props.updateUserStatus(this.state.selectedUser, UserStatus.Inactive, undefined);
     } else {
       this.props.deleteUser(this.state.selectedUser, deleteType);
     }
@@ -615,14 +628,7 @@ class UserManagement extends React.PureComponent {
         wildCardSearchText: searchText,
         selectedPage: 1,
       },
-      () => {
-        const { userProfiles } = this.props.state.allUserProfiles;
-        const { roles: rolesPermissions } = this.props.state.role;
-        const { requests: timeOffRequests } = this.props.state.timeOffRequests;
-        const { darkMode } = this.props.state.theme;
-
-        this.getFilteredData(userProfiles, rolesPermissions, timeOffRequests, darkMode);
-      },
+      () => this.updateGetFilteredData(),
     );
   };
 
@@ -663,7 +669,20 @@ class UserManagement extends React.PureComponent {
       selectedPage: 1,
       isPaused: paused,
       allSelected,
+      isFilteringTable: true,
+      selectText: value,
     });
+
+    setTimeout(() => this.updateGetFilteredData(), 1000);
+  };
+
+  updateGetFilteredData = () => {
+    const { userProfiles } = this.props.state.allUserProfiles;
+    const { roles: rolesPermissions } = this.props.state.role;
+    const { requests: timeOffRequests } = this.props.state.timeOffRequests;
+    const { darkMode } = this.props.state.theme;
+
+    this.getFilteredData(userProfiles, rolesPermissions, timeOffRequests, darkMode);
   };
 
   onNewUserClick = () => {
@@ -707,7 +726,14 @@ class UserManagement extends React.PureComponent {
         className={darkMode ? ' bg-oxford-blue text-light p-3' : 'p-3'}
         style={{ minHeight: '100%' }}
       >
-        <>
+        {this.state.isFilteringTable ?(
+           <div className="filtering-message" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+              <h3 className={darkMode ? `text-light` : `text-dark`}>
+                The table is being filtered, please wait.
+              </h3>
+            </div>
+        ) : (
+           <>
           {this.popupElements()}
           <UserSearchPanel
             onSearch={this.onWildCardSearch}
@@ -717,6 +743,7 @@ class UserManagement extends React.PureComponent {
             handleNewUserSetupPopup={this.handleNewUserSetupPopup}
             handleSetupHistoryPopup={this.handleSetupHistoryPopup}
             darkMode={darkMode}
+            selectText={this.state.selectText}
           />
           <div className={`table-responsive ${styles.userManagementTable}`}>
             <Table
@@ -766,6 +793,9 @@ class UserManagement extends React.PureComponent {
             darkMode={darkMode}
           />
         </>
+        )
+
+        }
       </Container>
     );
   }
@@ -780,8 +810,8 @@ const mapDispatchToProps = (dispatch) => ({
   getAllUserProfile: () => dispatch(getAllUserProfile()),
   deleteUser: (...args) => dispatch(deleteUser(...args)),
   getAllTimeOffRequests: () => dispatch(getAllTimeOffRequests()),
-  enableEditUserInfo: (value) => dispatch(enableEditUserInfo(value)),
-  disableEditUserInfo: (value) => dispatch(disableEditUserInfo(value)),
+  enableEditUserInfo: () => dispatch(enableEditUserInfo()),
+  disableEditUserInfo: () => dispatch(disableEditUserInfo()),
   getAllRoles: () => dispatch(getAllRoles()),
 });
 

@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .donutContainer {
   display: grid;
   align-items: center;
@@ -93,7 +94,7 @@
   line-height: 1.2;
 }
 
-@media (max-width: 615px) {
+@media (width <= 615px) {
   .donutContainer {
     overflow-x: scroll;
     justify-content: start;

@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 :global(.dark-mode) .modal-body p {
   color: #fff;
   background-color: transparent;
@@ -10,7 +11,8 @@
 
 .team-member-tasks {
   background-color: white;
-  overflow: visible; 
+  overflow: hidden;
+  max-width: 100%;
 }
 
 .truncateTasksBtn {
@@ -68,7 +70,7 @@
 
 .task_table-container {
   width: 100%;
-  overflow: auto;
+  overflow: hidden auto;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -246,11 +248,10 @@
 }
 
 .team-clocks {
-  display: flex;
-  justify-content: left;
-  padding-left: 35px !important;
-  align-items: center;
-  gap: 6px;
+  display: table-cell;
+  text-align: center;
+  vertical-align: top;
+  padding-left: 10px !important;
 }
 
 

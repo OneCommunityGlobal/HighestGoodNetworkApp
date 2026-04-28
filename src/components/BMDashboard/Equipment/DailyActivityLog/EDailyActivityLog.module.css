@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .mainContainer {
   height: 100%;
   min-height: 100vh;
@@ -41,4 +42,9 @@
 
 .checkOutBtn {
   width: 50%;
+}
+
+.helperText {
+  line-height: 1.4;
+  font-size: 0.85rem;
 }

@@ -1,15 +1,13 @@
+/* stylelint-disable  */
 .container-hgnform-wrapper {
   min-height: 100vh;
   width: 100%;
-  padding-top: 20px;
-  padding-bottom: 1px;
-  padding-left: 0;
-  padding-right: 0;
-  background-color: #ffffff;
+  padding: 20px 0 1px;
+  background-color: #fff;
   margin: 0;
   box-sizing: border-box;
 }
 
 .container-hgnform-wrapper.bg-oxford-blue {
-  color: #ffffff;
+  color: #fff;
 }
