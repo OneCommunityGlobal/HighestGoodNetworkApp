@@ -60,7 +60,19 @@ function TopCommunityMembers() {
         const response = await httpService.get(
           ENDPOINTS.HGN_FORM_GET_TEAM_MEMBERS_BY_SKILL(selectedSkill),
         );
-        setMembers(response.data);
+        const primaryData = Array.isArray(response?.data) ? response.data : [];
+
+        if (primaryData.length > 0) {
+          setMembers(primaryData);
+          return;
+        }
+
+        // Fallback: team-level endpoint can return data even when the userProfile endpoint is empty.
+        const fallbackResponse = await httpService.get(
+          ENDPOINTS.HGN_FORM_GET_TEAM_MEMBERS_BY_SKILL_FALLBACK(selectedSkill),
+        );
+        const fallbackData = Array.isArray(fallbackResponse?.data) ? fallbackResponse.data : [];
+        setMembers(fallbackData);
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error('Error fetching members:', error);
