@@ -53,7 +53,7 @@ import IssueDashboard from './components/BMDashboard/Issues/IssueDashboard';
 import IssueChart from './components/BMDashboard/Issues/issueCharts';
 import BMTimeLogger from './components/BMDashboard/BMTimeLogger/BMTimeLogger';
 import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember';
-import AnalyticsDashboard from './components/JobCCDashboard/JobAnalytics/JobAnalytics';
+import AnalyticsDashboard from './components/JobCCDashboard/JobAnalytics/JobAnalytics.jsx';
 import FaqSearch from './components/Faq/FaqSearch';
 import FaqManagement from './components/Faq/FaqManagement';
 import FaqHistory from './components/Faq/FaqHistory';
@@ -89,7 +89,7 @@ import FeedbackModal from './components/HGNHelpSkillsDashboard/FeedbackModal';
 import Activity from './components/CommunityPortal/Activities/activityId/Activity';
 import ActivityAttendance from './components/CommunityPortal/Activities/ActivityAttendance';
 import ActivityAgenda from './components/CommunityPortal/Activities/ActivityAgenda';
-import NoshowViz from './components/CommunityPortal/Attendence/NoshowViz';
+import EventNoShowChart from './components/CommunityPortal/Attendence/NoshowViz';
 import EventList from './components/CommunityPortal/Event/EventList/EventList';
 import ResourcesUsage from './components/CommunityPortal/Activities/activityId/ResourcesUsage';
 import EventParticipation from './components/CommunityPortal/Reports/Participation/EventParticipation';
@@ -214,6 +214,7 @@ import SupportLogin from './components/SupportPortal/SupportLogin';
 import SupportDashboard from './components/SupportPortal/SupportDashboard';
 import SupportLogViewer from './components/SupportPortal/SupportLogViewer';
 import MaterialUtilizationChart from './components/MaterialUtilization/MaterialUtilizationChart';
+import OptStatusPieChart from './components/OptStatusPieChart/OptStatusPieChart';
 
 // Social Architecture
 
@@ -668,7 +669,7 @@ export default (
           exact
           component={AnalyticsDashboard}
           fallback
-          // allowedRoles={[UserRole.Administrator, UserRole.Owner]}
+          allowedRoles={[UserRole.Administrator, UserRole.Owner]}
         />
 
         <ProtectedRoute
@@ -891,6 +892,15 @@ export default (
         />
         <Route path="/lbdashboard/bidoverview" exact component={LBBidOverview} />
         <LBProtectedRoute path="/lbdashboard/bidding" exact component={BiddingHomepage} />
+        <CPProtectedRoute
+          path="/communityportal/reports/participation"
+          exact
+          component={EventParticipation}
+        />
+        <CPProtectedRoute
+          path="/communityportal/reports/EventNoShowChart"
+          component={EventNoShowChart}
+        />
         {/* Good Education  Portal Routes */}
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
         <Route path="/educationportal/login" component={EPLogin} />
@@ -1091,6 +1101,28 @@ export default (
           component={PRDashboardTopReviewedPRs}
         />
         <ProtectedRoute path="/pr-dashboard/details" exact component={PRDashboardDetails} />
+        <ProtectedRoute path="/analytics/opt-status" exact component={OptStatusPieChart} />
+        {/* ----- PR Dashboard  ----- */}
+        <ProtectedRoute
+          path="/pr-dashboard/promotion-eligibility"
+          exact
+          component={PromotionEligibility}
+        />
+        {/* /*  for support team*/}
+        <Route path="/support/login" component={SupportLogin} />
+        <Route path="/support/dashboard" component={SupportDashboard} />
+        <Route path="/support/log/:studentId" component={SupportLogViewer} />
+        <ProtectedRoute
+          path="/pr-team-analytics/popular-prs"
+          exact
+          component={PRReviewTeamAnalytics}
+        />
+        <ProtectedRoute
+          path="/pr-grading-dashboard"
+          exact
+          component={PRGradingDashboard}
+          fallback
+        />
         <Route path="*" component={NotFoundPage} />
       </Switch>
     </>

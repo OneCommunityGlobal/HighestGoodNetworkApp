@@ -29,7 +29,7 @@
 }
 
 /* Override Bootstrap py-3 and mb-5 classes on mobile */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .containerTotalOrgWrapper:global(.py-3) {
     padding-top: 10px !important;
     padding-bottom: 10px !important;
@@ -91,9 +91,8 @@
   box-sizing: border-box;
 }
 
-.containerTotalOrgWrapper *:not(script):not(style) {
+.containerTotalOrgWrapper *:not(script, style) {
   overflow-wrap: break-word;
-  word-wrap: break-word;
 }
 
 /* Unified dark mode background */
@@ -494,7 +493,7 @@
 }
 
 /* Responsive design for better mobile experience */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .containerTotalOrgWrapper {
     padding: 10px !important;
     overflow-x: hidden;
@@ -532,7 +531,6 @@
     font-size: 24px;
     width: 100% !important;
     max-width: 100% !important;
-    word-wrap: break-word;
     overflow-wrap: break-word;
   }
 
@@ -555,7 +553,7 @@
   .componentContainer,
   .componentBorder {
     padding: 15px;
-    margin: 0 0 15px 0;
+    margin: 0 0 15px;
     overflow-x: auto;
     max-width: 100%;
   }
@@ -602,10 +600,7 @@
 
   /* Fix AccordianWrapper margins on mobile */
   :global(.Collapsible) {
-    margin-top: 10px !important;
-    margin-bottom: 10px !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
+    margin: 10px 0 !important;
   }
 
   :global(.Collapsible__contentInner) {
@@ -613,7 +608,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .containerTotalOrgWrapper {
     padding: 8px !important;
     margin-left: 0 !important;
@@ -651,7 +646,7 @@
   .componentContainer,
   .componentBorder {
     padding: 12px;
-    margin: 0 0 12px 0;
+    margin: 0 0 12px;
   }
 
   .totalOrgChartTitle p {
@@ -688,10 +683,7 @@
 
   /* Fix AccordianWrapper margins on small mobile */
   :global(.Collapsible) {
-    margin-top: 8px !important;
-    margin-bottom: 8px !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
+    margin: 8px 0 !important;
   }
 
   :global(.Collapsible__contentInner) {

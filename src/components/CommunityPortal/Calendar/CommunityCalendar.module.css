@@ -224,7 +224,7 @@
 }
 
 .tileEvents {
-  position: relative; 
+  position: relative;
 }
 
 /* Ensure tileEvents text is readable on selected date */
@@ -265,12 +265,12 @@
   gap: 4px;
   max-width: 100%;
   padding: 2px 6px;
-  margin-bottom: 2px; 
-  border-radius: 999px; 
+  margin-bottom: 2px;
+  border-radius: 999px;
   font-size: 0.7rem;
   font-weight: 600;
   background-color: #e0f7fa;
-  cursor: pointer; 
+  cursor: pointer;
 }
 
 .reactCalendar :global(.react-calendar__tile) .eventItem.statusNew {
@@ -281,8 +281,8 @@
 }
 
 .reactCalendar :global(.react-calendar__tile) .eventItem.statusNeedsAttendees {
-  background-color: #f3e5f5; 
-  color: #6a1b9a; 
+  background-color: #f3e5f5;
+  color: #6a1b9a;
   padding: 3px 5px;
   font-weight: 500;
 }
@@ -823,7 +823,7 @@
 /* Base Style: The Pill */
 .statusBadge {
   padding: 4px 14px;
-  border-radius: 50px; 
+  border-radius: 50px;
   font-size: 13px;
   font-weight: 800;
   text-transform: uppercase;
@@ -834,14 +834,14 @@
 
 /* Green: Full */
 .Full {
-  background-color: #E6FFFA; 
+  background-color: #E6FFFA;
   border-color: #138c78;
-  color: #234E52; 
+  color: #234E52;
 }
 
 /* Orange: Filling Fast */
 .FillingFast {
-  background-color: #FFF5E6; 
+  background-color: #FFF5E6;
   border-color: #FFD580;
   color: #C05621;
 }
@@ -862,38 +862,38 @@
 
 /* --- Base Dark Mode Badge --- */
 .darkModeStatusBadge {
-  background-color: #1a1a1a; 
-  border-width: 1.5px;      
+  background-color: #1a1a1a;
+  border-width: 1.5px;
 }
 
 /* --- Dark Mode Specific Statuses --- */
 
 /* Full - Deep Emerald */
 .darkModeStatusBadge.Full {
-  background-color: rgb(6 78 59 / 40%); 
-  border-color: #10b981;                
-  color: #d1fae5;                       
+  background-color: rgb(6 78 59 / 40%);
+  border-color: #10b981;
+  color: #d1fae5;
 }
 
 /* Filling Fast - Deep Burnt Orange */
 .darkModeStatusBadge.FillingFast {
-  background-color: rgb(124 45 18 / 40%); 
-  border-color: #f97316;                    
-  color: #ffedd5;                           
+  background-color: rgb(124 45 18 / 40%);
+  border-color: #f97316;
+  color: #ffedd5;
 }
 
 /* New - Deep Crimson */
 .darkModeStatusBadge.New {
-  background-color: rgb(127 29 29 / 40%); 
-  border-color: #ef4444;                    
-  color: #fee2e2;                           
+  background-color: rgb(127 29 29 / 40%);
+  border-color: #ef4444;
+  color: #fee2e2;
 }
 
 /* Needs Attendees - Deep Royal Blue */
 .darkModeStatusBadge.NeedsAttendees {
-  background-color: rgb(30 58 138 / 40%); 
-  border-color: #3b82f6;                    
-  color: #dbeafe;                          
+  background-color: rgb(30 58 138 / 40%);
+  border-color: #3b82f6;
+  color: #dbeafe;
 }
 
 .eventDetailsGrid {
@@ -1395,7 +1395,7 @@
 @media (width <= 1024px) {
   .calendarContainer{
     flex-direction: column;
-  } 
+  }
 
   .reactCalendar {
     padding: 1rem;
