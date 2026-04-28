@@ -205,15 +205,17 @@
 }
 
 .trackingHeader h3 {
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   color: #333;
   margin: 0;
+  white-space: nowrap;
 }
 
 .trackingHeaderDark h3 {
   color: #fff;
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   margin: 0;
+  white-space: nowrap;
 }
 
 .trackingFilters {
