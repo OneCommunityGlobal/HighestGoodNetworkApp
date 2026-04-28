@@ -9,7 +9,7 @@ fi
 
 . "$(dirname "$0")/_/husky.sh"
 
-changed_files=$(git diff --name-only @{upstream}...HEAD 2>/dev/null)
+changed_files=$(git diff --name-only --diff-filter=d @{upstream}...HEAD 2>/dev/null)
 
 if [ -z "$changed_files" ]; then
   echo "ℹ️  No outgoing changes to validate. Skipping pre-push checks."
@@ -30,17 +30,17 @@ style_status=0
 
 if [ -n "$js_files" ]; then
   echo "🧪 Running related tests before push..."
-  npx vitest related --run $js_files
+  printf '%s\n' "$js_files" | xargs -s 6000 npx vitest related --run
   test_status=$?
 
   echo "🧹 Running ESLint on changed files before push..."
-  npx eslint $js_files
+  printf '%s\n' "$js_files" | xargs -s 6000 npx eslint
   lint_status=$?
 fi
 
 if [ -n "$style_files" ]; then
   echo "🎨 Running Stylelint on changed files before push..."
-  npx stylelint $style_files
+  printf '%s\n' "$style_files" | xargs -s 6000 npx stylelint
   style_status=$?
 fi
 
