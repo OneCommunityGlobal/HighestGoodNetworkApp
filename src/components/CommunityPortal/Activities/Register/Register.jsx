@@ -401,11 +401,11 @@ function Register() {
                 <div className={styles.resourceList}>
                   {activity.resources?.map(person => (
                     <div key={person._id} className={styles.resourceCard}>
-                      <img
+                      {/* <img
                         src={person.profilePic || '/default-profile.png'}
                         alt={person.name}
                         className={styles.resourceAvatar}
-                      />
+                      /> */}
                       <div>
                         <p className={styles.resourceName}>{person.name}</p>
                         <p className={styles.resourceLocation}>{person.location}</p>

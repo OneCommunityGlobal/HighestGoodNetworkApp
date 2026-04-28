@@ -34,10 +34,6 @@
   box-shadow: 0 3px 10px rgb(0 0 0 / 10%);
 }
 
-.darkHeader {
-  background: #2b3e59;
-}
-
 .dashboardHeader h1 {
   font-size: 2.5rem;
   font-weight: bold;
@@ -78,7 +74,7 @@
   color: #1b3c55;
 }
 
-/* blue circular search button inside the bar */
+/* search icon button inside the bar */
 .dashboardSearchIconBtn {
   position: absolute;
   right: 1%;
@@ -88,11 +84,11 @@
   height: 34px;
   border-radius: 50%;
   cursor: pointer;
-  background: transparent; /* 🔹 icon background now white */
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #1b3c55; /* blue magnifying-glass icon */
+  color: #1b3c55;
   font-size: 0.9rem;
 }
 
@@ -103,6 +99,17 @@
   overflow: hidden;
   border: 2px solid #1b3c55;
   background: #fff;
+  outline: none;
+}
+
+.dashboardSearchContainer input {
+  outline: none;
+}
+
+.dashboardSearchContainer input:focus,
+.dashboardSearchContainer input:focus-visible {
+  outline: none;
+  box-shadow: none;
 }
 
 .dashboardSearchContainer:focus,
@@ -114,6 +121,7 @@
   border-color: #4da3ff;
   box-shadow: none;
 }
+
 .darkHeader .dashboardSearchContainer {
   border-color: #fff;
   background: #1b2a41;
@@ -123,52 +131,28 @@
   outline: none;
 }
 
-.dashboardSearchContainer input,
-.dashboardSearchContainer input:focus,
-.dashboardSearchContainer input:focus-visible {
-  outline: none;
-  box-shadow: none;
-}
-
 .dashboardSearchTextarea {
   width: 100%;
   resize: none;
   border: none;
   outline: none;
   background: transparent;
-
   font-size: 1rem;
   line-height: 1.5;
-
-  /* IMPORTANT */
   padding: 10px 96px 10px 18px;
-
   min-height: 36px;
   max-height: 120px;
-
   box-sizing: border-box;
-
-  overflow-y: auto;
-  overflow-x: hidden;
-
-  white-space: pre-wrap;      /* ✅ Brave-like wrapping */
-  word-wrap: break-word;      /* ✅ prevents overflow */
-  word-break: break-word;     /* ✅ fixes long strings */
+  overflow: hidden auto;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-break: normal;
 }
-
-
-
-
-@media (max-width: 850px) {
-  .dashboardSearchContainer {
-    width: 250px;
-  }
-}
-
 
 .darkHeader .dashboardSearchTextarea {
   color: #fff;
 }
+
 .darkHeader .dashboardSearchTextarea::placeholder {
   color: #cbd5e1;
 }
@@ -191,7 +175,6 @@
   white-space: nowrap;
 }
 
-/* icon wrapper */
 .dashboardSearchButtons {
   position: absolute;
   right: 14px;
@@ -202,40 +185,30 @@
   gap: 6px;
 }
 
-
-
-.dashboardSearchContainer:focus,
-.dashboardSearchContainer:focus-visible {
-  outline: none;
-}
-.dashboardSearchContainer input {
-  outline: none;
+/* Hide browser's built-in clear icon for search inputs */
+.dashboardSearchInput::-webkit-search-cancel-button,
+.dashboardSearchInput::-webkit-search-decoration,
+.dashboardSearchInput::-webkit-search-results-button,
+.dashboardSearchInput::-webkit-search-results-decoration {
+  appearance: none;
 }
 
-.dashboardSearchContainer input:focus,
-.dashboardSearchContainer input:focus-visible {
-  outline: none;
-  box-shadow: none;
-}
-
-.dashboardSearchContainer:focus-within {
+.darkSearchContainer {
+  background: #1b2a41;
   border-color: #4da3ff;
-  box-shadow: none;
-}
-.dashboardSearchContainer:focus-within:not(:focus-visible) {
-  outline: none;
-}
-.dashboardSearchContainer,
-.dashboardSearchContainer:focus,
-.dashboardSearchContainer:focus-visible {
-  outline: none;
 }
 
-.dashboardSearchContainer input,
-.dashboardSearchContainer input:focus,
-.dashboardSearchContainer input:focus-visible {
-  outline: none;
-  box-shadow: none;
+.darkSearchTextarea {
+  color: #fff;
+}
+
+.darkSearchTextarea::placeholder {
+  color: rgb(255 255 255 / 70%);
+}
+
+.darkSearchContainer .dashboardClearBtn,
+.darkSearchContainer .dashboardSearchIconBtn {
+  color: #fff;
 }
 
 .centeredRow {
@@ -253,38 +226,7 @@
 
 .darkSidebar {
   background: #2b3e59;
-}
-
-.darkSidebar .filterItem input:not([type='checkbox']):not([type='radio']),
-.darkSidebar .filterItem select {
-  background-color: #34495e;
-  color: #fff;
-  border: 1px solid #4a6572;
-}
-
-.darkSidebar .filterItem label {
-  color: #ecf0f1;
-}
-
-.darkSidebar input[type="date"] {
-  color-scheme: dark;
-}
-
-.darkSidebar .inputGroup {
-  background-color: #34495e;
-  border-color: #4da3ff;
-}
-
-.darkSidebar .inputGroup input {
-  color: #ffffff;
-}
-
-.darkSidebar .inputGroup input::placeholder {
-  color: #cbd5e1;
-}
-
-.darkSidebar .inputGroupText {
-  color: #cbd5e1;
+  border-right: 1px solid #1b2a41;
 }
 
 .filterSection h4 {
@@ -300,7 +242,35 @@
   gap: 20px;
 }
 
-.filterItem input:not([type='checkbox']):not([type='radio']),
+.filterOptionsVertical {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.filterItem label {
+  display: block;
+  font-weight: 600;
+  color: #34495e;
+  margin-bottom: 8px;
+}
+
+.filterItem input:not([type='checkbox'], [type='radio']),
+.filterItem select {
+  padding: 12px 15px;
+  margin-top: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  width: 100%;
+  height: auto;
+  font-size: 1rem;
+  background: #fff;
+  transition: all 0.3s ease;
+}
+
+.filterItem input:not([type='checkbox'], [type='radio']),
 .radioRow {
   display: flex;
   flex-wrap: wrap;
@@ -308,8 +278,35 @@
   margin-top: 10px;
 }
 
+.filterItem input[type='radio'],
+.filterItem input[type='checkbox'] {
+  display: inline-block;
+  width: auto;
+  padding: 0;
+  margin: 5px 0 0 120px;
+  vertical-align: middle;
+}
+
+.filterItem input:focus,
+.filterItem select:focus {
+  border-color: #2c3e50;
+  box-shadow: 0 0 5px rgb(44 62 80 / 40%);
+  outline: none;
+}
+
 .darkSidebar .filterItem label {
   color: #ecf0f1;
+}
+
+.darkSidebar .inputGroup input {
+  color: #fff;
+}
+
+.darkSidebar .filterItem input:not([type='checkbox'], [type='radio']),
+.darkSidebar .filterItem select {
+  background-color: #34495e;
+  color: #fff;
+  border: 1px solid #4a6572;
 }
 
 .darkSidebar input[type="date"] {
@@ -327,27 +324,6 @@
 .radioLabel {
   margin-bottom: 0;
   vertical-align: middle;
-}
-
-.filterItem input:not([type="checkbox"]):not([type="radio"]),
-.filterItem select {
-  padding: 12px 15px;
-  margin-top: 10px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  width: 100%;
-  height: auto;
-  font-size: 1rem;
-  background: #fff;
-  transition: all 0.3s ease;
-}
-
-.filterOptionsVertical {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
-  margin-top: 10px;
 }
 
 .dateFilter {
@@ -367,74 +343,41 @@
   background-size: 1em;
 }
 
-.filterItem input:not([type="checkbox"], [type="radio"]),
-.radioRow {
+.searchFilter {
+  margin-bottom: 1.5rem;
+}
+
+/* Search Input Container */
+.inputGroup {
   display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  margin-top: 10px;
+  align-items: center;
+  border-radius: 999px;
+  overflow: hidden;
+  background-color: #fff;
+  padding: 0 10px;
 }
 
-.filterItem label {
-  display: block;
-  font-weight: 600;
-  color: #34495e;
-  margin-bottom: 8px;
-  background: #fff;
-  transition: all 0.3s ease;
+.inputGroupText {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+  border: none;
+  color: #555;
+  font-size: 1.1rem;
 }
 
-.filterItem input[type='radio'],
-.filterItem input[type='checkbox'] {
-  display: inline-block; /* <– keeps input on same line as text */
-  width: auto;
-  padding: 0;
-  margin: 5px 0px 0px 120px; /* top margin to line up under "Dates" */
-  vertical-align: middle;
-}
-
-.filterItem input:focus,
-.filterItem select:focus {
-  border-color: #2c3e50;
-  box-shadow: 0 0 5px rgb(44 62 80 / 40%);
-  outline: none;
-}
-
-.filterItem input[type="radio"],
-.filterItem input[type="checkbox"] {
-  display: inline-block;
-  width: auto;
-  padding: 0;
-  margin: 5px 0 0 120px;
-  vertical-align: middle;
-}
-
-.darkSidebar .filterItem input:not([type="checkbox"], [type="radio"]),
-.darkSidebar .filterItem select {
+.darkSidebar .inputGroup {
   background-color: #34495e;
-  color: #fff;
-  border: 1px solid #4a6572;
+  border-color: #4da3ff;
 }
 
-.darkSidebar .filterItem label {
-  color: #ecf0f1;
+.darkSidebar .inputGroup input::placeholder {
+  color: #cbd5e1;
 }
 
-.darkSidebar input[type="date"] {
-  color-scheme: dark;
-}
-
-.radioGroup {
-  margin-right: 8px;
-}
-
-.radioInput {
-  margin-right: 6px;
-}
-
-.radioLabel {
-  margin-bottom: 0;
-  vertical-align: middle;
+.darkSidebar .inputGroupText {
+  color: #cbd5e1;
 }
 
 .dashboardMain {
@@ -465,11 +408,6 @@
   margin-bottom: 1.5rem;
 }
 
-.eventCard:hover {
-  transform: scale(1.05);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-}
-
 .eventCardImgContainer img {
   width: 100%;
   height: auto;
@@ -480,20 +418,13 @@
   height: 100%;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
   display: flex;
   flex-direction: column;
-  border-radius: 12px;
-  overflow: hidden;
   border: none;
   background: #fff;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   position: relative;
-}
-
-.darkEventCard {
-  background: #1b2a41;
 }
 
 .eventCard:hover {
@@ -501,19 +432,15 @@
   box-shadow: 0 8px 20px rgb(0 0 0 / 20%);
 }
 
+.darkEventCard {
+  background: #1b2a41;
+}
+
 .eventCardImgContainer {
   width: 100%;
   overflow: hidden;
   background-color: #f0f0f0;
   position: relative;
-}
-
-.eventCardBody {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  padding: 20px;
-  min-height: 180px;
 }
 
 .eventCardImg {
@@ -566,15 +493,16 @@
   flex-shrink: 0;
   font-size: 1rem;
 }
+
+.darkMain .eventTime {
+  color: #b0b3b8;
+}
+
 .darkMain .eventDate,
 .darkMain .eventDate .eventTime,
 .darkMain .eventLocation,
 .darkMain .eventOrganizer {
   color: #e4e6eb;
-}
-
-.darkMain .eventTime {
-  color: #b0b3b8;
 }
 
 .darkMain .eventIcon {
@@ -586,6 +514,10 @@
   padding: 40px;
   color: #888;
   font-size: 1.2rem;
+}
+
+.darkMain .noEvents {
+  color: #9ca3af;
 }
 
 .dashboardActions {
@@ -607,7 +539,7 @@
 
 .dashboardActions button:hover {
   background-color: #34495e;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 20%);
 }
 
 .paginationContainer {
@@ -617,57 +549,17 @@
   gap: 12px;
 }
 
-/* Hide browser's built-in clear icon for search inputs */
-.dashboardSearchInput::-webkit-search-cancel-button,
-.dashboardSearchInput::-webkit-search-decoration,
-.dashboardSearchInput::-webkit-search-results-button,
-.dashboardSearchInput::-webkit-search-results-decoration {
-  appearance: none;
+.paginationBtn {
+  background-color: #6c757d !important;
+  border-color: #6c757d !important;
+  color: #fff !important;
 }
 
-.darkSearchContainer {
-  background: #1b2a41;
-  border-color: #4da3ff;
+.paginationBtn:disabled {
+  opacity: 0.65;
 }
 
-.darkSearchTextarea {
-  color: #fff;
-}
-
-.darkSearchTextarea::placeholder {
-  color: rgb(255 255 255 / 70%);
-}
-
-.darkSearchContainer .dashboardClearBtn,
-.darkSearchContainer .dashboardSearchIconBtn {
-  color: #ffffff;
-}
-.darkMain .noEvents {
-  color: #9ca3af;
-}
-
-.searchFilter {
-  margin-bottom: 1.5rem;
-}
-
-/* --- Search Input Container --- */
-.inputGroup {
-  display: flex;
-  align-items: center;
-  border: 2px solid #d1d5db;
-  border-radius: 999px;
-  overflow: hidden;
-  background-color: #fff;
-  padding: 0 10px;
-}
-
-.inputGroupText {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 10px;
-  background-color: #fff;
-  border: none;
-  color: #555;
-  font-size: 1.1rem;
+.paginationBtn:hover:not(:disabled) {
+  background-color: #5a6268 !important;
+  border-color: #545b62 !important;
 }

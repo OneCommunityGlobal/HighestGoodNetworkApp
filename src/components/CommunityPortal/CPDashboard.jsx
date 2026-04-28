@@ -353,7 +353,7 @@ export function CPDashboard() {
 
             <div className={`${styles.filterItem} ${styles.searchFilter}`}>
               <label htmlFor="search-events">Search Events</label>
-              <div className={styles.inputGroup}>
+              <div className={styles.searchInputGroup}>
                 <span className={styles.inputGroupText}>
                   <FaSearch />
                 </span>
