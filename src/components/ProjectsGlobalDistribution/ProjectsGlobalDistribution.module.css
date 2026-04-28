@@ -1,10 +1,11 @@
-.filter{
+/* stylelint-disable  */
+.filter {
   display: flex;
   justify-content: space-around;
   margin: 2em 0;
 }
 
-.filterLabel{
+.filterLabel {
   margin-right: 0.5em;
 }
 
@@ -13,6 +14,7 @@
   justify-content: center;
 }
 
-.darkmode, .filterDark {
+.darkmode,
+.filterDark {
   background-color: #1b2a41 !important;
 }

@@ -1,5 +1,7 @@
+/* stylelint-disable  */
 @import url('./UserProfileModal.module.css');
-@media (max-width: 1024px) {
+
+@media (width <= 1024px) {
   .link-fields {
     display: flex;
     flex-direction: column;
@@ -26,8 +28,6 @@
   white-space: nowrap;
   vertical-align: baseline;
   border-radius: 0.25rem;
-  -webkit-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
-    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
     border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }

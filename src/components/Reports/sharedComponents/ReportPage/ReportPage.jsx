@@ -1,11 +1,11 @@
-import { ReportHeader } from './components/ReportHeader';
 import { ReportBlock } from './components/ReportBlock';
 import { ReportCard } from './components/ReportCard';
+import { ReportHeader } from './components/ReportHeader';
 import styles from './ReportPage.module.css';
 
 export function ReportPage({ children, renderProfile, contentClassName, darkMode }) {
   return (
-    <section className={`${styles["report-page-wrapper"]} ${darkMode ? 'bg-oxford-blue' : ''}`}>
+    <section className={`${styles["report-page-wrapper"]} ${darkMode ? styles["report-page-wrapper-dark"] : ''}`}>
       {renderProfile && (
         <div className={darkMode ? styles["report-page-profile-dark"] : styles["report-page-profile"]}>
           {renderProfile()}

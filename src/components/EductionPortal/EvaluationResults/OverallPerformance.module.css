@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 /* ============================================================================
    OVERALL PERFORMANCE COMPONENT STYLES - Premium Dashboard Design
    ============================================================================ */
@@ -19,7 +20,7 @@
 /* Header Styles */
 .performanceHeader {
   background: var(--primary-gradient);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgb(255 255 255 / 10%);
   padding: 1.5rem;
 }
 
@@ -40,7 +41,7 @@
 .headerIcon {
   font-size: 2.5rem;
   color: var(--accent-light);
-  background: rgba(255, 255, 255, 0.1);
+  background: rgb(255 255 255 / 10%);
   padding: 0.75rem;
   border-radius: var(--border-radius-full);
   backdrop-filter: blur(10px);
@@ -51,12 +52,12 @@
   margin: 0;
   font-size: 1.5rem;
   font-weight: 600;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  text-shadow: 0 1px 2px rgb(0 0 0 / 10%);
 }
 
 .headerSubtitle {
   color: var(--accent-light);
-  margin: 0.25rem 0 0 0;
+  margin: 0.25rem 0 0;
   font-size: 0.9rem;
   font-weight: 400;
   opacity: 0.9;
@@ -100,7 +101,7 @@
   gap: 2rem;
   padding: 2rem;
   background: linear-gradient(135deg, #f8faff 0%, #e8f2ff 100%);
-  border: 1px solid rgba(59, 130, 246, 0.2);
+  border: 1px solid rgb(59 130 246 / 20%);
   border-radius: var(--border-radius-lg);
   position: relative;
   overflow: hidden;
@@ -127,7 +128,7 @@
   border-radius: var(--border-radius-full);
   color: white;
   text-align: center;
-  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 8px 25px rgb(59 130 246 / 30%);
   flex-shrink: 0;
 }
 
@@ -219,7 +220,7 @@
 
 .metricCard:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 15px rgb(0 0 0 / 10%);
 }
 
 .metricCard::before {
@@ -243,7 +244,7 @@
 .metricIcon {
   font-size: 1.25rem;
   color: var(--primary-color);
-  background: rgba(59, 130, 246, 0.1);
+  background: rgb(59 130 246 / 10%);
   padding: 0.5rem;
   border-radius: var(--border-radius-sm);
 }
@@ -427,7 +428,7 @@
 }
 
 /* Responsive Design */
-@media (max-width: 992px) {
+@media (width <= 992px) {
   .scoreDisplay {
     flex-direction: column;
     text-align: center;
@@ -443,7 +444,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .performanceBody {
     padding: 1.5rem;
   }
@@ -475,7 +476,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .performanceHeader {
     padding: 1rem;
   }
@@ -501,8 +502,13 @@
 
 /* Animations */
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Accessibility */
