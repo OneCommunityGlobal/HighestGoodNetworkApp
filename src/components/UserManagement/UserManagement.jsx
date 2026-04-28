@@ -113,8 +113,6 @@ class UserManagement extends React.PureComponent {
   }
 
   handleResize = () => {
-    // eslint-disable-next-line no-console
-    console.log(window.innerWidth);
     this.setState({ isMobile: window.innerWidth <= 750 });
   };
 

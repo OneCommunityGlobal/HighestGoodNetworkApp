@@ -1,7 +1,6 @@
 import { createBaseProps } from './UserManagementTestSetup.jsx';
 
-import { screen, fireEvent , render } from '@testing-library/react';
-import { renderWithProvider } from '../../../__tests__/utils';
+import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
 
@@ -12,7 +11,7 @@ vi.mock('../../../actions/userManagement', async () => {
   const actual = await vi.importActual('../../../actions/userManagement');
   return {
     ...actual,
-    updateUserPauseStatus: vi.fn(() => async () => Promise.resolve()),
+    updateUserPauseStatus: vi.fn(() => async () => undefined),
   };
 });
 

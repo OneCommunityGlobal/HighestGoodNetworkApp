@@ -1,4 +1,4 @@
-import { screen, waitFor , render } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import PauseAndResumeButton from '../PauseAndResumeButton';
 import { PAUSE, RESUME } from '../../../languages/en/ui';
@@ -9,7 +9,7 @@ import { Provider } from 'react-redux';
 import { updateUserPauseStatus } from '../../../actions/userManagement';
 
 vi.mock('../../../actions/userManagement', () => ({
-  updateUserPauseStatus: vi.fn(() => async () => Promise.resolve()),
+  updateUserPauseStatus: vi.fn(() => async () => undefined),
 }));
 
 vi.mock('react-toastify', () => ({
@@ -116,10 +116,10 @@ describe('PauseAndResumeButton', () => {
       ).toBeInTheDocument();
     })
     expect(updateUserPauseStatus).toHaveBeenCalledWith(
-        expect.objectContaining({ _id: userProfileMock._id }),
-        'Inactive',
-        expect.anything()
-      );;
+      expect.objectContaining({ _id: userProfileMock._id }),
+      'Inactive',
+      expect.anything(),
+    );
   });
 
   it('resumes user and switches button back to PAUSE', async () => {
@@ -142,9 +142,9 @@ describe('PauseAndResumeButton', () => {
       ).toBeInTheDocument();
     })
     expect(updateUserPauseStatus).toHaveBeenCalledWith(
-        expect.objectContaining({ _id: userProfileMock._id }),
-        'Active',
-        expect.any(Number)
-      );;
+      expect.objectContaining({ _id: userProfileMock._id }),
+      'Active',
+      expect.any(Number),
+    );
   });
 });
