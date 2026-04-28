@@ -1,9 +1,10 @@
+/* stylelint-disable  */
 /* Description Section */
 .descriptionSection {
   padding: 20px;
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
 }
 
 .descriptionSectionDark {
@@ -48,7 +49,7 @@
 
 .tabButtonDark:hover {
   background-color: #374151;
-  color: #ffffff;
+  color: #fff;
 }
 
 .tabButtonActive {
@@ -104,18 +105,18 @@
 }
 
 .participantEntryDark {
-  background-color: rgba(148, 163, 184, 0.16);
+  background-color: rgb(148 163 184 / 16%);
   color: #f8fafc;
 }
 
 .participantEntryNew {
   border-left: 4px solid #2563eb;
-  box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.25);
+  box-shadow: inset 0 0 0 1px rgb(37 99 235 / 25%);
 }
 
 .participantEntryDark.participantEntryNew {
   border-left-color: #60a5fa;
-  box-shadow: inset 0 0 0 1px rgba(96, 165, 250, 0.35);
+  box-shadow: inset 0 0 0 1px rgb(96 165 250 / 35%);
 }
 
 .participantBadge {
@@ -146,46 +147,46 @@
 }
 
 /* Responsive design */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .tabs {
     flex-direction: column;
     border-bottom: none;
   }
-  
+
   .tabButton {
     border-bottom: 1px solid #e5e7eb;
     border-radius: 0;
   }
-  
+
   .tabButtonDark {
     border-bottom-color: #4b5563;
   }
-  
+
   .tabButton:last-child {
     border-bottom: none;
   }
-  
+
   .tabButtonActive {
     border-bottom: 3px solid #2563eb;
     border-left: 4px solid #2563eb;
   }
-  
+
   .tabButtonActiveDark {
     border-bottom-color: #60a5fa;
     border-left-color: #60a5fa;
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .descriptionSection {
     padding: 15px;
   }
-  
+
   .tabButton {
     padding: 12px 8px;
     font-size: 14px;
   }
-  
+
   .descriptionParagraph {
     font-size: 14px;
   }

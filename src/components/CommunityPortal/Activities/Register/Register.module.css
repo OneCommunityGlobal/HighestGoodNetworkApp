@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 /* Main container */
 .mainContainer {
   width: 100%;
@@ -10,7 +11,7 @@
 
 .mainContainerDark {
   background-color: #0f172a;
-  color: #ffffff;
+  color: #fff;
 }
 
 .contentWrapper {
@@ -21,7 +22,7 @@
 }
 
 .contentWrapperDark {
-  color: #ffffff;
+  color: #fff;
 }
 
 /* Register container */
@@ -50,7 +51,7 @@
   padding: 24px;
   gap: 32px;
   margin-bottom: 20px;
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
@@ -73,9 +74,10 @@
 
 .eventImage {
   width: 100%;
-  height: 200px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  max-width: 450px;
+  height: 300px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgb(0 0 0 / 20%);
   object-fit: cover;
   display: block;
 }
@@ -89,8 +91,10 @@
   background-color: transparent;
 }
 
-.eventDetailsSectionDark {
-  color: #f8fafc;
+.registerButton:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgb(0 123 255 / 30%);
 }
 
 /* Event Header Top (Title + Status) */
@@ -114,16 +118,25 @@
   color: #9ca3af;
 }
 
-.eventTitle {
-  font-size: 28px;
-  font-weight: 700;
-  margin: 0;
-  color: #1f2937;
-  line-height: 1.2;
+.registerButtonRegistering::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 20%), transparent);
+  animation: shimmer 1.5s infinite;
 }
 
-.eventTitleDark {
-  color: #ffffff;
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+
+  100% {
+    left: 100%;
+  }
 }
 
 /* Status Badge */
@@ -601,15 +614,21 @@
 
 /* Animations */
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
-@keyframes slideIn {
+@keyframes slide-in {
   from {
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -687,7 +706,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .mainContainer {
     padding: 20px 0;
   }

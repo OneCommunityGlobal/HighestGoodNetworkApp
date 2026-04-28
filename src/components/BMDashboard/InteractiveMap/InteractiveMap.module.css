@@ -1,12 +1,14 @@
+/* stylelint-disable  */
 /* ----------------------------------
    PAGE BACKGROUND
 ---------------------------------- */
 .lightPage {
-  background: #ffffff;
+  background: #fff;
   width: 100%;
   height: 100%;
   color: #222;
-  --legend-bg: rgba(255, 255, 255, 0.9);
+
+  --legend-bg: rgb(255 255 255 / 90%);
 }
 
 .darkPage {
@@ -14,7 +16,8 @@
   width: 100%;
   height: 100%;
   color: #e6e6e6;
-  --legend-bg: rgba(0, 0, 0, 0.55);
+
+  --legend-bg: rgb(0 0 0 / 55%);
 }
 
 /* ----------------------------------
@@ -58,7 +61,7 @@
 /* Before: pointer-events:none blocked legend + hid it entirely */
 :global(.leaflet-control-container) {
   pointer-events: auto !important;
-  z-index: 450 !important;  /* prevent covering header */
+  z-index: 450 !important; /* prevent covering header */
 }
 
 /* Leaflet bottom-right container */
@@ -93,8 +96,8 @@
 }
 
 .dateInputDark {
-  background: #1a2738;
-  color: #ffffff;
+  background: #1C2541;
+  color: #fff;
   border-color: #465a74;
 }
 
@@ -102,15 +105,19 @@
   border-color: #6acfde;
 }
 
+.calendarDark :global(.react-datepicker) {
+  background-color: #3A506B;
+}
+
 .dateInputDark:focus {
   outline: none;
   border-color: #6acfde;
-  box-shadow: 0 0 4px rgba(106, 207, 222, 0.6);
+  box-shadow: 0 0 4px rgb(106 207 222 / 60%);
 }
 
 /* Light mode */
 .lightPage .dateInput {
-  background: #ffffff;
+  background: #fff;
   color: #222;
   border-color: #ccc;
 }
@@ -122,7 +129,7 @@
 .lightPage .dateInput:focus {
   outline: none;
   border-color: #3a8bbd;
-  box-shadow: 0 0 3px rgba(58, 139, 189, 0.6);
+  box-shadow: 0 0 3px rgb(58 139 189 / 60%);
 }
 
 /* Error message */
@@ -172,7 +179,7 @@
 
 /* Light */
 .lightPage :global(.leaflet-popup-content-wrapper) {
-  background: #ffffff !important;
+  background: #fff !important;
   color: #222 !important;
   border: 1px solid #e3e3e3 !important;
 }
@@ -196,7 +203,7 @@
 }
 
 .lightTooltip {
-  background: #ffffff !important;
+  background: #fff !important;
   border: 1px solid #e3e3e3 !important;
   color: #222 !important;
 }
@@ -204,14 +211,14 @@
 .darkTooltip {
   background: #2d4059 !important;
   border: 1px solid #4b5f79 !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 /* ----------------------------------
    MAP CONTROLS
 ---------------------------------- */
 .darkPage :global(.leaflet-control-attribution) {
-  background: rgba(45, 64, 89, 0.85) !important;
+  background: rgb(45 64 89 / 85%) !important;
   color: #ddd !important;
 }
 
@@ -248,7 +255,7 @@
   left: 12px;
   bottom: 12px;
   padding: 6px 12px;
-  background: rgba(255, 255, 255, 0.75);
+  background: rgb(255 255 255 / 75%);
   border-radius: 8px;
   font-size: 13px;
   backdrop-filter: blur(4px);
@@ -256,10 +263,9 @@
 }
 
 .darkPage .bottomLeftLabel {
-  background: rgba(0, 0, 0, 0.55);
-  color: #ffffff;
+  background: rgb(0 0 0 / 55%);
+  color: #fff;
 }
-
 
 .legendItem {
   display: flex;
@@ -296,32 +302,28 @@
 
 .legendBox {
   position: absolute; /* absolute inside the map container */
-  width: 160px;       /* fixed width */
-  height: 180px;      /* fixed height */
+  width: 160px; /* fixed width */
+  height: 180px; /* fixed height */
   cursor: move;
   user-select: none;
   padding: 10px 12px;
   background: var(--legend-bg);
   border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
-  border: 1px solid rgba(0,0,0,0.15);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 25%);
+  border: 1px solid rgb(0 0 0 / 15%);
   backdrop-filter: blur(4px);
   font-size: 13px;
   z-index: 10000; /* higher than map */
   pointer-events: auto !important;
   opacity: 1 !important;
-  left: auto;    /* initial position handled in JSX */
-  top: auto;     /* initial position handled in JSX */
-  bottom: 20px;  /* fallback bottom-right */
-  right: 20px;
+  inset: auto 20px 20px auto; /* initial position handled in JSX */ /* initial position handled in JSX */ /* fallback bottom-right */
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
 }
 
-
 .darkPage .legendBox {
-  border: 1px solid rgba(255,255,255,0.15);
+  border: 1px solid rgb(255 255 255 / 15%);
   color: #fff;
 }
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { SEARCH } from '../../languages/en/ui';
-import './reportsPage.css';
+import styles from './reportsPage.module.css';
 
 /**
  * The search panel stateless component for Report grid
@@ -18,11 +18,11 @@ function ReportTableSearchPanel({ onSearch, wildCardSearchText, onSearchClick })
     // Scroll to results when search button is clicked, but ensure header remains visible
     setTimeout(() => {
       // Try to find the table data container (where results are shown)
-      let resultsContainer = document.querySelector('.table-data-container');
+      let resultsContainer = document.querySelector(`.${styles['table-data-container']}`);
       
       // If table data container is not visible, scroll to the report container data
       if (!resultsContainer || resultsContainer.offsetHeight === 0) {
-        resultsContainer = document.querySelector('.report-container-data');
+        resultsContainer = document.querySelector(`.${styles['report-container-data']}`);
       }
       
       if (resultsContainer) {
@@ -43,7 +43,7 @@ function ReportTableSearchPanel({ onSearch, wildCardSearchText, onSearchClick })
         });
       } else {
         // Fallback: scroll to the category container with header offset
-        const categoryContainer = document.querySelector('.category-container');
+        const categoryContainer = document.querySelector(`.${styles['category-container']}`);
         if (categoryContainer) {
           const header = document.querySelector('.header-wrapper, .navbar, [data-testid="header"]');
           const headerHeight = header ? header.offsetHeight : 80;
@@ -77,7 +77,7 @@ function ReportTableSearchPanel({ onSearch, wildCardSearchText, onSearchClick })
           /* eslint-disable-next-line jsx-a11y/no-autofocus */
           autoFocus
           type="text"
-          className={`form-control search-field-container ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
+          className={`form-control ${styles['search-field-container']} ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
           aria-label="Search"
           placeholder="Search Text"
           id="team-profiles-wild-card-search"
