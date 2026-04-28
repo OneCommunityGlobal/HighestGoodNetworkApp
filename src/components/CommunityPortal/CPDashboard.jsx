@@ -219,7 +219,7 @@ export function CPDashboard() {
   // Reset pagination to page 1 when filters change
   useEffect(() => {
     setPagination(prev => ({ ...prev, currentPage: 1 }));
-  }, [searchQuery, selectedDate, onlineOnly, dateFilter]);
+  }, [searchQuery, selectedDate, onlineOnly, appliedFilters.dateFilter]);
 
   const totalPages = Math.ceil(filteredEvents.length / pagination.limit) || 1;
   const displayedEvents = filteredEvents.slice(
@@ -398,17 +398,6 @@ export function CPDashboard() {
                   </FormGroup>
                 </div>
 
-                <div className={styles.dashboardActions}>
-                  <Button
-                    color="primary"
-                    onClick={() => {
-                      setDateFilter('');
-                      setSelectedDate('');
-                    }}
-                  >
-                    Clear date filter
-                  </Button>
-                </div>
                 <Input
                   type="date"
                   placeholder="Select Date"
