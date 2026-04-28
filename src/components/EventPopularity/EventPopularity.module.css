@@ -34,3 +34,46 @@
   visibility: visible;
 }
 
+.tooltipBox {
+  background: #ffffff;
+  color: #333;
+  border: 1px solid #e6e6e6;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* DARK VERSION (standalone class) */
+.tooltipBoxDark {
+  background: #1e1e1e;
+  color: #f1f1f1;
+  border: 1px solid #444;
+}
+
+.tooltipTitle {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.tooltipRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.darkMode .tooltipBox {
+  background: #1e1e1e;
+  color: #f1f1f1;
+  border: 1px solid #444;
+}
+
+.recharts-wrapper {
+  overflow: visible !important;
+}
+
+.darkMode {
+  background: #121212;
+  color: #f1f1f1;
+}
+

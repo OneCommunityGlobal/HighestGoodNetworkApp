@@ -92,6 +92,21 @@ export default function EventDashboard() {
   const thirtyDaysAgo = new Date(currentDate.getTime() - 30 * 24 * 60 * 60 * 1000);
   const dateRangeLabel = `${thirtyDaysAgo.toLocaleDateString()} - ${currentDate.toLocaleDateString()}`;
 
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (!active || !payload?.length) return null;
+
+    return (
+      <div className={styles.tooltipBox}>
+        <div className={styles.tooltipTitle}>{label}</div>
+        {payload.map((p, i) => (
+          <div key={i} className={styles.tooltipRow}>
+            <span>{p.name}:</span> <b>{p.value} users</b>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div
       style={{
@@ -375,19 +390,25 @@ export default function EventDashboard() {
             }}
           >
             <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={timeData}>
+              <BarChart data={timeData} margin={{ top: 20, right: 20, left: 80, bottom: 40 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                 <XAxis dataKey="time" interval={0} angle={-35} textAnchor="end" height={60} />
-                <YAxis label={{ value: 'Number of Users', angle: -90, position: 'insideLeft' }} />
-                <Tooltip
-                  formatter={value => `${value} users`}
-                  contentStyle={{
-                    background: '#333',
-                    border: 'none',
-                    borderRadius: '4px',
-                    color: '#fff',
+                <YAxis
+                  width={80}
+                  tick={{ fontSize: 12 }}
+                  label={{
+                    value: 'Number of Users',
+                    angle: -90,
+                    position: 'insideLeft',
+                    dx: -25,
+                    style: {
+                      textAnchor: 'middle',
+                      fill: '#666',
+                      fontSize: 12,
+                    },
                   }}
                 />
+                <Tooltip content={<CustomTooltip />} />
                 <Legend
                   wrapperStyle={{
                     paddingTop: '20px',
