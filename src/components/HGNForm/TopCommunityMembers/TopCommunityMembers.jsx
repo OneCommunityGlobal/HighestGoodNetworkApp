@@ -27,6 +27,33 @@ function TopCommunityMembers() {
   const [members, setMembers] = useState([]);
   const darkMode = useSelector(state => state.theme.darkMode);
 
+  const normalizeMember = member => {
+    const fullName = [member?.firstName, member?.lastName]
+      .filter(Boolean)
+      .join(' ')
+      .trim();
+
+    const phoneValue = Array.isArray(member?.phoneNumber)
+      ? member.phoneNumber[0]
+      : member?.phoneNumber || member?.phone || member?.contact?.phoneNumber;
+
+    return {
+      id: member?._id || member?.id || member?.userId || member?.user_id,
+      name: member?.name || member?.userInfo?.name || member?.fullName || fullName || null,
+      email: member?.email || member?.userInfo?.email || member?.contact?.email || null,
+      slack:
+        member?.slack ||
+        member?.slackID ||
+        member?.slackId ||
+        member?.userInfo?.slack ||
+        member?.userInfo?.slackID ||
+        null,
+      phoneNumber: phoneValue || null,
+      rating: member?.rating,
+      skillScore: member?.skillScore,
+    };
+  };
+
   useEffect(() => {
     const fetchMembers = async () => {
       try {
@@ -56,7 +83,8 @@ function TopCommunityMembers() {
     if (typeof m?.skillScore === 'number') return m.skillScore;
     return 0;
   };
-  const sortedMembers = [...members].sort((a, b) => scoreOf(b) - scoreOf(a));
+  const normalizedMembers = members.map(normalizeMember);
+  const sortedMembers = [...normalizedMembers].sort((a, b) => scoreOf(b) - scoreOf(a));
 
   return (
     <div
@@ -93,15 +121,16 @@ function TopCommunityMembers() {
           </tr>
         </thead>
         <tbody>
-          {sortedMembers.slice(0, 15).map(member => {
+          {sortedMembers.slice(0, 15).map((member, index) => {
             const scoreVal = scoreOf(member);
             return (
-              <tr key={member._id || member.id}>
-                <td>{member.name}</td>
+              <tr key={member.id || `${member.name || 'member'}-${index}`}>
+                <td>{member.name || 'Unavailable'}</td>
                 <td>
                   {!member.email ? (
-                    <span className={styles.private} title="No ID was found">
+                    <span className={styles.private} title="Email is private or unavailable">
                       <FaEnvelope style={{ color: '#ccc', cursor: 'not-allowed' }} />
+                      &nbsp;Private
                     </span>
                   ) : (
                     <a
@@ -110,13 +139,13 @@ function TopCommunityMembers() {
                       aria-label={`Email ${member.name}`}
                       className={darkMode ? styles.iconLinkDark : styles.iconLink}
                     >
-                      <FaEnvelope />
+                      <FaEnvelope /> {member.email}
                     </a>
                   )}
                 </td>
                 <td>
-                  {!member.slack && !member.slackID ? (
-                    <span title="No ID was found">
+                  {!member.slack ? (
+                    <span className={styles.private} title="Slack is private or unavailable">
                       <img
                         src={slackLogo}
                         alt="Slack"
@@ -127,23 +156,26 @@ function TopCommunityMembers() {
                           cursor: 'not-allowed',
                         }}
                       />
+                      &nbsp;Private
                     </span>
                   ) : (
                     <a
-                      href={`https://highest-good.slack.com/team/@${member.slack ||
-                        member.slackID}`}
+                      href={`https://highest-good.slack.com/team/@${member.slack}`}
                       target="_blank"
                       rel="noreferrer"
-                      title={member.slack || member.slackID}
+                      title={member.slack}
+                      className={darkMode ? styles.iconLinkDark : styles.iconLink}
                     >
-                      <img src={slackLogo} alt="Slack" style={{ width: '20px', height: '20px' }} />
+                      <img src={slackLogo} alt="Slack" style={{ width: '20px', height: '20px' }} />{' '}
+                      {member.slack}
                     </a>
                   )}
                 </td>
                 <td>
                   {!member.phoneNumber ? (
-                    <span className={styles.private} title="Phone number not found">
+                    <span className={styles.private} title="Phone number is private or unavailable">
                       <FaPhone style={{ color: '#ccc', cursor: 'not-allowed' }} />
+                      &nbsp;Private
                     </span>
                   ) : (
                     <a
