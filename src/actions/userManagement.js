@@ -408,11 +408,11 @@ export const getUserProfileBasicInfo = ({ userId, source } = {}) => {
   // API request to fetch basic user profile information
   let userProfileBasicInfoPromise;
   if (userId)
-    userProfileBasicInfoPromise = axios.get(`${ENDPOINTS.USER_PROFILE_BASIC_INFO}?userId=${userId}`);
+    userProfileBasicInfoPromise = axios.get(ENDPOINTS.USER_PROFILE(userId));
   else if (source)
     userProfileBasicInfoPromise = axios.get(ENDPOINTS.USER_PROFILE_BASIC_INFO(source));
   else
-    userProfileBasicInfoPromise = axios.get(ENDPOINTS.USER_PROFILE_BASIC_INFO);
+    userProfileBasicInfoPromise = axios.get(ENDPOINTS.USER_PROFILES);
 
   return async dispatch => {
     // Dispatch action indicating the start of the fetch process

@@ -247,11 +247,11 @@ export const ENDPOINTS = {
     if (startDate) params.append('startDate', startDate);
     if (endDate) params.append('endDate', endDate);
     if (groupBy) params.append('groupBy', groupBy);
-    
+
     const queryString = params.toString();
     return queryString ? `${url}?${queryString}` : url;
   },
-  
+
   INJURY_PROJECTS: () => `${APIEndpoint}/injuries/projects`,
 
   PRESETS: () => `${APIEndpoint}/rolePreset`,
@@ -302,6 +302,34 @@ export const ENDPOINTS = {
   PERMISSION_CHANGE_LOGS: userId => `${APIEndpoint}/permissionChangeLogs/${userId}`,
 
   GET_TOTAL_COUNTRY_COUNT: () => `${APIEndpoint}/getTotalCountryCount`,
+
+  ANALYTICS_AVAILABLE_ROLES: () => `${APIEndpoint}/analytics/roles`,
+
+  // Country Application Map Chart endpoints
+  COUNTRY_APPLICATION_DATA: (params = {}) => {
+    let url = `${APIEndpoint}/analytics/country-applications`;
+    const queryParams = new URLSearchParams();
+
+    if (params.roles && params.roles.length > 0) {
+      queryParams.append('roles', params.roles.join(','));
+    }
+    // Include ALL so the API uses filter=all; omit timeFrame when startDate/endDate define the range
+    if (params.timeFrame) {
+      queryParams.append('timeFrame', params.timeFrame);
+    }
+    if (params.startDate) {
+      queryParams.append('startDate', params.startDate);
+    }
+    if (params.endDate) {
+      queryParams.append('endDate', params.endDate);
+    }
+    if (params.customDateRange) {
+      queryParams.append('customDateRange', 'true');
+    }
+
+    const queryString = queryParams.toString();
+    return queryString ? `${url}?${queryString}` : url;
+  },
 
   GET_ALL_FOLLOWUPS: () => `${APIEndpoint}/followup`,
 
@@ -456,6 +484,8 @@ export const ENDPOINTS = {
   USER_STATE_SELECTIONS_BATCH: `${APIEndpoint}/userstate/selections/batch`,
   USER_STATE_CATALOG_USAGE: key => `${APIEndpoint}/userstate/catalog/${key}/usage`,
 
+  HGN_FORM_GET_TEAM_MEMBERS_BY_SKILL: skill => `${APIEndpoint}/userProfile/skills/${skill}`,
+
   CREATE_JOB_FORM: `${APIEndpoint}/jobforms`,
   UPDATE_JOB_FORM: `${APIEndpoint}/jobforms`,
   GET_JOB_FORM: formId => `${APIEndpoint}/jobforms/${formId}`,
@@ -539,6 +569,19 @@ export const ENDPOINTS = {
   LB_LISTING_BOOK: `${APIEndpoint}/lb/listing/availability/booking`,
   HELP_CATEGORIES: `${APIEndpoint}/help-categories`,
   APPLICANT_SOURCES: `${APIEndpoint}/applicant-analytics/applicant-sources`,
+
+  OPT_STATUS_BREAKDOWN: (startDate, endDate, role) => {
+  let url = `${APIEndpoint}/analytics/opt-status`;
+  const params = [];
+
+  if (startDate) params.push(`startDate=${startDate}`);
+  if (endDate) params.push(`endDate=${endDate}`);
+  if (role) params.push(`role=${role}`);
+
+  return params.length > 0 ? `${url}?${params.join("&")}` : url;
+},
+
+
 
   // job analytics
   HOURS_PLEDGED: `${APIEndpoint}/analytics/hours-pledged`,
