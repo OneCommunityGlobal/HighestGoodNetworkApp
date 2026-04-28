@@ -1,11 +1,10 @@
 import { createBaseProps } from './UserManagementTestSetup.jsx';
-import { UnconnectedUserManagement } from '../UserManagement';
+import UserManagement, { UnconnectedUserManagement } from '../UserManagement';
 
 import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
 
-import UserManagement from '../UserManagement';
 import { updateUserPauseStatus } from '../../../actions/userManagement';
 
 vi.mock('../../../actions/userManagement', async () => {
@@ -80,8 +79,8 @@ describe('UserManagement Component', () => {
     expect(screen.getByTestId('user-management-table')).toBeInTheDocument();
   });
 
-  it('calls activateUserAction when resuming user', () => {
-    renderWithProvider(<UserManagement {...props} />);
+  it('calls updateUserPauseStatus when resuming user', () => {
+    renderUserManagement(<UserManagement {...props} />);
     fireEvent.click(screen.getByTestId('pause-resume-button-0'));
     expect(updateUserPauseStatus).toHaveBeenCalled();
   });
