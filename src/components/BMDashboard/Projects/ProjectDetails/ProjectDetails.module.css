@@ -12,6 +12,7 @@
   background-color: #1b2a41;
   color: white;
 }
+
 .projectDetailsTitle {
   font-size: 1.5rem;
   overflow: hidden;
@@ -82,7 +83,7 @@
 .buttonBtn:hover {
   color: #fff; /* prevent blue text */
   text-decoration: none;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45); /* prevent underline */
+  box-shadow: 0 4px 12px rgb(0 0 0 / 45%); /* prevent underline */
 }
 
 /* LIGHT MODE COLORS */
@@ -119,7 +120,7 @@
   background-color: #7a0101;
 }
 
-@media (min-width: 550px) {
+@media (width >= 550px) {
   .logBar {
     flex-direction: column;
   }
@@ -139,10 +140,9 @@
   }
 }
 
-@media (min-width: 880px) {
+@media (width >= 880px) {
   .logBar {
-    flex-direction: row;
-    flex-wrap: wrap;
+    flex-flow: row wrap;
     justify-content: center;
   }
 
@@ -195,12 +195,12 @@
 }
 
 .singleCard:hover {
-  box-shadow: 0 20px 20px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2);
+  box-shadow: 0 20px 20px 0 rgb(0 0 0 / 20%), 0 6px 20px 0 rgb(0 0 0 / 20%);
   transform: translate3d(0.5px, 0.5px, 0.5px);
 }
 
 .darkMode .singleCard:hover {
-  box-shadow: 0 20px 20px 0 rgba(0, 0, 0, 0.4), 0 6px 20px 0 rgba(0, 0, 0, 0.4);
+  box-shadow: 0 20px 20px 0 rgb(0 0 0 / 40%), 0 6px 20px 0 rgb(0 0 0 / 40%);
 }
 
 .singleCardImg {
@@ -279,7 +279,7 @@
   color: #f8fafc;
 }
 
-@media (min-width: 992px) {
+@media (width >= 992px) {
   .singleCard {
     width: calc(33.333% - 20px);
     max-width: 180px;
@@ -287,7 +287,7 @@
   }
 }
 
-@media (min-width: 576px) and (max-width: 991px) {
+@media (width >= 576px) and (width <= 991px) {
   .singleCard {
     width: calc(50% - 15px);
     max-width: 180px;
@@ -295,7 +295,7 @@
   }
 }
 
-@media (max-width: 575px) {
+@media (width <= 575px) {
   .singleCard {
     width: 90%;
     max-width: 180px;
@@ -303,7 +303,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .projectLog td,
   .projectLog th {
     font-size: 0.6em;
@@ -311,7 +311,7 @@
 }
 
 ul.logBarBtnGroup {
-  padding: 5;
+  padding: 5px;
 } /* Row containing the RentedTools and Materials columns */
 
 /* Each column within the cardsRow */
@@ -340,7 +340,7 @@ ul.logBarBtnGroup {
   color: #e5e7eb;
 }
 
-@media (max-width: 992px) {
+@media (width <= 992px) {
   .cardsCol {
     flex: 1 1 100%; /* stack on smaller screens */
     min-width: unset;
