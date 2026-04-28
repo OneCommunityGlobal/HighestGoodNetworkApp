@@ -329,6 +329,10 @@ export default function ToolsStoppageHorizontalBarChart() {
       ...base,
       backgroundColor: '#2c3344',
     }),
+    menuList: base => ({
+      ...base,
+      backgroundColor: '#2c3344',
+    }),
     option: (base, state) => ({
       ...base,
       backgroundColor: state.isFocused ? '#364156' : '#2c3344',
@@ -342,6 +346,19 @@ export default function ToolsStoppageHorizontalBarChart() {
       ...base,
       color: '#aaaaaa',
     }),
+    input: base => ({
+      ...base,
+      color: '#e0e0e0',
+    }),
+    dropdownIndicator: base => ({
+      ...base,
+      color: '#aaaaaa',
+      ':hover': { color: '#e0e0e0' },
+    }),
+    indicatorSeparator: base => ({
+      ...base,
+      backgroundColor: '#364156',
+    }),
   };
 
   // ✅ Prepare Chart.js data
@@ -351,7 +368,7 @@ export default function ToolsStoppageHorizontalBarChart() {
   const chartOptions = getChartOptions(darkMode);
 
   return (
-    <div className={`tools-availability-page ${darkMode ? 'dark-mode' : ''}`}>
+    <div className={`tools-availability-page ${darkMode ? 'dark-mode darkTheme' : ''}`}>
       <h3 className={`tools-chart-title ${darkMode ? 'dark-mode' : ''}`}>
         Reason of Stoppage of Tools
       </h3>
@@ -366,7 +383,7 @@ export default function ToolsStoppageHorizontalBarChart() {
                 setDateRange(update);
               }}
               placeholderText={dateRangeLabel || 'Filter by Date Range'}
-              className={`${styles.datePickerInput} form-control ${darkMode ? 'darkTheme' : ''}`}
+              className={`${styles.datePickerInput} form-control`}
               calendarClassName={darkMode ? 'darkThemeCalendar' : 'customCalendar'}
             />
             <Button

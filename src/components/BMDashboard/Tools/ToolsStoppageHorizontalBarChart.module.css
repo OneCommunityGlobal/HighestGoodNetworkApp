@@ -100,10 +100,18 @@
 
 /* Dark mode for multi select*/
 :global(.darkTheme .customSelect__control) {
-  background-color: #fff!important;
-  color: #000!important;
-  border-color: #ccc!important;
+  background-color: #2b3e59!important;
+  color: #e0e0e0!important;
+  border-color: #666!important;
   font-size: 10px!important;
+}
+
+:global(.darkTheme .customSelect__single-value) {
+  color: #e0e0e0!important;
+}
+
+:global(.darkTheme .customSelect__placeholder) {
+  color: #aaaaaa!important;
 }
 
 :global(.darkTheme .customSelect__menu) {
