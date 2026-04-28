@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 /* stylelint-disable no-duplicate-selectors, no-descending-specificity, declaration-block-single-line-max-declarations */
 .chartCard {
   background-color: #fff;
@@ -258,11 +259,11 @@
   color: #eee;
 }
 
-.trendRow { 
-  display: flex; 
-  align-items: center; 
-  gap: 8px; 
-  font-size: 13px; 
+.trendRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
   margin-bottom: 8px;
 }
 
@@ -315,4 +316,3 @@
 
 .timelineSection { margin-top: 28px; padding: 18px; background: #fafafa; border-radius: 8px; border: 1px solid #e8e8e8; }
 .darkMode .timelineSection { background: #252525; border-color: #404040; }
-

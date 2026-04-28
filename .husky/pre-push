@@ -53,6 +53,8 @@ if [ -n "$style_files" ]; then
   style_status=$?
 fi
 
+
+# Block push if either fails
 if [ $test_status -ne 0 ] || [ $lint_status -ne 0 ] || [ $style_status -ne 0 ]; then
   echo "❌ Push blocked: changed-file validation failed."
   exit 1

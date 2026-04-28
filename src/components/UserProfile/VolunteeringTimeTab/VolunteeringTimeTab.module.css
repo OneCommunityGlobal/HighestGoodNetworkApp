@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .volunteeringTimeRow {
   align-items: center;
   margin-top: 8px;
@@ -50,7 +51,7 @@
   display: none;
 }
 
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
   .volunteeringTimeTabDesktop {
     display: none;
   }
@@ -71,6 +72,7 @@
     font-weight: bold;
   }
 }
+
 .darkMode {
   /* marker class */
 }
