@@ -20,10 +20,11 @@ function LogBar(props) {
       url: ['/bmdashboard/timelog', '/bmdashboard/materials/add', '/bmdashboard/tools/log'],
     },
     newItem: {
-      name: ['Team', 'Material', 'Tool/Equipment', 'Lessons'],
+      name: ['Team', 'Material', 'Add Equipment', 'Add Tool', 'Lessons'],
       url: [
         '/teams',
         '/bmdashboard/materials/add',
+        '/bmdashboard/equipment/add',
         '/bmdashboard/tools/add',
         `/bmdashboard/lessonform/${projectId}`,
       ],
