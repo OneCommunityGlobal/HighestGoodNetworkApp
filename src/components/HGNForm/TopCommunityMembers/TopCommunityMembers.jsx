@@ -27,56 +27,26 @@ function TopCommunityMembers() {
   const [members, setMembers] = useState([]);
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const normalizeMember = member => {
-    const fullName = [member?.firstName, member?.lastName]
-      .filter(Boolean)
-      .join(' ')
-      .trim();
-
-    const phoneValue = Array.isArray(member?.phoneNumber)
-      ? member.phoneNumber[0]
-      : member?.phoneNumber || member?.phone || member?.contact?.phoneNumber;
-
-    return {
-      id: member?._id || member?.id || member?.userId || member?.user_id,
-      name: member?.name || member?.userInfo?.name || member?.fullName || fullName || null,
-      email: member?.email || member?.userInfo?.email || member?.contact?.email || null,
-      slack:
-        member?.slack ||
-        member?.slackID ||
-        member?.slackId ||
-        member?.userInfo?.slack ||
-        member?.userInfo?.slackID ||
-        null,
-      phoneNumber: phoneValue || null,
-      rating: member?.rating,
-      skillScore: member?.skillScore,
-    };
-  };
+  const normalizeMember = member => ({
+    id: member?._id || member?.id,
+    name: member?.name || null,
+    email: member?.email || null,
+    slack: member?.slack || null,
+    phoneNumber: member?.phoneNumber || null,
+    score: typeof member?.score === 'number' ? member.score : 0,
+  });
 
   useEffect(() => {
     const fetchMembers = async () => {
       try {
-        const response = await httpService.get(
-          ENDPOINTS.HGN_FORM_GET_TEAM_MEMBERS_BY_SKILL(selectedSkill),
-        );
-        const primaryData = Array.isArray(response?.data) ? response.data : [];
-
-        if (primaryData.length > 0) {
-          setMembers(primaryData);
-          return;
-        }
-
-        // Fallback: team-level endpoint can return data even when the userProfile endpoint is empty.
-        const fallbackResponse = await httpService.get(
-          ENDPOINTS.HGN_FORM_GET_TEAM_MEMBERS_BY_SKILL_FALLBACK(selectedSkill),
-        );
-        const fallbackData = Array.isArray(fallbackResponse?.data) ? fallbackResponse.data : [];
-        setMembers(fallbackData);
+        const response = await httpService.get(ENDPOINTS.HGN_FORM_RANKED, {
+          params: { skills: selectedSkill },
+        });
+        setMembers(Array.isArray(response?.data) ? response.data : []);
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error('Error fetching members:', error);
-        setMembers([]); // fallback in case of error
+        setMembers([]);
       }
     };
 
@@ -85,16 +55,7 @@ function TopCommunityMembers() {
     }
   }, [selectedSkill]);
 
-  // normalize rating for sorting and display: supports "7/10" or numeric skillScore
-  const scoreOf = m => {
-    if (typeof m?.rating === 'string') {
-      const [n] = m.rating.split('/');
-      const num = parseInt(n, 10);
-      return Number.isFinite(num) ? num : 0;
-    }
-    if (typeof m?.skillScore === 'number') return m.skillScore;
-    return 0;
-  };
+  const scoreOf = m => (typeof m?.score === 'number' ? m.score : 0);
   const normalizedMembers = members.map(normalizeMember);
   const sortedMembers = [...normalizedMembers].sort((a, b) => scoreOf(b) - scoreOf(a));
 
@@ -213,7 +174,7 @@ function TopCommunityMembers() {
         </tbody>
       </table>
       <Link
-        to="/hgnhelp/community"
+        to={{ pathname: '/hgnhelp/community', state: { initialSkills: [selectedSkill] } }}
         className={darkMode ? styles.underlineLinkDark : styles.underlineLink}
       >
         Show your team members &gt;

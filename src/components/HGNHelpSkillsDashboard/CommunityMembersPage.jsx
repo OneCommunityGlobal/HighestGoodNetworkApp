@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import Accordion from './Accordion';
 import { PreferenceFilterButtons, SkillFilterButtons } from './FilterButtons';
 import RankedUserList from './RankedUserList';
@@ -7,7 +8,8 @@ import SearchBar from './SearchBar';
 import styles from './style/CommunityMembersPage.module.css';
 
 function CommunityMembersPage() {
-  const [selectedSkills, setSelectedSkills] = useState([]);
+  const location = useLocation();
+  const [selectedSkills, setSelectedSkills] = useState(location.state?.initialSkills || []);
   const [selectedPreferences, setSelectedPreferences] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const darkMode = useSelector(state => state.theme.darkMode);
