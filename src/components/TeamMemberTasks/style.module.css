@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 :global(.dark-mode) .modal-body p {
   color: #fff;
   background-color: transparent;

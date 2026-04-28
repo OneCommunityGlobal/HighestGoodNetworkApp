@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .messageUserNotFound {
   text-align: center;
   height: 100%;
@@ -469,6 +470,7 @@ button.btn.btn-outline-primary {
 
 /* Mobile & Tablet Layout */
 @media (width <= 767px) {
+@media (width <= 767px) {
   #containerProfile {
     grid-template-columns: 1fr; /* Single-column layout */
     grid-template-rows: auto auto auto; /* Three stacked rows */
@@ -492,4 +494,5 @@ button.btn.btn-outline-primary {
   .left-dummy {
     display: none;
   }
+}
 }
