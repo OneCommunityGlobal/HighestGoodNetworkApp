@@ -127,11 +127,39 @@ function DropOffTracking() {
           <thead>
             <tr>
               <th>Event name</th>
-              <th>No-show rate</th>
-              <th>Drop-off rate</th>
-              <th>Get list</th>
+
+              <th>
+                No-show rate
+                <span
+                  className={styles.infoIcon}
+                  title="Percentage of registered participants who did not attend the event. Calculated per event based on total registrations."
+                >
+                  ℹ️
+                </span>
+              </th>
+
+              <th>
+                Drop-off rate
+                <span
+                  className={styles.infoIcon}
+                  title="Percentage of participants who joined the event but left before it was completed. Calculated per event based on total registrations."
+                >
+                  ℹ️
+                </span>
+              </th>
+
+              <th>
+                Get list
+                <span
+                  className={styles.infoIcon}
+                  title="View the list of no-show participants for this event and send follow-up emails."
+                >
+                  ℹ️
+                </span>
+              </th>
             </tr>
           </thead>
+
           <tbody>
             {filteredEvents.map(event => (
               <tr key={event.id}>
