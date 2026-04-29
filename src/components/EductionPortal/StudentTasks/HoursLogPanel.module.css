@@ -1,0 +1,211 @@
+.panel {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem;
+  margin-top: 0.5rem;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 8%);
+}
+
+.panelDark {
+  background: #1e2533;
+  border-color: #374151;
+  color: #f3f4f6;
+}
+
+/* ── Header ──────────────────────────────── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.9rem;
+}
+
+.title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  color: #111827;
+}
+
+.panelDark .title {
+  color: #f3f4f6;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  color: #6b7280;
+  padding: 0 0.2rem;
+  transition: color 0.15s;
+}
+
+.closeBtn:hover {
+  color: #111827;
+}
+
+.panelDark .closeBtn {
+  color: #9ca3af;
+}
+
+.panelDark .closeBtn:hover {
+  color: #f3f4f6;
+}
+
+/* ── Progress ─────────────────────────────── */
+.progressSection {
+  margin-bottom: 1rem;
+}
+
+.progressLabel {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  color: #374151;
+  margin-bottom: 0.4rem;
+  font-weight: 500;
+}
+
+.panelDark .progressLabel {
+  color: #d1d5db;
+}
+
+.progressBar {
+  width: 100%;
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.panelDark .progressBar {
+  background: #374151;
+}
+
+.progressFill {
+  height: 100%;
+  background: #2563eb;
+  border-radius: 4px;
+  transition: width 0.35s ease;
+}
+
+.progressComplete {
+  background: #16a34a;
+}
+
+.eligibleMsg {
+  font-size: 0.8rem;
+  color: #16a34a;
+  margin: 0.4rem 0 0;
+  font-weight: 500;
+}
+
+/* ── Form ─────────────────────────────────── */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.inputRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.stepBtn {
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid #d1d5db;
+  border-radius: 50%;
+  background: #f9fafb;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #374151;
+  transition: background 0.15s, border-color 0.15s;
+  flex-shrink: 0;
+}
+
+.stepBtn:hover {
+  background: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+.panelDark .stepBtn {
+  background: #374151;
+  border-color: #4b5563;
+  color: #f3f4f6;
+}
+
+.panelDark .stepBtn:hover {
+  background: #4b5563;
+}
+
+.hoursInput {
+  flex: 1;
+  text-align: center;
+  border-radius: 6px;
+  padding: 0.35rem 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+  background: #f9fafb;
+  outline: none;
+  min-width: 0;
+  border: 1px solid #d1d5db;
+}
+
+.hoursInput:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgb(37 99 235 / 15%);
+}
+
+.hoursInputDark {
+  background: #374151;
+  border-color: #4b5563;
+  color: #f3f4f6;
+}
+
+.hoursInputDark:focus {
+  border-color: #3b82f6;
+}
+
+/* hide number spinner arrows */
+.hoursInput::-webkit-outer-spin-button,
+.hoursInput::-webkit-inner-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+.hoursInput[type='number'] {
+  appearance: textfield;
+}
+
+.submitBtn {
+  width: 100%;
+  padding: 0.5rem 1rem;
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.submitBtn:disabled {
+  background: #93c5fd;
+  cursor: not-allowed;
+}
+
+.submitBtn:hover:not(:disabled) {
+  background: #1d4ed8;
+}

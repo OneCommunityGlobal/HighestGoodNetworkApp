@@ -262,3 +262,38 @@ export const markStudentTaskAsDone = (taskId) => {
     }
   };
 };
+
+/**
+ * Log hours against a student task.
+ * @param {string} taskId - The task ID
+ * @param {number} hours  - Hours to add (positive number)
+ */
+export const logStudentTaskHours = (taskId, hours) => {
+  return async (dispatch, getState) => {
+    try {
+      const state = getState();
+      const userId = state.auth.user.userid;
+
+      const response = await httpService.post(ENDPOINTS.STUDENT_TASK_LOG_HOURS(taskId), {
+        hours,
+        requestor: { requestorId: userId },
+      });
+
+      const { loggedHours, suggestedTotalHours, status, canMarkDone } = response.data;
+
+      dispatch({
+        type: types.LOG_STUDENT_TASK_HOURS,
+        taskId,
+        loggedHours,
+        suggestedTotalHours,
+        status,
+        canMarkDone,
+      });
+
+      toast.success(`${hours} hour(s) logged successfully!`);
+    } catch (error) {
+      const msg = error.response?.data?.error || 'Failed to log hours. Please try again.';
+      toast.error(msg);
+    }
+  };
+};

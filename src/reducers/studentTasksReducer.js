@@ -42,6 +42,21 @@ export const studentTasksReducer = (state = initialState, action) => {
         ),
       };
 
+    case types.LOG_STUDENT_TASK_HOURS:
+      return {
+        ...state,
+        taskItems: state.taskItems.map(task =>
+          task.id === action.taskId
+            ? {
+                ...task,
+                logged_hours: action.loggedHours,
+                status: action.status,
+                can_mark_done: action.canMarkDone,
+              }
+            : task,
+        ),
+      };
+
     default:
       return state;
   }
