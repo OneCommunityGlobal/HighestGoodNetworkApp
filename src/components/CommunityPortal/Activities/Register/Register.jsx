@@ -1,10 +1,9 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-// import Calendar from 'react-calendar';
-// import 'react-calendar/dist/Calendar.css';
 import styles from './Register.module.css';
 import EventDescription from './EventDescription';
+import Calendar from 'react-calendar';
 
 function Register() {
   const { activityId } = useParams();
@@ -14,7 +13,6 @@ function Register() {
   const [activity, setActivity] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  // eslint-disable-next-line no-unused-vars
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [feedbackMessage, setFeedbackMessage] = useState(null);
   const [availability, setAvailability] = useState(0);
@@ -22,6 +20,7 @@ function Register() {
   const [registrants, setRegistrants] = useState([]);
   const feedbackTimeoutRef = useRef(null);
   const storageKey = useMemo(() => `activity-${activityId}-registrants`, [activityId]);
+
   const tokenPayload = useMemo(() => {
     if (typeof window === 'undefined' || typeof window.atob !== 'function') {
       return null;
@@ -42,6 +41,7 @@ function Register() {
       return null;
     }
   }, [authUser?.userid]);
+
   useEffect(() => {
     return () => {
       if (feedbackTimeoutRef.current) {
@@ -65,7 +65,6 @@ function Register() {
         setRegistrants([]);
       }
     } catch (err) {
-      // eslint-disable-next-line no-console
       console.error('Failed to load saved registrants', err);
       setRegistrants([]);
     }
@@ -76,19 +75,16 @@ function Register() {
     try {
       window.localStorage.setItem(storageKey, JSON.stringify(registrants));
     } catch (err) {
-      // eslint-disable-next-line no-console
       console.error('Failed to persist registrants', err);
     }
   }, [registrants, storageKey]);
 
   useEffect(() => {
-    // Simulate API call with loading and error handling
     const fetchActivity = async () => {
       try {
         setLoading(true);
         setError(null);
 
-        // Simulate network delay
         await new Promise(resolve => setTimeout(resolve, 1000));
 
         const fetchedActivities = [
@@ -158,7 +154,6 @@ function Register() {
                 }
               }
             } catch (storageErr) {
-              // eslint-disable-next-line no-console
               console.error('Failed to read saved registrants during fetch', storageErr);
             }
           }
@@ -186,6 +181,7 @@ function Register() {
     const remaining = activity.capacity - baseCount - registrants.length;
     setAvailability(remaining > 0 ? remaining : 0);
   }, [activity, registrants]);
+
   const resolveUserId = () =>
     authUser?.userid ||
     authUser?._id ||
@@ -256,6 +252,7 @@ function Register() {
       setFeedbackMessage(null);
     }, 5000);
   };
+
   const isAlreadyRegistered = useMemo(() => {
     if (!registrants.length) return false;
     const userId = resolveUserId();
@@ -265,6 +262,22 @@ function Register() {
       return reg.name.toLowerCase() === name;
     });
   }, [registrants, authUser, userProfile, tokenPayload]);
+
+  const participantList = useMemo(() => {
+    const base = Array.isArray(activity?.participants) ? activity.participants : [];
+    const dynamic = registrants.map(r => r?.name).filter(Boolean);
+    const combined = [...dynamic, ...base];
+    const seen = new Set();
+    return combined
+      .map(name => (typeof name === 'string' ? name.trim() : ''))
+      .filter(name => {
+        const key = name.toLowerCase();
+        if (!name || seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+  }, [activity?.participants, registrants]);
+
   const handleRegister = async () => {
     if (!activity) return;
     if (availability === 0) {
@@ -288,7 +301,6 @@ function Register() {
     setIsRegistering(true);
 
     try {
-      // Simulate API call delay
       await new Promise(resolve => setTimeout(resolve, 1500));
 
       setRegistrants(prev => [
@@ -317,10 +329,29 @@ function Register() {
     }
   };
 
+  const handleShareAvailability = async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: activity.name,
+          text: `I'm available for ${activity.name}. Join me!`,
+          url: window.location.href,
+        });
+      } else {
+        setFeedbackMessage({
+          type: 'info',
+          text: 'Sharing is not supported on this device.',
+        });
+        scheduleFeedbackClear();
+      }
+    } catch (err) {
+      console.error('Share failed:', err);
+    }
+  };
+
   const handleRetry = () => {
     setError(null);
     setLoading(true);
-    // Re-fetch activity
     window.location.reload();
   };
 
@@ -377,97 +408,131 @@ function Register() {
       </div>
     );
   }
+
   return (
     <div className={`${styles.mainContainer} ${darkMode ? styles.mainContainerDark : ''}`}>
       <div className={`${styles.contentWrapper} ${darkMode ? styles.contentWrapperDark : ''}`}>
         <div
           className={`${styles.registerContainer} ${darkMode ? styles.registerContainerDark : ''}`}
         >
-          {/* Left Column: Image + Register Button */}
-          <div className={styles.leftColumn}>
-            <img src={activity.image} alt={activity.name} className={styles.eventImage} />
-            <button
-              type="button"
-              className={`${styles.registerButton} ${darkMode ? styles.registerButtonDark : ''} ${
-                isRegistering ? styles.registerButtonRegistering : ''
-              }`}
-              onClick={handleRegister}
-              disabled={availability === 0 || isRegistering || isAlreadyRegistered}
-            >
-              {isRegistering ? 'Registering...' : isAlreadyRegistered ? 'Registered' : 'Register'}
-            </button>
-            {feedbackMessage && (
-              <div
-                className={`${styles.feedbackMessage} ${
-                  feedbackMessage.type === 'success'
-                    ? `${styles.feedbackMessageSuccess} ${
-                        darkMode ? styles.feedbackMessageSuccessDark : ''
-                      }`
-                    : `${styles.feedbackMessageError} ${
-                        darkMode ? styles.feedbackMessageErrorDark : ''
-                      }`
+          {/* Event Header: Image | Details | Calendar */}
+          <div className={`${styles.eventHeader} ${darkMode ? styles.eventHeaderDark : ''}`}>
+            {/* Left Section: Image + Register Button */}
+            <div className={styles.eventImageSection}>
+              <img src={activity.image} alt={activity.name} className={styles.eventImage} />
+              <button
+                type="button"
+                className={`${styles.registerButton} ${darkMode ? styles.registerButtonDark : ''} ${
+                  isRegistering ? styles.registerButtonRegistering : ''
                 }`}
+                onClick={handleRegister}
+                disabled={availability === 0 || isRegistering || isAlreadyRegistered}
               >
-                {feedbackMessage.text}
-              </div>
-            )}
-          </div>
+                {isRegistering ? 'Registering...' : isAlreadyRegistered ? 'Registered' : 'Register'}
+              </button>
+              {feedbackMessage && (
+                <div
+                  className={`${styles.feedbackMessage} ${
+                    feedbackMessage.type === 'success'
+                      ? `${styles.feedbackMessageSuccess} ${
+                          darkMode ? styles.feedbackMessageSuccessDark : ''
+                        }`
+                      : `${styles.feedbackMessageError} ${
+                          darkMode ? styles.feedbackMessageErrorDark : ''
+                        }`
+                  }`}
+                >
+                  {feedbackMessage.text}
+                </div>
+              )}
+            </div>
 
-          {/* Middle Column: Event Details */}
-          <div className={`${styles.middleColumn} ${darkMode ? styles.middleColumnDark : ''}`}>
-            <h1 className={`${styles.eventTitle} ${darkMode ? styles.eventTitleDark : ''}`}>
-              {activity.name}
-            </h1>
-            <div className={styles.detailsGrid}>
-              <div className={`${styles.detailsRow} ${darkMode ? styles.detailsRowDark : ''}`}>
-                <p>
-                  <strong>Date:</strong> {activity.date}
-                </p>
-                <p>
-                  <strong>Time:</strong> {activity.time}
-                </p>
-                <p>
-                  <strong>Organizer:</strong> {activity.organizer || 'Not Available'}
-                </p>
+            {/* Center Section: Event Details & Metadata */}
+            <div
+              className={`${styles.eventDetailsSection} ${
+                darkMode ? styles.eventDetailsSectionDark : ''
+              }`}
+            >
+              {/* Title and Status Badge */}
+              <div className={styles.eventHeaderTop}>
+                <div>
+                  <p className={`${styles.eventType} ${darkMode ? styles.eventTypeDark : ''}`}>
+                    {activity.type}
+                  </p>
+                  <h1 className={`${styles.eventTitle} ${darkMode ? styles.eventTitleDark : ''}`}>
+                    {activity.name}
+                  </h1>
+                </div>
+                <span
+                  className={`${styles.statusBadge} ${
+                    availability > 0 ? styles.statusBadgeActive : styles.statusBadgeFull
+                  } ${
+                    darkMode
+                      ? availability > 0
+                        ? styles.statusBadgeActiveDark
+                        : styles.statusBadgeFullDark
+                      : ''
+                  }`}
+                >
+                  {availability > 0 ? 'Available' : 'Full'}
+                </span>
               </div>
-              <div className={`${styles.detailsRow} ${darkMode ? styles.detailsRowDark : ''}`}>
-                <p>
-                  <strong>Availability:</strong>
-                  <span className={styles.availabilityContainer}>
-                    <span className={styles.availabilityIcon}>
-                      {availability > 5 ? '🟢' : availability > 0 ? '🟡' : '🔴'}
-                    </span>
+
+              {/* Metadata Grid */}
+              <div className={styles.metadataGrid}>
+                {/* First Row: Date, Time, Organizer */}
+                <div className={styles.metadataRow}>
+                  <div className={styles.metadataItem}>
+                    <span className={styles.metadataLabel}>Date</span>
                     <span
-                      className={`${styles.availabilityText} ${
-                        darkMode ? styles.availabilityTextDark : ''
-                      } ${
-                        availability <= 2
-                          ? styles.availabilityCritical
-                          : availability <= 5
-                          ? styles.availabilityLow
-                          : ''
-                      } ${
-                        darkMode
-                          ? availability <= 2
-                            ? styles.availabilityCriticalDark
-                            : availability <= 5
-                            ? styles.availabilityLowDark
-                            : ''
-                          : ''
+                      className={`${styles.metadataValue} ${
+                        darkMode ? styles.metadataValueDark : ''
                       }`}
                     >
-                      {availability} spots left
+                      {activity.date}
                     </span>
-                  </span>
-                </p>
-                <p className={styles.ratingContainer}>
-                  <strong>Overall Rating:</strong>
-                  <span className={styles.starRating}>
-                    {[...Array(5)].map((_, starIndex) => {
-                      const key = `star-${activity.id}-${starIndex}`;
-                      return (
+                  </div>
+                  <div className={styles.metadataItem}>
+                    <span className={styles.metadataLabel}>Time</span>
+                    <span
+                      className={`${styles.metadataValue} ${
+                        darkMode ? styles.metadataValueDark : ''
+                      }`}
+                    >
+                      {activity.time}
+                    </span>
+                  </div>
+                  <div className={styles.metadataItem}>
+                    <span className={styles.metadataLabel}>Organizer</span>
+                    <span
+                      className={`${styles.metadataValue} ${
+                        darkMode ? styles.metadataValueDark : ''
+                      }`}
+                    >
+                      {activity.organizer}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Second Row: Capacity, Rating, Availability */}
+                <div className={styles.metadataRow}>
+                  <div className={styles.metadataItem}>
+                    <span className={styles.metadataLabel}>Capacity</span>
+                    <span
+                      className={`${styles.metadataValue} ${
+                        darkMode ? styles.metadataValueDark : ''
+                      } ${styles.capacityValue}`}
+                    >
+                      {(activity.participants?.length || 0) + registrants.length}/
+                      {activity.capacity}
+                    </span>
+                  </div>
+                  <div className={styles.metadataItem}>
+                    <span className={styles.metadataLabel}>Rating</span>
+                    <span className={styles.starRating}>
+                      {[...Array(5)].map((_, starIndex) => (
                         <span
-                          key={key}
+                          key={`star-${activity.id}-${starIndex}`}
                           className={
                             starIndex < activity.rating
                               ? styles.filledStar
@@ -476,41 +541,114 @@ function Register() {
                         >
                           {starIndex < activity.rating ? '★' : '☆'}
                         </span>
+                      ))}
+                    </span>
+                  </div>
+                  <div className={styles.metadataItem}>
+                    <span className={styles.metadataLabel}>Availability</span>
+                    <span className={styles.availabilityContainer}>
+                      <span
+                        className={`${styles.availabilityBadge} ${
+                          availability > 5
+                            ? styles.availabilityBadgeHigh
+                            : availability > 0
+                            ? styles.availabilityBadgeLow
+                            : styles.availabilityBadgeNone
+                        } ${
+                          darkMode
+                            ? availability > 5
+                              ? styles.availabilityBadgeHighDark
+                              : availability > 0
+                              ? styles.availabilityBadgeLowDark
+                              : styles.availabilityBadgeNoneDark
+                            : ''
+                        }`}
+                      >
+                        {availability} spots
+                      </span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Secondary Actions */}
+              <div className={styles.secondaryActionWrapper}>
+                <div className={styles.locationDisplay}>
+                  <span className={`${styles.locationIcon}`}>📍</span>
+                  <span
+                    className={`${styles.locationText} ${darkMode ? styles.locationTextDark : ''}`}
+                  >
+                    {activity.location}
+                  </span>
+                </div>
+
+                <div className={styles.secondaryActions}>
+                  <div
+                    className={`${styles.participantAvatars} ${
+                      darkMode ? styles.participantAvatarsDark : ''
+                    }`}
+                    aria-hidden={participantList.length === 0}
+                  >
+                    {participantList.slice(0, 5).map((p, i) => {
+                      const initials = p
+                        .split(' ')
+                        .map(s => s[0])
+                        .slice(0, 2)
+                        .join('')
+                        .toUpperCase();
+                      return (
+                        <div
+                          key={`p-${i}`}
+                          className={`${styles.avatar} ${darkMode ? styles.avatarDark : ''}`}
+                          title={p}
+                        >
+                          <span>{initials}</span>
+                        </div>
                       );
                     })}
-                  </span>
-                </p>
-                <p>
-                  <strong>Status:</strong>
-                  <span
-                    className={`${availability > 0 ? styles.statusText : styles.statusTextFull} ${
-                      darkMode
-                        ? availability > 0
-                          ? styles.statusTextDark
-                          : styles.statusTextFullDark
-                        : ''
+                    {participantList.length > 5 && (
+                      <div
+                        className={`${styles.avatarMore} ${darkMode ? styles.avatarMoreDark : ''}`}
+                        title={`${participantList.length - 5} more`}
+                      >
+                        +{participantList.length - 5}
+                      </div>
+                    )}
+                  </div>
+
+                  <button
+                    type="button"
+                    className={`${styles.secondaryButton} ${
+                      darkMode ? styles.secondaryButtonDark : ''
                     }`}
+                    onClick={handleShareAvailability}
                   >
-                    {availability > 0 ? 'Available' : 'Full'}
-                  </span>
-                </p>
+                    Share Availability
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Right Column: Calendar */}
-          <div className={styles.rightColumn}>
-            {/*  <Calendar onChange={setSelectedDate} value={selectedDate} /> */}
-            <p className={`${styles.selectedDate} ${darkMode ? styles.selectedDateDark : ''}`}>
-              Selected Date: {selectedDate.toDateString()}
-            </p>
+            {/* Right Section: Calendar */}
+            <div
+              className={`${styles.calendarSection} ${darkMode ? styles.calendarSectionDark : ''}`}
+            >
+              <p
+                className={`${styles.calendarHeader} ${darkMode ? styles.calendarHeaderDark : ''}`}
+              >
+                {selectedDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+              </p>
+              <p className={`${styles.selectedDate} ${darkMode ? styles.selectedDateDark : ''}`}>
+                Selected: {selectedDate.toDateString()}
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* Description Section */}
+        {/* Description Section with Tabs */}
         <div
-          className={`${styles.descriptionSection} ${
-            darkMode ? styles.descriptionSectionDark : ''
+          className={`${styles.descriptionSectionWrapper} ${
+            darkMode ? styles.descriptionSectionWrapperDark : ''
           }`}
         >
           <EventDescription activity={activity} registrants={registrants} />
@@ -519,4 +657,5 @@ function Register() {
     </div>
   );
 }
+
 export default Register;
