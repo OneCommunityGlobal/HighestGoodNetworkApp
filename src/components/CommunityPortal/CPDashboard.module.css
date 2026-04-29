@@ -24,21 +24,29 @@
 
 .dashboardHeader {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
+  justify-content: flex-start; 
+  gap: 20px;                   
   margin-bottom: 30px;
   padding: 16px 24px;
   background: linear-gradient(120deg, #ffffff, #f8f9fa);
   border-radius: 12px;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  flex-wrap: nowrap;
+}
+
+
+.darkHeader{
+  background: #1B2A41;
 }
 
 .dashboardHeader h1 {
+  margin: 0;
   font-size: 2.5rem;
   font-weight: bold;
   color: #2c3e50;
-  margin: 0;
+  white-space: nowrap; 
+  flex-shrink: 0;
 }
 
 .darkHeader {
@@ -52,48 +60,23 @@
   gap: 15px;
 }
 
-/* pill input */
-.dashboardSearchInput {
-  width: 100%;
-  border-radius: 999px;
-  border: none;
-  background: transparent;
-  box-sizing: border-box;
-}
-
-
-/* clear X button */
-.dashboardClearBtn {
-  position: absolute;
-  right: 35px;
-  top: 45%;
-  transform: translateY(-50%);
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  font-size: 0.9rem;
-  color: #1b3c55;
-}
-
-/* blue circular search button inside the bar */
-.dashboardSearchIconBtn {
-  position: absolute;
-  right: 1%;
-  top: 48%;
-  transform: translateY(-50%);
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  cursor: pointer;
-  background: transparent; /* 🔹 icon background now white */
+.cp_dashboard_header {
   display: flex;
   align-items: center;
-  justify-content: center;
-  color: #1b3c55; /* blue magnifying-glass icon */
-  font-size: 0.9rem;
+  justify-content: space-between; 
+  gap: 24px;
+  padding: 16px 24px;
+  margin-bottom: 30px;
+  flex-wrap: nowrap;
 }
 
-.dashboardSearchContainer {
+.cp_dashboard_header h1 {
+  margin: 0;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.cp_dashboard_search_container {
   position: relative;
   width: 400px;
   border-radius: 999px;
@@ -521,6 +504,65 @@
   appearance: none;
 }
 
+.filterActions {
+  display: flex;
+  flex-direction: row; 
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #e0e0e0;
+  width: 100%; 
+}
+
+.applyBtn {
+  flex: 1; 
+  background-color: #27ae60 !important;
+  border: none;
+  color: white;
+  padding: 10px 5px; 
+  font-size: 0.9rem; 
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.applyBtn:hover {
+  background-color: #229954 !important;
+  box-shadow: 0 4px 8px rgba(39, 174, 96, 0.3);
+}
+
+.clearBtn {
+  flex: 1; 
+  background-color: #95a5a6 !important;
+  border: none;
+  color: white;
+  padding: 10px 5px; 
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.clearBtn:hover {
+  background-color: #7f8c8d !important;
+  box-shadow: 0 4px 8px rgba(149, 165, 166, 0.3);
+}
+
+.darkSidebar .filterActions {
+  border-top-color: #3a4e6a;
+}
+
+@media (max-width: 768px) {
+  .dashboardHeader {
+    flex-wrap: wrap;
+  }
+
+  .cp_dashboard_search_container {
+    width: 100%;
+  }
+}
 .darkSearchContainer {
   background: #1b2a41;
   border-color: #4da3ff;
