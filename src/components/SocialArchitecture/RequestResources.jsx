@@ -41,6 +41,28 @@ function RequestResources() {
     }
   };
 
+  const handlePhoneChange = e => {
+    const digits = e.target.value.replace(/\D/g, '').slice(0, 10);
+    const formatted = digits
+      .replace(/(\d{3})(\d)/, '$1-$2')
+      .replace(/(\d{3})-(\d{3})(\d)/, '$1-$2-$3');
+
+    setFormData({ ...formData, phoneNumber: formatted });
+
+    if (errors.phoneNumber) {
+      setErrors(prevErrors => {
+        const updatedErrors = { ...prevErrors };
+        delete updatedErrors.phoneNumber;
+        return updatedErrors;
+      });
+    }
+  };
+
+  const handleCountryCodeChange = e => {
+    const value = e.target.value.replace(/[^\d+]/g, '');
+    setFormData({ ...formData, countryCode: value });
+  };
+
   const handleFileChange = e => {
     setFormData({ ...formData, materialImage: e.target.files[0] });
   };
@@ -53,7 +75,8 @@ function RequestResources() {
     if (!formData.requestQuantity) newErrors.requestQuantity = 'Quantity is required';
     if (!formData.requestedDate) newErrors.requestedDate = 'Requested date is required';
     if (!formData.returnDate) newErrors.returnDate = 'Return date is required';
-    if (!formData.phoneNumber) newErrors.phoneNumber = 'Phone number is required';
+    if (!formData.phoneNumber || formData.phoneNumber.replace(/\D/g, '').length !== 10)
+      newErrors.phoneNumber = 'Enter a valid 10-digit phone number';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -172,17 +195,18 @@ function RequestResources() {
               id="countryCode"
               name="countryCode"
               value={formData.countryCode}
-              onChange={handleChange}
+              onChange={handleCountryCodeChange}
               placeholder="+1"
             />
             {errors.countryCode && <p className={styles.error}>{errors.countryCode}</p>}
             <input
-              type="tel"
+              type="text"
               id="phoneNumber"
               name="phoneNumber"
               value={formData.phoneNumber}
-              onChange={handleChange}
+              onChange={handlePhoneChange}
               placeholder="XXX-XXX-XXXX"
+              inputMode="numeric"
             />
             {errors.phoneNumber && <p className={styles.error}>{errors.phoneNumber}</p>}
           </div>
