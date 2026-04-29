@@ -187,17 +187,19 @@ export function CPDashboard() {
       if (!isOnlineEvent) return false;
     }
 
-    // Filter by date filter (Tomorrow / Weekend)
+    // Filter by specific date if one is selected
+    if (selectedDate) {
+      const eventDate = new Date(event.date);
+      const normalizedEventDate = eventDate.toISOString().split('T')[0];
+
+      if (normalizedEventDate !== selectedDate) return false;
+    }
+
+    // Filter by date filter
     if (dateFilter === 'tomorrow') {
       if (!isTomorrow(event.date)) return false;
     } else if (dateFilter === 'weekend') {
       if (!isComingWeekend(event.date)) return false;
-    }
-
-    // Filter by specific date (if selected)
-    const eventDate = event.date ? parseEventDate(event.date) : null;
-    if (selectedDate && eventDate !== selectedDate) {
-      return false;
     }
 
     // Filter by search query if provided
@@ -400,6 +402,7 @@ export function CPDashboard() {
                     onClick={() => {
                       setDateFilter('');
                       setSelectedDate('');
+                      setPagination(prev => ({ ...prev, currentPage: 1 }));
                     }}
                   >
                     Clear date filter
@@ -407,11 +410,13 @@ export function CPDashboard() {
                 </div>
                 <Input
                   type="date"
-                  placeholder="Select Date"
-                  className={styles.dateFilter}
+                  placeholder="Ending After"
+                  className={styles['date-filter']}
                   value={selectedDate}
-                  onChange={e => setSelectedDate(e.target.value)}
-                  style={{ marginTop: '10px' }}
+                  onChange={e => {
+                    setSelectedDate(e.target.value);
+                    setPagination(prev => ({ ...prev, currentPage: 1 }));
+                  }}
                 />
               </div>
 
