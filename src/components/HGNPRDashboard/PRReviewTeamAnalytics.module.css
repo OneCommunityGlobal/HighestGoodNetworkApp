@@ -1,7 +1,8 @@
+/* stylelint-disable  */
 .pr-review-analytics-container.pr-review-analytics-bg {
   background: #e0e3ea;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(5, 44, 101, 0.08);
+  box-shadow: 0 2px 8px rgb(5 44 101 / 8%);
   padding: 2rem;
   max-width: 900px;
   margin: 2rem auto;
@@ -104,7 +105,7 @@
   font-size: 1.1rem;
   pointer-events: none;
   background: #e0e3ea;
-  padding: 8px 0 8px 0;
+  padding: 8px 0;
   border-radius: 0 0 8px 8px;
   z-index: 2;
   box-sizing: border-box;
@@ -136,6 +137,7 @@
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
@@ -198,11 +200,11 @@
 
 /* Custom tooltip styles */
 .custom-tooltip {
-  background: rgba(255, 255, 255, 0.95);
+  background: rgb(255 255 255 / 95%);
   border: 1px solid #052c65;
   border-radius: 8px;
   padding: 1rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
   backdrop-filter: blur(10px);
   max-width: 300px;
 }
@@ -228,7 +230,7 @@
   color: #1a2a4f;
   font-size: 0.95rem;
   line-height: 1.4;
-  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .tooltip-details {
@@ -245,24 +247,28 @@
   color: #1a2a4f;
 }
 
-@media (max-width: 900px) {
+@media (width <= 900px) {
   .pr-review-analytics-container.pr-review-analytics-bg {
     padding: 1rem 0.3rem;
     max-width: 100vw;
   }
+
   .pr-review-analytics-header {
     flex-direction: column;
     align-items: stretch;
     gap: 0.7rem;
   }
+
   .pr-review-analytics-title {
     font-size: 1.1rem;
+
     /* text-align: left; */
     font-weight: 600;
     margin-bottom: 0.5rem;
     text-align: center;
     width: 100%;
   }
+
   .pr-review-analytics-dropdown-wrapper {
     min-width: 100px;
     padding: 0.4rem 0.6rem;
@@ -271,90 +277,110 @@
     text-align: center;
     width: 100%;
   }
+
   .pr-review-analytics-dropdown-label {
     font-size: 0.95rem;
   }
+
   .pr-review-analytics-dropdown-value {
     font-size: 1rem;
     margin: 0 0.2rem 0 0;
   }
+
   .pr-review-analytics-fixed-labels-layout {
     position: relative;
   }
+
   .pr-review-analytics-xaxis-fixed-label,
   .pr-review-analytics-yaxis-fixed-label {
-    padding: 6px 0 6px 0;
+    padding: 6px 0;
     font-size: 0.9rem;
   }
+
   .pr-review-analytics-yaxis-fixed-label {
     min-height: 100%;
     display: flex;
     align-items: flex-end;
   }
+
   .pr-review-analytics-xaxis-fixed-label {
     width: 100% !important;
   }
+
   .custom-tooltip {
     max-width: 250px;
     padding: 0.75rem;
   }
+
   .tooltip-header h4 {
     font-size: 1rem;
   }
+
   .tooltip-title {
     font-size: 0.9rem;
   }
+
   .tooltip-details p {
     font-size: 0.85rem;
   }
 }
 
-@media (max-width: 600px) {
+@media (width <= 600px) {
   .pr-review-analytics-fixed-labels-layout {
     position: relative;
   }
+
   .pr-review-analytics-xaxis-fixed-label,
   .pr-review-analytics-yaxis-fixed-label {
-    padding: 4px 0 4px 0;
+    padding: 4px 0;
     font-size: 1rem;
   }
+
   .pr-review-analytics-bars-scrollable-area {
     height: auto !important;
     min-height: 0 !important;
   }
+
   .pr-review-analytics-yaxis-fixed-label {
     min-height: 100%;
     display: flex;
     align-items: flex-end;
   }
+
   .pr-review-analytics-xaxis-fixed-label {
     width: 100% !important;
   }
+
   .custom-tooltip {
     max-width: 200px;
     padding: 0.5rem;
   }
+
   .tooltip-header h4 {
     font-size: 0.9rem;
   }
+
   .tooltip-title {
     font-size: 0.85rem;
   }
+
   .tooltip-details p {
     font-size: 0.8rem;
   }
+
   .loading-spinner {
     width: 30px;
     height: 30px;
     border-width: 3px;
   }
+
   .error-icon,
   .empty-icon {
     font-size: 2rem;
   }
 }
 
-@media (max-width: 500px) {
+@media (width <= 500px) {
   .pr-review-analytics-header {
     flex-direction: column;
     align-items: center;
@@ -362,12 +388,14 @@
     gap: 0.4rem;
     text-align: center;
   }
+
   .pr-review-analytics-title {
     font-size: 1.1rem;
     font-weight: 600;
     text-align: center;
     width: 100%;
   }
+
   .pr-review-analytics-dropdown-wrapper {
     min-width: 80px;
     padding: 0.2rem 0.3rem;
@@ -375,14 +403,17 @@
     text-align: center;
     width: 100%;
   }
+
   .pr-review-analytics-fixed-labels-layout {
     position: relative;
   }
+
   .pr-review-analytics-yaxis-fixed-label {
     min-height: 100%;
     display: flex;
     align-items: flex-end;
   }
+
   .pr-review-analytics-bars-scrollable-area {
     margin-left: 0;
     height: auto !important;
@@ -393,30 +424,36 @@
     background: #f8fafc;
     flex: 1 1 0%;
   }
+
   .pr-review-analytics-xaxis-fixed-label,
   .pr-review-analytics-yaxis-fixed-label {
     padding: 1px;
     font-size: 0.85rem;
   }
+
   .pr-review-analytics-xaxis-fixed-label {
     width: 100% !important;
   }
+
   .custom-tooltip {
     max-width: 180px;
     padding: 0.5rem;
   }
+
   .tooltip-header h4 {
     font-size: 0.85rem;
   }
+
   .tooltip-title {
     font-size: 0.8rem;
   }
+
   .tooltip-details p {
     font-size: 0.75rem;
   }
 }
 
-@media (max-width: 450px) {
+@media (width <= 450px) {
   .pr-review-analytics-header {
     flex-direction: column;
     align-items: center;
@@ -424,27 +461,32 @@
     gap: 0.3rem;
     text-align: center;
   }
+
   .pr-review-analytics-title {
     font-size: 0.8rem;
     font-weight: 600;
     text-align: center;
     width: 100%;
   }
+
   .pr-review-analytics-dropdown-wrapper {
     min-width: 40px;
-    padding: 0.1rem 0.1rem;
+    padding: 0.1rem;
     gap: 0.1rem;
     text-align: center;
     width: 100%;
   }
+
   .pr-review-analytics-fixed-labels-layout {
     position: relative;
   }
+
   .pr-review-analytics-yaxis-fixed-label {
     min-height: 100%;
     display: flex;
     align-items: flex-end;
   }
+
   .pr-review-analytics-bars-scrollable-area {
     margin-left: 0;
     height: auto !important;
@@ -455,76 +497,93 @@
     background: #f8fafc;
     flex: 1 1 0%;
   }
+
   .pr-review-analytics-xaxis-fixed-label,
   .pr-review-analytics-yaxis-fixed-label {
     font-size: 0.7rem;
   }
+
   .pr-review-analytics-xaxis-fixed-label {
     width: 100% !important;
   }
+
   .custom-tooltip {
     max-width: 150px;
     padding: 0.4rem;
   }
+
   .tooltip-header h4 {
     font-size: 0.8rem;
   }
+
   .tooltip-title {
     font-size: 0.75rem;
   }
+
   .tooltip-details p {
     font-size: 0.7rem;
   }
+
   .loading-spinner {
     width: 25px;
     height: 25px;
     border-width: 2px;
   }
+
   .error-icon,
   .empty-icon {
     font-size: 1.5rem;
   }
 }
 
-@media (max-width: 300px) {
+@media (width <= 300px) {
   .pr-review-analytics-fixed-labels-layout {
     position: relative;
   }
+
   .pr-review-analytics-bars-scrollable-area {
     height: auto !important;
     min-height: 0 !important;
   }
+
   .pr-review-analytics-yaxis-fixed-label {
     min-height: 100%;
     display: flex;
     align-items: flex-end;
   }
+
   .pr-review-analytics-xaxis-fixed-label,
   .pr-review-analytics-yaxis-fixed-label {
     font-size: 0.6rem;
   }
+
   .pr-review-analytics-xaxis-fixed-label {
     width: 100% !important;
   }
+
   .custom-tooltip {
     max-width: 120px;
     padding: 0.3rem;
   }
+
   .tooltip-header h4 {
     font-size: 0.75rem;
   }
+
   .tooltip-title {
     font-size: 0.7rem;
   }
+
   .tooltip-details p {
     font-size: 0.65rem;
   }
 }
 
-@media (max-width: 900px) and (min-width: 601px) {
+@media (width <= 900px) and (width >= 601px) {
   .pr-review-analytics-fixed-labels-layout {
     position: relative;
   }
+
   .pr-review-analytics-xaxis-fixed-label {
     position: absolute;
     left: 0;
@@ -538,7 +597,7 @@
 .dark-mode .pr-review-analytics-container.pr-review-analytics-bg {
   background: #1b2a42;
   color: #f8fafc;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 30%);
 }
 
 .dark-mode .pr-review-analytics-container .pr-review-analytics-title {
@@ -581,4 +640,78 @@
 
 .dark-mode .pr-review-analytics-container .pr-review-analytics-empty {
   color: #f8fafc;
+}
+
+/* Insights Panel Styles */
+.pr-insights-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1.25rem;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid #cbd5e0;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 5%);
+}
+
+.pr-insights-item {
+  flex: 1 1 calc(33.333% - 1rem);
+  min-width: 150px;
+  padding: 1rem;
+  border-radius: 6px;
+  text-align: center;
+  transition: transform 0.2s ease;
+}
+
+.pr-insights-item:hover {
+  transform: translateY(-2px);
+}
+
+.pr-insights-item-highlight {
+  box-shadow: 0 2px 8px rgb(5 44 101 / 12%);
+}
+
+.pr-insights-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #052c65;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.pr-insights-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #052c65;
+  line-height: 1;
+}
+
+.pr-insights-value-highlight {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #052c65;
+  line-height: 1.2;
+  margin-bottom: 0.25rem;
+}
+
+.pr-insights-subtext {
+  font-size: 0.75rem;
+  color: #052c65;
+  margin-top: 0.25rem;
+  font-weight: 500;
+}
+
+/* Responsive design for insights panel */
+@media (width <= 768px) {
+  .pr-insights-panel {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .pr-insights-item {
+    flex: 1 1 100%;
+    min-width: auto;
+  }
 }
