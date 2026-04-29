@@ -1,16 +1,24 @@
+import styles from '../ProjectDetails.module.css';
 function ToolCard() {
   return (
-    <div className="single-card">
-      <div className="single-card__img">
+    <div className={`${styles.singleCard}`}>
+      <div className={`${styles.singleCardImg}`}>
         <img
-          alt=""
+          alt="Equipment"
           src="https://www.theforkliftcenter.com/images/forklift-hero-left.png"
           width="100%"
+          style={{
+            imageRendering: 'auto',
+            filter: 'none',
+            objectFit: 'cover',
+            maxWidth: '100%',
+            height: 'auto',
+          }}
         />
       </div>
-      <div className="single-card__body">
+      <div className={`${styles.singleCardBody}`}>
         <h3>Card title</h3>
-        <div className="single-card__info">Term ends in __ hours.</div>
+        <div className={`${styles.singleCardInfo}`}>Term ends in __ hours.</div>
       </div>
     </div>
   );

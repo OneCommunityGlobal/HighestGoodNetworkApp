@@ -1,15 +1,15 @@
 /* eslint-disable import/prefer-default-export */
 import { useMemo, useState } from 'react';
 import {
-  ResponsiveContainer,
-  PieChart as RechartsPieChart,
-  Pie,
   Cell,
-  Tooltip,
   Label,
+  Pie,
+  PieChart as RechartsPieChart,
+  ResponsiveContainer,
+  Tooltip,
 } from 'recharts';
 import { CHART_RADIUS, CHART_SIZE } from './constants'; // use same numbers as the D3 chart
-import './UserProjectPieChart.css';
+import styles from './UserProjectPieChart.module.css';
 
 const BASE_COLORS = [
   '#3366CC',
@@ -66,9 +66,9 @@ function CenterLabel({ viewBox, total, darkMode, showPct, onToggle }) {
             height: '100%',
           }}
         >
-          <label className="switch">
+          <label className={styles['switch']}>
             {/* Accessible text for the label */}
-            <span className="sr-only">Show percentage</span>
+            {/* <span className={styles['sr-only']}>Show percentage</span> */}
 
             {/* The control associated with the label */}
             <input
@@ -78,7 +78,7 @@ function CenterLabel({ viewBox, total, darkMode, showPct, onToggle }) {
               aria-label="Show percentage"
             />
 
-            <span className="slider" aria-hidden="true" />
+            <span className={styles['slider']} aria-hidden="true" />
           </label>
         </div>
       </foreignObject>
@@ -97,7 +97,11 @@ export default function UserProjectD3PieChart({ projectsData, darkMode }) {
   if (!data.length || total === 0) return null;
 
   return (
-    <div className={`pie-chart-wrapper donut-no-outline ${darkMode ? 'text-light' : ''}`}>
+    <div
+      className={`${styles['pie-chart-wrapper']} donut-no-outline ${
+        darkMode ? styles['text-light'] : ''
+      }`}
+    >
       {/* Square box so the donut isn't clipped; same size as D3 chart */}
       <div style={{ width: CHART_SIZE, height: CHART_SIZE }}>
         <ResponsiveContainer width="100%" height="100%">
@@ -133,6 +137,12 @@ export default function UserProjectD3PieChart({ projectsData, darkMode }) {
             </Pie>
 
             <Tooltip
+              contentStyle={
+                darkMode
+                  ? { backgroundColor: '#1b2a41', color: '#f9fafb', border: '1px solid #374151' }
+                  : {}
+              }
+              itemStyle={darkMode ? { color: '#f9fafb' } : {}}
               formatter={(value, _name, entry) =>
                 showPct
                   ? [`${((Number(value) * 100) / total).toFixed(2)}%`, entry?.payload?.name]
@@ -143,8 +153,15 @@ export default function UserProjectD3PieChart({ projectsData, darkMode }) {
         </ResponsiveContainer>
       </div>
 
-      <div className="pie-chart-legend-container" style={{ marginTop: 8, marginLeft: 40 }}>
-        <table className={darkMode ? 'pie-chart-legend-table-dark' : 'pie-chart-legend-table'}>
+      <div
+        className={styles['pie-chart-legend-container']}
+        style={{ marginTop: 8, marginLeft: 40 }}
+      >
+        <table
+          className={
+            darkMode ? styles['pie-chart-legend-table-dark'] : styles['pie-chart-legend-table']
+          }
+        >
           <thead>
             <tr>
               <th>Color</th>
@@ -156,7 +173,10 @@ export default function UserProjectD3PieChart({ projectsData, darkMode }) {
             {data.map((p, i) => (
               <tr key={p.id || p.name}>
                 <td>
-                  <div id="project-chart-legend" style={{ backgroundColor: colors[i] }} />
+                  <div
+                    className={styles['project-chart-legend']}
+                    style={{ backgroundColor: colors[i] }}
+                  />
                 </td>
                 <td>{p.name}</td>
                 <td>{p.value.toFixed(2)}</td>
@@ -165,8 +185,13 @@ export default function UserProjectD3PieChart({ projectsData, darkMode }) {
           </tbody>
         </table>
 
-        <div className="data-total-value" style={{ marginTop: 8 }}>
-          <strong className={`strong-text ${darkMode ? 'text-light' : ''}`}>Total Hours:</strong>{' '}
+        <div
+          className={`${styles['data-total-value']} ${darkMode ? styles['text-light'] : ''}`}
+          style={{ marginTop: 8, color: darkMode ? '#f5f5f5' : 'inherit' }}
+        >
+          <strong className={`strong-text ${darkMode ? styles['text-light'] : ''}`}>
+            Total Hours:
+          </strong>{' '}
           {total.toFixed(2)}
         </div>
       </div>

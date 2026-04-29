@@ -1,8 +1,8 @@
-
+/* stylelint-disable  */
 .container {
   border-radius: 8px;
   padding: 16px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 15%);
   width: 100%;
   height: 100%;
   display: flex;
@@ -14,6 +14,15 @@
   font-size: large;
   font-weight: bold;
   margin-bottom: 8px;
+  color: #2563eb;
+}
+
+/* Keep title blue in dark mode */
+:global(.dark) .title,
+:global(.dark-mode) .title,
+:global(.bm-dashboard-dark) .title,
+:global([data-theme='dark']) .title {
+  color: #2563eb !important;
 }
 
 .filters {
@@ -28,6 +37,31 @@
   display: flex;
   flex-direction: column;
   font-size: 0.9rem;
+}
+
+/* Dark mode: make filter labels readable */
+:global(.dark) .filters label,
+:global(.dark-mode) .filters label,
+:global([data-theme='dark']) .filters label {
+  color: #fff;
+}
+
+/* Dark mode: style inputs/selects (including date picker) */
+:global(.dark) .filters input,
+:global(.dark-mode) .filters input,
+:global([data-theme='dark']) .filters input,
+:global(.dark) .filters select,
+:global(.dark-mode) .filters select,
+:global([data-theme='dark']) .filters select {
+  background-color: #1f2937;
+  color: #f9fafb;
+  border: 1px solid #374151;
+}
+
+:global(.dark) .filters input[type='date'],
+:global(.dark-mode) .filters input[type='date'],
+:global([data-theme='dark']) .filters input[type='date'] {
+  color-scheme: dark;
 }
 
 .chartWrapper {
@@ -59,24 +93,54 @@
 }
 
 .tooltip {
-  border-radius: 6px;
+  background-color: #f3f4f6;
+  color: #111827; /* darker percentage text in light mode */
   padding: 8px;
-  font-size: 0.85rem;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  border-radius: 6px;
 }
 
+/* Dark mode: ensure tooltip text is white on hover */
+:global(.dark) .tooltip,
+:global(.dark-mode) .tooltip,
+:global([data-theme='dark']) .tooltip {
+  color: #fff;
+}
+
+:global(.dark) .tooltip:hover,
+:global(.dark-mode) .tooltip:hover,
+:global([data-theme='dark']) .tooltip:hover {
+  color: #fff;
+}
+
+/* Dark mode: force ALL tooltip text to white */
+:global(.dark) .tooltip *,
+:global(.dark-mode) .tooltip *,
+:global([data-theme='dark']) .tooltip * {
+  color: #fff !important;
+}
+
+/* Submit button – light & dark mode safe */
 .button {
-  background-color: transparent;
-  color: inherit;
-  border: 1px solid currentColor;
+  background-color: #2563eb; /* blue */
+  color: #fff;            /* white text */
+  border: none;
   border-radius: 6px;
   padding: 8px 16px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background-color 0.3s ease;
 }
 
+/* Hover */
 .button:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: #1d4ed8;
+}
+
+/* Dark mode – keep same button color (no brightness jump) */
+:global(.dark) .button,
+:global(.dark-mode) .button,
+:global([data-theme='dark']) .button {
+  background-color: #2563eb;
+  color: #fff;
 }
 
 .pieChartContainer {
@@ -86,7 +150,7 @@
   width: 100%;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .chartWrapper {
     flex-direction: column;
     align-items: center;

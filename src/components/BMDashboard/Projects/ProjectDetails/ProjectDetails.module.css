@@ -1,0 +1,348 @@
+.projectDetails {
+  text-align: center;
+  padding-top: 20px;
+  padding-left: 3%;
+  padding-right: 3%;
+  font-weight: bold;
+  margin-bottom: 20px;
+  min-height: 100vh;
+}
+
+.darkMode .projectDetails {
+  background-color: #1b2a41;
+  color: white;
+}
+.projectDetailsTitle {
+  font-size: 1.5rem;
+  overflow: hidden;
+}
+
+.darkMode .projectDetailsTitle {
+  color: white;
+  background-color: #1b2a41;
+}
+
+/* styling for the logBar component */
+.logBar {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #eaeeef;
+}
+
+.darkMode .logBar {
+  background-color: #2e5061;
+  border: 1px solid #4b5563;
+}
+
+.logBarSection {
+  width: 100%;
+  margin-top: 1em;
+  background-color: transparent;
+}
+
+.logBarSection h2,
+.cardsContainer h2,
+.projectLog h2 {
+  margin-top: 0.5em;
+  font-size: 1em;
+  margin-bottom: 1em;
+  font-weight: bold;
+}
+
+.logBarSection ul {
+  list-style-type: none;
+}
+
+.logBarBtnGroup {
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Base */
+.buttonBtn {
+  border: 0;
+  border-radius: 10px;
+  padding: 0.5em 1em;
+  cursor: pointer;
+  transition: transform 0.2s ease, filter 0.2s ease;
+  min-width: 100px;
+  color: #fff;
+}
+
+/* LIGHT MODE hover */
+.buttonBtn:hover {
+  color: #fff; /* prevent blue text */
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45); /* prevent underline */
+}
+
+/* LIGHT MODE COLORS */
+.green {
+  background-color: #015d4a;
+}
+
+.blue {
+  background-color: #0f6386;
+}
+
+.indigo {
+  background-color: #203844;
+}
+
+.maroon {
+  background-color: #980101;
+}
+
+/* DARK MODE COLORS */
+.darkMode .green {
+  background-color: #014d3d;
+}
+
+.darkMode .blue {
+  background-color: #0b4c6a;
+}
+
+.darkMode .indigo {
+  background-color: #1b2f44;
+}
+
+.darkMode .maroon {
+  background-color: #7a0101;
+}
+
+@media (min-width: 550px) {
+  .logBar {
+    flex-direction: column;
+  }
+
+  .logBarBtnGroup {
+    margin-top: -0.5em;
+    display: flex;
+    justify-content: center;
+  }
+
+  .buttonBtn.btnSecondary {
+    width: auto;
+  }
+
+  .buttonBtn.btnSecondary.maroon {
+    margin-top: auto;
+  }
+}
+
+@media (min-width: 880px) {
+  .logBar {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .logBarSection {
+    width: 50%;
+    flex: auto;
+  }
+
+  .buttonBtn.btnSecondary {
+    width: auto;
+  }
+
+  .buttonBtn.btnSecondary.maroon {
+    margin-left: 2em;
+  }
+}
+
+.cardsContainer {
+  align-items: center;
+  margin: 1em 2em;
+  padding: 1em;
+  width: auto;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.darkMode .cardsContainer {
+  background-color: #374151;
+  color: #e5e7eb;
+  border: 1px solid #4b5563;
+}
+
+.darkMode .cardsContainer h2 {
+  color: #60a5fa;
+}
+
+.singleCard {
+  border: 1px solid #eaeeef;
+  border-radius: 5px;
+  text-align: center;
+  cursor: pointer;
+  transition: box-shadow 0.3s, transform 0.3s;
+  overflow: hidden;
+}
+
+.darkMode .singleCard {
+  background-color: #4b5563;
+  border: 1px solid #6b7280;
+  color: #e5e7eb;
+}
+
+.singleCard:hover {
+  box-shadow: 0 20px 20px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2);
+  transform: translate3d(0.5px, 0.5px, 0.5px);
+}
+
+.darkMode .singleCard:hover {
+  box-shadow: 0 20px 20px 0 rgba(0, 0, 0, 0.4), 0 6px 20px 0 rgba(0, 0, 0, 0.4);
+}
+
+.singleCardImg {
+  width: 100%;
+  height: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.singleCardImg img {
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.singleCardBody {
+  margin-top: 0.5em;
+  padding: 0.5em;
+}
+
+.singleCardBody h3 {
+  font-size: 1em;
+  margin-bottom: -0.2em;
+}
+
+.singleCardInfo {
+  font-size: 0.5rem;
+  padding: 1em;
+  margin: 0.5em;
+  border-radius: 10px;
+  background-color: #f2c897;
+}
+
+.darkMode .singleCardInfo {
+  background-color: #92400e;
+  color: #fef3c7;
+}
+
+/* cards container content */
+.cardsContainerContent {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  gap: 10px;
+}
+
+/* project log table */
+.projectLog {
+  width: 100%;
+  font-weight: lighter;
+  white-space: nowrap;
+  border-radius: 8px;
+}
+
+.darkMode .projectLog {
+  background-color: #374151;
+  color: #e5e7eb;
+}
+
+.darkMode .projectLog thead {
+  background-color: #4b5563;
+  color: #e5e7eb;
+}
+
+.darkMode .projectLog td,
+.darkMode .projectLog th {
+  color: #e5e7eb;
+}
+
+.darkMode .projectLog thead:hover {
+  background-color: #6b7280;
+  color: #f8fafc;
+}
+
+@media (min-width: 992px) {
+  .singleCard {
+    width: calc(33.333% - 20px);
+    max-width: 180px;
+    margin-bottom: 15px;
+  }
+}
+
+@media (min-width: 576px) and (max-width: 991px) {
+  .singleCard {
+    width: calc(50% - 15px);
+    max-width: 180px;
+    margin-bottom: 15px;
+  }
+}
+
+@media (max-width: 575px) {
+  .singleCard {
+    width: 90%;
+    max-width: 180px;
+    margin-bottom: 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  .projectLog td,
+  .projectLog th {
+    font-size: 0.6em;
+  }
+}
+
+ul.logBarBtnGroup {
+  padding: 5;
+} /* Row containing the RentedTools and Materials columns */
+
+/* Each column within the cardsRow */
+.cardsRow {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between; /* spread out columns */
+  gap: 1.5em;
+  margin-top: 2em;
+}
+
+.cardsCol {
+  flex: 1 1 45%; /* occupy roughly half of the row */
+  min-width: 350px; /* don't shrink too small */
+}
+
+/* Optional wrapper for padding/background */
+.cardsCol > * {
+  padding: 1em;
+  border-radius: 8px;
+  background-color: #f9fafb;
+}
+
+.darkMode .cardsCol > * {
+  background-color: #4b5563;
+  color: #e5e7eb;
+}
+
+@media (max-width: 992px) {
+  .cardsCol {
+    flex: 1 1 100%; /* stack on smaller screens */
+    min-width: unset;
+  }
+}
