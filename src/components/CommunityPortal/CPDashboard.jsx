@@ -1,17 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import {
-  Container,
-  Row,
-  Alert,
-  Col,
-  Card,
-  CardBody,
-  Button,
-  Input,
-  FormGroup,
-  Label,
-} from 'reactstrap';
+import { Container, Row, Alert, Col, Card, CardBody, Button, Input } from 'reactstrap';
 import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt, FaSearch, FaTimes } from 'react-icons/fa';
 import styles from './CPDashboard.module.css';
 import { ENDPOINTS } from '../../utils/URL';
@@ -356,55 +345,36 @@ export function CPDashboard() {
 
             <div className={styles.filterSectionDivider}>
               <div className={styles.filterItem}>
-                <label htmlFor="date-tomorrow"> Dates</label>
+                <label htmlFor="date-tomorrow">Dates</label>
                 <div className={styles.radioRow}>
-                  <FormGroup check className={styles.radioGroup + ' d-flex align-items-center'}>
-                    <Input
+                  <label className={styles.radioOption} htmlFor="date-tomorrow">
+                    <input
                       id="date-tomorrow"
                       type="radio"
                       name="dates"
                       checked={dateFilter === 'tomorrow'}
                       onChange={() => setDateFilter('tomorrow')}
-                      className={styles.radioInput}
+                      onClick={() => {
+                        if (dateFilter === 'tomorrow') setDateFilter('');
+                      }}
                     />
-                    <Label
-                      htmlFor="date-tomorrow"
-                      check
-                      className={styles.radioLabel + ' ms-2 mb-0'}
-                    >
-                      Tomorrow
-                    </Label>
-                  </FormGroup>
-                  <FormGroup check className={styles.radioGroup + ' d-flex align-items-center'}>
-                    <Input
+                    <span>Tomorrow</span>
+                  </label>
+                  <label className={styles.radioOption} htmlFor="date-weekend">
+                    <input
                       id="date-weekend"
                       type="radio"
                       name="dates"
                       checked={dateFilter === 'weekend'}
                       onChange={() => setDateFilter('weekend')}
-                      className={styles.radioInput}
+                      onClick={() => {
+                        if (dateFilter === 'weekend') setDateFilter('');
+                      }}
                     />
-                    <Label
-                      htmlFor="date-weekend"
-                      check
-                      className={styles.radioLabel + ' ms-2 mb-0'}
-                    >
-                      This Weekend
-                    </Label>
-                  </FormGroup>
+                    <span>This Weekend</span>
+                  </label>
                 </div>
 
-                <div className={styles.dashboardActions}>
-                  <Button
-                    color="primary"
-                    onClick={() => {
-                      setDateFilter('');
-                      setSelectedDate('');
-                    }}
-                  >
-                    Clear date filter
-                  </Button>
-                </div>
                 <Input
                   type="date"
                   placeholder="Select Date"
@@ -417,39 +387,39 @@ export function CPDashboard() {
 
               <div className={styles.filterItem}>
                 <label htmlFor="online-only">Online</label>
-                <div>
-                  <Input
-                    type="checkbox"
+                <label className={styles.checkboxOption} htmlFor="online-only">
+                  <input
                     id="online-only"
+                    type="checkbox"
                     checked={onlineOnly}
                     onChange={e => {
                       setOnlineOnly(e.target.checked);
                       setPagination(prev => ({ ...prev, currentPage: 1 }));
                     }}
-                  />{' '}
-                  Online Only
-                </div>
+                  />
+                  <span>Online Only</span>
+                </label>
               </div>
 
               <div className={styles.filterItem}>
                 <label htmlFor="branches">Branches</label>
-                <Input type="select">
+                <select id="branches">
                   <option>Select branches</option>
-                </Input>
+                </select>
               </div>
 
               <div className={styles.filterItem}>
                 <label htmlFor="themes">Themes</label>
-                <Input type="select">
+                <select id="themes">
                   <option>Select themes</option>
-                </Input>
+                </select>
               </div>
 
               <div className={styles.filterItem}>
                 <label htmlFor="categories">Categories</label>
-                <Input type="select">
+                <select id="categories">
                   <option>Select categories</option>
-                </Input>
+                </select>
               </div>
             </div>
           </div>
