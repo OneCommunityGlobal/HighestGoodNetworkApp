@@ -43,50 +43,60 @@ function AddLogModal({ isOpen, onClose, onAdd }) {
     materials: '',
     date: '',
   });
-  const [validationError, setValidationError] = useState('');
+  const [errors, setErrors] = useState({});
 
   const handleChange = e => {
     const { name, value } = e.target;
+
     setFormData(prev => ({
       ...prev,
       [name]: value,
     }));
 
-    if (validationError) setValidationError('');
+    setErrors(prev => ({
+      ...prev,
+      [name]: '',
+    }));
   };
 
   const validateForm = () => {
+    const newErrors = {};
+
     if (!formData.user.trim()) {
-      return 'User is required';
+      newErrors.user = 'User is required';
     }
 
     const timeRegex = /^([0-1]\d|2[0-3]):([0-5]\d):([0-5]\d)$/;
     if (!timeRegex.test(formData.timeDuration)) {
-      return 'Time must be in HH:MM:SS format';
+      newErrors.timeDuration = 'Time must be in HH:MM:SS format';
     }
 
     if (!formData.facilities.trim()) {
-      return 'Facilities is required';
+      newErrors.facilities = 'Facilities is required';
+    } else if (!/^[a-zA-Z\s]+$/.test(formData.facilities)) {
+      newErrors.facilities = 'Facilities should contain only letters';
     }
 
     if (!formData.materials.trim()) {
-      return 'Materials is required';
+      newErrors.materials = 'Materials is required';
+    } else if (!/^[a-zA-Z\s]+$/.test(formData.materials)) {
+      newErrors.materials = 'Materials should contain only letters';
     }
 
     if (!formData.date) {
-      return 'Date is required';
+      newErrors.date = 'Date is required';
     }
 
-    return '';
+    return newErrors;
   };
 
   const handleSubmit = e => {
     e.preventDefault();
 
-    const error = validateForm();
+    const validationErrors = validateForm();
 
-    if (error) {
-      setValidationError(error);
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
       return;
     }
 
@@ -99,8 +109,6 @@ function AddLogModal({ isOpen, onClose, onAdd }) {
       materials: '',
       date: '',
     });
-
-    setValidationError('');
     onClose();
   };
 
@@ -111,8 +119,6 @@ function AddLogModal({ isOpen, onClose, onAdd }) {
       <div className={`${styles.modalContent} ${darkMode ? styles.modalContentDark : ''}`}>
         <h3>Add New Log</h3>
 
-        {validationError && <div className={styles.errorMessage}>{validationError}</div>}
-
         <form onSubmit={handleSubmit} className={styles.formContainer}>
           <div className={styles.formGroup}>
             <label htmlFor="user">User</label>
@@ -121,8 +127,9 @@ function AddLogModal({ isOpen, onClose, onAdd }) {
               name="user"
               value={formData.user}
               onChange={handleChange}
-              placeholder="Enter user"
+              className={errors.user ? styles.inputError : ''}
             />
+            {errors.user && <span className={styles.errorText}>{errors.user}</span>}
           </div>
 
           <div className={styles.formGroup}>
@@ -132,8 +139,9 @@ function AddLogModal({ isOpen, onClose, onAdd }) {
               name="timeDuration"
               value={formData.timeDuration}
               onChange={handleChange}
-              className={`${validationError.includes('Time') ? styles.inputError : ''}`}
+              className={errors.timeDuration ? styles.inputError : ''}
             />
+            {errors.timeDuration && <span className={styles.errorText}>{errors.timeDuration}</span>}
           </div>
 
           <div className={styles.formGroup}>
@@ -143,8 +151,9 @@ function AddLogModal({ isOpen, onClose, onAdd }) {
               name="facilities"
               value={formData.facilities}
               onChange={handleChange}
-              placeholder="Enter facilities"
+              className={errors.facilities ? styles.inputError : ''}
             />
+            {errors.facilities && <span className={styles.errorText}>{errors.facilities}</span>}
           </div>
 
           <div className={styles.formGroup}>
@@ -154,8 +163,9 @@ function AddLogModal({ isOpen, onClose, onAdd }) {
               name="materials"
               value={formData.materials}
               onChange={handleChange}
-              placeholder="Enter materials"
+              className={errors.materials ? styles.inputError : ''}
             />
+            {errors.materials && <span className={styles.errorText}>{errors.materials}</span>}
           </div>
 
           <div className={styles.formGroup}>
@@ -166,7 +176,9 @@ function AddLogModal({ isOpen, onClose, onAdd }) {
               type="date"
               value={formData.date}
               onChange={handleChange}
+              className={errors.date ? styles.inputError : ''}
             />
+            {errors.date && <span className={styles.errorText}>{errors.date}</span>}
           </div>
 
           <div className={styles.modalActions}>
@@ -368,6 +380,7 @@ function ResourceManagement() {
             date: 'Just now',
           };
           setResources(prev => [newResource, ...prev]);
+          setShowToast(true);
         }}
       />
 
