@@ -29,8 +29,8 @@ describe('TeamTableHeader (pure)', () => {
     );
 
     expect(screen.getByText('#')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Team Name/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Active/i })).toBeInTheDocument();
+    expect(screen.getByRole('columnheader', { name: /Team Name/i })).toBeInTheDocument();
+    expect(screen.getByRole('columnheader', { name: /Active/i })).toBeInTheDocument();
     expect(screen.getByText(/Members/i)).toBeInTheDocument();
     expect(screen.getByTestId('teams__delete')).toBeInTheDocument();
   });

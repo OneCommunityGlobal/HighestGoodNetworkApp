@@ -14,7 +14,13 @@ export function PieChart({
 }) {
   const [totalHours, setTotalHours] = useState(0);
   const colors = useMemo(() => generateArrayOfUniqColors(tasksData?.length), [tasksData]);
-  const color = useMemo(() => d3.scaleOrdinal().range(colors), [colors]);
+  const color = useMemo(() => {
+    const domain = tasksData?.map(project => project.projectId) || [];
+    return d3
+      .scaleOrdinal()
+      .domain(domain)
+      .range(colors);
+  }, [colors, tasksData]);
 
   const [togglePercentage, setTogglePercentage] = useState(false);
   const [selectedProjects, setSelectedProjects] = useState(
@@ -213,13 +219,12 @@ export function PieChart({
                     />
                   </td>
                   <td>{project.projectName}</td>
-                  <td>{project.totalTime.toFixed(2)} </td>
+                  <td>{project.totalTime.toFixed(2)}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-
         <div className={styles['data-total-value']} style={{ marginTop: 8 }}>
           <strong className={styles['strong-text']}>Total Hours:</strong> {totalHours.toFixed(2)}
         </div>

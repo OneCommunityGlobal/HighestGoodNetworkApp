@@ -11,7 +11,7 @@ const mockStore = configureStore([]);
 const initialState = {
   badge: {
     selectedBadges: [],
-    allBadges: [], 
+    allBadges: [],
   },
   theme: themeMock,
 };
@@ -32,7 +32,7 @@ const tip2 = 'Want to assign multiple of the same badge to a person? Repeat the 
 const renderComponent = () => {
   render(
     <Provider store={store}>
-      <AssignBadgePopup />
+      <AssignBadgePopup isTableOpen={true} />
     </Provider>,
   );
 };
@@ -69,6 +69,8 @@ describe('Userprofile/AssignBadgePopup Test Suite', () => {
   it('Test case 4 : Assert the pop up contains only one table with 3 columns ', async () => {
     renderComponent();
 
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
     // / Find all tables within the component
     const tables = screen.getAllByRole('table');
 
@@ -84,6 +86,8 @@ describe('Userprofile/AssignBadgePopup Test Suite', () => {
   });
   it('Test case 5 : Assert the presnce of objects associated with the search results: a table and three columns', async () => {
     renderComponent();
+
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
     const table = screen.getByTestId('test-badgeResults');
     const badge = screen.getByText('Badge');
@@ -102,30 +106,38 @@ describe('Userprofile/AssignBadgePopup Test Suite', () => {
     expect(message1).toBeNull();
     expect(message2).toBeNull();
   });
-it('Test case 7 : Assert the tool tip message displayed when hovered', async () => {
-  renderComponent();
+  it('Test case 7 : Assert the tool tip message displayed when hovered', async () => {
+    renderComponent();
 
-  const infoIcon = screen.getByTestId('test-selectinfo');
-  fireEvent.mouseOver(infoIcon);  // trigger the tooltip
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
-  // now grab the two <p> elements by their test IDs
-  const tip1El = await screen.findByTestId('test-tip1');
-  const tip2El = await screen.findByTestId('test-tip2');
+    const infoIcon = screen.getByTestId('test-selectinfo');
+    fireEvent.mouseOver(infoIcon); // trigger the tooltip
 
-  expect(tip1El).toBeInTheDocument();
-  // just check the unique leading phrase
-  expect(tip1El).toHaveTextContent('Hmmm, little blank boxes');
-  
-  expect(tip2El).toBeInTheDocument();
-  expect(tip2El).toHaveTextContent('Want to assign multiple of the same badge');
-});
+    // now grab the two <p> elements by their test IDs
+    const tip1El = await screen.findByTestId('test-tip1');
+    const tip2El = await screen.findByTestId('test-tip2');
+
+    expect(tip1El).toBeInTheDocument();
+    // just check the unique leading phrase
+    expect(tip1El).toHaveTextContent('Hmmm, little blank boxes');
+
+    expect(tip2El).toBeInTheDocument();
+    expect(tip2El).toHaveTextContent('Want to assign multiple of the same badge');
+  });
   it('Test case 8 : Assert if the pop up has a submit button ', async () => {
     renderComponent();
+
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
     const button = screen.getByTestId('test-button');
     expect(button).toBeInTheDocument();
   });
   it('Test case 9 :  Assert if the popup renders badge data correctly ', async () => {
     renderComponent();
+
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
     // Find the AssignTableRow component within AssignBadgePopup
     const assignTableRowComponent = screen.getByTestId('test-badgeResults'); // Assuming you have a data-testid on the AssignTableRow
 

@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Form, Label } from 'reactstrap';
 import Select from 'react-select';
-// import styles from './SelectFilterModal.module.scss';
-import mainStyles from '../WeeklySummariesReport.module.css';
 import FilterPreviewForm from './FilterPreviewForm.jsx';
+import { getCustomStyles } from '~/utils/reactSelectStyles'; //  Import Styles
 
 export default function SelectFilterModal({
   state,
@@ -23,6 +22,8 @@ export default function SelectFilterModal({
     }
   }, [isOpen]);
 
+  const customStyles = getCustomStyles(darkMode);
+
   const handleSelectedFilter = () => {
     applyFilter(selectedFilter);
     setSelectedFilter(null);
@@ -30,18 +31,20 @@ export default function SelectFilterModal({
   };
 
   return (
-    <Modal isOpen={isOpen} toggle={toggle} className={`${darkMode ? mainStyles.darkModal : ''}`}>
+    <Modal isOpen={isOpen} toggle={toggle} className={darkMode ? 'wsrDarkModal' : ''}>
       <ModalHeader toggle={toggle}>Select a Filter</ModalHeader>
+
       <ModalBody>
         <Form>
-          <div>Please select a filter:</div>
+          <div className={darkMode ? 'text-light' : ''}>Please select a filter:</div>
           <Select
-            className="text-dark"
             options={filters}
             value={selectedFilter}
             onChange={setSelectedFilter}
             required
+            styles={customStyles}
           />
+
           <FilterPreviewForm
             selectedFilter={selectedFilter}
             darkMode={darkMode}
@@ -49,8 +52,9 @@ export default function SelectFilterModal({
           />
         </Form>
       </ModalBody>
+
       <ModalFooter>
-        <Button color="primary" onClick={handleSelectedFilter}>
+        <Button color="primary" onClick={handleSelectedFilter} disabled={!selectedFilter}>
           Apply
         </Button>
         <Button color="secondary" onClick={toggle}>

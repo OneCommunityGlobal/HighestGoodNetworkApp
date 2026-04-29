@@ -87,12 +87,13 @@ describe('TaskEditSuggestionRow', () => {
     );
 
     const button = screen.getByText('View Suggestion');
+    const buttonColor = window.getComputedStyle(button).color;
     expect(button).toHaveStyle({
       backgroundColor: '#007bff',
       borderRadius: '5px',
       padding: '5px 10px',
-      color: 'rgb(255, 255, 255)',
     });
+    expect(['rgb(255, 255, 255)', 'white']).toContain(buttonColor);
   });
 
   it('updates when taskEditSuggestion prop changes', () => {
