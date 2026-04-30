@@ -137,15 +137,15 @@ const StudentProgressChart = ({ subject, completedAtoms, inProgressAtoms, notSta
         <div className={styles.legend}>
           <div className={styles.legendItem}>
             <div className={styles.legendCircle} style={{ backgroundColor: '#FFD700' }} />
-            <span>{displayAtoms.filter(a => a.status === 'completed').length} completed</span>
+            <span>{completedAtoms.length} completed</span>
           </div>
           <div className={styles.legendItem}>
             <div className={styles.legendCircle} style={{ backgroundColor: '#4CAF50' }} />
-            <span>{displayAtoms.filter(a => a.status === 'in_progress').length} in progress</span>
+            <span>{inProgressAtoms.length} in progress</span>
           </div>
           <div className={styles.legendItem}>
             <div className={styles.legendCircle} style={{ backgroundColor: '#BDBDBD' }} />
-            <span>{displayAtoms.filter(a => a.status === 'not_started').length} remaining</span>
+            <span>{notStartedAtoms.length} remaining</span>
           </div>
         </div>
       </div>

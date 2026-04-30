@@ -168,9 +168,10 @@ const SubjectCard = ({ subject, completed, inProgress, remaining, onClick, darkM
   );
 };
 
+const TOTAL_MOLECULES = 25;
+
 const MoleculeChart = ({ subject, completedAtoms, inProgressAtoms, notStartedAtoms, darkMode }) => {
   const [tooltip, setTooltip] = useState(null);
-  const TOTAL_MOLECULES = 25;
   const createMolecules = () => {
     const molecules = [];
     const allRealAtoms = [
@@ -549,10 +550,10 @@ const StudentProfile = () => {
               <p className={styles.infoValue}>
                 {summary.totalCompleted}/{summary.totalAtoms}
               </p>
+              <button onClick={handleViewDailyLog} className={styles.linkButton}>
+                View Daily Log Activity
+              </button>
             </div>
-            <button onClick={handleViewDailyLog} className={styles.linkButton}>
-              View Daily Log Activity
-            </button>
           </div>
         </div>
       </div>
@@ -588,7 +589,7 @@ const StudentProfile = () => {
                 subject={subject}
                 completed={(completedBySubject[subject] || []).length}
                 inProgress={(inProgressBySubject[subject] || []).length}
-                remaining={(notStartedBySubject[subject] || []).length}
+                remaining={Math.max(0, TOTAL_MOLECULES - (completedBySubject[subject] || []).length - (inProgressBySubject[subject] || []).length)}
                 onClick={() => handleSubjectClick(subject)}
                 darkMode={darkMode}
               />
