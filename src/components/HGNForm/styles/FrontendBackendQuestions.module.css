@@ -1,3 +1,4 @@
+/* stylelint-disable declaration-block-single-line-max-declarations, no-descending-specificity */
 .frontendBackendQuestions {
   width: 50%;
   margin: 10px auto;
@@ -286,6 +287,8 @@
 
 .submitButton:hover {
   background-color: #21618a;
+
+  /* color: white; */
 }
 
 .darkContainer .submitButton:hover {

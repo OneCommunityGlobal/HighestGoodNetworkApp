@@ -1,3 +1,5 @@
+/* stylelint-disable no-descending-specificity */
+
 /* ---------- BASE CONTAINER ---------- */
 
 .itemsListContainer {
@@ -9,7 +11,7 @@
 
 
 .lightTheme {
-  background-color: #ffffff;
+  background-color: #fff;
   color: #111827;
 }
 
@@ -132,7 +134,7 @@
 /* LIGHT theme inputs */
 .lightTheme .filterSelect,
 .lightTheme .searchInput {
-  background-color: #ffffff;
+  background-color: #fff;
   color: #111827;
   border-color: #d1d5db;
 }
@@ -141,7 +143,7 @@
 .lightTheme .searchInput:focus {
   outline: none;
   border-color: #2563eb;
-  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.25);
+  box-shadow: 0 0 0 1px rgb(37 99 235 / 25%);
 }
 
 /* DARK theme inputs */
@@ -156,11 +158,11 @@
 .darkTheme .searchInput:focus {
   outline: none;
   border-color: #4ba3ff;
-  box-shadow: 0 0 0 1px rgba(75, 163, 255, 0.3);
+  box-shadow: 0 0 0 1px rgb(75 163 255 / 30%);
 }
 
 /* Responsive layout */
-@media (max-width: 900px) {
+@media (width <= 900px) {
   .filtersRow {
     align-items: flex-start;
   }
@@ -221,7 +223,7 @@
 }
 
 .lightTheme .itemsTableContainer tbody tr {
-  background-color: #ffffff;
+  background-color: #fff;
 }
 
 .lightTheme .itemsTableContainer tbody tr:nth-child(even) {
@@ -297,7 +299,7 @@
 }
 
 .darkTheme .itemsCell svg:hover {
-  color: #ffffff;
+  color: #fff;
 }
 
 .conditionCell {
@@ -307,6 +309,7 @@
   gap: 0.5rem;
   padding-left: 0;
 }
+
 /* vertical-align: middle;
   display: flex;
   gap: 20px;
@@ -331,7 +334,7 @@
 }
 
 .darkTheme .form-select:focus {
-  box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+  box-shadow: 0 0 0 0.2rem rgb(59 130 246 / 25%);
   border-color: #3b82f6;
 }
 

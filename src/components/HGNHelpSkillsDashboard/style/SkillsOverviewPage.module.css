@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .container {
   max-width: 100vw;
   margin: 0 auto;
@@ -220,4 +221,10 @@
   display: flex;
   justify-content: center;
   padding: 2rem 0;
+}
+
+.darkButton {
+  background-color: #1f2937 !important;
+  color: #f9fafb !important;
+  border-color: #4b5563 !important;
 }

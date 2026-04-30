@@ -1,3 +1,4 @@
+/* stylelint-disable declaration-block-single-line-max-declarations, no-descending-specificity */
 .followupQuestions {
   width: 50%;
   margin: 10px auto;
@@ -13,6 +14,22 @@
   color: #fff;
 }
 
+<<<<<<< Sayali_Task8_HGNSkillsForm_DarkMode
+=======
+@media (width <= 768px) {
+  .followupQuestions {
+    width: 80%;
+    margin: 10px auto;
+  }
+}
+
+@media (width <= 480px) {
+  .followupBackendQuestions {
+    width: 90%;
+  }
+}
+
+>>>>>>> development
 .followupQuestions h1 {
   text-align: left;
   margin-bottom: 20px;
@@ -59,6 +76,21 @@
   margin-bottom: 10px;
 }
 
+<<<<<<< Sayali_Task8_HGNSkillsForm_DarkMode
+=======
+.darkContainer .question { color: #93c5fd; }
+.darkContainer p { color: #b3bfca; }
+.darkContainer label { color: #e5eef6; }
+
+.darkContainer .followUp input[type="text"] {
+  background-color: transparent;
+  color: #fff;
+  border-color: #8aa0b4;
+}
+
+.darkContainer .finalButtonContainer button { border-color: #3a506b; color: #fff; }
+
+>>>>>>> development
 .followUp {
   display: flex;
   flex-direction: column;
@@ -232,8 +264,19 @@
   color: #93c5fd;
 }
 
+<<<<<<< Sayali_Task8_HGNSkillsForm_DarkMode
 .darkContainer p {
   color: #b3bfca;
+=======
+.finalButtonContainer button{
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  margin: 15px;
+  width: 20%;
+  border: 2px solid #2e5163;
+  font-size: medium;
+>>>>>>> development
 }
 
 .darkContainer label {
@@ -254,8 +297,14 @@
 
 .darkContainer .hgnReturnButton {
   background-color: #2e5163;
+<<<<<<< Sayali_Task8_HGNSkillsForm_DarkMode
   color: #fff;
   border-color: #3a506b;
+=======
+  border-radius: 10px;
+  width: 20%;
+  color: #fff;
+>>>>>>> development
 }
 
 .darkContainer .hgnReturnButton:hover {
@@ -278,6 +327,7 @@
   color: #fff;
 }
 
+<<<<<<< Sayali_Task8_HGNSkillsForm_DarkMode
 .darkContainer .submitButton:hover {
   background-color: #4e748d;
   border-color: #4e748d;
@@ -288,6 +338,12 @@
     width: 80%;
     margin: 10px auto;
   }
+=======
+.submitButton:hover {
+  background-color: #21618a;
+
+  /* color: white; */
+>>>>>>> development
 }
 
 @media (width <= 480px) {

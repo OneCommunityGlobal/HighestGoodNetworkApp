@@ -7,7 +7,7 @@ export default function DisplayBox({ onClose, darkMode = false }) {
     {
       prReviewer: 'Akshay - Jayram',
       teamCode: '123',
-      teamReviewerName: '""',
+      teamReviewerName: 'Team Leader 1',
       weeklyPRs: [
         { week: '2024-06-01', prCount: 12 },
         { week: '2024-06-08', prCount: 15 },
@@ -21,7 +21,7 @@ export default function DisplayBox({ onClose, darkMode = false }) {
     {
       prReviewer: 'Ghazi1212',
       teamCode: '456',
-      teamReviewerName: '""',
+      teamReviewerName: 'Team Leader 2',
       weeklyPRs: [
         { week: '2024-06-01', prCount: 12 },
         { week: '2024-06-08', prCount: 15 },
@@ -33,29 +33,33 @@ export default function DisplayBox({ onClose, darkMode = false }) {
   ];
 
   const [checkedItems, setCheckedItems] = useState(new Array(mockPromotionData.length).fill(true));
+
   const allChecked = checkedItems.every(Boolean);
 
   const handleCheckedBoxChange = index => {
-    const newChecked = [...checkedItems];
-    newChecked[index] = !newChecked[index];
-    setCheckedItems(newChecked);
+    const updated = [...checkedItems];
+    updated[index] = !updated[index];
+    setCheckedItems(updated);
   };
 
   const handleSelectAll = () => {
     setCheckedItems(new Array(mockPromotionData.length).fill(!allChecked));
   };
 
-  const popupClass = `${styles.popup} ${darkMode ? styles['popup-dark'] : ''}`;
+  const handleConfirm = () => {
+    const selectedReviewers = mockPromotionData.filter((_, index) => checkedItems[index]);
+    console.log('Selected reviewers:', selectedReviewers);
+    onClose();
+  };
 
   return (
     <div className={styles.overlay}>
-      <div className={popupClass}>
-        <h2
-          className={`${styles['popup-heading']} ${darkMode ? styles['popup-heading-dark'] : ''}`}
-        >
+      <div className={`${styles.popup} ${darkMode ? styles.popupDark : ''}`}>
+        <h2 className={`${styles.popupHeading} ${darkMode ? styles.popupHeadingDark : ''}`}>
           Are you sure you want to promote these PR reviewers?
         </h2>
-        <table className={`${styles['popup-table']} ${darkMode ? styles['popup-table-dark'] : ''}`}>
+
+        <table className={`${styles.popupTable} ${darkMode ? styles.popupTableDark : ''}`}>
           <thead>
             <tr>
               <th>
@@ -72,6 +76,7 @@ export default function DisplayBox({ onClose, darkMode = false }) {
               <th>Weekly PR Counts</th>
             </tr>
           </thead>
+
           <tbody>
             {mockPromotionData.map((promotion, index) => (
               <tr key={`${promotion.prReviewer}-${promotion.teamCode}`}>
@@ -90,7 +95,7 @@ export default function DisplayBox({ onClose, darkMode = false }) {
                   {promotion.weeklyPRs.map((pr, prIndex) => (
                     <span
                       key={`${promotion.prReviewer}-${pr.week}`}
-                      className={`${styles['pr-count-badge']} ${styles[`color-${prIndex}`]}`}
+                      className={`${styles.prCountBadge} ${styles[`color${prIndex}`] || ''}`}
                     >
                       {pr.prCount}
                     </span>
@@ -100,11 +105,18 @@ export default function DisplayBox({ onClose, darkMode = false }) {
             ))}
           </tbody>
         </table>
-        <div className={styles['button-row']}>
+
+        <div className={styles.buttonRow}>
           <button type="button" className={styles.button} onClick={onClose}>
             Cancel
           </button>
-          <button type="button" className={styles.button} disabled={!checkedItems.some(Boolean)}>
+
+          <button
+            type="button"
+            className={styles.button}
+            disabled={!checkedItems.some(Boolean)}
+            onClick={handleConfirm}
+          >
             Confirm
           </button>
         </div>

@@ -1,29 +1,23 @@
+// Activity List Component
 import { useState, useEffect, useMemo } from 'react';
 import { useSelector, useStore } from 'react-redux';
+import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import styles from './ActivityList.module.css';
 import { mockActivities } from './mockActivities';
 
 function ActivityList() {
-  let darkMode = false;
-
-  try {
-    const store = useStore();
-    darkMode = store?.getState()?.theme?.darkMode ?? false;
-  } catch (e) {
-    darkMode = false;
-  }
-
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedActivity, setSelectedActivity] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [filter, setFilter] = useState({
     type: '',
     date: '',
     location: '',
     pastEvents: false,
   });
-  const [locationSuggestions, setLocationSuggestions] = useState([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
   const [sortOrder, setSortOrder] = useState('earliest');
   const [showPastEvents, setShowPastEvents] = useState(false);
 
@@ -60,34 +54,13 @@ function ActivityList() {
     fetchActivities();
   }, []);
 
-  const getLocationSuggestions = input => {
-    if (!input.trim()) return [];
-
-    const uniqueLocations = [...new Set(activities.map(a => a.location))];
-    const lowerInput = input.toLowerCase();
-
-    return uniqueLocations.filter(loc => loc.toLowerCase().startsWith(lowerInput)).slice(0, 10);
-  };
-
   const handleFilterChange = e => {
     const { name, value } = e.target;
     setFilter({ ...filter, [name]: value });
-
-    if (name === 'location') {
-      const suggestions = getLocationSuggestions(value);
-      setLocationSuggestions(suggestions);
-      setShowSuggestions(true);
-    }
   };
 
   const handleSortChange = e => {
     setSortOrder(e.target.value);
-  };
-
-  const handleSuggestionClick = location => {
-    setFilter({ ...filter, location });
-    setShowSuggestions(false);
-    setLocationSuggestions([]);
   };
 
   const handleClearFilters = () => {
@@ -98,8 +71,15 @@ function ActivityList() {
       showPastEvents: false,
     });
     setShowPastEvents(false);
-    setLocationSuggestions([]);
-    setShowSuggestions(false);
+  };
+
+  const handleActivityClick = activity => {
+    setSelectedActivity(activity);
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
   };
 
   const startOfToday = useMemo(() => {
@@ -107,6 +87,20 @@ function ActivityList() {
     d.setHours(0, 0, 0, 0);
     return d;
   }, []);
+
+  const activityTypes = useMemo(() => {
+    const typeOrder = new Map();
+
+    activities.forEach(activity => {
+      if (activity.type && !typeOrder.has(activity.type)) {
+        typeOrder.set(activity.type, typeOrder.size);
+      }
+    });
+
+    return [...typeOrder.keys()].sort(
+      (typeA, typeB) => typeOrder.get(typeA) - typeOrder.get(typeB),
+    );
+  }, [activities]);
 
   const filteredActivities = activities
     .filter(activity => showPastEvents || activity._dateObj >= startOfToday)
@@ -134,15 +128,20 @@ function ActivityList() {
 
       <div className={`${darkMode ? styles.darkModeFilters : styles.filters}`}>
         <label className={darkMode ? 'text-light' : ''}>
-          Type:
-          <input
-            type="text"
+          Type:{' '}
+          <select
             name="type"
             value={filter.type}
             onChange={handleFilterChange}
-            placeholder="Enter type"
             className={darkMode ? styles.darkModeInput : ''}
-          />
+          >
+            <option value="">All Types</option>
+            {activityTypes.map(type => (
+              <option key={type} value={type}>
+                {type}
+              </option>
+            ))}
+          </select>
         </label>
 
         <label className={darkMode ? 'text-light' : ''}>
@@ -153,6 +152,7 @@ function ActivityList() {
             value={filter.date}
             onChange={handleFilterChange}
             className={darkMode ? styles.darkModeInput : ''}
+            min={new Date().toISOString().split('T')[0]}
           />
         </label>
 
@@ -170,50 +170,14 @@ function ActivityList() {
 
         <label className={darkMode ? 'text-light' : ''}>
           Location:
-          <div style={{ position: 'relative' }}>
-            <input
-              type="text"
-              name="location"
-              value={filter.location}
-              onChange={handleFilterChange}
-              onFocus={() => {
-                if (filter.location) {
-                  const suggestions = getLocationSuggestions(filter.location);
-                  setLocationSuggestions(suggestions);
-                  setShowSuggestions(true);
-                }
-              }}
-              onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-              placeholder="Enter location"
-              autoComplete="off"
-              className={darkMode ? styles.darkModeInput : ''}
-            />
-
-            {showSuggestions && locationSuggestions.length > 0 && (
-              <div className={`${styles.suggestions} ${darkMode ? styles.darkSuggestions : ''}`}>
-                {locationSuggestions.map((location, index) => (
-                  <div
-                    key={index}
-                    role="button"
-                    tabIndex={0}
-                    className={styles.suggestionItem}
-                    onMouseDown={e => {
-                      e.preventDefault();
-                      handleSuggestionClick(location);
-                    }}
-                    onKeyDown={e => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        handleSuggestionClick(location);
-                      }
-                    }}
-                  >
-                    {location}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          <input
+            type="text"
+            name="location"
+            value={filter.location}
+            onChange={handleFilterChange}
+            placeholder="Enter location"
+            className={darkMode ? styles.darkModeInput : ''}
+          />
         </label>
         <label className={`${styles.showPastToggle} ${darkMode ? styles.darkShowPastToggle : ''}`}>
           Show Past Events:
@@ -245,21 +209,69 @@ function ActivityList() {
         ) : filteredActivities.length > 0 ? (
           <ul>
             {filteredActivities.map(activity => (
-              <li
+              <div
                 key={activity.id}
-                className={`${styles.activityItem} ${darkMode ? styles.darkModeItem : ''}`}
+                style={{ cursor: 'pointer' }}
+                onClick={() => handleActivityClick(activity)}
+                tabIndex={0}
+                role="button"
+                aria-label={`View details for ${activity.name}`}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    handleActivityClick(activity);
+                  }
+                }}
               >
-                <strong>{activity.name}</strong>
-                <span>
-                  {activity.type} – {activity.date} – {activity.location}
-                </span>
-              </li>
+                <li
+                  key={activity.id}
+                  className={`${styles.activityItem} ${darkMode ? styles.darkModeItem : ''}`}
+                >
+                  <strong>{activity.name}</strong>
+                  <span>
+                    {activity.type} – {activity.date} – {activity.location}
+                  </span>
+                </li>
+              </div>
             ))}
           </ul>
         ) : (
           <p className={darkMode ? 'text-light' : ''}>No activities found</p>
         )}
       </div>
+
+      {/* Modal for activity details */}
+      <Modal isOpen={modalOpen} toggle={handleCloseModal}>
+        <ModalHeader toggle={handleCloseModal}>
+          {selectedActivity ? selectedActivity.name : ''}
+        </ModalHeader>
+        <ModalBody>
+          {selectedActivity && (
+            <div>
+              <p>
+                <strong>Type:</strong> {selectedActivity.type}
+              </p>
+              <p>
+                <strong>Date:</strong> {selectedActivity.date}
+              </p>
+              <p>
+                <strong>Time:</strong> {selectedActivity.time}
+              </p>
+              <p>
+                <strong>Location:</strong> {selectedActivity.location}
+              </p>
+              <p>
+                <strong>Description:</strong> {selectedActivity.description}
+              </p>
+              {/* Add more details as needed */}
+            </div>
+          )}
+        </ModalBody>
+        <ModalFooter>
+          <Button color="secondary" onClick={handleCloseModal}>
+            Close
+          </Button>
+        </ModalFooter>
+      </Modal>
     </div>
   );
 }
