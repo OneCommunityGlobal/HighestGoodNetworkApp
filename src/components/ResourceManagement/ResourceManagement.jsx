@@ -4,6 +4,8 @@ import { useSelector } from 'react-redux';
 import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react'; // Added Calendar icon
 import { MOCK_RESOURCES } from './MockData';
 import { toast } from 'react-toastify';
+import PropTypes from 'prop-types';
+
 
 function SearchBar({ onSortToggle, darkMode, searchTerm, onSearchTermChange }) {
   return (
@@ -247,5 +249,19 @@ function ResourceManagement() {
     </div>
   );
 }
+
+SearchBar.propTypes = {
+  onSortToggle: PropTypes.func.isRequired,
+  darkMode: PropTypes.bool,
+  searchTerm: PropTypes.string.isRequired,
+  onSearchTermChange: PropTypes.func.isRequired,
+};
+
+Pagination.propTypes = {
+  totalPages: PropTypes.number.isRequired,
+  currentPage: PropTypes.number.isRequired,
+  setCurrentPage: PropTypes.func.isRequired,
+  darkMode: PropTypes.bool,
+};
 
 export default ResourceManagement;

@@ -26,15 +26,14 @@
 }
 
 .addLogButton {
-  background-color: #007bff;
+  background-color: #0056b3; 
   color: white;
   border: none;
   padding: 10px 24px;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
+  cursor: pointer; 
   transition: background-color 0.2s;
 }
+
 
 .addLogButton:hover {
   background-color: #0056b3;
