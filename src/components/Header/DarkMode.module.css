@@ -1,6 +1,3 @@
-/* stylelint-disable  */
-/* stylelint-disable no-descending-specificity, no-duplicate-selectors, declaration-block-single-line-max-declarations */
-
 /* --- Root Wrapper --- */
 .darkModeButton {
   display: inline-block;
@@ -24,10 +21,9 @@
 }
 
 .sliderContainerDark { background-color: #1C2541; }
-
-.sliderContainerLight {
-  background-color: #e3e3e3;
-  border: 1px solid #d4d4d4;
+.sliderContainerLight { 
+  background-color: #e3e3e3; 
+  border: 1px solid #d4d4d4; 
 }
 
 /* --- Icons --- */
@@ -56,13 +52,13 @@
 }
 
 .labelLightHover { margin-left: 6px; color: #151515; }
-.labelDarkHover { margin-left: 32px; color: #fff; }
+.labelDarkHover { margin-left: 32px; color: #ffffff; }
 
 /* --- Hover States (Dark) --- */
-.sliderContainerDark:hover { background-color: #fff; }
+.sliderContainerDark:hover { background-color: #ffffff; }
 
 .sliderContainerDark:hover .labelDark { opacity: 0; }
-.sliderContainerDark:hover .labelLightHover { opacity: 1; }
+.sliderContainerDark:hover .labelLightHover { opacity: 1;color: #151515 !important; }
 
 .sliderContainerDark:hover .iconSunHover { opacity: 0; left: 90px; }
 .sliderContainerDark:hover .iconNight { opacity: 1; left: 90px; }
@@ -80,6 +76,3 @@
 .iconSun, .iconNightHover { left: 90px; }
 .iconNight, .iconSunHover { left: 4px; }
 
-.sliderContainerDark:hover .labelLightHover{
-  color: #151515 !important;
-}
