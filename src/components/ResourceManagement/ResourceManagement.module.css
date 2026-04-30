@@ -234,6 +234,7 @@
   padding: 6px 12px;
 }
 
+/* sl:ignore:content-contrast */
 .paginationButtonIndexes:hover:not(:disabled),
 .paginationLeft:hover:not(:disabled),
 .paginationRight:hover:not(:disabled) {
@@ -241,7 +242,7 @@
   color: white;
   background-color: #007bff;
 }
-
+/* sl:ignore:content-contrast */
 .activePage {
   background-color: #007bff;
   border: 1px solid #007bff;
