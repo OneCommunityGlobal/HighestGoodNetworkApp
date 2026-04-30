@@ -29,7 +29,7 @@ export const ENDPOINTS = {
 
   MODIFY_BLUE_SQUARE: (userId, blueSquareId) =>
     `${APIEndpoint}/userprofile/${userId}/infringements/${blueSquareId}`,
-
+  
   // Blue Square Email Triggers
   BLUE_SQUARE_RESEND_INFRINGEMENT_EMAILS: () =>
     `${APIEndpoint}/blueSquare/resend-infringement-emails-only`,
@@ -37,8 +37,6 @@ export const ENDPOINTS = {
     `${APIEndpoint}/blueSquare/resend-weekly-summary-emails`,
   USERS_ALLTEAMCODE_CHANGE: `${APIEndpoint}/AllTeamCodeChanges`,
   REPLACE_TEAM_CODE: `${APIEndpoint}/userProfile/replaceTeamCode`,
-
-  GET_JOB_FORMS: `${APIEndpoint}/jobForms`,
 
   USERS_REMOVE_PROFILE_IMAGE: `${APIEndpoint}/userProfile/profileImage/remove`,
   USERS_UPDATE_PROFILE_FROM_WEBSITE: `${APIEndpoint}/userProfile/profileImage/imagefromwebsite`,
@@ -100,7 +98,6 @@ export const ENDPOINTS = {
   TIME_ENTRIES_LOST_TEAM_LIST: `${APIEndpoint}/TimeEntry/lostTeams`,
   TIME_ENTRY: () => `${APIEndpoint}/TimeEntry`,
   TIME_ENTRY_CHANGE: timeEntryId => `${APIEndpoint}/TimeEntry/${timeEntryId}`,
-  TIMELOG_TRACKING: userId => `${APIEndpoint}/timelogTracking/${userId}`,
   WBS_ALL: `${APIEndpoint}/wbs`,
   WBS: projectId => `${APIEndpoint}/wbs/${projectId}`,
   GET_WBS: wbsId => `${APIEndpoint}/wbsId/${wbsId}`,
@@ -137,7 +134,6 @@ export const ENDPOINTS = {
   DELETE_WARNING_DESCRIPTION: warningId => `${APIEndpoint}/currentWarnings/${warningId}`,
   EDIT_WARNING_DESCRIPTION: () => `${APIEndpoint}/currentWarnings/edit`,
   GET_WARNINGS_BY_USER_ID: userId => `${APIEndpoint}/warnings/${userId}`,
-  GET_SPECIAL_WARNINGS: userId => `${APIEndpoint}/warnings/${userId}/special`,
   POST_WARNINGS_BY_USER_ID: userId => `${APIEndpoint}/warnings/${userId}`,
   DELETE_WARNINGS_BY_USER_ID: userId => `${APIEndpoint}/warnings/${userId}`,
   AUTHORIZE_WEEKLY_SUMMARY_REPORTS: () =>
@@ -635,6 +631,11 @@ export const ENDPOINTS = {
   WEEKLY_GRADING_SAVE: `${APIEndpoint}/weekly-grading/save`,
 
   // Education Portal endpoints
+  PROGRESS_EDUCATOR_STUDENT: studentId => `${APIEndpoint}/progress/educator/student-progress/${studentId}`,
+  EDUCATION_TASKS_BY_STUDENT: studentId => `${APIEndpoint}/education-tasks/student/${studentId}`,
+  EDUCATION_TASK: taskId => `${APIEndpoint}/education-tasks/${taskId}`,
+  EDUCATION_TASK_STATUS: taskId => `${APIEndpoint}/education-tasks/${taskId}/status`,
+
   STUDENT_PROFILE: `${APIEndpoint}/student/profile`,
   STUDENT_SUBJECT_TASKS: subjectId => `${APIEndpoint}/student/profile/subject/${subjectId}`,
   EDUCATOR_ASSIGN_ATOMS: () => `${APIEndpoint}/educator/assign-atoms`,
