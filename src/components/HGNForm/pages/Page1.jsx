@@ -42,7 +42,9 @@ export default function Page1() {
         const data = res?.data;
 
         // Response has skillInfo (not skills) — check if it exists
-        if (mounted && res?.status === 200 && data?.skillInfo) {
+        const hasRealSkillData =
+          data?.skillInfo?.frontend?.overall !== '0' || data?.skillInfo?.backend?.Overall !== '0';
+        if (mounted && res?.status === 200 && hasRealSkillData) {
           history.replace('/hgn/profile/skills');
           return;
         }
