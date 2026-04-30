@@ -61,7 +61,7 @@ const Pagination = ({ totalPages, currentPage, setCurrentPage, darkMode }) => {
     } else {
       pages = [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
     }
-  
+
     return pages;
   };
 
