@@ -133,6 +133,21 @@
   background-color: #007bff!important;
 }
 
+/* Empty state */
+:global(.tools-chart-empty) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 2rem 0;
+  color: #333;
+}
+
+:global(.darkTheme .tools-chart-empty),
+:global(.dark-mode .tools-chart-empty) {
+  color: #e0e0e0;
+}
+
 /* Title styling */
 :global(.tools-chart-title) {
   font-size: 1.5rem !important;
