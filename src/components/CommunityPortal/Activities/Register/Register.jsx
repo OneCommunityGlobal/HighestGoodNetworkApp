@@ -1,12 +1,33 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import styles from './Register.module.css';
-// import EventDescription from './EventDescription';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../../utils/URL';
-import EventDescription from './EventDescription';
-import Calendar from 'react-calendar';
+
+function isTomorrow(dateString) {
+  const input = new Date(dateString);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+  return input >= tomorrow && input < new Date(tomorrow.getTime() + 24 * 60 * 60 * 1000);
+}
+
+function isComingWeekend(dateString) {
+  const input = new Date(dateString);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const day = today.getDay();
+  const daysUntilSaturday = (6 - day + 7) % 7 || 7;
+  const saturday = new Date(today);
+  saturday.setDate(today.getDate() + daysUntilSaturday);
+  const sunday = new Date(saturday);
+  sunday.setDate(saturday.getDate() + 1);
+  sunday.setHours(23, 59, 59, 999);
+  return input >= saturday && input <= sunday;
+}
 
 function Register() {
   const { activityId } = useParams();
@@ -16,17 +37,12 @@ function Register() {
   const [activity, setActivity] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  // eslint-disable-next-line no-unused-vars
-  // const [selectedDate, setSelectedDate] = useState(new Date());
   const [activityDate, setActivityDate] = useState('');
   const [activityStartTime, setActivityStartTime] = useState('');
   const [activityEndTime, setActivityEndTime] = useState('');
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [feedbackMessage, setFeedbackMessage] = useState(null);
   const [availability, setAvailability] = useState(0);
   const [isRegistering, setIsRegistering] = useState(false);
   const [registrants, setRegistrants] = useState([]);
-  const feedbackTimeoutRef = useRef(null);
   const storageKey = useMemo(() => `activity-${activityId}-registrants`, [activityId]);
 
   const tokenPayload = useMemo(() => {
@@ -51,14 +67,6 @@ function Register() {
   }, [authUser?.userid]);
 
   useEffect(() => {
-    return () => {
-      if (feedbackTimeoutRef.current) {
-        clearTimeout(feedbackTimeoutRef.current);
-      }
-    };
-  }, []);
-
-  useEffect(() => {
     if (typeof window === 'undefined') return;
     try {
       const stored = window.localStorage.getItem(storageKey);
@@ -73,6 +81,7 @@ function Register() {
         setRegistrants([]);
       }
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error('Failed to load saved registrants', err);
       setRegistrants([]);
     }
@@ -83,6 +92,7 @@ function Register() {
     try {
       window.localStorage.setItem(storageKey, JSON.stringify(registrants));
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error('Failed to persist registrants', err);
     }
   }, [registrants, storageKey]);
@@ -94,85 +104,6 @@ function Register() {
         setError(null);
         const response = await axios.get(ENDPOINTS.EVENTS_BY_ID(activityId));
         setActivity(response.data || []);
-
-        const fetchedActivities = [
-          {
-            id: 1,
-            name: 'Yoga Class',
-            rating: 4,
-            type: 'Fitness',
-            date: '03-10-2025',
-            time: '10:00 AM',
-            organizer: 'Alex Brian',
-            location: 'Community Center',
-            capacity: 10,
-            image: 'https://cdn.pixabay.com/photo/2024/06/21/07/46/yoga-8843808_1280.jpg',
-            description: 'A relaxing yoga session to improve flexibility and mindfulness.',
-            faqs: [
-              { question: 'What should I bring?', answer: 'A yoga mat and a water bottle.' },
-              {
-                question: 'Is it beginner-friendly?',
-                answer: 'Yes, it is suitable for all levels.',
-              },
-            ],
-            participants: ['John Doe', 'Jane Smith', 'Alice Brown'],
-            comments: ['Looking forward to this!', 'This will be my first yoga session!'],
-          },
-          {
-            id: 2,
-            name: 'Book Club',
-            rating: 5,
-            type: 'Social',
-            date: '03-15-2025',
-            time: '5:00 PM',
-            organizer: 'Bob',
-            location: 'Library',
-            capacity: 5,
-            image: 'https://cdn.pixabay.com/photo/2019/01/30/08/30/book-3964050_1280.jpg',
-            description: 'A book club discussion on the latest bestsellers.',
-            faqs: [
-              {
-                question: 'Do I need to read the book beforehand?',
-                answer: "Yes, it's recommended.",
-              },
-              {
-                question: 'Are snacks provided?',
-                answer: 'Yes, light refreshments will be available.',
-              },
-            ],
-            participants: ['Emily White', 'Michael Green'],
-            comments: ['Excited to discuss my favorite book!', 'What book are we reading?'],
-          },
-        ];
-
-        const selectedActivity = fetchedActivities.find(
-          fetchedActivity => fetchedActivity.id === parseInt(activityId, 10),
-        );
-
-        if (selectedActivity) {
-          setActivity(selectedActivity);
-          let savedCount = 0;
-          if (typeof window !== 'undefined') {
-            try {
-              const existing = window.localStorage.getItem(storageKey);
-              if (existing) {
-                const parsed = JSON.parse(existing);
-                if (Array.isArray(parsed)) {
-                  savedCount = parsed.length;
-                }
-              }
-            } catch (storageErr) {
-              console.error('Failed to read saved registrants during fetch', storageErr);
-            }
-          }
-          const baseCount = Array.isArray(selectedActivity.participants)
-            ? selectedActivity.participants.length
-            : 0;
-          const remaining = selectedActivity.capacity - baseCount - savedCount;
-          setAvailability(remaining > 0 ? remaining : 0);
-        } else {
-          setError('Activity not found');
-        }
       } catch (err) {
         setError('Failed to load activity details. Please try again.');
       } finally {
@@ -282,15 +213,6 @@ function Register() {
   const resolveJobTitle = () =>
     userProfile?.jobTitle || resolveJobTitleFromToken() || 'Participant';
 
-  const scheduleFeedbackClear = () => {
-    if (feedbackTimeoutRef.current) {
-      clearTimeout(feedbackTimeoutRef.current);
-    }
-    feedbackTimeoutRef.current = setTimeout(() => {
-      setFeedbackMessage(null);
-    }, 5000);
-  };
-
   const isAlreadyRegistered = useMemo(() => {
     if (!registrants.length) return false;
     const userId = resolveUserId();
@@ -301,26 +223,10 @@ function Register() {
     });
   }, [registrants, authUser, userProfile, tokenPayload]);
 
-  const participantList = useMemo(() => {
-    const base = Array.isArray(activity?.participants) ? activity.participants : [];
-    const dynamic = registrants.map(r => r?.name).filter(Boolean);
-    const combined = [...dynamic, ...base];
-    const seen = new Set();
-    return combined
-      .map(name => (typeof name === 'string' ? name.trim() : ''))
-      .filter(name => {
-        const key = name.toLowerCase();
-        if (!name || seen.has(key)) return false;
-        seen.add(key);
-        return true;
-      });
-  }, [activity?.participants, registrants]);
-
   const handleRegister = async () => {
     if (!activity) return;
     if (availability === 0) {
-      setFeedbackMessage({ type: 'error', text: 'Registration failed. No spots available.' });
-      scheduleFeedbackClear();
+      toast.error('Registration failed. No spots available.');
       return;
     }
 
@@ -331,8 +237,7 @@ function Register() {
     const jobTitle = resolveJobTitle();
 
     if (isAlreadyRegistered) {
-      setFeedbackMessage({ type: 'error', text: 'You are already registered for this event.' });
-      scheduleFeedbackClear();
+      toast.error('You are already registered for this event.');
       return;
     }
 
@@ -351,17 +256,9 @@ function Register() {
         },
       ]);
 
-      setFeedbackMessage({
-        type: 'success',
-        text: 'Registration successful! See you at the event.',
-      });
-      scheduleFeedbackClear();
+      toast.success('Registration successful! See you at the event.');
     } catch (err) {
-      setFeedbackMessage({
-        type: 'error',
-        text: 'Registration failed. Please try again.',
-      });
-      scheduleFeedbackClear();
+      toast.error('Registration failed. Please try again.');
     } finally {
       setIsRegistering(false);
     }
@@ -371,29 +268,19 @@ function Register() {
     try {
       if (navigator.share) {
         await navigator.share({
-          title: activity.name,
-          text: `I'm available for ${activity.name}. Join me!`,
+          title: activity.title,
+          text: `I'm available for ${activity.title}. Join me!`,
           url: window.location.href,
         });
       } else {
-        setFeedbackMessage({
-          type: 'info',
-          text: 'Sharing is not supported on this device.',
-        });
-        scheduleFeedbackClear();
+        toast.info('Sharing is not supported on this device.');
       }
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error('Share failed:', err);
     }
   };
 
-  const handleRetry = () => {
-    setError(null);
-    setLoading(true);
-    window.location.reload();
-  };
-
-  // Loading state
   if (loading) {
     return (
       <div className={`${styles.mainContainer} ${darkMode ? styles.mainContainerDark : ''}`}>
@@ -401,7 +288,7 @@ function Register() {
           <div className={styles.loadingContainer}>
             <div
               className={`${styles.loadingSpinner} ${darkMode ? styles.loadingSpinnerDark : ''}`}
-            ></div>
+            />
             <p className={`${styles.loadingText} ${darkMode ? styles.loadingTextDark : ''}`}>
               Loading activity details...
             </p>
@@ -411,7 +298,6 @@ function Register() {
     );
   }
 
-  // No activity found
   if (error || !activity) {
     return (
       <div className={`${styles.mainContainer} ${darkMode ? styles.mainContainerDark : ''}`}>
@@ -430,246 +316,126 @@ function Register() {
   return (
     <div className={`${styles.mainContainer} ${darkMode ? styles.mainContainerDark : ''}`}>
       <div className={`${styles.contentWrapper} ${darkMode ? styles.contentWrapperDark : ''}`}>
-        <div
-          className={`${styles.registerContainer} ${darkMode ? styles.registerContainerDark : ''}`}
-        >
-          {/* Event Header: Image | Details | Calendar */}
-          <div className={`${styles.eventHeader} ${darkMode ? styles.eventHeaderDark : ''}`}>
-            {/* Left Section: Image + Register Button */}
-            <div className={styles.eventImageSection}>
-              <img src={activity.image} alt={activity.name} className={styles.eventImage} />
-              <button
-                type="button"
-                className={`${styles.registerButton} ${darkMode ? styles.registerButtonDark : ''} ${
-                  isRegistering ? styles.registerButtonRegistering : ''
-                }`}
-                onClick={handleRegister}
-                disabled={availability === 0 || isRegistering || isAlreadyRegistered}
-              >
-                {isRegistering ? 'Registering...' : isAlreadyRegistered ? 'Registered' : 'Register'}
-              </button>
-              {feedbackMessage && (
-                <div
-                  className={`${styles.feedbackMessage} ${
-                    feedbackMessage.type === 'success'
-                      ? `${styles.feedbackMessageSuccess} ${
-                          darkMode ? styles.feedbackMessageSuccessDark : ''
-                        }`
-                      : `${styles.feedbackMessageError} ${
-                          darkMode ? styles.feedbackMessageErrorDark : ''
-                        }`
-                  }`}
-                >
-                  {feedbackMessage.text}
-                </div>
-              )}
+        <div className={`${styles.eventPage} ${darkMode ? styles.eventPageDark : ''}`}>
+          <section className={styles.heroSection}>
+            <div className={styles.heroImageWrapper}>
+              <img src={activity.coverImage} alt={activity.title} className={styles.heroImage} />
             </div>
 
-            {/* Center Section: Event Details & Metadata */}
-            <div
-              className={`${styles.eventDetailsSection} ${
-                darkMode ? styles.eventDetailsSectionDark : ''
-              }`}
-            >
-              {/* Title and Status Badge */}
-              <div className={styles.eventHeaderTop}>
+            <div className={styles.heroContent}>
+              <div className={styles.heroHeader}>
+                <span className={styles.typeBadge}>{activity.type}</span>
+                <span className={styles.statusBadge}>{activity.status}</span>
+              </div>
+
+              <h1 className={styles.eventTitle}>{activity.title}</h1>
+
+              <div className={styles.metaGrid}>
                 <div>
-                  <p className={`${styles.eventType} ${darkMode ? styles.eventTypeDark : ''}`}>
-                    {activity.type}
-                  </p>
-                  <h1 className={`${styles.eventTitle} ${darkMode ? styles.eventTitleDark : ''}`}>
-                    {activity.name}
-                  </h1>
+                  <strong>Date:</strong> {activityDate}
                 </div>
-                <span
-                  className={`${styles.statusBadge} ${
-                    availability > 0 ? styles.statusBadgeActive : styles.statusBadgeFull
-                  } ${
-                    darkMode
-                      ? availability > 0
-                        ? styles.statusBadgeActiveDark
-                        : styles.statusBadgeFullDark
-                      : ''
+                <div>
+                  <strong>Time:</strong> {activityStartTime} - {activityEndTime}
+                </div>
+                <div>
+                  <strong>Location:</strong> {activity.location || 'To Be Decided'}
+                </div>
+                <div>
+                  <strong>Organizer:</strong> {activity.organizer || 'Not Specified'}
+                </div>
+              </div>
+
+              <div className={styles.heroActions}>
+                <button
+                  type="button"
+                  className={`${styles.registerButton} ${
+                    darkMode ? styles.registerButtonDark : ''
                   }`}
+                  onClick={handleRegister}
+                  disabled={availability === 0 || isRegistering || isAlreadyRegistered}
                 >
-                  {availability > 0 ? 'Available' : 'Full'}
-                </span>
+                  {isRegistering
+                    ? 'Registering...'
+                    : isAlreadyRegistered
+                    ? 'Registered'
+                    : 'Register'}
+                </button>
+
+                <button
+                  type="button"
+                  className={`${styles.secondaryButton} ${
+                    darkMode ? styles.secondaryButtonDark : ''
+                  }`}
+                  onClick={handleShareAvailability}
+                >
+                  Share Availability
+                </button>
+
+                <div className={styles.quickStats}>
+                  <span>{availability} spots left</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section className={styles.contentSection}>
+            <div className={styles.mainContent}>
+              <div className={styles.infoCard}>
+                <h2>About this event</h2>
+                <p>{activity.description}</p>
               </div>
 
-              {/* Metadata Grid */}
-              <div className={styles.metadataGrid}>
-                {/* First Row: Date, Time, Organizer */}
-                <div className={styles.metadataRow}>
-                  <div className={styles.metadataItem}>
-                    <span className={styles.metadataLabel}>Date</span>
-                    <span
-                      className={`${styles.metadataValue} ${
-                        darkMode ? styles.metadataValueDark : ''
-                      }`}
-                    >
-                      {activity.date}
-                    </span>
-                  </div>
-                  <div className={styles.metadataItem}>
-                    <span className={styles.metadataLabel}>Time</span>
-                    <span
-                      className={`${styles.metadataValue} ${
-                        darkMode ? styles.metadataValueDark : ''
-                      }`}
-                    >
-                      {activity.time}
-                    </span>
-                  </div>
-                  <div className={styles.metadataItem}>
-                    <span className={styles.metadataLabel}>Organizer</span>
-                    <span
-                      className={`${styles.metadataValue} ${
-                        darkMode ? styles.metadataValueDark : ''
-                      }`}
-                    >
-                      {activity.organizer}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Second Row: Capacity, Rating, Availability */}
-                <div className={styles.metadataRow}>
-                  <div className={styles.metadataItem}>
-                    <span className={styles.metadataLabel}>Capacity</span>
-                    <span
-                      className={`${styles.metadataValue} ${
-                        darkMode ? styles.metadataValueDark : ''
-                      } ${styles.capacityValue}`}
-                    >
-                      {(activity.participants?.length || 0) + registrants.length}/
-                      {activity.capacity}
-                    </span>
-                  </div>
-                  <div className={styles.metadataItem}>
-                    <span className={styles.metadataLabel}>Rating</span>
-                    <span className={styles.starRating}>
-                      {[...Array(5)].map((_, starIndex) => (
-                        <span
-                          key={`star-${activity.id}-${starIndex}`}
-                          className={
-                            starIndex < activity.rating
-                              ? styles.filledStar
-                              : `${styles.emptyStar} ${darkMode ? styles.emptyStarDark : ''}`
-                          }
-                        >
-                          {starIndex < activity.rating ? '★' : '☆'}
-                        </span>
-                      ))}
-                    </span>
-                  </div>
-                  <div className={styles.metadataItem}>
-                    <span className={styles.metadataLabel}>Availability</span>
-                    <span className={styles.availabilityContainer}>
-                      <span
-                        className={`${styles.availabilityBadge} ${
-                          availability > 5
-                            ? styles.availabilityBadgeHigh
-                            : availability > 0
-                            ? styles.availabilityBadgeLow
-                            : styles.availabilityBadgeNone
-                        } ${
-                          darkMode
-                            ? availability > 5
-                              ? styles.availabilityBadgeHighDark
-                              : availability > 0
-                              ? styles.availabilityBadgeLowDark
-                              : styles.availabilityBadgeNoneDark
-                            : ''
-                        }`}
-                      >
-                        {availability} spots
-                      </span>
-                    </span>
-                  </div>
+              <div className={styles.infoCard}>
+                <h2>Event details</h2>
+                <div className={styles.detailsList}>
+                  <p>
+                    <strong>Type:</strong> {activity.type}
+                  </p>
+                  <p>
+                    <strong>Location:</strong> {activity.location}
+                  </p>
+                  <p>
+                    <strong>Status:</strong> {activity.status}
+                  </p>
+                  <p>
+                    <strong>Active:</strong> {activity.isActive ? 'Yes' : 'No'}
+                  </p>
+                  <p>
+                    <strong>Organizer:</strong> {activity.organizer || 'Organizer not specified'}
+                  </p>
                 </div>
               </div>
 
-              {/* Secondary Actions */}
-              <div className={styles.secondaryActionWrapper}>
-                <div className={styles.locationDisplay}>
-                  <span className={`${styles.locationIcon}`}>📍</span>
-                  <span
-                    className={`${styles.locationText} ${darkMode ? styles.locationTextDark : ''}`}
-                  >
-                    {activity.location}
-                  </span>
-                </div>
-
-                <div className={styles.secondaryActions}>
-                  <div
-                    className={`${styles.participantAvatars} ${
-                      darkMode ? styles.participantAvatarsDark : ''
-                    }`}
-                    aria-hidden={participantList.length === 0}
-                  >
-                    {participantList.slice(0, 5).map((p, i) => {
-                      const initials = p
-                        .split(' ')
-                        .map(s => s[0])
-                        .slice(0, 2)
-                        .join('')
-                        .toUpperCase();
-                      return (
-                        <div
-                          key={`p-${i}`}
-                          className={`${styles.avatar} ${darkMode ? styles.avatarDark : ''}`}
-                          title={p}
-                        >
-                          <span>{initials}</span>
-                        </div>
-                      );
-                    })}
-                    {participantList.length > 5 && (
-                      <div
-                        className={`${styles.avatarMore} ${darkMode ? styles.avatarMoreDark : ''}`}
-                        title={`${participantList.length - 5} more`}
-                      >
-                        +{participantList.length - 5}
+              <div className={styles.infoCard}>
+                <h2>Facilitators / Resources</h2>
+                <div className={styles.resourceList}>
+                  {activity.resources?.map(person => (
+                    <div key={person._id} className={styles.resourceCard}>
+                      <div>
+                        <p className={styles.resourceName}>{person.name}</p>
+                        <p className={styles.resourceLocation}>{person.location}</p>
                       </div>
-                    )}
-                  </div>
-
-                  <button
-                    type="button"
-                    className={`${styles.secondaryButton} ${
-                      darkMode ? styles.secondaryButtonDark : ''
-                    }`}
-                    onClick={handleShareAvailability}
-                  >
-                    Share Availability
-                  </button>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
 
-            {/* Right Section: Calendar */}
-            <div
-              className={`${styles.calendarSection} ${darkMode ? styles.calendarSectionDark : ''}`}
-            >
-              <p
-                className={`${styles.calendarHeader} ${darkMode ? styles.calendarHeaderDark : ''}`}
-              >
-                {selectedDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-              </p>
-              <p className={`${styles.selectedDate} ${darkMode ? styles.selectedDateDark : ''}`}>
-                Selected: {selectedDate.toDateString()}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Description Section with Tabs */}
-        <div
-          className={`${styles.descriptionSectionWrapper} ${
-            darkMode ? styles.descriptionSectionWrapperDark : ''
-          }`}
-        >
-          <EventDescription activity={activity} registrants={registrants} />
+            <aside className={styles.sidebar}>
+              <div className={styles.sideCard}>
+                <h3>Registration summary</h3>
+                <p>
+                  <strong>Current attendees:</strong> {activity.currentAttendees}
+                </p>
+                <p>
+                  <strong>Max attendees:</strong> {activity.maxAttendees}
+                </p>
+                <p>
+                  <strong>Spots left:</strong> {availability}
+                </p>
+              </div>
+            </aside>
+          </section>
         </div>
       </div>
     </div>
