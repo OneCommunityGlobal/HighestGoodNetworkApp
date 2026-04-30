@@ -1,16 +1,18 @@
+/* stylelint-disable  */
 /* Main container styles */
 .containerMainMsg {
   background-color: #e0e0e0;
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
-  margin: 20px 40px 30px 40px;
+  margin: 20px 40px 30px;
   padding: 0;
   width: auto;
   min-height: 560px;
   height: 560px;
   align-items: stretch;
 }
+
 .mainContainer {
   display: flex;
   flex-direction: column;
@@ -44,7 +46,7 @@
   border: 1px solid #ccc;
   border-radius: 8px;
   width: 85%;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
   height: max-content;
 }
 
@@ -191,7 +193,7 @@
 .lbMessagingMessageWindowBody {
   flex: 1;
   min-height: 0;
-  padding: 10px 0 0 0;
+  padding: 10px 0 0;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -279,15 +281,15 @@
 .lbSearchInput {
   width: 75%;
   background-color: #8b8888;
-  color: #000000;
+  color: #000;
   outline: none;
-  border: 1px solid #000000;
+  border: 1px solid #000;
   border-radius: 5px;
   padding: 1px 0 1px 5px;
 }
 
 .lbSearchInput::placeholder {
-  color: #000000;
+  color: #000;
 }
 
 .lbMessagingSearchIcons {
@@ -307,7 +309,7 @@
 .lbTopBarMenuButton {
   background: transparent;
   border: none;
-  color: #000000;
+  color: #000;
   font-size: 32px;
   line-height: 1;
   padding: 4px 8px;
@@ -317,12 +319,12 @@
 .lgMessagingNotificationBell {
   font-size: 30px;
   cursor: pointer;
-  margin: 0px 15px;
-  color: #000000;
+  margin: 0 15px;
+  color: #000;
 }
 
 .lbContactMsgs {
-  color: #000000;
+  color: #000;
   margin: 0;
 }
 
@@ -338,7 +340,7 @@
   background-color: white;
   border: 1px solid #ddd;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
   display: none;
   flex-direction: column;
   justify-content: flex-start;
@@ -359,7 +361,7 @@
   top: -6px;
   right: -2px;
   background-color: #e04f4f;
-  color: #ffffff;
+  color: #fff;
   border-radius: 10px;
   font-size: 10px;
   line-height: 1;
@@ -371,7 +373,7 @@
 .lgMessagingSectionTitle {
   font-size: 12px;
   font-weight: 600;
-  color: #333333;
+  color: #333;
   width: 100%;
 }
 
@@ -399,13 +401,13 @@
 
 .lgMessagingSmsLabel {
   font-size: 12px;
-  color: #333333;
+  color: #333;
 }
 
 .lgMessagingSmsInput {
   width: 100%;
   padding: 6px 8px;
-  border: 1px solid #cccccc;
+  border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 13px;
   box-sizing: border-box;
@@ -413,7 +415,7 @@
 
 .lgMessagingSmsMask {
   font-size: 11px;
-  color: #666666;
+  color: #666;
 }
 
 .lgMessagingSmsSaveButton {
@@ -446,13 +448,13 @@
 
 .lgMessagingFieldLabel {
   font-size: 12px;
-  color: #333333;
+  color: #333;
 }
 
 .lgMessagingPhoneInput {
   width: 100%;
   padding: 6px 8px;
-  border: 1px solid #cccccc;
+  border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 14px;
   box-sizing: border-box;
@@ -460,7 +462,7 @@
 
 .lgMessagingPhoneInput:disabled {
   background-color: #f2f2f2;
-  color: #777777;
+  color: #777;
 }
 
 .lbNoMsgText {
@@ -491,7 +493,7 @@
   padding: 8px;
   border-radius: 50%;
   background-color: #4db7ab;
-  color: #ffffff;
+  color: #fff;
   transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
@@ -550,7 +552,7 @@
 .lbMobileContactsPanel {
   background-color: #fff;
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 10px rgb(0 0 0 / 5%);
   margin-top: 10px;
   padding: 10px;
 }
@@ -588,7 +590,7 @@
 :global(.dark-mode) .contentContainer {
   background-color: #1f1f1f;
   border-color: #2a2a2a;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 4px 10px rgb(0 0 0 / 45%);
 }
 
 :global(.dark-mode) .containerTop {
@@ -656,7 +658,7 @@
 :global(.dark-mode) .lbSearchInput {
   background-color: #2a2a2a;
   color: #f1f1f1;
-  border-color: #444444;
+  border-color: #444;
 }
 
 :global(.dark-mode) .lbSearchInput::placeholder {
@@ -665,7 +667,7 @@
 
 :global(.dark-mode) .lgMessagingBellSelectDropdown {
   background-color: #1f1f1f;
-  border-color: #333333;
+  border-color: #333;
   color: #f1f1f1;
 }
 

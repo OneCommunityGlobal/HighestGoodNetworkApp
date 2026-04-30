@@ -54,7 +54,7 @@ import {
   EMAIL_MODES,
   YOUTUBE_THUMBNAIL_QUALITIES,
 } from './constants/emailConstants';
-import { clearDraft, hasDraft, loadDraft, saveDraft } from './formPersistence';
+import { clearDraft, getDraftAge, hasDraft, loadDraft, saveDraft } from './formPersistence';
 import './IntegratedEmailSender.module.css';
 import {
   buildRenderedEmailFromTemplate,
@@ -187,13 +187,13 @@ const VariableRow = React.memo(
                       </Alert>
                     )}
                     {extractedValue && (
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: '12px', color: '#6c757d', marginBottom: '2px' }}>
-                          Extracted from:
-                        </div>
-                        <div style={{ fontSize: '11px', wordBreak: 'break-all' }}>{value}</div>
-                      </div>
-                    )}
+                    <div style={{ flex: 1, overflow: 'hidden', maxWidth: '200px' }}>
+                    <div style={{ fontSize: '12px', color: '#6c757d', marginBottom: '2px' }}>
+                      Extracted from:
+                    </div>
+                    <div style={{ fontSize: '11px', wordBreak: 'break-all', overflowWrap: 'break-word' }}>{value}</div>
+                  </div>
+                  )}
                   </div>
                 </div>
               )}
@@ -441,6 +441,13 @@ const IntegratedEmailSender = ({
   } = state;
 
   const abortControllerRef = useRef(null);
+  useEffect(() => {
+  if (hasDraft()) {
+    const age = getDraftAge();
+    dispatch({ type: 'SET_DRAFT_AGE', payload: age });
+    dispatch({ type: 'SET_SHOW_DRAFT_NOTIFICATION', payload: true });
+  }
+}, []);
   const timeoutRefs = useRef([]);
   const progressIntervalRef = useRef(null);
   const editorLoadTimeoutRef = useRef(null);
@@ -1269,8 +1276,6 @@ const IntegratedEmailSender = ({
         resetAllStates();
       }
     } catch (error) {
-      dispatch({ type: 'SET_IS_SENDING', payload: false });
-
       const errorMessage = error.response?.data?.message || error.message || 'Unknown error';
       toast.error(`Failed to send email: ${errorMessage}`);
 
@@ -1278,6 +1283,8 @@ const IntegratedEmailSender = ({
         type: 'UPDATE_VALIDATION_ERROR',
         payload: { field: 'general', error: errorMessage },
       });
+    } finally {
+      dispatch({ type: 'SET_IS_SENDING', payload: false });
     }
   }, [
     useTemplate,

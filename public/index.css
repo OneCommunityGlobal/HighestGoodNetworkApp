@@ -464,13 +464,29 @@ body .email-template-list .action-btn.delete-btn {
   border-color: #dc3545 !important;
 }
 
-/* Fix alert-warning dark mode globally */
-body.dark-mode .modal .alert-warning {
-  background-color: #92400e !important;
-  border-color: #d97706 !important;
-  color: #fef3c7 !important;
+/* Fix alert-danger in dark mode */
+body.dark-mode .alert-danger {
+  background-color: #7f1d1d !important;
+  border-color: #991b1b !important;
+  color: #fecaca !important;
 }
 
-body.dark-mode .modal .alert-warning * {
-  color: #fef3c7 !important;
+body.dark-mode .alert-danger * {
+  color: #fecaca !important;
+}
+/* Fix validation error text in dark mode */
+body.dark-mode .invalid-feedback,
+body.dark-mode .text-danger {
+  color: #ff6b6b !important;
+}
+
+/* Fix alert-danger in dark mode */
+body.dark-mode .alert-danger {
+  background-color: #7f1d1d !important;
+  border-color: #991b1b !important;
+  color: #fecaca !important;
+}
+
+body.dark-mode .alert-danger * {
+  color: #fecaca !important;
 }

@@ -1182,6 +1182,7 @@ const EmailTemplateEditor = ({
               HTML Content *
             </Label>
             <Editor
+              key={templateId || 'new-template'}
               tinymceScriptSrc="/tinymce/tinymce.min.js"
               value={formData.html_content}
               onEditorChange={content => handleInputChange('html_content', content)}

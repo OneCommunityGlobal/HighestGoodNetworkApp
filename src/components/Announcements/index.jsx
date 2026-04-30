@@ -14,12 +14,8 @@ import { useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import ReactTooltip from 'react-tooltip';
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
-import TruthSocialAutoPoster from '../AutoPoster/TruthSocialAutoPoster';
 import styles from './Announcements.module.css';
-import EmailPanel from './platforms/email';
-import LinkedInAutoPoster from './platforms/linkedin';
-import SlashdotAutoPoster from './platforms/slashdot';
-import SocialMediaComposer from './platforms/social/SocialMediaComposer';
+import { EmailPanel, SocialMediaComposer } from './platforms';
 
 function Announcements({ title, email: initialEmail }) {
   const [activeTab, setActiveTab] = useState('email');
@@ -211,15 +207,7 @@ function Announcements({ title, email: initialEmail }) {
           </TabPane>
 
           <TabPane tabId="weeklyreport">
-            <SocialMediaComposer platform="weeklyreport" darkMode={darkMode} />
-          </TabPane>
-
-          <TabPane tabId="linkedin">
-            <LinkedInAutoPoster darkMode={darkMode} />
-          </TabPane>
-
-          <TabPane tabId="truthsocial">
-            <TruthSocialAutoPoster darkMode={darkMode} />
+            <SocialMediaComposer platform="weeklyreport" />
           </TabPane>
 
           {[
@@ -242,15 +230,12 @@ function Announcements({ title, email: initialEmail }) {
             'livejournal',
             'slashdot',
             'blogger',
-          ].map(platform => {
-            const PlatformComposer =
-              platform === 'slashdot' ? SlashdotAutoPoster : SocialMediaComposer;
-            return (
-              <TabPane tabId={platform} key={platform}>
-                <PlatformComposer platform={platform} darkMode={darkMode} />
-              </TabPane>
-            );
-          })}
+            'truthsocial',
+          ].map(platform => (
+            <TabPane tabId={platform} key={platform}>
+              <SocialMediaComposer platform={platform} />
+            </TabPane>
+          ))}
         </TabContent>
       </div>
     </div>

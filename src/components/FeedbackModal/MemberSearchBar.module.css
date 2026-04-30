@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .memberSearchContainer {
   position: relative;
 }
@@ -17,7 +18,7 @@
 
 .simplifiedInput:focus {
   border-color: #6c38cc !important;
-  box-shadow: 0 0 0 0.2rem rgba(108, 56, 204, 0.25) !important;
+  box-shadow: 0 0 0 0.2rem rgb(108 56 204 / 25%) !important;
 }
 
 .suggestionsList {
@@ -27,7 +28,7 @@
   overflow-y: auto;
   z-index: 1000;
   margin-top: 2px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
 }
 
 .listGroupItem {
@@ -50,7 +51,7 @@
   border: 1px solid #ddd;
   border-radius: 4px;
   margin-top: 2px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 5px rgb(0 0 0 / 10%);
   z-index: 1000;
   color: #666;
 }
@@ -77,22 +78,22 @@
   text-align: center;
   padding: 8px;
   font-size: 14px;
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: rgb(255 255 255 / 90%);
   border: 1px solid #ddd;
   border-radius: 4px;
   margin-top: 2px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 5px rgb(0 0 0 / 10%);
   z-index: 1000;
 }
 
 .darkMode .loadingIndicator {
-  background-color: rgba(44, 62, 80, 0.9);
+  background-color: rgb(44 62 80 / 90%);
   color: #fff;
   border-color: #444;
 }
 
 .darkMode .simplifiedInput {
-  background-color: #ffffff !important;
+  background-color: #fff !important;
   border-color: #666 !important;
   color: #333 !important;
 }
