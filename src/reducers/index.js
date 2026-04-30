@@ -1,76 +1,76 @@
 /* eslint-disable import/no-named-as-default */
-import { teamMemberTasksReducer } from '~/components/TeamMemberTasks/reducer';
 import { taskEditSuggestionsReducer } from '~/components/TaskEditSuggestions/reducer';
-import { userProfileByIdReducer, userTaskByIdReducer } from './userProfileByIdReducer';
-import { authReducer } from './authReducer';
+import { teamMemberTasksReducer } from '~/components/TeamMemberTasks/reducer';
+import { allProjectsReducer } from './allProjectsReducer';
+import { allUserTeamsReducer } from './allTeamsReducer';
 import { allUserProfilesBasicInfoReducer } from './allUserProfilesBasicInfoReducer';
 import {
   allUserProfilesReducer,
   changeUserPageStatusReducer,
   enableUserInfoEditReducer,
 } from './allUserProfilesReducer';
+import { authReducer } from './authReducer';
+import { errorsReducer } from './errorsReducer';
 import { leaderboardDataReducer, orgDataReducer } from './leaderboardDataReducer';
+import { projectMembershipReducer } from './projectMembershipReducer';
+import { projectReportReducer } from './projectReportReducer';
+import { teamByIdReducer } from './teamByIdReducer';
+import { timeEntriesReducer } from './timeEntriesReducer';
+import { userProfileByIdReducer, userTaskByIdReducer } from './userProfileByIdReducer';
+import userProjectsReducer from './userProjectsReducer';
 import { weeklySummariesReducer } from './weeklySummariesReducer';
 import { weeklySummariesReportReducer } from './weeklySummariesReportReducer';
-import { allProjectsReducer } from './allProjectsReducer';
-import { projectReportReducer } from './projectReportReducer';
-import userProjectsReducer from './userProjectsReducer';
-import { projectMembershipReducer } from './projectMembershipReducer';
-import { allUserTeamsReducer } from './allTeamsReducer';
-import { teamByIdReducer } from './teamByIdReducer';
-import { errorsReducer } from './errorsReducer';
-import { timeEntriesReducer } from './timeEntriesReducer';
 // eslint-disable-next-line import/no-named-as-default
-import timelogTrackingReducer from './timelogTrackingReducer';
-import wbsReducer from './wbsReducer';
 import { taskReducer } from './allTasksReducer';
-import { managingTeamsReducer } from './managingTeamsReducer';
-import { teamUsersReducer } from './teamsTeamMembersReducer';
-import { themeReducer } from './themeReducer';
 import { badgeReducer } from './badgeReducer';
-import { popupEditorReducer } from './popupEditorReducer';
-import { roleReducer } from './roleReducer';
-import { rolePresetReducer } from './rolePresetReducer';
-import { ownerMessageReducer } from './ownerMessageReducer';
-import warningsByUserIdReducer from './warningsReducer';
+import { BlueSquareEmailAssignment } from './blueSquareEmailBcc';
+import { followUpReducer } from './followUpReducer';
 import { infoCollectionsReducer } from './informationReducer';
+import { managingTeamsReducer } from './managingTeamsReducer';
 import { mouseoverTextReducer } from './mouseoverTextReducer';
 import notificationReducer from './notificationReducer';
+import { ownerMessageReducer } from './ownerMessageReducer';
+import { popupEditorReducer } from './popupEditorReducer';
+import { rolePresetReducer } from './rolePresetReducer';
+import { roleReducer } from './roleReducer';
+import { teamUsersReducer } from './teamsTeamMembersReducer';
+import { themeReducer } from './themeReducer';
+import timelogTrackingReducer from './timelogTrackingReducer';
+import warningsByUserIdReducer from './warningsReducer';
+import wbsReducer from './wbsReducer';
 import weeklySummaryRecipientsReducer from './weeklySummaryRecipientsReducer';
-import { followUpReducer } from './followUpReducer';
-import { BlueSquareEmailAssignment } from './blueSquareEmailBcc';
 
 import WeeklySummaryEmailAssignment from './WeeklySummaryEmailAssignment';
 
-import { userProjectsByUserNameReducer } from './userProjectsByUserNameReducer';
-import teamCodesReducer from './teamCodesReducer';
 import { projectByIdReducer } from './projectByIdReducer';
+import teamCodesReducer from './teamCodesReducer';
+import { userProjectsByUserNameReducer } from './userProjectsByUserNameReducer';
 // eslint-disable-next-line import/no-named-as-default
 import savedFilterReducer from './savedFilterReducer';
 
 // bm dashboard
-import { materialsReducer } from './bmdashboard/materialsReducer';
-import { reusablesReducer } from './bmdashboard/reusablesReducer';
-import { bmProjectReducer } from './bmdashboard/projectReducer';
-import { bmInvTypeReducer } from './bmdashboard/inventoryTypeReducer';
-import { lessonsReducer } from './bmdashboard/lessonsReducer';
-import { bmProjectByIdReducer } from './bmdashboard/projectByIdReducer';
-import { bmInvUnitReducer } from './bmdashboard/inventoryUnitReducer';
 import { consumablesReducer } from './bmdashboard/consumablesReducer';
-import { toolReducer } from './bmdashboard/toolReducer';
-import toolAvailabilityReducer from './bmdashboard/toolAvailabilityReducer';
 import { equipmentReducer } from './bmdashboard/equipmentReducer';
-import { bmProjectMemberReducer } from './bmdashboard/projectMemberReducer';
-import { bmTimeLoggerReducer } from './bmdashboard/timeLoggerReducer';
 import bmInjuryReducer from './bmdashboard/injuryReducer';
+import { bmInvTypeReducer } from './bmdashboard/inventoryTypeReducer';
+import { bmInvUnitReducer } from './bmdashboard/inventoryUnitReducer';
+import { lessonsReducer } from './bmdashboard/lessonsReducer';
+import { materialsReducer } from './bmdashboard/materialsReducer';
+import { bmProjectByIdReducer } from './bmdashboard/projectByIdReducer';
+import { bmProjectMemberReducer } from './bmdashboard/projectMemberReducer';
+import { bmProjectReducer } from './bmdashboard/projectReducer';
+import { reusablesReducer } from './bmdashboard/reusablesReducer';
+import { bmTimeLoggerReducer } from './bmdashboard/timeLoggerReducer';
+import toolAvailabilityReducer from './bmdashboard/toolAvailabilityReducer';
+import { toolReducer } from './bmdashboard/toolReducer';
 
-import dashboardReducer from './dashboardReducer';
-import { timeOffRequestsReducer } from './timeOffRequestReducer';
-import { totalOrgSummaryReducer } from './totalOrgSummaryReducer';
 import { allUsersTimeEntriesReducer } from './allUsersTimeEntriesReducer';
 import issueReducer from './bmdashboard/issueReducer';
+import dashboardReducer from './dashboardReducer';
 import HGNFormReducer from './hgnFormReducers';
 import injuriesReducer from './injuries';
+import { timeOffRequestsReducer } from './timeOffRequestReducer';
+import { totalOrgSummaryReducer } from './totalOrgSummaryReducer';
 // import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
 
 import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
@@ -79,12 +79,13 @@ import messageReducer from './listBidDashboard/messagingReducer';
 import userPreferencesReducer from './listBidDashboard/userPreferencesReducer';
 import userSkillsReducer from './userSkillsReducer';
 // community portalgit
-import { noShowVizReducer } from './communityPortal/noShowVizReducer';
 import { eventFeedbackReducer } from './communityPortal/eventFeedback';
+import { noShowVizReducer } from './communityPortal/noShowVizReducer';
 
 import { jobApplicationReducer } from './jobApplication/jobApplicationReducer';
 
-// lbdashboard
+import emailOutboxReducer from './emailOutboxReducer';
+import emailTemplateReducer from './emailTemplateReducer';
 import wishListReducer from './listBidDashboard/wishListItemReducer';
 
 import { optStatusBreakdownReducer } from './optStatusBreakdownReducer';
@@ -106,10 +107,10 @@ import { JobsHitsApplicationsReducer } from './jobAnalytics/JobsHitsApplications
 import { studentTasksReducer } from './studentTasksReducer';
 
 // Education Dashboard Reducers
-import { studentReducer } from './studentProfileReducer';
-import { atomReducer } from './educationPortal/atomReducer';
 import { weeklySummariesFiltersApi } from '../actions/weeklySummariesFilterAction';
+import { atomReducer } from './educationPortal/atomReducer';
 import browseLessonPlanReducer from './educationPortal/broweLPReducer';
+import { studentReducer } from './studentProfileReducer';
 
 // Kitchen and Inventory Management
 import { kiCalendarApi } from '../actions/kiCalendarAction';
@@ -183,6 +184,8 @@ const localReducers = {
   // lbdashboard
   lbmessaging: messageReducer,
   lbuserpreferences: userPreferencesReducer,
+  emailTemplates: emailTemplateReducer,
+  emailOutbox: emailOutboxReducer,
 
   optStatusBreakdown: optStatusBreakdownReducer,
 

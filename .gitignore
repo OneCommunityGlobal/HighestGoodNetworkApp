@@ -2,7 +2,6 @@
 
 # dependencies
 /node_modules
-package-lock.json
 # testing
 /coverage
 *.code-snippets
@@ -28,9 +27,9 @@ yarn-error.log*
 /.idea
 
 .vscode/launch.json
-.vscode/settings.json
 
 **\ **
 
-/public/tinymce/
-package-lock.json
+/public/tinymce/Community/
+Community/
+public/tinymce/

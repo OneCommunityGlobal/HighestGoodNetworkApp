@@ -1,30 +1,89 @@
 /* Announcements/Announcements.jsx */
-import { useState } from 'react';
-import { useSelector } from 'react-redux';
-import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
-import classnames from 'classnames';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faEnvelope,
-  faVideo,
-  faNewspaper,
-  faImage,
-  faChartLine,
-} from '@fortawesome/free-solid-svg-icons';
 import { faFacebook, faLinkedin, faMedium } from '@fortawesome/free-brands-svg-icons';
+import {
+  faChartLine,
+  faEnvelope,
+  faImage,
+  faNewspaper,
+  faVideo,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import classnames from 'classnames';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { useHistory, useLocation } from 'react-router-dom';
 import ReactTooltip from 'react-tooltip';
-
+import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import styles from './Announcements.module.css';
-import SocialMediaComposer from './SocialMediaComposer';
-import TruthSocialAutoPoster from '../AutoPoster/TruthSocialAutoPoster';
-import BlueskyPostDetails from './BlueskyPostDetails';
-import EmailPanel from './platforms/email';
-import LinkedInAutoPoster from './platforms/linkedin';
-import SlashdotAutoPoster from './platforms/slashdot';
+import { EmailPanel, SocialMediaComposer } from './platforms';
 
 function Announcements({ title, email: initialEmail }) {
   const [activeTab, setActiveTab] = useState('email');
   const darkMode = useSelector(state => state.theme.darkMode);
+  const history = useHistory();
+  const location = useLocation();
+
+  // Get active tab from URL path
+  const getActiveTabFromURL = () => {
+    const path = location.pathname;
+
+    // Check for each platform
+    const platforms = [
+      'x',
+      'facebook',
+      'linkedin',
+      'pinterest',
+      'instagram',
+      'threads',
+      'mastodon',
+      'bluesky',
+      'youtube',
+      'reddit',
+      'tumblr',
+      'imgur',
+      'diigo',
+      'myspace',
+      'medium',
+      'plurk',
+      'bitily',
+      'livejournal',
+      'slashdot',
+      'blogger',
+      'truthsocial',
+    ];
+
+    for (const platform of platforms) {
+      if (path.includes(`/${platform}`)) {
+        return platform;
+      }
+    }
+
+    // Check for email platform
+    if (path.includes('/email')) {
+      return 'email';
+    }
+
+    // Default to email for main announcements page
+    return 'email';
+  };
+
+  // Update URL when activeTab changes
+  const updateURL = tab => {
+    if (tab === 'email') {
+      history.push('/announcements/email');
+    } else {
+      // For all social media platforms
+      history.push(`/announcements/${tab}`);
+    }
+  };
+
+  // Update activeTab when URL changes (e.g., browser back/forward)
+  useEffect(() => {
+    const newTab = getActiveTabFromURL();
+    if (newTab !== activeTab) {
+      setActiveTab(newTab);
+    }
+  }, [location.pathname]);
 
   const getIconColor = id => {
     switch (id) {
@@ -43,7 +102,7 @@ function Announcements({ title, email: initialEmail }) {
       case 'weeklyreport':
         return '#00C853';
       default:
-        return null;
+        return undefined;
     }
   };
 
@@ -70,14 +129,14 @@ function Announcements({ title, email: initialEmail }) {
     {
       id: 'livejournal',
       label: 'LiveJournal',
-      customIconSrc: 'social-media-logos/liveJournal_icon.png',
+      customIconSrc: '/social-media-logos/liveJournal_icon.png',
     },
-    { id: 'slashdot', label: 'Slashdot', customIconSrc: 'social-media-logos/slashdot_icon.png' },
-    { id: 'blogger', label: 'Blogger', customIconSrc: 'social-media-logos/blogger_icon.png' },
+    { id: 'slashdot', label: 'Slashdot', customIconSrc: '/social-media-logos/slashdot_icon.png' },
+    { id: 'blogger', label: 'Blogger', customIconSrc: '/social-media-logos/blogger_icon.png' },
     {
       id: 'truthsocial',
       label: 'Truth Social',
-      customIconSrc: 'social-media-logos/truthsocial_icon.png',
+      customIconSrc: '/social-media-logos/truthsocial_icon.png',
     },
     { id: 'email', icon: faEnvelope, label: 'Email' },
   ];
@@ -106,7 +165,10 @@ function Announcements({ title, email: initialEmail }) {
                 [styles.active]: activeTab === id,
                 [styles.dark]: darkMode,
               })}
-              onClick={() => setActiveTab(id)}
+              onClick={() => {
+                setActiveTab(id);
+                updateURL(id);
+              }}
               aria-selected={activeTab === id}
             >
               <div className={styles.tabIcon}>
@@ -133,32 +195,19 @@ function Announcements({ title, email: initialEmail }) {
           </TabPane>
 
           <TabPane tabId="video">
-            <SocialMediaComposer platform="video" darkMode={darkMode} />
+            <SocialMediaComposer platform="video" />
           </TabPane>
 
           <TabPane tabId="article">
-            <SocialMediaComposer platform="article" darkMode={darkMode} />
+            <SocialMediaComposer platform="article" />
           </TabPane>
 
           <TabPane tabId="photo">
-            <SocialMediaComposer platform="photo" darkMode={darkMode} />
+            <SocialMediaComposer platform="photo" />
           </TabPane>
 
           <TabPane tabId="weeklyreport">
-            <SocialMediaComposer platform="weeklyreport" darkMode={darkMode} />
-          </TabPane>
-
-          <TabPane tabId="linkedin">
-            <LinkedInAutoPoster darkMode={darkMode} />
-          </TabPane>
-
-          <TabPane tabId="truthsocial">
-            <TruthSocialAutoPoster darkMode={darkMode} />
-          </TabPane>
-
-          {/* Bluesky uses the dedicated BlueskyPostDetails component */}
-          <TabPane tabId="bluesky">
-            <BlueskyPostDetails />
+            <SocialMediaComposer platform="weeklyreport" />
           </TabPane>
 
           {[
@@ -168,6 +217,7 @@ function Announcements({ title, email: initialEmail }) {
             'instagram',
             'threads',
             'mastodon',
+            'bluesky',
             'youtube',
             'reddit',
             'tumblr',
@@ -180,20 +230,12 @@ function Announcements({ title, email: initialEmail }) {
             'livejournal',
             'slashdot',
             'blogger',
-          ].map(platform => {
-            let PlatformComposer = SocialMediaComposer;
-            if (platform === 'slashdot') {
-              PlatformComposer = SlashdotAutoPoster;
-            } else if (platform === 'bluesky') {
-              PlatformComposer = BlueskyPostDetails;
-            }
-
-            return (
-              <TabPane tabId={platform} key={platform}>
-                <PlatformComposer platform={platform} darkMode={darkMode} />
-              </TabPane>
-            );
-          })}
+            'truthsocial',
+          ].map(platform => (
+            <TabPane tabId={platform} key={platform}>
+              <SocialMediaComposer platform={platform} />
+            </TabPane>
+          ))}
         </TabContent>
       </div>
     </div>

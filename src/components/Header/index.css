@@ -1,3 +1,4 @@
+
 /* Dark mode button styles */
 .dark-mode-button {
   cursor: pointer;
@@ -306,4 +307,13 @@
 
 .table-bordered tbody tr:hover {
   background-color: #f0f8ff;
+}
+
+/* Fix bottom white strip */
+body.dark-mode,
+body.dark-mode html,
+html {
+  background-color: #1a1d23 !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
