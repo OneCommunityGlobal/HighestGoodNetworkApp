@@ -95,10 +95,10 @@ function Collaboration() {
     event.preventDefault();
     setSearchTerm(query);
     setSelectedCategory(category);
+    setCurrentPage(1);
     setShowSearchResults(true);
     setSummaries(null);
-    setCurrentPage(1);
-    fetchJobAds(query, category);
+    //fetchJobAds(query, category);
   };
 
   const handleCategoryChange = event => {
@@ -113,13 +113,13 @@ function Collaboration() {
   const handleRemoveQuery = () => {
     setQuery('');
     setSearchTerm('');
-    fetchJobAds('', category);
+    //fetchJobAds('', category);
   };
 
   const handleRemoveCategory = () => {
     setCategory('');
     setSelectedCategory('');
-    fetchJobAds(query, '');
+    //fetchJobAds(query, '');
   };
 
   const handleShowSummaries = async () => {
@@ -163,7 +163,9 @@ function Collaboration() {
   useEffect(() => {
     fetchJobAds(query, category);
     fetchCategories();
-  }, [currentPage]);
+    setShowSearchResults(true);
+    console.log('==========================' + category);
+  }, [currentPage, query, category]);
 
   if (summaries) {
     return (
