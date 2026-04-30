@@ -42,25 +42,26 @@ const Pagination = ({ totalPages, currentPage, setCurrentPage, darkMode }) => {
   const getPaginationGroup = () => {
     let pages = [];
     const threshold = 5;
+    // Flattened logic to avoid unnecessary nesting
     if (totalPages <= threshold) {
       pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+    } else if (currentPage <= 3) {
+      // This was previously nested inside an 'else' block
+      pages = [1, 2, 3, 4, 5, '...', totalPages];
+    } else if (currentPage > totalPages - 3) {
+      pages = [
+        1,
+        '...',
+        totalPages - 4,
+        totalPages - 3,
+        totalPages - 2,
+        totalPages - 1,
+        totalPages,
+      ];
     } else {
-      if (currentPage <= 3) {
-        pages = [1, 2, 3, 4, 5, '...', totalPages];
-      } else if (currentPage > totalPages - 3) {
-        pages = [
-          1,
-          '...',
-          totalPages - 4,
-          totalPages - 3,
-          totalPages - 2,
-          totalPages - 1,
-          totalPages,
-        ];
-      } else {
-        pages = [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
-      }
+      pages = [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
     }
+  
     return pages;
   };
 
@@ -80,7 +81,7 @@ const Pagination = ({ totalPages, currentPage, setCurrentPage, darkMode }) => {
 
       {getPaginationGroup().map((value, index) => (
         <button
-          key={index}
+          key={`paginationIndex ${index}`}
           type="button"
           className={value === currentPage ? styles.activePage : styles.paginationButtonIndexes}
           onClick={() => {
