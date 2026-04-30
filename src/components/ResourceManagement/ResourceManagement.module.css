@@ -244,8 +244,6 @@
 
 .activePage {
   background-color: #007bff;
-  /* stylelint-disable-next-line declaration-no-important */
-  color: white;
   border: 1px solid #007bff;
   padding: 6px 12px;
   border-radius: 4px;
