@@ -164,7 +164,6 @@ function Collaboration() {
     fetchJobAds(query, category);
     fetchCategories();
     setShowSearchResults(true);
-    console.log('==========================' + category);
   }, [currentPage, query, category]);
 
   if (summaries) {
