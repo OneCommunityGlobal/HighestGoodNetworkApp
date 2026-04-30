@@ -6,7 +6,6 @@ import { MOCK_RESOURCES } from './MockData';
 import { toast } from 'react-toastify';
 import PropTypes from 'prop-types';
 
-
 function SearchBar({ onSortToggle, darkMode, searchTerm, onSearchTermChange }) {
   return (
     <div
