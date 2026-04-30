@@ -81,7 +81,7 @@ const Pagination = ({ totalPages, currentPage, setCurrentPage, darkMode }) => {
 
       {getPaginationGroup().map((value, index) => (
         <button
-          key={`paginationIndex ${index}`}
+          key={`page-${value}-${index}`}
           type="button"
           className={value === currentPage ? styles.activePage : styles.paginationButtonIndexes}
           onClick={() => {
