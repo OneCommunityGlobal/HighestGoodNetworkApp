@@ -89,7 +89,7 @@ function DescriptionSection({ activity, registrants = [] }) {
         return true;
       })
       .map(({ label, isNew }) => ({ label, isNew }));
-  }, [activity?.participants, registrants]);
+  }, [activity?.resources, registrants]);
 
   const participantNameSet = useMemo(() => {
     return new Set(participantEntries.map(p => p.label.split(' - ')[0].toLowerCase()));
