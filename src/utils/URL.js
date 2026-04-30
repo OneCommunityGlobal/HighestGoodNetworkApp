@@ -518,7 +518,7 @@ export const ENDPOINTS = {
 
   // event endpoint
   EVENTS: `${APIEndpoint}/events`,
-  EVENT_BY_ID: id => `${APIEndpoint}/events/${id}`,
+  EVENTS_BY_ID: (activityId) => `${APIEndpoint}/events/${activityId}`,
   EVENT_TYPES: `${APIEndpoint}/events/types`,
   EVENT_LOCATIONS: `${APIEndpoint}/events/locations`,
   EVENT_ATTENDANCE_STATS: `${APIEndpoint}/events/attendance/stats`,
@@ -568,6 +568,19 @@ export const ENDPOINTS = {
   LB_LISTING_BOOK: `${APIEndpoint}/lb/listing/availability/booking`,
   HELP_CATEGORIES: `${APIEndpoint}/help-categories`,
   APPLICANT_SOURCES: `${APIEndpoint}/applicant-analytics/applicant-sources`,
+
+  OPT_STATUS_BREAKDOWN: (startDate, endDate, role) => {
+  let url = `${APIEndpoint}/analytics/opt-status`;
+  const params = [];
+
+  if (startDate) params.push(`startDate=${startDate}`);
+  if (endDate) params.push(`endDate=${endDate}`);
+  if (role) params.push(`role=${role}`);
+
+  return params.length > 0 ? `${url}?${params.join("&")}` : url;
+},
+
+
 
   // job analytics
   HOURS_PLEDGED: `${APIEndpoint}/analytics/hours-pledged`,
