@@ -53,11 +53,7 @@
   background-color: #3a506b;
 }
 
-<<<<<<< Sayali_Task8_HGNSkillsForm_DarkMode
 .hours {
-=======
-.hours{
->>>>>>> development
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -140,26 +136,6 @@
   margin-bottom: 10px;
 }
 
-<<<<<<< Sayali_Task8_HGNSkillsForm_DarkMode
-=======
-/* Dark mode text overrides */
-.darkContainer .question { color: #93c5fd; }
-.darkContainer p { color: #b3bfca; }
-.darkContainer label { color: #e5eef6; }
-.darkContainer .timeCell, .darkContainer .dayLabel { color: #e5eef6; }
-.darkContainer .availabilityGrid { color: #e5eef6; }
-
-/* Inputs */
-.darkContainer .locations input[type="text"] {
-  background-color: transparent;
-  color: #fff;
-  border-color: #8aa0b4;
-}
-
-/* Buttons */
-.darkContainer .buttonContainer button { border-color: #3a506b; color: #fff; }
-
->>>>>>> development
 .locations {
   display: flex;
   flex-direction: column;
@@ -223,31 +199,19 @@
   margin-bottom: 2px;
 }
 
-<<<<<<< Sayali_Task8_HGNSkillsForm_DarkMode
-@media (width <= 1024px) {
-=======
 @media screen and (width <= 1024px) {
->>>>>>> development
   .radioRating div {
     width: 30%;
   }
 }
 
-<<<<<<< Sayali_Task8_HGNSkillsForm_DarkMode
-@media (width <= 768px) {
-=======
 @media screen and (width <= 768px) {
->>>>>>> development
   .radioRating div {
     width: 45%;
   }
 }
 
-<<<<<<< Sayali_Task8_HGNSkillsForm_DarkMode
-@media (width <= 480px) {
-=======
 @media screen and (width <= 480px) {
->>>>>>> development
   .radioRating div {
     width: 100%;
   }
@@ -424,11 +388,6 @@
 
 .submitButton:hover {
   background-color: #21618a;
-<<<<<<< Sayali_Task8_HGNSkillsForm_DarkMode
-=======
-
-  /* color: white; */
->>>>>>> development
 }
 
 /* Dark mode overrides — must come after base selectors */

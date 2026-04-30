@@ -1,4 +1,3 @@
-/* stylelint-disable  */
 .infoFormContainer {
   width: 50%;
   margin: 0 auto;
@@ -17,13 +16,8 @@
 
 .infoFormContainer label {
   text-align: left;
-<<<<<<< Sayali_Task8_HGNSkillsForm_DarkMode
   color: black;
   margin: 20px 88% 20px 10px;
-=======
-  color:black;
-  margin:20px 88% 20px 10px;
->>>>>>> development
 }
 
 .dark label {
@@ -117,7 +111,6 @@
 
 .submitButton:hover {
   background-color: #21618a;
-<<<<<<< Sayali_Task8_HGNSkillsForm_DarkMode
 }
 
 .dark .buttonContainer button {
@@ -125,16 +118,6 @@
   background-color: #2e5163;
   color: #fff;
 }
-=======
-
-  /* color: white; */
-}
-
-@media (width <= 768px) {
-  .infoFormContainer {
-    width: 80%;
-  }
->>>>>>> development
 
 .dark .hgnReturnButton {
   background-color: #2e5163;
@@ -147,17 +130,10 @@
   border-color: #4e748d;
 }
 
-<<<<<<< Sayali_Task8_HGNSkillsForm_DarkMode
 .dark .nextButton {
   background-color: #2e5163;
   color: #fff;
 }
-=======
-@media (width <= 480px) {
-  .infoFormContainer {
-    width: 90%;
-  }
->>>>>>> development
 
 .dark .nextButton:hover {
   background-color: #4e748d;
@@ -169,30 +145,15 @@
   margin: 0 5px;
 }
 
-<<<<<<< Sayali_Task8_HGNSkillsForm_DarkMode
 .dark .slackConfirmLabel {
   color: #78a5c4;
-=======
-.infoInput.error {
-  border-color: #f00;
->>>>>>> development
-}
-
-.required {
-  color: #f00;
 }
 
 .errorMessage {
   color: #f00;
   font-size: 0.875rem;
   margin: 20px;
-<<<<<<< Sayali_Task8_HGNSkillsForm_DarkMode
   padding: 10px;
-=======
-  padding:10px;
-
-  /* margin-left: 10px; */
->>>>>>> development
   display: block;
   width: 50%;
 }
@@ -220,10 +181,7 @@
   white-space: nowrap;
 }
 
-
-
 @media (width <= 768px) {
-<<<<<<< Sayali_Task8_HGNSkillsForm_DarkMode
   .infoFormContainer {
     width: 80%;
   }
@@ -239,8 +197,6 @@
     margin: 10px;
   }
 
-=======
->>>>>>> development
   .errorMessage {
     font-size: 0.75rem;
     width: 80%;
@@ -249,7 +205,6 @@
 }
 
 @media (width <= 480px) {
-<<<<<<< Sayali_Task8_HGNSkillsForm_DarkMode
   .infoFormContainer {
     width: 90%;
   }
@@ -265,8 +220,6 @@
     margin: 5px;
   }
 
-=======
->>>>>>> development
   .errorMessage {
     font-size: 0.7rem;
     width: 90%;
