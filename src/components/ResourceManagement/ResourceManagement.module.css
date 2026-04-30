@@ -234,21 +234,18 @@
   padding: 6px 12px;
 }
 
-/* sl:ignore:content-contrast */
+
 .paginationButtonIndexes:hover:not(:disabled),
 .paginationLeft:hover:not(:disabled),
 .paginationRight:hover:not(:disabled) {
   border-color: #007bff;
-  color: white;
-  background-color: #007bff;
 }
-/* sl:ignore:content-contrast */
+
+
 .activePage {
-  background-color: #007bff;
   border: 1px solid #007bff;
   padding: 6px 12px;
   border-radius: 4px;
-  color: white;
 }
 
 .darkModePaginationContainer .paginationButtonIndexes,
