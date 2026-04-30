@@ -187,13 +187,21 @@ const VariableRow = React.memo(
                       </Alert>
                     )}
                     {extractedValue && (
-                    <div style={{ flex: 1, overflow: 'hidden', maxWidth: '200px' }}>
-                    <div style={{ fontSize: '12px', color: '#6c757d', marginBottom: '2px' }}>
-                      Extracted from:
-                    </div>
-                    <div style={{ fontSize: '11px', wordBreak: 'break-all', overflowWrap: 'break-word' }}>{value}</div>
-                  </div>
-                  )}
+                      <div style={{ flex: 1, overflow: 'hidden', maxWidth: '200px' }}>
+                        <div style={{ fontSize: '12px', color: '#6c757d', marginBottom: '2px' }}>
+                          Extracted from:
+                        </div>
+                        <div
+                          style={{
+                            fontSize: '11px',
+                            wordBreak: 'break-all',
+                            overflowWrap: 'break-word',
+                          }}
+                        >
+                          {value}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -442,12 +450,12 @@ const IntegratedEmailSender = ({
 
   const abortControllerRef = useRef(null);
   useEffect(() => {
-  if (hasDraft()) {
-    const age = getDraftAge();
-    dispatch({ type: 'SET_DRAFT_AGE', payload: age });
-    dispatch({ type: 'SET_SHOW_DRAFT_NOTIFICATION', payload: true });
-  }
-}, []);
+    if (hasDraft()) {
+      const age = getDraftAge();
+      dispatch({ type: 'SET_DRAFT_AGE', payload: age });
+      dispatch({ type: 'SET_SHOW_DRAFT_NOTIFICATION', payload: true });
+    }
+  }, []);
   const timeoutRefs = useRef([]);
   const progressIntervalRef = useRef(null);
   const editorLoadTimeoutRef = useRef(null);

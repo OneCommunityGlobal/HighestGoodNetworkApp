@@ -214,8 +214,6 @@ import SupportLogin from './components/SupportPortal/SupportLogin';
 import SupportLogViewer from './components/SupportPortal/SupportLogViewer';
 import { UserRole } from './utils/enums';
 
-
-
 import JobApplicationForm from './components/Collaboration/JobApplicationForm/JobApplicationForm';
 
 // Social Architecture
@@ -1063,7 +1061,6 @@ export default (
           exact
           component={TaskSubmissions}
         />
-
         <EPProtectedRoute path="/student/profile" exact component={StudentProfilePage} />
         {/* PR Analytics Dashboard */}
         <Route path="/pull-request-analytics/reviews-insight" component={ReviewsInsight} />
