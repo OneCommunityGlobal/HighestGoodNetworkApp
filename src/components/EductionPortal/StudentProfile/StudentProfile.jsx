@@ -459,6 +459,14 @@ const StudentProfile = () => {
 
   const subjects = Array.from(allSubjects);
 
+  const totalMoleculesAllSubjects = TOTAL_MOLECULES * subjects.length;
+  const totalCompleted = subjects.reduce((sum, s) => sum + (completedBySubject[s] || []).length, 0);
+  const totalInProgress = subjects.reduce(
+    (sum, s) => sum + (inProgressBySubject[s] || []).length,
+    0,
+  );
+  const totalRemaining = Math.max(0, totalMoleculesAllSubjects - totalCompleted - totalInProgress);
+
   return (
     <div className={`${styles.container}${darkMode ? ` ${styles.dark}` : ''}`}>
       {/* Header Section */}
@@ -589,7 +597,12 @@ const StudentProfile = () => {
                 subject={subject}
                 completed={(completedBySubject[subject] || []).length}
                 inProgress={(inProgressBySubject[subject] || []).length}
-                remaining={Math.max(0, TOTAL_MOLECULES - (completedBySubject[subject] || []).length - (inProgressBySubject[subject] || []).length)}
+                remaining={Math.max(
+                  0,
+                  TOTAL_MOLECULES -
+                    (completedBySubject[subject] || []).length -
+                    (inProgressBySubject[subject] || []).length,
+                )}
                 onClick={() => handleSubjectClick(subject)}
                 darkMode={darkMode}
               />
@@ -606,19 +619,19 @@ const StudentProfile = () => {
       <div className={styles.summarySection}>
         <div className={`${styles.statCard}${darkMode ? ` ${styles.dark}` : ''}`}>
           <h3>Total Completed</h3>
-          <p className={styles.statNumber}>{summary.totalCompleted}</p>
+          <p className={styles.statNumber}>{totalCompleted}</p>
         </div>
         <div className={`${styles.statCard}${darkMode ? ` ${styles.dark}` : ''}`}>
           <h3>In Progress</h3>
-          <p className={styles.statNumber}>{summary.totalInProgress}</p>
+          <p className={styles.statNumber}>{totalInProgress}</p>
         </div>
         <div className={`${styles.statCard}${darkMode ? ` ${styles.dark}` : ''}`}>
           <h3>Remaining</h3>
-          <p className={styles.statNumber}>{summary.totalNotStarted}</p>
+          <p className={styles.statNumber}>{totalRemaining}</p>
         </div>
         <div className={`${styles.statCard}${darkMode ? ` ${styles.dark}` : ''}`}>
           <h3>Total Atoms</h3>
-          <p className={styles.statNumber}>{summary.totalAtoms}</p>
+          <p className={styles.statNumber}>{totalMoleculesAllSubjects}</p>
         </div>
       </div>
 
