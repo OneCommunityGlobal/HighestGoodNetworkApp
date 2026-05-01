@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import PropTypes from 'prop-types';
 import { Card, CardBody, CardImg, CardText, Popover, CustomInput } from 'reactstrap';
 import { connect, useDispatch, useSelector } from 'react-redux';
 import { addSelectBadge, removeSelectBadge } from '../../actions/badgeManagement';
@@ -35,9 +36,7 @@ function AssignTableRow(props) {
     if (props.propExistBadges?.includes(badgeId)) {
       dispatch(addSelectBadge(badgeId));
     }
-    // run once on mount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [badgeId, dispatch, props.propExistBadges]);
 
   const isSelected = selectedBadges.includes(badgeId);
   // eslint-disable-next-line no-console
@@ -78,11 +77,24 @@ function AssignTableRow(props) {
           id={domId}
           onChange={handleCheckBoxChange}
           checked={isSelected}
+          className="cursor-pointer"
         />
       </td>
     </tr>
   );
 }
+
+AssignTableRow.propTypes = {
+  badge: PropTypes.shape({
+    _id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    imageUrl: PropTypes.string,
+    badgeName: PropTypes.string,
+    description: PropTypes.string,
+  }),
+  index: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  selectedBadges: PropTypes.array,
+  propExistBadges: PropTypes.array,
+};
 
 const mapDispatchToProps = dispatch => ({
   addSelectBadge: badgeId => dispatch(addSelectBadge(badgeId)),

@@ -19,7 +19,7 @@ function LogTools() {
   const dispatch = useDispatch();
   const history = useHistory();
   const today = new Date().toISOString().split('T')[0];
-  const [selectedProject, setSelectedProject] = useState(projects[0].name);
+  const [selectedProject, setSelectedProject] = useState(() => projects[0]?.name || '');
   const [selectedAction, setSelectedAction] = useState('Check In');
   const [relevantToolTypes, setRelevantToolTypes] = useState([]);
   const [postObject, setPostObject] = useState({
@@ -59,19 +59,19 @@ function LogTools() {
       let availForSelectedProj = 0;
       let usingForSelectedProj = 0;
 
-      type.available.forEach(availItem => {
-        if (availItem.project.name === selectedProject) {
+      (type.available || []).forEach(availItem => {
+        if (availItem.project?.name === selectedProject) {
           availForSelectedProj += 1;
         }
       });
 
-      type.using.forEach(usingItem => {
-        if (usingItem.project.name === selectedProject) {
+      (type.using || []).forEach(usingItem => {
+        if (usingItem.project?.name === selectedProject) {
           usingForSelectedProj += 1;
         }
       });
 
-      if (type[actionArray].length > 0) {
+      if ((type[actionArray] || []).length > 0) {
         const typeDetails = {
           toolName: type.name,
           _id: type._id,
@@ -79,9 +79,9 @@ function LogTools() {
           available: 0,
           items: [],
         };
-        if (type[actionArray].length > 0) {
-          type[actionArray].forEach(item => {
-            if (item.project.name === selectedProject) {
+        if ((type[actionArray] || []).length > 0) {
+          (type[actionArray] || []).forEach(item => {
+            if (item.project?.name === selectedProject) {
               const toolCodes = {
                 value: item._id,
                 label: item.code,

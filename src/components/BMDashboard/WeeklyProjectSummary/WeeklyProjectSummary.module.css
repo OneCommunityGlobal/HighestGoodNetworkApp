@@ -367,7 +367,8 @@
 }
 
 /* ---------------- TOOLTIP SCROLL FIX ---------------- */
-.quantityOfMaterialsUsedChartTooltip {
+.quantityOfMaterialsUsedChartTooltip { /* Limit to 80% of viewport height */ /* Enable vertical scrolling */ /* Add some padding for the scrollbar */
+  /* Support for Firefox */
   max-height: 80vh !important;
   overflow-y: auto !important;
   padding-right: 15px !important;
@@ -406,6 +407,8 @@
 }
 
 /* ---------------- RESPONSIVE DESIGN ---------------- */
+
+/* Medium Screens - Wrap Items */
 @media (width <= 1024px) {
   .weeklySummaryHeaderContainer {
     flex-direction: column;
@@ -424,6 +427,7 @@
   }
 }
 
+/* Small Screens - Make Dropdowns Vertical */
 @media (width <= 768px) {
   .weeklySummaryHeaderContainer {
     flex-direction: column;
