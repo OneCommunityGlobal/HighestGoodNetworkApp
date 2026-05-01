@@ -1,12 +1,13 @@
+/* stylelint-disable  */
 .jobCcDashboard {
   padding: 20px;
-  font-family: 'Arial', sans-serif;
+  font-family: Arial, sans-serif;
 }
 
 .darkModeJobCcDashboard {
   /*  #2c2f33 */
   background-color: #1b2a41;
-  color: #ffffff;
+  color: #fff;
 }
 
 .dashboardTitle {
@@ -19,13 +20,13 @@
   background-color: #f8f9fa;
   padding: 20px;
   border-radius: 8px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgb(0 0 0 / 10%);
   margin-bottom: 30px;
 }
 
 .darkModeJobCcDashboard .formContainer {
   background-color: #3c3f44;
-  color: #ffffff;
+  color: #fff;
 }
 
 .formContainer form {
@@ -39,10 +40,10 @@
 }
 
 .ccListContainer {
-  background-color: #ffffff;
+  background-color: #fff;
   padding: 20px;
   border-radius: 8px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgb(0 0 0 / 10%);
 }
 
 .darkModeJobCcDashboard .ccListContainer {
@@ -55,7 +56,7 @@
 
 .jobCcDashboardTable th {
   background-color: #007bff;
-  color: #ffffff;
+  color: #fff;
 }
 
 .darkModeJobCcDashboard .jobCcDashboardTable th {

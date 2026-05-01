@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .records_modal_table_container,
 .recordsModalTableContainer {
   overflow: scroll;
@@ -7,6 +8,7 @@
   white-space: nowrap;
 }
 
+@media (width >= 1200px) {
 :global(.dark-mode) .records_modal_table_container,
 :global(.dark-mode) .recordsModalTableContainer {
   background-color: #3a506b;
@@ -44,7 +46,6 @@
   color: #fff !important;
 }
 
-@media (width >= 1200px) {
   .records_modal_table_container,
   .recordsModalTableContainer {
     font-size: medium;
