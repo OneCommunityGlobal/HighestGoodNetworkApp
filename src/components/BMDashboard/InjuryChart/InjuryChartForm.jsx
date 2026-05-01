@@ -1,6 +1,6 @@
 // InjuryChartForm.jsx - Form and chart display component
 import { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { FormGroup, Label, Input } from 'reactstrap';
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
@@ -16,9 +16,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
-import { toast } from 'react-toastify';
 import { getInjuryData } from '../../../actions/bmdashboard/injuryActions';
-import { fetchBMProjects } from '../../../actions/bmdashboard/projectActions';
 
 import 'react-datepicker/dist/react-datepicker.css';
 import styles from './InjuryChartForm.module.css';
@@ -26,7 +24,6 @@ import styles from './InjuryChartForm.module.css';
 function InjuryChartForm({ dark }) {
   // Chart type toggle state
   const [chartType, setChartType] = useState('line'); // 'bar' or 'line'
-  const dispatch = useDispatch();
   const bmProjects = useSelector(state => state.bmProjects || []);
   // Form state
   const [projectId, setProjectId] = useState('all');
@@ -41,13 +38,6 @@ function InjuryChartForm({ dark }) {
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-
-  // Load projects on mount
-  useEffect(() => {
-    dispatch(fetchBMProjects()).catch(err => {
-      toast.error(`Failed to load projects: ${err.message}`);
-    });
-  }, [dispatch]);
 
   // Transform API data to chart format
   const transformData = data => {
