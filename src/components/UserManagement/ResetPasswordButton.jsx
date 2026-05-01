@@ -5,6 +5,7 @@ import { boxStyle } from '../../styles';
 import { resetPassword } from '../../services/userProfileService';
 import { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import ResetPasswordPopup from './ResetPasswordPopup';
+import styles from './usermanagement.module.css'
 
 class ResetPasswordButton extends React.PureComponent {
   constructor(props) {
@@ -23,6 +24,7 @@ class ResetPasswordButton extends React.PureComponent {
 
   onResetClick = () => {
     if (cantUpdateDevAdminDetails(this.props.user.email, this.props.authEmail)) {
+      // eslint-disable-next-line no-alert
       alert(
         'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. ' +
           'You shouldn’t even be using this account except to create your own accounts to use. ' +
@@ -82,7 +84,7 @@ class ResetPasswordButton extends React.PureComponent {
           <Button
             outline={!this.props.darkMode}
             color="primary"
-            className={`btn  btn-outline-success mr-1${this.props.isSmallButton ? ' btn-sm' : ''}`}
+            className={`${styles.userManagementCellControl} btn  btn-outline-success mr-1${this.props.isSmallButton ? ' btn-sm' : ''}`}
             style={
               this.props.darkMode
                 ? { boxShadow: '0 0 0 0', minWidth: '115px', fontWeight: 'bold', backgroundColor: '#3a506b' }

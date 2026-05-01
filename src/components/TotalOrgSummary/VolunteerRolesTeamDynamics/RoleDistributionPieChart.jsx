@@ -1,24 +1,33 @@
-import Loading from 'components/common/Loading';
-import { ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
+import { ResponsiveContainer, PieChart, Pie, Cell, Legend, Tooltip } from 'recharts';
+import Loading from '~/components/common/Loading';
 
 const COLORS = [
-  '#F285BB',
-  '#77A9EE',
-  '#F2AB53',
-  '#1B6DDF',
-  '#C92929',
-  '#1BC590',
-  '#7ff0f0',
-  '#6e33cc',
-  '#cc2fa7',
-  '#EE9322',
-  '#86ebcc',
-  '#bafc03',
-  '#cf583a',
-  '#46d130',
+  '#2F80ED', // blue
+  '#56CCF2', // light blue
+  '#27AE60', // green
+  '#6FCF97', // light green
+  '#F2994A', // orange
+  '#F2C94C', // yellow
+  '#E14848', // red
+  '#9B51E0', // purple
+  '#F765A3', // pink
+  '#4F4F4F', // dark
+  '#828282', // grey
 ];
 
-export default function RoleDistributionPieChart({ isLoading, roleDistributionStats, darkMode }) {
+// Explicit role-to-color mapping to keep key roles visually distinct and stable.
+const ROLE_COLOR_MAP = {
+  Volunteer: '#8ebfff',
+  Manager: '#27AE60',
+  Administrator: '#fb0505',
+  'Core Team': '#8100fa',
+  Owner: '#f68d42',
+  Mentor: '#f2ff00',
+};
+
+import CustomTooltip from '../../CustomTooltip';
+
+const RoleDistributionPieChart = ({ roleDistributionStats = [], isLoading, darkMode }) => {
   if (isLoading) {
     return (
       <div className="d-flex justify-content-center align-items-center">
@@ -33,8 +42,10 @@ export default function RoleDistributionPieChart({ isLoading, roleDistributionSt
   const data = roleDistributionStats.map((item, index) => ({
     name: item._id,
     value: item.count,
-    color: COLORS[index],
+    // Use a stable role mapping first, otherwise fallback by index.
+    color: ROLE_COLOR_MAP[item._id] || COLORS[index % COLORS.length],
   }));
+  const totalValue = data.reduce((sum, entry) => sum + entry.value, 0);
 
   const RADIAN = Math.PI / 180;
   const renderCustomizedLabel = ({
@@ -77,61 +88,92 @@ export default function RoleDistributionPieChart({ isLoading, roleDistributionSt
   };
 
   const renderCustomLegend = props => {
-    const { payload } = props;
+    const { payload } = props; // payload is an array of legend items provided by Recharts
+
     return (
-      <ul style={{ marginLeft: 20 }}>
-        {payload.map(entry => (
-          <li
-            key={`item-${entry.value}`}
-            style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}
-          >
-            <div
-              style={{
-                width: '10px',
-                height: '10px',
-                backgroundColor: entry.color,
-                marginRight: '3px',
-              }}
-            />
-            <span style={{ color: darkMode ? 'white ' : 'grey', fontSize: '12px' }}>
-              {entry.value}
-            </span>
-          </li>
-        ))}
+      <ul
+        style={{
+          listStyle: 'none', // Remove default bullet points
+          margin: 0,
+          paddingLeft: '20px', // Indent legend from the pie
+          textAlign: 'left', // Align text to the left
+          maxHeight: '400px', // Max height for the legend area
+          overflowY: 'auto', // Make legend scrollable if it exceeds maxHeight
+        }}
+      >
+        {payload.map(entry => {
+          // 'entry.value' here corresponds to the 'nameKey' of the Pie (which we set to 'name')
+          const itemName = entry.value;
+          // Find the original data object to get the count and original color
+          const itemData = data.find(d => d.name === itemName);
+
+          // If for some reason data is not found, skip rendering this legend item
+          if (!itemData) {
+            return null;
+          }
+
+          const { value, color } = itemData; // 'value' is the count
+          const percentage = totalValue > 0 ? (value / totalValue) * 100 : 0;
+
+          return (
+            <li
+              key={`item-${itemName}`} // Use itemName for a stable key
+              style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}
+            >
+              <div
+                style={{
+                  width: '10px',
+                  height: '10px',
+                  backgroundColor: color, // Use the color from our mapped data
+                  marginRight: '5px',
+                  flexShrink: 0, // Prevent the color swatch from shrinking
+                }}
+              />
+              <span style={{ color: darkMode ? 'white' : 'grey', fontSize: '12px' }}>
+                {`${itemName}: ${value} (${percentage.toFixed(1)}%)`}
+              </span>
+            </li>
+          );
+        })}
       </ul>
     );
   };
 
   return (
-    <div style={{ margin: '15px 10px 10px 10px' }}>
-      <ResponsiveContainer width="100%" height="100%" minWidth={400} minHeight={430}>
-        <PieChart className="test2">
-          <Pie
-            data={data}
-            cx="50%"
-            cy="50%"
-            innerRadius="50%"
-            outerRadius="100%"
-            legendType="square"
-            labelLine={false}
-            label={renderCustomizedLabel}
-            startAngle={-270}
-            endAngle={90}
-            stroke="none"
-            dataKey="value"
-          >
-            {data.map(entry => (
-              <Cell key={`cell-${entry.name}`} fill={entry.color} />
-            ))}
-          </Pie>
-          <Legend
-            layout="vertical"
-            verticalAlign="middle"
-            align="right"
-            content={renderCustomLegend}
-          />
-        </PieChart>
-      </ResponsiveContainer>
+    <div style={{ margin: '15px 10px 10px 10px', overflowX: 'auto' }}>
+      <div style={{ minWidth: 500 }}>
+        <ResponsiveContainer width="100%" height="100%" minWidth={400} minHeight={430}>
+          <PieChart>
+            <Pie
+              data={data}
+              cx="50%"
+              cy="50%"
+              innerRadius="50%"
+              outerRadius="100%"
+              legendType="square"
+              labelLine={false}
+              label={renderCustomizedLabel}
+              startAngle={-270}
+              endAngle={90}
+              stroke="none"
+              dataKey="value"
+            >
+              {data.map(entry => (
+                <Cell key={`cell-${entry.name}`} fill={entry.color} />
+              ))}
+            </Pie>
+            <Legend
+              layout="vertical"
+              verticalAlign="middle"
+              align="right"
+              content={renderCustomLegend}
+            />
+            <Tooltip content={<CustomTooltip darkMode={darkMode} />} />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
-}
+};
+
+export default RoleDistributionPieChart;

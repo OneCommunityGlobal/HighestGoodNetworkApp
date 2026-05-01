@@ -3,23 +3,22 @@ import {
   FETCH_ISSUES_BARCHART_REQUEST,
   FETCH_ISSUES_BARCHART_SUCCESS,
   FETCH_ISSUES_BARCHART_FAILURE,
-  FETCH_ISSUE_TYPES_YEARS_REQUEST,
-  FETCH_ISSUE_TYPES_YEARS_SUCCESS,
-  FETCH_ISSUE_TYPES_YEARS_FAILURE,
+  FETCH_LONGEST_OPEN_ISSUES_REQUEST,
+  FETCH_LONGEST_OPEN_ISSUES_SUCCESS,
+  FETCH_LONGEST_OPEN_ISSUES_FAILURE,
+  SET_DATE_FILTER,
+  SET_PROJECT_FILTER,
 } from '../../constants/bmdashboard/issueConstants';
-import { ENDPOINTS } from '../../utils/URL'; // Import the endpoints
+import { ENDPOINTS, ApiEndpoint } from '../../utils/URL';
 
-// Action to fetch issues for the bar chart
-export const fetchIssues = filters => async dispatch => {
+// eslint-disable-next-line import/prefer-default-export
+export const fetchIssues = () => async dispatch => {
   try {
     dispatch({ type: FETCH_ISSUES_BARCHART_REQUEST });
 
-    const { data } = await axios.get(ENDPOINTS.BM_ISSUE_CHART, { params: filters });
-
-    dispatch({
-      type: FETCH_ISSUES_BARCHART_SUCCESS,
-      payload: data,
-    });
+    // Fetch all data without applying any filters
+    const { data } = await axios.get(ENDPOINTS.BM_ISSUE_CHART);
+    dispatch({ type: FETCH_ISSUES_BARCHART_SUCCESS, payload: data });
   } catch (error) {
     dispatch({
       type: FETCH_ISSUES_BARCHART_FAILURE,
@@ -28,27 +27,34 @@ export const fetchIssues = filters => async dispatch => {
   }
 };
 
-// Action to fetch issue types and years (used for dropdowns)
-export const fetchIssueTypesAndYears = () => async dispatch => {
+
+export const fetchLongestOpenIssues = (dates = [], projects = []) => async dispatch => {
   try {
-    dispatch({ type: FETCH_ISSUE_TYPES_YEARS_REQUEST });
+    dispatch({ type: FETCH_LONGEST_OPEN_ISSUES_REQUEST });
 
-    const { data } = await axios.get(ENDPOINTS.BM_ISSUE_CHART);
+    const params = new URLSearchParams();
+    if (dates.length) params.append('dates', dates.join(','));
+    if (projects.length) params.append('projects', projects.join(','));
 
-    // Extract unique issueTypes and years from the response data
-    const issueTypes = [...new Set(data.map(item => item._id.issueType))];
-    const years = [...new Set(data.map(item => item._id.issueYear))];
+    const response = await axios.get(`${ApiEndpoint}/bm/issues/longest-open?${params}`);
     dispatch({
-      type: FETCH_ISSUE_TYPES_YEARS_SUCCESS,
-      payload: {
-        issueTypes,
-        years,
-      },
+      type: FETCH_LONGEST_OPEN_ISSUES_SUCCESS,
+      payload: response.data,
     });
   } catch (error) {
     dispatch({
-      type: FETCH_ISSUE_TYPES_YEARS_FAILURE,
-      payload: error.message || 'Failed to fetch issue types and years',
+      type: FETCH_LONGEST_OPEN_ISSUES_FAILURE,
+      payload: error.message,
     });
   }
 };
+
+export const setDateFilter = dates => ({
+  type: SET_DATE_FILTER,
+  payload: dates,
+});
+
+export const setProjectFilter = projects => ({
+  type: SET_PROJECT_FILTER,
+  payload: projects,
+});

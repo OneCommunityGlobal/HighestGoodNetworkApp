@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { ENDPOINTS } from '../../utils/URL';
-import GET_BM_PROJECT_BY_ID from '../../constants/bmdashboard/projectConstants';
+import { ENDPOINTS } from '~/utils/URL';
+import  { GET_BM_PROJECT_BY_ID } from '../../constants/bmdashboard/projectConstants';
 import { GET_ERRORS } from '../../constants/errors';
 
 export const setProject = payload => {
@@ -22,15 +22,17 @@ export const fetchProjectById = projectId => {
   return async dispatch => {
     try {
       const response = await axios.get(url);
+      if (!response.data) {
+        throw new Error('No data received from project API');
+      }
+
       const projectData = response.data;
-
       dispatch(setProject(projectData));
+      return projectData; 
 
-      return projectData;
     } catch (error) {
       dispatch(setErrors(error));
-
-      throw error;
+      return null; 
     }
   };
 };

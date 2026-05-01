@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Spinner, ListGroup, ListGroupItem, Alert } from 'reactstrap';
+import { Spinner, ListGroup, ListGroupItem } from 'reactstrap';
 import { IoReload } from 'react-icons/io5';
 import './autoComplete.css';
 
@@ -63,7 +63,7 @@ export const AutoCompleteTeamCode = props => {
         {showDropdown && (
           <section
             ref={refDropdown}
-            className={`overflow-auto mb-2 scrollAutoComplete`}
+            className="overflow-auto mb-2 scrollAutoComplete"
             style={{
               height: isLoading ? '7rem' : arrayInputAutoComplete.length <= 30 ? 'auto' : '23rem',
               width: 'auto',
@@ -71,7 +71,17 @@ export const AutoCompleteTeamCode = props => {
             }}
           >
             {!isLoading ? (
-              arrayInputAutoComplete.length === 0 ? (
+              inputAutoStatus !== 200 ? (
+                <ListGroup>
+                  <ListGroupItem
+                    className="d-flex justify-content-center align-items-center"
+                    onClick={fetchTeamCodeAllUsers}
+                    style={darkMode ? colordarkWithBorder : null}
+                  >
+                    <IoReload style={styleReload} />
+                  </ListGroupItem>
+                </ListGroup>
+              ) : arrayInputAutoComplete.length === 0 ? (
                 <p
                   className={classNameStyleP}
                   style={
@@ -82,16 +92,6 @@ export const AutoCompleteTeamCode = props => {
                 >
                   No options
                 </p>
-              ) : inputAutoStatus !== 200 ? (
-                <ListGroup>
-                  <ListGroupItem
-                    className="d-flex justify-content-center align-items-center"
-                    onClick={fetchTeamCodeAllUsers}
-                    style={darkMode ? colordarkWithBorder : null}
-                  >
-                    <IoReload style={styleReload} />
-                  </ListGroupItem>
-                </ListGroup>
               ) : (
                 <div
                   className={`${arrayInputAutoComplete.length > 3 &&
@@ -102,6 +102,7 @@ export const AutoCompleteTeamCode = props => {
                       key={item}
                       className={`${arrayInputAutoComplete.length <= 3 ? '' : 'col col-cols-3'}`}
                     >
+                      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions */}
                       <p
                         className={classNameStyleP}
                         style={
@@ -122,7 +123,7 @@ export const AutoCompleteTeamCode = props => {
                 className="h-100 d-flex justify-content-center align-items-center"
                 style={darkMode ? { ...styleSpinner, ...colordarkWithBorder } : styleSpinner}
               >
-                <Spinner color="primary"></Spinner>
+                <Spinner color="primary" />
               </section>
             )}
           </section>
@@ -131,3 +132,4 @@ export const AutoCompleteTeamCode = props => {
     </>
   );
 };
+

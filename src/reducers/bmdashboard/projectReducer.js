@@ -1,4 +1,4 @@
-import GET_BM_PROJECTS from 'constants/bmdashboard/projectConstants';
+import GET_BM_PROJECTS from '../../constants/bmdashboard/projectConstants';
 
 // eslint-disable-next-line default-param-last
 export const bmProjectReducer = (materials = [], action) => {

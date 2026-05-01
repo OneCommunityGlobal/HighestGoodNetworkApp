@@ -1,9 +1,0 @@
-.tab-pane {
-  overflow-y: auto;
-}
-
-@media screen and (max-width: 800px) {
-  .tab-pane {
-    max-height: 1500px;
-  }
-}

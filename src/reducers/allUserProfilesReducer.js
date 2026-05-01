@@ -16,7 +16,7 @@ const userProfilesInitial = {
     startDate: 1,
     endDate: 1,
   },
-  pagestats: { pageSize: 10, selectedPage: 1 },
+  pagestats: { pageSize: 20, selectedPage: 1 },
   status: 100,
   updating: false,
   newUserData: [],

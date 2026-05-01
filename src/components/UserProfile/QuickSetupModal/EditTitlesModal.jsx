@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { ENDPOINTS } from 'utils/URL';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
 
 const EditTitlesModal = ({ isOpen, toggle, titles, refreshModalTitles, darkMode }) => {
@@ -27,15 +27,18 @@ const EditTitlesModal = ({ isOpen, toggle, titles, refreshModalTitles, darkMode 
         id: title._id,
         order: index + 1
       }));
+      // eslint-disable-next-line no-console
       console.log('Sending order data:', orderData);
   
       const url = ENDPOINTS.REORDER_TITLES();
       const response = await axios.put(url, { orderData });
+      // eslint-disable-next-line no-console
       console.log('Server response:', response.data);
       
       await refreshModalTitles();
       toggle();
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error("Error saving title order: ", error);
     }
   };

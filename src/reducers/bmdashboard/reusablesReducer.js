@@ -9,7 +9,7 @@ import {
   POST_UPDATE_REUSABLE_END,
   RESET_UPDATE_REUSABLE,
   POST_UPDATE_REUSABLE_ERROR,
-} from 'constants/bmdashboard/reusableConstants';
+} from '~/constants/bmdashboard/reusableConstants';
 
 const defaultState = {
   reusablesList: [],

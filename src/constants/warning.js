@@ -5,9 +5,14 @@ export const CURRENT_WARNINGS = 'CURRENT_WARNINGS';
 export const POST_NEW_WARNING = 'POST_NEW_WARNING';
 export const UPDATE_WARNING_DESCRIPTION = 'UPDATE_WARNING_DESCRIPTION';
 export const EDIT_WARNING_DESCRIPTION = 'EDIT_WARNING_DESCRIPTION';
+export const GET_SPECIAL_WARNINGS = 'GET_SPECIAL_WARNINGS';
 
 export const getWarningByUserId = data => ({
   type: GET_WARNINGS_BY_USER_ID,
+  payload: data,
+});
+export const getSpecialWarnings = data => ({
+  type: GET_SPECIAL_WARNINGS,
   payload: data,
 });
 
@@ -15,6 +20,7 @@ export const getCurrentWarnings = data => ({
   type: CURRENT_WARNINGS,
   payload: data,
 });
+
 export const postNewWarning = data => ({
   type: POST_NEW_WARNING,
   payload: data,

@@ -1,4 +1,4 @@
-import { FETCH_FORM_DATA, SET_FORM_DATA, SUBMIT_FORM_DATA } from 'constants/hgnFormConstants';
+import { FETCH_FORM_DATA, SET_FORM_DATA, SUBMIT_FORM_DATA } from '~/constants/hgnFormConstants';
 
 const formState = {
   loading: false, // Add loading state
@@ -50,6 +50,7 @@ const formState = {
 
   // PAGE 5: Follow-up form fields
   followup_platform: '',
+  followup_mern_work_experience: '',
   followup_other_skills: '',
   followup_suggestion: '',
   followup_additional_info: '',

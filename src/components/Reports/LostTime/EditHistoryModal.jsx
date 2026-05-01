@@ -1,18 +1,20 @@
 import { useState, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, FormGroup, Label, Input, Form, Row, Col } from 'reactstrap';
-import { getFontColor, getBoxStyling } from 'styles';
+import { getFontColor, getBoxStyling } from '~/styles';
 import { connect, useDispatch } from 'react-redux';
-import { getUserProfile } from 'actions/userProfile';
+import { getUserProfile } from '~/actions/userProfile';
 import moment from 'moment';
 import { isEmpty } from 'lodash';
-import { deleteTimeEntry, editTimeEntry } from 'actions/timeEntries';
+import { deleteTimeEntry, editTimeEntry } from '~/actions/timeEntries';
 import './EditHistoryModal.css';
-import '../../Header/DarkMode.css'
+import '../../Header/index.css'
+import { toast } from 'react-toastify';
 
 function EditHistoryModal(props) {
   const {darkMode} = props;
   const fontColor = getFontColor(darkMode);
   const boxStyling = getBoxStyling(darkMode);
+  const MAX_HOURS_PER_ENTRY = 40;
 
   const initialForm = {
     projectId: props.entryType === 'project'? props.dataId: undefined,
@@ -110,50 +112,91 @@ function EditHistoryModal(props) {
     toggleEdit();
   };
 
-  const validateInputs = () => {
-    const result = {};
-
-    const date = moment(inputs.dateOfWork);
+  const validateDate = (dateOfWork) => {
+    const errors = {};
+    const date = moment(dateOfWork);
     const today = moment(
       moment()
         .tz('America/Los_Angeles')
         .format('YYYY-MM-DD'),
     );
+  
     if (!date.isValid()) {
-      result.dateOfWork = 'Invalid date';
-    } else if (
-        today.diff(date, 'days') < 0
+      errors.dateOfWork = 'Invalid date';
+    } else if (today.diff(date, 'days') < 0) {
+      errors.dateOfWork = 'Cannot add lost time for future dates.';
+    }
+  
+    return errors;
+  };
+  
+  const validateTime = (hoursInput, minutesInput) => {
+    const errors = {};
+    const hours = Number(hoursInput);
+    const minutes = Number(minutesInput);
+  
+    if (
+      Number.isNaN(hours) ||
+      Number.isNaN(minutes) ||
+      (hours === 0 && minutes === 0)
     ) {
-      result.dateOfWork = 'Cannot add lost time for future dates.';
+      errors.time = 'Time is required';
+      return errors;
     }
-
-    if (inputs.hours === 0 && inputs.minutes === 0) {
-      result.time = 'Time is required';
-    } else {
-      const hours = inputs.hours * 1;
-      const minutes = inputs.minutes * 1;
-      if (!Number.isInteger(hours) || !Number.isInteger(minutes)) {
-        result.time = 'Hours and minutes should be integers';
-      }
-      if (hours < 0 || minutes < 0) {
-        result.time = 'Time should be greater than 0';
-      }
+  
+    if (!Number.isInteger(hours) || !Number.isInteger(minutes)) {
+      errors.time = 'Hours and minutes should be integers';
+      return errors;
     }
-
-    if (props.entryType === 'project' && inputs.projectId === undefined) {
-      result.projectId = 'Project is required';
+  
+    if (hours < 0 || minutes < 0) {
+      errors.time = 'Time should be greater than 0';
+      return errors;
     }
-    if (props.entryType === 'person' && inputs.personId === undefined) {
-      result.personId = 'Person is required';
+  
+    const totalMinutes = hours * 60 + minutes;
+    const maxMinutes = MAX_HOURS_PER_ENTRY * 60;
+  
+    if (totalMinutes > maxMinutes) {
+      errors.time = `You can’t log more than ${MAX_HOURS_PER_ENTRY} hours in a single entry.`;
+      toast.error(
+        "Hold up, workhorse! You’ve hit the 40-hour limit for a single entry. You can pop in a new time log for any additional hours.",
+        { autoClose: 5000 }
+      );
     }
-    if (props.entryType === 'team' && inputs.teamId === undefined) {
-      result.teamId = 'Team is required';
+  
+    return errors;
+  };
+  
+  const validateEntryType = (inputs, entryType) => {
+    const errors = {};
+  
+    if (entryType === 'project' && inputs.projectId === undefined) {
+      errors.projectId = 'Project is required';
+    } else if (entryType === 'person' && inputs.personId === undefined) {
+      errors.personId = 'Person is required';
+    } else if (entryType === 'team' && inputs.teamId === undefined) {
+      errors.teamId = 'Team is required';
     }
-
+  
+    return errors;
+  };
+  
+  const validateInputs = () => {
+    const dateErrors = validateDate(inputs.dateOfWork);
+    const timeErrors = validateTime(inputs.hours, inputs.minutes);
+    const entryTypeErrors = validateEntryType(inputs, props.entryType);
+  
+    const result = {
+      ...dateErrors,
+      ...timeErrors,
+      ...entryTypeErrors,
+    };
+  
     setErrors(result);
     return isEmpty(result);
   };
-
+  
   const handleSubmit = async event => {
 
     if (event) event.preventDefault();

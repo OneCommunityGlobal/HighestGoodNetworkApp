@@ -8,9 +8,9 @@
       manifest.json provides metadata used when your web app is added to the
       homescreen on Android. See https://developers.google.com/web/fundamentals/engage-and-retain/web-app-manifest/
     -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <link rel="stylesheet" href="%PUBLIC_URL%/index.css" />
-    <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="stylesheet" href="/index.css" />
+    <link rel="shortcut icon" href="/favicon.ico" />
     <!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.
@@ -25,11 +25,6 @@
 
   <body>
     <noscript> You need to enable JavaScript to run this app. </noscript>
-    <script>
-      function leaveAlert() {
-        return "Don't forget to log your time before leaving the page!";
-      }
-    </script>
     <div id="root"></div>
     <!--
       This HTML file is a template.
@@ -41,6 +36,7 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
+    <script type="module" src="/src/index.jsx"></script>
     <a class="top" href="#">Back to Top ↑</a>
   </body>
 </html>

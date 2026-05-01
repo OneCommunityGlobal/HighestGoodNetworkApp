@@ -1,33 +1,46 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
+import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
-import axios from 'axios';
-import configureStore from 'redux-mock-store';
+import { configureStore } from 'redux-mock-store';
+
 import WBS from './wbs';
-import { setWBSStart, setWBS } from '../../../actions/wbs';
+import { fetchAllWBS } from '../../../actions/wbs';
+import { getProjectDetail } from '../../../actions/project';
 
-
-
-jest.mock('../../../actions/wbs', () => ({
-  addNewWBS: jest.fn(),
-  fetchAllWBS: jest.fn(),
-  setWBSStart: jest.fn(() => ({ type: 'SET_WBS_START' })),
-  setWBS: jest.fn(data => ({ type: 'SET_WBS', payload: data })),
-  setWBSError: jest.fn(err => ({ type: 'SET_WBS_ERROR', payload: err })),
+vi.mock('../../../actions/wbs', () => ({
+  __esModule: true,
+  fetchAllWBS: vi.fn(projectId => ({ type: 'FETCH_ALL_WBS', payload: projectId })),
+  setWBSStart: vi.fn(() => ({ type: 'SET_WBS_START' })),
+  setWBS: vi.fn(data => ({ type: 'SET_WBS', payload: data })),
+  addNewWBS: vi.fn(),
+  setWBSError: vi.fn(),
 }));
 
-jest.mock('axios');
-jest.mock('./AddWBS', () => () => <div data-testid="add-wbs">AddWBS Mock</div>);
+vi.mock('../../../actions/project', () => ({
+  __esModule: true,
+  getProjectDetail: vi.fn(projectId => ({ type: 'GET_PROJECT_DETAIL', payload: projectId })),
+}));
 
-jest.mock('./WBSItem/WBSItem', () => ({ index, name }) => (
-  <tr data-testid={`wbs-item-${index}`}><td>{index}</td><td>{name}</td><td></td></tr>
-));
+vi.mock('./AddWBS', () => ({
+  __esModule: true,
+  default: () => <div data-testid="add-wbs">AddWBS Mock</div>,
+}));
 
-const mockStore = configureStore([]);
+vi.mock('./WBSItem/WBSItem', () => ({
+  __esModule: true,
+  default: ({ index, name }) => (
+    <tr data-testid={`wbs-item-${index}`}>
+      <td>{index}</td>
+      <td>{name}</td>
+      <td></td>
+    </tr>
+  ),
+}));
 
 describe('WBS Component', () => {
+  const mockStore = configureStore([]);
   let store;
   const projectId = 'project123';
 
@@ -55,35 +68,27 @@ describe('WBS Component', () => {
 
   beforeEach(() => {
     store = mockStore(initialState);
-    store.dispatch = jest.fn();
+    store.dispatch = vi.fn();
   });
 
-  const renderComponent = () => {
-    return render(
+  const renderComponent = () =>
+    render(
       <Provider store={store}>
         <MemoryRouter>
           <WBS match={{ params: { projectId } }} />
         </MemoryRouter>
       </Provider>
     );
-  };
 
   it('renders the WBS component without crashing', () => {
     renderComponent();
     expect(screen.getByText(/Return to Project List/i)).toBeInTheDocument();
   });
 
-  it('dispatches setWBSStart and setWBS when fetchAllWBS is called on mount', async () => {
-    const mockWBSData = [{ _id: 'wbs1', wbsName: 'WBS 1' }];
-    axios.get.mockResolvedValueOnce({ data: mockWBSData });
-
+  it('dispatches fetchAllWBS and getProjectDetail on mount', () => {
     renderComponent();
-
-    expect(store.dispatch).toHaveBeenCalledWith(setWBSStart());
-
-    await waitFor(() => {
-      expect(store.dispatch).toHaveBeenCalledWith(setWBS(mockWBSData));
-    });
+    expect(store.dispatch).toHaveBeenCalledWith(fetchAllWBS(projectId));
+    expect(store.dispatch).toHaveBeenCalledWith(getProjectDetail(projectId));
   });
 
 
@@ -105,7 +110,6 @@ describe('WBS Component', () => {
     const backLink = screen.getByRole('link', { name: /Return to Project List/i });
     expect(backLink).toHaveAttribute('href', '/projects/');
     const backButton = screen.getByRole('button');
-    expect(backButton).toBeInTheDocument();
     expect(backButton).toHaveClass('btn-secondary');
   });
 

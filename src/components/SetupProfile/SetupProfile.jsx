@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { withRouter } from 'react-router';
-import { ENDPOINTS } from 'utils/URL';
-import httpService from 'services/httpService';
+import { ENDPOINTS } from '~/utils/URL';
+import httpService from '~/services/httpService';
 import SetupProfileInvalidToken from './SetupProfileInvalidToken';
 import SetupProfileUserEntry from './SetupProfileUserEntry';
 import './SetupProfile.css';

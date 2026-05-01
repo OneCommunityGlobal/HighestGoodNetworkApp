@@ -14,7 +14,7 @@ import {
   DropdownMenu,
   DropdownItem,
 } from 'reactstrap';
-import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
+import { fetchTaskEditSuggestions } from '~/components/TaskEditSuggestions/thunks';
 import { getHeaderData } from '../../../actions/authActions';
 import { getAllRoles } from '../../../actions/role';
 import Timer from '../../Timer/Timer';
@@ -31,6 +31,7 @@ import {
   LOG_EQUIPMENT_TOOL,
   UPDATE_EQUIPMENT_TOOL,
   EQUIPMENT_TOOL_LIST,
+  CONSUMABLE_LIST,
   ISSUE,
   LESSON,
   TIMELOG,
@@ -49,7 +50,7 @@ import {
   PERMISSIONS_MANAGEMENT,
 } from '../../../languages/en/ui';
 import Logout from '../../Logout/Logout';
-import './BMHeader.css';
+import styles from './BMHeader.module.css';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../../utils/permissions';
 
 export function Header(props) {
@@ -109,16 +110,16 @@ export function Header(props) {
   };
 
   return (
-    <div className="header-wrapper">
-      <Navbar className="py-3 navbar" color="dark" dark expand="xl">
+    <div className={`${styles.headerWrapper}`}>
+      <Navbar className={`py-3 ${styles.navbar}`} color="dark" dark expand="xl">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
         <div
-          className="timer-message-section"
+          className={`${styles.timerMessageSection}`}
           style={user.role === 'Owner' ? { marginRight: '6rem' } : { marginRight: '10rem' }}
         >
           {isAuthenticated && <Timer />}
           {isAuthenticated && (
-            <div className="owner-message">
+            <div className={`${styles.ownerMessage}`}>
               <OwnerMessage />
             </div>
           )}
@@ -126,11 +127,11 @@ export function Header(props) {
         <NavbarToggler onClick={toggle} />
         {isAuthenticated && (
           <Collapse isOpen={isOpen} navbar>
-            <Nav className="ml-auto nav-links" navbar>
+            <Nav className={`ml-auto ${styles.navLinks}`} navbar>
               {canUpdateTask && (
                 <NavItem>
                   <NavLink tag={Link} to="/taskeditsuggestions">
-                    <div className="redBackGroupHeader">
+                    <div className={`${styles.redBackGroupHeader}`}>
                       <span>{props.taskEditSuggestionCount}</span>
                     </div>
                   </NavLink>
@@ -138,22 +139,22 @@ export function Header(props) {
               )}
               <NavItem>
                 <NavLink tag={Link} to="/dashboard">
-                  <span className="dashboard-text-link">{DASHBOARD}</span>
+                  <span className={`${styles.dashboardTextLink}`}>{DASHBOARD}</span>
                 </NavLink>
               </NavItem>
               <NavItem>
                 <NavLink tag={Link} to="/bmdashboard">
-                  <span className="dashboard-text-link">{BM_DASHBOARD}</span>
+                  <span className={`${styles.dashboardTextLink}`}>{BM_DASHBOARD}</span>
                 </NavLink>
               </NavItem>
               <NavItem>
                 <NavLink tag={Link} to={`/timelog/${user.userid}`}>
-                  <span className="dashboard-text-link">{TIMELOG}</span>
+                  <span className={`${styles.dashboardTextLink}`}>{TIMELOG}</span>
                 </NavLink>
               </NavItem>
               <UncontrolledDropdown nav inNavbar>
                 <DropdownToggle nav caret>
-                  <span className="dashboard-text-link">{BM_PROJECT}</span>
+                  <span className={`${styles.dashboardTextLink}`}>{BM_PROJECT}</span>
                 </DropdownToggle>
                 <DropdownMenu>
                   <>
@@ -178,6 +179,9 @@ export function Header(props) {
                     <DropdownItem tag={Link} to="/bmdashboard/equipment-tool-list">
                       {EQUIPMENT_TOOL_LIST}
                     </DropdownItem>
+                    <DropdownItem tag={Link} to="/bmdashboard/consumables">
+                      {CONSUMABLE_LIST}
+                    </DropdownItem>
                     <DropdownItem tag={Link} to="/bmdashboard/issue">
                       {ISSUE}
                     </DropdownItem>
@@ -190,7 +194,7 @@ export function Header(props) {
               {canGetWeeklySummaries ? (
                 <UncontrolledDropdown nav inNavbar>
                   <DropdownToggle nav caret>
-                    <span className="dashboard-text-link">{REPORTS}</span>
+                    <span className={`${styles.dashboardTextLink}`}>{REPORTS}</span>
                   </DropdownToggle>
                   <DropdownMenu>
                     <DropdownItem tag={Link} to="/reports">
@@ -224,7 +228,7 @@ export function Header(props) {
                 canManageUser) && (
                 <UncontrolledDropdown nav inNavbar>
                   <DropdownToggle nav caret>
-                    <span className="dashboard-text-link">{OTHER_LINKS}</span>
+                    <span className={`${styles.dashboardTextLink}`}>{OTHER_LINKS}</span>
                   </DropdownToggle>
                   <DropdownMenu>
                     {canPostUserProfile ||
@@ -277,7 +281,7 @@ export function Header(props) {
               </NavItem>
               <UncontrolledDropdown nav>
                 <DropdownToggle nav caret>
-                  <span className="dashboard-text-link">
+                  <span className={`${styles.dashboardTextLink}`}>
                     {WELCOME}, {firstName}
                   </span>
                 </DropdownToggle>

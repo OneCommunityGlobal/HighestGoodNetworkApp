@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import Announcements from 'components/Announcements';
+import Announcements from '~/components/Announcements';
 
 function EmailSender() {
   const location = useLocation();

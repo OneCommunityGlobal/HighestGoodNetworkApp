@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import types from '../constants/userProjects';
-import { ENDPOINTS } from '../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
 export const setUserProjects = data => ({
   type: types.GET_USER_PROJECTS,

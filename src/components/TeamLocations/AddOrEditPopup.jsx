@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form } from 'reactstrap';
-import Input from 'components/common/Input';
-import { createLocation, editLocation } from 'services/mapLocationsService';
 import axios from 'axios';
-import { ENDPOINTS } from 'utils/URL';
-import { boxStyle, boxStyleDark } from 'styles';
-import '../Header/DarkMode.css';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
+import Input from '~/components/common/Input';
+import { createLocation, editLocation } from '~/services/mapLocationsService';
+import { ENDPOINTS } from '~/utils/URL';
+import { boxStyle, boxStyleDark } from '~/styles';
+import '../Header/index.css';
 import CustomInput from './CustomInput';
 
 const initialLocationData = {
@@ -181,8 +181,6 @@ function AddOrEditPopup({
         toast.success('User successfully edited!');
         setTimeZone('');
         setLocationData(initialLocationData);
-      } else {
-        return;
       }
     } catch (err) {
       onClose();
@@ -216,7 +214,26 @@ function AddOrEditPopup({
       setFormSubmitted(false);
     }
   }, [open, formSubmitted]);
+  const firstNameLabel = (
+    <>
+      First Name
+      <span className="red-asterisk">*</span>
+    </>
+  );
 
+  const lastNameLabel = (
+    <>
+      Last Name
+      <span className="red-asterisk">*</span>
+    </>
+  );
+
+  const jobTitleLabel = (
+    <>
+      Job Title
+      <span className="red-asterisk">*</span>
+    </>
+  );
   return (
     <Modal
       isOpen={open}
@@ -236,12 +253,7 @@ function AddOrEditPopup({
             type="text"
             name="firstName"
             value={locationData.firstName}
-            label={
-              <>
-                First Name
-                <span className="red-asterisk">* </span>
-              </>
-            }
+            label={firstNameLabel}
             placeholder="Please enter a first name"
             onChange={locationDataHandler}
             required
@@ -253,12 +265,7 @@ function AddOrEditPopup({
             type="text"
             name="lastName"
             value={locationData.lastName}
-            label={
-              <>
-                Last Name
-                <span className="red-asterisk">* </span>
-              </>
-            }
+            label={lastNameLabel}
             placeholder="Please enter a last name"
             onChange={locationDataHandler}
             required
@@ -270,12 +277,7 @@ function AddOrEditPopup({
             type="text"
             name="jobTitle"
             value={locationData.jobTitle}
-            label={
-              <>
-                Job Title
-                <span className="red-asterisk">* </span>
-              </>
-            }
+            label={jobTitleLabel}
             placeholder="Please enter user job title"
             onChange={locationDataHandler}
             required

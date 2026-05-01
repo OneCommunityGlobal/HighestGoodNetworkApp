@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Modal, Form, FormGroup, Label, Input, Button, Table } from 'reactstrap';
 import axios from 'axios';
-import { ENDPOINTS } from 'utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import { toast } from 'react-toastify';
 
 function JobCCModal({ job, onClose, darkMode, onRefresh }) {

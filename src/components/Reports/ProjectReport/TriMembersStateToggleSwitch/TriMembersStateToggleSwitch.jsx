@@ -32,9 +32,27 @@ function TriMembersStateToggleSwitch({ onChange }) {
   return (
     <div className={`toggle-switch bg-${bgColor}`}>
       <div className="knob-area">
-        <div onClick={() => handleClick('posted')} />
-        <div onClick={() => handleClick('default')} />
-        <div onClick={() => handleClick('requested')} />
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={() => handleClick('posted')}
+          onKeyDown={e => e.key === 'Enter' && handleClick('posted')}
+          aria-label="Show posted"
+        />
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={() => handleClick('default')}
+          onKeyDown={e => e.key === 'Enter' && handleClick('default')}
+          aria-label="Show default"
+        />
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={() => handleClick('requested')}
+          onKeyDown={e => e.key === 'Enter' && handleClick('requested')}
+          aria-label="Show requested"
+        />
       </div>
       <div className={`knob ${position}`} />
     </div>

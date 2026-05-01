@@ -1,9 +1,10 @@
+/* eslint-disable react/destructuring-assignment */
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 
-export const TeamStatusPopup = React.memo(props => {
+function TeamStatusPopupComponent(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const closePopup = () => {
@@ -20,9 +21,11 @@ export const TeamStatusPopup = React.memo(props => {
         Status Popup
       </ModalHeader>
       <ModalBody style={{ textAlign: 'center' }} className={darkMode ? 'bg-yinmn-blue' : ''}>
-        <span>{`Are you sure you want to change the status of this team ${
-          props.selectedTeamName
-        } to ${props.selectedStatus ? 'inactive' : 'active'}?`}</span>
+        <span>
+          {`Are you sure you want to change the status of this team ${props.selectedTeamName} to ${
+            props.selectedStatus ? 'inactive' : 'active'
+          }?`}
+        </span>
         <br />
       </ModalBody>
       <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
@@ -46,5 +49,10 @@ export const TeamStatusPopup = React.memo(props => {
       </ModalFooter>
     </Modal>
   );
-});
+}
+
+TeamStatusPopupComponent.displayName = 'TeamStatusPopup';
+
+export const TeamStatusPopup = React.memo(TeamStatusPopupComponent);
+
 export default TeamStatusPopup;

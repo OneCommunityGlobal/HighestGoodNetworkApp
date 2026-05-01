@@ -1,6 +1,6 @@
-import { fetchBMProjects } from 'actions/bmdashboard/projectActions';
-import { fetchMaterialTypes } from 'actions/bmdashboard/invTypeActions';
-import { purchaseMaterial } from 'actions/bmdashboard/materialsActions';
+import { fetchBMProjects } from '~/actions/bmdashboard/projectActions';
+import { fetchMaterialTypes } from '~/actions/bmdashboard/invTypeActions';
+import { purchaseMaterial } from '~/actions/bmdashboard/materialsActions';
 import PurchaseForm from '../PurchaseForm';
 
 const formLabels = {

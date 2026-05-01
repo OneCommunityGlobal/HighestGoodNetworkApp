@@ -1,0 +1,72 @@
+/* stylelint-disable  */
+.jobCcDashboard {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.darkModeJobCcDashboard {
+  /*  #2c2f33 */
+  background-color: #1b2a41;
+  color: #fff;
+}
+
+.dashboardTitle {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.formContainer {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgb(0 0 0 / 10%);
+  margin-bottom: 30px;
+}
+
+.darkModeJobCcDashboard .formContainer {
+  background-color: #3c3f44;
+  color: #fff;
+}
+
+.formContainer form {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.listTitle {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+.ccListContainer {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgb(0 0 0 / 10%);
+}
+
+.darkModeJobCcDashboard .ccListContainer {
+  background-color: #3c3f44;
+}
+
+.jobCcDashboardTable {
+  margin-top: 10px;
+}
+
+.jobCcDashboardTable th {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.darkModeJobCcDashboard .jobCcDashboardTable th {
+  background-color: #0056b3;
+}
+
+.jobCcDashboardTable td {
+  vertical-align: middle;
+}
+
+.jobCcDashboardTable button {
+  font-size: 0.85rem;
+}

@@ -1,6 +1,4 @@
-import { leaderboardDataReducer } from '../leaderboardDataReducer';
-
-import { orgDataReducer } from '../leaderboardDataReducer';
+import { leaderboardDataReducer, orgDataReducer } from '../leaderboardDataReducer';
 
 describe('leaderboardDataReducer', () => {
   it('should return default state when no action is passed', () => {

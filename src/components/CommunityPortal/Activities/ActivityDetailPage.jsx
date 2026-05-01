@@ -1,23 +1,23 @@
 import { useState, useEffect } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchToolById } from 'actions/bmdashboard/toolActions';
+import { fetchToolById } from '~/actions/bmdashboard/toolActions';
 import { Container, Button } from 'reactstrap';
 import { v4 as uuidv4 } from 'uuid';
 import ToolModal from './ActivityModal';
-import './ActivityDetailPage.css';
+import styles from './ActivityDetailPage.module.css';
 
 function DetailItem({ label, value }) {
   return (
-    <p className="ToolDetailPage__detail_item">
-      {label}: <span className="ToolDetailPage__span">{value}</span>
+    <p className={`${styles.toolDetailPage_detailItem}`}>
+      {label}: <span className={`${styles.toolDetailPage_span}`}>{value}</span>
     </p>
   );
 }
 
 function LinkItem({ label, value }) {
   return (
-    <p className="ToolDetailPage__detail_item">
+    <p className={`${styles.toolDetailPage_detailItem}`}>
       <a href={value} target="_blank" rel="noopener noreferrer">
         {label}
       </a>
@@ -31,7 +31,7 @@ function DescriptionItem({ label, value, title }) {
 
   return (
     <div>
-      <Button onClick={toggle} color="link" className="descriptionItem_button">
+      <Button onClick={toggle} color="link" className={`${styles.descriptionItemButton}`}>
         {label}
       </Button>
       <ToolModal modal={modal} toggle={toggle} title={title} value={value} />
@@ -41,15 +41,15 @@ function DescriptionItem({ label, value, title }) {
 
 function RentalDurationItem({ label, from, to }) {
   return (
-    <p className="ToolDetailPage__detail_item">
-      {label}: <span className="ToolDetailPage__span">{from}</span> to{' '}
-      <span className="ToolDetailPage__span">{to}</span>
+    <p className={`${styles.toolDetailPage_detailItem}`}>
+      {label}: <span className={`${styles.toolDetailPage_span}`}>{from}</span> to{' '}
+      <span className={`${styles.toolDetailPage_span}`}>{to}</span>
     </p>
   );
 }
 
 function DashedLineItem() {
-  return <div className="ToolDetailPage__dashed_line" />;
+  return <div className={`${styles.toolDetailPage_dashedLine}`} />;
 }
 
 function ToolDetailPage() {
@@ -163,13 +163,19 @@ function ToolDetailPage() {
   };
 
   return (
-    <Container className="ToolDetailPage justify-content-center align-items-center mw-80 px-4">
-      <header className="ToolDetailPage__header">
+    <Container
+      className={`${styles.toolDetailPage} justify-content-center align-items-center mw-80 px-4`}
+    >
+      <header className={`${styles.toolDetailPage_header}`}>
         <h1>Tool Detail Page</h1>
       </header>
       <main className="ToolDetailPage__content">
         <p>
-          <img src={tool?.imageUrl} alt={tool?.itemType.name} className="ToolDetailPage__image" />
+          <img
+            src={tool?.imageUrl}
+            alt={tool?.itemType.name}
+            className={`${styles.toolDetailPage_image}`}
+          />
         </p>
         {details.filter(Boolean).map(renderDetails)}
         <Button outline onClick={() => history.push('/communityportal')}>

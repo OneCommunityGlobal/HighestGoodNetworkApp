@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalFooter, ModalBody } from 'reactstrap';
-import { boxStyle, boxStyleDark } from 'styles';
-import '../Header/DarkMode.css';
+import { boxStyle, boxStyleDark } from '~/styles';
+import '../Header/index.css';
 
 function ListUsersPopUp({ open, onClose, userProfiles, removeUser, setEdit }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -72,12 +72,12 @@ function ListUsersPopUp({ open, onClose, userProfiles, removeUser, setEdit }) {
                 <tr className={darkMode ? 'bg-space-cadet' : ''}>
                   <th style={{ width: '70px' }}>#</th>
                   <th onClick={() => handleSort('name')} style={{ cursor: 'pointer' }}>
-                    Name{' '}
+                    Name&nbsp;
                     {sortConfig.key === 'name' &&
                       (sortConfig.direction === 'ascending' ? '▲' : '▼')}
                   </th>
                   <th onClick={() => handleSort('location')} style={{ cursor: 'pointer' }}>
-                    Location{' '}
+                    Location&nbsp;
                     {sortConfig.key === 'location' &&
                       (sortConfig.direction === 'ascending' ? '▲' : '▼')}
                   </th>
@@ -96,9 +96,11 @@ function ListUsersPopUp({ open, onClose, userProfiles, removeUser, setEdit }) {
                     <tr key={user._id}>
                       <td>{index + 1}</td>
                       <td>{userName}</td>
-                      <td>{`${user.location.city ? `${user.location.city}, ` : ''} ${
-                        user.location.country
-                      }`}</td>
+                      <td>
+                        {`${user.location.city ? `${user.location.city}, ` : ''} ${
+                          user.location.country
+                        }`}
+                      </td>
                       <td>
                         <div
                           style={{

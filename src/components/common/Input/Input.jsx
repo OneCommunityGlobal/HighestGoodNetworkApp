@@ -3,7 +3,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import './input.css';
+import styles from './input.module.css';
 import { useSelector } from 'react-redux';
 
 // eslint-disable-next-line react/function-component-definition
@@ -11,8 +11,8 @@ const Input = ({ label, name, error, className, type, invalid, textColor, ...res
   const [eye, setEye] = useState(true);
   const [password, setPassword] = useState('password');
 
-  const darkMode = useSelector(state => state.theme.darkMode);
-  const darkModeText = textColor || 'text-azure';
+  const darkmode = useSelector(state => state.theme.darkMode);
+  const darkmodeText = textColor || 'text-azure';
 
   const toggleEye = () => {
     if (password === 'password') {
@@ -25,20 +25,23 @@ const Input = ({ label, name, error, className, type, invalid, textColor, ...res
   };
 
   return (
-    <div className={`form-group ${className || ''}`}>
-      <label htmlFor={name} className={darkMode ? darkModeText : ''}>
+    <div data-testid="form-group" className={`form-group ${className || ''}`}>
+      <label htmlFor={name} className={darkmode ? darkmodeText : ''}>
         {label}
       </label>
       {type === 'password' ? (
-        <div className="input-text w-100">
+        <div className={`${styles.inputText} w-100`}>
           <input
             {...rest}
             type={password}
             id={name}
             name={name}
-            className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
+            className={`form-control ${darkmode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
           />
-          <i onClick={toggleEye} className={`fa ${eye ? 'fa-eye-slash' : 'fa-eye'}`} />
+          <i
+            onClick={toggleEye}
+            className={`fa ${eye ? 'fa-eye-slash' : 'fa-eye'} ${styles.eyeIcon}`}
+          />
           {invalid && (
             <div className="text-danger" style={{ fontSize: '14px' }}>
               {invalid}
@@ -51,7 +54,7 @@ const Input = ({ label, name, error, className, type, invalid, textColor, ...res
           type={type}
           id={name}
           name={name}
-          className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
+          className={`form-control ${darkmode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
         />
       )}
       {error && <div className="alert alert-danger mt-1">{error}</div>}
