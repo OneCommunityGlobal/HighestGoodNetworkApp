@@ -1,22 +1,22 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { formatDate } from '~/utils/formatDate';
+import { ENDPOINTS } from '~/utils/URL';
 import {
-  GET_ALL_BADGE_DATA,
   ADD_SELECT_BADGE,
-  REMOVE_SELECT_BADGE,
   CLEAR_NAME_AND_SELECTED,
   CLEAR_SELECTED,
+  CLOSE_ALERT,
+  GET_ALL_BADGE_DATA,
+  GET_BADGE_COUNT,
   GET_FIRST_NAME,
   GET_LAST_NAME,
   GET_MESSAGE,
-  CLOSE_ALERT,
   GET_USER_ID,
-  GET_BADGE_COUNT,
+  REMOVE_SELECT_BADGE,
   RESET_BADGE_COUNT,
   SET_ACTIVE_TAB,
 } from '../constants/badge';
-import { ENDPOINTS } from '~/utils/URL';
 
 export const ALERT_DELAY = process.env.NODE_ENV === 'test' ? 0 : 6000;
 
@@ -200,45 +200,26 @@ export const returnUpdatedBadgesCollection = (badgeCollection, selectedBadgesId)
 };
 
 export const returnUpdatedBadgesCollectionSingleUser = (badgeCollection, selectedBadgesId) => {
-  let newBadgeCollection = Array.from(badgeCollection);
-
-  const updatedOrAddedBadges = {};
+  const newBadgeCollection = badgeCollection.map(b => ({ ...b, earnedDate: [...b.earnedDate] }));
+  const currentTs = Date.now();
+  const currentDate = formatDate();
 
   selectedBadgesId.forEach(originalBadgeId => {
     let badgeId = originalBadgeId;
     if (badgeId.includes('assign-badge-')) badgeId = badgeId.replace('assign-badge-', '');
 
-    if (!updatedOrAddedBadges[badgeId]) {
-      let included = false;
-      const currentTs = Date.now();
-      const currentDate = formatDate();
-
-      newBadgeCollection = newBadgeCollection.map(badgeObj => {
-                            if (badgeId === badgeObj.badge) {
-                              if (!included) {
-                                included = true;
-                                updatedOrAddedBadges[badgeId] = true;
-                                return {
-                                  ...badgeObj,
-                                  count: badgeObj.count ? badgeObj.count + 1 : 1,
-                                  lastModified: currentTs,
-                                  earnedDate: [...badgeObj.earnedDate, currentDate]
-                                };
-                              }
-                              updatedOrAddedBadges[badgeId] = true;
-                            }
-                            return badgeObj;
-       });
-
-      if (!included) {
-        newBadgeCollection.push({
-          badge: badgeId,
-          count: 1,
-          lastModified: currentTs,
-          earnedDate: [currentDate],
-        });
-        updatedOrAddedBadges[badgeId] = true;
-      }
+    const existing = newBadgeCollection.find(b => b.badge === badgeId);
+    if (existing) {
+      existing.count = (existing.count || 0) + 1;
+      existing.lastModified = currentTs;
+      existing.earnedDate.push(currentDate);
+    } else {
+      newBadgeCollection.push({
+        badge: badgeId,
+        count: 1,
+        lastModified: currentTs,
+        earnedDate: [currentDate],
+      });
     }
   });
 
