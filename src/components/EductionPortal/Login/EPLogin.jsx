@@ -64,19 +64,20 @@ function EPLogin(props) {
     }
     const res = await dispatch(loginBMUser({ email: enteredEmail, password: enterPassword }));
     // server side error validation
-    if (!res || res.status !== 200) {
-      if (res && res.status === 422) {
+    if (res.statusText !== 'OK') {
+      if (res.status === 422) {
         return setValidationError({
           label: res.data.label,
           message: res.data.message,
         });
       }
+      // TODO: add additional error handling
       return setValidationError({
-        label: 'form',
-        message: 'Login failed. Please check your credentials and try again.',
+        label: '',
+        message: '',
       });
     }
-    // initiate push to EP if validated (ie received token)
+    // initiate push to BM Dashboard if validated (ie received token)
     return setHasAccess(!!res.data.token);
   };
 
@@ -117,9 +118,6 @@ function EPLogin(props) {
             <FormFeedback>{validationError.message}</FormFeedback>
           )}
         </FormGroup>
-        {validationError && validationError.label === 'form' && (
-          <p style={{ color: 'red', marginTop: '0.5rem' }}>{validationError.message}</p>
-        )}
         <Button disabled={!enteredEmail || !enterPassword}>Submit</Button>
       </Form>
     </div>

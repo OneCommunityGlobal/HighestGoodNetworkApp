@@ -88,42 +88,14 @@ const ModalExample = props => {
       </ModalBody>
       <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
         {setInactiveModal != null ? (
-          <>
-            <Button
-              color="secondary"
-              onClick={closeModal}
-              style={darkMode ? boxStyleDark : boxStyle}
-            >
-              Nope, changed my mind
-            </Button>
-            <Button
-              color="success"
-              disabled={isSetInactiveDisabled}
-              onClick={setInactiveModal}
-              style={darkMode ? boxStyleDark : boxStyle}
-            >
-              {isSetInactiveDisabled ? 'Setting Inactive...' : setInactiveButton}
-            </Button>
-          </>
+          <Button color="danger" onClick={closeModal} style={darkMode ? boxStyleDark : boxStyle}>
+            Nope, changed my mind
+          </Button>
         ) : null}
         {setActiveModal != null ? (
-          <>
-            <Button
-              color="secondary"
-              onClick={closeModal}
-              style={darkMode ? boxStyleDark : boxStyle}
-            >
-              Nope, leave it buried
-            </Button>
-            <Button
-              color="success"
-              disabled={isSetActiveDisabled}
-              onClick={setActiveModal}
-              style={darkMode ? boxStyleDark : boxStyle}
-            >
-              {isSetActiveDisabled ? 'Setting Active...' : setActiveButton}
-            </Button>
-          </>
+          <Button color="danger" onClick={closeModal} style={darkMode ? boxStyleDark : boxStyle}>
+            Nope, leave it buried
+          </Button>
         ) : null}
         {/*
         {confirmModal != null ? (
@@ -179,7 +151,7 @@ const ModalExample = props => {
         {/* Close button */}
         {confirmModal && (
           <Button color="secondary" onClick={closeModal} style={darkMode ? boxStyleDark : boxStyle}>
-            Nope, changed my mind
+            Close
           </Button>
         )}
 

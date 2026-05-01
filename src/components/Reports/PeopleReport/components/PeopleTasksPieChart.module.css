@@ -1,9 +1,8 @@
-/* stylelint-disable  */
 .people-pie-charts-wrapper {
   display: grid;
   grid-auto-flow: row;
   row-gap: 8px; 
-  color: rgb(0 0 0 / 50%);
+  color: rgba(0, 0, 0, 0.5);
 }
 
 .pie-no-scroll,
@@ -31,7 +30,7 @@
   height: 100% !important;
 }
 
-@media (width >= 2000px) {
+@media (min-width: 2000px) {
   .people-pie-charts-wrapper {
     grid-auto-flow: column;
     column-gap: 24px;

@@ -1,4 +1,3 @@
-/* stylelint-disable  */
 /* === selectors layout === */
 .selectorsContainer {
   display: flex;
@@ -43,7 +42,7 @@
   color: var(--text-color);
 }
 
-@media (width <= 768px) {
+@media (max-width: 768px) {
   .selectorsContainer {
     flex-direction: column;
     gap: 0.5rem;

@@ -1,4 +1,3 @@
-/* stylelint-disable  */
 :root {
   --border: #e8e8e8;
   --radius: 16px;
@@ -23,23 +22,19 @@
   transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
   user-select: none;
 }
-
 .dropzone.over {
   background: #fafcff;
   border-color: #b9cdfa;
-  box-shadow: 0 0 0 3px rgb(60 120 255 / 12%) inset;
+  box-shadow: 0 0 0 3px rgba(60, 120, 255, 0.12) inset;
 }
-
 .cloud {
   margin-top: 2px;
 }
-
 .dzTitle {
   font-size: 18px;
   font-weight: 600;
   color: #111;
 }
-
 .or {
   font-size: 13px;
   color: #777;
@@ -52,7 +47,6 @@
   row-gap: 14px;
   margin-top: 6px;
 }
-
 .hiddenInput {
   display: none;
 }
@@ -65,7 +59,6 @@
   font-weight: 700;
   cursor: pointer;
 }
-
 .browseBtn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
@@ -81,10 +74,9 @@
   padding: 10px 16px;
   border-radius: 12px;
   font-weight: 700;
-  box-shadow: 0 2px 0 rgb(0 0 0 / 15%);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.15);
   cursor: pointer;
 }
-
 .uploadBtn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
@@ -98,7 +90,6 @@
   justify-items: center;
   margin-top: 6px;
 }
-
 .progressTrack {
   width: 100%;
   height: 14px;
@@ -106,14 +97,12 @@
   border-radius: 999px;
   overflow: hidden;
 }
-
 .progressFill {
   height: 100%;
   background: #5a5a5a;
   border-radius: 999px;
   transition: width 0.12s linear;
 }
-
 .progressPct {
   font-size: 13px;
   color: #333;
@@ -130,19 +119,16 @@
 .notesBlock {
   margin-top: 18px;
 }
-
 .notesLabel {
   display: block;
   font-size: 14px;
   font-weight: 700;
   margin-bottom: 8px;
 }
-
 .muted {
   color: var(--muted);
   font-weight: 500;
 }
-
 .notes {
   width: 100%;
   min-height: 76px;
@@ -155,12 +141,11 @@
 }
 
 /* Responsive tweaks */
-@media (width <= 680px) {
+@media (max-width: 680px) {
   .dropzone {
     padding: 22px 14px;
     min-height: 220px;
   }
-
   .browseBtn {
     padding: 9px 16px;
   }

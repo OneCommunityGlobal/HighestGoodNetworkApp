@@ -15,7 +15,6 @@
 
 .calendarActivitySection,
 .calendarSection {
-  position: relative;
   flex: 1;
   border-radius: 8px;
   padding: 20px;
@@ -61,8 +60,6 @@
 }
 
 .reactCalendar {
-  position: relative;
-  z-index: 1;
   width: 100%;
   height: auto;
   font-size: 1.2rem;
@@ -147,16 +144,16 @@
   height: 80px;
   overflow: auto;
   border: 1px solid #555454;
-  box-sizing: border-box;
-  vertical-align: top;
-  padding: 2px;
+  box-sizing: border-box; 
 }
 
 .reactCalendar :global(.react-calendar__navigation) {
   background-color: #f9f9f9;
   border-bottom: 1px solid #ddd;
   margin-bottom: 0 !important;
+  
 }
+
 
 .reactCalendar :global(.react-calendar__tile) {
   display: grid;
@@ -216,37 +213,38 @@
 }
 
 .reactCalendar :global(.react-calendar__tile) .tileEvents {
+  font-size: 0.9rem;
+  color: #555;
+  margin-top: 4px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 2px;
-  width: 100%;
+  line-height: 1.1;
 }
 
-.tileEvents {
-  position: relative;
+.reactCalendar :global(.react-calendar__tile) :global(.eventItem) {
+  background-color: #e0f7fa;
+  padding: 5px;
+  border-radius: 4px;
+  margin-bottom: 5px;
+  white-space: nowrap;
 }
 
 /* Ensure tileEvents text is readable on selected date */
+.reactCalendar :global(.react-calendar__tile.selectedDate) .tileEvents {
+  color: #1a202c;
+}
 
 .reactCalendarDarkMode :global(.react-calendar__tile) .tileEvents {
   color: #e2e8f0;
-}
-
-.reactCalendar :global(.react-calendar__tile.selectedDate) .tileEvents {
-  color: #1a202c;
 }
 
 .reactCalendarDarkMode :global(.react-calendar__tile.selectedDate) .tileEvents {
   color: #fff;
 }
 
-.eventItem {
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
+
 
 .reactCalendar .eventItem {
   display: block;
@@ -257,20 +255,9 @@
   border-radius: 3px;
   background-color: #e0f7fa;
   cursor: pointer;
-}
-
-.reactCalendar :global(.eventItem) {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  max-width: 100%;
-  padding: 2px 6px;
-  margin-bottom: 2px;
-  border-radius: 999px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  background-color: #e0f7fa;
-  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .reactCalendar :global(.react-calendar__tile) .eventItem.statusNew {
@@ -281,8 +268,8 @@
 }
 
 .reactCalendar :global(.react-calendar__tile) .eventItem.statusNeedsAttendees {
-  background-color: #f3e5f5;
-  color: #6a1b9a;
+  background-color: #f3e5f5; 
+  color: #6a1b9a; 
   padding: 3px 5px;
   font-weight: 500;
 }
@@ -407,23 +394,8 @@
   color: #ffcdd2;
 }
 
-.overflowPopup .eventItem {
-  margin-bottom: 8px;
-  font-size: 0.9rem;
-  padding: 6px 10px;
-  border-radius: 6px;
-  color: #fff;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-
-.overflowPopup .eventItem:hover {
-  transform: translateY(-1px);
-}
-
-.reactCalendar .eventItem:hover {
-  transform: translate(-1px);
+.reactCalendar .eventItem.clickable:hover {
+  transform: scale(1.05) !important;
   z-index: 10;
   box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
 }
@@ -527,18 +499,6 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-}
-
-.modalHeader h2 {
-  margin: 0;
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #2d3748;
-}
-
-.calendarActivitySectionDarkMode h2 {
-  color: #fff;
-  margin-bottom: 10px;
 }
 
 .selectedDatePanelDarkMode .selectedDateHeader h2 {
@@ -668,22 +628,22 @@
 
 .eventTooltip {
   position: absolute;
-  top: 0;
-  left: 100%;
-  transform: translate(8px, -10px);
-  z-index: 999;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 5px;
   width: 220px;
   padding: 10px;
   background-color: #fff;
   border: 1px solid #ccc;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
+  z-index: 10;
+  pointer-events: none;
   display: flex;
   flex-direction: column;
   gap: 4px;
-  font-size: 0.75rem;
-  line-height: 1.3;
-  pointer-events: none;
+  color: #333;
 }
 
 .eventTooltipDark {
@@ -714,10 +674,10 @@
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  animation: fade-in 0.2s ease-out;
+  animation: fadeIn 0.2s ease-out;
 }
 
-@keyframes fade-in {
+@keyframes fadeIn {
   from {
     opacity: 0;
   }
@@ -740,7 +700,7 @@
   z-index: 2;
 }
 
-@keyframes slide-in {
+@keyframes slideIn {
   from {
     opacity: 0;
     transform: translateY(-20px) scale(0.95);
@@ -752,12 +712,11 @@
   }
 }
 
-.eventModalDark {
+/* .eventModalDark {
   background: #1a202c;
   color: #e2e8f0;
   border: 1px solid #4a5568;
-  box-shadow: 0 10px 40px rgb(0 0 0 / 60%);
-}
+} */
 
 .modalHeader {
   display: flex;
@@ -771,6 +730,13 @@
   border-bottom-color: #4a5568;
   background: #2d3748;
   border-radius: 12px 12px 0 0;
+}
+
+.modalHeader h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2d3748;
 }
 
 .eventModalDark .modalHeader h2 {
@@ -823,7 +789,7 @@
 /* Base Style: The Pill */
 .statusBadge {
   padding: 4px 14px;
-  border-radius: 50px;
+  border-radius: 50px; 
   font-size: 13px;
   font-weight: 800;
   text-transform: uppercase;
@@ -834,14 +800,14 @@
 
 /* Green: Full */
 .Full {
-  background-color: #E6FFFA;
+  background-color: #E6FFFA; 
   border-color: #138c78;
-  color: #234E52;
+  color: #234E52; 
 }
 
 /* Orange: Filling Fast */
 .FillingFast {
-  background-color: #FFF5E6;
+  background-color: #FFF5E6; 
   border-color: #FFD580;
   color: #C05621;
 }
@@ -862,38 +828,38 @@
 
 /* --- Base Dark Mode Badge --- */
 .darkModeStatusBadge {
-  background-color: #1a1a1a;
-  border-width: 1.5px;
+  background-color: #1a1a1a; 
+  border-width: 1.5px;      
 }
 
 /* --- Dark Mode Specific Statuses --- */
 
 /* Full - Deep Emerald */
 .darkModeStatusBadge.Full {
-  background-color: rgb(6 78 59 / 40%);
-  border-color: #10b981;
-  color: #d1fae5;
+  background-color: rgb(6 78 59 / 40%); 
+  border-color: #10b981;                
+  color: #d1fae5;                       
 }
 
 /* Filling Fast - Deep Burnt Orange */
 .darkModeStatusBadge.FillingFast {
-  background-color: rgb(124 45 18 / 40%);
-  border-color: #f97316;
-  color: #ffedd5;
+  background-color: rgb(124 45 18 / 40%); 
+  border-color: #f97316;                    
+  color: #ffedd5;                           
 }
 
 /* New - Deep Crimson */
 .darkModeStatusBadge.New {
-  background-color: rgb(127 29 29 / 40%);
-  border-color: #ef4444;
-  color: #fee2e2;
+  background-color: rgb(127 29 29 / 40%); 
+  border-color: #ef4444;                    
+  color: #fee2e2;                           
 }
 
 /* Needs Attendees - Deep Royal Blue */
 .darkModeStatusBadge.NeedsAttendees {
-  background-color: rgb(30 58 138 / 40%);
-  border-color: #3b82f6;
-  color: #dbeafe;
+  background-color: rgb(30 58 138 / 40%); 
+  border-color: #3b82f6;                    
+  color: #dbeafe;                          
 }
 
 .eventDetailsGrid {
@@ -917,16 +883,6 @@
   letter-spacing: 0.5px;
 }
 
-.eventDescription label {
-  display: block;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #718096;
-  margin-bottom: 8px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
 .eventModalDark .detailItem label {
   color: #cbd5e0;
 }
@@ -945,6 +901,16 @@
   margin-bottom: 24px;
 }
 
+.eventDescription label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #718096;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
 .eventModalDark .eventDescription label {
   color: #cbd5e0;
 }
@@ -954,11 +920,6 @@
   font-size: 1rem;
   line-height: 1.6;
   color: #4a5568;
-}
-
-.activityNoEventsMessage p {
-  margin: 0;
-  font-size: 1rem;
 }
 
 .eventModalDark .eventDescription p {
@@ -1027,6 +988,7 @@
   background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
 }
 
+/* Better dark mode contrast for all text elements */
 .eventModalDark * {
   text-shadow: 0 1px 2px rgb(0 0 0 / 10%);
 }
@@ -1061,6 +1023,11 @@
 
 .activityHeaderDark {
   color: #f7fafc;
+}
+
+.calendarActivitySectionDarkMode h2 {
+  color: #fff;
+  margin-bottom: 10px;
 }
 
 .calendarActivityList {
@@ -1105,47 +1072,6 @@
 
 .calendarActivityItemDarkMode small {
   color: #fff;
-}
-
-.eventButton {
-  width: 100%;
-  text-align: left;
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.eventButton:hover {
-  background-color: #f0f0f0;
-}
-
-.calendarActivityItemDarkMode .eventButton:hover {
-  background-color: #4a5568;
-}
-
-.calendarActivityItem.clickable {
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.calendarActivityItem.clickable:hover {
-  background-color: #f0f0f0;
-}
-
-.calendarActivityItemDarkMode.clickable:hover {
-  background-color: #4a5568;
-}
-
-.activityNoEventsMessage {
-  padding: 20px;
-  text-align: center;
-  color: #666;
-}
-
-.calendarActivitySectionDarkMode .activityNoEventsMessage {
-  color: #cbd5e0;
 }
 
 .activityMessage {
@@ -1229,16 +1155,6 @@
 }
 
 .reactCalendarDarkMode :global(.react-calendar__navigation) {
-  background-color: #1b2a41;
-  border-bottom: 1px solid #444;
-}
-
-.reactCalendarDarkMode :global(.react-calendar__navigation button) {
-  color: #fff;
-}
-
-.reactCalendarDarkMode :global(.react-calendar__navigation button:enabled:hover),
-.reactCalendarDarkMode :global(.react-calendar__navigation button:enabled:focus) {
   background-color: #2d3748;
   border-bottom-color: #4a5568;
 }
@@ -1364,6 +1280,21 @@
   border-bottom-color: #4a5568;
 }
 
+.overflowPopup .eventItem {
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  padding: 6px 10px;
+  border-radius: 6px;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.overflowPopup .eventItem:hover {
+  transform: translateY(-1px);
+}
+
 .detailLabel {
   font-size: 0.8rem;
   font-weight: 600;
@@ -1374,28 +1305,12 @@
   display: block;
 }
 
-/* Week Grid Styles */
-.weekGridContainer {
-  display: flex;
-  flex-direction: column;
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  height: 700px;
-  overflow: hidden;
-  margin-bottom: 20px;
-}
 
-.weekGridBody {
-  flex: 1;
-  overflow-y: scroll;
-  background: #fff;
-}
 
 @media (width <= 1024px) {
   .calendarContainer{
     flex-direction: column;
-  }
+  } 
 
   .reactCalendar {
     padding: 1rem;
@@ -1403,136 +1318,3 @@
 
 }
 
-.dateLabel {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #1e293b;
-}
-
-.hourRow {
-  display: grid;
-  grid-template-columns: 80px repeat(7, 1fr);
-  min-height: 80px;
-  border-bottom: 1px solid #f1f5f9;
-}
-
-.timeLabel {
-  font-size: 0.75rem;
-  color: #94a3b8;
-  text-align: right;
-  padding-right: 12px;
-  padding-top: 8px;
-  font-weight: 500;
-  border-right: 1px solid #e2e8f0;
-}
-
-.gridCell {
-  border-left: 1px solid #f1f5f9;
-  position: relative;
-  padding: 4px;
-  transition: background 0.2s;
-}
-
-.gridCell:hover {
-  background-color: #f8fafc;
-}
-
-.gridEvent {
-  background: #dcfce7;
-  border-left: 4px solid #22c55e;
-  border-radius: 6px;
-  padding: 6px;
-  font-size: 0.75rem;
-  cursor: pointer;
-  box-shadow: 0 1px 2px rgb(0 0 0 / 5%);
-  margin-bottom: 4px;
-}
-
-.gridEventTitle {
-  font-weight: 600;
-  color: #166534;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* Dark Mode Support */
-.weekGridContainerDark {
-  background: #1a2332;
-  border-color: #2d3748;
-}
-
-.weekGridContainerDark .weekGridBody {
-  background: #0f172a;
-}
-
-.weekGridHeaderDark {
-  background: #232d3f;
-  border-bottom-color: #2d3748;
-}
-
-.dayLabelDark {
-  color: #a0aec0;
-}
-
-.dateLabelDark {
-  color: #fff;
-}
-
-.hourRowDark {
-  border-bottom-color: #2d3748;
-}
-
-.timeLabelDark {
-  color: #718096;
-  border-right-color: #2d3748;
-}
-
-.gridCellDark {
-  border-left-color: #2d3748;
-}
-
-.gridCellDark:hover {
-  background-color: rgb(255 255 255 / 3%);
-}
-
-.gridEventDark {
-  background: #064e3b;
-  border-left: 4px solid #10b981;
-  box-shadow: 0 2px 4px rgb(0 0 0 / 30%);
-}
-
-.gridEventTitleDark {
-  color: #d1fae5;
-}
-
-.gridEventTimeDark {
-  color: #a7f3d0;
-}
-
-.eventContent {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  overflow: hidden;
-}
-
-.eventIcon {
-  font-size: 0.75rem;
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-}
-
-.eventTitleText {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.statusInline {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-weight: 600;
-}

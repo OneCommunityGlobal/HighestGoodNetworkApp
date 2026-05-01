@@ -1,10 +1,9 @@
-/* stylelint-disable  */
 /* Skeleton Loading for Timelog */
 
 .skeleton-loading-timelog {
   display: flex;
   flex-direction: column;
-  border: 1px solid rgb(0 0 0 / 12.5%);
+  border: 1px solid rgba(0, 0, 0, 0.125);
   margin-right: 1rem;
   background-color: #f3f4f6;
 }
@@ -62,8 +61,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  border: 1px solid rgb(0 0 0 / 12.5%);
-
+  border: 1px solid rgba(0, 0, 0, 0.125);
   /* background-color: #f3f4f6; */
   width: 16rem;
   height: 8rem;
@@ -79,7 +77,7 @@
 .skeleton-loading-weekly-summaries-report {
   display: flex;
   flex-direction: column;
-  border: 1px solid rgb(0 0 0 / 12.5%);
+  border: 1px solid rgba(0, 0, 0, 0.125);
   background-color: white;
   margin-top: 3rem;
   padding-top: 1rem;
@@ -87,8 +85,7 @@
 }
 
 .skeleton-loading-weekly-summaries-report-item {
-  border: 1px solid rgb(0 0 0 / 12.5%);
-
+  border: 1px solid rgba(0, 0, 0, 0.125);
   /* background-color: #f3f4f6; */
   margin-top: 5px;
   width: 90%;
@@ -104,8 +101,7 @@
 .skeleton-loading-user-profile-picture {
   display: flex;
   flex-direction: column;
-  border: 1px solid rgb(0 0 0 / 12.5%);
-
+  border: 1px solid rgba(0, 0, 0, 0.125);
   /* background-color: #f3f4f6; */
   width: 16rem;
   height: 8rem;
@@ -134,7 +130,7 @@
   animation: skeleton-loading-animation 1.5s ease-in-out infinite;
   height: 2.5rem;
   border-radius: 5px;
-  margin: 0.625rem 0.25rem 0.125rem;
+  margin: 0.625rem 0.25rem 0.125rem 0.25rem;
 }
 
 .mx-max-sm-0 {
@@ -146,7 +142,6 @@
   0% {
     background-position: -200% 0;
   }
-
   100% {
     background-position: 200% 0;
   }

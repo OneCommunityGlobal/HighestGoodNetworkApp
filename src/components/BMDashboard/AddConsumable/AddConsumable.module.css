@@ -1,4 +1,3 @@
-/* stylelint-disable  */
 .consumableContainer {
   padding: 0% !important;
   min-height: 100vh;
@@ -8,7 +7,7 @@
   background-color: #E8F4F9;
   width: 100%;
   min-height: 100%;
-  margin: 0;
+  margin: 0px;
   padding: 1rem 2rem;
   font-size: 15px;
 }
@@ -73,7 +72,6 @@
  background-color: #2a3f5f !important;
  border: none;
 }
-
 .select :global(.rs__menu) {
   background-color: #2a3f5f !important;
 }
@@ -87,8 +85,8 @@
 .select :global(.rs__option--is-focused) {
   background-color: #99b2e3;
 }
+@media (max-width: 780px) {
 
-@media (width <= 780px) {
   #AddConsumableForm {
     padding-left: 20px;
     padding-right: 20px;

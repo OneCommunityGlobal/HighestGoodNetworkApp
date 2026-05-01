@@ -1,4 +1,3 @@
-/* stylelint-disable  */
 /* Page wrapper */
 .wrapper {
   width: 100%;
@@ -6,7 +5,7 @@
 
 /* Alert */
 .unsavedAlert {
-  margin: 0 0 12px;
+  margin: 0 0 12px 0;
 }
 
 /* Header layout */
@@ -40,7 +39,7 @@
 }
 
 .editIconBtn:focus-visible {
-  outline: 2px solid rgb(0 123 255 / 55%);
+  outline: 2px solid rgba(0, 123, 255, 0.55);
   outline-offset: 2px;
   border-radius: 6px;
 }
@@ -96,13 +95,13 @@
 
 /* Focus for accessibility */
 .infoIconBtn:focus-visible {
-  outline: 2px solid rgb(0 123 255 / 55%);
+  outline: 2px solid rgba(0, 123, 255, 0.55);
   outline-offset: 2px;
   border-radius: 6px;
 }
 
 .permissionListTitle {
-  margin: 14px 0 0;
+  margin: 14px 0 0 0;
   font-size: 40px;
   font-weight: 700;
   color: #3b82f6; /* your “Permission List” blue feel */
@@ -122,11 +121,10 @@
 }
 
 /* Small screens: reduce the huge title sizes */
-@media (width <= 768px) {
+@media (max-width: 768px) {
   .title {
     font-size: 32px;
   }
-
   .permissionListTitle {
     font-size: 28px;
   }

@@ -1,4 +1,3 @@
-/* stylelint-disable  */
 .mfkContainer {
   padding: 1rem;
   font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
@@ -844,7 +843,7 @@
 }
 
 .mfkContainer.darkMode :global(.react-datepicker__day--selected:hover) {
-  background-color: #1e40af !important;
+  background-color: #2563eb !important;
 }
 
 .mfkContainer.darkMode :global(.react-datepicker__day--keyboard-selected) {

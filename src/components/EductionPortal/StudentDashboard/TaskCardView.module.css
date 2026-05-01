@@ -1,4 +1,3 @@
-/* stylelint-disable  */
 .cardView {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -17,7 +16,7 @@
 }
 
 /* Responsive Design */
-@media (width <= 768px) {
+@media (max-width: 768px) {
   .cardView {
     grid-template-columns: 1fr;
     gap: 1rem;

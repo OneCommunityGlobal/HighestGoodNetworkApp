@@ -6,97 +6,6 @@ import Loading from '../../common/Loading';
 
 const COLORS = ['#00AFF4', '#FFA500', '#00B030', '#EC52CB', '#F8FF00'];
 
-function parseRangeStart(rangeStr) {
-  if (!rangeStr) return 0;
-  const [first] = String(rangeStr).split(/[-+]/);
-  const parsed = Number(first);
-  return Number.isFinite(parsed) ? parsed : 0;
-}
-
-function normalizeBucketId(rangeStr) {
-  if (!rangeStr) return '';
-  const trimmed = String(rangeStr).trim();
-  if (trimmed.includes('+')) {
-    const start = parseRangeStart(trimmed);
-    return start === 40 ? '50+' : `${start}+`;
-  }
-  if (trimmed.includes('-')) {
-    const start = parseRangeStart(trimmed);
-    if (start === 40) return '40';
-    return String(start);
-  }
-  return String(parseRangeStart(trimmed));
-}
-
-function mergeHoursBuckets(hoursData) {
-  const safeHoursData = Array.isArray(hoursData) ? hoursData : [];
-  const merged = new Map();
-  safeHoursData.forEach(item => {
-    const normalizedId = normalizeBucketId(item?._id);
-    if (!normalizedId) return;
-    const existing = merged.get(normalizedId) || 0;
-    merged.set(normalizedId, existing + (Number(item?.count) || 0));
-  });
-  return [...merged.entries()]
-    .map(([id, count]) => ({ _id: id, count }))
-    .sort((a, b) => parseRangeStart(a._id) - parseRangeStart(b._id));
-}
-
-function allocateRoundedHoursByCount(normalizedHoursData, totalHoursWorked) {
-  const roundedTotalHours = Math.max(0, Math.round(Number(totalHoursWorked) || 0));
-  const totalCount = normalizedHoursData.reduce(
-    (sum, bucket) => sum + (Number(bucket.count) || 0),
-    0,
-  );
-
-  if (!totalCount || !roundedTotalHours) {
-    return normalizedHoursData.map(bucket => ({ ...bucket, allocatedHours: 0 }));
-  }
-
-  const provisional = normalizedHoursData.map(bucket => {
-    const count = Number(bucket.count) || 0;
-    const exact = (count / totalCount) * roundedTotalHours;
-    const base = Math.floor(exact);
-    return { ...bucket, allocatedHours: base, remainder: exact - base };
-  });
-
-  let assigned = provisional.reduce((sum, bucket) => sum + bucket.allocatedHours, 0);
-  let remaining = roundedTotalHours - assigned;
-
-  const byRemainderDesc = [...provisional].sort((a, b) => b.remainder - a.remainder);
-  let i = 0;
-  while (remaining > 0 && byRemainderDesc.length > 0) {
-    byRemainderDesc[i % byRemainderDesc.length].allocatedHours += 1;
-    remaining -= 1;
-    i += 1;
-  }
-
-  return byRemainderDesc
-    .map(({ remainder, ...bucket }) => bucket)
-    .sort((a, b) => parseRangeStart(a._id) - parseRangeStart(b._id));
-}
-
-// convert backend range string (e.g. "10", "40+", "20-29")
-// into a user-facing label with units.
-export function formatRangeLabel(rangeStr) {
-  if (!rangeStr) return '';
-  const normalizedRange = normalizeBucketId(rangeStr);
-  let displayName = '';
-  if (normalizedRange.includes('+')) {
-    const num = parseFloat(normalizedRange.replace('+', ''));
-    if (num === 40) {
-      displayName = '50+ hrs';
-    } else {
-      displayName = `${num}+ hrs`;
-    }
-  } else {
-    const num = parseFloat(normalizedRange);
-    const next = (num + 9.99).toFixed(2);
-    displayName = `${num}-${next} hrs`;
-  }
-  return displayName;
-}
-
 function HoursWorkList({ data, darkMode }) {
   if (!data) return <div />;
 
@@ -104,16 +13,11 @@ function HoursWorkList({ data, darkMode }) {
     const rangeStr = elem._id;
     const entry = {
       name: rangeStr,
-      count: elem.count,
     };
 
-    // derive human-readable label for the bucket
-    const displayName = formatRangeLabel(rangeStr);
-
-    entry.displayName = displayName;
+    const rangeArr = rangeStr.split('-');
     entry.color = COLORS[index];
 
-    const rangeArr = rangeStr.split('-');
     if (rangeArr.length > 1) {
       const [min, max] = rangeArr;
       entry.min = Number(min);
@@ -151,35 +55,12 @@ function HoursWorkList({ data, darkMode }) {
   );
 }
 
-// export HoursWorkList separately for testing
-export { HoursWorkList };
-
-// shared helper: derives normalizedHoursData, userData, and totals from raw API data
-function buildChartData(hoursData, totalHoursData) {
-  const normalizedHoursData = mergeHoursBuckets(hoursData);
-  const totalVolunteers = normalizedHoursData.reduce((total, cur) => total + (cur.count || 0), 0);
-  const totalHoursWorked = Number(totalHoursData?.current ?? totalHoursData?.count ?? 0);
-  const hoursByBucket = allocateRoundedHoursByCount(normalizedHoursData, totalHoursWorked);
-  const totalAllocatedHours = hoursByBucket.reduce(
-    (sum, bucket) => sum + (bucket.allocatedHours || 0),
-    0,
-  );
-  const userData = hoursByBucket.map(range => {
-    const value = range.allocatedHours || 0;
-    return {
-      name: range._id,
-      value,
-      percentage: totalAllocatedHours ? Math.round((value / totalAllocatedHours) * 100) : 0,
-    };
-  });
-  return { normalizedHoursData, userData, totalVolunteers, totalHoursWorked };
-}
-
 export default function VolunteerHoursDistribution({
   isLoading,
   darkMode,
   hoursData,
   totalHoursData,
+  comparisonType,
 }) {
   const [windowSize, setWindowSize] = useState({
     width: window.innerWidth,
@@ -210,10 +91,17 @@ export default function VolunteerHoursDistribution({
     );
   }
 
-  const { normalizedHoursData, userData, totalHoursWorked } = buildChartData(
-    hoursData,
-    totalHoursData,
-  );
+  const totalHours = hoursData.reduce((total, cur) => total + cur.count, 0);
+
+  const userData = hoursData.map(range => {
+    return {
+      name: range._id,
+      value: range.count,
+      totalHours,
+      title: 'HOURS WORKED',
+      comparisonPercentage: totalHoursData.comparison,
+    };
+  });
 
   return (
     <div
@@ -221,21 +109,13 @@ export default function VolunteerHoursDistribution({
       style={{ gap: '20px' }}
     >
       <HoursWorkedPieChart
-        darkMode={darkMode}
+        darkmode={darkMode}
         windowSize={windowSize}
         userData={userData}
-        totalHours={totalHoursWorked}
+        comparisonType={comparisonType}
         colors={COLORS}
       />
-      <HoursWorkList data={normalizedHoursData} darkMode={darkMode} />
+      <HoursWorkList data={hoursData} darkMode={darkMode} />
     </div>
   );
 }
-
-// computeDistribution: pure helper to derive the chart payload from API data
-export function computeDistribution(hoursData, totalHoursData) {
-  const { userData, totalVolunteers, totalHoursWorked } = buildChartData(hoursData, totalHoursData);
-  return { userData, totalVolunteers, totalHoursWorked };
-}
-
-export { mergeHoursBuckets };

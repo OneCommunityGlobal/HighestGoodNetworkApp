@@ -1,11 +1,10 @@
-/* stylelint-disable  */
 /* src/components/SupportPortal/SupportDashboard.module.css */
 
 .container {
   padding: 2rem;
   background-color: #f9fafc;
   min-height: 100vh;
-  font-family: Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
 }
 
 .header {
@@ -35,7 +34,7 @@
 
 .searchBar:focus {
   border-color: #1976d2;
-  box-shadow: 0 0 3px rgb(25 118 210 / 40%);
+  box-shadow: 0 0 3px rgba(25, 118, 210, 0.4);
   outline: none;
 }
 
@@ -66,7 +65,7 @@
 }
 
 .listItem:hover {
-  box-shadow: 0 2px 6px rgb(0 0 0 / 8%);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
   transform: translateY(-1px);
 }
 
@@ -96,7 +95,7 @@
 }
 
 /* ==== Responsive ==== */
-@media (width <= 768px) {
+@media (max-width: 768px) {
   .container {
     padding: 1rem;
   }

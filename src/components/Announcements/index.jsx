@@ -13,11 +13,9 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { faFacebook, faLinkedin, faMedium } from '@fortawesome/free-brands-svg-icons';
 import ReactTooltip from 'react-tooltip';
-
 import styles from './Announcements.module.css';
 import SocialMediaComposer from './SocialMediaComposer';
 import TruthSocialAutoPoster from '../AutoPoster/TruthSocialAutoPoster';
-import BlueskyPostDetails from './BlueskyPostDetails';
 import EmailPanel from './platforms/email';
 import LinkedInAutoPoster from './platforms/linkedin';
 import SlashdotAutoPoster from './platforms/slashdot';
@@ -156,11 +154,6 @@ function Announcements({ title, email: initialEmail }) {
             <TruthSocialAutoPoster darkMode={darkMode} />
           </TabPane>
 
-          {/* Bluesky uses the dedicated BlueskyPostDetails component */}
-          <TabPane tabId="bluesky">
-            <BlueskyPostDetails />
-          </TabPane>
-
           {[
             'x',
             'facebook',
@@ -168,6 +161,7 @@ function Announcements({ title, email: initialEmail }) {
             'instagram',
             'threads',
             'mastodon',
+            'bluesky',
             'youtube',
             'reddit',
             'tumblr',
@@ -181,13 +175,8 @@ function Announcements({ title, email: initialEmail }) {
             'slashdot',
             'blogger',
           ].map(platform => {
-            let PlatformComposer = SocialMediaComposer;
-            if (platform === 'slashdot') {
-              PlatformComposer = SlashdotAutoPoster;
-            } else if (platform === 'bluesky') {
-              PlatformComposer = BlueskyPostDetails;
-            }
-
+            const PlatformComposer =
+              platform === 'slashdot' ? SlashdotAutoPoster : SocialMediaComposer;
             return (
               <TabPane tabId={platform} key={platform}>
                 <PlatformComposer platform={platform} darkMode={darkMode} />

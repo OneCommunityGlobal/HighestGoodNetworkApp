@@ -1,13 +1,12 @@
 /* eslint-disable react/destructuring-assignment */
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import { useEffect, useRef, useState } from 'react';
-import { boxStyle, boxStyleDark } from '~/styles';
-import hasPermission from '~/utils/permissions';
+import { boxStyle, boxStyleDark } from '../../styles';
+import hasPermission from '../../utils/permissions';
 import { SEARCH, CREATE_NEW_TEAM } from '../../languages/en/ui';
 import styles from './TeamTableSearchPanel.module.css';
 /**
- * The search panel stateless component for Teams grid
+ * The search panel stateless component for  Teams grid
  */
 export function TeamTableSearchPanelBase(props) {
   const { darkMode } = props;
@@ -20,11 +19,8 @@ export function TeamTableSearchPanelBase(props) {
   const inputRef = useRef(null);
 
   useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
+    inputRef.current.focus(); // Programmatically focus the input
   }, []);
-
   return (
     <div className="input-group" id="new_team">
       <div className="input-group-prepend" style={{ marginLeft: '10px' }}>
@@ -58,16 +54,4 @@ export function TeamTableSearchPanelBase(props) {
     </div>
   );
 }
-
-TeamTableSearchPanelBase.propTypes = {
-  darkMode: PropTypes.bool,
-  hasPermission: PropTypes.func.isRequired,
-  onSearch: PropTypes.func.isRequired,
-  onCreateNewTeamClick: PropTypes.func.isRequired,
-};
-
-TeamTableSearchPanelBase.defaultProps = {
-  darkMode: false,
-};
-
 export default connect(null, { hasPermission })(TeamTableSearchPanelBase);

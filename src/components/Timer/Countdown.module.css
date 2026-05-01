@@ -1,4 +1,3 @@
-/* stylelint-disable  */
 .countdown {
   position: relative;
   display: flex;
@@ -325,17 +324,4 @@ input[type='number']::-webkit-inner-spin-button {
     opacity, transform;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 300ms;
-}
-
-.refreshIcon {
-  position: absolute;
-  top: 0.55rem;
-  right: 2.2rem;
-  cursor: pointer;
-  font-size: 1.2rem;
-  opacity: 0.9;
-}
-
-.refreshIcon:hover {
-  color: #ed688a;
 }

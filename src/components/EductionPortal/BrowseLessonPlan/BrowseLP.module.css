@@ -1,4 +1,3 @@
-/* stylelint-disable  */
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -16,7 +15,7 @@
   font-size: 1.75rem;
   font-weight: 600;
   color: #2c3e50;
-  margin: 0 0 1.5rem;
+  margin: 0 0 1.5rem 0;
   padding-bottom: 1rem;
   border-bottom: 1px solid #e0e0e0;
 }
@@ -56,7 +55,7 @@
   border: 1px solid #d8d8d8;
   border-radius: 6px;
   font-size: 0.9rem;
-  background: #fff;
+  background: #ffffff;
   transition: all 0.2s;
 }
 
@@ -67,7 +66,7 @@
 .searchInput:focus {
   outline: none;
   border-color: #999;
-  background: #fff;
+  background: #ffffff;
 }
 
 .dark .searchInput {
@@ -85,7 +84,7 @@
   padding: 0.7rem 1rem;
   border: 1px solid #d8d8d8;
   border-radius: 6px;
-  background: #fff;
+  background: #ffffff;
   font-size: 0.875rem;
   cursor: pointer;
   min-width: 140px;
@@ -111,7 +110,7 @@
 }
 
 .section {
-  background: #fff;
+  background: #ffffff;
   border: 1px solid #e5e5e5;
   border-radius: 8px;
   overflow: hidden;
@@ -194,7 +193,7 @@
   font-size: 1rem;
   font-weight: 600;
   color: #d68910;
-  margin: 0 0 1rem;
+  margin: 0 0 1rem 0;
 }
 
 .dark .priorityTitle {
@@ -202,7 +201,7 @@
 }
 
 .priorityCard {
-  background: #fff;
+  background: #ffffff;
   border: 1px solid #e8e8e8;
   border-radius: 6px;
   padding: 1rem;
@@ -326,7 +325,7 @@
   font-size: 0.875rem;
   color: #666;
   line-height: 1.5;
-  margin: 0 0 0.65rem;
+  margin: 0 0 0.65rem 0;
 }
 
 .dark .cardDescription {
@@ -393,7 +392,7 @@
   font-size: 0.95rem;
   font-weight: 600;
   color: #666;
-  margin: 0 0 1rem;
+  margin: 0 0 1rem 0;
 }
 
 .dark .allAtomsTitle {
@@ -407,7 +406,7 @@
 }
 
 .atomCard {
-  background: #fff;
+  background: #ffffff;
   border: 1px solid #e8e8e8;
   border-radius: 6px;
   padding: 1rem;
@@ -415,7 +414,7 @@
 }
 
 .atomCard:hover {
-  box-shadow: 0 2px 8px rgb(0 0 0 / 8%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   transform: translateY(-2px);
 }
 
@@ -427,7 +426,7 @@
 .savedCard {
   background: #fafffe;
   border-color: #d1f2eb;
-  box-shadow: 0 0 0 1px rgb(26 188 156 / 10%);
+  box-shadow: 0 0 0 1px rgba(26, 188, 156, 0.1);
 }
 
 .dark .savedCard {
@@ -487,7 +486,7 @@
 }
 
 /* Responsive */
-@media (width <= 768px) {
+@media (max-width: 768px) {
   .controlsRow {
     flex-direction: column;
   }

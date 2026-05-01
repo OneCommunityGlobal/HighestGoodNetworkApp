@@ -1,11 +1,10 @@
-/* stylelint-disable  */
 /* src/components/SupportPortal/SupportLogViewer.module.css */
 
 .container {
   padding: 2rem;
   background-color: #f9fafc;
   min-height: 100vh;
-  font-family: Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
 }
 
 .header {
@@ -20,13 +19,13 @@
   margin: 0;
   font-size: 1.7rem;
   font-weight: 600;
-  color: #333;
+  color: #333333;
 }
 
 .subtitle {
   margin: 0.25rem 0 0;
   font-size: 0.95rem;
-  color: #666;
+  color: #666666;
 }
 
 .backLink {
@@ -83,7 +82,7 @@
 
 .timelineContent {
   margin-left: 1.75rem;
-  background-color: #fff;
+  background-color: #ffffff;
   border-radius: 6px;
   border: 1px solid #e0e0e0;
   padding: 0.75rem 1rem;
@@ -101,7 +100,7 @@
 .entryDate {
   font-size: 0.9rem;
   font-weight: 500;
-  color: #333;
+  color: #333333;
 }
 
 .badge {
@@ -115,13 +114,13 @@
 .entryText {
   margin: 0.25rem 0;
   font-size: 0.95rem;
-  color: #444;
+  color: #444444;
 }
 
 .supportNotes {
   margin: 0.3rem 0 0;
   font-size: 0.9rem;
-  color: #555;
+  color: #555555;
 }
 
 /* ==== Empty ==== */
@@ -133,7 +132,7 @@
 }
 
 /* ==== Responsive ==== */
-@media (width <= 768px) {
+@media (max-width: 768px) {
   .container {
     padding: 1rem;
   }

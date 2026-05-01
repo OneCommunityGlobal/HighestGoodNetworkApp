@@ -1,7 +1,6 @@
-/* stylelint-disable  */
 :root {
   --rail-w: 72px; /* nav width */
-  --rail-bg: #fff;
+  --rail-bg: #ffffff;
   --rail-border: #ececec;
   --icon: #000; /* black icons */
   --pill: #dedede; /* active bg */
@@ -63,11 +62,9 @@
   place-items: center;
   transition: background 0.15s ease;
 }
-
 .navItem:hover {
   background: var(--pill-hover);
 }
-
 .active {
   background: var(--pill);
 }
@@ -94,7 +91,6 @@
   border-radius: 8px;
   cursor: pointer;
 }
-
 .bottomItem:hover {
   background: var(--pill-hover);
 }

@@ -1,4 +1,3 @@
-/* stylelint-disable  */
 .chartRoot {
   margin-top: 1.5rem;
   height: 100%;
@@ -26,9 +25,10 @@
   min-width: 0;
 }
 
-@media (width >= 768px) {
+@media (min-width: 768px) {
   .volunteerMentorChartsWrapper {
-    flex-flow: row wrap;
+    flex-direction: row;
+    flex-wrap: wrap;
     align-items: stretch;
     justify-content: center;
   }
@@ -44,7 +44,7 @@
   }
 }
 
-@media (width >= 1200px) {
+@media (min-width: 1200px) {
   .volunteerMentorChartsWrapper {
     flex-wrap: nowrap;
     justify-content: space-evenly;

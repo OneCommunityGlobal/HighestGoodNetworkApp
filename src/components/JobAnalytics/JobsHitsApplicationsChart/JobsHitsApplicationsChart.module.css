@@ -1,4 +1,3 @@
-/* stylelint-disable  */
 .mainContainer {
   margin: auto;
   height: 100%;
@@ -112,7 +111,7 @@
   color: white;
 }
 
-@media (width <= 1200px) {
+@media (max-width: 1200px) {
   .filterContainer {
     width: 100%;
     max-width: 1000px;
@@ -124,15 +123,15 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 0 8px;
-    padding: 0 8px;
+    margin: 0px 8px;
+    padding: 0px 8px;
   }
 
   .roleFilter {
     width: 100%;
     float: none;
-    margin: 0 8px;
-    padding: 0 8px;
+    margin: 0px 8px;
+    padding: 0px 8px;
   }
 
   .roleSelector {
@@ -159,11 +158,12 @@
   }
 
   .datePicker {
-    margin: 0 8px;
+    margin: 0px 8px;
   }
 }
 
-@media (width <= 570px) {
+@media (max-width: 570px) {
+
   .datePicker {
     width: 95%;
     margin: 8px;

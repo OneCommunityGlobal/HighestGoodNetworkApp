@@ -1,4 +1,3 @@
-/* stylelint-disable no-descending-specificity, no-duplicate-selectors, selector-type-no-unknown */
 .profileDetails {
   width: 100%;
   margin-bottom: 20px;
@@ -54,17 +53,9 @@ strong {
   color: #0f2f4a;
 }
 
-.value {
-  color: #111827;
-  display: inline-block;
-  font-family: Arial, sans-serif;
+.teamInfo .value,
+.contactsInfo .value {
   font-weight: bold;
-}
-
-strong {
-  /* color: #fffdfd; */
-  font-weight: 600;
-  font-size: 1rem;
 }
 
 .githubLink {
