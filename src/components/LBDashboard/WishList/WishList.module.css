@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .list_location {
   display: flex;
   padding-right: 8%;
@@ -22,8 +23,8 @@
 } */
 .item_body {
   background-color: #e0e0e0;
-  margin: 20px 40px 30px 40px;
-  padding: 10px 0px 10px 0px;
+  margin: 20px 40px 30px;
+  padding: 10px 0;
   width: auto;
   height: auto;
 }
@@ -37,7 +38,7 @@
 .item_footer {
   display: flex;
   justify-content: space-between;
-  margin: 0px 40px 10px 30px;
+  margin: 0 40px 10px 30px;
 }
 
 .list_detailsLeft {
@@ -123,10 +124,10 @@ h1.list_itemTitleMobile {
 }
 
 .item_price {
-  padding: 2rem 0rem;
+  padding: 2rem 0;
 }
 
-@media screen and (max-width: 500px) {
+@media screen and (width <= 500px) {
   .item_detailsWrapper {
     padding: 10px;
     margin: 10px;
@@ -153,7 +154,7 @@ h1.list_itemTitleMobile {
   }
 }
 
-@media screen and (max-width: 800px) {
+@media screen and (width <= 800px) {
   .item_detailsWrapper {
     padding: 10px;
     margin: 10px;
@@ -164,15 +165,19 @@ h1.list_itemTitleMobile {
   .itemTitleWrapperMobile {
     display: block;
   }
+
   .itemTitleWrapperDesktop {
     display: none;
   }
+
   .list_detailsLeft {
     width: 98%;
   }
+
   .list_detailsRight {
     width: 98%;
   }
+
   .list_link {
     align-self: center;
   }

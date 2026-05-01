@@ -69,7 +69,7 @@ function HelpModal({ show, onHide, auth }) {
     setIsSubmitting(true);
 
     try {
-      await axios.post('http://localhost:4500/api/helprequest/create', {
+      await axios.post(ENDPOINTS.HELP_REQUEST_CREATE, {
         userId,
         topic: selectedOption,
         description: `Help request for: ${selectedOption}`,
@@ -80,9 +80,13 @@ function HelpModal({ show, onHide, auth }) {
       onHide();
     } catch (err) {
       console.error('Help request submission error:', err);
-      const errorMessage =
-        err.response?.data?.message || 'Failed to submit help request. Please try again.';
-      toast.error(errorMessage);
+      if (err.code === 'ERR_NETWORK' || !err.response) {
+        toast.error('Cannot connect to server. Please ensure the backend is running.');
+      } else {
+        const errorMessage =
+          err.response?.data?.message || 'Failed to submit help request. Please try again.';
+        toast.error(errorMessage);
+      }
     } finally {
       setIsSubmitting(false);
     }

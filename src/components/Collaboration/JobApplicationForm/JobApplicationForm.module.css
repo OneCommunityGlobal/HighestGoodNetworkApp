@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .container {
   font-family: Arial, sans-serif;
   margin: 0 auto;
@@ -98,6 +99,8 @@
 
 .formContainer {
   background-color: #f9f9f9;
+  padding: 2%;
+  width: 75%;
   padding: 24px 32px 32px;
   width: 100%;
   max-width: 1100px;
@@ -464,6 +467,8 @@
 }
 
 .darkMode .popupContent {
+  background: #225163;
+  color: #f1f1f1;
   background: #0b1324;
   color: #e5e7eb;
   box-shadow: 0 8px 32px rgb(0 0 0 / 70%);

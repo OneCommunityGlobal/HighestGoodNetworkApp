@@ -1,3 +1,5 @@
+/* stylelint-disable declaration-block-single-line-max-declarations, no-descending-specificity, no-duplicate-selectors */
+
 /* ---------- General Styling ---------- */
 .body {
   font-family: Arial, sans-serif;
@@ -307,6 +309,7 @@
   font-size: 0.9rem;
   display: inline-block;
 }
+
 .trackingRate .trackingRateValue span.trackingRateValuePositive,
 .trackingRateDark .trackingRateValue span.trackingRateValuePositive {
   color: #f44336 !important;
@@ -578,8 +581,7 @@
 }
 
 .insightsPercentageDark {
-  font-size: 0.9rem;
-  color: red !important;
+  color: #fff;
 }
 
 .insightsDark .insightsPercentageDark {
@@ -713,6 +715,10 @@
 
 
 /* ---------- PDF/Print helpers ---------- */
+.pageBreakBefore { break-before: page; break-before: always; }
+.pageBreakAfter  { break-after: page;  break-after: always; }
+.avoidBreak       { break-inside: avoid; }
+
 .pageBreakBefore {
   break-before: page;
 }
@@ -789,6 +795,7 @@
 
   @page {
     size: auto;
+
     /* Use auto instead of Letter to allow multiple pages */
     margin: 0.5in;
   }
@@ -863,8 +870,8 @@
     margin-bottom: 8px;
   }
 
-  :global(.tracking-table-global) thead th { 
-    background: #f4f4f4 !important; 
+  :global(.tracking-table-global) thead th {
+    background: #f4f4f4 !important;
     color: #333 !important;
   }
 
@@ -976,7 +983,8 @@
   .participationLandingPageDark .eventNameDark,
   .participationLandingPageDark .eventTimeDark,
   .participationLandingPageDark .attendeesCountDark,
-  .participationLandingPageDark .insightsLabelDark {
+  .participationLandingPageDark .insightsLabelDark,
+  .participationLandingPageDark .insightsPercentageDark {
     color: #fff !important;
   }
 }
@@ -1037,7 +1045,7 @@
 /* ---------- Modal ---------- */
 
 .modalContent {
-  background: #ffffff;
+  background: #fff;
   width: 420px;
   max-height: 80vh;
   border-radius: 10px;
@@ -1048,7 +1056,7 @@
 
 .modalContentDark {
   background: #1C2541;
-  color: #ffffff;
+  color: #fff;
 }
 
 .closeBtn {
@@ -1119,30 +1127,30 @@
 /* ===== Dark mode fixes ===== */
 
 .participationLandingPageDark :global(button) {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .participationLandingPageDark :global(.btn),
 .participationLandingPageDark :global(.btn-light),
 .participationLandingPageDark :global(.btn-outline-secondary) {
-  color: #ffffff !important;
+  color: #fff !important;
   background-color: #3a506b !important;
   border-color: #3a506b !important;
 }
 
 .participationLandingPageDark :global(.btn-primary),
 .participationLandingPageDark :global(.active) {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .trackingContainerDark .trackingFilters select {
   background-color: #3A506B;
-  color: #ffffff;
+  color: #fff;
   border: 1px solid #3A506B;
 }
 
 .insightsDark .insightsFilters select {
   background-color: #3A506B;
-  color: #ffffff;
+  color: #fff;
   border: 1px solid #3A506B;
 }

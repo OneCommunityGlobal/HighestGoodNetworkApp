@@ -8,6 +8,7 @@ import { Provider } from 'react-redux';
 import { postNewTeam, getAllUserTeams } from '~/actions/allTeamsAction';
 import { ADD_NEW_TEAM, RECEIVE_ALL_USER_TEAMS } from '~/constants/allTeamsConstants';
 import axios from 'axios';
+import { vi } from 'vitest';
 
 const userTeams = [
   {
