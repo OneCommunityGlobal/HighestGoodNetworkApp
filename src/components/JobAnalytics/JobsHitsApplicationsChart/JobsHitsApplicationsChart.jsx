@@ -6,7 +6,7 @@ import styles from './JobsHitsApplicationsChart.module.css';
 import Select from 'react-select';
 import DatePicker from 'react-datepicker';
 
-export const JobsHitsApplicationsChart = () => {
+const JobsHitsApplicationsChart = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [selectedRoles, setSelectedRoles] = useState([]);
@@ -308,3 +308,4 @@ export const JobsHitsApplicationsChart = () => {
     </Fragment>
   );
 };
+export default JobsHitsApplicationsChart;

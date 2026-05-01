@@ -22,6 +22,7 @@ export const LESSON = 'Lesson';
 export const DASHBOARD = 'Dashboard';
 export const DELETE = 'Delete';
 export const ARCHIVE = 'Archive';
+export const UNARCHIVE = "Unarchive";
 export const LOGO = 'Time Tracking Tool';
 export const LOGOUT = 'Logout';
 export const MEMBERS = 'Members';

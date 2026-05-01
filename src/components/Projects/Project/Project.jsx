@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { ARCHIVE } from './../../../languages/en/ui';
-// old CSS removed
-// import './../projects.css';
+import { UNARCHIVE, ARCHIVE } from './../../../languages/en/ui';
 import styles from './../projects.module.css';
 import { Link } from 'react-router-dom';
 import { NavItem } from 'reactstrap';
@@ -213,14 +211,14 @@ const Project = props => {
         {canDeleteProject ? (
           <td>
             <button
-              data-testid="delete-button"
-              type="button"
-              className="btn btn-outline-danger"
-              style={darkMode ? { borderColor: '#D2042D' } : boxStyle}
-              onClick={onArchiveProject}
-            >
-              {ARCHIVE}
-            </button>
+            data-testid="delete-button"
+            type="button"
+            className="btn btn-outline-danger"
+            style={darkMode ? { borderColor: '#D2042D' } : boxStyle}
+            onClick={onArchiveProject}
+          >
+            {projectData?.isArchived ? UNARCHIVE : ARCHIVE}
+          </button>
           </td>
         ) : null}
     </tr>

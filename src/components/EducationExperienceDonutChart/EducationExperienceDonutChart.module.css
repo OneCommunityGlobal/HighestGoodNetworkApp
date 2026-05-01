@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .page {
   width: 100%;
   min-height: 100vh;
@@ -13,17 +14,17 @@
   width: 100%;
   max-width: 1000px;
   margin: 0 auto;
-  padding: 24px 16px 24px;
-  background-color: #ffffff;
+  padding: 24px 16px;
+  background-color: #fff;
   color: #1f2937;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 4px 12px rgb(15 23 42 / 8%);
 }
 
 .wrapperDark {
   background-color: #111827;
   color: #e5e7eb;
-  box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.08);
+  box-shadow: 0 0 0 1px rgb(148 163 184 / 8%);
 }
 
 .heading {
