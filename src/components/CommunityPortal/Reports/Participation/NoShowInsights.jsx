@@ -55,7 +55,7 @@ function NoShowInsights() {
   };
 
   const renderStats = () => {
-    const filteredEvents = filterEventsByDate(mockEvents,dateFilter);
+    const filteredEvents = filterEventsByDate(mockEvents, dateFilter);
     const stats = calculateStats(filteredEvents);
     const finalStats =
       sortOrder === 'none'

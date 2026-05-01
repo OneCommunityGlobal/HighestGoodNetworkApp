@@ -5,7 +5,6 @@ import mockEvents from './mockData';
 import CreateEventModal from './CreateEventModal';
 import { filterEventsByDate } from './FilterByDate';
 
-
 function MyCases() {
   const [view, setView] = useState('card');
   const [filter, setFilter] = useState('all');
@@ -17,15 +16,14 @@ function MyCases() {
 
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const filteredEvents = filterEventsByDate(mockEvents,filter);
-  const filteredEventsByEventType = filteredEvents.filter((event)=>{
-      if(event.eventType!=="all"){
-        return event.eventType===filter;
-      }
-      else{
-        return event;
-      }
-    })
+  const filteredEvents = filterEventsByDate(mockEvents, filter);
+  const filteredEventsByEventType = filteredEvents.filter(event => {
+    if (event.eventType !== 'all') {
+      return event.eventType === filter;
+    } else {
+      return event;
+    }
+  });
 
   // Sonar: extract nested ternary into independent statement
   let visibleEvents = filteredEventsByEventType;

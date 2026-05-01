@@ -14,10 +14,10 @@ function DropOffTracking() {
 
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const filteredEvents = filterEventsByDate(mockEvents,selectedTime);
+  const filteredEvents = filterEventsByDate(mockEvents, selectedTime);
 
-  const filteredEventsByEventType = filteredEvents.filter((event) => {
-    if (selectedEvent === "All Events") return true;
+  const filteredEventsByEventType = filteredEvents.filter(event => {
+    if (selectedEvent === 'All Events') return true;
     return event.eventType === selectedEvent;
   });
   const handleOpenList = event => {

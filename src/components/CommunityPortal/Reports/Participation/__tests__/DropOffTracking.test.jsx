@@ -11,7 +11,7 @@ vi.mock('../mockData', () => ({
       id: 1,
       eventName: 'Yoga Class',
       eventType: 'Yoga Class',
-      eventDate: new Date().toISOString(), 
+      eventDate: new Date().toISOString(),
       eventTime: '10:00 AM',
       noShowRate: '5%',
       dropOffRate: '2%',
@@ -47,20 +47,20 @@ describe('DropOffTracking', () => {
   });
 
   it('renders rows based on filtered mock data', () => {
-  renderWithStore(<DropOffTracking />);
-  
-  // 1. Target the table cell specifically to avoid the dropdown option conflict
-  const tableCell = screen.getByRole('cell', { name: /yoga class/i });
-  expect(tableCell).toBeInTheDocument();
-  
-  // 2. Alternatively, if you want to check the specific text inside the table:
-  // (Using selector to ensure we only look inside the table body)
-  const yogaRow = screen.getByText('Yoga Class', { selector: 'td' });
-  expect(yogaRow).toBeInTheDocument();
+    renderWithStore(<DropOffTracking />);
 
-  const buttons = screen.getAllByRole('button', { name: /get no-show list/i });
-  expect(buttons.length).toBe(1);
-});
+    // 1. Target the table cell specifically to avoid the dropdown option conflict
+    const tableCell = screen.getByRole('cell', { name: /yoga class/i });
+    expect(tableCell).toBeInTheDocument();
+
+    // 2. Alternatively, if you want to check the specific text inside the table:
+    // (Using selector to ensure we only look inside the table body)
+    const yogaRow = screen.getByText('Yoga Class', { selector: 'td' });
+    expect(yogaRow).toBeInTheDocument();
+
+    const buttons = screen.getAllByRole('button', { name: /get no-show list/i });
+    expect(buttons.length).toBe(1);
+  });
 
   it('opens and closes the modal correctly', () => {
     renderWithStore(<DropOffTracking />);
@@ -77,15 +77,15 @@ describe('DropOffTracking', () => {
   });
 
   it('updates selection when filtering by Event Type', () => {
-  renderWithStore(<DropOffTracking />);
-  
-  // Target the specific dropdown by its visible text
-  const eventSelect = screen.getByDisplayValue('All Events');
-  
-  // Change filter to something that doesn't exist in our mock
-  fireEvent.change(eventSelect, { target: { value: 'Dance Class' } });
-  
-  // Check that the Yoga Class row is removed from the document
-  expect(screen.queryByRole('cell', { name: /yoga class/i })).not.toBeInTheDocument();
-});
+    renderWithStore(<DropOffTracking />);
+
+    // Target the specific dropdown by its visible text
+    const eventSelect = screen.getByDisplayValue('All Events');
+
+    // Change filter to something that doesn't exist in our mock
+    fireEvent.change(eventSelect, { target: { value: 'Dance Class' } });
+
+    // Check that the Yoga Class row is removed from the document
+    expect(screen.queryByRole('cell', { name: /yoga class/i })).not.toBeInTheDocument();
+  });
 });
