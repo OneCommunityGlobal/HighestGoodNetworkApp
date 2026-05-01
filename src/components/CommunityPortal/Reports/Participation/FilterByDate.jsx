@@ -11,14 +11,14 @@ export const filterEventsByDate = (events, filterType) => {
   // Normalize today to midnight for consistent range comparisons
   const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 
-  const newEvents = events.sort(
-    (a, b) => new Date(a.eventDate).getTime() - new Date(b.eventDate).getTime(),
+  const newEvents = events.toSorted(
+  (a, b) => new Date(a.eventDate).getTime() - new Date(b.eventDate).getTime(),
   );
 
   return newEvents.filter(event => {
     // Ensure we have a valid date object to compare
     const eventDate = new Date(event.eventDate);
-    if (isNaN(eventDate.getTime())) return false;
+    if (Number.isNaN(eventDate.getTime())) return false;
 
     switch (filterType) {
       case 'Today':

@@ -17,11 +17,12 @@ function MyCases() {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const filteredEvents = filterEventsByDate(mockEvents, filter);
+
   const filteredEventsByEventType = filteredEvents.filter(event => {
-    if (event.eventType !== 'all') {
-      return event.eventType === filter;
+    if (event.eventType === 'all') {
+      return true; // Simplified: just return true to keep the item
     } else {
-      return event;
+      return event.eventType === filter;
     }
   });
 

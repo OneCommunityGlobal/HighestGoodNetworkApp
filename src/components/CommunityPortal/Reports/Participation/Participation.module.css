@@ -1035,15 +1035,6 @@
 }
 
 /* ---------- Modal ---------- */
-.modalOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.45);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
 
 .modalContent {
   background: #ffffff;
@@ -1058,12 +1049,6 @@
 .modalContentDark {
   background: #1C2541;
   color: #ffffff;
-}
-
-.modalHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
 .closeBtn {
@@ -1160,15 +1145,4 @@
   background-color: #3A506B;
   color: #ffffff;
   border: 1px solid #3A506B;
-}
-
-.insightsDark .insightsTab {
-  background-color: #3A506B;
-  color: #ffffff;
-  border-right: 1px solid #555;
-}
-
-.insightsDark .insightsTab.activeTab {
-  background-color: #007bff;
-  color: #ffffff;
 }
