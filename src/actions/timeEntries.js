@@ -202,7 +202,7 @@ export const postTimeEntry = timeEntry => {
   return async dispatch => {
     try {
       const res = await axios.post(url, timeEntry);
-      if (timeEntry.entryType === 'default') {
+      if (timeEntry.entryType === 'default' || timeEntry.entryType === 'person') {
         dispatch(updateTimeEntries(timeEntry));
       }
       return res.status;
@@ -217,7 +217,7 @@ export const editTimeEntry = (timeEntryId, timeEntry, oldDateOfWork) => {
   return async dispatch => {
     try {
       const res = await axios.put(url, timeEntry);
-      if (timeEntry.entryType === 'default') {
+      if (timeEntry.entryType === 'default' || timeEntry.entryType === 'person') {
         dispatch(updateTimeEntries(timeEntry, oldDateOfWork));
       }
       return res.status;
@@ -232,7 +232,7 @@ export const deleteTimeEntry = timeEntry => {
   return async dispatch => {
     try {
       const res = await axios.delete(url);
-      if (timeEntry.entryType === 'default') {
+      if (timeEntry.entryType === 'default' || timeEntry.entryType === 'person') {
         dispatch(updateTimeEntries(timeEntry));
       }
       return res.status;

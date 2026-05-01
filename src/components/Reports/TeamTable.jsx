@@ -7,6 +7,9 @@ import { connect } from 'react-redux';
 import hasPermission from '~/utils/permissions';
 import { updateTeam, getAllUserTeams } from '~/actions/allTeamsAction';
 import { updateSavedFiltersForIndividualTeamCodeChange } from '~/actions/savedFilterActions';
+import {
+  useUpdateFiltersWithIndividualCodesChangeMutation
+} from '~/actions/weeklySummariesFilterAction';
 import { boxStyle, boxStyleDark } from '~/styles';
 
 function TeamTable({ allTeams, auth, darkMode, refreshTeams }) {
@@ -24,6 +27,9 @@ function TeamTable({ allTeams, auth, darkMode, refreshTeams }) {
     const [teamCode, setTeamCode] = useState(team.teamCode);
     const [hasError, setHasError] = useState(false);
     const fullCodeRegex = /^.{5,7}$/;
+    const [
+        updateFilterWithIndividualCodesChange,
+      ] = useUpdateFiltersWithIndividualCodesChangeMutation();
 
     const handleOnChange = async (value, teamData) => {
       try {
@@ -31,7 +37,13 @@ function TeamTable({ allTeams, auth, darkMode, refreshTeams }) {
         if (result && result.status === 200) {
           // Update saved filters when team code changes
           if (teamData.teamCode && value && teamData.teamCode !== value) {
-            updateSavedFiltersForIndividualTeamCodeChange(teamData.teamCode, value, teamData._id);
+            const res = await updateFilterWithIndividualCodesChange({
+              oldTeamCode: teamData.teamCode,
+              newTeamCode,
+              userId: teamData._id,
+            }).unwrap(); // unwrap = throw exception if error
+
+            // updateSavedFiltersForIndividualTeamCodeChange(teamData.teamCode, value, teamData._id);
           }
           // Refresh team data to ensure UI shows latest data
           setTimeout(() => {

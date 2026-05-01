@@ -1,9 +1,13 @@
-/* html{
-    background-color: #e7f4f9;
+/* stylelint-disable  */
+.container-hgnform-wrapper {
+  min-height: 100vh;
+  width: 100%;
+  padding: 20px 0 1px;
+  background-color: #fff;
+  margin: 0;
+  box-sizing: border-box;
 }
-body{
-    background-color: #e7f4f9;
+
+.container-hgnform-wrapper.bg-oxford-blue {
+  color: #fff;
 }
-.hgnform{
-    background-color: #e7f4f9;
-} */

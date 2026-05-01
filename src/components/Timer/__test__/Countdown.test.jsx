@@ -36,8 +36,11 @@ describe('Countdown Component', () => {
     expect(screen.getByText('Goal: 01:00:00')).toBeInTheDocument();
     expect(screen.getByText('Elapsed: 00:30:00')).toBeInTheDocument();
     expect(screen.getByText('Time Remaining')).toBeInTheDocument();
-    expect(screen.getByText('00')).toBeInTheDocument();
+    expect(screen.getAllByText('00')).toHaveLength(2);
     expect(screen.getByText('30')).toBeInTheDocument();
+    expect(screen.getByText('Hours')).toBeInTheDocument();
+    expect(screen.getByText('minutes')).toBeInTheDocument();
+    expect(screen.getByText('seconds')).toBeInTheDocument();
   });
 
   it('calls toggleTimer when the close button is clicked', () => {
@@ -51,9 +54,8 @@ describe('Countdown Component', () => {
   it('displays correct remaining time based on props', () => {
     // eslint-disable-next-line react/jsx-props-no-spreading
     const { rerender } = render(<Countdown {...defaultProps} />);
-    expect(screen.getByText('00')).toBeInTheDocument(); // Hours
+    expect(screen.getAllByText('00')).toHaveLength(2); // Hours and Seconds
     expect(screen.getByText('30')).toBeInTheDocument(); // Minutes
-    expect(screen.getByText('00')).toBeInTheDocument(); // Seconds
 
     rerender(
       <Countdown

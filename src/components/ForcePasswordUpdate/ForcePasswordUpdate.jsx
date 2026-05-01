@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import Joi from 'joi-browser';
+import Joi from 'joi';
 import { toast } from 'react-toastify';
 import { forcePasswordUpdate } from '../../actions/updatePassword';
 import { clearErrors } from '../../actions/errorsActions';
@@ -45,28 +45,49 @@ export class ForcePasswordUpdate extends Form {
     this.props.clearErrors();
   }
 
+  // schema = {
+  //   newpassword: Joi.string()
+  //     .regex(/(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/)
+  //     .required()
+  //     .label('New Password')
+  //     .options({
+  //       language: {
+  //         string: {
+  //           regex: {
+  //             base:
+  //               'should be at least 8 characters long and must include at least one uppercase letter, one lowercase letter, and one number or special character',
+  //           },
+  //         },
+  //       },
+  //     }),
+
+  //   confirmnewpassword: Joi.any()
+  //     .valid(Joi.ref('newpassword'))
+  //     .messages({ 'any.only': 'must match new password' })
+  //     .label('Confirm Password'),
+  // };
+
   schema = {
     newpassword: Joi.string()
       .regex(/(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/)
       .required()
       .label('New Password')
-      .options({
-        language: {
-          string: {
-            regex: {
-              base:
-                'should be at least 8 characters long and must include at least one uppercase letter, one lowercase letter, and one number or special character',
-            },
-          },
-        },
+      .messages({
+        'string.pattern.base':
+          'New Password should be at least 8 characters long and must include at least one uppercase letter, one lowercase letter, and one number or special character',
+        'string.empty': 'New Password is required',
+        'any.required': 'New Password is required',
       }),
 
     confirmnewpassword: Joi.any()
       .valid(Joi.ref('newpassword'))
-      .options({ language: { any: { allowOnly: 'must match new password' } } })
-      .label('Confirm Password'),
+      .required()
+      .label('Confirm Password')
+      .messages({
+        'any.only': 'Confirm Password must match New Password',
+        'any.required': 'Confirm Password is required',
+      }),
   };
-
   doSubmit = async () => {
     const { newpassword } = {
       ...this.state.data,

@@ -11,6 +11,13 @@ export const updateOwnerMessageAction = payload => {
   };
 };
 
+export const updateOwnerMessageHistoryAction = payload => {
+  return {
+    type: types.UPDATE_OWNER_MESSAGE_HISTORY,
+    payload,
+  };
+};
+
 // redux thunk functions
 export const getOwnerMessage = () => {
   const url = ENDPOINTS.OWNERMESSAGE();
@@ -33,6 +40,8 @@ export const updateOwnerMessage = newMessage => {
       const response = await axios.put(url, newMessage);
       const { ownerMessage } = response.data;
       dispatch(updateOwnerMessageAction(ownerMessage));
+      // refresh history after update
+      dispatch(getOwnerMessageHistory());
       return response;
     } catch (error) {
       return error.response.data.error;
@@ -47,6 +56,23 @@ export const deleteOwnerMessage = () => {
       const response = await axios.delete(url);
       const { ownerMessage } = response.data;
       dispatch(updateOwnerMessageAction(ownerMessage));
+      // refresh history after update
+      dispatch(getOwnerMessageHistory());
+      return response;
+    } catch (error) {
+      return error.response.data.error;
+    }
+  };
+};
+
+export const getOwnerMessageHistory = (page = 1, limit = 10) => {
+  const url = ENDPOINTS.OWNER_MESSAGE_HISTORY(page, limit);
+
+  return async dispatch => {
+    try {
+      const response = await axios.get(url);
+      const ownerMessageHistory = response.data;
+      dispatch(updateOwnerMessageHistoryAction(ownerMessageHistory));
       return response;
     } catch (error) {
       return error.response.data.error;

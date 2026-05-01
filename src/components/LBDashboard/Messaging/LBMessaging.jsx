@@ -1,17 +1,17 @@
 import { useState, useEffect, useRef } from 'react';
-import './LBMessaging.css';
+import styles from './LBMessaging.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faLocationArrow, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch, useSelector } from 'react-redux';
-import { getUserProfileBasicInfo } from '~/actions/userManagement';
+import { getUserProfileBasicInfo } from '../../../actions/userManagement';
 import {
   fetchUserPreferences,
   updateUserPreferences,
-} from '~/actions/lbdashboard/userPreferenceActions';
+} from '../../../actions/lbdashboard/userPreferenceActions';
 import { toast } from 'react-toastify';
-import { fetchExistingChats, fetchMessages } from '~/actions/lbdashboard/messagingActions';
+import { fetchExistingChats, fetchMessages } from '../../../actions/lbdashboard/messagingActions';
 import axios from 'axios';
-import { ENDPOINTS } from '~/utils/URL';
+import { ENDPOINTS } from '../../../utils/URL';
 import {
   initMessagingSocket,
   getMessagingSocket,
@@ -19,6 +19,110 @@ import {
   markMessagesAsReadViaSocket,
 } from '../../../utils/messagingSocket';
 import logo from '../../../assets/images/logo2.png';
+import Header from '../../Header/Header';
+
+const DEFAULT_PROFILE_PICTURE = '/pfp-default-header.png';
+
+function MessagingContactItem({ user, contactNameClassName, onSelect }) {
+  return (
+    <div
+      key={user.userId || user._id}
+      className={styles.lbMessagingContact}
+      role="button"
+      tabIndex={0}
+      onClick={() => onSelect(user)}
+      onKeyDown={event => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          onSelect(user);
+        }
+      }}
+    >
+      <img
+        src={user.profilePic || DEFAULT_PROFILE_PICTURE}
+        alt="User Profile"
+        onError={event => {
+          event.target.onerror = null;
+          event.target.src = DEFAULT_PROFILE_PICTURE;
+        }}
+      />
+      <div className={styles.lbMessagingContactInfo}>
+        <div className={contactNameClassName}>
+          {user.firstName} {user.lastName}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MessagingContactsPanel({
+  isSearchOpen,
+  placeholder,
+  searchQuery,
+  onSearchChange,
+  onToggleSearch,
+  searchResults,
+  existingChats,
+  onSelectUser,
+  headerClassName,
+  bodyClassName,
+  contactNameClassName,
+  searchIconClassName,
+}) {
+  const visibleUsers = isSearchOpen ? searchResults : existingChats;
+
+  return (
+    <>
+      {isSearchOpen ? (
+        <div className={headerClassName}>
+          <input
+            type="text"
+            placeholder={placeholder}
+            className={`lb-search-input ${styles.lbSearchInput}`}
+            value={searchQuery}
+            onChange={onSearchChange}
+          />
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={onToggleSearch}
+            onKeyDown={event => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                onToggleSearch();
+              }
+            }}
+          >
+            <img
+              src="https://img.icons8.com/metro/26/multiply.png"
+              alt="multiply"
+              className="lb-msg-icon"
+            />
+          </div>
+        </div>
+      ) : (
+        <div className={headerClassName}>
+          <h3 className={`lb-contact-msgs ${styles.lbContactMsgs}`}>Messages</h3>
+          <div className={searchIconClassName}>
+            <FontAwesomeIcon icon={faSearch} className="lb-msg-icon" onClick={onToggleSearch} />
+          </div>
+        </div>
+      )}
+      <div className={bodyClassName}>
+        {visibleUsers.length === 0 ? (
+          <p>No chats available.</p>
+        ) : (
+          visibleUsers.map(user => (
+            <MessagingContactItem
+              key={user.userId || user._id}
+              user={user}
+              contactNameClassName={contactNameClassName}
+              onSelect={onSelectUser}
+            />
+          ))
+        )}
+      </div>
+    </>
+  );
+}
 
 export default function LBMessaging() {
   const dispatch = useDispatch();
@@ -32,21 +136,46 @@ export default function LBMessaging() {
 
   const [bellDropdownActive, setBellDropdownActive] = useState(false);
   const [showContacts, setShowContacts] = useState(false);
-  const [selectedOption, setSelectedOption] = useState({});
+  const [notificationSettings, setNotificationSettings] = useState({
+    notifyInApp: false,
+    notifyEmail: false,
+    notifySms: false,
+    smsPhone: '',
+    smsPhoneMasked: '',
+  });
   const messageEndRef = useRef(null);
   const menuRef = useRef(null);
+  const lastSendAtRef = useRef(0);
+  const lastMessageRef = useRef('');
+  const lastNotificationCountRef = useRef(0);
 
-  const users = useSelector(state => state.allUserProfilesBasicInfo);
-  const auth = useSelector(state => state.auth.user);
-  const messagesState = useSelector(state => state.messages);
-  const existingChats = useSelector(state => state.messages.existingChats);
-  const { messages, loading: messagesLoading } = messagesState;
+  const users = useSelector(state => state.allUserProfilesBasicInfo) || {
+    userProfilesBasicInfo: [],
+  };
+  const userProfilesBasicInfo = users.userProfilesBasicInfo || [];
+  const auth = useSelector(state => state.auth.user) || {};
+  const authUserId = auth?.userid || auth?.userId || auth?._id;
+  const messagesState = useSelector(state => state.messages) || {};
+  const existingChats = messagesState.existingChats || [];
+  const {
+    messages = [],
+    loading: messagesLoading = false,
+    notifications = [],
+    error,
+  } = messagesState;
+  const unreadNotificationsCount = notifications.length;
 
   useEffect(() => {
     if (messageEndRef.current) {
       messageEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages]);
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+  }, [error]);
 
   const searchUserProfiles = async query => {
     try {
@@ -58,10 +187,10 @@ export default function LBMessaging() {
   };
 
   useEffect(() => {
-    if (users.userProfilesBasicInfo.length === 0) {
+    if (userProfilesBasicInfo.length === 0) {
       dispatch(getUserProfileBasicInfo());
     }
-  }, [dispatch, users.userProfilesBasicInfo, auth.userid]);
+  }, [dispatch, userProfilesBasicInfo, authUserId]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -73,7 +202,7 @@ export default function LBMessaging() {
         socket.close();
       }
     };
-  }, [auth.userid]);
+  }, [authUserId]);
 
   useEffect(() => {
     if (selectedUser.userId) {
@@ -94,31 +223,49 @@ export default function LBMessaging() {
   }, [selectedUser]);
 
   useEffect(() => {
-    dispatch(fetchExistingChats(auth.userid));
-  }, [dispatch, auth.userid]);
+    if (authUserId) {
+      dispatch(fetchExistingChats(authUserId));
+    }
+  }, [dispatch, authUserId]);
 
   useEffect(() => {
-    if (selectedUser.userId) {
-      dispatch(fetchUserPreferences(auth.userid, selectedUser.userId)).then(response => {
-        if (response) {
-          setSelectedOption({
-            notifyInApp: response.notifyInApp || false,
-            notifyEmail: response.notifyEmail || false,
-          });
-        } else {
-          setSelectedOption({
-            notifyInApp: false,
-            notifyEmail: false,
-          });
-        }
-      });
-    } else {
-      setSelectedOption({
+    if (!authUserId) {
+      setNotificationSettings({
         notifyInApp: false,
         notifyEmail: false,
+        notifySms: false,
+        smsPhone: '',
       });
+      return;
     }
-  }, [dispatch, auth.userid, selectedUser.userId]);
+
+    dispatch(fetchUserPreferences(authUserId, null)).then(response => {
+      if (response) {
+        setNotificationSettings({
+          notifyInApp: response.notifyInApp || false,
+          notifyEmail: response.notifyEmail || false,
+          notifySms: response.notifySms || false,
+          smsPhone: '',
+          smsPhoneMasked: response.smsPhoneMasked || getMaskedPhone(response.smsPhone) || '',
+        });
+      } else {
+        setNotificationSettings({
+          notifyInApp: false,
+          notifyEmail: false,
+          notifySms: false,
+          smsPhone: '',
+          smsPhoneMasked: '',
+        });
+      }
+    });
+  }, [dispatch, authUserId]);
+
+  useEffect(() => {
+    if (notifications.length > lastNotificationCountRef.current) {
+      toast.info('New message received.');
+    }
+    lastNotificationCountRef.current = notifications.length;
+  }, [notifications]);
 
   useEffect(() => {
     const handleClickOutside = event => {
@@ -144,46 +291,122 @@ export default function LBMessaging() {
     updateSelectedUser(newSelectedUser);
 
     if (newSelectedUser.userId) {
-      dispatch(fetchMessages(auth.userid, newSelectedUser.userId));
+      if (authUserId) {
+        dispatch(fetchMessages(authUserId, newSelectedUser.userId));
+      }
     } else {
       Error('Invalid user selected:', user);
       toast.error('Invalid user selected. Please try again.');
     }
   };
 
+  const persistNotificationPreferences = () => {
+    if (!authUserId) {
+      toast.error('Unable to update preferences without a valid user.');
+      return Promise.reject(new Error('Missing user ID'));
+    }
+    const cleanedPhone = notificationSettings.smsPhone.replace(/[^\d+]/g, '');
+    const digits = cleanedPhone.replace(/\D/g, '');
+    if (notificationSettings.notifySms && digits.length > 0 && digits.length !== 10) {
+      toast.error('Please enter a valid 10-digit phone number for SMS notifications.');
+      return Promise.reject(new Error('Invalid phone number'));
+    }
+
+    const payload = {
+      notifyInApp: notificationSettings.notifyInApp,
+      notifyEmail: notificationSettings.notifyEmail,
+      notifySms: notificationSettings.notifySms,
+    };
+    if (digits.length > 0) {
+      payload.smsPhone = cleanedPhone;
+    }
+
+    return dispatch(updateUserPreferences(authUserId, null, payload)).then(() => {
+      // Refresh preferences after saving
+      return dispatch(fetchUserPreferences(authUserId, null)).then(response => {
+        const refreshed = response?.payload || response;
+        if (refreshed) {
+          setNotificationSettings(prev => ({
+            ...prev,
+            notifyInApp: refreshed.notifyInApp || false,
+            notifyEmail: refreshed.notifyEmail || false,
+            notifySms: refreshed.notifySms || false,
+            smsPhoneMasked: refreshed.smsPhoneMasked || getMaskedPhone(refreshed.smsPhone) || '',
+          }));
+        }
+      });
+    });
+  };
+
   const saveUserPreferences = () => {
-    dispatch(updateUserPreferences(auth.userid, selectedUser.userId, selectedOption))
+    persistNotificationPreferences()
       .then(() => {
         toast.success('Preferences updated successfully!');
         setBellDropdownActive(false);
-
-        // Refresh preferences after saving
-        dispatch(fetchUserPreferences(auth.userid, selectedUser.userId)).then(response => {
-          if (response && response.payload) {
-            setSelectedOption({
-              notifyInApp: response.payload.notifyInApp || false,
-              notifyEmail: response.payload.notifyEmail || false,
-            });
-          }
-        });
       })
       .catch(error => {
-        toast.error('Failed to update preferences. Please try again.');
+        if (error?.message !== 'Missing user ID' && error?.message !== 'Invalid phone number') {
+          toast.error('Failed to update preferences. Please try again.');
+        }
         Error('Error updating preferences:', error);
+      });
+  };
+
+  const saveSmsPreferences = () => {
+    if (!authUserId) {
+      toast.error('Unable to update SMS settings without a valid user.');
+      return;
+    }
+
+    persistNotificationPreferences()
+      .then(() => {
+        toast.success('SMS settings updated successfully!');
+      })
+      .catch(error => {
+        if (error?.message !== 'Missing user ID' && error?.message !== 'Invalid phone number') {
+          toast.error('Failed to update SMS settings. Please try again.');
+        }
+        Error('Error updating SMS settings:', error);
       });
   };
 
   const handleSendMessage = () => {
     const socket = getMessagingSocket();
+    const trimmedMessage = messageText.trim();
+    if (!selectedUser.userId) {
+      toast.error('Select a user before sending a message.');
+      return;
+    }
+    if (!trimmedMessage) {
+      toast.error('Message cannot be empty.');
+      return;
+    }
+    if (trimmedMessage.length > 1000) {
+      toast.error('Message is too long. Please keep it under 1000 characters.');
+      return;
+    }
+
+    const now = Date.now();
+    if (now - lastSendAtRef.current < 1500) {
+      toast.error('You are sending messages too quickly. Please wait a moment.');
+      return;
+    }
+    if (trimmedMessage === lastMessageRef.current && now - lastSendAtRef.current < 10000) {
+      toast.error('Please avoid sending duplicate messages.');
+      return;
+    }
+
     if (socket && socket.readyState === WebSocket.OPEN) {
       socket.send(
         JSON.stringify({
           action: 'SEND_MESSAGE',
           receiver: selectedUser.userId,
-          content: messageText.trim(),
+          content: trimmedMessage,
         }),
       );
       setMessageText('');
+      lastSendAtRef.current = now;
+      lastMessageRef.current = trimmedMessage;
     } else {
       toast.error('WebSocket is not connected. Please try again later.');
       Error('WebSocket is not connected or is in an invalid state:', socket);
@@ -211,72 +434,76 @@ export default function LBMessaging() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const renderContacts = () => {
-    if (existingChats.length === 0) {
-      return <p>No chats available.</p>;
+  const getMaskedPhone = phone => {
+    if (!phone) return '';
+    const digits = phone.replace(/\D/g, '');
+    if (digits.length <= 4) {
+      return digits;
     }
+    const lastFour = digits.slice(-4);
+    return `••• ••• ${lastFour}`;
+  };
 
-    return existingChats.map(user => (
-      <button
-        key={user.userId}
-        type="button"
-        className="lb-messaging-contact"
-        onClick={() => {
-          updateSelection(user);
-          setMobileHamMenu(false);
-        }}
-      >
-        <img
-          src={user.profilePic || '/pfp-default-header.png'}
-          alt="User Profile"
-          onError={e => {
-            e.target.onerror = null;
-            e.target.src = '/pfp-default-header.png';
-          }}
-        />
-        <div className="lb-messaging-contact-info">
-          <div className={`lb-messaging-contact-name ${mobileView ? 'black' : ''}`}>
-            {user.firstName} {user.lastName}
-          </div>
-        </div>
-      </button>
-    ));
+  const maskSensitiveText = text => {
+    if (!text) return '';
+    return text.replace(/(\+?\d[\d\s().-]{6,}\d)/g, match => {
+      const digits = match.replace(/\D/g, '');
+      if (digits.length < 8) return match;
+      const lastFour = digits.slice(-4);
+      return `••• ••• ${lastFour}`;
+    });
   };
 
   const renderChatMessages = () => {
     if (messagesLoading) {
-      return <p className="lb-no-msg-text">Loading messages...</p>;
+      return <p className={styles.lbNoMsgText}>Loading messages...</p>;
     }
 
     if (messages.length === 0) {
-      return <p className="lb-no-msg-text">No messages to display.</p>;
+      return <p className={styles.lbNoMsgText}>No messages to display.</p>;
     }
 
-    const filteredMessages = messages.filter(
+    const uniqueMessages = [];
+    const seenKeys = new Set();
+    for (const message of messages) {
+      const key =
+        message._id ||
+        `${message.sender}-${message.receiver}-${message.timestamp}-${message.content}`;
+      if (!seenKeys.has(key)) {
+        seenKeys.add(key);
+        uniqueMessages.push(message);
+      }
+    }
+
+    const filteredMessages = uniqueMessages.filter(
       message =>
-        (message.sender === auth.userid && message.receiver === selectedUser.userId) ||
-        (message.sender === selectedUser.userId && message.receiver === auth.userid),
+        (message.sender === authUserId && message.receiver === selectedUser.userId) ||
+        (message.sender === selectedUser.userId && message.receiver === authUserId),
     );
 
     if (filteredMessages.length === 0) {
-      return <p className="lb-no-msg-text">No messages to display.</p>;
+      return <p className={styles.lbNoMsgText}>No messages to display.</p>;
     }
 
     return (
-      <div className="message-list">
-        <div className="message-spacer" />
+      <div className={styles.messageList}>
+        <div className={styles.messageSpacer} />
         {filteredMessages.map(message => (
           <div
             key={message._id || message.timestamp}
-            className={`message-item ${message.sender === auth.userid ? 'sent' : 'received'}`}
+            className={`${styles.messageItem} ${
+              message.sender === authUserId ? styles.sent : styles.received
+            }`}
           >
-            <p className="message-text">
-              {message.content.split('\n').map(line => (
-                <span key={message._id + line}>
-                  {line}
-                  <br />
-                </span>
-              ))}
+            <p className={styles.messageText}>
+              {maskSensitiveText(message.content)
+                .split('\n')
+                .map(line => (
+                  <span key={message._id + line}>
+                    {line}
+                    <br />
+                  </span>
+                ))}
             </p>
           </div>
         ))}
@@ -285,17 +512,37 @@ export default function LBMessaging() {
     );
   };
 
+  const handleSearchChange = event => {
+    const query = event.target.value;
+    setSearchQuery(query);
+    if (query.trim() !== '') {
+      searchUserProfiles(query);
+      return;
+    }
+    setSearchResults([]);
+  };
+
+  const handleToggleContacts = () => {
+    setShowContacts(prev => !prev);
+  };
+
+  const handleSelectUser = user => {
+    updateSelection(user);
+    setMobileHamMenu(false);
+  };
+
   return (
-    users.userProfilesBasicInfo.length !== 0 && (
-      <div className="main-container">
-        <div className="logo-container">
+    userProfilesBasicInfo.length !== 0 && (
+      <div className={`main-container ${styles.mainContainer}`}>
+        <Header />
+        <div className={`logo-container ${styles.logoContainer}`}>
           <img src={logo} alt="One Community Logo" />
         </div>
-        <div className="content-container">
-          <div className="container-top msg">
+        <div className={`content-container ${styles.contentContainer}`}>
+          <div className={`container-top msg ${styles.containerTop} ${styles.msg}`}>
             {mobileView && (
-              <div className="lb-mobile-messaging-menu">
-                <div className="lb-mobile-header">
+              <div className={`lb-mobile-messaging-menu ${styles.lbMobileMessagingMenu}`}>
+                <div className={`lb-mobile-header ${styles.lbMobileHeader}`}>
                   <button
                     type="button"
                     className="lb-ham-btn"
@@ -304,166 +551,157 @@ export default function LBMessaging() {
                     ☰
                   </button>
                   {mobileHamMenu && (
-                    <div className="lb-mobile-ham-menu" ref={menuRef}>
+                    <div
+                      className={`lb-mobile-ham-menu ${styles.lbMobileContactsPanel}`}
+                      ref={menuRef}
+                    >
                       <div className="lb-mobile-ham-menu-header">
-                        {showContacts ? (
-                          <div className="lb-messaging-contacts-header-mobile">
-                            <input
-                              type="text"
-                              placeholder={placeholder}
-                              className="lb-search-input"
-                              value={searchQuery}
-                              onChange={e => {
-                                const query = e.target.value;
-                                setSearchQuery(query);
-                                if (query.trim() !== '') {
-                                  searchUserProfiles(query);
-                                } else {
-                                  setSearchResults([]);
-                                }
-                              }}
-                            />
-                            <button
-                              type="button"
-                              onClick={() => setShowContacts(prev => !prev)}
-                              className="lb-msg-icon-btn" // you can reuse or define styles here
-                            >
-                              <img
-                                src="https://img.icons8.com/metro/26/multiply.png"
-                                alt="Close"
-                                className="lb-msg-icon"
-                              />
-                            </button>
-                          </div>
-                        ) : (
-                          <div className="lb-messaging-contacts-header-mobile">
-                            <h3 className="lb-contact-msgs">Messages</h3>
-                            <div className="lb-messaging-search-icons-mobile">
-                              <FontAwesomeIcon
-                                icon={faSearch}
-                                className="lb-msg-icon-mobile"
-                                onClick={() => setShowContacts(prev => !prev)}
-                              />
-                            </div>
-                          </div>
-                        )}
-                        <div className="lb-messaging-contacts-body active">
-                          {showContacts
-                            ? searchResults.map(user => (
-                                <button
-                                  key={user.userId}
-                                  type="button"
-                                  className="lb-messaging-contact"
-                                  onClick={() => {
-                                    updateSelection(user);
-                                    setMobileHamMenu(false);
-                                  }}
-                                >
-                                  <img
-                                    src={user.profilePic || '/pfp-default-header.png'}
-                                    alt="User Profile"
-                                    onError={e => {
-                                      e.target.onerror = null;
-                                      e.target.src = '/pfp-default-header.png';
-                                    }}
-                                  />
-                                  <div className="lb-messaging-contact-info">
-                                    <div
-                                      className={`lb-messaging-contact-name ${
-                                        mobileView ? 'black' : ''
-                                      }`}
-                                    >
-                                      {user.firstName} {user.lastName}
-                                    </div>
-                                  </div>
-                                </button>
-                              ))
-                            : renderContacts()}
-                        </div>
+                        <MessagingContactsPanel
+                          isSearchOpen={showContacts}
+                          placeholder={placeholder}
+                          searchQuery={searchQuery}
+                          onSearchChange={handleSearchChange}
+                          onToggleSearch={handleToggleContacts}
+                          searchResults={searchResults}
+                          existingChats={existingChats}
+                          onSelectUser={handleSelectUser}
+                          headerClassName={`lb-messaging-contacts-header-mobile ${styles.lbMessagingContactsHeaderMobile}`}
+                          bodyClassName="lb-messaging-contacts-body active"
+                          contactNameClassName={`${styles.lbMessagingContactName} ${styles.black}`}
+                          searchIconClassName="lb-messaging-search-icons-mobile"
+                        />
                       </div>
                     </div>
                   )}
                 </div>
               </div>
             )}
+            <div className={`${styles.lbMessagingHeaderIcons} ${styles.lbTopBarBell}`}>
+              <button
+                type="button"
+                className={styles.lbTopBarMenuButton}
+                onClick={() => {
+                  setBellDropdownActive(prev => !prev);
+                }}
+              >
+                ☰
+              </button>
+              {bellDropdownActive && (
+                <div
+                  className={`${styles.lgMessagingBellSelectDropdown} ${
+                    bellDropdownActive ? styles.activeInlgMessagingBellSelectDropdown : ''
+                  }`}
+                >
+                  <div className={styles.lgMessagingSectionTitle}>Notification Settings</div>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={notificationSettings.notifyInApp || false}
+                      onChange={e => {
+                        const isChecked = e.target.checked;
+                        setNotificationSettings(prev => ({
+                          ...prev,
+                          notifyInApp: isChecked,
+                        }));
+                      }}
+                    />
+                    In App
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={notificationSettings.notifyEmail || false}
+                      onChange={e => {
+                        const isChecked = e.target.checked;
+                        setNotificationSettings(prev => ({
+                          ...prev,
+                          notifyEmail: isChecked,
+                        }));
+                      }}
+                    />
+                    Email
+                  </label>
+                  <div className={styles.lgMessagingDivider} />
+                  <div className={styles.lgMessagingSectionTitle}>SMS Notifications</div>
+                  <label className={styles.lgMessagingSmsCheckbox}>
+                    <input
+                      type="checkbox"
+                      checked={notificationSettings.notifySms}
+                      onChange={e => {
+                        const isChecked = e.target.checked;
+                        setNotificationSettings(prev => ({
+                          ...prev,
+                          notifySms: isChecked,
+                        }));
+                      }}
+                    />
+                    Enable SMS notifications
+                  </label>
+                  <div className={styles.lgMessagingSmsField}>
+                    <span className={styles.lgMessagingSmsLabel}>SMS Phone</span>
+                    <input
+                      type="tel"
+                      placeholder={notificationSettings.smsPhoneMasked || '+11234567890'}
+                      className={styles.lgMessagingSmsInput}
+                      value={notificationSettings.smsPhone}
+                      onChange={e => {
+                        const nextValue = e.target.value;
+                        setNotificationSettings(prev => ({
+                          ...prev,
+                          smsPhone: nextValue,
+                        }));
+                      }}
+                    />
+                    {notificationSettings.smsPhoneMasked && (
+                      <span className={styles.lgMessagingSmsMask}>
+                        Saved as {notificationSettings.smsPhoneMasked}
+                      </span>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    className={`btn btn-secondary ${styles.lgMessagingSmsSaveButton}`}
+                    onClick={saveSmsPreferences}
+                  >
+                    Save SMS Settings
+                  </button>
+                  <button
+                    type="button"
+                    className={`btn btn-primary ${styles.lgMessagingSubmitButton}`}
+                    onClick={saveUserPreferences}
+                  >
+                    Save
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
-          <div className="container-main-msg">
+          <div className={`container-main-msg ${styles.containerMainMsg}`}>
             {/* Contacts Section */}
             {!mobileView && (
               <div className="lb-messaging-contacts">
-                {showContacts ? (
-                  <div className="lb-messaging-contacts-header">
-                    <input
-                      type="text"
-                      placeholder={placeholder}
-                      className="lb-search-input"
-                      value={searchQuery}
-                      onChange={e => {
-                        const query = e.target.value;
-                        setSearchQuery(query);
-                        if (query.trim() !== '') {
-                          searchUserProfiles(query);
-                        } else {
-                          setSearchResults([]);
-                        }
-                      }}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowContacts(prev => !prev)}
-                      className="lb-msg-icon-btn" // you can reuse or define styles here
-                    >
-                      <img
-                        src="https://img.icons8.com/metro/26/multiply.png"
-                        alt="Close"
-                        className="lb-msg-icon"
-                      />
-                    </button>
-                  </div>
-                ) : (
-                  <div className="lb-messaging-contacts-header">
-                    <h3 className="lb-contact-msgs">Messages</h3>
-                    <div className="lb-messaging-search-icons">
-                      <FontAwesomeIcon
-                        icon={faSearch}
-                        className="lb-msg-icon"
-                        onClick={() => setShowContacts(prev => !prev)}
-                      />
-                    </div>
-                  </div>
-                )}
-                <div className="lb-messaging-contacts-body active">
-                  {showContacts
-                    ? searchResults.map(user => (
-                        <button
-                          key={user._id}
-                          type="button"
-                          className="lb-messaging-contact"
-                          onClick={() => updateSelection(user)}
-                        >
-                          <img
-                            src={user.profilePic || '/pfp-default-header.png'}
-                            alt="User Profile"
-                            onError={e => {
-                              e.target.onerror = null;
-                              e.target.src = '/pfp-default-header.png';
-                            }}
-                          />
-                          <div className="lb-messaging-contact-info">
-                            <div className="lb-messaging-contact-name">
-                              {user.firstName} {user.lastName}
-                            </div>
-                          </div>
-                        </button>
-                      ))
-                    : renderContacts()}
-                </div>
+                <MessagingContactsPanel
+                  isSearchOpen={showContacts}
+                  placeholder={placeholder}
+                  searchQuery={searchQuery}
+                  onSearchChange={handleSearchChange}
+                  onToggleSearch={handleToggleContacts}
+                  searchResults={searchResults}
+                  existingChats={existingChats}
+                  onSelectUser={handleSelectUser}
+                  headerClassName={`lb-messaging-contacts-header ${styles.lbMessagingContactsHeader}`}
+                  bodyClassName="lb-messaging-contacts-body active"
+                  contactNameClassName={styles.lbMessagingContactName}
+                  searchIconClassName="lb-messaging-search-icons"
+                />
               </div>
             )}
 
             {/* Chat Window Section */}
-            <div className="lb-messaging-message-window">
-              <div className="lb-messaging-message-window-header">
+            <div className={`lb-messaging-message-window ${styles.lbMessagingMessageWindow}`}>
+              <div
+                className={`lb-messaging-message-window-header ${styles.lbMessagingMessageWindowHeader}`}
+              >
                 <div>
                   <img
                     src={selectedUser.profilePic || '/pfp-default-header.png'}
@@ -478,69 +716,18 @@ export default function LBMessaging() {
                     ? `${selectedUser.firstName} ${selectedUser.lastName}`
                     : 'Select a user to chat'}
                 </div>
-                {selectedUser.userId && (
-                  <div className="lb-messaging-header-icons">
-                    <FontAwesomeIcon
-                      icon={faBell}
-                      onClick={() => {
-                        setBellDropdownActive(prev => !prev);
-                      }}
-                      className="lg-messaging-notification-bell"
-                    />
-                    {bellDropdownActive && (
-                      <div
-                        className={`lg-messaging-bell-select-dropdown ${
-                          bellDropdownActive ? 'active' : ''
-                        }`}
-                      >
-                        <label>
-                          <input
-                            type="checkbox"
-                            checked={selectedOption.notifyInApp || false}
-                            onChange={e => {
-                              const isChecked = e.target.checked;
-                              setSelectedOption(prev => ({
-                                ...prev,
-                                notifyInApp: isChecked,
-                              }));
-                            }}
-                          />
-                          In App
-                        </label>
-                        <label>
-                          <input
-                            type="checkbox"
-                            checked={selectedOption.notifyEmail || false}
-                            onChange={e => {
-                              const isChecked = e.target.checked;
-                              setSelectedOption(prev => ({
-                                ...prev,
-                                notifyEmail: isChecked,
-                              }));
-                            }}
-                          />
-                          Email
-                        </label>
-                        <button
-                          type="button"
-                          className="btn btn-primary"
-                          onClick={saveUserPreferences}
-                        >
-                          Save
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                )}
+                {selectedUser.userId && null}
               </div>
-              <div className="lb-messaging-message-window-body">
+              <div className={styles.lbMessagingMessageWindowBody}>
                 {selectedUser.userId ? (
                   renderChatMessages()
                 ) : (
-                  <p className="start-msg">Select a user to start chatting</p>
+                  <p className={styles.startMsg}>Select a user to start chatting</p>
                 )}
               </div>
-              <div className="lb-messaing-message-window-footer">
+              <div
+                className={`lb-messaing-message-window-footer ${styles.lbMessagingMessageWindowFooter}`}
+              >
                 <textarea
                   type="text"
                   placeholder="Type a message..."
@@ -552,12 +739,12 @@ export default function LBMessaging() {
                       handleSendMessage();
                     }
                   }}
-                  className="lb-messaging-textarea"
+                  className={`lb-messaging-textarea ${styles.lbMessagingTextarea}`}
                   disabled={!selectedUser.userId}
                 />
                 <FontAwesomeIcon
                   icon={faLocationArrow}
-                  className="send-button"
+                  className={`send-button ${styles.sendButton}`}
                   onClick={handleSendMessage}
                 />
               </div>
