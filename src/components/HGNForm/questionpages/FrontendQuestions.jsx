@@ -13,6 +13,7 @@ function FrontendQuestions() {
   const navigate = useHistory();
   const [questions, setQuestions] = useState([]);
   const formData = useSelector(state => state.hgnForm);
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [newVolunteer, setNewVolunteer] = useState(formData);
   const dispatch = useDispatch();
   const location = useLocation();
@@ -114,8 +115,10 @@ function FrontendQuestions() {
   }
 
   return (
-    <div className={`${styles.frontendBackendQuestions}`}>
-      <h3 className={`${styles.blueStrip}`}>Frontend Questions</h3>
+    <div className={`${styles.frontendBackendQuestions} ${darkMode ? styles.darkContainer : ''}`}>
+      <h3 className={`${styles.blueStrip} ${darkMode ? styles.darkStrip : ''}`}>
+        Frontend Questions
+      </h3>
       <form onSubmit={handleNext}>
         {questions.map((question, index) => {
           const fieldName = fieldNameMap[index] || `frontend_Question_${index}`;

@@ -1,0 +1,100 @@
+/* stylelint-disable  */
+.userProfilePage {
+  width: 100%;
+}
+
+.userInfoSection {
+  margin-bottom: 1rem;
+}
+
+.skillsSection {
+  width: 100%;
+  text-align: left;
+  padding: 0 4px;
+}
+
+.tabNav {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tabItem {
+  margin-bottom: 15px;
+}
+
+.tabLink {
+  background-color: #f1f1f1;
+  color: #555;
+  font-weight: 500;
+  text-align: center;
+  border-radius: 10px;
+  cursor: pointer;
+  padding: 10px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.tabLinkActive {
+  background-color: #e3f2fd;
+  color: #007bff;
+}
+
+.chartWrapper {
+  height: 350px;
+  overflow: hidden;
+}
+
+.scoreItem {
+  position: relative;
+  padding: 15px 10px;
+  height: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.scoreValue {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.scoreLow {
+  color: #dc3545; /* red */
+}
+
+.scoreHigh {
+  color: #28a745; /* green */
+}
+
+.scoreName {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.customTooltip {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 6px 8px;
+  font-size: 12px;
+  box-shadow: 0 0 6px rgb(0 0 0 / 10%);
+  max-width: 180px;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+.tooltipTitle {
+  margin: 0 0 4px;
+  font-weight: bold;
+}
+
+.tooltipScore {
+  margin: 0 0 4px;
+}
+
+.tooltipQuestion {
+  margin: 0;
+}

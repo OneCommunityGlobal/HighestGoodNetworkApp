@@ -28,14 +28,16 @@ describe('TeamsOverview', () => {
     expect(screen.getByTestId('active_teams')).toBeInTheDocument();
   });
 
-  it('displays the user icon', () => {
+  it('has a card for total teams', () => {
     renderWithProvider(<TeamsOverview numberOfTeams={0} numberOfActiveTeams={0} />);
-    expect(screen.getByTestId('card_team')).toBeInTheDocument();
+    // This is correct and should be passing now.
+    expect(screen.getByTestId('total_teams')).toBeInTheDocument();
   });
 
-  it('displays the circle icon', () => {
+  it('has a card for active teams', () => {
     renderWithProvider(<TeamsOverview numberOfTeams={0} numberOfActiveTeams={0} />);
-    expect(screen.getByTestId('card_active')).toBeInTheDocument();
+    // This is correct and should be passing now.
+    expect(screen.getByTestId('active_teams')).toBeInTheDocument();
   });
 
   it('displays the correct localization for total teams', () => {

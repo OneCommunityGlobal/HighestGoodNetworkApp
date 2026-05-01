@@ -77,7 +77,7 @@ export const fetchVillages = async () => {
 
     const allVillages = [...new Set([...FIXED_VILLAGES, ...apiVillages])];
 
-    return allVillages.sort();
+    return allVillages.sort((a, b) => String(a).localeCompare(String(b)));
   } catch (error) {
     // console.error('Error fetching villages:', error);
 
@@ -109,7 +109,7 @@ export const fetchListings = async (page = 1, size = 12, filters = {}) => {
     if (filters.availableFrom) params.append('availableFrom', filters.availableFrom);
     if (filters.availableTo) params.append('availableTo', filters.availableTo);
 
-    const response = await httpService.get(`${API_BASE_URL}/listings?${params.toString()}`);
+    const response = await httpService.get(`${API_BASE_URL}/listing?${params.toString()}`);
 
     const responseData = response.data;
     const items = responseData.data?.items || responseData.items || [];
