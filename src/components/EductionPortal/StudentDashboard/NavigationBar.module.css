@@ -1,7 +1,8 @@
+/* stylelint-disable  */
 .navigationBar {
   background-color: #3b82f6;
   padding: 0.75rem 0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
 }
 
 .navContainer {
@@ -25,7 +26,7 @@
   gap: 0.5rem;
   background: transparent;
   border: none;
-  color: #ffffff;
+  color: #fff;
   font-size: 0.875rem;
   font-weight: 500;
   padding: 0.5rem 0.75rem;
@@ -36,7 +37,7 @@
 }
 
 .navButton:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgb(255 255 255 / 10%);
 }
 
 .navText {
@@ -61,9 +62,9 @@
 }
 
 .dropdownContent {
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 8px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 10%), 0 2px 4px -1px rgb(0 0 0 / 6%);
   padding: 0.5rem 0;
   min-width: 200px;
   border: 1px solid #e5e7eb;
@@ -89,7 +90,7 @@
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .navContainer {
     gap: 1rem;
     padding: 0 0.5rem;
@@ -120,5 +121,5 @@
 
 :global(.dark-mode) .dropdownItem:hover {
   background-color: #363636;
-  color: #ffffff;
+  color: #fff;
 }

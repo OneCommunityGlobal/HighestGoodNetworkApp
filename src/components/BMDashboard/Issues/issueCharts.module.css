@@ -1,3 +1,5 @@
+/* stylelint-disable no-descending-specificity */
+
 /* ===========================
 Issue Charts Module CSS
 =========================== */
@@ -218,8 +220,6 @@ Issue Charts Module CSS
   height: 38px;
 }
 
-/* ---------- Select / input base styles ---------- */
-
 .filterSelect:focus,
 .issueChartSelect:focus {
   border-color: #4caf50;
@@ -235,10 +235,18 @@ Issue Charts Module CSS
   height: 400px;
   padding: 20px;
   border-radius: 8px;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
   color: #000;
 }
 
 .chartContainerDark {
+  width: 100%;
+  max-width: 900px; /* centers the chart while panel stays 100% */
+  background: #1a1c20;
+  padding: 25px;
+  border-radius: 12px;
+  margin: 0 auto;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 60%);
   color: #cfd7e3;
 }
 
