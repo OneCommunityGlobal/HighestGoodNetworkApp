@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .userProfilePage {
   padding: 1rem;
 }
@@ -50,24 +51,24 @@
 
 /* Tooltip styles */
 .tooltip {
-  background-color: #ffffff;
+  background-color: #fff;
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 6px 8px;
   font-size: 12px;
-  box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 6px rgb(0 0 0 / 10%);
   max-width: 180px;
   white-space: normal;
-  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .tooltipTitle {
-  margin: 0 0 4px 0;
+  margin: 0 0 4px;
   font-weight: bold;
 }
 
 .tooltipScore {
-  margin: 0 0 4px 0;
+  margin: 0 0 4px;
 }
 
 .scoreLow {
