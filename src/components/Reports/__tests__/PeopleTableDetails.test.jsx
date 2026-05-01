@@ -54,17 +54,17 @@ describe('Unit Test case for PeopleTableDetails component', () => {
 
   it('Test 7 : Verify toggle interaction', () => {
   render(<PeopleTableDetails taskData={[getMockTask('1', 'P2', 3)]} />);
-  
-  const toggleButton = screen.getByRole('button', { name: /1\+/ });
-  const extraDiv = screen.getByTestId('extra-resources-1'); 
 
-  // Instead of checking visibility (which depends on CSS), 
+  const toggleButton = screen.getByRole('button', { name: /1\+/ });
+  const extraDiv = screen.getByTestId('extra-resources-1');
+
+  // Instead of checking visibility (which depends on CSS),
   // check if the click actually triggers the change you expect.
   fireEvent.click(toggleButton);
-  
+
   // If your toggle function sets display to 'block' inline:
   expect(extraDiv).toBeVisible();
-  
+
   fireEvent.click(toggleButton);
   // If the toggle function sets it back to 'none' inline:
   expect(extraDiv).not.toBeVisible();
