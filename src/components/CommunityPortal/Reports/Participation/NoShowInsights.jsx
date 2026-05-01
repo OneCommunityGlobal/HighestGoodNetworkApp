@@ -16,30 +16,44 @@ function NoShowInsights() {
   const [exportError, setExportError] = useState('');
   const [isExporting, setIsExporting] = useState(false);
 
-  const filterByDate = events => {
+  const filterByDate = (events) => {
     const today = new Date();
-    return events.filter(event => {
+    
+    // Create a normalized "start of today" for accurate comparisons
+    const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+    return events.filter((event) => {
       const eventDate = new Date(event.eventDate);
+
       switch (dateFilter) {
         case 'Today':
           return eventDate.toDateString() === today.toDateString();
+
         case 'This Week': {
-          const startOfWeek = new Date(today);
-          startOfWeek.setDate(today.getDate() - today.getDay());
+          // Calculate the beginning of the current week (Sunday)
+          const startOfWeek = new Date(startOfToday);
+          startOfWeek.setDate(startOfToday.getDate() - today.getDay());
+          startOfWeek.setHours(0, 0, 0, 0); // Set to 00:00:00
+
+          // Calculate the end of the current week (Saturday)
           const endOfWeek = new Date(startOfWeek);
           endOfWeek.setDate(startOfWeek.getDate() + 6);
+          endOfWeek.setHours(23, 59, 59, 999); // Set to 23:59:59
+
           return eventDate >= startOfWeek && eventDate <= endOfWeek;
         }
+
         case 'This Month':
           return (
             eventDate.getMonth() === today.getMonth() &&
             eventDate.getFullYear() === today.getFullYear()
           );
+
         default:
           return true;
-      }
-    });
-  };
+    }
+  });
+};
 
   const handleSortClick = () => {
     setSortOrder(prev => {

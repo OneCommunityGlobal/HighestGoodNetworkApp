@@ -11,7 +11,9 @@ function MyCases() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const isExporting =
-    typeof document !== 'undefined' && document.documentElement?.dataset?.exporting === 'true'; // Sonar: prefer .dataset
+    typeof document !== 'undefined' && document.documentElement?.dataset?.exporting === 'true'; // Sonar: prefer .
+    
+
   const filterEvents = events => {
     const now = new Date();
     // Create a clean "today" at midnight to avoid hour/minute comparison issues
@@ -63,6 +65,7 @@ function MyCases() {
 
     return upcomingEvents; // 'all' returns all future events
   };
+  
 
   const darkMode = useSelector(state => state.theme.darkMode);
   const filteredEvents = filterEvents(mockEvents);

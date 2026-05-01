@@ -13,41 +13,59 @@ function DropOffTracking() {
 
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const getDateRange = () => {
-    const today = new Date();
-    let startDate, endDate;
+  const filterEvents = events => {
+    const now = new Date();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    const upcomingEvents = events.filter(event => {
+      const eventDate = new Date(event.eventDate);
+      return eventDate >= startOfToday;
+    });
 
     if (selectedTime === 'Today') {
-      startDate = new Date(today);
-      startDate.setHours(0, 0, 0, 0);
-      endDate = new Date(today);
-      endDate.setHours(23, 59, 59, 999);
-    } else if (selectedTime === 'This Week') {
-      startDate = new Date(today);
-      startDate.setDate(today.getDate() - today.getDay());
-      startDate.setHours(0, 0, 0, 0);
-      endDate = new Date(startDate);
-      endDate.setDate(startDate.getDate() + 6);
-      endDate.setHours(23, 59, 59, 999);
-    } else if (selectedTime === 'This Month') {
-      startDate = new Date(today.getFullYear(), today.getMonth(), 1);
-      endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-      endDate.setHours(23, 59, 59, 999);
+      return upcomingEvents.filter(event => {
+        const eDate = new Date(event.eventDate);
+        return eDate.toDateString() === startOfToday.toDateString();
+      });
     }
-    return { startDate, endDate };
+
+    if (selectedTime === 'This Week') {
+  
+      const dayOfWeek = now.getDay();
+      const diffToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+
+      const startOfWeek = new Date(startOfToday);
+      startOfWeek.setDate(startOfToday.getDate() - diffToMonday);
+
+      const endOfWeek = new Date(startOfWeek);
+      endOfWeek.setDate(startOfWeek.getDate() + 6);
+      endOfWeek.setHours(23, 59, 59, 999); 
+      return upcomingEvents.filter(event => {
+        const eDate = new Date(event.eventDate);
+        return eDate >= startOfWeek && eDate <= endOfWeek;
+      });
+    }
+
+    if (selectedTime === 'This Month') {
+      const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+
+      return upcomingEvents.filter(event => {
+        const eDate = new Date(event.eventDate);
+        return eDate <= endOfMonth;
+      });
+    }
+
+    let filteredByEventType;
+    if(selectedEvent!=="All Events"){
+        filteredByEventType = upcomingEvents.filter((event)=>event.eventType===selectedEvent);
+    }
+    else{
+      filteredByEventType = upcomingEvents;
+    }
+    return filteredByEventType;
   };
 
-  const filteredEvents = mockEvents.filter(event => {
-    if (selectedEvent !== 'All Events' && event.eventType !== selectedEvent) {
-      return false;
-    }
-    if (selectedTime !== 'All Time') {
-      const { startDate, endDate } = getDateRange();
-      const eventDate = new Date(event.eventDate);
-      return eventDate >= startDate && eventDate <= endDate;
-    }
-    return true;
-  });
+  const filteredEvents = filterEvents(mockEvents);
 
   const handleOpenList = event => {
     setActiveEvent(event);
