@@ -11,14 +11,14 @@
 }
 
 .chartCard.darkMode {
-  background-color: #1b2a41; /* --color-oxford-blue */
-  color: #e5e5e5; /* --text-dark */
-  box-shadow: 2px 2px 4px 1px black; /* box-shadow-dark */
+  background-color: #1b2a41;
+  color: #e5e5e5;
+  box-shadow: 2px 2px 4px 1px black;
 }
 
 .chartTitle {
   margin-bottom: 24px;
-  font-size: 24px; /* match previous standard or h2 size */
+  font-size: 24px;
   font-weight: bold;
 }
 
@@ -37,8 +37,9 @@
 .formGroup {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  min-width: 90px;
+  align-items: flex-start;
+  min-width: 150px;
+  position: relative;
 }
 
 .label {
@@ -51,19 +52,31 @@
   font-size: 14px;
   color: #444;
   font-weight: 500;
-  margin-bottom: 2px;
+  margin-top: 6px;
   cursor: pointer;
-  position: relative;
   display: inline-block;
-  min-width: 60px;
-  text-align: center;
-  background: none;
-  border: none;
-  padding: 0;
+  min-width: 120px;
+  text-align: left;
+  background: #ffffff;
+  border: 1px solid #ccc;
+  padding: 6px 12px;
+  border-radius: 4px;
+}
+
+.dropdownButton:hover {
+  background: #f0f0f0;
+  border-color: #bdbdbd;
 }
 
 .darkMode .dropdownButton {
   color: #e5e5e5;
+  background-color: #2c2c2c;
+  border-color: #555;
+}
+
+.darkMode .dropdownButton:hover {
+  background: #344263;
+  border-color: #5b6c92;
 }
 
 .dropdownMenu {
@@ -79,7 +92,7 @@
 }
 
 .darkMode .dropdownMenu {
-  background-color: #1c2541; /* --color-space-cadet */
+  background-color: #1c2541;
   box-shadow: 2px 2px 4px 1px black;
 }
 
@@ -87,4 +100,220 @@
   width: 100%;
   margin: 0 -24px;
   padding: 0 24px;
+  margin-bottom: 18px;
+}
+
+.noData {
+  padding: 40px 20px;
+  text-align: center;
+  color: #777;
+  background: #f9f9f9;
+  border: 1px dashed #ccc;
+  border-radius: 6px;
+  font-weight: 500;
+  margin: 20px 0;
+}
+
+.darkMode .noData {
+  background: #2b2b2b;
+  border-color: #555;
+  color: #bbb;
+}
+
+.trendSection {
+  margin-top: 10px;
+}
+
+.subHeading {
+  margin: 8px 0 10px 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.tableScroll {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 900px;
+}
+
+.tableHeadRow {
+  background: #f7f7f7;
+}
+
+.darkMode .tableHeadRow {
+  background: #262626;
+}
+
+.th {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  color: #222;
+}
+
+.darkMode .th {
+  border-bottom: 1px solid #444;
+  color: #eee;
+}
+
+.td {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.darkMode .td {
+  border-bottom: 1px solid #333;
+}
+
+.tdProject {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  white-space: nowrap;
+}
+
+.darkMode .tdProject {
+  border-bottom: 1px solid #333;
+}
+
+.sparkRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.arrow {
+  width: 22px;
+}
+
+.sparkline {
+  width: 160px;
+  height: 36px;
+}
+
+.deltaText {
+  font-size: 12px;
+  color: #555;
+}
+
+.darkMode .deltaText {
+  color: #bbb;
+}
+
+.indicatorBox {
+  cursor: help;
+}
+
+.indicatorLine {
+  font-size: 13px;
+}
+
+.indicatorSub {
+  font-size: 12px;
+  color: #555;
+  margin-top: 4px;
+}
+
+.darkMode .indicatorSub {
+  color: #bbb;
+}
+
+.noDataRow {
+  padding: 12px;
+  color: #777;
+  text-align: center;
+}
+
+.darkMode .noDataRow {
+  color: #bbb;
+}
+
+.tooltip {
+  background: #fff;
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 6px;
+  color: #222;
+}
+
+.tooltipDark {
+  background: #2c2c2c;
+  border: 1px solid #555;
+  color: #eee;
+}
+
+.tooltipTitle {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.tooltipSubtitle {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.tooltipDivider {
+  margin: 8px 0;
+  border: 0;
+  border-top: 1px solid #ddd;
+}
+
+.error {
+  color: red;
+}
+
+.loading {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* React-select overrides */
+.customSelect__control {
+  font-size: 14px;
+  min-height: 34px;
+  background: none;
+  border: none;
+  box-shadow: none;
+}
+
+.darkMode .customSelect__control {
+  color: #eee;
+  background: #2c2c2c;
+}
+
+.customSelect__multi-value {
+  background: #e6f7ff;
+  font-size: 12px;
+  margin: 2px;
+}
+
+.darkMode .customSelect__multi-value {
+  background: #444;
+  color: #eee;
+}
+
+.customSelect__option {
+  color: #000;
+  background-color: #fff;
+}
+
+.customSelect__option:hover {
+  background-color: #f0f0f0;
+}
+
+.darkMode .customSelect__option {
+  color: #eee;
+  background-color: #2c2c2c;
+}
+
+.darkMode .customSelect__option:hover {
+  background-color: #3a3a3a;
+}
+
+.customSelect__menu {
+  z-index: 9999;
 }
