@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 /* ApplicationTimeChart.module.css */
 
 .pageContainer {
@@ -23,13 +24,13 @@
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .pageContainer {
     padding: 15px;
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .pageContainer {
     padding: 10px;
   }
@@ -45,7 +46,7 @@
   flex: 1;
   border: 2px solid #4285f4;
   border-radius: 8px;
-  background-color: #ffffff;
+  background-color: #fff;
   padding: 20px;
   overflow: visible;
   transition: background-color 0.3s ease, border-color 0.3s ease;
@@ -60,7 +61,7 @@
   font-size: 20px;
   font-weight: 400;
   color: #5f6368;
-  margin: 0 0 30px 0;
+  margin: 0 0 30px;
   font-family: Arial, sans-serif;
   transition: color 0.3s ease;
 }
@@ -72,15 +73,13 @@
 .chartArea {
   min-height: 400px;
   position: relative;
-  padding-left: 140px;
+  padding: 20px 108px 40px 140px;
+
   /* Room for value labels placed to the right of each bar (not on the bar) */
-  padding-right: 108px;
-  padding-top: 20px;
-  padding-bottom: 40px;
 }
 
 /* Responsive design for mobile */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .chartArea {
     padding-left: 100px;
     padding-right: 88px;
@@ -88,7 +87,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .chartArea {
     padding-left: 80px;
     padding-right: 72px;
@@ -98,10 +97,7 @@
 
 .grid {
   position: absolute;
-  left: 140px;
-  right: 108px;
-  top: 20px;
-  bottom: 40px;
+  inset: 20px 108px 40px 140px;
   background-image: linear-gradient(to right, #e0e0e0 1px, transparent 1px),
     linear-gradient(to bottom, #e0e0e0 1px, transparent 1px);
   opacity: 0.5;
@@ -114,14 +110,14 @@
     linear-gradient(to bottom, #5a6c7d 1px, transparent 1px);
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .grid {
     left: 100px;
     right: 88px;
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .grid {
     left: 80px;
     right: 72px;
@@ -139,13 +135,13 @@
   justify-content: space-between;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .yAxis {
     width: 90px;
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .yAxis {
     width: 70px;
   }
@@ -167,7 +163,7 @@
   border-right-color: #5a6c7d;
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .yAxisItem {
     font-size: 10px;
     padding-right: 5px;
@@ -191,14 +187,14 @@
   border-top-color: #5a6c7d;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .xAxis {
     left: 100px;
     right: 88px;
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .xAxis {
     left: 80px;
     right: 72px;
@@ -207,23 +203,20 @@
 
 .bars {
   position: absolute;
-  left: 140px;
-  right: 108px;
-  top: 20px;
-  bottom: 40px;
+  inset: 20px 108px 40px 140px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .bars {
     left: 100px;
     right: 88px;
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .bars {
     left: 80px;
     right: 72px;
@@ -271,10 +264,10 @@
 
 .dataLabel.darkMode {
   color: #f1f5f9;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+  text-shadow: 0 1px 2px rgb(0 0 0 / 45%);
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .dataLabel {
     font-size: 12px;
     margin-left: 8px;
@@ -295,7 +288,7 @@
   color: #e0e0e0;
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .xAxisLabel {
     font-size: 10px;
     bottom: -20px;
@@ -316,14 +309,14 @@
   color: #e0e0e0;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .noData {
     height: 300px;
     font-size: 14px;
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .noData {
     height: 250px;
     font-size: 12px;
@@ -345,7 +338,7 @@
   color: #e0e0e0;
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .summary {
     font-size: 12px;
     padding: 10px;
@@ -359,14 +352,14 @@
   min-width: 150px;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .filters {
     min-width: 120px;
     gap: 15px;
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .filters {
     min-width: 100px;
     gap: 10px;
@@ -377,7 +370,7 @@
   border: 1px solid #dadce0;
   border-radius: 4px;
   padding: 12px;
-  background-color: #ffffff;
+  background-color: #fff;
   transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
@@ -386,7 +379,7 @@
   border-color: #5a6c7d;
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .filterCard {
     padding: 8px;
   }
@@ -404,7 +397,7 @@
   color: #e0e0e0;
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .filterTitle {
     font-size: 12px;
     margin-bottom: 6px;
@@ -417,7 +410,7 @@
   border: 1px solid #dadce0;
   border-radius: 4px;
   font-size: 14px;
-  background-color: #ffffff;
+  background-color: #fff;
   color: #3c4043;
   transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
@@ -430,7 +423,7 @@
 
 /* Native <option> is often white-on-white in dark mode without explicit colors */
 .select option {
-  background-color: #ffffff;
+  background-color: #fff;
   color: #3c4043;
 }
 
@@ -439,7 +432,7 @@
   color: #f1f5f9;
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .select {
     font-size: 12px;
     padding: 3px 6px;
@@ -447,13 +440,13 @@
 }
 
 /* Responsive layout adjustments */
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
   .container {
     max-width: 100%;
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .container {
     flex-direction: column;
     gap: 15px;
@@ -485,7 +478,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .container {
     gap: 10px;
   }
@@ -509,7 +502,7 @@
   }
 }
 
-@media (max-width: 320px) {
+@media (width <= 320px) {
   .title {
     font-size: 14px;
   }

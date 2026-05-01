@@ -851,18 +851,6 @@ setUpdatedTasks(prev => {
   const fetchSpecialWarnings = async () => {
     const userId = props?.match?.params?.userId;
     try {
-      const userProfileToUpdate = {
-        ...(updatedUserProfile || userProfileRef.current),
-        projects, // Ensure projects are included in the payload
-      };
-      console.log('Submitting UserProfile:', userProfileToUpdate); // Debugging log
-      const result = await props.updateUserProfile(userProfileToUpdate);
-      if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
-        await props.refreshToken(userProfile._id);
-      }
-      await loadUserProfile();
-      await loadUserTasks();
-      setSaved(false);
       dispatch(getSpecialWarnings(userId)).then(res => {
         if (res.error) {
           // eslint-disable-next-line no-console
