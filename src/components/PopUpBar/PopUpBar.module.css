@@ -1,4 +1,3 @@
-/* stylelint-disable  */
 .popupContainer {
   position: sticky;
   width: 100%;
@@ -6,21 +5,20 @@
   left: 0%;
   margin: 0;
   text-align: center;
-  background-color: #fc0;
+  background-color: #ffcc00;
   color: #fff;
   z-index: 2;
   opacity: 0.8;
 }
-
 .popupContainer.blackText{
-  color: #000
+  color: #000000
 }
 
 .closeButton {
   background: none;
   border: none;
   font-size: 18px;
-  color: #000;
+  color: #000000;
   cursor: pointer;
   position: absolute;
   top: 50%;
@@ -29,12 +27,12 @@
 }
 
 .closeButton.btnPadding{
-  @media (width <= 768px) { 
+  @media (max-width: 768px) { 
     top: 70%;
   }
 }
 
 .closeButton > .containerFluid {
-  padding: 0;
+  padding: 0px;
 }
   

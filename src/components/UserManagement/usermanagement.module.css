@@ -3,17 +3,9 @@
 }
 
 /* This background color on hover property below is taking precedence over reactstrap and affecting multiple components. */
-
 /* .btn:hover {
   background-color: #0f8292;
 } */
-
-.filtering-message {
-  height: calc(100dvh - 17rem);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
 
 .userManagementActiveCell {
   position: relative;
@@ -53,11 +45,12 @@
 
 .activeCellGrid {
   display: grid;
-  grid-template-columns: 18px 34px 18px;
-  grid-template-rows: 1fr 1fr;
-  place-items: center;
+  grid-template-columns: 18px 34px 18px; 
+  grid-template-rows: 1fr 1fr;           
+  align-items: center;
+  justify-items: center;
   position: relative;
-  min-height: 42px;
+  min-height: 42px; 
 }
 
 .activeCellLeftTop {
@@ -178,7 +171,6 @@
 .emailCell a:hover {
   text-decoration: none;
 }
-
 .titleCell {
   width: 180px;
   min-width: 180px;
@@ -280,7 +272,6 @@
 
 .addUserModal {
   min-width: 50vw;
-
   /* Occupy the 90% of the screen width */
   max-width: 90vw !important;
 }
@@ -304,7 +295,7 @@
 }
 
 .setupNewUserPopupLabel {
-  margin: 0;
+  margin: 0px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
     'Noto Sans', 'Liberation Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
     'Segoe UI Symbol', 'Noto Color Emoji';
@@ -336,7 +327,7 @@
 .requestedTimeOffClockSvg {
   width: 100%;
   height: 100%;
-  fill: currentcolor;
+  fill: currentColor;
 }
 
 .requestedTimeOffClockSvg path {
@@ -404,7 +395,7 @@
   border-radius: 4px;
   background-color: #e7e7e7;
   border: 1px solid #cacaca;
-  box-shadow: inset 0 0 6px rgb(0 0 0 / 30%);
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
 }
 
 .loggedTimeOffCardsContainer::-webkit-scrollbar-thumb {
@@ -438,7 +429,7 @@
   background-color: #fff;
   border-color: #80bdff;
   outline: 0;
-  box-shadow: 0 0 0 0.2rem rgb(0 123 255 / 25%);
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
 .editbutton {
@@ -469,12 +460,6 @@
   background-color: #f0f8ff;
 }
 
-.tooltipContainer::after {
-  visibility: hidden;
-  opacity: 0;
-  transition: opacity 0.2s ease-in-out;
-}
-
 .tooltipContainer {
   position: relative;
   display: inline-block;
@@ -487,7 +472,7 @@
 .tooltipContainer:hover::after {
   content: attr(data-title); /* Show full text when hovered */
   position: absolute;
-  background-color: rgb(0 0 0 / 80%);
+  background-color: rgba(0, 0, 0, 0.8);
   color: white;
   padding: 5px;
   border-radius: 4px;
@@ -500,6 +485,12 @@
   text-align: center;
   visibility: visible;
   opacity: 1;
+}
+
+.tooltipContainer::after {
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
 }
 
 .infringementCount {

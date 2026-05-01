@@ -1,9 +1,8 @@
-/* stylelint-disable  */
 .addToolForm{
   width: 100%;
 }
 
-.addToolForm label{
+.addToolForm Label{
 font-size: .8em;
 }
 
@@ -60,7 +59,7 @@ font-size: .8em;
   color: red;
 }
 
-@media screen and (width <= 640px) {
+@media screen and (max-width: 640px) {
   .addToolFlexGroup {
     display: block;
   }

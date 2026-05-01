@@ -77,7 +77,6 @@ export const TeamMembersPopup = React.memo(props => {
   const [duplicateUserAlert, setDuplicateUserAlert] = useState(false);
   const [sortOrder, setSortOrder] = useState(0);
   const [infoModal, setInfoModal] = useState(false);
-  const [isLoading, setisLoading] = useState(false);
 
   // Normalize members
   const validation = useMemo(() => {
@@ -187,16 +186,15 @@ export const TeamMembersPopup = React.memo(props => {
     setDuplicateUserAlert(false);
   };
 
-  const onAddUser = async () => {
+  // avoid negated condition
+  const onAddUser = () => {
     if (selectedUser) {
       const isDuplicate = validation.some(x => x?._id === selectedUser._id);
       if (isDuplicate) {
         setSearchText('');
         setDuplicateUserAlert(true);
       } else {
-        setisLoading(true);
-        await props.onAddUser(selectedUser);
-        setisLoading(false);
+        props.onAddUser(selectedUser);
         setSearchText('');
         setDuplicateUserAlert(false);
       }
@@ -347,9 +345,8 @@ export const TeamMembersPopup = React.memo(props => {
                 color="primary"
                 onClick={onAddUser}
                 style={darkMode ? boxStyleDark : boxStyle}
-                disabled={isLoading}
               >
-                {isLoading ? <Spinner color="light" size="sm" /> : 'Add'}
+                Add
               </Button>
             </div>
           )}

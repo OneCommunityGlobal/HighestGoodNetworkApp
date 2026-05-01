@@ -1,28 +1,21 @@
 import { useState, useEffect } from 'react';
-import { faCheck, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useDispatch, useSelector } from 'react-redux';
 import { setUserFollowUp } from '../../actions/followUpActions';
 import styles from './FollowUpCheckButton.module.css';
 
-function FollowupCheckButton({ mouseoverText, user, task }) {
+function FollowupCheckButton({ moseoverText, user, task }) {
   const dispatch = useDispatch();
   const userFollowUps = useSelector(state => state.userFollowUp?.followUps[user.personId] || []);
   const userFollowUpTask = userFollowUps.filter(ele => ele.taskId === task._id);
   const isChecked = userFollowUpTask[0]?.followUpCheck || false;
   const followUpPercentageDeadline = userFollowUpTask[0]?.followUpPercentageDeadline || 0;
-  const acceptedPercentage = userFollowUpTask[0]?.acceptedPercentage || 0;
   const [needFollowUp, setNeedFollowUp] = useState(false);
 
-  const currentPercentage =
-    Number(((task.hoursLogged / task.estimatedHours) * 100).toFixed(2)) || 0;
-
-  // Was accepted as done but more time was logged after acceptance
-  const violatedAfterAcceptance =
-    isChecked && acceptedPercentage > 0 && currentPercentage > acceptedPercentage;
-
   const checkNeedFollowUp = () => {
-    const taskProgressPercentage = currentPercentage;
+    const taskProgressPercentage =
+      Number(((task.hoursLogged / task.estimatedHours) * 100).toFixed(2)) || 0;
 
     if (userFollowUpTask.length > 0) {
       const followUp = userFollowUpTask[0];
@@ -61,16 +54,15 @@ function FollowupCheckButton({ mouseoverText, user, task }) {
 
   useEffect(() => {
     checkNeedFollowUp();
-  }, [followUpPercentageDeadline, userFollowUpTask.length, task.hoursLogged]); // ← fix: added dependencies
+  }, [followUpPercentageDeadline]);
 
   const handleCheckboxFollowUp = () => {
-    const progressPercentage =
+    const progressPersantage =
       Number(((task.hoursLogged / task.estimatedHours) * 100).toFixed(2)) || 0;
 
     const data = {
       followUpCheck: needFollowUp ? true : !isChecked,
-      followUpPercentageDeadline: progressPercentage,
-      acceptedPercentage: !isChecked ? progressPercentage : 0, // save percentage when accepting
+      followUpPercentageDeadline: progressPersantage,
     };
     dispatch(setUserFollowUp(user.personId, task._id, data));
   };
@@ -79,30 +71,18 @@ function FollowupCheckButton({ mouseoverText, user, task }) {
     <div className={styles['followup-box']}>
       <input
         type="checkbox"
-        title={
-          violatedAfterAcceptance
-            ? '⚠️ Time was logged after this task was accepted as complete!'
-            : mouseoverText
-        }
+        title={moseoverText}
         className={`${styles['team-task-progress-follow-up']} ${
           needFollowUp ? styles['team-task-progress-follow-up-red'] : ''
-        } ${violatedAfterAcceptance ? styles['team-task-progress-follow-up-violated'] : ''}`}
+        }`}
         checked={isChecked && !needFollowUp}
         onChange={handleCheckboxFollowUp}
       />
-      {isChecked && !needFollowUp && !violatedAfterAcceptance && (
+      {isChecked && !needFollowUp && (
         <FontAwesomeIcon
           icon={faCheck}
-          title="Accepted as complete"
+          title="This box is used to track follow ups. Clicking it means you’ve checked in with a person that they are on track to meet their deadline"
           className={styles['team-task-progress-follow-up-check']}
-          onClick={handleCheckboxFollowUp}
-        />
-      )}
-      {violatedAfterAcceptance && (
-        <FontAwesomeIcon
-          icon={faExclamationTriangle}
-          title="⚠️ Time was logged after this task was accepted as complete!"
-          className={styles['team-task-progress-follow-up-violated-icon']}
           onClick={handleCheckboxFollowUp}
         />
       )}

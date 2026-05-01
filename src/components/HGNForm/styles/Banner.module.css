@@ -1,4 +1,3 @@
-/* stylelint-disable  */
 .banner {
   width: 50%;
   margin: 10px auto;
@@ -7,7 +6,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .banner img {
@@ -16,17 +15,17 @@
   max-width: 100%;
   object-fit: cover;
   border-radius: 15px;
-  border-color: rgb(0 0 0);
+  border-color: rgb(0, 0, 0);
 }
 
-@media (width <= 768px) {
+@media (max-width: 768px) {
   .banner {
     width: 80%;
     margin: 10px auto;
   }
 }
 
-@media (width <= 480px) {
+@media (max-width: 480px) {
   .banner {
     width: 90%;
     margin: 5px auto;

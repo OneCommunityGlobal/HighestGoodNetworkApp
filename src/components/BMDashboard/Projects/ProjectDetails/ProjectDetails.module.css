@@ -1,166 +1,200 @@
-.projectDetails {
+.project-details {
   text-align: center;
   padding-top: 20px;
   padding-left: 3%;
   padding-right: 3%;
   font-weight: bold;
-  margin-bottom: 20px;
-  min-height: 100vh;
 }
 
-.darkMode .projectDetails {
-  background-color: #1b2a41;
-  color: white;
+.project-details-dark {
+  text-align: center;
+  padding-top: 20px;
+  padding-left: 3%;
+  padding-right: 3%;
+  font-weight: bold;
+  background-color: #1c1e1c;
 }
-.projectDetailsTitle {
+
+.project-details-title {
   font-size: 1.5rem;
-  overflow: hidden;
 }
 
-.darkMode .projectDetailsTitle {
+.project-details-title-dark {
+  font-size: 1.5rem;
   color: white;
-  background-color: #1b2a41;
 }
 
-/* styling for the logBar component */
-.logBar {
+/* =============================
+   LogBar Component
+============================= */
+
+.log-bar,
+.log-bar-dark {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: 100%;
-  background-color: #f9fafb;
-  border-radius: 8px;
-  border: 1px solid #eaeeef;
+  margin: 2em auto;
+  padding: 1em 2em;
+  width: 95%;
+  color: #333333;
 }
 
-.darkMode .logBar {
-  background-color: #2e5061;
-  border: 1px solid #4b5563;
+.log-bar {
+  background-color: white;
 }
 
-.logBarSection {
+.log-bar-dark {
+  background-color: #1b2a41;
+  color: #ffffff;
+}
+
+.log-bar__section {
   width: 100%;
   margin-top: 1em;
-  background-color: transparent;
 }
 
-.logBarSection h2,
-.cardsContainer h2,
-.projectLog h2 {
-  margin-top: 0.5em;
+.log-bar__section :global(h2),
+.cards-container :global(h2),
+.project-log :global(h2) {
   font-size: 1em;
-  margin-bottom: 1em;
   font-weight: bold;
+  color: #333333;
+  text-align: center;
 }
 
-.logBarSection ul {
-  list-style-type: none;
+.log-bar-dark .log-bar__section h2,
+.log-bar-dark .card.cards-container h2,
+.log-bar-dark .project-log h2 {
+  color: #ffffff !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
-.logBarBtnGroup {
-  padding: 0;
+/* Button Group Layout */
+.log-bar__btn-group {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5em;
   justify-content: center;
   align-items: center;
+  gap: 0.5em;
+  padding: 0;
+  margin: 0;
+  list-style: none !important;
 }
 
-/* Base */
-.buttonBtn {
+.button {
   border: 0;
   border-radius: 10px;
-  padding: 0.5em 1em;
-  cursor: pointer;
-  transition: transform 0.2s ease, filter 0.2s ease;
-  min-width: 100px;
-  color: #fff;
+  margin: 0.1em;
+  width: auto;
+  color: #ffffff !important;
+  font-weight: 500;
 }
 
-/* LIGHT MODE hover */
-.buttonBtn:hover {
-  color: #fff; /* prevent blue text */
-  text-decoration: none;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45); /* prevent underline */
+.button:hover {
+  outline: auto;
+  filter: brightness(130%);
+  color: #ffffff !important;
 }
 
-/* LIGHT MODE COLORS */
-.green {
+/* Button Colors */
+.button--green {
   background-color: #015d4a;
 }
 
-.blue {
+.button--blue {
   background-color: #0f6386;
 }
 
-.indigo {
+.button--indigo {
   background-color: #203844;
 }
 
-.maroon {
+.button--maroon {
   background-color: #980101;
 }
 
-/* DARK MODE COLORS */
-.darkMode .green {
-  background-color: #014d3d;
+/* Dark mode button colors - brighter/more vibrant for visibility */
+.log-bar-dark .button--green {
+  background-color: #0d8b6f !important;
+  border: 1px solid #0fb894;
 }
 
-.darkMode .blue {
-  background-color: #0b4c6a;
+.log-bar-dark .button--blue {
+  background-color: #1a8bb8 !important;
+  border: 1px solid #2ba3d1;
 }
 
-.darkMode .indigo {
-  background-color: #1b2f44;
+.log-bar-dark .button--indigo {
+  background-color: #3a5a6b !important;
+  border: 1px solid #4d7a94;
 }
 
-.darkMode .maroon {
-  background-color: #7a0101;
+.log-bar-dark .button--maroon {
+  background-color: #c41e1e !important;
+  border: 1px solid #e63939;
 }
 
+/* Responsive Alignment */
 @media (min-width: 550px) {
-  .logBar {
+  .log-bar,
+  .log-bar-dark {
     flex-direction: column;
   }
 
-  .logBarBtnGroup {
+  .log-bar__btn-group {
     margin-top: -0.5em;
     display: flex;
     justify-content: center;
   }
 
-  .buttonBtn.btnSecondary {
+  .button {
     width: auto;
   }
 
-  .buttonBtn.btnSecondary.maroon {
+  .button.button--maroon {
     margin-top: auto;
   }
 }
 
 @media (min-width: 880px) {
-  .logBar {
+  .log-bar,
+  .log-bar-dark {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
+    align-items: flex-start;
+    margin: 2em;
   }
 
-  .logBarSection {
+  .log-bar-dark {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 2em;
+  }
+
+  .log-bar__section {
     width: 50%;
     flex: auto;
+    text-align: center;
   }
 
-  .buttonBtn.btnSecondary {
+  .button {
     width: auto;
   }
 
-  .buttonBtn.btnSecondary.maroon {
+  .button.button--maroon {
     margin-left: 2em;
   }
 }
 
-.cardsContainer {
+/* =============================
+   Card Containers
+============================= */
+
+.cards-container {
   align-items: center;
   margin: 1em 2em;
   padding: 1em;
@@ -169,17 +203,58 @@
   overflow: hidden;
 }
 
-.darkMode .cardsContainer {
+/* Dark mode styles for project dashboard */
+.project-details-dark .card.cards-container {
   background-color: #374151;
-  color: #e5e7eb;
-  border: 1px solid #4b5563;
+  color: #E5E7EB;
+  border: 1px solid #4B5563;
 }
 
-.darkMode .cardsContainer h2 {
-  color: #60a5fa;
+.project-details-dark .card.cards-container h2 {
+  color: #60A5FA;
 }
 
-.singleCard {
+.project-details-dark .single-card {
+  background-color: #4B5563;
+  border: 1px solid #6B7280;
+  color: #E5E7EB;
+}
+
+.project-details-dark .single-card:hover {
+  box-shadow: 0 20px 20px 0 rgba(0, 0, 0, 0.4), 0 6px 20px 0 rgba(0, 0, 0, 0.4);
+}
+
+.project-details-dark .single-card__info {
+  background-color: #92400E;
+  color: #FEF3C7;
+}
+
+.project-details-dark .project-log {
+  background-color: #374151;
+  color: #E5E7EB;
+}
+
+.project-details-dark .project-log thead {
+  background-color: #4B5563;
+}
+
+.cards-container__header {
+  font-size: 1em;
+  font-weight: bold;
+  color: #333333;
+  margin-bottom: 1em;
+}
+
+.cards-container__content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+  gap: 10px;
+}
+
+/* Single Card */
+.single-card {
   border: 1px solid #eaeeef;
   border-radius: 5px;
   text-align: center;
@@ -188,47 +263,44 @@
   overflow: hidden;
 }
 
-.darkMode .singleCard {
-  background-color: #4b5563;
-  border: 1px solid #6b7280;
-  color: #e5e7eb;
-}
-
-.singleCard:hover {
-  box-shadow: 0 20px 20px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2);
-  transform: translate3d(0.5px, 0.5px, 0.5px);
-}
-
-.darkMode .singleCard:hover {
-  box-shadow: 0 20px 20px 0 rgba(0, 0, 0, 0.4), 0 6px 20px 0 rgba(0, 0, 0, 0.4);
-}
-
-.singleCardImg {
+.single-card__img {
   width: 100%;
   height: auto;
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
+  background-color: #ffffff;
+  border-radius: 5px 5px 0 0;
 }
 
-.singleCardImg img {
+.single-card__img img {
   max-width: 100%;
   height: auto;
-  object-fit: contain;
+  object-fit: cover;
+  image-rendering: auto;
+  filter: none;
+  -webkit-filter: none;
+  backface-visibility: hidden;
+  transform: translateZ(0);
 }
 
-.singleCardBody {
+.single-card:hover {
+  box-shadow: 0 20px 20px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2);
+  transform: translate3d(0.5px, 0.5px, 0.5px);
+}
+
+.single-card__body {
   margin-top: 0.5em;
   padding: 0.5em;
 }
 
-.singleCardBody h3 {
+.single-card__body :global(h3) {
   font-size: 1em;
   margin-bottom: -0.2em;
 }
 
-.singleCardInfo {
+.single-card__info {
   font-size: 0.5rem;
   padding: 1em;
   margin: 0.5em;
@@ -236,51 +308,9 @@
   background-color: #f2c897;
 }
 
-.darkMode .singleCardInfo {
-  background-color: #92400e;
-  color: #fef3c7;
-}
-
-/* cards container content */
-.cardsContainerContent {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  gap: 10px;
-}
-
-/* project log table */
-.projectLog {
-  width: 100%;
-  font-weight: lighter;
-  white-space: nowrap;
-  border-radius: 8px;
-}
-
-.darkMode .projectLog {
-  background-color: #374151;
-  color: #e5e7eb;
-}
-
-.darkMode .projectLog thead {
-  background-color: #4b5563;
-  color: #e5e7eb;
-}
-
-.darkMode .projectLog td,
-.darkMode .projectLog th {
-  color: #e5e7eb;
-}
-
-.darkMode .projectLog thead:hover {
-  background-color: #6b7280;
-  color: #f8fafc;
-}
-
+/* Card Sizing */
 @media (min-width: 992px) {
-  .singleCard {
+  .single-card {
     width: calc(33.333% - 20px);
     max-width: 180px;
     margin-bottom: 15px;
@@ -288,7 +318,7 @@
 }
 
 @media (min-width: 576px) and (max-width: 991px) {
-  .singleCard {
+  .single-card {
     width: calc(50% - 15px);
     max-width: 180px;
     margin-bottom: 15px;
@@ -296,53 +326,49 @@
 }
 
 @media (max-width: 575px) {
-  .singleCard {
+  .single-card {
     width: 90%;
     max-width: 180px;
     margin-bottom: 15px;
   }
 }
 
+/* =============================
+   Project Log Table
+============================= */
+
+.project-log {
+  margin: 2em;
+  padding: 1em 2em;
+  width: 100%;
+  font-weight: lighter;
+  white-space: nowrap;
+}
+
+.project-log :global(thead) {
+  background-color: transparent;
+}
+
 @media (max-width: 768px) {
-  .projectLog td,
-  .projectLog th {
+  .project-log :global(td),
+  .project-log :global(th) {
     font-size: 0.6em;
   }
 }
 
-ul.logBarBtnGroup {
-  padding: 5;
-} /* Row containing the RentedTools and Materials columns */
-
-/* Each column within the cardsRow */
-.cardsRow {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between; /* spread out columns */
-  gap: 1.5em;
-  margin-top: 2em;
+ul.log-bar__btn-group {
+  padding: 0px;
 }
 
-.cardsCol {
-  flex: 1 1 45%; /* occupy roughly half of the row */
-  min-width: 350px; /* don't shrink too small */
+.dark-table-header th {
+  background-color: #1b2a41 !important;
+  color: #ffffff !important;
+  border-bottom: 1px solid #4f5f76;
 }
 
-/* Optional wrapper for padding/background */
-.cardsCol > * {
-  padding: 1em;
-  border-radius: 8px;
-  background-color: #f9fafb;
-}
-
-.darkMode .cardsCol > * {
-  background-color: #4b5563;
-  color: #e5e7eb;
-}
-
-@media (max-width: 992px) {
-  .cardsCol {
-    flex: 1 1 100%; /* stack on smaller screens */
-    min-width: unset;
-  }
+.log-bar__section ul,
+.log-bar-dark ul {
+  list-style: none !important;
+  padding: 0;
+  margin: 0;
 }

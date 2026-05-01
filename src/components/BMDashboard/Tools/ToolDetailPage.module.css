@@ -1,4 +1,3 @@
-/* stylelint-disable  */
 .toolDetailPage{
 font-size: clamp(0.9em, 2.5vw, 1em);
 margin-top: 1em;
@@ -29,7 +28,7 @@ margin-left: 1em;
 }
 
 button.descriptionItemButton{
- padding: 0;
+ padding: 0em;
  margin-bottom: 1em; 
 }
 

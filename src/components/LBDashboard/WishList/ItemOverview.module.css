@@ -1,11 +1,10 @@
-/* stylelint-disable no-descending-specificity */
 .item__navbar {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
   background-color: #9dd425 !important;
-  padding: 1.5rem !important;
+  padding: 1.5rem 1.5rem !important;
   margin: 0 !important;
 }
 
@@ -34,7 +33,7 @@
 }
 
 .item__button {
-  background-color: rgb(190 190 190);
+  background-color: rgb(190, 190, 190);
   padding: 0.2rem 0.5rem;
   border-radius: 5px;
   border: 1px solid black;
@@ -43,6 +42,7 @@
 
 .item__button:hover {
   background-color: black;
+
   padding: 0.2rem 0.5rem;
   border-radius: 5px;
   border: 1px solid black;
@@ -69,7 +69,7 @@
 
 .item__navbar-right h2 {
   font-family: sans-serif;
-  color: #000;
+  color: #000000;
   font-size: 14px;
   padding: 0;
   margin: 0;
@@ -87,7 +87,7 @@
 }
 
 .item__nav-link {
-  color: rgb(0 0 0) !important;
+  color: rgba(0, 0, 0) !important;
 }
 
 .item__overview {
@@ -95,8 +95,8 @@
   display: flex;
   justify-content: space-evenly;
   align-items: center;
-  margin: 20px 40px 30px;
-  padding: 10px 0;
+  margin: 20px 40px 30px 40px;
+  padding: 10px 0px 10px 0px;
   width: auto;
   height: auto;
 }
@@ -107,7 +107,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 2.5% 2.5% 1.5%;
+  padding: 2.5% 2.5% 1.5% 2.5%;
 }
 
 .item__listing-details--mobile {
@@ -218,7 +218,6 @@ p {
 .item__form button:active {
   transform: scale(0.99);
 }
-
 .item__rent input[type='date'] {
   border: 1px solid #ccc;
   margin-top: 2.5%;
@@ -292,7 +291,7 @@ p {
   color: red;
 }
 
-@media screen and (width <= 1200px) {
+@media screen and (max-width: 1200px) {
   .item__navbar {
     display: flex;
     flex-direction: row;
@@ -301,29 +300,25 @@ p {
     background-color: green;
     padding: 1.1rem 1rem !important;
   }
-
   .item__nav-icon {
     margin-left: 0.5rem;
     font-size: 16px;
     margin-bottom: 0.25rem;
   }
-
   .item__navbar-right {
     justify-content: space-between;
     padding: 1rem 0 0;
   }
-
   .item__navbar-right h2 {
     font-family: sans-serif;
-    color: #000;
+    color: #000000;
     font-size: 12px;
     padding: 0;
     margin: 0.3rem 0 0;
   }
-
   .item__icons {
     padding-left: 0.2rem;
-    margin: 0;
+    margin: 0 0 0rem;
   }
 
   .item_overview_module .navbar-nav {
@@ -335,7 +330,7 @@ p {
   }
 }
 
-@media screen and (width <= 800px) {
+@media screen and (max-width: 800px) {
   .item__navbar-right {
     padding: 1rem 0 0;
     justify-content: space-between;
@@ -352,17 +347,15 @@ p {
 
   .item__navbar-right h2 {
     font-family: sans-serif;
-    color: #000;
+    color: #000000;
     font-size: 12px;
     padding: 0;
     margin: 0.3rem 0 0;
   }
-
   .item__icons {
     padding-left: 0.2rem;
-    margin: 0;
+    margin: 0 0 0rem;
   }
-
   .item__nav-icon {
     margin-left: 0.8rem;
     font-size: 16px;
@@ -376,28 +369,22 @@ p {
     margin-bottom: 0;
     list-style: none;
   }
-
   .item__overview {
     flex-direction: column;
     align-items: center;
   }
-
   .item__details-left {
     width: 98%;
   }
-
   .item__listing-details--mobile {
     display: block;
   }
-
   .item__details-right {
     width: 98%;
   }
-
   .item__listing-details--desktop {
     display: none;
   }
-
   .start__chat button {
     background: #d1d1d1;
     padding: 2.5%;
@@ -407,15 +394,14 @@ p {
     display: flex;
     justify-content: center;
   }
-
   .item__rent {
     justify-content: space-between;
   }
 }
 
-@media screen and (width <= 500px) {
+@media screen and (max-width: 500px) {
   .navbar-light .navbar-toggler {
-    color: rgb(0 0 0 / 50%);
+    color: rgba(0, 0, 0, 0.5);
     border: 0.5px solid black !important;
     padding: 0.2rem 0.5rem !important;
   }
@@ -458,7 +444,7 @@ p {
 
   .item__navbar-right h2 {
     font-family: sans-serif;
-    color: #000;
+    color: #000000;
     font-size: 12px;
     padding: 0;
     margin: 0.5rem 0 0;
@@ -466,7 +452,7 @@ p {
 
   .item__icons {
     padding-left: 0.2rem;
-    margin: 0;
+    margin: 0 0 0rem;
   }
 
   .item__nav-icon {
@@ -510,11 +496,10 @@ p {
   }
 }
 
-@media screen and (width <= 340px) {
+@media screen and (max-width: 340px) {
   .item__selector {
     width: 150px;
   }
-
   .navbar-toggler-icon {
     width: 20px !important;
   }

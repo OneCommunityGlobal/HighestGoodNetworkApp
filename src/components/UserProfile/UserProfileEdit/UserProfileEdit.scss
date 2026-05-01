@@ -1,4 +1,3 @@
-/* stylelint-disable declaration-property-value-no-unknown */
 form-control {
   width: 0;
 }
@@ -14,7 +13,7 @@ form-control {
   border: 1px solid #a8a8a8;
   text-align: center;
   z-index: 9;
-  opacity: 0.7;
+  opacity: 70%;
 }
 
 .profileEditTitleCenter {
@@ -47,7 +46,8 @@ form-control {
 .inputSections {
   display: flex;
   flex-direction: column;
-  place-content: center center;
+  justify-content: center;
+  align-content: center;
   text-align: center;
   width: 300px;
 }
@@ -86,7 +86,6 @@ form-control {
   background-color: #6d757d;
   border: none;
 }
-
 .teamsView {
   display: flex;
 }
@@ -104,12 +103,11 @@ form-control {
 .Schedule-explanation-modal-list-marker::marker {
   font-weight: bold;
 }
-
 .infringements-explanation-modal-row,
 .scheduled-time-off-explanation-modal-row {
   max-height: 200px;
   overflow-y: auto;
-  box-shadow: inset 0 0 5px rgb(0 0 0 / 30%);
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
   padding-top: 10px;
   border-radius: 5px;
 }
@@ -124,7 +122,7 @@ form-control {
   border-radius: 4px;
   background-color: #e7e7e7;
   border: 1px solid #cacaca;
-  box-shadow: inset 0 0 6px rgb(0 0 0 / 30%);
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
 }
 
 .infringements-explanation-modal-row::-webkit-scrollbar-thumb,

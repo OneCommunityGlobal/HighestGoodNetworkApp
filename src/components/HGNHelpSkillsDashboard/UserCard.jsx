@@ -5,19 +5,8 @@ import slackIcon from './style/slack_icon.png';
 import { useSelector } from 'react-redux';
 
 function UserCard({ user }) {
-  const { name, email, slack, score, topSkills, skills } = user;
+  const { name, email, slack, score, topSkills } = user;
   const darkMode = useSelector(state => state.theme.darkMode);
-
-  const normalizedSkills = Array.isArray(topSkills)
-    ? topSkills
-    : Array.isArray(skills)
-    ? skills
-        .map(skill => {
-          if (typeof skill === 'string') return skill;
-          return skill.name || skill.skill || skill.label || skill.type || '';
-        })
-        .filter(Boolean)
-    : [];
 
   return (
     <div className={`${styles.userCard} ${darkMode ? styles.darkMode : ''}`}>
@@ -51,7 +40,7 @@ function UserCard({ user }) {
 
         <div className={`${styles.skillsSection}`}>
           <div className={`${styles.skillsLabel}`}>Top Skills:</div>
-          <div className={`${styles.skillsText}`}>{normalizedSkills.join(', ')}</div>
+          <div className={`${styles.skillsText}`}>{topSkills.join(', ')}</div>
         </div>
       </div>
     </div>

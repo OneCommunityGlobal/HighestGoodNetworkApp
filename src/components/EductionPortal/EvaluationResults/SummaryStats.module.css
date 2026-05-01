@@ -1,5 +1,3 @@
-/* stylelint-disable keyframes-name-pattern */
-
 /* SummaryStats Component Styles */
 
 .summaryContainer {
@@ -10,17 +8,17 @@
 }
 
 .statCard {
-  background: #fff;
+  background: #ffffff;
   border: none;
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgb(0 0 0 / 8%);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   overflow: hidden;
   transition: all 0.3s ease;
   position: relative;
 }
 
 .statCard:hover {
-  box-shadow: 0 8px 30px rgb(0 0 0 / 12%);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
   transform: translateY(-4px);
 }
 
@@ -233,7 +231,6 @@
   0% {
     transform: rotate(0deg);
   }
-
   100% {
     transform: rotate(360deg);
   }
@@ -245,7 +242,6 @@
     opacity: 0;
     transform: translateY(10px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
@@ -253,7 +249,7 @@
 }
 
 /* Responsive Design */
-@media (width <= 768px) {
+@media (max-width: 768px) {
   .summaryContainer {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 1rem;
@@ -282,7 +278,7 @@
   }
 }
 
-@media (width <= 480px) {
+@media (max-width: 480px) {
   .summaryContainer {
     grid-template-columns: 1fr;
     gap: 0.75rem;

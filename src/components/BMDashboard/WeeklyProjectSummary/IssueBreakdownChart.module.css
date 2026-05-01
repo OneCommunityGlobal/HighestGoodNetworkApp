@@ -1,4 +1,3 @@
-/* stylelint-disable no-descending-specificity */
 .container {
   box-sizing: border-box;
   position: relative;
@@ -6,7 +5,7 @@
   height: 100%;
   background: var(--card-bg, #fafbfc);
   border-radius: 18px;
-  box-shadow: 0 2px 12px var(--card-shadow, rgb(0 0 0 / 6%));
+  box-shadow: 0 2px 12px var(--card-shadow, rgba(0, 0, 0, 0.06));
   padding: 32px;
   display: flex;
   flex-direction: column;
@@ -66,8 +65,8 @@
 
 /* Dark mode legend label */
 :global(.dark-mode) .legendLabel {
-  color: #fff;
-  text-shadow: 0 1px 2px rgb(0 0 0 / 10%);
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .filtersRow {
@@ -124,7 +123,6 @@
   max-width: 100%;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
   box-sizing: border-box;
-
   /* Force light calendar popup and icon in light mode */
   color-scheme: light;
 }
@@ -179,12 +177,12 @@
 .datePicker:focus {
   outline: none;
   border-color: var(--primary-color, #0d55b3);
-  box-shadow: 0 0 0 2px rgb(13 85 179 / 10%);
+  box-shadow: 0 0 0 2px rgba(13, 85, 179, 0.1);
 }
 
 :global(.dark-mode) .datePicker:focus {
   border-color: #0d55b3 !important;
-  box-shadow: 0 0 0 2px rgb(13 85 179 / 30%) !important;
+  box-shadow: 0 0 0 2px rgba(13, 85, 179, 0.3) !important;
 }
 
 .dateSeparator {
@@ -213,23 +211,23 @@
   font-weight: 500;
   font-size: 14px;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .resetButton:hover {
   opacity: 0.9;
   transform: translateY(-1px);
-  box-shadow: 0 4px 6px rgb(0 0 0 / 15%);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
 }
 
 .resetButton:active {
   transform: translateY(0);
-  box-shadow: 0 1px 2px rgb(0 0 0 / 10%);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .resetButton:focus {
   outline: none;
-  box-shadow: 0 0 0 2px rgb(244 67 54 / 30%);
+  box-shadow: 0 0 0 2px rgba(244, 67, 54, 0.3);
 }
 
 .errorMessage {
@@ -238,8 +236,8 @@
   gap: 8px;
   padding: 12px 16px;
   margin-top: 16px;
-  background: rgb(244 67 54 / 10%);
-  border: 1px solid rgb(244 67 54 / 30%);
+  background: rgba(244, 67, 54, 0.1);
+  border: 1px solid rgba(244, 67, 54, 0.3);
   border-radius: 6px;
   color: #f44336;
   font-size: 14px;
@@ -247,8 +245,8 @@
 }
 
 :global(.dark-mode) .errorMessage {
-  background: rgb(244 67 54 / 15%);
-  border: 1px solid rgb(244 67 54 / 40%);
+  background: rgba(244, 67, 54, 0.15);
+  border: 1px solid rgba(244, 67, 54, 0.4);
   color: #ff6b6b;
 }
 
@@ -260,7 +258,7 @@
   width: 100%;
   height: 500px;
   margin-top: 20px;
-  background: var(--section-bg, #fff);
+  background: var(--section-bg, #ffffff);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -322,7 +320,7 @@
 }
 
 :global(.dark-mode) .errorText {
-  color: #fff;
+  color: #ffffff;
 }
 
 .emptyContainer {
@@ -355,7 +353,7 @@
 }
 
 :global(.dark-mode) .emptyText {
-  color: #fff;
+  color: #ffffff;
 }
 
 .emptySubtext {
@@ -371,7 +369,7 @@
 /* ===================== RESPONSIVE DESIGN ===================== */
 
 /* At 1155px, force issue type filter to wrap to next line */
-@media (width <= 1155px) {
+@media (max-width: 1155px) {
   .filterGroup {
     /* Increase flex-basis to force wrapping */
     flex: 1 1 370px;
@@ -379,7 +377,7 @@
 }
 
 /* Tablet screens - reduce size for better fit */
-@media (width <= 1024px) {
+@media (max-width: 1024px) {
   .filtersRow {
     gap: 16px;
   }
@@ -391,7 +389,7 @@
 }
 
 /* Transition to vertical layout at 900px to prevent overflow */
-@media (width <= 900px) {
+@media (max-width: 900px) {
   .filterGroup {
     min-width: 0;
     flex: 1 1 calc(50% - 8px);
@@ -399,7 +397,7 @@
 }
 
 /* Mobile and smaller tablets - single column layout */
-@media (width <= 768px) {
+@media (max-width: 768px) {
   .container {
     padding: 16px;
   }
@@ -458,7 +456,7 @@
 }
 
 /* Small mobile devices */
-@media (width <= 480px) {
+@media (max-width: 480px) {
   .container {
     padding: 12px;
   }
@@ -519,13 +517,13 @@
    =========================== */
 
 /* Responsive design */
-@media (width <= 768px) {
+@media (max-width: 768px) {
   .container {
     padding: 20px;
   }
 
 /* Tablets */
-@media (width <= 1024px) {
+@media (max-width: 1024px) {
   .heading {
     font-size: 28px;
   }
@@ -555,7 +553,7 @@
 }
 
 /* Mobile */
-@media (width <= 768px) {
+@media (max-width: 768px) {
   .heading {
     font-size: 22px;
   }
@@ -582,7 +580,7 @@
 }
 
 /* Very small screens */
-@media (width <= 480px) {
+@media (max-width: 480px) {
   .chartContainer {
     height: 320px;
     width: 100%;
@@ -597,8 +595,7 @@
   }
 
   .legendBox {
-    border: 1px solid currentcolor;
-
+    border: 1px solid currentColor;
   /* Reduce label size and opacity instead of hiding */
   :global(.recharts-label-list text) {
     font-size: 8px;
@@ -614,37 +611,34 @@
   font-weight: 600;
   font-size: 12px;
 }
-
 /* Selected value text — DARK MODE (keep text black) */
 :global(.darkMode .injurySelect__single-value) {
-  color: #000 !important;
+  color: #000000 !important;
 }
 
 :global(.darkMode .injurySelect__multi-value__label) {
-  color: #000 !important;
+  color: #000000 !important;
 }
 
 /* Ensure input text while typing is also black */
 :global(.darkMode .injurySelect__input-container),
 :global(.darkMode .injurySelect__input) {
-  color: #000 !important;
+  color: #000000 !important;
 }
 
 /* Ensure clear (×) and dropdown arrow are black in dark mode */
 :global(.darkMode .injurySelect__clear-indicator),
 :global(.darkMode .injurySelect__dropdown-indicator) {
-  color: #000 !important;
+  color: #000000 !important;
 }
 
 :global(.darkMode .injurySelect__clear-indicator:hover),
 :global(.darkMode .injurySelect__dropdown-indicator:hover) {
-  color: #000 !important;
+  color: #000000 !important;
 }
-
 :global(.filter label) {
   margin-bottom: 4px;
 }
-
 /* Ensure filter blocks always stack label + input vertically */
 :global(.filter) {
   display: flex;

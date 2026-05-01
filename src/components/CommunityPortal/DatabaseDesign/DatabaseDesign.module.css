@@ -1,4 +1,3 @@
-/* stylelint-disable  */
 .page {
   padding: 24px;
   min-height: 100vh;
@@ -464,7 +463,7 @@
 }
 
 .retryButton:hover {
-  background: #1e40af;
+  background: #2563eb;
 }
 
 .darkMode .retryButton {

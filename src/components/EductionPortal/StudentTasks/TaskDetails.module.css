@@ -1,4 +1,3 @@
-/* stylelint-disable  */
 /* ===========================
    PAGE LAYOUT
 =========================== */
@@ -44,7 +43,7 @@
 .divider {
   border: none;
   border-top: 1px solid #e5e7eb;
-  margin: 0.5rem 0 1.5rem;
+  margin: 0.5rem 0 1.5rem 0;
 }
 
 /* ===========================
@@ -78,10 +77,10 @@
 =========================== */
 .progressSection {
   width: 280px;
-  background: #fff;
+  background: #ffffff;
   padding: 1.5rem 1.75rem;
   border-radius: 10px;
-  box-shadow: 0 0 4px rgb(0 0 0 / 5%);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.05);
   align-self: flex-start;
 }
 
@@ -153,7 +152,7 @@
   border-radius: 6px;
   font-size: 0.9rem;
   color: #111827;
-  background: #fff;
+  background: #ffffff;
   outline: none;
   cursor: pointer;
   transition: border-color 0.2s ease;
@@ -177,7 +176,7 @@
   resize: none;
   font-size: 0.9rem;
   color: #111827;
-  background: #fff;
+  background: #ffffff;
   transition: border-color 0.2s ease;
 }
 
@@ -190,7 +189,7 @@
 /* ===========================
    RESPONSIVENESS
 =========================== */
-@media (width <= 1024px) {
+@media (max-width: 1024px) {
   .mainSection {
     flex-direction: column;
     align-items: center;
@@ -202,7 +201,7 @@
   }
 }
 
-@media (width <= 640px) {
+@media (max-width: 640px) {
   .content {
     padding: 1.25rem;
   }
@@ -224,7 +223,6 @@
     height: 320px;
   }
 }
-
 /* ===== Dark mode for Task Details ===== */
 .contentDark {
   background: #0b1220;
@@ -234,11 +232,9 @@
 .contentDark .title {
   color: #e5e7eb;
 }
-
 .contentDark .subtitle {
   color: #94a3b8;
 }
-
 .contentDark .divider {
   border-top: 1px solid #1f2937;
 }
@@ -253,18 +249,16 @@
 .contentDark .progressSection {
   background: #0f172a;
   color: #e5e7eb;
-  box-shadow: 0 0 4px rgb(0 0 0 / 35%);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.35);
 }
 
 /* bars */
 .contentDark .progressBar {
   background: #1f2937;
 }
-
 .contentDark .progressFill {
   background: #93c5fd;
 }
-
 .contentDark .progressFillDark {
   background: #2563eb;
 }
@@ -275,11 +269,9 @@
   color: #e5e7eb;
   border-color: #1f2937;
 }
-
 .contentDark .dropdown:hover {
   border-color: #334155;
 }
-
 .contentDark .dropdown:focus {
   border-color: #60a5fa;
   box-shadow: 0 0 0 1px #60a5fa;
@@ -290,20 +282,16 @@
   color: #e5e7eb;
   border-color: #1f2937;
 }
-
 .contentDark .textbox::placeholder {
   color: #94a3b8;
 }
-
 .contentDark .textbox:focus {
   border-color: #60a5fa;
   box-shadow: 0 0 0 1px #60a5fa;
 }
-
 .pageLayoutDark {
   background: #0b1220;
 }
-
 .progressSectionDark {
   background: #0f172a;
   color: #e5e7eb;
@@ -314,11 +302,9 @@
 .progressSectionDark .progressTitle {
   color: #e5e7eb;
 }
-
 .progressSectionDark .progressRow {
   color: #cbd5e1;
 }
-
 .progressSectionDark .progressBar {
   background: #1f2937;
 }

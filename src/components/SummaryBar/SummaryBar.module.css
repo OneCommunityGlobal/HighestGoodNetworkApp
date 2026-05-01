@@ -1,4 +1,3 @@
-/* stylelint-disable declaration-property-value-keyword-no-deprecated, declaration-property-value-no-unknown, no-descending-specificity */
 .btn--dark-sea-green {
   background-color: #c9d6c6 !important;
   border-color: #225163 !important;
@@ -18,9 +17,8 @@
 }
 
 .btn--white-smoke:hover:not([disabled]) {
-  background-color: #fff !important;
+  background-color: #ffffff !important;
 }
-
 .btn:disabled {
   cursor: not-allowed;
 }
@@ -42,7 +40,7 @@
 }
 
 .text--black {
-  color: #000;
+  color: #000000;
 }
 
 .media-url {
@@ -105,7 +103,7 @@
   vertical-align: middle;
   background: #020202;
   border-radius: 20px;
-  color: rgb(235 238 48);
+  color: rgb(235, 238, 48);
   position: absolute;
   top: 55px;
   left: 60px;
@@ -115,8 +113,7 @@
 
 .border-red {
   border-width: 1px;
-  border-top-width: 0;
-
+  border-top-width: 0px;
   /* border-radius: 10px; */
   border-color: #ff050d;
   border-style: solid;
@@ -124,17 +121,15 @@
 
 .border-black {
   border-width: 1px;
-  border-top-width: 0;
-
+  border-top-width: 0px;
   /* border-radius: 10px; */
-  border-color: #000;
+  border-color: #000000;
   border-style: solid;
 }
 
 .border-green {
   border-width: 1px;
-  border-top-width: 0;
-
+  border-top-width: 0px;
   /* border-radius: 10px; */
   border-color: #32a518;
   border-style: solid;
@@ -185,7 +180,6 @@
   opacity: 0.4;
   filter: alpha(opacity=40); /* msie */
 }
-
 .name-segment {
   display: block;
   white-space: nowrap;
@@ -195,7 +189,7 @@
   margin-bottom: 2px;
 }
 
-@media (width >= 992px) {
+@media (min-width: 992px) {
   .name-segment {
     max-width: 21ch;
   }
@@ -229,47 +223,44 @@
 }
 
 /* Custom media query for screen widths between 1200px and 1330px */
-@media (width >= 1200px) and (width <= 1330px) {
+@media (min-width: 1200px) and (max-width: 1330px) {
   .med_text_summary {
     font-size: 0.8rem;
   }
 }
 
 /* XLarge devices (landscape phones, 544px and down) */
-@media (width <= 1200px) {
+@media (max-width: 1200px) {
   .med_text_summary {
     font-size: 0.70rem;
   }
-
   .name-linebreak {
     display: none;
   }
 }
 
 /* Large devices (landscape phones, 544px and down) */
-@media (width <= 991px) {
+@media (max-width: 991px) {
   .large_text_summary {
     font-size: 2rem;
   }
-
   .med_text_summary {
     font-size: 0.9rem;
   }
 }
 
 /* Med devices (tablets, 768px and down) */
-@media (width <= 768px) {
+@media (max-width: 768px) {
   .med_text_summary {
     font-size: 0.9rem;
   }
 }
 
 /* Small devices (landscape phones, 576px and down) */
-@media (width <= 576px) {
+@media (max-width: 576px) {
   .large_text_summary {
     font-size: 1.5rem;
   }
-
   .redBackgroup {
     font-size: 0.75rem;
     height: 20px;

@@ -1,8 +1,7 @@
-/* stylelint-disable no-descending-specificity */
 .event-card {
   max-width: 64rem;
   margin: 0 auto;
-  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease;
 }
 
@@ -156,9 +155,9 @@
   gap: 0.5rem;
 }
 
-@media (width <= 768px) {
+@media (max-width: 768px) {
   .event-card {
-    margin: 0 0 1rem;
+    margin: 0 0 1rem 0;
   }
 
   .cover-section {
@@ -181,11 +180,11 @@
 }
 
 .event-card.bg-space-cadet .event-description p {
-  color: #fff;
+  color: #ffffff;
 }
 
 .event-card.bg-space-cadet .btn-link {
-  color: #fff;
+  color: #ffffff;
 }
 
 .event-dark-mode {

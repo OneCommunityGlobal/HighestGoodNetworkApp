@@ -1,8 +1,9 @@
 import styles from '../ProjectDetails.module.css';
+
 function ToolCard() {
   return (
-    <div className={`${styles.singleCard}`}>
-      <div className={`${styles.singleCardImg}`}>
+    <div className={styles['single-card']}>
+      <div className={styles['single-card__img']}>
         <img
           alt="Equipment"
           src="https://www.theforkliftcenter.com/images/forklift-hero-left.png"
@@ -16,9 +17,9 @@ function ToolCard() {
           }}
         />
       </div>
-      <div className={`${styles.singleCardBody}`}>
+      <div className={styles['single-card__body']}>
         <h3>Card title</h3>
-        <div className={`${styles.singleCardInfo}`}>Term ends in __ hours.</div>
+        <div className={styles['single-card__info']}>Term ends in __ hours.</div>
       </div>
     </div>
   );

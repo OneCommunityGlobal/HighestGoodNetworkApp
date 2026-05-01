@@ -1,4 +1,3 @@
-/* stylelint-disable  */
 .iconAddPerson {
     padding: 50px;
     justify-content: center;
@@ -139,7 +138,7 @@
     border-radius: 5px;
     font-size: 16px;
     cursor: pointer;
-    margin: 0 50px;
+    margin: 0px 50px;
 }
 
 .submitButton {

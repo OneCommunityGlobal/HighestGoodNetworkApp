@@ -1,4 +1,3 @@
-/* stylelint-disable  */
 /* wrapper gives a positioning context */
 .followup-box {
   position: relative;
@@ -10,6 +9,8 @@
 /* the custom checkbox */
 .team-task-progress-follow-up {
   appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
   box-sizing: border-box;
   width: 100%;
   height: 100%;
@@ -37,29 +38,12 @@
 }
 
 /* mobile sizing to match your old media rule */
-@media (width <= 480px) {
+@media (max-width: 480px) {
   .followup-box {
     width: 15px;
     height: 15px;
   }
-
   .team-task-progress-follow-up-check {
     font-size: 10px;
   }
-}
-
-.team-task-progress-follow-up-violated {
-  outline: 3px solid red !important;
-  outline-offset: 2px;
-  background-color: #fff3cd !important;
-}
-
-.team-task-progress-follow-up-violated-icon {
-  color: #FFD700;
-  position: absolute;
-  font-size: 16px;
-  top: -8px;
-  right: -8px;
-  cursor: pointer;
-  filter: drop-shadow(0 0 2px rgba(0,0,0,0.5));
 }

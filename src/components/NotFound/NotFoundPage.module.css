@@ -1,4 +1,3 @@
-/* stylelint-disable  */
 .notFoundContainer {
   display: flex;
   flex-direction: column;
@@ -20,7 +19,6 @@
 .notFoundImage {
   max-width: 100%;
   height: auto;
-
   /* margin-bottom:-20px; */
 }
 
@@ -54,21 +52,21 @@
   background-color: #121212;
 }
 
-@media (width <= 1039px) {
+@media (max-width: 1039px) {
   .notFoundContent {
     margin-top: 20rem;
   }
 }
 
-@media (width <= 1200px) {
+@media (max-width: 1200px) {
   .notFoundContent {
     width: 92%;
   }
 }
 
-@media (width <= 768px) {
+@media (max-width: 768px) {
   .notFoundContent {
-    margin-top: 0;
+    margin-top: 0rem;
   }
 
   .notFoundText h1 {

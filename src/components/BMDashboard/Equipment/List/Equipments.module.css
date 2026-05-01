@@ -1,5 +1,3 @@
-/* stylelint-disable no-descending-specificity */
-
 /* Page Layout */
 .PageViewContainer {
   min-height: 100vh;
@@ -13,7 +11,7 @@
 
 .Box {
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgb(0 0 0 / 8%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   padding: 2rem;
   transition: all 0.3s ease;
 }
@@ -38,7 +36,7 @@
   overflow-x: auto;
   border-radius: 8px;
   margin-top: 1.5rem;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 5%);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .tableWrapper table {
@@ -51,7 +49,7 @@
 /* Table Headers - Light Mode */
 .BuildingTableHeaderLine th {
   background-color: #4dabf7;
-  color: #fff;
+  color: #ffffff;
   font-weight: 600;
   font-size: 0.875rem;
   text-transform: uppercase;
@@ -146,7 +144,7 @@
 
 .tableWrapper button[type="button"]:hover {
   color: #0a58ca;
-  background: rgb(13 110 253 / 10%);
+  background: rgba(13, 110, 253, 0.1);
 }
 
 .tableWrapper .btn {
@@ -161,9 +159,9 @@
 
 .tableWrapper .btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgb(13 110 253 / 30%);
+  box-shadow: 0 2px 8px rgba(13, 110, 253, 0.3);
   background-color: #0d6efd;
-  color: #fff;
+  color: #ffffff;
 }
 
 /* Modal Styling - Light Mode */
@@ -174,7 +172,7 @@
 .ModalViewContainer .modal-content {
   border-radius: 12px;
   border: none;
-  box-shadow: 0 10px 40px rgb(0 0 0 / 15%);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
 }
 
 .ModalViewContainer .modal-header {
@@ -209,7 +207,7 @@ body.bm-dashboard-dark table * {
 body.dark-mode table,
 body.bm-dashboard-dark table {
   background-color: #2d2d2d !important;
-  color: #fff !important;
+  color: #ffffff !important;
   border-color: #404040 !important;
 }
 
@@ -221,7 +219,7 @@ body.bm-dashboard-dark table thead,
 body.bm-dashboard-dark table thead tr,
 body.bm-dashboard-dark table thead th {
   background-color: #3d3d3d !important;
-  color: #fff !important;
+  color: #ffffff !important;
   border-color: #404040 !important;
 }
 
@@ -233,7 +231,7 @@ body.bm-dashboard-dark table tbody,
 body.bm-dashboard-dark table tbody tr,
 body.bm-dashboard-dark table tbody td {
   background-color: #2d2d2d !important;
-  color: #fff !important;
+  color: #ffffff !important;
   border-color: #404040 !important;
 }
 
@@ -243,7 +241,7 @@ body.dark-mode table tbody tr:hover td,
 body.bm-dashboard-dark table tbody tr:hover,
 body.bm-dashboard-dark table tbody tr:hover td {
   background-color: #4d4d4d !important;
-  color: #fff !important;
+  color: #ffffff !important;
 }
 
 /* Reactstrap table classes */
@@ -252,17 +250,16 @@ body.dark-mode .table-responsive,
 body.bm-dashboard-dark .table,
 body.bm-dashboard-dark .table-responsive {
   --bs-table-bg: #2d2d2d !important;
-  --bs-table-color: #fff !important;
+  --bs-table-color: #ffffff !important;
   --bs-table-border-color: #404040 !important;
   --bs-table-striped-bg: #353535 !important;
-  --bs-table-striped-color: #fff !important;
+  --bs-table-striped-color: #ffffff !important;
   --bs-table-active-bg: #4d4d4d !important;
-  --bs-table-active-color: #fff !important;
+  --bs-table-active-color: #ffffff !important;
   --bs-table-hover-bg: #4d4d4d !important;
-  --bs-table-hover-color: #fff !important;
-
+  --bs-table-hover-color: #ffffff !important;
   background-color: #2d2d2d !important;
-  color: #fff !important;
+  color: #ffffff !important;
 }
 
 /* Force all table descendants */
@@ -286,7 +283,7 @@ body.dark-mode table .btn:hover,
 body.bm-dashboard-dark table button:hover,
 body.bm-dashboard-dark table .btn:hover {
   background-color: #4dabf7 !important;
-  color: #0f172a !important;
+  color: #ffffff !important;
   border-color: #4dabf7 !important;
 }
 
@@ -305,7 +302,7 @@ body.bm-dashboard-dark .btn-outline-primary:hover,
 body.bm-dashboard-dark .btn-outline-primary:focus,
 body.bm-dashboard-dark .btn-outline-primary:active {
   background-color: #4dabf7 !important;
-  color: #0f172a !important;
+  color: #ffffff !important;
   border-color: #4dabf7 !important;
 }
 
@@ -352,7 +349,7 @@ body.bm-dashboard-dark .css-1fdsijx-ValueContainer,
 body.bm-dashboard-dark .css-hlgwow {
   background-color: #2d2d2d !important;
   border-color: #404040 !important;
-  color: #fff !important;
+  color: #ffffff !important;
 }
 
 body.dark-mode .css-1dimb5e-singleValue,
@@ -361,7 +358,7 @@ body.dark-mode input,
 body.bm-dashboard-dark .css-1dimb5e-singleValue,
 body.bm-dashboard-dark .css-qbdosj-Input,
 body.bm-dashboard-dark input {
-  color: #fff !important;
+  color: #ffffff !important;
 }
 
 body.dark-mode .css-1nmdiq5-menu,
@@ -375,7 +372,7 @@ body.dark-mode .css-10wo9uf-option,
 body.bm-dashboard-dark .css-d7l1ni-option,
 body.bm-dashboard-dark .css-10wo9uf-option {
   background-color: #2d2d2d !important;
-  color: #fff !important;
+  color: #ffffff !important;
 }
 
 body.dark-mode .css-d7l1ni-option:hover,
@@ -395,7 +392,7 @@ body.bm-dashboard-dark .modal-header,
 body.bm-dashboard-dark .modal-body,
 body.bm-dashboard-dark .modal-footer {
   background-color: #2d2d2d !important;
-  color: #fff !important;
+  color: #ffffff !important;
   border-color: #404040 !important;
 }
 
@@ -404,7 +401,7 @@ body.dark-mode label,
 body.dark-mode .form-label,
 body.bm-dashboard-dark label,
 body.bm-dashboard-dark .form-label {
-  color: #fff !important;
+  color: #ffffff !important;
 }
 
 /* Tooltip */
@@ -413,7 +410,7 @@ body.dark-mode .tooltip-inner,
 body.bm-dashboard-dark .tooltip,
 body.bm-dashboard-dark .tooltip-inner {
   background-color: #4d4d4d !important;
-  color: #fff !important;
+  color: #ffffff !important;
 }
 
 /* Container backgrounds */
@@ -438,12 +435,12 @@ body.bm-dashboard-dark [class*="col-"] {
 body.dark-mode .Box,
 body.bm-dashboard-dark .Box {
   background: #1a1a1a !important;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 40%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 body.dark-mode .BuildingTitle,
 body.bm-dashboard-dark .BuildingTitle {
-  color: #fff !important;
+  color: #ffffff !important;
   border-bottom-color: #4dabf7;
 }
 
@@ -453,7 +450,7 @@ body.bm-dashboard-dark .PageViewContainer {
 }
 
 /* Responsive Design */
-@media (width <= 768px) {
+@media (max-width: 768px) {
   .PageViewContainer {
     padding: 1rem 0.5rem;
   }

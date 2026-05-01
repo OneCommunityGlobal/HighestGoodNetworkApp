@@ -1,5 +1,3 @@
-/* stylelint-disable no-descending-specificity */
-
 /* Modal Container */
 .materialChartModal :global(.modal-dialog) {
   max-width: 800px;
@@ -9,7 +7,7 @@
 .materialChartModal :global(.modal-content) {
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 4px 20px rgb(0 0 0 / 15%);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
 /* Header */
@@ -39,7 +37,7 @@
   display: flex;
   flex-direction: column;
   min-height: 500px;
-  background: #fff;
+  background: #ffffff;
 }
 
 /* Main Chart Container */
@@ -56,7 +54,7 @@
   flex: 1;
   position: relative;
   min-height: 350px;
-  background: #fff;
+  background: #ffffff;
   border-radius: 8px;
   padding: 1rem;
   border: 1px solid #e9ecef;
@@ -74,7 +72,7 @@
   transform: translate(-50%, -50%);
   text-align: center;
   z-index: 10;
-  background: #fff;
+  background: #ffffff;
   padding: 1rem;
   border-radius: 50%;
   width: 100px;
@@ -83,7 +81,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border: 1px solid #f1f3f4;
 }
 
@@ -119,7 +117,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.4rem 0.8rem;
-  background: #fff;
+  background: #ffffff;
   border-radius: 4px;
   border: 1px solid #dee2e6;
   transition: all 0.2s ease;
@@ -127,15 +125,15 @@
 
 .legendItem:hover {
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .legendColor {
   width: 16px;
   height: 16px;
   border-radius: 3px;
-  border: 2px solid #fff;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease;
 }
 
@@ -203,7 +201,7 @@
 .chartRetryButton:hover {
   background: #0056b3;
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgb(0 123 255 / 30%);
+  box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
 }
 
 .chartRetryButton:active {
@@ -227,7 +225,7 @@
 }
 
 /* Responsive Design */
-@media (width <= 768px) {
+@media (max-width: 768px) {
   .materialChartModal :global(.modal-dialog) {
     max-width: 95%;
     margin: 0.5rem auto;
@@ -276,7 +274,7 @@
   }
 }
 
-@media (width <= 576px) {
+@media (max-width: 576px) {
   .materialChartModal :global(.modal-dialog) {
     margin: 0.25rem auto;
     max-width: 98%;
@@ -343,7 +341,7 @@
 
 .darkMode .materialChartHeader {
   background: #2d3748;
-  color: #fff;
+  color: #ffffff;
   border-bottom-color: #4a5568;
 }
 
@@ -352,7 +350,7 @@
 }
 
 .darkMode .materialChartHeader :global(.close):hover {
-  color: #fff;
+  color: #ffffff;
 }
 
 .darkMode .materialChartBody {
@@ -367,11 +365,11 @@
 .darkMode .centerLabel {
   background: #2d3748;
   border-color: #4a5568;
-  box-shadow: 0 2px 8px rgb(0 0 0 / 30%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .darkMode .centerLabelValue {
-  color: #fff;
+  color: #ffffff;
 }
 
 .darkMode .centerLabelSubtitle {

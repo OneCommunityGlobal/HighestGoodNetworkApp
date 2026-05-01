@@ -1,4 +1,3 @@
-/* stylelint-disable  */
 .subscribeContainer {
   max-width: 700px;
   margin: auto;
@@ -23,13 +22,11 @@
   margin-bottom: 10px;
   border: 1px solid #333;
   border-radius: 10px;
-
   /* more styles for your input field */
 }
 
 .inputField.error {
   border: 1px solid red;
-
   /* additional styles for input field when there is an error */
 }
 
@@ -39,19 +36,16 @@
   border: 1px solid #333;
   background-color: #4497a8;
   border-radius: 10px;
-
   /* styles for your subscribe button */
 }
 
 .subscribeButton:hover {
   opacity: 0.8;
-
   /* additional styles for subscribe button on hover */
 }
 
 .errorMessage {
   color: red;
-
   /* additional styles for error message */
 }
 
@@ -71,7 +65,7 @@
 
 
 /* Add responsive designs and other styles as needed */
-@media (width <= 768px) {
+@media (max-width: 768px) {
   .header {
     font-size: 20px; /* Slightly smaller text on smaller screens */
     padding: 15px; /* Less padding on smaller screens */

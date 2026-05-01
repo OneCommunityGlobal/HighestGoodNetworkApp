@@ -3,7 +3,7 @@ import styles from '../ProjectDetails.module.css';
 
 function ToolCards() {
   return (
-    <div className={`${styles.cardsContainerContent}`}>
+    <div className={styles['cards-container__content']}>
       <ToolCard />
       <ToolCard />
       <ToolCard />

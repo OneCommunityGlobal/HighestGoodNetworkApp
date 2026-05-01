@@ -140,7 +140,6 @@ describe('EPLogin component', () => {
   });
   it('check if entering the right email and password logs in as expected', async () => {
     axios.post.mockResolvedValue({
-      status: 200,
       statusText: 'OK',
       data: { token: '1234' },
     });
