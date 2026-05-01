@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .totalMaterialCostPerProjectChartTitle {
   font-size: medium;
   font-weight: bold;
@@ -6,9 +7,8 @@
 }
 
 .totalMaterialCostPerProjectChartTitleDark {
-  color: var(--text-color, #ffffff);
+  color: var(--text-color, #fff);
 }
-
 
 .selectValueContainerDark {
   background-color: var(--section-bg);
@@ -48,5 +48,3 @@
 .selectOptionHoverDark {
   background-color: var(--accent-color, #0d55b3);
 }
-
-

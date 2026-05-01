@@ -17,19 +17,19 @@ function TeamsReportCharts({
 }) {
   const chart = {
     team1:
-      title === 'Weekly Commited Hours'
+      title === 'Weekly Committed Hours'
         ? selectedTeamsData[0]?.totalCommitedHours
         : selectedTeamsWeeklyEffort[0],
     team2:
-      title === 'Weekly Commited Hours'
+      title === 'Weekly Committed Hours'
         ? selectedTeamsData[1]?.totalCommitedHours
         : selectedTeamsWeeklyEffort[1],
     team3:
-      title === 'Weekly Commited Hours'
+      title === 'Weekly Committed Hours'
         ? selectedTeamsData[2]?.totalCommitedHours
         : selectedTeamsWeeklyEffort[2],
     team4:
-      title === 'Weekly Commited Hours'
+      title === 'Weekly Committed Hours'
         ? selectedTeamsData[3]?.totalCommitedHours
         : selectedTeamsWeeklyEffort[3],
   };
