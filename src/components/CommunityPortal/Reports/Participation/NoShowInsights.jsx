@@ -5,6 +5,7 @@ import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import mockEvents from './mockData';
 import styles from './Participation.module.css';
+import { filterEventsByDate } from './FilterByDate';
 
 function NoShowInsights() {
   const [dateFilter, setDateFilter] = useState('All');
@@ -15,45 +16,6 @@ function NoShowInsights() {
   const [isExportOpen, setIsExportOpen] = useState(false);
   const [exportError, setExportError] = useState('');
   const [isExporting, setIsExporting] = useState(false);
-
-  const filterByDate = (events) => {
-    const today = new Date();
-    
-    // Create a normalized "start of today" for accurate comparisons
-    const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-
-    return events.filter((event) => {
-      const eventDate = new Date(event.eventDate);
-
-      switch (dateFilter) {
-        case 'Today':
-          return eventDate.toDateString() === today.toDateString();
-
-        case 'This Week': {
-          // Calculate the beginning of the current week (Sunday)
-          const startOfWeek = new Date(startOfToday);
-          startOfWeek.setDate(startOfToday.getDate() - today.getDay());
-          startOfWeek.setHours(0, 0, 0, 0); // Set to 00:00:00
-
-          // Calculate the end of the current week (Saturday)
-          const endOfWeek = new Date(startOfWeek);
-          endOfWeek.setDate(startOfWeek.getDate() + 6);
-          endOfWeek.setHours(23, 59, 59, 999); // Set to 23:59:59
-
-          return eventDate >= startOfWeek && eventDate <= endOfWeek;
-        }
-
-        case 'This Month':
-          return (
-            eventDate.getMonth() === today.getMonth() &&
-            eventDate.getFullYear() === today.getFullYear()
-          );
-
-        default:
-          return true;
-    }
-  });
-};
 
   const handleSortClick = () => {
     setSortOrder(prev => {
@@ -93,7 +55,7 @@ function NoShowInsights() {
   };
 
   const renderStats = () => {
-    const filteredEvents = filterByDate(mockEvents);
+    const filteredEvents = filterEventsByDate(mockEvents,dateFilter);
     const stats = calculateStats(filteredEvents);
     const finalStats =
       sortOrder === 'none'
@@ -293,7 +255,7 @@ function NoShowInsights() {
             className={`${styles.insightsFilters} ${darkMode ? styles.insightsFiltersDark : ''}`}
           >
             <select value={dateFilter} onChange={e => setDateFilter(e.target.value)}>
-              <option value="All">All Time</option>
+              <option value="All Time">All Time</option>
               <option value="Today">Today</option>
               <option value="This Week">This Week</option>
               <option value="This Month">This Month</option>
