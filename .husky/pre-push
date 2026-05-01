@@ -7,8 +7,6 @@ if command -v nvm >/dev/null 2>&1 && [ -f .nvmrc ]; then
   nvm use 20 2>/dev/null || nvm install 20 && nvm use 20
 fi
 
-. "$(dirname "$0")/_/husky.sh"
-
 changed_files=$(git diff --name-only @{upstream}...HEAD 2>/dev/null)
 
 if [ -z "$changed_files" ]; then
