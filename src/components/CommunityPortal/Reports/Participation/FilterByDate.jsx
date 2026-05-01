@@ -12,7 +12,7 @@ export const filterEventsByDate = (events, filterType) => {
   const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 
   const newEvents = events.toSorted(
-  (a, b) => new Date(a.eventDate).getTime() - new Date(b.eventDate).getTime(),
+    (a, b) => new Date(a.eventDate).getTime() - new Date(b.eventDate).getTime(),
   );
 
   return newEvents.filter(event => {
