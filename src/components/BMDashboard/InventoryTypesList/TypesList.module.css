@@ -1,3 +1,4 @@
+/* stylelint-disable no-descending-specificity */
 .typesListContainer {
   width: 100%;
   max-width: 1080px;
@@ -7,9 +8,19 @@
   --color-h50: #e8f4f9;
   --color-h100: #78bdda;
   --color-h500: #0d5675;
-  --color-n0: #ffffff;
+  --color-n0: #fff;
   --color-text: #1c8bcc;
-  --font-clickable: Roboto;
+  --font-clickable: roboto;
+}
+
+/* Dark mode support */
+:global(.dark-mode) .typesListContainer,
+:global(.bm-dashboard-dark) .typesListContainer {
+  --color-h50: #1a3d4d;
+  --color-h100: #2a5a70;
+  --color-h500: #4a9bc2;
+  --color-n0: #1e1e1e;
+  --color-text: #5eb3e4;
 }
 
 .timestampContainer {
@@ -32,6 +43,22 @@
   text-align: start;
 }
 
+.cardHeader:hover {
+  color: #fff;
+  background-color: var(--color-h100);
+}
+
+:global(.dark-mode) .cardHeader,
+:global(.bm-dashboard-dark) .cardHeader {
+  color: #fff;
+}
+
+:global(.dark-mode) .cardHeader:hover,
+:global(.bm-dashboard-dark) .cardHeader:hover {
+  color: #fff;
+  background-color: var(--color-h500);
+}
+
 .buttonContainer {
   margin-top: 10px;
   display: flex;
@@ -48,12 +75,35 @@
 
 .btnTypes {
   background-color: var(--color-h100);
-  color: var(--color-n0);
+  color: #fff;
   border: none;
 }
 
+.btnTypes:hover {
+  background-color: var(--color-h500);
+  color: #fff;
+}
+
+:global(.dark-mode) .btnTypes,
+:global(.bm-dashboard-dark) .btnTypes {
+  background-color: var(--color-h100);
+  color: #fff;
+}
+
+:global(.dark-mode) .btnTypes:hover,
+:global(.bm-dashboard-dark) .btnTypes:hover {
+  background-color: var(--color-h500);
+  color: #fff;
+}
+
 .tableHeader {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+  border-bottom: 1px solid rgb(0 0 0 / 12.5%);
+}
+
+:global(.dark-mode) .tableHeader,
+:global(.bm-dashboard-dark) .tableHeader {
+  border-bottom: 1px solid rgb(255 255 255 / 20%);
+  color: #fff;
 }
 
 .arrowIcon {
@@ -65,6 +115,12 @@
 .accordionCollapse {
   max-height: 50vh;
   overflow: auto;
+}
+
+:global(.dark-mode) .accordionCollapse,
+:global(.bm-dashboard-dark) .accordionCollapse {
+  background-color: #2a2a2a;
+  color: #fff;
 }
 
 #input-measurement {
@@ -203,34 +259,163 @@
   font-size: 10px;
 }
 
-/* Main container dark mode */
-:global(.bm-dashboard-dark) .typesListContainer {
-  color: #ffffff;
+/* Dark mode table styling */
+:global(.dark-mode) .typesListContainer table,
+:global(.bm-dashboard-dark) .typesListContainer table {
+  color: #fff;
 }
 
-:global(.bm-dashboard-dark) .typesListContainer h1 {
-  color: #ffffff !important;
+:global(.dark-mode) .typesListContainer table tbody tr,
+:global(.bm-dashboard-dark) .typesListContainer table tbody tr {
+  background-color: #2a2a2a;
+  color: #fff;
 }
 
-/* Timestamp/DatePicker dark mode */
+:global(.dark-mode) .typesListContainer table tbody tr:hover,
+:global(.bm-dashboard-dark) .typesListContainer table tbody tr:hover {
+  background-color: #3a3a3a;
+}
+
+:global(.dark-mode) .typesListContainer table td,
+:global(.bm-dashboard-dark) .typesListContainer table td {
+  color: #fff;
+  border-color: rgb(255 255 255 / 10%);
+}
+
+/* Dark mode card styling */
+:global(.dark-mode) .typesListContainer :global(.card),
+:global(.bm-dashboard-dark) .typesListContainer :global(.card) {
+  background-color: #2a2a2a;
+  border-color: rgb(255 255 255 / 20%);
+}
+
+:global(.dark-mode) .typesListContainer :global(.card-body),
+:global(.bm-dashboard-dark) .typesListContainer :global(.card-body) {
+  background-color: #2a2a2a;
+  color: #fff;
+}
+
+/* Dark mode form controls */
+:global(.dark-mode) .typesListContainer :global(.form-control),
+:global(.bm-dashboard-dark) .typesListContainer :global(.form-control) {
+  background-color: #3a3a3a;
+  color: #fff;
+  border-color: rgb(255 255 255 / 20%);
+}
+
+:global(.dark-mode) .typesListContainer :global(.form-control):focus,
+:global(.bm-dashboard-dark) .typesListContainer :global(.form-control):focus {
+  background-color: #3a3a3a;
+  color: #fff;
+  border-color: var(--color-h500);
+}
+
+/* Dark mode timestamp styling */
+:global(.dark-mode) #timestamp,
+:global(.bm-dashboard-dark) #timestamp {
+  background-color: #3a3a3a !important;
+  color: #fff !important;
+  border-color: rgb(255 255 255 / 20%) !important;
+}
+
+:global(.dark-mode) .timestampContainer,
 :global(.bm-dashboard-dark) .timestampContainer {
-  color: #ffffff;
+  color: #fff;
 }
 
 :global(.bm-dashboard-dark) .timestampContainer span {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
-:global(.bm-dashboard-dark) #timestamp {
-  background-color: #2e5061 !important;
-  color: #ffffff !important;
-  border-color: #3a506b !important;
+/* Dark mode react-datepicker styling */
+:global(.dark-mode) .timestampContainer :global(.react-datepicker-wrapper) input,
+:global(.bm-dashboard-dark) .timestampContainer :global(.react-datepicker-wrapper) input {
+  background-color: #3a3a3a !important;
+  color: #fff !important;
+  border-color: rgb(255 255 255 / 20%) !important;
 }
 
-/* Card header (accordion toggle) dark mode */
+:global(.dark-mode) :global(.react-datepicker),
+:global(.bm-dashboard-dark) :global(.react-datepicker) {
+  background-color: #2a2a2a !important;
+  border-color: rgb(255 255 255 / 20%) !important;
+}
+
+:global(.dark-mode) :global(.react-datepicker__header),
+:global(.bm-dashboard-dark) :global(.react-datepicker__header) {
+  background-color: #1a3d4d !important;
+  border-bottom-color: rgb(255 255 255 / 20%) !important;
+}
+
+:global(.dark-mode) :global(.react-datepicker__current-month),
+:global(.dark-mode) :global(.react-datepicker__day-name),
+:global(.dark-mode) :global(.react-datepicker-time__header),
+:global(.bm-dashboard-dark) :global(.react-datepicker__current-month),
+:global(.bm-dashboard-dark) :global(.react-datepicker__day-name),
+:global(.bm-dashboard-dark) :global(.react-datepicker-time__header) {
+  color: #fff !important;
+}
+
+:global(.dark-mode) :global(.react-datepicker__day),
+:global(.dark-mode) :global(.react-datepicker__time-list-item),
+:global(.bm-dashboard-dark) :global(.react-datepicker__day),
+:global(.bm-dashboard-dark) :global(.react-datepicker__time-list-item) {
+  color: #fff !important;
+}
+
+:global(.dark-mode) :global(.react-datepicker__day):hover,
+:global(.dark-mode) :global(.react-datepicker__time-list-item):hover,
+:global(.bm-dashboard-dark) :global(.react-datepicker__day):hover,
+:global(.bm-dashboard-dark) :global(.react-datepicker__time-list-item):hover {
+  background-color: #4a9bc2 !important;
+  color: #fff !important;
+}
+
+:global(.dark-mode) :global(.react-datepicker__day--selected),
+:global(.dark-mode) :global(.react-datepicker__day--keyboard-selected),
+:global(.dark-mode) :global(.react-datepicker__time-list-item--selected),
+:global(.bm-dashboard-dark) :global(.react-datepicker__day--selected),
+:global(.bm-dashboard-dark) :global(.react-datepicker__day--keyboard-selected),
+:global(.bm-dashboard-dark) :global(.react-datepicker__time-list-item--selected) {
+  background-color: #2a5a70 !important;
+  color: #fff !important;
+}
+
+:global(.dark-mode) :global(.react-datepicker__time-container),
+:global(.bm-dashboard-dark) :global(.react-datepicker__time-container) {
+  border-left-color: rgb(255 255 255 / 20%) !important;
+}
+
+:global(.dark-mode) :global(.react-datepicker__time-list),
+:global(.bm-dashboard-dark) :global(.react-datepicker__time-list) {
+  background-color: #2a2a2a !important;
+}
+
+:global(.dark-mode) :global(.react-datepicker__input-time-container),
+:global(.bm-dashboard-dark) :global(.react-datepicker__input-time-container) {
+  background-color: #3a3a3a !important;
+}
+
+:global(.dark-mode) :global(.react-datepicker__navigation-icon::before),
+:global(.bm-dashboard-dark) :global(.react-datepicker__navigation-icon::before) {
+  border-color: #fff !important;
+}
+
+:global(.dark-mode) :global(.react-datepicker__day--disabled),
+:global(.bm-dashboard-dark) :global(.react-datepicker__day--disabled) {
+  color: #666 !important;
+}
+
+/* Dark mode heading */
+:global(.dark-mode) .typesListContainer h1,
+:global(.bm-dashboard-dark) .typesListContainer h1 {
+  color: #fff;
+}
+
+/* Dark mode card header - Bootstrap override */
 :global(.bm-dashboard-dark) .cardHeader {
   background-color: #2e5061 !important;
-  color: #ffffff !important;
+  color: #fff !important;
   border-color: #3a506b !important;
 }
 
@@ -241,7 +426,7 @@
 /* Accordion collapse body dark mode */
 :global(.bm-dashboard-dark) .accordionCollapse {
   background-color: #1c2541 !important;
-  color: #ffffff !important;
+  color: #fff !important;
   scrollbar-width: thin;
   scrollbar-color: #3a506b #1c2541;
 }
@@ -266,20 +451,20 @@
   background: #5a7a9b;
 }
 
-/* Table header dark mode */
+/* Table header dark mode (bm-dashboard specific) */
 :global(.bm-dashboard-dark) .tableHeader {
   border-color: #3a506b !important;
   background-color: #1c2541 !important;
 }
 
 :global(.bm-dashboard-dark) .tableHeader th {
-  color: #ffffff !important;
+  color: #fff !important;
   background-color: #1c2541 !important;
 }
 
-/* Table dark mode - all tables */
+/* Table dark mode (bm-dashboard specific) */
 :global(.bm-dashboard-dark) .typesListContainer :global(table) {
-  color: #ffffff !important;
+  color: #fff !important;
   background-color: #1c2541 !important;
 }
 
@@ -288,7 +473,7 @@
 }
 
 :global(.bm-dashboard-dark) .typesListContainer :global(table) :global(thead) th {
-  color: #ffffff !important;
+  color: #fff !important;
   background-color: #1c2541 !important;
   border-color: #3a506b !important;
 }
@@ -298,7 +483,7 @@
 }
 
 :global(.bm-dashboard-dark) .typesListContainer :global(table) td {
-  color: #ffffff !important;
+  color: #fff !important;
   background-color: transparent !important;
 }
 
@@ -310,23 +495,23 @@
   background-color: #3a506b !important;
 }
 
-/* Card header - Bootstrap override */
+/* Card header - Bootstrap override (bm-dashboard specific) */
 :global(.bm-dashboard-dark) .typesListContainer :global(.card-header) {
   background-color: #2e5061 !important;
-  color: #ffffff !important;
+  color: #fff !important;
   border-color: #3a506b !important;
 }
 
-/* Card body - Bootstrap override */
+/* Card body - Bootstrap override (bm-dashboard specific) */
 :global(.bm-dashboard-dark) .typesListContainer :global(.card-body) {
   background-color: #1c2541 !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
-/* Buttons dark mode */
+/* Buttons dark mode (bm-dashboard specific) */
 :global(.bm-dashboard-dark) .btnTypes {
   background-color: #3a506b !important;
-  color: #ffffff !important;
+  color: #fff !important;
   border-color: #5a7a9b !important;
 }
 
@@ -338,7 +523,7 @@
 /* Back button dark mode */
 :global(.bm-dashboard-dark) .buttonContainer a {
   background-color: #2e5061 !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 :global(.bm-dashboard-dark) .buttonContainer a:hover {
@@ -348,7 +533,7 @@
 /* Input measurement dark mode */
 :global(.bm-dashboard-dark) #input-measurement {
   background-color: #2e5061 !important;
-  color: #ffffff !important;
+  color: #fff !important;
   border-color: #3a506b !important;
 }
 
@@ -359,7 +544,7 @@
 /* All inputs in the container */
 :global(.bm-dashboard-dark) .typesListContainer input {
   background-color: #2e5061 !important;
-  color: #ffffff !important;
+  color: #fff !important;
   border-color: #3a506b !important;
 }
 
@@ -370,15 +555,15 @@
 :global(.bm-dashboard-dark) .typesListContainer input:focus {
   background-color: #3a506b !important;
   border-color: #5a7a9b !important;
-  box-shadow: 0 0 0 0.2rem rgba(106, 241, 234, 0.25) !important;
+  box-shadow: 0 0 0 0.2rem rgb(106 241 234 / 25%) !important;
 }
 
 /* Autocomplete styling */
 :global(.bm-dashboard-dark) .typesListContainer input:-webkit-autofill,
 :global(.bm-dashboard-dark) .typesListContainer input:-webkit-autofill:hover,
 :global(.bm-dashboard-dark) .typesListContainer input:-webkit-autofill:focus {
-  -webkit-box-shadow: 0 0 0 30px #2e5061 inset !important;
-  -webkit-text-fill-color: #ffffff !important;
+  box-shadow: 0 0 0 30px #2e5061 inset !important;
+  -webkit-text-fill-color: #fff !important;
 }
 
 /* Bootstrap Card dark mode */
@@ -387,7 +572,7 @@
   border-color: #3a506b !important;
 }
 
-/* DatePicker calendar dark mode */
+/* DatePicker calendar dark mode (bm-dashboard specific) */
 :global(.bm-dashboard-dark) .typesListContainer :global(.react-datepicker) {
   background-color: #2e5061 !important;
   border-color: #3a506b !important;
@@ -401,7 +586,7 @@
 :global(.bm-dashboard-dark) .typesListContainer :global(.react-datepicker__current-month),
 :global(.bm-dashboard-dark) .typesListContainer :global(.react-datepicker__day-name),
 :global(.bm-dashboard-dark) .typesListContainer :global(.react-datepicker__day) {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 :global(.bm-dashboard-dark) .typesListContainer :global(.react-datepicker__day:hover) {
@@ -422,7 +607,7 @@
 }
 
 :global(.bm-dashboard-dark) .typesListContainer :global(.react-datepicker__time-list-item) {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 :global(.bm-dashboard-dark) .typesListContainer :global(.react-datepicker__time-list-item:hover) {
@@ -430,11 +615,11 @@
 }
 
 :global(.bm-dashboard-dark) .typesListContainer :global(.react-datepicker__input-time-container) {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 :global(.bm-dashboard-dark) .typesListContainer :global(.react-datepicker-time__input) input {
   background-color: #1c2541 !important;
-  color: #ffffff !important;
+  color: #fff !important;
   border-color: #3a506b !important;
 }

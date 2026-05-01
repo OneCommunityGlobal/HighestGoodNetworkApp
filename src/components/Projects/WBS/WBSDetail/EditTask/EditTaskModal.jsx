@@ -1085,39 +1085,43 @@ function EditTaskModal(props) {
         ) : null}
       </Modal>
       <div className="task-action-buttons d-flex" />
-      {canUpdateTask && (
-        <Button
-          className="mx-2 controlBtn"
-          color="primary"
-          size="sm"
-          onClick={e => handleModalShow('Edit')}
-          style={darkMode ? boxStyleDark : boxStyle}
-        >
-          Edit
-        </Button>
-      )}
-      {canSuggestTask && (
-        <Button
-          className="mr-2 controlBtn"
-          color="primary"
-          size="sm"
-          onClick={e => handleModalShow('Suggest')}
-          style={darkMode ? boxStyleDark : boxStyle}
-        >
-          Suggest
-        </Button>
-      )}
-      {!canUpdateTask && !canSuggestTask && (
-        <Button
-          className="mr-2 controlBtn"
-          color="primary"
-          size="sm"
-          onClick={e => handleModalShow('View')}
-          style={darkMode ? boxStyleDark : boxStyle}
-        >
-          View
-        </Button>
-      )}
+        <div className={styles.taskTopActionButtons}>
+          {canUpdateTask && (
+            <Button
+              className={styles.taskActionButton}
+              color="primary"
+              size="sm"
+              onClick={() => handleModalShow('Edit')}
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              Edit
+            </Button>
+          )}
+
+          {canSuggestTask && (
+            <Button
+              className={styles.taskActionButton}
+              color="primary"
+              size="sm"
+              onClick={() => handleModalShow('Suggest')}
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              Suggest
+            </Button>
+          )}
+
+          {!canUpdateTask && !canSuggestTask && (
+            <Button
+              className={styles.taskActionButton}
+              color="primary"
+              size="sm"
+              onClick={() => handleModalShow('View')}
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              View
+            </Button>
+          )}
+        </div>
     </div>
   );
 }

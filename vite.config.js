@@ -36,12 +36,18 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react({
         babel: {
-          plugins: ['@babel/plugin-proposal-logical-assignment-operators'],
+          plugins: ['@babel/plugin-transform-logical-assignment-operators'],
         },
       }),
     ],
     optimizeDeps: {
-      include: ['react-popper', 'react-datepicker', 'react-tooltip', 'react-bootstrap'],
+      include: [
+        'react-popper',
+        'react-datepicker',
+        'react-tooltip',
+        'react-bootstrap',
+        'libphonenumber-js/max',
+      ],
       force: true, // force re-bundle after cache issues; set to false once deps load
     },
   };

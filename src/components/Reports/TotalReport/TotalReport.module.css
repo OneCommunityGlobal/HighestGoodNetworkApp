@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .totalContainer {
   display: flex;
   flex-direction: column;
@@ -64,7 +65,7 @@
   font-size: inherit;
 }
 
-@media screen and (max-width: 1100px) {
+@media screen and (width <= 1100px) {
   .totalTitle,
   .totalNumber,
   .totalPeriod {
@@ -76,7 +77,7 @@
   }
 }
 
-@media screen and (max-width: 700px) {
+@media screen and (width <= 700px) {
   .totalTitle,
   .totalNumber,
   .totalPeriod {
@@ -88,9 +89,9 @@
   }
 }
 
-@media screen and (max-width: 550px) {
+@media screen and (width <= 550px) {
   .totalContainer {
-    padding: 15px 15px;
+    padding: 15px;
   }
 }
 
@@ -109,7 +110,7 @@
 }
 
 :global(.dark-mode) .totalNumber {
-  color: #ffffff;
+  color: #fff;
 }
 
 :global(.dark-mode) .totalText {
@@ -118,7 +119,7 @@
 
 :global(.dark-mode) .totalDetail button {
   background-color: #2563eb;
-  color: #ffffff;
+  color: #fff;
 }
 
 :global(.dark-mode) .totalDetail button:hover {

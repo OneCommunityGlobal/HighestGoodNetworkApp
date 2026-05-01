@@ -49,10 +49,6 @@ function ApplicantVolunteerRatio() {
 
       if (validationError) setValidationError('');
 
-      if (selectedRoles.length === 0) {
-        setData([]);
-        return;
-      }
       try {
         setLoading(true);
         const filters = {};
@@ -60,6 +56,8 @@ function ApplicantVolunteerRatio() {
         if (endDate) filters.endDate = endDate.toISOString().split('T')[0];
         if (selectedRoles.length > 0) {
           filters.roles = selectedRoles.map(role => role.value).join(',');
+        } else {
+          filters.roles = ''; // fetch all roles
         }
 
         const response = await getAllApplicantVolunteerRatios(filters);
@@ -111,6 +109,8 @@ function ApplicantVolunteerRatio() {
       document.body.classList.remove('dark-mode-body');
     };
   }, [darkMode]);
+
+  const legendTextColor = darkMode ? '#e0e0e0' : '#333';
 
   if (loading) {
     return (
@@ -280,11 +280,66 @@ function ApplicantVolunteerRatio() {
           >
             {viewMode === 'count' ? (
               <>
-                <span style={{ color: '#1976d2' }}>■ Total Applications</span>
-                <span style={{ color: '#43a047' }}>■ People Hired</span>
+                <span
+                  style={{
+                    color: legendTextColor,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                  }}
+                >
+                  <span
+                    style={{
+                      width: '12px',
+                      height: '12px',
+                      backgroundColor: '#1976d2',
+                      display: 'inline-block',
+                      borderRadius: '2px',
+                    }}
+                  />
+                  Total Applications
+                </span>
+
+                <span
+                  style={{
+                    color: legendTextColor,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                  }}
+                >
+                  <span
+                    style={{
+                      width: '12px',
+                      height: '12px',
+                      backgroundColor: '#43a047',
+                      display: 'inline-block',
+                      borderRadius: '2px',
+                    }}
+                  />
+                  People Hired
+                </span>
               </>
             ) : (
-              <span style={{ color: '#43a047' }}>■ People Hired (%)</span>
+              <span
+                style={{
+                  color: legendTextColor,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                }}
+              >
+                <span
+                  style={{
+                    width: '12px',
+                    height: '12px',
+                    backgroundColor: '#43a047',
+                    display: 'inline-block',
+                    borderRadius: '2px',
+                  }}
+                />
+                People Hired (%)
+              </span>
             )}
           </div>
 
