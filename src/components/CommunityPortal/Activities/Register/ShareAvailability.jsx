@@ -72,9 +72,14 @@ function ShareAvailability({ activity, availability, activityId }) {
     }
 
     try {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const isValidEmail = email => {
+        const input = document.createElement('input');
+        input.type = 'email';
+        input.value = email;
+        return input.checkValidity();
+      };
 
-      if (!emailRegex.test(emailInput)) {
+      if (!isValidEmail(emailInput)) {
         setShareMessage({
           type: 'error',
           text: 'Please enter a valid email address',
