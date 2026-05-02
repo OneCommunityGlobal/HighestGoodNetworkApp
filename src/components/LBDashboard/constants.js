@@ -59,17 +59,15 @@ export const getCustomSelectStyles = darkMode => ({
     backgroundColor: darkMode ? '#1C2541' : '#fff',
     zIndex: 1000,
   }),
-  option: (provided, state) => ({
-    ...provided,
-    backgroundColor: state.isFocused
-      ? darkMode
-        ? '#3A506B'
-        : '#f0f0f0'
-      : darkMode
-      ? '#1C2541'
-      : '#fff',
-    color: darkMode ? '#fff' : '#333',
-  }),
+  option: (provided, state) => {
+    const focusedBg = darkMode ? '#3A506B' : '#f0f0f0';
+    const defaultBg = darkMode ? '#1C2541' : '#fff';
+    return {
+      ...provided,
+      backgroundColor: state.isFocused ? focusedBg : defaultBg,
+      color: darkMode ? '#fff' : '#333',
+    };
+  },
   multiValue: provided => ({
     ...provided,
     backgroundColor: darkMode ? '#3A506B' : '#e2e3fc',

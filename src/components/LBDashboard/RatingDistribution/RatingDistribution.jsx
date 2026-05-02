@@ -17,6 +17,39 @@ import styles from './RatingDistribution.module.css';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
+function applyDateFilter(reviews, selectedDateRange, fromDate, toDate) {
+  if (selectedDateRange.value === 'all') return reviews;
+
+  const today = new Date();
+
+  if (selectedDateRange.value === 'custom') {
+    if (!fromDate || !toDate) return reviews;
+    const start = new Date(fromDate);
+    const end = new Date(toDate);
+    return reviews.filter(review => {
+      const d = new Date(review.date);
+      return d >= start && d <= end;
+    });
+  }
+
+  const dayMap = { last30: 30, last60: 60, last90: 90 };
+  const days = dayMap[selectedDateRange.value];
+  const startDate = new Date(today.setDate(today.getDate() - days));
+  return reviews.filter(review => new Date(review.date) >= startDate);
+}
+
+function applyCategoryFilter(reviews, selectedCategory, selectedVillages, selectedProperties) {
+  if (selectedCategory.value === 'village' && selectedVillages.length > 0) {
+    const villageSet = new Set(selectedVillages.map(v => v.value));
+    return reviews.filter(review => villageSet.has(review.village));
+  }
+  if (selectedCategory.value === 'property' && selectedProperties.length > 0) {
+    const propertySet = new Set(selectedProperties.map(p => p.value));
+    return reviews.filter(review => propertySet.has(review.property));
+  }
+  return reviews;
+}
+
 function RatingDistribution({ darkMode }) {
   // Mock data - Replace with actual API data
   const mockReviewsData = [
@@ -117,41 +150,18 @@ function RatingDistribution({ darkMode }) {
 
   useEffect(() => {
     // Filter reviews based on selected filters
-    let filteredReviews = [...mockReviewsData];
-
-    // Apply date filter
-    if (selectedDateRange.value !== 'all') {
-      const today = new Date();
-      let startDate;
-
-      if (selectedDateRange.value === 'last30') {
-        startDate = new Date(today.setDate(today.getDate() - 30));
-      } else if (selectedDateRange.value === 'last60') {
-        startDate = new Date(today.setDate(today.getDate() - 60));
-      } else if (selectedDateRange.value === 'last90') {
-        startDate = new Date(today.setDate(today.getDate() - 90));
-      } else if (selectedDateRange.value === 'custom' && fromDate && toDate) {
-        startDate = new Date(fromDate);
-        const endDate = new Date(toDate);
-        filteredReviews = filteredReviews.filter(review => {
-          const reviewDate = new Date(review.date);
-          return reviewDate >= startDate && reviewDate <= endDate;
-        });
-      }
-
-      if (selectedDateRange.value !== 'custom') {
-        filteredReviews = filteredReviews.filter(review => new Date(review.date) >= startDate);
-      }
-    }
-
-    // Apply category filter
-    if (selectedCategory.value === 'village' && selectedVillages.length > 0) {
-      const villageValues = selectedVillages.map(v => v.value);
-      filteredReviews = filteredReviews.filter(review => villageValues.includes(review.village));
-    } else if (selectedCategory.value === 'property' && selectedProperties.length > 0) {
-      const propertyValues = selectedProperties.map(p => p.value);
-      filteredReviews = filteredReviews.filter(review => propertyValues.includes(review.property));
-    }
+    let filteredReviews = applyDateFilter(
+      [...mockReviewsData],
+      selectedDateRange,
+      fromDate,
+      toDate,
+    );
+    filteredReviews = applyCategoryFilter(
+      filteredReviews,
+      selectedCategory,
+      selectedVillages,
+      selectedProperties,
+    );
 
     // Calculate rating distribution
     const ratingCounts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
