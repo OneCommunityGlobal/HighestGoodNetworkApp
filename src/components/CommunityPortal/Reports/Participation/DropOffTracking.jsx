@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import styles from './Participation.module.css';
 import mockEvents from './mockData';
+import { filterEventsByDate } from './FilterByDate';
 
 function DropOffTracking() {
   const [selectedEvent, setSelectedEvent] = useState('All Events');
@@ -13,43 +14,12 @@ function DropOffTracking() {
 
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const getDateRange = () => {
-    const today = new Date();
-    let startDate, endDate;
+  const filteredEvents = filterEventsByDate(mockEvents, selectedTime);
 
-    if (selectedTime === 'Today') {
-      startDate = new Date(today);
-      startDate.setHours(0, 0, 0, 0);
-      endDate = new Date(today);
-      endDate.setHours(23, 59, 59, 999);
-    } else if (selectedTime === 'This Week') {
-      startDate = new Date(today);
-      startDate.setDate(today.getDate() - today.getDay());
-      startDate.setHours(0, 0, 0, 0);
-      endDate = new Date(startDate);
-      endDate.setDate(startDate.getDate() + 6);
-      endDate.setHours(23, 59, 59, 999);
-    } else if (selectedTime === 'This Month') {
-      startDate = new Date(today.getFullYear(), today.getMonth(), 1);
-      endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-      endDate.setHours(23, 59, 59, 999);
-    }
-
-    return { startDate, endDate };
-  };
-
-  const filteredEvents = mockEvents.filter(event => {
-    if (selectedEvent !== 'All Events' && event.eventType !== selectedEvent) {
-      return false;
-    }
-    if (selectedTime !== 'All Time') {
-      const { startDate, endDate } = getDateRange();
-      const eventDate = new Date(event.eventDate);
-      return eventDate >= startDate && eventDate <= endDate;
-    }
-    return true;
+  const filteredEventsByEventType = filteredEvents.filter(event => {
+    if (selectedEvent === 'All Events') return true;
+    return event.eventType === selectedEvent;
   });
-
   const handleOpenList = event => {
     setActiveEvent(event);
     setSelectedUsers([]);
@@ -70,15 +40,23 @@ function DropOffTracking() {
     >
       <div className={`${styles.trackingHeader} ${darkMode ? styles.trackingHeaderDark : ''}`}>
         <h3>Drop-off and no-show rate tracking</h3>
-        <div className={`${styles.trackingFilters} ${darkMode ? styles.trackingFiltersDark : ''}`}>
-          <select value={selectedEvent} onChange={e => setSelectedEvent(e.target.value)}>
+        <div className={styles.trackingFilters}>
+          <select
+            className={styles.filterDropdown}
+            value={selectedEvent}
+            onChange={e => setSelectedEvent(e.target.value)}
+          >
             <option value="All Events">All Events</option>
             <option value="Yoga Class">Yoga Class</option>
             <option value="Cooking Workshop">Cooking Workshop</option>
             <option value="Dance Class">Dance Class</option>
             <option value="Fitness Bootcamp">Fitness Bootcamp</option>
           </select>
-          <select value={selectedTime} onChange={e => setSelectedTime(e.target.value)}>
+          <select
+            className={styles.filterDropdown}
+            value={selectedTime}
+            onChange={e => setSelectedTime(e.target.value)}
+          >
             <option value="All Time">All Time</option>
             <option value="Today">Today</option>
             <option value="This Week">This Week</option>
@@ -89,6 +67,10 @@ function DropOffTracking() {
 
       <div className={styles.trackingSummary}>
         <div className={`${styles.trackingRate} ${darkMode ? styles.trackingRateDark : ''}`}>
+          <p className={styles.trackingRateValue}>
+            +5% <span>Last week</span>
+            {/* People who signed up but did not show up */}
+          </p>
           <p className={styles.trackingRateSubheading}>
             <span>
               <b>Drop-off rate</b>
@@ -100,6 +82,10 @@ function DropOffTracking() {
           </p>
         </div>
         <div className={`${styles.trackingRate} ${darkMode ? styles.trackingRateDark : ''}`}>
+          <p className={styles.trackingRateValue}>
+            +5% <span>Last week</span>
+            {/* People who did not show up */}
+          </p>
           <p className={styles.trackingRateSubheading}>
             <span>
               <b>No-show rate</b>
@@ -161,7 +147,7 @@ function DropOffTracking() {
           </thead>
 
           <tbody>
-            {filteredEvents.map(event => (
+            {filteredEventsByEventType.map(event => (
               <tr key={event.id}>
                 <td>{event.eventName}</td>
                 <td className={styles.trackingRateGreen} style={{ color: 'green' }}>

@@ -177,11 +177,19 @@
   box-sizing: border-box;
 }
 
-@media (width <= 768px) {
+@media (max-width: 1024px) {
   .analyticsSection {
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 30px;
   }
 
+  .trackingContainer,
+  .insights {
+    min-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
   .trackingContainer,
   .insights {
     width: 100%;
@@ -202,6 +210,21 @@
   align-items: center;
   margin-bottom: 20px;
   color: #fff;
+}
+
+
+@media (max-width: 1024px) {
+  .trackingHeader {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .trackingHeaderDark {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
 }
 
 .trackingHeader h3 {
@@ -366,6 +389,20 @@
   justify-content: space-between;
 }
 
+@media (max-width: 1024px) {
+  .insightsHeader {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .insightsHeaderDark {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+}
+
 .insightsHeader h3 {
   font-size: 1.3rem;
   color: #333;
@@ -406,13 +443,9 @@
 .insightsTabs {
   flex: 1;
   display: flex;
-  background-color: #f0f0f0;
-  border-radius: 8px;
-  padding: 4px;
-  gap: 2px;
-  max-width: 60%;
-  border: none;
-  overflow: visible;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
 .insightsTabsContainer{
@@ -964,6 +997,38 @@
   box-shadow: 0 1px 6px rgb(0 0 0 / 50%);
 }
 
+  /* Text colors for dark mode */
+  .participationLandingPageDark .landingPageHeaderDark,
+  .participationLandingPageDark .sectionTitleDark,
+  .participationLandingPageDark .eventNameDark,
+  .participationLandingPageDark .eventTimeDark,
+  .participationLandingPageDark .attendeesCountDark,
+  .participationLandingPageDark .insightsLabelDark,
+  .participationLandingPageDark .insightsPercentageDark {
+    color: #ffffff !important;
+  }
+
+.filterDropdown {
+  padding: 8px;
+  font-size: 14px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.participationLandingPageDark .filterDropdown {
+  background-color: #3A506B;
+  color: #ffffff;
+  border: 1px solid #555;
+  color-scheme: dark;
+}
+
+.participationLandingPageDark .filterDropdown:hover,
+.participationLandingPageDark .filterDropdown:focus {
+  border-color: #007bff;
+  background-color: #4A627D;
+}
+
+
 /* Hover effect dark mode */
 .insightsTabDarkMode:hover {
   background-color: #374151;
@@ -978,15 +1043,6 @@
 }
 
 /* ---------- Modal ---------- */
-.modalOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgb(0 0 0 / 45%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
 
 .modalContent {
   background: #fff;
@@ -1001,12 +1057,6 @@
 .modalContentDark {
   background: #1C2541;
   color: #fff;
-}
-
-.modalHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
 .closeBtn {
@@ -1103,36 +1153,4 @@
   background-color: #3A506B;
   color: #fff;
   border: 1px solid #3A506B;
-}
-
-.insightsDark .insightsTab {
-  background-color: #3A506B;
-  color: #fff;
-  border-right: 1px solid #555;
-}
-
-.insightsDark .insightsTab.activeTab {
-  background-color: #007bff;
-  color: #ffffff;
-}
-
-/* ---------- Info Tooltip Icons ---------- */
-.infoIcon {
-  margin-left: 6px;
-  font-size: 0.85rem;
-  cursor: pointer;
-  color: #666;
-  vertical-align: middle;
-}
-
-.infoIcon:hover {
-  color: #000;
-}
-
-.trackingTableDark .infoIcon {
-  color: #cccccc;
-}
-
-.trackingTableDark .infoIcon:hover {
-  color: #ffffff;
 }
