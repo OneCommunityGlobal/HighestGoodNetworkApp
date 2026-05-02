@@ -50,6 +50,52 @@ function applyCategoryFilter(reviews, selectedCategory, selectedVillages, select
   return reviews;
 }
 
+function buildChartOptions(darkMode) {
+  return {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      title: { display: false },
+      tooltip: {
+        backgroundColor: darkMode ? '#1C2541' : '#fff',
+        titleColor: darkMode ? '#fff' : '#333',
+        bodyColor: darkMode ? '#fff' : '#333',
+        borderColor: darkMode ? '#225163' : '#ccc',
+        borderWidth: 1,
+        callbacks: {
+          label: context => {
+            const label = context.dataset.label || '';
+            const value = context.parsed.y;
+            return `${label}: ${value}`;
+          },
+        },
+      },
+    },
+    scales: {
+      x: {
+        grid: { display: false },
+        ticks: { color: darkMode ? '#fff' : '#333', font: { size: 14 } },
+      },
+      y: {
+        beginAtZero: true,
+        grid: {
+          display: true,
+          color: darkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.15)',
+          lineWidth: 1,
+        },
+        ticks: { color: darkMode ? '#fff' : '#333', font: { size: 12 }, stepSize: 1 },
+        title: {
+          display: true,
+          text: 'Number of Reviews',
+          color: darkMode ? '#fff' : '#333',
+          font: { size: 14, weight: 'bold' },
+        },
+      },
+    },
+  };
+}
+
 function RatingDistribution({ darkMode }) {
   // Mock data - Replace with actual API data
   const mockReviewsData = [
@@ -205,69 +251,7 @@ function RatingDistribution({ darkMode }) {
     setChartData(data);
   }, [selectedDateRange, selectedCategory, selectedVillages, selectedProperties, fromDate, toDate]);
 
-  const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: false,
-      },
-      title: {
-        display: false,
-      },
-      tooltip: {
-        backgroundColor: darkMode ? '#1C2541' : '#fff',
-        titleColor: darkMode ? '#fff' : '#333',
-        bodyColor: darkMode ? '#fff' : '#333',
-        borderColor: darkMode ? '#225163' : '#ccc',
-        borderWidth: 1,
-        callbacks: {
-          label: context => {
-            const label = context.dataset.label || '';
-            const value = context.parsed.y;
-            return `${label}: ${value}`;
-          },
-        },
-      },
-    },
-    scales: {
-      x: {
-        grid: {
-          display: false,
-        },
-        ticks: {
-          color: darkMode ? '#fff' : '#333',
-          font: {
-            size: 14,
-          },
-        },
-      },
-      y: {
-        beginAtZero: true,
-        grid: {
-          display: true,
-          color: darkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.15)',
-          lineWidth: 1,
-        },
-        ticks: {
-          color: darkMode ? '#fff' : '#333',
-          font: {
-            size: 12,
-          },
-          stepSize: 1,
-        },
-        title: {
-          display: true,
-          text: 'Number of Reviews',
-          color: darkMode ? '#fff' : '#333',
-          font: {
-            size: 14,
-            weight: 'bold',
-          },
-        },
-      },
-    },
-  };
+  const chartOptions = buildChartOptions(darkMode);
 
   return (
     <Card className={`${styles.ratingCard} ${darkMode ? styles.darkCard : ''}`}>

@@ -46,13 +46,13 @@ export const PROPERTY_OPTIONS = [
   },
 ];
 
-export const getCustomSelectStyles = darkMode => ({
+export const getCustomSelectStyles = (darkMode, minHeight = '38px') => ({
   control: provided => ({
     ...provided,
     backgroundColor: darkMode ? '#1C2541' : '#fff',
     borderColor: darkMode ? '#225163' : '#ccc',
     color: darkMode ? '#fff' : '#333',
-    minHeight: '38px',
+    minHeight,
   }),
   menu: provided => ({
     ...provided,
