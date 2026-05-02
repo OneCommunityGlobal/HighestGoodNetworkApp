@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -103,143 +103,41 @@ export default function PurchaseForm() {
   const [makeModel, setMakeModel] = useState('');
   const [estTime, setEstTime] = useState('');
   const [desc, setDesc] = useState('');
-  const [validationError, setValidationError] = useState('');
+  const [errors, setErrors] = useState({});
 
   const schema = Joi.object({
-    projectId: Joi.string().required(),
-    toolId: Joi.string().required(),
+    projectId: Joi.string()
+      .required()
+      .label('Project'),
+    toolId: Joi.string()
+      .required()
+      .label('Tool'),
     quantity: Joi.number()
+      .integer()
       .min(1)
       .max(999)
-      .integer()
-      .required(),
-    priority: Joi.string().required(),
-    estTime: Joi.string().required(),
-    desc: Joi.string()
       .required()
-      .max(DESC_CHAR_LIMIT),
+      .label('Quantity'),
+    priority: Joi.string().required(),
+    estTime: Joi.string()
+      .min(2)
+      .required()
+      .label('Estimated Time of Use'),
+    desc: Joi.string()
+      .max(150)
+      .required()
+      .label('Usage Description'),
     makeModel: Joi.string().allow(''),
   });
 
-  const sortedTools = [...tools].sort((a, b) => a.name.localeCompare(b.name));
-  const selectedTool = sortedTools.find(tool => tool._id === toolId);
-
-  const selectedProjectInventory = projectId
-    ? toolInventory.filter(tool => getObjectId(tool.project) === projectId)
-    : [];
-
-  const projectSpecificToolIds = new Set();
-
-  selectedProjectInventory.forEach(tool => {
-    const itemTypeId = getObjectId(tool.itemType);
-
-    if (itemTypeId) {
-      projectSpecificToolIds.add(itemTypeId);
-    }
-  });
-
-  sortedTools.forEach(tool => {
-    const availableOnProject = (tool.available || []).some(
-      item => getObjectId(item.project) === projectId,
-    );
-    const inUseOnProject = (tool.using || []).some(item => getObjectId(item.project) === projectId);
-
-    if (availableOnProject || inUseOnProject) {
-      projectSpecificToolIds.add(tool._id);
-    }
-  });
-
-  const projectFocusedTools = sortedTools.filter(tool => projectSpecificToolIds.has(tool._id));
-  const otherTools = sortedTools.filter(tool => !projectSpecificToolIds.has(tool._id));
-  const selectedProjectName = bmProjects.find(project => project._id === projectId)?.name || '';
-
-  const matchingToolRecords = toolId
-    ? toolInventory.filter(tool => getObjectId(tool.itemType) === toolId)
-    : [];
-  const matchingProjectToolRecords = matchingToolRecords.filter(
-    tool => getObjectId(tool.project) === projectId,
-  );
-
-  const projectPurchaseHistory = matchingProjectToolRecords
-    .flatMap(tool => tool.purchaseRecord || [])
-    .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
-
-  const crossProjectPurchaseHistory = matchingToolRecords
-    .flatMap(tool => tool.purchaseRecord || [])
-    .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
-
-  const projectAvailableCount = (selectedTool?.available || []).filter(
-    item => getObjectId(item.project) === projectId,
-  ).length;
-  const projectUsingCount = (selectedTool?.using || []).filter(
-    item => getObjectId(item.project) === projectId,
-  ).length;
-  const globalAvailableCount = selectedTool?.available?.length || 0;
-  const globalUsingCount = selectedTool?.using?.length || 0;
-
-  const availabilitySummary = {
-    projectAvailableCount,
-    projectUsingCount,
-    globalAvailableCount,
-    globalUsingCount,
+  const validateField = (name, value) => {
+    const fieldSchema = Joi.object({ [name]: schema.extract(name) });
+    const { error } = fieldSchema.validate({ [name]: value });
+    return error ? error.details[0].message : null;
   };
 
-  const suggestedPriority = getSuggestedPriority(projectPurchaseHistory, availabilitySummary);
-  const lastRequestedRecord = projectPurchaseHistory[0] || crossProjectPurchaseHistory[0] || null;
-  const recentDuplicateRecord =
-    projectPurchaseHistory.find(
-      record => getDaysSince(record.date) <= RECENT_REQUEST_WINDOW_DAYS,
-    ) || null;
-
-  const availabilityStatus = (() => {
-    if (!selectedTool) return 'Select a tool to view availability.';
-    if (!projectId)
-      return `${globalAvailableCount} available and ${globalUsingCount} in use across all projects.`;
-    if (projectAvailableCount > 0) {
-      return `${projectAvailableCount} available on ${selectedProjectName}.`;
-    }
-    if (projectUsingCount > 0) {
-      return `${projectUsingCount} currently in use on ${selectedProjectName}.`;
-    }
-    if (globalAvailableCount > 0) {
-      return `${globalAvailableCount} available on other projects.`;
-    }
-    if (globalUsingCount > 0) {
-      return `${globalUsingCount} currently in use across other projects.`;
-    }
-    return 'No active inventory found for this tool yet.';
-  })();
-
   useEffect(() => {
-    if (!priorityTouched) {
-      setPriority(suggestedPriority);
-    }
-  }, [suggestedPriority, priorityTouched]);
-
-  useEffect(() => {
-    setPriorityTouched(false);
-  }, [projectId, toolId]);
-
-  const handleSubmit = async e => {
-    e.preventDefault();
-    const { error } = schema.validate({
-      projectId,
-      toolId,
-      quantity,
-      priority,
-      estTime,
-      desc,
-      makeModel,
-    });
-    if (error) {
-      // Display the first validation error message
-      setValidationError(
-        error.details[0]?.message || 'Invalid form data. Please review your inputs.',
-      );
-      return;
-    }
-    setValidationError('');
-    const body = {
+    const formData = {
       projectId,
       toolId,
       quantity,
@@ -248,22 +146,45 @@ export default function PurchaseForm() {
       desc,
       makeModel,
     };
-    const response = await purchaseTools(body);
-    setProjectId('');
-    setToolId('');
-    setQty('');
-    setPriority('Low');
-    setPriorityTouched(false);
-    setMakeModel('');
-    setEstTime('');
-    setDesc('');
+
+    const { error } = schema.validate(formData, { abortEarly: false });
+
+    if (!error) {
+      setErrors({});
+    } else {
+      const fieldErrors = {};
+      error.details.forEach(d => {
+        fieldErrors[d.path[0]] = d.message;
+      });
+      setErrors(fieldErrors);
+    }
+  }, [projectId, toolId, quantity, priority, estTime, desc, makeModel]);
+
+  const isFormValid =
+    projectId && toolId && quantity && estTime && desc && Object.values(errors).every(e => !e);
+
+  const handleSubmit = async e => {
+    e.preventDefault();
+    if (!isFormValid) return;
+
+    const response = await purchaseTools({
+      projectId,
+      toolId,
+      quantity,
+      priority,
+      estTime,
+      desc,
+      makeModel,
+    });
 
     if (response.status === 201) {
       toast.success('Success: your purchase request has been logged.');
       history.push('/bmdashboard/tools');
     } else if (response.status >= 400) {
       toast.error(`Error: ${response.status} ${response.statusText}.`);
-    } else toast.warning(`Warning: unexpected status ${response.status}.`);
+    } else {
+      toast.warning(`Warning: unexpected status ${response.status}.`);
+    }
   };
 
   const handleCancel = e => {
@@ -272,134 +193,75 @@ export default function PurchaseForm() {
   };
 
   return (
-    <Form className={`${styles.purchaseToolForm}`} onSubmit={handleSubmit}>
+    <Form className={styles.purchaseToolForm} onSubmit={handleSubmit}>
+      {/* Project */}
       <FormGroup>
         <Label for="select-project">Project</Label>
         <Input
           id="select-project"
           type="select"
           value={projectId}
-          onChange={({ currentTarget }) => {
-            setValidationError('');
-            setProjectId(currentTarget.value);
-          }}
+          invalid={!!errors.projectId}
+          onChange={e => setProjectId(e.target.value)}
           disabled={!bmProjects.length}
         >
-          <option disabled hidden value="">
-            {' '}
-          </option>
+          <option hidden value="" />
           {bmProjects.map(({ _id, name }) => (
-            <option value={_id} key={_id}>
+            <option key={_id} value={_id}>
               {name}
             </option>
           ))}
         </Input>
+        {errors.projectId && <FormText color="danger">{errors.projectId}</FormText>}
       </FormGroup>
+
+      {/* Tool */}
       <FormGroup>
         <Label for="select-tool">Tool</Label>
         <Input
           id="select-tool"
           type="select"
           value={toolId}
-          onChange={({ currentTarget }) => {
-            setValidationError('');
-            setToolId(currentTarget.value);
-          }}
+          invalid={!!errors.toolId}
+          onChange={e => setToolId(e.target.value)}
         >
-          <option disabled hidden value="">
-            {' '}
-          </option>
-          {!projectId &&
-            sortedTools.map(({ _id, name }) => (
-              <option value={_id} key={_id}>
-                {name}
-              </option>
-            ))}
-          {!!projectId && !!projectFocusedTools.length && (
-            <optgroup label={`Suggested for ${selectedProjectName}`}>
-              {projectFocusedTools.map(({ _id, name }) => (
-                <option value={_id} key={_id}>
-                  {name}
-                </option>
-              ))}
-            </optgroup>
-          )}
-          {!!projectId && !!otherTools.length && (
-            <optgroup label={projectFocusedTools.length ? 'Other Tool Types' : 'All Tool Types'}>
-              {otherTools.map(({ _id, name }) => (
-                <option value={_id} key={_id}>
-                  {name}
-                </option>
-              ))}
-            </optgroup>
-          )}
+          <option hidden value="" />
+          {tools.map(({ _id, name }) => (
+            <option key={_id} value={_id}>
+              {name}
+            </option>
+          ))}
         </Input>
-        {projectId && (
-          <FormText>
-            {projectFocusedTools.length
-              ? 'Tools already used, available, or previously requested on this project are grouped first.'
-              : 'No prior tool history was found for this project, so the full catalog is shown.'}
-          </FormText>
-        )}
+        {errors.toolId && <FormText color="danger">{errors.toolId}</FormText>}
       </FormGroup>
-      {toolId && (
-        <section className={styles.toolInsightPanel}>
-          <div className={styles.toolInsightHeader}>
-            <h3>Selection Insights</h3>
-            <span className={styles.toolInsightPriority}>
-              Suggested priority: {suggestedPriority}
-            </span>
-          </div>
-          <dl className={styles.toolInsightGrid}>
-            <div>
-              <dt>Availability Status</dt>
-              <dd>{availabilityStatus}</dd>
-            </div>
-            <div>
-              <dt>Last Requested</dt>
-              <dd>{formatDate(lastRequestedRecord?.date)}</dd>
-            </div>
-            <div>
-              <dt>Common Use Case</dt>
-              <dd>{selectedTool?.description || 'No usage guidance added for this tool yet.'}</dd>
-            </div>
-          </dl>
-          {recentDuplicateRecord && selectedProjectName && (
-            <p className={styles.toolWarning}>
-              Warning: this tool was already requested for {selectedProjectName} on{' '}
-              {formatDate(recentDuplicateRecord.date)} with {recentDuplicateRecord.priority}{' '}
-              priority.
-            </p>
-          )}
-        </section>
-      )}
-      <div className={`${styles.purchaseToolFlexGroup}`}>
-        <FormGroup className={`${styles.flexGroupQty}`}>
-          <Label for="input-quantity">Quantity</Label>
-          <div className={`${styles.flexGroupQtyContainer}`}>
-            <Input
-              id="input-quantity"
-              type="number"
-              value={quantity}
-              min={1}
-              onChange={({ currentTarget }) => {
-                setValidationError('');
-                setQty(currentTarget.value);
-              }}
-            />
-          </div>
+
+      <div className={styles.purchaseToolFlexGroup}>
+        {/* Quantity */}
+        <FormGroup className={styles.flexGroupQty}>
+          <Label for="input-quantity">
+            Quantity <span className="text-danger">*</span>
+          </Label>
+          <Input
+            id="input-quantity"
+            type="number"
+            min={1}
+            placeholder="Ex: 3 units"
+            value={quantity}
+            invalid={!!errors.quantity}
+            onChange={e => setQty(e.target.value)}
+          />
+          <FormText>Admins use this to calculate total cost and inventory impact.</FormText>
+          {errors.quantity && <FormText color="danger">{errors.quantity}</FormText>}
         </FormGroup>
+
+        {/* Priority */}
         <FormGroup>
           <Label for="input-priority">Priority</Label>
           <Input
             id="input-priority"
             type="select"
             value={priority}
-            onChange={({ currentTarget }) => {
-              setValidationError('');
-              setPriorityTouched(true);
-              setPriority(currentTarget.value);
-            }}
+            onChange={e => setPriority(e.target.value)}
           >
             <option value="Low">Low</option>
             <option value="Medium">Medium</option>
@@ -407,87 +269,62 @@ export default function PurchaseForm() {
           </Input>
         </FormGroup>
       </div>
+
+      {/* Estimated Time */}
       <FormGroup>
-        <Label htmlFor="input-estimated-time">Est. Time of Use</Label>
+        <Label for="input-estimated-time">
+          Est. Time of Use <span className="text-danger">*</span>
+        </Label>
         <Input
           id="input-estimated-time"
           type="text"
+          placeholder="Ex: 2 weeks"
           value={estTime}
-          onChange={({ currentTarget }) => {
-            setValidationError('');
-            setEstTime(currentTarget.value);
-          }}
+          invalid={!!errors.estTime}
+          onChange={e => setEstTime(e.target.value)}
         />
-        <FormText>
-          Ex: <q>10 days</q>, <q>2 weeks</q>, etc.
-        </FormText>
+        <FormText>Helps admins plan scheduling and avoid overlapping allocations.</FormText>
+        {errors.estTime && <FormText color="danger">{errors.estTime}</FormText>}
       </FormGroup>
+
+      {/* Description */}
       <FormGroup>
-        <Label htmlFor="input-usage-description">Usage Description</Label>
+        <Label for="input-usage-description">
+          Usage Description <span className="text-danger">*</span>
+        </Label>
         <Input
           id="input-usage-description"
           type="textarea"
-          maxLength={DESC_CHAR_LIMIT}
+          maxLength={150}
+          placeholder="Briefly describe how this tool will be used..."
           value={desc}
-          onChange={({ currentTarget }) => {
-            setValidationError('');
-            setDesc(currentTarget.value.slice(0, DESC_CHAR_LIMIT));
-          }}
+          invalid={!!errors.desc}
+          onChange={e => setDesc(e.target.value)}
         />
-        <BMCharacterLimitHint limit={DESC_CHAR_LIMIT} length={desc.length} />
+        <FormText className="d-flex justify-content-between">
+          <span>Admins review this to justify and approve purchases.</span>
+          <span>{desc.length}/150</span>
+        </FormText>
+        {errors.desc && <FormText color="danger">{errors.desc}</FormText>}
       </FormGroup>
+
+      {/* Make / Model */}
       <FormGroup>
-        <Label for="input-brand">Preferred Make &amp; Model (optional)</Label>
+        <Label>Preferred Make &amp; Model (optional)</Label>
         <Input
           type="text"
+          placeholder="Ex: DeWalt XR Series"
           value={makeModel}
-          onChange={({ currentTarget }) => {
-            setValidationError('');
-            setMakeModel(currentTarget.value);
-          }}
+          onChange={e => setMakeModel(e.target.value)}
         />
       </FormGroup>
-      <div className={`${styles.purchaseToolError}`}>
-        {validationError && <p>{validationError}</p>}
-      </div>
-      {!!projectId && !!toolId && (
-        <div className={styles.confirmationSummary}>
-          <h3>Ready to Submit</h3>
-          <p>
-            You are requesting {quantity || '0'} {selectedTool?.name || 'tool'} for{' '}
-            {selectedProjectName || 'the selected project'} with {priority} priority.
-          </p>
-          <p>
-            Expected use: {estTime || 'not provided yet'}.
-            {makeModel ? ` Preferred make/model: ${makeModel}.` : ''}
-          </p>
-          <p>{desc || 'Add a short usage description before submitting.'}</p>
-        </div>
-      )}
-      <div className={`${styles.purchaseToolButtons}`}>
-        <Button
-          type="button"
-          id="cancel-button"
-          color="secondary"
-          onClick={handleCancel}
-          style={boxStyle}
-        >
+
+      {/* Buttons */}
+      <div className={styles.purchaseToolButtons}>
+        <Button type="button" color="secondary" onClick={handleCancel} style={boxStyle}>
           Cancel
         </Button>
-        <Button
-          id="submit-button"
-          color="primary"
-          style={boxStyle}
-          disabled={
-            !projectId ||
-            !toolId ||
-            !quantity ||
-            !priority ||
-            !estTime ||
-            !desc ||
-            !!validationError
-          }
-        >
+        <Button type="submit" color="primary" style={boxStyle} disabled={!isFormValid}>
           Submit
         </Button>
       </div>
