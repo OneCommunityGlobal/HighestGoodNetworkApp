@@ -5,9 +5,9 @@ import { getUserProfileBasicInfo } from '~/actions/userManagement';
 import httpService from '~/services/httpService';
 import { ENDPOINTS } from '~/utils/URL';
 import Banner from '../questionpages/Banner';
-import QuestionnaireInfo from '../questionpages/QuestionnaireInfo';
 import InfoForm from '../questionpages/InfoForm';
 import Progress from '../questionpages/Progress';
+import QuestionnaireInfo from '../questionpages/QuestionnaireInfo';
 import styles from '../styles/hgnform.module.css';
 
 export default function Page1() {
@@ -42,7 +42,9 @@ export default function Page1() {
         const data = res?.data;
 
         // Response has skillInfo (not skills) — check if it exists
-        if (mounted && res?.status === 200 && data?.skillInfo) {
+        const hasRealSkillData =
+          data?.skillInfo?.frontend?.overall !== '0' || data?.skillInfo?.backend?.Overall !== '0';
+        if (mounted && res?.status === 200 && hasRealSkillData) {
           history.replace('/hgn/profile/skills');
           return;
         }

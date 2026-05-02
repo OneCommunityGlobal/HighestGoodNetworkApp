@@ -8,6 +8,7 @@
   box-sizing: border-box;
 }
 
-.container-hgnform-wrapper.bg-oxford-blue {
+.container-hgnform-wrapper:global(.bg-oxford-blue) {
   color: #fff;
+  background-color: #1b2a41 !important;
 }
