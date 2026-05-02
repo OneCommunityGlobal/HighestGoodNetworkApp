@@ -30,7 +30,7 @@ export const ENDPOINTS = {
 
   MODIFY_BLUE_SQUARE: (userId, blueSquareId) =>
     `${APIEndpoint}/userprofile/${userId}/infringements/${blueSquareId}`,
-
+  
   // Blue Square Email Triggers
   BLUE_SQUARE_RESEND_INFRINGEMENT_EMAILS: () =>
     `${APIEndpoint}/blueSquare/resend-infringement-emails-only`,
@@ -38,8 +38,6 @@ export const ENDPOINTS = {
     `${APIEndpoint}/blueSquare/resend-weekly-summary-emails`,
   USERS_ALLTEAMCODE_CHANGE: `${APIEndpoint}/AllTeamCodeChanges`,
   REPLACE_TEAM_CODE: `${APIEndpoint}/userProfile/replaceTeamCode`,
-
-  GET_JOB_FORMS: `${APIEndpoint}/jobForms`,
 
   USERS_REMOVE_PROFILE_IMAGE: `${APIEndpoint}/userProfile/profileImage/remove`,
   USERS_UPDATE_PROFILE_FROM_WEBSITE: `${APIEndpoint}/userProfile/profileImage/imagefromwebsite`,
@@ -138,7 +136,6 @@ export const ENDPOINTS = {
   DELETE_WARNING_DESCRIPTION: warningId => `${APIEndpoint}/currentWarnings/${warningId}`,
   EDIT_WARNING_DESCRIPTION: () => `${APIEndpoint}/currentWarnings/edit`,
   GET_WARNINGS_BY_USER_ID: userId => `${APIEndpoint}/warnings/${userId}`,
-  GET_SPECIAL_WARNINGS: userId => `${APIEndpoint}/warnings/${userId}/special`,
   POST_WARNINGS_BY_USER_ID: userId => `${APIEndpoint}/warnings/${userId}`,
   DELETE_WARNINGS_BY_USER_ID: userId => `${APIEndpoint}/warnings/${userId}`,
   AUTHORIZE_WEEKLY_SUMMARY_REPORTS: () =>
@@ -438,8 +435,8 @@ export const ENDPOINTS = {
   BM_ORGS_WITH_LOCATION: `${APIEndpoint}/bm/orgLocation`,
   ORG_DETAILS: projectId => `${APIEndpoint}/bm/orgLocation/${projectId}`,
   BM_PROJECT_MEMBERS: projectId => `${APIEndpoint}/bm/project/${projectId}/users`,
-  BM_UPDATE_NAME_AND_UNIT :invtypeId => `${APIEndpoint}/bm/invtypes/material/${invtypeId}`,
-  BM_ITEM_UPDATE_HISTORY: invtypeId =>`${APIEndpoint}/bm/invtypes/${invtypeId}/history`,
+  BM_UPDATE_NAME_AND_UNIT: invtypeId => `${APIEndpoint}/bm/invtypes/material/${invtypeId}`,
+  BM_ITEM_UPDATE_HISTORY: invtypeId => `${APIEndpoint}/bm/invtypes/${invtypeId}/history`,
 
   PROJECT_GLOBAL_DISTRIBUTION: `${APIEndpoint}/projectglobaldistribution`,
 
@@ -519,7 +516,7 @@ export const ENDPOINTS = {
 
   // event endpoint
   EVENTS: `${APIEndpoint}/events`,
-  EVENT_BY_ID: id => `${APIEndpoint}/events/${id}`,
+  EVENTS_BY_ID: (activityId) => `${APIEndpoint}/events/${activityId}`,
   EVENT_TYPES: `${APIEndpoint}/events/types`,
   EVENT_LOCATIONS: `${APIEndpoint}/events/locations`,
   EVENT_ATTENDANCE_STATS: `${APIEndpoint}/events/attendance/stats`,
@@ -568,6 +565,7 @@ export const ENDPOINTS = {
   LB_LISTING_AVAILABILITY: `${APIEndpoint}/lb/listing/availability`,
   LB_LISTING_BOOK: `${APIEndpoint}/lb/listing/availability/booking`,
   HELP_CATEGORIES: `${APIEndpoint}/help-categories`,
+  HELP_REQUEST_CREATE: `${APIEndpoint}/helprequest/create`,
   APPLICANT_SOURCES: `${APIEndpoint}/applicant-analytics/applicant-sources`,
 
   OPT_STATUS_BREAKDOWN: (startDate, endDate, role) => {
@@ -635,6 +633,11 @@ export const ENDPOINTS = {
   WEEKLY_GRADING_SAVE: `${APIEndpoint}/weekly-grading/save`,
 
   // Education Portal endpoints
+  PROGRESS_EDUCATOR_STUDENT: studentId => `${APIEndpoint}/progress/educator/student-progress/${studentId}`,
+  EDUCATION_TASKS_BY_STUDENT: studentId => `${APIEndpoint}/education-tasks/student/${studentId}`,
+  EDUCATION_TASK: taskId => `${APIEndpoint}/education-tasks/${taskId}`,
+  EDUCATION_TASK_STATUS: taskId => `${APIEndpoint}/education-tasks/${taskId}/status`,
+
   STUDENT_PROFILE: `${APIEndpoint}/student/profile`,
   STUDENT_SUBJECT_TASKS: subjectId => `${APIEndpoint}/student/profile/subject/${subjectId}`,
   EDUCATOR_ASSIGN_ATOMS: () => `${APIEndpoint}/educator/assign-atoms`,
@@ -659,10 +662,10 @@ export const ENDPOINTS = {
   KI_CALENDAR_EVENTS: (month, year) => `${APIEndpoint}/kitchenandinventory/calendar?month=${month}&year=${year}`,
 
   // Help Request & Feedback Modal endpoints
-HGN_FORM_RANKED: `${APIEndpoint}/hgnform/ranked`,
-HELP_REQUEST_CHECK_MODAL: userId => `${APIEndpoint}/helprequest/check-modal/${userId}`,
-FEEDBACK_CLOSE_PERMANENTLY: `${APIEndpoint}/feedback/close-permanently`,
-FEEDBACK_SUBMIT: `${APIEndpoint}/feedback/submit`,
+  HGN_FORM_RANKED: `${APIEndpoint}/hgnform/ranked`,
+  HELP_REQUEST_CHECK_MODAL: userId => `${APIEndpoint}/helprequest/check-modal/${userId}`,
+  FEEDBACK_CLOSE_PERMANENTLY: `${APIEndpoint}/feedback/close-permanently`,
+  FEEDBACK_SUBMIT: `${APIEndpoint}/feedback/submit`,
   // application time analytics
   APPLICATION_TIME_DATA: (startDate, endDate, roles) => {
     let url = `${APIEndpoint}/analytics/application-time?`;
