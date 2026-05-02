@@ -31,7 +31,7 @@ import { jsPDF } from 'jspdf';
 
 export default function IssueDashboard() {
   const dispatch = useDispatch();
-  const issues = useSelector(state => state.bmIssues?.issues || []);
+  const issues = useSelector(state => state.bmissuechart?.issues || []);
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const [currentPage, setCurrentPage] = useState(1);

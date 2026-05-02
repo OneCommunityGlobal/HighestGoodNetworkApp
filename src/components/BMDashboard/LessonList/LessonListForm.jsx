@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { connect } from 'react-redux';
 import { Form, FormControl, InputGroup, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -14,6 +14,7 @@ import styles from './LessonListForm.module.css';
 function LessonList(props) {
   const { lessons, darkMode, dispatch } = props;
   const [tags, setTags] = useState([]);
+  const [tagFilterLogic, setTagFilterLogic] = useState('AND');
   const [inputValue, setInputValue] = useState('');
   const [deleteValue, setDeleteInputValue] = useState('');
   const [filteredLessons, setFilteredLessons] = useState(lessons || []);
@@ -73,6 +74,20 @@ function LessonList(props) {
     }
   }, [lessons]);
 
+  const tagCounts = useMemo(() => {
+    const counts = {};
+    if (lessons && Array.isArray(lessons)) {
+      lessons.forEach(lesson => {
+        if (lesson.tags && Array.isArray(lesson.tags)) {
+          lesson.tags.forEach(tag => {
+            counts[tag] = (counts[tag] || 0) + 1;
+          });
+        }
+      });
+    }
+    return counts;
+  }, [lessons]);
+
   const handleDeleteTags = async () => {
     try {
       const tagExistsChecks = tagsToDelete.map(tag => availableTags.includes(tag));
@@ -111,9 +126,9 @@ function LessonList(props) {
   };
 
   const getFilteredTags = () => {
-    return availableTags.filter(
-      tag => tag.toLowerCase().includes(inputValue.toLowerCase()) && !tags.includes(tag),
-    );
+    return availableTags
+      .filter(tag => tag.toLowerCase().includes(inputValue.toLowerCase()) && !tags.includes(tag))
+      .sort((a, b) => (tagCounts[b] || 0) - (tagCounts[a] || 0));
   };
 
   const getFilteredTagsToDelete = () => {
@@ -253,8 +268,11 @@ function LessonList(props) {
       // 1. Apply tag filtering
       if (tags.length > 0) {
         filtered = filtered.filter(lesson => {
-          const hasAllTags = lesson.tags && tags.every(tag => lesson.tags.includes(tag));
-          return hasAllTags;
+          if (!lesson.tags) return false;
+          if (tagFilterLogic === 'OR') {
+            return tags.some(tag => lesson.tags.includes(tag));
+          }
+          return tags.every(tag => lesson.tags.includes(tag));
         });
       }
 
@@ -286,6 +304,13 @@ function LessonList(props) {
         case '3': // Likes
           filtered = filtered.sort((a, b) => b.totalLikes - a.totalLikes);
           break;
+        case '4': // Tag Frequency
+          filtered = filtered.sort((a, b) => {
+            const sumA = a.tags ? a.tags.reduce((sum, t) => sum + (tagCounts[t] || 0), 0) : 0;
+            const sumB = b.tags ? b.tags.reduce((sum, t) => sum + (tagCounts[t] || 0), 0) : 0;
+            return sumB - sumA;
+          });
+          break;
         default:
           break;
       }
@@ -293,7 +318,7 @@ function LessonList(props) {
     };
 
     applyFiltersAndSort();
-  }, [lessons, tags, filterOption, sortOption]); // All dependencies that should trigger filtering
+  }, [lessons, tags, filterOption, sortOption, tagFilterLogic, tagCounts]); // All dependencies that should trigger filtering
 
   /**
    * Safely removes HTML tags from a string using DOMParser.
@@ -582,7 +607,7 @@ function LessonList(props) {
   };
 
   return (
-    <div className={`${styles.mainContainer}`}>
+    <div className={`${styles.mainContainer} ${darkMode ? styles.darkMode : styles.lightMode}`}>
       <div className={`${styles.formContainer}`}>
         <Form>
           <div>
@@ -621,6 +646,7 @@ function LessonList(props) {
                   <option value="1">Newest</option>
                   <option value="2">Date</option>
                   <option value="3">Likes</option>
+                  <option value="4">Tag Frequency</option>
                 </FormControl>
               </Form.Group>
             </div>
@@ -641,7 +667,27 @@ function LessonList(props) {
           </div>
           <Form.Group controlId="tagInput">
             <Form.Label>Tags:</Form.Label>
-            <div className={`${styles.tagsInputContainer}`}>
+            {tags.length > 1 && (
+              <div className="mb-2" style={{ fontSize: '0.85rem' }}>
+                <Form.Check
+                  inline
+                  type="radio"
+                  id="tagLogicAnd"
+                  label="Match ALL tags (AND)"
+                  checked={tagFilterLogic === 'AND'}
+                  onChange={() => setTagFilterLogic('AND')}
+                />
+                <Form.Check
+                  inline
+                  type="radio"
+                  id="tagLogicOr"
+                  label="Match ANY tag (OR)"
+                  checked={tagFilterLogic === 'OR'}
+                  onChange={() => setTagFilterLogic('OR')}
+                />
+              </div>
+            )}
+            <div className={`tags-input-container ${styles.tagsInputContainer}`}>
               <InputGroup className={`${styles.tagsWrapper}`}>
                 <input
                   type="text"
@@ -651,8 +697,14 @@ function LessonList(props) {
                     setInputValue(e.target.value);
                     setShowDropdown(true);
                   }}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' && getFilteredTags().length > 0) {
+                      addTag(getFilteredTags()[0]);
+                      setShowDropdown(false);
+                    }
+                  }}
                   onFocus={() => setShowDropdown(true)}
-                  className={`${styles.formControl}`}
+                  className={`form-control ${styles.formControl}`}
                 />
                 {showDropdown && inputValue && (
                   <div className={`${styles.tagDropdown}`}>
@@ -666,7 +718,7 @@ function LessonList(props) {
                           setShowDropdown(false);
                         }}
                       >
-                        {tag}
+                        {tag} ({tagCounts[tag] || 0})
                       </button>
                     ))}
                   </div>
@@ -721,13 +773,13 @@ function LessonList(props) {
             </div>
 
             <Form.Label>Delete Tags (Press enter to add a tag to delete): </Form.Label>
-            <div className={`${styles.tagsInputContainer}`}>
+            <div className={`tags-input-container ${styles.tagsInputContainer}`}>
               <div className={`${styles.deleteInputWrapper}`}>
                 <input
                   type="text"
                   placeholder="Search tag to delete"
                   value={deleteValue}
-                  className={`${styles.formControlDelete}`}
+                  className={`form-control ${styles.formControlDelete}`}
                   onChange={e => {
                     setDeleteInputValue(e.target.value);
                     setShowDeleteDropdown(true);

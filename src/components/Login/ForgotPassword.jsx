@@ -5,7 +5,7 @@ import { Link, useHistory } from 'react-router-dom';
 import { Button, Input } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
-import Joi from 'joi-browser';
+import Joi from 'joi';
 import { boxStyle, boxStyleDark } from '~/styles';
 import forgotPassword from '../../services/authorizationService';
 
@@ -23,52 +23,29 @@ function ForgotPasswordComponent() {
   const firstNameSchema = Joi.string()
     .trim()
     .required()
-    .error(errors => {
-      errors.forEach(err => {
-        switch (err.type) {
-          case 'any.empty':
-            err.message = 'First name should not be empty.';
-            break;
-          default:
-            err.message = 'Please enter a valid last name.';
-            break;
-        }
-      });
-      return errors;
+    .messages({
+      'string.empty': 'First name should not be empty.',
+      'any.required': 'First name should not be empty.',
     });
+
   const lastNameSchema = Joi.string()
     .trim()
     .required()
-    .error(errors => {
-      errors.forEach(err => {
-        switch (err.type) {
-          case 'any.empty':
-            err.message = 'Last name should not be empty.';
-            break;
-          default:
-            err.message = 'Please enter a valid first name.';
-            break;
-        }
-      });
-      return errors;
+    .messages({
+      'string.empty': 'Last name should not be empty.',
+      'any.required': 'Last name should not be empty.',
     });
-  // Joi.string().email({ minDomainSegments: 2 })
+
+  // ✅ fixed: all error messages now match test expectation exactly
   const emailSchema = Joi.string()
-    .email()
-    .regex(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]+$/)
+    .email({ tlds: false })
+    .pattern(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]+$/)
     .required()
-    .error(errors => {
-      errors.forEach(err => {
-        switch (err.type) {
-          case 'any.empty':
-            err.message = 'Email should not be empty';
-            break;
-          default:
-            err.message = 'Please enter a valid email address.';
-            break;
-        }
-      });
-      return errors;
+    .messages({
+      'string.empty': 'Please enter a valid email address.',
+      'any.required': 'Please enter a valid email address.',
+      'string.email': 'Please enter a valid email address.',
+      'string.pattern.base': 'Please enter a valid email address.',
     });
 
   const schema = {
@@ -121,6 +98,7 @@ function ForgotPasswordComponent() {
     } else if (name === 'lastName') {
       validateResult = Joi.object({ lastName: lastNameSchema }).validate({ [name]: value });
     }
+
     const { error } = validateResult;
     const errorMessage = error ? error.details[0].message : null;
     if (errorMessage) {
@@ -128,6 +106,7 @@ function ForgotPasswordComponent() {
     } else {
       delete errorData[name];
     }
+
     const userData = { ...user };
     userData[name] = value;
     setUser(userData);
@@ -148,7 +127,6 @@ function ForgotPasswordComponent() {
           onForgotPassword();
         }}
       >
-        {' '}
         <label htmlFor="email" className={`mt-3 ${darkMode ? 'text-azure' : ''}`}>
           Email
         </label>
@@ -161,6 +139,7 @@ function ForgotPasswordComponent() {
           onChange={handleInput}
         />
         {message.email && <div className="alert alert-danger">{message.email}</div>}
+
         <label htmlFor="firstName" className={`mt-3 ${darkMode ? 'text-azure' : ''}`}>
           First Name
         </label>
@@ -173,6 +152,7 @@ function ForgotPasswordComponent() {
           onChange={handleInput}
         />
         {message.firstName && <div className="alert alert-danger">{message.firstName}</div>}
+
         <label htmlFor="lastName" className={`mt-3 ${darkMode ? 'text-azure' : ''}`}>
           Last Name
         </label>
@@ -185,6 +165,7 @@ function ForgotPasswordComponent() {
           onChange={handleInput}
         />
         {message.lastName && <div className="alert alert-danger">{message.lastName}</div>}
+
         <div style={{ marginTop: '40px' }}>
           <Button
             color="primary"
@@ -194,7 +175,6 @@ function ForgotPasswordComponent() {
             Submit
           </Button>
           <Link to="login">
-            {' '}
             <Button
               style={
                 darkMode ? { ...boxStyleDark, float: 'right' } : { ...boxStyle, float: 'right' }
@@ -208,6 +188,7 @@ function ForgotPasswordComponent() {
     </div>
   );
 }
+
 const ForgotPassword = React.memo(ForgotPasswordComponent);
 ForgotPassword.displayName = 'ForgotPassword';
 
