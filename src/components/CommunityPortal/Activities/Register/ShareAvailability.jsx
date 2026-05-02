@@ -104,31 +104,59 @@ function ShareAvailability({ activity, availability, activityId }) {
     }
   };
 
-  const handleSocialShare = platform => {
+  const handleSocialShare = async platform => {
     const url = encodeURIComponent(shareContent.shareUrl);
-    const text = encodeURIComponent(shareContent.title);
-    const content = encodeURIComponent(shareContent.fullText);
+    const text = shareContent.fullText; // NOT encoded for clipboard
 
     let socialUrl = '';
 
-    switch (platform) {
-      case 'x':
-        socialUrl = `https://x.com/intent/tweet?url=${url}&text=${text}`;
-        break;
-      case 'facebook':
-        socialUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}&text=${content}`;
-        break;
-      case 'linkedin':
-        socialUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${url}&text=${content}`;
-        break;
-      case 'whatsapp':
-        const whatsappText = encodeURIComponent(`${shareContent.title}\n${shareContent.shareUrl}`);
-        socialUrl = `https://wa.me/?text=${whatsappText}`;
-        break;
-      default:
+    try {
+      if (platform === 'facebook') {
+        // Step 1: Copy text automatically
+        await CopyToClipboard(text);
+
+        // Step 2: Notify user
+        setShareMessage({
+          type: 'success',
+          text: 'Details copied! Paste it into your Facebook post.',
+        });
+
+        // Step 3: Open Facebook share dialog (only URL)
+        socialUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+
+        window.open(socialUrl, '_blank', 'width=600,height=400');
+
         return;
+      }
+
+      // Existing platforms
+      const encodedText = encodeURIComponent(shareContent.title);
+      const encodedContent = encodeURIComponent(shareContent.fullText);
+
+      switch (platform) {
+        case 'x':
+          socialUrl = `https://x.com/intent/tweet?url=${url}&text=${encodedText}`;
+          break;
+        case 'linkedin':
+          socialUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${url}`;
+          break;
+        case 'whatsapp':
+          const whatsappText = encodeURIComponent(
+            `${shareContent.title}\n${shareContent.shareUrl}`,
+          );
+          socialUrl = `https://wa.me/?text=${whatsappText}`;
+          break;
+        default:
+          return;
+      }
+
+      window.open(socialUrl, '_blank', 'width=600,height=400');
+    } catch (error) {
+      setShareMessage({
+        type: 'error',
+        text: 'Failed to copy content. Please try again.',
+      });
     }
-    window.open(socialUrl, '_blank', 'width=600,height=400');
   };
 
   useEffect(() => {
