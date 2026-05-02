@@ -10,29 +10,23 @@ import {
   Label,
   Input,
   FormFeedback,
-  Alert
+  Alert,
 } from 'reactstrap';
 import { useSelector } from 'react-redux';
 import { FaSave, FaTimes, FaExclamationTriangle } from 'react-icons/fa';
 import styles from './AnnouncementModal.module.css';
 
-const AnnouncementModal = ({
-  isOpen,
-  toggle,
-  announcement = null,
-  onSave,
-  userInfo = null
-}) => {
+const AnnouncementModal = ({ isOpen, toggle, announcement = null, onSave, userInfo = null }) => {
   const [formData, setFormData] = useState({
     title: '',
     body: '',
-    audience: 'all'
+    audience: 'all',
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showConfirmDiscard, setShowConfirmDiscard] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  
+
   const darkMode = useSelector(state => state.theme.darkMode);
   const isEditing = !!announcement;
 
@@ -43,13 +37,13 @@ const AnnouncementModal = ({
         setFormData({
           title: announcement.title || '',
           body: announcement.body || '',
-          audience: announcement.audience || 'all'
+          audience: announcement.audience || 'all',
         });
       } else {
         setFormData({
           title: '',
           body: '',
-          audience: 'all'
+          audience: 'all',
         });
       }
       setErrors({});
@@ -60,18 +54,20 @@ const AnnouncementModal = ({
   // Track changes to detect unsaved modifications
   useEffect(() => {
     if (!isOpen) return;
-    
-    const originalData = announcement ? {
-      title: announcement.title || '',
-      body: announcement.body || '',
-      audience: announcement.audience || 'all'
-    } : {
-      title: '',
-      body: '',
-      audience: 'all'
-    };
 
-    const hasChanges = 
+    const originalData = announcement
+      ? {
+          title: announcement.title || '',
+          body: announcement.body || '',
+          audience: announcement.audience || 'all',
+        }
+      : {
+          title: '',
+          body: '',
+          audience: 'all',
+        };
+
+    const hasChanges =
       formData.title !== originalData.title ||
       formData.body !== originalData.body ||
       formData.audience !== originalData.audience;
@@ -122,34 +118,34 @@ const AnnouncementModal = ({
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
 
     // Clear error for this field when user starts typing
     if (errors[field]) {
       setErrors(prev => ({
         ...prev,
-        [field]: ''
+        [field]: '',
       }));
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
-    
+
     console.log('Form submitted, current formData:', formData);
     console.log('Current errors:', errors);
-    
+
     const isValid = validateForm();
     console.log('Form validation result:', isValid);
-    
+
     if (!isValid) {
       console.log('Form validation failed, errors:', errors);
       return;
     }
 
     setIsSubmitting(true);
-    
+
     try {
       const announcementData = {
         // Preserve all original fields when editing so nothing is lost (createdAt, course, grade, isNew, etc.)
@@ -157,15 +153,17 @@ const AnnouncementModal = ({
         ...formData,
         title: formData.title.trim(),
         body: formData.body.trim(),
-        ...(isEditing ? {
-          id: announcement.id,
-          author: announcement.author,
-          updatedAt: new Date().toISOString(),
-        } : {
-          author: userInfo?.name || 'Unknown',
-          createdAt: new Date().toISOString(),
-          isNew: true,
-        })
+        ...(isEditing
+          ? {
+              id: announcement.id,
+              author: announcement.author,
+              updatedAt: new Date().toISOString(),
+            }
+          : {
+              author: userInfo?.name || 'Unknown',
+              createdAt: new Date().toISOString(),
+              isNew: true,
+            }),
       };
 
       console.log('Saving announcement data:', announcementData);
@@ -173,7 +171,7 @@ const AnnouncementModal = ({
       if (onSave) {
         await onSave(announcementData);
       }
-      
+
       setHasUnsavedChanges(false);
       toggle();
     } catch (error) {
@@ -202,10 +200,10 @@ const AnnouncementModal = ({
     setShowConfirmDiscard(false);
   };
 
-  const getCharacterCount = (field) => {
+  const getCharacterCount = field => {
     const maxLengths = {
       title: 100,
-      body: 2000
+      body: 2000,
     };
     const current = formData[field]?.length || 0;
     const max = maxLengths[field];
@@ -214,8 +212,8 @@ const AnnouncementModal = ({
 
   return (
     <>
-      <Modal 
-        isOpen={isOpen} 
+      <Modal
+        isOpen={isOpen}
         toggle={handleClose}
         size="lg"
         className={`${styles.announcementModal} ${darkMode ? 'dark-mode text-light' : ''}`}
@@ -224,7 +222,7 @@ const AnnouncementModal = ({
         <ModalHeader toggle={handleClose} className={styles.modalHeader}>
           {isEditing ? 'Edit Announcement' : 'Create New Announcement'}
         </ModalHeader>
-        
+
         <Form onSubmit={handleSubmit}>
           <ModalBody className={styles.modalBody}>
             {errors.submit && (
@@ -243,7 +241,7 @@ const AnnouncementModal = ({
                 id="announcementTitle"
                 name="title"
                 value={formData.title || ''}
-                onChange={(e) => {
+                onChange={e => {
                   console.log('Title changed:', e.target.value);
                   handleInputChange('title', e.target.value);
                 }}
@@ -266,7 +264,7 @@ const AnnouncementModal = ({
                 type="select"
                 id="announcementAudience"
                 value={formData.audience}
-                onChange={(e) => handleInputChange('audience', e.target.value)}
+                onChange={e => handleInputChange('audience', e.target.value)}
                 invalid={!!errors.audience}
                 className={styles.audienceSelect}
               >
@@ -286,7 +284,7 @@ const AnnouncementModal = ({
                 id="announcementBody"
                 name="body"
                 value={formData.body || ''}
-                onChange={(e) => {
+                onChange={e => {
                   console.log('Body changed:', e.target.value);
                   handleInputChange('body', e.target.value);
                 }}
@@ -305,17 +303,20 @@ const AnnouncementModal = ({
             <div className={styles.previewSection}>
               <Label className={styles.fieldLabel}>Preview</Label>
               <div className={styles.previewCard}>
-                <h6 className={styles.previewTitle}>
-                  {formData.title || 'Announcement Title'}
-                </h6>
+                <h6 className={styles.previewTitle}>{formData.title || 'Announcement Title'}</h6>
                 <p className={styles.previewBody}>
                   {formData.body || 'Your announcement message will appear here...'}
                 </p>
                 <div className={styles.previewMeta}>
-                  <span className={`badge ${
-                    formData.audience === 'students' ? 'bg-primary' :
-                    formData.audience === 'educators' ? 'bg-success' : 'bg-info'
-                  }`}>
+                  <span
+                    className={`badge ${
+                      formData.audience === 'students'
+                        ? 'bg-primary'
+                        : formData.audience === 'educators'
+                        ? 'bg-success'
+                        : 'bg-info'
+                    }`}
+                  >
                     {formData.audience === 'all' ? 'Everyone' : formData.audience}
                   </span>
                 </div>
@@ -324,9 +325,9 @@ const AnnouncementModal = ({
           </ModalBody>
 
           <ModalFooter className={styles.modalFooter}>
-            <Button 
+            <Button
               type="button"
-              color="secondary" 
+              color="secondary"
               onClick={handleClose}
               disabled={isSubmitting}
               className={styles.cancelButton}
@@ -334,22 +335,22 @@ const AnnouncementModal = ({
               <FaTimes className="me-2" />
               Cancel
             </Button>
-            <Button 
+            <Button
               type="submit"
-              color="primary" 
+              color="primary"
               disabled={isSubmitting || Object.keys(errors).length > 0}
               className={styles.saveButton}
             >
               <FaSave className="me-2" />
-              {isSubmitting ? 'Saving...' : (isEditing ? 'Update' : 'Create')}
+              {isSubmitting ? 'Saving...' : isEditing ? 'Update' : 'Create'}
             </Button>
           </ModalFooter>
         </Form>
       </Modal>
 
       {/* Discard Changes Confirmation Modal */}
-      <Modal 
-        isOpen={showConfirmDiscard} 
+      <Modal
+        isOpen={showConfirmDiscard}
         toggle={handleCancelDiscard}
         className={darkMode ? 'dark-mode text-light' : ''}
       >
@@ -357,9 +358,7 @@ const AnnouncementModal = ({
           <FaExclamationTriangle className="me-2 text-warning" />
           Unsaved Changes
         </ModalHeader>
-        <ModalBody>
-          You have unsaved changes. Are you sure you want to discard them?
-        </ModalBody>
+        <ModalBody>You have unsaved changes. Are you sure you want to discard them?</ModalBody>
         <ModalFooter>
           <Button color="secondary" onClick={handleCancelDiscard}>
             Keep Editing

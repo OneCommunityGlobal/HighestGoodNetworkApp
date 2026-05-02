@@ -4,17 +4,17 @@ import { useSelector } from 'react-redux';
 import { FaPlus, FaEdit, FaCalendarAlt, FaUser, FaFilter } from 'react-icons/fa';
 import styles from './AnnouncementsBoard.module.css';
 
-const AnnouncementsBoard = ({ 
-  userRole = 'student', 
-  onCreateAnnouncement, 
-  onEditAnnouncement, 
-  announcements = [], 
-  selectedAudience = 'all', 
+const AnnouncementsBoard = ({
+  userRole = 'student',
+  onCreateAnnouncement,
+  onEditAnnouncement,
+  announcements = [],
+  selectedAudience = 'all',
   searchQuery = '',
   courseFilter = '',
   dateFromFilter = '',
   dateToFilter = '',
-  isEmbedded = false 
+  isEmbedded = false,
 }) => {
   const [filteredAnnouncements, setFilteredAnnouncements] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -22,43 +22,50 @@ const AnnouncementsBoard = ({
 
   // Filter announcements based on all filters
   useEffect(() => {
-    console.log('Filtering announcements:', { 
-      selectedAudience, 
-      searchQuery, 
-      courseFilter, 
-      dateFromFilter, 
+    console.log('Filtering announcements:', {
+      selectedAudience,
+      searchQuery,
+      courseFilter,
+      dateFromFilter,
       dateToFilter,
-      totalAnnouncements: announcements.length 
+      totalAnnouncements: announcements.length,
     });
-    
-    console.log('Sample announcement courses:', announcements.map(a => ({ title: a.title, course: a.course })));
-    
+
+    console.log(
+      'Sample announcement courses:',
+      announcements.map(a => ({ title: a.title, course: a.course })),
+    );
+
     const filtered = announcements.filter(announcement => {
       // Audience filter
-      const audienceMatch = selectedAudience === 'all' || 
-                           announcement.audience === selectedAudience || 
-                           announcement.audience === 'all';
-      
+      const audienceMatch =
+        selectedAudience === 'all' ||
+        announcement.audience === selectedAudience ||
+        announcement.audience === 'all';
+
       // Search query filter (searches in title and body)
-      const searchMatch = !searchQuery || 
-                         announcement.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         announcement.body.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         announcement.author.toLowerCase().includes(searchQuery.toLowerCase());
-      
+      const searchMatch =
+        !searchQuery ||
+        announcement.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        announcement.body.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        announcement.author.toLowerCase().includes(searchQuery.toLowerCase());
+
       // Course filter (searches in course name, title, and author)
-      const courseMatch = !courseFilter || 
-                         (announcement.course && announcement.course.toLowerCase().includes(courseFilter.toLowerCase())) ||
-                         announcement.title.toLowerCase().includes(courseFilter.toLowerCase()) ||
-                         announcement.author.toLowerCase().includes(courseFilter.toLowerCase());
-      
+      const courseMatch =
+        !courseFilter ||
+        (announcement.course &&
+          announcement.course.toLowerCase().includes(courseFilter.toLowerCase())) ||
+        announcement.title.toLowerCase().includes(courseFilter.toLowerCase()) ||
+        announcement.author.toLowerCase().includes(courseFilter.toLowerCase());
+
       // Date filter
       const announcementDate = new Date(announcement.createdAt).toISOString().split('T')[0]; // YYYY-MM-DD format
       const dateFromMatch = !dateFromFilter || announcementDate >= dateFromFilter;
       const dateToMatch = !dateToFilter || announcementDate <= dateToFilter;
-      
+
       return audienceMatch && searchMatch && courseMatch && dateFromMatch && dateToMatch;
     });
-    
+
     console.log('Filtered result:', filtered.length, 'announcements');
     setFilteredAnnouncements(filtered);
   }, [announcements, selectedAudience, searchQuery, courseFilter, dateFromFilter, dateToFilter]);
@@ -69,23 +76,23 @@ const AnnouncementsBoard = ({
     }
   };
 
-  const handleEditClick = (announcement) => {
+  const handleEditClick = announcement => {
     if (onEditAnnouncement) {
       onEditAnnouncement(announcement);
     }
   };
 
-  const formatDate = (date) => {
+  const formatDate = date => {
     return new Date(date).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
-  const getAudienceBadgeColor = (audience) => {
+  const getAudienceBadgeColor = audience => {
     switch (audience) {
       case 'students':
         return 'primary';
@@ -103,30 +110,48 @@ const AnnouncementsBoard = ({
     return (
       <div style={{ backgroundColor: 'transparent' }}>
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '40px', color: darkMode ? '#94a3b8' : '#666' }}>Loading announcements...</div>
+          <div
+            style={{ textAlign: 'center', padding: '40px', color: darkMode ? '#94a3b8' : '#666' }}
+          >
+            Loading announcements...
+          </div>
         ) : filteredAnnouncements.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '40px', color: darkMode ? '#94a3b8' : '#666' }}>
+          <div
+            style={{ textAlign: 'center', padding: '40px', color: darkMode ? '#94a3b8' : '#666' }}
+          >
             <p>No announcements found</p>
           </div>
         ) : (
-          filteredAnnouncements.map((announcement) => (
-            <div key={announcement.id} style={{
-              backgroundColor: darkMode ? '#1b2a41' : 'white',
-              border: `1px solid ${darkMode ? '#3A506B' : '#e0e0e0'}`,
-              borderRadius: '8px',
-              padding: '20px',
-              marginBottom: '15px',
-              boxShadow: darkMode ? '0 1px 3px rgba(0,0,0,0.4)' : '0 1px 3px rgba(0,0,0,0.1)'
-            }}>
+          filteredAnnouncements.map(announcement => (
+            <div
+              key={announcement.id}
+              style={{
+                backgroundColor: darkMode ? '#1b2a41' : 'white',
+                border: `1px solid ${darkMode ? '#3A506B' : '#e0e0e0'}`,
+                borderRadius: '8px',
+                padding: '20px',
+                marginBottom: '15px',
+                boxShadow: darkMode ? '0 1px 3px rgba(0,0,0,0.4)' : '0 1px 3px rgba(0,0,0,0.1)',
+              }}
+            >
               {/* Header */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
-                <h5 style={{ 
-                  margin: 0, 
-                  fontWeight: 'bold', 
-                  fontSize: '16px',
-                  color: darkMode ? '#e9ecef' : '#333',
-                  flex: 1
-                }}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-start',
+                  marginBottom: '10px',
+                }}
+              >
+                <h5
+                  style={{
+                    margin: 0,
+                    fontWeight: 'bold',
+                    fontSize: '16px',
+                    color: darkMode ? '#e9ecef' : '#333',
+                    flex: 1,
+                  }}
+                >
                   {announcement.title}
                 </h5>
                 {userRole === 'educator' && (
@@ -138,7 +163,7 @@ const AnnouncementsBoard = ({
                       padding: '4px 8px',
                       border: `1px solid ${darkMode ? '#3A506B' : '#ccc'}`,
                       backgroundColor: darkMode ? '#243B5A' : '#f8f9fa',
-                      color: darkMode ? '#e2e8f0' : '#333'
+                      color: darkMode ? '#e2e8f0' : '#333',
                     }}
                   >
                     <FaEdit size={12} />
@@ -147,29 +172,35 @@ const AnnouncementsBoard = ({
               </div>
 
               {/* Author and metadata */}
-              <div style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: '15px',
-                marginBottom: '10px',
-                fontSize: '13px',
-                color: darkMode ? '#94a3b8' : '#666'
-              }}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '15px',
+                  marginBottom: '10px',
+                  fontSize: '13px',
+                  color: darkMode ? '#94a3b8' : '#666',
+                }}
+              >
                 <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  By <strong style={{ color: darkMode ? '#e2e8f0' : '#333' }}>{announcement.author}</strong>
+                  By{' '}
+                  <strong style={{ color: darkMode ? '#e2e8f0' : '#333' }}>
+                    {announcement.author}
+                  </strong>
                 </span>
                 <span>|</span>
                 <span>{announcement.course || 'General'}</span>
                 <span>|</span>
                 <span>{announcement.grade || 'All Grades'}</span>
                 <span>|</span>
-                <span>Audience: 
+                <span>
+                  Audience:
                   <Badge
                     color={getAudienceBadgeColor(announcement.audience)}
-                    style={{ 
+                    style={{
                       marginLeft: '5px',
                       fontSize: '10px',
-                      padding: '2px 6px'
+                      padding: '2px 6px',
                     }}
                   >
                     {announcement.audience === 'all' ? 'Everyone' : announcement.audience}
@@ -178,12 +209,14 @@ const AnnouncementsBoard = ({
               </div>
 
               {/* Body */}
-              <p style={{ 
-                margin: 0, 
-                lineHeight: '1.5',
-                color: darkMode ? '#94a3b8' : '#555',
-                fontSize: '14px'
-              }}>
+              <p
+                style={{
+                  margin: 0,
+                  lineHeight: '1.5',
+                  color: darkMode ? '#94a3b8' : '#555',
+                  fontSize: '14px',
+                }}
+              >
                 {announcement.body.length > 200
                   ? `${announcement.body.substring(0, 200)}...`
                   : announcement.body}
@@ -208,11 +241,7 @@ const AnnouncementsBoard = ({
           </Col>
           <Col md={4} className="d-flex align-items-center justify-content-end">
             {userRole === 'educator' && (
-              <Button
-                color="primary"
-                onClick={handleCreateClick}
-                className={styles.createButton}
-              >
+              <Button color="primary" onClick={handleCreateClick} className={styles.createButton}>
                 <FaPlus className="me-2" />
                 New Announcement
               </Button>
@@ -228,7 +257,7 @@ const AnnouncementsBoard = ({
               <Input
                 type="select"
                 value={selectedAudience}
-                onChange={(e) => setSelectedAudience(e.target.value)}
+                onChange={e => setSelectedAudience(e.target.value)}
                 className={styles.audienceFilter}
               >
                 <option value="all">All Audiences</option>
@@ -239,7 +268,8 @@ const AnnouncementsBoard = ({
           </Col>
           <Col md={6} className="text-end">
             <span className={styles.resultCount}>
-              {filteredAnnouncements.length} announcement{filteredAnnouncements.length !== 1 ? 's' : ''}
+              {filteredAnnouncements.length} announcement
+              {filteredAnnouncements.length !== 1 ? 's' : ''}
             </span>
           </Col>
         </Row>
@@ -268,9 +298,13 @@ const AnnouncementsBoard = ({
               </div>
             </Col>
           ) : (
-            filteredAnnouncements.map((announcement) => (
+            filteredAnnouncements.map(announcement => (
               <Col lg={6} xl={4} key={announcement.id} className={styles.announcementCol}>
-                <Card className={`${styles.announcementCard} ${announcement.isNew ? styles.newAnnouncement : ''}`}>
+                <Card
+                  className={`${styles.announcementCard} ${
+                    announcement.isNew ? styles.newAnnouncement : ''
+                  }`}
+                >
                   <CardBody>
                     {/* Card Header */}
                     <div className={styles.cardHeader}>

@@ -927,7 +927,11 @@ export default (
           component={StudentProfile}
         />
         <EPProtectedRoute path="/educationportal/tasks/upload" exact component={WriteTaskUpload} />
-        <EPProtectedRoute path="/educationportal/announcements" exact component={AnnouncementsPage} />
+        <EPProtectedRoute
+          path="/educationportal/announcements"
+          exact
+          component={AnnouncementsPage}
+        />
         <EPProtectedRoute
           path="/educationportal/educator/task-submissions"
           exact
