@@ -70,7 +70,6 @@ const TeamMemberTask = React.memo(
     useEffect(() => {}, [userStateSelection]);
 
     const handleDashboardAccess = () => {
-      // null checks
       if (!user || !userRole || !user.role) {
         toast.error('User information not available to determine dashboard access.');
         return;
@@ -158,9 +157,9 @@ const TeamMemberTask = React.memo(
     const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
 
     const colorsObjs = {
-      'Assistant Manager': '#849ced', // blue
-      Manager: '#90e766', // green
-      Mentor: '#e9dd57', // yellow
+      'Assistant Manager': '#849ced',
+      Manager: '#90e766',
+      Mentor: '#e9dd57',
     };
 
     function getTaskCreatorName(task) {
@@ -285,7 +284,6 @@ const TeamMemberTask = React.memo(
             <Table className={styles['no-bottom-margin']}>
               <tbody>
                 <tr className="remove-child-borders">
-                  {/* green if member has met committed hours for the week, red if not */}
                   <td colSpan={1} className={`${darkMode ? 'bg-yinmn-blue' : ''}`}>
                     <div style={{ display: 'flex', flexWrap: 'wrap', flexDirection: 'column' }}>
                       <div className={styles['member-links-wrapper']}>
@@ -469,7 +467,7 @@ const TeamMemberTask = React.memo(
                                       style={{
                                         width: '22px',
                                         height: '22px',
-                                        marginTop: '-2px', // 🔧 fixes the slight vertical offset of the R icon
+                                        marginTop: '-2px',
                                       }}
                                     />
                                   </Link>
@@ -564,8 +562,7 @@ const TeamMemberTask = React.memo(
                                       darkMode ? 'bg-yinmn-blue text-light' : ''
                                     }`}
                                   >
-                                    <div className={styles.taskColumnLayout}>
-                                      {/* Task title */}
+                                    <div className={styles['inner-task-align']}>
                                       <div className={styles['team-member-tasks-content']}>
                                         <Link
                                           className={styles['team-member-tasks-content-link']}
@@ -584,9 +581,7 @@ const TeamMemberTask = React.memo(
                                           message="Task Copied!"
                                         />
                                       </div>
-
-                                      {/* Icons UNDER task name */}
-                                      <div className={styles.taskIconsUnderName}>
+                                      <div className={styles['team-member-tasks-icons']}>
                                         {task.taskNotifications.length > 0 &&
                                           task.taskNotifications.some(
                                             notification =>
@@ -639,8 +634,6 @@ const TeamMemberTask = React.memo(
 
                                         <TeamMemberTaskIconsInfo />
                                       </div>
-
-                                      {/* Review Button */}
                                       <div
                                         className={styles['team-member-task-review-button']}
                                         style={
@@ -798,7 +791,6 @@ const TeamMemberTask = React.memo(
             </Table>
           </div>
         </td>
-        {/* Task Change Log Modal */}
         {selectedTaskForChangeLog && (
           <TaskChangeLogModal
             isOpen={showChangeLogModal}
