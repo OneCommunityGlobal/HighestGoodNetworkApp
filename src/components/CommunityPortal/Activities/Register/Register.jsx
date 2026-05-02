@@ -181,14 +181,29 @@ function Register() {
     const eventDateTime = new Date(activity.startTime);
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const eventDate = new Date(
-      new Intl.DateTimeFormat('en-US', { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit' }).format(eventDateTime),
+      new Intl.DateTimeFormat('en-US', {
+        timeZone: tz,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      }).format(eventDateTime),
     );
     setActivityDate(eventDate.toLocaleDateString());
     setActivityStartTime(
-      new Intl.DateTimeFormat('en-US', { hour: '2-digit', minute: '2-digit', hour12: true, timeZone: tz }).format(eventDateTime),
+      new Intl.DateTimeFormat('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+        timeZone: tz,
+      }).format(eventDateTime),
     );
     setActivityEndTime(
-      new Intl.DateTimeFormat('en-US', { hour: '2-digit', minute: '2-digit', hour12: true, timeZone: tz }).format(new Date(activity.endTime)),
+      new Intl.DateTimeFormat('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+        timeZone: tz,
+      }).format(new Date(activity.endTime)),
     );
   }, [activity]);
 
@@ -236,7 +251,12 @@ function Register() {
 
   // User resolution helpers
   const resolveUserId = () =>
-    authUser?.userid || authUser?._id || userProfile?._id || tokenPayload?.userId || tokenPayload?._id || null;
+    authUser?.userid ||
+    authUser?._id ||
+    userProfile?._id ||
+    tokenPayload?.userId ||
+    tokenPayload?._id ||
+    null;
 
   const resolveNameFromToken = () => {
     if (!tokenPayload) return null;
@@ -254,16 +274,26 @@ function Register() {
 
   const resolveUserName = () => {
     const firstName =
-      userProfile?.firstName || authUser?.firstName || tokenPayload?.firstName || tokenPayload?.firstname;
+      userProfile?.firstName ||
+      authUser?.firstName ||
+      tokenPayload?.firstName ||
+      tokenPayload?.firstname;
     const lastName =
-      userProfile?.lastName || authUser?.lastName || tokenPayload?.lastName || tokenPayload?.lastname;
+      userProfile?.lastName ||
+      authUser?.lastName ||
+      tokenPayload?.lastName ||
+      tokenPayload?.lastname;
     if (firstName && lastName) return `${firstName} ${lastName}`.trim();
     if (firstName) return firstName.trim();
     return resolveNameFromToken() || 'Participant';
   };
 
   const resolveJobTitle = () =>
-    userProfile?.jobTitle || tokenPayload?.jobTitle || tokenPayload?.title || tokenPayload?.position || 'Participant';
+    userProfile?.jobTitle ||
+    tokenPayload?.jobTitle ||
+    tokenPayload?.title ||
+    tokenPayload?.position ||
+    'Participant';
 
   const isAlreadyRegistered = useMemo(() => {
     if (!registrants.length) return false;
@@ -272,7 +302,7 @@ function Register() {
     return registrants.some(reg =>
       userId ? reg.userId === userId : reg.name?.toLowerCase() === name,
     );
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [registrants, authUser, userProfile, tokenPayload]);
 
   const handleRegister = async () => {
@@ -294,10 +324,18 @@ function Register() {
       const jobTitle = resolveJobTitle();
       setRegistrants(prev => [
         ...prev,
-        { userId: userId || `guest-${Date.now()}`, name: displayName, jobTitle, registeredAt: new Date().toISOString() },
+        {
+          userId: userId || `guest-${Date.now()}`,
+          name: displayName,
+          jobTitle,
+          registeredAt: new Date().toISOString(),
+        },
       ]);
       toast.success('Registration successful! See you at the event.');
-      setFeedbackMessage({ type: 'success', text: 'Registration successful! See you at the event.' });
+      setFeedbackMessage({
+        type: 'success',
+        text: 'Registration successful! See you at the event.',
+      });
     } catch {
       toast.error('Registration failed. Please try again.');
       setFeedbackMessage({ type: 'error', text: 'Registration failed. Please try again.' });
@@ -310,7 +348,11 @@ function Register() {
     try {
       const title = activity.title || activity.name;
       if (navigator.share) {
-        await navigator.share({ title, text: `I'm available for ${title}. Join me!`, url: window.location.href });
+        await navigator.share({
+          title,
+          text: `I'm available for ${title}. Join me!`,
+          url: window.location.href,
+        });
       } else {
         toast.info('Sharing is not supported on this device.');
       }
@@ -324,8 +366,14 @@ function Register() {
       <div className={`${styles['main-container']} ${darkMode ? styles['bg-oxford-blue'] : ''}`}>
         <div className={`${styles['register-container']} ${darkMode ? styles['dark-mode'] : ''}`}>
           <div className={styles['loading-container']}>
-            <div className={`${styles['loading-spinner']} ${darkMode ? styles['loading-spinner-dark'] : ''}`} />
-            <p className={`${styles['loading-text']} ${darkMode ? styles['loading-text-dark'] : ''}`}>
+            <div
+              className={`${styles['loading-spinner']} ${
+                darkMode ? styles['loading-spinner-dark'] : ''
+              }`}
+            />
+            <p
+              className={`${styles['loading-text']} ${darkMode ? styles['loading-text-dark'] : ''}`}
+            >
               Loading activity details...
             </p>
           </div>
@@ -402,7 +450,8 @@ function Register() {
                 <strong>Date:</strong> {displayDate}
               </p>
               <p>
-                <strong>Time:</strong> {displayStartTime}{displayEndTime}
+                <strong>Time:</strong> {displayStartTime}
+                {displayEndTime}
               </p>
               <p>
                 <strong>Organizer:</strong> {activity.organizer || 'Not Specified'}
@@ -422,7 +471,9 @@ function Register() {
                         <span
                           key={key}
                           className={
-                            starIndex < activity.rating ? styles['filled-star'] : styles['empty-star']
+                            starIndex < activity.rating
+                              ? styles['filled-star']
+                              : styles['empty-star']
                           }
                         >
                           {starIndex < activity.rating ? '★' : '☆'}
@@ -447,7 +498,8 @@ function Register() {
           </div>
           {registrants.length > 0 && (
             <div className={styles['registrants-summary']}>
-              <strong>{registrants.length}</strong> participant{registrants.length !== 1 ? 's' : ''} registered
+              <strong>{registrants.length}</strong> participant{registrants.length !== 1 ? 's' : ''}{' '}
+              registered
             </div>
           )}
         </div>

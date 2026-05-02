@@ -157,8 +157,14 @@ function DescriptionSection({ activity, registrants = [] }) {
 
             if (isFaqTab) {
               const lines = label.split('\n');
-              const question = lines.find(l => l.startsWith('Q:'))?.replace('Q:', '').trim();
-              const answer = lines.find(l => l.startsWith('A:'))?.replace('A:', '').trim();
+              const question = lines
+                .find(l => l.startsWith('Q:'))
+                ?.replace('Q:', '')
+                .trim();
+              const answer = lines
+                .find(l => l.startsWith('A:'))
+                ?.replace('A:', '')
+                .trim();
               return (
                 <div
                   key={`faq-${index}`}
