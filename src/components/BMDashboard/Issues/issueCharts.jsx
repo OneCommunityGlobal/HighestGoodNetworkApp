@@ -194,15 +194,48 @@ function IssueChart() {
     return { labels, datasets };
   }, [issues, filters, uniqueYears, yearColorMap, darkMode]);
 
-  useEffect(() => {
-    if (!issues || Object.keys(issues).length === 0) return;
-    const issueCounts = Object.entries(issues).map(([type, data]) => ({
-      type: type ?? 'null',
-      total: Object.values(data || {}).reduce((sum, value) => sum + (Number(value) || 0), 0),
-    }));
-    // eslint-disable-next-line no-console
-    console.log('Issue type totals:', issueCounts);
-  }, [issues]);
+  const chartAnalysis = useMemo(() => {
+    const labels = chartData?.labels ?? [];
+    const datasets = chartData?.datasets ?? [];
+
+    const totalByYear = {};
+    datasets.forEach(ds => {
+      const year = ds.label;
+      const total = (ds.data || []).reduce((sum, v) => sum + (Number(v) || 0), 0);
+      totalByYear[year] = total;
+    });
+
+    const totalsByIssueType = labels.map((_, idx) =>
+      datasets.reduce((sum, ds) => sum + (Number(ds.data?.[idx]) || 0), 0),
+    );
+
+    const topIssueTypeIndex =
+      totalsByIssueType.length > 0
+        ? totalsByIssueType.reduce(
+            (bestIdx, val, idx, arr) => (val > arr[bestIdx] ? idx : bestIdx),
+            0,
+          )
+        : -1;
+
+    let peak = { value: -Infinity, year: null, issueType: null };
+    datasets.forEach(ds => {
+      (ds.data || []).forEach((v, idx) => {
+        const value = Number(v) || 0;
+        if (value > peak.value) {
+          peak = { value, year: ds.label, issueType: labels[idx] ?? null };
+        }
+      });
+    });
+
+    let insightText = '';
+    if (peak.value > 0 && peak.year && peak.issueType) {
+      insightText = `${peak.issueType} issues peak in ${peak.year} (${peak.value}).`;
+    } else {
+      insightText = `No issues found for the selected filters.`;
+    }
+
+    return { totalByYear, topIssueTypeIndex, insightText };
+  }, [chartData]);
 
   const xAxisBackgroundPlugin = darkMode => ({
     id: 'xAxisBackground',
@@ -250,6 +283,13 @@ function IssueChart() {
         legend: {
           display: true,
           position: 'top',
+          onClick: (e, legendItem, legend) => {
+            const index = legendItem.datasetIndex;
+            const chart = legend.chart;
+            const visible = chart.isDatasetVisible(index);
+            chart.setDatasetVisibility(index, !visible);
+            chart.update();
+          },
           labels: {
             font: { size: 13 },
             usePointStyle: true,
@@ -264,42 +304,22 @@ function IssueChart() {
         },
         tooltip: {
           enabled: true,
-          mode: 'index',
-          intersect: false,
+          mode: 'nearest',
+          intersect: true,
           backgroundColor: darkMode ? '#232323' : '#fff',
           titleColor: darkMode ? '#fff' : '#232323',
           bodyColor: darkMode ? '#fff' : '#232323',
           callbacks: {
             title: items => {
-              const index = items?.[0]?.dataIndex ?? 0;
-              return chartData?.labels?.[index] ?? '';
+              return items?.[0]?.label ?? '';
             },
             label: ctx => {
-              const base = chartData?.labels?.[ctx.dataIndex] ?? ctx.label;
-              const year = parseInt(ctx.dataset.label, 10);
-              const getBase = name => stripNumericSuffix(name);
-              const selectedTypes = filters.issueTypes.length
-                ? filters.issueTypes
-                : Object.keys(issues || {});
-              const selectedTypeSet = new Set(selectedTypes.map(t => String(t).toLowerCase()));
-              const groupTypes = Object.keys(issues || {}).filter(
-                t => getBase(t) === base && selectedTypeSet.has(String(t).toLowerCase()),
-              );
-              const breakdown = groupTypes
-                .map(type => ({
-                  type,
-                  value: issues?.[type]?.[year] || 0,
-                }))
-                .filter(item => item.value > 0);
+              const year = ctx.dataset.label;
+              const value = Number(ctx.raw) || 0;
+              const total = chartAnalysis.totalByYear?.[year] ?? 0;
+              const pct = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
 
-              if (breakdown.length === 0) {
-                return `${ctx.dataset.label}: ${ctx.formattedValue}`;
-              }
-
-              return [
-                `${ctx.dataset.label}: ${ctx.formattedValue}`,
-                ...breakdown.map(item => `  ${item.type}: ${item.value}`),
-              ];
+              return `${year}: ${value} (${pct}%)`;
             },
           },
         },
@@ -307,6 +327,27 @@ function IssueChart() {
           display: false,
         },
         xAxisBackground: true,
+      },
+      datasets: {
+        bar: {
+          backgroundColor: ctx => {
+            const idx = ctx.dataIndex;
+            const ds = ctx.dataset;
+            const base = ds.backgroundColor;
+
+            if (chartAnalysis.topIssueTypeIndex < 0) return base;
+
+            const isTop = idx === chartAnalysis.topIssueTypeIndex;
+
+            if (typeof base === 'string' && base.startsWith('hsl(')) {
+              const alpha = isTop ? 0.9 : 0.55;
+              return base.replace('hsl(', 'hsla(').replace(')', `, ${alpha})`);
+            }
+
+            return base;
+          },
+          borderWidth: ctx => (ctx.dataIndex === chartAnalysis.topIssueTypeIndex ? 2 : 1.5),
+        },
       },
       scales: {
         x: {
@@ -323,7 +364,7 @@ function IssueChart() {
           ticks: {
             color: darkMode ? '#e8f0fe' : '#1a1a1a',
             stepSize: 1,
-            padding: 8,
+            padding: 10,
             align: 'center',
             autoSkip: false,
             maxRotation: isMobile ? 90 : 0,
@@ -333,7 +374,7 @@ function IssueChart() {
               const label = chartData?.labels?.[index] ?? ticks?.[index]?.label ?? String(value);
               if (isMobile) return label;
 
-              const maxCharsPerLine = 12;
+              const maxCharsPerLine = 10;
               if (label.length <= maxCharsPerLine) return label;
 
               const words = label.split(' ');
@@ -371,7 +412,7 @@ function IssueChart() {
         },
       },
     }),
-    [darkMode, isMobile, chartData],
+    [darkMode, isMobile, chartAnalysis, chartData],
   );
 
   const chartPlugins = useMemo(() => [xAxisBackgroundPlugin(darkMode)], [
@@ -617,7 +658,13 @@ function IssueChart() {
             <div className={styles.activeFilterSummary}>{activeFilterSummary}</div>
             <div
               className={`${styles.chartWrapper} ${darkMode ? styles.chartWrapperDark : ''}`}
-              style={{ minHeight: 420, paddingBottom: 12 }}
+              style={{
+                height: '520px',
+                maxHeight: '520px',
+                position: 'relative',
+                overflow: 'hidden',
+                paddingBottom: 50,
+              }}
             >
               <Bar
                 data={chartData}
@@ -625,6 +672,16 @@ function IssueChart() {
                 plugins={chartPlugins}
                 aria-labelledby="chart-title"
               />
+              <p
+                style={{
+                  marginTop: 10,
+                  fontSize: 13,
+                  opacity: 0.85,
+                  textAlign: 'center',
+                }}
+              >
+                {chartAnalysis.insightText}
+              </p>
             </div>
           </div>
         )}

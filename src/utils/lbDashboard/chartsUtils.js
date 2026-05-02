@@ -38,7 +38,7 @@ export function createChartOptions(metric, darkMode) {
       },
     },
     layout: {
-      padding: 20,
+      padding: { top: 36, right: 20, bottom: 20, left: 20 },
     },
     scales: {
       x: {
@@ -59,6 +59,8 @@ export function createChartOptions(metric, darkMode) {
           color: darkMode ? '#fff' : '#222',
         },
         beginAtZero: true,
+        // Room above the max point so datalabels (align: top) are not clipped at the chart edge
+        grace: '12%',
         ticks: { font: { size: 12 }, color: darkMode ? '#fff' : '#222' },
       },
     },
