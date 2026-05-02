@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .btn--dark-sea-green {
   background-color: #c9d6c6 !important;
   border-color: #285739 !important;
@@ -51,12 +52,15 @@
   bottom: 2px;
   z-index: 10;
 }
+
 .bagde-box-shadow {
   box-shadow: 2px 2px 4px 1px lightgray;
 }
+
 .badge-box-shadow-dark {
   box-shadow: 2px 2px 4px 1px black;
 }
+
 /* This is just only for displaying 'Personal Max hours' badge hours position */
 .badge_count_personalmax {
   padding-top: 4px;
@@ -161,7 +165,7 @@
   margin: 0 auto;
 }
 
-@media screen and (max-width: 544px) {
+@media screen and (width <= 544px) {
   .responsive-font-size {
     font-size: 0.75rem !important;
   }

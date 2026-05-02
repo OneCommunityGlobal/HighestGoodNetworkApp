@@ -50,24 +50,6 @@ export default function SearchProjectByPerson({
           value={inputValue}
           onChange={handleInputChange} // Trigger input change
         />
-        <div>
-          {/* <button type="submit" className="archived-button" onClick={handleFetchArchivedProjects}>
-            {showArchived ? 'Hide Archived' : 'Show Archived'}
-          </button> */}
-          <button
-            type="button"
-            onClick={handleFetchArchivedProjects}
-            className={`btn ${
-              showArchived
-                ? 'btn-warning'
-                : darkMode
-                ? 'btn-outline-light'
-                : 'btn-outline-secondary'
-            }`}
-          >
-            {showArchived ? 'Hide Archived' : 'Show Archived'}
-          </button>
-        </div>
       </form>
 
       {showSuggestions && suggestions?.length > 0 && (

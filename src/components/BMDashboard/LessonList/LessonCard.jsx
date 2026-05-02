@@ -150,7 +150,7 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
                   </>
                 ) : (
                   <span>
-                    {parse(
+                    {ReactHtmlParser(
                       (lesson?.content || '').length > maxSummaryLength
                         ? `${lesson.content.slice(0, maxSummaryLength)}...`
                         : lesson.content || '',
@@ -235,10 +235,18 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
   return (
     <div>
       <div style={{ textAlign: 'right' }}>
-        <button type="submit" onClick={() => expandAll()} className={`${styles.expandLessons}`}>
+        <button
+          type="submit"
+          onClick={() => expandAll()}
+          className={`${styles.expandLessons} ${darkMode ? styles.darkExpandLessons : ''}`}
+        >
           Expand All
         </button>
-        <button type="submit" onClick={() => collapseAll()} className={`${styles.expandLessons}`}>
+        <button
+          type="submit"
+          onClick={() => collapseAll()}
+          className={`${styles.expandLessons} ${darkMode ? styles.darkExpandLessons : ''}`}
+        >
           Collapse All
         </button>
       </div>
