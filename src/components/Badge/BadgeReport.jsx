@@ -1,36 +1,35 @@
 /* eslint-disable */
-import { useState, useEffect } from 'react';
-import {
-  Table,
-  Button,
-  ButtonGroup,
-  Input,
-  DropdownToggle,
-  Modal,
-  ModalBody,
-  ModalFooter,
-  FormGroup,
-  UncontrolledDropdown,
-  DropdownMenu,
-  DropdownItem,
-  UncontrolledTooltip,
-} from 'reactstrap';
-import pdfMake from 'pdfmake/build/pdfmake';
-import 'pdfmake/build/vfs_fonts';
 import htmlToPdfmake from 'html-to-pdfmake';
 import moment from 'moment';
 import 'moment-timezone';
+import pdfMake from 'pdfmake/build/pdfmake';
+import 'pdfmake/build/vfs_fonts';
+import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { toast } from 'react-toastify';
-import { ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
+import {
+  Button,
+  ButtonGroup,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+  FormGroup,
+  Input,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  Table,
+  UncontrolledDropdown,
+  UncontrolledTooltip,
+} from 'reactstrap';
 import { boxStyle, boxStyleDark } from '~/styles';
-import { formatDate } from '~/utils/formatDate';
-import hasPermission from '../../utils/permissions';
-import { changeBadgesByUserID } from '../../actions/badgeManagement';
-import './BadgeReport.module.css';
-import { getUserProfile } from '../../actions/userProfile';
 import { PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from '~/utils/constants';
+import { formatDate } from '~/utils/formatDate';
+import { changeBadgesByUserID } from '../../actions/badgeManagement';
+import { getUserProfile } from '../../actions/userProfile';
+import hasPermission from '../../utils/permissions';
 import BadgeImage from './BadgeImage';
+import './BadgeReport.module.css';
 
 function BadgeReport(props) {
   const [sortBadges, setSortBadges] = useState(JSON.parse(JSON.stringify(props.badges)) || []);
@@ -428,9 +427,16 @@ function BadgeReport(props) {
                           >
                             Dates
                           </DropdownToggle>
-                          <DropdownMenu className="badge_dropdown">
+                          <DropdownMenu className={`badge_dropdown ${darkMode ? 'bg-dark' : ''}`}>
                             {value.earnedDate.map((date, i) => {
-                              return <DropdownItem key={i}>{date}</DropdownItem>;
+                              return (
+                                <DropdownItem
+                                  key={i}
+                                  className={darkMode ? 'text-light bg-dark' : ''}
+                                >
+                                  {date}
+                                </DropdownItem>
+                              );
                             })}
                           </DropdownMenu>
                         </UncontrolledDropdown>

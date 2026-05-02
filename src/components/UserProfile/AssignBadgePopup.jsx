@@ -1,17 +1,17 @@
-import { useState, useEffect, useMemo } from 'react';
-import { Table, Button, UncontrolledTooltip , Spinner } from 'reactstrap';
-import { connect } from 'react-redux';
 import axios from 'axios';
-import AssignTableRow from '../Badge/AssignTableRow';
+import { useEffect, useMemo, useState } from 'react';
+import { connect } from 'react-redux';
+import { toast } from 'react-toastify';
+import { Button, Spinner, Table, UncontrolledTooltip } from 'reactstrap';
+import { PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from '~/utils/constants';
+import { ENDPOINTS } from '~/utils/URL';
 import {
+  addSelectBadge,
   assignBadgesByUserID,
   clearNameAndSelected,
-  addSelectBadge,
 } from '../../actions/badgeManagement';
-import { ENDPOINTS } from '~/utils/URL';
 import { boxStyle, boxStyleDark } from '../../styles';
-import { toast } from 'react-toastify';
-import { PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from '~/utils/constants';
+import AssignTableRow from '../Badge/AssignTableRow';
 
 
 function AssignBadgePopup(props) {
@@ -134,7 +134,7 @@ function AssignBadgePopup(props) {
             </thead>
             <tbody>
               {filteredBadges.map((value, index) => (
-                <AssignTableRow badge={value} index={index} key={index} existBadges={existBadges} />
+                <AssignTableRow badge={value} index={index} key={index} propExistBadges={existBadges} />
               ))}
             </tbody>
           </Table>
