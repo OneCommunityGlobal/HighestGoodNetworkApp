@@ -24,6 +24,7 @@ function Login() {
   const [backendError, setBackendError] = useState('');
   const [hasAccess, setHasAccess] = useState(false);
   const prevLocation = location?.state?.from || { pathname: '/bmdashboard' };
+  const [capsLockOn, setCapsLockOn] = useState(false);
 
   useEffect(() => {
     if (hasAccess || auth.user.access?.canAccessBMPortal) {
