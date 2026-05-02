@@ -6,7 +6,7 @@
   padding: 2rem 3rem;
   max-width: 500px;
   margin: 2rem auto;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
 }
 
 .formTitle {
@@ -60,10 +60,10 @@
 .formGroup textarea:focus {
   border-color: #2563eb;
   outline: none;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+  box-shadow: 0 0 0 3px rgb(37 99 235 / 20%);
 }
 
-input[type="date"] {
+input[type='date'] {
   font-family: inherit;
 }
 
@@ -105,7 +105,7 @@ input[type="date"] {
   color: #2563eb;
 }
 
-.uploadBox input[type="file"] {
+.uploadBox input[type='file'] {
   display: none;
 }
 
@@ -144,7 +144,7 @@ input[type="date"] {
 
 .submitButton {
   background-color: #1e3a8a;
-  color: #ffffff;
+  color: #fff;
   border: none;
   padding: 0.6rem 1.5rem;
   border-radius: 6px;
@@ -173,7 +173,13 @@ input[type="date"] {
   text-align: center;
 }
 
-@media (max-width: 600px) {
+.successDark {
+  background-color: #064e3b;
+  color: #a7f3d0;
+  border-color: #34d399;
+}
+
+@media (width <= 600px) {
   .requestResourceContainer {
     padding: 1.5rem;
     margin: 1rem;
@@ -188,37 +194,4 @@ input[type="date"] {
   .submitButton {
     width: 100%;
   }
-}
-
-[data-theme="dark"] .requestResourceContainer {
-  background-color: #1f2937;
-  color: #f9fafb;
-}
-
-[data-theme="dark"] .requestResourceContainer input,
-[data-theme="dark"] .requestResourceContainer textarea {
-  background-color: #374151;
-  color: #f9fafb;
-  border-color: #4b5563;
-}
-
-[data-theme="dark"] .requestResourceContainer .uploadBox {
-  background-color: #374151;
-  border-color: #4b5563;
-  color: #d1d5db;
-}
-
-[data-theme="dark"] .requestResourceContainer .uploadBox:hover {
-  background-color: #1e293b;
-  border-color: #60a5fa;
-  color: #93c5fd;
-}
-
-[data-theme="dark"] .requestResourceContainer .error {
-  color: #f87171;
-}
-
-[data-theme="dark"] .requestResourceContainer .success {
-  background-color: #064e3b;
-  color: #a7f3d0;
 }
