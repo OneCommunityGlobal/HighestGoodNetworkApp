@@ -103,20 +103,20 @@ const AnnouncementsBoard = ({
     return (
       <div style={{ backgroundColor: 'transparent' }}>
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>Loading announcements...</div>
+          <div style={{ textAlign: 'center', padding: '40px', color: darkMode ? '#94a3b8' : '#666' }}>Loading announcements...</div>
         ) : filteredAnnouncements.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>
+          <div style={{ textAlign: 'center', padding: '40px', color: darkMode ? '#94a3b8' : '#666' }}>
             <p>No announcements found</p>
           </div>
         ) : (
           filteredAnnouncements.map((announcement) => (
             <div key={announcement.id} style={{
-              backgroundColor: 'white',
-              border: '1px solid #e0e0e0',
+              backgroundColor: darkMode ? '#1b2a41' : 'white',
+              border: `1px solid ${darkMode ? '#3A506B' : '#e0e0e0'}`,
               borderRadius: '8px',
               padding: '20px',
               marginBottom: '15px',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+              boxShadow: darkMode ? '0 1px 3px rgba(0,0,0,0.4)' : '0 1px 3px rgba(0,0,0,0.1)'
             }}>
               {/* Header */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
@@ -124,7 +124,7 @@ const AnnouncementsBoard = ({
                   margin: 0, 
                   fontWeight: 'bold', 
                   fontSize: '16px',
-                  color: '#333',
+                  color: darkMode ? '#e9ecef' : '#333',
                   flex: 1
                 }}>
                   {announcement.title}
@@ -136,8 +136,9 @@ const AnnouncementsBoard = ({
                     onClick={() => handleEditClick(announcement)}
                     style={{
                       padding: '4px 8px',
-                      border: '1px solid #ccc',
-                      backgroundColor: '#f8f9fa'
+                      border: `1px solid ${darkMode ? '#3A506B' : '#ccc'}`,
+                      backgroundColor: darkMode ? '#243B5A' : '#f8f9fa',
+                      color: darkMode ? '#e2e8f0' : '#333'
                     }}
                   >
                     <FaEdit size={12} />
@@ -152,10 +153,10 @@ const AnnouncementsBoard = ({
                 gap: '15px',
                 marginBottom: '10px',
                 fontSize: '13px',
-                color: '#666'
+                color: darkMode ? '#94a3b8' : '#666'
               }}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  By <strong style={{ color: '#333' }}>{announcement.author}</strong>
+                  By <strong style={{ color: darkMode ? '#e2e8f0' : '#333' }}>{announcement.author}</strong>
                 </span>
                 <span>|</span>
                 <span>{announcement.course || 'General'}</span>
@@ -171,7 +172,7 @@ const AnnouncementsBoard = ({
                       padding: '2px 6px'
                     }}
                   >
-                    {announcement.audience === 'all' ? 'Students' : announcement.audience}
+                    {announcement.audience === 'all' ? 'Everyone' : announcement.audience}
                   </Badge>
                 </span>
               </div>
@@ -180,7 +181,7 @@ const AnnouncementsBoard = ({
               <p style={{ 
                 margin: 0, 
                 lineHeight: '1.5',
-                color: '#555',
+                color: darkMode ? '#94a3b8' : '#555',
                 fontSize: '14px'
               }}>
                 {announcement.body.length > 200

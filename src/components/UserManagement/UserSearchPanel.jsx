@@ -7,6 +7,7 @@ import { Tooltip, OverlayTrigger } from 'react-bootstrap';
 import { boxStyle, boxStyleDark } from '../../styles';
 import hasPermission from '../../utils/permissions';
 import { SEARCH, SHOW, CREATE_NEW_USER, SEND_SETUP_LINK } from '../../languages/en/ui';
+import styles from './usermanagement.module.css';
 
 const setupHistoryTooltip = <Tooltip id="tooltip">Setup History Modal</Tooltip>;
 
@@ -22,14 +23,15 @@ function UserSearchPanel({
   onNewUserClick,
   searchText,
   onSearch,
-  onActiveFiter,
+  onActiveFilter,
   darkMode,
+  selectText,
 }) {
   const canCreateUsers = hasPermission('postUserProfile');
   const [tooltipCreateNewUserOpen, setTooltipCreateNewUserOpen] = useState(false);
   const toggleCreateNewUserTooltip = () => setTooltipCreateNewUserOpen(!tooltipCreateNewUserOpen);
   return (
-    <div className="input-group mt-3" id="new_usermanagement">
+    <div className={`input-group mt-3 ${styles.new_user_management}`}>
       <button
         type="button"
         disabled={!canCreateUsers}
@@ -76,33 +78,35 @@ function UserSearchPanel({
       >
         {CREATE_NEW_USER}
       </button>
-      
-      <div className='d-flex flex-fill mb-2'>
-        <div className="input-group-prepend">
-          <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>{SEARCH}</span>
-        </div>
-        <input
-          // autoFocus
-          type="text"
-          className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
-          aria-label="Search"
-          placeholder="Search Text"
-          id="user-profiles-wild-card-search"
-          value={searchText}
-          onChange={e => {
-            onSearch(e.target.value);
-          }}
-          style={{marginRight: "5px"}}
-        />
+      <div className="input-group-prepend">
+        <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+          {SEARCH}
+        </span>
       </div>
-      <div className="input-group-prepend mb-2">
-        <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>{SHOW}</span>
+      <input
+        // autoFocus
+        type="text"
+        className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
+        aria-label="Search"
+        placeholder="Search Text"
+        id="user-profiles-wild-card-search"
+        value={searchText}
+        onChange={e => {
+          onSearch(e.target.value);
+        }}
+        style={{ marginRight: '5px' }}
+      />
+      <div className="input-group-prepend">
+        <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+          {SHOW}
+        </span>
         <select
           id="active-filter-dropdown"
-          style={{marginBottom: "0px"}}
+          style={{ marginBottom: '0px' }}
           onChange={e => {
-            onActiveFiter(e.target.value);
+            onActiveFilter(e.target.value);
           }}
+          value={selectText}
           className={darkMode ? 'bg-darkmode-liblack text-light' : ''}
         >
           <option value="all">All</option>

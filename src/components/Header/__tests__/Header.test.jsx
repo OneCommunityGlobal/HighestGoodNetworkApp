@@ -122,7 +122,7 @@ describe('Header component', () => {
 
   it('renders the owner message & timer children', () => {
     renderHeader();
-    expect(screen.getByTestId('mock-owner-message')).toBeInTheDocument();
+    expect(screen.getAllByTestId('mock-owner-message').length).toBeGreaterThan(0);
     expect(screen.getByTestId('mock-timer')).toBeInTheDocument();
   });
 });

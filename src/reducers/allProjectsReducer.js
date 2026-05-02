@@ -46,6 +46,7 @@ export const allProjectsReducer = (allProjects = allProjectsInital, action) => {
 
     case types.UPDATE_PROJECT: {
       if (status !== 200) return updateState({ status, error });
+
       const { updatedProject } = action;
       const index = allProjects.projects.findIndex(project => project._id === updatedProject._id);
 
@@ -56,9 +57,9 @@ export const allProjectsReducer = (allProjects = allProjectsInital, action) => {
           ...allProjects.projects.slice(index + 1),
         ];
         return updateState({ projects: updatedProjects, status });
+      } else {
+        return updateState({ status: 404, error: 'Project not found.' });
       }
-
-      return updateState({ status: 404, error: 'Project not found.' });
     }
 
     case types.DELETE_PROJECT: {

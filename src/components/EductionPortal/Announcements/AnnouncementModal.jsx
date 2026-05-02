@@ -152,15 +152,19 @@ const AnnouncementModal = ({
     
     try {
       const announcementData = {
+        // Preserve all original fields when editing so nothing is lost (createdAt, course, grade, isNew, etc.)
+        ...(isEditing ? announcement : {}),
         ...formData,
         title: formData.title.trim(),
         body: formData.body.trim(),
-        author: userInfo?.name || 'Unknown',
-        ...(isEditing && { id: announcement.id }),
-        ...(isEditing && { updatedAt: new Date().toISOString() }),
-        ...(!isEditing && { 
+        ...(isEditing ? {
+          id: announcement.id,
+          author: announcement.author,
+          updatedAt: new Date().toISOString(),
+        } : {
+          author: userInfo?.name || 'Unknown',
           createdAt: new Date().toISOString(),
-          isNew: true 
+          isNew: true,
         })
       };
 

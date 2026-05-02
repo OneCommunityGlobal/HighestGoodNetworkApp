@@ -10,7 +10,7 @@ vi.mock('react-redux', async importOriginal => {
 });
 
 import * as reactRedux from 'react-redux';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import AssignTableRow from '~/components/Badge/AssignTableRow';
 import { Provider } from 'react-redux';
 import { configureStore } from 'redux-mock-store';
@@ -41,6 +41,7 @@ describe('AssignTableRow', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    // By default, no badges selected -> empty array
     reactRedux.useSelector.mockReturnValue([]);
   });
 
@@ -60,22 +61,24 @@ describe('AssignTableRow', () => {
 
     fireEvent.click(cb);
     expect(dispatch).toHaveBeenCalledWith(
-      expect.objectContaining({ type: 'ADD_SELECT_BADGE', badgeId: 'assign-badge-1' }),
+      expect.objectContaining({ type: 'ADD_SELECT_BADGE', badgeId: '1' }), // ✅ raw _id
     );
   });
 
-  it('dispatches REMOVE_SELECT_BADGE when unchecking a checked box', () => {
+  it('dispatches REMOVE_SELECT_BADGE when unchecking a checked box', async () => {
     const dispatch = vi.fn();
     reactRedux.useDispatch.mockReturnValue(dispatch);
-    reactRedux.useSelector.mockReturnValue(['assign-badge-1']);
+
+    // ✅ component now expects selectedBadges to contain the raw id
+    reactRedux.useSelector.mockReturnValue(['1']);
 
     renderComponent({ badge: defaultBadge, index: 0 });
     const cb = screen.getByRole('checkbox');
-    expect(cb).toBeChecked();
+    await waitFor(() => expect(cb).toBeChecked());
 
     fireEvent.click(cb);
     expect(dispatch).toHaveBeenCalledWith(
-      expect.objectContaining({ type: 'REMOVE_SELECT_BADGE', badgeId: 'assign-badge-1' }),
+      expect.objectContaining({ type: 'REMOVE_SELECT_BADGE', badgeId: '1' }), // ✅ raw _id
     );
   });
 
@@ -86,8 +89,10 @@ describe('AssignTableRow', () => {
     expect(screen.getByRole('checkbox')).toBeInTheDocument();
   });
 
-  it('gracefully handles undefined selectedBadges', () => {
-    reactRedux.useSelector.mockReturnValue(undefined);
+  // Updated: component now expects selectedBadges to be an array,
+  // so "gracefully handles undefined" means "still renders when store gives an empty array".
+  it('gracefully handles an empty selectedBadges array', () => {
+    reactRedux.useSelector.mockReturnValue([]); // ✅ not undefined anymore
     renderComponent({ badge: defaultBadge, index: 0 });
     expect(screen.getByText('Badge Name')).toBeInTheDocument();
     expect(screen.getByRole('checkbox')).toBeInTheDocument();

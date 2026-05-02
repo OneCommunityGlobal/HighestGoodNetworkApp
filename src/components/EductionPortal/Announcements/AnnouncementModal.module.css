@@ -12,8 +12,8 @@
 }
 
 .announcementModal:global(.dark-mode) :global(.modal-content) {
-  background-color: #2d3748;
-  color: #e9ecef;
+  background-color: #1b2a41;
+  color: #e2e8f0;
 }
 
 /* Modal Header */
@@ -47,7 +47,7 @@
 }
 
 .announcementModal:global(.dark-mode) .modalBody {
-  background-color: #2d3748;
+  background-color: #1b2a41;
 }
 
 /* Form Fields */
@@ -59,7 +59,7 @@
 }
 
 .announcementModal:global(.dark-mode) .fieldLabel {
-  color: #e9ecef;
+  color: #e2e8f0;
 }
 
 .required {
@@ -91,15 +91,15 @@
 
 .announcementModal:global(.dark-mode) .titleInput,
 .announcementModal:global(.dark-mode) .audienceSelect {
-  background-color: #4a5568;
-  border-color: #4a5568;
-  color: #e9ecef;
+  background-color: #243B5A;
+  border-color: #3A506B;
+  color: #e2e8f0;
 }
 
 .announcementModal:global(.dark-mode) .titleInput:focus,
 .announcementModal:global(.dark-mode) .audienceSelect:focus {
   border-color: #007bff;
-  background-color: #4a5568;
+  background-color: #243B5A;
 }
 
 /* Textarea */
@@ -127,14 +127,14 @@
 }
 
 .announcementModal:global(.dark-mode) .bodyTextarea {
-  background-color: #4a5568;
-  border-color: #4a5568;
-  color: #e9ecef;
+  background-color: #243B5A;
+  border-color: #3A506B;
+  color: #e2e8f0;
 }
 
 .announcementModal:global(.dark-mode) .bodyTextarea:focus {
   border-color: #007bff;
-  background-color: #4a5568;
+  background-color: #243B5A;
 }
 
 /* Character Count */
@@ -157,7 +157,7 @@
 }
 
 .announcementModal:global(.dark-mode) .previewSection {
-  border-top-color: #4a5568;
+  border-top-color: #3A506B;
 }
 
 .previewCard {
@@ -169,8 +169,8 @@
 }
 
 .announcementModal:global(.dark-mode) .previewCard {
-  background: #1a202c;
-  border-color: #4a5568;
+  background: #0d1b2a;
+  border-color: #3A506B;
 }
 
 .previewTitle {
@@ -182,7 +182,7 @@
 }
 
 .announcementModal:global(.dark-mode) .previewTitle {
-  color: #e9ecef;
+  color: #e2e8f0;
 }
 
 .previewBody {
@@ -193,7 +193,7 @@
 }
 
 .announcementModal:global(.dark-mode) .previewBody {
-  color: #cbd5e0;
+  color: #94a3b8;
 }
 
 .previewMeta {

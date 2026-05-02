@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import AnnouncementsBoard from './AnnouncementsBoard';
 import AnnouncementModal from './AnnouncementModal';
@@ -6,7 +6,50 @@ import AnnouncementModal from './AnnouncementModal';
 const AnnouncementsPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAnnouncement, setEditingAnnouncement] = useState(null);
-  const [announcements, setAnnouncements] = useState([]);
+  const [announcements, setAnnouncements] = useState(() => {
+    try {
+      const stored = localStorage.getItem('edu_announcements');
+      if (stored) return JSON.parse(stored);
+    } catch (e) { /* ignore parse errors */ }
+    return [
+      {
+        id: 1,
+        title: 'Welcome to Phase 4 Education Portal',
+        body: 'We are excited to launch the new education portal features. Students can now access enhanced learning resources and educators can better manage their content.',
+        author: 'Dr. Smith',
+        audience: 'all',
+        course: 'Mathematics',
+        grade: 'Grade 5 PM',
+        createdAt: new Date('2024-01-15T10:00:00Z').toISOString(),
+        updatedAt: new Date('2024-01-15T10:00:00Z').toISOString(),
+        isNew: true
+      },
+      {
+        id: 2,
+        title: 'New Assignment Guidelines',
+        body: 'Please review the updated assignment submission guidelines. All assignments must be submitted through the new portal interface.',
+        author: 'Prof. Johnson',
+        audience: 'students',
+        course: 'Computer Science',
+        grade: 'Grade 8 PM',
+        createdAt: new Date('2024-01-14T14:30:00Z').toISOString(),
+        updatedAt: new Date('2024-01-14T14:30:00Z').toISOString(),
+        isNew: false
+      },
+      {
+        id: 3,
+        title: 'Faculty Meeting Tomorrow',
+        body: 'Reminder: Monthly faculty meeting scheduled for tomorrow at 2 PM in the conference room.',
+        author: 'Admin Team',
+        audience: 'educators',
+        course: 'Administration',
+        grade: 'Grade 11 PM',
+        createdAt: new Date('2024-01-13T09:15:00Z').toISOString(),
+        updatedAt: new Date('2024-01-13T09:15:00Z').toISOString(),
+        isNew: false
+      }
+    ];
+  });
   const [selectedAudience, setSelectedAudience] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [courseFilter, setCourseFilter] = useState('');
@@ -44,48 +87,10 @@ const AnnouncementsPage = () => {
     cursor: 'pointer'
   });
 
-  // Initialize with mock data on component mount
-  useState(() => {
-    const mockAnnouncements = [
-      {
-        id: 1,
-        title: 'Welcome to Phase 4 Education Portal',
-        body: 'We are excited to launch the new education portal features. Students can now access enhanced learning resources and educators can better manage their content.',
-        author: 'Dr. Smith',
-        audience: 'all',
-        course: 'Mathematics',
-        grade: 'Grade 5 PM',
-        createdAt: new Date('2024-01-15T10:00:00Z'),
-        updatedAt: new Date('2024-01-15T10:00:00Z'),
-        isNew: true
-      },
-      {
-        id: 2,
-        title: 'New Assignment Guidelines',
-        body: 'Please review the updated assignment submission guidelines. All assignments must be submitted through the new portal interface.',
-        author: 'Prof. Johnson',
-        audience: 'students',
-        course: 'Computer Science',
-        grade: 'Grade 8 PM',
-        createdAt: new Date('2024-01-14T14:30:00Z'),
-        updatedAt: new Date('2024-01-14T14:30:00Z'),
-        isNew: false
-      },
-      {
-        id: 3,
-        title: 'Faculty Meeting Tomorrow',
-        body: 'Reminder: Monthly faculty meeting scheduled for tomorrow at 2 PM in the conference room.',
-        author: 'Admin Team',
-        audience: 'educators',
-        course: 'Administration',
-        grade: 'Grade 11 PM',
-        createdAt: new Date('2024-01-13T09:15:00Z'),
-        updatedAt: new Date('2024-01-13T09:15:00Z'),
-        isNew: false
-      }
-    ];
-    setAnnouncements(mockAnnouncements);
-  });
+  // Persist announcements to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('edu_announcements', JSON.stringify(announcements));
+  }, [announcements]);
 
   const handleCreateAnnouncement = () => {
     setEditingAnnouncement(null);
@@ -136,21 +141,21 @@ const AnnouncementsPage = () => {
     <div style={{ 
       display: 'flex', 
       minHeight: '100vh', 
-      backgroundColor: darkMode ? '#1a1a1a' : '#f8f9fa',
-      color: darkMode ? '#ffffff' : '#333333'
+      backgroundColor: darkMode ? '#0d1b2a' : '#f8f9fa',
+      color: darkMode ? '#e2e8f0' : '#333333'
     }}>
       {/* Left Sidebar - Filters */}
       <div style={{ 
         width: '250px', 
-        backgroundColor: darkMode ? '#2d2d2d' : 'white', 
-        borderRight: `1px solid ${darkMode ? '#444444' : '#e0e0e0'}`,
+        backgroundColor: darkMode ? '#1b2a41' : 'white', 
+        borderRight: `1px solid ${darkMode ? '#3A506B' : '#e0e0e0'}`,
         padding: '20px',
         boxShadow: darkMode ? '2px 0 4px rgba(0,0,0,0.3)' : '2px 0 4px rgba(0,0,0,0.1)'
       }}>
         <h5 style={{ 
           marginBottom: '20px', 
           fontWeight: 'bold',
-          color: darkMode ? '#ffffff' : '#333333'
+          color: darkMode ? '#e2e8f0' : '#333333'
         }}>Filters</h5>
         
         {/* Scope Filter */}
@@ -159,7 +164,7 @@ const AnnouncementsPage = () => {
             fontSize: '14px', 
             fontWeight: 'bold', 
             marginBottom: '10px',
-            color: darkMode ? '#ffffff' : '#333333'
+            color: darkMode ? '#e2e8f0' : '#333333'
           }}>Scope</h6>
           <div style={{ display: 'flex', gap: '8px' }}>
             <button style={getButtonStyle(true, '#007bff')}>All</button>
@@ -173,7 +178,7 @@ const AnnouncementsPage = () => {
             fontSize: '14px', 
             fontWeight: 'bold', 
             marginBottom: '10px',
-            color: darkMode ? '#ffffff' : '#333333'
+            color: darkMode ? '#e2e8f0' : '#333333'
           }}>Audience</h6>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <button 
@@ -197,7 +202,7 @@ const AnnouncementsPage = () => {
             fontSize: '14px', 
             fontWeight: 'bold', 
             marginBottom: '10px',
-            color: darkMode ? '#ffffff' : '#333333'
+            color: darkMode ? '#e2e8f0' : '#333333'
           }}>Courses / Classes</h6>
           <input 
             type="text" 
@@ -222,13 +227,13 @@ const AnnouncementsPage = () => {
             fontSize: '14px', 
             fontWeight: 'bold', 
             marginBottom: '10px',
-            color: darkMode ? '#ffffff' : '#333333'
+            color: darkMode ? '#e2e8f0' : '#333333'
           }}>Date</h6>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
               <label style={{ 
                 fontSize: '11px', 
-                color: darkMode ? '#cccccc' : '#666666' 
+                color: darkMode ? '#94a3b8' : '#666666' 
               }}>From</label>
               <input 
                 type="date" 
@@ -237,18 +242,19 @@ const AnnouncementsPage = () => {
                 style={{
                   width: '100%',
                   padding: '6px',
-                  border: `1px solid ${darkMode ? '#555555' : '#ccc'}`,
+                  border: `1px solid ${darkMode ? '#3A506B' : '#ccc'}`,
                   borderRadius: '4px',
                   fontSize: '12px',
-                  backgroundColor: darkMode ? '#3d3d3d' : 'white',
-                  color: darkMode ? '#ffffff' : '#333333'
+                  backgroundColor: darkMode ? '#243B5A' : 'white',
+                  color: darkMode ? '#e2e8f0' : '#333333',
+                  colorScheme: darkMode ? 'dark' : 'light'
                 }}
               />
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
               <label style={{ 
                 fontSize: '11px', 
-                color: darkMode ? '#cccccc' : '#666666' 
+                color: darkMode ? '#94a3b8' : '#666666' 
               }}>To</label>
               <input 
                 type="date" 
@@ -257,11 +263,12 @@ const AnnouncementsPage = () => {
                 style={{
                   width: '100%',
                   padding: '6px',
-                  border: `1px solid ${darkMode ? '#555555' : '#ccc'}`,
+                  border: `1px solid ${darkMode ? '#3A506B' : '#ccc'}`,
                   borderRadius: '4px',
                   fontSize: '12px',
-                  backgroundColor: darkMode ? '#3d3d3d' : 'white',
-                  color: darkMode ? '#ffffff' : '#333333'
+                  backgroundColor: darkMode ? '#243B5A' : 'white',
+                  color: darkMode ? '#e2e8f0' : '#333333',
+                  colorScheme: darkMode ? 'dark' : 'light'
                 }}
               />
             </div>
@@ -273,9 +280,9 @@ const AnnouncementsPage = () => {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         {/* Header */}
         <div style={{
-          backgroundColor: darkMode ? '#2d2d2d' : 'white',
+          backgroundColor: darkMode ? '#1b2a41' : 'white',
           padding: '15px 30px',
-          borderBottom: `1px solid ${darkMode ? '#444444' : '#e0e0e0'}`,
+          borderBottom: `1px solid ${darkMode ? '#3A506B' : '#e0e0e0'}`,
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center'
@@ -283,7 +290,7 @@ const AnnouncementsPage = () => {
           <h4 style={{ 
             margin: 0, 
             fontWeight: 'bold',
-            color: darkMode ? '#ffffff' : '#333333'
+            color: darkMode ? '#e2e8f0' : '#333333'
           }}>Announcements</h4>
           {userRole === 'educator' && (
             <button 
@@ -305,9 +312,9 @@ const AnnouncementsPage = () => {
 
         {/* Board Navigation */}
         <div style={{
-          backgroundColor: darkMode ? '#2d2d2d' : 'white',
+          backgroundColor: darkMode ? '#1b2a41' : 'white',
           padding: '10px 30px',
-          borderBottom: `1px solid ${darkMode ? '#444444' : '#e0e0e0'}`,
+          borderBottom: `1px solid ${darkMode ? '#3A506B' : '#e0e0e0'}`,
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center'
@@ -323,21 +330,21 @@ const AnnouncementsPage = () => {
             <button style={{
               background: 'none',
               border: 'none',
-              color: '#666',
+              color: darkMode ? '#94a3b8' : '#666',
               fontSize: '14px',
               cursor: 'pointer'
             }}>All</button>
             <button style={{
               background: 'none',
               border: 'none',
-              color: '#666',
+              color: darkMode ? '#94a3b8' : '#666',
               fontSize: '14px',
               cursor: 'pointer'
             }}>Unread</button>
             <button style={{
               background: 'none',
               border: 'none',
-              color: '#666',
+              color: darkMode ? '#94a3b8' : '#666',
               fontSize: '14px',
               cursor: 'pointer'
             }}>Scheduled</button>
@@ -349,25 +356,27 @@ const AnnouncementsPage = () => {
             onChange={(e) => setSearchQuery(e.target.value)}
             style={{
               padding: '6px 12px',
-              border: '1px solid #ccc',
+              border: `1px solid ${darkMode ? '#3A506B' : '#ccc'}`,
               borderRadius: '4px',
               fontSize: '12px',
-              width: '200px'
+              width: '200px',
+              backgroundColor: darkMode ? '#243B5A' : 'white',
+              color: darkMode ? '#e2e8f0' : '#333333'
             }}
           />
         </div>
 
         {/* Latest Section Header */}
         <div style={{
-          backgroundColor: 'white',
+          backgroundColor: darkMode ? '#1b2a41' : 'white',
           padding: '15px 30px',
-          borderBottom: '1px solid #e0e0e0',
+          borderBottom: `1px solid ${darkMode ? '#3A506B' : '#e0e0e0'}`,
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center'
         }}>
-          <h6 style={{ margin: 0, fontWeight: 'bold', fontSize: '14px' }}>Latest</h6>
-          <div style={{ fontSize: '12px', color: '#666' }}>
+          <h6 style={{ margin: 0, fontWeight: 'bold', fontSize: '14px', color: darkMode ? '#e2e8f0' : '#333333' }}>Latest</h6>
+          <div style={{ fontSize: '12px', color: darkMode ? '#94a3b8' : '#666' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '15px', flexWrap: 'wrap' }}>
               <span>
                 Showing: <strong style={{ color: '#007bff' }}>
@@ -378,7 +387,7 @@ const AnnouncementsPage = () => {
               
               {/* Active Filters */}
               {(searchQuery || courseFilter || dateFromFilter || dateToFilter) && (
-                <span style={{ color: '#666' }}>
+                <span style={{ color: darkMode ? '#94a3b8' : '#666' }}>
                   | Filters: 
                   {searchQuery && <span style={{ marginLeft: '5px', backgroundColor: '#e3f2fd', padding: '2px 6px', borderRadius: '3px', fontSize: '11px' }}>Search: "{searchQuery}"</span>}
                   {courseFilter && <span style={{ marginLeft: '5px', backgroundColor: '#f3e5f5', padding: '2px 6px', borderRadius: '3px', fontSize: '11px' }}>Course: "{courseFilter}"</span>}
@@ -426,7 +435,7 @@ const AnnouncementsPage = () => {
         <div style={{ 
           flex: 1, 
           padding: '20px 30px', 
-          backgroundColor: darkMode ? '#1a1a1a' : '#f8f9fa' 
+          backgroundColor: darkMode ? '#0d1b2a' : '#f8f9fa' 
         }}>
           <AnnouncementsBoard
             userRole={userRole}

@@ -1,216 +1,445 @@
-import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import ReactCalendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
+import axios from 'axios';
+import { ENDPOINTS } from '../../../utils/URL';
 import CalendarActivitySection from './CalendarActivitySection';
 import styles from './CommunityCalendar.module.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faClock, faLocationDot, faTag, faCircleCheck } from '@fortawesome/free-solid-svg-icons';
 
-function CommunityCalendar() {
+const MOCK_EVENTS = [];
+
+const normalizeStatus = status => {
+  if (!status) return 'New';
+
+  const s = status.toLowerCase();
+
+  if (s.includes('need')) return 'Needs Attendees';
+  if (s.includes('fill')) return 'Filling Fast';
+  if (s.includes('full')) return 'Full Event';
+  if (s.includes('new')) return 'New';
+
+  return 'New';
+};
+
+export default function CommunityCalendar() {
+  const [events, setEvents] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [filter, setFilter] = useState({ type: 'all', location: 'all', status: 'all' });
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showEventModal, setShowEventModal] = useState(false);
+  const [hoveredEventId, setHoveredEventId] = useState(null);
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const currentDate = new Date();
 
-  const mockEvents = [
-    {
-      id: 1,
-      title: 'Event 1',
-      type: 'Workshop',
-      location: 'Virtual',
-      time: '10:00 AM',
-      date: new Date(2025, 0, 27),
-      status: 'New',
-      description: 'Detailed description of Event 1.',
-    },
-    {
-      id: 2,
-      title: 'Event 2',
-      type: 'Meeting',
-      location: 'In person',
-      time: '2:00 PM',
-      date: new Date(2025, 0, 31),
-      status: 'Needs Attendees',
-      description: 'Detailed description of Event 2.',
-    },
-    {
-      id: 3,
-      title: 'Event 3',
-      type: 'Workshop',
-      location: 'Virtual',
-      time: '12:00 PM',
-      date: new Date(2025, 0, 28),
-      status: 'New',
-      description: 'Detailed description of Event 3.',
-    },
-    {
-      id: 4,
-      title: 'Event 4',
-      type: 'Webinar',
-      location: 'Virtual',
-      time: '3:00 AM',
-      date: new Date(2025, 0, 3),
-      status: 'Full',
-      description: 'Detailed description of Event 4.',
-    },
-    {
-      id: 5,
-      title: 'Event 5',
-      type: 'Social Gathering',
-      location: 'In person',
-      time: '11:00 AM',
-      date: new Date(2025, 0, 28),
-      status: 'Filling Fast',
-      description: 'Detailed description of Event 5.',
-    },
-  ];
+  useEffect(() => {
+    const fetchEvents = async () => {
+      setIsLoading(true);
+      try {
+        const response = await axios.get(ENDPOINTS.EVENTS);
 
-  // Memoized filtered events - only recalculates when filter changes
-  const filteredEvents = useMemo(() => {
-    return mockEvents.filter(
-      event =>
-        (filter.type === 'all' || event.type === filter.type) &&
-        (filter.location === 'all' || event.location === filter.location) &&
-        (filter.status === 'all' || event.status === filter.status),
-    );
-  }, [filter, mockEvents]);
+        const apiEvents = response.data?.events || response.data || [];
+
+        if (!apiEvents || apiEvents.length === 0) {
+          console.warn('API returned empty → using mock events');
+          setEvents(MOCK_EVENTS);
+        } else {
+          setEvents(apiEvents);
+        }
+      } catch (err) {
+        console.warn('API failed → using mock events');
+        setEvents(MOCK_EVENTS);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchEvents();
+  }, []);
+
+  const mappedEvents = useMemo(() => {
+    return events.map(event => {
+      const eventDate = new Date(event.date);
+      const timeString = eventDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      return {
+        ...event,
+        id: event.id || `${event.title}-${eventDate.getTime()}`,
+        date: eventDate,
+        type: event.type || 'General',
+        status: normalizeStatus(event.status),
+        time: event.time || timeString,
+        description: event.description || `Join us for ${event.title}`,
+        location: event.location || 'Online',
+      };
+    });
+  }, [events]);
+
+  const filteredEvents = useMemo(
+    () =>
+      mappedEvents.filter(
+        e =>
+          (filter.type === 'all' || e.type === filter.type) &&
+          (filter.location === 'all' || e.location === filter.location) &&
+          (filter.status === 'all' || e.status === filter.status),
+      ),
+    [mappedEvents, filter],
+  );
 
   // Enhanced event caching by date - memoized for performance
   const eventCache = useMemo(() => {
-    const cache = new Map();
-    filteredEvents.forEach(event => {
-      const dateKey = event.date.toDateString();
-      if (!cache.has(dateKey)) {
-        cache.set(dateKey, []);
-      }
-      cache.get(dateKey).push(event);
+    const map = new Map();
+    filteredEvents.forEach(e => {
+      const key = e.date.toDateString();
+      if (!map.has(key)) map.set(key, []);
+      map.get(key).push(e);
     });
-    return cache;
+    return map;
   }, [filteredEvents]);
 
-  // Memoized event count by date for quick lookups
   const eventCountByDate = useMemo(() => {
-    const countMap = new Map();
-    filteredEvents.forEach(event => {
-      const dateKey = event.date.toDateString();
-      countMap.set(dateKey, (countMap.get(dateKey) || 0) + 1);
+    const map = new Map();
+    filteredEvents.forEach(e => {
+      const key = e.date.toDateString();
+      map.set(key, (map.get(key) || 0) + 1);
     });
-    return countMap;
+    return map;
   }, [filteredEvents]);
 
-  // Memoized unique filter values for dropdowns
-  const uniqueFilterValues = useMemo(() => {
-    const types = [...new Set(mockEvents.map(event => event.type))];
-    const locations = [...new Set(mockEvents.map(event => event.location))];
-    const statuses = [...new Set(mockEvents.map(event => event.status))];
+  const handleFilterChange = useCallback(
+    filterType => e => {
+      setFilter(prev => ({
+        ...prev,
+        [filterType]: e.target.value,
+      }));
+    },
+    [],
+  );
 
-    return { types, locations, statuses };
-  }, [mockEvents]);
+  const [overflowDate, setOverflowDate] = useState(false);
 
   // Memoized helper function to get events for a specific date
   const getEventsForDate = useCallback(
     date => {
-      return eventCache.get(date.toDateString()) || [];
+      if (!date) return [];
+      return eventCache.get(new Date(date).toDateString()) || [];
     },
     [eventCache],
   );
 
-  // Handle event click
+  const selectedDateEvents = useMemo(() => {
+    const dateKey = selectedDate?.toDateString();
+    if (!dateKey) {
+      return [];
+    }
+    return filteredEvents.filter(event => event.date.toDateString() === dateKey);
+  }, [filteredEvents, selectedDate]);
+
+  const formattedSelectedDate = useMemo(() => {
+    if (!selectedDate) {
+      return '';
+    }
+    return selectedDate.toLocaleDateString(undefined, {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  }, [selectedDate]);
+
+  const handleDateSelect = useCallback(
+    date => {
+      setSelectedDate(date);
+      const eventsForDate = getEventsForDate(date);
+      if (eventsForDate.length > 0) {
+        setSelectedEvent(eventsForDate[0]);
+      } else {
+        setSelectedEvent(null);
+      }
+      setShowEventModal(false);
+    },
+    [getEventsForDate],
+  );
   const handleEventClick = useCallback(event => {
+    setSelectedDate(new Date(event.date));
+
     setSelectedEvent(event);
+
     setShowEventModal(true);
   }, []);
-
-  // Handle event key press
-  const handleEventKeyPress = useCallback(
-    (event, calendarEvent) => {
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault();
-        handleEventClick(calendarEvent);
-      }
-    },
-    [handleEventClick],
-  );
-
-  // Close modal
   const closeEventModal = useCallback(() => {
     setShowEventModal(false);
     setSelectedEvent(null);
   }, []);
 
-  // Handle escape key globally when modal is open
+  // Close on ESC
   useEffect(() => {
-    const handleEscape = e => {
-      if (e.key === 'Escape' && showEventModal) {
+    const esc = e => {
+      if (e.key === 'Escape') {
         closeEventModal();
+        setOverflowDate(null);
       }
     };
+    document.addEventListener('keydown', esc);
+    return () => document.removeEventListener('keydown', esc);
+  }, [closeEventModal]);
 
-    if (showEventModal) {
-      document.addEventListener('keydown', handleEscape);
-      return () => {
-        document.removeEventListener('keydown', handleEscape);
-      };
+  // Close overflow popup on outside click
+
+  const popupRef = useRef(null);
+  useEffect(() => {
+    const handleClickOutside = e => {
+      if (popupRef.current && !popupRef.current.contains(e.target)) {
+        setOverflowDate(null);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    const eventsForDate = getEventsForDate(selectedDate);
+
+    if (eventsForDate.length === 0) {
+      if (selectedEvent !== null) {
+        setSelectedEvent(null);
+      }
+      return;
     }
-  }, [showEventModal, closeEventModal]);
 
-  // Memoized tile content function - prevents unnecessary re-renders
+    const hasSelectedEvent = eventsForDate.some(event => event.id === selectedEvent?.id);
+
+    if (!hasSelectedEvent) {
+      setSelectedEvent(eventsForDate[0]);
+    }
+  }, [getEventsForDate, selectedDate]);
+
+  const statusMap = {
+    New: 'statusNew',
+    'Needs Attendees': 'statusNeedsAttendees',
+    'Filling Fast': 'statusFillingFast',
+    'Full Event': 'statusFull',
+  };
+
+  const statusIconMap = {
+    New: '⭐',
+    'Needs Attendees': '🙋',
+    'Filling Fast': '⚡',
+    'Full Event': '⛔',
+    Full: '⛔',
+  };
+
+  function WeeklyTimeGrid({ events, selectedDate, onEventClick, darkMode }) {
+    const hours = Array.from({ length: 24 }, (_, i) => i);
+
+    const startOfWeek = useMemo(() => {
+      const d = new Date(selectedDate);
+      d.setDate(d.getDate() - d.getDay());
+      return d;
+    }, [selectedDate]);
+
+    const weekDays = useMemo(() => {
+      return Array.from({ length: 7 }, (_, i) => {
+        const day = new Date(startOfWeek);
+        day.setDate(startOfWeek.getDate() + i);
+        return day;
+      });
+    }, [startOfWeek]);
+
+    return (
+      <div
+        className={`${styles.weekGridContainer} ${darkMode ? styles.weekGridContainerDark : ''}`}
+      >
+        <div className={`${styles.weekGridHeader} ${darkMode ? styles.weekGridHeaderDark : ''}`}>
+          <div className={styles.timeGutter} />
+          {weekDays.map(date => (
+            <div key={date.toString()} className={styles.dayColumnHeader}>
+              <div className={`${styles.dayLabel} ${darkMode ? styles.dayLabelDark : ''}`}>
+                {date.toLocaleDateString('en-US', { weekday: 'short' })}
+              </div>
+              <div className={`${styles.dateLabel} ${darkMode ? styles.dateLabelDark : ''}`}>
+                {date.getDate()}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className={styles.weekGridBody}>
+          {hours.map(hour => (
+            <div key={hour} className={`${styles.hourRow} ${darkMode ? styles.hourRowDark : ''}`}>
+              <div className={`${styles.timeLabel} ${darkMode ? styles.timeLabelDark : ''}`}>
+                {hour === 0
+                  ? '12 AM'
+                  : hour > 12
+                  ? `${hour - 12} PM`
+                  : hour === 12
+                  ? '12 PM'
+                  : `${hour} AM`}
+              </div>
+
+              {weekDays.map(date => {
+                const cellEvents = events.filter(e => {
+                  const eventDate = new Date(e.date);
+                  const [hStr] = e.time.split(':');
+                  let h = parseInt(hStr, 10);
+                  const isPM = e.time.toLowerCase().includes('pm');
+                  const isAM = e.time.toLowerCase().includes('am');
+                  if (isPM && h !== 12) h += 12;
+                  if (isAM && h === 12) h = 0;
+
+                  return eventDate.toDateString() === date.toDateString() && h === hour;
+                });
+
+                return (
+                  <div
+                    key={date.toString()}
+                    className={`${styles.gridCell} ${darkMode ? styles.gridCellDark : ''}`}
+                  >
+                    {cellEvents.map(ev => (
+                      <button
+                        key={ev.id}
+                        type="button"
+                        className={`${styles.gridEvent} ${darkMode ? styles.gridEventDark : ''}`}
+                        onClick={() => onEventClick(ev)}
+                        aria-label={`Open event ${ev.title} at ${ev.time}`}
+                      >
+                        <div
+                          className={`${styles.gridEventTime} ${
+                            darkMode ? styles.gridEventTimeDark : ''
+                          }`}
+                        >
+                          {ev.time}
+                        </div>
+                        <div
+                          className={`${styles.gridEventTitle} ${
+                            darkMode ? styles.gridEventTitleDark : ''
+                          }`}
+                        >
+                          {ev.title}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Render event tiles
   const tileContent = useCallback(
     ({ date, view }) => {
-      if (view === 'month') {
-        const eventsForTile = getEventsForDate(date).map(event => (
-          <div
-            key={event.id}
-            className={`${styles.eventItem} ${styles.clickable}`}
-            onClick={() => handleEventClick(event)}
-            onKeyDown={e => handleEventKeyPress(e, event)}
-            role="button"
-            tabIndex={0}
-            aria-label={`Click to view details for ${event.title}`}
-          >
-            {event.title}
-          </div>
-        ));
-        return eventsForTile.length > 0 ? (
-          <div className={styles.tileEvents}>{eventsForTile}</div>
-        ) : null;
-      }
-      return null;
+      if (view !== 'month') return null;
+      const events = getEventsForDate(date);
+      if (!events.length) return null;
+
+      const visible = events.slice(0, 3);
+      const hiddenCount = events.length - 3;
+
+      return (
+        <div className={styles.tileEvents}>
+          {visible.map(e => {
+            const statusKey = statusMap[e.status] || 'statusNew';
+
+            return (
+              <button
+                key={e.id}
+                type="button"
+                className={`${styles.eventItem} ${styles[statusKey] || ''}`}
+                onClick={e_obj => {
+                  e_obj.stopPropagation();
+                  handleEventClick(e);
+                }}
+                onMouseEnter={() => setHoveredEventId(e.id)}
+                onMouseLeave={() => setHoveredEventId(null)}
+                aria-label={`Click to view details for ${e.title}`}
+              >
+                <span className={styles.eventContent}>
+                  <span className={styles.eventIcon} aria-label={e.status} title={e.status}>
+                    {statusIconMap[e.status] || '⭐'}
+                  </span>
+                  <span className={styles.eventTitleText}>{e.title}</span>
+                </span>
+
+                {hoveredEventId === e.id && (
+                  <div
+                    className={`${styles.eventTooltip} ${darkMode ? styles.eventTooltipDark : ''}`}
+                  >
+                    <strong>{e.title}</strong>
+                    <span className={styles.tooltipDetail}>
+                      <strong>Time:</strong> {e.time}
+                    </span>
+                    <span className={styles.tooltipDetail}>
+                      <strong>Location:</strong> {e.location}
+                    </span>
+                    <span className={styles.tooltipDetail}>
+                      <strong>Status:</strong> {e.status}
+                    </span>
+                    <small>Click for more details</small>
+                  </div>
+                )}
+              </button>
+            );
+          })}
+          {hiddenCount > 0 && (
+            <button
+              type="button"
+              className={styles.moreEvents}
+              onClick={() => setOverflowDate(date)}
+              title="View all events"
+            >
+              +{hiddenCount} more
+            </button>
+          )}
+        </div>
+      );
     },
-    [getEventsForDate, handleEventClick, handleEventKeyPress],
+    [getEventsForDate, handleEventClick, darkMode, hoveredEventId],
   );
 
-  // Memoized tile class name function - optimized for performance
+  // Memoized tile class name function
   const tileClassName = useCallback(
     ({ date, view }) => {
+      const classNames = [];
       if (view === 'month' && eventCountByDate.has(date.toDateString())) {
-        return styles.hasEvents;
+        classNames.push(styles.hasEvents);
       }
-      return null;
+      if (view === 'month' && selectedDate && date.toDateString() === selectedDate.toDateString()) {
+        classNames.push(styles.selectedDate);
+      }
+      return classNames.join(' ') || null;
     },
-    [eventCountByDate],
+    [eventCountByDate, selectedDate],
   );
 
-  // Memoized filter change handlers to prevent unnecessary re-renders
-  const handleTypeFilterChange = useCallback(e => {
+  // Memoized filter change handlers
+  /*   const handleTypeFilterChange = useCallback(e => {
     setFilter(prev => ({ ...prev, type: e.target.value }));
-  }, []);
+  }, []); */
 
-  const handleLocationFilterChange = useCallback(e => {
-    setFilter(prev => ({ ...prev, location: e.target.value }));
-  }, []);
+  const uniqueFilterValues = useMemo(
+    () => ({
+      types: [...new Set(mappedEvents.map(e => e.type))],
+      locations: [...new Set(mappedEvents.map(e => e.location))],
+      statuses: [...new Set(mappedEvents.map(e => e.status))],
+    }),
+    [mappedEvents],
+  );
 
-  const handleStatusFilterChange = useCallback(e => {
-    setFilter(prev => ({ ...prev, status: e.target.value }));
-  }, []);
-
-  // Memoized dark mode selector to prevent unnecessary re-renders
-  const darkMode = useSelector(state => state.theme.darkMode);
-
-  // Memoized CSS classes to prevent string concatenation on every render
+  // Memoized CSS classes
   const calendarClasses = useMemo(
     () => ({
       container: `${styles.communityCalendar} ${darkMode ? styles.communityCalendarDarkMode : ''}`,
       header: `${styles.calendarHeader} ${darkMode ? styles.calendarHeaderDarkMode : ''}`,
       filters: `${styles.calendarFilters} ${darkMode ? styles.calendarFiltersDarkMode : ''}`,
+      select: `${styles.filterSelect} ${darkMode ? styles.filterSelectDarkMode : ''}`,
       main: styles.calendarMain,
       calendarContainer: `${styles.calendarContainer} ${
         darkMode ? styles.calendarContainerDarkMode : ''
@@ -228,143 +457,321 @@ function CommunityCalendar() {
 
   return (
     <div className={calendarClasses.container}>
+      {/* Inline styles to ensure selected date number is visible in dark mode - force dark background */}
+      {darkMode && (
+        <style>
+          {`
+            /* CRITICAL: Force dark background on selected date in dark mode - override ALL react-calendar defaults */
+            .react-calendar__tile.selectedDate,
+            .react-calendar__tile.selectedDate.react-calendar__tile--active,
+            .react-calendar__tile.react-calendar__tile--active.selectedDate {
+              background-color: #1a2332 !important;
+              background: #1a2332 !important;
+              color: #ffffff !important;
+            }
+            .react-calendar__tile.selectedDate:hover,
+            .react-calendar__tile.selectedDate.react-calendar__tile--active:hover,
+            .react-calendar__tile.react-calendar__tile--active.selectedDate:hover {
+              background-color: #1a2332 !important;
+              background: #1a2332 !important;
+              color: #ffffff !important;
+            }
+
+            /* Force white text on dark background */
+
+            .react-calendar__tile.selectedDate abbr,
+            .react-calendar__tile.selectedDate abbr[title],
+            .react-calendar__tile.selectedDate > abbr,
+            .react-calendar__tile.selectedDate.react-calendar__tile--active abbr,
+            .react-calendar__tile.react-calendar__tile--active.selectedDate abbr {
+              color: #ffffff !important;
+              font-weight: 900 !important;
+              font-size: 1.2em !important;
+              text-shadow: 
+                0 0 8px rgba(255, 255, 255, 1),
+                0 0 10px rgba(255, 255, 255, 0.9),
+                0 2px 4px rgba(0, 0, 0, 1),
+                0 4px 8px rgba(0, 0, 0, 0.9) !important;
+              -webkit-text-stroke: 0.6px rgba(255, 255, 255, 1) !important;
+              filter: brightness(1.8) contrast(1.5) !important;
+              opacity: 1 !important;
+            }
+            .react-calendar__tile.selectedDate:hover abbr,
+            .react-calendar__tile.selectedDate:hover abbr[title],
+            .react-calendar__tile.selectedDate.react-calendar__tile--active:hover abbr {
+              color: #ffffff !important;
+              filter: brightness(1.8) contrast(1.5) !important;
+              opacity: 1 !important;
+            }
+            /* But preserve event item colors */
+            .react-calendar__tile.selectedDate .eventItem {
+              color: inherit !important;
+            }
+              /* 1. Target the button and any text inside it */
+            .react-calendar__navigation button:enabled:hover,
+            .react-calendar__navigation button:enabled:hover *,
+            .react-calendar__navigation button:enabled:focus,
+            .react-calendar__navigation button:enabled:focus * {
+              background-color: #e6e6e6 !important;
+              color: #000000 !important;
+              /* This handles cases where they use text-shadows or strokes */
+              text-shadow: none !important;
+              -webkit-text-stroke: 0px transparent !important;
+            }
+
+            /* 2. Target the specific arrows (the << < > >> symbols) */
+            .react-calendar__navigation__arrow:enabled:hover {
+              color: #000000 !important;
+            }
+
+            /* 3. If they are using pseudo-elements (common in some versions) */
+            .react-calendar__navigation button:enabled:hover::before,
+            .react-calendar__navigation button:enabled:hover::after {
+              color: #000000 !important;
+            }
+          `}
+        </style>
+      )}
       <header className={calendarClasses.header}>
         <h1>Community Calendar</h1>
         <div className={calendarClasses.filters}>
-          <select id="type-filter" value={filter.type} onChange={handleTypeFilterChange}>
+          <select
+            className={calendarClasses.select}
+            value={filter.type}
+            onChange={handleFilterChange('type')}
+          >
             <option value="all">All Types</option>
-            {uniqueFilterValues.types.map(type => (
-              <option key={type} value={type}>
-                {type}
-              </option>
+            {uniqueFilterValues.types.map(t => (
+              <option key={t}>{t}</option>
             ))}
           </select>
 
           <select
-            id="location-filter"
+            className={calendarClasses.select}
             value={filter.location}
-            onChange={handleLocationFilterChange}
+            onChange={handleFilterChange('location')}
           >
             <option value="all">All Locations</option>
-            {uniqueFilterValues.locations.map(location => (
-              <option key={location} value={location}>
-                {location}
-              </option>
+            {uniqueFilterValues.locations.map(l => (
+              <option key={l}>{l}</option>
             ))}
           </select>
 
-          <select id="status-filter" value={filter.status} onChange={handleStatusFilterChange}>
+          <select
+            className={calendarClasses.select}
+            value={filter.status}
+            onChange={handleFilterChange('status')}
+          >
             <option value="all">All Statuses</option>
-            {uniqueFilterValues.statuses.map(status => (
-              <option key={status} value={status}>
-                {status}
-              </option>
+            {uniqueFilterValues.statuses.map(s => (
+              <option key={s}>{s}</option>
             ))}
           </select>
         </div>
       </header>
+
       <main className={calendarClasses.main}>
         <div className={calendarClasses.calendarContainer}>
           <div className={calendarClasses.activitySection}>
-            <CalendarActivitySection />
+            <CalendarActivitySection
+              selectedDate={selectedDate}
+              events={selectedDateEvents}
+              onEventClick={handleEventClick}
+            />
           </div>
           <div className={calendarClasses.calendarSection}>
             <ReactCalendar
               className={calendarClasses.reactCalendar}
               tileContent={tileContent}
               tileClassName={tileClassName}
+              onClickDay={handleDateSelect}
+              value={selectedDate}
             />
+            <section
+              className={`${styles.selectedDatePanel} ${
+                darkMode ? styles.selectedDatePanelDarkMode : ''
+              }`}
+              aria-live="polite"
+            >
+              <div className={styles.selectedDateHeader}>
+                <div>
+                  <h2>{formattedSelectedDate || 'Select a date'}</h2>
+                  <p className={styles.selectedDateSummary}>
+                    {(() => {
+                      if (selectedDateEvents.length === 0) {
+                        return 'No events scheduled for this date';
+                      }
+                      const eventText = selectedDateEvents.length === 1 ? 'event' : 'events';
+                      return `${selectedDateEvents.length} ${eventText} scheduled`;
+                    })()}
+                  </p>
+                </div>
+              </div>
+
+              {selectedDateEvents.length > 0 ? (
+                <ul className={styles.selectedEventList}>
+                  {selectedDateEvents.map(event => {
+                    const isActive = selectedEvent?.id === event.id;
+                    return (
+                      <li key={event.id}>
+                        <article
+                          className={`${styles.selectedEventCard} ${
+                            darkMode ? styles.selectedEventCardDarkMode : ''
+                          } ${isActive ? styles.selectedEventCardActive : ''}`}
+                        >
+                          <header className={styles.selectedEventHeader}>
+                            <div>
+                              <h3>{event.title}</h3>
+                              <div>
+                                <ul className={styles.selectedEventMeta}>
+                                  <li className={styles.metaItem}>
+                                    <FontAwesomeIcon icon={faClock} className={styles.metaIcon} />
+                                    <span>{event.time}</span>
+                                  </li>
+
+                                  <li className={styles.metaItem}>
+                                    <FontAwesomeIcon
+                                      icon={faLocationDot}
+                                      className={styles.metaIcon}
+                                    />
+                                    <span>{event.location}</span>
+                                  </li>
+
+                                  <li className={styles.metaItem}>
+                                    <FontAwesomeIcon icon={faTag} className={styles.metaIcon} />
+                                    <span>{event.type}</span>
+                                  </li>
+
+                                  <li className={styles.metaItem}>
+                                    <FontAwesomeIcon
+                                      icon={faCircleCheck}
+                                      className={styles.metaIcon}
+                                    />
+                                    <span className={styles.statusInline}>
+                                      {statusIconMap[event.status] || ''} {event.status}
+                                    </span>
+                                  </li>
+                                </ul>
+                              </div>
+                            </div>
+                            <button
+                              type="button"
+                              className={styles.eventDetailButton}
+                              onClick={() => handleEventClick(event)}
+                            >
+                              View full details
+                            </button>
+                          </header>
+                          <p className={styles.selectedEventDescription}>{event.description}</p>
+                        </article>
+                      </li>
+                    );
+                  })}
+                </ul>
+              ) : (
+                <div className={styles.noEventsMessage}>
+                  <p>Select a different date or adjust the filters to see scheduled events.</p>
+                </div>
+              )}
+            </section>
           </div>
         </div>
       </main>
 
-      {/* Event Details Modal */}
-      {showEventModal && selectedEvent && (
-        <>
-          <div
-            className={styles.eventModalOverlay}
-            role="button"
-            tabIndex={0}
-            aria-label="Close event details (click backdrop or press Enter/Space)"
-            onClick={e => {
-              if (e.target === e.currentTarget) {
-                closeEventModal();
-              }
-            }}
-            onKeyDown={e => {
-              if ((e.key === 'Enter' || e.key === ' ') && e.target === e.currentTarget) {
-                e.preventDefault();
-                closeEventModal();
-              }
-            }}
-          >
-            <div
-              className={`${styles.eventModal} ${darkMode ? styles.eventModalDark : ''}`}
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="event-modal-title"
-            >
-              <div className={styles.modalHeader}>
-                <h2 id="event-modal-title">{selectedEvent.title}</h2>
-                <button
-                  className={styles.modalClose}
-                  onClick={closeEventModal}
-                  aria-label="Close event details"
-                >
-                  ×
-                </button>
-              </div>
-
-              <div className={styles.modalContent}>
-                <div className={styles.eventStatus}>
-                  <span
-                    className={`${styles.statusBadge} ${(() => {
-                      const statusKey = selectedEvent.status
-                        .toLowerCase()
-                        .replace(/\s+/g, '')
-                        .replace(/^(.)/, match => `status${match.toUpperCase()}`);
-                      return styles[statusKey] || '';
-                    })()}`}
-                  >
-                    {selectedEvent.status}
+      {/* Overflow popup */}
+      {overflowDate && (
+        <div
+          ref={popupRef}
+          className={`${styles.overflowPopup} ${darkMode ? styles.overflowPopupDark : ''}`}
+        >
+          <div className={styles.overflowPopupInner}>
+            <h4>{overflowDate.toDateString()}</h4>
+            {getEventsForDate(overflowDate).map(e => (
+              <button
+                key={e.id}
+                type="button"
+                className={`${styles.eventItem} ${styles[statusMap[e.status]] || styles.statusNew}`}
+                onClick={() => handleEventClick(e)}
+                title={e.title}
+              >
+                <span className={styles.eventContent}>
+                  <span className={styles.eventIcon} aria-label={e.status} title={e.status}>
+                    {statusIconMap[e.status] || '⭐'}
                   </span>
-                </div>
+                  <span className={styles.eventTitleText}>{e.title}</span>
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
-                <div className={styles.eventDetailsGrid}>
-                  <div className={styles.detailItem}>
-                    <label htmlFor="event-type">Type:</label>
-                    <span id="event-type">{selectedEvent.type}</span>
-                  </div>
-                  <div className={styles.detailItem}>
-                    <label htmlFor="event-location">Location:</label>
-                    <span id="event-location">{selectedEvent.location}</span>
-                  </div>
-                  <div className={styles.detailItem}>
-                    <label htmlFor="event-date">Date:</label>
-                    <span id="event-date">{selectedEvent.date.toLocaleDateString()}</span>
-                  </div>
-                  <div className={styles.detailItem}>
-                    <label htmlFor="event-time">Time:</label>
-                    <span id="event-time">{selectedEvent.time}</span>
-                  </div>
-                </div>
+      {/* Event modal */}
+      {showEventModal && selectedEvent && (
+        <div
+          className={styles.eventModalOverlay}
+          role="presentation"
+          onClick={e => e.target === e.currentTarget && closeEventModal()}
+        >
+          <div
+            className={`${styles.eventModal} ${darkMode ? styles.eventModalDark : ''}`}
+            role="dialog"
+            aria-modal="true"
+          >
+            <div className={styles.modalHeader}>
+              <h2>{selectedEvent.title}</h2>
+              <button
+                type="button"
+                className={styles.modalClose}
+                onClick={closeEventModal}
+                aria-label="Close modal"
+              >
+                ×
+              </button>
+            </div>
 
-                <div className={styles.eventDescription}>
-                  <label htmlFor="event-description">Description:</label>
-                  <p id="event-description">{selectedEvent.description}</p>
+            <div className={styles.modalContent}>
+              <div className={styles.eventStatus}>
+                <span
+                  className={`${styles.statusBadge} ${styles[statusMap[selectedEvent.status]] ||
+                    ''} ${darkMode ? styles.darkModeStatusBadge : ''}`}
+                >
+                  {statusIconMap[selectedEvent.status] || ''} {selectedEvent.status}
+                </span>
+              </div>
+
+              <div className={styles.eventDetailsGrid}>
+                <div className={styles.detailItem}>
+                  <span>Type:</span>
+                  <span>{selectedEvent.type}</span>
+                </div>
+                <div className={styles.detailItem}>
+                  <span>Location:</span>
+                  <span>{selectedEvent.location}</span>
+                </div>
+                <div className={styles.detailItem}>
+                  <span>Date:</span>
+                  <span>{selectedEvent.date.toLocaleDateString()}</span>
+                </div>
+                <div className={styles.detailItem}>
+                  <span>Time:</span>
+                  <span>{selectedEvent.time}</span>
                 </div>
               </div>
 
-              <div className={styles.modalActions}>
-                <button className={styles.btnPrimary}>Register for Event</button>
-                <button className={styles.btnSecondary}>Add to Calendar</button>
+              <div className={styles.eventDescription}>
+                <span>Description:</span>
+                <p>{selectedEvent.description}</p>
               </div>
             </div>
+
+            <div className={styles.modalActions}>
+              <button className={styles.btnPrimary}>Register for Event</button>
+              <button className={styles.btnSecondary}>Add to Calendar</button>
+            </div>
           </div>
-        </>
+        </div>
       )}
     </div>
   );
 }
-
-export default CommunityCalendar;

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { FaCheck } from 'react-icons/fa';
 import { getPromotionEligibility, postPromotionEligibility } from '../../actions/promotionActions';
-import './PromotionEligibility.css';
+import styles from './PromotionEligibility.module.css';
 import { useSelector } from 'react-redux';
 
 function PromotionEligibility({ currentUser }) {
@@ -13,8 +13,7 @@ function PromotionEligibility({ currentUser }) {
   const [selectedForPromotion, setSelectedForPromotion] = useState(new Set());
   const [processing, setProcessing] = useState(false);
 
-  const [showNew, setShowNew] = useState(true);
-  const [showExisting, setShowExisting] = useState(true);
+  const [selectGroup, setSelectedGroup] = useState('new');
 
   const darkMode = useSelector(state => state.theme.darkMode);
 
@@ -45,6 +44,7 @@ function PromotionEligibility({ currentUser }) {
 
   const newMembers = reviewers.filter(r => r.isNewMember);
   const existingMembers = reviewers.filter(r => !r.isNewMember);
+  const filteredMemebers = selectGroup === 'new' ? newMembers : existingMembers;
 
   const toggleSelectPromotion = id => {
     setSelectedForPromotion(prev => {
@@ -109,7 +109,12 @@ function PromotionEligibility({ currentUser }) {
   }) => (
     <tr key={id}>
       <td data-label="Reviewer Name">{reviewerName}</td>
-      <td data-label="Weekly Requirements">{weeklyRequirementsMet ? '✔️' : '❌'}</td>
+      <td
+        data-label="Weekly Requirements"
+        className={weeklyRequirementsMet ? styles.status_met : styles.status_not_met}
+      >
+        {weeklyRequirementsMet ? '✓ Has Met' : '✗ Has not Met'}
+      </td>
       <td data-label="Required PRs">{requiredPRs}</td>
       <td data-label="Total Reviews Done">{totalReviews}</td>
       <td data-label="Remaining Weeks">{remainingWeeks}</td>
@@ -125,15 +130,17 @@ function PromotionEligibility({ currentUser }) {
               toggleSelectPromotion(id);
             }
           }}
-          className={`custom-circular-checkbox-wrapper ${processing ? 'disabled' : ''}`}
+          className={`${styles.custom_circular_checkbox_wrapper} ${processing ? 'disabled' : ''}`}
           style={{
-            cursor: !processing ? 'pointer' : 'not-allowed',
+            cursor: !processing ? 'pointer' : 'not_allowed',
           }}
         >
           <div
-            className={`custom-circular-checkbox ${selectedForPromotion.has(id) ? 'checked' : ''}`}
+            className={`${styles.custom_circular_checkbox} ${
+              selectedForPromotion.has(id) ? 'checked' : ''
+            }`}
           >
-            {selectedForPromotion.has(id) && <FaCheck className="check-icon" />}
+            {selectedForPromotion.has(id) && <FaCheck className="check_icon" />}
           </div>
         </div>
       </td>
@@ -141,16 +148,24 @@ function PromotionEligibility({ currentUser }) {
   );
 
   return (
-    <div className={`page-wrapper ${darkMode ? 'dark' : ''}`}>
-      <div className={`promo-table-container ${darkMode ? 'dark' : ''}`}>
-        <div className="promo-table-header">
+    <div className={`${styles.pageWrapper} ${darkMode ? styles.dark : ''}`}>
+      <div className={`${styles.promo_table_container} ${darkMode ? styles.dark : ''}`}>
+        <div className={styles.promo_table_header}>
           Promotion Eligibility
           <div>
+            <select
+              className={`${styles.selectGroup}  ${darkMode ? styles.dark : ''}`}
+              value={selectGroup}
+              onChange={e => setSelectedGroup(e.target.value)}
+            >
+              <option value="new">New Member</option>
+              <option value="existing">Existing Member</option>
+            </select>
             <button
               type="button"
               onClick={() => toast.info('Review Weekly clicked. Logic not implemented yet.')}
               disabled={processing}
-              className="review-btn"
+              className={styles.review_btn}
             >
               Review for this week
             </button>
@@ -158,80 +173,55 @@ function PromotionEligibility({ currentUser }) {
               type="button"
               onClick={handleProcessPromotions}
               disabled={processing}
-              className="process-promo-btn"
+              className={styles.process_promo_btn}
             >
               {processing ? 'Processing...' : 'Process Promotions'}
             </button>
           </div>
         </div>
-
-        <table className="promo-table">
-          <thead>
-            <tr>
-              <th>Reviewer Name</th>
-              <th>Weekly Requirements</th>
-              <th>Required PRs</th>
-              <th>Total Reviews Done</th>
-              <th>Remaining Weeks</th>
-              <th>Promote?</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading && (
+        <div className={styles.tableWrapper}>
+          <table className={styles.promo_table}>
+            <thead>
               <tr>
-                <td colSpan="6" style={{ textAlign: 'center' }}>
-                  Loading...
-                </td>
+                <th>Reviewer Name</th>
+                <th>Weekly Requirements</th>
+                <th>Required PRs</th>
+                <th>Total Reviews Done</th>
+                <th>Remaining Weeks</th>
+                <th>Promote?</th>
               </tr>
-            )}
+            </thead>
+            <tbody>
+              {loading && (
+                <tr>
+                  <td colSpan="6" style={{ textAlign: 'center' }}>
+                    Loading...
+                  </td>
+                </tr>
+              )}
 
-            {!loading && error && (
-              <tr>
-                <td colSpan="6" style={{ textAlign: 'center', color: 'red' }}>
-                  {error}
-                </td>
-              </tr>
-            )}
+              {!loading && error && (
+                <tr>
+                  <td colSpan="6" style={{ textAlign: 'center', color: 'red' }}>
+                    {error}
+                  </td>
+                </tr>
+              )}
 
-            {!loading && !error && reviewers.length === 0 && (
-              <tr>
-                <td colSpan="6" style={{ textAlign: 'center' }}>
-                  No reviewers found.
-                </td>
-              </tr>
-            )}
+              {!loading && !error && reviewers.length === 0 && (
+                <tr>
+                  <td colSpan="6" style={{ textAlign: 'center' }}>
+                    No reviewers found.
+                  </td>
+                </tr>
+              )}
 
-            {!loading && !error && (
-              <>
-                {newMembers.length > 0 && (
-                  <>
-                    <tr
-                      className="section-row"
-                      onClick={() => setShowNew(prev => !prev)}
-                      style={{ cursor: 'pointer' }}
-                    >
-                      <td colSpan="6">New Members {showNew ? '▲' : '▼'}</td>
-                    </tr>
-                    {showNew && newMembers.map(renderRow)}
-                  </>
-                )}
-
-                {existingMembers.length > 0 && (
-                  <>
-                    <tr
-                      className="section-row"
-                      onClick={() => setShowExisting(prev => !prev)}
-                      style={{ cursor: 'pointer' }}
-                    >
-                      <td colSpan="6">Existing Members{showExisting ? '▲' : '▼'}</td>
-                    </tr>
-                    {showExisting && existingMembers.map(renderRow)}
-                  </>
-                )}
-              </>
-            )}
-          </tbody>
-        </table>
+              {!loading && !error && (
+                <>{filteredMemebers.length > 0 && filteredMemebers.map(renderRow)}</>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

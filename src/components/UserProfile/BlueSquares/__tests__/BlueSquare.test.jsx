@@ -7,6 +7,7 @@ import mockAdminState from '__tests__/mockAdminState';
 import { configureStore } from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import hasPermission from '~/utils/permissions';
+import styles from '../BlueSquare.module.css';
 
 const handleBlueSquare = vi.fn();
 
@@ -124,11 +125,11 @@ describe('BlueSquare component', () => {
     // Wait for the component to render completely
     await waitFor(() => {
       // eslint-disable-next-line testing-library/no-node-access, testing-library/no-container
-      const blueSquareButtonElement = container.querySelector('.blueSquareButton');
+      const blueSquareButtonElement = container.querySelector(`.${styles.blueSquareButton}`);
       expect(blueSquareButtonElement).toBeInTheDocument();
     });
     // eslint-disable-next-line testing-library/no-node-access, testing-library/no-container
-    const blueSquareButtonElement = container.querySelector('.blueSquareButton');
+    const blueSquareButtonElement = container.querySelector(`.${styles.blueSquareButton}`);
   
     // Use act to wrap the click event
     // eslint-disable-next-line testing-library/no-unnecessary-act

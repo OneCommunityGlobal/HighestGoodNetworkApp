@@ -60,7 +60,7 @@ describe('BadgeReport Component', () => {
     const optionsField = screen.getByText('Options');
     expect(optionsField).toBeInTheDocument();
 
-    optionsField.click();
+    fireEvent.click(optionsField);
     expect(screen.getByText('Count:')).toBeInTheDocument();
     expect(screen.getByText('Featured:')).toBeInTheDocument();
   });
