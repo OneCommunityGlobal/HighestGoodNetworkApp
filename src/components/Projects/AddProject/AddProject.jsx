@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { connect } from 'react-redux';
-import '../../Header/DarkMode.css';
+import '../../Header/index.css';
 import { addNewWBS } from './../../../actions/wbs';
 import { postNewProject } from './../../../actions/projects';
 import { findUserProfiles, assignProject } from './../../../actions/projectMembers';
@@ -151,12 +151,13 @@ const AddProject = (props) => {
     <div>
       <button
         type="button"
-        className="btn btn-outline-success"
+        className="btn btn-outline-success m-2"
         onClick={toggleModal}
         style={{
           borderColor: '#8ec233',
           color: '#8ec233',
           borderWidth: '1px',
+          marginBottom: '10px'
         }}
       >
         <i className="fa fa-plus" aria-hidden="true"></i> Add New Project

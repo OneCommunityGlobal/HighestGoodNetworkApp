@@ -1,1 +1,87 @@
-{"total":2,"p":1,"ps":500,"paging":{"pageIndex":1,"pageSize":500,"total":2},"effortTotal":6,"debtTotal":6,"issues":[{"key":"AZoEHka-zWUHlKwwamic","rule":"javascript:S1481","severity":"MINOR","component":"OneCommunityGlobal_HighestGoodNetworkApp:src/components/Projects/WBS/WBSDetail/WBSTasks.jsx","project":"OneCommunityGlobal_HighestGoodNetworkApp","line":29,"hash":"65e76d7513e47400427dd2f2eb5191cc","textRange":{"startLine":29,"endLine":29,"startOffset":21,"endOffset":34},"flows":[],"status":"OPEN","message":"Remove the declaration of the unused \u0027setShowImport\u0027 variable.","effort":"5min","debt":"5min","tags":["unused"],"creationDate":"2025-10-18T02:48:20+0000","updateDate":"2025-10-18T02:48:35+0000","type":"CODE_SMELL","organization":"onecommunityglobal","pullRequest":"4054","cleanCodeAttribute":"CLEAR","cleanCodeAttributeCategory":"INTENTIONAL","impacts":[{"softwareQuality":"MAINTAINABILITY","severity":"LOW"}],"issueStatus":"OPEN","projectName":"HighestGoodNetworkApp"},{"key":"AZoEHka-zWUHlKwwamid","rule":"javascript:S1854","severity":"MAJOR","component":"OneCommunityGlobal_HighestGoodNetworkApp:src/components/Projects/WBS/WBSDetail/WBSTasks.jsx","project":"OneCommunityGlobal_HighestGoodNetworkApp","line":29,"hash":"65e76d7513e47400427dd2f2eb5191cc","textRange":{"startLine":29,"endLine":29,"startOffset":21,"endOffset":34},"flows":[],"status":"OPEN","message":"Remove this useless assignment to variable \"setShowImport\".","effort":"1min","debt":"1min","tags":["cwe","unused"],"creationDate":"2025-10-18T02:48:20+0000","updateDate":"2025-10-18T02:48:35+0000","type":"CODE_SMELL","organization":"onecommunityglobal","pullRequest":"4054","cleanCodeAttribute":"LOGICAL","cleanCodeAttributeCategory":"INTENTIONAL","impacts":[{"softwareQuality":"MAINTAINABILITY","severity":"MEDIUM"}],"issueStatus":"OPEN","projectName":"HighestGoodNetworkApp"}],"components":[{"organization":"onecommunityglobal","key":"OneCommunityGlobal_HighestGoodNetworkApp","uuid":"AZnF4puuDsOhetXBcabH","enabled":true,"qualifier":"TRK","name":"HighestGoodNetworkApp","longName":"HighestGoodNetworkApp","pullRequest":"4054"},{"organization":"onecommunityglobal","key":"OneCommunityGlobal_HighestGoodNetworkApp:src/components/Projects/WBS/WBSDetail/WBSTasks.jsx","uuid":"AZnRU2j4CG59FxruBTQv","enabled":true,"qualifier":"FIL","name":"WBSTasks.jsx","longName":"src/components/Projects/WBS/WBSDetail/WBSTasks.jsx","path":"src/components/Projects/WBS/WBSDetail/WBSTasks.jsx","pullRequest":"4054"}],"organizations":[{"key":"onecommunityglobal","name":"One Community"}],"facets":[]}
+{
+  "total": 2,
+  "p": 1,
+  "ps": 500,
+  "paging": { "pageIndex": 1, "pageSize": 500, "total": 2 },
+  "effortTotal": 6,
+  "debtTotal": 6,
+  "issues": [
+    {
+      "key": "AZoEHka-zWUHlKwwamic",
+      "rule": "javascript:S1481",
+      "severity": "MINOR",
+      "component": "OneCommunityGlobal_HighestGoodNetworkApp:src/components/Projects/WBS/WBSDetail/WBSTasks.jsx",
+      "project": "OneCommunityGlobal_HighestGoodNetworkApp",
+      "line": 29,
+      "hash": "65e76d7513e47400427dd2f2eb5191cc",
+      "textRange": { "startLine": 29, "endLine": 29, "startOffset": 21, "endOffset": 34 },
+      "flows": [],
+      "status": "OPEN",
+      "message": "Remove the declaration of the unused \u0027setShowImport\u0027 variable.",
+      "effort": "5min",
+      "debt": "5min",
+      "tags": ["unused"],
+      "creationDate": "2025-10-18T02:48:20+0000",
+      "updateDate": "2025-10-18T02:48:35+0000",
+      "type": "CODE_SMELL",
+      "organization": "onecommunityglobal",
+      "pullRequest": "4054",
+      "cleanCodeAttribute": "CLEAR",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "impacts": [{ "softwareQuality": "MAINTAINABILITY", "severity": "LOW" }],
+      "issueStatus": "OPEN",
+      "projectName": "HighestGoodNetworkApp"
+    },
+    {
+      "key": "AZoEHka-zWUHlKwwamid",
+      "rule": "javascript:S1854",
+      "severity": "MAJOR",
+      "component": "OneCommunityGlobal_HighestGoodNetworkApp:src/components/Projects/WBS/WBSDetail/WBSTasks.jsx",
+      "project": "OneCommunityGlobal_HighestGoodNetworkApp",
+      "line": 29,
+      "hash": "65e76d7513e47400427dd2f2eb5191cc",
+      "textRange": { "startLine": 29, "endLine": 29, "startOffset": 21, "endOffset": 34 },
+      "flows": [],
+      "status": "OPEN",
+      "message": "Remove this useless assignment to variable \"setShowImport\".",
+      "effort": "1min",
+      "debt": "1min",
+      "tags": ["cwe", "unused"],
+      "creationDate": "2025-10-18T02:48:20+0000",
+      "updateDate": "2025-10-18T02:48:35+0000",
+      "type": "CODE_SMELL",
+      "organization": "onecommunityglobal",
+      "pullRequest": "4054",
+      "cleanCodeAttribute": "LOGICAL",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "impacts": [{ "softwareQuality": "MAINTAINABILITY", "severity": "MEDIUM" }],
+      "issueStatus": "OPEN",
+      "projectName": "HighestGoodNetworkApp"
+    }
+  ],
+  "components": [
+    {
+      "organization": "onecommunityglobal",
+      "key": "OneCommunityGlobal_HighestGoodNetworkApp",
+      "uuid": "AZnF4puuDsOhetXBcabH",
+      "enabled": true,
+      "qualifier": "TRK",
+      "name": "HighestGoodNetworkApp",
+      "longName": "HighestGoodNetworkApp",
+      "pullRequest": "4054"
+    },
+    {
+      "organization": "onecommunityglobal",
+      "key": "OneCommunityGlobal_HighestGoodNetworkApp:src/components/Projects/WBS/WBSDetail/WBSTasks.jsx",
+      "uuid": "AZnRU2j4CG59FxruBTQv",
+      "enabled": true,
+      "qualifier": "FIL",
+      "name": "WBSTasks.jsx",
+      "longName": "src/components/Projects/WBS/WBSDetail/WBSTasks.jsx",
+      "path": "src/components/Projects/WBS/WBSDetail/WBSTasks.jsx",
+      "pullRequest": "4054"
+    }
+  ],
+  "organizations": [{ "key": "onecommunityglobal", "name": "One Community" }],
+  "facets": []
+}

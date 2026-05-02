@@ -1,72 +1,360 @@
-/* DescriptionSection.css */
+/* stylelint-disable */
+/* Description Section */
+.descriptionSection {
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.descriptionSectionDark {
+  background-color: rgba(30, 41, 59, 0.8);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Tabs */
 .tabs {
   display: flex;
   justify-content: space-between;
-  /* Ensures tabs fill the container */
-  border-bottom: 2px solid #ccc;
-  margin-bottom: 16px;
+  border-bottom: 2px solid #e5e7eb;
+  margin-bottom: 20px;
 }
 
-.tab-button {
+.tabsDark {
+  border-bottom-color: #4b5563;
+}
+
+.tabButton {
   flex: 1;
-  /* Ensures all buttons take equal width */
   text-align: center;
-  /* Center-align the text */
-  padding: 12px;
-  font-weight: bold;
+  padding: 16px 12px;
+  font-weight: 600;
+  font-size: 16px;
   border: none;
   background: none;
   cursor: pointer;
+  color: #6b7280;
+  transition: all 0.3s ease;
+  position: relative;
 }
 
-.tab-button.active {
-  color: #1d4ed8;
-  /* Highlight active tab */
-  border-bottom: 2px solid #1d4ed8;
-  /* Bottom border for active tab */
+.tabButtonDark {
+  color: #9ca3af;
 }
 
-.tab-button:hover {
+.tabButton:hover {
+  background-color: #f9fafb;
+  color: #374151;
+}
+
+.tabButtonDark:hover {
+  background-color: #374151;
+  color: #fff;
+}
+
+.tabButtonActive {
+  color: #2563eb;
+  border-bottom: 3px solid #2563eb;
+  background-color: #eff6ff;
+}
+
+.tabButtonActiveDark {
+  color: #60a5fa;
+  border-bottom-color: #60a5fa;
+  background-color: #1e3a8a;
+}
+
+.tabButtonActive:hover {
+  background-color: #dbeafe;
+}
+
+.tabButtonActiveDark:hover {
+  background-color: #1e40af;
+}
+
+/* Tab Content */
+.tabContent {
+  margin-top: 20px;
+  min-height: 200px;
+}
+
+.descriptionParagraph {
+  padding: 12px 0;
+  margin-bottom: 16px;
+  line-height: 1.6;
+  color: #374151;
+  font-size: 16px;
+}
+
+.descriptionParagraphDark {
+  color: #e5e7eb;
+}
+
+.participantEntry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  border-radius: 10px;
   background-color: #f3f4f6;
-  /* Light background on hover */
+  color: #111827;
+  font-weight: 500;
+  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.tab-content {
-  margin-top: 16px;
-  border: none;
+.participantEntryDark {
+  background-color: rgba(148, 163, 184, 0.16);
+  color: #f8fafc;
 }
 
-.description-paragraph {
-  padding-left: 5%;
+.participantEntryNew {
+  border-left: 4px solid #2563eb;
+  box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.25);
+}
+
+.participantEntryDark.participantEntryNew {
+  border-left-color: #60a5fa;
+  box-shadow: inset 0 0 0 1px rgba(96, 165, 250, 0.35);
+}
+
+.participantBadge {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #2563eb;
+}
+
+.participantBadgeDark {
+  color: #93c5fd;
+}
+
+/* Empty state */
+.emptyState {
+  text-align: center;
+  padding: 40px 20px;
+  color: #6b7280;
+  font-style: italic;
+}
+
+.emptyStateDark {
+  color: #9ca3af;
+}
+
+/* Comment entries */
+.commentEntry {
+  display: flex;
+  gap: 12px;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  background-color: #f3f4f6;
+  transition: background-color 0.3s ease;
+}
+
+.commentEntryDark {
+  background-color: rgba(148, 163, 184, 0.16);
+}
+
+.commentAvatar {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.commentContent {
+  flex: 1;
+}
+
+.commentAuthor {
+  margin: 0 0 4px 0;
+  font-weight: 600;
+  font-size: 14px;
+  color: #1f2937;
+}
+
+.commentAuthorDark {
+  color: #f8fafc;
+}
+
+.commentText {
+  margin: 0;
+  font-size: 14px;
+  color: #374151;
+  line-height: 1.5;
+}
+
+.commentTextDark {
+  color: #e5e7eb;
+}
+
+/* Participant rows */
+.participantRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.participantRowDark {
+  color: #fff;
+}
+
+.participantAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #e5e7eb;
+  color: #111827;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.participantAvatarDark {
+  background-color: #374151;
+  color: #fff;
+}
+
+.participantInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.participantName {
+  font-size: 14px;
+}
+
+/* FAQ cards */
+.faqCard {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  background-color: #fff;
+}
+
+.faqCardDark {
+  background-color: #1f2937;
+  border-color: #374151;
+}
+
+.faqQuestionRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
   margin-bottom: 8px;
 }
 
-/* Class-based Dark Mode Support */
-.description-section.dark-mode {
-  background-color: #1e2a3a;
+.faqQBadge {
+  min-width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background-color: #2563eb;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
-.description-section.dark-mode .tabs {
-  border-bottom-color: #3a4a5c;
+.faqQuestionText {
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
 }
 
-.description-section.dark-mode .tab-button {
-  color: #b0b0b0;
+.faqQuestionTextDark {
+  color: #f9fafb;
 }
 
-.description-section.dark-mode .tab-button.active {
-  color: #4a9eff;
-  border-bottom-color: #4a9eff;
+.faqAnswerRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
 }
 
-.description-section.dark-mode .tab-button:hover {
-  background-color: #2a3a4a;
+.faqABadge {
+  min-width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background-color: #10b981;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
-.description-section.dark-mode .tab-content {
-  color: #e0e0e0;
+.faqAnswerText {
+  color: #374151;
+  line-height: 1.5;
+  margin: 0;
 }
 
-.description-section.dark-mode .description-paragraph {
-  color: #b0b0b0;
+.faqAnswerTextDark {
+  color: #d1d5db;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .tabs {
+    flex-direction: column;
+    border-bottom: none;
+  }
+
+  .tabButton {
+    border-bottom: 1px solid #e5e7eb;
+    border-radius: 0;
+  }
+
+  .tabButtonDark {
+    border-bottom-color: #4b5563;
+  }
+
+  .tabButton:last-child {
+    border-bottom: none;
+  }
+
+  .tabButtonActive {
+    border-bottom: 3px solid #2563eb;
+    border-left: 4px solid #2563eb;
+  }
+
+  .tabButtonActiveDark {
+    border-bottom-color: #60a5fa;
+    border-left-color: #60a5fa;
+  }
+}
+
+@media (max-width: 480px) {
+  .descriptionSection {
+    padding: 15px;
+  }
+
+  .tabButton {
+    padding: 12px 8px;
+    font-size: 14px;
+  }
+
+  .descriptionParagraph {
+    font-size: 14px;
+  }
 }

@@ -1,5 +1,11 @@
 import React from 'react';
-import { render, screen, fireEvent, waitForElementToBeRemoved } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  waitForElementToBeRemoved,
+  within,
+} from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { authMock, userProfileMock, rolesMock, themeMock } from '../../../__tests__/mockStates';
 import { renderWithProvider } from '../../../__tests__/utils';
@@ -131,11 +137,9 @@ describe('Badge Component', () => {
           theme: themeMock,
         });
         renderWithProvider(<Badge {...badgeProps} />, { store });
-        expect(
-          screen.getByText(
-            /Bravo! You have earned 13 badges and a personal best of 50 hours in a week!/i,
-          ),
-        ).toBeInTheDocument();
+        expect(screen.getByTestId('total_badges')).toHaveTextContent(
+          /Bravo! You earned 13 badges total and have a personal best of 50 hours in a week!/i,
+        );
       });
     });
 
@@ -188,8 +192,7 @@ describe('Badge Component', () => {
             <Badge {...badgeProps} />
           </Provider>,
         );
-
-        expect(screen.getByText('Bravo! You have earned 1 badge!')).toBeInTheDocument();
+        expect(screen.getByTestId('total_badges')).toHaveTextContent(/Bravo! You earned 1 badge!/i);
       });
     });
   });

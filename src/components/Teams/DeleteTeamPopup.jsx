@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { boxStyle, boxStyleDark } from '~/styles';
-import '../Header/DarkMode.css';
+import '../Header/index.css';
 import { connect, useSelector } from 'react-redux';
 import hasPermission from '~/utils/permissions';
 

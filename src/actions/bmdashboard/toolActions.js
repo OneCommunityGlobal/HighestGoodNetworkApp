@@ -80,3 +80,13 @@ export const fetchToolAvailability = (toolId = '', projectId = '') => {
     }
   };
 };
+
+export const updateTool = async (toolId, body) => {
+  return axios
+    .put(ENDPOINTS.BM_TOOL_BY_ID(toolId), body)
+    .then(res => res)
+    .catch(err => {
+      if (err.response) return err.response;
+      return err.message;
+    });
+};
