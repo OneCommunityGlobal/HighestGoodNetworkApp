@@ -239,10 +239,10 @@ function RatingDistribution({ darkMode }) {
           ],
           backgroundColor: [
             'rgba(106, 79, 247, 0.35)', // 1 star
-            'rgba(106, 79, 247, 0.5)',  // 2 stars
+            'rgba(106, 79, 247, 0.5)', // 2 stars
             'rgba(106, 79, 247, 0.65)', // 3 stars
-            'rgba(106, 79, 247, 0.8)',  // 4 stars
-            'rgba(106, 79, 247, 1)',    // 5 stars
+            'rgba(106, 79, 247, 0.8)', // 4 stars
+            'rgba(106, 79, 247, 1)', // 5 stars
           ],
           borderColor: [
             'rgba(106, 79, 247, 0.6)',
