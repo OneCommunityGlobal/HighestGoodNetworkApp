@@ -135,24 +135,53 @@ function IssueGraph() {
           {graphData.length > 0 && (
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={graphData} margin={{ top: 20, right: 20, left: 0, bottom: 30 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="week" />
-                <YAxis />
-                <Tooltip />
+                <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#3a4a5a' : '#e0e0e0'} />
+
+                <XAxis dataKey="week" tick={{ fill: darkMode ? '#ffffff' : '#666' }} />
+
+                <YAxis tick={{ fill: darkMode ? '#ffffff' : '#666' }} />
+
+                <Tooltip
+                  cursor={{
+                    fill: darkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.05)',
+                  }}
+                  contentStyle={{
+                    backgroundColor: darkMode ? '#253342' : '#fff',
+                    border: '1px solid #555',
+                    color: darkMode ? '#fff' : '#000',
+                  }}
+                  labelStyle={{
+                    color: darkMode ? '#fff' : '#000',
+                  }}
+                  itemStyle={{
+                    color: darkMode ? '#fff' : '#000',
+                  }}
+                />
+
                 <Legend verticalAlign="bottom" height={36} />
+
                 <Bar
                   dataKey="created"
                   fill={darkMode ? '#4fc3f7' : '#007bff'}
                   name="Created Issues"
                 >
-                  <LabelList dataKey="created" position="top" />
+                  <LabelList
+                    dataKey="created"
+                    position="top"
+                    fill={darkMode ? '#ffffff' : '#000000'}
+                  />
                 </Bar>
+
                 <Bar
                   dataKey="resolved"
                   fill={darkMode ? '#81c784' : '#28a745'}
                   name="Resolved Issues"
                 >
-                  <LabelList dataKey="resolved" position="top" />
+                  <LabelList
+                    dataKey="resolved"
+                    position="top"
+                    fill={darkMode ? '#ffffff' : '#000000'}
+                  />
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
