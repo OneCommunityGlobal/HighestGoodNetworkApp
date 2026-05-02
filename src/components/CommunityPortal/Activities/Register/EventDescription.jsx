@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+﻿import { useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import styles from './DescriptionSection.module.css';
 
@@ -22,7 +22,7 @@ const DEFAULT_TAB_CONTENT = {
     { author: 'Alice Brown', comment: 'Excited to collaborate with everyone.' },
   ],
   FAQs: [
-    'Q: What should I bring to the event? `\n` A: Just bring yourself and a positive attitude! All materials will be provided.',
+    'Q: What should I bring to the event?\nA: Just bring yourself and a positive attitude! All materials will be provided.',
     'Q: Is parking available?\nA: Yes, free parking is available in the adjacent lot.',
     'Q: Will there be refreshments?\nA: Light refreshments and coffee will be provided during breaks.',
     'Q: Can I bring a guest?\nA: Unfortunately, this event is for registered participants only.',
@@ -37,7 +37,7 @@ function DescriptionSection({ activity, registrants = [] }) {
     if (Array.isArray(activity?.descriptionParagraphs) && activity.descriptionParagraphs.length) {
       return activity.descriptionParagraphs;
     }
-    if (typeof activity?.description === 'string') {
+    if (typeof activity?.description === 'string' && activity.description.trim()) {
       return activity.description
         .split('\n')
         .map(line => line.trim())
@@ -54,16 +54,10 @@ function DescriptionSection({ activity, registrants = [] }) {
 
     const dynamicEntries = registrants
       .map(reg => {
-        if (!reg?.name) return null;
-        const trimmedName = reg.name.trim();
-        if (!trimmedName) return null;
+        if (!reg?.name?.trim()) return null;
         const title = reg.jobTitle && reg.jobTitle !== 'Participant' ? ` - ${reg.jobTitle}` : '';
-        const label = `${trimmedName}${title}`;
-        return {
-          label,
-          isNew: true,
-          key: label.toLowerCase(),
-        };
+        const label = `${reg.name.trim()}${title}`;
+        return { label, isNew: true, key: label.toLowerCase() };
       })
       .filter(Boolean);
 
@@ -71,29 +65,24 @@ function DescriptionSection({ activity, registrants = [] }) {
       .map(participant => {
         const label = typeof participant === 'string' ? participant.trim() : '';
         if (!label) return null;
-        return {
-          label,
-          isNew: false,
-          key: label.toLowerCase(),
-        };
+        return { label, isNew: false, key: label.toLowerCase() };
       })
       .filter(Boolean);
 
-    const combined = [...dynamicEntries, ...baseEntries];
     const seen = new Set();
-
-    return combined
+    return [...dynamicEntries, ...baseEntries]
       .filter(entry => {
         if (seen.has(entry.key)) return false;
         seen.add(entry.key);
         return true;
       })
       .map(({ label, isNew }) => ({ label, isNew }));
-  }, [activity?.resources, registrants]);
+  }, [activity?.participants, registrants]);
 
-  const participantNameSet = useMemo(() => {
-    return new Set(participantEntries.map(p => p.label.split(' - ')[0].toLowerCase()));
-  }, [participantEntries]);
+  const participantNameSet = useMemo(
+    () => new Set(participantEntries.map(p => p.label.split(' - ')[0].toLowerCase())),
+    [participantEntries],
+  );
 
   const commentEntries = useMemo(() => {
     const baseComments =
@@ -103,19 +92,12 @@ function DescriptionSection({ activity, registrants = [] }) {
 
     return baseComments.map((comment, idx) => {
       if (typeof comment !== 'object') {
-        return {
-          comment,
-          author: `User ${idx + 1}`,
-          isParticipant: false,
-        };
+        return { comment, author: `User ${idx + 1}`, isParticipant: false };
       }
-
-      const isParticipant = participantNameSet.has(comment.author?.toLowerCase().trim());
-
       return {
         comment: comment.comment,
         author: comment.author,
-        isParticipant,
+        isParticipant: participantNameSet.has(comment.author?.toLowerCase().trim()),
       };
     });
   }, [activity?.comments, participantNameSet]);
@@ -125,15 +107,13 @@ function DescriptionSection({ activity, registrants = [] }) {
       return activity.faqs
         .map(faq => {
           if (typeof faq === 'string') return faq;
-          if (faq?.question && faq?.answer) {
-            return `Q: ${faq.question}\nA: ${faq.answer}`;
-          }
+          if (faq?.question && faq?.answer) return `Q: ${faq.question}\nA: ${faq.answer}`;
           return null;
         })
         .filter(Boolean);
     }
     return DEFAULT_TAB_CONTENT.FAQs;
-  }, [activity]);
+  }, [activity?.faqs]);
 
   const tabContent = useMemo(
     () => ({
@@ -172,25 +152,22 @@ function DescriptionSection({ activity, registrants = [] }) {
             const isParticipantTab = activeTab === 'Participants';
             const isCommentTab = activeTab === 'Comments';
             const isFaqTab = activeTab === 'FAQs';
-
             const label = typeof item === 'string' ? item : item.label;
             const isNewParticipant = isParticipantTab && typeof item === 'object' && item.isNew;
 
-            // Handle FAQ formatting
             if (isFaqTab) {
               const lines = label.split('\n');
               const question = lines
-                .find(line => line.startsWith('Q:'))
+                .find(l => l.startsWith('Q:'))
                 ?.replace('Q:', '')
                 .trim();
               const answer = lines
-                .find(line => line.startsWith('A:'))
+                .find(l => l.startsWith('A:'))
                 ?.replace('A:', '')
                 .trim();
-
               return (
                 <div
-                  key={`${activeTab}-${index}`}
+                  key={`faq-${index}`}
                   className={`${styles.faqCard} ${darkMode ? styles.faqCardDark : ''}`}
                 >
                   <div className={styles.faqQuestionRow}>
@@ -203,7 +180,6 @@ function DescriptionSection({ activity, registrants = [] }) {
                       {question}
                     </p>
                   </div>
-
                   <div className={styles.faqAnswerRow}>
                     <span className={styles.faqABadge}>A</span>
                     <p
@@ -218,7 +194,6 @@ function DescriptionSection({ activity, registrants = [] }) {
               );
             }
 
-            // Handle Comments with avatars
             if (isCommentTab) {
               const commentText = item.comment || item;
               const commentAuthor = item.author || `User ${index + 1}`;
@@ -228,10 +203,9 @@ function DescriptionSection({ activity, registrants = [] }) {
                 .slice(0, 2)
                 .join('')
                 .toUpperCase();
-
               return (
                 <div
-                  key={`${activeTab}-${index}`}
+                  key={`comment-${index}`}
                   className={`${styles.commentEntry} ${darkMode ? styles.commentEntryDark : ''}`}
                 >
                   <div className={styles.commentAvatar}>
@@ -255,7 +229,6 @@ function DescriptionSection({ activity, registrants = [] }) {
               );
             }
 
-            // Handle Participants
             if (isParticipantTab) {
               const nameOnly = label.split(' - ')[0];
               const initials = nameOnly
@@ -264,22 +237,13 @@ function DescriptionSection({ activity, registrants = [] }) {
                 .slice(0, 2)
                 .join('')
                 .toUpperCase();
-              const paragraphClasses = [styles.descriptionParagraph];
-              if (darkMode) paragraphClasses.push(styles.descriptionParagraphDark);
-              if (isParticipantTab) {
-                paragraphClasses.push(styles.participantEntry);
-                if (darkMode) paragraphClasses.push(styles.participantEntryDark);
-                if (isNewParticipant) paragraphClasses.push(styles.participantEntryNew);
-              }
-
               return (
                 <div
-                  key={`${activeTab}-${index}`}
+                  key={`participant-${index}`}
                   className={`${styles.participantRow} ${
                     darkMode ? styles.participantRowDark : ''
                   }`}
                 >
-                  {/* Avatar */}
                   <div
                     className={`${styles.participantAvatar} ${
                       darkMode ? styles.participantAvatarDark : ''
@@ -287,11 +251,8 @@ function DescriptionSection({ activity, registrants = [] }) {
                   >
                     {initials}
                   </div>
-
-                  {/* Name + badge */}
                   <div className={styles.participantInfo}>
                     <span className={styles.participantName}>{label}</span>
-
                     {isNewParticipant && (
                       <span
                         className={`${styles.participantBadge} ${
@@ -306,14 +267,12 @@ function DescriptionSection({ activity, registrants = [] }) {
               );
             }
 
-            // Default: Description paragraphs
-            const paragraphClasses = [styles.descriptionParagraph];
-            if (darkMode) paragraphClasses.push(styles.descriptionParagraphDark);
-
             return (
               <p
-                key={`${activeTab}-${index}`}
-                className={paragraphClasses.filter(Boolean).join(' ')}
+                key={`desc-${index}`}
+                className={`${styles.descriptionParagraph} ${
+                  darkMode ? styles.descriptionParagraphDark : ''
+                }`}
               >
                 {label}
               </p>
