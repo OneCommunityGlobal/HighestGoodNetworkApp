@@ -12,6 +12,9 @@ export const ENDPOINTS = {
   USER_PROFILE_UPDATE: `${APIEndpoint}/userprofile/update`,
   ADD_BLUE_SQUARE: userId => `${APIEndpoint}/userprofile/${userId}/addInfringement`,
 
+  TASKS_TRENDS: () => `${APIEndpoint}/tasks/trends`,
+  TASKS_SUMMARY: () => `${APIEndpoint}/tasks/summary`,
+
   TOP_CONVERTED: (limit, startDate, endDate) => {
     const dateParams =
       startDate && endDate
@@ -26,7 +29,6 @@ export const ENDPOINTS = {
         : '';
     return `${APIEndpoint}/job-analytics/least-converted?limit=${limit}${dateParams}`;
   },
-
   MODIFY_BLUE_SQUARE: (userId, blueSquareId) =>
     `${APIEndpoint}/userprofile/${userId}/infringements/${blueSquareId}`,
   
