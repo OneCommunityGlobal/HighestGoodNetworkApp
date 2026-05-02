@@ -12,6 +12,7 @@ function Login() {
   const history = useHistory();
   const location = useLocation();
   const auth = useSelector(state => state.auth);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const [enteredemail, setEnteredemail] = useState('');
   const [enteredPassword, setEnteredPassword] = useState('');
@@ -97,7 +98,7 @@ function Login() {
     <div className={styles.loginContainer}>
       <h1 className={styles.pageTitle}>Highest Good Network</h1>
       <h1 className={styles.pageTitle}> Material Equipemnt Tool Tracker</h1>
-      <div className={styles.formContainer}>
+      <div className={`${styles.formContainer} ${darkMode ? styles.darkBg : ''}`}>
         <Form onSubmit={handleSubmit}>
           {/* Backend/general error */}
           {backendError && (
@@ -116,7 +117,7 @@ function Login() {
                 name="email"
                 id="email"
                 value={enteredemail}
-                className={styles.inputBox}
+                className={`${styles.inputBox} ${darkMode ? styles.darkMail : ''}`}
                 onChange={handleChange}
                 aria-label="email input field"
                 invalid={touched.email && !!fieldErrors.email}
@@ -125,7 +126,7 @@ function Login() {
               />
             </div>
             {touched.email && fieldErrors.email && (
-              <FormFeedback style={{ display: 'block' }} id="email-error">
+              <FormFeedback className="d-block error" id="email-error">
                 {fieldErrors.email}
               </FormFeedback>
             )}

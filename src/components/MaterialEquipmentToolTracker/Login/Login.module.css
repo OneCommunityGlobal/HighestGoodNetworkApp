@@ -1,4 +1,4 @@
-.loginContainer{
+.loginContainer {
     background-color: #353A3F;
     padding: 2em;
     margin-top: -1.5em;
@@ -6,14 +6,14 @@
     min-height: 100vh;
 }
 
-.pageTitle{
+.pageTitle {
     font-size: x-large;
     text-align: center;
     color: #F7F7F7;
     font-weight: 400;
 }
 
-.formContainer{
+.formContainer {
     background-color: #E8F4F9;
     text-align: center;
     padding: 4em;
@@ -23,22 +23,22 @@
     border-radius: 3%;
 }
 
-.heading2{
+.heading2 {
     color: #DF7801;
     font-size: large;
     font-weight: 600;
     padding: 1em;
 }
 
-.inputBox{
-    border: none !important;   
-    background: none !important;   
+.inputBox {
+    border: none !important;
+    background: none !important;
     border-radius: 0 !important;
     text-align: center;
     width: auto;
 }
 
-.inputWrapper{
+.inputWrapper {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -46,21 +46,21 @@
     margin: 1em 0 0;
 }
 
-.inputIcon{
+.inputIcon {
     padding-left: 1em;
 }
 
-.forgetPswd{
+.forgetPswd {
     text-align: right;
     font-size: small;
     padding: 0.5em 0;
 }
 
-.forgetPswd a{    
+.forgetPswd a {
     color: #000 !important;
 }
 
-.logInBtn{
+.logInBtn {
     display: block;
     margin: 1em;
     background-color: #2E5061 !important;
@@ -70,7 +70,7 @@
     font-size: medium;
 }
 
-.infoSec{
+.infoSec {
     color: #DF7801 !important;
     text-align: center;
     font-weight: 400;
@@ -81,8 +81,32 @@
 .formContainer .inputWrapper:focus-within {
     outline: none;
     box-shadow: 0 0 0 2px #cfd5e2;
-  }
+}
 
-.formContainer .inputBox:focus{
+.formContainer .inputBox:focus {
     box-shadow: none !important
-  }
+}
+
+.darkBg {
+    background-color: #121517c9;
+}
+
+span {
+    padding: 0.5em
+}
+
+:global(body.dark-mode) .infoSec,
+:global(body.bm-dashboard-dark) .infoSec {
+    color: #DF7801 !important;
+}
+
+.darkMail:-webkit-autofill,
+.darkMail:-webkit-autofill:hover,
+.darkMail:-webkit-autofill:focus,
+.darkMail:-webkit-autofill:active {
+    /* stylelint-disable-next-line property-no-vendor-prefix */
+    -webkit-box-shadow: 0 0 0 1000px #1a1a1a inset !important;
+    -webkit-text-fill-color: #fff !important;
+    caret-color: #fff;
+    transition: background-color 5000s ease-in-out 0s;
+}
