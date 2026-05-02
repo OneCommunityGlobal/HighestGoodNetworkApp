@@ -6,6 +6,7 @@
  **************************************************************** */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Container } from 'reactstrap';
 import { Table } from 'react-bootstrap';
@@ -794,6 +795,50 @@ class UserManagement extends React.PureComponent {
     );
   }
 }
+
+UserManagement.propTypes = {
+  dispatch: PropTypes.func,
+  getAllRoles: PropTypes.func,
+  getAllTimeOffRequests: PropTypes.func,
+  getAllUserProfile: PropTypes.func,
+  deleteUser: PropTypes.func,
+  enableEditUserInfo: PropTypes.func,
+  disableEditUserInfo: PropTypes.func,
+  hasPermission: PropTypes.func,
+  state: PropTypes.shape({
+    theme: PropTypes.shape({
+      darkMode: PropTypes.bool,
+    }).isRequired,
+    auth: PropTypes.shape({
+      user: PropTypes.shape({
+        role: PropTypes.string,
+      }),
+    }).isRequired,
+    userProfile: PropTypes.shape({
+      email: PropTypes.string,
+      jobTitle: PropTypes.string,
+    }).isRequired,
+    allUserProfiles: PropTypes.shape({
+      userProfiles: PropTypes.array,
+    }).isRequired,
+    role: PropTypes.shape({
+      roles: PropTypes.array,
+    }).isRequired,
+    timeOffRequests: PropTypes.shape({
+      requests: PropTypes.object,
+    }).isRequired,
+    userPagination: PropTypes.shape({
+      pagestats: PropTypes.shape({
+        selectedPage: PropTypes.number,
+        pageSize: PropTypes.number,
+      }).isRequired,
+      editable: PropTypes.bool,
+    }).isRequired,
+    userProfileEdit: PropTypes.shape({
+      editable: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
+    }).isRequired,
+  }).isRequired,
+};
 
 const mapStateToProps = (state) => {
   return { state };

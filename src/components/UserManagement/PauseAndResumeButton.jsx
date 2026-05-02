@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Button } from 'reactstrap';
@@ -99,4 +100,15 @@ function PauseAndResumeButton(props) {
     </>
   );
 }
+
+PauseAndResumeButton.propTypes = {
+  darkMode: PropTypes.bool,
+  isBigBtn: PropTypes.bool,
+  loadUserProfile: PropTypes.func.isRequired,
+  userProfile: PropTypes.shape({
+    _id: PropTypes.string,
+    isActive: PropTypes.bool,
+  }).isRequired,
+};
+
 export default PauseAndResumeButton;

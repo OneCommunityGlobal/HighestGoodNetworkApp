@@ -435,7 +435,7 @@ const UserTableDataComponent = props => {
 
       {/* PAUSE/RESUME */}
       <td>
-        {!canInteractWithPauseUserButton ? (
+        {canInteractWithPauseUserButton ? null : (
           <Tooltip
             placement="bottom"
             isOpen={tooltipPauseOpen}
@@ -444,8 +444,6 @@ const UserTableDataComponent = props => {
           >
             You don&apos;t have permission to change user status
           </Tooltip>
-        ) : (
-          ''
         )}
         <button
           type="button"
