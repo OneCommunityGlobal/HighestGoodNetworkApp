@@ -69,6 +69,12 @@
   color: #333;
 }
 
+/* Select specific sizing */
+.filters select {
+  height: 48px;
+}
+
+/* Dark mode input */
 .darkModeInput {
   background-color: #1e2a3a !important;
   color: #fff !important;
@@ -76,12 +82,13 @@
   color-scheme: dark;
 }
 
-/* Date picker icon fix for dark mode */
+/* Date picker icon fix */
 .darkModeInput[type="date"]::-webkit-calendar-picker-indicator {
   filter: invert(1);
   cursor: pointer;
 }
 
+/* Focus */
 .filters input:focus,
 .filters select:focus {
   outline: none;
@@ -113,7 +120,6 @@
   box-shadow: none;
   border: 1px solid #3a4a5c;
   border-radius: 0;
-  margin: 0 auto;
 }
 
 .activityList ul {
@@ -139,6 +145,7 @@
   box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
 }
 
+/* Dark item */
 .darkModeItem {
   background-color: #1e2a3a !important;
   border: 1px solid #3a4a5c !important;
@@ -151,6 +158,7 @@
   box-shadow: none !important;
 }
 
+/* Text */
 .activityItem strong {
   color: #1e3a8a;
   font-size: 1.2rem;
@@ -206,7 +214,6 @@
 
 .clearFiltersButton:hover:not(:disabled) {
   transform: scale(1.05);
-  background-color: #f9fafb;
 }
 
 .clearFiltersButtonDark {
@@ -219,7 +226,7 @@
   background: #111c33;
 }
 
-/* Suggestions Dropdown */
+/* Suggestions */
 .suggestions {
   position: absolute;
   top: 100%;
@@ -269,13 +276,20 @@
   border-radius: 6px;
   margin-top: 5px;
   font-size: 1rem;
+  transition: all 0.3s ease;
 }
 
 .showPastToggle input[type="checkbox"] {
   width: 18px;
   height: 18px;
+  margin: 0;
   cursor: pointer;
   accent-color: #3b82f6;
+}
+
+.showPastToggle input[type="checkbox"]:focus-visible {
+  outline: none;
+  border-radius: 4px;
 }
 
 .darkShowPastToggle {

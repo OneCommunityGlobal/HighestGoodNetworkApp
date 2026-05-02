@@ -3,7 +3,7 @@ import axios from 'axios';
 import styles from './FinancialStatButtons.module.css';
 
 function formatCurrency(amount) {
-  if (amount === null || amount === undefined || Number.isNaN(Number(amount))) return '-';
+  if (amount === null || amount === undefined || Number.isNaN(Number(amount))) return '$0';
   try {
     return new Intl.NumberFormat(undefined, {
       style: 'currency',
@@ -15,7 +15,7 @@ function formatCurrency(amount) {
   }
 }
 
-export default function FinancialStatButtons({ defaultProjectId }) {
+export default function FinancialStatButtons({ defaultProjectId, darkMode }) {
   const [projects, setProjects] = useState([]); // [{ id, name }]
   const [projectId, setProjectId] = useState(defaultProjectId || '');
   const [loading, setLoading] = useState(true);
@@ -160,7 +160,8 @@ export default function FinancialStatButtons({ defaultProjectId }) {
   }, [apiBase, projectId]);
 
   return (
-    <div className={styles.container}>
+    /* Apply darkMode to the top-level container so the whole component follows the theme */
+    <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
       <div className={styles.controlsRow}>
         <label htmlFor="financials-project" className={styles.label}>
           Project
@@ -190,27 +191,45 @@ export default function FinancialStatButtons({ defaultProjectId }) {
 
       {!loading && !error && (
         <div className={styles.grid}>
-          <button type="button" className={styles.kpiButton} aria-label="Total Project Cost">
+          <button
+            type="button"
+            className={`${styles.kpiButton} ${styles.projectCost}`}
+            aria-label="Total Project Cost"
+          >
             <span className={styles.label}>Total Project Cost</span>
             <span className={styles.value}>{formatCurrency(totalCost)}</span>
           </button>
 
-          <button type="button" className={styles.kpiButton} aria-label="Material Cost">
+          <button
+            type="button"
+            className={`${styles.kpiButton} ${styles.materialCost}`}
+            aria-label="Material Cost"
+          >
             <span className={styles.label}>Material Cost</span>
             <span className={styles.value}>{formatCurrency(materialCost)}</span>
           </button>
 
-          <button type="button" className={styles.kpiButton} aria-label="Labor Cost">
+          <button
+            type="button"
+            className={`${styles.kpiButton} ${styles.laborCost}`}
+            aria-label="Labor Cost"
+          >
             <span className={styles.label}>Labor Cost</span>
             <span className={styles.value}>{formatCurrency(laborCost)}</span>
           </button>
 
-          <button type="button" className={styles.kpiButton} aria-label="Equipment Cost">
+          <button
+            type="button"
+            className={`${styles.kpiButton} ${styles.equipmentCost}`}
+            aria-label="Equipment Cost"
+          >
             <span className={styles.label}>Equipment Cost</span>
             <span className={styles.value}>{formatCurrency(equipmentCost)}</span>
+
             {mom?.equipmentCostChange !== undefined && (
               <span className={styles.subtext}>
-                MoM: {Number(mom.equipmentCostChange).toFixed(2)}%
+                {mom.equipmentCostChange > 0 ? '▲' : '▼'}{' '}
+                {Math.abs(mom.equipmentCostChange).toFixed(1)}%
               </span>
             )}
           </button>

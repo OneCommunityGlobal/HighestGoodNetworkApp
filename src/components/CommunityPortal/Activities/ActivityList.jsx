@@ -3,7 +3,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import styles from './ActivityList.module.css';
-import { mockActivities } from './mockactivities';
+import { mockActivities } from './mockActivities';
 
 function ActivityList() {
   const [activities, setActivities] = useState([]);
@@ -46,7 +46,6 @@ function ActivityList() {
         setLoading(true);
         setError(null);
 
-        // Simulated API failure fallback
         throw new Error('API not implemented yet');
       } catch (err) {
         setError(err.message);
@@ -65,7 +64,7 @@ function ActivityList() {
     fetchActivities();
   }, []);
 
-  // Reset page on filter/sort change
+  // Reset pagination on filter/sort change
   useEffect(() => {
     setCurrentPage(1);
   }, [filter, sortOrder, showPastEvents]);
@@ -132,7 +131,7 @@ function ActivityList() {
       return sortOrder === 'earliest' ? dateA - dateB : dateB - dateA;
     });
 
-  // Pagination (AFTER filtering)
+  // Pagination
   const totalPages = Math.ceil(filteredActivities.length / itemsPerPage);
   const safePage = Math.min(currentPage, totalPages || 1);
   const startIndex = (safePage - 1) * itemsPerPage;
@@ -185,8 +184,8 @@ function ActivityList() {
             onChange={handleSortChange}
             className={darkMode ? styles.darkModeInput : ''}
           >
-            <option value="earliest">Earliest to Latest</option>
-            <option value="latest">Latest to Earliest</option>
+            <option value="earliest">Start Time: Earliest to Latest</option>
+            <option value="latest">Start Time: Latest to Earliest</option>
           </select>
         </label>
 
@@ -238,6 +237,7 @@ function ActivityList() {
                 onClick={() => handleActivityClick(activity)}
                 tabIndex={0}
                 role="button"
+                aria-label={`View details for ${activity.name}`}
                 onKeyDown={e => {
                   if (e.key === 'Enter' || e.key === ' ') {
                     handleActivityClick(activity);
@@ -286,7 +286,7 @@ function ActivityList() {
         <ModalHeader toggle={handleCloseModal}>{selectedActivity?.name}</ModalHeader>
         <ModalBody>
           {selectedActivity && (
-            <>
+            <div>
               <p>
                 <strong>Type:</strong> {selectedActivity.type}
               </p>
@@ -302,7 +302,7 @@ function ActivityList() {
               <p>
                 <strong>Description:</strong> {selectedActivity.description}
               </p>
-            </>
+            </div>
           )}
         </ModalBody>
         <ModalFooter>

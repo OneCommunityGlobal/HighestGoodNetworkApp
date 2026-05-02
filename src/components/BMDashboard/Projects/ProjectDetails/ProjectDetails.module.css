@@ -1,163 +1,166 @@
-.project-details {
+.projectDetails {
   text-align: center;
   padding-top: 20px;
   padding-left: 3%;
   padding-right: 3%;
-  /* margin-top: 40px;
-  margin-bottom: 20px; */
   font-weight: bold;
-}
-.project-details-dark {
-  text-align: center;
-  padding-top: 20px;
-  padding-left: 3%;
-  padding-right: 3%;
-/*   margin-top: 40px;
   margin-bottom: 20px;
- */  font-weight: bold;
-  background-color: #1C1E1C;
+  min-height: 100vh;
 }
 
-.project-details-title {
-  font-size: 1.5rem;
-}
-
-.project-details-title-dark {
-  font-size: 1.5rem;
+.darkMode .projectDetails {
+  background-color: #1b2a41;
   color: white;
 }
-
-/* styling for the logBar component - i.e. dashboard with buttons */
-
-.log-bar {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  margin: 2em;
-  padding: 1em 2em;
-  width: 100%;
-  background-color: white;
-  color: #333333;
+.projectDetailsTitle {
+  font-size: 1.5rem;
+  overflow: hidden;
 }
 
-.log-bar-dark {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  margin: 2em;
-  padding: 1em 2em;
-  width: 100%;
+.darkMode .projectDetailsTitle {
+  color: white;
   background-color: #1b2a41;
-  color: #ffffff;
 }
 
-.log-bar__section {
+/* styling for the logBar component */
+.logBar {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #eaeeef;
+}
+
+.darkMode .logBar {
+  background-color: #2e5061;
+  border: 1px solid #4b5563;
+}
+
+.logBarSection {
   width: 100%;
   margin-top: 1em;
+  background-color: transparent;
 }
 
-.log-bar__section h2,
-.card.cards-container h2,
-.project-log h2 {
+.logBarSection h2,
+.cardsContainer h2,
+.projectLog h2 {
+  margin-top: 0.5em;
   font-size: 1em;
+  margin-bottom: 1em;
   font-weight: bold;
-  color: #333333;
 }
 
-.log-bar-dark .log-bar__section h2,
-.log-bar-dark .card.cards-container h2,
-.log-bar-dark .project-log h2 {
-  color: #ffffff !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-.log-bar__section ul {
+.logBarSection ul {
   list-style-type: none;
 }
 
-.button.btn {
+.logBarBtnGroup {
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Base */
+.buttonBtn {
   border: 0;
   border-radius: 10px;
-  margin: 0.1em;
-  width: 100%;
-  color: #ffffff !important;
-  font-weight: 500;
+  padding: 0.5em 1em;
+  cursor: pointer;
+  transition: transform 0.2s ease, filter 0.2s ease;
+  min-width: 100px;
+  color: #fff;
 }
 
-.button.btn:hover {
-  outline: auto;
-  filter: brightness(130%);
-  color: #ffffff !important;
+/* LIGHT MODE hover */
+.buttonBtn:hover {
+  color: #fff; /* prevent blue text */
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45); /* prevent underline */
 }
 
-/* buttons custom colors */
-.button.btn.button--green {
+/* LIGHT MODE COLORS */
+.green {
   background-color: #015d4a;
-  color: #ffffff !important;
 }
 
-.button.btn.button--blue {
+.blue {
   background-color: #0f6386;
-  color: #ffffff !important;
 }
 
-.button.btn.button--indigo {
+.indigo {
   background-color: #203844;
-  color: #ffffff !important;
 }
 
-.button.btn.button--maroon {
+.maroon {
   background-color: #980101;
-  margin-top: 2em;
-  color: #ffffff !important;
+}
+
+/* DARK MODE COLORS */
+.darkMode .green {
+  background-color: #014d3d;
+}
+
+.darkMode .blue {
+  background-color: #0b4c6a;
+}
+
+.darkMode .indigo {
+  background-color: #1b2f44;
+}
+
+.darkMode .maroon {
+  background-color: #7a0101;
 }
 
 @media (min-width: 550px) {
-  .log-bar {
-    display: flex;
+  .logBar {
     flex-direction: column;
   }
 
-  .log-bar__btn-group {
+  .logBarBtnGroup {
     margin-top: -0.5em;
     display: flex;
     justify-content: center;
   }
 
-  .button.btn.btn-secondary {
+  .buttonBtn.btnSecondary {
     width: auto;
   }
 
-  .button.btn.btn-secondary.button--maroon {
+  .buttonBtn.btnSecondary.maroon {
     margin-top: auto;
   }
 }
 
 @media (min-width: 880px) {
-  .log-bar {
-    display: flex;
+  .logBar {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
-    margin: 2em;
   }
 
-  .log-bar__section {
+  .logBarSection {
     width: 50%;
     flex: auto;
   }
 
-  .button.btn.btn-secondary {
+  .buttonBtn.btnSecondary {
     width: auto;
   }
 
-  .button.btn.btn-secondary.button--maroon {
+  .buttonBtn.btnSecondary.maroon {
     margin-left: 2em;
   }
 }
 
-/* styling for containers with cards */
-.card.cards-container {
+.cardsContainer {
   align-items: center;
   margin: 1em 2em;
   padding: 1em;
@@ -166,16 +169,17 @@
   overflow: hidden;
 }
 
-.cards-container__content {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  width: 100%;
-  gap: 10px;
+.darkMode .cardsContainer {
+  background-color: #374151;
+  color: #e5e7eb;
+  border: 1px solid #4b5563;
 }
 
-/* styling for single card element */
-.single-card {
+.darkMode .cardsContainer h2 {
+  color: #60a5fa;
+}
+
+.singleCard {
   border: 1px solid #eaeeef;
   border-radius: 5px;
   text-align: center;
@@ -184,45 +188,47 @@
   overflow: hidden;
 }
 
-.single-card__img {
+.darkMode .singleCard {
+  background-color: #4b5563;
+  border: 1px solid #6b7280;
+  color: #e5e7eb;
+}
+
+.singleCard:hover {
+  box-shadow: 0 20px 20px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2);
+  transform: translate3d(0.5px, 0.5px, 0.5px);
+}
+
+.darkMode .singleCard:hover {
+  box-shadow: 0 20px 20px 0 rgba(0, 0, 0, 0.4), 0 6px 20px 0 rgba(0, 0, 0, 0.4);
+}
+
+.singleCardImg {
   width: 100%;
   height: auto;
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  background-color: #ffffff;
-  border-radius: 5px 5px 0 0;
 }
 
-.single-card__img img {
+.singleCardImg img {
   max-width: 100%;
   height: auto;
-  object-fit: cover;
-  image-rendering: auto;
-  filter: none;
-  -webkit-filter: none;
-  backface-visibility: hidden;
-  transform: translateZ(0);
+  object-fit: contain;
 }
 
-.single-card:hover {
-  box-shadow: 0 20px 20px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2);
-  transform: translate3d(0.5px, 0.5px, 0.5px);
-}
-
-.single-card__body {
+.singleCardBody {
   margin-top: 0.5em;
   padding: 0.5em;
 }
 
-.single-card__body h3 {
+.singleCardBody h3 {
   font-size: 1em;
   margin-bottom: -0.2em;
 }
 
-/* button on a card */
-.single-card__info {
+.singleCardInfo {
   font-size: 0.5rem;
   padding: 1em;
   margin: 0.5em;
@@ -230,14 +236,51 @@
   background-color: #f2c897;
 }
 
-/* TO DO: dynamic value to be added */
-/* .single-card__info .warning{
-  color: white;
-  background-color: #980101;
-} */
+.darkMode .singleCardInfo {
+  background-color: #92400e;
+  color: #fef3c7;
+}
+
+/* cards container content */
+.cardsContainerContent {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  gap: 10px;
+}
+
+/* project log table */
+.projectLog {
+  width: 100%;
+  font-weight: lighter;
+  white-space: nowrap;
+  border-radius: 8px;
+}
+
+.darkMode .projectLog {
+  background-color: #374151;
+  color: #e5e7eb;
+}
+
+.darkMode .projectLog thead {
+  background-color: #4b5563;
+  color: #e5e7eb;
+}
+
+.darkMode .projectLog td,
+.darkMode .projectLog th {
+  color: #e5e7eb;
+}
+
+.darkMode .projectLog thead:hover {
+  background-color: #6b7280;
+  color: #f8fafc;
+}
 
 @media (min-width: 992px) {
-  .single-card {
+  .singleCard {
     width: calc(33.333% - 20px);
     max-width: 180px;
     margin-bottom: 15px;
@@ -245,40 +288,61 @@
 }
 
 @media (min-width: 576px) and (max-width: 991px) {
-  .single-card {
+  .singleCard {
     width: calc(50% - 15px);
     max-width: 180px;
     margin-bottom: 15px;
   }
 }
+
 @media (max-width: 575px) {
-  .single-card {
+  .singleCard {
     width: 90%;
     max-width: 180px;
     margin-bottom: 15px;
   }
 }
 
-/* styling for project log - i.e.table at the bottom */
-.project-log {
-  margin: 2em;
-  padding: 1em 2em;
-  width: 100%;
-  font-weight: lighter;
-  white-space: nowrap;
-}
-
-.project-log thead {
-  background-color: transparent;
-}
-
 @media (max-width: 768px) {
-  .project-log td,
-  .project-log th {
+  .projectLog td,
+  .projectLog th {
     font-size: 0.6em;
   }
 }
 
-ul.log-bar__btn-group {
-  padding: 0px;
+ul.logBarBtnGroup {
+  padding: 5;
+} /* Row containing the RentedTools and Materials columns */
+
+/* Each column within the cardsRow */
+.cardsRow {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between; /* spread out columns */
+  gap: 1.5em;
+  margin-top: 2em;
+}
+
+.cardsCol {
+  flex: 1 1 45%; /* occupy roughly half of the row */
+  min-width: 350px; /* don't shrink too small */
+}
+
+/* Optional wrapper for padding/background */
+.cardsCol > * {
+  padding: 1em;
+  border-radius: 8px;
+  background-color: #f9fafb;
+}
+
+.darkMode .cardsCol > * {
+  background-color: #4b5563;
+  color: #e5e7eb;
+}
+
+@media (max-width: 992px) {
+  .cardsCol {
+    flex: 1 1 100%; /* stack on smaller screens */
+    min-width: unset;
+  }
 }
