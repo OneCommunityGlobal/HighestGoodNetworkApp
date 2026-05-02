@@ -77,6 +77,16 @@ body {
   margin: 0 15px 18px;
 }
 
+@media (max-width: 640px) {
+  .filterBar {
+    grid-template-columns: 1fr;
+  }
+
+  .currentMetric {
+    justify-self: start;
+  }
+}
+
 .filterLabel {
   font-size: 12px;
   color: #4a4a4a;
@@ -257,6 +267,18 @@ body {
 /* Comparing Villages Chart Filters */
 .comparingChart {
   width: 100%;
+}
+
+/* Allow pie chart outer labels to overflow SVG/container bounds without clipping */
+.comparingChart :global(.recharts-responsive-container),
+.comparingChart :global(.recharts-wrapper),
+.comparingChart :global(.recharts-surface) {
+  overflow: visible !important;
+}
+
+.datePickerWrapper {
+  width: 100% !important;
+  display: block;
 }
 
 .filtersContainer {
@@ -579,9 +601,10 @@ body {
 }
 
 .darkCard {
-  background: #1c2541;
+  background: #1c2541 !important;
   border-color: #3a506b;
   box-shadow: 0 4px 16px #1c1c1c;
+  color: #e1e1e1;
 }
 
 .darkCardBody {
