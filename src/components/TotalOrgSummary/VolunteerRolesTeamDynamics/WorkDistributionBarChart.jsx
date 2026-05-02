@@ -1,7 +1,7 @@
 import CustomTooltip from '../../CustomTooltip';
 import Loading from '~/components/common/Loading';
 import { ResponsiveContainer, BarChart, XAxis, YAxis, Tooltip, Legend, Bar, Cell } from 'recharts';
-import './WorkDistributionBarChart.css';
+import styles from './WorkDistributionBarChart.module.css';
 
 const COLORS = [
   '#14b32b',
@@ -15,7 +15,8 @@ const COLORS = [
 ];
 
 function CustomizedLabel(props) {
-  const { x, y, value, sum, width } = props;
+  const { x, y, value, sum, width, darkMode } = props;
+  const labelColor = darkMode ? '#FFFFFF' : '#333333';
 
   if (!sum || Number.isNaN(sum) || !Number.isFinite(sum) || !Number.isFinite(value)) return null;
 
@@ -25,10 +26,10 @@ function CustomizedLabel(props) {
   return (
     <g>
       <text x={centerX} y={y - 10} textAnchor="middle">
-        <tspan x={centerX} dy="-10" fontSize="0.7em" fontWeight="bold" fill="grey">
+        <tspan x={centerX} dy="-10" fontSize="0.7em" fontWeight="bold" fill={labelColor}>
           {value}
         </tspan>
-        <tspan x={centerX} dy="10" fontSize="0.5em" fontWeight="bold" fill="grey">
+        <tspan x={centerX} dy="10" fontSize="0.5em" fontWeight="bold" fill={labelColor}>
           {`(${percentage}%)`}
         </tspan>
       </text>
@@ -36,7 +37,7 @@ function CustomizedLabel(props) {
   );
 }
 
-export default function WorkDistributionBarChart({ isLoading, workDistributionStats }) {
+export default function WorkDistributionBarChart({ isLoading, workDistributionStats, darkMode }) {
   if (isLoading) {
     return (
       <div className="d-flex justify-content-center align-items-center">
@@ -60,7 +61,8 @@ export default function WorkDistributionBarChart({ isLoading, workDistributionSt
   const totalValues = data.map(item => item.totalHours);
   const sum = totalValues.reduce((acc, val) => acc + val, 0);
 
-  const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  //const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const isDarkMode = Boolean(darkMode);
 
   if (!data.length || !Number.isFinite(sum) || sum === 0) {
     return (
@@ -71,7 +73,7 @@ export default function WorkDistributionBarChart({ isLoading, workDistributionSt
   }
 
   return (
-    <div className="work-distribution-container">
+    <div className={`${styles.workDistributionContainer}`}>
       <div className="work-distribution-chart" style={{ minWidth: 500 }}>
         <ResponsiveContainer width="100%" height="100%" minWidth={400} minHeight={430}>
           <BarChart
@@ -96,7 +98,7 @@ export default function WorkDistributionBarChart({ isLoading, workDistributionSt
                 fontSize: 14,
               }}
             />
-            <Tooltip content={<CustomTooltip yAxisLabel="totalHours" />} />
+            <Tooltip content={<CustomTooltip yAxisLabel="totalHours" darkMode={isDarkMode} />} />
             <Legend />
             <Bar
               dataKey="totalHours"

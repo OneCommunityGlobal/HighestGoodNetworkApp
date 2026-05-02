@@ -7,8 +7,10 @@ import { userPreferencesReducer } from './reducers/listBidDashboard/userPreferen
 import { messagingReducer } from './reducers/listBidDashboard/messagingReducer';
 import { weeklyProjectSummaryReducer } from '~/reducers/bmdashboard/weeklyProjectSummaryReducer';
 import { localReducers, sessionReducers } from './reducers';
+import { weeklySummariesFiltersApi } from './actions/weeklySummariesFilterAction';
+import { kiCalendarApi } from './actions/kiCalendarAction';
 
-const middleware = [thunk];
+const middleware = [thunk, weeklySummariesFiltersApi.middleware, kiCalendarApi.middleware];
 const initialState = {};
 const devTools = window.__REDUX_DEVTOOLS_EXTENSION__
   ? window.__REDUX_DEVTOOLS_EXTENSION__()

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import styles from './DemandOverTime.module.css';
@@ -41,6 +41,11 @@ const DemandOverTime = ({
 }) => {
   const [data, setData] = useState([]);
 
+  const dateRangeBoundsKey = useMemo(() => {
+    if (!dateRange?.length || dateRange.length < 2) return '';
+    return `${moment(dateRange[0]).valueOf()}-${moment(dateRange[1]).valueOf()}`;
+  }, [dateRange]);
+
   useEffect(() => {
     const getItems = () => {
       return compareType === 'villages'
@@ -75,7 +80,8 @@ const DemandOverTime = ({
     };
 
     setTimeout(() => setData(generateDummyData()), 300);
-  }, [compareType, metric, dateRange]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- dateRange bounds are in dateRangeBoundsKey
+  }, [compareType, metric, dateRangeBoundsKey]);
 
   return (
     <div className={`${styles.container} ${darkMode ? styles.darkContainer : ''}`}>

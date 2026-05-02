@@ -1,6 +1,17 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'reactstrap';
+import {
+  Button,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Input,
+  Table,
+  Pagination,
+  PaginationItem,
+  PaginationLink,
+} from 'reactstrap';
 import { connect, useDispatch } from 'react-redux';
 import hasPermission from '~/utils/permissions';
 import { boxStyle, boxStyleDark } from '../../styles';
@@ -14,16 +25,19 @@ import {
   getOwnerMessage,
   updateOwnerMessage,
   deleteOwnerMessage,
+  getOwnerMessageHistory,
 } from '../../actions/ownerMessageAction';
 
 function OwnerMessage({
   auth,
   ownerMessage,
   ownerStandardMessage,
+  ownerMessageHistory,
   darkMode,
   getMessage,
   updateMessage,
   deleteMessage,
+  getMessageHistory,
 }) {
   const dispatch = useDispatch();
   const { user } = auth;
@@ -32,12 +46,12 @@ function OwnerMessage({
   const [disableButtons, setDisableButtons] = useState(true);
   const [message, setMessage] = useState('');
   const [modal, setModal] = useState(false);
+  const [historyModalOpen, setHistoryModalOpen] = useState(false);
   const [modalDeleteWarning, setModalDeleteWarning] = useState(false);
   const [modalWrongPictureFormatWarning, setModalWrongPictureFormatWarning] = useState(false);
 
   const canEditHeaderMessage = dispatch(hasPermission('editHeaderMessage'));
-
-  const isImage = /;base64/g;
+  const isImageMessage = value => typeof value === 'string' && value.includes(';base64');
 
   function toggle() {
     setModal(!modal);
@@ -101,15 +115,39 @@ function OwnerMessage({
   }
 
   function getContent(messages) {
-    if (isImage.test(messages)) {
+    if (isImageMessage(messages)) {
       return <img src={messages} alt="" className={styles.ownerMessageImg} />;
     }
     return <span className={styles.message}>{messages}</span>;
   }
 
+  function getHistoryContent(messages) {
+    if (isImageMessage(messages)) {
+      return <img src={messages} alt="" className={styles.ownerMessageImg} />;
+    }
+    return <span>{messages}</span>;
+  }
+
+  const formatDateTimePST = date =>
+    new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/Los_Angeles',
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    }).format(new Date(date));
+
+  const page = ownerMessageHistory?.pagination?.page ? ownerMessageHistory.pagination.page : 1;
+  const totalPages = ownerMessageHistory?.pagination?.totalPages
+    ? ownerMessageHistory.pagination.totalPages
+    : 1;
+
   useEffect(() => {
     async function fetchMessages() {
       await getMessage();
+      await getMessageHistory(page, 10);
     }
     fetchMessages();
   }, []);
@@ -126,13 +164,14 @@ function OwnerMessage({
   const headerBg = darkMode ? 'bg-space-cadet' : '';
   const bodyBg = darkMode ? 'bg-yinmn-blue' : '';
   const boxStyling = darkMode ? boxStyleDark : boxStyle;
+  const hasSelectedImage = isImageMessage(message);
 
   return (
     <div className={styles.messageContainer}>
       {ownerMessage ? getContent(ownerMessage) : getContent(ownerStandardMessage)}
 
       {(user.role === 'Owner' || canEditHeaderMessage) && (
-        <div className={styles.iconWrapper}>
+        <span className={styles.iconWrapper}>
           <button
             type="submit"
             className={styles.ownerMessageButton}
@@ -177,7 +216,23 @@ function OwnerMessage({
               />
             </button>
           )}
-        </div>
+          <button
+            type="submit"
+            className={styles.ownerMessageButton}
+            onClick={() => setHistoryModalOpen(true)}
+            aria-label="View owner message edit history"
+          >
+            <i
+              style={{
+                fontSize: '24px',
+                marginLeft: '0.25rem',
+                color: 'white',
+              }}
+              className="fa fa-history"
+              aria-label="View owner message edit history"
+            ></i>
+          </button>
+        </span>
       )}
 
       <Modal isOpen={modal} toggle={() => toggle()} className={fontColor}>
@@ -195,20 +250,25 @@ function OwnerMessage({
             disabled={disableTextInput}
             className={styles.inputs}
           />
-          <p className="paragraph" style={{ marginTop: '1rem' }}>
-            Or upload a picture:
-          </p>
-          <span style={{ marginTop: '-1.25rem', marginBottom: '1rem', fontSize: '.8rem' }}>
-            (max size 1000 x 400 pixels and 100 KB)
-          </span>
-          <Input
-            id="image"
-            name="file"
-            type="file"
-            label="Choose Image"
-            onChange={event => handleImageUpload(event)}
-            className={styles.inputs}
-          />
+          {!hasSelectedImage && (
+            <>
+              <p className="paragraph" style={{ marginTop: '1rem' }}>
+                Or upload a picture:
+              </p>
+              <span style={{ marginTop: '-1.25rem', marginBottom: '1rem', fontSize: '.8rem' }}>
+                (max size 1000 x 400 pixels and 100 KB)
+              </span>
+              <Input
+                id="image"
+                name="file"
+                type="file"
+                label="Choose Image"
+                aria-label="Choose owner message image"
+                onChange={event => handleImageUpload(event)}
+                className={styles.inputs}
+              />
+            </>
+          )}
         </ModalBody>
 
         <ModalFooter
@@ -271,6 +331,104 @@ function OwnerMessage({
           </Button>
         </ModalFooter>
       </Modal>
+
+      {/* Owner Edit History Modal */}
+      <Modal
+        size="xl"
+        isOpen={historyModalOpen}
+        toggle={() => setHistoryModalOpen(false)}
+        className={`${fontColor}`}
+      >
+        <ModalHeader toggle={() => setHistoryModalOpen(false)}>
+          Owner Message Edit History
+        </ModalHeader>
+        <ModalBody className={headerBg}>
+          {!ownerMessageHistory?.data?.length ? (
+            <p>No edit history available.</p>
+          ) : (
+            <>
+              <Table className={styles.ownerHistoryTable}>
+                <thead className={`${darkMode ? 'bg-space-cadet' : ''}`}>
+                  <tr>
+                    <th
+                      className={`${styles.ownerHistorySmallColumn} ${
+                        darkMode ? 'bg-space-cadet' : ''
+                      }`}
+                    >
+                      Date
+                    </th>
+                    <th
+                      className={`${styles.ownerHistorySmallColumn} ${
+                        darkMode ? 'bg-space-cadet' : ''
+                      }`}
+                    >
+                      Edited By
+                    </th>
+                    <th className={`${darkMode ? 'bg-space-cadet' : ''}`}>Action</th>
+                    <th className={`${darkMode ? 'bg-space-cadet' : ''}`}>Old Message</th>
+                    <th className={`${darkMode ? 'bg-space-cadet' : ''}`}>New Message</th>
+                  </tr>
+                </thead>
+                <tbody className={darkMode ? 'bg-yinmn-blue dark-mode' : ''}>
+                  {ownerMessageHistory.data.map((historyItem, index) => (
+                    <tr key={index}>
+                      <td className={styles.ownerHistorySmallColumn}>
+                        <span className={styles.showInTablet}>
+                          <b>Date:</b>
+                        </span>
+                        {formatDateTimePST(historyItem.createdAt)} PST
+                      </td>
+
+                      <td className={styles.ownerHistorySmallColumn}>
+                        <span className={styles.showInTablet}>
+                          <b>Edited By:</b>
+                        </span>
+                        {historyItem.requestorName} ({historyItem.requestorEmail})
+                      </td>
+                      <td>
+                        <span className={styles.showInTablet}>
+                          <b>Action:</b>
+                        </span>
+                        {historyItem.action}
+                      </td>
+                      <td>
+                        <span className={styles.showInTablet}>
+                          <b>Old Message:</b>
+                        </span>
+                        {getHistoryContent(historyItem.oldMessage)}
+                      </td>
+                      <td>
+                        <span className={styles.showInTablet}>
+                          <b>New Message:</b>
+                        </span>
+                        {getHistoryContent(historyItem.newMessage)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+              <Pagination aria-label="Table pagination">
+                <PaginationItem disabled={page === 1}>
+                  <PaginationLink previous onClick={() => getMessageHistory(page - 1, 10)} />
+                </PaginationItem>
+
+                <PaginationItem active>
+                  <PaginationLink>{page}</PaginationLink>
+                </PaginationItem>
+
+                <PaginationItem disabled={page === totalPages}>
+                  <PaginationLink next onClick={() => getMessageHistory(page + 1, 10)} />
+                </PaginationItem>
+              </Pagination>
+            </>
+          )}
+        </ModalBody>
+        <ModalFooter className={bodyBg}>
+          <Button color="secondary" onClick={() => setHistoryModalOpen(false)} style={boxStyling}>
+            Close
+          </Button>
+        </ModalFooter>
+      </Modal>
     </div>
   );
 }
@@ -280,12 +438,14 @@ const mapStateToProps = state => ({
   ownerMessage: state.ownerMessage.message,
   ownerStandardMessage: state.ownerMessage.standardMessage,
   darkMode: state.theme.darkMode,
+  ownerMessageHistory: state.ownerMessage.history,
 });
 
 const mapDispatchToProps = dispatch => ({
   getMessage: () => dispatch(getOwnerMessage()),
   updateMessage: ownerMessage => dispatch(updateOwnerMessage(ownerMessage)),
   deleteMessage: () => dispatch(deleteOwnerMessage()),
+  getMessageHistory: (page, limit) => dispatch(getOwnerMessageHistory(page, limit)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(OwnerMessage);

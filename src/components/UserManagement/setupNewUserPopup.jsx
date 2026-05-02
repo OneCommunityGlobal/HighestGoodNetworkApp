@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import _ from 'lodash';
 import httpService from '../../services/httpService';
 import { ENDPOINTS } from '~/utils/URL';
-import '../Header/index.css';
+import styles from './setupNewUserPopup.module.css';
 
 const SetupNewUserPopupComponent = (props) => {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -90,48 +90,62 @@ const SetupNewUserPopupComponent = (props) => {
         Setup New User
       </ModalHeader>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-        <div className="setup-new-user-popup-section">
-          <label
-            htmlFor="email"
-            className={`setup-new-user-popup-label ${darkMode ? 'text-light' : ''}`}
-          >
-            Email<span className="red-asterisk">* </span>
-          </label>
-          <input
-            type="email"
-            name="email"
-            value={email}
-            onChange={e => {
-              setEmail(e.target.value.toLocaleLowerCase());
-            }}
-            className={`form-control setup-new-user-popup-input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
-            placeholder="Please enter the email address for the new user"
-          />
-          <input
-            type="number"
-            name="weeklyCommittedHours"
-            min={0}
-            max={168}
-            value={weeklyCommittedHours}
-            onKeyDown={e => {
-              if (e.key === 'Backspace' || e.key === 'Delete') {
-                setWeeklyCommittedHours('');
-              }
-            }}
-            onChange={handleCommitedHoursChange}
-            className={`form-control setup-new-user-popup-input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
-            placeholder="weekly committed hours"
-          />
-          <button
-            type="button"
-            className="btn btn-primary"
-            id="setup-new-user-popup-btn"
-            onClick={handelSendLink}
-          >
-            Send Link
-          </button>
+        <div className={styles.setupNewUserSection}>
+                  <div className={styles.setupNewUserRow}>
+            <label
+              htmlFor="email"
+              className={darkMode ? 'text-light' : ''}
+            >
+              Email<span className="red-asterisk">* </span>
+            </label>
+
+            <input
+              type="email"
+              name="email"
+              value={email}
+              onChange={e => {
+                setEmail(e.target.value.toLocaleLowerCase());
+              }}
+              className={`form-control ${
+                darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+              }`}
+              placeholder="Please enter the email address for the new user"
+            />
+          </div>
+
+          <div className={styles.setupNewUserRow}>
+            <input
+              type="number"
+              name="weeklyCommittedHours"
+              min={0}
+              max={168}
+              value={weeklyCommittedHours}
+              onKeyDown={e => {
+                if (e.key === 'Backspace' || e.key === 'Delete') {
+                  setWeeklyCommittedHours('');
+                }
+              }}
+              onChange={handleCommitedHoursChange}
+              className={`form-control ${
+                darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+              }`}
+              placeholder="Weekly committed hours"
+            />
+          </div>
+
+          <div className={styles.setupNewUserActions}>
+            <button
+              type="button"
+              className="btn btn-primary"
+              id="setup-new-user-popup-btn"
+              onClick={handelSendLink}
+            >
+              Send Link
+            </button>
+          </div>
+
           <div
-            className={`setup-new-user-popup-${alert.state}`}
+            className={styles.setupNewUserAlert}
             style={{ visibility: alert.visibility }}
           >
             {alert.message}

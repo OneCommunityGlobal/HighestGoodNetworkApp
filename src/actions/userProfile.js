@@ -77,7 +77,7 @@ export const getUserTasks = userId => {
         toast.info(`Get user task request status is not 200, status message: ${res.statusText}`);
       }
     } catch (error) {
-      toast.error(error);
+      toast.error(error?.message || String(error));
     }
   };
 };

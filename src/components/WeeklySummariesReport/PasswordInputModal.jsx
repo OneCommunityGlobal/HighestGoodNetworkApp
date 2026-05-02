@@ -79,7 +79,7 @@ export default function PasswordInputModal({
 
   const onSubmit = () => {
     setPasswordField('');
-    authorizeWeeklySummariesButton(passwordField);
+    authorizeWeeklySummariesButton();
   };
 
   return (
