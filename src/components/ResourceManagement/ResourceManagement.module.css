@@ -7,7 +7,7 @@
 
 .darkModeResourceManagementDashboard {
   background-color: #1b2a41;
-  color: #ffffff;
+  color: #fff;
 }
 
 /* --- Header Section --- */
@@ -94,6 +94,29 @@
   color: white;
 }
 
+.itemsPerPage {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: 0.95rem;
+}
+
+.itemsPerPage select {
+  padding: 6px 10px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #334155;
+}
+
+.darkModeResourceManagementDashboard .itemsPerPage select {
+  background-color: #172f53;
+  border-color: #2d4a77;
+  color: #fff;
+}
+
 /* --- Table & Column Alignment --- */
 .resourceList {
   background-color: white;
@@ -136,7 +159,7 @@
 }
 
 .resourceItem:hover {
-  background-color: rgba(236, 236, 141, 0.264);
+  background-color: rgb(236 236 141 / 26.4%);
 }
 
 .darkModeResourceManagementDashboard .resourceItem:hover {
@@ -235,13 +258,6 @@
 }
 
 
-.paginationButtonIndexes:hover:not(:disabled),
-.paginationLeft:hover:not(:disabled),
-.paginationRight:hover:not(:disabled) {
-  border-color: #007bff;
-}
-
-
 .activePage {
   border: 1px solid #007bff;
   padding: 6px 12px;
@@ -253,7 +269,7 @@
 .darkModePaginationContainer .paginationRight {
   background-color: #172f53;
   border-color: #2d4a77;
-  color: #ffffff;
+  color: #fff;
 }
 
 .darkModePaginationContainer .activePage {
@@ -265,6 +281,24 @@
 .paginationRight:disabled {
   opacity: 0.3;
   cursor: not-allowed;
+}
+
+.paginationButtonIndexes:hover:not(:disabled),
+.paginationLeft:hover:not(:disabled),
+.paginationRight:hover:not(:disabled) {
+  border-color: #007bff;
+}
+
+.recordCount {
+  margin-top: -10px;
+  padding-bottom: 20px;
+  text-align: center;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.darkModeResourceManagementDashboard .recordCount {
+  color: #cbd5e1;
 }
 
 /* Utilities */

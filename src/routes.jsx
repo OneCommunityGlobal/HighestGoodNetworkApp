@@ -901,6 +901,7 @@ export default (
           fallback
           routePermissions={RoutePermissions.resourceManagement}
         />
+
         {/* Listing and Bidding Routes - Additional routes with parameters */}
         <LBProtectedRoute path="/lbdashboard/listOverview/:id" exact component={ListOveriew} />
         <LBProtectedRoute path="/lbdashboard/masterplan" exact component={MasterPlan} />
