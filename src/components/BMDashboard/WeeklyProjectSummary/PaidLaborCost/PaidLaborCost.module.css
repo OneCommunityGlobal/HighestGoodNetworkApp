@@ -356,17 +356,9 @@
   border-color: #ccc !important;
 }
 
-<<<<<<< HEAD
-:global(.paid-labor-cost-calendar .react-datepicker__month-select),
-:global(.paid-labor-cost-calendar .react-datepicker__year-select) {
-  background-color: #fff !important;
-  border-color: #aeaeae !important;
-  color: #000 !important;
-=======
 .dark-mode .paid-labor-cost-date-range-calendar {
   background-color: var(--card-bg);
   box-shadow: 0 4px 12px rgb(0 0 0 / 30%);
->>>>>>> origin/development
 }
 
 /* Dark mode styles for react-datepicker - applied via calendarClassName prop */
@@ -428,15 +420,8 @@
   font-weight: 600;
 }
 
-<<<<<<< HEAD
-/* Date range selection */
-:global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--in-range) {
-  background-color: rgba(232, 167, 28, 0.3) !important;
-  color: #ffffff !important;
-=======
 .dark-mode .paid-labor-cost-day.in-range {
   background-color: rgb(232 167 28 / 20%); /* var(--button-bg) with opacity */
->>>>>>> origin/development
 }
 
 :global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--in-selecting-range) {
