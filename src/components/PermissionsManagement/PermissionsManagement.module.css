@@ -1,9 +1,10 @@
+/* stylelint-disable declaration-property-value-keyword-no-deprecated, declaration-property-value-no-unknown */
 .permissions-management {
   padding: 0.5rem 1rem;
   width: 40%;
   min-width: 350px;
   margin: 1.5rem auto;
-  box-shadow: 1px 1px 8px rgb(158, 158, 158);
+  box-shadow: 1px 1px 8px rgb(158 158 158);
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -48,6 +49,7 @@
   cursor: pointer;
   padding: 5px;
 }
+
 .user__auto-complete:hover {
   background: #1d62f0;
 }
@@ -57,6 +59,32 @@
   font-size: 1.2rem;
 }
 
+.name-container__btn_columns {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.name-container__btns {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.btn-with-info {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-with-info .info-icon {
+  cursor: pointer;
+  line-height: 1;
+  font-size: 18px;
+  margin: 0;
+}
+
 .user-role-tab__permission {
   border-bottom: solid 1px #ced4da;
   display: flex;
@@ -64,16 +92,17 @@
   align-items: flex-end;
   padding-bottom: 5px;
   padding-top: 5px;
-  word-wrap: break-word;
   overflow-wrap: break-word;
   max-width: 100%;
 }
+
 .permission-label {
   word-break: break-word;
   white-space: normal;
   max-width: calc(100% - 60px);
   margin-right: 10px;
 }
+
 #info-icon__permissions {
   cursor: pointer;
   align-self: flex-end;
@@ -107,11 +136,11 @@
 }
 
 .role-name-container::-webkit-scrollbar-track {
-  background: rgb(0, 0, 0, 0);
+  background: rgb(0 0 0 / 0%);
 }
 
 .role-name-container::-webkit-scrollbar-thumb {
-  background: rgb(206, 212, 218);
+  background: rgb(206 212 218);
   border-radius: 8px;
 }
 
@@ -127,8 +156,19 @@
 }
 
 .role-btn {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent;
   text-align: center;
   flex-grow: 1;
+}
+
+.role-btn:focus,
+.role-btn:active,
+.role-btn:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 .infos {
@@ -166,7 +206,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  box-shadow: 0px 2px 10px black;
+  box-shadow: 0 2px 10px black;
 }
 
 .ReminderTitle{
@@ -174,6 +214,7 @@
   justify-content: center;
   flex: 1;
 }
+
 .ReminderTitle h2{
   color: black;
   font-size: 22px;
@@ -187,7 +228,6 @@
   border-top: 1px solid #ccc;
   text-align: center;
   margin-bottom: 10px;
-  word-wrap: break-word;
   overflow-wrap: break-word;
 }
 
@@ -198,6 +238,7 @@
   width: 100%;
   padding-top: 10px;
 }
+
 .ReminderButton button:first-child{
   height: 80%;
   width: 140px;
@@ -220,13 +261,13 @@
 }
 
  
-@media only screen and (max-width: 1110px) {
+@media only screen and (width <= 1110px) {
   .permissions-management__header {
     flex-direction: column;
   }
 }
 
-@media only screen and (min-width: 300px) {
+@media only screen and (width >= 300px) {
   .ContainerReminder {
     position: absolute;
     width: 400px;
@@ -235,19 +276,21 @@
   }
 }
 
-@media only screen and (min-width: 1200px) {
+@media only screen and (width >= 1200px) {
   .ContainerReminder {
     position: fixed;
     width: 200px;
     top: 35%;
     right: 11%;
   }
+
   .ReminderTitle{
     display: flex;
     justify-content: center;
     flex: 10;
     padding-left: 10px;
   }
+
   .ReminderButton button:first-child{
     height: 100%;
     width: 140px;
@@ -260,11 +303,12 @@
   
 }
 
-@media only screen and (min-width: 1400px) {
+@media only screen and (width >= 1400px) {
   .ContainerReminder {
     width: 300px;
     right: 13%;
   }
+
   .ReminderTitle{
     display: flex;
     justify-content: center;
@@ -273,7 +317,7 @@
   }
 }
 
-@media only screen and (min-width: 1600px) {
+@media only screen and (width >= 1600px) {
   .ContainerReminder {
     width: 400px;
     right: 15%;
@@ -287,12 +331,13 @@
   }
 }
 
-@media only screen and (min-width: 1900px) {
+@media only screen and (width >= 1900px) {
   .ContainerReminder {
     right: 20%;
   }
 }
-@media (max-width: 600px) {
+
+@media (width <= 600px) {
   .ContainerReminder {
     width: 95%;
     max-width: none; 

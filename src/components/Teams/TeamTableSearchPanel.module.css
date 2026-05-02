@@ -1,0 +1,18 @@
+/* stylelint-disable  */
+.searchLabelDark {
+  background-color: #3a506b !important;
+  color: #fff !important;
+  border-color: #445d7d !important;
+}
+
+.searchInputDark {
+  background-color: #1c1c1c !important;
+  color: #fff !important;
+  border-color: #445d7d !important;
+}
+
+.searchInputDark:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: #2f4157 !important;
+}

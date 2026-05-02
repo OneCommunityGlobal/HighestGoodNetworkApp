@@ -19,6 +19,7 @@ import {
 } from 'reactstrap';
 
 import DemandOverTime from './LbAnalytics/DemandOverTime/DemandOverTime';
+import WinningVsAverageBidChart from './LbAnalytics/WinningVsAverageBidChart/WinningVsAverageBidChart';
 import ReviewWordCloud from './ReviewWordCloud/ReviewWordCloud';
 import { CompareBarGraph } from './BarGraphs/CompareGraphs';
 import { ComparePropertiesRatings } from './BarGraphs/ComparePropertiesRatings';
@@ -27,6 +28,7 @@ import httpService from '../../services/httpService';
 import { ApiEndpoint } from '../../utils/URL';
 
 import styles from './LBDashboard.module.css';
+import ConversionFunnel from './LbAnalytics/ConversionFunnel/ConversionFunnel';
 
 function randomInt(min, max) {
   const range = max - min + 1;
@@ -712,6 +714,22 @@ export function LBDashboard() {
           </Row>
         </AnalysisSection>
       )}
+
+      <AnalysisSection title="Conversion Funnel" darkMode={darkMode}>
+        <div className={styles.chartRow}>
+          <div className={styles.fullWidthChartCol}>
+            <ConversionFunnel darkMode={darkMode} />
+          </div>
+        </div>
+      </AnalysisSection>
+
+      <AnalysisSection title="Winning Bid vs Average Bid" darkMode={darkMode}>
+        <div className={styles.chartRow}>
+          <div className={styles.chartCol}>
+            <WinningVsAverageBidChart darkMode={darkMode} />
+          </div>
+        </div>
+      </AnalysisSection>
 
       <AnalysisSection title="Insights from Reviews" darkMode={darkMode}>
         <ReviewWordCloud darkMode={darkMode} />

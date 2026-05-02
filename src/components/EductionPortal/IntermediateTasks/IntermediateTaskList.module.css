@@ -1,7 +1,9 @@
+/* stylelint-disable  */
 .dashboard {
   min-height: 100vh;
   background-color: #f8f9fa;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+    Cantarell, sans-serif;
   padding: 2rem 0;
 }
 
@@ -38,16 +40,16 @@
 }
 
 .taskCard {
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
   border: 1px solid #e5e7eb;
   transition: all 0.2s ease;
 }
 
 .taskCard:hover {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 10%), 0 2px 4px -1px rgb(0 0 0 / 6%);
 }
 
 .taskHeader {
@@ -65,14 +67,14 @@
   font-size: 1.25rem;
   font-weight: 600;
   color: #1a1a1a;
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.5rem;
   line-height: 1.3;
 }
 
 .taskSubtitle {
   font-size: 0.875rem;
   color: #6b7280;
-  margin: 0 0 0.75rem 0;
+  margin: 0 0 0.75rem;
   line-height: 1.4;
 }
 
@@ -111,7 +113,7 @@
   width: 40px;
   height: 40px;
   border: 1px solid #d1d5db;
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -158,8 +160,13 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .emptySubTasks {
@@ -199,13 +206,13 @@
   font-size: 1rem;
   font-weight: 600;
   color: #1a1a1a;
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.5rem;
 }
 
 .subTaskDescription {
   font-size: 0.875rem;
   color: #6b7280;
-  margin: 0 0 0.75rem 0;
+  margin: 0 0 0.75rem;
   line-height: 1.5;
 }
 
@@ -264,7 +271,7 @@
   width: 36px;
   height: 36px;
   border: 1px solid #d1d5db;
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -286,8 +293,8 @@
 .markDoneButton {
   padding: 0.5rem 1rem;
   border: none;
-  background-color: #3b82f6;
-  color: #ffffff;
+  background-color: #1d4ed8;
+  color: #fff;
   border-radius: 6px;
   font-size: 0.875rem;
   font-weight: 500;
@@ -312,7 +319,7 @@
   text-align: center;
   padding: 4rem 2rem;
   color: #6b7280;
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 12px;
   border: 1px solid #e5e7eb;
 }
@@ -332,7 +339,7 @@
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .mainContainer {
     padding: 0 0.5rem;
   }
@@ -370,7 +377,7 @@
 }
 
 :global(.dark-mode) .title {
-  color: #ffffff;
+  color: #fff;
 }
 
 :global(.dark-mode) .subtitle {
@@ -380,15 +387,15 @@
 :global(.dark-mode) .taskCard {
   background-color: #2d2d2d;
   border-color: #404040;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 30%);
 }
 
 :global(.dark-mode) .taskCard:hover {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 40%), 0 2px 4px -1px rgb(0 0 0 / 30%);
 }
 
 :global(.dark-mode) .taskTitle {
-  color: #ffffff;
+  color: #fff;
 }
 
 :global(.dark-mode) .taskSubtitle {
@@ -447,7 +454,7 @@
 }
 
 :global(.dark-mode) .subTaskTitle {
-  color: #ffffff;
+  color: #fff;
 }
 
 :global(.dark-mode) .subTaskDescription {
@@ -502,7 +509,7 @@
 
 :global(.dark-mode) .markDoneButton {
   background-color: #2563eb;
-  color: #ffffff;
+  color: #fff;
 }
 
 :global(.dark-mode) .markDoneButton:hover {
@@ -529,11 +536,11 @@
 :global(.dark-mode .modal-header) {
   background-color: #2d2d2d !important;
   border-bottom-color: #404040 !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 :global(.dark-mode .modal-header .close) {
-  color: #ffffff !important;
+  color: #fff !important;
   opacity: 0.8;
 }
 
@@ -543,7 +550,7 @@
 
 :global(.dark-mode .modal-body) {
   background-color: #2d2d2d !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 :global(.dark-mode .modal-footer) {
@@ -554,14 +561,14 @@
 :global(.dark-mode .form-control) {
   background-color: #1a1a1a !important;
   border-color: #404040 !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 :global(.dark-mode .form-control:focus) {
   background-color: #1a1a1a !important;
   border-color: #60a5fa !important;
-  color: #ffffff !important;
-  box-shadow: 0 0 0 0.2rem rgba(96, 165, 250, 0.25) !important;
+  color: #fff !important;
+  box-shadow: 0 0 0 0.2rem rgb(96 165 250 / 25%) !important;
 }
 
 :global(.dark-mode .form-control::placeholder) {
@@ -575,7 +582,7 @@
 :global(.dark-mode .btn-secondary) {
   background-color: #404040 !important;
   border-color: #525252 !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 :global(.dark-mode .btn-secondary:hover) {
@@ -586,7 +593,7 @@
 :global(.dark-mode .btn-primary) {
   background-color: #2563eb !important;
   border-color: #2563eb !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 :global(.dark-mode .btn-primary:hover) {
@@ -597,12 +604,12 @@
 :global(.dark-mode select.form-control) {
   background-color: #1a1a1a !important;
   border-color: #404040 !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 :global(.dark-mode select.form-control option) {
   background-color: #1a1a1a !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 /* Additional styles for form inputs when using bg-yinmn-blue and bg-space-cadet */
@@ -610,15 +617,15 @@
 :global(.bg-space-cadet .form-control) {
   background-color: #1a1a1a !important;
   border-color: #404040 !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 :global(.bg-yinmn-blue .form-control:focus),
 :global(.bg-space-cadet .form-control:focus) {
   background-color: #1a1a1a !important;
   border-color: #60a5fa !important;
-  color: #ffffff !important;
-  box-shadow: 0 0 0 0.2rem rgba(96, 165, 250, 0.25) !important;
+  color: #fff !important;
+  box-shadow: 0 0 0 0.2rem rgb(96 165 250 / 25%) !important;
 }
 
 :global(.bg-yinmn-blue .form-control::placeholder),
@@ -635,12 +642,11 @@
 :global(.bg-space-cadet select.form-control) {
   background-color: #1a1a1a !important;
   border-color: #404040 !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 :global(.bg-yinmn-blue select.form-control option),
 :global(.bg-space-cadet select.form-control option) {
   background-color: #1a1a1a !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
-
