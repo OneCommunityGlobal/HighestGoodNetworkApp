@@ -269,12 +269,36 @@ export default function LossTrackingLineChart() {
 
           <label>
             <span>Start Date</span>
-            <input type="month" value={startDate} onChange={e => setStartDate(e.target.value)} />
+            <div className={styles.monthInputWrapper}>
+              <input
+                className={styles.monthInput}
+                type="month"
+                value={startDate}
+                onChange={e => setStartDate(e.target.value)}
+              />
+              <span className={styles.monthInputIcon} aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                  <path d="M7 2a1 1 0 0 1 1 1v1h8V3a1 1 0 1 1 2 0v1h1a3 3 0 0 1 3 3v11a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V7a3 3 0 0 1 3-3h1V3a1 1 0 0 1 1-1Zm12 8H5v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-8ZM5 8h14V7a1 1 0 0 0-1-1H6A1 1 0 0 0 5 7v1Z" />
+                </svg>
+              </span>
+            </div>
           </label>
 
           <label>
             <span>End Date</span>
-            <input type="month" value={endDate} onChange={e => setEndDate(e.target.value)} />
+            <div className={styles.monthInputWrapper}>
+              <input
+                className={styles.monthInput}
+                type="month"
+                value={endDate}
+                onChange={e => setEndDate(e.target.value)}
+              />
+              <span className={styles.monthInputIcon} aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                  <path d="M7 2a1 1 0 0 1 1 1v1h8V3a1 1 0 1 1 2 0v1h1a3 3 0 0 1 3 3v11a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V7a3 3 0 0 1 3-3h1V3a1 1 0 0 1 1-1Zm12 8H5v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-8ZM5 8h14V7a1 1 0 0 0-1-1H6A1 1 0 0 0 5 7v1Z" />
+                </svg>
+              </span>
+            </div>
           </label>
 
           <button className={styles.resetBtn} onClick={handleReset} disabled={isDefaultFilters}>
