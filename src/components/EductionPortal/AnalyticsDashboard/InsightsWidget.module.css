@@ -1,8 +1,9 @@
+/* stylelint-disable no-descending-specificity */
 .insightsContainer {
   padding: 24px;
-  background: #ffffff;
+  background: #fff;
   border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
   margin-bottom: 24px;
   transition: all 0.3s ease;
   opacity: 0;
@@ -10,14 +11,15 @@
 
 .insightsContainer.fadeIn {
   opacity: 1;
-  animation: fadeInUp 0.5s ease-out forwards;
+  animation: fade-in-up 0.5s ease-out forwards;
 }
 
-@keyframes fadeInUp {
+@keyframes fade-in-up {
   from {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -26,7 +28,7 @@
 
 .insightsContainer.dark {
   background: #1e293b;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 30%);
 }
 
 /* Header */
@@ -47,7 +49,7 @@
   font-size: 24px;
   font-weight: 600;
   color: #111827;
-  margin: 0 0 4px 0;
+  margin: 0 0 4px;
 }
 
 .insightsContainer.dark .title {
@@ -121,7 +123,7 @@
 }
 
 .summaryCard:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 8%);
   transform: translateY(-2px);
 }
 
@@ -215,7 +217,7 @@
   font-size: 16px;
   font-weight: 600;
   color: #111827;
-  margin: 0 0 20px 0;
+  margin: 0 0 20px;
 }
 
 .insightPanel.darkPanel .panelTitle {
@@ -234,7 +236,7 @@
   align-items: center;
   gap: 12px;
   padding: 12px;
-  background: #ffffff;
+  background: #fff;
   border: 1px solid #e5e7eb;
   border-radius: 6px;
   transition: all 0.2s ease;
@@ -246,15 +248,15 @@
 }
 
 .performerItem:hover {
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 8%);
   transform: translateX(4px);
 }
 
 .performerRank {
   width: 28px;
   height: 28px;
-  background: #3b82f6;
-  color: #ffffff;
+  background: #1d4ed8;
+  color: #fff;
   border-radius: 6px;
   display: flex;
   align-items: center;
@@ -378,7 +380,7 @@
   flex-wrap: wrap;
   gap: 16px;
   padding: 16px;
-  background: #ffffff;
+  background: #fff;
   border: 1px solid #e5e7eb;
   border-radius: 6px;
   margin-bottom: 16px;
@@ -529,7 +531,7 @@
   padding: 48px 24px;
   text-align: center;
   border-radius: 12px;
-  background: #ffffff;
+  background: #fff;
 }
 
 .loading {
@@ -637,7 +639,7 @@
 }
 
 /* Responsive Design */
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
   .contentGrid {
     grid-template-columns: 1fr;
   }
@@ -647,7 +649,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .insightsContainer {
     padding: 16px;
   }
@@ -676,7 +678,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .cardValue {
     font-size: 24px;
   }
