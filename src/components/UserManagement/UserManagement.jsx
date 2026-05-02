@@ -798,7 +798,6 @@ class UserManagement extends React.PureComponent {
 
 UserManagement.propTypes = {
   dispatch: PropTypes.func,
-  getAllRoles: PropTypes.func,
   getAllTimeOffRequests: PropTypes.func,
   getAllUserProfile: PropTypes.func,
   deleteUser: PropTypes.func,
