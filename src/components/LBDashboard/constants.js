@@ -1,50 +1,27 @@
 // Shared constants for LBDashboard components
 
 export const VILLAGE_OPTIONS = [
-  { value: 'Eco Village', label: 'Eco Village' },
-  { value: 'Forest Retreat', label: 'Forest Retreat' },
-  { value: 'Desert Oasis', label: 'Desert Oasis' },
-  { value: 'River Valley', label: 'River Valley' },
-  { value: 'City Sanctuary', label: 'City Sanctuary' },
-];
+  'Eco Village',
+  'Forest Retreat',
+  'Desert Oasis',
+  'River Valley',
+  'City Sanctuary',
+].map(name => ({ value: name, label: name }));
 
-export const PROPERTY_OPTIONS = [
-  {
-    label: 'Eco Village',
-    options: [
-      { value: 'Mountain View', label: 'Mountain View' },
-      { value: 'Solar Haven', label: 'Solar Haven' },
-    ],
-  },
-  {
-    label: 'Forest Retreat',
-    options: [
-      { value: 'Lakeside Cottage', label: 'Lakeside Cottage' },
-      { value: 'Woodland Cabin', label: 'Woodland Cabin' },
-    ],
-  },
-  {
-    label: 'Desert Oasis',
-    options: [
-      { value: 'Tiny Home', label: 'Tiny Home' },
-      { value: 'Earth Ship', label: 'Earth Ship' },
-    ],
-  },
-  {
-    label: 'River Valley',
-    options: [
-      { value: 'Riverside Cabin', label: 'Riverside Cabin' },
-      { value: 'Floating House', label: 'Floating House' },
-    ],
-  },
-  {
-    label: 'City Sanctuary',
-    options: [
-      { value: 'Urban Garden Apartment', label: 'Urban Garden Apartment' },
-      { value: 'Eco Loft', label: 'Eco Loft' },
-    ],
-  },
-];
+const PROPERTY_OPTIONS_BY_VILLAGE = {
+  'Eco Village': ['Mountain View', 'Solar Haven'],
+  'Forest Retreat': ['Lakeside Cottage', 'Woodland Cabin'],
+  'Desert Oasis': ['Tiny Home', 'Earth Ship'],
+  'River Valley': ['Riverside Cabin', 'Floating House'],
+  'City Sanctuary': ['Urban Garden Apartment', 'Eco Loft'],
+};
+
+export const PROPERTY_OPTIONS = Object.entries(PROPERTY_OPTIONS_BY_VILLAGE).map(
+  ([village, properties]) => ({
+    label: village,
+    options: properties.map(name => ({ value: name, label: name })),
+  }),
+);
 
 export const getCustomSelectStyles = (darkMode, minHeight = '38px') => ({
   control: provided => ({

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Bar } from 'react-chartjs-2';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -15,7 +16,7 @@ import { Row, Col, Card, CardBody } from 'reactstrap';
 import { VILLAGE_OPTIONS, PROPERTY_OPTIONS, getCustomSelectStyles } from '../constants';
 import styles from './RatingDistribution.module.css';
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ChartDataLabels);
 
 function applyDateFilter(reviews, selectedDateRange, fromDate, toDate) {
   if (selectedDateRange.value === 'all') return reviews;
@@ -54,6 +55,7 @@ function buildChartOptions(darkMode) {
   return {
     responsive: true,
     maintainAspectRatio: false,
+    backgroundColor: 'transparent',
     plugins: {
       legend: { display: false },
       title: { display: false },
@@ -70,6 +72,13 @@ function buildChartOptions(darkMode) {
             return `${label}: ${value}`;
           },
         },
+      },
+      datalabels: {
+        color: darkMode ? '#fff' : '#333',
+        anchor: 'center',
+        align: 'center',
+        font: { size: 12, weight: 'bold' },
+        formatter: value => (value > 0 ? value : ''),
       },
     },
     scales: {
@@ -229,18 +238,18 @@ function RatingDistribution({ darkMode }) {
             ratingCounts[5],
           ],
           backgroundColor: [
-            'rgba(139, 92, 246, 0.3)', // 1 star - lightest purple
-            'rgba(139, 92, 246, 0.45)', // 2 stars
-            'rgba(139, 92, 246, 0.6)', // 3 stars
-            'rgba(139, 92, 246, 0.75)', // 4 stars
-            'rgba(139, 92, 246, 0.9)', // 5 stars - darkest purple
+            'rgba(106, 79, 247, 0.35)', // 1 star
+            'rgba(106, 79, 247, 0.5)',  // 2 stars
+            'rgba(106, 79, 247, 0.65)', // 3 stars
+            'rgba(106, 79, 247, 0.8)',  // 4 stars
+            'rgba(106, 79, 247, 1)',    // 5 stars
           ],
           borderColor: [
-            'rgba(139, 92, 246, 0.6)',
-            'rgba(139, 92, 246, 0.7)',
-            'rgba(139, 92, 246, 0.8)',
-            'rgba(139, 92, 246, 0.9)',
-            'rgba(139, 92, 246, 1)',
+            'rgba(106, 79, 247, 0.6)',
+            'rgba(106, 79, 247, 0.7)',
+            'rgba(106, 79, 247, 0.85)',
+            'rgba(106, 79, 247, 0.95)',
+            'rgba(106, 79, 247, 1)',
           ],
           borderWidth: 1,
           borderRadius: 8,
@@ -253,9 +262,20 @@ function RatingDistribution({ darkMode }) {
 
   const chartOptions = buildChartOptions(darkMode);
 
+  const canvasBgPlugin = {
+    id: 'canvasBackground',
+    beforeDraw: chart => {
+      const { ctx, width, height } = chart;
+      ctx.save();
+      ctx.fillStyle = darkMode ? '#1c2541' : '#ffffff';
+      ctx.fillRect(0, 0, width, height);
+      ctx.restore();
+    },
+  };
+
   return (
     <Card className={`${styles.ratingCard} ${darkMode ? styles.darkCard : ''}`}>
-      <CardBody>
+      <CardBody className={darkMode ? styles.darkCardBody : ''}>
         {/* Header with Title and Date Range */}
         <div className={styles.header}>
           <h3 className={`${styles.title} ${darkMode ? styles.darkText : ''}`}>
@@ -390,7 +410,7 @@ function RatingDistribution({ darkMode }) {
 
         {/* Chart */}
         <div className={styles.chartContainer}>
-          {chartData && <Bar data={chartData} options={chartOptions} />}
+          {chartData && <Bar data={chartData} options={chartOptions} plugins={[canvasBgPlugin]} />}
         </div>
       </CardBody>
     </Card>

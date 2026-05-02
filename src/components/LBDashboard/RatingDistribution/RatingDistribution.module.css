@@ -5,11 +5,17 @@
   padding: 16px;
   transition: all 0.3s ease;
   min-height: 220px;
+  border: 1px solid #ece7f4;
 }
 
 .darkCard {
-  background-color: #1c2541;
+  background-color: #1c2541 !important;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  border: none !important;
+}
+
+.darkCardBody {
+  background-color: #1c2541 !important;
 }
 
 .header {
@@ -73,10 +79,27 @@
   min-width: 150px;
 }
 
-.darkInput {
-  background-color: #1c2541;
-  border-color: #225163;
-  color: #fff;
+.darkInput,
+.dateInput.darkInput {
+  background-color: #1c2541 !important;
+  border-color: #225163 !important;
+  color: #fff !important;
+  color-scheme: dark;
+}
+
+.darkInput::-webkit-datetime-edit,
+.darkInput::-webkit-datetime-edit-fields-wrapper,
+.darkInput::-webkit-datetime-edit-text,
+.darkInput::-webkit-datetime-edit-month-field,
+.darkInput::-webkit-datetime-edit-day-field,
+.darkInput::-webkit-datetime-edit-year-field,
+.dateInput.darkInput::-webkit-datetime-edit,
+.dateInput.darkInput::-webkit-datetime-edit-fields-wrapper,
+.dateInput.darkInput::-webkit-datetime-edit-text,
+.dateInput.darkInput::-webkit-datetime-edit-month-field,
+.dateInput.darkInput::-webkit-datetime-edit-day-field,
+.dateInput.darkInput::-webkit-datetime-edit-year-field {
+  color: #fff !important;
 }
 
 .dateInput:focus,
