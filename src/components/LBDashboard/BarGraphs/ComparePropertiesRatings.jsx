@@ -2,33 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import { CompareBarGraph } from './CompareGraphs';
-
-function randomInt(min, max) {
-  const range = max - min + 1;
-  if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
-    if (range <= 256) {
-      const arr = new Uint8Array(1);
-      const limit = 256 - (256 % range);
-      let r;
-      do {
-        crypto.getRandomValues(arr);
-        r = arr[0];
-      } while (r >= limit);
-      return min + (r % range);
-    } else {
-      const arr = new Uint32Array(1);
-      const MAX = 0x100000000;
-      const limit = MAX - (MAX % range);
-      let r;
-      do {
-        crypto.getRandomValues(arr);
-        r = arr[0];
-      } while (r >= limit);
-      return min + (r % range);
-    }
-  }
-  return Math.floor(Math.random() * range) + min;
-}
+import { randomInt } from '../lbUtils';
 
 export function ComparePropertiesRatings({
   fromDate,
@@ -56,8 +30,9 @@ export function ComparePropertiesRatings({
       const dateSeed = daysDiff > 0 ? daysDiff / 365 : 0.1;
 
       // Different ranges based on listing/bidding filter
-      const multiplier =
-        listingBiddingFilter === 'bidding' ? 0.85 : listingBiddingFilter === 'listing' ? 1.1 : 1;
+      let multiplier = 1;
+      if (listingBiddingFilter === 'bidding') multiplier = 0.85;
+      else if (listingBiddingFilter === 'listing') multiplier = 1.1;
 
       return properties
         .map(p => {
@@ -65,11 +40,12 @@ export function ComparePropertiesRatings({
 
           // Generate different data based on metric
           switch (selectedMetricKey) {
-            case 'avgRating':
+            case 'avgRating': {
               // Generate ratings between 2.5 and 5.0, affected by filters
               const baseRating = randomInt(250, 500) / 100;
-              value = Math.min(5.0, Math.max(1.0, baseRating * multiplier * dateSeed));
+              value = Math.min(5, Math.max(1, baseRating * multiplier * dateSeed));
               break;
+            }
             case 'pageVisits':
               value = Math.floor(randomInt(20, 150) * multiplier * dateSeed);
               break;
@@ -115,14 +91,13 @@ export function ComparePropertiesRatings({
           yDomain: [0, 5],
           yTicks: [0, 1, 2, 3, 4, 5],
           valueFormatter: v => Number(v).toFixed(2),
-          tooltipLabel: 'Average Rating',
         };
       case 'pageVisits':
         return {
           yLabel: 'Page Visits',
           yDomain: undefined,
           yTicks: undefined,
-          valueFormatter: v => Number(v),
+          valueFormatter: Number,
           tooltipLabel: 'Page Visits',
         };
       case 'numBids':
@@ -130,7 +105,7 @@ export function ComparePropertiesRatings({
           yLabel: 'Number of Bids',
           yDomain: undefined,
           yTicks: undefined,
-          valueFormatter: v => Number(v),
+          valueFormatter: Number,
           tooltipLabel: 'Number of Bids',
         };
       case 'avgBid':
@@ -163,7 +138,7 @@ export function ComparePropertiesRatings({
           yLabel: 'Value',
           yDomain: undefined,
           yTicks: undefined,
-          valueFormatter: v => Number(v),
+          valueFormatter: Number,
           tooltipLabel: 'Value',
         };
     }

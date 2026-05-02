@@ -29,33 +29,7 @@ import { ApiEndpoint } from '../../utils/URL';
 
 import styles from './LBDashboard.module.css';
 import ConversionFunnel from './LbAnalytics/ConversionFunnel/ConversionFunnel';
-
-function randomInt(min, max) {
-  const range = max - min + 1;
-  if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
-    if (range <= 256) {
-      const arr = new Uint8Array(1);
-      const limit = 256 - (256 % range);
-      let r;
-      do {
-        crypto.getRandomValues(arr);
-        r = arr[0];
-      } while (r >= limit);
-      return min + (r % range);
-    } else {
-      const arr = new Uint32Array(1);
-      const MAX = 0x100000000;
-      const limit = MAX - (MAX % range);
-      let r;
-      do {
-        crypto.getRandomValues(arr);
-        r = arr[0];
-      } while (r >= limit);
-      return min + (r % range);
-    }
-  }
-  return Math.floor(Math.random() * range) + min;
-}
+import { randomInt } from './lbUtils';
 
 const METRIC_OPTIONS = {
   DEMAND: [
@@ -444,8 +418,9 @@ export function LBDashboard() {
 
       return villages.map(v => {
         // Different ranges based on listing/bidding filter
-        const multiplier =
-          listingBiddingFilter === 'bidding' ? 0.6 : listingBiddingFilter === 'listing' ? 1.2 : 1;
+        let multiplier = 1;
+        if (listingBiddingFilter === 'bidding') multiplier = 0.6;
+        else if (listingBiddingFilter === 'listing') multiplier = 1.2;
 
         return {
           _id: v.regionId,
@@ -478,23 +453,6 @@ export function LBDashboard() {
     const all = Object.values(METRIC_OPTIONS).flat();
     return (all.find(o => o.key === selectedMetricKey) || {}).label || '';
   };
-
-  // Decide which numeric value to calculate for the bar chart
-  const effectiveMetric = useMemo(() => {
-    switch (selectedMetricKey) {
-      case 'avgBid':
-      case 'finalPrice':
-        return 'avgCurrentBid';
-      case 'pageVisits':
-      case 'numBids':
-      case 'avgRating':
-      case 'occupancyRate':
-      case 'avgStay':
-        return 'totalCurrentBid';
-      default:
-        return 'totalCurrentBid';
-    }
-  }, [selectedMetricKey]);
 
   const valueFormatter = useMemo(() => {
     if (selectedMetricKey === 'avgRating') return v => Number(v).toFixed(2);
@@ -538,12 +496,14 @@ export function LBDashboard() {
           case 'avgStay':
             value = analytics.averageStay || 0;
             break;
-          default:
+          default: {
             // Fallback to old logic for properties.currentBid
             const props = Array.isArray(v.properties) ? v.properties : [];
             const bids = props.map(p => Number(p?.currentBid || 0));
             const sum = bids.reduce((a, b) => a + b, 0);
             value = sum;
+            break;
+          }
         }
 
         return {
