@@ -72,13 +72,15 @@ function RegistrationForm() {
         </div>
 
         <div className={`${styles.bottomRow}`}>
-          <input
-            type="date"
-            value={eventDate}
-            onChange={e => setEventDate(e.target.value)}
-            className={`${showValidation && !eventDate ? styles.inputError : ''}`}
-            aria-invalid={showValidation && !eventDate}
-          />
+          <div className={`${darkMode ? styles.dateInputWrapperDark : ''}`}>
+            <input
+              type="date"
+              value={eventDate}
+              onChange={e => setEventDate(e.target.value)}
+              className={`${showValidation && !eventDate ? styles.inputError : ''}`}
+              aria-invalid={showValidation && !eventDate}
+            />
+          </div>
 
           <button type="submit" className={`${styles.submitbtn}`}>
             Register
