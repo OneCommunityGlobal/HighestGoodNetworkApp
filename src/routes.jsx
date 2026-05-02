@@ -355,7 +355,6 @@ export default (
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
     <Route path="/hours-pledged-chart" component={HoursPledgedChart} />
     <Route path="/TestEventReg" component={TestEventRegistration} />
-    <Route path="/logattendance" component={AttendanceNoShow} />
     <Route path="/Participation" component={AttendanceStatistics} />
 
     <>
@@ -851,6 +850,11 @@ export default (
           path="/communityportal/activities/:activityid"
           exact
           component={Activity}
+        />
+        <CPProtectedRoute
+          path="/communityportal/activities/TestEventReg"
+          exact
+          component={TestEventRegistration}
         />
         <CPProtectedRoute
           path="/communityportal/activity/:activityId/logattendance"

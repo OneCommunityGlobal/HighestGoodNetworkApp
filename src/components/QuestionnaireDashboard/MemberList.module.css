@@ -6,7 +6,6 @@
   margin: 0 auto;
 }
 
-/* Filter Bar Styles */
 .filterBar {
   border: 1px solid #dee2e6;
   border-radius: 8px;
@@ -121,7 +120,6 @@
   grid-column: 1 / -1;
 }
 
-/* Member Cards */
 .cards {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -175,7 +173,6 @@
   font-weight: 600;
 }
 
-/* Pagination */
 .paginationControls {
   margin-top: 20px;
   display: flex;
@@ -203,7 +200,6 @@
   font-weight: bold;
 }
 
-/* Dark Mode Fixes */
 :global(.dark-mode) .pageButton {
   color: #fff;
   border-color: #6c757d;
