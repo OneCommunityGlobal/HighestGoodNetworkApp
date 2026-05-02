@@ -50,7 +50,7 @@ describe('user search panel', () => {
      renderWithProvider(
       <UserSearchPanel
         onSearch={onSearch}
-        onActiveFiter={onActiveFilter}
+        onActiveFilter={onActiveFilter}
         onNewUserClick={onNewUserClick}
       />,
       { store },
