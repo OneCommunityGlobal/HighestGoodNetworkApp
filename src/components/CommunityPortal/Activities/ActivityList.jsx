@@ -1,6 +1,6 @@
 // Activity List Component
 import { useState, useEffect, useMemo } from 'react';
-import { useSelector, useStore } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import styles from './ActivityList.module.css';
 import { mockActivities } from './mockActivities';
@@ -11,16 +11,22 @@ function ActivityList() {
   const [error, setError] = useState(null);
   const [selectedActivity, setSelectedActivity] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+
   const darkMode = useSelector(state => state.theme.darkMode);
+
   const [filter, setFilter] = useState({
     type: '',
     date: '',
     location: '',
-    pastEvents: false,
   });
+
   const [sortOrder, setSortOrder] = useState('earliest');
   const [showPastEvents, setShowPastEvents] = useState(false);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  // Dark mode body class
   useEffect(() => {
     if (darkMode) {
       document.body.classList.add('activity-list-dark-body');
@@ -33,18 +39,22 @@ function ActivityList() {
     };
   }, [darkMode]);
 
+  // Fetch activities (mock fallback)
   useEffect(() => {
     const fetchActivities = async () => {
       try {
         setLoading(true);
         setError(null);
+
         throw new Error('API not implemented yet');
       } catch (err) {
         setError(err.message);
+
         const parsed = mockActivities.map(a => ({
           ...a,
           _dateObj: new Date(`${a.date}T00:00:00`),
         }));
+
         setActivities(parsed);
       } finally {
         setLoading(false);
@@ -54,9 +64,14 @@ function ActivityList() {
     fetchActivities();
   }, []);
 
+  // Reset pagination on filter/sort change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filter, sortOrder, showPastEvents]);
+
   const handleFilterChange = e => {
     const { name, value } = e.target;
-    setFilter({ ...filter, [name]: value });
+    setFilter(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSortChange = e => {
@@ -68,9 +83,9 @@ function ActivityList() {
       type: '',
       date: '',
       location: '',
-      showPastEvents: false,
     });
     setShowPastEvents(false);
+    setCurrentPage(1);
   };
 
   const handleActivityClick = activity => {
@@ -97,9 +112,7 @@ function ActivityList() {
       }
     });
 
-    return [...typeOrder.keys()].sort(
-      (typeA, typeB) => typeOrder.get(typeA) - typeOrder.get(typeB),
-    );
+    return [...typeOrder.keys()].sort((a, b) => typeOrder.get(a) - typeOrder.get(b));
   }, [activities]);
 
   const filteredActivities = activities
@@ -118,6 +131,13 @@ function ActivityList() {
       return sortOrder === 'earliest' ? dateA - dateB : dateB - dateA;
     });
 
+  // Pagination
+  const totalPages = Math.ceil(filteredActivities.length / itemsPerPage);
+  const safePage = Math.min(currentPage, totalPages || 1);
+  const startIndex = (safePage - 1) * itemsPerPage;
+
+  const paginatedActivities = filteredActivities.slice(startIndex, startIndex + itemsPerPage);
+
   return (
     <div
       className={`${styles.activityListContainer} ${
@@ -126,9 +146,10 @@ function ActivityList() {
     >
       <h1 className={`${styles.heading} ${darkMode ? 'text-light' : ''}`}>Activity List</h1>
 
+      {/* Filters */}
       <div className={`${darkMode ? styles.darkModeFilters : styles.filters}`}>
         <label className={darkMode ? 'text-light' : ''}>
-          Type:{' '}
+          Type:
           <select
             name="type"
             value={filter.type}
@@ -179,11 +200,11 @@ function ActivityList() {
             className={darkMode ? styles.darkModeInput : ''}
           />
         </label>
+
         <label className={`${styles.showPastToggle} ${darkMode ? styles.darkShowPastToggle : ''}`}>
           Show Past Events:
           <input
             type="checkbox"
-            name="showPastEvents"
             checked={showPastEvents}
             onChange={e => setShowPastEvents(e.target.checked)}
           />
@@ -203,12 +224,13 @@ function ActivityList() {
         </div>
       </div>
 
+      {/* Activity List */}
       <div className={`${styles.activityList} ${darkMode ? styles.darkModeList : ''}`}>
         {loading ? (
           <p className={darkMode ? 'text-light' : ''}>Loading activities...</p>
-        ) : filteredActivities.length > 0 ? (
+        ) : paginatedActivities.length > 0 ? (
           <ul>
-            {filteredActivities.map(activity => (
+            {paginatedActivities.map(activity => (
               <div
                 key={activity.id}
                 style={{ cursor: 'pointer' }}
@@ -222,10 +244,7 @@ function ActivityList() {
                   }
                 }}
               >
-                <li
-                  key={activity.id}
-                  className={`${styles.activityItem} ${darkMode ? styles.darkModeItem : ''}`}
-                >
+                <li className={`${styles.activityItem} ${darkMode ? styles.darkModeItem : ''}`}>
                   <strong>{activity.name}</strong>
                   <span>
                     {activity.type} – {activity.date} – {activity.location}
@@ -239,11 +258,32 @@ function ActivityList() {
         )}
       </div>
 
-      {/* Modal for activity details */}
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className={styles.pagination}>
+          <Button onClick={() => setCurrentPage(p => p - 1)} disabled={safePage === 1}>
+            Prev
+          </Button>
+
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+            <Button
+              key={page}
+              onClick={() => setCurrentPage(page)}
+              className={page === safePage ? styles.activePage : ''}
+            >
+              {page}
+            </Button>
+          ))}
+
+          <Button onClick={() => setCurrentPage(p => p + 1)} disabled={safePage === totalPages}>
+            Next
+          </Button>
+        </div>
+      )}
+
+      {/* Modal */}
       <Modal isOpen={modalOpen} toggle={handleCloseModal}>
-        <ModalHeader toggle={handleCloseModal}>
-          {selectedActivity ? selectedActivity.name : ''}
-        </ModalHeader>
+        <ModalHeader toggle={handleCloseModal}>{selectedActivity?.name}</ModalHeader>
         <ModalBody>
           {selectedActivity && (
             <div>
@@ -262,7 +302,6 @@ function ActivityList() {
               <p>
                 <strong>Description:</strong> {selectedActivity.description}
               </p>
-              {/* Add more details as needed */}
             </div>
           )}
         </ModalBody>

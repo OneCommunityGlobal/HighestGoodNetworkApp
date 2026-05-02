@@ -1,4 +1,6 @@
 /* stylelint-disable no-descending-specificity */
+
+/* Container */
 .activityListContainer {
   padding: 20px;
   min-height: calc(100vh - 140px);
@@ -9,6 +11,7 @@
   padding-bottom: 40px;
 }
 
+/* Heading */
 .heading {
   text-align: center;
   margin: 20px 0;
@@ -17,6 +20,7 @@
   font-weight: 600;
 }
 
+/* Filters */
 .filters {
   display: flex;
   justify-content: center;
@@ -50,6 +54,7 @@
   color: #1f2937;
 }
 
+/* Inputs */
 .filters input,
 .filters select,
 .darkModeFilters input,
@@ -64,6 +69,12 @@
   color: #333;
 }
 
+/* Select specific sizing */
+.filters select {
+  height: 48px;
+}
+
+/* Dark mode input */
 .darkModeInput {
   background-color: #1e2a3a !important;
   color: #fff !important;
@@ -71,23 +82,15 @@
   color-scheme: dark;
 }
 
-.filters select {
-  padding: 10px;
-  height: 48px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  margin-top: 5px;
-  font-size: 1rem;
-  background: #fff;
-}
-
-/* Dark mode date input - style the calendar icon */
+/* Date picker icon fix */
 .darkModeInput[type="date"]::-webkit-calendar-picker-indicator {
   filter: invert(1);
   cursor: pointer;
 }
 
-.filters input:focus {
+/* Focus */
+.filters input:focus,
+.filters select:focus {
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 8px rgb(59 130 246 / 30%);
@@ -102,10 +105,7 @@
   color: #a0a0a0;
 }
 
-.darkFilters input[type="date"]::-webkit-calendar-picker-indicator {
-  filter: invert(1);
-}
-
+/* Activity List */
 .activityList {
   max-width: 900px;
   margin: 0 auto;
@@ -120,7 +120,6 @@
   box-shadow: none;
   border: 1px solid #3a4a5c;
   border-radius: 0;
-  margin: 0 auto;
 }
 
 .activityList ul {
@@ -128,6 +127,7 @@
   padding: 0;
 }
 
+/* Activity Item */
 .activityItem {
   display: flex;
   flex-direction: column;
@@ -137,8 +137,15 @@
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   background-color: #f9fafb;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+.activityItem:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
+}
+
+/* Dark item */
 .darkModeItem {
   background-color: #1e2a3a !important;
   border: 1px solid #3a4a5c !important;
@@ -146,21 +153,12 @@
   border-radius: 0;
 }
 
-.activityList.darkActivityList li strong {
-  color: #00f3ff;
-  font-size: 1.2rem;
-}
-
-.activityList li:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
-}
-
 .darkModeItem:hover {
   background-color: #3d4f62 !important;
   box-shadow: none !important;
 }
 
+/* Text */
 .activityItem strong {
   color: #1e3a8a;
   font-size: 1.2rem;
@@ -178,6 +176,7 @@
   color: #d1d5db !important;
 }
 
+/* Empty state */
 .activityList p {
   text-align: center;
   color: #6b7280;
@@ -185,7 +184,8 @@
   margin: 20px 0;
 }
 
-.clearButtonWrapper{
+/* Clear Button */
+.clearButtonWrapper {
   display: flex;
   justify-content: center;
   gap: 30px;
@@ -214,9 +214,7 @@
 
 .clearFiltersButton:hover:not(:disabled) {
   transform: scale(1.05);
-  background-color: #f9fafb;
 }
-
 
 .clearFiltersButtonDark {
   border: 1px solid #fff;
@@ -227,7 +225,6 @@
 .clearFiltersButtonDark:hover:not(:disabled) {
   background: #111c33;
 }
-
 
 /* Suggestions */
 .suggestions {
@@ -269,6 +266,7 @@
   background-color: #334155;
 }
 
+/* Show Past Toggle */
 .showPastToggle {
   display: inline-flex;
   align-items: center;
@@ -302,19 +300,45 @@
   accent-color: #60a5fa;
 }
 
+/* Pagination */
+.pagination {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.pagination button {
+  border-radius: 6px;
+  padding: 6px 12px;
+}
+
+.activePage {
+  font-weight: bold;
+  background-color: #3b82f6;
+  color: white;
+}
+
 /* Responsive */
 @media (width <= 768px) {
-  .filters {
+  .filters,
+  .darkModeFilters {
     flex-direction: column;
     align-items: center;
     gap: 20px;
   }
 
-  .filters label {
+  .filters label,
+  .darkModeFilters label {
     width: 100%;
   }
 
   .activityList {
     padding: 20px;
+  }
+
+  .activityItem {
+    flex-direction: column;
+    padding: 10px;
   }
 }
