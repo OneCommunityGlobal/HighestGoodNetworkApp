@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import { availablePreferences, availableSkills, formatSkillName, toggleItem } from './FilerData.js';
-import styles from './style/CommunityMembersPage.module.css';
+import styles from './style/SkillsOverviewPage.module.css';
 
-export function SkillFilterButtons({ selectedSkills, setSelectedSkills }) {
+export function SkillFilterButtons({ selectedSkills, setSelectedSkills, darkMode }) {
   return (
     <div className={styles.filterGroup}>
       {availableSkills.map(skillKey => (
@@ -12,7 +12,7 @@ export function SkillFilterButtons({ selectedSkills, setSelectedSkills }) {
           onClick={() => toggleItem(skillKey, selectedSkills, setSelectedSkills)}
           className={`${styles.skillButton} ${
             selectedSkills.includes(skillKey) ? styles.selected : ''
-          }`}
+          } ${darkMode ? styles.darkButton : ''}`}
         >
           {formatSkillName(skillKey)}
         </button>
@@ -21,7 +21,7 @@ export function SkillFilterButtons({ selectedSkills, setSelectedSkills }) {
   );
 }
 
-export function PreferenceFilterButtons({ selectedPreferences, setSelectedPreferences }) {
+export function PreferenceFilterButtons({ selectedPreferences, setSelectedPreferences, darkMode }) {
   return (
     <div className={styles.filterGroup}>
       {availablePreferences.map(pref => (
@@ -31,7 +31,7 @@ export function PreferenceFilterButtons({ selectedPreferences, setSelectedPrefer
           onClick={() => toggleItem(pref, selectedPreferences, setSelectedPreferences)}
           className={`${styles.preferenceButton} ${
             selectedPreferences.includes(pref) ? styles.selected : ''
-          }`}
+          } ${darkMode ? styles.darkButton : ''}`}
         >
           {pref}
         </button>
@@ -43,9 +43,11 @@ export function PreferenceFilterButtons({ selectedPreferences, setSelectedPrefer
 SkillFilterButtons.propTypes = {
   selectedSkills: PropTypes.arrayOf(PropTypes.string).isRequired,
   setSelectedSkills: PropTypes.func.isRequired,
+  darkMode: PropTypes.bool,
 };
 
 PreferenceFilterButtons.propTypes = {
   selectedPreferences: PropTypes.arrayOf(PropTypes.string).isRequired,
   setSelectedPreferences: PropTypes.func.isRequired,
+  darkMode: PropTypes.bool,
 };

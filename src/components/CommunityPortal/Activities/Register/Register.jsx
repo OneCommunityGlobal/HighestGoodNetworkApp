@@ -1,10 +1,33 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import styles from './Register.module.css';
-// import EventDescription from './EventDescription';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../../utils/URL';
+
+function isTomorrow(dateString) {
+  const input = new Date(dateString);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+  return input >= tomorrow && input < new Date(tomorrow.getTime() + 24 * 60 * 60 * 1000);
+}
+
+function isComingWeekend(dateString) {
+  const input = new Date(dateString);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const day = today.getDay();
+  const daysUntilSaturday = (6 - day + 7) % 7 || 7;
+  const saturday = new Date(today);
+  saturday.setDate(today.getDate() + daysUntilSaturday);
+  const sunday = new Date(saturday);
+  sunday.setDate(saturday.getDate() + 1);
+  sunday.setHours(23, 59, 59, 999);
+  return input >= saturday && input <= sunday;
+}
 
 function Register() {
   const { activityId } = useParams();
@@ -15,16 +38,14 @@ function Register() {
   const [activity, setActivity] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  // eslint-disable-next-line no-unused-vars
-  // const [selectedDate, setSelectedDate] = useState(new Date());
   const [activityDate, setActivityDate] = useState('');
   const [activityStartTime, setActivityStartTime] = useState('');
   const [activityEndTime, setActivityEndTime] = useState('');
-  const [feedbackMessage, setFeedbackMessage] = useState(null);
   const [availability, setAvailability] = useState(0);
   const [isRegistering, setIsRegistering] = useState(false);
-  const [isAlreadyRegistered, setIsAlreadyRegistered] = useState(false);
-  const feedbackTimeoutRef = useRef(null);
+  const [registrants, setRegistrants] = useState([]);
+  const storageKey = useMemo(() => `activity-${activityId}-registrants`, [activityId]);
+
   const tokenPayload = useMemo(() => {
     if (typeof window === 'undefined' || typeof window.atob !== 'function') {
       return null;
@@ -45,13 +66,37 @@ function Register() {
       return null;
     }
   }, [authUser?.userid]);
+
   useEffect(() => {
-    return () => {
-      if (feedbackTimeoutRef.current) {
-        clearTimeout(feedbackTimeoutRef.current);
+    if (typeof window === 'undefined') return;
+    try {
+      const stored = window.localStorage.getItem(storageKey);
+      if (!stored) {
+        setRegistrants([]);
+        return;
       }
-    };
-  }, []);
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed)) {
+        setRegistrants(parsed);
+      } else {
+        setRegistrants([]);
+      }
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('Failed to load saved registrants', err);
+      setRegistrants([]);
+    }
+  }, [storageKey]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      window.localStorage.setItem(storageKey, JSON.stringify(registrants));
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('Failed to persist registrants', err);
+    }
+  }, [registrants, storageKey]);
 
   useEffect(() => {
     const fetchActivity = async () => {
@@ -105,7 +150,8 @@ function Register() {
     const baseCount = activity.currentAttendees;
     const remaining = activity.maxAttendees - baseCount;
     setAvailability(remaining > 0 ? remaining : 0);
-  }, [activity]);
+  }, [activity, registrants]);
+
   const resolveUserId = () =>
     authUser?.userid ||
     authUser?._id ||
@@ -168,35 +214,20 @@ function Register() {
   const resolveJobTitle = () =>
     userProfile?.jobTitle || resolveJobTitleFromToken() || 'Participant';
 
-  const scheduleFeedbackClear = () => {
-    if (feedbackTimeoutRef.current) {
-      clearTimeout(feedbackTimeoutRef.current);
-    }
-    feedbackTimeoutRef.current = setTimeout(() => {
-      setFeedbackMessage(null);
-    }, 5000);
-  };
-
-  useEffect(() => {
-    if (!activity?.resources?.length) {
-      setIsAlreadyRegistered(false);
-      return;
-    }
+  const isAlreadyRegistered = useMemo(() => {
+    if (!registrants.length) return false;
     const userId = resolveUserId();
     const name = resolveUserName().toLowerCase();
-    setIsAlreadyRegistered(
-      activity.resources.some(person => {
-        // if (userId) return person._id === userId;
-        return person.name?.toLowerCase() === name;
-      }),
-    );
-  }, [activity, authUser, userProfile, tokenPayload]);
+    return registrants.some(reg => {
+      if (userId) return reg.userId === userId;
+      return reg.name.toLowerCase() === name;
+    });
+  }, [registrants, authUser, userProfile, tokenPayload]);
 
   const handleRegister = async () => {
     if (!activity) return;
     if (availability === 0) {
-      setFeedbackMessage({ type: 'error', text: 'Registration failed. No spots available.' });
-      scheduleFeedbackClear();
+      toast.error('Registration failed. No spots available.');
       return;
     }
 
@@ -206,8 +237,7 @@ function Register() {
     const displayName = resolveUserName();
 
     if (isAlreadyRegistered) {
-      setFeedbackMessage({ type: 'error', text: 'You are already registered for this event.' });
-      scheduleFeedbackClear();
+      toast.error('You are already registered for this event.');
       return;
     }
 
@@ -224,53 +254,43 @@ function Register() {
     setIsRegistering(true);
 
     try {
-      const response = await axios.post(ENDPOINTS.REGISTER_FOR_EVENT(activity._id), {
-        userId: userId,
-        name: displayName,
-        profilePic: null,
-        location: activity.location || 'TBD',
-      });
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
-      if (response.status === 200) {
-        const updatedActivity = response.data?.activity || response.data;
-        if (updatedActivity?.currentAttendees !== undefined) {
-          setActivity(updatedActivity);
-        } else {
-          setActivity(prev => ({
-            ...prev,
-            currentAttendees: prev.currentAttendees + 1,
-            resources: [
-              ...(prev.resources || []),
-              {
-                _id: userId,
-                name: displayName,
-                profilePic: '',
-                location: activity.location || 'Virtual',
-              },
-            ],
-          }));
-        }
+      setRegistrants(prev => [
+        ...prev,
+        {
+          userId: userId || `guest-${Date.now()}`,
+          name: displayName,
+          jobTitle,
+          registeredAt: new Date().toISOString(),
+        },
+      ]);
 
-        setIsAlreadyRegistered(true);
-        setFeedbackMessage({
-          type: 'success',
-          text: 'Registration successful! See you at the event.',
-        });
-
-        scheduleFeedbackClear();
-      }
+      toast.success('Registration successful! See you at the event.');
     } catch (err) {
-      setFeedbackMessage({
-        type: 'error',
-        text: 'Registration failed. Please try again.',
-      });
-      scheduleFeedbackClear();
+      toast.error('Registration failed. Please try again.');
     } finally {
       setIsRegistering(false);
     }
   };
 
-  // Loading state
+  const handleShareAvailability = async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: activity.title,
+          text: `I'm available for ${activity.title}. Join me!`,
+          url: window.location.href,
+        });
+      } else {
+        toast.info('Sharing is not supported on this device.');
+      }
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('Share failed:', err);
+    }
+  };
+
   if (loading) {
     return (
       <div className={`${styles.mainContainer} ${darkMode ? styles.mainContainerDark : ''}`}>
@@ -278,7 +298,7 @@ function Register() {
           <div className={styles.loadingContainer}>
             <div
               className={`${styles.loadingSpinner} ${darkMode ? styles.loadingSpinnerDark : ''}`}
-            ></div>
+            />
             <p className={`${styles.loadingText} ${darkMode ? styles.loadingTextDark : ''}`}>
               Loading activity details...
             </p>
@@ -303,6 +323,7 @@ function Register() {
       </div>
     );
   }
+
   return (
     <div className={`${styles.mainContainer} ${darkMode ? styles.mainContainerDark : ''}`}>
       <div className={`${styles.contentWrapper} ${darkMode ? styles.contentWrapperDark : ''}`}>
@@ -328,10 +349,10 @@ function Register() {
                   <strong>Time:</strong> {activityStartTime} - {activityEndTime}
                 </div>
                 <div>
-                  <strong>Location:</strong> {activity.location}
+                  <strong>Location:</strong> {activity.location || 'To Be Decided'}
                 </div>
                 <div>
-                  <strong>Organizer:</strong> {activity.organizer || 'Organizer not specified'}
+                  <strong>Organizer:</strong> {activity.organizer || 'Not Specified'}
                 </div>
               </div>
 
@@ -351,22 +372,20 @@ function Register() {
                     : 'Register'}
                 </button>
 
+                <button
+                  type="button"
+                  className={`${styles.secondaryButton} ${
+                    darkMode ? styles.secondaryButtonDark : ''
+                  }`}
+                  onClick={handleShareAvailability}
+                >
+                  Share Availability
+                </button>
+
                 <div className={styles.quickStats}>
                   <span>{availability} spots left</span>
                 </div>
               </div>
-
-              {feedbackMessage && (
-                <div
-                  className={`${styles.feedbackMessage} ${
-                    feedbackMessage.type === 'success'
-                      ? styles.feedbackMessageSuccess
-                      : styles.feedbackMessageError
-                  }`}
-                >
-                  {feedbackMessage.text}
-                </div>
-              )}
             </div>
           </section>
 
@@ -399,7 +418,7 @@ function Register() {
               </div>
 
               <div className={styles.infoCard}>
-                <h2>Attendees</h2>
+                <h2>Facilitators / Resources</h2>
                 <div className={styles.resourceList}>
                   {activity.resources?.map(person => (
                     <div key={person._id} className={styles.resourceCard}>
@@ -433,4 +452,5 @@ function Register() {
     </div>
   );
 }
+
 export default Register;
