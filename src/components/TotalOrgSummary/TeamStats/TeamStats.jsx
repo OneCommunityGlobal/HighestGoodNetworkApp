@@ -95,7 +95,7 @@ function TeamStats({ isLoading, usersInTeamStats, endDate, darkMode }) {
 
   return (
     <div>
-      <TeamStatsBarChart data={data} yAxisLabel="name" />
+      <TeamStatsBarChart data={data} yAxisLabel="name" darkMode={isDarkMode} />
       {teamsWithActiveMembers && (
         <div className={styles.teamStatsActiveMembers}>
           <div className={styles.teamStatsBarChartSummary}>
