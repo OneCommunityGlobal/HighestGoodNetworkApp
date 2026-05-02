@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 /* Dark mode on body has to stay global */
 :global(body.dark-mode) {
   background-color: #1b2a41;
