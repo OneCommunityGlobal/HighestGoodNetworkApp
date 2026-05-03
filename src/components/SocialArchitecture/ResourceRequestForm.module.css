@@ -142,6 +142,15 @@ input[type='date'] {
   background-color: #d1d5db;
 }
 
+.cancelButtonDark {
+  background-color: #3a506b;
+  color: #f9fafb;
+}
+
+.cancelButtonDark:hover {
+  background-color: #2f4157;
+}
+
 .submitButton {
   background-color: #1e3a8a;
   color: #fff;

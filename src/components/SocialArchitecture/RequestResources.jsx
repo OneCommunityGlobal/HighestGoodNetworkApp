@@ -286,7 +286,7 @@ function RequestResources() {
         <div className={styles.buttonGroup}>
           <button
             type="button"
-            className={`${styles.cancelButton} ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
+            className={`${styles.cancelButton} ${darkMode ? styles.cancelButtonDark : ''}`}
           >
             Cancel
           </button>
