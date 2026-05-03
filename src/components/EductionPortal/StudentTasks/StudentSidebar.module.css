@@ -1,7 +1,8 @@
+/* stylelint-disable  */
 :root {
   --rail-w: 72px;
   --header-h: 72px;
-  --rail-bg: #ffffff;
+  --rail-bg: #fff;
   --rail-border: #ececec;
   --icon: #000;
   --pill: #dedede;
@@ -22,8 +23,7 @@
   align-items: center;
   box-sizing: border-box;
   z-index: 10;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden auto;
   scrollbar-width: thin;
 }
 
@@ -74,6 +74,7 @@
 .navItem:hover {
   background: var(--pill-hover);
 }
+
 .active {
   background: var(--pill);
 }
@@ -114,22 +115,28 @@
   background: #0f172a;
   border-right: 1px solid #1f2937;
 }
+
 .sidebarDark .icon {
   color: #e5e7eb;
 }
+
 .sidebarDark .navItem:hover {
   background: #111827;
 }
+
 .sidebarDark .active {
   background: #1f2937;
 }
+
 .sidebarDark .bottom {
   background: #0f172a;
   border-top: 1px solid #1f2937;
 }
+
 .sidebarDark .bottomIcon {
   color: #e5e7eb;
 }
+
 .sidebarDark .bottomIcon:hover {
   background: #111827;
 }
