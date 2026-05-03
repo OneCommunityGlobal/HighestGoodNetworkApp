@@ -964,13 +964,13 @@
 
 .resourceCard {
   display: flex;
-  align-items: center;
+  /* align-items: center; */
   gap: 14px;
   padding: 16px;
   border-radius: 16px;
   background: #f9fafb;
   border: 1px solid #e5e7eb;
-  min-height: 400px;
+  min-height: 100px;
   flex-direction: column;
   gap: 20px;
 }
@@ -1108,7 +1108,6 @@
     width: 100%;
     max-width: 400px;
   }
-}
 
   .eventImage {
     height: 250px;
