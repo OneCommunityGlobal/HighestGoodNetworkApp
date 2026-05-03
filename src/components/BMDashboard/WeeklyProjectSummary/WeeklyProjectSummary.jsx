@@ -24,6 +24,7 @@ import EmbedInteractiveMap from '../InteractiveMap/EmbedInteractiveMap';
 import InteractiveMap from '../InteractiveMap/InteractiveMap';
 import styles from './WeeklyProjectSummary.module.css';
 import IssueCharts from '../Issues/openIssueCharts';
+import LossTrackingLineChart from './Financials/LossTrackingLineCharts/LossTrackingLineChart';
 import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
@@ -348,9 +349,11 @@ function WeeklyProjectSummary() {
       {
         title: 'Loss Tracking',
         key: 'Loss Tracking',
-        className: 'small',
+        className: 'large',
         content: (
-          <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>📊 Card</div>
+          <div className="weekly-project-summary-card financial-big">
+            <LossTrackingLineChart />
+          </div>
         ),
       },
       {
@@ -549,6 +552,10 @@ function WeeklyProjectSummary() {
         autoClose: 3000,
       });
     } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('PDF generation failed:', err);
+      // eslint-disable-next-line no-alert
+      alert('Failed to generate PDF. Please try again.');
       // Dismiss loading toast
       toast.dismiss(loadingToastId);
 

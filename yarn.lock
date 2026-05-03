@@ -3322,17 +3322,17 @@
   resolved "https://registry.npmjs.org/@standard-schema/utils/-/utils-0.3.0.tgz"
   integrity sha512-e7Mew686owMaPJVNNLs55PUvgz371nKgwsc4vxE49zsODpJEnxgxRo2y/OKrqueavXgZNMDVj3DdHFlaSAeU8g==
 
-"@tanstack/query-core@5.100.6":
-  version "5.100.6"
-  resolved "https://registry.npmjs.org/@tanstack/query-core/-/query-core-5.100.6.tgz"
-  integrity sha512-Os2CPUr98to98RYm+D4qGqGkiffn7MGSyl2547a4MljVkHE30AMJRqTiyCqBfMwzAx/I91vCkAxp5tHSla6Twg==
+"@tanstack/query-core@5.100.8":
+  version "5.100.8"
+  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-5.100.8.tgz#934082269e09f788599823416216ffda39203469"
+  integrity sha512-ceYwSFOqjPwET5TA6IOYxzxlGc0ekyH/gfOtWkP0PX43rzX9bxW48Iuw8KAduKCToi4rJAQ6nRy2kAe8gszdmg==
 
-"@tanstack/react-query@^5.90.16":
-  version "5.100.6"
-  resolved "https://registry.npmjs.org/@tanstack/react-query/-/react-query-5.100.6.tgz"
-  integrity sha512-uVSrps0PV16Cxmcn2rvL+dUhwTpTUtiRW347AEeYxMZXO2pZe9ja7E24PAMGoQ5u2g89DD8u4QhOviBk+RN8RA==
+"@tanstack/react-query@^5.91.0":
+  version "5.100.8"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-query/-/react-query-5.100.8.tgz#eb968cc9d92ee4b38aa80cc331c01b49d332e073"
+  integrity sha512-iNNEekixXU5vtAGKKZX2lx3jTooG5yNY+kv0wSgEdEYG0Mj0JM5bcuQtC35ZAP3nDopT6jciUK3xeX65U7AnfA==
   dependencies:
-    "@tanstack/query-core" "5.100.6"
+    "@tanstack/query-core" "5.100.8"
 
 "@testing-library/dom@^10.4.0":
   version "10.4.1"
@@ -4506,9 +4506,9 @@ ant-design@^1.0.0:
   resolved "https://registry.npmjs.org/ant-design/-/ant-design-1.0.0.tgz"
   integrity sha512-EiN9oXroImi01yz1xwpDzExb1U5ddi4MYiCTaTLVl8SA3QHXYClJn0BikAYS2IMPzmpmAYhwOgGA2HE/sL/c9g==
 
-antd@^5.27.6:
+antd@^5.29.3:
   version "5.29.3"
-  resolved "https://registry.npmjs.org/antd/-/antd-5.29.3.tgz"
+  resolved "https://registry.yarnpkg.com/antd/-/antd-5.29.3.tgz#404eda9f9716b2ff9b06251dfecb7028d7c4de40"
   integrity sha512-3DdbGCa9tWAJGcCJ6rzR8EJFsv2CtyEbkVabZE14pfgUHfCicWCj0/QzQVLDYg8CPfQk9BH7fHCoTXHTy7MP/A==
   dependencies:
     "@ant-design/colors" "^7.2.1"
@@ -9668,9 +9668,9 @@ levn@^0.4.1:
     prelude-ls "^1.2.1"
     type-check "~0.4.0"
 
-libphonenumber-js@^1.12.38:
+libphonenumber-js@^1.12.40:
   version "1.12.42"
-  resolved "https://registry.npmjs.org/libphonenumber-js/-/libphonenumber-js-1.12.42.tgz"
+  resolved "https://registry.yarnpkg.com/libphonenumber-js/-/libphonenumber-js-1.12.42.tgz#794db17340b0a04f8d193b65dc7998e3e6e1088c"
   integrity sha512-oKQFPTibqQwZZkChCDVMFVJXMZdyJNqDWZWYNn8BgyAaK/6yFJEowxCY0RVFirRyWP63hMRuKlkSEd9qlvbWXg==
 
 lines-and-columns@^1.1.6:
@@ -11434,6 +11434,13 @@ react-is@^19.2.3:
   version "19.2.5"
   resolved "https://registry.npmjs.org/react-is/-/react-is-19.2.5.tgz"
   integrity sha512-Dn0t8IQhCmeIT3wu+Apm1/YVsJXsGWi6k4sPdnBIdqMVtHtv0IGi6dcpNpNkNac0zB2uUAqNX3MHzN8c+z2rwQ==
+
+react-leaflet-cluster@^3.1.0:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/react-leaflet-cluster/-/react-leaflet-cluster-3.1.1.tgz#4aa372388ad4dae065a9732ed2b03b83f0e03b95"
+  integrity sha512-g39QohKNrmIwHNlL0KTv+a9PYYWDtcRAsnHHytJyRhIgjxGxs4/SXe/Zr4kP8IZoEzxbqCMkJqUsFBEZJqKp2g==
+  dependencies:
+    leaflet.markercluster "^1.5.3"
 
 react-leaflet@4.2.1, react-leaflet@^4.0.0:
   version "4.2.1"
