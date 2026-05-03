@@ -58,6 +58,7 @@ const EditLinkModal = props => {
   const [isWarningPopupOpen, setIsWarningPopupOpen] = useState(false);
   const [isMediaFolderLinkChanged, setIsMediaFolderLinkChanged] = useState(false);
   const [isValidLink, setIsValidLink] = useState(true);
+  const [duplicateNameError, setDuplicateNameError] = useState(false);
 
   const handleNameChanges = (e, links, index, setLinks) => {
     const updateLinks = [...links];
@@ -90,16 +91,21 @@ const EditLinkModal = props => {
   }
 
   const addNewLink = (links, setLinks, newLink, clearInput) => {
-    if (
-      isDuplicateLink([googleLink, mediaFolderLink, ...links], newLink) ||
-      !isValidUrl(newLink.Link)
-    ) {
+    const isDuplicate = isDuplicateLink([googleLink, mediaFolderLink, ...links], newLink);
+    const hasInvalidUrl = !isValidUrl(newLink.Link);
+
+    if (isDuplicate) {
+      setDuplicateNameError(true);
+      setIsValidLink(true);
+    } else if (hasInvalidUrl) {
+      setDuplicateNameError(false);
       setIsValidLink(false);
     } else {
       const newLinks = [...links, { Name: newLink.Name, Link: newLink.Link }];
       setLinks(newLinks);
       setIsChanged(true);
       setIsValidLink(true);
+      setDuplicateNameError(false);
       clearInput();
     }
   };
@@ -156,6 +162,7 @@ const EditLinkModal = props => {
       await updateLink(personalLinks, linksToUpdate, mediaFolderLink.Link);
       handleSubmit();
       setIsValidLink(true);
+      setDuplicateNameError(false);
       setIsChanged(false);
       closeModal();
     } else {
@@ -277,6 +284,7 @@ const EditLinkModal = props => {
                         onChange={e => {
                           const { value } = e.target;
                           setNewAdminLink(prev => ({ ...prev, Name: value }));
+                          setDuplicateNameError(false);
                         }}
                       />
                       <input
@@ -357,6 +365,7 @@ const EditLinkModal = props => {
                         const { value } = e.target;
                         setNewPersonalLink(prev => ({ ...prev, Name: value }));
                         setIsChanged(true);
+                        setDuplicateNameError(false);
                       }}
                     />
                     <input
@@ -383,10 +392,19 @@ const EditLinkModal = props => {
                   </div>
                 </div>
               </Card>
-              {!isValidLink && (
-                <p className={`${styles['invalid-help-context']}`} data-testid='invalid-url-warning' >
-                  Please enter valid URLs for each link.
-                </p>
+              {(!isValidLink || duplicateNameError) && (
+                <div className={`${styles['invalid-help-context']}`}>
+                  {!isValidLink && (
+                    <p data-testid='invalid-url-warning'>
+                      Please enter valid URLs for each link.
+                    </p>
+                  )}
+                  {duplicateNameError && (
+                    <p data-testid='duplicate-name-warning'>
+                      A link with this name already exists.
+                    </p>
+                  )}
+                </div>
               )}
             </CardBody>
           </div>
@@ -407,6 +425,7 @@ const EditLinkModal = props => {
             onClick={() => {
               setIsMediaFolderLinkChanged(false);
               setMediaFolderLink({ ...mediaFolderLink, Link: originalMediaFolderLink.current });
+              setDuplicateNameError(false);
               closeModal();
             }
             }
@@ -447,3 +466,4 @@ EditLinkModal.propTypes = {
 };
 
 export default connect(null, { hasPermission })(EditLinkModal);
+
