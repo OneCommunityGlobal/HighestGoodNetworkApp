@@ -962,16 +962,15 @@
   border: 1px solid rgba(148, 163, 184, 0.15);
 }
 
-/* Loading state */
-.loadingContainer {
+.resourceCard {
   display: flex;
-  align-items: center;
+  /* align-items: center; */
   gap: 14px;
   padding: 16px;
   border-radius: 16px;
   background: #f9fafb;
   border: 1px solid #e5e7eb;
-  min-height: 400px;
+  min-height: 100px;
   flex-direction: column;
   gap: 20px;
 }

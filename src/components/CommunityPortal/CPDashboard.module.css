@@ -31,13 +31,8 @@
   padding: 16px 24px;
   background: linear-gradient(120deg, #fff, #f8f9fa);
   border-radius: 12px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 3px 10px rgb(0 0 0 / 10%);
   flex-wrap: nowrap;
-}
-
-
-.darkHeader{
-  background: #1B2A41;
 }
 
 .dashboardHeader h1 {
@@ -99,6 +94,7 @@
   color: #1b3c55;
   font-size: 0.9rem;
 }
+
 .cp_dashboard_header {
   display: flex;
   align-items: center;
@@ -206,14 +202,6 @@
   display: flex;
   align-items: center;
   gap: 6px;
-}
-
-/* Hide browser's built-in clear icon for search inputs */
-.dashboardSearchInput::-webkit-search-cancel-button,
-.dashboardSearchInput::-webkit-search-decoration,
-.dashboardSearchInput::-webkit-search-results-button,
-.dashboardSearchInput::-webkit-search-results-decoration {
-  appearance: none;
 }
 
 .darkSearchContainer {
@@ -426,6 +414,10 @@
   margin-bottom: 30px;
 }
 
+.clearDateFilterBtn{
+  margin-top: 10px;
+}
+
 .eventCardCol {
   display: flex;
   margin-bottom: 1.5rem;
@@ -439,11 +431,11 @@
 .eventCard {
   width: 100%;
   height: 100%;
-  border-radius: 12px;
-  overflow: hidden;
   box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
   display: flex;
   flex-direction: column;
+  border-radius: 12px;
+  overflow: hidden;
   border: none;
   background: #fff;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -577,12 +569,12 @@
   border-color: #6c757d !important;
   color: #fff !important;
 }
+
 /* Hide browser's built-in clear icon for search inputs */
 .dashboardSearchInput::-webkit-search-cancel-button,
 .dashboardSearchInput::-webkit-search-decoration,
 .dashboardSearchInput::-webkit-search-results-button,
 .dashboardSearchInput::-webkit-search-results-decoration {
-  -webkit-appearance: none;
   appearance: none;
 }
 
@@ -611,7 +603,7 @@
 
 .applyBtn:hover {
   background-color: #229954 !important;
-  box-shadow: 0 4px 8px rgba(39, 174, 96, 0.3);
+  box-shadow: 0 4px 8px rgb(39 174 96 / 30%);
 }
 
 .clearBtn {
@@ -629,14 +621,14 @@
 
 .clearBtn:hover {
   background-color: #7f8c8d !important;
-  box-shadow: 0 4px 8px rgba(149, 165, 166, 0.3);
+  box-shadow: 0 4px 8px rgb(149 165 166 / 30%);
 }
 
 .darkSidebar .filterActions {
   border-top-color: #3a4e6a;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .dashboardHeader {
     flex-wrap: wrap;
   }
@@ -644,10 +636,6 @@
   .cp_dashboard_search_container {
     width: 100%;
   }
-}
-.darkSearchContainer {
-  background: #1b2a41;
-  border-color: #4da3ff;
 }
 
 .paginationBtn:disabled {

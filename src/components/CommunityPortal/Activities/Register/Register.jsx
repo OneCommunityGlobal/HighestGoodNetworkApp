@@ -6,29 +6,6 @@ import styles from './Register.module.css';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../../utils/URL';
 
-function isTomorrow(dateString) {
-  const input = new Date(dateString);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const tomorrow = new Date(today);
-  tomorrow.setDate(today.getDate() + 1);
-  return input >= tomorrow && input < new Date(tomorrow.getTime() + 24 * 60 * 60 * 1000);
-}
-
-function isComingWeekend(dateString) {
-  const input = new Date(dateString);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const day = today.getDay();
-  const daysUntilSaturday = (6 - day + 7) % 7 || 7;
-  const saturday = new Date(today);
-  saturday.setDate(today.getDate() + daysUntilSaturday);
-  const sunday = new Date(saturday);
-  sunday.setDate(saturday.getDate() + 1);
-  sunday.setHours(23, 59, 59, 999);
-  return input >= saturday && input <= sunday;
-}
-
 function Register() {
   const { activityId } = useParams();
   const darkMode = useSelector(state => state.theme?.darkMode);
@@ -42,8 +19,7 @@ function Register() {
   const [activityEndTime, setActivityEndTime] = useState('');
   const [availability, setAvailability] = useState(0);
   const [isRegistering, setIsRegistering] = useState(false);
-  const [registrants, setRegistrants] = useState([]);
-  const storageKey = useMemo(() => `activity-${activityId}-registrants`, [activityId]);
+  const [isAlreadyRegistered, setIsAlreadyRegistered] = useState(false);
 
   const tokenPayload = useMemo(() => {
     if (typeof window === 'undefined' || typeof window.atob !== 'function') {
@@ -65,37 +41,6 @@ function Register() {
       return null;
     }
   }, [authUser?.userid]);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    try {
-      const stored = window.localStorage.getItem(storageKey);
-      if (!stored) {
-        setRegistrants([]);
-        return;
-      }
-      const parsed = JSON.parse(stored);
-      if (Array.isArray(parsed)) {
-        setRegistrants(parsed);
-      } else {
-        setRegistrants([]);
-      }
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error('Failed to load saved registrants', err);
-      setRegistrants([]);
-    }
-  }, [storageKey]);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    try {
-      window.localStorage.setItem(storageKey, JSON.stringify(registrants));
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error('Failed to persist registrants', err);
-    }
-  }, [registrants, storageKey]);
 
   useEffect(() => {
     const fetchActivity = async () => {
@@ -149,7 +94,7 @@ function Register() {
     const baseCount = activity.currentAttendees;
     const remaining = activity.maxAttendees - baseCount;
     setAvailability(remaining > 0 ? remaining : 0);
-  }, [activity, registrants]);
+  }, [activity]);
 
   const resolveUserId = () =>
     authUser?.userid ||
@@ -213,15 +158,14 @@ function Register() {
   const resolveJobTitle = () =>
     userProfile?.jobTitle || resolveJobTitleFromToken() || 'Participant';
 
-  const isAlreadyRegistered = useMemo(() => {
-    if (!registrants.length) return false;
-    const userId = resolveUserId();
+  useEffect(() => {
+    if (!activity?.resources?.length) {
+      setIsAlreadyRegistered(false);
+      return;
+    }
     const name = resolveUserName().toLowerCase();
-    return registrants.some(reg => {
-      if (userId) return reg.userId === userId;
-      return reg.name.toLowerCase() === name;
-    });
-  }, [registrants, authUser, userProfile, tokenPayload]);
+    setIsAlreadyRegistered(activity.resources.some(p => p.name?.toLowerCase() === name));
+  }, [activity, authUser, userProfile, tokenPayload]);
 
   const handleRegister = async () => {
     if (!activity) return;
@@ -230,33 +174,43 @@ function Register() {
       return;
     }
 
-    if (isRegistering) return;
+    if (isRegistering || isAlreadyRegistered) return;
 
     const userId = resolveUserId();
     const displayName = resolveUserName();
-    const jobTitle = resolveJobTitle();
-
-    if (isAlreadyRegistered) {
-      toast.error('You are already registered for this event.');
-      return;
-    }
 
     setIsRegistering(true);
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const response = await axios.post(ENDPOINTS.REGISTER_FOR_EVENT(activity._id), {
+        userId,
+        name: displayName,
+        profilePic: null,
+        location: activity.location || 'TBD',
+      });
 
-      setRegistrants(prev => [
-        ...prev,
-        {
-          userId: userId || `guest-${Date.now()}`,
-          name: displayName,
-          jobTitle,
-          registeredAt: new Date().toISOString(),
-        },
-      ]);
-
-      toast.success('Registration successful! See you at the event.');
+      if (response.status === 200) {
+        const updatedActivity = response.data?.activity || response.data;
+        if (updatedActivity?.currentAttendees !== undefined) {
+          setActivity(updatedActivity);
+        } else {
+          setActivity(prev => ({
+            ...prev,
+            currentAttendees: prev.currentAttendees + 1,
+            resources: [
+              ...(prev.resources || []),
+              {
+                _id: userId,
+                name: displayName,
+                profilePic: '',
+                location: activity.location || 'Virtual',
+              },
+            ],
+          }));
+        }
+        setIsAlreadyRegistered(true);
+        toast.success('Registration successful! See you at the event.');
+      }
     } catch (err) {
       toast.error('Registration failed. Please try again.');
     } finally {
@@ -298,6 +252,7 @@ function Register() {
     );
   }
 
+  // No activity found
   if (error || !activity) {
     return (
       <div className={`${styles.mainContainer} ${darkMode ? styles.mainContainerDark : ''}`}>
