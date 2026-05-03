@@ -87,7 +87,7 @@ import SkillsOverviewPage from './components/HGNHelpSkillsDashboard/SkillsOvervi
 import CommunityMembersPage from './components/HGNHelpSkillsDashboard/CommunityMembersPage';
 import UserProfilePage from './components/HGNHelpSkillsDashboard/UserProfilePage';
 import FeedbackModal from './components/HGNHelpSkillsDashboard/FeedbackModal';
-import Activity from './components/CommunityPortal/Activities/activityId/Activity';
+import ActivityFeedback from './components/CommunityPortal/Activities/activityId/ActivityFeedback';
 import ActivityAttendance from './components/CommunityPortal/Activities/ActivityAttendance';
 import ActivityAgenda from './components/CommunityPortal/Activities/ActivityAgenda';
 import EventNoShowChart from './components/CommunityPortal/Attendence/NoshowViz';
@@ -839,6 +839,11 @@ export default (
         <CPProtectedRoute path="/communityportal/database/design" exact component={EventList} />
         <CPProtectedRoute path="/communityportal/activities" exact component={ActivityList} />
         <CPProtectedRoute
+          path="/communityportal/activity/:activityId/ActivityFeedback"
+          exact
+          component={ActivityFeedback}
+        />
+        <CPProtectedRoute
           path="/communityportal/profile/:userId"
           fallback
           component={UserProfile}
@@ -855,7 +860,7 @@ export default (
         <CPProtectedRoute
           path="/communityportal/activities/:activityid"
           exact
-          component={Activity}
+          component={ActivityFeedback}
         />
         <CPProtectedRoute
           path="/communityportal/activities/TestEventReg"
@@ -979,17 +984,6 @@ export default (
           exact
           component={DatabaseDesign}
         />
-        <CPProtectedRoute
-          path="/communityportal/activity/:activityid/comments"
-          exact
-          render={() => <Activity initialTab="FAQs" />}
-        />
-        <CPProtectedRoute
-          path="/communityportal/activity/:activityid/Comments"
-          exact
-          render={() => <Activity initialTab="FAQs" />}
-        />
-        <CPProtectedRoute path="/communityportal/activity/:activityId" exact component={Activity} />
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
         {/* <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} /> */}
