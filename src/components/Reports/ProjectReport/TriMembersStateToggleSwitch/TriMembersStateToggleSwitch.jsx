@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import './TriMembersStateToggleSwitch.css';
+import './TriMembersStateToggleSwitch.module.css';
 
 function TriMembersStateToggleSwitch({ onChange }) {
   const [position, setPosition] = useState('default');

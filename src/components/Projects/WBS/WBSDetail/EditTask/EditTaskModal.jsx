@@ -19,7 +19,7 @@ import { toast } from 'react-toastify';
 import UserSearch from './UserSearch';
 import UserTag from './UserTag';
 import ReadOnlySectionWrapper from './ReadOnlySectionWrapper';
-import '../../../../Header/index.css';
+import '../../../../Header/index.module.css';
 import styles from '../wbs.module.css';
 import TagsSearch from '../components/TagsSearch';
 
@@ -764,7 +764,7 @@ function EditTaskModal(props) {
                       { componentOnly: true },
                     )}
                   </div>
-                    <div className="warning">
+                    <div className={styles.warning}>
                       {hoursWarning ? 'The number of hours must be less than other cases' : ''}
                     </div>
                   
@@ -793,7 +793,7 @@ function EditTaskModal(props) {
                       { componentOnly: true },
                     )}
                   </div>
-                    <div className="warning">
+                    <div className={styles.warning}>
                       {hoursWarning ? 'The number of hours must be higher than other cases' : ''}
                     </div>
                   
@@ -822,7 +822,7 @@ function EditTaskModal(props) {
                       { componentOnly: true },
                     )}
                   </div>
-                    <div className="warning">
+                    <div className={styles.warning}>
                       {hoursWarning
                         ? 'The number of hours must range between best and worst cases'
                         : ''}
@@ -854,7 +854,7 @@ function EditTaskModal(props) {
                   </div>
                 </td>
               </tr>
-              <tr className='text-break'>
+              <tr className={styles['text-break']}>
                 {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td id="edit-modal-td" scope="col">
                   Links
@@ -876,7 +876,7 @@ function EditTaskModal(props) {
                         disabled={!editable}
                       />
                       <button
-                        className="task-resouces-btn"
+                        className={styles['task-resouces-btn']}
                         type="button"
                         data-tip="Add Link"
                         onClick={addLink}

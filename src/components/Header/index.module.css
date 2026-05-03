@@ -129,15 +129,12 @@
   color: #fff;
 }
 
-/* .dark-mode .DayPicker-wrapper {
-  background-color: #1C2541;
-} */
 .dark-mode .DayPicker-Caption {
   color: #fff;
 }
 
 .dark-mode .DayPicker-NavButton {
-  /* background: none; */
+
 }
 
 .dark-mode .DayPicker-Month {

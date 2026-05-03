@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, forwardRef } from 'react';
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
 import MarkerClusterGroup from './TestSafeMarkerCluster';
 import { Button, Container, Spinner } from 'reactstrap';
-import './TeamLocations.css';
+import './TeamLocations.module.css';
 
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';

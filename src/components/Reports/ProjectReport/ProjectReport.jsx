@@ -17,7 +17,7 @@ import hasPermission from '../../../utils/permissions';
 import viewWBSpermissionsRequired from '../../../utils/viewWBSpermissionsRequired';
 import { projectReportViewData } from './selectors';
 import '../../Teams/Team.module.css';
-import './ProjectReport.css';
+import './ProjectReport.module.css';
 import { boxStyle, boxStyleDark } from '../../../styles';
 import { PieChartByProject } from './PiechartByProject/PieChartByProject';
 

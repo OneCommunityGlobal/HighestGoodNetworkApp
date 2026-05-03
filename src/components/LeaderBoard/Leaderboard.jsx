@@ -37,8 +37,8 @@ import axios from 'axios';
 import { getUserProfile } from '~/actions/userProfile';
 import { useDispatch, useSelector } from 'react-redux';
 import { boxStyleDark } from '../../styles';
-import '../Header/index.css';
-import '../UserProfile/TeamsAndProjects/autoComplete.css';
+import '../Header/index.module.css';
+import '../UserProfile/TeamsAndProjects/autoComplete.module.css';
 import { ENDPOINTS } from '~/utils/URL';
 
 function useDeepEffect(effectFunc, deps) {
@@ -701,7 +701,7 @@ function LeaderBoard({
               } ${isAbbreviatedView ? 'abbreviated-mode' : ''}`}
               style={{ width: '100%', tableLayout: isAbbreviatedView ? 'fixed' : 'auto' }}
             >
-              <thead className="responsive-font-size">
+              <thead className={styles['responsive-font-size']}>
                 <tr className={darkMode ? 'bg-space-cadet' : ''} style={darkModeStyle}>
                   <th style={darkModeStyle}>
                     <span>{isAbbreviatedView ? 'Stat.' : 'Status'}</span>
@@ -778,7 +778,7 @@ function LeaderBoard({
                   ) : (
                     <>
                       <td aria-label="Placeholder" />
-                      <td className="leaderboard-totals-container">
+                      <td className={styles['leaderboard-totals-container']}>
                         <span>{stateOrganizationData.name}</span>
                         <br />
                         {viewZeroHouraMembers(loggedInUser.role) && (

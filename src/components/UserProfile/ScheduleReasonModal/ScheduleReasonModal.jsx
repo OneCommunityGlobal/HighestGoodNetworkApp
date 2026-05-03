@@ -13,7 +13,7 @@ import {
   updateTimeOffRequestThunk,
 } from '../../../actions/timeOffRequestAction';
 import 'react-datepicker/dist/react-datepicker.css';
-import './ScheduleReasonModal.css';
+import './ScheduleReasonModal.module.css';
 
 const ScheduleReasonModal = ({
   handleClose,

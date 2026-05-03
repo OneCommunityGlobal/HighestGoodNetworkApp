@@ -2,7 +2,6 @@
   background-color: #c9d6c6 !important;
   border-color: #285739 !important;
   color: #285739 !important;
-  /*Spacing between buttons*/
   margin-right: 10px;
 }
 
@@ -45,7 +44,6 @@
   z-index: 0;
 }
 
-/* This is just only for displaying 'Personal Max hours' badge hours position */
 .badge_featured_count_personalmax {
   padding-top: 7px;
   border-radius: 55%;
@@ -90,10 +88,8 @@
 
 .badge_featured_container {
   display: flex;
-  /*Wrap on overflow*/
   flex-wrap: wrap;
   overflow-y: hidden;
-  /*center align content*/
   justify-content: space-around;
 }
 
@@ -135,19 +131,10 @@
   text-align: left;
 }
 
-/*Aligns the title and the buttons*/
-/* .badge-header {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-} */
-
-/*Title to occupy more width than buttons*/
 .badge-header-title {
   flex: 3;
 }
 
-/*To match width of iphone 12 Pro*/
 #badgeCard {
   min-width: 320px;
   background-color: #f6f6f3;
@@ -160,16 +147,10 @@
   }
 }
 
-/* @media (max-width: 1024px) {
-  .badge-header {
-    flex-direction: column;
-  }
-} */
-
 .badge-header {
   display: flex;
-  justify-content: space-between; /* This will push the buttons to the right */
-  align-items: center; /* This will ensure vertical centering */
+  justify-content: space-between;
+  align-items: center;
   flex-wrap: wrap;
   gap: 5px;
 }
@@ -177,6 +158,6 @@
 @media (max-width: 1024px) {
   .badge-header {
     flex-direction: column;
-    align-items: center; /* This will center the buttons below the title */
+    align-items: center; 
   }
 }

@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Dropdown, Input } from 'reactstrap';
-import './TeamsAndProjects.css';
+import './TeamsAndProjects.module.css';
 import { useSelector } from 'react-redux';
 
 const TEAM_NAME_MAX_LENGTH = 100;

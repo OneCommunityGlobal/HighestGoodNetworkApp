@@ -61,7 +61,7 @@ import {
   KI_CALENDAR,
 } from '../../../languages/en/ui';
 import Logout from '../../Logout/Logout';
-// import './CPHeader.css';
+// import './CPHeader.module.css';
 import styles from '../../Header/Header.module.css';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../../utils/permissions';
 

@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 // import { useSelector } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
 import { boxStyleDark, boxStyle } from '../../styles';
-import '../Header/index.css';
+import '../Header/index.module.css';
 /**
  * Modal popup to show the user profile in create mode
  */

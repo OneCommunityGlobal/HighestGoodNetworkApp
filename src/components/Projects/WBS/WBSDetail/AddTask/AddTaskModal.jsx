@@ -17,7 +17,7 @@ import {
   END_DATE_ERROR_MESSAGE,
   START_DATE_ERROR_MESSAGE
 } from '../../../../../languages/en/messages';
-import '../../../../Header/index.css';
+import '../../../../Header/index.module.css';
 import TagsSearch from '../components/TagsSearch';
 import styles from '../wbs.module.css';
 // import styles from './AddTaskModal.module.css';
@@ -1187,7 +1187,7 @@ useEffect(() => {
                     />
                   </div>
                   {hoursWarning && (
-                    <div className="warning">The number of hours must be less than other cases</div>
+                    <div className={styles.warning}>The number of hours must be less than other cases</div>
                   )}
                   <div className="py-2 d-flex align-items-center justify-content-sm-around">
                     <label
@@ -1210,7 +1210,7 @@ useEffect(() => {
                     />
                   </div>
                   {hoursWarning && (
-                    <div className="warning">
+                    <div className={styles.warning}>
                       The number of hours must be higher than other cases
                     </div>
                   )}
@@ -1235,7 +1235,7 @@ useEffect(() => {
                     />
                   </div>
                   {hoursWarning && (
-                    <div className="warning">
+                    <div className={styles.warning}>
                       The number of hours must range between best and worst cases
                     </div>
                   )}
@@ -1258,7 +1258,7 @@ useEffect(() => {
                       aria-label="Estimated hours"
                     />
                   </div>
-                  <div className="warning">
+                  <div className={styles.warning}>
                     {hasNegativeHours ? 'Negative hours are not allowed.' : ''}
                   </div>
                 </div>
@@ -1275,13 +1275,13 @@ useEffect(() => {
                       id="linkInput"
                       aria-label="Link Input"
                       placeholder="Link"
-                      className="task-resouces-input"
+                      className={styles['task-resouces-input']}
                       onChange={e => setLink(e.target.value)}
                       value={link}
                     />
                     <button
                       type="button"
-                      className="task-resouces-btn"
+                      className={styles['task-resouces-btn']}
                       aria-label="Add Link"
                       onClick={addLink}
                     >
@@ -1419,7 +1419,7 @@ useEffect(() => {
                     <div className="warning text-danger">
                       {startDateFormatError && 'Please enter date in MM/dd/yy format'}
                     </div>
-                    <div className="warning">{startDateError ? START_DATE_ERROR_MESSAGE : ''}</div>
+                    <div className={styles.warning}>{startDateError ? START_DATE_ERROR_MESSAGE : ''}</div>
                   </div>
                 </span>
               </div>
@@ -1446,7 +1446,7 @@ useEffect(() => {
                   <div className="warning text-danger">
                     {endDateFormatError && 'Please enter date in MM/dd/yy format'}
                   </div>
-                  <div className="warning">{endDateError ? END_DATE_ERROR_MESSAGE : ''}</div>
+                  <div className={styles.warning}>{endDateError ? END_DATE_ERROR_MESSAGE : ''}</div>
                 </span>
               </div>
             </div>
@@ -1501,7 +1501,7 @@ useEffect(() => {
       </Modal>
       <Button
         color="primary"
-        className="controlBtn"
+        className={styles.controlBtn}
         size="sm"
         onClick={openModal}
         style={darkMode ? boxStyleDark : boxStyle}

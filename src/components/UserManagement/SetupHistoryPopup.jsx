@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import Table from 'react-bootstrap/Table';
 import { formatDate } from '../../utils/formatDate';
 import UserTableFooter from './UserTableFooter';
-import '../Header/index.css';
+import '../Header/index.module.css';
 import { boxStyle, boxStyleDark } from '../../styles';
 import { ENDPOINTS } from '~/utils/URL';
 import httpService from '../../services/httpService';
