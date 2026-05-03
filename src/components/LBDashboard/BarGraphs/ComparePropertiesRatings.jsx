@@ -9,6 +9,7 @@ export function ComparePropertiesRatings({
   toDate,
   listingBiddingFilter,
   selectedMetricKey,
+  darkMode,
 }) {
   const [propertiesData, setPropertiesData] = useState([]);
 
@@ -163,6 +164,7 @@ export function ComparePropertiesRatings({
       margins={{ top: 20, right: 40, bottom: 60, left: 60 }}
       valueFormatter={metricConfig.valueFormatter}
       tooltipLabel={metricConfig.tooltipLabel}
+      darkMode={darkMode}
       headerChips={[
         { label: 'List/Bid', value: 'ALL' },
         { label: 'Dates', value: 'ALL' },
@@ -178,4 +180,5 @@ ComparePropertiesRatings.propTypes = {
   toDate: PropTypes.instanceOf(Date).isRequired,
   listingBiddingFilter: PropTypes.string.isRequired,
   selectedMetricKey: PropTypes.string.isRequired,
+  darkMode: PropTypes.bool,
 };

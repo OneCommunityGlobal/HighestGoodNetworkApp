@@ -108,24 +108,29 @@ const CategoryControls = ({
     m => listingBiddingFilter !== 'listing' || !m.biddingOnly,
   );
 
+  const isDisabled = availableMetrics.length === 0;
+
   return (
     <>
       <Button
         className={`${styles.filterBtn} ${activeCategory === categoryKey ? styles.active : ''} ${
           darkMode ? styles.darkFilterBtn : ''
         }`}
-        onClick={() => onCategoryClick(categoryKey)}
+        disabled={isDisabled}
+        title={isDisabled ? 'Not available for Listing type' : undefined}
+        onClick={() => !isDisabled && onCategoryClick(categoryKey)}
       >
         {label}
       </Button>
 
       <ButtonDropdown
         isOpen={openDD[categoryKey]}
-        toggle={() => onToggleDD(categoryKey)}
+        toggle={() => !isDisabled && onToggleDD(categoryKey)}
         className={styles.dd}
       >
         <DropdownToggle
           caret
+          disabled={isDisabled}
           className={`${styles.filterBtn} ${activeCategory === categoryKey ? styles.active : ''} ${
             darkMode ? styles.darkFilterBtn : ''
           }`}
@@ -633,6 +638,7 @@ export function LBDashboard() {
                   barSize={24}
                   maxBars={6}
                   valueFormatter={valueFormatter}
+                  darkMode={darkMode}
                   headerChips={[
                     { label: 'Dates', value: 'ALL' },
                     { label: 'Villages', value: 'ALL' },
@@ -669,6 +675,7 @@ export function LBDashboard() {
                 toDate={toDate}
                 listingBiddingFilter={listingBiddingFilter}
                 selectedMetricKey={selectedMetricKey}
+                darkMode={darkMode}
               />
             </Col>
           </Row>
