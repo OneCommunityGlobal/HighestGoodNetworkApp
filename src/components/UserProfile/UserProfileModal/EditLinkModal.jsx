@@ -15,6 +15,7 @@ import styles from './EditLinkModal.module.css';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { connect, useSelector } from 'react-redux';
 import { isValidGoogleDocsUrl, isValidMediaUrl } from '~/utils/checkValidURL';
+import { toast } from 'react-toastify';
 
 const EditLinkModal = props => {
   const darkMode = useSelector(state => state.theme.darkMode)
@@ -95,6 +96,7 @@ const EditLinkModal = props => {
       !isValidUrl(newLink.Link)
     ) {
       setIsValidLink(false);
+      toast.error('Please enter valid URLs for each link.');
     } else {
       const newLinks = [...links, { Name: newLink.Name, Link: newLink.Link }];
       setLinks(newLinks);
@@ -160,6 +162,7 @@ const EditLinkModal = props => {
       closeModal();
     } else {
       setIsValidLink(false);
+      toast.error('Please enter valid URLs for each link.');
     }
   };
 
@@ -383,11 +386,6 @@ const EditLinkModal = props => {
                   </div>
                 </div>
               </Card>
-              {!isValidLink && (
-                <p className={`${styles['invalid-help-context']}`} data-testid='invalid-url-warning' >
-                  Please enter valid URLs for each link.
-                </p>
-              )}
             </CardBody>
           </div>
         </ModalBody>
