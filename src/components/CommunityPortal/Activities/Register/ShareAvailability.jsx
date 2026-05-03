@@ -111,46 +111,45 @@ function ShareAvailability({ activity, availability, activityId }) {
 
   const handleSocialShare = async platform => {
     const url = encodeURIComponent(shareContent.shareUrl);
-    const text = shareContent.fullText; // NOT encoded for clipboard
-
-    let socialUrl = '';
+    const text = encodeURIComponent(shareContent.title);
+    const content = encodeURIComponent(shareContent.fullText);
 
     try {
-      if (platform === 'facebook') {
-        // Step 1: Copy text automatically
-        await CopyToClipboard(text);
-
-        // Step 2: Notify user
-        setShareMessage({
-          type: 'success',
-          text: 'Details copied! Paste it into your Facebook post.',
-        });
-
-        // Step 3: Open Facebook share dialog (only URL)
-        socialUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
-
-        window.open(socialUrl, '_blank', 'width=600,height=400');
-
-        return;
-      }
-
-      // Existing platforms
-      const encodedText = encodeURIComponent(shareContent.title);
-      const encodedContent = encodeURIComponent(shareContent.fullText);
+      let socialUrl = '';
 
       switch (platform) {
-        case 'x':
-          socialUrl = `https://x.com/intent/tweet?url=${url}&text=${encodedText}`;
+        case 'facebook': {
+          // ✅ Facebook: copy text + open link (no text support)
+          await CopyToClipboard(shareContent.fullText);
+
+          setShareMessage({
+            type: 'success',
+            text: 'Copied! Paste it into Facebook.',
+          });
+
+          socialUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
           break;
-        case 'linkedin':
-          socialUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${url}`;
+        }
+
+        case 'x': {
+          // ✅ Twitter (X): MUST use encoded text
+          const text = encodeURIComponent(shareContent.title);
+          socialUrl = `https://x.com/intent/tweet?url=${url}&text=${text}`;
           break;
-        case 'whatsapp':
-          const whatsappText = encodeURIComponent(
-            `${shareContent.title}\n${shareContent.shareUrl}`,
-          );
-          socialUrl = `https://wa.me/?text=${whatsappText}`;
+        }
+
+        case 'linkedin': {
+          // ✅ LinkedIn: ONLY supports URL (text often ignored)
+          socialUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${url}&text=${content}`;
           break;
+        }
+
+        case 'whatsapp': {
+          const text = encodeURIComponent(`${shareContent.title}\n${shareContent.shareUrl}`);
+          socialUrl = `https://wa.me/?text=${text}`;
+          break;
+        }
+
         default:
           return;
       }
@@ -159,7 +158,7 @@ function ShareAvailability({ activity, availability, activityId }) {
     } catch (error) {
       setShareMessage({
         type: 'error',
-        text: 'Failed to copy content. Please try again.',
+        text: 'Sharing failed. Try again.',
       });
     }
   };
