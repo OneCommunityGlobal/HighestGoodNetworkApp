@@ -29,6 +29,8 @@
 .customDropdown {
   border: 1px solid #e5e7eb !important;
   padding: 0.5rem 1rem !important;
+  width: 8.75rem !important;
+  font-size: 0.875rem !important;
   border-radius: 0.375rem !important;
   font-size: 0.875rem !important;
 
@@ -36,7 +38,9 @@
   box-shadow: none !important;
   display: flex !important;
   align-items: center !important;
+  justify-content: space-between !important;
   gap: 0.5rem !important;
+  white-space: nowrap !important;
 }
 
 .customDropdown:hover,
