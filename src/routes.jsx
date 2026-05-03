@@ -850,7 +850,7 @@ export default (
         <CPProtectedRoute
           path="/communityportal/activities/:activityid"
           exact
-          component={Activity}
+          component={ActivityFeedback}
         />
         <CPProtectedRoute
           path="/communityportal/activities/TestEventReg"
