@@ -1,0 +1,182 @@
+/* Light Mode Styles */
+.container {
+  min-height: 100vh;
+  padding: 16px;
+  font-family: sans-serif;
+  background-color: #f9fafb;
+  color: #111827;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  padding: 16px;
+  background-color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 900;
+  color: #4f46e5;
+  margin-bottom: 16px;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+}
+
+.createButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: bold;
+  padding: 8px 16px;
+  border-radius: 12px;
+  background-color: #4f46e5;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.createButton:hover {
+  background-color: #4338ca;
+}
+
+.viewButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: bold;
+  padding: 8px 16px;
+  border-radius: 12px;
+  background-color: #9ca3af;
+  color: #1f2937;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.viewButton:hover {
+  background-color: #6b7280;
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+}
+
+.iconSmall {
+  width: 16px;
+  height: 16px;
+}
+
+.logSwitcher,
+.roleSelector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  background-color: #f3f4f6;
+  border-radius: 12px;
+}
+
+.select {
+  background-color: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 4px 8px;
+  font-size: 0.875rem;
+  color: #111827;
+}
+
+.main {
+  max-width: 1024px;
+  margin: 0 auto;
+}
+
+.footer {
+  margin-top: 40px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+  text-align: center;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.noLogs {
+  text-align: center;
+  padding: 40px;
+  background-color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  color: #6b7280;
+}
+
+/* Dark Mode Overrides */
+.darkMode .container {
+  background-color: #1f2937;
+  color: #f3f4f6;
+}
+
+.darkMode .header {
+  background-color: #374151;
+  border-bottom: 1px solid #4b5563;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+}
+
+.darkMode .title {
+  color: #818cf8;
+}
+
+.darkMode .createButton {
+  background-color: #6366f1;
+  color: #f9fafb;
+}
+
+.darkMode .createButton:hover {
+  background-color: #4f46e5;
+}
+
+.darkMode .viewButton {
+  background-color: #6b7280;
+  color: #f3f4f6;
+}
+
+.darkMode .viewButton:hover {
+  background-color: #4b5563;
+}
+
+.darkMode .logSwitcher,
+.darkMode .roleSelector {
+  background-color: #4b5563;
+}
+
+.darkMode .select {
+  background-color: #374151;
+  border: 1px solid #6b7280;
+  color: #f3f4f6;
+}
+
+.darkMode .main {
+  max-width: 1024px;
+  margin: 0 auto;
+}
+
+.darkMode .footer {
+  border-top: 1px solid #6b7280;
+  color: #d1d5db;
+}
+
+.darkMode .noLogs {
+  background-color: #374151;
+  color: #d1d5db;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+}

@@ -202,6 +202,8 @@ import PromotionEligibility from './components/HGNPRDashboard/PromotionEligibili
 import BookingPage from './components/Booking/BookingPage';
 import BookingConfirmPage from './components/Booking/BookingConfirmPage';
 import PRPromotionsPage from './components/PRPromotions/PRPromotionsPage';
+import ActivityLogs from './components/ActivityLog/DailyLogPage';
+
 import ReviewersStackedBarChart from './components/HGNPRDashboard/ReviewersStackedBarChart/ReviewersStackedBarChart';
 import PRGradingDashboard from './components/PRGradingDashboard/PRGradingDashboard';
 import PRGradingScreen from './components/PRGradingScreen';
@@ -640,6 +642,7 @@ export default (
           fallback
           allowedRoles={[UserRole.Owner]}
         />
+        <Route path="/ActivityLogs/DailyLog" component={ActivityLogs} />
         <ProtectedRoute path="/materials/utilization" component={MaterialUtilizationChart} />
         <ProtectedRoute path="/job-application" exact component={JobApplicationForm} />
         <ProtectedRoute path="/popularity" component={PopularityTimelineChart} fallback />
