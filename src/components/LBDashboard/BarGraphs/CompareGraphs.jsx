@@ -46,7 +46,9 @@ export function CompareBarGraph({
   return (
     <Card
       className={`${styles.graphCard} ${darkMode ? styles.darkCard : ''}`}
-      style={darkMode ? { background: '#1c2541', borderColor: '#3a506b', color: '#e1e1e1' } : undefined}
+      style={
+        darkMode ? { background: '#1c2541', borderColor: '#3a506b', color: '#e1e1e1' } : undefined
+      }
     >
       <CardBody className={`${styles.graphCardBody} ${darkMode ? styles.darkCardBody : ''}`}>
         {/* Title row + chips */}
@@ -65,8 +67,14 @@ export function CompareBarGraph({
           <div style={{ display: 'flex', gap: 16 }}>
             {headerChips.map((c, i) => (
               <div key={i} style={{ textAlign: 'center', lineHeight: 1.1 }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: darkMode ? '#e1e1e1' : undefined }}>{c.label}</div>
-                <div style={{ fontSize: 11, color: darkMode ? '#a0b0c8' : '#777', letterSpacing: 0.2 }}>
+                <div
+                  style={{ fontSize: 12, fontWeight: 600, color: darkMode ? '#e1e1e1' : undefined }}
+                >
+                  {c.label}
+                </div>
+                <div
+                  style={{ fontSize: 11, color: darkMode ? '#a0b0c8' : '#777', letterSpacing: 0.2 }}
+                >
                   {String(c.value).toUpperCase()}
                 </div>
               </div>

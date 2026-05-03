@@ -69,11 +69,7 @@ body {
   background: #fff;
   border: 1px solid #ece7f4;
   border-radius: 14px;
-  padding: 14px 16px;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 12px 16px;
-  align-items: center;
+  padding: 16px;
   margin: 0 15px 18px;
 }
 
