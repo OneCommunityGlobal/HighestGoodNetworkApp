@@ -50,6 +50,7 @@ export const studentTasksReducer = (state = initialState, action) => {
             ? {
                 ...task,
                 logged_hours: action.loggedHours,
+                suggested_total_hours: action.suggestedTotalHours,
                 status: action.status,
                 can_mark_done: action.canMarkDone,
               }
