@@ -21,6 +21,7 @@ function JobFormBuilder() {
   const [selectedTemplate, setSelectedTemplate] = useState('');
   const [currentFormId, setCurrentFormId] = useState(null);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
+  const [jobTitleInput, setJobTitleInput] = useState('');
   const [newField, setNewField] = useState({
     questionText: '',
     questionType: 'textbox',
@@ -102,14 +103,34 @@ function JobFormBuilder() {
     setNewOption('');
   };
 
+  // Helper: normalise API response to a flat array of forms
+  const extractFormsArray = data => {
+    if (Array.isArray(data?.forms)) return data.forms;
+    if (Array.isArray(data)) return data;
+    return [];
+  };
+
+  // Helper: fuzzy-match a typed title against saved form titles
+  const findFormByTitle = (formsArr, raw) => {
+    const lower = raw.toLowerCase();
+    let match = formsArr.find(f => (f.title || '').toLowerCase() === lower);
+    if (match) return match;
+    match = formsArr.find(f => {
+      const ft = (f.title || '').toLowerCase();
+      return ft && (lower.includes(ft) || ft.includes(lower));
+    });
+    return match || null;
+  };
+
   // Auto-load existing form on component mount
   useEffect(() => {
     const loadFirstAvailableForm = async () => {
       try {
         const response = await axios.get(ENDPOINTS.GET_ALL_JOB_FORMS);
+        const formsArr = extractFormsArray(response.data);
 
-        if (response.data && response.data.length > 0) {
-          const firstForm = response.data[0];
+        if (formsArr.length > 0) {
+          const firstForm = formsArr[0];
           const formId = firstForm._id || firstForm.id;
 
           setCurrentFormId(formId);
@@ -138,6 +159,52 @@ function JobFormBuilder() {
 
     setHasUnsavedChanges(changed);
   }, [formFields, newField, templateName, selectedTemplate, initialFormFields]);
+
+  // Go button: load form matching the typed job title
+  const handleGoClick = async () => {
+    const raw = jobTitleInput.trim();
+    if (!raw) {
+      alert('Enter a job title.');
+      return;
+    }
+    try {
+      const response = await axios.get(ENDPOINTS.GET_ALL_JOB_FORMS);
+      const formsArr = extractFormsArray(response.data);
+      const form = findFormByTitle(formsArr, raw);
+      if (form) {
+        const formId = form._id || form.id;
+        setCurrentFormId(formId);
+        setFormFields(form.questions || []);
+        setJobTitle(form.title);
+        markAsSaved(form.questions || []);
+      } else {
+        alert('No form matches that job title.');
+      }
+    } catch (err) {
+      console.error('Error fetching forms on Go:', err);
+      alert('Failed to load forms. Please try again.');
+    }
+  };
+
+  // Dropdown change: load the selected form directly
+  const handleJobTitleDropdownChange = async e => {
+    const selected = e.target.value;
+    setJobTitle(selected);
+    if (selected === 'Please Choose an option') return;
+    try {
+      const response = await axios.get(ENDPOINTS.GET_ALL_JOB_FORMS);
+      const formsArr = extractFormsArray(response.data);
+      const form = findFormByTitle(formsArr, selected);
+      if (form) {
+        const formId = form._id || form.id;
+        setCurrentFormId(formId);
+        setFormFields(form.questions || []);
+        markAsSaved(form.questions || []);
+      }
+    } catch (err) {
+      console.error('Error loading form from dropdown:', err);
+    }
+  };
 
   // CRUD Functions with Dynamic Form ID
   const cloneField = async (field, index) => {
@@ -355,15 +422,21 @@ function JobFormBuilder() {
         />
         <div className={styles.jobformNavbar}>
           <div>
-            <input placeholder="Enter Job Title" className={styles.jobformInput} />
-            <button type="button" className={styles.goButton}>
+            <input
+              placeholder="Enter Job Title"
+              className={styles.jobformInput}
+              value={jobTitleInput}
+              onChange={e => setJobTitleInput(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleGoClick()}
+            />
+            <button type="button" className={styles.goButton} onClick={handleGoClick}>
               Go
             </button>
           </div>
           <div>
             <select
               value={jobTitle}
-              onChange={q => setJobTitle(q.target.value)}
+              onChange={handleJobTitleDropdownChange}
               className={styles.jobformSelect}
             >
               <option value="Please Choose an option">Please Choose an Option</option>
