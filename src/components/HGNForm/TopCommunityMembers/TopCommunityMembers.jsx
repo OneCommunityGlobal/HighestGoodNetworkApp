@@ -27,17 +27,26 @@ function TopCommunityMembers() {
   const [members, setMembers] = useState([]);
   const darkMode = useSelector(state => state.theme.darkMode);
 
+  const normalizeMember = member => ({
+    id: member?._id || member?.id,
+    name: member?.name || null,
+    email: member?.email || null,
+    slack: member?.slack || null,
+    phoneNumber: member?.phoneNumber || null,
+    score: typeof member?.score === 'number' ? member.score : 0,
+  });
+
   useEffect(() => {
     const fetchMembers = async () => {
       try {
-        const response = await httpService.get(
-          ENDPOINTS.HGN_FORM_GET_TEAM_MEMBERS_BY_SKILL(selectedSkill),
-        );
-        setMembers(response.data);
+        const response = await httpService.get(ENDPOINTS.HGN_FORM_RANKED, {
+          params: { skills: selectedSkill },
+        });
+        setMembers(Array.isArray(response?.data) ? response.data : []);
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error('Error fetching members:', error);
-        setMembers([]); // fallback in case of error
+        setMembers([]);
       }
     };
 
@@ -46,17 +55,9 @@ function TopCommunityMembers() {
     }
   }, [selectedSkill]);
 
-  // normalize rating for sorting and display: supports "7/10" or numeric skillScore
-  const scoreOf = m => {
-    if (typeof m?.rating === 'string') {
-      const [n] = m.rating.split('/');
-      const num = parseInt(n, 10);
-      return Number.isFinite(num) ? num : 0;
-    }
-    if (typeof m?.skillScore === 'number') return m.skillScore;
-    return 0;
-  };
-  const sortedMembers = [...members].sort((a, b) => scoreOf(b) - scoreOf(a));
+  const scoreOf = m => (typeof m?.score === 'number' ? m.score : 0);
+  const normalizedMembers = members.map(normalizeMember);
+  const sortedMembers = [...normalizedMembers].sort((a, b) => scoreOf(b) - scoreOf(a));
 
   return (
     <div
@@ -93,15 +94,16 @@ function TopCommunityMembers() {
           </tr>
         </thead>
         <tbody>
-          {sortedMembers.slice(0, 15).map(member => {
+          {sortedMembers.slice(0, 15).map((member, index) => {
             const scoreVal = scoreOf(member);
             return (
-              <tr key={member._id || member.id}>
-                <td>{member.name}</td>
+              <tr key={member.id || `${member.name || 'member'}-${index}`}>
+                <td>{member.name || 'Unavailable'}</td>
                 <td>
                   {!member.email ? (
-                    <span className={styles.private} title="No ID was found">
+                    <span className={styles.private} title="Email is private or unavailable">
                       <FaEnvelope style={{ color: '#ccc', cursor: 'not-allowed' }} />
+                      &nbsp;Private
                     </span>
                   ) : (
                     <a
@@ -110,13 +112,13 @@ function TopCommunityMembers() {
                       aria-label={`Email ${member.name}`}
                       className={darkMode ? styles.iconLinkDark : styles.iconLink}
                     >
-                      <FaEnvelope />
+                      <FaEnvelope /> {member.email}
                     </a>
                   )}
                 </td>
                 <td>
-                  {!member.slack && !member.slackID ? (
-                    <span title="No ID was found">
+                  {!member.slack ? (
+                    <span className={styles.private} title="Slack is private or unavailable">
                       <img
                         src={slackLogo}
                         alt="Slack"
@@ -127,23 +129,26 @@ function TopCommunityMembers() {
                           cursor: 'not-allowed',
                         }}
                       />
+                      &nbsp;Private
                     </span>
                   ) : (
                     <a
-                      href={`https://highest-good.slack.com/team/@${member.slack ||
-                        member.slackID}`}
+                      href={`https://highest-good.slack.com/team/@${member.slack}`}
                       target="_blank"
                       rel="noreferrer"
-                      title={member.slack || member.slackID}
+                      title={member.slack}
+                      className={darkMode ? styles.iconLinkDark : styles.iconLink}
                     >
-                      <img src={slackLogo} alt="Slack" style={{ width: '20px', height: '20px' }} />
+                      <img src={slackLogo} alt="Slack" style={{ width: '20px', height: '20px' }} />{' '}
+                      {member.slack}
                     </a>
                   )}
                 </td>
                 <td>
                   {!member.phoneNumber ? (
-                    <span className={styles.private} title="Phone number not found">
+                    <span className={styles.private} title="Phone number is private or unavailable">
                       <FaPhone style={{ color: '#ccc', cursor: 'not-allowed' }} />
+                      &nbsp;Private
                     </span>
                   ) : (
                     <a
@@ -169,7 +174,7 @@ function TopCommunityMembers() {
         </tbody>
       </table>
       <Link
-        to="/hgnhelp/community"
+        to={{ pathname: '/hgnhelp/community', state: { initialSkills: [selectedSkill] } }}
         className={darkMode ? styles.underlineLinkDark : styles.underlineLink}
       >
         Show your team members &gt;
