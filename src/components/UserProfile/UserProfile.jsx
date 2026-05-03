@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useId, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import {
   Row,
   Input,
@@ -851,6 +852,18 @@ setUpdatedTasks(prev => {
   const fetchSpecialWarnings = async () => {
     const userId = props?.match?.params?.userId;
     try {
+      const userProfileToUpdate = {
+        ...(updatedUserProfile || userProfileRef.current),
+        projects, // Ensure projects are included in the payload
+      };
+      console.log('Submitting UserProfile:', userProfileToUpdate); // Debugging log
+      await props.updateUserProfile(userProfileToUpdate);
+      if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
+        await props.refreshToken(userProfile._id);
+      }
+      await loadUserProfile();
+      await loadUserTasks();
+      setSaved(false);
       dispatch(getSpecialWarnings(userId)).then(res => {
         if (res.error) {
           // eslint-disable-next-line no-console
@@ -994,7 +1007,7 @@ setUpdatedTasks(prev => {
   }
 
   try {
-    const result = await props.updateUserProfile(userProfileToUpdate);
+    await props.updateUserProfile(userProfileToUpdate);
     clearCachedTeamMembers(); // clear all team caches on any profile save
     if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
       await props.refreshToken(userProfile._id);
@@ -2437,6 +2450,30 @@ setUpdatedTasks(prev => {
     </div>
   );
 }
+
+UserProfile.propTypes = {
+  auth: PropTypes.shape({
+    user: PropTypes.shape({
+      permissions: PropTypes.object,
+      role: PropTypes.string,
+      userid: PropTypes.string,
+    }).isRequired,
+  }).isRequired,
+  handleLinkModel: PropTypes.func,
+  handleSaveError: PropTypes.func,
+  hasPermission: PropTypes.func,
+  history: PropTypes.shape({
+    push: PropTypes.func,
+  }),
+  isAddNewUser: PropTypes.bool,
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      userId: PropTypes.string,
+    }),
+  }),
+  refreshToken: PropTypes.func,
+  updateUserProfile: PropTypes.func.isRequired,
+};
 
  const mapStateToProps = state => ({
    allProjects: state.allProjects || state.projects || {},   // <- gives you .projects array

@@ -6,11 +6,15 @@ export const ENDPOINTS = {
   USER_PROFILE: userId => `${APIEndpoint}/userprofile/${userId}`,
   USER_PROFILE_FIXED: userId => `${APIEndpoint}/userProfile/${userId}`,
   USER_PROFILE_PROPERTY: userId => `${APIEndpoint}/userprofile/${userId}/property`,
+  USER_PAUSE: userId => `${APIEndpoint}/userProfile/${userId}/pause`,
   USER_PROFILES: `${APIEndpoint}/userprofile/`,
   UPDATE_REHIREABLE_STATUS: userId => `${APIEndpoint}/userprofile/${userId}/rehireable`,
   TOGGLE_VISIBILITY: userId => `${APIEndpoint}/userprofile/${userId}/toggleInvisibility`,
   USER_PROFILE_UPDATE: `${APIEndpoint}/userprofile/update`,
   ADD_BLUE_SQUARE: userId => `${APIEndpoint}/userprofile/${userId}/addInfringement`,
+
+  TASKS_TRENDS: () => `${APIEndpoint}/tasks/trends`,
+  TASKS_SUMMARY: () => `${APIEndpoint}/tasks/summary`,
 
   TOP_CONVERTED: (limit, startDate, endDate) => {
     const dateParams =
@@ -26,7 +30,6 @@ export const ENDPOINTS = {
         : '';
     return `${APIEndpoint}/job-analytics/least-converted?limit=${limit}${dateParams}`;
   },
-
   MODIFY_BLUE_SQUARE: (userId, blueSquareId) =>
     `${APIEndpoint}/userprofile/${userId}/infringements/${blueSquareId}`,
   
