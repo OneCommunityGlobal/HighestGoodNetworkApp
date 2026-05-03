@@ -136,6 +136,7 @@ import EquipmentDetail from './components/BMDashboard/Equipment/Detail/Equipment
 import UpdateEquipment from './components/BMDashboard/Equipment/Update/UpdateEquipment';
 import ToolDetailPage from './components/BMDashboard/Tools/ToolDetailPage';
 import CheckTypes from './components/BMDashboard/shared/CheckTypes';
+import AttendanceStatistics from './components/AttendanceStats/AttendanceDashboard';
 import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import AddTool from './components/BMDashboard/Tools/AddTool';
 import AttendanceNoShow from './components/AttendanceSystem/AttendanceNoShowCharts';
@@ -355,6 +356,9 @@ export default (
     <Route path="/formviewer" component={FormViewer} />
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
     <Route path="/hours-pledged-chart" component={HoursPledgedChart} />
+    <Route path="/TestEventReg" component={TestEventRegistration} />
+    <Route path="/Participation" component={AttendanceStatistics} />
+
     <>
       {/* Comment out the Header component and its import during phase 2 development. */}
       {/* Uncomment BMHeader and its import during phase 2 development. */}
