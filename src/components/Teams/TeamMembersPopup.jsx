@@ -317,6 +317,9 @@ export const TeamMembersPopup = React.memo(props => {
     return visibleList.map((u, i) => renderRow(u, i));
   };
 
+  const wrapLongTeamName = teamName =>
+    teamName.length >= 60 ? teamName.slice(0, 50) + '...' : teamName;
+
   return (
     <Container fluid>
       <InfoModal isOpen={infoModal} toggle={toggleInfoModal} />
@@ -329,8 +332,8 @@ export const TeamMembersPopup = React.memo(props => {
           props.open ? ' open-team-members-popup-modal' : ''
         }`}
       >
-        <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>
-          {`Members of ${props.selectedTeamName}`}
+        <ModalHeader className={`${darkMode ? 'bg-space-cadet' : ''} `} toggle={closePopup}>
+          {wrapLongTeamName(`Members of ${props.selectedTeamName}`)}
         </ModalHeader>
 
         <div className={darkMode ? 'bg-space-cadet' : ''}>
