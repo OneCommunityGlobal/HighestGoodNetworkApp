@@ -79,7 +79,7 @@ function ProjectDetails() {
       <h2 className="text-center mt-4 mb-4">
         {currProject.projectName || currProject.name} Dashboard
       </h2>
-      <LogBar projectId={currProject._id} />
+      <LogBar projectId={currProject._id} darkMode={darkMode} />
       <div className="d-flex flex-column flex-lg-row justify-content-evenly my-4 gap-5">
         <RentedToolsDisplay projectId={currProject._id} />
         <MaterialsDisplay projectId={currProject._id} />

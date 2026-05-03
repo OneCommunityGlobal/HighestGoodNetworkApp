@@ -9,7 +9,7 @@ const buttonStyles = {
 };
 
 function LogBar(props) {
-  const { projectId } = props;
+  const { projectId, darkMode } = props;
   const buttonLabels = {
     dailyLogging: {
       name: ['Time', 'Material', 'Tool/Equipment'],
@@ -35,7 +35,7 @@ function LogBar(props) {
   };
 
   return (
-    <div className="log-bar">
+    <div className={darkMode ? 'log-bar-dark' : 'log-bar'}>
       {Object.keys(buttonStyles).map(section => (
         <div key={uuidv4()} className="log-bar__section">
           <h2>
