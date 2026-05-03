@@ -150,6 +150,7 @@ import CostPredictionPage from './components/BMDashboard/CostPrediction/CostPred
 //import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChart';
 import JobsHitsApplicationsChart from './components/JobAnalytics/JobsHitsApplicationsChart/JobsHitsApplicationsChart';
 import RentalChart from './components/BMDashboard/RentalChart/RentalChart';
+import InjuryTrendChart from './components/BMDashboard/InjuryTrendChart';
 import ReturnedLateChart from './components/BMDashboard/RentalChart/ReturnedLateChart';
 import CreateNewTeam from './components/BMDashboard/Team/CreateNewTeam/CreateNewTeam';
 // Community Portal
@@ -804,6 +805,7 @@ export default (
         />
         <BMProtectedRoute path="/bmdashboard/issues/add/:projectId" component={Issue} />
         <BMProtectedRoute path="/bmdashboard/issuechart" component={IssueChart} />
+        <BMProtectedRoute path="/bmdashboard/injurychart" component={InjuryTrendChart} />
         <BMProtectedRoute path="/bmdashboard/timelog/" component={BMTimeLogger} />
         <BMProtectedRoute path="/bmdashboard/issues/" component={IssueDashboard} />
         <BMProtectedRoute path="/bmdashboard/InteractiveMap" component={InteractiveMap} />
