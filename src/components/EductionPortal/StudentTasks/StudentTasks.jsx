@@ -1,16 +1,51 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import Sidebar from './StudentSidebar';
 import TaskCard from './TaskCard';
 import RubricModal from './RubricModal';
+import { fetchStudentTasks } from '../../../actions/studentTasks';
 import styles from './StudentTasks.module.css';
 
 const FILTER_OPTIONS = ['All', 'Incomplete', 'Submitted', 'Graded'];
 const GROUP_OPTIONS = ['subject', 'colorLevel', 'activityGroup', 'strategy'];
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
 
+// Map API status values to display labels used by TaskCard / filters
+const STATUS_DISPLAY_MAP = {
+  assigned: 'Incomplete',
+  in_progress: 'Incomplete',
+  completed: 'Submitted',
+  graded: 'Graded',
+};
+
+// Normalise a Redux task (flat format from actions) into the shape TaskCard expects
+const normalizeTask = task => ({
+  ...task,
+  title: task.subtitle || task.course_name || 'Untitled Task',
+  subject: task.subject?.name || task.course_name || 'Unknown Subject',
+  colorLevel: task.color_level || 'Unknown',
+  activityGroup: task.activity_group || 'Unassigned',
+  strategy: task.strategy || 'General',
+  description: task.subtitle || '',
+  status: STATUS_DISPLAY_MAP[task.status] || 'Incomplete',
+  progress:
+    task.suggested_total_hours > 0
+      ? Math.round((task.logged_hours / task.suggested_total_hours) * 100)
+      : 0,
+  dueDate: task.dueAt ? new Date(task.dueAt).toISOString().split('T')[0] : 'N/A',
+  logged_hours: task.logged_hours || 0,
+  suggested_total_hours: task.suggested_total_hours || 0,
+});
+
 const StudentTasks = () => {
+  const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme?.darkMode);
+  const reduxTasks = useSelector(state => state.studentTasks?.taskItems || []);
+  const loading = useSelector(state => state.studentTasks?.isFetching);
+
+  useEffect(() => {
+    dispatch(fetchStudentTasks());
+  }, [dispatch]);
 
   useEffect(() => {
     const htmlEl = document.documentElement;
@@ -32,50 +67,7 @@ const StudentTasks = () => {
     };
   }, [darkMode]);
 
-  const [tasks] = useState([
-    {
-      id: 1,
-      title: 'Activity 1: Technology, Art, Trades, Health',
-      subject: 'Technology / Art / Health',
-      colorLevel: 'Red',
-      activityGroup: 'Creative Projects',
-      strategy: 'Teaching Strategy',
-      description:
-        'Choose a person listed in the Technology Subject Page and a related trade. Visit at least 1 location and observe 5 professionals in action. Create a blog post or video.',
-      status: 'Incomplete',
-      progress: 25,
-      dueDate: '2025-10-15',
-      rubric: ['Clarity', 'Creativity', 'Effort'],
-    },
-    {
-      id: 2,
-      title: 'Activity 2: Math, Science, Innovation',
-      subject: 'Math / Science',
-      colorLevel: 'Blue',
-      activityGroup: 'Research Assignments',
-      strategy: 'Life Strategy',
-      description:
-        'Research patterns of climate bands and write a pamphlet showing your findings. Distribute pamphlets to students.',
-      status: 'Submitted',
-      progress: 50,
-      dueDate: '2025-10-20',
-      rubric: ['Accuracy', 'Presentation', 'Depth of Research'],
-    },
-    {
-      id: 3,
-      title: 'Activity 3: Social Sciences, English, Values',
-      subject: 'Social Sciences / English',
-      colorLevel: 'Violet',
-      activityGroup: 'Written Work',
-      strategy: 'Teaching Strategy',
-      description:
-        'Write a 10–15 page research paper on cultural development. Include fictional story and empathy-driven examples.',
-      status: 'Graded',
-      progress: 80,
-      dueDate: '2025-10-25',
-      rubric: ['Critical Thinking', 'Empathy', 'Writing Style'],
-    },
-  ]);
+  const tasks = useMemo(() => reduxTasks.map(normalizeTask), [reduxTasks]);
 
   const [selectedTask, setSelectedTask] = useState(null);
   const [filter, setFilter] = useState('All');
@@ -174,7 +166,12 @@ const StudentTasks = () => {
             ))}
           </div>
 
+          {loading && <p className={styles.loadingMsg}>Loading tasks…</p>}
+
           <div className={styles.taskList}>
+            {!loading && groupKeys.length === 0 && (
+              <p className={styles.emptyMsg}>No tasks found.</p>
+            )}
             {groupKeys.map(key => (
               <div key={key} className={styles.subjectGroup}>
                 <button
