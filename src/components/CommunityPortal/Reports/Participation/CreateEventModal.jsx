@@ -5,7 +5,7 @@ import moment from 'moment-timezone';
 import { createEvent } from '../../../../actions/communityPortal/eventActions';
 import '../../../Header/DarkMode.module.css';
 
-function CreateEventModal({ isOpen, toggle }) {
+function CreateEventModal({ isOpen, toggle, onEventCreated = () => {} }) {
   const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme.darkMode);
   const [loading, setLoading] = useState(false);
@@ -169,11 +169,11 @@ function CreateEventModal({ isOpen, toggle }) {
     try {
       const result = await dispatch(createEvent(eventData));
       if (result?.success) {
+        onEventCreated();
         handleToggle();
-        // The events list will be refreshed when the component re-renders
       }
     } catch (error) {
-      // Error handling is done in the action
+      setErrors('Unable to create a new event. Please try again later.');
     } finally {
       setLoading(false);
     }
