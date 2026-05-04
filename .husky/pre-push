@@ -7,20 +7,12 @@ if command -v nvm >/dev/null 2>&1 && [ -f .nvmrc ]; then
   nvm use 20 2>/dev/null || nvm install 20 && nvm use 20
 fi
 
-. "$(dirname "$0")/_/husky.sh"
-
-# Determine diff base: prefer the branch's upstream; fall back to origin/development
-# for branches that have never been pushed (no upstream tracking ref).
-if git rev-parse --verify --quiet '@{upstream}' >/dev/null 2>&1; then
-  diff_base='@{upstream}'
-elif git rev-parse --verify --quiet 'origin/development' >/dev/null 2>&1; then
-  diff_base='origin/development'
+if git rev-parse --abbrev-ref @{upstream} >/dev/null 2>&1; then
+  changed_files=$(git diff --name-only @{upstream}...HEAD)
 else
-  echo "ℹ️  No diff base available. Skipping pre-push checks."
+  echo "ℹ️  No upstream branch set. Skipping pre-push checks."
   exit 0
 fi
-
-changed_files=$(git diff --name-only --diff-filter=d "$diff_base"...HEAD 2>/dev/null || true)
 
 if [ -z "$changed_files" ]; then
   echo "ℹ️  No outgoing changes to validate. Skipping pre-push checks."
