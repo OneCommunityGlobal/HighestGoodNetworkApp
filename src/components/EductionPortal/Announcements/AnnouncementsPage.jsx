@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import AnnouncementsBoard from './AnnouncementsBoard';
 import AnnouncementModal from './AnnouncementModal';
 
-const EDUCATOR_ROLES = ['Owner', 'Administrator', 'Mentor', 'Core Team'];
+const EDUCATOR_ROLES = new Set(['Owner', 'Administrator', 'Mentor', 'Core Team']);
 
 const getUserRole = authUser => {
   if (!authUser) return 'student';
   if (authUser.permissions?.frontPermissions?.includes('announcements_manage')) {
     return 'educator';
   }
-  return EDUCATOR_ROLES.includes(authUser.role) ? 'educator' : 'student';
+  return EDUCATOR_ROLES.has(authUser.role) ? 'educator' : 'student';
 };
 
 const getAudienceLabel = selectedAudience => {
@@ -20,9 +20,22 @@ const getAudienceLabel = selectedAudience => {
 };
 
 const getButtonStyle = (isActive, activeColor, darkMode) => {
-  const borderColor = isActive ? activeColor : darkMode ? '#555555' : '#ccc';
-  const bgColor = isActive ? activeColor : darkMode ? '#3d3d3d' : 'white';
-  const textColor = isActive ? 'white' : darkMode ? '#ffffff' : '#333';
+  let borderColor;
+  let bgColor;
+  let textColor;
+  if (isActive) {
+    borderColor = activeColor;
+    bgColor = activeColor;
+    textColor = 'white';
+  } else if (darkMode) {
+    borderColor = '#555555';
+    bgColor = '#3d3d3d';
+    textColor = '#ffffff';
+  } else {
+    borderColor = '#ccc';
+    bgColor = 'white';
+    textColor = '#333';
+  }
   return {
     padding: '6px 12px',
     border: `1px solid ${borderColor}`,
@@ -96,13 +109,10 @@ const AnnouncementsPage = () => {
   const [dateFromFilter, setDateFromFilter] = useState('');
   const [dateToFilter, setDateToFilter] = useState('');
 
-  // Get user info from Redux state
   const authUser = useSelector(state => state.auth.user);
   const darkMode = useSelector(state => state.theme.darkMode);
-
   const userRole = getUserRole(authUser);
 
-  // Persist announcements to localStorage whenever they change
   useEffect(() => {
     localStorage.setItem('edu_announcements', JSON.stringify(announcements));
   }, [announcements]);
@@ -124,10 +134,7 @@ const AnnouncementsPage = () => {
 
   const handleSaveAnnouncement = async announcementData => {
     try {
-      console.log('Saving announcement:', announcementData);
-
       if (editingAnnouncement) {
-        // Update existing announcement
         setAnnouncements(prev =>
           prev.map(ann =>
             ann.id === editingAnnouncement.id
@@ -136,22 +143,257 @@ const AnnouncementsPage = () => {
           ),
         );
       } else {
-        // Add new announcement
         const newAnnouncement = {
           ...announcementData,
-          id: Date.now(), // Simple ID generation for demo
+          id: Date.now(),
           createdAt: new Date().toISOString(),
           isNew: true,
         };
         setAnnouncements(prev => [newAnnouncement, ...prev]);
       }
-
       handleCloseModal();
       alert('Announcement saved successfully!');
     } catch (error) {
       console.error('Failed to save announcement:', error);
       throw error;
     }
+  };
+
+  const clearFilters = () => {
+    setSearchQuery('');
+    setCourseFilter('');
+    setDateFromFilter('');
+    setDateToFilter('');
+  };
+
+  const hasActiveFilters = searchQuery || courseFilter || dateFromFilter || dateToFilter;
+
+  const inputStyle = width => ({
+    padding: '6px',
+    border: `1px solid ${darkMode ? '#3A506B' : '#ccc'}`,
+    borderRadius: '4px',
+    fontSize: '12px',
+    width: width || '100%',
+    backgroundColor: darkMode ? '#243B5A' : 'white',
+    color: darkMode ? '#e2e8f0' : '#333333',
+    colorScheme: darkMode ? 'dark' : 'light',
+  });
+
+  const renderSidebar = () => (
+    <div
+      style={{
+        width: '250px',
+        backgroundColor: darkMode ? '#1b2a41' : 'white',
+        borderRight: `1px solid ${darkMode ? '#3A506B' : '#e0e0e0'}`,
+        padding: '20px',
+        boxShadow: darkMode ? '2px 0 4px rgba(0,0,0,0.3)' : '2px 0 4px rgba(0,0,0,0.1)',
+      }}
+    >
+      <h5
+        style={{
+          marginBottom: '20px',
+          fontWeight: 'bold',
+          color: darkMode ? '#e2e8f0' : '#333333',
+        }}
+      >
+        Filters
+      </h5>
+      <div style={{ marginBottom: '25px' }}>
+        <h6
+          style={{
+            fontSize: '14px',
+            fontWeight: 'bold',
+            marginBottom: '10px',
+            color: darkMode ? '#e2e8f0' : '#333333',
+          }}
+        >
+          Scope
+        </h6>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button style={getButtonStyle(true, '#007bff', darkMode)}>All</button>
+          <button style={getButtonStyle(false, '#007bff', darkMode)}>My Classes</button>
+        </div>
+      </div>
+      <div style={{ marginBottom: '25px' }}>
+        <h6
+          style={{
+            fontSize: '14px',
+            fontWeight: 'bold',
+            marginBottom: '10px',
+            color: darkMode ? '#e2e8f0' : '#333333',
+          }}
+        >
+          Audience
+        </h6>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <button
+            onClick={() => setSelectedAudience('all')}
+            style={getButtonStyle(selectedAudience === 'all', '#007bff', darkMode)}
+          >
+            All
+          </button>
+          <button
+            onClick={() => setSelectedAudience('students')}
+            style={getButtonStyle(selectedAudience === 'students', '#28a745', darkMode)}
+          >
+            Students
+          </button>
+          <button
+            onClick={() => setSelectedAudience('educators')}
+            style={getButtonStyle(selectedAudience === 'educators', '#17a2b8', darkMode)}
+          >
+            Educators
+          </button>
+        </div>
+      </div>
+      <div style={{ marginBottom: '25px' }}>
+        <h6
+          style={{
+            fontSize: '14px',
+            fontWeight: 'bold',
+            marginBottom: '10px',
+            color: darkMode ? '#e2e8f0' : '#333333',
+          }}
+        >
+          Courses / Classes
+        </h6>
+        <input
+          type="text"
+          placeholder="Search Classes..."
+          value={courseFilter}
+          onChange={e => setCourseFilter(e.target.value)}
+          style={{
+            width: '100%',
+            padding: '8px',
+            border: `1px solid ${darkMode ? '#555555' : '#ccc'}`,
+            borderRadius: '4px',
+            fontSize: '12px',
+            backgroundColor: darkMode ? '#3d3d3d' : 'white',
+            color: darkMode ? '#ffffff' : '#333333',
+          }}
+        />
+      </div>
+      <div style={{ marginBottom: '25px' }}>
+        <h6
+          style={{
+            fontSize: '14px',
+            fontWeight: 'bold',
+            marginBottom: '10px',
+            color: darkMode ? '#e2e8f0' : '#333333',
+          }}
+        >
+          Date
+        </h6>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <label
+              htmlFor="date-from-filter"
+              style={{ fontSize: '11px', color: darkMode ? '#94a3b8' : '#666666' }}
+            >
+              From
+            </label>
+            <input
+              id="date-from-filter"
+              type="date"
+              value={dateFromFilter}
+              onChange={e => setDateFromFilter(e.target.value)}
+              style={inputStyle()}
+            />
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <label
+              htmlFor="date-to-filter"
+              style={{ fontSize: '11px', color: darkMode ? '#94a3b8' : '#666666' }}
+            >
+              To
+            </label>
+            <input
+              id="date-to-filter"
+              type="date"
+              value={dateToFilter}
+              onChange={e => setDateToFilter(e.target.value)}
+              style={inputStyle()}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderActiveFilters = () => {
+    if (!hasActiveFilters) return null;
+    return (
+      <span style={{ color: darkMode ? '#94a3b8' : '#666' }}>
+        | Filters:
+        {searchQuery && (
+          <span
+            style={{
+              marginLeft: '5px',
+              backgroundColor: '#e3f2fd',
+              padding: '2px 6px',
+              borderRadius: '3px',
+              fontSize: '11px',
+            }}
+          >
+            Search: &quot;{searchQuery}&quot;
+          </span>
+        )}
+        {courseFilter && (
+          <span
+            style={{
+              marginLeft: '5px',
+              backgroundColor: '#f3e5f5',
+              padding: '2px 6px',
+              borderRadius: '3px',
+              fontSize: '11px',
+            }}
+          >
+            Course: &quot;{courseFilter}&quot;
+          </span>
+        )}
+        {dateFromFilter && (
+          <span
+            style={{
+              marginLeft: '5px',
+              backgroundColor: '#e8f5e8',
+              padding: '2px 6px',
+              borderRadius: '3px',
+              fontSize: '11px',
+            }}
+          >
+            From: {dateFromFilter}
+          </span>
+        )}
+        {dateToFilter && (
+          <span
+            style={{
+              marginLeft: '5px',
+              backgroundColor: '#fff3e0',
+              padding: '2px 6px',
+              borderRadius: '3px',
+              fontSize: '11px',
+            }}
+          >
+            To: {dateToFilter}
+          </span>
+        )}
+        <button
+          onClick={clearFilters}
+          style={{
+            marginLeft: '8px',
+            padding: '2px 6px',
+            backgroundColor: '#ffebee',
+            border: '1px solid #f44336',
+            borderRadius: '3px',
+            fontSize: '10px',
+            color: '#f44336',
+            cursor: 'pointer',
+          }}
+        >
+          Clear All
+        </button>
+      </span>
+    );
   };
 
   return (
@@ -163,181 +405,8 @@ const AnnouncementsPage = () => {
         color: darkMode ? '#e2e8f0' : '#333333',
       }}
     >
-      {/* Left Sidebar - Filters */}
-      <div
-        style={{
-          width: '250px',
-          backgroundColor: darkMode ? '#1b2a41' : 'white',
-          borderRight: `1px solid ${darkMode ? '#3A506B' : '#e0e0e0'}`,
-          padding: '20px',
-          boxShadow: darkMode ? '2px 0 4px rgba(0,0,0,0.3)' : '2px 0 4px rgba(0,0,0,0.1)',
-        }}
-      >
-        <h5
-          style={{
-            marginBottom: '20px',
-            fontWeight: 'bold',
-            color: darkMode ? '#e2e8f0' : '#333333',
-          }}
-        >
-          Filters
-        </h5>
-
-        {/* Scope Filter */}
-        <div style={{ marginBottom: '25px' }}>
-          <h6
-            style={{
-              fontSize: '14px',
-              fontWeight: 'bold',
-              marginBottom: '10px',
-              color: darkMode ? '#e2e8f0' : '#333333',
-            }}
-          >
-            Scope
-          </h6>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <button style={getButtonStyle(true, '#007bff', darkMode)}>All</button>
-            <button style={getButtonStyle(false, '#007bff', darkMode)}>My Classes</button>
-          </div>
-        </div>
-
-        {/* Audience Filter */}
-        <div style={{ marginBottom: '25px' }}>
-          <h6
-            style={{
-              fontSize: '14px',
-              fontWeight: 'bold',
-              marginBottom: '10px',
-              color: darkMode ? '#e2e8f0' : '#333333',
-            }}
-          >
-            Audience
-          </h6>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <button
-              onClick={() => setSelectedAudience('all')}
-              style={getButtonStyle(selectedAudience === 'all', '#007bff', darkMode)}
-            >
-              All
-            </button>
-            <button
-              onClick={() => setSelectedAudience('students')}
-              style={getButtonStyle(selectedAudience === 'students', '#28a745', darkMode)}
-            >
-              Students
-            </button>
-            <button
-              onClick={() => setSelectedAudience('educators')}
-              style={getButtonStyle(selectedAudience === 'educators', '#17a2b8', darkMode)}
-            >
-              Educators
-            </button>
-          </div>
-        </div>
-
-        {/* Courses/Classes Filter */}
-        <div style={{ marginBottom: '25px' }}>
-          <h6
-            style={{
-              fontSize: '14px',
-              fontWeight: 'bold',
-              marginBottom: '10px',
-              color: darkMode ? '#e2e8f0' : '#333333',
-            }}
-          >
-            Courses / Classes
-          </h6>
-          <input
-            type="text"
-            placeholder="Search Classes..."
-            value={courseFilter}
-            onChange={e => setCourseFilter(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '8px',
-              border: `1px solid ${darkMode ? '#555555' : '#ccc'}`,
-              borderRadius: '4px',
-              fontSize: '12px',
-              backgroundColor: darkMode ? '#3d3d3d' : 'white',
-              color: darkMode ? '#ffffff' : '#333333',
-            }}
-          />
-        </div>
-
-        {/* Date Filter */}
-        <div style={{ marginBottom: '25px' }}>
-          <h6
-            style={{
-              fontSize: '14px',
-              fontWeight: 'bold',
-              marginBottom: '10px',
-              color: darkMode ? '#e2e8f0' : '#333333',
-            }}
-          >
-            Date
-          </h6>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              <label
-                htmlFor="date-from-filter"
-                style={{
-                  fontSize: '11px',
-                  color: darkMode ? '#94a3b8' : '#666666',
-                }}
-              >
-                From
-              </label>
-              <input
-                id="date-from-filter"
-                type="date"
-                value={dateFromFilter}
-                onChange={e => setDateFromFilter(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '6px',
-                  border: `1px solid ${darkMode ? '#3A506B' : '#ccc'}`,
-                  borderRadius: '4px',
-                  fontSize: '12px',
-                  backgroundColor: darkMode ? '#243B5A' : 'white',
-                  color: darkMode ? '#e2e8f0' : '#333333',
-                  colorScheme: darkMode ? 'dark' : 'light',
-                }}
-              />
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              <label
-                htmlFor="date-to-filter"
-                style={{
-                  fontSize: '11px',
-                  color: darkMode ? '#94a3b8' : '#666666',
-                }}
-              >
-                To
-              </label>
-              <input
-                id="date-to-filter"
-                type="date"
-                value={dateToFilter}
-                onChange={e => setDateToFilter(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '6px',
-                  border: `1px solid ${darkMode ? '#3A506B' : '#ccc'}`,
-                  borderRadius: '4px',
-                  fontSize: '12px',
-                  backgroundColor: darkMode ? '#243B5A' : 'white',
-                  color: darkMode ? '#e2e8f0' : '#333333',
-                  colorScheme: darkMode ? 'dark' : 'light',
-                }}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Content Area */}
+      {renderSidebar()}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        {/* Header */}
         <div
           style={{
             backgroundColor: darkMode ? '#1b2a41' : 'white',
@@ -348,13 +417,7 @@ const AnnouncementsPage = () => {
             alignItems: 'center',
           }}
         >
-          <h4
-            style={{
-              margin: 0,
-              fontWeight: 'bold',
-              color: darkMode ? '#e2e8f0' : '#333333',
-            }}
-          >
+          <h4 style={{ margin: 0, fontWeight: 'bold', color: darkMode ? '#e2e8f0' : '#333333' }}>
             Announcements
           </h4>
           {userRole === 'educator' && (
@@ -374,8 +437,6 @@ const AnnouncementsPage = () => {
             </button>
           )}
         </div>
-
-        {/* Board Navigation */}
         <div
           style={{
             backgroundColor: darkMode ? '#1b2a41' : 'white',
@@ -448,8 +509,6 @@ const AnnouncementsPage = () => {
             }}
           />
         </div>
-
-        {/* Latest Section Header */}
         <div
           style={{
             backgroundColor: darkMode ? '#1b2a41' : 'white',
@@ -474,106 +533,22 @@ const AnnouncementsPage = () => {
             <div style={{ display: 'flex', alignItems: 'center', gap: '15px', flexWrap: 'wrap' }}>
               <span>
                 Showing:{' '}
-                <strong style={{ color: '#007bff' }}>
-                  {getAudienceLabel(selectedAudience)}
-                </strong>
+                <strong style={{ color: '#007bff' }}>{getAudienceLabel(selectedAudience)}</strong>
               </span>
-
-              {/* Active Filters */}
-              {(searchQuery || courseFilter || dateFromFilter || dateToFilter) && (
-                <span style={{ color: darkMode ? '#94a3b8' : '#666' }}>
-                  | Filters:
-                  {searchQuery && (
-                    <span
-                      style={{
-                        marginLeft: '5px',
-                        backgroundColor: '#e3f2fd',
-                        padding: '2px 6px',
-                        borderRadius: '3px',
-                        fontSize: '11px',
-                      }}
-                    >
-                      Search: &quot;{searchQuery}&quot;
-                    </span>
-                  )}
-                  {courseFilter && (
-                    <span
-                      style={{
-                        marginLeft: '5px',
-                        backgroundColor: '#f3e5f5',
-                        padding: '2px 6px',
-                        borderRadius: '3px',
-                        fontSize: '11px',
-                      }}
-                    >
-                      Course: &quot;{courseFilter}&quot;
-                    </span>
-                  )}
-                  {dateFromFilter && (
-                    <span
-                      style={{
-                        marginLeft: '5px',
-                        backgroundColor: '#e8f5e8',
-                        padding: '2px 6px',
-                        borderRadius: '3px',
-                        fontSize: '11px',
-                      }}
-                    >
-                      From: {dateFromFilter}
-                    </span>
-                  )}
-                  {dateToFilter && (
-                    <span
-                      style={{
-                        marginLeft: '5px',
-                        backgroundColor: '#fff3e0',
-                        padding: '2px 6px',
-                        borderRadius: '3px',
-                        fontSize: '11px',
-                      }}
-                    >
-                      To: {dateToFilter}
-                    </span>
-                  )}
-                  <button
-                    onClick={() => {
-                      setSearchQuery('');
-                      setCourseFilter('');
-                      setDateFromFilter('');
-                      setDateToFilter('');
-                    }}
-                    style={{
-                      marginLeft: '8px',
-                      padding: '2px 6px',
-                      backgroundColor: '#ffebee',
-                      border: '1px solid #f44336',
-                      borderRadius: '3px',
-                      fontSize: '10px',
-                      color: '#f44336',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    Clear All
-                  </button>
-                </span>
-              )}
-
-              {/* Role Indicator */}
+              {renderActiveFilters()}
               {userRole === 'educator' && (
                 <span style={{ color: '#28a745' }}>
-                  👨‍🏫 <strong>Educator Mode</strong> (Can create/edit)
+                  ðŸ‘¨â€ðŸ« <strong>Educator Mode</strong> (Can create/edit)
                 </span>
               )}
               {userRole === 'student' && (
                 <span style={{ color: '#17a2b8' }}>
-                  👨‍🎓 <strong>Student Mode</strong> (View only)
+                  ðŸ‘¨â€ðŸŽ“ <strong>Student Mode</strong> (View only)
                 </span>
               )}
             </div>
           </div>
         </div>
-
-        {/* Announcements List */}
         <div
           style={{
             flex: 1,
@@ -591,12 +566,11 @@ const AnnouncementsPage = () => {
             courseFilter={courseFilter}
             dateFromFilter={dateFromFilter}
             dateToFilter={dateToFilter}
-            isEmbedded={true}
+            isEmbedded
             darkMode={darkMode}
           />
         </div>
       </div>
-
       <AnnouncementModal
         isOpen={isModalOpen}
         toggle={handleCloseModal}

@@ -113,131 +113,201 @@ const AnnouncementsBoard = ({
   const renderEmbeddedContent = () => {
     if (loading) {
       return (
-        <div
-          style={{ textAlign: 'center', padding: '40px', color: darkMode ? '#94a3b8' : '#666' }}
-        >
+        <div style={{ textAlign: 'center', padding: '40px', color: darkMode ? '#94a3b8' : '#666' }}>
           Loading announcements...
         </div>
       );
     }
     if (filteredAnnouncements.length === 0) {
       return (
-        <div
-          style={{ textAlign: 'center', padding: '40px', color: darkMode ? '#94a3b8' : '#666' }}
-        >
+        <div style={{ textAlign: 'center', padding: '40px', color: darkMode ? '#94a3b8' : '#666' }}>
           <p>No announcements found</p>
         </div>
       );
     }
     return filteredAnnouncements.map(announcement => (
-            <div
-              key={announcement.id}
+      <div
+        key={announcement.id}
+        style={{
+          backgroundColor: darkMode ? '#1b2a41' : 'white',
+          border: `1px solid ${darkMode ? '#3A506B' : '#e0e0e0'}`,
+          borderRadius: '8px',
+          padding: '20px',
+          marginBottom: '15px',
+          boxShadow: darkMode ? '0 1px 3px rgba(0,0,0,0.4)' : '0 1px 3px rgba(0,0,0,0.1)',
+        }}
+      >
+        {/* Header */}
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
+            marginBottom: '10px',
+          }}
+        >
+          <h5
+            style={{
+              margin: 0,
+              fontWeight: 'bold',
+              fontSize: '16px',
+              color: darkMode ? '#e9ecef' : '#333',
+              flex: 1,
+            }}
+          >
+            {announcement.title}
+          </h5>
+          {userRole === 'educator' && (
+            <Button
+              size="sm"
+              color="light"
+              onClick={() => handleEditClick(announcement)}
               style={{
-                backgroundColor: darkMode ? '#1b2a41' : 'white',
-                border: `1px solid ${darkMode ? '#3A506B' : '#e0e0e0'}`,
-                borderRadius: '8px',
-                padding: '20px',
-                marginBottom: '15px',
-                boxShadow: darkMode ? '0 1px 3px rgba(0,0,0,0.4)' : '0 1px 3px rgba(0,0,0,0.1)',
+                padding: '4px 8px',
+                border: `1px solid ${darkMode ? '#3A506B' : '#ccc'}`,
+                backgroundColor: darkMode ? '#243B5A' : '#f8f9fa',
+                color: darkMode ? '#e2e8f0' : '#333',
               }}
             >
-              {/* Header */}
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'flex-start',
-                  marginBottom: '10px',
-                }}
-              >
-                <h5
-                  style={{
-                    margin: 0,
-                    fontWeight: 'bold',
-                    fontSize: '16px',
-                    color: darkMode ? '#e9ecef' : '#333',
-                    flex: 1,
-                  }}
-                >
-                  {announcement.title}
-                </h5>
-                {userRole === 'educator' && (
-                  <Button
-                    size="sm"
-                    color="light"
-                    onClick={() => handleEditClick(announcement)}
-                    style={{
-                      padding: '4px 8px',
-                      border: `1px solid ${darkMode ? '#3A506B' : '#ccc'}`,
-                      backgroundColor: darkMode ? '#243B5A' : '#f8f9fa',
-                      color: darkMode ? '#e2e8f0' : '#333',
-                    }}
-                  >
-                    <FaEdit size={12} />
-                  </Button>
+              <FaEdit size={12} />
+            </Button>
+          )}
+        </div>
+
+        {/* Author and metadata */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '15px',
+            marginBottom: '10px',
+            fontSize: '13px',
+            color: darkMode ? '#94a3b8' : '#666',
+          }}
+        >
+          <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            By{' '}
+            <strong style={{ color: darkMode ? '#e2e8f0' : '#333' }}>{announcement.author}</strong>
+          </span>
+          <span>|</span>
+          <span>{announcement.course || 'General'}</span>
+          <span>|</span>
+          <span>{announcement.grade || 'All Grades'}</span>
+          <span>|</span>
+          <span>
+            Audience:
+            <Badge
+              color={getAudienceBadgeColor(announcement.audience)}
+              style={{
+                marginLeft: '5px',
+                fontSize: '10px',
+                padding: '2px 6px',
+              }}
+            >
+              {announcement.audience === 'all' ? 'Everyone' : announcement.audience}
+            </Badge>
+          </span>
+        </div>
+
+        {/* Body */}
+        <p
+          style={{
+            margin: 0,
+            lineHeight: '1.5',
+            color: darkMode ? '#94a3b8' : '#555',
+            fontSize: '14px',
+          }}
+        >
+          {announcement.body.length > 200
+            ? `${announcement.body.substring(0, 200)}...`
+            : announcement.body}
+        </p>
+      </div>
+    ));
+  };
+
+  const renderGridContent = () => {
+    if (loading) {
+      return (
+        <Col xs={12} className="text-center">
+          <div className={styles.loadingSpinner}>Loading announcements...</div>
+        </Col>
+      );
+    }
+    if (filteredAnnouncements.length === 0) {
+      return (
+        <Col xs={12} className="text-center">
+          <div className={styles.emptyState}>
+            <FaCalendarAlt className={styles.emptyIcon} />
+            <h4>No announcements found</h4>
+            <p>{getEmptyMessage(selectedAudience)}</p>
+            {userRole === 'educator' && (
+              <Button color="primary" onClick={handleCreateClick}>
+                Create First Announcement
+              </Button>
+            )}
+          </div>
+        </Col>
+      );
+    }
+    return filteredAnnouncements.map(announcement => (
+      <Col lg={6} xl={4} key={announcement.id} className={styles.announcementCol}>
+        <Card
+          className={`${styles.announcementCard} ${
+            announcement.isNew ? styles.newAnnouncement : ''
+          }`}
+        >
+          <CardBody>
+            <div className={styles.cardHeader}>
+              <div className={styles.cardHeaderLeft}>
+                <h5 className={styles.announcementTitle}>{announcement.title}</h5>
+                {announcement.isNew && (
+                  <Badge color="warning" className={styles.newBadge}>
+                    NEW
+                  </Badge>
                 )}
               </div>
-
-              {/* Author and metadata */}
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '15px',
-                  marginBottom: '10px',
-                  fontSize: '13px',
-                  color: darkMode ? '#94a3b8' : '#666',
-                }}
-              >
-                <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  By{' '}
-                  <strong style={{ color: darkMode ? '#e2e8f0' : '#333' }}>
-                    {announcement.author}
-                  </strong>
-                </span>
-                <span>|</span>
-                <span>{announcement.course || 'General'}</span>
-                <span>|</span>
-                <span>{announcement.grade || 'All Grades'}</span>
-                <span>|</span>
-                <span>
-                  Audience:
-                  <Badge
-                    color={getAudienceBadgeColor(announcement.audience)}
-                    style={{
-                      marginLeft: '5px',
-                      fontSize: '10px',
-                      padding: '2px 6px',
-                    }}
-                  >
-                    {announcement.audience === 'all' ? 'Everyone' : announcement.audience}
-                  </Badge>
-                </span>
-              </div>
-
-              {/* Body */}
-              <p
-                style={{
-                  margin: 0,
-                  lineHeight: '1.5',
-                  color: darkMode ? '#94a3b8' : '#555',
-                  fontSize: '14px',
-                }}
-              >
-                {announcement.body.length > 200
-                  ? `${announcement.body.substring(0, 200)}...`
+              {userRole === 'educator' && (
+                <Button
+                  size="sm"
+                  color="light"
+                  onClick={() => handleEditClick(announcement)}
+                  className={styles.editButton}
+                >
+                  <FaEdit />
+                </Button>
+              )}
+            </div>
+            <div className={styles.cardBody}>
+              <p className={styles.announcementBody}>
+                {announcement.body.length > 150
+                  ? `${announcement.body.substring(0, 150)}...`
                   : announcement.body}
               </p>
             </div>
+            <div className={styles.cardFooter}>
+              <div className={styles.authorInfo}>
+                <FaUser className={styles.authorIcon} />
+                <span className={styles.authorName}>{announcement.author}</span>
+              </div>
+              <div className={styles.metaInfo}>
+                <Badge
+                  color={getAudienceBadgeColor(announcement.audience)}
+                  className={styles.audienceBadge}
+                >
+                  {announcement.audience === 'all' ? 'Everyone' : announcement.audience}
+                </Badge>
+                <span className={styles.dateInfo}>{formatDate(announcement.createdAt)}</span>
+              </div>
+            </div>
+          </CardBody>
+        </Card>
+      </Col>
     ));
   };
 
   if (isEmbedded) {
-    return (
-      <div style={{ backgroundColor: 'transparent' }}>
-        {renderEmbeddedContent()}
-      </div>
-    );
+    return <div style={{ backgroundColor: 'transparent' }}>{renderEmbeddedContent()}</div>;
   }
 
   return (
@@ -287,88 +357,7 @@ const AnnouncementsBoard = ({
         </Row>
 
         {/* Announcements Grid */}
-        <Row>
-          {loading ? (
-            <Col xs={12} className="text-center">
-              <div className={styles.loadingSpinner}>Loading announcements...</div>
-            </Col>
-          ) : filteredAnnouncements.length === 0 ? (
-            <Col xs={12} className="text-center">
-              <div className={styles.emptyState}>
-                <FaCalendarAlt className={styles.emptyIcon} />
-                <h4>No announcements found</h4>
-                <p>{getEmptyMessage(selectedAudience)}</p>
-                {userRole === 'educator' && (
-                  <Button color="primary" onClick={handleCreateClick}>
-                    Create First Announcement
-                  </Button>
-                )}
-              </div>
-            </Col>
-          ) : (
-            filteredAnnouncements.map(announcement => (
-              <Col lg={6} xl={4} key={announcement.id} className={styles.announcementCol}>
-                <Card
-                  className={`${styles.announcementCard} ${
-                    announcement.isNew ? styles.newAnnouncement : ''
-                  }`}
-                >
-                  <CardBody>
-                    {/* Card Header */}
-                    <div className={styles.cardHeader}>
-                      <div className={styles.cardHeaderLeft}>
-                        <h5 className={styles.announcementTitle}>{announcement.title}</h5>
-                        {announcement.isNew && (
-                          <Badge color="warning" className={styles.newBadge}>
-                            NEW
-                          </Badge>
-                        )}
-                      </div>
-                      {userRole === 'educator' && (
-                        <Button
-                          size="sm"
-                          color="light"
-                          onClick={() => handleEditClick(announcement)}
-                          className={styles.editButton}
-                        >
-                          <FaEdit />
-                        </Button>
-                      )}
-                    </div>
-
-                    {/* Card Body */}
-                    <div className={styles.cardBody}>
-                      <p className={styles.announcementBody}>
-                        {announcement.body.length > 150
-                          ? `${announcement.body.substring(0, 150)}...`
-                          : announcement.body}
-                      </p>
-                    </div>
-
-                    {/* Card Footer */}
-                    <div className={styles.cardFooter}>
-                      <div className={styles.authorInfo}>
-                        <FaUser className={styles.authorIcon} />
-                        <span className={styles.authorName}>{announcement.author}</span>
-                      </div>
-                      <div className={styles.metaInfo}>
-                        <Badge
-                          color={getAudienceBadgeColor(announcement.audience)}
-                          className={styles.audienceBadge}
-                        >
-                          {announcement.audience === 'all' ? 'Everyone' : announcement.audience}
-                        </Badge>
-                        <span className={styles.dateInfo}>
-                          {formatDate(announcement.createdAt)}
-                        </span>
-                      </div>
-                    </div>
-                  </CardBody>
-                </Card>
-              </Col>
-            ))
-          )}
-        </Row>
+        <Row>{renderGridContent()}</Row>
       </Container>
     </div>
   );
