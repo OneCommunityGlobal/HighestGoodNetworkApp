@@ -1,13 +1,14 @@
+/* stylelint-disable no-descending-specificity */
 :global(.tooltip-donut) {
   position: absolute;
   text-align: center;
   padding: 0.5rem;
-  background: #ffffff;
+  background: #fff;
   color: #313639;
   border-radius: 8px;
   pointer-events: none;
   font-size: 1rem;
-  word-wrap: break-word; /* Ensures long text wraps within the tooltip */
+  overflow-wrap: break-word; /* Ensures long text wraps within the tooltip */
   white-space: normal;
 }
 
@@ -27,16 +28,13 @@
 :global(.slider) {
   position: absolute;
   cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background-color: #baaeae;
   transition: 0.4s;
   border-radius: 34px;
 }
 
-:global(.slider:before) {
+:global(.slider::before) {
   position: absolute;
   content: "";
   height: 14px;
@@ -52,7 +50,7 @@
   background-color: #2196f3;
 }
 
-:global(.switch input:checked + .slider:before) {
+:global(.switch input:checked + .slider::before) {
   transform: translateX(14px);
 }
 
@@ -95,7 +93,6 @@
   min-width: 20px;
   min-height: 20px;
   margin-right: 12px;
-
   border-radius: 50%;
 }
 
@@ -103,15 +100,14 @@
   width: 240px;
   display: flex;
   justify-content: space-between;
-
-  color: rgba(0, 0, 0, 0.5);
+  color: rgb(0 0 0 / 50%);
 }
 
 .data-legend-info-part:not(:last-child) {
   margin-right: 24px;
 }
 
-@media (max-width: 670px) {
+@media (width <= 670px) {
   .pie-chart-wrapper {
     flex-direction: column;
   }
@@ -134,7 +130,7 @@ div.pie-chart-legend-container {
 
 /* Optional: Dark mode adjustments */
 .text-light .slider {
-  background-color: #ffffff;
+  background-color: #fff;
 }
 
 .text-light input:checked + .slider {

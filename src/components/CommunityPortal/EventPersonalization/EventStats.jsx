@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
 import styles from './EventStats.module.css';
+import { useSelector } from 'react-redux';
 
 const dummyData = [
   {
@@ -58,7 +58,11 @@ export default function PopularEvents() {
   const [timeFilter, setTimeFilter] = useState('All day');
   const [typeFilter, setTypeFilter] = useState('All');
 
-  const calculatePercentage = (attended, enrolled) => Math.round((attended / enrolled) * 100);
+  const darkMode = useSelector(state => state.theme.darkMode);
+
+  // ✅ KEEP YOUR SAFE FIX
+  const calculatePercentage = (attended, enrolled) =>
+    enrolled === 0 ? 0 : Math.round((attended / enrolled) * 100);
 
   const getBarColor = percentage => {
     if (percentage > 60) return 'green';
@@ -72,67 +76,127 @@ export default function PopularEvents() {
     return timeMatch && typeMatch;
   });
 
-  const mostPopularEvent = filteredData.reduce(
-    (max, event) =>
-      calculatePercentage(event.attended, event.enrolled) >
-      calculatePercentage(max.attended, max.enrolled)
-        ? event
-        : max,
-    filteredData[0] || {},
-  );
+  const mostPopularEvent =
+    filteredData.length > 0
+      ? filteredData.reduce(
+          (max, event) =>
+            calculatePercentage(event.attended, event.enrolled) >
+            calculatePercentage(max.attended, max.enrolled)
+              ? event
+              : max,
+          filteredData[0],
+        )
+      : null;
 
-  const leastPopularEvent = filteredData.reduce(
-    (min, event) =>
-      calculatePercentage(event.attended, event.enrolled) <
-      calculatePercentage(min.attended, min.enrolled)
-        ? event
-        : min,
-    filteredData[0] || {},
-  );
-  const darkMode = useSelector(state => state.theme.darkMode);
+  const leastPopularEvent =
+    filteredData.length > 0
+      ? filteredData.reduce(
+          (min, event) =>
+            calculatePercentage(event.attended, event.enrolled) <
+            calculatePercentage(min.attended, min.enrolled)
+              ? event
+              : min,
+          filteredData[0],
+        )
+      : null;
+
   return (
     <div
-      className={`${styles.popularEventsContainer} ${
-        darkMode ? styles.popularEventsContainerDark : ''
-      }`}
+      className={`
+        ${styles['popular-events-container']}
+        ${darkMode ? 'bg-oxford-blue text-light' : ''}
+      `}
     >
-      <div className={`${styles.headerContainer} ${darkMode ? styles.headerContainerDark : ''}`}>
+      {/* Header */}
+      <div
+        className={`
+          ${styles['header-container']}
+          ${darkMode ? 'text-light' : ''}
+        `}
+      >
         <h2
-          className={`${styles.popularEventsHeader} ${
-            darkMode ? styles.popularEventsHeaderDark : ''
-          }`}
+          className={`
+            ${styles['popular-events-header']}
+            ${darkMode ? 'text-light' : ''}
+          `}
         >
           Most Popular Event
         </h2>
-        <div className={`${styles.filters} ${darkMode ? styles.filtersDark : ''}`}>
-          <select value={timeFilter} onChange={e => setTimeFilter(e.target.value)}>
-            <option value="All day">All day</option>
-            <option value="Morning">Morning</option>
-            <option value="Afternoon">Afternoon</option>
-            <option value="Night">Night</option>
+
+        {/* Filters */}
+        <div className={styles.filters}>
+          <select
+            value={timeFilter}
+            onChange={e => setTimeFilter(e.target.value)}
+            className={`
+              ${styles.selectBase}
+              ${darkMode ? 'bg-space-cadet text-light border-light' : ''}
+            `}
+          >
+            <option className={darkMode ? 'bg-space-cadet text-light' : ''} value="All day">
+              All day
+            </option>
+            <option className={darkMode ? 'bg-space-cadet text-light' : ''} value="Morning">
+              Morning
+            </option>
+            <option className={darkMode ? 'bg-space-cadet text-light' : ''} value="Afternoon">
+              Afternoon
+            </option>
+            <option className={darkMode ? 'bg-space-cadet text-light' : ''} value="Night">
+              Night
+            </option>
           </select>
-          <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)}>
-            <option value="All">All</option>
-            <option value="Offline">Offline</option>
-            <option value="Online">Online</option>
+
+          <select
+            value={typeFilter}
+            onChange={e => setTypeFilter(e.target.value)}
+            className={`
+              ${styles.selectBase}
+              ${darkMode ? 'bg-space-cadet text-light border-light' : ''}
+            `}
+          >
+            <option className={darkMode ? 'bg-space-cadet text-light' : ''} value="All">
+              All
+            </option>
+            <option className={darkMode ? 'bg-space-cadet text-light' : ''} value="Offline">
+              Offline
+            </option>
+            <option className={darkMode ? 'bg-space-cadet text-light' : ''} value="Online">
+              Online
+            </option>
           </select>
         </div>
       </div>
-      <div className={`${styles.stats} ${darkMode ? styles.statsDark : ''}`}>
+
+      {/* Stats Section */}
+      <div
+        className={`
+          ${styles.stats}
+          ${darkMode ? 'bg-space-cadet text-light box-shadow-dark' : 'box-shadow-light'}
+        `}
+      >
         {filteredData.map(event => (
-          <div key={event.id} className={styles.statItem}>
-            <div className={`${styles.statLabel} ${darkMode ? styles.statLabelDark : ''}`}>
+          <div key={event.id} className={styles['stat-item']}>
+            <div
+              data-testid="stat-label"
+              className={`${styles['stat-label']} ${darkMode ? 'text-light' : ''}`}
+            >
               {event.type}
             </div>
-            <div className={styles.statBar}>
+
+            <div className={styles['stat-bar']}>
               <div
+                data-testid="stat-bar-inner"
                 className={`${styles.bar} ${
                   styles[getBarColor(calculatePercentage(event.attended, event.enrolled))]
                 }`}
-                style={{ width: `${calculatePercentage(event.attended, event.enrolled)}%` }}
+                style={{
+                  width: `${calculatePercentage(event.attended, event.enrolled)}%`,
+                }}
               />
             </div>
-            <div className={`${styles.statValue} ${darkMode ? styles.statValueDark : ''}`}>
+
+            <div className={`${styles['stat-value']} ${darkMode ? 'text-light' : ''}`}>
               {`${calculatePercentage(event.attended, event.enrolled)}% (${event.attended}/${
                 event.enrolled
               })`}
@@ -140,40 +204,51 @@ export default function PopularEvents() {
           </div>
         ))}
       </div>
-      <div className={styles.eventSummary}>
-        <div className={`${styles.summaryItem} ${darkMode ? styles.summaryItemDark : ''}`}>
-          <div className={`${styles.summaryTitle} ${darkMode ? styles.summaryTitleDark : ''}`}>
-            Total Number of Events
-          </div>
-          <div className={`${styles.summaryValue} ${darkMode ? styles.summaryValueDark : ''}`}>
-            {filteredData.length}
+
+      {/* Summary */}
+      <div className={styles['event-summary']}>
+        <div
+          data-testid="summary-total-events"
+          className={`${styles['summary-item']} ${
+            darkMode ? 'bg-yinmn-blue text-light box-shadow-dark' : 'box-shadow-light'
+          }`}
+        >
+          <div className={styles['summary-title']}>Total Number of Events</div>
+          <div className={styles['summary-value']}>{filteredData.length}</div>
+        </div>
+
+        <div
+          data-testid="summary-total-enrollments"
+          className={`${styles['summary-item']} ${
+            darkMode ? 'bg-yinmn-blue text-light box-shadow-dark' : 'box-shadow-light'
+          }`}
+        >
+          <div className={styles['summary-title']}>Total Number of Event Enrollments</div>
+          <div className={styles['summary-value']}>
+            {filteredData.reduce((acc, e) => acc + e.enrolled, 0)}
           </div>
         </div>
-        <div className={`${styles.summaryItem} ${darkMode ? styles.summaryItemDark : ''}`}>
-          <div className={`${styles.summaryTitle} ${darkMode ? styles.summaryTitleDark : ''}`}>
-            Total Number of Event Enrollments
-          </div>
-          <div className={`${styles.summaryValue} ${darkMode ? styles.summaryValueDark : ''}`}>
-            {filteredData.reduce((acc, event) => acc + event.enrolled, 0)}
-          </div>
-        </div>
+
         {filteredData.length > 0 && (
           <>
-            <div className={`${styles.summaryItem} ${darkMode ? styles.summaryItemDark : ''}`}>
-              <div className={`${styles.summaryTitle} ${darkMode ? styles.summaryTitleDark : ''}`}>
-                Most Popular Event
-              </div>
-              <div className={`${styles.summaryValue} ${darkMode ? styles.summaryValueDark : ''}`}>
-                {mostPopularEvent.type || 'N/A'}
-              </div>
+            <div
+              data-testid="summary-most"
+              className={`${styles['summary-item']} ${
+                darkMode ? 'bg-yinmn-blue text-light box-shadow-dark' : 'box-shadow-light'
+              }`}
+            >
+              <div className={styles['summary-title']}>Most Popular Event</div>
+              <div className={styles['summary-value']}>{mostPopularEvent?.type || 'N/A'}</div>
             </div>
-            <div className={`${styles.summaryItem} ${darkMode ? styles.summaryItemDark : ''}`}>
-              <div className={`${styles.summaryTitle} ${darkMode ? styles.summaryTitleDark : ''}`}>
-                Least Popular Event
-              </div>
-              <div className={`${styles.summaryValue} ${darkMode ? styles.summaryValueDark : ''}`}>
-                {leastPopularEvent.type || 'N/A'}
-              </div>
+
+            <div
+              data-testid="summary-least"
+              className={`${styles['summary-item']} ${
+                darkMode ? 'bg-yinmn-blue text-light box-shadow-dark' : 'box-shadow-light'
+              }`}
+            >
+              <div className={styles['summary-title']}>Least Popular Event</div>
+              <div className={styles['summary-value']}>{leastPopularEvent?.type || 'N/A'}</div>
             </div>
           </>
         )}
