@@ -89,6 +89,22 @@ const DEFAULT_ANNOUNCEMENTS = [
   },
 ];
 
+const getInputStyle = (darkMode, width) => ({
+  padding: '6px',
+  border: `1px solid ${darkMode ? '#3A506B' : '#ccc'}`,
+  borderRadius: '4px',
+  fontSize: '12px',
+  width: width || '100%',
+  backgroundColor: darkMode ? '#243B5A' : 'white',
+  color: darkMode ? '#e2e8f0' : '#333333',
+  colorScheme: darkMode ? 'dark' : 'light',
+});
+
+const applyAnnouncementUpdate = (ann, announcementData, targetId) => {
+  if (ann.id === targetId) return { ...announcementData, id: targetId };
+  return ann;
+};
+
 const loadStoredAnnouncements = () => {
   try {
     const stored = localStorage.getItem('edu_announcements');
@@ -135,12 +151,9 @@ const AnnouncementsPage = () => {
   const handleSaveAnnouncement = async announcementData => {
     try {
       if (editingAnnouncement) {
+        const targetId = editingAnnouncement.id;
         setAnnouncements(prev =>
-          prev.map(ann =>
-            ann.id === editingAnnouncement.id
-              ? { ...announcementData, id: editingAnnouncement.id }
-              : ann,
-          ),
+          prev.map(ann => applyAnnouncementUpdate(ann, announcementData, targetId)),
         );
       } else {
         const newAnnouncement = {
@@ -167,17 +180,6 @@ const AnnouncementsPage = () => {
   };
 
   const hasActiveFilters = searchQuery || courseFilter || dateFromFilter || dateToFilter;
-
-  const inputStyle = width => ({
-    padding: '6px',
-    border: `1px solid ${darkMode ? '#3A506B' : '#ccc'}`,
-    borderRadius: '4px',
-    fontSize: '12px',
-    width: width || '100%',
-    backgroundColor: darkMode ? '#243B5A' : 'white',
-    color: darkMode ? '#e2e8f0' : '#333333',
-    colorScheme: darkMode ? 'dark' : 'light',
-  });
 
   const renderSidebar = () => (
     <div
@@ -297,7 +299,7 @@ const AnnouncementsPage = () => {
               type="date"
               value={dateFromFilter}
               onChange={e => setDateFromFilter(e.target.value)}
-              style={inputStyle()}
+              style={getInputStyle(darkMode)}
             />
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
@@ -312,7 +314,7 @@ const AnnouncementsPage = () => {
               type="date"
               value={dateToFilter}
               onChange={e => setDateToFilter(e.target.value)}
-              style={inputStyle()}
+              style={getInputStyle(darkMode)}
             />
           </div>
         </div>
