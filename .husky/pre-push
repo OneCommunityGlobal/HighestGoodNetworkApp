@@ -7,9 +7,12 @@ if command -v nvm >/dev/null 2>&1 && [ -f .nvmrc ]; then
   nvm use 20 2>/dev/null || nvm install 20 && nvm use 20
 fi
 
-. "$(dirname "$0")/_/husky.sh"
-
-changed_files=$(git diff --name-only @{upstream}...HEAD 2>/dev/null)
+if git rev-parse --abbrev-ref @{upstream} >/dev/null 2>&1; then
+  changed_files=$(git diff --name-only @{upstream}...HEAD)
+else
+  echo "ℹ️  No upstream branch set. Skipping pre-push checks."
+  exit 0
+fi
 
 if [ -z "$changed_files" ]; then
   echo "ℹ️  No outgoing changes to validate. Skipping pre-push checks."
@@ -43,6 +46,7 @@ if [ -n "$style_files" ]; then
   npx stylelint $style_files
   style_status=$?
 fi
+
 
 # Block push if either fails
 if [ $test_status -ne 0 ] || [ $lint_status -ne 0 ] || [ $style_status -ne 0 ]; then

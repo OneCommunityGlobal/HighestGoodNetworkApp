@@ -1,3 +1,4 @@
+/* stylelint-disable no-descending-specificity */
 html {
   overflow-x: hidden;
   height: 100%;
@@ -16,6 +17,7 @@ button {
 
 #root {
   height: 100%;
+  overflow: auto hidden;
 
   /* background-color: var(--background-color); */
   overflow: auto;
@@ -55,6 +57,7 @@ button {
 }
 
 .accordion-toggle.collapsed::after {
+  /* symbol for down chevron */
   content: '\f078';
 }
 
@@ -64,22 +67,29 @@ button {
 }
 
 .hgn-leaderboard {
+  /* background-color:#FFCCBC */
   background-color: black;
 }
 
 .bg-super {
+  /* medium blue #0000CD */
   background-color: #00d !important;
 }
 
 .bg-awesome {
   background-color: #909 !important;
+
+  /*  violet */
 }
 
 .bg-super-awesome {
   background-color: #609 !important;
+
+  /*  purple */
 }
 
 .bg-orange {
+  /*  brighter orange */
   background-color: #fa5 !important;
 }
 
@@ -89,10 +99,14 @@ button {
 
 .bg-bright-red {
   background-color: #f30 !important;
+
+  /*  bright-red */
 }
 
 .bg-almost-red {
   background-color: #c36 !important;
+
+  /*  90%to100%-red */
 }
 
 .bg-oxford-blue {
@@ -144,6 +158,7 @@ button {
 }
 
 .text-custom-grey {
+  color: rgb(192 192 192) !important;
   color: #c0c0c0 !important;
 }
 
