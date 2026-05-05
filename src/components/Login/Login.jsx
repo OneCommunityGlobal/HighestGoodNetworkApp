@@ -1,4 +1,4 @@
-import Joi from 'joi-browser';
+import Joi from 'joi';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
 import NetlifyPoweredLink from '~/components/Footer/NetlifyPoweredLink';
@@ -43,7 +43,7 @@ export class Login extends Form {
         }
       }
     }
-    if (prevProps.errors !== this.props.errors) {
+    if (prevProps.errors.email !== this.props.errors.email) {
       this.setState({ errors: this.props.errors });
     }
   }

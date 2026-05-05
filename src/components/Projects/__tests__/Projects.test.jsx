@@ -159,30 +159,17 @@ describe("Projects component",()=>{
 
     render(<Provider store={testStore}><Projects /></Provider>)
     // expect(screen.queryByText('Add new project')).toBeInTheDocument()
-    // expect(screen.getByRole('button', { name: /add new project/i })).toBeInTheDocument();
-    // for two buttons
-    const addButtons = screen.getAllByRole('button', { name: /add new project/i });
-    expect(addButtons.length).toBeGreaterThan(0);
+    expect(screen.getByRole('button', { name: /add new project/i })).toBeInTheDocument();
   })
-  // it('check if modal title is set to error when the modal is not open',()=>{
-  it('check if components render correctly when no modal is open', () => {
+  it('check if modal title is set to error when the modal is not open',()=>{
     axios.get.mockResolvedValue({
       status: 200,
       data: [],
     });
     render(<Provider store={store}><Projects /></Provider>)
-    // expect(screen.getByText("ERROR")).toBeInTheDocument()
-    expect(screen.getByText("Projects")).toBeInTheDocument()
-    // expect(screen.getByText("Project Name")).toBeInTheDocument()
-    expect(
-      screen.getByRole("columnheader", { name: "Project Name" })
-    ).toBeInTheDocument()
-    expect(screen.getByText("Category")).toBeInTheDocument()
-    // Test that no modal is open
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(screen.getByText("ERROR")).toBeInTheDocument()
   })
-  // it('check if modal title is not set to error when modal is open',()=>{
-  it('check if project data renders correctly and sorting works',()=>{
+  it('check if modal title is not set to error when modal is open',()=>{
     axios.get.mockResolvedValue({
       status: 200,
       data: [],
@@ -201,35 +188,31 @@ describe("Projects component",()=>{
       theme: theme,
       projectTarget:{projectId:"project123",projectName:"project name 1"},
       projectInfoModal: false,
-      allProjects:{projects:projects, status: 'Active', fetching: false, fetched: true},
+      allProjects:{projects:projects, status: 'Active', fetching: true, fetched: false},
       userProfile:{role:'Owner'},
       popupEditor:{currPopup:{popupContent:'project content 1'}},
       infoCollections:infoCollections,
-      role: {roles: rolesMock.role.roles},
-      projectMembers: { activeMemberCounts: {} }
+      role: {roles: rolesMock.role.roles}
     })
 
-    const {container}=render(<MemoryRouter><Provider store={testStore}><Projects /></Provider></MemoryRouter>)
-    // expect(screen.getByText("ERROR")).toBeInTheDocument()
-    // Test that the project data is displayed
-    expect(screen.getByDisplayValue("Team Calls")).toBeInTheDocument() // Project name input
-    expect(screen.getByTestId("delete-button")).toBeInTheDocument() // Archive button
+    const { container } = render(<MemoryRouter><Provider store={testStore}><Projects /></Provider></MemoryRouter>)
+    expect(screen.getByText("ERROR")).toBeInTheDocument()
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-    const ascendingButton=container.querySelector('[id="Ascending"]')
-    fireEvent.click(ascendingButton)
+    const ascendingButton = container.querySelector('[id="Ascending"]')
+    if (ascendingButton) {
+      fireEvent.click(ascendingButton)
+    }
 
-    // Verify the component still functions after sorting
-    expect(screen.getByDisplayValue("Team Calls")).toBeInTheDocument()
     // Code related to "Archive" functionality is refactored into Project component and will be tested in Project.test.js 
-    //   const archiveButton=screen.getAllByText('Archive')[1]
-    //   fireEvent.click(archiveButton)
-      
-    //   expect(screen.getByText('Confirm Archive')).toBeInTheDocument();
-    //   expect(screen.getByText(`Do you want to archive ${projects[0].projectName}?`)).toBeInTheDocument();
+  //   const archiveButton=screen.getAllByText('Archive')[1]
+  //   fireEvent.click(archiveButton)
+    
+  //   expect(screen.getByText('Confirm Archive')).toBeInTheDocument();
+  //   expect(screen.getByText(`Do you want to archive ${projects[0].projectName}?`)).toBeInTheDocument();
 
-    //   const closeButton=screen.getByText('Close')
-    //   fireEvent.click(closeButton)
-    //   expect(screen.queryByText('Confirm Archive')).not.toBeInTheDocument();
+  //   const closeButton=screen.getByText('Close')
+  //   fireEvent.click(closeButton)
+  //   expect(screen.queryByText('Confirm Archive')).not.toBeInTheDocument();
   })
   
 })

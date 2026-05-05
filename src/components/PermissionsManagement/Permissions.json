@@ -101,6 +101,11 @@
         "description": "Gives the user permission to change the invisibility toggle for themselves and others"
       },
       {
+        "label": "Interact with Pause User button",
+        "key": "interactWithPauseUserButton",
+        "description": "Allows the user to view and interact with the Pause/Resume button on a user profile. \"User Profile\" -> \"Basic Information\" -> \"Status\" -> \"Pause/Resume\""
+      },  
+      {
         "label": "Assign Blue Squares",
         "key": "addInfringements",
         "description": "Gives the user permission to add blue squares to any user."
@@ -139,11 +144,6 @@
         "label": "Change Rehireable Status",
         "key": "changeUserRehireableStatus",
         "description": "Gives the user permission to change the user status of rehireable or not."
-      },
-      {
-        "label": "Pause User Activity",
-        "key": "pauseUserActivity",
-        "description": "Gives the user permission to use the \"Pause\" button to pause user activity on their profile page."
       },
       {
         "label": "Set Final Day",

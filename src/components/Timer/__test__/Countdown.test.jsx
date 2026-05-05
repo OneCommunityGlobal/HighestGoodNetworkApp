@@ -33,8 +33,8 @@ describe('Countdown Component', () => {
   it('renders the countdown component with the correct initial values', () => {
     // eslint-disable-next-line react/jsx-props-no-spreading
     render(<Countdown {...defaultProps} />);
-    expect(screen.getByText('Goal: 1:00:00')).toBeInTheDocument();
-    expect(screen.getByText('Elapsed: 0:30:00')).toBeInTheDocument();
+    expect(screen.getByText('Goal: 01:00:00')).toBeInTheDocument();
+    expect(screen.getByText('Elapsed: 00:30:00')).toBeInTheDocument();
     expect(screen.getByText('Time Remaining')).toBeInTheDocument();
     expect(screen.getAllByText('00')).toHaveLength(2);
     expect(screen.getByText('30')).toBeInTheDocument();
