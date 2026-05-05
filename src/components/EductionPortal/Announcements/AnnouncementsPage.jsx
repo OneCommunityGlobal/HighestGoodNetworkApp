@@ -374,6 +374,12 @@ ActiveFiltersBar.defaultProps = {
   dateToFilter: '',
 };
 
+const selectAuthUser = state => state.auth.user;
+const selectDarkMode = state => state.theme.darkMode;
+
+const buildAnnouncementUpdater = (announcementData, targetId) => prev =>
+  prev.map(ann => applyAnnouncementUpdate(ann, announcementData, targetId));
+
 const loadStoredAnnouncements = () => {
   try {
     const stored = localStorage.getItem('edu_announcements');
@@ -394,8 +400,8 @@ const AnnouncementsPage = () => {
   const [dateFromFilter, setDateFromFilter] = useState('');
   const [dateToFilter, setDateToFilter] = useState('');
 
-  const authUser = useSelector(state => state.auth.user);
-  const darkMode = useSelector(state => state.theme.darkMode);
+  const authUser = useSelector(selectAuthUser);
+  const darkMode = useSelector(selectDarkMode);
   const userRole = getUserRole(authUser);
 
   useEffect(() => {
@@ -421,18 +427,18 @@ const AnnouncementsPage = () => {
     try {
       if (editingAnnouncement) {
         const targetId = editingAnnouncement.id;
-        setAnnouncements(prev =>
-          prev.map(ann => applyAnnouncementUpdate(ann, announcementData, targetId)),
-        );
-      } else {
-        const newAnnouncement = {
-          ...announcementData,
-          id: Date.now(),
-          createdAt: new Date().toISOString(),
-          isNew: true,
-        };
-        setAnnouncements(prev => [newAnnouncement, ...prev]);
+        setAnnouncements(buildAnnouncementUpdater(announcementData, targetId));
+        handleCloseModal();
+        alert('Announcement saved successfully!');
+        return;
       }
+      const newAnnouncement = {
+        ...announcementData,
+        id: Date.now(),
+        createdAt: new Date().toISOString(),
+        isNew: true,
+      };
+      setAnnouncements(prev => [newAnnouncement, ...prev]);
       handleCloseModal();
       alert('Announcement saved successfully!');
     } catch (error) {

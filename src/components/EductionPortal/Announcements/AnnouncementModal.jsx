@@ -320,9 +320,7 @@ const AnnouncementModal = ({ isOpen, toggle, announcement = null, onSave, userIn
                   {formData.body || 'Your announcement message will appear here...'}
                 </p>
                 <div className={styles.previewMeta}>
-                  <span
-                    className={`badge ${getBadgeClass(formData.audience)}`}
-                  >
+                  <span className={`badge ${getBadgeClass(formData.audience)}`}>
                     {formData.audience === 'all' ? 'Everyone' : formData.audience}
                   </span>
                 </div>
