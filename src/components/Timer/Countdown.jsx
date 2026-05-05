@@ -66,8 +66,8 @@ export default function Countdown({
   const remainingSecondsDisplay = remainingSeconds.toString().padStart(2, '0');
 
   const shouldDisplay = {
-    hour: !!remainingHours,
-    minute: !!remainingHours || !!remainingMinutes,
+    hour: true,
+    minute: true,
   };
 
   const forceMinMax = (event, ref) => {
@@ -309,7 +309,7 @@ export default function Countdown({
                   />
                 )}
               </div>
-              :
+              <span className={css.timeColon}>:</span>
               <div className={css.numberWrapper}>
                 {editing && (
                   <FaAngleUp

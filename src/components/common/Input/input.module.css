@@ -1,0 +1,12 @@
+/* stylelint-disable  */
+.inputText {
+  position: relative;
+}
+
+.eyeIcon {
+  position: absolute;
+  right: 10px;
+  top: 12px;
+  font-size: 15px;
+  cursor: pointer;
+}

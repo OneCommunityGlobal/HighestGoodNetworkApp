@@ -9,6 +9,7 @@ const TaskCardView = ({
   expandedTasks,
   onToggleIntermediateTasks,
   onMarkIntermediateAsDone,
+  darkMode = false,
 }) => {
   if (!tasks || tasks.length === 0) {
     return (
@@ -29,6 +30,7 @@ const TaskCardView = ({
           isExpanded={expandedTasks[task.id] || false}
           onToggleIntermediateTasks={onToggleIntermediateTasks}
           onMarkIntermediateAsDone={onMarkIntermediateAsDone}
+          darkMode={darkMode}
         />
       ))}
     </div>

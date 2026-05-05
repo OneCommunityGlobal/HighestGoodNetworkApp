@@ -1,156 +1,278 @@
-/* General Styles */
-:global(body) {
-  margin: 0;
-  padding: 0;
-  background-color: white;
-  font-family: Arial, sans-serif;
-}
-
+/* --- Dashboard Container --- */
 .resourceManagementDashboard {
   padding: 20px;
+  min-height: 100vh;
+  transition: background-color 0.3s ease;
 }
 
+.darkModeResourceManagementDashboard {
+  background-color: #1b2a41;
+  color: #ffffff;
+}
+
+/* --- Header Section --- */
 .dashboardTitle {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 20px;
-  /* Spacing between the title and button */
-  margin-bottom: 20px;
+  margin-bottom: 25px;
 }
 
 .dashboardTitle h2 {
-  font-size: 1.5em;
-  font-weight: bold;
-  color: black;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0;
+  color: inherit;
 }
 
 .addLogButton {
-  background-color: #d3d3d3;
-  color: black;
+  background-color: #0056b3; 
+  color: white;
   border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
+  padding: 10px 24px;
+  cursor: pointer; 
+  transition: background-color 0.2s;
 }
+
 
 .addLogButton:hover {
-  background-color: #b3b3b3;
+  background-color: #0056b3;
 }
 
-/* Search Bar */
+.darkModeResourceManagementDashboard .addLogButton {
+  background-color: #2196f3;
+}
+
+/* --- Search Bar --- */
 .searchBarContainer {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
-  background-color: #f0f0f0;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  padding: 10px;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 12px 20px;
+}
+
+.darkModeSearchBarContainer {
+  background-color: #172f53;
+  border-color: #2d4a77;
 }
 
 .searchBarContainerLeft {
   display: flex;
-  gap: 10px;
+  gap: 15px;
   align-items: center;
-  font-size: 1.2em;
 }
 
-.searchBarContainerRight {
-  display: flex;
-  gap: 10px;
+.iconToggle {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: inherit;
+  transition: transform 0.2s;
+}
+
+.iconToggle:hover {
+  transform: scale(1.2);
+  color: #007bff;
 }
 
 .searchInput {
-  padding: 5px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  padding: 8px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  width: 250px;
+  outline: none;
 }
 
-.searchButton {
-  background-color: #007bff;
+.darkModeSearchBarContainer .searchInput {
+  background-color: #1b2a41;
+  border-color: #444;
   color: white;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 5px;
-  cursor: pointer;
 }
 
-.searchButton:hover {
-  background-color: #0056b3;
-}
-
-/* Resource List */
+/* --- Table & Column Alignment --- */
 .resourceList {
   background-color: white;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  padding: 10px;
-}
-.checkboxContainer {
-  flex: 0;
-  /* Ensures the checkbox doesn't stretch unnecessarily */
-  margin-right: 20px;
-  /* Add a margin to create space between the checkbox and the rest of the items */
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
-.resourceHeading,
+.darkModeResourceManagementDashboard .resourceList {
+  background-color: #1b2a41;
+  border-color: #2d4a77;
+}
+
+.resourceTable {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* Common Row Layout for Header and Items */
+.resourceHeaderRow,
 .resourceItem {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 10px 0;
+  padding: 12px 15px;
+  border-bottom: 1px solid #edf2f7;
+  height: 60px;
 }
 
-.resourceHeadingItem {
-  flex: 1;
-  text-align: left;
-  color: #555;
-  /* Font color for headings */
+.resourceHeaderRow {
+  background-color: #f1f5f9;
+  border-bottom: 2px solid #cbd5e1;
+  color: #475569;
+}
+
+.darkModeResourceManagementDashboard .resourceHeaderRow {
+  background-color: #1e3a5f;
+  border-bottom: 2px solid #2d4a77;
+  color: #cbd5e1;
+}
+
+.resourceItem:hover {
+  background-color: rgba(236, 236, 141, 0.264);
+}
+
+.darkModeResourceManagementDashboard .resourceItem:hover {
+  background-color: #25416b;
+}
+
+/* --- Fixed Column Widths (Critical for Alignment) --- */
+.colCheck {
+  width: 50px;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.colUser {
+  flex: 2;
+  min-width: 150px;
+  padding: 0 10px;
+}
+
+.colDuration {
+  flex: 1.5;
+  padding: 0 10px;
+}
+
+.colFacilities {
+  flex: 2;
+  padding: 0 10px;
+}
+
+.colMaterials {
+  flex: 2;
+  padding: 0 10px;
+}
+
+.colDate {
+  flex: 1.5;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+}
+
+/* --- Header Sorting --- */
+.headerSortButton {
+  background: none;
+  border: none;
+  font: inherit;
   font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  color: inherit;
+  outline: none;
+}
+
+.headerSortButton:hover {
+  color: #007bff;
 }
 
 .resourceItemDetail {
-  flex: 1;
-  text-align: left;
-  color: #333;
-  /* Font color for logs */
+  font-size: 0.95rem;
+  color: #334155;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.calendarIcon {
-  margin-right: 5px;
-  /* Space between icon and text */
+.darkModeResourceManagementDashboard .resourceItemDetail {
+  color: #e2e8f0;
 }
 
-.lineSperator {
-  border: none;
-  border-top: 1px solid #ddd;
-}
-
-/* Pagination */
-.rmPagination {
+/* --- Pagination --- */
+.paginationContainer {
   display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-  margin-top: 20px;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 30px;
+  padding-bottom: 20px;
 }
 
-.rmPagination button {
-  background-color: #f1f1f1;
-  border: 1px solid #ddd;
-  padding: 5px 10px;
+.paginationButtonIndexes,
+.paginationLeft,
+.paginationRight {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
   cursor: pointer;
+  transition: all 0.2s;
+  color: #334155;
+  padding: 6px 12px;
 }
 
-.rmPagination button:hover {
-  background-color: #007bff;
-  color: white;
+
+.paginationButtonIndexes:hover:not(:disabled),
+.paginationLeft:hover:not(:disabled),
+.paginationRight:hover:not(:disabled) {
+  border-color: #007bff;
 }
 
-.arrow-button {
-  font-weight: bold;
-  padding: 5px 15px;
+
+.activePage {
+  border: 1px solid #007bff;
+  padding: 6px 12px;
+  border-radius: 4px;
+}
+
+.darkModePaginationContainer .paginationButtonIndexes,
+.darkModePaginationContainer .paginationLeft,
+.darkModePaginationContainer .paginationRight {
+  background-color: #172f53;
+  border-color: #2d4a77;
+  color: #ffffff;
+}
+
+.darkModePaginationContainer .activePage {
+  background-color: #2196f3 !important;
+  border-color: #2196f3 !important;
+}
+
+.paginationLeft:disabled,
+.paginationRight:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* Utilities */
+.calendarIcon {
+  margin-right: 8px;
+  color: #64748b;
+}
+
+.darkModeResourceManagementDashboard .calendarIcon {
+  color: #94a3b8;
 }

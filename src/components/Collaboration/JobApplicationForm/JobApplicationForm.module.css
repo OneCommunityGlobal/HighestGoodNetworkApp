@@ -1,7 +1,8 @@
+/* stylelint-disable  */
 .container {
   font-family: Arial, sans-serif;
   margin: 0 auto;
-  padding: 20px;
+  padding: 20px 0 40px;
   background-color: #d9d9d9;
   width: 100%;
 }
@@ -17,7 +18,7 @@
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  padding: 10px;
+  padding: 10px 0 0;
   border-radius: 5px;
 }
 
@@ -25,47 +26,86 @@
   display: flex;
   gap: 10px;
   background-color: #98cb03;
-  width: 75%;
-  padding: 2%;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 12px 16px;
   justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+  flex-wrap: wrap;
 }
 
 .headerLeft {
   display: flex;
   gap: 10px;
+  flex: 1 1 0;
+  max-width: 50%;
+  align-items: center;
+  min-width: 260px;
 }
 
 .headerRight {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
+  flex: 1 1 0;
+  max-width: 50%;
 }
 
 .jobTitleInput {
-  padding: 5px;
+  padding: 6px 8px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  flex: 1 1 0;
+  min-width: 0;
 }
 
 .jobSelect {
-  padding: 5px;
+  padding: 6px 8px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  width: 100%;
 }
 
 .goButton {
   background-color: #4caf50;
   color: white;
   border: none;
-  padding: 5px 10px;
+  padding: 6px 14px;
   border-radius: 5px;
   cursor: pointer;
+}
+
+@media (width <= 768px) {
+  .headerContent {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .headerLeft {
+    width: 100%;
+  }
+
+  .headerRight {
+    width: 100%;
+    margin-top: 8px;
+  }
+
+  .jobSelect {
+    max-width: 100%;
+  }
 }
 
 .formContainer {
   background-color: #f9f9f9;
   padding: 2%;
   width: 75%;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 24px 32px 32px;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  box-shadow: 0 0 10px rgb(0 0 0 / 10%);
 }
 
 .formTitle {
@@ -133,6 +173,23 @@
   border-radius: 5px;
 }
 
+.formGroup textarea {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 100px;
+  resize: vertical;
+}
+
+.dateInput,
+.selectField {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
 .submitButton {
   background-color: #4caf50;
   color: white;
@@ -145,11 +202,8 @@
 
 .popupOverlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(30, 41, 65, 0.7);
+  inset: 0;
+  background: rgb(30 41 65 / 70%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -162,9 +216,10 @@
   background: #fff;
   padding: 2rem 2.5rem 2rem 2rem;
   border-radius: 16px;
-  max-width: 420px;
+  max-width: 860px;
+  width: min(860px, calc(100vw - 48px));
   min-width: 320px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.32);
+  box-shadow: 0 8px 32px rgb(0 0 0 / 32%);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -202,6 +257,112 @@
   line-height: 1.5;
 }
 
+/* Job description modal layout (collaboration job forms) */
+.jobDescHeader {
+  width: 100%;
+}
+
+.jobDescTitle {
+  font-size: 44px;
+  line-height: 1.05;
+  margin: 0 0 10px;
+  color: #0b1324;
+  letter-spacing: -0.02em;
+}
+
+.jobDescTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0 0 14px;
+}
+
+.tagPill {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid #d7deea;
+  background: #f6f8fc;
+  color: #24324c;
+}
+
+.tagPillStrong {
+  border-color: #cfe3ff;
+  background: #e9f2ff;
+  color: #0b3b84;
+}
+
+.jobDescBody {
+  width: 100%;
+  margin-top: 6px;
+}
+
+.jobDescBody a {
+  color: #1a5fb4;
+}
+
+.jobDescSectionTitle {
+  font-weight: 700;
+  font-size: 18px;
+  margin: 18px 0 10px;
+  color: #0b1324;
+}
+
+.jobDescText {
+  font-size: 16px;
+  color: #1d2a44;
+  line-height: 1.65;
+  white-space: pre-line;
+}
+
+.jobDescFooter {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 22px;
+}
+
+.gotItBtn {
+  background: #1a73e8;
+  border: 0;
+  border-radius: 8px;
+  color: #fff;
+  padding: 10px 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.gotItBtn:hover {
+  background: #155dc0;
+}
+
+/* Dark mode: native date input — white calendar icon (WebKit/Blink) */
+.darkMode input[type='date'],
+.darkMode .dateInput {
+  color-scheme: dark;
+}
+
+.darkMode input[type='date']::-webkit-calendar-picker-indicator,
+.darkMode .dateInput::-webkit-calendar-picker-indicator {
+  /* Force a light/white glyph on dark inputs (invert alone can stay too dim) */
+  filter: brightness(0) invert(1);
+  opacity: 1;
+  cursor: pointer;
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+/* Firefox: calendar icon in date inputs */
+.darkMode input[type='date']::-moz-calendar-picker-indicator,
+.darkMode .dateInput::-moz-calendar-picker-indicator {
+  filter: brightness(0) invert(1);
+  opacity: 1;
+  cursor: pointer;
+}
+
 .resumeLabel {
   display: inline-flex;
   margin-bottom: 0;
@@ -210,7 +371,7 @@
   cursor: pointer;
   padding: 8px 12px;
   border-radius: 8px;
-  background: #ffffff;
+  background: #fff;
   border: 1px solid #cfcfcf;
   color: #222;
   font-size: 14px;
@@ -221,11 +382,11 @@
 
 .resumeLabel:hover {
   background: #f6f6f6;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 6px 18px rgb(0 0 0 / 4%);
   transform: translateY(-1px);
 }
 
-.resumeLabel input[type="file"] {
+.resumeLabel input[type='file'] {
   display: none;
 }
 
@@ -247,7 +408,7 @@
 .darkMode .formContainer {
   background: #1c2541;
   color: #e0e0e0;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 70%);
   transition: background 0.3s, color 0.3s;
 }
 
@@ -261,7 +422,7 @@
 .darkMode .jobSelect,
 .darkMode input,
 .darkMode select,
-.darkMode textarea{
+.darkMode textarea {
   background: #181a1b;
   color: #f1f1f1;
   border: 1px solid #444;
@@ -286,7 +447,7 @@
 .darkMode .btn {
   background: #225163;
   color: #f1f1f1;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 18%);
   transition: background 0.3s, color 0.3s;
 }
 
@@ -302,13 +463,15 @@
 }
 
 .darkMode .popupOverlay {
-  background: rgba(30, 41, 65, 0.85);
+  background: rgb(30 41 65 / 85%);
 }
 
 .darkMode .popupContent {
   background: #225163;
   color: #f1f1f1;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
+  background: #0b1324;
+  color: #e5e7eb;
+  box-shadow: 0 8px 32px rgb(0 0 0 / 70%);
 }
 
 .darkMode .popupCloseBtn {
@@ -326,6 +489,40 @@
 
 .darkMode .popupContent p {
   color: #e0e0e0;
+}
+
+/* Dark mode: job description modal (new layout) */
+.darkMode .jobDescTitle {
+  color: #f8fafc;
+}
+
+.darkMode .jobDescSectionTitle {
+  color: #e2e8f0;
+}
+
+.darkMode .jobDescText {
+  color: #cbd5e1;
+}
+
+.darkMode .tagPill {
+  border-color: rgb(148 163 184 / 35%);
+  background: rgb(148 163 184 / 12%);
+  color: #e2e8f0;
+}
+
+.darkMode .tagPillStrong {
+  border-color: rgb(56 189 248 / 35%);
+  background: rgb(56 189 248 / 14%);
+  color: #e0f2fe;
+}
+
+.darkMode .gotItBtn {
+  background: #1a73e8;
+  color: #fff;
+}
+
+.darkMode .gotItBtn:hover {
+  background: #155dc0;
 }
 
 .darkMode a {
@@ -353,11 +550,11 @@
 
 .darkMode .resumeLabel:hover {
   background: #22364e;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 6px 18px rgb(0 0 0 / 35%);
 }
 
 .darkMode .resumeLabel .fileName {
-  background: rgba(255, 255, 255, 0.04);
+  background: rgb(255 255 255 / 4%);
   color: #cfe7ff;
-  border-color: rgba(255, 255, 255, 0.05);
+  border-color: rgb(255 255 255 / 5%);
 }

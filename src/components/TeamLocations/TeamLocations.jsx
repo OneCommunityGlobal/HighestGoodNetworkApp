@@ -2,7 +2,7 @@ import axios from 'axios';
 import 'leaflet/dist/leaflet.css';
 import { useEffect, useRef, useState, forwardRef } from 'react';
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
-import MarkerClusterGroup from '@changey/react-leaflet-markercluster';
+import MarkerClusterGroup from './TestSafeMarkerCluster';
 import { Button, Container, Spinner } from 'reactstrap';
 import './TeamLocations.css';
 
@@ -101,10 +101,14 @@ const TeamLocations = forwardRef(() => {
 
   // We don't need the back to top button on this page
   useEffect(() => {
-    const backToTopButton = document.querySelector('.top');
-    backToTopButton.style.display = 'none';
+    const btn = document.querySelector('.back-to-top');
+    if (!btn) return;
+
+    const prev = btn.style.display;
+    btn.style.display = 'none';
+
     return () => {
-      backToTopButton.style.display = 'block';
+      btn.style.display = prev;
     };
   }, []);
 

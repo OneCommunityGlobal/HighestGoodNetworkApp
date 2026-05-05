@@ -1,4 +1,4 @@
-import '../Teams/Team.css';
+import '../Teams/Team.module.css';
 import { Link } from 'react-router-dom';
 import './reports.css';
 import moment from 'moment';
