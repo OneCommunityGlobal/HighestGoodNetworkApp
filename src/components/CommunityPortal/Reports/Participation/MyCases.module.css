@@ -275,8 +275,8 @@
 }
 
 .caseCardDark .eventBadge[data-type='Cooking Workshop'] {
-  background-color: rgb(231 76 60 / 20%);
-  color: #f1948a;
+  background-color: rgb(4 0 255 / 20%);
+  color: #8a8af1;
 }
 
 .caseCardDark .eventBadge[data-type='Dance Class'] {
@@ -469,6 +469,7 @@
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
     break-inside: avoid-page !important;
+    break-inside: avoid !important;
   }
 
   .caseCardDark {
@@ -478,6 +479,7 @@
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
     break-inside: avoid-page !important;
+    break-inside: avoid !important;
   }
 
   .caseList {
@@ -489,10 +491,12 @@
 
   .caseListItem {
     break-inside: avoid-page !important;
+    break-inside: avoid !important;
   }
 
   .caseListItemDark {
     break-inside: avoid-page !important;
+    break-inside: avoid !important;
   }
 
   .eventBadge {

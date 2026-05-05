@@ -10,6 +10,7 @@ import {
 } from '~/actions/bmdashboard/equipmentActions';
 import { getHeaderData } from '~/actions/authActions';
 import { getUserProfile } from '~/actions/userProfile';
+import { toast } from 'react-toastify';
 
 import styles from './EDailyActivityLog.module.css';
 
@@ -44,7 +45,7 @@ const buildRows = list =>
       .filter(l => l.type === 'Check Out')
       .reduce((s, l) => s + (l.quantity || 1), 0);
 
-    const usingQty = Math.max(checkInQty - checkOutQty, 0);
+    const usingQty = Math.max(checkOutQty - checkInQty, 0);
     const availableQty = Math.max(total - usingQty, 0);
 
     const allNumbers = buildToolNumbers(e.itemType?.name, total);
@@ -138,6 +139,15 @@ function EDailyActivityLog(props) {
   const [logType, setLogType] = useState('check-in'); // 'check-in' | 'check-out'
 
   const [rows, setRows] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+
+  // Deriving validation states
+  const isMissingProject = !selectedProject;
+  const isInvalidDate = !date || isNaN(Date.parse(date));
+  const hasNoEquipments = isMissingProject || rows.length === 0;
+  const noEquipmentSelected = rows.length === 0 || rows.every(r => r.selectedNumbers.length === 0);
+  const isSubmitDisabled = isMissingProject || isInvalidDate || noEquipmentSelected;
 
   useEffect(() => {
     dispatch(fetchBMProjects());
@@ -145,7 +155,8 @@ function EDailyActivityLog(props) {
 
   useEffect(() => {
     if (selectedProject?.value) {
-      dispatch(fetchAllEquipments(selectedProject.value));
+      setIsLoading(true);
+      dispatch(fetchAllEquipments(selectedProject.value)).finally(() => setIsLoading(false));
     }
   }, [selectedProject, dispatch]);
 
@@ -155,8 +166,8 @@ function EDailyActivityLog(props) {
   const onToolSelect = (rowIdx, selected) => {
     setRows(prev => {
       const row = prev[rowIdx];
-      const valid = logType === 'check-in' ? row.availableNumbers : row.inUseNumbers;
-      const limit = logType === 'check-in' ? row.availableQty : row.usingQty;
+      const valid = logType === 'check-in' ? row.inUseNumbers : row.availableNumbers;
+      const limit = logType === 'check-in' ? row.usingQty : row.availableQty;
 
       const clean = selected
         .map(o => o.value)
@@ -171,8 +182,8 @@ function EDailyActivityLog(props) {
     setLogType(newType);
     setRows(prev =>
       prev.map(r => {
-        const valid = newType === 'check-in' ? r.availableNumbers : r.inUseNumbers;
-        const limit = newType === 'check-in' ? r.availableQty : r.usingQty;
+        const valid = newType === 'check-in' ? r.inUseNumbers : r.availableNumbers;
+        const limit = newType === 'check-in' ? r.usingQty : r.availableQty;
         return {
           ...r,
           selectedNumbers: r.selectedNumbers.filter(n => valid.includes(n)).slice(0, limit),
@@ -189,6 +200,10 @@ function EDailyActivityLog(props) {
   };
 
   const handleSubmit = () => {
+    if (isSubmitDisabled) return;
+    setShowConfirm(true);
+  };
+  const confirmSubmit = () => {
     const payload = rows.flatMap(r =>
       r.selectedNumbers.map(() => ({
         equipmentId: r.id,
@@ -202,6 +217,15 @@ function EDailyActivityLog(props) {
     );
 
     dispatch(updateMultipleEquipmentLogs(selectedProject.value, payload));
+    setShowConfirm(false);
+    toast.success(
+      logType === 'check-in'
+        ? 'Equipment checked in successfully'
+        : 'Equipment checked out successfully',
+    );
+
+    // Clear selections immediately so UI responds while backend async request finishes
+    setRows(prev => prev.map(r => ({ ...r, selectedNumbers: [] })));
   };
 
   const projectSelectStyles = getSelectStyles(darkMode, false);
@@ -275,12 +299,41 @@ function EDailyActivityLog(props) {
 
       <div className="container">
         <h4 className="mb-4 pt-3">Daily Equipment Log</h4>
+        {showConfirm && (
+          <div
+            className="alert alert-warning d-flex justify-content-between align-items-center"
+            style={
+              darkMode
+                ? {
+                    backgroundColor: 'rgba(255, 193, 7, 0.18)',
+                    borderColor: 'rgba(255, 193, 7, 0.35)',
+                    color: '#f8f9fa',
+                  }
+                : undefined
+            }
+          >
+            <span>Are you sure? This will update equipment availability.</span>
+            <div className="d-flex">
+              <Button
+                size="sm"
+                color="secondary"
+                className="mr-2"
+                onClick={() => setShowConfirm(false)}
+              >
+                Cancel
+              </Button>
+              <Button size="sm" color="danger" onClick={confirmSubmit}>
+                Confirm
+              </Button>
+            </div>
+          </div>
+        )}
 
         {/* Header Row */}
-        <div className="row mb-3 align-items-end">
+        <div className="row mb-3 align-items-start">
           <div className="col-md-3">
             <label
-              className={`form-label fw-bold${darkMode ? ' text-light' : ''}`}
+              className={`form-label fw-bold ${darkMode ? 'text-light' : 'text-dark'}`}
               htmlFor="date"
               style={darkMode ? { color: '#f8f9fa' } : {}}
             >
@@ -303,6 +356,9 @@ function EDailyActivityLog(props) {
                   : {}
               }
             />
+            {isInvalidDate && (
+              <small className="text-danger mt-1 d-block">Please select a valid date.</small>
+            )}
             {darkMode && (
               <small className="text-muted mt-1 d-block">
                 Note: Calendar appearance depends on your browser and OS.
@@ -312,7 +368,7 @@ function EDailyActivityLog(props) {
 
           <div className="col-md-5">
             <label
-              className={`form-label fw-bold${darkMode ? ' text-light' : ''}`}
+              className={`form-label fw-bold ${darkMode ? 'text-light' : 'text-dark'}`}
               htmlFor="project-select"
               style={darkMode ? { color: '#f8f9fa' } : {}}
             >
@@ -327,11 +383,14 @@ function EDailyActivityLog(props) {
               isClearable
               styles={projectSelectStyles}
             />
+            {isMissingProject && (
+              <small className="text-danger mt-1 d-block">Project selection is required.</small>
+            )}
           </div>
 
           <div className="col-md-4">
             <div
-              className={`form-label fw-bold mb-2 ${darkMode ? 'text-light' : ''}`}
+              className={`form-label fw-bold ${darkMode ? 'text-light' : 'text-dark'}`}
               id="log-type-label"
               style={darkMode ? { color: '#f8f9fa' } : {}}
             >
@@ -341,19 +400,32 @@ function EDailyActivityLog(props) {
             <div className="d-flex" role="group" aria-labelledby="log-type-label">
               <Button
                 color={logType === 'check-in' ? 'primary' : 'secondary'}
-                onClick={() => flipLogType('check-in')}
+                onClick={() => !hasNoEquipments && flipLogType('check-in')}
                 className={styles.checkInBtn}
+                disabled={hasNoEquipments}
+                style={hasNoEquipments ? { opacity: 0.65, cursor: 'not-allowed' } : {}}
               >
                 Check In
               </Button>
               <Button
                 color={logType === 'check-out' ? 'primary' : 'secondary'}
-                onClick={() => flipLogType('check-out')}
+                onClick={() => !hasNoEquipments && flipLogType('check-out')}
                 className={styles.checkOutBtn}
+                disabled={hasNoEquipments}
+                style={hasNoEquipments ? { opacity: 0.65, cursor: 'not-allowed' } : {}}
               >
                 Check Out
               </Button>
             </div>
+            <small
+              className={`mt-2 d-block ${styles.helperText} ${
+                darkMode ? 'text-light' : 'text-muted'
+              }`}
+            >
+              <strong>Check In:</strong> Report equipment as returned and available.
+              <br />
+              <strong>Check Out:</strong> Assign equipment for current use.
+            </small>
           </div>
         </div>
 
@@ -412,8 +484,8 @@ function EDailyActivityLog(props) {
             {selectedProject &&
               rows.length > 0 &&
               rows.map((r, idx) => {
-                const validList = logType === 'check-in' ? r.availableNumbers : r.inUseNumbers;
-                const limit = logType === 'check-in' ? r.availableQty : r.usingQty;
+                const validList = logType === 'check-in' ? r.inUseNumbers : r.availableNumbers;
+                const limit = logType === 'check-in' ? r.usingQty : r.availableQty;
 
                 return (
                   <tr
@@ -446,7 +518,12 @@ function EDailyActivityLog(props) {
           <Button color="secondary" onClick={handleCancel}>
             Cancel
           </Button>
-          <Button color="primary" onClick={handleSubmit}>
+          <Button
+            color="primary"
+            onClick={handleSubmit}
+            disabled={isSubmitDisabled}
+            style={isSubmitDisabled ? { cursor: 'not-allowed', opacity: 0.65 } : {}}
+          >
             Submit
           </Button>
         </div>

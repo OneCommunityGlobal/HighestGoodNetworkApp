@@ -11,7 +11,7 @@ import styles from '../styles/UserSkillsProfile.module.css';
 import LeftSection from './LeftSection';
 import RightSection from './RightSection';
 
-function UserSkillsProfile() {
+export default function UserSkillsProfile() {
   const { userId: routeUserId } = useParams();
   const dispatch = useDispatch();
   const [profileData, setProfileData] = useState(null);
@@ -19,7 +19,7 @@ function UserSkillsProfile() {
   const [error, setError] = useState(null);
   const history = useHistory();
   const location = useLocation();
-  const darkMode = useSelector(state => state.theme.darkMode);
+  const darkMode = useSelector(state => state?.theme?.darkMode);
 
   // Fetch data from backend on component mount
   useEffect(() => {
@@ -139,13 +139,10 @@ function UserSkillsProfile() {
 
   return (
     <div className={`${styles.userProfileHome} ${darkMode ? 'dark-mode' : ''}`}>
-      <div className={`${styles.dashboardContainer}`}>
+      <div className={styles.dashboardContainer}>
         <LeftSection />
-        <div className={`${styles.verticalSeparator}`} />
         <RightSection />
       </div>
     </div>
   );
 }
-
-export default UserSkillsProfile;
