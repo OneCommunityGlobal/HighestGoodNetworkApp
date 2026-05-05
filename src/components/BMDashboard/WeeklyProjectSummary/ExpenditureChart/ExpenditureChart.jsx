@@ -51,7 +51,7 @@ function ExpenditureChart({ projectId }) {
       setLoading(true);
       setError(null);
       try {
-        // Using mock data instead of API call
+        // Using mock data
         const data = getProjectExpenditure(projectId);
         setActual(data.actual);
         setPlanned(data.planned);
