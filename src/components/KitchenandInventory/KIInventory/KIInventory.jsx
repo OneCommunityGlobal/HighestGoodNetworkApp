@@ -108,71 +108,50 @@ const KIInventory = () => {
           </MetricCard>
         </div>
         <Nav className={classnames(styles.inventoryNavBar, darkMode ? styles.darkNavBar : '')}>
-          <NavItem>
-            <NavLink
-              className={classnames(styles.inventoryNavBarLink)}
-              style={{
-                backgroundColor: `${activeTab === tabs[0] ? '#a1a5d1' : ''}`,
-                borderRadius: `${activeTab === tabs[0] ? '30px' : ''}`,
-              }}
-              onClick={() => toggleTab(0)}
+          {[
+            {
+              index: 0,
+              label: 'Ingredients',
+              icon: <TbToolsKitchen2 className={styles.inventoryNavBarIcon} />,
+            },
+            {
+              index: 1,
+              label: 'Equipment & Supplies',
+              icon: <FiPackage className={styles.inventoryNavBarIcon} />,
+            },
+            {
+              index: 2,
+              label: 'Seeds',
+              icon: <LiaSeedlingSolid className={styles.inventoryNavBarIcon} />,
+            },
+            {
+              index: 3,
+              label: 'Canning Supplies',
+              icon: <GiMasonJar className={styles.inventoryNavBarIcon} />,
+            },
+            {
+              index: 4,
+              label: 'Animal Supplies',
+              icon: <FiShoppingCart className={styles.inventoryNavBarIcon} />,
+            },
+          ].map((tabItem, idx) => (
+            <NavItem
+              key={tabItem.index}
+              style={idx === 4 ? { paddingRight: 0, marginRight: 0 } : {}}
             >
-              <TbToolsKitchen2 className={styles.inventoryNavBarIcon} />
-              Ingredients
-            </NavLink>
-          </NavItem>
-          <NavItem>
-            <NavLink
-              className={classnames(styles.inventoryNavBarLink)}
-              style={{
-                backgroundColor: `${activeTab === tabs[1] ? '#a1a5d1' : ''}`,
-                borderRadius: `${activeTab === tabs[1] ? '30px' : ''}`,
-              }}
-              onClick={() => toggleTab(1)}
-            >
-              <FiPackage className={styles.inventoryNavBarIcon} />
-              Equipment &amp; Supplies
-            </NavLink>
-          </NavItem>
-          <NavItem>
-            <NavLink
-              className={classnames(styles.inventoryNavBarLink)}
-              style={{
-                backgroundColor: `${activeTab === tabs[2] ? '#a1a5d1' : ''}`,
-                borderRadius: `${activeTab === tabs[2] ? '30px' : ''}`,
-              }}
-              onClick={() => toggleTab(2)}
-            >
-              <LiaSeedlingSolid className={styles.inventoryNavBarIcon} />
-              Seeds
-            </NavLink>
-          </NavItem>
-          <NavItem>
-            <NavLink
-              className={classnames(styles.inventoryNavBarLink)}
-              style={{
-                backgroundColor: `${activeTab === tabs[3] ? '#a1a5d1' : ''}`,
-                borderRadius: `${activeTab === tabs[3] ? '30px' : ''}`,
-              }}
-              onClick={() => toggleTab(3)}
-            >
-              <GiMasonJar className={styles.inventoryNavBarIcon} />
-              Canning Supplies
-            </NavLink>
-          </NavItem>
-          <NavItem style={{ paddingRight: 0, marginRight: 0 }}>
-            <NavLink
-              className={classnames(styles.inventoryNavBarLink)}
-              style={{
-                backgroundColor: `${activeTab === tabs[4] ? '#a1a5d1' : ''}`,
-                borderRadius: `${activeTab === tabs[4] ? '30px' : ''}`,
-              }}
-              onClick={() => toggleTab(4)}
-            >
-              <FiShoppingCart className={styles.inventoryNavBarIcon} />
-              Animal Supplies
-            </NavLink>
-          </NavItem>
+              <NavLink
+                className={classnames(styles.inventoryNavBarLink)}
+                style={{
+                  backgroundColor: `${activeTab === tabs[tabItem.index] ? '#a1a5d1' : ''}`,
+                  borderRadius: `${activeTab === tabs[tabItem.index] ? '30px' : ''}`,
+                }}
+                onClick={() => toggleTab(tabItem.index)}
+              >
+                {tabItem.icon}
+                {tabItem.label}
+              </NavLink>
+            </NavItem>
+          ))}
         </Nav>
         <div className={`${styles.inventoryInteraction}`}>
           <div
