@@ -154,6 +154,7 @@ export default function Warning({ personId, username, userRole, displayUser }) {
         .map(warning => (
           <div className={`${styles['warning-item-container']}`} key={warning.title}>
             <div className={`${styles['warning-wrapper']}`}>
+              <p className={`${styles['warning-text']}`}> {warning.title}</p>
               <WarningIcons
                 warnings={warning.warnings}
                 warningText={warning.title}
@@ -161,7 +162,6 @@ export default function Warning({ personId, username, userRole, displayUser }) {
                 handleShowWarningModal={handleShowWarningModal}
                 numberOfWarnings={warning.warnings.length}
               />
-              <p className={`${styles['warning-text']}`}> {warning.title}</p>
             </div>
           </div>
         ))

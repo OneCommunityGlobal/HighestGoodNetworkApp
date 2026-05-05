@@ -87,7 +87,7 @@ function WarningTrackerModal({
   const handleOverlayTrigger = title => {
     if (title === 'info') {
       return (
-        <Popover id="details">
+        <Popover id="details" className={styles.popover}>
           <Popover.Title
             as="h4"
             className={

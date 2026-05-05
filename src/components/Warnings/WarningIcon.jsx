@@ -62,7 +62,7 @@ function WarningIcon({
   };
 
   const popover = (
-    <Popover id="popover-basic" className={darkMode ? styles.popover : ''}>
+    <Popover id="popover-basic" className={darkMode ? styles.popoverDarkMode : ''}>
       <Popover.Title as="h4">Date Assigned</Popover.Title>
       <Popover.Content className={styles['popover-body']}>{dateAssigned}</Popover.Content>
     </Popover>
