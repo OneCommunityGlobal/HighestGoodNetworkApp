@@ -155,9 +155,6 @@ function Register() {
   const resolveJobTitleFromToken = () =>
     tokenPayload?.jobTitle || tokenPayload?.title || tokenPayload?.position || null;
 
-  const resolveJobTitle = () =>
-    userProfile?.jobTitle || resolveJobTitleFromToken() || 'Participant';
-
   useEffect(() => {
     if (!activity?.resources?.length) {
       setIsAlreadyRegistered(false);
@@ -190,8 +187,8 @@ function Register() {
       });
 
       if (response.status === 200) {
-        const updatedActivity = response.data?.activity || response.data;
-        if (updatedActivity?.currentAttendees !== undefined) {
+        const updatedActivity = response.data?.activity || response.data || [];
+        if (updatedActivity?.currentAttendees) {
           setActivity(updatedActivity);
         } else {
           setActivity(prev => ({
