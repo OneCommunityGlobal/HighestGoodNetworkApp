@@ -206,7 +206,8 @@ describe('RolePermissions component', () => {
     const history = createMemoryHistory();
     renderComponent(store, history, roleName, roleId);
 
-    fireEvent.click(screen.getByTestId('edit-role-icon'));
+    const editIcon = await screen.findByTestId('edit-role-icon');
+    fireEvent.click(editIcon);
 
     const dialog = screen.getByRole('dialog');
 

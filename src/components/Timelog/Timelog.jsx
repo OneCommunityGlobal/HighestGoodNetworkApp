@@ -823,8 +823,8 @@ return (
                   <Row className="d-flex flex-nowrap align-items-center w-100 gx-0">
                   {/* LEFT: title/subtitle takes remaining space */}
                   <Col className="px-0 flex-grow-1" style={{ minWidth: 0 }}>
-                    <CardTitle tag="h4">
-                      <div className="d-flex align-items-center flex-wrap">
+                  <CardTitle tag="h4" className="mb-0 d-flex align-items-center h-100">
+                      <div className="d-flex align-items-center flex-wrap mb-0">
                         <span className={`${timeLog.taskboardHeaderTitle} mb-1 mr-2`}>
                           Tasks and Timelogs
                         </span>
@@ -839,18 +839,27 @@ return (
                         />
 
                         <span className="mr-2" style={{ color: '#7cfc00', padding: '1px' }}>
-                          <ActiveCell
+                        <ActiveCell
                             isActive={displayUserProfile.isActive}
+                            endDate={displayUserProfile.endDate}
+                            reactivationDate={displayUserProfile.reactivationDate}
+                            canChange={canPutUserProfileImportantInfo} // or whatever permission should control this
                             user={displayUserProfile}
-                            onClick={() => {
-                              props.updateUserProfile({
-                                ...displayUserProfile,
-                                isActive: !displayUserProfile.isActive,
-                                endDate:
-                                  !displayUserProfile.isActive === false
-                                    ? moment(new Date()).format('YYYY-MM-DD')
-                                    : undefined,
-                              });
+                            onClick={async () => {
+                              const newIsActive = !displayUserProfile.isActive;
+
+                              try {
+                                await props.updateUserProfile({
+                                  ...displayUserProfile,
+                                  isActive: newIsActive,
+                                  endDate: newIsActive ? undefined : moment().format('YYYY-MM-DD'),
+                                });
+
+                                await props.getUserProfile(displayUserId);
+                              } catch (e) {
+                                console.log(e);
+                                alert('Failed to update active status. Please try again.');
+                              }
                             }}
                           />
                         </span>
@@ -861,15 +870,6 @@ return (
                         />
                       </div>
                     </CardTitle>
-
-                    <CardSubtitle
-                      tag="h6"
-                      className={`${
-                        darkMode ? 'text-azure' : `text-muted ${timeLog['text-muted']} text-muted`
-                      } ${timeLog['responsive-font-size']}`}
-                    >
-                      Viewing time entries logged in the last 3 weeks
-                    </CardSubtitle>
                   </Col>
 
                   {/* RIGHT: button stays compact and right-aligned (never becomes a big centered block) */}
@@ -880,15 +880,15 @@ return (
                         style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}
                       >
                         <div className={timeLog.followupTooltipButton}>
-                          <Button
-                            className="btn btn-success"
-                            onClick={toggle}
-                            style={{
-                              ...(darkMode ? boxStyleDark : boxStyle),
-                              whiteSpace: 'nowrap',
-                              alignSelf: 'flex-start',
-                            }}
-                          >
+                        <Button
+                          className="btn btn-success"
+                          onClick={toggle}
+                          style={{
+                            ...(darkMode ? boxStyleDark : boxStyle),
+                            whiteSpace: 'nowrap',
+                            alignSelf: 'center',
+                          }}
+                        >
                             Add Intangible Time Entry
                             <TooltipPortal
                               darkMode={darkMode}

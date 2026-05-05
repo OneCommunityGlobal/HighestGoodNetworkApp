@@ -1,8 +1,9 @@
+/* stylelint-disable  */
 .addMaterialForm{
   width: 100%;
 }
 
-.addMaterialForm Label{
+.addMaterialForm label{
 font-size: .8em;
 }
 
@@ -49,15 +50,15 @@ font-size: .8em;
   padding-left: 1em;
   margin-top: 1em;
   transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.addMaterialCreatedby div{
-  width: 50%;
+  gap: 6px;
+  flex-wrap: wrap;
 }
 
 .createdby{
   text-align: end;
   padding-right: 1em;
+  word-break: break-all;
+  overflow-wrap: anywhere;
 }
 
 .filePreviewContainer{
@@ -66,6 +67,7 @@ font-size: .8em;
   gap: 0.5rem;
   width: 100%;
   margin-top: 1rem;
+  
 }
 
 .materialFormError {
@@ -76,11 +78,15 @@ font-size: .8em;
   justify-content: flex-start;
 }
 
+.materialFormErrorDark {
+  color: #ff6b6b !important;
+}
+
 .fieldRequired{
   color: red;
 }
 
-@media screen and (max-width: 640px) {
+@media screen and (width <= 640px) {
   .addMaterialFlexGroup {
     display: block;
   }
@@ -97,7 +103,7 @@ font-size: .8em;
   padding: 1rem 2rem;
   border: 1px solid #ccc;
   border-radius: 20px;
-  background-color: #ffffff;
+  background-color: #fff;
   transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
@@ -107,7 +113,7 @@ font-size: .8em;
 }
 
 
-@media screen and (max-width: 800px) {
+@media screen and (width <= 800px) {
   .addMaterialContainer {
     width: 95%;
   }
@@ -119,18 +125,26 @@ font-size: .8em;
   padding: 15px;
   margin-bottom: 15px;
 }
+
 .navigationOptions .optionContainer:hover {
   background-color: #f8f9fa;
 }
+
 .navigationOptions h5 {
   margin-bottom: 8px;
 }
+
 .navigationOptions p {
   margin-bottom: 15px;
   font-size: 0.9rem;
 }
 
+.currency{
+  width: fit-content;
+}
+
 /* ================== DARK MODE STYLES ================== */
+
 /* Only styles for elements with hardcoded light colors not covered by global BMDashboard styles */
 
 /* Main container - has hardcoded white background */
@@ -189,7 +203,7 @@ font-size: .8em;
 /* Select dropdown options - white background when selecting */
 :global(.bm-dashboard-dark) .addMaterialForm select option {
   background-color: #2e5061 !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 /* Browser autocomplete suggestions - white background when selecting */
@@ -197,9 +211,9 @@ font-size: .8em;
 :global(.bm-dashboard-dark) .addMaterialForm input:-webkit-autofill:hover,
 :global(.bm-dashboard-dark) .addMaterialForm input:-webkit-autofill:focus,
 :global(.bm-dashboard-dark) .addMaterialForm input:-webkit-autofill:active {
-  -webkit-box-shadow: 0 0 0 30px #2e5061 inset !important;
-  -webkit-text-fill-color: #ffffff !important;
-  caret-color: #ffffff !important;
+  box-shadow: 0 0 0 30px #2e5061 inset !important;
+  -webkit-text-fill-color: #fff !important;
+  caret-color: #fff !important;
   transition: background-color 5000s ease-in-out 0s;
 }
 
@@ -222,7 +236,7 @@ font-size: .8em;
 /* PhoneInput dark mode styling */
 :global(.bm-dashboard-dark) .addMaterialForm :global(.react-tel-input) :global(.form-control) {
   background-color: #2e5061 !important;
-  color: #ffffff !important;
+  color: #fff !important;
   border-color: #3a506b !important;
 }
 
@@ -243,7 +257,7 @@ font-size: .8em;
 
 :global(.bm-dashboard-dark) .addMaterialForm :global(.react-tel-input) :global(.country-list) {
   background-color: #2e5061 !important;
-  color: #ffffff !important;
+  color: #fff !important;
   border-color: #3a506b !important;
 }
 
@@ -258,14 +272,70 @@ font-size: .8em;
 
 :global(.bm-dashboard-dark) .addMaterialForm :global(.react-tel-input) :global(.country-list) :global(.country-name),
 :global(.bm-dashboard-dark) .addMaterialForm :global(.react-tel-input) :global(.country-list) :global(.dial-code) {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 :global(.bm-dashboard-dark) .addMaterialForm :global(.react-tel-input) :global(.arrow) {
-  border-top-color: #ffffff !important;
+  border-top-color: #fff !important;
 }
 
 :global(.bm-dashboard-dark) .addMaterialForm :global(.react-tel-input) :global(.arrow.up) {
-  border-bottom-color: #ffffff !important;
+  border-bottom-color: #fff !important;
   border-top-color: transparent !important;
+}
+
+:global(body.dark-mode) .fieldRequired,:global(body.bm-dashboard-dark) .fieldRequired {
+  color: #F87171 !important;
+}
+
+.dragWrapper :global(label) {
+  background-color: #2a3f5f  !important;
+}
+
+.phoneDark :global(.react-tel-input .flag-dropdown), .phoneDark :global(.react-tel-input .flag-dropdown.open) {
+  background-color: #2a3f5f !important;
+  border-color: #444;  
+} 
+
+.phoneDark :global(.react-tel-input .country-list) {
+  background-color: #2a3f5f;
+  border-color: #444;
+}
+
+.phoneDark :global(.react-tel-input .country:hover) {
+  background-color: #514141;
+}
+
+.phoneDark :global(.react-tel-input .country.highlight) {
+  background-color: #4b3737;
+}
+
+.phoneDark :global(.react-tel-input .selected-flag) {
+  background-color: #2a3f5f;
+}
+
+.darkBackground{
+  background-color: #e57373;
+}
+
+.darkBackgroundId{
+  background-color: #4fc3f7;
+}
+
+:global(body.dark-mode .form-control) {
+  background-color: #2a3f5f !important;
+}
+
+:global(body.dark-mode select.form-control), :global(body.bm-dashboard-dark  select.form-control){
+  background-image: none !important;
+}
+
+:global(body.dark-mode:not(.no-global-theme) select.form-control),
+:global(body.bm-dashboard-dark:not(.no-global-theme) select.form-control){
+  background-image: none !important;
+}
+
+:global(.bm-dashboard-dark select){
+  background-color: #2e5061;
+  border: none;
 }
