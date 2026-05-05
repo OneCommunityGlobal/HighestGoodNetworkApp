@@ -265,8 +265,25 @@ export default function ResourceUsage() {
                   iconType="circle"
                   iconSize={8}
                   wrapperStyle={{
+                    top: 0,
+                    right: 0,
+                    paddingBottom: '4px',
                     color: darkMode ? '#ffffff' : '#666',
+                    fontSize: '0.875rem',
+                    lineHeight: '1.5',
                   }}
+                  formatter={value => (
+                    <span
+                      style={{
+                        color: darkMode ? '#ffffff' : '#666',
+                        marginLeft: '1px',
+                        marginRight: '0px',
+                        fontSize: '0.875rem',
+                      }}
+                    >
+                      {value.charAt(0).toUpperCase() + value.slice(1)}
+                    </span>
+                  )}
                 />
 
                 <Bar dataKey="returned" stackId="a" fill="#22c55e" radius={[4, 4, 0, 0]} />
