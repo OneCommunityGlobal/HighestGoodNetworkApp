@@ -78,6 +78,25 @@ const KIInventory = () => {
       ? preservedItems.map(item => `${item.presentQuantity} ${item.unit} of ${item.name}`)
       : [];
 
+  const renderItems = tabName => {
+    if (loading) {
+      return <p style={{ padding: '1rem' }}>Loading...</p>;
+    }
+    if (tabItems.length > 0) {
+      return tabItems.map(item => (
+        <div key={item._id}>
+          <KIItemCard item={item} />
+        </div>
+      ));
+    }
+    if (searchTerm) {
+      return (
+        <p style={{ padding: '1rem', opacity: 0.6 }}>No results for &quot;{searchTerm}&quot;</p>
+      );
+    }
+    return <p style={{ padding: '1rem', opacity: 0.6 }}>No items in {tabName} yet.</p>;
+  };
+
   return (
     <div className={classnames(styles.inventoryContainer, darkMode ? styles.darkContainer : '')}>
       <header className={classnames(styles.inventoryPageHeader, darkMode ? styles.darkHeader : '')}>
@@ -223,21 +242,7 @@ const KIInventory = () => {
                   </div>
                 </div>
               )}
-              <div className={styles.ingredientsContainer}>
-                {loading ? (
-                  <p style={{ padding: '1rem' }}>Loading...</p>
-                ) : tabItems.length > 0 ? (
-                  tabItems.map(item => (
-                    <div key={item._id}>
-                      <KIItemCard item={item} />
-                    </div>
-                  ))
-                ) : (
-                  <p style={{ padding: '1rem', opacity: 0.6 }}>
-                    {searchTerm ? `No results for "${searchTerm}"` : `No items in ${tab} yet.`}
-                  </p>
-                )}
-              </div>
+              <div className={styles.ingredientsContainer}>{renderItems(tab)}</div>
             </div>
           </TabPane>
         ))}
