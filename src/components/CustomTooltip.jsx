@@ -36,10 +36,10 @@ const getTooltipData = (payload, label) => {
   };
 };
 
-function CustomTooltip({ active, payload, label, tooltipType }) {
+function CustomTooltip({ active, payload, label, tooltipType, darkMode = false }) {
   if (!active || !payload || !payload.length) return null;
 
-  const isDarkMode = getIsDarkMode();
+  const isDarkMode = darkMode;
   const { name, percentage, hoursValue, totalHours, change } = getTooltipData(payload, label);
   const textColor = isDarkMode ? '#fff' : '#222';
 

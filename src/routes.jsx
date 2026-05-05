@@ -219,6 +219,8 @@ import SupportLogViewer from './components/SupportPortal/SupportLogViewer';
 import MaterialUtilizationChart from './components/MaterialUtilization/MaterialUtilizationChart';
 import OptStatusPieChart from './components/OptStatusPieChart/OptStatusPieChart';
 
+import WeeklyProgressDashboard from './components/WeeklyProgress/WeeklyProgressDashboard';
+
 // Social Architecture
 import JobApplicationForm from './components/Collaboration/JobApplicationForm/JobApplicationForm';
 const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
@@ -353,7 +355,6 @@ export default (
     <Route path="/formviewer" component={FormViewer} />
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
     <Route path="/hours-pledged-chart" component={HoursPledgedChart} />
-    <Route path="/TestEventReg" component={TestEventRegistration} />
     <>
       {/* Comment out the Header component and its import during phase 2 development. */}
       {/* Uncomment BMHeader and its import during phase 2 development. */}
@@ -437,6 +438,14 @@ export default (
           component={Reports}
           fallback
           routePermissions={RoutePermissions.reports}
+        />
+        {/* Weekly Progress (Phase 2) */}
+        <ProtectedRoute
+          path="/weeklyprogress"
+          exact
+          component={WeeklyProgressDashboard}
+          fallback
+          routePermissions={RoutePermissions.weeklySummariesReport}
         />
         <ProtectedRoute path="/teamlocations" exact component={TeamLocations} />
         <ProtectedRoute path="/job-analytics" component={JobAnalyticsPage} fallback />
@@ -847,6 +856,11 @@ export default (
           path="/communityportal/activities/:activityid"
           exact
           component={Activity}
+        />
+        <CPProtectedRoute
+          path="/communityportal/activities/TestEventReg"
+          exact
+          component={TestEventRegistration}
         />
         <CPProtectedRoute
           path="/communityportal/activity/:activityId/logattendance"
