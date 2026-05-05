@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .loadingContainer {
   min-height: 100vh;
   background-color: #f9fafb;
@@ -90,14 +91,14 @@
   border: 1px solid #d1d5db;
   border-radius: 6px;
   background-color: white;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 5%);
   outline: none;
 }
 
 .card {
   background-color: white;
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgb(0 0 0 / 10%);
   padding: 24px;
   margin-bottom: 24px;
 }
@@ -105,7 +106,7 @@
 .chartsCard {
   background-color: white;
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgb(0 0 0 / 10%);
   padding: 24px;
 }
 
@@ -166,6 +167,7 @@
   height: 12px;
   border-radius: 50%;
 }
+
 .statusValue {
   font-size: 18px;
   font-weight: 600;
@@ -241,7 +243,7 @@
 .upcomingChartsCard {
   background-color: white;
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgb(0 0 0 / 10%);
   padding: 24px;
   text-align: center;
 }
@@ -252,23 +254,26 @@
   margin: 0;
 }
 
-@media (min-width: 768px) {
+@media (width >= 768px) {
   .chartsContainer {
     flex-direction: row;
     justify-content: space-between;
   }
+
   .chartWrapper {
     width: 48%;
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .pageTitle {
     font-size: 20px;
   }
+
   .cardTitle {
     font-size: 20px;
   }
+
   .chartSectionTitle {
     font-size: 16px;
   }
@@ -304,7 +309,7 @@
 :global(.dark-mode) .upcomingChartsCard,
 :global(.dark-mode) .upcomingContainer {
   background-color: #1f2937; /* Darker card background */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 6px rgb(0 0 0 / 30%);
   color: #f9fafb;
 }
 

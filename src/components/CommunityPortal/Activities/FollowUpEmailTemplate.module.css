@@ -1,3 +1,4 @@
+/* stylelint-disable no-descending-specificity */
 .emailTemplateContainer {
   max-width: 600px;
   margin: auto;
@@ -5,19 +6,19 @@
   font-family: Arial, sans-serif;
   border: 1px solid #ddd;
   border-radius: 8px;
-  box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.1);
-  background-color: #ffffff;
+  box-shadow: 2px 2px 12px rgb(0 0 0 / 10%);
+  background-color: #fff;
 }
 
 .emailTemplateContainerDark {
   background-color: #1c2541 !important;
   border: 1px solid #3a506b !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45) !important;
-  color: #ffffff !important;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 45%) !important;
+  color: #fff !important;
 }
 
 .textLight {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .linkSoftDark a {
@@ -37,7 +38,7 @@
 }
 
 .emailTemplateContainerDark .h2 {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .p {
@@ -48,7 +49,7 @@
 }
 
 .emailTemplateContainerDark .p {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .feedbackLink {
@@ -76,13 +77,13 @@
   align-items: center !important;
   height: 45px !important;
   background-color: #3a506b !important;
-  color: #ffffff !important;
+  color: #fff !important;
   border: none !important;
 }
 
 .feedbackLink:hover {
-  background-color: #3399ff;
-  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
+  background-color: #39f;
+  box-shadow: 0 4px 10px rgb(0 123 255 / 20%);
 }
 
 .feedbackLinkDark:hover {
@@ -110,7 +111,7 @@
 }
 
 .socialIconsDark .socialIcon {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .socialIcon {

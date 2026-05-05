@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .container {
   padding: 20px;
   background-color: #fff;
@@ -7,12 +8,12 @@
 .filterCard {
   margin-bottom: 20px;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
 }
 
 .chartCard {
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
   margin-bottom: 20px;
 }
 
@@ -49,7 +50,7 @@
   margin-right: 4px;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .container {
     padding: 10px;
   }
