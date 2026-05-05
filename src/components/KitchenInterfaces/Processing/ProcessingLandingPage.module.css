@@ -102,12 +102,13 @@
 }
 
 .activeNavItem {
-  background-color: #333; /* Or a specific green from branding */
-  color: white;
+  background-color: #e6f4ea; /* Light green background */
+  color: #2e7d32; /* Darker green text */
+  font-weight: 600;
 }
 .activeNavItem:hover {
-    background-color: #444;
-    color: white;
+  background-color: #dcedc8;
+  color: #1b5e20;
 }
 
 
@@ -126,9 +127,9 @@
 
 .sectionBox {
   background: #fff;
-  /* border: 1px solid #e0e0e0; */
-  /* border-radius: 12px; */
-  /* padding: 24px; */
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 24px;
 }
 
 .sectionHeader {
@@ -333,14 +334,14 @@
 }
 
 .darkMode .activeNavItem {
-  background-color: #ffffff;
-  color: #121212;
+  background-color: #2e7d32;
+  color: #ffffff;
   font-weight: 600;
 }
 
 .darkMode .activeNavItem:hover {
-  background-color: #f0f0f0;
-  color: #000;
+  background-color: #1b5e20;
+  color: #ffffff;
 }
 
 .darkMode .methodStatus {
@@ -415,9 +416,9 @@
 }
 
 .darkMode .placeholderContent h2 {
-  color: #ddd;
+  color: #e0e0e0;
 }
 
 .darkMode .placeholderContent p {
-  color: #aaa;
+  color: #cccccc;
 }
