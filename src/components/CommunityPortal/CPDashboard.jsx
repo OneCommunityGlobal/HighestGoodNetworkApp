@@ -63,10 +63,20 @@ export function CPDashboard() {
   const [error, setError] = useState(null);
   const darkMode = useSelector(state => state.theme.darkMode);
 
+  // Hide the global back-to-top button — not needed on this page
+  useEffect(() => {
+    const scrollBtn = document.querySelector('.back-to-top');
+    if (!scrollBtn) return;
+    const prevDisplay = scrollBtn.style.display;
+    scrollBtn.style.display = 'none';
+    return () => {
+      scrollBtn.style.display = prevDisplay;
+    };
+  }, []);
+
   // Consolidated filter states
   const [pendingFilters, setPendingFilters] = useState(DEFAULT_FILTERS);
   const [appliedFilters, setAppliedFilters] = useState(DEFAULT_FILTERS);
-
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalPages: 5,
