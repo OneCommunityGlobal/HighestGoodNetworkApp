@@ -152,9 +152,6 @@ function Register() {
     return fallback || 'Participant';
   };
 
-  const resolveJobTitleFromToken = () =>
-    tokenPayload?.jobTitle || tokenPayload?.title || tokenPayload?.position || null;
-
   useEffect(() => {
     if (!activity?.resources?.length) {
       setIsAlreadyRegistered(false);
@@ -227,8 +224,7 @@ function Register() {
         toast.info('Sharing is not supported on this device.');
       }
     } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error('Share failed:', err);
+      toast.error('Share failed: ', err);
     }
   };
 
