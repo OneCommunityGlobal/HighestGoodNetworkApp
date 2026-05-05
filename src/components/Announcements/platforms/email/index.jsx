@@ -143,8 +143,12 @@ export default function EmailPanel({ title, initialEmail }) {
   };
 
   return (
-    <div className={styles.emailUpdateContainer}>
-      <div className={styles.editor}>
+    <div
+      className={`${styles.emailUpdateContainer} ${
+        darkMode ? styles.emailUpdateContainerDark : ''
+      }`}
+    >
+      <div className={`${styles.editor} ${darkMode ? styles.editorDark : ''}`}>
         {title ? <h3>{title}</h3> : <h3>Weekly Progress Editor</h3>}
         <br />
         {showEditor && (

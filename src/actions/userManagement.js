@@ -203,8 +203,7 @@ export const buildUpdatedUserLifecycleDetails = (user, payload) => {
 };
 
 const buildBackendPayload = (userDetails, action) => {
-  console.log('Building backend payload with:', { userDetails, action });
-  switch (action){
+  switch (action) {
     case UserStatusOperations.ACTIVATE:
       return {
         action: action,
@@ -225,7 +224,7 @@ const buildBackendPayload = (userDetails, action) => {
     case UserStatusOperations.PAUSE:
       return {
         action: action,
-        reactivationDate: userDetails.reactivationDate
+        reactivationDate: userDetails.reactivationDate,
       };
     default:
       throw new Error(`Unknown lifecycle action: ${action}`);
@@ -233,21 +232,61 @@ const buildBackendPayload = (userDetails, action) => {
 };
 
 export const updateUserLifecycle = (updatedUser, payload) => {
-  return async dispatch => {
+  return async (dispatch, getState) => {
+    const { auth } = getState();
     dispatch(userProfileUpdateAction(updatedUser));
-
-    const backendPayload = buildBackendPayload(updatedUser, payload.action);
+    const requestor = {
+      requestorId: auth.user.userid,
+      role: auth.user.role,
+      permissions: auth.user.permissions,
+    };
+    const backendPayload = {
+      ...buildBackendPayload(updatedUser, payload.action),
+      requestor,
+    };
     try {
-      // console.log('Sending PATCH request to update user lifecycle');
-      await axios.patch(ENDPOINTS.USER_PROFILE(updatedUser._id), backendPayload);
-
+      await axios.patch(ENDPOINTS.USER_PROFILE_FIXED(updatedUser._id), backendPayload);
     } catch (error) {
       toast.error('Error updating user lifecycle:', error);
       dispatch(userProfileUpdateAction(payload.originalUser));
       throw error;
     }
   };
-}
+};
+
+/**
+ * Update the pause/resume status of a user via the dedicated pause endpoint.
+ * Requires the 'interactWithPauseUserButton' permission.
+ * @param {*} user - the user to be paused or resumed
+ * @param {string} status - UserStatus.Active or UserStatus.Inactive
+ * @param {*} reactivationDate - the date on which the user should be reactivated
+ */
+export const updateUserPauseStatus = (user, status, reactivationDate) => {
+  return async (dispatch, getState) => {
+    const userProfile = { ...user };
+    userProfile.isActive = status === UserStatus.Active;
+    userProfile.reactivationDate = reactivationDate;
+    const auth = getState().auth;
+    const requestor = {
+      requestorId: auth.user.userid,
+      role: auth.user.role,
+      permissions: auth.user.permissions,
+      email: auth.user.email,
+    };
+    const patchData = {
+      status,
+      reactivationDate: status === UserStatus.Active ? undefined : reactivationDate,
+      requestor,
+    };
+    try {
+      await axios.patch(ENDPOINTS.USER_PAUSE(user._id), patchData);
+      dispatch(userProfileUpdateAction(userProfile));
+    } catch (error) {
+      toast.error('Error updating user pause status:', error);
+      throw error;
+    }
+  };
+};
 
 /**
  * Update the rehireable status of a user
@@ -365,15 +404,15 @@ export const updateUserFinalDayStatusIsSet = (user, status, finalDayDate, isSet)
  * fetching all user profiles basic info
  *  Added `source` parameter to identify the calling component.
  */
-export const getUserProfileBasicInfo = ({ userId, source }) => {
+export const getUserProfileBasicInfo = ({ userId, source } = {}) => {
   // API request to fetch basic user profile information
   let userProfileBasicInfoPromise;
   if (userId)
-    userProfileBasicInfoPromise = axios.get(`${ENDPOINTS.USER_PROFILE_BASIC_INFO}?userId=${userId}`);
+    userProfileBasicInfoPromise = axios.get(ENDPOINTS.USER_PROFILE(userId));
   else if (source)
     userProfileBasicInfoPromise = axios.get(ENDPOINTS.USER_PROFILE_BASIC_INFO(source));
   else
-    userProfileBasicInfoPromise = axios.get(ENDPOINTS.USER_PROFILE_BASIC_INFO);
+    userProfileBasicInfoPromise = axios.get(ENDPOINTS.USER_PROFILES);
 
   return async dispatch => {
     // Dispatch action indicating the start of the fetch process
