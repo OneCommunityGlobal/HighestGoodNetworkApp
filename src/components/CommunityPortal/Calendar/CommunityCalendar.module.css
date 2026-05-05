@@ -164,7 +164,7 @@
   border: 1px solid #dee2e6 !important;
   box-sizing: border-box;
   transition: background 0.3s, border-color 0.3s ease;
-  overflow: visible !important;
+  overflow: hidden !important;
   position: relative;
   padding: 4px;
   color: #1a202c;
@@ -667,11 +667,8 @@
 }
 
 .eventTooltip {
-  position: absolute;
-  top: 0;
-  left: 100%;
-  transform: translate(8px, -10px);
-  z-index: 999;
+  position: fixed;
+  z-index: 9999;
   width: 220px;
   padding: 10px;
   background-color: #fff;

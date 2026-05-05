@@ -32,7 +32,7 @@ export default function CommunityCalendar() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showEventModal, setShowEventModal] = useState(false);
-  const [hoveredEventId, setHoveredEventId] = useState(null);
+  const [tooltip, setTooltip] = useState(null);
   const darkMode = useSelector(state => state.theme.darkMode);
   const currentDate = new Date();
 
@@ -41,18 +41,10 @@ export default function CommunityCalendar() {
       setIsLoading(true);
       try {
         const response = await axios.get(ENDPOINTS.EVENTS);
-
         const apiEvents = response.data?.events || response.data || [];
-
-        if (!apiEvents || apiEvents.length === 0) {
-          console.warn('API returned empty → using mock events');
-          setEvents(MOCK_EVENTS);
-        } else {
-          setEvents(apiEvents);
-        }
+        setEvents(apiEvents);
       } catch (err) {
-        console.warn('API failed → using mock events');
-        setEvents(MOCK_EVENTS);
+        setError('Error fetching Events. Please try again later.');
       } finally {
         setIsLoading(false);
       }
@@ -357,8 +349,11 @@ export default function CommunityCalendar() {
                   e_obj.stopPropagation();
                   handleEventClick(e);
                 }}
-                onMouseEnter={() => setHoveredEventId(e.id)}
-                onMouseLeave={() => setHoveredEventId(null)}
+                onMouseEnter={ev => {
+                  const r = ev.currentTarget.getBoundingClientRect();
+                  setTooltip({ event: e, x: r.right + 8, y: r.top });
+                }}
+                onMouseLeave={() => setTooltip(null)}
                 aria-label={`Click to view details for ${e.title}`}
               >
                 <span className={styles.eventContent}>
@@ -367,24 +362,6 @@ export default function CommunityCalendar() {
                   </span>
                   <span className={styles.eventTitleText}>{e.title}</span>
                 </span>
-
-                {hoveredEventId === e.id && (
-                  <div
-                    className={`${styles.eventTooltip} ${darkMode ? styles.eventTooltipDark : ''}`}
-                  >
-                    <strong>{e.title}</strong>
-                    <span className={styles.tooltipDetail}>
-                      <strong>Time:</strong> {e.time}
-                    </span>
-                    <span className={styles.tooltipDetail}>
-                      <strong>Location:</strong> {e.location}
-                    </span>
-                    <span className={styles.tooltipDetail}>
-                      <strong>Status:</strong> {e.status}
-                    </span>
-                    <small>Click for more details</small>
-                  </div>
-                )}
               </button>
             );
           })}
@@ -401,7 +378,7 @@ export default function CommunityCalendar() {
         </div>
       );
     },
-    [getEventsForDate, handleEventClick, darkMode, hoveredEventId],
+    [getEventsForDate, handleEventClick, darkMode],
   );
 
   // Memoized tile class name function
@@ -703,6 +680,26 @@ export default function CommunityCalendar() {
               </button>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* Hover tooltip — fixed so it escapes overflow: hidden on tiles */}
+      {tooltip && (
+        <div
+          className={`${styles.eventTooltip} ${darkMode ? styles.eventTooltipDark : ''}`}
+          style={{ left: tooltip.x, top: tooltip.y }}
+        >
+          <strong>{tooltip.event.title}</strong>
+          <span className={styles.tooltipDetail}>
+            <strong>Time:</strong> {tooltip.event.time}
+          </span>
+          <span className={styles.tooltipDetail}>
+            <strong>Location:</strong> {tooltip.event.location}
+          </span>
+          <span className={styles.tooltipDetail}>
+            <strong>Status:</strong> {tooltip.event.status}
+          </span>
+          <small>Click for more details</small>
         </div>
       )}
 
