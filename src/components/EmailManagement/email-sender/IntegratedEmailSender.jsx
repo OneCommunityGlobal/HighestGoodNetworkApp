@@ -1236,7 +1236,6 @@ const IntegratedEmailSender = ({
           autoClose: 3000,
         });
 
-        dispatch({ type: 'SET_IS_SENDING', payload: false });
         dispatch({ type: 'SET_SHOW_PREVIEW_MODAL', payload: false });
         dispatch({ type: 'SET_BACKEND_PREVIEW_DATA', payload: null });
         dispatch({ type: 'SET_PREVIEW_ERROR', payload: null });
@@ -1276,7 +1275,6 @@ const IntegratedEmailSender = ({
           autoClose: 3000,
         });
 
-        dispatch({ type: 'SET_IS_SENDING', payload: false });
         dispatch({ type: 'SET_SHOW_PREVIEW_MODAL', payload: false });
         dispatch({ type: 'SET_BACKEND_PREVIEW_DATA', payload: null });
         dispatch({ type: 'SET_PREVIEW_ERROR', payload: null });
@@ -2179,20 +2177,16 @@ const IntegratedEmailSender = ({
       <Modal
         isOpen={showPreviewModal}
         toggle={() => {
-          if (!isSending) {
-            dispatch({ type: 'SET_SHOW_PREVIEW_MODAL', payload: false });
-            dispatch({ type: 'SET_BACKEND_PREVIEW_DATA', payload: null });
-            dispatch({ type: 'SET_PREVIEW_ERROR', payload: null });
-          }
+          dispatch({ type: 'SET_SHOW_PREVIEW_MODAL', payload: false });
+          dispatch({ type: 'SET_BACKEND_PREVIEW_DATA', payload: null });
+          dispatch({ type: 'SET_PREVIEW_ERROR', payload: null });
         }}
         size="lg"
         centered
       >
         <ModalHeader
           toggle={() => {
-            if (!isSending) {
-              dispatch({ type: 'SET_SHOW_PREVIEW_MODAL', payload: false });
-            }
+            dispatch({ type: 'SET_SHOW_PREVIEW_MODAL', payload: false });
           }}
         >
           {previewLoading ? (
@@ -2280,7 +2274,7 @@ const IntegratedEmailSender = ({
             onClick={() => {
               dispatch({ type: 'SET_SHOW_PREVIEW_MODAL', payload: false });
             }}
-            disabled={isSending || previewLoading}
+            disabled={previewLoading}
           >
             Cancel
           </Button>

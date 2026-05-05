@@ -119,7 +119,9 @@ import MemberList from './components/QuestionnaireDashboard/MemberList';
 import PromotionTable from './components/QuestionnaireDashboard/PromotionTable';
 import { JobAnalyticsCompetitiveRolesPage } from './components/Reports/JobAnalytics';
 // LB Dashboard
+import InjurySeverityChart from './components/BMDashboard/Injuries/InjurySeverityChart';
 import LBProtectedRoute from './components/common/LBDashboard/LBProtectedRoute/LBProtectedRoute';
+import Activity from './components/CommunityPortal/Activities/activityId/Activity';
 import LBDashboard from './components/LBDashboard';
 import BiddingHomepage from './components/LBDashboard/BiddingHomepage/BiddingHomepage';
 import LBBidOverview from './components/LBDashboard/BiddingOverview/BiddingOverview';
@@ -131,6 +133,7 @@ import LBMessaging from './components/LBDashboard/Messaging/LBMessaging';
 import LBRegister from './components/LBDashboard/Register/LBRegister';
 import WishListItem from './components/LBDashboard/WishList/ItemOverview';
 import WishList from './components/LBDashboard/WishList/WishList';
+import WeeklyProgressDashboard from './components/WeeklyProgress/WeeklyProgressDashboard';
 
 //mostwatedmaterials
 import MostWastedMaterials from './components/MostWastedMaterials/MostWastedMaterials.jsx';
