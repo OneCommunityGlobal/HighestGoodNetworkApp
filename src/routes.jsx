@@ -149,13 +149,11 @@ import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
 import InjuriesDonutChart from './components/InjuriesAnalytics/InjuriesDonutChart';
 //import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChart';
 import InteractiveMap from './components/BMDashboard/InteractiveMap/InteractiveMap';
-import JobsHitsApplicationsChart from './components/JobAnalytics/JobsHitsApplicationsChart/JobsHitsApplicationsChart';
-
 import RentalChart from './components/BMDashboard/RentalChart/RentalChart';
 import ReturnedLateChart from './components/BMDashboard/RentalChart/ReturnedLateChart';
 import CreateNewTeam from './components/BMDashboard/Team/CreateNewTeam/CreateNewTeam';
+import JobsHitsApplicationsChart from './components/JobAnalytics/JobsHitsApplicationsChart/JobsHitsApplicationsChart';
 // import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChart';
-import InjurySeverityDashboard from './components/BMDashboard/Injuries/InjurySeverityChart';
 import HoursPledgedChart from './components/JobAnalytics/HoursPledgedChart/HoursPledgedChart';
 
 // Community Portal
@@ -164,7 +162,6 @@ import CPDashboard from './components/CommunityPortal';
 import ActivityComments from './components/CommunityPortal/Activities/activityId/ActivityComments';
 import ActivityList from './components/CommunityPortal/Activities/ActivityList';
 import Feedbackform from './components/CommunityPortal/Activities/Feedbackform';
-import FollowUpEmailTemplate from './components/CommunityPortal/Activities/FollowUpEmailTemplate';
 import CPLogin from './components/CommunityPortal/Login';
 // import AddActivities from './components/CommunityPortal/Activities/AddActivities';
 // import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
@@ -185,14 +182,14 @@ import RecipesLandingPage from './components/KitchenandInventory/Recipes';
 // Education Portal
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPDashboard from './components/EductionPortal';
-import TaskSubmissions from './components/EductionPortal/Educators/TaskSubmissions';
-
 import InsightWidget from './components/EductionPortal/AnalyticsDashboard/InsightsWidget';
 import ReportDownloadButton from './components/EductionPortal/AnalyticsDashboard/ReportDownloadButton';
 import BrowseLessonPlan from './components/EductionPortal/BrowseLessonPlan/BrowseLP';
+import TaskSubmissions from './components/EductionPortal/Educators/TaskSubmissions';
 import EvaluationResultsWrapper from './components/EductionPortal/EvaluationResultsWrapper';
 import GroupList from './components/EductionPortal/GroupList/GroupList';
 import EPLogin from './components/EductionPortal/Login';
+import StudentProfile from './components/EductionPortal/StudentProfile';
 import StudentProfilePage from './components/EductionPortal/StudentProfile/StudentProfilePage';
 
 import BookingConfirmPage from './components/Booking/BookingConfirmPage';
@@ -274,7 +271,11 @@ const PermissionsManagement = lazy(() =>
   import('./components/PermissionsManagement/PermissionsManagement'),
 );
 const UserRoleTab = lazy(() => import('./components/PermissionsManagement/UserRoleTab'));
+const BlueSquareEmailManagement = lazy(() =>
+  import('./components/BlueSquareEmailManagement/BlueSquareEmailManagement'),
+);
 const Teams = lazy(() => import('./components/Teams/Teams'));
+// const EventList = lazy(() => import('./components/CommunityPortal/Event/EventList/EventList'));
 const JobFormBuilder = lazy(() => import('./components/Collaboration/JobFormbuilder'));
 const PopularityTimelineChart = lazy(() =>
   import('./components/PopularityTimelineAnalytics/PopularityTimelineChart'),
@@ -441,6 +442,14 @@ export default (
           fallback
           routePermissions={RoutePermissions.reports}
         />
+        {/* Weekly Progress (Phase 2) */}
+        <ProtectedRoute
+          path="/weeklyprogress"
+          exact
+          component={WeeklyProgressDashboard}
+          fallback
+          routePermissions={RoutePermissions.weeklySummariesReport}
+        />
         <ProtectedRoute path="/teamlocations" exact component={TeamLocations} />
         <ProtectedRoute path="/job-analytics" component={JobAnalyticsPage} fallback />
         <ProtectedRoute
@@ -519,6 +528,13 @@ export default (
           component={UserRoleTab}
           fallback
           routePermissions={RoutePermissions.permissionsManagement}
+        />
+        <ProtectedRoute
+          path="/bluesquare-email-management"
+          exact
+          component={BlueSquareEmailManagement}
+          fallback
+          routePermissions={['resendBlueSquareAndSummaryEmails']}
         />
         <ProtectedRoute
           path="/teams"
@@ -911,6 +927,7 @@ export default (
         />
         <BMProtectedRoute path="/bmdashboard/tools" exact component={Toolslist} />
         <BMProtectedRoute path="/bmdashboard/AddTeamMember" component={AddTeamMember} />
+        <BMProtectedRoute path="/bmdashboard/InteractiveMap" component={InteractiveMap} />
         <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} />
         <BMProtectedRoute path="/bmdashboard/tools/log" exact component={LogTools} />
         <BMProtectedRoute
@@ -938,7 +955,7 @@ export default (
           path="/bmdashboard/injuries-severity"
           fallback
           exact
-          component={InjurySeverityDashboard}
+          component={InjurySeverityChart}
         />
         <BMProtectedRoute path="/bmdashboard/issues/add/:projectId" component={Issue} />
         <BMProtectedRoute path="/bmdashboard/issuechart" component={IssueChart} />
@@ -986,8 +1003,14 @@ export default (
           component={Feedbackform}
         />
         <CPProtectedRoute
-          path="/communityportal/activities/FollowUpEmailTemplate"
-          component={FollowUpEmailTemplate}
+          path="/communityportal/activities/:activityid"
+          exact
+          component={Activity}
+        />
+        <CPProtectedRoute
+          path="/communityportal/activities/TestEventReg"
+          exact
+          component={TestEventRegistration}
         />
         <CPProtectedRoute
           path="/communityportal/reports/participation"
@@ -1055,6 +1078,11 @@ export default (
         {/* Good Education  Portal Routes */}
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
         <Route path="/educationportal/login" component={EPLogin} />
+        <ProtectedRoute
+          path="/educationportal/student/:studentId"
+          exact
+          component={StudentProfile}
+        />
         <EPProtectedRoute path="/educationportal/tasks/upload" exact component={WriteTaskUpload} />
         <EPProtectedRoute
           path="/educationportal/educator/task-submissions"
@@ -1069,7 +1097,6 @@ export default (
           exact
           component={EvaluationResultsWrapper}
         />
-        <Route path="/educationportal/login" component={EPLogin} />
         <Route path="/educationportal/InsightWidget" component={InsightWidget} />
         <Route path="/educationportal/lesson-library" exact component={BrowseLessonPlan} />
         <EPProtectedRoute path="/educationportal/tasks/upload" exact component={WriteTaskUpload} />

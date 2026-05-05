@@ -50,11 +50,9 @@ jobs:
       with:
         node-version: 20
         cache: 'yarn'
-    - name: Enable Corepack
-      run: corepack enable
     - name: Install Dependencies
       run: yarn install --frozen-lockfile
     - name: Run Unit Tests for Changed Files Only
-      run: yarn test:changed
+      run: yarn run test:changed
     - name: Run Lint
-      run: yarn lint
+      run: yarn run lint
