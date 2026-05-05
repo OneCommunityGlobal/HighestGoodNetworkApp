@@ -501,6 +501,7 @@
   color: #fff;
   border-right: 1px solid #555;
 }
+
 .insightsTab:hover:not(.activeTab) {
   background-color: #e4e4e4;
 }
@@ -608,70 +609,6 @@
   opacity: 1;
 }
 
-/* ---------- Export PDF modal ---------- */
-
-/* .modalOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgb(0 0 0 / 45%);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 999;
-}
-
-.modal {
-  width: 420px;
-  max-width: calc(100vw - 32px);
-  background: #fff;
-  border-radius: 12px;
-  padding: 16px;
-}
-
-.modalDark {
-  background: #1C2541;
-}
-
-.modalHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.modalTitle {
-  margin: 0;
-}
-
-.modalClose {
-  border: none;
-  background: transparent;
-  font-size: 22px;
-  cursor: pointer;
-}
-
-.modalBody {
-  margin-top: 12px;
-}
-
-.modalMeta {
-  font-size: 16px;
-  opacity: 0.85;
-  display: grid;
-  gap: 6px;
-  margin-bottom: 12px;
-}
-
-.modalError {
-  margin-bottom: 12px;
-  font-size: 13px;
-  color: #b00020;
-}
-
-.modalActions {
-  display: flex;
-  gap: 10px;
-} */
-
 .exportOptionsButtons,
 .exportOptionsButtonsDark {
   flex: 1;
@@ -739,16 +676,6 @@
 .printOnly {
   display: none;
 }
-
-/* .participationLandingPage,
-.participationLandingPage * {
-  -webkit-print-color-adjust: exact !important;
-  print-color-adjust: exact !important;
-}
-
-.participationLandingPage {
-  background: white !important;
-} */
 
 @media print {
   /* Hide everything except the participation component */
@@ -1119,22 +1046,6 @@
   border: 1px solid #3A506B;
 }
 
-/* .insightsDark .insightsFilters select {
-  background-color: #3A506B;
-  color: #fff;
-  border: 1px solid #3A506B;
-}
-
-.insightsDark .insightsTab {
-  background-color: #3A506B;
-  color: #fff;
-  border-right: 1px solid #555;
-}
-
-.insightsDark .insightsTab.activeTab {
-  background-color: #007bff;
-  color: #fff;
-} */
 /* ---------- Info Tooltip Icons ---------- */
 .infoIcon {
   margin-left: 6px;
@@ -1149,9 +1060,9 @@
 }
 
 .trackingTableDark .infoIcon {
-  color: #cccccc;
+  color: #ccc;
 }
 
 .trackingTableDark .infoIcon:hover {
-  color: #ffffff;
+  color: #fff;
 }

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import styles from './Participation.module.css';
-import { ArrowUpDown, ArrowUp, ArrowDown, SquareArrowOutUpRight } from 'lucide-react';
+import { ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 import mockEvents from './mockData';
 
 function DropOffTracking() {
@@ -74,7 +74,7 @@ function DropOffTracking() {
     }
   };
 
-  const parseRate = val => parseFloat(val);
+  const parseRate = val => Number.parseFloat(val);
 
   const sortedEvents = [...filteredEvents].sort((a, b) => {
     if (!sortColumn) return 0;
