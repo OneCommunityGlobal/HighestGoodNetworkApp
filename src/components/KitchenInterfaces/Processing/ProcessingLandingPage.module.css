@@ -1,8 +1,8 @@
 /* Main Container */
 .container {
   padding: 24px;
-  background-color: #ffffff; /* Clean white background */
-  font-family: 'Inter', sans-serif; /* Example modern font, adjust to match project if needed */
+  background-color: #fff; /* Clean white background */
+  font-family: Inter, sans-serif; /* Example modern font, adjust to match project if needed */
   color: #333;
   width: 100%;
 }
@@ -15,7 +15,7 @@
   font-size: 24px;
   font-weight: 600;
   color: #333;
-  margin: 0 0 8px 0;
+  margin: 0 0 8px;
 }
 
 .subtitle {
@@ -40,13 +40,13 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 2%);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 5%);
 }
 
 .cardHeader {
@@ -64,6 +64,7 @@
 
 .cardIcon {
   font-size: 20px;
+
   /* Colors for icons matching the screenshot roughly */
 }
 
@@ -106,6 +107,7 @@
   color: #2e7d32; /* Darker green text */
   font-weight: 600;
 }
+
 .activeNavItem:hover {
   background-color: #dcedc8;
   color: #1b5e20;
@@ -119,7 +121,7 @@
   gap: 24px;
 }
 
-@media (max-width: 900px) {
+@media (width <= 900px) {
   .overviewContainer {
     grid-template-columns: 1fr;
   }
@@ -135,11 +137,13 @@
 .sectionHeader {
     margin-bottom: 24px;
 }
+
 .sectionTitle {
     font-size: 18px;
     font-weight: 600;
-    margin: 0 0 4px 0;
+    margin: 0 0 4px;
 }
+
 .sectionSubtitle {
     font-size: 14px;
     color: #666;
@@ -190,6 +194,7 @@
     font-weight: 700;
     color: #333;
 }
+
 .methodStatus {
     font-size: 12px;
     color: #28a745; /* Green for active */
@@ -204,9 +209,11 @@
 .suppliesList {
     width: 100%;
 }
+
 .supplyCategory {
     margin-bottom: 24px;
 }
+
 .categoryTitle {
     font-size: 14px;
     font-weight: 600;
@@ -247,6 +254,7 @@
     justify-content: center;
     gap: 8px;
 }
+
 .addSupplyBtn:hover {
     border-color: #888;
     color: #333;
@@ -305,11 +313,11 @@
 .darkMode .card {
   background-color: #1c2541; /* bg-space-cadet */
   border-color: #2f4157;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 50%);
 }
 
 .darkMode .card:hover {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.7);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 70%);
 }
 
 .darkMode .cardTitle {
@@ -335,17 +343,17 @@
 
 .darkMode .activeNavItem {
   background-color: #2e7d32;
-  color: #ffffff;
+  color: #fff;
   font-weight: 600;
 }
 
 .darkMode .activeNavItem:hover {
   background-color: #1b5e20;
-  color: #ffffff;
+  color: #fff;
 }
 
 .darkMode .methodStatus {
-  background-color: rgba(40, 167, 69, 0.2);
+  background-color: rgb(40 167 69 / 20%);
   color: #4cd964;
   border: 1px solid #2ea043;
   box-shadow: none;
@@ -420,5 +428,5 @@
 }
 
 .darkMode .placeholderContent p {
-  color: #cccccc;
+  color: #ccc;
 }
