@@ -139,7 +139,6 @@ const AddProjectPopup = React.memo((props) => {
       isOpen={open}
       toggle={close}
       centered
-      size="lg"
       className={darkMode ? 'text-light dark-mode' : ''}
     >
       <ModalHeader className={darkMode ? 'bg-space-cadet text-light' : ''} toggle={close}>

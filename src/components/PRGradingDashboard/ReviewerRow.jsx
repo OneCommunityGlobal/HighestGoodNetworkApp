@@ -1,9 +1,9 @@
-import React from 'react';
 import { Plus } from 'lucide-react';
+import PropTypes from 'prop-types';
 import styles from './ReviewerRow.module.css';
 import { useRowSelection } from './SelectionContext';
 
-function ReviewerRow({ grading, onUpdatePRsReviewed, onAddPRClick }) {
+function ReviewerRow({ grading, onUpdatePRsReviewed, onAddPRClick, darkMode }) {
   const { activeId, selectRow } = useRowSelection();
 
   const handlePRsReviewedChange = e => {
@@ -24,7 +24,11 @@ function ReviewerRow({ grading, onUpdatePRsReviewed, onAddPRClick }) {
   return (
     <tr className={styles.row}>
       <td className={styles.cell}>
-        <button className={styles.reviewerName} onClick={() => selectRow(grading.reviewer)}>
+        <button
+          className={styles.reviewerName}
+          onClick={() => selectRow(grading.reviewer)}
+          style={darkMode ? { color: '#f9fafb' } : {}}
+        >
           {grading.reviewer}
         </button>
       </td>
@@ -36,6 +40,9 @@ function ReviewerRow({ grading, onUpdatePRsReviewed, onAddPRClick }) {
           onChange={handlePRsReviewedChange}
           onBlur={handleBlur}
           className={styles.prsReviewedInput}
+          style={
+            darkMode ? { backgroundColor: '#374151', color: '#f9fafb', borderColor: '#4b5563' } : {}
+          }
         />
       </td>
       <td className={styles.cell}>
@@ -54,5 +61,19 @@ function ReviewerRow({ grading, onUpdatePRsReviewed, onAddPRClick }) {
     </tr>
   );
 }
+ReviewerRow.propTypes = {
+  grading: PropTypes.shape({
+    reviewer: PropTypes.string.isRequired,
+    prsReviewed: PropTypes.number.isRequired,
+    prsNeeded: PropTypes.number.isRequired,
+  }).isRequired,
+  onUpdatePRsReviewed: PropTypes.func.isRequired,
+  onAddPRClick: PropTypes.func.isRequired,
+  darkMode: PropTypes.bool,
+};
+
+ReviewerRow.defaultProps = {
+  darkMode: false,
+};
 
 export default ReviewerRow;

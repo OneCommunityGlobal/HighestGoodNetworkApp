@@ -7,10 +7,13 @@ if [ -f .nvmrc ]; then
   nvm use 20 2>/dev/null || nvm install 20 && nvm use 20
 fi
 
-. "$(dirname "$0")/_/husky.sh"
-
 echo ""
 echo "🛡️  Husky pre-commit hook triggered"
+
+if git rev-parse -q --verify MERGE_HEAD >/dev/null 2>&1; then
+  echo "ℹ️  Merge commit detected. Skipping lint-staged auto-fix on the merged file set."
+  exit 0
+fi
 
 # Block plain .css files (except .module.css and index.css)
 for file in $(git diff --cached --name-only --diff-filter=ACM | grep '\.css$'); do

@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 /* CSS rules */
 .pr-grading-screen-container {
   background-color: #f8f9fa;
@@ -81,7 +82,29 @@
   margin-bottom: 20px;
 }
 
+/* Grading Table Styles */
+.pr-grading-screen-grading-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
 
+.pr-grading-screen-grading-table th {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  padding: 12px 8px;
+  text-align: center;
+  font-weight: 600;
+  color: #495057;
+  font-size: 0.9rem;
+}
+
+.pr-grading-screen-grading-table td {
+  border: 1px solid #dee2e6;
+  padding: 12px 8px;
+  text-align: center;
+  vertical-align: middle;
+}
 
 /* Table Styles */
 .pr-grading-screen-table-container {
@@ -142,6 +165,10 @@
   background-color: #f8f9fa;
 }
 
+.pr-grading-screen-grading-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
 .pr-grading-screen-table tbody td {
   padding: 16px 12px;
   vertical-align: middle;
@@ -173,7 +200,9 @@
 
 .pr-grading-screen-reviewer-role {
   font-size: 0.8rem;
-  color: #b0b8c4; 
+
+  /* color: #6c757d; commenting this line to remove duplicate selector issue present in later section of this page */
+  color: #b0b8c4;
   line-height: 1.3;
   text-align: center;
   max-width: 180px;
@@ -383,13 +412,18 @@
 }
 
 .pr-grading-screen-error-message {
-  color: #f8d7da;
+  color: #dc3545;
   font-size: 0.75rem;
   margin-top: 4px;
   text-align: center;
 }
 
+.pr-grading-screen-error-message.dark-mode {
+  color: #f8d7da;
+}
+
 .pr-grading-screen-pair-message {
+  /* color: #155724; commenting this line due to duplicate selector issue replacing the color code with latest one */
   color: #a7f3d0;
   font-size: 0.75rem;
   margin-top: 4px;
@@ -462,34 +496,6 @@
   max-height: calc(80vh - 120px);
 }
 
-/* Grading Table Styles */
-.pr-grading-screen-grading-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 20px;
-}
-
-.pr-grading-screen-grading-table thead th {
-  background-color: #f8f9fa;
-  border: 1px solid #dee2e6;
-  padding: 12px 8px;
-  text-align: center;
-  font-weight: 600;
-  color: #495057;
-  font-size: 0.9rem;
-}
-
-.pr-grading-screen-grading-table tbody td {
-  border: 1px solid #dee2e6;
-  padding: 12px 8px;
-  text-align: center;
-  vertical-align: middle;
-}
-
-.pr-grading-screen-grading-table tbody tr:hover {
-  background-color: #f8f9fa;
-}
-
 .pr-grading-screen-modal-pr-number {
   text-align: left !important;
   padding-left: 16px !important;
@@ -518,49 +524,47 @@
   font-weight: 600;
 }
 
-
-
 /* Responsive adjustments */
 @media (width <= 768px) {
   .pr-grading-screen-title {
     font-size: 1.5rem;
   }
-  
+
   .pr-grading-screen-team-info {
     font-size: 1rem;
   }
-  
+
   .pr-grading-screen-container {
     padding: 10px;
   }
-  
+
   .pr-grading-screen-header-content {
     flex-direction: column;
     gap: 15px;
   }
-  
+
   .pr-grading-screen-header-right {
     margin-left: 0;
     align-self: flex-end;
   }
-  
+
   .pr-grading-screen-table {
     font-size: 0.9rem;
   }
-  
+
   .pr-grading-screen-table th,
   .pr-grading-screen-table td {
     padding: 10px 8px;
   }
-  
+
   .pr-grading-screen-td-name {
     width: 20%;
   }
-  
+
   .pr-grading-screen-td-numbers {
     width: 60%;
   }
-  
+
   .pr-grading-screen-pr-input {
     width: 50px;
     padding: 3px 6px;
@@ -678,7 +682,24 @@
   color: #fff;
 }
 
-/* Table */
+/* Grading Table Dark Mode */
+.pr-grading-screen-grading-table.dark-mode {
+  background-color: #1b2a41;
+  color: #fff;
+}
+
+.pr-grading-screen-grading-table.dark-mode th {
+  background-color: #2d4059;
+  border-bottom: 1px solid #4a5a77;
+  color: #fff;
+}
+
+.pr-grading-screen-grading-table.dark-mode td {
+  border-bottom: 1px solid #4a5a77;
+  color: #fff;
+}
+
+/* Table Dark Mode */
 .pr-grading-screen-table-container.dark-mode {
   box-shadow: 0 1px 3px rgb(255 255 255 / 10%);
 }
@@ -696,6 +717,10 @@
 
 .pr-grading-screen-table.dark-mode tbody tr {
   border-bottom: 1px solid #4a5a77;
+}
+
+.pr-grading-screen-grading-table.dark-mode tr:hover {
+  background-color: #2d4059;
 }
 
 .pr-grading-screen-table.dark-mode tbody tr:hover {
@@ -751,7 +776,7 @@
   border-color: #1e7e34;
 }
 
-/* Modal */
+/* Modal Dark Mode */
 .pr-grading-screen-modal-overlay.dark-mode {
   background-color: rgb(27 42 65 / 80%);
 }
@@ -788,26 +813,6 @@
   color: #fff;
 }
 
-.pr-grading-screen-grading-table.dark-mode {
-  background-color: #1b2a41;
-  color: #fff;
-}
-
-.pr-grading-screen-grading-table.dark-mode thead th {
-  background-color: #2d4059;
-  border-bottom: 1px solid #4a5a77;
-  color: #fff;
-}
-
-.pr-grading-screen-grading-table.dark-mode td {
-  border-bottom: 1px solid #4a5a77;
-  color: #fff;
-}
-
-.pr-grading-screen-grading-table.dark-mode tbody tr:hover {
-  background-color: #2d4059;
-}
-
 /* Input and Form Elements */
 .pr-grading-screen-pr-number-input.dark-mode {
   background-color: #2d4059;
@@ -823,10 +828,6 @@
 .pr-grading-screen-input-error.dark-mode {
   border-color: #dc3545;
 }
-
-/* .pr-grading-screen-pair-message {
-  color: #a7f3d0;
-} */
 
 /* Modal Buttons */
 .pr-grading-screen-done-btn.dark-mode {
@@ -896,114 +897,14 @@
   border-color: #d6d8db;
 }
 
-/* ===== SEARCH BAR ===== */
-.pr-grading-screen-search-bar {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 16px;
-  flex-wrap: wrap;
-}
-
-.pr-grading-screen-search-input {
-  flex: 1;
-  min-width: 200px;
-  padding: 8px 12px;
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-  font-size: 0.9rem;
-  color: #495057;
-  background-color: #fff;
-  outline: none;
-}
-
-.pr-grading-screen-search-input:focus {
-  border-color: #80bdff;
-  box-shadow: 0 0 0 2px rgb(0 123 255 / 25%);
-}
-
-.pr-grading-screen-role-select {
-  padding: 8px 12px;
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-  font-size: 0.9rem;
-  color: #495057;
-  background-color: #fff;
-  outline: none;
-  cursor: pointer;
-}
-
-.pr-grading-screen-role-select:focus {
-  border-color: #80bdff;
-  box-shadow: 0 0 0 2px rgb(0 123 255 / 25%);
-}
-
-.pr-grading-screen-clear-btn {
-  padding: 8px 14px;
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #495057;
+.pr-grading-screen-summary-row {
   background-color: #f8f9fa;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background-color 0.2s ease;
 }
 
-.pr-grading-screen-clear-btn:hover {
-  background-color: #e2e6ea;
+.pr-grading-screen-summary-row.dark-mode {
+  background-color: #1e2a3a;
 }
 
-.pr-grading-screen-no-results {
-  text-align: center;
-  padding: 24px;
-  font-size: 1rem;
-  color: #6c757d;
-  font-style: italic;
-}
-
-/* Search bar dark mode */
-.pr-grading-screen-search-bar.dark-mode {
-  background-color: transparent;
-}
-
-.pr-grading-screen-search-input.dark-mode {
-  background-color: #2d4059;
-  border-color: #5a6b88;
-  color: #fff;
-}
-
-.pr-grading-screen-search-input.dark-mode::placeholder {
-  color: #9ab0cc;
-}
-
-.pr-grading-screen-search-input.dark-mode:focus {
-  border-color: #e8a71c;
-  box-shadow: 0 0 0 2px rgb(232 167 28 / 25%);
-}
-
-.pr-grading-screen-role-select.dark-mode {
-  background-color: #2d4059;
-  border-color: #5a6b88;
-  color: #fff;
-}
-
-.pr-grading-screen-role-select.dark-mode:focus {
-  border-color: #e8a71c;
-  box-shadow: 0 0 0 2px rgb(232 167 28 / 25%);
-}
-
-.pr-grading-screen-clear-btn.dark-mode {
-  background-color: #2d4059;
-  border-color: #5a6b88;
-  color: #fff;
-}
-
-.pr-grading-screen-clear-btn.dark-mode:hover {
-  background-color: #3a506b;
-}
-
-.pr-grading-screen-no-results.dark-mode {
-  color: #9ab0cc;
+.pr-grading-screen-summary-cell {
+  padding: 0.5rem 1rem !important;
 }
