@@ -372,7 +372,7 @@ export function CPDashboard() {
 
             <div className={styles.filterSectionDivider}>
               {/* Date Filter */}
-              <div className={styles.filterItem}>
+              <div className={styles.filterItem} style={{ marginTop: '60px' }}>
                 <label htmlFor="date-tomorrow">Dates</label>
                 <div className={styles.radioRow}>
                   <div className={styles.radioGroup}>
@@ -433,7 +433,7 @@ export function CPDashboard() {
               </div>
 
               {/* Branches Filter */}
-              <div className={styles.filterItem}>
+              <div className={styles.filterItem} style={{ marginTop: '80px' }}>
                 <label htmlFor="branches">Branches</label>
                 <Input
                   type="select"
