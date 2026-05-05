@@ -144,6 +144,7 @@ const KIInventory = () => {
                 style={{
                   backgroundColor: `${activeTab === tabs[tabItem.index] ? '#a1a5d1' : ''}`,
                   borderRadius: `${activeTab === tabs[tabItem.index] ? '30px' : ''}`,
+                  color: darkMode && activeTab !== tabs[tabItem.index] ? '#ffffff' : '#404040',
                 }}
                 onClick={() => toggleTab(tabItem.index)}
               >
@@ -206,11 +207,15 @@ const KIInventory = () => {
                     </p>
                   </div>
                   <div className={styles.notificationBody}>
-                    <p style={{ color: 'rgb(175, 124, 62)' }}>{preservedDesc.join(', ')}</p>
+                    <p style={{ color: darkMode ? '#f5a23d' : 'rgb(175, 124, 62)' }}>
+                      {preservedDesc.join(', ')}
+                    </p>
                     <div>
                       <button
                         className={styles.viewAllButton}
-                        style={darkMode ? { backgroundColor: 'rgb(245, 162, 61)' } : {}}
+                        style={
+                          darkMode ? { backgroundColor: 'rgb(245, 162, 61)', color: 'white' } : {}
+                        }
                       >
                         View All
                       </button>
