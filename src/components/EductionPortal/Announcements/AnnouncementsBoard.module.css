@@ -188,8 +188,8 @@
 
 .editButton:hover {
   background: #e9ecef;
-  color: #007bff;
-  border-color: #007bff;
+  color: #0056b3;
+  border-color: #0056b3;
 }
 
 .darkMode .editButton {
@@ -199,8 +199,8 @@
 }
 
 .darkMode .editButton:hover {
-  background: #718096;
-  color: #007bff;
+  background: #2a4a6e;
+  color: #e2e8f0;
 }
 
 /* Card Body */

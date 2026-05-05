@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { Container, Row, Col, Card, CardBody, Button, Input, Badge } from 'reactstrap';
 import { useSelector } from 'react-redux';
 import { FaPlus, FaEdit, FaCalendarAlt, FaUser, FaFilter } from 'react-icons/fa';
 import styles from './AnnouncementsBoard.module.css';
+
+const getEmptyMessage = selectedAudience => {
+  if (selectedAudience === 'all') return 'There are no announcements yet.';
+  return `No announcements for ${selectedAudience}.`;
+};
 
 const AnnouncementsBoard = ({
   userRole = 'student',
@@ -17,7 +23,7 @@ const AnnouncementsBoard = ({
   isEmbedded = false,
 }) => {
   const [filteredAnnouncements, setFilteredAnnouncements] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
 
   // Filter announcements based on all filters
@@ -53,8 +59,7 @@ const AnnouncementsBoard = ({
       // Course filter (searches in course name, title, and author)
       const courseMatch =
         !courseFilter ||
-        (announcement.course &&
-          announcement.course.toLowerCase().includes(courseFilter.toLowerCase())) ||
+        announcement.course?.toLowerCase().includes(courseFilter.toLowerCase()) ||
         announcement.title.toLowerCase().includes(courseFilter.toLowerCase()) ||
         announcement.author.toLowerCase().includes(courseFilter.toLowerCase());
 
@@ -105,24 +110,26 @@ const AnnouncementsBoard = ({
     }
   };
 
-  if (isEmbedded) {
-    // Embedded view for the new layout
-    return (
-      <div style={{ backgroundColor: 'transparent' }}>
-        {loading ? (
-          <div
-            style={{ textAlign: 'center', padding: '40px', color: darkMode ? '#94a3b8' : '#666' }}
-          >
-            Loading announcements...
-          </div>
-        ) : filteredAnnouncements.length === 0 ? (
-          <div
-            style={{ textAlign: 'center', padding: '40px', color: darkMode ? '#94a3b8' : '#666' }}
-          >
-            <p>No announcements found</p>
-          </div>
-        ) : (
-          filteredAnnouncements.map(announcement => (
+  const renderEmbeddedContent = () => {
+    if (loading) {
+      return (
+        <div
+          style={{ textAlign: 'center', padding: '40px', color: darkMode ? '#94a3b8' : '#666' }}
+        >
+          Loading announcements...
+        </div>
+      );
+    }
+    if (filteredAnnouncements.length === 0) {
+      return (
+        <div
+          style={{ textAlign: 'center', padding: '40px', color: darkMode ? '#94a3b8' : '#666' }}
+        >
+          <p>No announcements found</p>
+        </div>
+      );
+    }
+    return filteredAnnouncements.map(announcement => (
             <div
               key={announcement.id}
               style={{
@@ -222,8 +229,13 @@ const AnnouncementsBoard = ({
                   : announcement.body}
               </p>
             </div>
-          ))
-        )}
+    ));
+  };
+
+  if (isEmbedded) {
+    return (
+      <div style={{ backgroundColor: 'transparent' }}>
+        {renderEmbeddedContent()}
       </div>
     );
   }
@@ -269,7 +281,7 @@ const AnnouncementsBoard = ({
           <Col md={6} className="text-end">
             <span className={styles.resultCount}>
               {filteredAnnouncements.length} announcement
-              {filteredAnnouncements.length !== 1 ? 's' : ''}
+              {filteredAnnouncements.length === 1 ? '' : 's'}
             </span>
           </Col>
         </Row>
@@ -285,11 +297,7 @@ const AnnouncementsBoard = ({
               <div className={styles.emptyState}>
                 <FaCalendarAlt className={styles.emptyIcon} />
                 <h4>No announcements found</h4>
-                <p>
-                  {selectedAudience === 'all'
-                    ? 'There are no announcements yet.'
-                    : `No announcements for ${selectedAudience}.`}
-                </p>
+                <p>{getEmptyMessage(selectedAudience)}</p>
                 {userRole === 'educator' && (
                   <Button color="primary" onClick={handleCreateClick}>
                     Create First Announcement
@@ -364,6 +372,31 @@ const AnnouncementsBoard = ({
       </Container>
     </div>
   );
+};
+
+AnnouncementsBoard.propTypes = {
+  userRole: PropTypes.string,
+  onCreateAnnouncement: PropTypes.func,
+  onEditAnnouncement: PropTypes.func,
+  announcements: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number,
+      title: PropTypes.string,
+      body: PropTypes.string,
+      audience: PropTypes.string,
+      author: PropTypes.string,
+      course: PropTypes.string,
+      grade: PropTypes.string,
+      createdAt: PropTypes.string,
+      isNew: PropTypes.bool,
+    }),
+  ),
+  selectedAudience: PropTypes.string,
+  searchQuery: PropTypes.string,
+  courseFilter: PropTypes.string,
+  dateFromFilter: PropTypes.string,
+  dateToFilter: PropTypes.string,
+  isEmbedded: PropTypes.bool,
 };
 
 export default AnnouncementsBoard;

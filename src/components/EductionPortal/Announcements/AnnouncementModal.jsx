@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import {
   Modal,
   ModalHeader,
@@ -15,6 +16,17 @@ import {
 import { useSelector } from 'react-redux';
 import { FaSave, FaTimes, FaExclamationTriangle } from 'react-icons/fa';
 import styles from './AnnouncementModal.module.css';
+
+const getBadgeClass = audience => {
+  if (audience === 'students') return 'bg-primary';
+  if (audience === 'educators') return 'bg-success';
+  return 'bg-info';
+};
+
+const getSubmitButtonText = (isSubmitting, isEditing) => {
+  if (isSubmitting) return 'Saving...';
+  return isEditing ? 'Update' : 'Create';
+};
 
 const AnnouncementModal = ({ isOpen, toggle, announcement = null, onSave, userInfo = null }) => {
   const [formData, setFormData] = useState({
@@ -309,13 +321,7 @@ const AnnouncementModal = ({ isOpen, toggle, announcement = null, onSave, userIn
                 </p>
                 <div className={styles.previewMeta}>
                   <span
-                    className={`badge ${
-                      formData.audience === 'students'
-                        ? 'bg-primary'
-                        : formData.audience === 'educators'
-                        ? 'bg-success'
-                        : 'bg-info'
-                    }`}
+                    className={`badge ${getBadgeClass(formData.audience)}`}
                   >
                     {formData.audience === 'all' ? 'Everyone' : formData.audience}
                   </span>
@@ -342,7 +348,7 @@ const AnnouncementModal = ({ isOpen, toggle, announcement = null, onSave, userIn
               className={styles.saveButton}
             >
               <FaSave className="me-2" />
-              {isSubmitting ? 'Saving...' : isEditing ? 'Update' : 'Create'}
+              {getSubmitButtonText(isSubmitting, isEditing)}
             </Button>
           </ModalFooter>
         </Form>
@@ -370,6 +376,24 @@ const AnnouncementModal = ({ isOpen, toggle, announcement = null, onSave, userIn
       </Modal>
     </>
   );
+};
+
+AnnouncementModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  toggle: PropTypes.func.isRequired,
+  announcement: PropTypes.shape({
+    id: PropTypes.number,
+    title: PropTypes.string,
+    body: PropTypes.string,
+    audience: PropTypes.string,
+    author: PropTypes.string,
+    createdAt: PropTypes.string,
+    updatedAt: PropTypes.string,
+  }),
+  onSave: PropTypes.func.isRequired,
+  userInfo: PropTypes.shape({
+    name: PropTypes.string,
+  }),
 };
 
 export default AnnouncementModal;

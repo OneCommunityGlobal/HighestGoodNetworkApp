@@ -3,6 +3,7 @@
 /* Modal Container */
 .announcementModal :global(.modal-dialog) {
   max-width: 700px;
+  transition: transform 0.3s ease;
 }
 
 .announcementModal :global(.modal-content) {
@@ -18,7 +19,8 @@
 
 /* Modal Header */
 .modalHeader {
-  background: linear-gradient(135deg, #007bff, #0056b3);
+  background-color: #0056b3;
+  background: linear-gradient(135deg, #0062cc, #0056b3);
   color: white;
   border-bottom: none;
   border-radius: 0.75rem 0.75rem 0 0;
@@ -248,14 +250,14 @@
 }
 
 .saveButton {
-  background-color: #007bff;
-  border-color: #007bff;
+  background-color: #0056b3;
+  border-color: #0056b3;
   color: white;
   box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
 }
 
 .saveButton:hover:not(:disabled) {
-  background-color: #0056b3;
+  background-color: #004085;
   border-color: #004085;
   transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
@@ -335,10 +337,6 @@
 }
 
 /* Animation */
-.announcementModal :global(.modal-dialog) {
-  transition: transform 0.3s ease;
-}
-
 .announcementModal:global(.show) :global(.modal-dialog) {
   transform: translateY(0);
 }

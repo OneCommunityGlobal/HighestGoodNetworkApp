@@ -3,58 +3,93 @@ import { useSelector } from 'react-redux';
 import AnnouncementsBoard from './AnnouncementsBoard';
 import AnnouncementModal from './AnnouncementModal';
 
+const EDUCATOR_ROLES = ['Owner', 'Administrator', 'Mentor', 'Core Team'];
+
+const getUserRole = authUser => {
+  if (!authUser) return 'student';
+  if (authUser.permissions?.frontPermissions?.includes('announcements_manage')) {
+    return 'educator';
+  }
+  return EDUCATOR_ROLES.includes(authUser.role) ? 'educator' : 'student';
+};
+
+const getAudienceLabel = selectedAudience => {
+  if (selectedAudience === 'all') return 'All Audiences';
+  if (selectedAudience === 'students') return 'Students Only';
+  return 'Educators Only';
+};
+
+const getButtonStyle = (isActive, activeColor, darkMode) => {
+  const borderColor = isActive ? activeColor : darkMode ? '#555555' : '#ccc';
+  const bgColor = isActive ? activeColor : darkMode ? '#3d3d3d' : 'white';
+  const textColor = isActive ? 'white' : darkMode ? '#ffffff' : '#333';
+  return {
+    padding: '6px 12px',
+    border: `1px solid ${borderColor}`,
+    backgroundColor: bgColor,
+    color: textColor,
+    borderRadius: '4px',
+    fontSize: '12px',
+    cursor: 'pointer',
+  };
+};
+
+const DEFAULT_ANNOUNCEMENTS = [
+  {
+    id: 1,
+    title: 'Welcome to Phase 4 Education Portal',
+    body:
+      'We are excited to launch the new education portal features. Students can now access enhanced learning resources and educators can better manage their content.',
+    author: 'Dr. Smith',
+    audience: 'all',
+    course: 'Mathematics',
+    grade: 'Grade 5 PM',
+    createdAt: new Date('2024-01-15T10:00:00Z').toISOString(),
+    updatedAt: new Date('2024-01-15T10:00:00Z').toISOString(),
+    isNew: true,
+  },
+  {
+    id: 2,
+    title: 'New Assignment Guidelines',
+    body:
+      'Please review the updated assignment submission guidelines. All assignments must be submitted through the new portal interface.',
+    author: 'Prof. Johnson',
+    audience: 'students',
+    course: 'Computer Science',
+    grade: 'Grade 8 PM',
+    createdAt: new Date('2024-01-14T14:30:00Z').toISOString(),
+    updatedAt: new Date('2024-01-14T14:30:00Z').toISOString(),
+    isNew: false,
+  },
+  {
+    id: 3,
+    title: 'Faculty Meeting Tomorrow',
+    body:
+      'Reminder: Monthly faculty meeting scheduled for tomorrow at 2 PM in the conference room.',
+    author: 'Admin Team',
+    audience: 'educators',
+    course: 'Administration',
+    grade: 'Grade 11 PM',
+    createdAt: new Date('2024-01-13T09:15:00Z').toISOString(),
+    updatedAt: new Date('2024-01-13T09:15:00Z').toISOString(),
+    isNew: false,
+  },
+];
+
+const loadStoredAnnouncements = () => {
+  try {
+    const stored = localStorage.getItem('edu_announcements');
+    if (stored) return JSON.parse(stored);
+  } catch (e) {
+    console.error('Failed to parse stored announcements:', e);
+  }
+  return DEFAULT_ANNOUNCEMENTS;
+};
+
 const AnnouncementsPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAnnouncement, setEditingAnnouncement] = useState(null);
-  const [announcements, setAnnouncements] = useState(() => {
-    try {
-      const stored = localStorage.getItem('edu_announcements');
-      if (stored) return JSON.parse(stored);
-    } catch (e) {
-      /* ignore parse errors */
-    }
-    return [
-      {
-        id: 1,
-        title: 'Welcome to Phase 4 Education Portal',
-        body:
-          'We are excited to launch the new education portal features. Students can now access enhanced learning resources and educators can better manage their content.',
-        author: 'Dr. Smith',
-        audience: 'all',
-        course: 'Mathematics',
-        grade: 'Grade 5 PM',
-        createdAt: new Date('2024-01-15T10:00:00Z').toISOString(),
-        updatedAt: new Date('2024-01-15T10:00:00Z').toISOString(),
-        isNew: true,
-      },
-      {
-        id: 2,
-        title: 'New Assignment Guidelines',
-        body:
-          'Please review the updated assignment submission guidelines. All assignments must be submitted through the new portal interface.',
-        author: 'Prof. Johnson',
-        audience: 'students',
-        course: 'Computer Science',
-        grade: 'Grade 8 PM',
-        createdAt: new Date('2024-01-14T14:30:00Z').toISOString(),
-        updatedAt: new Date('2024-01-14T14:30:00Z').toISOString(),
-        isNew: false,
-      },
-      {
-        id: 3,
-        title: 'Faculty Meeting Tomorrow',
-        body:
-          'Reminder: Monthly faculty meeting scheduled for tomorrow at 2 PM in the conference room.',
-        author: 'Admin Team',
-        audience: 'educators',
-        course: 'Administration',
-        grade: 'Grade 11 PM',
-        createdAt: new Date('2024-01-13T09:15:00Z').toISOString(),
-        updatedAt: new Date('2024-01-13T09:15:00Z').toISOString(),
-        isNew: false,
-      },
-    ];
-  });
+  const [announcements, setAnnouncements] = useState(loadStoredAnnouncements);
   const [selectedAudience, setSelectedAudience] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [courseFilter, setCourseFilter] = useState('');
@@ -65,32 +100,7 @@ const AnnouncementsPage = () => {
   const authUser = useSelector(state => state.auth.user);
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  // Determine user role based on authenticated user's role/permissions
-  const getUserRole = () => {
-    if (!authUser) return 'student'; // Default to student if no user
-
-    // Check for educator permissions first (most specific)
-    if (authUser.permissions?.frontPermissions?.includes('announcements_manage')) {
-      return 'educator';
-    }
-
-    // Check role-based access as fallback (volunteers are treated as students)
-    const educatorRoles = ['Owner', 'Administrator', 'Mentor', 'Core Team'];
-    return educatorRoles.includes(authUser.role) ? 'educator' : 'student';
-  };
-
-  const userRole = getUserRole();
-
-  // Helper function for button styling with dark mode support
-  const getButtonStyle = (isActive = false, activeColor = '#007bff') => ({
-    padding: '6px 12px',
-    border: `1px solid ${isActive ? activeColor : darkMode ? '#555555' : '#ccc'}`,
-    backgroundColor: isActive ? activeColor : darkMode ? '#3d3d3d' : 'white',
-    color: isActive ? 'white' : darkMode ? '#ffffff' : '#333',
-    borderRadius: '4px',
-    fontSize: '12px',
-    cursor: 'pointer',
-  });
+  const userRole = getUserRole(authUser);
 
   // Persist announcements to localStorage whenever they change
   useEffect(() => {
@@ -186,8 +196,8 @@ const AnnouncementsPage = () => {
             Scope
           </h6>
           <div style={{ display: 'flex', gap: '8px' }}>
-            <button style={getButtonStyle(true, '#007bff')}>All</button>
-            <button style={getButtonStyle(false)}>My Classes</button>
+            <button style={getButtonStyle(true, '#007bff', darkMode)}>All</button>
+            <button style={getButtonStyle(false, '#007bff', darkMode)}>My Classes</button>
           </div>
         </div>
 
@@ -206,19 +216,19 @@ const AnnouncementsPage = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <button
               onClick={() => setSelectedAudience('all')}
-              style={getButtonStyle(selectedAudience === 'all', '#007bff')}
+              style={getButtonStyle(selectedAudience === 'all', '#007bff', darkMode)}
             >
               All
             </button>
             <button
               onClick={() => setSelectedAudience('students')}
-              style={getButtonStyle(selectedAudience === 'students', '#28a745')}
+              style={getButtonStyle(selectedAudience === 'students', '#28a745', darkMode)}
             >
               Students
             </button>
             <button
               onClick={() => setSelectedAudience('educators')}
-              style={getButtonStyle(selectedAudience === 'educators', '#17a2b8')}
+              style={getButtonStyle(selectedAudience === 'educators', '#17a2b8', darkMode)}
             >
               Educators
             </button>
@@ -465,11 +475,7 @@ const AnnouncementsPage = () => {
               <span>
                 Showing:{' '}
                 <strong style={{ color: '#007bff' }}>
-                  {selectedAudience === 'all'
-                    ? 'All Audiences'
-                    : selectedAudience === 'students'
-                    ? 'Students Only'
-                    : 'Educators Only'}
+                  {getAudienceLabel(selectedAudience)}
                 </strong>
               </span>
 
