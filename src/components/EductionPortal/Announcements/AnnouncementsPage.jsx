@@ -382,6 +382,65 @@ const buildAnnouncementUpdater = (announcementData, targetId) => prev =>
 
 const prependItem = item => prev => [item, ...prev];
 
+const createCreateAnnouncementHandler = (setEditingAnnouncement, setIsModalOpen) => () => {
+  setEditingAnnouncement(null);
+  setIsModalOpen(true);
+};
+
+const createEditAnnouncementHandler = (setEditingAnnouncement, setIsModalOpen) => announcement => {
+  setEditingAnnouncement(announcement);
+  setIsModalOpen(true);
+};
+
+const createCloseModalHandler = (setIsModalOpen, setEditingAnnouncement) => () => {
+  setIsModalOpen(false);
+  setEditingAnnouncement(null);
+};
+
+const createSaveAnnouncementHandler = ({
+  editingAnnouncement,
+  setAnnouncements,
+  handleCloseModal,
+}) => async announcementData => {
+  try {
+    if (editingAnnouncement) {
+      const targetId = editingAnnouncement.id;
+      setAnnouncements(buildAnnouncementUpdater(announcementData, targetId));
+      handleCloseModal();
+      alert('Announcement saved successfully!');
+      return;
+    }
+    const newAnnouncement = {
+      ...announcementData,
+      id: Date.now(),
+      createdAt: new Date().toISOString(),
+      isNew: true,
+    };
+    setAnnouncements(prependItem(newAnnouncement));
+    handleCloseModal();
+    alert('Announcement saved successfully!');
+  } catch (error) {
+    console.error('Failed to save announcement:', error);
+    throw error;
+  }
+};
+
+const createClearFiltersHandler = (
+  setSearchQuery,
+  setCourseFilter,
+  setDateFromFilter,
+  setDateToFilter,
+) => () => {
+  setSearchQuery('');
+  setCourseFilter('');
+  setDateFromFilter('');
+  setDateToFilter('');
+};
+
+const createSearchQueryChangeHandler = setSearchQuery => event => {
+  setSearchQuery(event.target.value);
+};
+
 const loadStoredAnnouncements = () => {
   try {
     const stored = localStorage.getItem('edu_announcements');
@@ -410,51 +469,27 @@ const AnnouncementsPage = () => {
     localStorage.setItem('edu_announcements', JSON.stringify(announcements));
   }, [announcements]);
 
-  const handleCreateAnnouncement = () => {
-    setEditingAnnouncement(null);
-    setIsModalOpen(true);
-  };
-
-  const handleEditAnnouncement = announcement => {
-    setEditingAnnouncement(announcement);
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setEditingAnnouncement(null);
-  };
-
-  const handleSaveAnnouncement = async announcementData => {
-    try {
-      if (editingAnnouncement) {
-        const targetId = editingAnnouncement.id;
-        setAnnouncements(buildAnnouncementUpdater(announcementData, targetId));
-        handleCloseModal();
-        alert('Announcement saved successfully!');
-        return;
-      }
-      const newAnnouncement = {
-        ...announcementData,
-        id: Date.now(),
-        createdAt: new Date().toISOString(),
-        isNew: true,
-      };
-      setAnnouncements(prependItem(newAnnouncement));
-      handleCloseModal();
-      alert('Announcement saved successfully!');
-    } catch (error) {
-      console.error('Failed to save announcement:', error);
-      throw error;
-    }
-  };
-
-  const clearFilters = () => {
-    setSearchQuery('');
-    setCourseFilter('');
-    setDateFromFilter('');
-    setDateToFilter('');
-  };
+  const handleCreateAnnouncement = createCreateAnnouncementHandler(
+    setEditingAnnouncement,
+    setIsModalOpen,
+  );
+  const handleEditAnnouncement = createEditAnnouncementHandler(
+    setEditingAnnouncement,
+    setIsModalOpen,
+  );
+  const handleCloseModal = createCloseModalHandler(setIsModalOpen, setEditingAnnouncement);
+  const handleSaveAnnouncement = createSaveAnnouncementHandler({
+    editingAnnouncement,
+    setAnnouncements,
+    handleCloseModal,
+  });
+  const clearFilters = createClearFiltersHandler(
+    setSearchQuery,
+    setCourseFilter,
+    setDateFromFilter,
+    setDateToFilter,
+  );
+  const handleSearchQueryChange = createSearchQueryChangeHandler(setSearchQuery);
 
   return (
     <div
@@ -567,7 +602,7 @@ const AnnouncementsPage = () => {
             type="text"
             placeholder="Search Announcements..."
             value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
+            onChange={handleSearchQueryChange}
             style={{
               padding: '6px 12px',
               border: `1px solid ${darkMode ? '#3A506B' : '#ccc'}`,
