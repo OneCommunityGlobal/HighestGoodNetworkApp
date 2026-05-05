@@ -380,6 +380,8 @@ const selectDarkMode = state => state.theme.darkMode;
 const buildAnnouncementUpdater = (announcementData, targetId) => prev =>
   prev.map(ann => applyAnnouncementUpdate(ann, announcementData, targetId));
 
+const prependItem = item => prev => [item, ...prev];
+
 const loadStoredAnnouncements = () => {
   try {
     const stored = localStorage.getItem('edu_announcements');
@@ -438,7 +440,7 @@ const AnnouncementsPage = () => {
         createdAt: new Date().toISOString(),
         isNew: true,
       };
-      setAnnouncements(prev => [newAnnouncement, ...prev]);
+      setAnnouncements(prependItem(newAnnouncement));
       handleCloseModal();
       alert('Announcement saved successfully!');
     } catch (error) {
@@ -613,12 +615,13 @@ const AnnouncementsPage = () => {
               />
               {userRole === 'educator' && (
                 <span style={{ color: '#28a745' }}>
-                  ðŸ‘¨â€ðŸ« <strong>Educator Mode</strong> (Can create/edit)
+                  {'\uD83D\uDC68\u200D\uD83C\uDFEB'} <strong>Educator Mode</strong> (Can
+                  create/edit)
                 </span>
               )}
               {userRole === 'student' && (
                 <span style={{ color: '#17a2b8' }}>
-                  ðŸ‘¨â€ðŸŽ“ <strong>Student Mode</strong> (View only)
+                  {'\uD83D\uDC68\u200D\uD83C\uDF93'} <strong>Student Mode</strong> (View only)
                 </span>
               )}
             </div>
