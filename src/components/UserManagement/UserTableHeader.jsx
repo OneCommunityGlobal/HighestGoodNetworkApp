@@ -44,7 +44,6 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
     const updatedUserData = useSelector(state => state.userProfileEdit.newUserData);
     const saveUserInformation = async updatedData => {
       try {
-        console.log('Updated user data to save:', updatedData);
         const response = await axios.patch(ENDPOINTS.USER_PROFILE_UPDATE, updatedData);
         if (response.status === 200) {
           const toastId = toast.success(' Saving Data...', { autoClose: false });
