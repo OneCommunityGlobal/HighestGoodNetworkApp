@@ -1,4 +1,5 @@
 ﻿import { useState, useMemo } from 'react';
+import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import styles from './DescriptionSection.module.css';
 
@@ -287,5 +288,37 @@ function DescriptionSection({ activity, registrants = [] }) {
     </div>
   );
 }
+
+DescriptionSection.propTypes = {
+  activity: PropTypes.shape({
+    descriptionParagraphs: PropTypes.arrayOf(PropTypes.string),
+    description: PropTypes.string,
+    participants: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.object])),
+    comments: PropTypes.arrayOf(
+      PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.shape({
+          author: PropTypes.string,
+          comment: PropTypes.string,
+        }),
+      ]),
+    ),
+    faqs: PropTypes.arrayOf(
+      PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.shape({
+          question: PropTypes.string,
+          answer: PropTypes.string,
+        }),
+      ]),
+    ),
+  }),
+  registrants: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string,
+      jobTitle: PropTypes.string,
+    }),
+  ),
+};
 
 export default DescriptionSection;
