@@ -517,15 +517,33 @@ function Register() {
           <p className={styles['selected-date']}>Selected Date: {selectedDate.toDateString()}</p>
           <div className={styles['calendar-legend']}>
             <div className={styles['legend-item']}>
-              <span className={`${styles['legend-indicator']} ${styles['available']}`}>●</span>
+              <span
+                className={
+                  darkMode
+                    ? styles['indicator-available-dark']
+                    : `${styles['legend-indicator']} ${styles['available']}`
+                }
+              >●</span>
               <span className={styles['legend-text']}>Available</span>
             </div>
             <div className={styles['legend-item']}>
-              <span className={`${styles['legend-indicator']} ${styles['booked']}`}>●</span>
+              <span
+                className={
+                  darkMode
+                    ? styles['indicator-booked-dark']
+                    : `${styles['legend-indicator']} ${styles['booked']}`
+                }
+              >●</span>
               <span className={styles['legend-text']}>Booked/Unavailable</span>
             </div>
             <div className={styles['legend-item']}>
-              <span className={`${styles['legend-indicator']} ${styles['today']}`}>■</span>
+              <span
+                className={
+                  darkMode
+                    ? styles['indicator-today-dark']
+                    : `${styles['legend-indicator']} ${styles['today']}`
+                }
+              >■</span>
               <span className={styles['legend-text']}>Today</span>
             </div>
           </div>

@@ -250,6 +250,31 @@
   font-size: 13px;
   color: #555;
 }
+
+/* Dark mode indicator classes - must be defined before dark-mode parent scope */
+.indicator-available-dark {
+  font-size: 16px;
+  margin-right: 8px;
+  width: 20px;
+  text-align: center;
+  color: #81c784 !important;
+}
+
+.indicator-booked-dark {
+  font-size: 16px;
+  margin-right: 8px;
+  width: 20px;
+  text-align: center;
+  color: #ef5350 !important;
+}
+
+.indicator-today-dark {
+  font-size: 16px;
+  margin-right: 8px;
+  width: 20px;
+  text-align: center;
+  color: #64b5f6 !important;
+}
 /* removed duplicate .event-image selector (defined earlier with full styles) */
 
 .submit-comment-button {
@@ -481,10 +506,18 @@
   color: #b0b0b0;
 }
 
-.register-container.dark-mode .legend-indicator.today {
-  color: #4a9eff;
+/* Ensure dark mode indicator colors are applied */
+.register-container.dark-mode .indicator-available-dark {
+  color: #81c784 !important;
 }
 
+.register-container.dark-mode .indicator-booked-dark {
+  color: #ef5350 !important;
+}
+
+.register-container.dark-mode .indicator-today-dark {
+  color: #64b5f6 !important;
+}
 /* Register button dark mode */
 .register-container.dark-mode .register-button {
   background-color: #3d4f62;
