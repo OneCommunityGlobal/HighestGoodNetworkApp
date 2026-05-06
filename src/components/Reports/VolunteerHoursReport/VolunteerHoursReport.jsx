@@ -91,7 +91,7 @@ const paginatedReportData = reportData.slice(
           }).filter(item => item.totalHours > 0); // Only show people with hours
         }
       } else if (reportType === 'team') {
-        const res = await axios.get(ENDPOINTS.TEAMS_COMMITTED_HOURS);
+        const res = await axios.post(ENDPOINTS.TEAMS_COMMITTED_HOURS,{fromDate, toDate});
         data = res.data.map(team => ({
                id: team.teamId,
                name: team.teamName,
@@ -182,7 +182,7 @@ const paginatedReportData = reportData.slice(
         <CardBody>
           {/* Report Type Selection */}
           <Row className="mb-4">
-            <Col md={4}>
+            <Col md={3}>
               <FormGroup>
                 <Label for="reportType">Report Type</Label>
                 <Input
@@ -240,7 +240,6 @@ const paginatedReportData = reportData.slice(
                   color="success"
                   onClick={generateReport}
                   disabled={loading}
-                  
                 >
                   {loading ? 'Refreshing...' : 'Refresh Report'}
                 </Button>
