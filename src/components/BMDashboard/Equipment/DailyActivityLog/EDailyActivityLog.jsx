@@ -528,11 +528,7 @@ function EDailyActivityLog(props) {
         </Table>
 
         <div className={styles.actionContainer}>
-          <Button
-            color="secondary"
-            onClick={handleCancel}
-            disabled={isSubmitting}
-          >
+          <Button color="secondary" onClick={handleCancel} disabled={isSubmitting}>
             Cancel
           </Button>
           <Button
