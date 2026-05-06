@@ -383,7 +383,7 @@ export const addInventoryType = (payload, category) => {
 export const updateInventoryType = (typeId, payload, category) => {
   return async dispatch => {
     try {
-      const res = await axios.put(ENDPOINTS.BM_INVTYPE_BY_ID(typeId), payload);
+      const res = await axios.put(ENDPOINTS.BM_INVTYPE_BY_ID(category, typeId), payload);
       dispatch({ type: UPDATE_INVENTORY_TYPE_SUCCESS, payload: res.data });
       // Refresh the list for this category
       dispatch(fetchInvTypeByType(category));
@@ -404,7 +404,7 @@ export const updateInventoryType = (typeId, payload, category) => {
 export const deleteInventoryType = (typeId, category) => {
   return async dispatch => {
     try {
-      await axios.delete(ENDPOINTS.BM_INVTYPE_BY_ID(typeId));
+      await axios.delete(ENDPOINTS.BM_INVTYPE_BY_ID(category, typeId));
       dispatch({ type: DELETE_INVENTORY_TYPE_SUCCESS, payload: typeId });
       // Refresh the list for this category
       dispatch(fetchInvTypeByType(category));

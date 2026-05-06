@@ -227,7 +227,7 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
           desc: formData.description,
           fuel: formData.fuel,
         };
-        response = await axios.put(ENDPOINTS.BM_INVTYPE_BY_ID(itemType._id), payload);
+        response = await axios.put(ENDPOINTS.BM_INVTYPE_BY_ID(category, itemType._id), payload);
       } else if (category === 'Tools') {
         const payload = {
           ...formData,
@@ -243,7 +243,7 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
           images: imageURL[0] || itemType?.images || '',
           totalPriceWithShipping,
         };
-        response = await axios.put(ENDPOINTS.BM_INVTYPE_BY_ID(itemType._id), payload);
+        response = await axios.put(ENDPOINTS.BM_INVTYPE_BY_ID(category, itemType._id), payload);
       } else {
         // Materials, Consumables
         const payload = {
@@ -252,7 +252,7 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
           images: imageURL[0] || itemType?.images || '',
           totalPriceWithShipping,
         };
-        response = await axios.put(ENDPOINTS.BM_INVTYPE_BY_ID(itemType._id), payload);
+        response = await axios.put(ENDPOINTS.BM_INVTYPE_BY_ID(category, itemType._id), payload);
       }
 
       if (response.status === 200) {

@@ -342,7 +342,7 @@ export const ENDPOINTS = {
   BM_INVENTORY_UNITS: `${APIEndpoint}/bm/inventoryUnits`,
   BM_INVENTORY_UNIT_BY_ID: unitId => `${APIEndpoint}/bm/inventoryUnits/${unitId}`,
   BM_INVTYPE_ROOT: `${APIEndpoint}/bm/invtypes`,
-  BM_INVTYPE_BY_ID: typeId => `${APIEndpoint}/bm/invtypes/${typeId}`,
+  BM_INVTYPE_BY_ID: (type, typeId) => `${APIEndpoint}/bm/invtypes/${type}/${typeId}`,
   BM_TOOLS: `${APIEndpoint}/bm/tools/`,
   BM_TOOL_BY_ID: singleToolId => `${APIEndpoint}/bm/tools/${singleToolId}`,
   BM_TOOL_AVAILABILITY: (toolId = '', projectId = '') =>
