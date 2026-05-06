@@ -157,7 +157,7 @@ CustomLabel.propTypes = {
 };
 
 const CustomTooltip = ({ active, payload, darkMode }) => {
-  if (active && payload && payload.length) {
+  if (active && payload?.length) {
     return (
       <div
         style={{
@@ -248,13 +248,12 @@ export function ComparePieChart({
       const multipliers = METRIC_ITEM_MULTIPLIERS[metricKey] || METRIC_ITEM_MULTIPLIERS.pageVisits;
       const data = baseData.map((item, i) => ({
         ...item,
-        value: Math.max(1, Math.round(item.value * (multipliers[i] ?? 1.0))),
+        value: Math.max(1, Math.round(item.value * (multipliers[i] ?? 1))),
       }));
 
       setFetchedData(data);
-    } catch (err) {
+    } catch {
       setError('Failed to load chart data. Please try again.');
-      // Error is handled by setting error state
     } finally {
       setIsLoading(false);
     }
@@ -321,22 +320,22 @@ export function ComparePieChart({
     return moment(date).format('MMM DD, YYYY');
   };
 
+  // Helper to generate status message for screen readers
+  const getStatusMessage = () => {
+    if (isLoading) return 'Loading chart data...';
+    if (error) return `Error loading data: ${error}`;
+    return `Chart updated. Showing ${getChartTitle()} for ${metricLabel ||
+      'selected metric'} from ${formatDateForDisplay(fromDate)} to ${formatDateForDisplay(toDate)}`;
+  };
+
   return (
-    <div
+    <section
       className={`${styles.comparingChart} ${darkMode ? styles.darkMode : ''}`}
-      role="region"
       aria-label="Interactive pie chart with filters"
     >
       {/* Screen Reader Status Updates */}
       <div aria-live="polite" aria-atomic="true" className="sr-only">
-        {isLoading && 'Loading chart data...'}
-        {error && `Error loading data: ${error}`}
-        {!isLoading &&
-          !error &&
-          `Chart updated. Showing ${getChartTitle()} for ${metricLabel ||
-            'selected metric'} from ${formatDateForDisplay(fromDate)} to ${formatDateForDisplay(
-            toDate,
-          )}`}
+        {getStatusMessage()}
       </div>
 
       {/* Filters Section - Displayed Above Chart */}
@@ -614,7 +613,7 @@ export function ComparePieChart({
           )}
         </CardBody>
       </Card>
-    </div>
+    </section>
   );
 }
 
