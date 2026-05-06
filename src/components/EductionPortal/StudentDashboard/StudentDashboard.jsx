@@ -44,9 +44,8 @@ const StudentDashboard = () => {
             if (subTasks && subTasks.length > 0) {
               intermediateTasksData[task.id] = subTasks;
             }
-          } catch (fetchError) {
+          } catch {
             // Non-critical: skip if intermediate tasks unavailable for this task
-            void fetchError;
           }
         }
 
