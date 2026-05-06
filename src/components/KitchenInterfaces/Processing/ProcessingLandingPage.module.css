@@ -354,7 +354,7 @@
 
 .darkMode .methodStatus {
   background-color: rgb(40 167 69 / 20%);
-  color: #a5d6a7; /* Lighter green for better contrast in dark mode */
+  color: #fff; /* Maximum contrast in dark mode */
   border: 1px solid #2ea043;
   box-shadow: none;
 }
