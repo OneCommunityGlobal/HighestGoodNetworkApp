@@ -121,6 +121,19 @@
   outline: none;
 }
 
+.dashboardSearchContainer {
+  position: relative;
+  border-radius: 8px;
+  border: 1.5px solid #c8d4e0;
+  background: #fff;
+  overflow: hidden;
+}
+
+.sidebarSearchWrapper {
+  position: relative;
+  margin-top: 8px;
+}
+
 .dashboardSearchContainer input {
   outline: none;
 }
@@ -247,10 +260,13 @@
 }
 
 .filterSectionDivider {
-  margin-top: 20px;
   display: flex;
   flex-direction: column;
   gap: 24px;
+}
+
+.filterSectionHeader{
+  margin-bottom: 40px;
 }
 
 .filterItem {
@@ -293,15 +309,6 @@
   padding: 0;
 }
 
-.filterItem input[type='radio'],
-.filterItem input[type='checkbox'] {
-  display: inline-block;
-  width: auto;
-  padding: 0;
-  margin: 5px 0 0 120px;
-  vertical-align: middle;
-}
-
 .filterItem input:focus,
 .filterItem select:focus {
   border-color: #2c3e50;
@@ -309,39 +316,21 @@
   outline: none;
 }
 
+.filterItem input[type='radio'],
+.filterItem input[type='checkbox'] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  margin: 0;
+  padding: 0;
+  accent-color: #1b3c55;
+  flex-shrink: 0;
+  vertical-align: middle;
+  display: inline-block;
+}
+
 .darkSidebar .filterItem label {
   color: #ecf0f1;
-}
-
-.darkSidebar .radioLabel {
-  color: #ecf0f1;
-}
-
-.darkSidebar .inputGroup input {
-  color: #fff;
-}
-
-.darkSidebar .filterItem input:not([type='checkbox'], [type='radio'], [type='date']),
-.darkSidebar .filterItem select {
-  background-color: #34495e;
-  color: #fff;
-  border: 1px solid #4a6572;
-}
-
-.darkSidebar input[type="date"] {
-  color-scheme: dark;
-}
-
-.darkSidebar .radioInput,
-.darkSidebar .filterItem input[type='checkbox'] {
-  accent-color: #4da3ff;
-}
-
-.radioGroup {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 0;
 }
 
 .radioInput {
@@ -363,10 +352,41 @@
   display: inline;
 }
 
+.radioGroup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+}
+
 .radioGroup label.radioLabel {
   display: inline;
   font-weight: 400;
   margin-bottom: 0;
+}
+
+.darkSidebar .radioInput,
+.darkSidebar .filterItem input[type='checkbox'] {
+  accent-color: #4da3ff;
+}
+
+.darkSidebar .radioLabel {
+  color: #ecf0f1;
+}
+
+.darkSidebar .inputGroup input {
+  color: #fff;
+}
+
+.darkSidebar .filterItem input:not([type='checkbox'], [type='radio'], [type='date']),
+.darkSidebar .filterItem select {
+  background-color: #34495e;
+  color: #fff;
+  border: 1px solid #4a6572;
+}
+
+.darkSidebar input[type="date"] {
+  color-scheme: dark;
 }
 
 .dateFilter {
@@ -397,19 +417,6 @@
 
 .searchFilter {
   margin-bottom: 1.5rem;
-}
-
-.filterItem input[type='radio'],
-.filterItem input[type='checkbox'] {
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-  margin: 0;
-  padding: 0;
-  accent-color: #1b3c55;
-  flex-shrink: 0;
-  vertical-align: middle;
-  display: inline-block;
 }
 
 /* Search Input Container */
@@ -455,12 +462,34 @@
   background: #2b3e59;
 }
 
+.eventsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
 .sectionTitle {
   font-size: 2.2rem;
   color: #2c3e50;
-  margin-bottom: 30px;
+  margin-bottom: 0;
   font-weight: bold;
-  text-align: center;
+}
+
+.showPastEventsBtn {
+  flex-shrink: 0;
+  background-color: #2c3e50 !important;
+  border-color: #2c3e50 !important;
+  color: #fff !important;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 8px 18px;
+  transition: background-color 0.2s ease;
+}
+
+.showPastEventsBtn:hover {
+  background-color: #34495e !important;
+  border-color: #34495e !important;
 }
 
 .sidebarTitle {
@@ -624,21 +653,12 @@
   color: #fff !important;
 }
 
-/* Hide browser's built-in clear icon for search inputs */
-.dashboardSearchInput::-webkit-search-cancel-button,
-.dashboardSearchInput::-webkit-search-decoration,
-.dashboardSearchInput::-webkit-search-results-button,
-.dashboardSearchInput::-webkit-search-results-decoration {
-  appearance: none;
-}
-
 .filterActions {
   display: flex;
   flex-direction: row; 
   gap: 10px;
   margin-top: 20px;
   padding-top: 15px;
-  border-top: 1px solid #e0e0e0;
   width: 100%; 
 }
 
