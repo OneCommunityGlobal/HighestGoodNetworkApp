@@ -25,22 +25,70 @@ const LISTING_OPTIONS = {
 // Metrics that require bidding functionality
 const BIDDING_ONLY_METRICS = ['numBids', 'avgBid', 'finalPrice'];
 
-// Sample data for different comparison types
-const SAMPLE_VILLAGE_DATA = [
-  { name: 'Earthbag', value: 10 },
-  { name: 'Straw Bale', value: 50 },
-  { name: 'Cob Village', value: 60 },
-  { name: 'Tree House', value: 10 },
-  { name: 'Recycle Materials', value: 70 },
-];
+// Sample data indexed by [comparisonType][listingType]
+const SAMPLE_DATA = {
+  villages: {
+    all: [
+      { name: 'Earthbag', value: 10 },
+      { name: 'Straw Bale', value: 50 },
+      { name: 'Cob Village', value: 60 },
+      { name: 'Tree House', value: 10 },
+      { name: 'Recycle Materials', value: 70 },
+    ],
+    listing: [
+      { name: 'Earthbag', value: 25 },
+      { name: 'Straw Bale', value: 40 },
+      { name: 'Cob Village', value: 15 },
+      { name: 'Tree House', value: 55 },
+      { name: 'Recycle Materials', value: 30 },
+    ],
+    bidding: [
+      { name: 'Earthbag', value: 45 },
+      { name: 'Straw Bale', value: 20 },
+      { name: 'Cob Village', value: 70 },
+      { name: 'Tree House', value: 10 },
+      { name: 'Recycle Materials', value: 35 },
+    ],
+  },
+  properties: {
+    all: [
+      { name: 'Residential Units', value: 45 },
+      { name: 'Commercial Spaces', value: 25 },
+      { name: 'Workshop Areas', value: 30 },
+      { name: 'Common Areas', value: 15 },
+      { name: 'Outdoor Spaces', value: 35 },
+    ],
+    listing: [
+      { name: 'Residential Units', value: 20 },
+      { name: 'Commercial Spaces', value: 50 },
+      { name: 'Workshop Areas', value: 10 },
+      { name: 'Common Areas', value: 40 },
+      { name: 'Outdoor Spaces', value: 30 },
+    ],
+    bidding: [
+      { name: 'Residential Units', value: 60 },
+      { name: 'Commercial Spaces', value: 10 },
+      { name: 'Workshop Areas', value: 45 },
+      { name: 'Common Areas', value: 25 },
+      { name: 'Outdoor Spaces', value: 10 },
+    ],
+  },
+};
 
-const SAMPLE_PROPERTY_DATA = [
-  { name: 'Residential Units', value: 45 },
-  { name: 'Commercial Spaces', value: 25 },
-  { name: 'Workshop Areas', value: 30 },
-  { name: 'Common Areas', value: 15 },
-  { name: 'Outdoor Spaces', value: 35 },
-];
+// Metric-based per-item multipliers (index matches item order above)
+const METRIC_ITEM_MULTIPLIERS = {
+  pageVisits: [1.0, 1.0, 1.0, 1.0, 1.0],
+  numBids: [3.0, 0.4, 1.3, 4.5, 0.5],
+  avgRating: [4.8, 4.2, 3.5, 5.0, 2.5],
+  avgBid: [5.5, 1.5, 7.0, 3.0, 3.0],
+  finalPrice: [2.0, 6.5, 2.5, 5.5, 3.5],
+  occupancyRate: [4.0, 3.0, 1.5, 6.5, 5.0],
+  avgStay: [6.0, 1.0, 4.5, 2.0, 6.5],
+};
+
+// Convenience fallbacks for code that still references these names
+const SAMPLE_VILLAGE_DATA = SAMPLE_DATA.villages.all;
+const SAMPLE_PROPERTY_DATA = SAMPLE_DATA.properties.all;
 
 // Label showing absolute values ON the pie slices
 // Label showing absolute values ON the pie slices
@@ -148,21 +196,25 @@ CustomLegend.propTypes = {
   ),
 };
 
-const CustomTooltip = ({ active, payload }) => {
+const CustomTooltip = ({ active, payload, darkMode }) => {
   if (active && payload && payload.length) {
     return (
       <div
         style={{
-          backgroundColor: 'white',
+          backgroundColor: darkMode ? '#2C3E50' : 'white',
           padding: '10px',
-          border: '1px solid #ccc',
+          border: darkMode ? '1px solid #34495E' : '1px solid #ccc',
           borderRadius: '4px',
           boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
         }}
       >
-        <p style={{ margin: 0, fontWeight: 'bold' }}>{payload[0].name}</p>
-        <p style={{ margin: '4px 0 0 0', color: '#666' }}>Value: {payload[0].value}</p>
-        <p style={{ margin: '4px 0 0 0', color: '#666' }}>
+        <p style={{ margin: 0, fontWeight: 'bold', color: darkMode ? '#fff' : '#000' }}>
+          {payload[0].name}
+        </p>
+        <p style={{ margin: '4px 0 0 0', color: darkMode ? '#e1e1e1' : '#666' }}>
+          Value: {payload[0].value}
+        </p>
+        <p style={{ margin: '4px 0 0 0', color: darkMode ? '#e1e1e1' : '#666' }}>
           Percentage: {payload[0].payload.percent}%
         </p>
       </div>
@@ -174,6 +226,7 @@ const CustomTooltip = ({ active, payload }) => {
 CustomTooltip.propTypes = {
   active: PropTypes.bool,
   payload: PropTypes.array,
+  darkMode: PropTypes.bool,
 };
 
 export function ComparePieChart({
@@ -214,7 +267,7 @@ export function ComparePieChart({
 
     try {
       // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 800));
+      await new Promise(resolve => setTimeout(resolve, 300));
 
       // In real implementation, make API call here
       // const response = await fetch('/api/chart-data', {
@@ -223,11 +276,20 @@ export function ComparePieChart({
       // });
       // const data = await response.json();
 
-      // For now, return sample data based on filters
-      const data =
-        filters.comparisonType === COMPARISON_OPTIONS.VILLAGES
-          ? SAMPLE_VILLAGE_DATA
-          : SAMPLE_PROPERTY_DATA;
+      const compKey =
+        filters.comparisonType === COMPARISON_OPTIONS.VILLAGES ? 'villages' : 'properties';
+      const listKey = filters.listingType || LISTING_OPTIONS.ALL;
+      const metricKey = filters.selectedMetricKey || 'pageVisits';
+
+      // Pick base dataset by comparisonType + listingType
+      const baseData = SAMPLE_DATA[compKey][listKey] || SAMPLE_DATA[compKey].all;
+
+      // Apply per-item metric multipliers so switching metric changes proportions
+      const multipliers = METRIC_ITEM_MULTIPLIERS[metricKey] || METRIC_ITEM_MULTIPLIERS.pageVisits;
+      const data = baseData.map((item, i) => ({
+        ...item,
+        value: Math.max(1, Math.round(item.value * (multipliers[i] ?? 1.0))),
+      }));
 
       setFetchedData(data);
     } catch (err) {
@@ -340,20 +402,30 @@ export function ComparePieChart({
               >
                 From Date
               </Label>
-              <DatePicker
-                id="fromDate"
-                selected={fromDate}
-                onChange={date => handleDateChange(date, true)}
-                selectsStart
-                startDate={fromDate}
-                endDate={toDate}
-                maxDate={toDate}
-                className={`form-control ${darkMode ? 'bg-dark text-light border-secondary' : ''}`}
-                wrapperClassName={styles.datePickerWrapper}
-                dateFormat="MMM dd, yyyy"
-                placeholderText="Select start date"
-                aria-label="Select start date for data range"
-              />
+              <div className={styles.datePickerWrapper}>
+                <DatePicker
+                  id="fromDate"
+                  selected={fromDate}
+                  onChange={date => handleDateChange(date, true)}
+                  selectsStart
+                  startDate={fromDate}
+                  endDate={toDate}
+                  maxDate={toDate}
+                  className={`form-control ${styles.datePickerInput} ${
+                    darkMode ? styles.darkDatePicker : ''
+                  }`}
+                  wrapperClassName={styles.datePickerInnerWrapper}
+                  calendarClassName={darkMode ? styles.datePickerCalendarDark : ''}
+                  dateFormat="MMM dd, yyyy"
+                  placeholderText="Select start date"
+                  aria-label="Select start date for data range"
+                />
+                <span
+                  className={`${styles.datePickerChevron} ${
+                    darkMode ? styles.datePickerChevronDark : ''
+                  }`}
+                />
+              </div>
             </FormGroup>
 
             <FormGroup style={{ marginBottom: 0 }}>
@@ -364,21 +436,31 @@ export function ComparePieChart({
               >
                 To Date
               </Label>
-              <DatePicker
-                id="toDate"
-                selected={toDate}
-                onChange={date => handleDateChange(date, false)}
-                selectsEnd
-                startDate={fromDate}
-                endDate={toDate}
-                minDate={fromDate}
-                maxDate={new Date()}
-                className={`form-control ${darkMode ? 'bg-dark text-light border-secondary' : ''}`}
-                wrapperClassName={styles.datePickerWrapper}
-                dateFormat="MMM dd, yyyy"
-                placeholderText="Select end date"
-                aria-label="Select end date for data range"
-              />
+              <div className={styles.datePickerWrapper}>
+                <DatePicker
+                  id="toDate"
+                  selected={toDate}
+                  onChange={date => handleDateChange(date, false)}
+                  selectsEnd
+                  startDate={fromDate}
+                  endDate={toDate}
+                  minDate={fromDate}
+                  maxDate={new Date()}
+                  className={`form-control ${styles.datePickerInput} ${
+                    darkMode ? styles.darkDatePicker : ''
+                  }`}
+                  wrapperClassName={styles.datePickerInnerWrapper}
+                  calendarClassName={darkMode ? styles.datePickerCalendarDark : ''}
+                  dateFormat="MMM dd, yyyy"
+                  placeholderText="Select end date"
+                  aria-label="Select end date for data range"
+                />
+                <span
+                  className={`${styles.datePickerChevron} ${
+                    darkMode ? styles.datePickerChevronDark : ''
+                  }`}
+                />
+              </div>
             </FormGroup>
 
             {/* Compare Villages vs Properties Dropdown */}
@@ -395,7 +477,7 @@ export function ComparePieChart({
                 type="select"
                 value={comparisonType}
                 onChange={e => setComparisonType(e.target.value)}
-                className={`${darkMode ? 'bg-dark text-light border-secondary' : ''}`}
+                className={`${darkMode ? styles.darkSelect : ''}`}
                 style={{ width: '100%' }}
                 aria-label="Choose comparison type"
               >
@@ -418,7 +500,7 @@ export function ComparePieChart({
                 type="select"
                 value={listingType}
                 onChange={e => setListingType(e.target.value)}
-                className={`${darkMode ? 'bg-dark text-light border-secondary' : ''}`}
+                className={`${darkMode ? styles.darkSelect : ''}`}
                 style={{ width: '100%' }}
                 aria-label="Select listing type filter"
               >
@@ -506,7 +588,7 @@ export function ComparePieChart({
                       <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
                     ))}
                   </Pie>
-                  <Tooltip content={<CustomTooltip />} />
+                  <Tooltip content={<CustomTooltip darkMode={darkMode} />} />
                   <text
                     x="50%"
                     y="45%"

@@ -279,6 +279,35 @@ body {
 .datePickerWrapper {
   width: 100% !important;
   display: block;
+  position: relative;
+}
+
+.datePickerInnerWrapper {
+  width: 100% !important;
+  display: block;
+}
+
+.datePickerInput {
+  padding-right: 2rem !important;
+  cursor: pointer;
+}
+
+.datePickerChevron {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  width: 16px;
+  height: 12px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23555555' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 16px 12px;
+}
+
+.datePickerChevronDark {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E");
 }
 
 .filtersContainer {
@@ -630,4 +659,98 @@ body {
 .chartCard,
 .darkChartCard {
   box-shadow: 0 4px 16px rgb(28 37 65 / 25%);
+}
+
+/* Dark mode select dropdowns - remove double arrows and style properly */
+.darkSelect {
+  background-color: #2C3E50 !important;
+  color: #fff !important;
+  border-color: #34495E !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 0.75rem center !important;
+  background-size: 16px 12px !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  padding-right: 2.5rem !important;
+}
+
+.darkSelect:focus {
+  background-color: #34495E !important;
+  border-color: #3498DB !important;
+  color: #fff !important;
+  box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25) !important;
+}
+
+/* Dark mode date picker input */
+.darkDatePicker {
+  background-color: #2C3E50 !important;
+  color: #fff !important;
+  border-color: #34495E !important;
+}
+
+.darkDatePicker:focus {
+  background-color: #34495E !important;
+  border-color: #3498DB !important;
+  color: #fff !important;
+  box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25) !important;
+}
+
+/* DatePicker Calendar - Dark Mode */
+.datePickerCalendarDark {
+  background-color: #2C3E50 !important;
+  border-color: #34495E !important;
+}
+
+.datePickerCalendarDark :global(.react-datepicker__header) {
+  background-color: #1C2541 !important;
+  border-bottom-color: #34495E !important;
+}
+
+.datePickerCalendarDark :global(.react-datepicker__current-month),
+.datePickerCalendarDark :global(.react-datepicker__day-name) {
+  color: #fff !important;
+}
+
+.datePickerCalendarDark :global(.react-datepicker__day) {
+  color: #e1e1e1 !important;
+}
+
+.datePickerCalendarDark :global(.react-datepicker__day:hover) {
+  background-color: #3498DB !important;
+  color: #fff !important;
+}
+
+.datePickerCalendarDark :global(.react-datepicker__day--selected),
+.datePickerCalendarDark :global(.react-datepicker__day--keyboard-selected) {
+  background-color: #3498DB !important;
+  color: #fff !important;
+}
+
+.datePickerCalendarDark :global(.react-datepicker__day--outside-month) {
+  color: #6c757d !important;
+}
+
+.datePickerCalendarDark :global(.react-datepicker__day--disabled) {
+  color: #495057 !important;
+}
+
+/* DatePicker navigation arrows - ensure visibility in light mode */
+.comparingChart :global(.react-datepicker__navigation-icon::before) {
+  border-color: #333 !important;
+  border-width: 2px 2px 0 0 !important;
+}
+
+.datePickerCalendarDark :global(.react-datepicker__navigation-icon::before) {
+  border-color: #fff !important;
+  border-width: 2px 2px 0 0 !important;
+}
+
+.comparingChart :global(.react-datepicker__navigation:hover *::before) {
+  border-color: #000 !important;
+}
+
+.datePickerCalendarDark :global(.react-datepicker__navigation:hover *::before) {
+  border-color: #3498DB !important;
 }
