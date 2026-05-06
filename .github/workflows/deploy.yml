@@ -7,7 +7,7 @@ on:
 concurrency:
   group: Build and Deploy / ${{ github.ref_name == 'main' && 'Production' || 'Development' }}
   cancel-in-progress: true
-jobs:
+jobs:  
   # Build
   build:
     name: Build

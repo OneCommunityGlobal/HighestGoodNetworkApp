@@ -4,9 +4,10 @@ import { render, screen, fireEvent, within } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import moment from 'moment';
 import { Provider } from 'react-redux';
-import { configureStore } from 'redux-mock-store';
-import SetUpFinalDayPopUp from '../SetUpFinalDayPopUp';
-
+// eslint-disable import/no-named-as-default 
+// eslint-disable-next-line import/no-named-as-default
+import configureStore from 'redux-mock-store';
+import SetUpFinalDayPopUp from '../SetUpFinalDayPopUp.jsx';
 const mockStore = configureStore([]);
 const onSaveMock = vi.fn();
 const onCloseMock = vi.fn();
@@ -33,7 +34,7 @@ describe('SetUpFinalDayPopUp Component', () => {
   it('should render the modal with proper title and buttons', () => {
     renderComponent(store, { open: true, onClose: onCloseMock, onSave: onSaveMock });
 
-    expect(screen.getByText('Set Your Final Day')).toBeInTheDocument();
+    expect(screen.getByText("Set User's Final Day")).toBeInTheDocument();
     expect(screen.getByText('Save')).toBeInTheDocument();
     expect(screen.getByText('Close')).toBeInTheDocument();
   });
@@ -83,7 +84,7 @@ describe('SetUpFinalDayPopUp Component', () => {
     
     const dialog = await screen.findByRole('dialog');
     expect(dialog).toBeInTheDocument();
-    expect(within(dialog).getByRole('heading', { name: 'Set Your Final Day' })).toBeInTheDocument();
+    expect(within(dialog).getByRole('heading', { name: "Set User's Final Day" })).toBeInTheDocument();
 
     const dateInput = within(dialog).getByTestId('date-input');
     expect(dateInput).toHaveClass('bg-darkmode-liblack', 'text-light', 'border-0', 'calendar-icon-dark');
@@ -117,7 +118,7 @@ describe('SetUpFinalDayPopUp Component', () => {
   it('should not render the modal content when the open prop is false', () => {
     renderComponent(store, { open: false, onClose: onCloseMock, onSave: onSaveMock });
 
-    expect(screen.queryByText('Set Your Final Day')).not.toBeInTheDocument();
+    expect(screen.queryByText("Set User's Final Day")).not.toBeInTheDocument();
     expect(screen.queryByText('Save')).not.toBeInTheDocument();
     expect(screen.queryByText('Close')).not.toBeInTheDocument();
   });
@@ -130,6 +131,7 @@ describe('SetUpFinalDayPopUp Component', () => {
       .format('YYYY-MM-DD');
     fireEvent.change(screen.getByTestId('date-input'), { target: { value: pastDate } });
     fireEvent.click(screen.getByText('Save'));
+
 
     expect(screen.getByText('Please choose a future date.')).toBeInTheDocument();
     expect(onSaveMock).not.toHaveBeenCalled();

@@ -4,8 +4,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 import { boxStyle, boxStyleDark } from '~/styles';
-import './style.css';
-import '../Header/DarkMode.css';
+import styles from './style.module.css';
+import '../Header/index.css';
 import { useSelector } from 'react-redux';
 import infoTaskIconContent from './infoTaskIconContent';
 
@@ -24,7 +24,7 @@ const TeamMemberTaskInfo = React.memo(() => {
   return (
     <>
       <FontAwesomeIcon
-        className="team-member-task-info"
+        className={styles['team-member-task-info']}
         icon={faInfoCircle}
         title="Click this icon to learn about the task icons"
         onClick={handleModalOpen}
@@ -32,7 +32,7 @@ const TeamMemberTaskInfo = React.memo(() => {
       />
       <Modal
         className={darkMode ? 'text-light dark-mode' : ''}
-        backdropClassName="task-info-modal-backdrop"
+        backdropClassName={styles['task-info-modal-backdrop']}
         isOpen={infoTaskIconModal}
         toggle={toggleInfoTaskIconModal}
       >

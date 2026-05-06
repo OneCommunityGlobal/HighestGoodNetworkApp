@@ -12,6 +12,8 @@ import {
   FETCH_BM_INJURY_TYPES,
   FETCH_BM_INJURY_PROJECTS,
   RESET_BM_INJURY_DATA,
+  FETCH_BM_INJURY_OVER_TIME,
+  GET_INJURY_SEVERITY,
 } from '../../actions/bmdashboard/injuryActions';
 
 const byName = (a, b) => String(a?.name || a).localeCompare(String(b?.name || b));
@@ -24,6 +26,8 @@ const initialState = {
   severities: [],
   injuryTypes: [],
   projects: [], // [{ _id, name }]
+  injuryOverTimeData: [],
+  severityData: [], // Legacy field for backward compatibility
 };
 
 function bmInjuryReducer(state = initialState, action) {
@@ -83,12 +87,29 @@ function bmInjuryReducer(state = initialState, action) {
       return { ...state, projects };
     }
 
+    case FETCH_BM_INJURY_OVER_TIME: {
+      const injuryOverTimeData = Array.isArray(action.payload) ? action.payload : [];
+      return { ...state, injuryOverTimeData };
+    }
+
     case RESET_BM_INJURY_DATA:
       return { ...state, data: [], error: null, loading: false };
+
+    // Legacy action for backward compatibility
+    case GET_INJURY_SEVERITY:
+      return { ...state, severityData: action.payload };
 
     default:
       return state;
   }
 }
 
+// Legacy reducer function for backward compatibility
+// eslint-disable-next-line default-param-last
+export const bmInjurySeverityReducer = (severityData = [], action) => {
+  if (action.type === GET_INJURY_SEVERITY) {
+    return action.payload;
+  }
+  return severityData;
+};
 export default bmInjuryReducer;
