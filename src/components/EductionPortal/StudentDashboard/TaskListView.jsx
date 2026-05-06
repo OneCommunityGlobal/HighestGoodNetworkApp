@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import styles from './TaskListView.module.css';
 import TaskListItem from './TaskListItem';
 import { taskViewPropTypes, taskViewDefaultProps } from './taskPropTypes';
