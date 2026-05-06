@@ -101,9 +101,13 @@ function TopCommunityMembers() {
                 <td>{member.name || 'Unavailable'}</td>
                 <td>
                   {!member.email ? (
-                    <span className={styles.private} title="Email is private or unavailable">
+                    <span
+                      className={styles.private}
+                      title="Email is private or unavailable"
+                      style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
+                    >
                       <FaEnvelope style={{ color: '#ccc', cursor: 'not-allowed' }} />
-                      &nbsp;Private
+                      Private
                     </span>
                   ) : (
                     <a
@@ -151,9 +155,13 @@ function TopCommunityMembers() {
                 </td>
                 <td>
                   {!member.phoneNumber ? (
-                    <span className={styles.private} title="Phone number is private or unavailable">
+                    <span
+                      className={styles.private}
+                      title="Phone number is private or unavailable"
+                      style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
+                    >
                       <FaPhone style={{ color: '#ccc', cursor: 'not-allowed' }} />
-                      &nbsp;Private
+                      Private
                     </span>
                   ) : (
                     <a
