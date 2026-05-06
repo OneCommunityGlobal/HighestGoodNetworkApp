@@ -130,7 +130,11 @@ function TopCommunityMembers() {
                       {member.slack}
                     </a>
                   ) : (
-                    <span className={styles.private} title="Slack is private or unavailable">
+                    <span
+                      className={styles.private}
+                      title="Slack is private or unavailable"
+                      style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
+                    >
                       <img
                         src={slackLogo}
                         alt="Slack"
@@ -141,7 +145,7 @@ function TopCommunityMembers() {
                           cursor: 'not-allowed',
                         }}
                       />
-                      &nbsp;Private
+                      Private
                     </span>
                   )}
                 </td>
