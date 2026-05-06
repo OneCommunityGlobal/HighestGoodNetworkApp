@@ -74,9 +74,13 @@ export const CreateNewTeamPopup = React.memo(props => {
         >
           {newTeam.length}/{TEAM_NAME_MAX_LENGTH} characters
         </small>
-        {!isValidTeam && <Alert color="danger">Please enter a team name.</Alert>}
+        {!isValidTeam && (
+          <Alert color="danger" className={darkMode ? 'text-light bg-dark border-danger' : ''}>
+            Please enter a team name.
+          </Alert>
+        )}
         {teamExists && !props.isEdit && (
-          <Alert color="warning">
+          <Alert color="warning" className={darkMode ? 'text-light bg-dark border-warning' : ''}>
             That’s a great team name! So great that someone else already created that team. Please
             choose a new name or use the existing team.
           </Alert>
