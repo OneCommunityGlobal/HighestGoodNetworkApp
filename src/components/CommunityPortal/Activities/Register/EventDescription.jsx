@@ -126,6 +126,17 @@ function DescriptionSection({ activity, registrants = [] }) {
     [descriptionParagraphs, participantEntries, commentEntries, faqEntries],
   );
 
+  const keyUsageMap = new Map();
+  const buildUniqueKey = rawKey => {
+    const baseKey = String(rawKey || 'item')
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, '-');
+    const seenCount = keyUsageMap.get(baseKey) || 0;
+    keyUsageMap.set(baseKey, seenCount + 1);
+    return seenCount === 0 ? baseKey : `${baseKey}-${seenCount + 1}`;
+  };
+
   return (
     <div
       className={`${styles.descriptionSection} ${darkMode ? styles.descriptionSectionDark : ''}`}
@@ -149,7 +160,7 @@ function DescriptionSection({ activity, registrants = [] }) {
 
       <div className={styles.tabContent}>
         {tabContent[activeTab]?.length > 0 ? (
-          tabContent[activeTab].map((item, index) => {
+          tabContent[activeTab].map(item => {
             const isParticipantTab = activeTab === 'Participants';
             const isCommentTab = activeTab === 'Comments';
             const isFaqTab = activeTab === 'FAQs';
@@ -166,9 +177,10 @@ function DescriptionSection({ activity, registrants = [] }) {
                 .find(l => l.startsWith('A:'))
                 ?.replace('A:', '')
                 .trim();
+              const faqKey = buildUniqueKey(`faq-${question || 'unknown'}-${answer || 'unknown'}`);
               return (
                 <div
-                  key={`faq-${index}`}
+                  key={faqKey}
                   className={`${styles.faqCard} ${darkMode ? styles.faqCardDark : ''}`}
                 >
                   <div className={styles.faqQuestionRow}>
@@ -197,7 +209,8 @@ function DescriptionSection({ activity, registrants = [] }) {
 
             if (isCommentTab) {
               const commentText = item.comment || item;
-              const commentAuthor = item.author || `User ${index + 1}`;
+              const commentAuthor = item.author || 'User';
+              const commentKey = buildUniqueKey(`comment-${commentAuthor}-${commentText}`);
               const initials = commentAuthor
                 .split(' ')
                 .map(s => s[0])
@@ -206,7 +219,7 @@ function DescriptionSection({ activity, registrants = [] }) {
                 .toUpperCase();
               return (
                 <div
-                  key={`comment-${index}`}
+                  key={commentKey}
                   className={`${styles.commentEntry} ${darkMode ? styles.commentEntryDark : ''}`}
                 >
                   <div className={styles.commentAvatar}>
@@ -232,6 +245,7 @@ function DescriptionSection({ activity, registrants = [] }) {
 
             if (isParticipantTab) {
               const nameOnly = label.split(' - ')[0];
+              const participantKey = buildUniqueKey(`participant-${nameOnly}-${label}`);
               const initials = nameOnly
                 .split(' ')
                 .map(s => s[0])
@@ -240,7 +254,7 @@ function DescriptionSection({ activity, registrants = [] }) {
                 .toUpperCase();
               return (
                 <div
-                  key={`participant-${index}`}
+                  key={participantKey}
                   className={`${styles.participantRow} ${
                     darkMode ? styles.participantRowDark : ''
                   }`}
@@ -268,9 +282,10 @@ function DescriptionSection({ activity, registrants = [] }) {
               );
             }
 
+            const descriptionKey = buildUniqueKey(`description-${label}`);
             return (
               <p
-                key={`desc-${index}`}
+                key={descriptionKey}
                 className={`${styles.descriptionParagraph} ${
                   darkMode ? styles.descriptionParagraphDark : ''
                 }`}
