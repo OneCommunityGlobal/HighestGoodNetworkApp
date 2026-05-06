@@ -15,9 +15,10 @@ import {
   Row,
   Col,
 } from 'reactstrap';
-
 import DemandOverTime from './LbAnalytics/DemandOverTime/DemandOverTime';
+import WinningVsAverageBidChart from './LbAnalytics/WinningVsAverageBidChart/WinningVsAverageBidChart';
 import ReviewWordCloud from './ReviewWordCloud/ReviewWordCloud';
+import RatingDistribution from './RatingDistribution/RatingDistribution';
 import { CompareBarGraph } from './BarGraphs/CompareGraphs';
 
 import httpService from '../../services/httpService';
@@ -513,8 +514,23 @@ export function LBDashboard() {
         </div>
       </AnalysisSection>
 
+      <AnalysisSection title="Winning Bid vs Average Bid" darkMode={darkMode}>
+        <div className={styles.chartRow}>
+          <div className={styles.chartCol}>
+            <WinningVsAverageBidChart darkMode={darkMode} />
+          </div>
+        </div>
+      </AnalysisSection>
+
       <AnalysisSection title="Insights from Reviews" darkMode={darkMode}>
-        <ReviewWordCloud darkMode={darkMode} />
+        <div className={styles.chartRow}>
+          <div className={styles.chartCol}>
+            <RatingDistribution darkMode={darkMode} />
+          </div>
+          <div className={styles.chartCol}>
+            <ReviewWordCloud darkMode={darkMode} />
+          </div>
+        </div>
       </AnalysisSection>
     </Container>
   );
