@@ -217,14 +217,6 @@
   gap: 6px;
 }
 
-/* Hide browser's built-in clear icon for search inputs */
-.dashboardSearchInput::-webkit-search-cancel-button,
-.dashboardSearchInput::-webkit-search-decoration,
-.dashboardSearchInput::-webkit-search-results-button,
-.dashboardSearchInput::-webkit-search-results-decoration {
-  appearance: none;
-}
-
 .darkSearchContainer {
   background: #1b2a41;
   border-color: #4da3ff;
@@ -505,6 +497,10 @@
   margin-bottom: 30px;
 }
 
+.clearDateFilterBtn{
+  margin-top: 10px;
+}
+
 .eventCardCol {
   display: flex;
   margin-bottom: 1.5rem;
@@ -518,11 +514,11 @@
 .eventCard {
   width: 100%;
   height: 100%;
-  border-radius: 12px;
-  overflow: hidden;
   box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
   display: flex;
   flex-direction: column;
+  border-radius: 12px;
+  overflow: hidden;
   border: none;
   background: #fff;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
