@@ -523,7 +523,9 @@ function Register() {
                     ? styles['indicator-available-dark']
                     : `${styles['legend-indicator']} ${styles['available']}`
                 }
-              >●</span>
+              >
+                ●
+              </span>
               <span className={styles['legend-text']}>Available</span>
             </div>
             <div className={styles['legend-item']}>
@@ -533,7 +535,9 @@ function Register() {
                     ? styles['indicator-booked-dark']
                     : `${styles['legend-indicator']} ${styles['booked']}`
                 }
-              >●</span>
+              >
+                ●
+              </span>
               <span className={styles['legend-text']}>Booked/Unavailable</span>
             </div>
             <div className={styles['legend-item']}>
@@ -543,7 +547,9 @@ function Register() {
                     ? styles['indicator-today-dark']
                     : `${styles['legend-indicator']} ${styles['today']}`
                 }
-              >■</span>
+              >
+                ■
+              </span>
               <span className={styles['legend-text']}>Today</span>
             </div>
           </div>
