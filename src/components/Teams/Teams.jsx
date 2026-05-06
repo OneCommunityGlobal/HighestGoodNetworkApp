@@ -326,7 +326,7 @@ class Teams extends React.PureComponent {
               await this.props.getAllUserTeams();
               await this.props.getAllUserProfile();
             } catch (error) {
-              toast.error('Error updating team list. Please refresh the page.');
+              toast.error(error?.message || 'Error updating team list. Please refresh the page.');
             }
           }}
           handleSubmit={() => {}}
@@ -445,7 +445,7 @@ class Teams extends React.PureComponent {
   onCreateNewTeamOkClick = async teamName => {
     try {
       const res = await this.props.postNewTeam(teamName, true);
-      if (res && res.status === 200) {
+      if (res?.status === 200) {
         toast.success(`Team "${teamName}" created successfully!`);
         this.setState({ createNewTeamPopupOpen: false });
         await this.props.getAllUserTeams();
@@ -453,7 +453,7 @@ class Teams extends React.PureComponent {
         toast.error(res?.data?.error || 'Failed to create team. Please try again.');
       }
     } catch (err) {
-      toast.error('An unexpected error occurred. Please try again.');
+      toast.error(err?.message || 'An unexpected error occurred. Please try again.');
     }
   };
 
