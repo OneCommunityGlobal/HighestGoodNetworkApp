@@ -634,9 +634,10 @@ export function LBDashboard() {
                   showYAxisTitle={true}
                   yTickFormatter={stripVillageWord}
                   yCategoryWidth={120}
-                  margins={{ top: 20, right: 50, bottom: 50, left: 100 }}
+                  margins={{ top: 60, right: 50, bottom: 50, left: 20 }}
                   barSize={24}
                   maxBars={6}
+                  height={480}
                   valueFormatter={valueFormatter}
                   darkMode={darkMode}
                   headerChips={[

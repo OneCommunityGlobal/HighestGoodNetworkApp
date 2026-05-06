@@ -132,6 +132,11 @@ body {
   color: #fff;
 }
 
+.darkSelectInput option {
+  background: #34495E;
+  color: #fff;
+}
+
 .selectInput {
   appearance: none;
   background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"12\" height=\"12\" viewBox=\"0 0 12 12\"><path fill=\"%23333\" d=\"M6 9L1 4h10z\"/></svg>');
@@ -209,21 +214,24 @@ body {
 .dropdownMenu {
   border-radius: 10px;
   padding: 4px 0;
+  background: #fff;
 }
 
 .darkDropdownMenu {
-  background: #1c2541;
-  border-color: #225163;
+  background: #1c2541 !important;
+  border-color: #225163 !important;
 }
 
 .dropdownItem {
   font-size: 14px;
   padding: 6px 14px;
+  color: #333;
+  background: #fff;
 }
 
 .dropdownItem:hover {
-  background: #eae4fb;
-  color: #6a4ff7;
+  background: #eae4fb !important;
+  color: #6a4ff7 !important;
 }
 
 .dropdownActive {
@@ -378,12 +386,13 @@ body {
 }
 
 .darkDropdownItem {
-  color: #e1e1e1;
-  background: #1c2541;
+  color: #e1e1e1 !important;
+  background: #1c2541 !important;
 }
 
 .darkDropdownItem:hover {
-  background: #3a506b;
+  background: #3a506b !important;
+  color: #fff !important;
 }
 
 .darkText {

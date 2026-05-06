@@ -102,7 +102,7 @@ export function CompareBarGraph({
                     label={{
                       value: xLabel,
                       position: 'insideBottom',
-                      offset: -10,
+                      offset: -40,
                       style: { fontSize: 15, fill: tickColor },
                     }}
                   />
@@ -148,7 +148,7 @@ export function CompareBarGraph({
                       value: yLabel,
                       angle: -90,
                       position: 'insideLeft',
-                      offset: 15,
+                      offset: -35,
                       style: { fontSize: 12, fill: tickColor },
                     }}
                   />

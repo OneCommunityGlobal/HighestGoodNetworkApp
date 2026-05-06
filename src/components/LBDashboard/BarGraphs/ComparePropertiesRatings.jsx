@@ -161,7 +161,7 @@ export function ComparePropertiesRatings({
       barSize={50}
       barColor="#f2b233"
       height={360}
-      margins={{ top: 20, right: 40, bottom: 60, left: 60 }}
+      margins={{ top: 20, right: 40, bottom: 60, left: 90 }}
       valueFormatter={metricConfig.valueFormatter}
       tooltipLabel={metricConfig.tooltipLabel}
       darkMode={darkMode}
