@@ -102,6 +102,7 @@ import FeedbackRatingEntry from './components/FeedbackActivityModal/FeedbackActi
 import TeamLocations from './components/TeamLocations';
 import Inventory from './components/Inventory';
 import Collaboration from './components/Collaboration';
+import AddLessons from './components/BMDashboard/Lessons/AddLessons';
 import SuggestedJobsList from './components/Collaboration/SuggestedJobsList';
 import TestEventRegistration from './components/EventRegistration/TestEventRegistration';
 import MemberList from './components/QuestionnaireDashboard/MemberList';
@@ -181,6 +182,7 @@ import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import BrowseLessonPlan from './components/EductionPortal/BrowseLessonPlan/BrowseLP';
 import EPDashboard from './components/EductionPortal';
+import AnnouncementsPage from './components/EductionPortal/Announcements/AnnouncementsPage';
 import StudentProfile from './components/EductionPortal/StudentProfile';
 import TaskSubmissions from './components/EductionPortal/Educators/TaskSubmissions';
 import StudentProfilePage from './components/EductionPortal/StudentProfile/StudentProfilePage';
@@ -218,6 +220,8 @@ import SupportDashboard from './components/SupportPortal/SupportDashboard';
 import SupportLogViewer from './components/SupportPortal/SupportLogViewer';
 import MaterialUtilizationChart from './components/MaterialUtilization/MaterialUtilizationChart';
 import OptStatusPieChart from './components/OptStatusPieChart/OptStatusPieChart';
+
+import WeeklyProgressDashboard from './components/WeeklyProgress/WeeklyProgressDashboard';
 
 // Social Architecture
 import JobApplicationForm from './components/Collaboration/JobApplicationForm/JobApplicationForm';
@@ -436,6 +440,14 @@ export default (
           component={Reports}
           fallback
           routePermissions={RoutePermissions.reports}
+        />
+        {/* Weekly Progress (Phase 2) */}
+        <ProtectedRoute
+          path="/weeklyprogress"
+          exact
+          component={WeeklyProgressDashboard}
+          fallback
+          routePermissions={RoutePermissions.weeklySummariesReport}
         />
         <ProtectedRoute path="/teamlocations" exact component={TeamLocations} />
         <ProtectedRoute path="/job-analytics" component={JobAnalyticsPage} fallback />
@@ -773,6 +785,7 @@ export default (
         <BMProtectedRoute path="/bmdashboard/tools/:toolId" component={ToolDetailPage} />
         <BMProtectedRoute path="/bmdashboard/lessonform/:projectId" component={LessonForm} />
         <BMProtectedRoute path="/bmdashboard/lessonform/" component={LessonForm} />
+        <BMProtectedRoute path="/bmdashboard/lessons/add" component={AddLessons} />
         <BMProtectedRoute
           path="/bmdashboard/inventorytypes"
           fallback
@@ -926,6 +939,11 @@ export default (
           component={StudentProfile}
         />
         <EPProtectedRoute path="/educationportal/tasks/upload" exact component={WriteTaskUpload} />
+        <EPProtectedRoute
+          path="/educationportal/announcements"
+          exact
+          component={AnnouncementsPage}
+        />
         <EPProtectedRoute
           path="/educationportal/educator/task-submissions"
           exact
