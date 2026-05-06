@@ -117,7 +117,19 @@ function TopCommunityMembers() {
                   )}
                 </td>
                 <td>
-                  {!member.slack ? (
+                  {member.slack ? (
+                    <a
+                      href={`https://highest-good.slack.com/team/@${member.slack}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      title={member.slack}
+                      className={darkMode ? styles.iconLinkDark : styles.iconLink}
+                      style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
+                    >
+                      <img src={slackLogo} alt="Slack" style={{ width: '20px', height: '20px' }} />
+                      {member.slack}
+                    </a>
+                  ) : (
                     <span className={styles.private} title="Slack is private or unavailable">
                       <img
                         src={slackLogo}
@@ -131,17 +143,6 @@ function TopCommunityMembers() {
                       />
                       &nbsp;Private
                     </span>
-                  ) : (
-                    <a
-                      href={`https://highest-good.slack.com/team/@${member.slack}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      title={member.slack}
-                      className={darkMode ? styles.iconLinkDark : styles.iconLink}
-                    >
-                      <img src={slackLogo} alt="Slack" style={{ width: '20px', height: '20px' }} />{' '}
-                      {member.slack}
-                    </a>
                   )}
                 </td>
                 <td>
