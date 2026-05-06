@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import styles from './TaskCard.module.css';
 import { useTaskLogic } from './useTaskLogic';
 import MarkAsDoneButton from './MarkAsDoneButton';
@@ -78,11 +79,7 @@ const TaskCard = ({
 
         {/* Action Buttons */}
         <div className={styles.actionButtons}>
-          <button
-            className={styles.clockButton}
-            title="Log Time"
-            onClick={() => onLogTime && onLogTime(task)}
-          >
+          <button className={styles.clockButton} title="Log Time" onClick={() => onLogTime?.(task)}>
             <svg
               width="16"
               height="16"
@@ -145,6 +142,33 @@ const TaskCard = ({
       </div>
     </div>
   );
+};
+
+TaskCard.propTypes = {
+  task: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    _id: PropTypes.string,
+    course_name: PropTypes.string,
+    title: PropTypes.string,
+    subtitle: PropTypes.string,
+  }).isRequired,
+  onMarkAsDone: PropTypes.func,
+  onLogTime: PropTypes.func,
+  intermediateTasks: PropTypes.arrayOf(PropTypes.shape({})),
+  isExpanded: PropTypes.bool,
+  onToggleIntermediateTasks: PropTypes.func,
+  onMarkIntermediateAsDone: PropTypes.func,
+  darkMode: PropTypes.bool,
+};
+
+TaskCard.defaultProps = {
+  onMarkAsDone: undefined,
+  onLogTime: undefined,
+  intermediateTasks: [],
+  isExpanded: false,
+  onToggleIntermediateTasks: undefined,
+  onMarkIntermediateAsDone: undefined,
+  darkMode: false,
 };
 
 export default TaskCard;

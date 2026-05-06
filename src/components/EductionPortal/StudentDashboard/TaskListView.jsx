@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import styles from './TaskListView.module.css';
 import TaskListItem from './TaskListItem';
 
@@ -37,6 +38,27 @@ const TaskListView = ({
       ))}
     </div>
   );
+};
+
+TaskListView.propTypes = {
+  tasks: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  onMarkAsDone: PropTypes.func,
+  onLogTime: PropTypes.func,
+  intermediateTasks: PropTypes.objectOf(PropTypes.arrayOf(PropTypes.shape({}))),
+  expandedTasks: PropTypes.objectOf(PropTypes.bool),
+  onToggleIntermediateTasks: PropTypes.func,
+  onMarkIntermediateAsDone: PropTypes.func,
+  darkMode: PropTypes.bool,
+};
+
+TaskListView.defaultProps = {
+  onMarkAsDone: undefined,
+  onLogTime: undefined,
+  intermediateTasks: {},
+  expandedTasks: {},
+  onToggleIntermediateTasks: undefined,
+  onMarkIntermediateAsDone: undefined,
+  darkMode: false,
 };
 
 export default TaskListView;
