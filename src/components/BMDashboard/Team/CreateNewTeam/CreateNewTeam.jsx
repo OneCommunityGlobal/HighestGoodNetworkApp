@@ -138,7 +138,7 @@ export default function CreateNewTeam() {
       await Promise.all(assignedMembers.map(userId => dispatch(addTeamMember(newTeamId, userId))));
 
       toast.success(`Team "${formData.teamName}" created successfully!`);
-      history.push('/teams');
+      history.push('/bmdashboard');
     } catch (err) {
       const errMsg =
         err?.response?.data?.error ||
