@@ -161,7 +161,7 @@ function Register() {
         const response = await axios.get(ENDPOINTS.EVENTS_BY_ID(activityId));
         setActivity(response.data || null);
       } catch {
-        const numericId = parseInt(activityId, 10);
+        const numericId = Number.parseInt(activityId, 10);
         const mockActivity = MOCK_ACTIVITIES.find(a => a.id === numericId);
         if (mockActivity) {
           setActivity(mockActivity);
@@ -177,7 +177,7 @@ function Register() {
 
   // Format date/time for API activities (have startTime/endTime ISO strings)
   useEffect(() => {
-    if (!activity || !activity.startTime) return;
+    if (!activity?.startTime) return;
     const eventDateTime = new Date(activity.startTime);
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const eventDate = new Date(
@@ -267,7 +267,7 @@ function Register() {
     if (tokenPayload.name) return tokenPayload.name.trim();
     if (tokenPayload.email) {
       const [local] = tokenPayload.email.split('@');
-      return local ? local.replace(/[._-]+/g, ' ').trim() : null;
+      return local ? local.replaceAll(/[._-]+/gu, ' ').trim() : null;
     }
     return null;
   };
@@ -415,7 +415,12 @@ function Register() {
             onClick={handleRegister}
             disabled={availability === 0 || isRegistering || isAlreadyRegistered}
           >
-            {isRegistering ? 'Registering...' : isAlreadyRegistered ? 'Registered' : 'Register'}
+            {// eslint-disable-next-line no-nested-ternary
+            (() => {
+              if (isRegistering) return 'Registering...';
+              if (isAlreadyRegistered) return 'Registered';
+              return 'Register';
+            })()}
           </button>
           {feedbackMessage && (
             <div

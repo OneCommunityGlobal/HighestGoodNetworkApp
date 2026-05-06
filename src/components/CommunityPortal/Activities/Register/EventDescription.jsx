@@ -131,10 +131,131 @@ function DescriptionSection({ activity, registrants = [] }) {
     const baseKey = String(rawKey || 'item')
       .trim()
       .toLowerCase()
-      .replace(/\s+/g, '-');
+      .replaceAll(/\s+/gu, '-');
     const seenCount = keyUsageMap.get(baseKey) || 0;
     keyUsageMap.set(baseKey, seenCount + 1);
     return seenCount === 0 ? baseKey : `${baseKey}-${seenCount + 1}`;
+  };
+
+  const renderFaqItem = (label, key) => {
+    const lines = label.split('\n');
+    const question = lines
+      .find(l => l.startsWith('Q:'))
+      ?.replaceAll('Q:', '')
+      .trim();
+    const answer = lines
+      .find(l => l.startsWith('A:'))
+      ?.replaceAll('A:', '')
+      .trim();
+    const faqKey = buildUniqueKey(`faq-${question || 'unknown'}-${answer || 'unknown'}`);
+    return (
+      <div
+        key={key || faqKey}
+        className={`${styles.faqCard} ${darkMode ? styles.faqCardDark : ''}`}
+      >
+        <div className={styles.faqQuestionRow}>
+          <span className={styles.faqQBadge}>Q</span>
+          <p className={`${styles.faqQuestionText} ${darkMode ? styles.faqQuestionTextDark : ''}`}>
+            {question}
+          </p>
+        </div>
+        <div className={styles.faqAnswerRow}>
+          <span className={styles.faqABadge}>A</span>
+          <p className={`${styles.faqAnswerText} ${darkMode ? styles.faqAnswerTextDark : ''}`}>
+            {answer}
+          </p>
+        </div>
+      </div>
+    );
+  };
+
+  const renderCommentItem = item => {
+    const commentText = item.comment || item;
+    const commentAuthor = item.author || 'User';
+    const commentKey = buildUniqueKey(`comment-${commentAuthor}-${commentText}`);
+    const initials = commentAuthor
+      .split(' ')
+      .map(s => s[0])
+      .slice(0, 2)
+      .join('')
+      .toUpperCase();
+    return (
+      <div
+        key={commentKey}
+        className={`${styles.commentEntry} ${darkMode ? styles.commentEntryDark : ''}`}
+      >
+        <div className={styles.commentAvatar}>
+          <span>{initials}</span>
+        </div>
+        <div className={styles.commentContent}>
+          <p className={`${styles.commentAuthor} ${darkMode ? styles.commentAuthorDark : ''}`}>
+            {commentAuthor}
+          </p>
+          <p className={`${styles.commentText} ${darkMode ? styles.commentTextDark : ''}`}>
+            {commentText}
+          </p>
+        </div>
+      </div>
+    );
+  };
+
+  const renderParticipantItem = (label, isNewParticipant) => {
+    const nameOnly = label.split(' - ')[0];
+    const participantKey = buildUniqueKey(`participant-${nameOnly}-${label}`);
+    const initials = nameOnly
+      .split(' ')
+      .map(s => s[0])
+      .slice(0, 2)
+      .join('')
+      .toUpperCase();
+    return (
+      <div
+        key={participantKey}
+        className={`${styles.participantRow} ${darkMode ? styles.participantRowDark : ''}`}
+      >
+        <div
+          className={`${styles.participantAvatar} ${darkMode ? styles.participantAvatarDark : ''}`}
+        >
+          {initials}
+        </div>
+        <div className={styles.participantInfo}>
+          <span className={styles.participantName}>{label}</span>
+          {isNewParticipant && (
+            <span
+              className={`${styles.participantBadge} ${
+                darkMode ? styles.participantBadgeDark : ''
+              }`}
+            >
+              New
+            </span>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const renderTabItem = item => {
+    const isParticipantTab = activeTab === 'Participants';
+    const isCommentTab = activeTab === 'Comments';
+    const isFaqTab = activeTab === 'FAQs';
+    const label = typeof item === 'string' ? item : item.label;
+    const isNewParticipant = isParticipantTab && typeof item === 'object' && item.isNew;
+
+    if (isFaqTab) return renderFaqItem(label);
+    if (isCommentTab) return renderCommentItem(item);
+    if (isParticipantTab) return renderParticipantItem(label, isNewParticipant);
+
+    const descriptionKey = buildUniqueKey(`description-${label}`);
+    return (
+      <p
+        key={descriptionKey}
+        className={`${styles.descriptionParagraph} ${
+          darkMode ? styles.descriptionParagraphDark : ''
+        }`}
+      >
+        {label}
+      </p>
+    );
   };
 
   return (
@@ -160,140 +281,7 @@ function DescriptionSection({ activity, registrants = [] }) {
 
       <div className={styles.tabContent}>
         {tabContent[activeTab]?.length > 0 ? (
-          tabContent[activeTab].map(item => {
-            const isParticipantTab = activeTab === 'Participants';
-            const isCommentTab = activeTab === 'Comments';
-            const isFaqTab = activeTab === 'FAQs';
-            const label = typeof item === 'string' ? item : item.label;
-            const isNewParticipant = isParticipantTab && typeof item === 'object' && item.isNew;
-
-            if (isFaqTab) {
-              const lines = label.split('\n');
-              const question = lines
-                .find(l => l.startsWith('Q:'))
-                ?.replaceAll('Q:', '')
-                .trim();
-              const answer = lines
-                .find(l => l.startsWith('A:'))
-                ?.replaceAll('A:', '')
-                .trim();
-              const faqKey = buildUniqueKey(`faq-${question || 'unknown'}-${answer || 'unknown'}`);
-              return (
-                <div
-                  key={faqKey}
-                  className={`${styles.faqCard} ${darkMode ? styles.faqCardDark : ''}`}
-                >
-                  <div className={styles.faqQuestionRow}>
-                    <span className={styles.faqQBadge}>Q</span>
-                    <p
-                      className={`${styles.faqQuestionText} ${
-                        darkMode ? styles.faqQuestionTextDark : ''
-                      }`}
-                    >
-                      {question}
-                    </p>
-                  </div>
-                  <div className={styles.faqAnswerRow}>
-                    <span className={styles.faqABadge}>A</span>
-                    <p
-                      className={`${styles.faqAnswerText} ${
-                        darkMode ? styles.faqAnswerTextDark : ''
-                      }`}
-                    >
-                      {answer}
-                    </p>
-                  </div>
-                </div>
-              );
-            }
-
-            if (isCommentTab) {
-              const commentText = item.comment || item;
-              const commentAuthor = item.author || 'User';
-              const commentKey = buildUniqueKey(`comment-${commentAuthor}-${commentText}`);
-              const initials = commentAuthor
-                .split(' ')
-                .map(s => s[0])
-                .slice(0, 2)
-                .join('')
-                .toUpperCase();
-              return (
-                <div
-                  key={commentKey}
-                  className={`${styles.commentEntry} ${darkMode ? styles.commentEntryDark : ''}`}
-                >
-                  <div className={styles.commentAvatar}>
-                    <span>{initials}</span>
-                  </div>
-                  <div className={styles.commentContent}>
-                    <p
-                      className={`${styles.commentAuthor} ${
-                        darkMode ? styles.commentAuthorDark : ''
-                      }`}
-                    >
-                      {commentAuthor}
-                    </p>
-                    <p
-                      className={`${styles.commentText} ${darkMode ? styles.commentTextDark : ''}`}
-                    >
-                      {commentText}
-                    </p>
-                  </div>
-                </div>
-              );
-            }
-
-            if (isParticipantTab) {
-              const nameOnly = label.split(' - ')[0];
-              const participantKey = buildUniqueKey(`participant-${nameOnly}-${label}`);
-              const initials = nameOnly
-                .split(' ')
-                .map(s => s[0])
-                .slice(0, 2)
-                .join('')
-                .toUpperCase();
-              return (
-                <div
-                  key={participantKey}
-                  className={`${styles.participantRow} ${
-                    darkMode ? styles.participantRowDark : ''
-                  }`}
-                >
-                  <div
-                    className={`${styles.participantAvatar} ${
-                      darkMode ? styles.participantAvatarDark : ''
-                    }`}
-                  >
-                    {initials}
-                  </div>
-                  <div className={styles.participantInfo}>
-                    <span className={styles.participantName}>{label}</span>
-                    {isNewParticipant && (
-                      <span
-                        className={`${styles.participantBadge} ${
-                          darkMode ? styles.participantBadgeDark : ''
-                        }`}
-                      >
-                        New
-                      </span>
-                    )}
-                  </div>
-                </div>
-              );
-            }
-
-            const descriptionKey = buildUniqueKey(`description-${label}`);
-            return (
-              <p
-                key={descriptionKey}
-                className={`${styles.descriptionParagraph} ${
-                  darkMode ? styles.descriptionParagraphDark : ''
-                }`}
-              >
-                {label}
-              </p>
-            );
-          })
+          tabContent[activeTab].map(item => renderTabItem(item))
         ) : (
           <div className={`${styles.emptyState} ${darkMode ? styles.emptyStateDark : ''}`}>
             No {activeTab.toLowerCase()} available at the moment.
