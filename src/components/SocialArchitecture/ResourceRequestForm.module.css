@@ -9,6 +9,11 @@
   box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
 }
 
+.darkContainer {
+  background-color: #1c2541 !important;
+  color: #f9fafb !important;
+}
+
 .formTitle {
   text-align: center;
   margin-bottom: 1.5rem;
@@ -67,6 +72,16 @@ input[type='date'] {
   font-family: inherit;
 }
 
+.darkInput {
+  background-color: #3a506b !important;
+  color: #f9fafb !important;
+  border-color: #4b5563 !important;
+}
+
+.darkInput::placeholder {
+  color: #9ca3af !important;
+}
+
 .phoneInput {
   display: flex;
   gap: 8px;
@@ -107,6 +122,18 @@ input[type='date'] {
 
 .uploadBox input[type='file'] {
   display: none;
+}
+
+.darkUploadBox {
+  background-color: #3a506b !important;
+  color: #d1d5db !important;
+  border-color: #4b5563 !important;
+}
+
+.darkUploadBox:hover {
+  background-color: #2f4157 !important;
+  border-color: #60a5fa !important;
+  color: #93c5fd !important;
 }
 
 .uploadPreview {
@@ -167,9 +194,13 @@ input[type='date'] {
 }
 
 .error {
-  color: #dc2626;
+  color: #dc2626 !important;
   font-size: 0.85rem;
   margin-top: -0.3rem;
+}
+
+.error.errorDark {
+  color: #f87171 !important;
 }
 
 .success {

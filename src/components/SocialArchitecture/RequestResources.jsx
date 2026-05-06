@@ -80,7 +80,9 @@ function RequestResources() {
 
   const handleSubmit = e => {
     e.preventDefault();
+    setSuccessMessage('');
     if (!validateForm()) return;
+
     console.log(formData);
     setSuccessMessage('Your resource request has been submitted successfully.');
     setFormData({
@@ -100,11 +102,7 @@ function RequestResources() {
   };
 
   return (
-    <div
-      className={`${styles.requestResourceContainer} ${
-        darkMode ? 'bg-space-cadet text-light' : ''
-      }`}
-    >
+    <div className={`${styles.requestResourceContainer} ${darkMode ? styles.darkContainer : ''}`}>
       <h2 className={styles.formTitle} style={{ color: darkMode ? '#fff' : undefined }}>
         REQUEST MATERIAL
       </h2>
@@ -127,9 +125,13 @@ function RequestResources() {
             value={formData.eventName}
             onChange={handleChange}
             placeholder="Event Name"
-            className={darkMode ? 'bg-yinmn-blue text-light' : ''}
+            className={darkMode ? styles.darkInput : ''}
           />
-          {errors.eventName && <p className={styles.error}>{errors.eventName}</p>}
+          {errors.eventName && (
+            <p className={`${styles.error} ${darkMode ? styles.errorDark : ''}`}>
+              {errors.eventName}
+            </p>
+          )}
         </div>
 
         <div className={`${styles.formGroup} ${styles.largeWidth}`}>
@@ -143,9 +145,13 @@ function RequestResources() {
             value={formData.organizerName}
             onChange={handleChange}
             placeholder="Name"
-            className={darkMode ? 'bg-yinmn-blue text-light' : ''}
+            className={darkMode ? styles.darkInput : ''}
           />
-          {errors.organizerName && <p className={styles.error}>{errors.organizerName}</p>}
+          {errors.organizerName && (
+            <p className={`${styles.error} ${darkMode ? styles.errorDark : ''}`}>
+              {errors.organizerName}
+            </p>
+          )}
         </div>
 
         <div className={`${styles.formGroup} ${styles.largeWidth}`}>
@@ -159,9 +165,13 @@ function RequestResources() {
             value={formData.itemName}
             onChange={handleChange}
             placeholder="Name of item you want to request"
-            className={darkMode ? 'bg-yinmn-blue text-light' : ''}
+            className={darkMode ? styles.darkInput : ''}
           />
-          {errors.itemName && <p className={styles.error}>{errors.itemName}</p>}
+          {errors.itemName && (
+            <p className={`${styles.error} ${darkMode ? styles.errorDark : ''}`}>
+              {errors.itemName}
+            </p>
+          )}
         </div>
 
         <div className={`${styles.formGroup} ${styles.largeWidth}`}>
@@ -176,9 +186,13 @@ function RequestResources() {
             onChange={handleChange}
             placeholder="Qty"
             min="1"
-            className={darkMode ? 'bg-yinmn-blue text-light' : ''}
+            className={darkMode ? styles.darkInput : ''}
           />
-          {errors.requestQuantity && <p className={styles.error}>{errors.requestQuantity}</p>}
+          {errors.requestQuantity && (
+            <p className={`${styles.error} ${darkMode ? styles.errorDark : ''}`}>
+              {errors.requestQuantity}
+            </p>
+          )}
         </div>
 
         <div className={`${styles.formGroup} ${styles.Date}`}>
@@ -192,9 +206,14 @@ function RequestResources() {
             value={formData.requestedDate}
             onChange={handleChange}
             min={today}
-            className={darkMode ? 'bg-yinmn-blue text-light' : ''}
+            className={darkMode ? styles.darkInput : ''}
+            style={darkMode ? { colorScheme: 'dark' } : undefined}
           />
-          {errors.requestedDate && <p className={styles.error}>{errors.requestedDate}</p>}
+          {errors.requestedDate && (
+            <p className={`${styles.error} ${darkMode ? styles.errorDark : ''}`}>
+              {errors.requestedDate}
+            </p>
+          )}
         </div>
 
         <div className={`${styles.formGroup} ${styles.Date}`}>
@@ -208,9 +227,14 @@ function RequestResources() {
             value={formData.returnDate}
             onChange={handleChange}
             min={formData.requestedDate || today}
-            className={darkMode ? 'bg-yinmn-blue text-light' : ''}
+            className={darkMode ? styles.darkInput : ''}
+            style={darkMode ? { colorScheme: 'dark' } : undefined}
           />
-          {errors.returnDate && <p className={styles.error}>{errors.returnDate}</p>}
+          {errors.returnDate && (
+            <p className={`${styles.error} ${darkMode ? styles.errorDark : ''}`}>
+              {errors.returnDate}
+            </p>
+          )}
         </div>
 
         <div className={styles.formGroup}>
@@ -225,9 +249,13 @@ function RequestResources() {
               value={formData.countryCode}
               onChange={handleCountryCodeChange}
               placeholder="+1"
-              className={darkMode ? 'bg-yinmn-blue text-light' : ''}
+              className={darkMode ? styles.darkInput : ''}
             />
-            {errors.countryCode && <p className={styles.error}>{errors.countryCode}</p>}
+            {errors.countryCode && (
+              <p className={`${styles.error} ${darkMode ? styles.errorDark : ''}`}>
+                {errors.countryCode}
+              </p>
+            )}
             <input
               type="text"
               id="phoneNumber"
@@ -236,9 +264,13 @@ function RequestResources() {
               onChange={handlePhoneChange}
               placeholder="XXX-XXX-XXXX"
               inputMode="numeric"
-              className={darkMode ? 'bg-yinmn-blue text-light' : ''}
+              className={darkMode ? styles.darkInput : ''}
             />
-            {errors.phoneNumber && <p className={styles.error}>{errors.phoneNumber}</p>}
+            {errors.phoneNumber && (
+              <p className={`${styles.error} ${darkMode ? styles.errorDark : ''}`}>
+                {errors.phoneNumber}
+              </p>
+            )}
           </div>
         </div>
 
@@ -248,7 +280,7 @@ function RequestResources() {
           </label>
           <label
             htmlFor="materialImage"
-            className={`${styles.uploadBox} ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
+            className={`${styles.uploadBox} ${darkMode ? styles.darkUploadBox : ''}`}
           >
             Drag and drop your picture here
             <input
@@ -265,7 +297,11 @@ function RequestResources() {
               <img src={URL.createObjectURL(formData.materialImage)} alt="Preview" />
             </div>
           )}
-          {errors.materialImage && <p className={styles.error}>{errors.materialImage}</p>}
+          {errors.materialImage && (
+            <p className={`${styles.error} ${darkMode ? styles.errorDark : ''}`}>
+              {errors.materialImage}
+            </p>
+          )}
         </div>
 
         <div className={styles.formGroup}>
@@ -279,7 +315,7 @@ function RequestResources() {
             onChange={handleChange}
             placeholder="Describe your material in detail."
             rows="4"
-            className={darkMode ? 'bg-yinmn-blue text-light' : ''}
+            className={darkMode ? styles.darkInput : ''}
           />
         </div>
 
