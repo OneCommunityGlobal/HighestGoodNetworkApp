@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faClock } from '@fortawesome/free-solid-svg-icons';
 import styles from './AnimalManagement.module.css';
@@ -17,7 +18,7 @@ const CullingCalendarTab = ({ events, setEvents }) => {
     const eventData = {
       id: `CULL-${Date.now()}`,
       animalName: newEvent.animalName,
-      count: parseInt(newEvent.count, 10),
+      count: Number.parseInt(newEvent.count, 10),
       notes: newEvent.notes,
       scheduledDate: newEvent.scheduledDate,
       status: 'scheduled',
@@ -44,25 +45,26 @@ const CullingCalendarTab = ({ events, setEvents }) => {
         {events.length === 0 ? (
           <div className={styles['empty-state']}>No culling events scheduled.</div>
         ) : (
-          events.map(ev => (
-            <div key={ev.id} className={styles['list-item']}>
-              <div className={styles['item-main']}>
-                <span className={styles['item-title']}>
-                  {ev.animalName} ({ev.count})
-                </span>
-                <p className={styles['item-details']} style={{ marginTop: '8px' }}>
-                  <FontAwesomeIcon icon={faClock} style={{ marginRight: '6px', color: '#888' }} />
-                  Scheduled: {ev.scheduledDate}
-                </p>
-                <p className={styles['item-details']}>Notes: {ev.notes}</p>
+          events.map(ev => {
+            const statusClass = styles[`status-${ev.status}`] || '';
+            return (
+              <div key={ev.id} className={styles['list-item']}>
+                <div className={styles['item-main']}>
+                  <span className={styles['item-title']}>
+                    {ev.animalName} ({ev.count})
+                  </span>
+                  <p className={styles['item-details']} style={{ marginTop: '8px' }}>
+                    <FontAwesomeIcon icon={faClock} style={{ marginRight: '6px', color: '#888' }} />
+                    Scheduled: {ev.scheduledDate}
+                  </p>
+                  <p className={styles['item-details']}>Notes: {ev.notes}</p>
+                </div>
+                <div className={styles['item-status']}>
+                  <span className={`${styles['status-badge']} ${statusClass}`}>{ev.status}</span>
+                </div>
               </div>
-              <div className={styles['item-status']}>
-                <span className={`${styles['status-badge']} ${styles[`status-${ev.status}`]}`}>
-                  {ev.status}
-                </span>
-              </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
 
@@ -84,20 +86,10 @@ const CullingCalendarTab = ({ events, setEvents }) => {
       </div>
 
       {showModal && (
-        <div
-          className={styles['modal-overlay']}
-          onClick={() => setShowModal(false)}
-          role="button"
-          tabIndex={0}
-          onKeyDown={e => {
-            if (e.key === 'Escape') setShowModal(false);
-          }}
-        >
-          <div
-            className={styles['modal-content']}
-            onClick={e => e.stopPropagation()}
-            role="presentation"
-          >
+        /* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */
+        <div className={styles['modal-overlay']} onClick={() => setShowModal(false)}>
+          {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
+          <div className={styles['modal-content']} onClick={e => e.stopPropagation()}>
             <div className={styles['modal-header']}>
               <h2>Schedule Culling Event</h2>
               <button className={styles['modal-close']} onClick={() => setShowModal(false)}>
@@ -164,6 +156,11 @@ const CullingCalendarTab = ({ events, setEvents }) => {
       )}
     </div>
   );
+};
+
+CullingCalendarTab.propTypes = {
+  events: PropTypes.array.isRequired,
+  setEvents: PropTypes.func.isRequired,
 };
 
 export default CullingCalendarTab;

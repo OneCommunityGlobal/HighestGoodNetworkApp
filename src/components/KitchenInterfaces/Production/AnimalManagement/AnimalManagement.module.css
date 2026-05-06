@@ -1,7 +1,7 @@
 .animal-management-container {
   padding: 30px 40px;
   width: 100%;
-  font-family: 'Inter', 'Roboto', sans-serif;
+  font-family: Inter, Roboto, sans-serif;
   color: #333;
 }
 
@@ -18,7 +18,7 @@
 
 .page-subtitle {
   font-size: 14px;
-  color: #666;
+  color: #595959;
 }
 
 .dashboard-cards {
@@ -35,14 +35,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 6px rgb(0 0 0 / 5%);
   border: 1px solid #e1e8e2;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .dashboard-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 6px 12px rgb(0 0 0 / 8%);
 }
 
 .card-info {
@@ -52,7 +52,7 @@
 
 .card-title {
   font-size: 13px;
-  color: #666;
+  color: #595959;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: 8px;
@@ -88,7 +88,7 @@
   padding: 8px 16px;
   font-size: 15px;
   font-weight: 500;
-  color: #666;
+  color: #595959;
   cursor: pointer;
   border-radius: 20px;
   transition: all 0.2s;
@@ -110,11 +110,11 @@
   background: white;
   border-radius: 12px;
   padding: 25px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 6px rgb(0 0 0 / 5%);
   border: 1px solid #e1e8e2;
 }
 
-/* Tab Headers */
+
 .tab-header {
   display: flex;
   justify-content: space-between;
@@ -130,11 +130,11 @@
 
 .tab-title-group p {
   font-size: 13px;
-  color: #777;
+  color: #595959;
 }
 
 .btn-primary {
-  background: #d4a373;
+  background: #8c5a2b;
   color: white;
   border: none;
   padding: 8px 20px;
@@ -149,7 +149,7 @@
 }
 
 .btn-primary:hover {
-  background: #c39262;
+  background: #6e4620;
 }
 
 .btn-secondary {
@@ -168,7 +168,7 @@
   background: #f7f7f7;
 }
 
-/* List Items */
+
 .list-container {
   display: flex;
   flex-direction: column;
@@ -202,7 +202,7 @@
 }
 
 .item-subtitle {
-  color: #666;
+  color: #595959;
   font-size: 14px;
 }
 
@@ -214,7 +214,7 @@
 
 .item-dates {
   font-size: 13px;
-  color: #777;
+  color: #595959;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -241,12 +241,12 @@
 
 .status-shipped {
   background: #e7f5ff;
-  color: #1c7ed6;
+  color: #115293;
 }
 
 .status-delivered {
   background: #ebfbee;
-  color: #2b8a3e;
+  color: #1c5d2a;
 }
 
 .status-scheduled {
@@ -262,17 +262,17 @@
 .empty-state {
   text-align: center;
   padding: 40px;
-  color: #888;
+  color: #595959;
   font-size: 15px;
 }
 
-/* Dark Mode support */
+
 .dark-mode {
   color: #e4e6eb;
 }
 
 .dark-mode .page-title {
-  color: #a3e635; /* a highly visible green */
+  color: #a3e635; 
 }
 
 .dark-mode .page-subtitle,
@@ -286,7 +286,7 @@
 .dark-mode .tab-content {
   background: #242526;
   border-color: #3a3b3c;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 6px rgb(0 0 0 / 30%);
 }
 
 .dark-mode .card-value {
@@ -294,7 +294,7 @@
 }
 
 .dark-mode .tab-button {
-  color: #b0b3b8;
+  color: #ccc;
 }
 
 .dark-mode .tab-button:hover {
@@ -324,7 +324,7 @@
 }
 
 .dark-mode .item-subtitle {
-  color: #b0b3b8;
+  color: #ccc;
 }
 
 .dark-mode .tab-title-group h3 {
@@ -341,14 +341,11 @@
   background: #4a4b4c;
 }
 
-/* Modal Simple Styles */
+
 .modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  inset: 0;
+  background: rgb(0 0 0 / 50%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -361,7 +358,7 @@
   border-radius: 12px;
   width: 90%;
   max-width: 500px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 25px rgb(0 0 0 / 20%);
 }
 
 .dark-mode .modal-content {
@@ -381,7 +378,7 @@
   border: none;
   font-size: 24px;
   cursor: pointer;
-  color: #888;
+  color: #595959;
 }
 
 .form-group {
@@ -418,33 +415,33 @@
   margin-top: 25px;
 }
 
-/* Dark Mode status badges */
+
 .dark-mode .status-ordered {
   background: #343a40 !important;
-  color: #f8f9fa !important;
+  color: #fff !important;
 }
 
 .dark-mode .status-shipped {
   background: #1864ab !important;
-  color: #e7f5ff !important;
+  color: #fff !important;
 }
 
 .dark-mode .status-delivered {
-  background: #2b8a3e !important;
-  color: #ebfbee !important;
+  background: #1c5d2a !important;
+  color: #fff !important;
 }
 
 .dark-mode .status-scheduled {
   background: #5f3dc4 !important;
-  color: #f3f0ff !important;
+  color: #fff !important;
 }
 
 .dark-mode .status-confirmed {
   background: #868e96 !important;
-  color: #212529 !important;
+  color: #fff !important;
 }
 
-/* ─── Feed Management: Two-column split ─── */
+
 .feed-split-layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -452,7 +449,7 @@
   align-items: start;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .feed-split-layout {
     grid-template-columns: 1fr;
   }
@@ -491,16 +488,16 @@
   font-size: 16px;
   font-weight: 600;
   color: #222;
-  margin: 0 0 2px 0;
+  margin: 0 0 2px;
 }
 
 .panel-subtitle {
   font-size: 12px;
-  color: #888;
+  color: #595959;
   margin: 0;
 }
 
-/* ─── Inventory rows ─── */
+
 .feed-inventory-list {
   display: flex;
   flex-direction: column;
@@ -534,10 +531,10 @@
 
 .inventory-row-detail {
   font-size: 12px;
-  color: #888;
+  color: #595959;
 }
 
-/* ─── Bottom action buttons ─── */
+
 .btn-add-row {
   width: 100%;
   margin-top: 16px;
@@ -557,7 +554,7 @@
 
 .btn-add-row:hover {
   border-color: #52b788;
-  color: #2b8a3e;
+  color: #1c5d2a;
   background: #f8fdf9;
 }
 
@@ -565,7 +562,7 @@
   width: 100%;
   margin-top: 20px;
   padding: 13px;
-  background: #52b788;
+  background: #246e49;
   color: white;
   border: none;
   border-radius: 8px;
@@ -579,7 +576,7 @@
 }
 
 .btn-order-feed:hover {
-  background: #40a070;
+  background: #1a5236;
 }
 
 .order-row-top {
@@ -590,7 +587,7 @@
   margin-bottom: 4px;
 }
 
-/* ─── Dark mode: Feed split layout ─── */
+
 .dark-mode .feed-panel {
   background: #242526;
   border-color: #3a3b3c;
@@ -609,12 +606,12 @@
 }
 
 .dark-mode .inventory-row-detail {
-  color: #888;
+  color: #595959;
 }
 
 .dark-mode .btn-add-row {
   border-color: #4a4b4c;
-  color: #b0b3b8;
+  color: #ccc;
   background: none;
 }
 
@@ -624,10 +621,10 @@
   background: #1a2e22;
 }
 
-/* Good / Warning badges */
+
 .status-good {
   background: #ebfbee;
-  color: #2b8a3e;
+  color: #1c5d2a;
   display: inline-flex;
   align-items: center;
   padding: 3px 10px;
@@ -638,7 +635,7 @@
 
 .status-warning {
   background: #fff3bf;
-  color: #e67700;
+  color: #a65600;
   display: inline-flex;
   align-items: center;
   padding: 3px 10px;
@@ -649,11 +646,11 @@
 
 .dark-mode .status-good {
   background: #1a3d22 !important;
-  color: #8ce99a !important;
+  color: #fff !important;
 }
 
 .dark-mode .status-warning {
   background: #3d2e00 !important;
-  color: #ffd43b !important;
+  color: #fff !important;
 }
 

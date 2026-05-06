@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faPlus,
@@ -7,13 +8,10 @@ import {
   faWarehouse,
   faArchive,
 } from '@fortawesome/free-solid-svg-icons';
-import { useSelector } from 'react-redux';
 import styles from './ProcessingLandingPage.module.css';
 import ProcessingProjectCard from './ProcessingProjectCard';
 
 const ProcessingQueue = ({ title, subtitle, projects, onAddProject, type }) => {
-  const darkMode = useSelector(state => state.theme.darkMode);
-
   const getIcon = type => {
     switch (type) {
       case 'canning':
@@ -57,7 +55,7 @@ const ProcessingQueue = ({ title, subtitle, projects, onAddProject, type }) => {
             <p className={styles.queueSubtitle}>{subtitle}</p>
           </div>
         </div>
-        <button className={styles.addProjectBtn} onClick={onAddProject}>
+        <button type="button" className={styles.addProjectBtn} onClick={onAddProject}>
           <FontAwesomeIcon icon={faPlus} /> Add {type === 'cellarStorage' ? 'Item' : 'Project'}
         </button>
       </div>
@@ -75,6 +73,14 @@ const ProcessingQueue = ({ title, subtitle, projects, onAddProject, type }) => {
       </div>
     </div>
   );
+};
+
+ProcessingQueue.propTypes = {
+  title: PropTypes.string.isRequired,
+  subtitle: PropTypes.string.isRequired,
+  projects: PropTypes.array.isRequired,
+  onAddProject: PropTypes.func.isRequired,
+  type: PropTypes.string.isRequired,
 };
 
 export default ProcessingQueue;

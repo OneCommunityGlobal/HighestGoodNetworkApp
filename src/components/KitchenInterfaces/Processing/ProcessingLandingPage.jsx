@@ -21,27 +21,32 @@ const DASHBOARD_METRICS = [
   { id: 4, title: 'Cellar Storage', value: 180, icon: faWarehouse, iconClass: styles.iconGreen },
 ];
 
+const ACTIVE_STATUS = 'active';
+const UNITS_STR = 'units';
+
 const PROCESSING_METHODS = [
-  { id: 'canning', name: 'Canning', total: 245, thisMonth: 45, status: 'active' },
-  { id: 'dehydration', name: 'Dehydration', total: 128, thisMonth: 28, status: 'active' },
-  { id: 'freezeDrying', name: 'Freeze Drying', total: 67, thisMonth: 12, status: 'active' },
-  { id: 'cellarStorage', name: 'Cellar Storage', total: 180, thisMonth: 52, status: 'active' },
+  { id: 'canning', name: 'Canning', total: 245, thisMonth: 45, status: ACTIVE_STATUS },
+  { id: 'dehydration', name: 'Dehydration', total: 128, thisMonth: 28, status: ACTIVE_STATUS },
+  { id: 'freezeDrying', name: 'Freeze Drying', total: 67, thisMonth: 12, status: ACTIVE_STATUS },
+  { id: 'cellarStorage', name: 'Cellar Storage', total: 180, thisMonth: 52, status: ACTIVE_STATUS },
 ];
 
 const CANNING_SUPPLIES = [
-  { name: 'Quart Jars', quantity: '120 units' },
-  { name: 'Pint Jars', quantity: '85 units' },
-  { name: 'Canning Lids', quantity: '200 units' },
+  { name: 'Quart Jars', quantity: `120 ${UNITS_STR}` },
+  { name: 'Pint Jars', quantity: `85 ${UNITS_STR}` },
+  { name: 'Canning Lids', quantity: `200 ${UNITS_STR}` },
 ];
 
 const STORAGE_SUPPLIES = [
-  { name: 'Vacuum Seal Bags (Quart)', quantity: '45 units' },
-  { name: 'Mylar Bags (Gallon)', quantity: '38 units' },
-  { name: 'Cellar Storage Bins', quantity: '12 units' },
+  { name: 'Vacuum Seal Bags (Quart)', quantity: `45 ${UNITS_STR}` },
+  { name: 'Mylar Bags (Gallon)', quantity: `38 ${UNITS_STR}` },
+  { name: 'Cellar Storage Bins', quantity: `12 ${UNITS_STR}` },
 ];
 
+const OVERVIEW_STR = 'Processing Overview';
+
 const SECTIONS = [
-  'Processing Overview',
+  OVERVIEW_STR,
   'Canning',
   'Dehydration',
   'Freeze Drying',
@@ -164,8 +169,8 @@ const ProcessingLandingPage = () => {
             <div className={styles.suppliesList}>
               <div className={styles.supplyCategory}>
                 <h3 className={styles.categoryTitle}>Canning Supplies</h3>
-                {CANNING_SUPPLIES.map((item, idx) => (
-                  <div key={idx} className={styles.supplyItem}>
+                {CANNING_SUPPLIES.map(item => (
+                  <div key={item.name} className={styles.supplyItem}>
                     <span className={styles.supplyName}>{item.name}</span>
                     <span className={styles.supplyQuantity}>{item.quantity}</span>
                   </div>
@@ -174,8 +179,8 @@ const ProcessingLandingPage = () => {
 
               <div className={styles.supplyCategory}>
                 <h3 className={styles.categoryTitle}>Storage Materials</h3>
-                {STORAGE_SUPPLIES.map((item, idx) => (
-                  <div key={idx} className={styles.supplyItem}>
+                {STORAGE_SUPPLIES.map(item => (
+                  <div key={item.name} className={styles.supplyItem}>
                     <span className={styles.supplyName}>{item.name}</span>
                     <span className={styles.supplyQuantity}>{item.quantity}</span>
                   </div>
@@ -285,15 +290,15 @@ const ProcessingLandingPage = () => {
         ))}
       </div>
 
-      {error ? (
+      {error && (
         <div className="alert alert-danger" style={{ margin: '20px 0' }}>
           {error}
         </div>
-      ) : loading ? (
-        <div style={{ padding: '40px', textAlign: 'center' }}>Loading projects...</div>
-      ) : (
-        renderContent()
       )}
+      {loading && !error && (
+        <div style={{ padding: '40px', textAlign: 'center' }}>Loading projects...</div>
+      )}
+      {!loading && !error && renderContent()}
 
       <AddProcessingProjectModal
         isOpen={isModalOpen}

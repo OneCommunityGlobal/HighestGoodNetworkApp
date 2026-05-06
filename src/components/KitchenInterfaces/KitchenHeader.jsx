@@ -43,10 +43,7 @@ const KitchenHeader = () => {
             className={styles.navItem}
             activeClassName={styles.activeLink}
             onClick={() => setIsMenuOpen(false)} // Close menu on click
-            isActive={match => {
-              if (!match) return false;
-              return true;
-            }}
+            isActive={match => !!match}
           >
             {item.name}
             {item.isDropdown && <span className={styles.dropdownArrow}>▼</span>}
@@ -56,7 +53,8 @@ const KitchenHeader = () => {
 
       {/* Overlay for mobile when menu is open */}
       {isMenuOpen && (
-        <div
+        <button
+          type="button"
           className={styles.overlay}
           onClick={() => setIsMenuOpen(false)}
           onKeyDown={e => {
@@ -64,8 +62,6 @@ const KitchenHeader = () => {
               setIsMenuOpen(false);
             }
           }}
-          role="button"
-          tabIndex={0}
           aria-label="Close menu"
         />
       )}

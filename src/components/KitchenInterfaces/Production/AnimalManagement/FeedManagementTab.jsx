@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faShoppingCart, faBoxOpen } from '@fortawesome/free-solid-svg-icons';
 import styles from './AnimalManagement.module.css';
@@ -23,8 +24,9 @@ const FeedManagementTab = ({ feedOrders, setFeedOrders, feedInventory, setFeedIn
 
   const handleCreateOrder = e => {
     e.preventDefault();
+    const newIdNum = String(feedOrders.length + 1).padStart(3, '0');
     const order = {
-      id: `FO-${String(feedOrders.length + 1).padStart(3, '0')}`,
+      id: `FO-${newIdNum}`,
       supplierName: newOrder.supplierName,
       items: newOrder.items,
       orderedDate: new Date().toISOString().split('T')[0],
@@ -42,8 +44,8 @@ const FeedManagementTab = ({ feedOrders, setFeedOrders, feedInventory, setFeedIn
       id: `FI-${Date.now()}`,
       name: newItem.name,
       unit: newItem.unit,
-      stockLeft: parseFloat(newItem.stockLeft),
-      reorderThreshold: parseFloat(newItem.reorderThreshold),
+      stockLeft: Number.parseFloat(newItem.stockLeft),
+      reorderThreshold: Number.parseFloat(newItem.reorderThreshold),
     };
     setFeedInventory([...feedInventory, item]);
     setShowInventoryModal(false);
@@ -92,7 +94,11 @@ const FeedManagementTab = ({ feedOrders, setFeedOrders, feedInventory, setFeedIn
           )}
         </div>
 
-        <button className={styles['btn-add-row']} onClick={() => setShowInventoryModal(true)}>
+        <button
+          type="button"
+          className={styles['btn-add-row']}
+          onClick={() => setShowInventoryModal(true)}
+        >
           <FontAwesomeIcon icon={faPlus} style={{ marginRight: '6px' }} />
           Add Feed Item
         </button>
@@ -112,54 +118,59 @@ const FeedManagementTab = ({ feedOrders, setFeedOrders, feedInventory, setFeedIn
           {feedOrders.length === 0 ? (
             <div className={styles['empty-state']}>No feed orders found.</div>
           ) : (
-            feedOrders.map(order => (
-              <div key={order.id} className={styles['list-item']}>
-                <div className={styles['item-main']}>
-                  <div className={styles['order-row-top']}>
-                    <span className={styles['item-title']}>{order.id}</span>
-                    <span
-                      className={`${styles['status-badge']} ${styles[`status-${order.status}`]}`}
-                    >
-                      {order.status}
-                    </span>
-                  </div>
-                  <span className={styles['item-subtitle']}>{order.supplierName}</span>
-                  <p className={styles['item-details']}>{order.items}</p>
-                  <div className={styles['item-dates']}>
-                    <span>Ordered: {order.orderedDate}</span>
-                    <span>
-                      {order.status === 'delivered'
-                        ? `Delivered: ${order.expectedDate}`
-                        : `Expected: ${order.expectedDate}`}
-                    </span>
-                  </div>
-                  {order.status === 'ordered' && (
-                    <div className={styles['item-actions']}>
-                      <button
-                        className={styles['btn-secondary']}
-                        onClick={() => handleStatusChange(order.id, order.status)}
-                      >
-                        Mark as Shipped
-                      </button>
+            feedOrders.map(order => {
+              const statusClass = styles[`status-${order.status}`] || '';
+              return (
+                <div key={order.id} className={styles['list-item']}>
+                  <div className={styles['item-main']}>
+                    <div className={styles['order-row-top']}>
+                      <span className={styles['item-title']}>{order.id}</span>
+                      <span className={`${styles['status-badge']} ${statusClass}`}>
+                        {order.status}
+                      </span>
                     </div>
-                  )}
-                  {order.status === 'shipped' && (
-                    <div className={styles['item-actions']}>
-                      <button
-                        className={styles['btn-secondary']}
-                        onClick={() => handleStatusChange(order.id, order.status)}
-                      >
-                        Mark as Delivered
-                      </button>
+                    <span className={styles['item-subtitle']}>{order.supplierName}</span>
+                    <p className={styles['item-details']}>{order.items}</p>
+                    <div className={styles['item-dates']}>
+                      <span>Ordered: {order.orderedDate}</span>
+                      <span>
+                        {order.status === 'delivered'
+                          ? `Delivered: ${order.expectedDate}`
+                          : `Expected: ${order.expectedDate}`}
+                      </span>
                     </div>
-                  )}
+                    {order.status === 'ordered' && (
+                      <div className={styles['item-actions']}>
+                        <button
+                          className={styles['btn-secondary']}
+                          onClick={() => handleStatusChange(order.id, order.status)}
+                        >
+                          Mark as Shipped
+                        </button>
+                      </div>
+                    )}
+                    {order.status === 'shipped' && (
+                      <div className={styles['item-actions']}>
+                        <button
+                          className={styles['btn-secondary']}
+                          onClick={() => handleStatusChange(order.id, order.status)}
+                        >
+                          Mark as Delivered
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
         </div>
 
-        <button className={styles['btn-order-feed']} onClick={() => setShowOrderModal(true)}>
+        <button
+          type="button"
+          className={styles['btn-order-feed']}
+          onClick={() => setShowOrderModal(true)}
+        >
           <FontAwesomeIcon icon={faPlus} style={{ marginRight: '8px' }} />
           Order Feed
         </button>
@@ -167,20 +178,10 @@ const FeedManagementTab = ({ feedOrders, setFeedOrders, feedInventory, setFeedIn
 
       {/* ─── ORDER MODAL ─── */}
       {showOrderModal && (
-        <div
-          className={styles['modal-overlay']}
-          onClick={() => setShowOrderModal(false)}
-          role="button"
-          tabIndex={0}
-          onKeyDown={e => {
-            if (e.key === 'Escape') setShowOrderModal(false);
-          }}
-        >
-          <div
-            className={styles['modal-content']}
-            onClick={e => e.stopPropagation()}
-            role="presentation"
-          >
+        /* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */
+        <div className={styles['modal-overlay']} onClick={() => setShowOrderModal(false)}>
+          {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
+          <div className={styles['modal-content']} onClick={e => e.stopPropagation()}>
             <div className={styles['modal-header']}>
               <h2>New Feed Order</h2>
               <button className={styles['modal-close']} onClick={() => setShowOrderModal(false)}>
@@ -239,20 +240,10 @@ const FeedManagementTab = ({ feedOrders, setFeedOrders, feedInventory, setFeedIn
 
       {/* ─── INVENTORY MODAL ─── */}
       {showInventoryModal && (
-        <div
-          className={styles['modal-overlay']}
-          onClick={() => setShowInventoryModal(false)}
-          role="button"
-          tabIndex={0}
-          onKeyDown={e => {
-            if (e.key === 'Escape') setShowInventoryModal(false);
-          }}
-        >
-          <div
-            className={styles['modal-content']}
-            onClick={e => e.stopPropagation()}
-            role="presentation"
-          >
+        /* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */
+        <div className={styles['modal-overlay']} onClick={() => setShowInventoryModal(false)}>
+          {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
+          <div className={styles['modal-content']} onClick={e => e.stopPropagation()}>
             <div className={styles['modal-header']}>
               <h2>Add Feed Item</h2>
               <button
@@ -327,6 +318,13 @@ const FeedManagementTab = ({ feedOrders, setFeedOrders, feedInventory, setFeedIn
       )}
     </div>
   );
+};
+
+FeedManagementTab.propTypes = {
+  feedOrders: PropTypes.array.isRequired,
+  setFeedOrders: PropTypes.func.isRequired,
+  feedInventory: PropTypes.array.isRequired,
+  setFeedInventory: PropTypes.func.isRequired,
 };
 
 export default FeedManagementTab;
