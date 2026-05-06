@@ -437,7 +437,7 @@
 }
 
 .dark-mode .status-confirmed {
-  background: #868e96 !important;
+  background: #495057 !important; /* Darkened for WCAG contrast with white text */
   color: #fff !important;
 }
 

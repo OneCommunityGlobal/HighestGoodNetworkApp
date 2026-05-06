@@ -614,7 +614,7 @@
 }
 
 .darkMode .methodStatus {
-  background-color: rgb(40 167 69 / 20%);
+  background-color: #1e3824; /* Solid equivalent of rgb(40 167 69 / 20%) over #1c1c1c */
   color: #fff;
   border: 1px solid #2ea043;
   box-shadow: none;
@@ -625,19 +625,19 @@
 }
 
 .darkMode .priorityHigh {
-    background-color: rgb(198 40 40 / 20%);
+    background-color: #3b1a1a; /* Solid equivalent of rgb(198 40 40 / 20%) over #1c1c1c */
     border-color: #c62828;
     color: #fff;
 }
 
 .darkMode .priorityMedium {
-    background-color: rgb(239 108 0 / 20%);
+    background-color: #382a1a; /* Solid equivalent of rgb(239 108 0 / 20%) over #1c1c1c */
     border-color: #ef6c00;
     color: #fff;
 }
 
 .darkMode .priorityLow {
-    background-color: rgb(21 101 192 / 20%);
+    background-color: #1a2438; /* Solid equivalent of rgb(21 101 192 / 20%) over #1c1c1c */
     border-color: #1565c0;
     color: #fff;
 }
