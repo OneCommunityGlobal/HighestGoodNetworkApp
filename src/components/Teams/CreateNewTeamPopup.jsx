@@ -95,8 +95,8 @@ export const CreateNewTeamPopup = React.memo(props => {
                 : {}
             }
           >
-            That's a great team name! So great that someone else already created that team. Please
-            choose a new name or use the existing team.
+            That&apos;s a great team name! So great that someone else already created that team.
+            Please choose a new name or use the existing team.
           </Alert>
         )}
       </ModalBody>
