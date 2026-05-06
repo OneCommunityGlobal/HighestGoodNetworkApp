@@ -136,6 +136,16 @@ const OuterPercentLabel = ({ cx, cy, midAngle, outerRadius, percent, name, fill 
   );
 };
 
+OuterPercentLabel.propTypes = {
+  cx: PropTypes.number,
+  cy: PropTypes.number,
+  midAngle: PropTypes.number,
+  outerRadius: PropTypes.number,
+  percent: PropTypes.number,
+  name: PropTypes.string,
+  fill: PropTypes.string,
+};
+
 CustomLabel.propTypes = {
   cx: PropTypes.number,
   cy: PropTypes.number,
