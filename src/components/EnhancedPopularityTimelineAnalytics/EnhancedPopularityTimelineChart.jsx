@@ -14,6 +14,7 @@ import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import styles from './EnhancedPopularityTimelineChart.module.css';
+import { ENDPOINTS } from '../../utils/URL';
 
 /**
  * Enhanced Popularity Timeline Chart Component
@@ -21,27 +22,20 @@ import styles from './EnhancedPopularityTimelineChart.module.css';
 
 // --- Data Fetching Functions ---
 const fetchEnhancedPopularityData = async ({ range, roles = [], includeLowVolume }) => {
-  const params = {
-    groupByRole: 'true',
-    includeLowVolume: includeLowVolume.toString(),
-  };
+  const url = ENDPOINTS.ENHANCED_POPULARITY(
+    range,
+    roles,
+    null, // start (optional)
+    null, // end (optional)
+    includeLowVolume,
+  );
 
-  if (roles.length > 0 && !roles.includes('All Roles')) {
-    params.roles = roles.join(',');
-  }
-
-  if (range && range !== 'all') {
-    params.range = range;
-  }
-
-  const { data } = await axios.get('http://localhost:4500/api/popularity-enhanced/timeline', {
-    params,
-  });
+  const { data } = await axios.get(url);
   return data;
 };
 
 const fetchEnhancedRoles = async () => {
-  const { data } = await axios.get('http://localhost:4500/api/popularity-enhanced/roles-enhanced');
+  const { data } = await axios.get(ENDPOINTS.ENHANCED_POPULARITY_ROLES);
   return data;
 };
 

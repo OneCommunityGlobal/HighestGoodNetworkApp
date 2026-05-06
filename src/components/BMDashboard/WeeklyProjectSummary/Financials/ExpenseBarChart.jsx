@@ -4,13 +4,30 @@ import { useState, useEffect } from 'react';
 const categories = ['Plumbing', 'Electrical', 'Structural', 'Mechanical'];
 const projects = ['Project A', 'Project B', 'Project C'];
 
-export default function ExpenseBarChart() {
+export default function ExpenseBarChart({ darkMode }) {
   const [projectId, setProjectId] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('ALL');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [data, setData] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
+
+  // Dark Mode Styles for Inputs/Selects
+  const inputStyle = {
+    marginLeft: '0.3rem',
+    width: '100%',
+    padding: '4px',
+    borderRadius: '4px',
+    backgroundColor: darkMode ? '#333' : '#fff',
+    color: darkMode ? '#eee' : '#000',
+    border: darkMode ? '1px solid #555' : '1px solid #ccc',
+    outline: 'none',
+  };
+
+  const labelStyle = {
+    minWidth: '150px',
+    color: darkMode ? '#bbb' : '#555',
+  };
 
   useEffect(() => {
     async function fetchData() {
@@ -85,16 +102,19 @@ export default function ExpenseBarChart() {
         setErrorMessage('Something went wrong while loading chart data.');
       }
     }
-
     fetchData();
   }, [projectId, categoryFilter, startDate, endDate]);
 
   return (
-    <div style={{ width: '100%', padding: '0.5rem' }}>
+    <div
+      style={{ width: '100%', padding: '0.5rem', backgroundColor: darkMode ? '' : 'transparent' }}
+    >
       <div style={{ textAlign: 'center', marginBottom: '0.75rem' }}>
-        <h4 style={{ margin: 0, color: '#555', fontSize: '1.2rem' }}>Planned vs Actual Cost</h4>
+        <h4 style={{ margin: 0, color: darkMode ? '#ddd' : '#555', fontSize: '1.2rem' }}>
+          Planned vs Actual Cost
+        </h4>
         {errorMessage && (
-          <div style={{ color: 'red', fontSize: '0.9rem', marginTop: '0.5rem' }}>
+          <div style={{ color: '#ff4444', fontSize: '0.9rem', marginTop: '0.5rem' }}>
             {errorMessage}
           </div>
         )}
@@ -111,13 +131,9 @@ export default function ExpenseBarChart() {
           marginBottom: '0.5rem',
         }}
       >
-        <label style={{ minWidth: '150px' }}>
+        <label style={labelStyle}>
           Project:
-          <select
-            value={projectId}
-            onChange={e => setProjectId(e.target.value)}
-            style={{ marginLeft: '0.3rem', width: '100%' }}
-          >
+          <select value={projectId} onChange={e => setProjectId(e.target.value)} style={inputStyle}>
             <option value="">All</option>
             {projects.map(p => (
               <option key={p} value={p}>
@@ -126,12 +142,13 @@ export default function ExpenseBarChart() {
             ))}
           </select>
         </label>
-        <label style={{ minWidth: '150px' }}>
+
+        <label style={labelStyle}>
           Category:
           <select
             value={categoryFilter}
             onChange={e => setCategoryFilter(e.target.value)}
-            style={{ marginLeft: '0.3rem', width: '100%' }}
+            style={inputStyle}
           >
             <option value="ALL">All</option>
             {categories.map(cat => (
@@ -141,26 +158,29 @@ export default function ExpenseBarChart() {
             ))}
           </select>
         </label>
-        <label style={{ minWidth: '150px' }}>
+
+        <label style={labelStyle}>
           Start Date:
           <input
             type="date"
             value={startDate}
             onChange={e => setStartDate(e.target.value)}
-            style={{ marginLeft: '0.3rem', width: '100%' }}
+            style={inputStyle}
           />
         </label>
-        <label style={{ minWidth: '150px' }}>
+
+        <label style={labelStyle}>
           End Date:
           <input
             type="date"
             value={endDate}
             onChange={e => setEndDate(e.target.value)}
-            style={{ marginLeft: '0.3rem', width: '100%' }}
+            style={inputStyle}
           />
         </label>
       </div>
 
+      {/* Legend */}
       <div
         style={{
           display: 'flex',
@@ -168,7 +188,7 @@ export default function ExpenseBarChart() {
           gap: '1rem',
           fontSize: '0.75rem',
           marginBottom: '0.75rem',
-          flexWrap: 'wrap',
+          color: darkMode ? '#ccc' : '#333',
         }}
       >
         <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
@@ -190,18 +210,26 @@ export default function ExpenseBarChart() {
           <BarChart data={data} margin={{ top: 10, right: 10, left: 35, bottom: 35 }}>
             <XAxis
               dataKey="project"
-              tick={{ fontSize: 10 }}
+              stroke={darkMode ? '#888' : '#333'}
+              tick={{ fontSize: 10, fill: darkMode ? '#aaa' : '#333' }}
               interval={0}
               angle={-15}
               textAnchor="end"
-              label={{ value: 'Project Name', position: 'insideBottom', dy: 25, fontSize: 10 }}
             />
-            <YAxis tick={{ fontSize: 10 }} axisLine tickLine />
+            <YAxis tick={{ fontSize: 10, fill: darkMode ? '#aaa' : '#333' }} axisLine tickLine />
             <Bar dataKey="planned" fill="#4285F4" name="Planned">
-              <LabelList dataKey="planned" position="top" style={{ fontSize: 8 }} />
+              <LabelList
+                dataKey="planned"
+                position="top"
+                style={{ fontSize: 8, fill: darkMode ? '#eee' : '#000' }}
+              />
             </Bar>
             <Bar dataKey="actual" fill="#EA4335" name="Actual">
-              <LabelList dataKey="actual" position="top" style={{ fontSize: 8 }} />
+              <LabelList
+                dataKey="actual"
+                position="top"
+                style={{ fontSize: 8, fill: darkMode ? '#eee' : '#000' }}
+              />
             </Bar>
           </BarChart>
         </ResponsiveContainer>
