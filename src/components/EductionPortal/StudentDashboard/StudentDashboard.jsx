@@ -44,8 +44,8 @@ const StudentDashboard = () => {
             if (subTasks && subTasks.length > 0) {
               intermediateTasksData[task.id] = subTasks;
             }
-          } catch (error) {
-            console.error(`Error fetching intermediate tasks for task ${task.id}:`, error);
+          } catch (fetchError) {
+            // Error fetching intermediate tasks; skip silently
           }
         }
 

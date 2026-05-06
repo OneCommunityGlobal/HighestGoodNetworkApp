@@ -132,7 +132,6 @@ const fetchTasksFromPrimaryEndpoint = async () => {
  * @returns {Array} Mock tasks for demo purposes
  */
 const handleApiError = (apiError, dispatch) => {
-  toast.info('Using demo data. Student tasks API is not yet available.');
   return mockTasks;
 };
 
@@ -144,20 +143,19 @@ export const fetchStudentTasks = () => {
     dispatch(setStudentTasksStart());
 
     try {
-      const state = getState();
-      const userId = state.auth.user.userid;
-
-      if (!userId) {
-        dispatch(setStudentTasksError('User not authenticated'));
-        return;
+      let tasks = [];
+      try {
+        tasks = await fetchTasksFromPrimaryEndpoint();
+      } catch (apiError) {
+        tasks = handleApiError(apiError, dispatch);
       }
 
-      try {
-        const tasks = await fetchTasksFromPrimaryEndpoint();
+      // Fall back to mock data if API returned nothing
+      if (!tasks || tasks.length === 0) {
+        toast.info('Using demo data. Student tasks API is not yet available.');
+        dispatch(setStudentTasks(mockTasks));
+      } else {
         dispatch(setStudentTasks(tasks));
-      } catch (apiError) {
-        const fallbackTasks = handleApiError(apiError, dispatch);
-        dispatch(setStudentTasks(fallbackTasks));
       }
     } catch (err) {
       dispatch(setStudentTasksError(err.message || 'Failed to fetch student tasks'));
