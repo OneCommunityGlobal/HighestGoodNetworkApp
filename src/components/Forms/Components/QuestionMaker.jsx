@@ -1,4 +1,5 @@
 import { updateQuestion, deleteQuestion } from '~/actions/formActions';
+import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import OptionMaker from './OptionMaker';
 import RichTextEditor from './RichTextEditor';
@@ -104,3 +105,19 @@ export default function QuestionMaker({ data }) {
     </div>
   );
 }
+
+QuestionMaker.propTypes = {
+  data: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    label: PropTypes.string,
+    description: PropTypes.string,
+    type: PropTypes.string.isRequired,
+    required: PropTypes.bool,
+    options: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        value: PropTypes.string,
+      }),
+    ),
+  }).isRequired,
+};
