@@ -601,7 +601,6 @@ function TotalOrgSummary(props) {
       )}
     >
       <div ref={rootRef} data-pdf-root>
-<<<<<<< peterson-implement-improve-dropdown-options-total-org-summary-page
         <Row className={styles.totalOrgReportHeaderRow} data-pdf-title-row>
           <div className={styles.reportHeaderTitle} data-pdf-title-col>
             <h3 className="my-0">Total Org Summary</h3>
@@ -675,7 +674,6 @@ function TotalOrgSummary(props) {
             </Button>
           </div>
         </Row>
-
         <Modal isOpen={showDatePicker} toggle={() => setShowDatePicker(!showDatePicker)}>
           <ModalHeader toggle={() => setShowDatePicker(!showDatePicker)}>
             Select Date Range
@@ -729,7 +727,6 @@ function TotalOrgSummary(props) {
             </Button>
           </ModalFooter>
         </Modal>
-=======
         <ReportHeader
           darkMode={darkMode}
           selectedDateRange={selectedDateRange}
@@ -753,8 +750,6 @@ function TotalOrgSummary(props) {
           onCancel={() => setShowDatePicker(false)}
           onApply={handleDatePickerSubmit}
         />
->>>>>>> development
-
         <hr />
         <AccordianWrapper title="Volunteer Status">
           <Row>
