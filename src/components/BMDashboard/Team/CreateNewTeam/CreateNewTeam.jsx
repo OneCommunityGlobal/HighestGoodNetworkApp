@@ -27,8 +27,8 @@ export default function CreateNewTeam() {
   const [selectedMember, setSelectedMember] = useState('');
   const [selectedTask, setSelectedTask] = useState('');
   const [members, setMembers] = useState([]);
-  // const [tasks, setTasks] = useState([]);
-  const [tasks] = useState([]);
+  const [tasks, setTasks] = useState([]);
+  //const [tasks] = useState([]);
   const [assignedMembers, setAssignedMembers] = useState([]);
   const [assignedTasks, setAssignedTasks] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
@@ -40,12 +40,25 @@ export default function CreateNewTeam() {
     additionalInformation: false,
   });
 
+  const user = useSelector(state => state.auth.user);
+
+  const dummyTasks = ['Task 1', 'Task 2', 'Task 3', 'Task 4', 'Task 5'];
+
+  const [loadingMembers, setLoadingMembers] = useState(false);
   useEffect(() => {
-    dispatch(getUserProfileBasicInfo());
+    setLoadingMembers(true);
+    const result = dispatch(getUserProfileBasicInfo());
+    // If the action returns a promise (thunk), handle it
+    if (result && typeof result.then === 'function') {
+      result.finally(() => setLoadingMembers(false));
+    } else {
+      setLoadingMembers(false);
+    }
+    tasks.length === 0 && setTasks(dummyTasks);
   }, [dispatch]);
 
   useEffect(() => {
-    setMembers(userProfilesBasicInfo);
+    setMembers(userProfilesBasicInfo || []);
   }, [userProfilesBasicInfo]);
 
   const validationObj = {
@@ -67,7 +80,7 @@ export default function CreateNewTeam() {
         errorMessages[detail.path[0]] = detail.message;
       });
     }
-    if (assignedMembers.length === 0) {
+    if ((!data.teamMembers || data.teamMembers.length === 0) && assignedMembers.length === 0) {
       errorMessages.assignedMembers = 'You must assign at least one member.';
     } else {
       // Clear the assignedMembers error if members have been added
@@ -144,6 +157,7 @@ export default function CreateNewTeam() {
     setAssignedTasks([]);
     setFormData(initialFormState);
     setErrors({});
+    setErrorMessage('');
     setTouchedFields({
       teamName: false,
       assignedMembers: false,
@@ -208,6 +222,7 @@ export default function CreateNewTeam() {
     if (selectedTask && !assignedTasks.includes(selectedTask)) {
       setAssignedTasks([...assignedTasks, selectedTask]);
       setSelectedTask('');
+      setTaskErrorMessage('');
     }
   };
 
@@ -224,7 +239,7 @@ export default function CreateNewTeam() {
       </header>
 
       <Form className={`${styles.addTeamForm} container`} onSubmit={handleSubmit}>
-        <FormGroup>
+        <FormGroup style={{ marginTop: '1.5rem', marginBottom: 0 }}>
           <Label for="teamName">
             Team Name<span className={`${styles.fieldRequired}`}>*</span>
           </Label>
@@ -243,26 +258,36 @@ export default function CreateNewTeam() {
             </Label>
           )}
         </FormGroup>
-        <FormGroup>
+        <FormGroup style={{ marginTop: '1.5rem', marginBottom: 0 }}>
           <Label for="member-select">
             Add Members<span className={`${styles.fieldRequired}`}>*</span>
           </Label>
           <div className={`${styles.selectContainer}`}>
-            <Input
-              id="members-select"
-              type="select"
-              value={selectedMember}
-              onChange={handleMemberChange}
-              className={`${styles.memberDropdown}`}
-            >
-              <option value="">Select a Member</option>
-              {members.map((user, index) => (
-                // eslint-disable-next-line react/no-array-index-key
-                <option key={index} value={user.id}>
-                  {user.firstName} {user.lastName}
-                </option>
-              ))}
-            </Input>
+            {loadingMembers ? (
+              <div style={{ padding: '0.5rem' }}>Loading members...</div>
+            ) : (
+              <Input
+                id="members-select"
+                type="select"
+                value={selectedMember}
+                onChange={handleMemberChange}
+                className={`${styles.memberDropdown}`}
+              >
+                {Array.isArray(members) && members.length > 0 ? (
+                  <>
+                    <option value="">Select a Member</option>
+                    {members.map((user, index) => (
+                      // eslint-disable-next-line react/no-array-index-key
+                      <option key={index} value={user.id}>
+                        {user.firstName} {user.lastName}
+                      </option>
+                    ))}
+                  </>
+                ) : (
+                  <option value="">No members available</option>
+                )}
+              </Input>
+            )}
             <Button
               onClick={handleAddMember}
               // disabled={!selectedMember || isMemberAssigned}
@@ -284,7 +309,9 @@ export default function CreateNewTeam() {
         </FormGroup>
         <div>
           {assignedMembers.length > 0 && (
-            <p className={styles.label}>Currently Assigned Members:</p>
+            <label htmlFor="assigned-members" className={styles.label}>
+              Currently Assigned Members:
+            </label>
           )}
           <div className={`${styles.badgeContainer}`}>
             {assignedMembers.map((memberId, index) => {
@@ -310,17 +337,23 @@ export default function CreateNewTeam() {
             })}
           </div>
         </div>
-        <FormGroup>
+        <FormGroup style={{ marginTop: '1.5rem', marginBottom: 0 }}>
           <Label for="task-select">Add Main Tasks</Label>
           <div className={`${styles.selectContainer}`}>
             <Input id="tasks-select" type="select" value={selectedTask} onChange={handleTaskChange}>
-              <option value="">Select a Task</option>
-              {tasks.map((task, index) => (
-                // eslint-disable-next-line react/no-array-index-key
-                <option key={index} value={task.id}>
-                  {task}
-                </option>
-              ))}
+              {Array.isArray(tasks) && tasks.length > 0 ? (
+                <>
+                  <option value="">Select a Task</option>
+                  {tasks.map((task, index) => (
+                    // eslint-disable-next-line react/no-array-index-key
+                    <option key={index} value={task.id}>
+                      {task}
+                    </option>
+                  ))}
+                </>
+              ) : (
+                <option value="">No tasks available</option>
+              )}
             </Input>
             <Button
               onClick={handleAddTask}
@@ -330,7 +363,7 @@ export default function CreateNewTeam() {
               Add
             </Button>
           </div>
-          {errorMessage && (
+          {taskErrorMessage && (
             <Label className={`${styles.teamFormError}`} style={{ color: 'red' }}>
               {taskErrorMessage}
             </Label>
@@ -339,7 +372,9 @@ export default function CreateNewTeam() {
 
         <div>
           {assignedTasks.length > 0 && (
-            <label htmlFor="assigned-tasks">Currently Assigned Tasks:</label>
+            <label htmlFor="assigned-tasks" className={styles.label}>
+              Currently Assigned Tasks:
+            </label>
           )}
           <div className={`${styles.badgeContainer}`}>
             {assignedTasks.map((task, index) => {
@@ -361,7 +396,7 @@ export default function CreateNewTeam() {
             })}
           </div>
         </div>
-        <FormGroup>
+        <FormGroup style={{ marginTop: '1.5rem', marginBottom: 0 }}>
           <Label for="additional-information-label">Additional Information</Label>
           <Input
             type="textarea"
@@ -379,10 +414,10 @@ export default function CreateNewTeam() {
           )}
         </FormGroup>
         <div className={`${styles.addTeamButtons}`}>
-          <Button id="cancel-button" outline style={boxStyle} onClick={handleCancelClick}>
+          <Button id="cancel-button" style={boxStyle} onClick={handleCancelClick}>
             Cancel
           </Button>
-          <Button id="submit-button" style={boxStyle}>
+          <Button id="submit-button" style={boxStyle} onClick={handleSubmit}>
             Submit
           </Button>
         </div>
