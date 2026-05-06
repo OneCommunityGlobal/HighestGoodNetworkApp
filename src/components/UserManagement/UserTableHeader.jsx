@@ -23,6 +23,7 @@ import {
   USER_END_DATE,
 } from '../../languages/en/ui';
 import styles from './usermanagement.module.css';
+import def from 'ajv/dist/vocabularies/discriminator';
 
 /**
  * The header row of the user table.
@@ -47,13 +48,18 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
         const response = await axios.patch(ENDPOINTS.USER_PROFILE_UPDATE, updatedData);
         if (response.status === 200) {
           const toastId = toast.success(' Saving Data...', { autoClose: false });
-          await dispatch(clearUserInformation());
-          await dispatch(getAllUserProfile());
+          dispatch(getAllUserProfile());
+          dispatch(clearUserInformation());
+          
           toast.update(toastId, {
             render: 'Data Updated successfully !',
-            // type: toast.TYPE.SUCCESS,
+            type: toast.TYPE.SUCCESS,
+            isLoading: false,
             autoClose: 3000,
           });
+          setTimeout(() => {
+          window.location.reload();
+          }, 1000);
         } else {
           toast.error('Error Updating Data!');
         }
