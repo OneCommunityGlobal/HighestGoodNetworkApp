@@ -10,6 +10,160 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 const COLORS = ['#3B82F6', '#EF4444', '#F59E0B', '#10B981', '#FF6B35'];
 
+// FilterSection component to reduce cognitive complexity
+const FilterSection = ({
+  darkMode,
+  fromDate,
+  toDate,
+  handleDateChange,
+  comparisonType,
+  setComparisonType,
+  listingType,
+  setListingType,
+}) => (
+  <div
+    className={`${styles.filtersContainer} ${darkMode ? styles.darkFilters : ''}`}
+    style={{ marginBottom: '16px', padding: '12px 16px' }}
+  >
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(2, 1fr)',
+        gap: '8px',
+        fontSize: '13px',
+      }}
+    >
+      {/* Date Range Filters */}
+      <FormGroup style={{ marginBottom: 0 }}>
+        <Label
+          className={`${styles.filterLabel} ${darkMode ? styles.darkText : ''}`}
+          htmlFor="fromDate"
+          style={{ fontSize: '12px', marginBottom: '4px', display: 'block' }}
+        >
+          From Date
+        </Label>
+        <div className={styles.datePickerWrapper}>
+          <DatePicker
+            id="fromDate"
+            selected={fromDate}
+            onChange={date => handleDateChange(date, true)}
+            selectsStart
+            startDate={fromDate}
+            endDate={toDate}
+            maxDate={toDate}
+            className={`form-control ${styles.datePickerInput} ${
+              darkMode ? styles.darkDatePicker : ''
+            }`}
+            wrapperClassName={styles.datePickerInnerWrapper}
+            calendarClassName={darkMode ? styles.datePickerCalendarDark : ''}
+            dateFormat="MMM dd, yyyy"
+            placeholderText="Select start date"
+            aria-label="Select start date for data range"
+          />
+          <span
+            className={`${styles.datePickerChevron} ${
+              darkMode ? styles.datePickerChevronDark : ''
+            }`}
+          />
+        </div>
+      </FormGroup>
+
+      <FormGroup style={{ marginBottom: 0 }}>
+        <Label
+          className={`${styles.filterLabel} ${darkMode ? styles.darkText : ''}`}
+          htmlFor="toDate"
+          style={{ fontSize: '12px', marginBottom: '4px', display: 'block' }}
+        >
+          To Date
+        </Label>
+        <div className={styles.datePickerWrapper}>
+          <DatePicker
+            id="toDate"
+            selected={toDate}
+            onChange={date => handleDateChange(date, false)}
+            selectsEnd
+            startDate={fromDate}
+            endDate={toDate}
+            minDate={fromDate}
+            maxDate={new Date()}
+            className={`form-control ${styles.datePickerInput} ${
+              darkMode ? styles.darkDatePicker : ''
+            }`}
+            wrapperClassName={styles.datePickerInnerWrapper}
+            calendarClassName={darkMode ? styles.datePickerCalendarDark : ''}
+            dateFormat="MMM dd, yyyy"
+            placeholderText="Select end date"
+            aria-label="Select end date for data range"
+          />
+          <span
+            className={`${styles.datePickerChevron} ${
+              darkMode ? styles.datePickerChevronDark : ''
+            }`}
+          />
+        </div>
+      </FormGroup>
+
+      {/* Compare Villages vs Properties Dropdown */}
+      <FormGroup style={{ marginBottom: 0 }}>
+        <Label
+          className={`${styles.filterLabel} ${darkMode ? styles.darkText : ''}`}
+          htmlFor="compareBy"
+          style={{ fontSize: '12px', marginBottom: '4px', display: 'block' }}
+        >
+          Compare By
+        </Label>
+        <Input
+          id="compareBy"
+          type="select"
+          value={comparisonType}
+          onChange={e => setComparisonType(e.target.value)}
+          className={`${darkMode ? styles.darkSelect : ''}`}
+          style={{ width: '100%' }}
+          aria-label="Choose comparison type"
+        >
+          <option value={COMPARISON_OPTIONS.VILLAGES}>Villages</option>
+          <option value={COMPARISON_OPTIONS.PROPERTIES}>Properties</option>
+        </Input>
+      </FormGroup>
+
+      {/* Listing/Bidding Filter */}
+      <FormGroup style={{ marginBottom: 0 }}>
+        <Label
+          className={`${styles.filterLabel} ${darkMode ? styles.darkText : ''}`}
+          htmlFor="listingType"
+          style={{ fontSize: '12px', marginBottom: '4px', display: 'block' }}
+        >
+          Type
+        </Label>
+        <Input
+          id="listingType"
+          type="select"
+          value={listingType}
+          onChange={e => setListingType(e.target.value)}
+          className={`${darkMode ? styles.darkSelect : ''}`}
+          style={{ width: '100%' }}
+          aria-label="Select listing type filter"
+        >
+          <option value={LISTING_OPTIONS.ALL}>All</option>
+          <option value={LISTING_OPTIONS.LISTING}>Listing</option>
+          <option value={LISTING_OPTIONS.BIDDING}>Bidding</option>
+        </Input>
+      </FormGroup>
+    </div>
+  </div>
+);
+
+FilterSection.propTypes = {
+  darkMode: PropTypes.bool.isRequired,
+  fromDate: PropTypes.instanceOf(Date).isRequired,
+  toDate: PropTypes.instanceOf(Date).isRequired,
+  handleDateChange: PropTypes.func.isRequired,
+  comparisonType: PropTypes.string.isRequired,
+  setComparisonType: PropTypes.func.isRequired,
+  listingType: PropTypes.string.isRequired,
+  setListingType: PropTypes.func.isRequired,
+};
+
 // Constants for filters
 const COMPARISON_OPTIONS = {
   VILLAGES: 'villages',
@@ -328,6 +482,137 @@ export function ComparePieChart({
       'selected metric'} from ${formatDateForDisplay(fromDate)} to ${formatDateForDisplay(toDate)}`;
   };
 
+  // Extract chart content rendering to reduce cognitive complexity and nested ternary
+  const renderChartContent = () => {
+    if (error) {
+      return (
+        <div className={`${styles.errorContainer} ${darkMode ? styles.darkError : ''}`}>
+          <div className={styles.errorMessage}>
+            <i className="fa fa-exclamation-circle" />
+            <span>{error}</span>
+          </div>
+          <button
+            className={`${styles.retryBtn} ${darkMode ? styles.darkRetryBtn : ''}`}
+            onClick={() =>
+              fetchChartData({
+                fromDate,
+                toDate,
+                comparisonType,
+                listingType,
+                selectedMetricKey,
+              })
+            }
+          >
+            <i className="fa fa-refresh" /> Retry
+          </button>
+        </div>
+      );
+    }
+
+    if (isLoading) {
+      return (
+        <div className={`${styles.loadingSkeleton} ${darkMode ? styles.darkSkeleton : ''}`}>
+          <div className={styles.skeletonChart}></div>
+          <div className={styles.skeletonLegend}>
+            <div className={styles.skeletonLegendItem}></div>
+            <div className={styles.skeletonLegendItem}></div>
+            <div className={styles.skeletonLegendItem}></div>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div
+        role="img"
+        aria-label={`Pie chart showing ${getChartTitle()} data. Total value: ${total}. ${processedChartData
+          .map(item => `${item.name}: ${item.value} (${item.percent}%)`)
+          .join(', ')}`}
+      >
+        <ResponsiveContainer width="100%" height={height}>
+          <PieChart>
+            <Pie
+              data={processedChartData}
+              cx="50%"
+              cy="50%"
+              innerRadius="38%"
+              outerRadius="62%"
+              paddingAngle={3}
+              dataKey="value"
+              label={CustomLabel}
+              labelLine={false}
+              isAnimationActive={false}
+            >
+              {processedChartData.map((entry, index) => (
+                <Cell key={entry.name} fill={colors[index % colors.length]} />
+              ))}
+            </Pie>
+            <Tooltip content={<CustomTooltip darkMode={darkMode} />} />
+            <text
+              x="50%"
+              y="45%"
+              textAnchor="middle"
+              dominantBaseline="middle"
+              style={{
+                fontSize: '13px',
+                fill: darkMode ? '#aaa' : '#666',
+                fontWeight: '600',
+              }}
+            >
+              Total:
+            </text>
+            <text
+              x="50%"
+              y="55%"
+              textAnchor="middle"
+              dominantBaseline="middle"
+              style={{
+                fontSize: '26px',
+                fill: darkMode ? '#fff' : '#333',
+                fontWeight: 'bold',
+              }}
+            >
+              {total}
+            </text>
+          </PieChart>
+        </ResponsiveContainer>
+        {/* DOM legend — immune to SVG clipping, works on any screen size */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(2, 1fr)',
+            gap: '6px 12px',
+            marginTop: '12px',
+            padding: '0 4px',
+          }}
+        >
+          {processedChartData.map((item, index) => (
+            <div
+              key={item.name}
+              style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px' }}
+            >
+              <div
+                style={{
+                  width: '12px',
+                  height: '12px',
+                  borderRadius: '2px',
+                  backgroundColor: colors[index % colors.length],
+                  flexShrink: 0,
+                }}
+              />
+              <span style={{ color: darkMode ? '#e1e1e1' : '#333' }}>
+                {item.name}
+                <span style={{ color: darkMode ? '#aaa' : '#888', marginLeft: '3px' }}>
+                  {item.percent}%
+                </span>
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <section
       className={`${styles.comparingChart} ${darkMode ? styles.darkMode : ''}`}
@@ -340,136 +625,16 @@ export function ComparePieChart({
 
       {/* Filters Section - Displayed Above Chart */}
       {showFilters && (
-        <div
-          className={`${styles.filtersContainer} ${darkMode ? styles.darkFilters : ''}`}
-          style={{ marginBottom: '16px', padding: '12px 16px' }}
-        >
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(2, 1fr)',
-              gap: '8px',
-              fontSize: '13px',
-            }}
-          >
-            {/* Date Range Filters */}
-            <FormGroup style={{ marginBottom: 0 }}>
-              <Label
-                className={`${styles.filterLabel} ${darkMode ? styles.darkText : ''}`}
-                htmlFor="fromDate"
-                style={{ fontSize: '12px', marginBottom: '4px', display: 'block' }}
-              >
-                From Date
-              </Label>
-              <div className={styles.datePickerWrapper}>
-                <DatePicker
-                  id="fromDate"
-                  selected={fromDate}
-                  onChange={date => handleDateChange(date, true)}
-                  selectsStart
-                  startDate={fromDate}
-                  endDate={toDate}
-                  maxDate={toDate}
-                  className={`form-control ${styles.datePickerInput} ${
-                    darkMode ? styles.darkDatePicker : ''
-                  }`}
-                  wrapperClassName={styles.datePickerInnerWrapper}
-                  calendarClassName={darkMode ? styles.datePickerCalendarDark : ''}
-                  dateFormat="MMM dd, yyyy"
-                  placeholderText="Select start date"
-                  aria-label="Select start date for data range"
-                />
-                <span
-                  className={`${styles.datePickerChevron} ${
-                    darkMode ? styles.datePickerChevronDark : ''
-                  }`}
-                />
-              </div>
-            </FormGroup>
-
-            <FormGroup style={{ marginBottom: 0 }}>
-              <Label
-                className={`${styles.filterLabel} ${darkMode ? styles.darkText : ''}`}
-                htmlFor="toDate"
-                style={{ fontSize: '12px', marginBottom: '4px', display: 'block' }}
-              >
-                To Date
-              </Label>
-              <div className={styles.datePickerWrapper}>
-                <DatePicker
-                  id="toDate"
-                  selected={toDate}
-                  onChange={date => handleDateChange(date, false)}
-                  selectsEnd
-                  startDate={fromDate}
-                  endDate={toDate}
-                  minDate={fromDate}
-                  maxDate={new Date()}
-                  className={`form-control ${styles.datePickerInput} ${
-                    darkMode ? styles.darkDatePicker : ''
-                  }`}
-                  wrapperClassName={styles.datePickerInnerWrapper}
-                  calendarClassName={darkMode ? styles.datePickerCalendarDark : ''}
-                  dateFormat="MMM dd, yyyy"
-                  placeholderText="Select end date"
-                  aria-label="Select end date for data range"
-                />
-                <span
-                  className={`${styles.datePickerChevron} ${
-                    darkMode ? styles.datePickerChevronDark : ''
-                  }`}
-                />
-              </div>
-            </FormGroup>
-
-            {/* Compare Villages vs Properties Dropdown */}
-            <FormGroup style={{ marginBottom: 0 }}>
-              <Label
-                className={`${styles.filterLabel} ${darkMode ? styles.darkText : ''}`}
-                htmlFor="compareBy"
-                style={{ fontSize: '12px', marginBottom: '4px', display: 'block' }}
-              >
-                Compare By
-              </Label>
-              <Input
-                id="compareBy"
-                type="select"
-                value={comparisonType}
-                onChange={e => setComparisonType(e.target.value)}
-                className={`${darkMode ? styles.darkSelect : ''}`}
-                style={{ width: '100%' }}
-                aria-label="Choose comparison type"
-              >
-                <option value={COMPARISON_OPTIONS.VILLAGES}>Villages</option>
-                <option value={COMPARISON_OPTIONS.PROPERTIES}>Properties</option>
-              </Input>
-            </FormGroup>
-
-            {/* Listing/Bidding Filter */}
-            <FormGroup style={{ marginBottom: 0 }}>
-              <Label
-                className={`${styles.filterLabel} ${darkMode ? styles.darkText : ''}`}
-                htmlFor="listingType"
-                style={{ fontSize: '12px', marginBottom: '4px', display: 'block' }}
-              >
-                Type
-              </Label>
-              <Input
-                id="listingType"
-                type="select"
-                value={listingType}
-                onChange={e => setListingType(e.target.value)}
-                className={`${darkMode ? styles.darkSelect : ''}`}
-                style={{ width: '100%' }}
-                aria-label="Select listing type filter"
-              >
-                <option value={LISTING_OPTIONS.ALL}>All</option>
-                <option value={LISTING_OPTIONS.LISTING}>Listing</option>
-                <option value={LISTING_OPTIONS.BIDDING}>Bidding</option>
-              </Input>
-            </FormGroup>
-          </div>
-        </div>
+        <FilterSection
+          darkMode={darkMode}
+          fromDate={fromDate}
+          toDate={toDate}
+          handleDateChange={handleDateChange}
+          comparisonType={comparisonType}
+          setComparisonType={setComparisonType}
+          listingType={listingType}
+          setListingType={setListingType}
+        />
       )}
 
       {/* Chart Section */}
@@ -492,125 +657,7 @@ export function ComparePieChart({
             )}
           </div>
 
-          {error ? (
-            <div className={`${styles.errorContainer} ${darkMode ? styles.darkError : ''}`}>
-              <div className={styles.errorMessage}>
-                <i className="fa fa-exclamation-circle" />
-                <span>{error}</span>
-              </div>
-              <button
-                className={`${styles.retryBtn} ${darkMode ? styles.darkRetryBtn : ''}`}
-                onClick={() =>
-                  fetchChartData({
-                    fromDate,
-                    toDate,
-                    comparisonType,
-                    listingType,
-                    selectedMetricKey,
-                  })
-                }
-              >
-                <i className="fa fa-refresh" /> Retry
-              </button>
-            </div>
-          ) : isLoading ? (
-            <div className={`${styles.loadingSkeleton} ${darkMode ? styles.darkSkeleton : ''}`}>
-              <div className={styles.skeletonChart}></div>
-              <div className={styles.skeletonLegend}>
-                <div className={styles.skeletonLegendItem}></div>
-                <div className={styles.skeletonLegendItem}></div>
-                <div className={styles.skeletonLegendItem}></div>
-              </div>
-            </div>
-          ) : (
-            <div
-              role="img"
-              aria-label={`Pie chart showing ${getChartTitle()} data. Total value: ${total}. ${processedChartData
-                .map(item => `${item.name}: ${item.value} (${item.percent}%)`)
-                .join(', ')}`}
-            >
-              <ResponsiveContainer width="100%" height={height}>
-                <PieChart>
-                  <Pie
-                    data={processedChartData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius="38%"
-                    outerRadius="62%"
-                    paddingAngle={3}
-                    dataKey="value"
-                    label={CustomLabel}
-                    labelLine={false}
-                    isAnimationActive={false}
-                  >
-                    {processedChartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip content={<CustomTooltip darkMode={darkMode} />} />
-                  <text
-                    x="50%"
-                    y="45%"
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    style={{
-                      fontSize: '13px',
-                      fill: darkMode ? '#aaa' : '#666',
-                      fontWeight: '600',
-                    }}
-                  >
-                    Total:
-                  </text>
-                  <text
-                    x="50%"
-                    y="55%"
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    style={{
-                      fontSize: '26px',
-                      fill: darkMode ? '#fff' : '#333',
-                      fontWeight: 'bold',
-                    }}
-                  >
-                    {total}
-                  </text>
-                </PieChart>
-              </ResponsiveContainer>
-              {/* DOM legend — immune to SVG clipping, works on any screen size */}
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(2, 1fr)',
-                  gap: '6px 12px',
-                  marginTop: '12px',
-                  padding: '0 4px',
-                }}
-              >
-                {processedChartData.map((item, index) => (
-                  <div
-                    key={item.name}
-                    style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px' }}
-                  >
-                    <div
-                      style={{
-                        width: '12px',
-                        height: '12px',
-                        borderRadius: '2px',
-                        backgroundColor: colors[index % colors.length],
-                        flexShrink: 0,
-                      }}
-                    />
-                    <span style={{ color: darkMode ? '#e1e1e1' : '#333' }}>
-                      {item.name}
-                      <span style={{ color: darkMode ? '#aaa' : '#888', marginLeft: '3px' }}>
-                        {item.percent}%
-                      </span>
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          {renderChartContent()}
         </CardBody>
       </Card>
     </section>
