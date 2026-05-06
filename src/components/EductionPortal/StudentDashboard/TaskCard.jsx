@@ -4,6 +4,7 @@ import styles from './TaskCard.module.css';
 import { useTaskLogic } from './useTaskLogic';
 import MarkAsDoneButton from './MarkAsDoneButton';
 import IntermediateTasksList from './IntermediateTasksList';
+import { taskItemPropTypes, taskItemDefaultProps } from './taskPropTypes';
 
 const TaskCard = ({
   task,
@@ -144,31 +145,7 @@ const TaskCard = ({
   );
 };
 
-TaskCard.propTypes = {
-  task: PropTypes.shape({
-    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    _id: PropTypes.string,
-    course_name: PropTypes.string,
-    title: PropTypes.string,
-    subtitle: PropTypes.string,
-  }).isRequired,
-  onMarkAsDone: PropTypes.func,
-  onLogTime: PropTypes.func,
-  intermediateTasks: PropTypes.arrayOf(PropTypes.shape({})),
-  isExpanded: PropTypes.bool,
-  onToggleIntermediateTasks: PropTypes.func,
-  onMarkIntermediateAsDone: PropTypes.func,
-  darkMode: PropTypes.bool,
-};
-
-TaskCard.defaultProps = {
-  onMarkAsDone: undefined,
-  onLogTime: undefined,
-  intermediateTasks: [],
-  isExpanded: false,
-  onToggleIntermediateTasks: undefined,
-  onMarkIntermediateAsDone: undefined,
-  darkMode: false,
-};
+TaskCard.propTypes = taskItemPropTypes;
+TaskCard.defaultProps = taskItemDefaultProps;
 
 export default TaskCard;

@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styles from './TaskCardView.module.css';
 import TaskCard from './TaskCard';
+import { taskViewPropTypes, taskViewDefaultProps } from './taskPropTypes';
 
 const TaskCardView = ({
   tasks,
@@ -40,25 +41,7 @@ const TaskCardView = ({
   );
 };
 
-TaskCardView.propTypes = {
-  tasks: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  onMarkAsDone: PropTypes.func,
-  onLogTime: PropTypes.func,
-  intermediateTasks: PropTypes.objectOf(PropTypes.arrayOf(PropTypes.shape({}))),
-  expandedTasks: PropTypes.objectOf(PropTypes.bool),
-  onToggleIntermediateTasks: PropTypes.func,
-  onMarkIntermediateAsDone: PropTypes.func,
-  darkMode: PropTypes.bool,
-};
-
-TaskCardView.defaultProps = {
-  onMarkAsDone: undefined,
-  onLogTime: undefined,
-  intermediateTasks: {},
-  expandedTasks: {},
-  onToggleIntermediateTasks: undefined,
-  onMarkIntermediateAsDone: undefined,
-  darkMode: false,
-};
+TaskCardView.propTypes = taskViewPropTypes;
+TaskCardView.defaultProps = taskViewDefaultProps;
 
 export default TaskCardView;
