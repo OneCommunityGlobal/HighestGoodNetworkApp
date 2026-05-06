@@ -1,7 +1,7 @@
 // ComparePieChart.jsx
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { ResponsiveContainer, PieChart, Pie, Cell, Legend, Tooltip } from 'recharts';
+import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from 'recharts';
 import { Card, CardBody, Input, Label, FormGroup } from 'reactstrap';
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
@@ -77,13 +77,13 @@ const SAMPLE_DATA = {
 
 // Metric-based per-item multipliers (index matches item order above)
 const METRIC_ITEM_MULTIPLIERS = {
-  pageVisits: [1.0, 1.0, 1.0, 1.0, 1.0],
-  numBids: [3.0, 0.4, 1.3, 4.5, 0.5],
-  avgRating: [4.8, 4.2, 3.5, 5.0, 2.5],
-  avgBid: [5.5, 1.5, 7.0, 3.0, 3.0],
-  finalPrice: [2.0, 6.5, 2.5, 5.5, 3.5],
-  occupancyRate: [4.0, 3.0, 1.5, 6.5, 5.0],
-  avgStay: [6.0, 1.0, 4.5, 2.0, 6.5],
+  pageVisits: [1, 1, 1, 1, 1],
+  numBids: [3, 0.4, 1.3, 4.5, 0.5],
+  avgRating: [4.8, 4.2, 3.5, 5, 2.5],
+  avgBid: [5.5, 1.5, 7, 3, 3],
+  finalPrice: [2, 6.5, 2.5, 5.5, 3.5],
+  occupancyRate: [4, 3, 1.5, 6.5, 5],
+  avgStay: [6, 1, 4.5, 2, 6.5],
 };
 
 // Convenience fallbacks for code that still references these names
@@ -144,56 +144,6 @@ CustomLabel.propTypes = {
   outerRadius: PropTypes.number,
   percent: PropTypes.number,
   value: PropTypes.number,
-};
-
-const CustomLegend = ({ payload, darkMode: dm }) => (
-  <div
-    style={{
-      display: 'grid',
-      gridTemplateColumns: 'repeat(2, 1fr)',
-      gap: '12px',
-      marginTop: '24px',
-      padding: '0 20px',
-    }}
-  >
-    {payload.map((entry, index) => (
-      <div
-        key={`legend-${index}`}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          fontSize: '13px',
-        }}
-      >
-        <div
-          style={{
-            width: '14px',
-            height: '14px',
-            backgroundColor: entry.color,
-            borderRadius: '2px',
-            flexShrink: 0,
-          }}
-        />
-        <span style={{ fontSize: '13px', color: dm ? '#e1e1e1' : '#333' }}>
-          {entry.value}
-          <span style={{ color: dm ? '#aaa' : '#999', marginLeft: '4px' }}>
-            {entry.payload.percent}%
-          </span>
-        </span>
-      </div>
-    ))}
-  </div>
-);
-
-CustomLegend.propTypes = {
-  payload: PropTypes.arrayOf(
-    PropTypes.shape({
-      value: PropTypes.string,
-      color: PropTypes.string,
-      payload: PropTypes.object,
-    }),
-  ),
 };
 
 const CustomTooltip = ({ active, payload, darkMode }) => {
