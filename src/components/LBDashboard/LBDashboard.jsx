@@ -24,9 +24,6 @@ import ReviewWordCloud from './ReviewWordCloud/ReviewWordCloud';
 import { CompareBarGraph } from './BarGraphs/CompareGraphs';
 import { ComparePropertiesRatings } from './BarGraphs/ComparePropertiesRatings';
 
-import httpService from '../../services/httpService';
-import { ApiEndpoint } from '../../utils/URL';
-
 import styles from './LBDashboard.module.css';
 import ConversionFunnel from './LbAnalytics/ConversionFunnel/ConversionFunnel';
 import { randomInt } from './lbUtils';
@@ -399,7 +396,7 @@ export function LBDashboard() {
   // --- Mock Villages data ---
   const [villagesRaw, setVillagesRaw] = useState([]);
   const [loadingVillages, setLoadingVillages] = useState(false);
-  const [villagesError, setVillagesError] = useState(null);
+  const [villagesError] = useState(null);
 
   useEffect(() => {
     setLoadingVillages(true);
