@@ -26,78 +26,92 @@ const HoursLogPanel = ({ task, darkMode, onClose }) => {
   };
 
   return (
-    <dialog
-      open
-      className={`${styles.panel} ${darkMode ? styles.panelDark : ''}`}
-      aria-label="Log hours panel"
+    <div
+      className={styles.overlay}
+      role="presentation"
+      onClick={e => e.target === e.currentTarget && onClose()}
+      onKeyDown={e => e.key === 'Escape' && onClose()}
     >
-      <div className={styles.header}>
-        <h4 className={styles.title}>Log Hours</h4>
-        <button
-          type="button"
-          className={styles.closeBtn}
-          onClick={onClose}
-          aria-label="Close hours panel"
-        >
-          ×
-        </button>
-      </div>
-
-      {/* Real-time progress indicator */}
-      <div className={styles.progressSection}>
-        <div className={styles.progressLabel}>
-          <span>
-            {logged} / {total > 0 ? total : '—'} hrs
-          </span>
-          {total > 0 && <span>{progressPercent}%</span>}
-        </div>
-        {total > 0 && (
-          <progress
-            className={`${styles.progressBar} ${
-              progressPercent >= 100 ? styles.progressComplete : ''
-            }`}
-            value={progressPercent}
-            max={100}
-            aria-label="Task progress"
-          />
-        )}
-        {progressPercent >= 100 && <p className={styles.eligibleMsg}>✓ Eligible to mark as done</p>}
-      </div>
-
-      {/* Hours input */}
-      <form onSubmit={handleSubmit} className={styles.form}>
-        <div className={styles.inputRow}>
+      <dialog
+        open
+        className={`${styles.panel} ${darkMode ? styles.panelDark : ''}`}
+        aria-label="Log hours panel"
+        aria-modal="true"
+      >
+        <div className={styles.header}>
+          <h4 className={styles.title}>Log Hours</h4>
           <button
             type="button"
-            className={styles.stepBtn}
-            onClick={handleDecrement}
-            aria-label="Decrease hours"
+            className={styles.closeBtn}
+            onClick={onClose}
+            aria-label="Close hours panel"
           >
-            −
-          </button>
-          <input
-            type="number"
-            min="0.5"
-            step="0.5"
-            value={inputHours}
-            onChange={e => setInputHours(Math.max(0.5, Number(e.target.value)))}
-            className={`${styles.hoursInput} ${darkMode ? styles.hoursInputDark : ''}`}
-            aria-label="Hours to log"
-          />
-          <button
-            type="button"
-            className={styles.stepBtn}
-            onClick={handleIncrement}
-            aria-label="Increase hours"
-          >
-            +
+            ×
           </button>
         </div>
-        <button type="submit" className={styles.submitBtn} disabled={submitting || inputHours <= 0}>
-          {submitting ? 'Saving…' : 'Log Hours'}
-        </button>
-      </form>
-    </dialog>
+
+        {/* Real-time progress indicator */}
+        <div className={styles.progressSection}>
+          <div className={styles.progressLabel}>
+            <span>
+              {logged} / {total > 0 ? total : '—'} hrs
+            </span>
+            {total > 0 && <span>{progressPercent}%</span>}
+          </div>
+          {total > 0 && (
+            <progress
+              className={`${styles.progressBar} ${
+                progressPercent >= 100 ? styles.progressComplete : ''
+              }`}
+              value={progressPercent}
+              max={100}
+              aria-label="Task progress"
+            />
+          )}
+          {progressPercent >= 100 && (
+            <p className={styles.eligibleMsg}>✓ Eligible to mark as done</p>
+          )}
+        </div>
+
+        {/* Hours input */}
+        <form onSubmit={handleSubmit} className={styles.form}>
+          <div className={styles.inputRow}>
+            <button
+              type="button"
+              className={styles.stepBtn}
+              onClick={handleDecrement}
+              aria-label="Decrease hours"
+            >
+              −
+            </button>
+            <input
+              type="number"
+              min="0.5"
+              step="0.5"
+              value={inputHours}
+              onChange={e => setInputHours(Math.max(0.5, Number(e.target.value)))}
+              className={`${styles.hoursInput} ${darkMode ? styles.hoursInputDark : ''}`}
+              aria-label="Hours to log"
+            />
+            <button
+              type="button"
+              className={styles.stepBtn}
+              onClick={handleIncrement}
+              aria-label="Increase hours"
+            >
+              +
+            </button>
+          </div>
+          <button
+            type="submit"
+            className={styles.submitBtn}
+            disabled={submitting || inputHours <= 0}
+          >
+            {submitting ? 'Saving…' : 'Log Hours'}
+          </button>
+        </form>
+      </dialog>
+    </div>
   );
 };
 
