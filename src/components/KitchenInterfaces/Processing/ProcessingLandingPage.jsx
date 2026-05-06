@@ -122,8 +122,8 @@ const ProcessingLandingPage = () => {
             <div className={styles.suppliesList}>
               <div className={styles.supplyCategory}>
                 <h3 className={styles.categoryTitle}>Canning Supplies</h3>
-                {CANNING_SUPPLIES.map((item, idx) => (
-                  <div key={idx} className={styles.supplyItem}>
+                {CANNING_SUPPLIES.map(item => (
+                  <div key={item.name} className={styles.supplyItem}>
                     <span className={styles.supplyName}>{item.name}</span>
                     <span className={styles.supplyQuantity}>{item.quantity}</span>
                   </div>
@@ -132,8 +132,8 @@ const ProcessingLandingPage = () => {
 
               <div className={styles.supplyCategory}>
                 <h3 className={styles.categoryTitle}>Storage Materials</h3>
-                {STORAGE_SUPPLIES.map((item, idx) => (
-                  <div key={idx} className={styles.supplyItem}>
+                {STORAGE_SUPPLIES.map(item => (
+                  <div key={item.name} className={styles.supplyItem}>
                     <span className={styles.supplyName}>{item.name}</span>
                     <span className={styles.supplyQuantity}>{item.quantity}</span>
                   </div>

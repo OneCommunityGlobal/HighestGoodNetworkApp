@@ -1,13 +1,13 @@
 .headerContainer {
-  background-color: #ffffff;
+  background-color: #fff;
   border-bottom: 1px solid #e0e0e0;
   padding: 0 32px;
   height: 64px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-family: 'Inter', sans-serif;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  font-family: Inter, sans-serif;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 5%);
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -76,6 +76,7 @@
   color: #2e7d32; /* Darker green text */
   font-weight: 600;
 }
+
 .activeLink:hover {
   background-color: #dcedc8;
   color: #1b5e20;
@@ -105,7 +106,7 @@
 
 
 /* Responsive Adjustments */
-@media (max-width: 900px) {
+@media (width <= 900px) {
   .headerContainer {
     padding: 0 16px;
     height: 64px; /* Fixed height again */
@@ -130,7 +131,7 @@
     background-color: white;
     flex-direction: column;
     padding: 16px 0;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 6px rgb(0 0 0 / 10%);
     transform: translateY(-150%);
     transition: transform 0.3s ease-in-out;
     z-index: 999;
@@ -151,12 +152,11 @@
   .overlay {
       display: block;
       position: fixed;
-      top: 64px;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0,0,0,0.3);
+      inset: 64px 0 0;
+      background: rgb(0 0 0 / 30%);
       z-index: 998;
+      border: none;
+      padding: 0;
   }
   
    /* Prevent horizontal scrolling on container overrides */
@@ -203,9 +203,9 @@
   color: #fff;
 }
 
-@media (max-width: 900px) {
+@media (width <= 900px) {
   .darkMode .navContainer {
     background-color: #1c2541;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+    box-shadow: 0 4px 6px rgb(0 0 0 / 50%);
   }
 }

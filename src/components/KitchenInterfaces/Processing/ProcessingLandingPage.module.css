@@ -197,7 +197,7 @@
 
 .methodStatus {
     font-size: 12px;
-    color: #28a745; /* Green for active */
+    color: #1b5e20; /* Darker green for accessibility */
     background: #e6f4ea;
     padding: 2px 8px;
     border-radius: 12px;
@@ -354,7 +354,7 @@
 
 .darkMode .methodStatus {
   background-color: rgb(40 167 69 / 20%);
-  color: #4cd964;
+  color: #a5d6a7; /* Lighter green for better contrast in dark mode */
   border: 1px solid #2ea043;
   box-shadow: none;
 }
