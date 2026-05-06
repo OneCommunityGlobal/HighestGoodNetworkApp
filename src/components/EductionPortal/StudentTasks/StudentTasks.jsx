@@ -41,7 +41,7 @@ const StudentTasks = () => {
   const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme?.darkMode);
   const reduxTasks = useSelector(state => state.studentTasks?.taskItems || []);
-  const loading = useSelector(state => state.studentTasks?.isFetching);
+  const loading = useSelector(state => state.studentTasks?.fetching);
 
   useEffect(() => {
     dispatch(fetchStudentTasks());

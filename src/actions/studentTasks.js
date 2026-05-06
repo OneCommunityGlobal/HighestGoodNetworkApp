@@ -126,26 +126,11 @@ const fetchTasksFromPrimaryEndpoint = async () => {
 };
 
 /**
- * Handle API error and try fallback options
- * @param {Error} apiError - The API error
+ * Handle API error and fall back to demo data
  * @param {Function} dispatch - Redux dispatch function
- * @returns {Promise<Array>} Array of tasks (from fallback or mock data)
+ * @returns {Array} Mock tasks for demo purposes
  */
-const handleApiError = async (apiError, dispatch) => {
-  console.error('Error response:', apiError.response?.data);
-  console.error('Error status:', apiError.response?.status);
-  console.error('Error config:', apiError.config);
-
-  // Try alternative endpoint if the first one fails
-  if (apiError.response?.status === 404) {
-    try {
-      const altResponse = await httpService.post(`${ENDPOINTS.APIEndpoint()}/student-tasks`);
-      return altResponse.data.tasks || [];
-    } catch (altError) {
-      // Alternative endpoint failed
-    }
-  }
-
+const handleApiError = (dispatch) => {
   toast.info('Using demo data. Student tasks API is not yet available.');
   return mockTasks;
 };
@@ -170,7 +155,7 @@ export const fetchStudentTasks = () => {
         const tasks = await fetchTasksFromPrimaryEndpoint();
         dispatch(setStudentTasks(tasks));
       } catch (apiError) {
-        const fallbackTasks = await handleApiError(apiError, dispatch);
+        const fallbackTasks = handleApiError(dispatch);
         dispatch(setStudentTasks(fallbackTasks));
       }
     } catch (err) {
