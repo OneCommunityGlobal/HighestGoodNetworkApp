@@ -40,8 +40,6 @@ export default function CreateNewTeam() {
     additionalInformation: false,
   });
 
-  const user = useSelector(state => state.auth.user);
-
   const dummyTasks = ['Task 1', 'Task 2', 'Task 3', 'Task 4', 'Task 5'];
 
   const [loadingMembers, setLoadingMembers] = useState(false);
@@ -276,10 +274,10 @@ export default function CreateNewTeam() {
                 {Array.isArray(members) && members.length > 0 ? (
                   <>
                     <option value="">Select a Member</option>
-                    {members.map((user, index) => (
+                    {members.map((member, index) => (
                       // eslint-disable-next-line react/no-array-index-key
-                      <option key={index} value={user.id}>
-                        {user.firstName} {user.lastName}
+                      <option key={index} value={member.id}>
+                        {member.firstName} {member.lastName}
                       </option>
                     ))}
                   </>
@@ -315,8 +313,10 @@ export default function CreateNewTeam() {
           )}
           <div className={`${styles.badgeContainer}`}>
             {assignedMembers.map((memberId, index) => {
-              const user = members?.find(m => m.id === memberId);
-              const displayName = user ? `${user.firstName} ${user.lastName}` : memberId;
+              const foundMember = members?.find(m => m.id === memberId);
+              const displayName = foundMember
+                ? `${foundMember.firstName} ${foundMember.lastName}`
+                : memberId;
               return (
                 // eslint-disable-next-line react/no-array-index-key
                 <Badge key={index} pill color="info" className="mr-2">
