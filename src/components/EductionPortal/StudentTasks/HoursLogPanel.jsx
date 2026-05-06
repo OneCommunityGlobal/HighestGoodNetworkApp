@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { logStudentTaskHours } from '../../../actions/studentTasks';
@@ -16,6 +16,14 @@ const HoursLogPanel = ({ task, darkMode, onClose }) => {
   const handleDecrement = () => setInputHours(prev => Math.max(0.5, +(prev - 0.5).toFixed(1)));
   const handleIncrement = () => setInputHours(prev => +(prev + 0.5).toFixed(1));
 
+  useEffect(() => {
+    const handleKeyDown = e => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
   const handleSubmit = async e => {
     e.preventDefault();
     if (inputHours <= 0) return;
@@ -26,12 +34,7 @@ const HoursLogPanel = ({ task, darkMode, onClose }) => {
   };
 
   return (
-    <div
-      className={styles.overlay}
-      role="presentation"
-      onClick={e => e.target === e.currentTarget && onClose()}
-      onKeyDown={e => e.key === 'Escape' && onClose()}
-    >
+    <div className={styles.overlay}>
       <dialog
         open
         className={`${styles.panel} ${darkMode ? styles.panelDark : ''}`}
