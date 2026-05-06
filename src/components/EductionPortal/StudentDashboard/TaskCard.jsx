@@ -7,6 +7,7 @@ import IntermediateTasksList from './IntermediateTasksList';
 const TaskCard = ({
   task,
   onMarkAsDone,
+  onLogTime,
   intermediateTasks = [],
   isExpanded = false,
   onToggleIntermediateTasks,
@@ -77,7 +78,11 @@ const TaskCard = ({
 
         {/* Action Buttons */}
         <div className={styles.actionButtons}>
-          <button className={styles.clockButton} title="Log Time">
+          <button
+            className={styles.clockButton}
+            title="Log Time"
+            onClick={() => onLogTime && onLogTime(task)}
+          >
             <svg
               width="16"
               height="16"

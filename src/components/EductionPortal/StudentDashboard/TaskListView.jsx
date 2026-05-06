@@ -5,6 +5,7 @@ import TaskListItem from './TaskListItem';
 const TaskListView = ({
   tasks,
   onMarkAsDone,
+  onLogTime,
   intermediateTasks,
   expandedTasks,
   onToggleIntermediateTasks,
@@ -26,6 +27,7 @@ const TaskListView = ({
           key={task._id || task.id}
           task={task}
           onMarkAsDone={onMarkAsDone}
+          onLogTime={onLogTime}
           intermediateTasks={intermediateTasks[task.id] || []}
           isExpanded={expandedTasks[task.id] || false}
           onToggleIntermediateTasks={onToggleIntermediateTasks}
