@@ -6,9 +6,8 @@ function ConfirmationModal({ showConfirmModal, handleDeleteTags, setConfirmModal
     <Modal isOpen={showConfirmModal} toggle={() => setConfirmModal(false)}>
       <ModalBody>
         <p>
-          Whoa tiger! This is a very aggressive move... please confirm you are SURE you want to do
-          this. Deleting tags cannot be undone and removes them from every lesson that uses them,
-          not just this one.
+          Are you sure you want to delete the selected tags? This action cannot be undone and will
+          remove the tags from every lesson that uses them.
         </p>
       </ModalBody>
       <ModalFooter>
@@ -19,10 +18,10 @@ function ConfirmationModal({ showConfirmModal, handleDeleteTags, setConfirmModal
             setConfirmModal(false);
           }}
         >
-          Yep, I&apos;m sure, scratch them!
+          Confirm
         </Button>
         <Button color="secondary" onClick={() => setConfirmModal(false)}>
-          No, take me back!
+          Cancel
         </Button>
       </ModalFooter>
     </Modal>

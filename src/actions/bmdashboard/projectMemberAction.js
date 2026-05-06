@@ -10,7 +10,7 @@ export const fetchBMProjectMembers = projectId => {
     axios
       .get(ENDPOINTS.BM_PROJECT_MEMBERS(projectId))
       .then(res => {
-        dispatch(setProjectMembers(res.data));
+        dispatch(setProjectMembers(res.data.members));
       })
       .catch(err => {
         dispatch(setErrors(err));

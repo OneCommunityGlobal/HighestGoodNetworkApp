@@ -30,3 +30,11 @@ export const fetchBMProjects = () => {
       });
   };
 };
+
+export const getProjectGlobalDistribution = async (payload) => {
+  const url = ENDPOINTS.PROJECT_GLOBAL_DISTRIBUTION
+
+  const res = await axios.get(url, {params: payload});
+  
+  return res.data
+  };
