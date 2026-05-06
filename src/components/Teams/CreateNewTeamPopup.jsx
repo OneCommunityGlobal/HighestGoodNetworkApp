@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/no-autofocus */
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
 import { boxStyle, boxStyleDark } from '~/styles';
@@ -113,5 +114,20 @@ export const CreateNewTeamPopup = React.memo(props => {
 });
 
 CreateNewTeamPopup.displayName = 'CreateNewTeamPopup';
+
+CreateNewTeamPopup.propTypes = {
+  open: PropTypes.bool.isRequired,
+  teamName: PropTypes.string,
+  isEdit: PropTypes.bool,
+  onClose: PropTypes.func,
+  onOkClick: PropTypes.func,
+};
+
+CreateNewTeamPopup.defaultProps = {
+  teamName: '',
+  isEdit: false,
+  onClose: () => {},
+  onOkClick: () => {},
+};
 
 export default CreateNewTeamPopup;
