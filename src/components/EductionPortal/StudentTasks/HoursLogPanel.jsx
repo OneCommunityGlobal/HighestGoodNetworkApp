@@ -26,9 +26,9 @@ const HoursLogPanel = ({ task, darkMode, onClose }) => {
   };
 
   return (
-    <div
+    <dialog
+      open
       className={`${styles.panel} ${darkMode ? styles.panelDark : ''}`}
-      role="dialog"
       aria-label="Log hours panel"
     >
       <div className={styles.header}>
@@ -52,20 +52,14 @@ const HoursLogPanel = ({ task, darkMode, onClose }) => {
           {total > 0 && <span>{progressPercent}%</span>}
         </div>
         {total > 0 && (
-          <div
-            className={styles.progressBar}
-            role="progressbar"
-            aria-valuenow={progressPercent}
-            aria-valuemin={0}
-            aria-valuemax={100}
-          >
-            <div
-              className={`${styles.progressFill} ${
-                progressPercent >= 100 ? styles.progressComplete : ''
-              }`}
-              style={{ width: `${progressPercent}%` }}
-            />
-          </div>
+          <progress
+            className={`${styles.progressBar} ${
+              progressPercent >= 100 ? styles.progressComplete : ''
+            }`}
+            value={progressPercent}
+            max={100}
+            aria-label="Task progress"
+          />
         )}
         {progressPercent >= 100 && <p className={styles.eligibleMsg}>✓ Eligible to mark as done</p>}
       </div>
@@ -103,7 +97,7 @@ const HoursLogPanel = ({ task, darkMode, onClose }) => {
           {submitting ? 'Saving…' : 'Log Hours'}
         </button>
       </form>
-    </div>
+    </dialog>
   );
 };
 

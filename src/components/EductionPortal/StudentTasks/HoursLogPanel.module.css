@@ -1,3 +1,11 @@
+/* Reset native <dialog> element styles when used as a panel */
+dialog.panel {
+  position: static;
+  margin: 0;
+  inset: auto;
+  padding: 0;
+}
+
 .panel {
   background: #fff;
   border: 1px solid #e5e7eb;
@@ -76,23 +84,46 @@
 .progressBar {
   width: 100%;
   height: 8px;
-  background: #e5e7eb;
   border-radius: 4px;
   overflow: hidden;
+
+  /* Reset native <progress> element styles */
+  appearance: none;
+  border: none;
+  background: #e5e7eb;
 }
 
+.progressBar::-webkit-progress-bar {
+  background: #e5e7eb;
+  border-radius: 4px;
+}
+
+/* Dark mode progress bar track */
 .panelDark .progressBar {
   background: #374151;
 }
 
-.progressFill {
-  height: 100%;
+.panelDark .progressBar::-webkit-progress-bar {
+  background: #374151;
+}
+
+.progressBar::-webkit-progress-value {
   background: #2563eb;
   border-radius: 4px;
   transition: width 0.35s ease;
 }
 
-.progressComplete {
+.progressBar::-moz-progress-bar {
+  background: #2563eb;
+  border-radius: 4px;
+  transition: width 0.35s ease;
+}
+
+.progressComplete::-webkit-progress-value {
+  background: #16a34a;
+}
+
+.progressComplete::-moz-progress-bar {
   background: #16a34a;
 }
 

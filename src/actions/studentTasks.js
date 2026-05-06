@@ -127,10 +127,11 @@ const fetchTasksFromPrimaryEndpoint = async () => {
 
 /**
  * Handle API error and fall back to demo data
+ * @param {Error} apiError - The caught API error
  * @param {Function} dispatch - Redux dispatch function
  * @returns {Array} Mock tasks for demo purposes
  */
-const handleApiError = (dispatch) => {
+const handleApiError = (apiError, dispatch) => {
   toast.info('Using demo data. Student tasks API is not yet available.');
   return mockTasks;
 };
@@ -155,7 +156,7 @@ export const fetchStudentTasks = () => {
         const tasks = await fetchTasksFromPrimaryEndpoint();
         dispatch(setStudentTasks(tasks));
       } catch (apiError) {
-        const fallbackTasks = handleApiError(dispatch);
+        const fallbackTasks = handleApiError(apiError, dispatch);
         dispatch(setStudentTasks(fallbackTasks));
       }
     } catch (err) {
