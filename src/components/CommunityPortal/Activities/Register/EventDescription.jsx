@@ -171,11 +171,11 @@ function DescriptionSection({ activity, registrants = [] }) {
               const lines = label.split('\n');
               const question = lines
                 .find(l => l.startsWith('Q:'))
-                ?.replace('Q:', '')
+                ?.replaceAll('Q:', '')
                 .trim();
               const answer = lines
                 .find(l => l.startsWith('A:'))
-                ?.replace('A:', '')
+                ?.replaceAll('A:', '')
                 .trim();
               const faqKey = buildUniqueKey(`faq-${question || 'unknown'}-${answer || 'unknown'}`);
               return (
