@@ -64,7 +64,7 @@ export default function AddTypeForm() {
       setErrType(validate.error.details[0].type);
       return;
     }
-    const response = await addEquipmentType({ name, desc, fuel });
+    const response = await addEquipmentType({ name, description: desc, fuel });
     if (response.status === 201) {
       toast.success('Success: new equipment type added.');
       // Refresh the equipment list to show the newly added item
@@ -77,7 +77,7 @@ export default function AddTypeForm() {
     } else toast.warning(`Warning: unexpected status ${response.status}.`);
     setName('');
     setDesc('');
-    setFuel('');
+    setFuel(FuelTypes.dies);
   };
 
   const handleCancel = () => history.goBack();
@@ -144,7 +144,7 @@ export default function AddTypeForm() {
         <Button color="secondary" onClick={handleCancel}>
           Cancel
         </Button>
-        <Button color="primary" disabled={!name && !desc}>
+        <Button color="primary" disabled={!name || !desc}>
           Submit
         </Button>
       </div>

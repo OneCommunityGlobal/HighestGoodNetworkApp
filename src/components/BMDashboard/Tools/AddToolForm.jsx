@@ -2,11 +2,12 @@ import { useState, useEffect } from 'react';
 import { Form, FormGroup, Label, Input, Button } from 'reactstrap';
 import DragAndDrop from '~/components/common/DragAndDrop/DragAndDrop';
 import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
 import { toast } from 'react-toastify';
 
 import { useDispatch, useSelector } from 'react-redux';
 import Joi from 'joi';
-import { boxStyle } from '~/styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import styles from './AddToolForm.module.css';
 
 import {
@@ -44,6 +45,7 @@ export default function AddToolForm() {
   const [errors, setErrors] = useState({});
   const dispatch = useDispatch();
   const postBuildingInventoryResult = useSelector(state => state.bmInvTypes.postedResult);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
     if (postBuildingInventoryResult?.error === true) {
@@ -352,14 +354,32 @@ export default function AddToolForm() {
         </FormGroup>
       </div>
 
-      <PhoneInput
-        country="US"
-        regions={['america', 'europe', 'asia', 'oceania', 'africa']}
-        limitMaxLength="true"
-        value={formData.phoneNumber}
-        onChange={phone => phoneChange('phoneNumber', phone)}
-        inputStyle={{ height: 'auto', width: '40%', fontSize: 'inherit' }}
-      />
+      <FormGroup>
+        <Label for="phone-number">Contact Phone Number</Label>
+        <PhoneInput
+          country="us"
+          regions={['america', 'europe', 'asia', 'oceania', 'africa']}
+          limitMaxLength
+          value={formData.phoneNumber}
+          onChange={phone => phoneChange('phoneNumber', phone)}
+          inputStyle={{
+            height: 'auto',
+            width: 'calc(100% - 52px)',
+            fontSize: 'inherit',
+            backgroundColor: darkMode ? '#1a1a2e' : '#fff',
+            color: darkMode ? '#fff' : '#000',
+            border: darkMode ? '1px solid #555' : '1px solid #ccc',
+          }}
+          buttonStyle={{
+            backgroundColor: darkMode ? '#1a1a2e' : '#fff',
+            border: darkMode ? '1px solid #555' : '1px solid #ccc',
+          }}
+          dropdownStyle={{
+            backgroundColor: darkMode ? '#1a1a2e' : '#fff',
+            color: darkMode ? '#fff' : '#000',
+          }}
+        />
+      </FormGroup>
       <FormGroup>
         <Label for="imageUpload">Upload Tool/Equipment Picture</Label>
         <DragAndDrop
@@ -413,7 +433,9 @@ export default function AddToolForm() {
           </Label>
         )}
       </FormGroup>
-      <div className={`${styles.addToolTotalPrice}`}>
+      <div
+        className={`${styles.addToolTotalPrice} ${darkMode ? styles.addToolTotalPriceDark : ''}`}
+      >
         <div>Total Price</div>
         <div className={`${styles.totalPriceCalculated}`}>
           {totalPriceWithShipping} {formData.currency}
@@ -430,10 +452,10 @@ export default function AddToolForm() {
           <div className={`${styles.toolFormError}`}> Missing Required Field </div>
         )}
       <div className={`${styles.addToolButtons}`}>
-        <Button outline style={boxStyle} onClick={handleCancelClick}>
+        <Button outline style={darkMode ? boxStyleDark : boxStyle} onClick={handleCancelClick}>
           Cancel
         </Button>
-        <Button id="submit-button" style={boxStyle}>
+        <Button id="submit-button" style={darkMode ? boxStyleDark : boxStyle}>
           Submit
         </Button>
       </div>

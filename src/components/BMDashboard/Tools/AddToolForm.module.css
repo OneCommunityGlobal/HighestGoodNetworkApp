@@ -31,6 +31,11 @@ font-size: .8em;
   padding-left: 1em;
 }
 
+.addToolTotalPriceDark{
+  background-color: #2a2a4a;
+  color: #fff;
+}
+
 .addToolTotalPrice div{
   width: 50%;
 }
