@@ -107,7 +107,7 @@ function TopCommunityMembers() {
                       style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
                     >
                       <FaEnvelope style={{ color: '#ccc', cursor: 'not-allowed' }} />
-                      Private
+                      <span>Private</span>
                     </span>
                   ) : (
                     <a
@@ -115,8 +115,10 @@ function TopCommunityMembers() {
                       title={member.email}
                       aria-label={`Email ${member.name}`}
                       className={darkMode ? styles.iconLinkDark : styles.iconLink}
+                      style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
                     >
-                      <FaEnvelope /> {member.email}
+                      <FaEnvelope />
+                      <span>{member.email}</span>
                     </a>
                   )}
                 </td>
@@ -131,7 +133,7 @@ function TopCommunityMembers() {
                       style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
                     >
                       <img src={slackLogo} alt="Slack" style={{ width: '20px', height: '20px' }} />
-                      {member.slack}
+                      <span>{member.slack}</span>
                     </a>
                   ) : (
                     <span
@@ -149,7 +151,7 @@ function TopCommunityMembers() {
                           cursor: 'not-allowed',
                         }}
                       />
-                      Private
+                      <span>Private</span>
                     </span>
                   )}
                 </td>
@@ -161,7 +163,7 @@ function TopCommunityMembers() {
                       style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
                     >
                       <FaPhone style={{ color: '#ccc', cursor: 'not-allowed' }} />
-                      Private
+                      <span>Private</span>
                     </span>
                   ) : (
                     <a
@@ -169,9 +171,10 @@ function TopCommunityMembers() {
                       title={member.phoneNumber}
                       aria-label={`Call ${member.name}`}
                       className={darkMode ? styles.iconLinkDark : styles.iconLink}
+                      style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
                     >
-                      <FaPhone style={{ marginRight: '5px' }} />
-                      {member.phoneNumber}
+                      <FaPhone />
+                      <span>{member.phoneNumber}</span>
                     </a>
                   )}
                 </td>
