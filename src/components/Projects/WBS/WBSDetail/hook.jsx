@@ -1,7 +1,7 @@
 // WARNING: HIGHLY INEFFICIENT CODE
 
 import { useState, useEffect, useCallback } from 'react'
-// import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import axios from 'axios'
 
 import { ENDPOINTS } from '~/utils/URL';
@@ -44,14 +44,22 @@ const sortByNum = tasks => {
 /**
  * Custom hook to fetch tasks for a given WBS, level, and parent task
  * @param {string} wbsId - ID of the WBS
+ * @param {string} projectId - ID of the project (to watch for category changes)
  * @param {number} level - Depth level (e.g. 0,1,2,...)
  * @param {string|null} parent - Parent task ID or null
  * @returns {{ tasks: Task[] | null, isLoading: boolean, error: string | null, refetch: function }}
  */
-export const useFetchWbsTasks = (wbsId, level = 0, parent = null) => {
+export const useFetchWbsTasks = (wbsId, projectId = null, level = 0, parent = null) => {
   const [tasks, setTasks] = useState(/** @type {Task[] | null} */([]))
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(/** @type {string | null} */(null))
+  
+  // Watch the project's category from Redux - refetch when it changes
+  const projectCategory = useSelector(state => {
+    if (!projectId) return null;
+    const project = state.allProjects?.projects?.find(p => p._id === projectId);
+    return project?.category;
+  });
 
   const fetchTasks = useCallback(async () => {
     setTasks([])
@@ -71,9 +79,17 @@ export const useFetchWbsTasks = (wbsId, level = 0, parent = null) => {
     }
   }, [wbsId, level, parent])
 
+  // Initial fetch
   useEffect(() => {
     fetchTasks()
   }, [fetchTasks])
+  
+  // Refetch when project category changes
+  useEffect(() => {
+    if (projectCategory) {
+      fetchTasks();
+    }
+  }, [projectCategory]);
 
   return {
     tasks,

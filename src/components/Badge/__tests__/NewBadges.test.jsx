@@ -63,13 +63,11 @@ describe('NewBadges component', () => {
 
     for (const [index, badge] of mockBadges.entries()) {
       fireEvent.mouseEnter(badgeImages[index]);
-      await waitFor(() => {
-        expect(screen.getByText(text => text.includes(badge.badge.badgeName))).toBeInTheDocument();
-
-        expect(
-          screen.getByText(text => text.includes(badge.badge.description)),
-        ).toBeInTheDocument();
-      });
+      await screen.findByText(text => text.includes(badge.badge.badgeName));
+      const descriptionElements = screen.getAllByText(text =>
+        text.includes(badge.badge.description),
+      );
+      expect(descriptionElements.length).toBeGreaterThan(0);
     }
   });
 
@@ -149,7 +147,7 @@ describe('NewBadges component', () => {
         darkMode={false}
       />,
     );
-    const badgeImages = await screen.getAllByRole('img');
+    const badgeImages = screen.getAllByRole('img');
 
     expect(badgeImages).toHaveLength(3);
 
@@ -255,11 +253,8 @@ describe('NewBadges component', () => {
     for (const [index, badge] of sortedBadges.entries()) {
       fireEvent.mouseEnter(badgeImages[index]);
 
-      await waitFor(() => {
-        expect(screen.getByText(badge.badge.badgeName)).toBeInTheDocument();
-
-        expect(screen.getByText(badge.badge.description)).toBeInTheDocument();
-      });
+      await screen.findByText(badge.badge.badgeName);
+      expect(screen.getByText(badge.badge.description)).toBeInTheDocument();
     }
   });
 

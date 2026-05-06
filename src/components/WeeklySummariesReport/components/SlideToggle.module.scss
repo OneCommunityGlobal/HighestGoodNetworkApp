@@ -1,31 +1,33 @@
+/* stylelint-disable  */
 .default {
-  --checked-bg-color: #2ba6ed;
-  --slider-color: #007bff;
-  --slider-checked-color: #FFFFFF;
+  --checked-bg-color: #6c757d;
+  --slider-color: #6c757d;
+  --slider-checked-color: #FFF;
 }
 
-// Following colors must match that in JS code filter in WeeklySummariesReport.jsx
+/* Following colors must match that in JS code filter in WeeklySummariesReport.jsx */
 .purple {
   --checked-bg-color: #df39e7;
   --slider-color: #800080;
-  --slider-checked-color: #FFFFFF;
+  --slider-checked-color: #FFF;
 }
 
 .green {
   --checked-bg-color: #37df37;
   --slider-color: #008000;
-  --slider-checked-color: #FFFFFF;
+  --slider-checked-color: #FFF;
 }
 
 .navy {
   --checked-bg-color: #5353df;
   --slider-color: #000080;
-  --slider-checked-color: #FFFFFF;
+  --slider-checked-color: #FFF;
 }
 
 .switch {
   position: relative;
   display: inline-block;
+  align-items: center;
   width: 2rem;
   height: 1rem;
 
@@ -38,16 +40,13 @@
   .slider {
     position: absolute;
     cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     transition: 0.4s;
     border-radius: 34px;
     border: 1px solid #bbb;
   }
 
-  .slider:before {
+  .slider::before {
     position: absolute;
     content: "";
     height: 0.5rem;
@@ -61,16 +60,12 @@
   }
 }
 
-// Slide color when checked (has some overhead)
-input:checked + .slider:before {
-  background-color: var(--slider-checked-color, var(--slider-color));
-}
-
-// Background color when checked
+/* Background color when checked */
 input:checked + .slider {
   background-color: var(--checked-bg-color);
 }
 
-input:checked + .slider:before {
+/* Slide color when checked (has some overhead) */
+input:checked + .slider::before {
   transform: translate(1rem,-50%);
 }

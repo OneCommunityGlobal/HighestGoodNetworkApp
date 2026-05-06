@@ -9,8 +9,12 @@ const AddProjectsAutoComplete = React.memo(props => {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
-    if (!props.selectedProject) props.onInputChange('');
-    else props.onInputChange(props.selectedProject.projectName);
+    try {
+      if (!props.selectedProject) props.onInputChange('');
+     else props.onInputChange(props.selectedProject.projectName);
+    } catch (error) {
+      if (!props.selectedProject) props.onInputChange('');
+    }
   }, [props.selectedProject]);
 
   return (
