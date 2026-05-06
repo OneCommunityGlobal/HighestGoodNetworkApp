@@ -113,10 +113,9 @@ function Register() {
   const storageKey = useMemo(() => `activity-${activityId}-registrants`, [activityId]);
 
   const tokenPayload = useMemo(() => {
-    if (typeof globalThis.window === 'undefined' || typeof globalThis.window.atob !== 'function')
-      return null;
+    if (typeof globalThis === 'undefined' || typeof globalThis.atob !== 'function') return null;
     try {
-      const token = globalThis.window.localStorage.getItem('token');
+      const token = globalThis.localStorage.getItem('token');
       if (!token) return null;
       const segment = token.split('.')[1];
       if (!segment) return null;
@@ -125,7 +124,7 @@ function Register() {
         normalized.length + ((4 - (normalized.length % 4)) % 4),
         '=',
       );
-      return JSON.parse(globalThis.window.atob(padded));
+      return JSON.parse(globalThis.atob(padded));
     } catch {
       return null;
     }
@@ -133,9 +132,9 @@ function Register() {
 
   // Load registrants from localStorage
   useEffect(() => {
-    if (typeof globalThis.window === 'undefined') return;
+    if (typeof globalThis === 'undefined') return;
     try {
-      const stored = globalThis.window.localStorage.getItem(storageKey);
+      const stored = globalThis.localStorage.getItem(storageKey);
       const parsed = stored ? JSON.parse(stored) : [];
       setRegistrants(Array.isArray(parsed) ? parsed : []);
     } catch {
@@ -145,9 +144,9 @@ function Register() {
 
   // Persist registrants to localStorage
   useEffect(() => {
-    if (typeof globalThis.window === 'undefined') return;
+    if (typeof globalThis === 'undefined') return;
     try {
-      globalThis.window.localStorage.setItem(storageKey, JSON.stringify(registrants));
+      globalThis.localStorage.setItem(storageKey, JSON.stringify(registrants));
     } catch {
       // ignore
     }
@@ -352,7 +351,7 @@ function Register() {
         await navigator.share({
           title,
           text: `I'm available for ${title}. Join me!`,
-          url: globalThis.window.location.href,
+          url: globalThis.location.href,
         });
       } else {
         toast.info('Sharing is not supported on this device.');
