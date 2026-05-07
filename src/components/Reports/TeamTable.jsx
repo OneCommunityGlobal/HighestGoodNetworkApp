@@ -233,9 +233,4 @@ TeamTable.propTypes = {
   refreshTeams: PropTypes.func.isRequired,
 };
 
-TeamTable.defaultProps = {
-  allTeams: [],
-  darkMode: false,
-};
-
 export default connect(mapStateToProps, mapDispatchToProps)(TeamTable);
