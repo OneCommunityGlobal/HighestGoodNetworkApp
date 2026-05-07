@@ -523,7 +523,7 @@ function Register() {
                 <p className={styles['rating-container']}>
                   <strong>Overall Rating:</strong>
                   <span className={styles['star-rating']}>
-                    {[...new Array(5)].map((_, starIndex) => {
+                    {Array.from({ length: 5 }).map((_, starIndex) => {
                       const key = `star-${activity.id || activity._id}-${starIndex}`;
                       return (
                         <span

@@ -106,7 +106,7 @@
 }
  
 .register-button {
-  background-color: #007bff;
+  background-color: #06c;
   color: white;
   padding: 10px 20px;
   border: none;
@@ -116,8 +116,8 @@
 }
 
 .register-button:disabled {
-  background-color: #ccc;
-  color: #4a4a4a;
+  background-color: #6c757d;
+  color: white;
   cursor: not-allowed;
 }
 
@@ -184,7 +184,7 @@
 
 /* Selected date styling */
 .calendar-container :global(.react-calendar__tile--active) {
-  background-color: #007bff !important;
+  background-color: #06c !important;
   color: white !important;
 }
 
@@ -280,7 +280,7 @@
 /* removed duplicate .event-image selector (defined earlier with full styles) */
 
 .submit-comment-button {
-  background-color: #007bff;
+  background-color: #06c;
   color: white;
   padding: 8px 16px;
   border: none;
@@ -437,7 +437,7 @@
 }
 
 .register-container.dark-mode .calendar-container :global(.react-calendar__tile--active) {
-  background-color: #007bff !important;
+  background-color: #06c !important;
   color: white !important;
 }
 
@@ -548,7 +548,7 @@
 
 .register-container.dark-mode .register-button:disabled {
   background-color: #2a3a4a;
-  color: #a0a0a0;
+  color: #c0c0c0;
 }
 
 .register-container.dark-mode .register-button:hover:not(:disabled) {
@@ -764,15 +764,15 @@
 }
 
 .register-container.dark-mode .type-badge {
-  background: rgb(29 78 216 / 18%);
+  background: #162347;
   color: #93c5fd;
-  border-color: rgb(147 197 253 / 25%);
+  border-color: #1e3a6a;
 }
 
 .register-container.dark-mode .status-badge {
-  background: rgb(4 120 87 / 20%);
+  background: #0a2418;
   color: #6ee7b7;
-  border-color: rgb(110 231 183 / 22%);
+  border-color: #0d3a24;
 }
 
 /* Share button */
@@ -916,8 +916,6 @@
 
 .resourceCard {
   display: flex;
-
-  /* align-items: center; */
   padding: 16px;
   border-radius: 16px;
   background: #f9fafb;
@@ -1208,9 +1206,9 @@
 }
 
 .avatarMoreDark {
-  background-color: #6366f1;
+  background-color: #4f46e5;
   color: #fff;
-  border-color: rgb(99 102 241 / 30%);
+  border-color: rgb(79 70 229 / 30%);
   box-shadow: 0 1px 3px rgb(0 0 0 / 20%);
 }
 
@@ -1233,7 +1231,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #4f46e5 0%, #5b21b6 100%);
   color: #fff;
   display: flex;
   align-items: center;
@@ -1255,7 +1253,7 @@
 }
 
 .register-container.dark-mode .registrants-summary {
-  background-color: rgb(29 78 216 / 15%);
-  border-color: rgb(147 197 253 / 30%);
+  background-color: #1a2d5a;
+  border-color: #2a4a8a;
   color: #93c5fd;
 }
