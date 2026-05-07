@@ -20,9 +20,9 @@ function TeamTable({ allTeams, auth, darkMode, refreshTeams }) {
   const [currentPage, setCurrentPage] = useState(1);
 const itemsPerPage = 10;
 
-const totalPages = Math.ceil(allTeams.length / itemsPerPage);
+const totalPages = Math.ceil(allTeams?.length / itemsPerPage);
 
-const paginatedTeams = allTeams.slice(
+const paginatedTeams = allTeams?.slice(
   (currentPage - 1) * itemsPerPage,
   currentPage * itemsPerPage,
 );

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { Link } from 'react-router-dom';
@@ -7,9 +8,9 @@ function ProjectTable({ projects, darkMode }) {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  const totalPages = Math.ceil(projects.length / itemsPerPage);
+  const totalPages = Math.ceil(projects?.length / itemsPerPage);
 
-  const paginatedProjects = projects.slice(
+  const paginatedProjects = projects?.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage,
   );

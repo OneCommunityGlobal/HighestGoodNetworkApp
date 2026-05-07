@@ -99,8 +99,8 @@ const paginatedReportData = reportData.slice(
     }))
 
 } else if (reportType === 'project') {
-        const res = await axios.get(ENDPOINTS.PROJECTS_COMMITTED_HOURS);
-      data = res.data.map(project => ({
+        const res = await axios.post(ENDPOINTS.PROJECTS_COMMITTED_HOURS, {fromDate, toDate});
+        data = res.data.map(project => ({
         id: project.projectId,
         name: project.projectName,
         totalHours: Number(project.committedHours.toFixed(1)),
