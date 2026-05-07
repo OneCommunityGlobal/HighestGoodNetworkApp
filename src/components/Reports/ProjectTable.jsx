@@ -82,4 +82,20 @@ function ProjectTable({ projects, darkMode }) {
   );
 }
 
+ProjectTable.propTypes = {
+  projects: PropTypes.arrayOf(
+    PropTypes.shape({
+      _id: PropTypes.string.isRequired,
+      projectName: PropTypes.string.isRequired,
+      isActive: PropTypes.bool.isRequired,
+    }),
+  ),
+  darkMode: PropTypes.bool,
+};
+
+ProjectTable.defaultProps = {
+  projects: [],
+  darkMode: false,
+};
+
 export default ProjectTable;
