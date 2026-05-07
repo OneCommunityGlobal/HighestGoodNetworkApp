@@ -1,5 +1,6 @@
 // src/pages/Collaboration/Collaboration.jsx
 import { useEffect, useState, useMemo, useRef } from 'react';
+import { useHistory } from 'react-router-dom';
 import styles from './Collaboration.module.css';
 import { toast } from 'react-toastify';
 import { ApiEndpoint } from '~/utils/URL';
@@ -26,9 +27,7 @@ function Collaboration() {
   const categoryRef = useRef(null);
   const positionRef = useRef(null);
 
-  // Modal
-  const [selectedJob, setSelectedJob] = useState(null);
-
+  const history = useHistory();
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const slugify = s =>
@@ -61,18 +60,6 @@ function Collaboration() {
       setCategories((data.categories || []).sort((a, b) => a.localeCompare(b)));
     } catch {
       toast.error('Error fetching categories');
-    }
-  };
-
-  /* ================= FETCH CATEGORIES ================= */
-  const fetchPositions = async () => {
-    try {
-      const res = await fetch(`${ApiEndpoint}/jobs/positions`);
-      const data = await res.json();
-
-      setPositions((data.positions || []).sort((a, b) => a.localeCompare(b)));
-    } catch {
-      toast.error('Error fetching positions');
     }
   };
 
@@ -119,11 +106,8 @@ function Collaboration() {
   }, [filteredJobs, currentPage]);
 
   useEffect(() => {
-    if (!selectedJob) return;
-    const esc = e => e.key === 'Escape' && setSelectedJob(null);
-    window.addEventListener('keydown', esc);
-    return () => window.removeEventListener('keydown', esc);
-  }, [selectedJob]);
+    // no-op placeholder; keep hook list stable if needed in future
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = event => {
@@ -166,6 +150,22 @@ function Collaboration() {
     } catch {
       toast.error('Error fetching summaries');
     }
+  };
+
+  const handleJobClick = ad => {
+    const title = ad.title || '';
+    const search = title ? `?jobTitle=${encodeURIComponent(title)}` : '';
+    history.push({
+      pathname: '/job-application',
+      search,
+      state: {
+        jobId: ad._id,
+        jobTitle: title,
+        jobDescription: ad.description || '',
+        requirements: ad.requirements || [],
+        category: ad.category || 'General',
+      },
+    });
   };
 
   /* ================= SUMMARIES VIEW ================= */
@@ -338,7 +338,7 @@ function Collaboration() {
               key={ad._id}
               type="button"
               className={styles.jobAd}
-              onClick={() => setSelectedJob(ad)}
+              onClick={() => handleJobClick(ad)}
             >
               <img
                 src={
@@ -367,42 +367,6 @@ function Collaboration() {
           ))}
         </div>
       </div>
-
-      {/* MODAL */}
-      {selectedJob && (
-        <div className={styles.modalOverlay} aria-hidden="true">
-          <div className={styles.modal}>
-            <button
-              type="button"
-              className={styles.closeButton}
-              aria-label="Close role details"
-              onClick={() => setSelectedJob(null)}
-            >
-              ×
-            </button>
-
-            <h2>{selectedJob.title}</h2>
-            <p>
-              <strong>Category:</strong> {selectedJob.category}
-            </p>
-            <p>{selectedJob.description}</p>
-
-            <div className={styles.modalActions}>
-              <a
-                className="btn btn-secondary"
-                href={`https://www.onecommunityglobal.org/collaboration/seeking-${slugify(
-                  selectedJob.category,
-                )}`}
-              >
-                View Full Details
-              </a>
-              <button className="btn btn-primary" disabled>
-                Apply Now
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

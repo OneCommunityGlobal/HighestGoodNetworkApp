@@ -20,16 +20,11 @@ function MemberList() {
 
   const membersPerPage = 5;
 
-  // Filter members based on selected filters
   const filteredMembers = useMemo(() => {
     return dummyMembers.filter(member => {
-      // Filter by skills
       const skillMatch =
         selectedSkills.length === 0 || selectedSkills.some(skill => member.skills.includes(skill));
-
-      // Filter by score range
       const scoreMatch = member.score >= minScore && member.score <= maxScore;
-
       return skillMatch && scoreMatch;
     });
   }, [selectedSkills, minScore, maxScore]);
@@ -40,7 +35,9 @@ function MemberList() {
   const totalPages = Math.ceil(filteredMembers.length / membersPerPage);
 
   const goToPage = page => {
-    if (page >= 1 && page <= totalPages) setCurrentPage(page);
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
   };
 
   const handleSkillToggle = skill => {
@@ -50,7 +47,7 @@ function MemberList() {
       }
       return [...prev, skill];
     });
-    setCurrentPage(1); // Reset to page 1 when filter changes
+    setCurrentPage(1);
   };
 
   const handleScoreChange = (type, value) => {
@@ -59,7 +56,7 @@ function MemberList() {
     } else {
       setMaxScore(Number(value));
     }
-    setCurrentPage(1); // Reset to page 1 when filter changes
+    setCurrentPage(1);
   };
 
   const handleClearFilters = () => {
@@ -71,7 +68,6 @@ function MemberList() {
 
   return (
     <div className={styles.memberListContainer}>
-      {/* Filter Bar */}
       <div className={styles.filterBar}>
         <div className={styles.filterSection}>
           <div className={styles.filterLabel}>Filter by Skills:</div>
@@ -130,7 +126,6 @@ function MemberList() {
         </div>
       </div>
 
-      {/* Member Cards */}
       <div className={styles.cards}>
         {currentMembers.length > 0 ? (
           currentMembers.map(member => (
@@ -158,7 +153,6 @@ function MemberList() {
         )}
       </div>
 
-      {/* Pagination */}
       {totalPages > 0 && (
         <div className={styles.paginationControls}>
           <button
