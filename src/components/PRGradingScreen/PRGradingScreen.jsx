@@ -56,7 +56,14 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [teamData?.teamCode]);
   const [promotionCandidate, setPromotionCandidate] = useState(null);
-  const [confirmedPromotions, setConfirmedPromotions] = useState([]);
+  const [confirmedPromotions, setConfirmedPromotions] = useState(() => {
+    try {
+      const stored = localStorage.getItem(`promotedReviewers_${teamData?.teamName}`);
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
   const [selectedForPromotion, setSelectedForPromotion] = useState([]);
   const [showBatchConfirm, setShowBatchConfirm] = useState(false);
 
@@ -150,6 +157,11 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
   /* ---------------- SAVE / FINALIZE ---------------- */
 
   const handleFinalize = async () => {
+    if (!teamData?.teamCode) {
+      setIsFinalized(true);
+      setSaveMessage('Grades saved successfully!');
+      return;
+    }
     setIsSaving(true);
     setSaveMessage('');
     try {
@@ -210,7 +222,11 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
     } catch (error) {
       // silently continue even if API fails
     }
-    setConfirmedPromotions(prev => [...prev, reviewerName]);
+    setConfirmedPromotions(prev => {
+      const updated = [...prev, reviewerName];
+      localStorage.setItem(`promotedReviewers_${teamData?.teamName}`, JSON.stringify(updated));
+      return updated;
+    });
     setPromotionCandidate(null);
   };
 
@@ -238,7 +254,11 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
     const selectedNames = reviewerData
       .filter(r => selectedForPromotion.includes(r.id))
       .map(r => r.reviewer);
-    setConfirmedPromotions(prev => [...prev, ...selectedNames]);
+    setConfirmedPromotions(prev => {
+      const updated = [...prev, ...selectedNames];
+      localStorage.setItem(`promotedReviewers_${teamData?.teamName}`, JSON.stringify(updated));
+      return updated;
+    });
     setSelectedForPromotion([]);
     setShowBatchConfirm(false);
   };
@@ -317,7 +337,56 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                   {reviewerData.map(reviewer => (
                     <>
                       <tr key={reviewer.id}>
-                        <td>{reviewer.reviewer}</td>
+                        <td>
+                          <div
+                            style={{
+                              display: 'flex',
+                              flexDirection: 'column',
+                              alignItems: 'center',
+                              gap: '6px',
+                            }}
+                          >
+                            <span>{reviewer.reviewer}</span>
+                            {!confirmedPromotions.includes(reviewer.reviewer) ? (
+                              <>
+                                <input
+                                  type="checkbox"
+                                  title="Select for batch promotion"
+                                  checked={selectedForPromotion.includes(reviewer.id)}
+                                  onChange={() => handleCheckboxChange(reviewer.id)}
+                                  style={{
+                                    marginTop: '4px',
+                                    cursor: 'pointer',
+                                    width: '16px',
+                                    height: '16px',
+                                  }}
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => handlePromoteClick(reviewer)}
+                                  style={{
+                                    fontSize: '0.75rem',
+                                    padding: '3px 10px',
+                                    borderRadius: '4px',
+                                    border: 'none',
+                                    background: '#ffc107',
+                                    color: '#333',
+                                    cursor: 'pointer',
+                                    fontWeight: '600',
+                                  }}
+                                >
+                                  🏆 Promote
+                                </button>
+                              </>
+                            ) : (
+                              <span
+                                style={{ fontSize: '0.75rem', color: '#28a745', fontWeight: '600' }}
+                              >
+                                ✅ Promoted
+                              </span>
+                            )}
+                          </div>
+                        </td>
                         <td>
                           <input
                             type="number"
