@@ -7,7 +7,6 @@ import { toast } from 'react-toastify';
 import {
   Button,
   Card,
-  NavbarToggler,
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
@@ -17,6 +16,7 @@ import {
   ModalHeader,
   Nav,
   Navbar,
+  NavbarToggler,
   NavItem,
   NavLink,
   UncontrolledDropdown
@@ -804,22 +804,12 @@ export function Header(props) {
                       <DropdownItem divider />
                       <DropdownItem
                         tag={Link}
-                        to="/pr-dashboard/analytics"
+                        to="/pr-dashboard/overview"
                         className={fontColor}
                         disabled={headerDisabled}
                       >
                         PR Team Analytics
                       </DropdownItem>
-                      {canAccessBlueSquareEmailManagement && (
-                        <DropdownItem
-                          tag={Link}
-                          to="/bluesquare-email-management"
-                          className={fontColor}
-                          disabled={headerDisabled}
-                        >
-                          {BLUE_SQUARE_EMAIL_MANAGEMENT}
-                        </DropdownItem>
-                      )}
                       <DropdownItem
                         tag={Link}
                         to="/pr-dashboard/analytics"
