@@ -29,17 +29,13 @@ const VolunteerHoursReport = ({
   });
   const [loading, setLoading] = useState(false);
   const [reportData, setReportData] = useState([]);
-  const [selectedItems, setSelectedItems] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-
-
   const totalPages = Math.ceil(reportData.length / itemsPerPage);
-
-const paginatedReportData = reportData.slice(
+  const paginatedReportData = reportData.slice(
   (currentPage - 1) * itemsPerPage,
   currentPage * itemsPerPage
-);
+  );
   // Load initial data
   useEffect(() => {
     const loadData = async () => {
@@ -63,8 +59,6 @@ const paginatedReportData = reportData.slice(
 
   // Generate report data based on selected type
   const generateReport = useCallback(async () => {
-
-    console.log(reportType);
     setLoading(true);
     try {
       const fromDate = moment(dateRange.startDate).format('YYYY-MM-DD');
@@ -94,9 +88,9 @@ const paginatedReportData = reportData.slice(
                id: team.teamId,
                name: team.teamName,
                totalHours: Number(team.committedHours.toFixed(1)),
-    }))
+      }))
 
-} else if (reportType === 'project') {
+      } else if (reportType === 'project') {
         const res = await axios.post(ENDPOINTS.PROJECTS_COMMITTED_HOURS, {fromDate, toDate});
         data = res.data.map(project => ({
         id: project.projectId,
@@ -110,7 +104,7 @@ const paginatedReportData = reportData.slice(
       setReportData(data);
       setCurrentPage(1);
     } catch (error) {
-      // Handle error silently or show user-friendly message
+     console.error('Error generating report:', error);
     } finally {
       setLoading(false);
     }
