@@ -73,7 +73,7 @@ export const fetchVillages = async () => {
   try {
     ensureAuthentication();
 
-    const response = await httpService.get(VILLAGES_URL);
+    const response = await httpService.get(VILLAGES_URL, { skipGlobalErrorToast: true });
     const rawVillages = Array.isArray(response.data) ? response.data : response.data?.data || [];
     const apiVillages = rawVillages.map(v => (typeof v === 'string' ? v : v?.name)).filter(Boolean);
 
@@ -112,7 +112,10 @@ export const fetchListings = async (page = 1, size = 12, filters = {}) => {
       headers.village = String(filters.village);
     }
 
-    const response = await httpService.get(`${API_BASE_URL}/listings`, { headers });
+    const response = await httpService.get(`${API_BASE_URL}/listings`, {
+      headers,
+      skipGlobalErrorToast: true,
+    });
 
     const responseData = response.data;
     const items = responseData.data?.items || responseData.items || [];
@@ -169,7 +172,10 @@ export const fetchBiddings = async (page = 1, size = 12, filters = {}) => {
       headers.village = String(filters.village);
     }
 
-    const response = await httpService.get(`${API_BASE_URL}/biddings`, { headers });
+    const response = await httpService.get(`${API_BASE_URL}/biddings`, {
+      headers,
+      skipGlobalErrorToast: true,
+    });
 
     const responseData = response.data;
     const items = responseData.data?.items || responseData.items || [];
