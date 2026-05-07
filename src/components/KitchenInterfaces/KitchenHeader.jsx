@@ -2,11 +2,9 @@ import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { useSelector } from 'react-redux';
 import styles from './KitchenHeader.module.css';
 
 const KitchenHeader = () => {
-  const darkMode = useSelector(state => state.theme.darkMode);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const NAV_ITEMS = [
@@ -53,7 +51,8 @@ const KitchenHeader = () => {
 
       {/* Overlay for mobile when menu is open */}
       {isMenuOpen && (
-        <div
+        <button
+          type="button"
           className={styles.overlay}
           onClick={() => setIsMenuOpen(false)}
           onKeyDown={e => {
@@ -61,8 +60,6 @@ const KitchenHeader = () => {
               setIsMenuOpen(false);
             }
           }}
-          role="button"
-          tabIndex={0}
           aria-label="Close menu"
         />
       )}

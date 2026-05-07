@@ -8,7 +8,6 @@ import {
   faWarehouse,
   faArchive,
 } from '@fortawesome/free-solid-svg-icons';
-import { useSelector } from 'react-redux';
 import styles from './ProcessingLandingPage.module.css';
 import ProcessingProjectCard from './ProcessingProjectCard';
 

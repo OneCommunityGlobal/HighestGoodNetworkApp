@@ -93,17 +93,14 @@ const AnimalOrdersTab = ({ orders, setOrders }) => {
       </div>
 
       {showModal && (
-        <div
-          className={styles['modal-overlay']}
-          onClick={e => {
-            if (e.target === e.currentTarget) setShowModal(false);
-          }}
-          onKeyDown={e => {
-            if (e.key === 'Escape') setShowModal(false);
-          }}
-          role="presentation"
-        >
-          <div className={styles['modal-content']} role="dialog" aria-modal="true">
+        <>
+          <button
+            type="button"
+            className={styles['modal-overlay']}
+            onClick={() => setShowModal(false)}
+            aria-label="Close modal"
+          />
+          <dialog open className={styles['modal-content']} aria-modal="true">
             <div className={styles['modal-header']}>
               <h2>Create New Order</h2>
               <button className={styles['modal-close']} onClick={() => setShowModal(false)}>
@@ -156,8 +153,8 @@ const AnimalOrdersTab = ({ orders, setOrders }) => {
                 </button>
               </div>
             </form>
-          </div>
-        </div>
+          </dialog>
+        </>
       )}
     </div>
   );

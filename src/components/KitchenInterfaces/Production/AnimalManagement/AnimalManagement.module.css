@@ -346,19 +346,28 @@
   position: fixed;
   inset: 0;
   background: rgb(0 0 0 / 50%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  border: none;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
   z-index: 1000;
+  display: block;
 }
 
 .modal-content {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   background: white;
   padding: 30px;
   border-radius: 12px;
   width: 90%;
   max-width: 500px;
   box-shadow: 0 10px 25px rgb(0 0 0 / 20%);
+  z-index: 1001;
+  border: none;
+  margin: 0;
 }
 
 .dark-mode .modal-content {
@@ -427,8 +436,8 @@
 }
 
 .dark-mode .status-delivered {
-  background: #2b8a3e !important;
-  color: #ebfbee !important;
+  background: #1a5d2e !important; /* Even darker green for contrast */
+  color: #f0fff4 !important;
 }
 
 .dark-mode .status-scheduled {
@@ -437,6 +446,6 @@
 }
 
 .dark-mode .status-confirmed {
-  background: #868e96 !important;
-  color: #212529 !important;
+  background: #495057 !important;
+  color: #fff !important; /* High contrast white on dark gray */
 }

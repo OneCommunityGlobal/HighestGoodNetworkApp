@@ -1,7 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import axios from 'axios';
-import { useSelector } from 'react-redux';
+import { useState, useEffect } from 'react';
 import styles from './ProcessingLandingPage.module.css';
 import ProcessingQueue from './ProcessingQueue';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
