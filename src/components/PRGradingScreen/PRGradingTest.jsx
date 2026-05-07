@@ -47,7 +47,8 @@ const PRGradingTest = () => {
   const allTeams = [...STATIC_TEAMS, ...dynamicTeams];
 
   const handleTeamSelect = teamId => {
-    history.push('/pr-grading-screen', { teamId });
+    const team = allTeams.find(t => t.id === teamId);
+    history.push('/pr-grading-screen', { teamId, teamName: team?.name });
   };
 
   const handleDeleteConfig = async (e, teamId) => {
