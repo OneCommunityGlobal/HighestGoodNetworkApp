@@ -65,6 +65,13 @@
   font-size: inherit;
 }
 
+.team-name-cell {
+  max-width: 200px;
+  white-space: normal;
+  overflow-wrap: anywhere;   
+  word-break: break-all;
+}
+
 @media screen and (width <= 1100px) {
   .totalTitle,
   .totalNumber,

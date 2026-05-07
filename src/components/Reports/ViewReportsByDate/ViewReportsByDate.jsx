@@ -53,7 +53,7 @@ class ViewReportByDate extends Component {
     const { minDate, maxDate, textColor, darkMode } = this.props;
 
     return (
-      <div className={`date-picker-container ${darkMode ? 'dark-mode' : ''}`}>
+      <div className={`date-picker-container d-flex align-items-end gap-3 ${darkMode ? 'dark-mode' : ''}`}  style={{ marginTop: '15px', marginRight: '15px' }}>
         <div id="task_startDate" className="date-picker-item">
           <label 
             htmlFor="task_startDate" 

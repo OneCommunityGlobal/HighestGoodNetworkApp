@@ -1,0 +1,89 @@
+.container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dateRangeContainer {
+  position: relative;
+}
+
+.dateButton {
+  width: 100%;
+  text-align: left;
+  font-size: 14px;
+  padding: 8px 12px;
+}
+
+.datePicker {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 10px;
+  box-shadow: 0 2px 10px rgb(0 0 0 / 10%);
+  min-width: 300px;
+}
+
+.tableContainer {
+  max-height: 600px;
+  overflow-y: auto;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+}
+
+.hoursCell {
+  text-align: right;
+  font-weight: 500;
+  min-width: 100px;
+}
+
+.totalRow {
+  background-color: #f8f9fa;
+  font-weight: bold;
+}
+
+.totalRow td {
+  border-top: 2px solid #dee2e6;
+}
+
+/* Dark mode styles */
+:global(.bg-dark) .datePicker {
+  background: #343a40;
+  border-color: #495057;
+  color: white;
+}
+
+:global(.bg-dark) .totalRow {
+  background-color: #495057;
+}
+
+/* Responsive design */
+@media (width <= 768px) {
+  .container {
+    padding: 10px;
+  }
+  
+  .datePicker {
+    min-width: 280px;
+  }
+  
+  .tableContainer {
+    max-height: 400px;
+  }
+}
+
+@media (width <= 576px) {
+  .dateButton {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+  
+  .hoursCell {
+    min-width: 80px;
+    font-size: 14px;
+  }
+}

@@ -1,0 +1,67 @@
+.center {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.row {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.block {
+  width: 120px;
+}
+
+.team-code-form-field {
+  width: fit-content;
+  min-width: 8em;
+  max-width: 13em;
+}
+
+.team-name-cell {
+  width: 40%;
+  max-width: 350px;
+  white-space: normal;
+}
+
+.team-name-link {
+  display: inline-block;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+/* Example fixes for TotalReport styles */
+
+.container {
+  padding: 15px;
+}
+
+.card {
+  background-color: #fff;
+}
+
+.card-dark {
+  background-color: #fff;
+}
+
+@media (width <= 1024px) {
+  .container {
+    padding: 12px;
+  }
+}
+
+@media (width <= 768px) {
+  .container {
+    padding: 10px;
+  }
+}
+
+@media (width <= 480px) {
+  .container {
+    padding: 8px;
+  }
+}
