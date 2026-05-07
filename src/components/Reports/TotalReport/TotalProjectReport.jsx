@@ -30,7 +30,8 @@ function TotalProjectReport(props) {
   const [showYearly, setShowYearly] = useState(false);
   // Added state to show warning if month gap is less than one month
   const [showWarning, setShowWarning] = useState(false);
-
+const [currentPage, setCurrentPage] = useState(1);
+const itemsPerPage = 10;
   const fromDate = useMemo(() => startDate.toLocaleDateString('en-CA'), [startDate]);
   const toDate = useMemo(() => endDate.toLocaleDateString('en-CA'), [endDate]);
   const userList = useMemo(() => {
@@ -247,24 +248,38 @@ function TotalProjectReport(props) {
     checkPeriodForSummary,
   ]);
 
-  const onClickTotalProjectDetail = () => setShowTotalProjectTable(prevState => !prevState);
+  const onClickTotalProjectDetail = () => {
+    console.log(allProject)
+    setShowTotalProjectTable(prevState => !prevState)};
 
-  const totalProjectTable = totalProject => (
-    <table className="details-table table table-bordered table-responsive-sm">
-      <thead className={darkMode ? 'bg-space-cadet text-light' : ''} style={{ pointerEvents: 'none' }}>
-        <tr>
-          <th scope="col" id="projects__order">
-            #
-          </th>
-          <th scope="col">Project Name</th>
-          <th scope="col">Total Tangible Logged Time (Hrs)</th>
-        </tr>
-      </thead>
-      <tbody className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
-        {totalProject
-          .sort((a, b) => a.projectName.localeCompare(b.projectName))
-          .filter(project => project.tangibleTime > 0) // Filters out projects that have 0 tangible time
-          .map((project, index) => (
+  const totalProjectTable = totalProject => {
+  const filteredProjects = totalProject
+    .filter(project => project.tangibleTime > 0)
+    .sort((a, b) => a.projectName.localeCompare(b.projectName));
+
+  const totalPages = Math.ceil(filteredProjects.length / itemsPerPage);
+
+  const paginatedProjects = filteredProjects.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage,
+  );
+
+  return (
+    <>
+      <table className="details-table table table-bordered table-responsive-sm">
+        <thead
+          className={darkMode ? 'bg-space-cadet text-light' : ''}
+          style={{ pointerEvents: 'none' }}
+        >
+          <tr>
+            <th scope="col" id="projects__order">#</th>
+            <th scope="col">Project Name</th>
+            <th scope="col">Total Tangible Logged Time (Hrs)</th>
+          </tr>
+        </thead>
+
+        <tbody className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
+          {paginatedProjects.map((project, index) => (
             <tr
               className={
                 darkMode ? 'teams__tr hover-effect-reports-page-dark-mode text-light' : 'teams__tr'
@@ -273,8 +288,9 @@ function TotalProjectReport(props) {
               key={project.projectId}
             >
               <th className="teams__order--input" scope="row">
-                <div>{index + 1}</div>
+                <div>{(currentPage - 1) * itemsPerPage + index + 1}</div>
               </th>
+
               <td>
                 {project.projectId ? (
                   <Link
@@ -287,12 +303,39 @@ function TotalProjectReport(props) {
                   'Unrecorded Project'
                 )}
               </td>
+
               <td>{project.tangibleTime}</td>
             </tr>
           ))}
-      </tbody>
-    </table>
+        </tbody>
+      </table>
+
+      {totalPages > 1 && (
+        <div className="d-flex justify-content-center align-items-center mt-3 gap-2">
+          <Button
+            size="sm"
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage(prev => prev - 1)}
+          >
+            Previous
+          </Button>
+
+          <span>
+            Page {currentPage} of {totalPages}
+          </span>
+
+          <Button
+            size="sm"
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage(prev => prev + 1)}
+          >
+            Next
+          </Button>
+        </div>
+      )}
+    </>
   );
+};
 
   const totalProjectInfo = totalProject => {
     const totalTangibleTime = totalProject.reduce((acc, obj) => {
