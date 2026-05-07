@@ -223,7 +223,7 @@ TeamTable.propTypes = {
       isActive: PropTypes.bool.isRequired,
       teamCode: PropTypes.string,
     }),
-  ).isRequired,
+  ),
   auth: PropTypes.shape({
     user: PropTypes.shape({
       role: PropTypes.string,
