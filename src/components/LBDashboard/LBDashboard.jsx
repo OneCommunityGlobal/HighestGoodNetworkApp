@@ -17,13 +17,16 @@ import {
   Row,
   Col,
 } from 'reactstrap';
-
 import DemandOverTime from './LbAnalytics/DemandOverTime/DemandOverTime';
 import WinningVsAverageBidChart from './LbAnalytics/WinningVsAverageBidChart/WinningVsAverageBidChart';
 import ReviewWordCloud from './ReviewWordCloud/ReviewWordCloud';
+import { ComparePieChart } from './PieChart/ComparePieChart';
+import RatingDistribution from './RatingDistribution/RatingDistribution';
 import { CompareBarGraph } from './BarGraphs/CompareGraphs';
 import { ComparePropertiesRatings } from './BarGraphs/ComparePropertiesRatings';
 
+import httpService from '../../services/httpService';
+import { ApiEndpoint } from '../../utils/URL';
 import styles from './LBDashboard.module.css';
 import ConversionFunnel from './LbAnalytics/ConversionFunnel/ConversionFunnel';
 import { randomInt } from './lbUtils';
@@ -62,7 +65,6 @@ const DEFAULTS = {
 
 const getClassNames = (baseClass, darkClass, darkMode) =>
   `${baseClass} ${darkMode ? darkClass : ''}`;
-
 function GraphCard({ title, metricLabel, darkMode }) {
   return (
     <Card className={`${styles.graphCard} ${darkMode ? styles.darkCard : ''}`}>
@@ -532,6 +534,10 @@ export function LBDashboard() {
     [villagesData],
   );
 
+  const getAvailableMetrics = () => {
+    return Object.values(METRIC_OPTIONS).flat();
+  };
+
   const handleCategoryClick = category => {
     setActiveCategory(category);
     const availableMetrics = METRIC_OPTIONS[category].filter(
@@ -539,6 +545,19 @@ export function LBDashboard() {
     );
     const defaultMetric = availableMetrics.find(m => m.key === DEFAULTS[category]);
     setSelectedMetricKey(defaultMetric ? defaultMetric.key : availableMetrics[0]?.key);
+  };
+
+  const handleMetricChange = newMetricKey => {
+    setSelectedMetricKey(newMetricKey);
+
+    // Update active category based on the selected metric
+    const allMetrics = Object.entries(METRIC_OPTIONS);
+    for (const [category, metrics] of allMetrics) {
+      if (metrics.some(m => m.key === newMetricKey)) {
+        setActiveCategory(category);
+        break;
+      }
+    }
   };
 
   const handleMetricPick = (category, key) => {
@@ -697,7 +716,14 @@ export function LBDashboard() {
       </AnalysisSection>
 
       <AnalysisSection title="Insights from Reviews" darkMode={darkMode}>
-        <ReviewWordCloud darkMode={darkMode} />
+        <div className={styles.chartRow}>
+          <div className={styles.chartCol}>
+            <RatingDistribution darkMode={darkMode} />
+          </div>
+          <div className={styles.chartCol}>
+            <ReviewWordCloud darkMode={darkMode} />
+          </div>
+        </div>
       </AnalysisSection>
     </Container>
   );

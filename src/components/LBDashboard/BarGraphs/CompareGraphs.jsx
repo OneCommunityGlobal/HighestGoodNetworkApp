@@ -13,7 +13,7 @@ import {
 import { Card, CardBody } from 'reactstrap';
 import styles from '../LBDashboard.module.css';
 
-const getHorizontalAxes = (
+const getHorizontalAxes = ({
   xDomain,
   xTicks,
   valueFormatter,
@@ -24,7 +24,7 @@ const getHorizontalAxes = (
   yTickFormatter,
   showYAxisTitle,
   yLabel,
-) => ({
+}) => ({
   xAxis: (
     <XAxis
       type="number"
@@ -175,7 +175,7 @@ export function CompareBarGraph({
               <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
               {isHorizontal
                 ? (() => {
-                    const axes = getHorizontalAxes(
+                    const axes = getHorizontalAxes({
                       xDomain,
                       xTicks,
                       valueFormatter,
@@ -186,7 +186,7 @@ export function CompareBarGraph({
                       yTickFormatter,
                       showYAxisTitle,
                       yLabel,
-                    );
+                    });
                     return (
                       <>
                         {axes.xAxis}
