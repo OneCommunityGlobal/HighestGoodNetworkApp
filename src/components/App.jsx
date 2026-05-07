@@ -234,9 +234,7 @@ class App extends Component {
               <Router>
                 <ThemeManager />
                 <UpdateDocumentTitle />
-                <Suspense fallback={<Loading />}>
-                  {routes}
-                </Suspense>
+                <Suspense fallback={<Loading />}>{routes}</Suspense>
               </Router>
             </ModalProvider>
           </QueryClientProvider>
