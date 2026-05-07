@@ -143,32 +143,17 @@ const paginatedReportData = reportData.slice(
   };
 
   const renderTableRow = (item) => {
-    switch (reportType) {
-      case 'person':
+    if(reportType) {
         return (
           <tr key={item.id}>
             <td>{item.name}</td>
             <td className={styles.hoursCell}>{item.totalHours}</td>
           </tr>
         );
-      case 'team':
-        return (
-    <tr key={item.id}>
-      <td>{item.name}</td>
-      <td className={styles.hoursCell}>{item.totalHours}</td>
-    </tr>
-  );
-      case 'project':
-        return (
-          <tr key={item.id}>
-            <td>{item.name}</td>
-            <td className={styles.hoursCell}>{item.totalHours}</td>
-          </tr>
-        );
-      default:
+    } else {
         return null;
     }
-  };
+  }
 
   return (
     <div className={styles.container}>
@@ -255,8 +240,8 @@ const paginatedReportData = reportData.slice(
                 <Table responsive className={darkMode ? 'table-dark' : ''}>
                   <thead>
                     <tr>
-                      {getTableHeaders().map((header, index) => (
-                        <th key={index}>{header}</th>
+                      {getTableHeaders().map(header => (
+                        <th key={header}>{header}</th>
                       ))}
                     </tr>
                   </thead>
