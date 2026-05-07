@@ -34,7 +34,7 @@ const VolunteerHoursReport = ({
   const totalPages = Math.ceil(reportData.length / itemsPerPage);
   const paginatedReportData = reportData.slice(
   (currentPage - 1) * itemsPerPage,
-  currentPage * itemsPerPage
+    currentPage * itemsPerPage
   );
   // Load initial data
   useEffect(() => {
