@@ -455,8 +455,8 @@
 }
 
 .darkMode .methodStatus {
-  background-color: rgb(40 167 69 / 25%);
-  color: #d0ffd0; /* Even lighter green for guaranteed dark mode contrast */
+  background-color: rgb(40 167 69 / 15%);
+  color: #fff;
   border: 1px solid #2ea043;
   box-shadow: none;
 }
@@ -748,21 +748,21 @@
 }
 
 .darkMode .priorityHigh {
-  background-color: rgb(198 40 40 / 25%);
+  background-color: rgb(198 40 40 / 15%);
   border-color: #c62828;
-  color: #ffe0e0; /* Maximal lightness for contrast */
+  color: #fff;
 }
 
 .darkMode .priorityMedium {
-  background-color: rgb(239 108 0 / 25%);
+  background-color: rgb(239 108 0 / 15%);
   border-color: #ef6c00;
-  color: #fff3e0; /* Maximal lightness for contrast */
+  color: #fff;
 }
 
 .darkMode .priorityLow {
-  background-color: rgb(21 101 192 / 25%);
+  background-color: rgb(21 101 192 / 15%);
   border-color: #1565c0;
-  color: #e1f5fe; /* Maximal lightness for contrast */
+  color: #fff;
 }
 
 /* Dark Mode Modal */
