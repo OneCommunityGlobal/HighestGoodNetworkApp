@@ -1,6 +1,7 @@
 // eslint-disable-next-line no-unused-vars
 import { React, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import './Teamtable.module.css';
 import { Input, FormGroup, FormFeedback, Button } from 'reactstrap';
 import { connect } from 'react-redux';
@@ -18,7 +19,7 @@ function TeamTable({ allTeams, auth, darkMode, refreshTeams }) {
   const canEditTeamCode = hasPermission('editTeamCode') || auth.user.role === 'Owner';
 
   const [currentPage, setCurrentPage] = useState(1);
-const itemsPerPage = 10;
+  const itemsPerPage = 10;
 
 const totalPages = Math.ceil(allTeams?.length / itemsPerPage);
 
@@ -110,6 +111,15 @@ const paginatedTeams = allTeams?.slice(
       </div>
     );
   }
+
+  EditTeamCode.propTypes = {
+  team: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
+    teamName: PropTypes.string.isRequired,
+    isActive: PropTypes.bool.isRequired,
+    teamCode: PropTypes.string,
+  }).isRequired,
+ };
 
   if (allTeams.length > 0) {
     TeamsList  = paginatedTeams.map((team, index) => (
@@ -204,5 +214,28 @@ const mapDispatchToProps = dispatch => ({
     dispatch(updateSavedFiltersForIndividualTeamCodeChange(oldTeamCode, newTeamCode, userId)),
   refreshTeams: () => dispatch(getAllUserTeams()),
 });
+
+TeamTable.propTypes = {
+  allTeams: PropTypes.arrayOf(
+    PropTypes.shape({
+      _id: PropTypes.string.isRequired,
+      teamName: PropTypes.string.isRequired,
+      isActive: PropTypes.bool.isRequired,
+      teamCode: PropTypes.string,
+    }),
+  ),
+  auth: PropTypes.shape({
+    user: PropTypes.shape({
+      role: PropTypes.string,
+    }),
+  }).isRequired,
+  darkMode: PropTypes.bool,
+  refreshTeams: PropTypes.func.isRequired,
+};
+
+TeamTable.defaultProps = {
+  allTeams: [],
+  darkMode: false,
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(TeamTable);
