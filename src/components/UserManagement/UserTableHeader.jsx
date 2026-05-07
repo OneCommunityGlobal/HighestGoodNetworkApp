@@ -66,7 +66,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
         toast.error('Error Updating Data ! ');
       }
     };
-    const darkModeStyle = darkMode ? { color: 'white', backgroundColor: '#3a506b' } : { backgroundColor: "#f0f8ff",color:"black"};
+    const darkModeStyle = darkMode ? { text: 'white', backgroundColor: '#364456' } : { backgroundColor: "#f0f8ff",color:"black"};
     const enableEdit = value => {
       setEditFlag(value);
       enableEditUserInfo(value);
