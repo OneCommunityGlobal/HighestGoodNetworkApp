@@ -1,18 +1,16 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { connect } from 'react-redux';
 import { Button, Table, Card, CardBody, CardHeader, Row, Col, FormGroup, Label, Input } from 'reactstrap';
 import moment from 'moment-timezone';
 import { getUsersTotalHoursForSpecifiedPeriod } from '../../../actions/timeEntries';
 import { getAllUserTeams } from '../../../actions/allTeamsAction';
 import { fetchAllProjects } from '../../../actions/projects';
-import { getUserProfileBasicInfo, userProfileUpdateAction } from '../../../actions/userManagement';
+import { getUserProfileBasicInfo } from '../../../actions/userManagement';
 import Loading from '../../common/Loading';
 import styles from './VolunteerHoursReport.module.css';
-import {getTimeEntryByProjectSpecifiedPeriod} from '../../../actions/index'
-import { fetchAllTasks} from '../../../actions/task';
-import { fetchAllWBS } from '../../../actions/wbs';
 import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
+import PropTypes from 'prop-types';
 
 const VolunteerHoursReport = ({
   darkMode,
@@ -329,4 +327,21 @@ const mapDispatchToProps = {
   getUserProfileBasicInfo
 };
 
+VolunteerHoursReport.propTypes = {
+  darkMode: PropTypes.bool,
+  allTeams: PropTypes.array,
+  projects: PropTypes.array,
+  userProfiles: PropTypes.array,
+  getUsersTotalHoursForSpecifiedPeriod: PropTypes.func.isRequired,
+  getAllUserTeams: PropTypes.func.isRequired,
+  fetchAllProjects: PropTypes.func.isRequired,
+  getUserProfileBasicInfo: PropTypes.func.isRequired,
+};
+
+VolunteerHoursReport.defaultProps = {
+  darkMode: false,
+  allTeams: [],
+  projects: [],
+  userProfiles: [],
+};
 export default connect(mapStateToProps, mapDispatchToProps)(VolunteerHoursReport);
