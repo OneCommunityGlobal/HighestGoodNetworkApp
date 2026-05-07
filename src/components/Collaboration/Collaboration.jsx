@@ -150,6 +150,34 @@ function Collaboration() {
     }
   };
 
+  const handleJobClick = ad => {
+    const title = ad.title || '';
+    const search = title ? `?jobTitle=${encodeURIComponent(title)}` : '';
+    history.push({
+      pathname: '/job-application',
+      search,
+      state: {
+        jobId: ad._id,
+        jobTitle: title,
+        jobDescription: ad.description || '',
+        requirements: ad.requirements || [],
+        category: ad.category || 'General',
+      },
+    });
+  };
+
+  const resultLabel = filteredJobs.length === 1 ? 'result' : 'results';
+
+  let listingText = `Listing all ${filteredJobs.length} job ads.`;
+
+  if (searchTerm.trim()) {
+    listingText = `Listing ${filteredJobs.length} ${resultLabel} for '${searchTerm}'`;
+  } else if (selectedPosition) {
+    listingText = `Listing ${filteredJobs.length} ${resultLabel} for '${selectedPosition}' in '${selectedCategory}'`;
+  } else if (selectedCategory) {
+    listingText = `Listing ${filteredJobs.length} ${resultLabel} for '${selectedCategory}'`;
+  }
+
   /* ================= SUMMARIES VIEW ================= */
   if (summaries) {
     return (
@@ -288,21 +316,7 @@ function Collaboration() {
 
         {/* QUERY TEXT */}
         <div className="job-queries">
-          <p>
-            {searchTerm.trim()
-              ? `Listing ${filteredJobs.length} result${
-                  filteredJobs.length !== 1 ? 's' : ''
-                } for '${searchTerm}'`
-              : selectedPosition
-              ? `Listing ${filteredJobs.length} result${
-                  filteredJobs.length !== 1 ? 's' : ''
-                } for '${selectedPosition}' in '${selectedCategory}'`
-              : selectedCategory
-              ? `Listing ${filteredJobs.length} result${
-                  filteredJobs.length !== 1 ? 's' : ''
-                } for '${selectedCategory}'`
-              : `Listing all ${filteredJobs.length} job ads.`}
-          </p>
+          <p>{listingText}</p>
           <button className="btn btn-secondary" onClick={handleShowSummaries}>
             Show Summaries
           </button>
