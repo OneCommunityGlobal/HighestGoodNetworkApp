@@ -23,7 +23,6 @@ import {
   USER_END_DATE,
 } from '../../languages/en/ui';
 import styles from './usermanagement.module.css';
-import def from 'ajv/dist/vocabularies/discriminator';
 
 /**
  * The header row of the user table.
@@ -57,11 +56,12 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
             autoClose: 3000,
           });
           setTimeout(() => {
-          window.location.reload();
+          globalThis.location.reload();
           }, 1000);
         } else {
           toast.error('Error Updating Data!');
         }
+        
       } catch (error) {
         toast.error('Error Updating Data ! ');
       }

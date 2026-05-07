@@ -251,7 +251,7 @@ const UserTableDataComponent = props => {
       <td className={styles.emailCell}>
         {editUser?.first ? (
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-            <a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-white' : 'text-dark'}>
+            <a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-black' : 'text-dark'}>
               {formData.firstName}{' '}
             </a>
             <FontAwesomeIcon
@@ -282,7 +282,7 @@ const UserTableDataComponent = props => {
       <td className={styles.emailCell}>
         {editUser?.last ? (
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-            <a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-white' : 'text-dark'}>
+            <a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-black' : 'text-dark'}>
               {formData.lastName}
             </a>
             <FontAwesomeIcon
