@@ -299,7 +299,7 @@ function Register() {
   // Check if user is already registered (from API resources or local registrants)
   useEffect(() => {
     const userId = resolveUserId();
-    const name = resolveUserName().toLowerCase();
+    const name = (resolveUserName() || '').toLowerCase();
 
     // Check API resources first
     const inApiResources = activity?.resources?.some(p => p.name?.toLowerCase() === name);

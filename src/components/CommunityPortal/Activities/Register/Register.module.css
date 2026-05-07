@@ -29,7 +29,7 @@
   max-width: 450px; 
   height: auto; 
   border-radius: 8px; 
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+  box-shadow: 0 4px 8px rgb(0 0 0 / 20%); 
   object-fit: cover; 
   margin: 10px auto; 
   display: block; 
@@ -116,8 +116,8 @@
 }
 
 .register-button:disabled {
-  background-color: #cccccc;
-  color: #666666;
+  background-color: #ccc;
+  color: #666;
   cursor: not-allowed;
 }
 
@@ -132,7 +132,7 @@
   width: 100%;
   border: 1px solid #ddd;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
   font-family: inherit;
 }
 
@@ -276,6 +276,7 @@
   text-align: center;
   color: #64b5f6 !important;
 }
+
 /* removed duplicate .event-image selector (defined earlier with full styles) */
 
 .submit-comment-button {
@@ -306,7 +307,7 @@
 
 .submit-comment-button:disabled {
   background-color: #c0c0c0;
-  color: #666666;
+  color: #666;
   cursor: not-allowed;
 }
 
@@ -356,6 +357,24 @@
   color: #ccc; 
   font-size: 18px; 
   margin-right: 2px; 
+}
+
+.detailsList {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  gap: 14px 20px;
+}
+
+.detailsList p {
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+}
+
+.eventPageDark .detailsList p {
+  background: #0f172a;
+  border-color: #1f2937;
 }
 
 /* Class-based Dark Mode Support - Following Dashboard pattern */
@@ -428,7 +447,7 @@
 }
 
 .register-container.dark-mode .calendar-container :global(.react-calendar__month-view__days__day--weekend) {
-  color: #ff9999;
+  color: #f99;
 }
 
 .register-container.dark-mode .calendar-container :global(.react-calendar__month-view__weekdays) {
@@ -520,14 +539,11 @@
 .register-container.dark-mode .indicator-today-dark {
   color: #64b5f6 !important;
 }
+
 /* Register button dark mode */
 .register-container.dark-mode .register-button {
   background-color: #3d4f62;
   border: 1px solid #3a4a5c;
-}
-
-.register-container.dark-mode .register-button:hover:not(:disabled) {
-  background-color: #4a5d72;
 }
 
 .register-container.dark-mode .register-button:disabled {
@@ -535,8 +551,12 @@
   color: #666;
 }
 
+.register-container.dark-mode .register-button:hover:not(:disabled) {
+  background-color: #4a5d72;
+}
+
 /* Responsive Design for Smaller Screens */
-@media (max-width: 1200px) {
+@media (width <= 1200px) {
   .register-container {
     flex-direction: column;
   }
@@ -559,7 +579,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .register-container {
     padding: 10px;
     gap: 15px;
@@ -594,7 +614,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .register-container {
     padding: 8px;
   }
@@ -636,7 +656,7 @@
   margin-top: 20px;
   background-color: #fff;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
   overflow: hidden;
 }
 
@@ -744,15 +764,15 @@
 }
 
 .register-container.dark-mode .type-badge {
-  background: rgba(29, 78, 216, 0.18);
+  background: rgb(29 78 216 / 18%);
   color: #93c5fd;
-  border-color: rgba(147, 197, 253, 0.25);
+  border-color: rgb(147 197 253 / 25%);
 }
 
 .register-container.dark-mode .status-badge {
-  background: rgba(4, 120, 87, 0.2);
+  background: rgb(4 120 87 / 20%);
   color: #6ee7b7;
-  border-color: rgba(110, 231, 183, 0.22);
+  border-color: rgb(110 231 183 / 22%);
 }
 
 /* Share button */
@@ -775,13 +795,13 @@
 }
 
 .register-container.dark-mode .share-button {
-  background-color: rgba(75, 85, 99, 0.4);
+  background-color: rgb(75 85 99 / 40%);
   color: #e5e7eb;
-  border-color: rgba(148, 163, 184, 0.25);
+  border-color: rgb(148 163 184 / 25%);
 }
 
 .register-container.dark-mode .share-button:hover {
-  background-color: rgba(75, 85, 99, 0.6);
+  background-color: rgb(75 85 99 / 60%);
 }
 
 /* Registrants summary */
@@ -802,16 +822,6 @@
   justify-content: center;
 }
 
-.registerButton:hover:not(:disabled) {
-  background-color: #0056b3;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
-}
-
-.registerButton:active:not(:disabled) {
-  transform: translateY(0);
-}
-
 .registerButton:disabled {
   background-color: #6c757d;
   cursor: not-allowed;
@@ -820,16 +830,26 @@
   opacity: 0.7;
 }
 
+.registerButton:hover:not(:disabled) {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgb(0 123 255 / 30%);
+}
+
+.registerButton:active:not(:disabled) {
+  transform: translateY(0);
+}
+
 .registerButtonDark {
   background-color: #0d6efd;
 }
 
-.registerButtonDark:hover:not(:disabled) {
-  background-color: #0b5ed7;
-}
-
 .registerButtonDark:disabled {
   background-color: #495057;
+}
+
+.registerButtonDark:hover:not(:disabled) {
+  background-color: #0b5ed7;
 }
 
 .registerButtonRegistering {
@@ -846,7 +866,7 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 20%), transparent);
   animation: shimmer 1.5s infinite;
 }
 
@@ -854,6 +874,7 @@
   0% {
     left: -100%;
   }
+
   100% {
     left: 100%;
   }
@@ -871,24 +892,6 @@
   width: 100%;
 }
 
-.detailsList {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(180px, 1fr));
-  gap: 14px 20px;
-}
-
-.detailsList p {
-  padding: 14px 16px;
-  border-radius: 14px;
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
-}
-
-.eventPageDark .detailsList p {
-  background: #0f172a;
-  border-color: #1f2937;
-}
-
 /* Resources */
 .resourceList {
   display: grid;
@@ -899,22 +902,22 @@
 /* Description Section Wrapper */
 .descriptionSectionWrapper {
   margin-top: 0;
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 8%);
   overflow: hidden;
 }
 
 .descriptionSectionWrapperDark {
-  background-color: rgba(30, 41, 59, 0.8);
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.3);
-  border: 1px solid rgba(148, 163, 184, 0.15);
+  background-color: rgb(30 41 59 / 80%);
+  box-shadow: 0 2px 8px rgb(15 23 42 / 30%);
+  border: 1px solid rgb(148 163 184 / 15%);
 }
 
 .resourceCard {
   display: flex;
+
   /* align-items: center; */
-  gap: 14px;
   padding: 16px;
   border-radius: 16px;
   background: #f9fafb;
@@ -1023,6 +1026,7 @@
     grid-template-columns: 1fr;
   }
 }
+
 /* Animations */
 @keyframes spin {
   0% {
@@ -1047,7 +1051,7 @@
 }
 
 /* Responsive Design */
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
   .eventHeader {
     flex-direction: column;
     gap: 24px;
@@ -1072,7 +1076,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .eventHeader {
     padding: 16px;
     gap: 16px;
@@ -1132,6 +1136,7 @@
   .heroActions {
     align-items: stretch;
   }
+
   .contentWrapper {
     padding: 0 12px;
   }
@@ -1173,17 +1178,17 @@
   justify-content: center;
   font-weight: 700;
   font-size: 13px;
-  border: 2px solid #ffffff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border: 2px solid #fff;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 8%);
   overflow: hidden;
   flex-shrink: 0;
 }
 
 .avatarDark {
   background-color: #4f46e5;
-  color: #ffffff;
-  border-color: rgba(79, 70, 229, 0.3);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  color: #fff;
+  border-color: rgb(79 70 229 / 30%);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 20%);
 }
 
 .avatarMore {
@@ -1197,16 +1202,16 @@
   justify-content: center;
   font-weight: 600;
   font-size: 13px;
-  border: 2px solid #ffffff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border: 2px solid #fff;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 8%);
   flex-shrink: 0;
 }
 
 .avatarMoreDark {
   background-color: #6366f1;
-  color: #ffffff;
-  border-color: rgba(99, 102, 241, 0.3);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  color: #fff;
+  border-color: rgb(99 102 241 / 30%);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 20%);
 }
 
 .commentEntry {
@@ -1220,7 +1225,7 @@
 }
 
 .commentEntryDark {
-  background-color: rgba(148, 163, 184, 0.16);
+  background-color: rgb(148 163 184 / 16%);
 }
 
 .commentAvatar {
@@ -1229,13 +1234,13 @@
   height: 32px;
   border-radius: 50%;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #ffffff;
+  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
   font-size: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgb(255 255 255 / 20%);
 }
 
 .commentContent {
@@ -1243,14 +1248,14 @@
 }
 
 .commentAuthor {
-  margin: 0 0 4px 0;
+  margin: 0 0 4px;
   font-weight: 600;
   font-size: 14px;
   color: #1d4ed8;
 }
 
 .register-container.dark-mode .registrants-summary {
-  background-color: rgba(29, 78, 216, 0.15);
-  border-color: rgba(147, 197, 253, 0.3);
+  background-color: rgb(29 78 216 / 15%);
+  border-color: rgb(147 197 253 / 30%);
   color: #93c5fd;
 }
