@@ -289,13 +289,19 @@ function Collaboration() {
         {/* QUERY TEXT */}
         <div className="job-queries">
           <p>
-            {searchTerm
-              ? `Listing results for '${searchTerm}'`
+            {searchTerm.trim()
+              ? `Listing ${filteredJobs.length} result${
+                  filteredJobs.length !== 1 ? 's' : ''
+                } for '${searchTerm}'`
               : selectedPosition
-              ? `Listing results for '${selectedPosition}' in '${selectedCategory}'`
+              ? `Listing ${filteredJobs.length} result${
+                  filteredJobs.length !== 1 ? 's' : ''
+                } for '${selectedPosition}' in '${selectedCategory}'`
               : selectedCategory
-              ? `Listing results for '${selectedCategory}'`
-              : 'Listing all job ads.'}
+              ? `Listing ${filteredJobs.length} result${
+                  filteredJobs.length !== 1 ? 's' : ''
+                } for '${selectedCategory}'`
+              : `Listing all ${filteredJobs.length} job ads.`}
           </p>
           <button className="btn btn-secondary" onClick={handleShowSummaries}>
             Show Summaries
