@@ -142,6 +142,7 @@ export function getProjectById(projectId) {
   };
 }
 
+
 export function getProjectsByUser(userId) {
   const request = httpService.get(`${APIEndpoint}/projects/user/${userId}`);
 

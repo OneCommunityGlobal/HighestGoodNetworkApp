@@ -43,12 +43,18 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
     );
   }
 
+  if (!data || !data.taskHours || !data.projectHours) {
+    return (
+      <div className="d-flex justify-content-center align-items-center">No data available</div>
+    );
+  }
+
   const { taskHours, projectHours } = data;
 
-  const taskPercentage = taskHours.submittedToCommittedHoursPercentage;
-  const projectPercentage = projectHours.submittedToCommittedHoursPercentage;
-  const taskChangePercentage = taskHours.comparisonPercentage;
-  const projectChangePercentage = projectHours.comparisonPercentage;
+  const taskPercentage = taskHours.submittedToCommittedHoursPercentage ?? 0;
+  const projectPercentage = projectHours.submittedToCommittedHoursPercentage ?? 0;
+  const taskChangePercentage = taskHours.comparisonPercentage ?? 0;
+  const projectChangePercentage = projectHours.comparisonPercentage ?? 0;
   const stats = [
     {
       name: 'Tasks',
@@ -134,6 +140,22 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
     );
   };
 
+  // for top right positioning of the projects box
+  const projectsBoxPosition =
+    cardSize.height === '300px'
+      ? { top: '28%', right: '10%' }
+      : cardSize.height === '548px'
+      ? { top: '30%', right: '8%' }
+      : { top: '30%', right: '6%' };
+
+  const projectsTextStyle = {
+    color: darkMode ? '#ffffff' : '#222222',
+  };
+
+  const projectsMutedTextStyle = {
+    color: darkMode ? '#d1d5db' : '#666666',
+  };
+
   return (
     <div
       style={{
@@ -142,8 +164,52 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
         maxHeight: '548px',
         display: 'flex',
         flexDirection: 'column',
+        position: 'relative',
       }}
     >
+      {/* Projects box positioned in the right side middle area */}
+      <div
+        style={{
+          position: 'absolute',
+          ...projectsBoxPosition,
+          left: 'auto',
+          transform: 'translateY(-50%)',
+          zIndex: 10,
+          background: darkMode ? '#1f2937' : '#ffffff',
+          borderRadius: 4,
+          padding: 4,
+          boxShadow: darkMode ? '0 2px 6px rgba(0,0,0,0.35)' : '0 2px 6px rgba(0,0,0,0.15)',
+          border: darkMode ? '1px solid rgba(255,255,255,0.15)' : '1px solid #eee',
+          minWidth: 105,
+          minHeight: 45,
+          display: 'grid',
+          justifyItems: 'center',
+          gap: 2,
+          isolation: 'isolate',
+        }}
+      >
+        <div style={{ ...projectsTextStyle, fontWeight: 'bold', fontSize: 15 }}>Projects</div>
+        <div style={{ ...projectsTextStyle, fontWeight: 'bold', fontSize: 14 }}>
+          {projectBarInfo.amount}
+        </div>
+
+        <div style={{ ...projectsMutedTextStyle, fontSize: 10 }}>({projectBarInfo.percentage})</div>
+
+        {projectBarInfo.ifcompare && (
+          <div
+            style={{
+              ...projectsTextStyle,
+              color: darkMode ? 'lightgreen' : 'green',
+
+              fontSize: 10,
+              fontWeight: 'bold',
+            }}
+          >
+            {projectBarInfo.change}
+          </div>
+        )}
+      </div>
+
       <div style={{ textAlign: 'center', marginBottom: 0 }}>
         <div
           style={{
@@ -184,9 +250,7 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
           chartData={chartData.filter(item => item.name === 'Tasks')}
           maxY={maxY}
           tickInterval={tickInterval}
-          // renderCustomizedLabel={renderCustomizedLabel}
           darkMode={darkMode}
-          projectBarInfo={projectBarInfo}
           yAxisLabel="Hours"
         />
       </div>

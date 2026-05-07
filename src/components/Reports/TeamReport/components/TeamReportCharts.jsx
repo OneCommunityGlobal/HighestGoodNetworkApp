@@ -4,7 +4,7 @@ import './ReportCharts.css';
 import * as d3 from 'd3';
 
 import { CHART_RADIUS, CHART_SIZE } from '../../../common/PieChart/constants';
-import '../../../common/PieChart/PieChart.css';
+import styles from '../../../common/PieChart/PieChart.module.css';
 import PieChartInfoDetail from './PieChartInfoDetail';
 
 function TeamReportCharts({
@@ -62,8 +62,8 @@ function TeamReportCharts({
   }, [totalHoursAvailable]);
 
   return (
-    <section className="team-report-chart-wrapper">
-      <div className={`team-report-chart-teams ${darkMode ? 'bg-yinmn-blue' : ''}`}>
+    <section className={styles['team-report-chart-wrapper']}>
+      <div className={`${styles['team-report-chart-teams']} ${darkMode ? 'bg-yinmn-blue' : ''}`}>
         <h4 style={{ textAlign: 'center', color: darkMode ? 'white' : '' }}>{title}</h4>
         <div
           style={{
@@ -72,19 +72,19 @@ function TeamReportCharts({
             justifyItems: 'center',
             alignItems: 'center',
           }}
-          className="team-report-chart-info-wrapper mobile-pie-chart"
+          className={`${styles['team-report-chart-info-wrapper']} mobile-pie-chart`}
         >
-          <div className="team-report-chart-info">
-            <div className="pie-chart-wrapper mobile-pie-chart">
+          <div className={styles['team-report-chart-info']}>
+            <div className={`${styles['pie-chart-wrapper']} mobile-pie-chart`}>
               <div
                 id={`pie-chart-container-${pieChartId}`}
-                className="pie-chart"
+                className={styles['pie-chart']}
                 data-testid={`pie-chart-container-${pieChartId}`}
               />
-              <div className="pie-chart-info-detail">
-                <div className="pie-chart-info-detail-title">
-                  <h5 className={darkMode ? 'text-light' : ''}>Name</h5>
-                  <h5 className={darkMode ? 'text-light' : ''}>Hours</h5>
+              <div className={styles['pie-chart-info-detail']}>
+                <div className={styles['pie-chart-info-detail-title']}>
+                  <h5 className={darkMode ? styles['text-light'] : ''}>Name</h5>
+                  <h5 className={darkMode ? styles['text-light'] : ''}>Hours</h5>
                 </div>
                 <PieChartInfoDetail
                   keyName="Commited"
@@ -107,7 +107,7 @@ function TeamReportCharts({
               </div>
             </div>
           </div>
-          <div className="team-report-chart-info" />
+          <div className={styles['team-report-chart-info']} />
         </div>
       </div>
     </section>
