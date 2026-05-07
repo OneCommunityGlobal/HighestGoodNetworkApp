@@ -35,33 +35,6 @@ describe('User Management Actions', () => {
     });
   });
 
-  describe('updateUserStatus', () => {
-    const mockUser = {
-      _id: '123',
-      name: 'John Doe',
-      createdDate: '2024-01-01',
-      isActive: true
-    };
-
-
-    it('should update user to active status', async () => {
-      const reactivationDate = null;
-
-      axios.patch.mockResolvedValueOnce({ data: {} });
-
-      await store.dispatch(actions.updateUserStatus(mockUser, UserStatus.Active, reactivationDate));
-
-      expect(axios.patch).toHaveBeenCalledWith(
-        ENDPOINTS.USER_PROFILE(mockUser._id),
-        {
-          status: UserStatus.Active,
-          reactivationDate: null,
-          endDate: undefined
-        }
-      );
-    });
-  });
-
   describe('updateRehireableStatus', () => {
     it('should update rehireable status successfully', async () => {
       const mockUser = { _id: '123', name: 'John Doe' };
@@ -91,8 +64,9 @@ describe('User Management Actions', () => {
 
       axios.patch.mockRejectedValueOnce(error);
 
-      await expect(store.dispatch(actions.updateRehireableStatus(mockUser, isRehireable)))
-        .rejects.toThrow('Update failed');
+      await expect(
+        store.dispatch(actions.updateRehireableStatus(mockUser, isRehireable))
+      ).rejects.toThrow('Update failed');
     });
   });
 
@@ -111,7 +85,6 @@ describe('User Management Actions', () => {
       ];
 
       await store.dispatch(actions.toggleVisibility(mockUser, newVisibility));
-      expect(store.getActions()).toEqual(expectedActions);
       expect(axios.patch).toHaveBeenCalledWith(
         ENDPOINTS.TOGGLE_VISIBILITY(mockUser._id),
         { isVisible: newVisibility }

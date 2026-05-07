@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import BMError from '../shared/BMError';
 import { fetchBMProjectMembers } from '../../../actions/bmdashboard/projectMemberAction';
 import BMTimeLogDisplayMember from './BMTimeLogDisplayMember';
+import BMTimeLogSummary from './BMTimeLogSummary';
 
 function BMTimeLogCard(props) {
   const [isError, setIsError] = useState(false);
@@ -21,14 +22,18 @@ function BMTimeLogCard(props) {
   }, [props.selectedProject, dispatch]);
 
   useEffect(() => {
-    // projectInfo.members IS the members array directly
-    const membersArray = projectInfo?.members;
-
-    if (Array.isArray(membersArray)) {
-      setMemberList(membersArray);
-      setFilteredMembers(membersArray);
-      setIsMemberFetched(true);
+    let members = [];
+    if (projectInfo?.members) {
+      if (Array.isArray(projectInfo.members)) {
+        members = projectInfo.members;
+      } else if (projectInfo.members.members && Array.isArray(projectInfo.members.members)) {
+        members = projectInfo.members.members;
+      }
     }
+
+    setMemberList(members);
+    setFilteredMembers(members);
+    setIsMemberFetched(true);
   }, [projectInfo]);
 
   // trigger an error state if there is an errors object
@@ -86,6 +91,9 @@ function BMTimeLogCard(props) {
 
   return (
     <Container fluid>
+      {/* Time Log Summary Section */}
+      <BMTimeLogSummary projectId={props.selectedProject} />
+
       {isMemberFetched && (
         <>
           <Row className="my-3">

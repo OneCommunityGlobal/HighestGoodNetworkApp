@@ -73,7 +73,7 @@ const BlueSquare = (props) => {
     }
   }, []);
   return (
-    <div id="bluesquare" className={`${styles.blueSquareContainer} ${darkMode ? 'bg-darkmode-liblack' : ''}`}>
+    <div id="bluesquare" className={`${styles.blueSquareContainer} ${darkMode ? styles.bgDarkmodeLibblack: ''}`}>
       <div className={`${styles.blueSquares} ${blueSquares?.length ? '' : styles.NoBlueSquares}`}>
         {blueSquares?.length ? (
           sortedBlueSquares
