@@ -47,7 +47,7 @@ const paginatedTeams = allTeams?.slice(
         if (result && result.status === 200) {
           // Update saved filters when team code changes
           if (teamData.teamCode && value && teamData.teamCode !== value) {
-            const res = await updateFilterWithIndividualCodesChange({
+             await updateFilterWithIndividualCodesChange({
               oldTeamCode: teamData.teamCode,
               newTeamCode,
               userId: teamData._id,
