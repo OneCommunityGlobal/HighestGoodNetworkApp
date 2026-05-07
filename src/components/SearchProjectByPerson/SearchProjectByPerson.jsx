@@ -59,11 +59,9 @@ export default function SearchProjectByPerson({
           }
         />
         <div>
-          {/* <button type="submit" className="archived-button" onClick={handleFetchArchivedProjects}>
-            {showArchived ? 'Hide Archived' : 'Show Archived'}
-          </button> */}
           <button
             className={`btn ${showArchived ? 'btn-warning' : 'btn-outline-secondary'}`}
+            onClick={handleFetchArchivedProjects}
             style={
               darkMode && !showArchived
                 ? {

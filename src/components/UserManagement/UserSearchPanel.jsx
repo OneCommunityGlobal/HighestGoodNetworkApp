@@ -25,6 +25,7 @@ function UserSearchPanel({
   onSearch,
   onActiveFilter,
   darkMode,
+  selectText,
 }) {
   const canCreateUsers = hasPermission('postUserProfile');
   const [tooltipCreateNewUserOpen, setTooltipCreateNewUserOpen] = useState(false);
@@ -77,7 +78,7 @@ function UserSearchPanel({
       >
         {CREATE_NEW_USER}
       </button>
-      
+
       <div className='d-flex flex-fill mb-2'>
         <div className="input-group-prepend">
           <span
@@ -129,6 +130,7 @@ function UserSearchPanel({
           onChange={e => {
             onActiveFilter(e.target.value);
           }}
+          value={selectText}
           className={darkMode ? 'bg-darkmode-liblack text-light' : ''}
         >
           <option value="all">All</option>

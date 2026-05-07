@@ -2,6 +2,19 @@
   background: aliceblue;
 }
 
+/* This background color on hover property below is taking precedence over reactstrap and affecting multiple components. */
+
+/* .btn:hover {
+  background-color: #0f8292;
+} */
+
+.filtering-message {
+  height: calc(100dvh - 17rem);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .userManagementActiveCell {
   position: relative;
   width: 60px;
@@ -263,6 +276,12 @@
   background-color: #e9f6ff;
 }
 
+.tooltipContainer::after {
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+
 .pageNoLink {
   margin-left: 10px;
   text-align: center;
@@ -287,6 +306,8 @@
 
 .addUserModal {
   min-width: 50vw;
+
+  /* Occupy the 90% of the screen width */
   max-width: 90vw !important;
 }
 
@@ -465,12 +486,6 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.tooltipContainer::after {
-  visibility: hidden;
-  opacity: 0;
-  transition: opacity 0.2s ease-in-out;
 }
 
 .tooltipContainer:hover::after {

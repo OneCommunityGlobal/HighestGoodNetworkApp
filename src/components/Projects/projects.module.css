@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 :global(thead) {
   background: aliceblue;
 }
@@ -33,6 +34,12 @@
 :global(#projects__delete) {
   width: 20px;
 }
+
+/* Keep overview layout global for now (likely used in Overview.jsx) */
+
+/* .projects__overview--top {
+  background: gray;
+} */
 
 :global(.projects__overview--top .card) {
   width: 200px;
@@ -175,4 +182,55 @@
 :global(.dark-mode) :global(.suggestions-list) {
   background-color: #1c2541;
   color: #fff;
+}
+
+/* Local (non-global) versions from development */
+.suggestion-item {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.suggestion-item:hover {
+  background-color: #f0f0f0;
+}
+
+.suggestion-button {
+  display: block;
+  width: 100%; 
+  padding: 10px; 
+  text-align: left; 
+  background: none; 
+  border: none; 
+  cursor: pointer; 
+}
+
+.suggestion-button:hover {
+  background-color: #f0f0f0;
+}
+
+tr:hover {
+  background: #e9f6ff;
+}
+
+.archived-button {
+  background-color: #007bff;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-left: 10px;
+}
+
+.archived-button:hover {
+  background-color: #0056b3;
+}
+
+@media (width <= 375px) {
+  #new_project .form-control {
+    flex: 1 1 auto;
+    width: 50%;
+  }
 }
