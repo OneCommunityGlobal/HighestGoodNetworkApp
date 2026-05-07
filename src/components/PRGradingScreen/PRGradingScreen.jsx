@@ -1,6 +1,6 @@
 import axios from 'axios';
 import PropTypes from 'prop-types';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Card, Col, Container, Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
@@ -315,8 +315,8 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                 </thead>
                 <tbody>
                   {reviewerData.map(reviewer => (
-                    <>
-                      <tr key={reviewer.id}>
+                    <React.Fragment key={reviewer.id}>
+                      <tr>
                         <td>{reviewer.reviewer}</td>
                         <td>
                           <input
@@ -462,7 +462,7 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                           </td>
                         </tr>
                       )}
-                    </>
+                    </React.Fragment>
                   ))}
                 </tbody>
               </table>
