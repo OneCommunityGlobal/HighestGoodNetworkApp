@@ -117,7 +117,7 @@
 
 .register-button:disabled {
   background-color: #ccc;
-  color: #666;
+  color: #4a4a4a;
   cursor: not-allowed;
 }
 
@@ -307,7 +307,7 @@
 
 .submit-comment-button:disabled {
   background-color: #c0c0c0;
-  color: #666;
+  color: #4a4a4a;
   cursor: not-allowed;
 }
 
@@ -388,7 +388,7 @@
 }
 
 .register-container.dark-mode .details-row p {
-  color: #b0b0b0;
+  color: #d0d0d0;
 }
 
 .register-container.dark-mode .details-row p strong {
@@ -451,11 +451,11 @@
 }
 
 .register-container.dark-mode .calendar-container :global(.react-calendar__month-view__weekdays) {
-  color: #b0b0b0;
+  color: #d0d0d0;
 }
 
 .register-container.dark-mode .calendar-container :global(.react-calendar__month-view__weekdays__weekday) {
-  color: #b0b0b0;
+  color: #d0d0d0;
 }
 
 /* Available dates in dark mode */
@@ -524,7 +524,7 @@
 }
 
 .register-container.dark-mode .legend-text {
-  color: #b0b0b0;
+  color: #d0d0d0;
 }
 
 /* Ensure dark mode indicator colors are applied */
@@ -548,7 +548,7 @@
 
 .register-container.dark-mode .register-button:disabled {
   background-color: #2a3a4a;
-  color: #666;
+  color: #a0a0a0;
 }
 
 .register-container.dark-mode .register-button:hover:not(:disabled) {
