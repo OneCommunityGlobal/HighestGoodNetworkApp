@@ -63,14 +63,11 @@ function BMTimeLogCard(props) {
       // Check if user has teams and search in them too
       const teamMatch =
         member.user.teams && member.user.teams.length > 0
-          ? member.user.teams.some(team =>
-              // eslint-disable-next-line no-nested-ternary
-              typeof team === 'string'
-                ? team.toLowerCase().includes(query)
-                : team?.name
-                ? team.name.toLowerCase().includes(query)
-                : false,
-            )
+          ? member.user.teams.some(team => {
+              if (typeof team === 'string') return team.toLowerCase().includes(query);
+              if (team?.name) return team.name.toLowerCase().includes(query);
+              return false;
+            })
           : false;
 
       return (
