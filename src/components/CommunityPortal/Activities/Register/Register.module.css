@@ -117,6 +117,7 @@
 
 .register-button:disabled {
   background-color: #cccccc;
+  color: #666666;
   cursor: not-allowed;
 }
 
@@ -305,6 +306,7 @@
 
 .submit-comment-button:disabled {
   background-color: #c0c0c0;
+  color: #666666;
   cursor: not-allowed;
 }
 
@@ -316,12 +318,12 @@
 }
 
 .feedback-message.success {
-  color: green;
+  color: #1b5e20;
   background-color: #e6ffe6;
 }
 
 .feedback-message.error {
-  color: red;
+  color: #c62828;
   background-color: #ffe6e6;
 }
 
@@ -789,6 +791,460 @@
   background-color: #eff6ff;
   border: 1px solid #bfdbfe;
   border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+  font-size: 15px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.registerButton:hover:not(:disabled) {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+.registerButton:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.registerButton:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  opacity: 0.7;
+}
+
+.registerButtonDark {
+  background-color: #0d6efd;
+}
+
+.registerButtonDark:hover:not(:disabled) {
+  background-color: #0b5ed7;
+}
+
+.registerButtonDark:disabled {
+  background-color: #495057;
+}
+
+.registerButtonRegistering {
+  background-color: #0d6efd;
+  cursor: wait;
+  position: relative;
+  overflow: hidden;
+}
+
+.registerButtonRegistering::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Feedback Messages */
+.feedbackMessage {
+  margin-top: 0;
+  padding: 12px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+  animation: slideIn 0.3s ease-out;
+  width: 100%;
+}
+
+.detailsList {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  gap: 14px 20px;
+}
+
+.detailsList p {
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+}
+
+.eventPageDark .detailsList p {
+  background: #0f172a;
+  border-color: #1f2937;
+}
+
+/* Resources */
+.resourceList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+/* Description Section Wrapper */
+.descriptionSectionWrapper {
+  margin-top: 0;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.descriptionSectionWrapperDark {
+  background-color: rgba(30, 41, 59, 0.8);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.3);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+.resourceCard {
+  display: flex;
+  /* align-items: center; */
+  gap: 14px;
+  padding: 16px;
+  border-radius: 16px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  min-height: 100px;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.eventPageDark .resourceCard {
+  background: #0f172a;
+  border-color: #1f2937;
+}
+
+.resourceAvatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: #d1d5db;
+}
+
+.resourceName {
+  margin: 0 0 4px;
+  font-size: 0.98rem;
+  font-weight: 700;
+}
+
+.resourceLocation {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.eventPageDark .resourceLocation {
+  color: #9ca3af;
+}
+
+/* Rating */
+.starRating {
+  display: flex;
+  gap: 4px;
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.filledStar {
+  color: #f59e0b;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+  flex-direction: column;
+  gap: 20px;
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.errorIcon {
+  font-size: 48px;
+}
+
+.emptyStar {
+  color: #d1d5db;
+}
+
+.eventPageDark .emptyStar {
+  color: #4b5563;
+}
+
+/* Availability / status helper styles if you want to reuse them */
+.availabilityBar {
+  width: 100%;
+  height: 10px;
+  border-radius: 999px;
+  background: #e5e7eb;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.eventPageDark .availabilityBar {
+  background: #1f2937;
+}
+
+.availabilityFill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #2563eb, #60a5fa);
+}
+
+.statusOpen {
+  color: #047857;
+}
+
+.statusLow {
+  color: #b45309;
+}
+
+.statusFull {
+  color: #b91c1c;
+}
+
+/* Responsive */
+@media (width <= 1100px) {
+  .contentSection {
+    grid-template-columns: 1fr;
+  }
+}
+/* Animations */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .eventHeader {
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .eventImageSection {
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .eventImage {
+    height: 250px;
+  }
+
+  .calendarSection {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .metadataRow {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .eventHeader {
+    padding: 16px;
+    gap: 16px;
+  }
+
+  .eventImageSection {
+    width: 100%;
+  }
+
+  .eventImage {
+    height: 200px;
+  }
+
+  .eventTitle {
+    font-size: 24px;
+  }
+
+  .eventHeaderTop {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .statusBadge {
+    align-self: flex-start;
+  }
+
+  .metadataRow {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .secondaryActions {
+    flex-direction: column;
+  }
+
+  .secondaryButton {
+    flex: 1;
+  }
+
+  .calendarSection {
+    width: 100%;
+  }
+}
+
+@media (width <= 480px) {
+  .mainContainer {
+    padding: 20px 0;
+  }
+
+  .heroContent,
+  .infoCard,
+  .sideCard {
+    padding: 18px;
+    border-radius: 16px;
+  }
+
+  .heroActions {
+    align-items: stretch;
+  }
+  .contentWrapper {
+    padding: 0 12px;
+  }
+
+  .eventHeader {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .eventTitle {
+    font-size: 20px;
+  }
+
+  .registerButton {
+    padding: 10px 16px;
+  }
+
+  .eventImage {
+    height: 150px;
+  }
+}
+
+.participantAvatars {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #eef2ff;
+  color: #1f2937;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 13px;
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.avatarDark {
+  background-color: #4f46e5;
+  color: #ffffff;
+  border-color: rgba(79, 70, 229, 0.3);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.avatarMore {
+  min-width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #e6e6e6;
+  color: #374151;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 13px;
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  flex-shrink: 0;
+}
+
+.avatarMoreDark {
+  background-color: #6366f1;
+  color: #ffffff;
+  border-color: rgba(99, 102, 241, 0.3);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.commentEntry {
+  display: flex;
+  gap: 12px;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  background-color: #f3f4f6;
+  transition: background-color 0.3s ease;
+}
+
+.commentEntryDark {
+  background-color: rgba(148, 163, 184, 0.16);
+}
+
+.commentAvatar {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.commentContent {
+  flex: 1;
+}
+
+.commentAuthor {
+  margin: 0 0 4px 0;
+  font-weight: 600;
   font-size: 14px;
   color: #1d4ed8;
 }

@@ -110,6 +110,7 @@ function Register() {
   const [isRegistering, setIsRegistering] = useState(false);
   const [registrants, setRegistrants] = useState([]);
   const [feedbackMessage, setFeedbackMessage] = useState(null);
+  const [isAlreadyRegistered, setIsAlreadyRegistered] = useState(false);
   const storageKey = useMemo(() => `activity-${activityId}-registrants`, [activityId]);
 
   const tokenPayload = useMemo(() => {
@@ -210,8 +211,8 @@ function Register() {
   // Compute availability
   useEffect(() => {
     if (!activity) return;
-    if (activity.maxAttendees !== undefined) {
-      const remaining = activity.maxAttendees - (activity.currentAttendees || 0);
+    if (activity.maxAttendees !== undefined && activity.currentAttendees !== undefined) {
+      const remaining = activity.maxAttendees - activity.currentAttendees;
       setAvailability(remaining > 0 ? remaining : 0);
     } else if (activity.capacity !== undefined) {
       setAvailability(Math.max(0, activity.capacity - registrants.length));
@@ -295,15 +296,22 @@ function Register() {
     tokenPayload?.position ||
     'Participant';
 
-  const isAlreadyRegistered = useMemo(() => {
-    if (!registrants.length) return false;
+  // Check if user is already registered (from API resources or local registrants)
+  useEffect(() => {
     const userId = resolveUserId();
     const name = resolveUserName().toLowerCase();
-    return registrants.some(reg =>
+
+    // Check API resources first
+    const inApiResources = activity?.resources?.some(p => p.name?.toLowerCase() === name);
+
+    // Check local registrants
+    const inLocalRegistrants = registrants.some(reg =>
       userId ? reg.userId === userId : reg.name?.toLowerCase() === name,
     );
+
+    setIsAlreadyRegistered(inApiResources || inLocalRegistrants);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [registrants, authUser, userProfile, tokenPayload]);
+  }, [activity, registrants, authUser, userProfile, tokenPayload]);
 
   const handleRegister = async () => {
     if (!activity) return;
@@ -316,27 +324,68 @@ function Register() {
       return;
     }
     if (isRegistering) return;
+
+    const userId = resolveUserId();
+    const displayName = resolveUserName();
+    const jobTitle = resolveJobTitle();
+
     setIsRegistering(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      const userId = resolveUserId();
-      const displayName = resolveUserName();
-      const jobTitle = resolveJobTitle();
-      setRegistrants(prev => [
-        ...prev,
-        {
-          userId: userId || `guest-${Date.now()}`,
+      // Try API registration first if we have an _id
+      if (activity._id) {
+        const response = await axios.post(ENDPOINTS.REGISTER_FOR_EVENT(activity._id), {
+          userId,
           name: displayName,
-          jobTitle,
-          registeredAt: new Date().toISOString(),
-        },
-      ]);
-      toast.success('Registration successful! See you at the event.');
-      setFeedbackMessage({
-        type: 'success',
-        text: 'Registration successful! See you at the event.',
-      });
-    } catch {
+          profilePic: null,
+          location: activity.location || 'TBD',
+        });
+
+        if (response.status === 200) {
+          const updatedActivity = response.data?.activity || response.data;
+          if (updatedActivity?.currentAttendees) {
+            setActivity(updatedActivity);
+          } else {
+            setActivity(prev => ({
+              ...prev,
+              currentAttendees: (prev.currentAttendees || 0) + 1,
+              resources: [
+                ...(prev.resources || []),
+                {
+                  _id: userId,
+                  name: displayName,
+                  profilePic: '',
+                  location: activity.location || 'Virtual',
+                },
+              ],
+            }));
+          }
+          setIsAlreadyRegistered(true);
+          toast.success('Registration successful! See you at the event.');
+          setFeedbackMessage({
+            type: 'success',
+            text: 'Registration successful! See you at the event.',
+          });
+        }
+      } else {
+        // Fallback to local registration for mock activities
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        setRegistrants(prev => [
+          ...prev,
+          {
+            userId: userId || `guest-${Date.now()}`,
+            name: displayName,
+            jobTitle,
+            registeredAt: new Date().toISOString(),
+          },
+        ]);
+        setIsAlreadyRegistered(true);
+        toast.success('Registration successful! See you at the event.');
+        setFeedbackMessage({
+          type: 'success',
+          text: 'Registration successful! See you at the event.',
+        });
+      }
+    } catch (err) {
       toast.error('Registration failed. Please try again.');
       setFeedbackMessage({ type: 'error', text: 'Registration failed. Please try again.' });
     } finally {
@@ -356,8 +405,11 @@ function Register() {
       } else {
         toast.info('Sharing is not supported on this device.');
       }
-    } catch {
-      // share cancelled or failed
+    } catch (err) {
+      // Share cancelled or failed - only show error if not an AbortError
+      if (err.name !== 'AbortError') {
+        toast.error(`Share failed: ${err.message || 'Unknown error'}`);
+      }
     }
   };
 
@@ -382,6 +434,7 @@ function Register() {
     );
   }
 
+  // No activity found
   if (error || !activity) {
     return (
       <div className={`${styles['main-container']} ${darkMode ? styles['bg-oxford-blue'] : ''}`}>
@@ -470,7 +523,7 @@ function Register() {
                 <p className={styles['rating-container']}>
                   <strong>Overall Rating:</strong>
                   <span className={styles['star-rating']}>
-                    {[...Array(5)].map((_, starIndex) => {
+                    {[...new Array(5)].map((_, starIndex) => {
                       const key = `star-${activity.id || activity._id}-${starIndex}`;
                       return (
                         <span
@@ -503,7 +556,7 @@ function Register() {
           </div>
           {registrants.length > 0 && (
             <div className={styles['registrants-summary']}>
-              <strong>{registrants.length}</strong> participant{registrants.length !== 1 ? 's' : ''}{' '}
+              <strong>{registrants.length}</strong> participant{registrants.length === 1 ? '' : 's'}{' '}
               registered
             </div>
           )}
