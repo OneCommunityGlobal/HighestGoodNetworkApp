@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faPlus,
@@ -12,8 +13,6 @@ import styles from './ProcessingLandingPage.module.css';
 import ProcessingProjectCard from './ProcessingProjectCard';
 
 const ProcessingQueue = ({ title, subtitle, projects, onAddProject, type }) => {
-  const darkMode = useSelector(state => state.theme.darkMode);
-
   const getIcon = type => {
     switch (type) {
       case 'canning':
@@ -75,6 +74,14 @@ const ProcessingQueue = ({ title, subtitle, projects, onAddProject, type }) => {
       </div>
     </div>
   );
+};
+
+ProcessingQueue.propTypes = {
+  title: PropTypes.string.isRequired,
+  subtitle: PropTypes.string.isRequired,
+  projects: PropTypes.arrayOf(PropTypes.object).isRequired,
+  onAddProject: PropTypes.func.isRequired,
+  type: PropTypes.string.isRequired,
 };
 
 export default ProcessingQueue;

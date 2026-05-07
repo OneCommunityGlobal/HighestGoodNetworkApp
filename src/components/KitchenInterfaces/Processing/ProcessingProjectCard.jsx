@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import styles from './ProcessingLandingPage.module.css';
 
@@ -53,6 +54,19 @@ const ProcessingProjectCard = ({ project }) => {
       </div>
     </div>
   );
+};
+
+ProcessingProjectCard.propTypes = {
+  project: PropTypes.shape({
+    _id: PropTypes.string,
+    id: PropTypes.string,
+    item_name: PropTypes.string.isRequired,
+    quantity: PropTypes.number.isRequired,
+    unit: PropTypes.string,
+    priority: PropTypes.string,
+    batches: PropTypes.number,
+    scheduled_date: PropTypes.string,
+  }).isRequired,
 };
 
 export default ProcessingProjectCard;

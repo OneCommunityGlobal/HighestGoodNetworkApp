@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faClock } from '@fortawesome/free-solid-svg-icons';
 import styles from './AnimalManagement.module.css';
@@ -17,7 +18,7 @@ const CullingCalendarTab = ({ events, setEvents }) => {
     const eventData = {
       id: `CULL-${Date.now()}`,
       animalName: newEvent.animalName,
-      count: parseInt(newEvent.count, 10),
+      count: Number.parseInt(newEvent.count, 10),
       notes: newEvent.notes,
       scheduledDate: newEvent.scheduledDate,
       status: 'scheduled',
@@ -57,9 +58,12 @@ const CullingCalendarTab = ({ events, setEvents }) => {
                 <p className={styles['item-details']}>Notes: {ev.notes}</p>
               </div>
               <div className={styles['item-status']}>
-                <span className={`${styles['status-badge']} ${styles[`status-${ev.status}`]}`}>
-                  {ev.status}
-                </span>
+                {(() => {
+                  const statusClass = styles[`status-${ev.status}`];
+                  return (
+                    <span className={`${styles['status-badge']} ${statusClass}`}>{ev.status}</span>
+                  );
+                })()}
               </div>
             </div>
           ))
@@ -86,18 +90,15 @@ const CullingCalendarTab = ({ events, setEvents }) => {
       {showModal && (
         <div
           className={styles['modal-overlay']}
-          onClick={() => setShowModal(false)}
-          role="button"
-          tabIndex={0}
+          onClick={e => {
+            if (e.target === e.currentTarget) setShowModal(false);
+          }}
           onKeyDown={e => {
             if (e.key === 'Escape') setShowModal(false);
           }}
+          role="presentation"
         >
-          <div
-            className={styles['modal-content']}
-            onClick={e => e.stopPropagation()}
-            role="presentation"
-          >
+          <div className={styles['modal-content']} role="dialog" aria-modal="true">
             <div className={styles['modal-header']}>
               <h2>Schedule Culling Event</h2>
               <button className={styles['modal-close']} onClick={() => setShowModal(false)}>
@@ -164,6 +165,11 @@ const CullingCalendarTab = ({ events, setEvents }) => {
       )}
     </div>
   );
+};
+
+CullingCalendarTab.propTypes = {
+  events: PropTypes.arrayOf(PropTypes.object).isRequired,
+  setEvents: PropTypes.func.isRequired,
 };
 
 export default CullingCalendarTab;

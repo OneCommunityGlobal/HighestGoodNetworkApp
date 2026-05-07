@@ -43,10 +43,7 @@ const KitchenHeader = () => {
             className={styles.navItem}
             activeClassName={styles.activeLink}
             onClick={() => setIsMenuOpen(false)} // Close menu on click
-            isActive={match => {
-              if (!match) return false;
-              return true;
-            }}
+            isActive={match => !!match}
           >
             {item.name}
             {item.isDropdown && <span className={styles.dropdownArrow}>▼</span>}

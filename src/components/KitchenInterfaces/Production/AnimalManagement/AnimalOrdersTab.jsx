@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import styles from './AnimalManagement.module.css';
@@ -77,9 +78,14 @@ const AnimalOrdersTab = ({ orders, setOrders }) => {
                 </div>
               </div>
               <div className={styles['item-status']}>
-                <span className={`${styles['status-badge']} ${styles[`status-${order.status}`]}`}>
-                  {order.status}
-                </span>
+                {(() => {
+                  const statusClass = styles[`status-${order.status}`];
+                  return (
+                    <span className={`${styles['status-badge']} ${statusClass}`}>
+                      {order.status}
+                    </span>
+                  );
+                })()}
               </div>
             </div>
           ))
@@ -89,18 +95,15 @@ const AnimalOrdersTab = ({ orders, setOrders }) => {
       {showModal && (
         <div
           className={styles['modal-overlay']}
-          onClick={() => setShowModal(false)}
-          role="button"
-          tabIndex={0}
+          onClick={e => {
+            if (e.target === e.currentTarget) setShowModal(false);
+          }}
           onKeyDown={e => {
             if (e.key === 'Escape') setShowModal(false);
           }}
+          role="presentation"
         >
-          <div
-            className={styles['modal-content']}
-            onClick={e => e.stopPropagation()}
-            role="presentation"
-          >
+          <div className={styles['modal-content']} role="dialog" aria-modal="true">
             <div className={styles['modal-header']}>
               <h2>Create New Order</h2>
               <button className={styles['modal-close']} onClick={() => setShowModal(false)}>
@@ -158,6 +161,11 @@ const AnimalOrdersTab = ({ orders, setOrders }) => {
       )}
     </div>
   );
+};
+
+AnimalOrdersTab.propTypes = {
+  orders: PropTypes.arrayOf(PropTypes.object).isRequired,
+  setOrders: PropTypes.func.isRequired,
 };
 
 export default AnimalOrdersTab;

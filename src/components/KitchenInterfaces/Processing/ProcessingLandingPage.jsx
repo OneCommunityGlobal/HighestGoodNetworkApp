@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import styles from './ProcessingLandingPage.module.css';
@@ -164,8 +165,8 @@ const ProcessingLandingPage = () => {
             <div className={styles.suppliesList}>
               <div className={styles.supplyCategory}>
                 <h3 className={styles.categoryTitle}>Canning Supplies</h3>
-                {CANNING_SUPPLIES.map((item, idx) => (
-                  <div key={idx} className={styles.supplyItem}>
+                {CANNING_SUPPLIES.map(item => (
+                  <div key={item.name} className={styles.supplyItem}>
                     <span className={styles.supplyName}>{item.name}</span>
                     <span className={styles.supplyQuantity}>{item.quantity}</span>
                   </div>
@@ -174,8 +175,8 @@ const ProcessingLandingPage = () => {
 
               <div className={styles.supplyCategory}>
                 <h3 className={styles.categoryTitle}>Storage Materials</h3>
-                {STORAGE_SUPPLIES.map((item, idx) => (
-                  <div key={idx} className={styles.supplyItem}>
+                {STORAGE_SUPPLIES.map(item => (
+                  <div key={item.name} className={styles.supplyItem}>
                     <span className={styles.supplyName}>{item.name}</span>
                     <span className={styles.supplyQuantity}>{item.quantity}</span>
                   </div>
@@ -285,15 +286,15 @@ const ProcessingLandingPage = () => {
         ))}
       </div>
 
-      {error ? (
+      {error && (
         <div className="alert alert-danger" style={{ margin: '20px 0' }}>
           {error}
         </div>
-      ) : loading ? (
-        <div style={{ padding: '40px', textAlign: 'center' }}>Loading projects...</div>
-      ) : (
-        renderContent()
       )}
+      {!error && loading && (
+        <div style={{ padding: '40px', textAlign: 'center' }}>Loading projects...</div>
+      )}
+      {!error && !loading && renderContent()}
 
       <AddProcessingProjectModal
         isOpen={isModalOpen}

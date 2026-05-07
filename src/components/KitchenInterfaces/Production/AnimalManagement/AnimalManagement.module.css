@@ -1,7 +1,7 @@
 .animal-management-container {
   padding: 30px 40px;
   width: 100%;
-  font-family: 'Inter', 'Roboto', sans-serif;
+  font-family: Inter, Roboto, sans-serif;
   color: #333;
 }
 
@@ -35,14 +35,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 6px rgb(0 0 0 / 5%);
   border: 1px solid #e1e8e2;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .dashboard-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 6px 12px rgb(0 0 0 / 8%);
 }
 
 .card-info {
@@ -110,7 +110,7 @@
   background: white;
   border-radius: 12px;
   padding: 25px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 6px rgb(0 0 0 / 5%);
   border: 1px solid #e1e8e2;
 }
 
@@ -134,7 +134,7 @@
 }
 
 .btn-primary {
-  background: #d4a373;
+  background: #8b5a2b; /* Darker brown for white text contrast */
   color: white;
   border: none;
   padding: 8px 20px;
@@ -241,12 +241,12 @@
 
 .status-shipped {
   background: #e7f5ff;
-  color: #1c7ed6;
+  color: #1864ab; /* Darker blue for contrast */
 }
 
 .status-delivered {
   background: #ebfbee;
-  color: #2b8a3e;
+  color: #1a5d2e; /* Darker green for contrast */
 }
 
 .status-scheduled {
@@ -286,7 +286,7 @@
 .dark-mode .tab-content {
   background: #242526;
   border-color: #3a3b3c;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 6px rgb(0 0 0 / 30%);
 }
 
 .dark-mode .card-value {
@@ -344,11 +344,8 @@
 /* Modal Simple Styles */
 .modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  inset: 0;
+  background: rgb(0 0 0 / 50%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -361,7 +358,7 @@
   border-radius: 12px;
   width: 90%;
   max-width: 500px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 25px rgb(0 0 0 / 20%);
 }
 
 .dark-mode .modal-content {
