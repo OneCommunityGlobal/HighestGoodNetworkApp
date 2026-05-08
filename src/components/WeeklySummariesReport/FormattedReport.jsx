@@ -302,6 +302,7 @@ function ReportDetails({
   const totalSecondsArray = summary.totalSeconds || [];
   const promisedHoursArray = summary.promisedHoursByWeek || [];
   const hoursLogged = ((totalSecondsArray[weekIndex] || 0) / 3600).toFixed(2);
+  const tangibleHoursLogged = (summary.totalTangibleSeconds?.[weekIndex] || 0) / 3600;
   const promisedHours = promisedHoursArray[weekIndex] ?? 0;
 
   const isMeetCriteria =
@@ -847,6 +848,7 @@ function Index({
 }) {
   const colors = ['purple', 'green', 'navy'];
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
+  const tangibleHoursLogged = (summary.totalTangibleSeconds?.[weekIndex] || 0) / 3600;
   const currentDate = moment.tz(TZ).startOf('day');
   const [setTrophyFollowedUp] = useState(summary?.trophyFollowedUp);
   const dispatch = useDispatch();
@@ -1040,12 +1042,15 @@ function Index({
       )}
       {Array.isArray(summary.promisedHoursByWeek) &&
         summary.promisedHoursByWeek.length > weekIndex &&
-        showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
+        showStar(tangibleHoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
           <i
             className="fa fa-star"
             title={`Weekly Committed: ${summary.promisedHoursByWeek[weekIndex]} hours`}
             style={{
-              color: assignStarDotColors(hoursLogged, summary.promisedHoursByWeek[weekIndex]),
+              color: assignStarDotColors(
+                tangibleHoursLogged,
+                summary.promisedHoursByWeek[weekIndex],
+              ),
               fontSize: '55px',
               marginLeft: '10px',
               verticalAlign: 'middle',
@@ -1063,7 +1068,9 @@ function Index({
                 fontSize: '10px',
               }}
             >
-              +{Math.round((hoursLogged / summary.promisedHoursByWeek[weekIndex] - 1) * 100)}%
+              +
+              {Math.round((tangibleHoursLogged / summary.promisedHoursByWeek[weekIndex] - 1) * 100)}
+              %
             </span>
           </i>
         )}
@@ -1082,40 +1089,6 @@ function Index({
           </small>
         </p>
       )}
-      {/* //newly added */}
-      {Array.isArray(summary.promisedHoursByWeek) &&
-        summary.promisedHoursByWeek.length > weekIndex &&
-        weekIndex !== null &&
-        weekIndex !== undefined &&
-        summary.promisedHoursByWeek[weekIndex] !== undefined &&
-        showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
-          <i
-            className="fa fa-star"
-            title={`Weekly Committed: ${summary.promisedHoursByWeek[weekIndex]} hours`}
-            style={{
-              color: assignStarDotColors(hoursLogged, summary.promisedHoursByWeek[weekIndex]),
-              fontSize: '55px',
-              marginLeft: '10px',
-              verticalAlign: 'middle',
-              position: 'relative',
-            }}
-          >
-            <span
-              style={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                color: 'white',
-                fontWeight: 'bold',
-                fontSize: '10px',
-              }}
-            >
-              +{Math.round((hoursLogged / summary.promisedHoursByWeek[weekIndex] - 1) * 100)}%
-              {/* +{Math.round((hoursLogged / promisedHoursByWeek[weekIndex] - 1) * 100)}% */}
-            </span>
-          </i>
-        )}
     </>
   );
 }
