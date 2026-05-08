@@ -177,22 +177,34 @@ function Register() {
         <div className={styles.eventPage}>
           {/* HERO */}
           <section className={styles.heroSection}>
-            <img src={activity.coverImage} alt={activity.title} className={styles.heroImage} />
+            <div className={styles.heroImageWrapper}>
+              <img src={activity.coverImage} alt={activity.title} className={styles.heroImage} />
+            </div>
 
-            <h1>{activity.title}</h1>
+            <div className={styles.heroContent}>
+              <h1 className={styles.eventTitle}>{activity.title}</h1>
 
-            <p>{activityDate}</p>
-            <p>{activityStartTime} - {activityEndTime}</p>
+              <p className={styles.eventDescription}>{activity.description}</p>
 
-            <button onClick={handleRegister} disabled={isAlreadyRegistered || availability === 0}>
-              {isAlreadyRegistered ? 'Registered' : 'Register'}
-            </button>
+              <div className={styles.metaGrid}>
+                <div>{activityDate}</div>
+                <div>
+                  {activityStartTime} - {activityEndTime}
+                </div>
+              </div>
 
-            <button onClick={handleShareAvailability}>
-              Share Availability
-            </button>
+              <div className={styles.heroActions}>
+                <button
+                  className={styles.registerButton}
+                  onClick={handleRegister}
+                  disabled={isAlreadyRegistered || availability === 0}
+                >
+                  {isAlreadyRegistered ? 'Registered' : 'Register'}
+                </button>
+              </div>
 
-            <p>{availability} spots left</p>
+              <p className={styles.statusText}>{availability} spots left</p>
+            </div>
           </section>
 
           {/* MAIN CONTENT */}

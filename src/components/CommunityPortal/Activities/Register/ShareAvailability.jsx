@@ -189,11 +189,8 @@ function ShareAvailability({ activity, availability, activityId }) {
       </button>
 
       {showShareModal && (
-        <div className={`${styles.modalOverlay} ${darkMode ? styles.modalOverlayDark : ''}`}>
-          <div
-            className={`${styles.shareModal} ${darkMode ? styles.shareModalDark : ''}`}
-            ref={shareModalRef}
-          >
+        <div className={styles.overlay}>
+          <div className={styles.modal} ref={shareModalRef}>
             <div className={`${styles.modalHeader} ${darkMode ? styles.modalHeaderDark : ''}`}>
               <h2 className={`${styles.modalTitle} ${darkMode ? styles.modalTitleDark : ''}`}>
                 Share Event Availability
