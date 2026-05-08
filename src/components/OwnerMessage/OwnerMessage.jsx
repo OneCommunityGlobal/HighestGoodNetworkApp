@@ -54,7 +54,6 @@ function OwnerMessage({
   const isImageMessage = value => typeof value === 'string' && value.includes(';base64');
 
   function toggle() {
-    console.log('toggle called, message:', message, 'ownerMessage:', ownerMessage);
     setModal(!modal);
     setDisableTextInput(isImageMessage(message));
   }
