@@ -167,6 +167,15 @@ export function CPDashboard() {
     }));
   };
 
+  // Toggle the date radio: clicking the active option clears it; clicking another switches.
+  // Applies immediately (bypasses the Apply Filters button) so the user sees instant feedback.
+  const handleDateToggle = value => {
+    const next = appliedFilters.dateFilter === value ? '' : value;
+    setPendingFilters(prev => ({ ...prev, dateFilter: next }));
+    setAppliedFilters(prev => ({ ...prev, dateFilter: next }));
+    setPagination(prev => ({ ...prev, currentPage: 1 }));
+  };
+
   // Apply all pending filters
   const handleApplyFilters = () => {
     setAppliedFilters(pendingFilters);
@@ -369,13 +378,9 @@ export function CPDashboard() {
                       id="date-tomorrow"
                       type="radio"
                       name="dates"
-                      checked={dateFilter === 'tomorrow'}
-                      onChange={() => setDateFilter('tomorrow')}
-                      onClick={() => {
-                        if (dateFilter === 'tomorrow') setDateFilter('');
-                      }}
-                      checked={pendingFilters.dateFilter === 'tomorrow'}
-                      onChange={() => handleFilterChange('dateFilter', 'tomorrow')}
+                      checked={appliedFilters.dateFilter === 'tomorrow'}
+                      onChange={() => {}}
+                      onClick={() => handleDateToggle('tomorrow')}
                       className={styles.radioInput}
                     />
                     <span>Tomorrow</span>
@@ -385,13 +390,9 @@ export function CPDashboard() {
                       id="date-weekend"
                       type="radio"
                       name="dates"
-                      checked={dateFilter === 'weekend'}
-                      onChange={() => setDateFilter('weekend')}
-                      onClick={() => {
-                        if (dateFilter === 'weekend') setDateFilter('');
-                      }}
-                      checked={pendingFilters.dateFilter === 'weekend'}
-                      onChange={() => handleFilterChange('dateFilter', 'weekend')}
+                      checked={appliedFilters.dateFilter === 'weekend'}
+                      onChange={() => {}}
+                      onClick={() => handleDateToggle('weekend')}
                       className={styles.radioInput}
                     />
                     <span>This Weekend</span>
@@ -423,11 +424,6 @@ export function CPDashboard() {
                   />
                   <span>Online Only</span>
                 </label>
-                    checked={pendingFilters.onlineOnly}
-                    onChange={e => handleFilterChange('onlineOnly', e.target.checked)}
-                  />{' '}
-                  Online Only
-                </div>
               </div>
 
               {/* Branches Filter */}
