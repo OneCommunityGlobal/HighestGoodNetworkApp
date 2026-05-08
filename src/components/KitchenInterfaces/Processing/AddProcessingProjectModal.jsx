@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { useSelector } from 'react-redux';
@@ -201,6 +202,13 @@ const AddProcessingProjectModal = ({ isOpen, onClose, targetSection, onSave }) =
       </div>
     </div>
   );
+};
+
+AddProcessingProjectModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  targetSection: PropTypes.string,
+  onSave: PropTypes.func.isRequired,
 };
 
 export default AddProcessingProjectModal;

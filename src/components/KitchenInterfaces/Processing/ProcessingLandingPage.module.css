@@ -128,12 +128,6 @@
 
 .sectionBox {
   background: #fff;
-
-  /* border: 1px solid #e0e0e0; */
-
-  /* border-radius: 12px; */
-
-  /* padding: 24px; */
 }
 
 .sectionHeader {
@@ -199,7 +193,7 @@
 
 .methodStatus {
     font-size: 12px;
-    color: #28a745; /* Green for active */
+    color: #1a6b28; /* Green for active */
     background: #e6f4ea;
     padding: 2px 8px;
     border-radius: 12px;
@@ -260,17 +254,16 @@
 .addSupplyBtn:hover {
     border-color: #888;
     color: #333;
-    background-color: #fafafa;
-}
-
-/* Icon colors specific classes */
-.iconPurple { color: #9c27b0; }
-.iconOrange { color: #ed6c02; }
-.iconBlue { color: #0288d1; }
-.iconGreen { color: #2e7d32; }
-
-/* Placeholder Styles */
-.placeholderContainer {
+        background-color: #fafafa;
+    }
+    
+      /* Icon colors specific classes */
+      .iconPurple, .darkMode .iconPurple { color: #9c27b0; }
+  .iconOrange, .darkMode .iconOrange { color: #ed6c02; }
+  .iconBlue, .darkMode .iconBlue { color: #0288d1; }
+      .iconGreen, .darkMode .iconGreen { color: #2e7d32; }
+  
+  /* Placeholder Styles */.placeholderContainer {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -356,7 +349,7 @@
 
 .darkMode .methodStatus {
   background-color: rgb(40 167 69 / 20%);
-  color: #4cd964;
+  color: #7ef592;
   border: 1px solid #2ea043;
   box-shadow: none;
 }
@@ -515,7 +508,7 @@
 
 .priorityMedium {
   background-color: #fff3e0;
-  color: #ef6c00;
+  color: #e65100;
   border-color: #ffe0b2;
 }
 
@@ -588,7 +581,7 @@
 }
 
 .addProjectBtn {
-    background-color: #d35400; /* Burnt orange/brownish */
+    background-color: #b34700; /* Burnt orange/brownish */
     color: white;
     border: none;
     padding: 10px 20px;
@@ -603,7 +596,7 @@
 }
 
 .addProjectBtn:hover {
-    background-color: #e67e22;
+    background-color: #8a3700;
 }
 
 /* Dark Mode Extensions */
@@ -656,19 +649,19 @@
 .darkMode .priorityHigh {
     background-color: rgb(198 40 40 / 20%);
     border-color: #c62828;
-    color: #ef9a9a;
+    color: #ffcdd2;
 }
 
 .darkMode .priorityMedium {
     background-color: rgb(239 108 0 / 20%);
     border-color: #ef6c00;
-    color: #ffcc80;
+    color: #ffe0b2;
 }
 
 .darkMode .priorityLow {
     background-color: rgb(21 101 192 / 20%);
     border-color: #1565c0;
-    color: #90caf9;
+    color: #bbdefb;
 }
 
 /* Modal Styles */
@@ -758,7 +751,7 @@
 }
 
 .submitBtn {
-  background-color: #28a745;
+  background-color: #1b7a32;
   color: white;
   border: none;
   padding: 8px 20px;
@@ -768,7 +761,7 @@
 }
 
 .submitBtn:hover {
-  background-color: #218838;
+  background-color: #155d27;
 }
 
 /* Dark Mode Modal */
