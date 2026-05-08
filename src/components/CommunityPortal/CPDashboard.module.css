@@ -22,12 +22,8 @@
 }
 
 .darkContainer {
-  background: #2b3e59 !important;
+  background: #2b3e59;
   color: #fff;
-}
-
-.centeredRow {
-  padding: 30px;
 }
 
 /* =========================
@@ -36,9 +32,9 @@
 
 .dashboardHeader {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
   gap: 16px;
   margin-bottom: 30px;
   padding: 16px 24px;
@@ -52,18 +48,12 @@
   font-size: 2.5rem;
   font-weight: bold;
   color: #2c3e50;
+  white-space: nowrap;
 }
 
 .darkHeader {
   background: #1b2a41;
   color: #fff;
-}
-
-.dashboardControls {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 15px;
 }
 
 /* =========================
@@ -74,27 +64,17 @@
   position: relative;
   width: 100%;
   max-width: 400px;
-  overflow: visible;
-  border: 2px solid #1b3c55;
   border-radius: 24px;
+  border: 2px solid #1b3c55;
   background: #fff;
+  overflow: visible;
 }
 
 .dashboardSearchContainer:focus-within {
   border-color: #4da3ff;
 }
 
-.dashboardSearchInput {
-  width: 100%;
-  border: none;
-  border-radius: 999px;
-  background: transparent;
-  box-sizing: border-box;
-  outline: none;
-}
-
 .dashboardSearchTextarea {
-  display: block;
   width: 100%;
   min-height: 36px;
   max-height: 120px;
@@ -103,70 +83,31 @@
   outline: none;
   background: transparent;
   resize: none;
-  overflow: auto;
-  box-sizing: border-box;
+
   font-size: 1rem;
   line-height: 1.5;
-  white-space: pre-wrap;
+
+  overflow-y: auto;
   overflow-wrap: break-word;
+  white-space: pre-wrap;
 }
 
+/* buttons */
 .dashboardSearchButtons {
   position: absolute;
-  top: 12px;
   right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
   display: flex;
-  align-items: center;
   gap: 6px;
 }
 
 .dashboardClearBtn,
 .dashboardSearchIconBtn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 0;
+  border: none;
   background: transparent;
   cursor: pointer;
   color: #1b3c55;
-}
-
-.dashboardSearchIconBtn {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-}
-
-.charCountWarning {
-  position: absolute;
-  top: 100%;
-  transform: translateY(4px);
-  padding: 4px 8px;
-  border-radius: 4px;
-  background: #e4b348 !important;
-  color: #333 !important;
-  font-size: 0.85rem;
-}
-
-/* =========================
-   INPUT GROUP
-========================= */
-
-.inputGroup {
-  display: flex;
-  align-items: center;
-  padding: 0 10px;
-  border: 2px solid #d1d5db;
-  border-radius: 999px;
-  background: #fff;
-}
-
-.inputGroupText {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 10px;
-  color: #555;
 }
 
 /* =========================
@@ -175,121 +116,130 @@
 
 .dashboardSidebar {
   display: flex;
-  justify-content: flex-start;
   padding: 20px;
   border-radius: 12px;
   background: #fff;
   box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
 }
 
-.filterSection h4 {
-  font-size: 1.8rem;
-  font-weight: 600;
-  color: #2c3e50;
+.darkSidebar {
+  background: #2b3e59;
 }
 
-.filterSectionDivider {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  margin-top: 20px;
-}
-
-.filterItem label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 600;
+/* labels FIX (your issue) */
+.dashboardSidebar label,
+.filterItem label,
+.radioLabel {
   color: #34495e;
   background: transparent;
 }
 
+.darkSidebar label,
+.darkSidebar .filterItem label,
+.darkSidebar .radioLabel {
+  color: #ecf0f1;
+}
+
+/* =========================
+   INPUTS
+========================= */
 
 .filterItem input:not([type='checkbox'], [type='radio']),
 .filterItem select {
   width: 100%;
-  margin-top: 10px;
   padding: 12px 15px;
+  margin-top: 10px;
   border: 1px solid #ddd;
   border-radius: 8px;
   background: #fff;
 }
 
-/* inputs first (fixes no-descending-specificity) */
 .filterItem input:focus,
 .filterItem select:focus {
-  border-color: #2c3e50;
   outline: none;
+  border-color: #2c3e50;
   box-shadow: 0 0 5px rgb(44 62 80 / 40%);
 }
 
-
-
-.filterItem input[type='radio'],
-.filterItem input[type='checkbox'] {
-  width: auto;
-  margin: 0;
-  padding: 0;
-}
-
 /* =========================
-   MAIN
+   DARK INPUT FIX (clear green issue)
 ========================= */
 
-.dashboardMain {
-  width: 65%;
-  padding: 30px;
-  border-radius: 12px;
-}
-
-.noEvents {
-  padding: 40px;
-  text-align: center;
-  color: #888;
+.darkSidebar .filterItem input:not([type='checkbox'], [type='radio']),
+.darkSidebar .filterItem select {
+  background: #34495e;
+  border-color: #4a6572;
+  color: #fff;
 }
 
 /* =========================
-   CARDS
+   EVENTS
 ========================= */
 
 .eventCard {
   display: flex;
   flex-direction: column;
-  width: 100%;
-  overflow: hidden;
   border-radius: 12px;
   background: #fff;
   box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: 0.3s ease;
 }
 
 .eventCard:hover {
-  transform: scale(1.05);
+  transform: scale(1.02);
   box-shadow: 0 8px 20px rgb(0 0 0 / 20%);
 }
 
+.eventTitle {
+  color: #2c3e50;
+  text-align: center;
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+
 /* =========================
-   DARK MODE FIXES
+   DARK MODE TEXT FIX (IMPORTANT)
 ========================= */
 
-.darkSidebar label,
-.darkSidebar .filterItem label,
-.darkSidebar .radioLabel,
-.darkSidebar .filterSection h4 {
-  color: #ecf0f1;
-  background: transparent;
+.darkMain .eventDate,
+.darkMain .eventLocation,
+.darkMain .eventOrganizer,
+.darkMain .eventIcon {
+  color: #e4e6eb;
 }
 
-.darkSidebar .clearBtn {
-  background: #34495e !important;
-  border-color: #4a6572 !important;
-  color: #ecf0f1 !important;
+.darkMain .noEvents {
+  color: #9ca3af;
 }
 
-.darkSidebar .clearBtn:hover {
-  background: #3d566e !important;
-}
+/* =========================
+   BUTTONS
+========================= */
 
-.darkSearchContainer .dashboardClearBtn,
-.darkSearchContainer .dashboardSearchIconBtn {
+.clearBtn {
+  background: #95a5a6;
   color: #fff;
+}
+
+.clearBtn:hover {
+  background: #7f8c8d;
+}
+
+.applyBtn {
+  background: #27ae60;
+  color: #fff;
+}
+
+.applyBtn:hover {
+  background: #229954;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (width <= 850px) {
+  .dashboardSearchContainer {
+    width: 250px;
+  }
 }
