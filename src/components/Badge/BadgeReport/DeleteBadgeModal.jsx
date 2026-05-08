@@ -3,10 +3,11 @@ import PropTypes from 'prop-types';
 import { Modal, ModalBody, ModalFooter, Button } from 'reactstrap';
 
 const DeleteBadgeModal = ({ isOpen, onCancel, onDelete, darkMode, boxStyle, boxStyleDark }) => {
-  const [isTablet, setIsTablet] = useState(window.innerWidth <= 992);
+  const [isTablet, setIsTablet] = useState(false);
 
   useEffect(() => {
     const handleResize = () => setIsTablet(window.innerWidth <= 992);
+    handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
