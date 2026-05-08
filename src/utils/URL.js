@@ -664,6 +664,7 @@ export const ENDPOINTS = {
   HGN_FORM_RESPONSES: () => `${APIEndpoint}/hgnform`,
   // Kitchen and Inventory Management endpoints
   KI_CALENDAR_EVENTS: (month, year) => `${APIEndpoint}/kitchenandinventory/calendar?month=${month}&year=${year}`,
+  KITCHEN_PROCESSING_PROJECTS: `${APIEndpoint}/kitchenandinventory/processing`,
 
   // Help Request & Feedback Modal endpoints
   HGN_FORM_RANKED: `${APIEndpoint}/hgnform/ranked`,

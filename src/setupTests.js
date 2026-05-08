@@ -234,3 +234,7 @@ class ResizeObserver {
 }
 
 global.ResizeObserver = ResizeObserver;
+
+HTMLCanvasElement.prototype.getContext = () => {
+  return {};
+};

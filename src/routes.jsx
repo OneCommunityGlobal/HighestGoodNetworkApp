@@ -177,6 +177,7 @@ import RecipesLandingPage from './components/KitchenandInventory/Recipes';
 import KIINVENTORY from './components/KitchenandInventory/KIInventory/KIInventory';
 import KICalendar from './components/KitchenandInventory/KICalendar/KICalendar';
 import OrchardManagement from './components/KitchenandInventory/OrchardManagement/OrchardManagement';
+import ProcessingLandingPage from './components/KitchenInterfaces/Processing/ProcessingLandingPage';
 
 // Education Portal
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
@@ -1025,6 +1026,11 @@ export default (
           path="/kitchenandinventory/recipes"
           exact
           component={RecipesLandingPage}
+        />
+        <KIProtectedRoute
+          path="/kitchenandinventory/processing"
+          exact
+          component={ProcessingLandingPage}
         />
         {/* ----- End of Kitchen and Inventory Portal Routes ----- */}
         <Route path="/login" component={Login} />

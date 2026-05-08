@@ -28,7 +28,6 @@ function WBSTasks(props) {
   // states from hooks
   const [filterState, setFilterState] = useState('all');
   const [openAll, setOpenAll] = useState(false);
-  const [showImport, setShowImport] = useState(false);
   // const [isLoading, setIsLoading] = useState(true);
   const [isDeleted, setIsDeleted] = useState(false);
   const [levelOneTasks, setLevelOneTasks] = useState([]);
@@ -154,7 +153,7 @@ function WBSTasks(props) {
         />
       )}
 
-      {!isLoading && showImport && (
+      {!isLoading && (
         <ImportTask
           wbsId={wbsId}
           projectId={projectId}
@@ -183,17 +182,6 @@ function WBSTasks(props) {
         disabled={isLoading}
       >
         {openAll ? 'Fold All' : 'Unfold All'}
-      </Button>
-      
-      <Button
-        color="info"
-        size="sm"
-        className="ml-2"
-        onClick={() => setShowImport(!showImport)}
-        style={darkMode ? boxStyleDark : boxStyle}
-        disabled={isLoading}
-      >
-        <i className="fa fa-upload" aria-hidden="true" /> {showImport ? 'Hide Import' : 'Import Tasks'}
       </Button>
       
       <FilterBar currentFilter={filterState} onChange={setFilterState} isLoading={isLoading} />
