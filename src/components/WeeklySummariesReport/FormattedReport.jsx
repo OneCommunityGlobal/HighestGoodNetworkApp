@@ -302,7 +302,6 @@ function ReportDetails({
   const totalSecondsArray = summary.totalSeconds || [];
   const promisedHoursArray = summary.promisedHoursByWeek || [];
   const hoursLogged = ((totalSecondsArray[weekIndex] || 0) / 3600).toFixed(2);
-  const tangibleHoursLogged = (summary.totalTangibleSeconds?.[weekIndex] || 0) / 3600;
   const promisedHours = promisedHoursArray[weekIndex] ?? 0;
 
   const isMeetCriteria =
@@ -1117,7 +1116,8 @@ FormattedReport.propTypes = {
       _id: PropTypes.string,
       filterColor: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
       promisedHoursByWeek: PropTypes.arrayOf(PropTypes.number),
-      totalSeconds: PropTypes.number,
+      totalSeconds: PropTypes.arrayOf(PropTypes.number),
+      totalTangibleSeconds: PropTypes.arrayOf(PropTypes.number),
       weeklySummaries: PropTypes.arrayOf(PropTypes.shape({ summary: PropTypes.string })),
     }),
   ).isRequired,
