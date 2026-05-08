@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import styles from './MyCases.module.css';
 import mockEvents from './mockData';
+import CreateEventModal from './CreateEventModal';
 
 function MyCases() {
   const [view, setView] = useState('card');
   const [filter, setFilter] = useState('all');
   const [expanded, setExpanded] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const isExporting =
     typeof document !== 'undefined' && document.documentElement?.dataset?.exporting === 'true'; // Sonar: prefer .dataset
@@ -81,9 +83,9 @@ function MyCases() {
           <span className={`${styles.eventTime} ${darkMode ? styles.eventTimeDark : ''}`}>
             {event.eventTime}
           </span>
-          <span className={`${styles.eventName} ${darkMode ? styles.eventNameDark : ''}`}>
+          <div className={`${styles.eventName} ${darkMode ? styles.eventNameDark : ''}`}>
             {event.eventName}
-          </span>
+          </div>
           <div className={`${styles.attendeesInfo} ${darkMode ? styles.attendeesInfoDark : ''}`}>
             <div className={styles.avatars}>
               <img
@@ -182,6 +184,7 @@ function MyCases() {
           <button
             type="button"
             className={`${styles.createNew} ${darkMode ? styles.createNewDarkMode : ''}`}
+            onClick={() => setIsCreateModalOpen(true)}
           >
             + Create New
           </button>
@@ -201,6 +204,10 @@ function MyCases() {
         {view === 'list' && renderListView()}
         {view === 'calendar' && renderCalendarView()}
       </main>
+      <CreateEventModal
+        isOpen={isCreateModalOpen}
+        toggle={() => setIsCreateModalOpen(!isCreateModalOpen)}
+      />
     </div>
   );
 }

@@ -2,7 +2,7 @@ import axios from 'axios';
 import 'leaflet/dist/leaflet.css';
 import { useEffect, useRef, useState, forwardRef } from 'react';
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
-import MarkerClusterGroup from '@changey/react-leaflet-markercluster';
+import MarkerClusterGroup from './TestSafeMarkerCluster';
 import { Button, Container, Spinner } from 'reactstrap';
 import './TeamLocations.css';
 

@@ -1,10 +1,9 @@
+import PropTypes from 'prop-types';
 import { Bar } from 'react-chartjs-2';
-import styles from './ReviewsInsight.module.css';
 import { useSelector } from 'react-redux';
-import { Chart } from 'chart.js';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
+import sharedStyles from './ReviewsInsight.module.css';
 
-function ActionDoneGraph({ selectedTeams, teamData }) {
+function ActionDoneGraph({ selectedTeams, teamData, orderedTeamIds }) {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   if (!selectedTeams || selectedTeams.length === 0) {
@@ -12,11 +11,11 @@ function ActionDoneGraph({ selectedTeams, teamData }) {
   }
 
   if (!teamData || Object.keys(teamData).length === 0) {
-    return <div className={styles.noData}>No data available for Action Graph.</div>;
+    return <div className={sharedStyles.noData}>No data available for Action Graph.</div>;
   }
 
   const isAllTeams = selectedTeams.some(team => team.value === 'All');
-  const teamsToDisplay = isAllTeams ? Object.keys(teamData) : selectedTeams.map(team => team.value);
+  const teamsToDisplay = isAllTeams ? orderedTeamIds : selectedTeams.map(team => team.value);
 
   const data = {
     labels: teamsToDisplay,
@@ -47,33 +46,39 @@ function ActionDoneGraph({ selectedTeams, teamData }) {
       legend: {
         display: true,
         labels: {
-          font: {
-            size: 12,
-          },
+          font: { size: 12 },
           color: darkMode ? '#fff' : '#000',
         },
       },
       tooltip: {
         enabled: true,
+        callbacks: {
+          label: function(context) {
+            const label = context.dataset.label || '';
+            const value = Math.round(context.raw);
+            return `${label}: ${value} PRs reviewed`;
+          },
+        },
       },
       datalabels: {
         color: darkMode ? '#fff' : '#000',
         font: { weight: 'bold', size: 11 },
-        formatter: value => {
-          if (!value) return 0;
-          return value;
-        },
+        formatter: value => (value ? value : ''),
       },
     },
     scales: {
       x: {
         title: {
           display: true,
-          text: 'Count of PRs',
+          text: 'Number of PRs Reviewed',
           color: darkMode ? '#fff' : '#000',
         },
         ticks: {
           color: darkMode ? '#fff' : '#000',
+          stepSize: 1,
+          callback: function(value) {
+            return Math.floor(value);
+          },
         },
         beginAtZero: true,
       },
@@ -85,21 +90,82 @@ function ActionDoneGraph({ selectedTeams, teamData }) {
         },
         ticks: {
           color: darkMode ? '#fff' : '#000',
+          callback: function(value, index) {
+            const team = teamsToDisplay[index];
+            const memberCount = teamData[team]?.memberCount || 0;
+            const circles = [
+              '⓪',
+              '①',
+              '②',
+              '③',
+              '④',
+              '⑤',
+              '⑥',
+              '⑦',
+              '⑧',
+              '⑨',
+              '⑩',
+              '⑪',
+              '⑫',
+              '⑬',
+              '⑭',
+              '⑮',
+              '⑯',
+              '⑰',
+              '⑱',
+              '⑲',
+              '⑳',
+            ];
+            const circle = memberCount <= 20 ? circles[memberCount] : `(${memberCount})`;
+            return `${team} ${circle}`;
+          },
         },
       },
     },
   };
 
   return (
-    <div className={styles.riActionDoneGraph}>
-      <h2 className={`${styles.heading} ${darkMode ? styles.darkModeForeground : ''}`}>
-        PR: Action Done
+    <div className={sharedStyles.riActionDoneGraph}>
+      <h2>
+        PR: Action Done &nbsp;
+        <span className={sharedStyles.tooltip}>
+          <i className="fa fa-info-circle fa-sm" aria-hidden="true"></i>
+          <span className={`${sharedStyles.tooltipText} ${darkMode ? 'darkMode' : ''} `}>
+            Approved: PR was approved without blocking changes <br />
+            <br />
+            Changes Requested: Reviewer requested changes before approval <br />
+            <br />
+            Commented: Reviewer left comments but did not approve or request changes
+          </span>
+        </span>
       </h2>
-      <div className={`${styles.riGraph} ${darkMode ? styles.riGraphDarkMode : ''}`}>
+      <div className={sharedStyles.riGraph}>
         <Bar data={data} options={options} />
       </div>
     </div>
   );
 }
+
+ActionDoneGraph.propTypes = {
+  selectedTeams: PropTypes.arrayOf(
+    PropTypes.shape({
+      value: PropTypes.string,
+      label: PropTypes.string,
+    }),
+  ),
+  teamData: PropTypes.objectOf(
+    PropTypes.shape({
+      actionSummary: PropTypes.object,
+      memberCount: PropTypes.number,
+    }),
+  ),
+  orderedTeamIds: PropTypes.arrayOf(PropTypes.string),
+};
+
+ActionDoneGraph.defaultProps = {
+  selectedTeams: [],
+  teamData: {},
+  orderedTeamIds: [],
+};
 
 export default ActionDoneGraph;
