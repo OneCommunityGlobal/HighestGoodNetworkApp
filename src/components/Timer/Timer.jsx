@@ -36,6 +36,7 @@ function Timer({ authUser, darkMode, isPopout }) {
    *  to CLOSED, and the user will be notified to refresh the page to reconnect to the server.
    * */
   const [customReadyState, setCustomReadyState] = useState(ReadyState.CONNECTING);
+  const [wsKey, setWsKey] = useState(0);
   const WSoptions = {
     share: false,
     protocols: localStorage.getItem(config.tokenKey),
@@ -59,9 +60,18 @@ function Timer({ authUser, darkMode, isPopout }) {
    * }
    */
 
-  const { sendMessage, sendJsonMessage, lastJsonMessage, getWebSocket } = useWebSocket(
+  /*const { sendMessage, sendJsonMessage, lastJsonMessage, getWebSocket } = useWebSocket(
     ENDPOINTS.TIMER_SERVICE,
     WSoptions,
+  );*/
+
+  const { sendMessage, sendJsonMessage, lastJsonMessage, getWebSocket } = useWebSocket(
+    ENDPOINTS.TIMER_SERVICE,
+    {
+      ...WSoptions,
+      // This makes the hook treat wsKey changes as a full reconnect
+      queryParams: { reconnect: wsKey },
+    },
   );
 
   // This is the contract between server and client
@@ -228,8 +238,15 @@ function Timer({ authUser, darkMode, isPopout }) {
   );
 
   const handleRefreshTimer = useCallback(() => {
-    window.location.reload();
-  }, []);
+    // Close the existing socket gracefully, then remount by bumping the key
+    try {
+      getWebSocket()?.close();
+    } catch (e) {
+      // ignore if socket is already gone
+    }
+    setCustomReadyState(ReadyState.CONNECTING);
+    setWsKey(k => k + 1);
+  }, [getWebSocket]);
 
   // Initialize session ID on component mount
   useEffect(() => {
