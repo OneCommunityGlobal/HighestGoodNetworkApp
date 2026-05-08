@@ -987,6 +987,10 @@
 
 .btnPrimary,
 .btnSecondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
   padding: 10px 20px;
   border: none;
   border-radius: 8px;

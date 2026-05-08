@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import ReactCalendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import axios from 'axios';
@@ -797,7 +798,13 @@ export default function CommunityCalendar() {
             </div>
 
             <div className={styles.modalActions}>
-              <button className={styles.btnPrimary}>Register for Event</button>
+              <Link
+                to={`/communityportal/Activities/Register/${selectedEvent._id}`}
+                className={styles.btnPrimary}
+                onClick={closeEventModal}
+              >
+                Register for Event
+              </Link>
               <button className={styles.btnSecondary}>Add to Calendar</button>
             </div>
           </div>
