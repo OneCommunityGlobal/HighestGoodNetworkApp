@@ -10,7 +10,7 @@
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* GLOBAL DARK MODE WRAPPER (IMPORTANT FIX) */
+/* GLOBAL DARK MODE WRAPPER */
 .dark-mode {
   background-color: #1e2a3a;
   color: #e0e0e0;
@@ -30,7 +30,6 @@
   flex-wrap: wrap;
 }
 
-/* FIX: ensure dark mode applies everywhere inside */
 .dark-mode .register-container {
   background-color: transparent;
   color: #e0e0e0;
@@ -47,7 +46,7 @@
   min-width: 300px;
 }
 
-/* LEFT */
+/* LEFT COLUMN */
 .left-column {
   display: flex;
   flex-direction: column;
@@ -61,9 +60,11 @@
   border-radius: 8px;
   object-fit: cover;
   box-shadow: 0 4px 8px rgb(0 0 0 / 20%);
+  margin: 10px auto;
+  display: block;
 }
 
-/* MIDDLE */
+/* MIDDLE COLUMN */
 .middle-column h1 {
   font-size: 1.8rem;
   margin-bottom: 12px;
@@ -81,6 +82,7 @@
   border-radius: 4px;
   cursor: pointer;
   margin-top: 15px;
+  transition: 0.2s ease;
 }
 
 .register-button:disabled {
@@ -88,7 +90,6 @@
   cursor: not-allowed;
 }
 
-/* SHARE BUTTON */
 .share-button {
   margin-top: 8px;
   padding: 8px 16px;
@@ -96,9 +97,13 @@
   background: #f3f4f6;
   cursor: pointer;
   border-radius: 4px;
+  transition: all 0.2s ease;
 }
 
-/* DARK MODE SHARE */
+.share-button:hover {
+  background-color: #e5e7eb;
+}
+
 .dark-mode .share-button {
   background: #3d4f62;
   color: #e5e7eb;
@@ -106,25 +111,82 @@
 }
 
 /* =========================
+   DETAILS / GRID
+========================= */
+
+.details-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.details-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.details-row p {
+  flex: 1;
+  min-width: 150px;
+}
+
+.details-row p strong {
+  font-weight: bold;
+}
+
+/* =========================
    CALENDAR
 ========================= */
 
-.calendarContainer {
+.calendar-container {
   margin-top: 20px;
   width: 100%;
   max-width: 400px;
 }
 
-/* BASE CALENDAR */
-.calendarContainer :global(.react-calendar) {
+/* react-calendar base */
+.calendar-container :global(.react-calendar) {
   width: 100%;
-  border-radius: 8px;
   border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
+  font-family: inherit;
   background: white;
-  transition: all 0.3s ease;
 }
 
-/* DARK MODE FIX */
+.calendar-container :global(.react-calendar__tile) {
+  position: relative;
+  padding: 10px 6px;
+  height: 60px;
+}
+
+/* booked / available */
+.booked-indicator,
+.available-indicator {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  font-size: 12px;
+}
+
+.booked-indicator {
+  color: #d32f2f;
+}
+
+.available-indicator {
+  color: #2e7d32;
+}
+
+/* selected/today */
+.calendar-container :global(.react-calendar__tile--active) {
+  background-color: #06c !important;
+  color: white !important;
+}
+
+/* DARK MODE CALENDAR */
 .dark-mode :global(.react-calendar) {
   background: #1e2a3a !important;
   color: #e0e0e0 !important;
@@ -140,35 +202,6 @@
   color: #e0e0e0;
 }
 
-/* TILE BASE */
-.calendarContainer :global(.react-calendar__tile) {
-  position: relative;
-}
-
-/* BOOKED / AVAILABLE */
-.booked-indicator {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  color: #d32f2f;
-}
-
-.available-indicator {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  color: #2e7d32;
-}
-
-/* DARK INDICATORS */
-.dark-mode .available-indicator {
-  color: #81c784;
-}
-
-.dark-mode .booked-indicator {
-  color: #ff6b6b;
-}
-
 /* =========================
    FEEDBACK
 ========================= */
@@ -177,6 +210,7 @@
   margin-top: 15px;
   padding: 10px;
   border-radius: 4px;
+  font-size: 14px;
 }
 
 .feedback-message.success {
@@ -190,17 +224,44 @@
 }
 
 /* =========================
+   DETAILS LIST
+========================= */
+
+.detailsList {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  gap: 14px 20px;
+}
+
+.detailsList p {
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+}
+
+.dark-mode .detailsList p {
+  background: #0f172a;
+  border-color: #1f2937;
+}
+
+/* =========================
    RESPONSIVE
 ========================= */
 
-@media (width <= 1200px) {
+@media (max-width: 1200px) {
   .register-container {
     flex-direction: column;
   }
 }
 
-@media (width <= 768px) {
+@media (max-width: 768px) {
   .middle-column h1 {
     font-size: 1.5rem;
+  }
+
+  .details-row {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }

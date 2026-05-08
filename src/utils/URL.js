@@ -6,6 +6,7 @@ export const ENDPOINTS = {
   USER_PROFILE: userId => `${APIEndpoint}/userprofile/${userId}`,
   USER_PROFILE_FIXED: userId => `${APIEndpoint}/userProfile/${userId}`,
   USER_PROFILE_PROPERTY: userId => `${APIEndpoint}/userprofile/${userId}/property`,
+  USER_PAUSE: userId => `${APIEndpoint}/userProfile/${userId}/pause`,
   USER_PROFILES: `${APIEndpoint}/userprofile/`,
   UPDATE_REHIREABLE_STATUS: userId => `${APIEndpoint}/userprofile/${userId}/rehireable`,
   TOGGLE_VISIBILITY: userId => `${APIEndpoint}/userprofile/${userId}/toggleInvisibility`,
@@ -137,6 +138,7 @@ export const ENDPOINTS = {
   DELETE_WARNING_DESCRIPTION: warningId => `${APIEndpoint}/currentWarnings/${warningId}`,
   EDIT_WARNING_DESCRIPTION: () => `${APIEndpoint}/currentWarnings/edit`,
   GET_WARNINGS_BY_USER_ID: userId => `${APIEndpoint}/warnings/${userId}`,
+  GET_SPECIAL_WARNINGS: userId => `${APIEndpoint}/warnings/${userId}/special`,
   POST_WARNINGS_BY_USER_ID: userId => `${APIEndpoint}/warnings/${userId}`,
   DELETE_WARNINGS_BY_USER_ID: userId => `${APIEndpoint}/warnings/${userId}`,
   AUTHORIZE_WEEKLY_SUMMARY_REPORTS: () =>
@@ -518,6 +520,7 @@ export const ENDPOINTS = {
   // event endpoint
   EVENTS: `${APIEndpoint}/events`,
   EVENTS_BY_ID: (activityId) => `${APIEndpoint}/events/${activityId}`,
+  REGISTER_FOR_EVENT: (activityId) => `${APIEndpoint}/events/${activityId}/register`,
   EVENT_TYPES: `${APIEndpoint}/events/types`,
   EVENT_LOCATIONS: `${APIEndpoint}/events/locations`,
   EVENT_ATTENDANCE_STATS: `${APIEndpoint}/events/attendance/stats`,

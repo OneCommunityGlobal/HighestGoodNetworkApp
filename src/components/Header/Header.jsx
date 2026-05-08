@@ -7,7 +7,6 @@ import { toast } from 'react-toastify';
 import {
   Button,
   Card,
-  NavbarToggler,
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
@@ -17,6 +16,7 @@ import {
   ModalHeader,
   Nav,
   Navbar,
+  NavbarToggler,
   NavItem,
   NavLink,
   UncontrolledDropdown
@@ -111,7 +111,8 @@ export function Header(props) {
     props.hasPermission('deleteUserProfile', !isAuthUser ) ||
     props.hasPermission('changeUserStatus', !isAuthUser ) ||
     props.hasPermission('getUserProfiles', !isAuthUser ) ||
-    props.hasPermission('setFinalDay', !isAuthUser);
+    props.hasPermission('setFinalDay', !isAuthUser) ||
+    props.hasPermission('interactWithPauseUserButton', !isAuthUser);
 
   // Badges
   const canAccessBadgeManagement =
@@ -429,7 +430,7 @@ export function Header(props) {
             <NavbarToggler onClick={toggle} ref={toggleRef} className={styles.navbarToggler} />
             <div
               ref={collapseRef}
-              className={`${styles.navCollapse} ${isOpen ? styles.navCollapseOpen : styles.navCollapseHidden}`}
+              className={`${styles.navCollapse} ${isOpen ? styles.navCollapseOpen : ''}`}
               role="menu"
               tabIndex={-1}
               onKeyDown={(e) => {
@@ -820,22 +821,12 @@ export function Header(props) {
                       <DropdownItem divider />
                       <DropdownItem
                         tag={Link}
-                        to="/pr-dashboard/analytics"
+                        to="/pr-dashboard/overview"
                         className={fontColor}
                         disabled={headerDisabled}
                       >
                         PR Team Analytics
                       </DropdownItem>
-                      {canAccessBlueSquareEmailManagement && (
-                        <DropdownItem
-                          tag={Link}
-                          to="/bluesquare-email-management"
-                          className={fontColor}
-                          disabled={headerDisabled}
-                        >
-                          {BLUE_SQUARE_EMAIL_MANAGEMENT}
-                        </DropdownItem>
-                      )}
                       <DropdownItem
                         tag={Link}
                         to="/pr-dashboard/analytics"

@@ -12,6 +12,10 @@ import { ENDPOINTS } from '../../../../utils/URL';
 import EventDescription from './EventDescription';
 import ShareAvailability from './ShareAvailability';
 
+/* =========================
+   MOCK DATA (KEEP ONLY ONCE)
+========================= */
+
 const MOCK_ACTIVITIES = [
   {
     id: 1,
@@ -68,15 +72,15 @@ function Register() {
   const [error, setError] = useState(null);
 
   const [selectedDate, setSelectedDate] = useState(new Date());
-
   const [availability, setAvailability] = useState(0);
   const [isRegistering, setIsRegistering] = useState(false);
   const [registrants, setRegistrants] = useState([]);
 
-  // ✅ ONLY STATE FOR SHARE MODAL
-  const [isShareOpen, setIsShareOpen] = useState(false);
-
   const storageKey = useMemo(() => `activity-${activityId}-registrants`, [activityId]);
+
+  /* =========================
+     LOCAL STORAGE
+  ========================= */
 
   useEffect(() => {
     try {
@@ -94,6 +98,10 @@ function Register() {
     } catch {}
   }, [registrants, storageKey]);
 
+  /* =========================
+     FETCH ACTIVITY
+  ========================= */
+
   useEffect(() => {
     const fetchActivity = async () => {
       setLoading(true);
@@ -101,6 +109,7 @@ function Register() {
 
       try {
         const res = await axios.get(ENDPOINTS.EVENTS_BY_ID(activityId));
+
         const raw = res.data;
 
         const normalized = {
@@ -119,6 +128,7 @@ function Register() {
         setActivity(normalized);
       } catch {
         const mock = MOCK_ACTIVITIES.find(a => a.id === Number(activityId));
+
         if (mock) setActivity(mock);
         else setError('Activity not found');
       } finally {
@@ -129,6 +139,10 @@ function Register() {
     fetchActivity();
   }, [activityId]);
 
+  /* =========================
+     AVAILABILITY
+  ========================= */
+
   useEffect(() => {
     if (!activity) return;
 
@@ -137,6 +151,10 @@ function Register() {
 
     setAvailability(Math.max(0, capacity - used));
   }, [activity, registrants]);
+
+  /* =========================
+     CALENDAR
+  ========================= */
 
   const isDateBooked = date =>
     MOCK_BOOKED_DATES.some(
@@ -168,12 +186,21 @@ function Register() {
     return null;
   };
 
+  /* =========================
+     USER NAME
+  ========================= */
+
   const resolveUserName = () => {
     const first = userProfile?.firstName || authUser?.firstName;
     const last = userProfile?.lastName || authUser?.lastName;
+
     if (first && last) return `${first} ${last}`;
     return authUser?.email || 'Participant';
   };
+
+  /* =========================
+     REGISTER
+  ========================= */
 
   const handleRegister = async () => {
     if (availability === 0) return toast.error('No spots available');
@@ -183,22 +210,31 @@ function Register() {
     setTimeout(() => {
       setRegistrants(prev => [
         ...prev,
-        { name: resolveUserName(), registeredAt: new Date().toISOString() },
+        {
+          name: resolveUserName(),
+          registeredAt: new Date().toISOString(),
+        },
       ]);
+
       toast.success('Registered!');
       setIsRegistering(false);
     }, 1000);
   };
 
-  // ✅ SHARE = ONLY YOUR COMPONENT CONTROL
-  const openShareModal = () => setIsShareOpen(true);
-  const closeShareModal = () => setIsShareOpen(false);
+  /* =========================
+     LOADING / ERROR
+  ========================= */
 
   if (loading) return <div className={styles.mainContainer}>Loading...</div>;
+
   if (error || !activity) return <div className={styles.mainContainer}>Activity not found</div>;
 
   const displayTitle = activity.title || activity.name;
   const displayImage = activity.coverImage || activity.image;
+
+  /* =========================
+     RENDER
+  ========================= */
 
   return (
     <div className={`${styles['main-container']} ${darkMode ? styles['dark-mode'] : ''}`}>
@@ -219,7 +255,6 @@ function Register() {
             activity={activity}
             availability={availability}
             activityId={activityId}
-            onClose={closeShareModal}
           />
         </div>
 
