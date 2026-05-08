@@ -151,22 +151,17 @@ RiskTooltip.propTypes = {
 export default function ProjectRiskProfileOverview() {
   const darkMode = useSelector(state => Boolean(state?.theme?.darkMode));
 
-  const [data, setData] = useState([]);
   const [rawProjects, setRawProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
   const [timeRange, setTimeRange] = useState(30);
   const [customStart, setCustomStart] = useState('');
   const [customEnd, setCustomEnd] = useState('');
   const [allProjects, setAllProjects] = useState([]);
   const [selectedProjects, setSelectedProjects] = useState([]);
-  const [allDates, setAllDates] = useState([]);
-  const [selectedDates, setSelectedDates] = useState([]);
   const [showProjectDropdown, setShowProjectDropdown] = useState(false);
-  const [showDateDropdown, setShowDateDropdown] = useState(false);
-
   const projectWrapperRef = useRef(null);
-  const dateWrapperRef = useRef(null);
 
   useEffect(() => {
     async function fetchData() {
@@ -180,7 +175,6 @@ export default function ProjectRiskProfileOverview() {
 
         if (!Array.isArray(result)) result = [result];
 
-        setData(result);
         const normalized = result.map(p => ({
           ...p,
           projectName: p.projectName || p.name || 'Unknown Project',
@@ -191,10 +185,6 @@ export default function ProjectRiskProfileOverview() {
         const names = normalized.map(p => p.projectName);
         setAllProjects(names);
         setSelectedProjects(names);
-
-        const datesFromPayload = Array.from(new Set(normalized.flatMap(p => p.dates || [])));
-        setAllDates(datesFromPayload);
-        setSelectedDates(datesFromPayload);
       } catch (err) {
         setError('Failed to fetch project risk profile data.');
       } finally {
@@ -204,30 +194,26 @@ export default function ProjectRiskProfileOverview() {
     fetchData();
   }, []);
 
-  const filteredData = data.filter(
-    p =>
-      (selectedProjects.length === 0 || selectedProjects.includes(p.projectName)) &&
-      (selectedDates.length === 0 || (p.dates || []).some(d => selectedDates.includes(d))),
-  );
-
+  // Dynamically calculate the window so synthetic generator makes enough days for "Custom"
   const effectiveWindow = useMemo(() => {
     const fallbackEnd = formatDateISO(new Date());
-    const end =
-      (timeRange === 'custom' && customEnd) ||
-      (selectedDates?.length
-        ? [...selectedDates].sort((a, b) => new Date(a) - new Date(b)).at(-1)
-        : null) ||
-      fallbackEnd;
+    const end = timeRange === 'custom' && customEnd ? customEnd : fallbackEnd;
 
     if (timeRange === 'custom') {
       const start = customStart || end;
-      return { start, end, days: null };
+      const startD = new Date(start);
+      const endD = new Date(end);
+      const diffTime = Math.abs(endD - startD);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+      return { start, end, days: diffDays || 30 };
     }
+
     const days = Number(timeRange);
     const startDate = new Date(end);
     startDate.setDate(startDate.getDate() - (days - 1));
     return { start: formatDateISO(startDate), end, days };
-  }, [timeRange, customStart, customEnd, selectedDates]);
+  }, [timeRange, customStart, customEnd]);
 
   const projectsWithHistory = useMemo(() => {
     if (!rawProjects || rawProjects.length === 0) return [];
@@ -264,19 +250,14 @@ export default function ProjectRiskProfileOverview() {
     return projectsWithHistory
       .filter(p => selectedProjects.length === 0 || selectedProjects.includes(p.projectName))
       .map(p => {
-        const hist = (p.history || [])
-          .filter(h => h.date >= effectiveWindow.start && h.date <= effectiveWindow.end)
-          .filter(h => selectedDates.length === 0 || selectedDates.includes(h.date));
+        // Cleanly filter by strict start and end dates. No hidden selectedDates array.
+        const hist = (p.history || []).filter(
+          h => h.date >= effectiveWindow.start && h.date <= effectiveWindow.end,
+        );
         return { ...p, historyFiltered: hist };
       })
       .filter(p => (p.historyFiltered || []).length > 0);
-  }, [
-    projectsWithHistory,
-    selectedProjects,
-    selectedDates,
-    effectiveWindow.start,
-    effectiveWindow.end,
-  ]);
+  }, [projectsWithHistory, selectedProjects, effectiveWindow.start, effectiveWindow.end]);
 
   const barChartData = useMemo(() => {
     return filteredProjects.map(p => {
@@ -294,9 +275,6 @@ export default function ProjectRiskProfileOverview() {
   const chartColors = {
     text: darkMode ? '#dbe3f0' : '#333333',
     grid: darkMode ? '#3a506b' : '#cccccc',
-    tooltipBg: darkMode ? '#1c2541' : '#ffffff',
-    tooltipBorder: darkMode ? '#3a506b' : '#ccc',
-    tooltipText: darkMode ? '#ffffff' : '#000000',
   };
 
   const sparklineTooltipProps = useMemo(
@@ -314,11 +292,17 @@ export default function ProjectRiskProfileOverview() {
   );
 
   const customSelectStyles = {
+    container: base => ({
+      ...base,
+      minWidth: '250px',
+      marginTop: '6px',
+    }),
     control: base => ({
       ...base,
       backgroundColor: darkMode ? '#2c2c2c' : '#fff',
       borderColor: darkMode ? '#555' : '#ccc',
       color: darkMode ? '#eee' : '#222',
+      minHeight: '36px',
     }),
     menu: base => ({
       ...base,
@@ -369,6 +353,29 @@ export default function ProjectRiskProfileOverview() {
             </select>
           </div>
 
+          {timeRange === 'custom' && (
+            <div className={styles.customDateContainer}>
+              <div className={styles.formGroup}>
+                <span className={styles.label}>Start Date</span>
+                <input
+                  type="date"
+                  className={styles.dateInput}
+                  value={customStart}
+                  onChange={e => setCustomStart(e.target.value)}
+                />
+              </div>
+              <div className={styles.formGroup}>
+                <span className={styles.label}>End Date</span>
+                <input
+                  type="date"
+                  className={styles.dateInput}
+                  value={customEnd}
+                  onChange={e => setCustomEnd(e.target.value)}
+                />
+              </div>
+            </div>
+          )}
+
           <div ref={projectWrapperRef} className={styles.formGroup}>
             <span className={styles.label}>Projects</span>
             <button
@@ -398,11 +405,11 @@ export default function ProjectRiskProfileOverview() {
         </div>
 
         <div className={styles.chartContainer}>
-          {filteredData.length === 0 ? (
+          {barChartData.length === 0 ? (
             <div className={styles.noData}>No data available for the selected filters.</div>
           ) : (
             <ResponsiveContainer width="100%" height={400}>
-              <BarChart data={filteredData} margin={{ top: 20, right: 40, left: 60, bottom: 80 }}>
+              <BarChart data={barChartData} margin={{ top: 20, right: 40, left: 60, bottom: 80 }}>
                 <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke={chartColors.grid} />
                 <XAxis
                   dataKey="projectName"
@@ -416,11 +423,7 @@ export default function ProjectRiskProfileOverview() {
                   tick={{ fontSize: 12, fill: chartColors.text }}
                 />
                 <Tooltip
-                  contentStyle={{
-                    backgroundColor: chartColors.tooltipBg,
-                    border: `1px solid ${chartColors.tooltipBorder}`,
-                    color: chartColors.tooltipText,
-                  }}
+                  content={<RiskTooltip darkMode={darkMode} />}
                   cursor={{ fill: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }}
                 />
                 <Legend wrapperStyle={{ marginTop: 20, color: chartColors.text }} />
@@ -444,50 +447,6 @@ export default function ProjectRiskProfileOverview() {
 
         <div className={styles.trendSection}>
           <h3 className={styles.subHeading}>Trend Summary</h3>
-          <div className={styles.chartContainer}>
-            {barChartData.length === 0 ? (
-              <div className={styles.noData}>
-                No trend data available for the selected time window.
-              </div>
-            ) : (
-              <ResponsiveContainer width="100%" height={380}>
-                <BarChart data={barChartData} margin={{ top: 20, right: 40, left: 40, bottom: 80 }}>
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    horizontal={false}
-                    stroke={chartColors.grid}
-                  />
-                  <XAxis
-                    dataKey="projectName"
-                    angle={-45}
-                    textAnchor="end"
-                    height={80}
-                    tick={{ fontSize: 12, fill: chartColors.text }}
-                  />
-                  <YAxis
-                    tickFormatter={val => (Number.isInteger(val) ? val : val.toFixed(0))}
-                    tick={{ fontSize: 12, fill: chartColors.text }}
-                  />
-                  <Tooltip content={<RiskTooltip darkMode={darkMode} />} />
-                  <Legend wrapperStyle={{ marginTop: 20, color: chartColors.text }} />
-                  <Bar
-                    dataKey="predictedCostOverrun"
-                    name="Cost Overrun (%)"
-                    fill="#4285F4"
-                    barSize={30}
-                  />
-                  <Bar dataKey="totalOpenIssues" name="Issues" fill="#EA4335" barSize={30} />
-                  <Bar
-                    dataKey="predictedTimeDelay"
-                    name="Time Delay (%)"
-                    fill="#FBBC05"
-                    barSize={30}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            )}
-          </div>
-
           <div className={styles.tableScroll}>
             <table className={styles.table}>
               <thead>
