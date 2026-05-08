@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .summaryCards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -6,16 +7,16 @@
 }
 
 .card {
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
   border: 1px solid #e5e7eb;
   transition: all 0.2s ease;
 }
 
 .card:hover {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 10%), 0 2px 4px -1px rgb(0 0 0 / 6%);
   transform: translateY(-1px);
 }
 
@@ -67,17 +68,17 @@
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .summaryCards {
     grid-template-columns: 1fr;
     gap: 1rem;
     margin-bottom: 2rem;
   }
-  
+
   .card {
     padding: 1.25rem;
   }
-  
+
   .cardValue {
     font-size: 1.75rem;
   }
@@ -87,11 +88,11 @@
 :global(.dark-mode) .card {
   background-color: #2d2d2d;
   border-color: #404040;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 30%);
 }
 
 :global(.dark-mode) .card:hover {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 40%), 0 2px 4px -1px rgb(0 0 0 / 30%);
 }
 
 :global(.dark-mode) .cardIcon {
@@ -104,7 +105,7 @@
 }
 
 :global(.dark-mode) .cardValue {
-  color: #ffffff;
+  color: #fff;
 }
 
 :global(.dark-mode) .cardDescription {

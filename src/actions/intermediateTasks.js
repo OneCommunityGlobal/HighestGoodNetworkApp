@@ -1,6 +1,6 @@
 import { toast } from 'react-toastify';
-import { ENDPOINTS } from '~/utils/URL';
 import httpService from '../services/httpService';
+import { ENDPOINTS } from '~/utils/URL';
 import { updateStudentTask } from './studentTasks';
 
 /**
@@ -17,13 +17,12 @@ export const MARK_INTERMEDIATE_TASK_DONE = 'MARK_INTERMEDIATE_TASK_DONE';
 /**
  * Fetch intermediate tasks for a parent task
  */
-export const fetchIntermediateTasks = (taskId) => {
-  return async (dispatch) => {
+export const fetchIntermediateTasks = taskId => {
+  return async dispatch => {
     try {
       const response = await httpService.get(ENDPOINTS.INTERMEDIATE_TASKS_BY_PARENT(taskId));
       return response.data;
     } catch (error) {
-      console.error('Error fetching intermediate tasks:', error);
       toast.error('Failed to fetch sub-tasks');
       throw error;
     }
@@ -33,7 +32,7 @@ export const fetchIntermediateTasks = (taskId) => {
 /**
  * Calculate total expected hours from intermediate tasks
  */
-const calculateTotalExpectedHours = (intermediateTasks) => {
+const calculateTotalExpectedHours = intermediateTasks => {
   return intermediateTasks.reduce((total, task) => {
     return total + (task.expected_hours || 0);
   }, 0);
@@ -44,46 +43,47 @@ const calculateTotalExpectedHours = (intermediateTasks) => {
  */
 const updateParentTaskExpectedHours = async (dispatch, getState, parentTaskId) => {
   try {
-    // Fetch all intermediate tasks for this parent
     const intermediateTasks = await dispatch(fetchIntermediateTasks(parentTaskId));
-
-    // Calculate total expected hours
     const totalExpectedHours = calculateTotalExpectedHours(intermediateTasks);
-
-    // Get the parent task from state
     const state = getState();
     const parentTask = state.studentTasks.taskItems.find(t => t.id === parentTaskId);
 
     if (parentTask) {
-      // Update the parent task with new expected hours
-      dispatch(updateStudentTask(parentTaskId, {
-        ...parentTask,
-        suggested_total_hours: totalExpectedHours
-      }));
+      dispatch(
+        updateStudentTask(parentTaskId, {
+          ...parentTask,
+          suggested_total_hours: totalExpectedHours,
+        }),
+      );
     }
   } catch (error) {
-    console.error('Error updating parent task expected hours:', error);
+    toast.error('Failed to update parent task hours');
   }
 };
 
 /**
  * Create a new intermediate task
+ * @param {Object} taskData - The task data to create
  */
-export const createIntermediateTask = (taskData) => {
+export const createIntermediateTask = taskData => {
   return async (dispatch, getState) => {
     try {
       const response = await httpService.post(ENDPOINTS.INTERMEDIATE_TASKS(), taskData);
-      toast.success('Sub-task created successfully');
 
-      // Update parent task expected hours
-      if (taskData.parentTaskId) {
-        await updateParentTaskExpectedHours(dispatch, getState, taskData.parentTaskId);
+      if (response.data.success) {
+        toast.success('Task created successfully!');
+
+        if (taskData.parentTaskId) {
+          await updateParentTaskExpectedHours(dispatch, getState, taskData.parentTaskId);
+        }
+
+        return response.data.task;
       }
 
       return response.data;
     } catch (error) {
-      console.error('Error creating intermediate task:', error);
-      const errorMessage = error.response?.data?.error || error.message || 'Failed to create sub-task';
+      const errorMessage =
+        error.response?.data?.error || error.message || 'Failed to create sub-task';
       toast.error(`Error: ${errorMessage}`);
       throw error;
     }
@@ -92,22 +92,28 @@ export const createIntermediateTask = (taskData) => {
 
 /**
  * Update an intermediate task
+ * @param {string} id - The task ID
+ * @param {Object} taskData - The updated task data
  */
 export const updateIntermediateTask = (id, taskData) => {
   return async (dispatch, getState) => {
     try {
       const response = await httpService.put(ENDPOINTS.INTERMEDIATE_TASK_BY_ID(id), taskData);
-      toast.success('Sub-task updated successfully');
 
-      // Update parent task expected hours
-      if (taskData.parentTaskId) {
-        await updateParentTaskExpectedHours(dispatch, getState, taskData.parentTaskId);
+      if (response.data.success) {
+        toast.success('Task updated successfully!');
+
+        if (taskData.parentTaskId) {
+          await updateParentTaskExpectedHours(dispatch, getState, taskData.parentTaskId);
+        }
+
+        return response.data.task;
       }
 
       return response.data;
     } catch (error) {
-      console.error('Error updating intermediate task:', error);
-      const errorMessage = error.response?.data?.error || error.message || 'Failed to update sub-task';
+      const errorMessage =
+        error.response?.data?.error || error.message || 'Failed to update sub-task';
       toast.error(`Error: ${errorMessage}`);
       throw error;
     }
@@ -116,22 +122,22 @@ export const updateIntermediateTask = (id, taskData) => {
 
 /**
  * Delete an intermediate task
+ * @param {string} taskId - The task ID to delete
  */
-export const deleteIntermediateTask = (id, parentTaskId = null) => {
+export const deleteIntermediateTask = taskId => {
   return async (dispatch, getState) => {
     try {
-      await httpService.delete(ENDPOINTS.INTERMEDIATE_TASK_BY_ID(id));
-      toast.success('Sub-task deleted successfully');
+      const response = await httpService.delete(ENDPOINTS.INTERMEDIATE_TASK_BY_ID(taskId));
 
-      // Update parent task expected hours
-      if (parentTaskId) {
-        await updateParentTaskExpectedHours(dispatch, getState, parentTaskId);
+      if (response.data.success) {
+        toast.success('Task deleted successfully!');
+        return true;
       }
 
       return true;
     } catch (error) {
-      console.error('Error deleting intermediate task:', error);
-      const errorMessage = error.response?.data?.error || error.message || 'Failed to delete sub-task';
+      const errorMessage =
+        error.response?.data?.error || error.message || 'Failed to delete sub-task';
       toast.error(`Error: ${errorMessage}`);
       throw error;
     }
@@ -142,24 +148,22 @@ export const deleteIntermediateTask = (id, parentTaskId = null) => {
  * Mark an intermediate task as done (for students)
  */
 export const markIntermediateTaskAsDone = (id, parentTaskId) => {
-  return async (dispatch) => {
+  return async dispatch => {
     try {
-      // First, fetch the current task data
       const currentTask = await httpService.get(ENDPOINTS.INTERMEDIATE_TASK_BY_ID(id));
 
-      // Update with the completed status while preserving all required fields
       const response = await httpService.put(ENDPOINTS.INTERMEDIATE_TASK_BY_ID(id), {
         ...currentTask.data,
-        status: 'completed'
+        status: 'completed',
       });
+
       toast.success('Sub-task marked as done');
       return response.data;
     } catch (error) {
-      console.error('Error marking intermediate task as done:', error);
-      const errorMessage = error.response?.data?.error || error.message || 'Failed to mark sub-task as done';
+      const errorMessage =
+        error.response?.data?.error || error.message || 'Failed to mark sub-task as done';
       toast.error(`Error: ${errorMessage}`);
       throw error;
     }
   };
 };
-

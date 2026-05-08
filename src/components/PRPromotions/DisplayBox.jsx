@@ -1,12 +1,13 @@
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 import styles from './DisplayBox.module.css';
 
-export default function DisplayBox({ onClose }) {
+export default function DisplayBox({ onClose, darkMode = false }) {
   const mockPromotionData = [
     {
       prReviewer: 'Akshay - Jayram',
       teamCode: '123',
-      teamReviewerName: '""',
+      teamReviewerName: 'Team Leader 1',
       weeklyPRs: [
         { week: '2024-06-01', prCount: 12 },
         { week: '2024-06-08', prCount: 15 },
@@ -20,7 +21,7 @@ export default function DisplayBox({ onClose }) {
     {
       prReviewer: 'Ghazi1212',
       teamCode: '456',
-      teamReviewerName: '""',
+      teamReviewerName: 'Team Leader 2',
       weeklyPRs: [
         { week: '2024-06-01', prCount: 12 },
         { week: '2024-06-08', prCount: 15 },
@@ -32,25 +33,33 @@ export default function DisplayBox({ onClose }) {
   ];
 
   const [checkedItems, setCheckedItems] = useState(new Array(mockPromotionData.length).fill(true));
+
   const allChecked = checkedItems.every(Boolean);
 
   const handleCheckedBoxChange = index => {
-    const newChecked = [...checkedItems];
-    newChecked[index] = !newChecked[index];
-    setCheckedItems(newChecked);
+    const updated = [...checkedItems];
+    updated[index] = !updated[index];
+    setCheckedItems(updated);
   };
 
   const handleSelectAll = () => {
     setCheckedItems(new Array(mockPromotionData.length).fill(!allChecked));
   };
 
+  const handleConfirm = () => {
+    const selectedReviewers = mockPromotionData.filter((_, index) => checkedItems[index]);
+    console.log('Selected reviewers:', selectedReviewers);
+    onClose();
+  };
+
   return (
     <div className={styles.overlay}>
-      <div className={styles.popup}>
-        <h2 className={styles['popup-heading']}>
+      <div className={`${styles.popup} ${darkMode ? styles.popupDark : ''}`}>
+        <h2 className={`${styles.popupHeading} ${darkMode ? styles.popupHeadingDark : ''}`}>
           Are you sure you want to promote these PR reviewers?
         </h2>
-        <table className={styles['popup-table']}>
+
+        <table className={`${styles.popupTable} ${darkMode ? styles.popupTableDark : ''}`}>
           <thead>
             <tr>
               <th>
@@ -63,10 +72,11 @@ export default function DisplayBox({ onClose }) {
               </th>
               <th>PR Reviewer</th>
               <th>Team Code</th>
-              <th>Team Reviewer Name</th>
+              <th>Team Leader Name</th>
               <th>Weekly PR Counts</th>
             </tr>
           </thead>
+
           <tbody>
             {mockPromotionData.map((promotion, index) => (
               <tr key={`${promotion.prReviewer}-${promotion.teamCode}`}>
@@ -85,7 +95,7 @@ export default function DisplayBox({ onClose }) {
                   {promotion.weeklyPRs.map((pr, prIndex) => (
                     <span
                       key={`${promotion.prReviewer}-${pr.week}`}
-                      className={`${styles['pr-count-badge']} ${styles[`color-${prIndex}`]}`}
+                      className={`${styles.prCountBadge} ${styles[`color${prIndex}`] || ''}`}
                     >
                       {pr.prCount}
                     </span>
@@ -95,11 +105,18 @@ export default function DisplayBox({ onClose }) {
             ))}
           </tbody>
         </table>
-        <div className={styles['button-row']}>
+
+        <div className={styles.buttonRow}>
           <button type="button" className={styles.button} onClick={onClose}>
             Cancel
           </button>
-          <button type="button" className={styles.button} disabled={!checkedItems.some(Boolean)}>
+
+          <button
+            type="button"
+            className={styles.button}
+            disabled={!checkedItems.some(Boolean)}
+            onClick={handleConfirm}
+          >
             Confirm
           </button>
         </div>
@@ -107,3 +124,12 @@ export default function DisplayBox({ onClose }) {
     </div>
   );
 }
+
+DisplayBox.propTypes = {
+  onClose: PropTypes.func.isRequired,
+  darkMode: PropTypes.bool,
+};
+
+DisplayBox.defaultProps = {
+  darkMode: false,
+};
