@@ -202,6 +202,18 @@ function Task(props) {
                 {controllerRow ? <BsFillCaretUpFill /> : <BsFillCaretDownFill />}
               </Button>
             </td>
+            {props.taskSelectionMode && (
+              <td className={styles.centerAction}>
+                <Button
+                  color="success"
+                  size="sm"
+                  onClick={() => props.onSelectTask({ _id: props.taskId, taskName: props.name })}
+                  style={darkMode ? boxStyleDark : boxStyle}
+                >
+                  Select
+                </Button>
+              </td>
+            )}
             <td
               id={`r_${props.num}_${props.taskId}`}
               // eslint-disable-next-line jsx-a11y/scope
@@ -464,6 +476,8 @@ function Task(props) {
               load={props.load}
               pageLoadTime={props.pageLoadTime}
               setIsLoading={props.setIsLoading}
+              taskSelectionMode={props.taskSelectionMode}
+              onSelectTask={props.onSelectTask}
             />
           ))
           : null

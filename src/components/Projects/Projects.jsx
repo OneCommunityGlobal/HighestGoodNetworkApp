@@ -2,6 +2,7 @@
 /* eslint-disable no-use-before-define */
 import { useState, useEffect, useCallback } from 'react';
 import { connect , useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import SearchProjectByPerson from '~/components/SearchProjectByPerson/SearchProjectByPerson';
 import ProjectsList from '~/components/BMDashboard/Projects/ProjectsList';
 // import { fetchAllProjects, modifyProject, clearError } from '../../actions/projects';
@@ -34,6 +35,9 @@ import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
 const Projects = function(props) {
   const { role } = props.state.userProfile;
   const { darkMode } = props.state.theme;
+  const location = useLocation();
+  const taskSelectionMode = location.state?.taskSelectionMode || false;
+  const taskSelectionReturnPath = location.state?.returnPath || '/bmdashboard/AddNewTeam';
   
   const allReduxProjects = useSelector(state => state.allProjects.projects);
   const projectFetchStatus = useSelector(state => state.allProjects.status);
@@ -218,6 +222,8 @@ const Projects = function(props) {
         onClickArchiveBtn={onClickArchiveBtn}
         onClickProjectStatusBtn={onClickProjectStatusBtn}
         darkMode={darkMode}
+        taskSelectionMode={taskSelectionMode}
+        taskSelectionReturnPath={taskSelectionReturnPath}
         onProjectArchived={async (updatedProject) => {
           try {
             // persist change
@@ -1245,6 +1251,8 @@ const Projects = function(props) {
       onClickArchiveBtn={onClickArchiveBtn}
       onClickProjectStatusBtn={onClickProjectStatusBtn}
       darkMode={darkMode}
+      taskSelectionMode={taskSelectionMode}
+      taskSelectionReturnPath={taskSelectionReturnPath}
     />
   ));
 
@@ -1281,6 +1289,11 @@ const Projects = function(props) {
             />
             <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
             {canPostProject ? <AddProject hasPermission={hasPermission} onAddNewProject={postProject} /> : null}
+          {taskSelectionMode && (
+            <div className="alert alert-info mb-2" role="alert">
+              <strong>Task Selection Mode:</strong> Click the <i className="fa fa-tasks" /> WBS button on a project to browse its tasks.
+            </div>
+          )}
           </div>
           <SearchProjectByPerson 
             onSearch={handleSearchName} 

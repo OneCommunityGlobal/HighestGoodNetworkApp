@@ -109,6 +109,17 @@
   font-weight: 500;
 }
 
+.taskPickerStatus {
+  font-size: 0.8rem;
+  color: #666;
+  margin-top: 0.5rem;
+}
+
+.taskSelectInput {
+  background-color: #fff !important;
+  opacity: 1;
+}
+
 /* Dropdown + Add button row */
 .selectContainer {
   display: flex;
@@ -361,6 +372,11 @@
 :global(body.dark-mode) .teamFormError,
 :global(body.bm-dashboard-dark) .teamFormError {
   color: #ff6b6b !important;
+}
+
+:global(body.dark-mode) .taskPickerStatus,
+:global(body.bm-dashboard-dark) .taskPickerStatus {
+  color: #c0d0dd !important;
 }
 
 :global(body.dark-mode) .fieldRequired,

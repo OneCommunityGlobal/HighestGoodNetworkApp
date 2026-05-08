@@ -257,7 +257,12 @@ const Project = props => {
         </td>
 
         <td>
-          <NavItem tag={Link} to={`/project/wbs/${projectId}`}>
+          <NavItem tag={Link} to={{
+            pathname: `/project/wbs/${projectId}`,
+            state: props.taskSelectionMode
+              ? { taskSelectionMode: true, returnPath: props.taskSelectionReturnPath }
+              : undefined,
+          }}>
             <button
               type="button"
               className="btn btn-outline-info"

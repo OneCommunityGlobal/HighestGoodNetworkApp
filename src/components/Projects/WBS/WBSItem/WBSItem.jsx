@@ -15,7 +15,7 @@ import { Link } from 'react-router-dom';
 import { NavItem } from 'reactstrap';
 
 
-const WBSItem = ({ darkMode, index, name, wbsId, projectId, getPopupById, deleteWbs, hasPermission, popupEditor }) => {
+const WBSItem = ({ darkMode, index, name, wbsId, projectId, getPopupById, deleteWbs, hasPermission, popupEditor, taskSelectionMode, taskSelectionReturnPath }) => {
 
   const [showModalDelete, setShowModalDelete] = useState(false);
 
@@ -38,7 +38,12 @@ const WBSItem = ({ darkMode, index, name, wbsId, projectId, getPopupById, delete
           {index}
         </th>
         <td style={{ textAlign: 'left' }}>
-          <NavItem tag={Link} to={`/wbs/tasks/${wbsId}/${projectId}/${name}`} className={darkMode ? 'text-azure' : ''}>
+          <NavItem tag={Link} to={{
+            pathname: `/wbs/tasks/${wbsId}/${projectId}/${name}`,
+            state: taskSelectionMode
+              ? { taskSelectionMode: true, returnPath: taskSelectionReturnPath }
+              : undefined,
+          }} className={darkMode ? 'text-azure' : ''}>
             {name}
           </NavItem>
         </td>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 import { Form, FormGroup, Label, Input, Button, Badge, Tooltip } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import Joi from 'joi-browser';
@@ -14,6 +15,8 @@ const initialFormState = {
 };
 
 export default function CreateNewTeam() {
+  const history = useHistory();
+  const location = useLocation();
   const [formData, setFormData] = useState(initialFormState);
   const [errors, setErrors] = useState({});
   const dispatch = useDispatch();
@@ -21,10 +24,7 @@ export default function CreateNewTeam() {
     state => state.allUserProfilesBasicInfo?.userProfilesBasicInfo,
   );
   const [selectedMember, setSelectedMember] = useState('');
-  const [selectedTask, setSelectedTask] = useState('');
   const [members, setMembers] = useState([]);
-  // const [tasks, setTasks] = useState([]);
-  const [tasks] = useState([]);
   const [assignedMembers, setAssignedMembers] = useState([]);
   const [assignedTasks, setAssignedTasks] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
@@ -45,6 +45,28 @@ export default function CreateNewTeam() {
   useEffect(() => {
     dispatch(getUserProfileBasicInfo({ source: 'CreateNewTeam' }));
   }, [dispatch]);
+
+  useEffect(() => {
+    // Restore saved draft when returning from WBS task selection
+    const saved = sessionStorage.getItem('createTeamDraft');
+    if (saved) {
+      try {
+        const draft = JSON.parse(saved);
+        setFormData(draft.formData || initialFormState);
+        setAssignedMembers(draft.assignedMembers || []);
+        setAssignedTasks(draft.assignedTasks || []);
+      } catch (e) {
+        // ignore malformed draft
+      }
+      sessionStorage.removeItem('createTeamDraft');
+    }
+    // Add task selected from WBS page
+    if (location.state?.selectedTask) {
+      const task = location.state.selectedTask;
+      setAssignedTasks(prev => (prev.some(t => t.id === task.id) ? prev : [...prev, task]));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (Array.isArray(userProfilesBasicInfo)) {
@@ -135,7 +157,14 @@ export default function CreateNewTeam() {
     const updatedFormData = {
       ...formData,
       teamMembers: assignedMembers,
-      tasks: assignedTasks,
+      tasks: assignedTasks.map(task => ({
+        taskId: task.id,
+        taskName: task.name,
+        projectId: task.projectId,
+        projectName: task.projectName,
+        wbsId: task.wbsId,
+        wbsName: task.wbsName,
+      })),
     };
 
     // eslint-disable-next-line no-console
@@ -143,12 +172,12 @@ export default function CreateNewTeam() {
 
     setSelectedMember('');
     setAssignedMembers([]);
-    setSelectedTask('');
     setAssignedTasks([]);
     setFormData(initialFormState);
     setErrors({});
     setSelectedMembersForBulk([]);
     setSelectedTasksForBulk([]);
+    setTaskErrorMessage('');
     setTouchedFields({
       teamName: false,
       assignedMembers: false,
@@ -159,12 +188,12 @@ export default function CreateNewTeam() {
   const handleCancelClick = () => {
     setSelectedMember('');
     setAssignedMembers([]);
-    setSelectedTask('');
     setAssignedTasks([]);
     setFormData(initialFormState);
     setErrors({});
     setSelectedMembersForBulk([]);
     setSelectedTasksForBulk([]);
+    setTaskErrorMessage('');
     setTouchedFields({
       teamName: false,
       assignedMembers: false,
@@ -218,36 +247,62 @@ export default function CreateNewTeam() {
     );
   };
 
-  const handleTaskChange = e => {
-    setSelectedTask(e.target.value);
+  const resetTaskPicker = () => {
     setTaskErrorMessage('');
   };
 
-  const handleAddTask = () => {
-    if (assignedTasks.includes(selectedTask)) {
+  const handleTaskProjectChange = e => {
+    e.preventDefault();
+  };
+
+  const handleTaskWbsChange = e => {
+    e.preventDefault();
+  };
+
+  const handleTaskSelectionChange = e => {
+    e.preventDefault();
+  };
+
+  const handleOpenTaskModal = () => {
+    setTaskErrorMessage('');
+    sessionStorage.setItem(
+      'createTeamDraft',
+      JSON.stringify({ formData, assignedMembers, assignedTasks }),
+    );
+    history.push('/projects', { taskSelectionMode: true, returnPath: '/bmdashboard/AddNewTeam' });
+  };
+
+  const handleCloseTaskModal = () => {
+    resetTaskPicker();
+  };
+
+  const handleNavigateToWbsPage = () => {
+    handleOpenTaskModal();
+  };
+
+  const handleAddTask = task => {
+    if (!task) return;
+    if (assignedTasks.some(t => t.id === task.id)) {
       setTaskErrorMessage('This task is already assigned!');
       return;
     }
-    if (selectedTask && !assignedTasks.includes(selectedTask)) {
-      setAssignedTasks([...assignedTasks, selectedTask]);
-      setSelectedTask('');
-    }
+    setAssignedTasks(prev => [...prev, task]);
   };
 
   const handleRemoveTask = task => {
-    setAssignedTasks(assignedTasks.filter(t => t !== task));
-    setSelectedTasksForBulk(prev => prev.filter(t => t !== task));
+    setAssignedTasks(assignedTasks.filter(t => t.id !== task.id));
+    setSelectedTasksForBulk(prev => prev.filter(taskId => taskId !== task.id));
   };
 
   const handleBulkRemoveTasks = () => {
     if (selectedTasksForBulk.length === 0) return;
-    setAssignedTasks(prev => prev.filter(t => !selectedTasksForBulk.includes(t)));
+    setAssignedTasks(prev => prev.filter(task => !selectedTasksForBulk.includes(task.id)));
     setSelectedTasksForBulk([]);
   };
 
   const handleToggleTaskForBulk = task => {
     setSelectedTasksForBulk(prev =>
-      prev.includes(task) ? prev.filter(t => t !== task) : [...prev, task],
+      prev.includes(task.id) ? prev.filter(taskId => taskId !== task.id) : [...prev, task.id],
     );
   };
 
@@ -415,20 +470,13 @@ export default function CreateNewTeam() {
             <div className={styles.selectContainer}>
               <Input
                 id="tasks-select"
-                type="select"
-                value={selectedTask}
-                onChange={handleTaskChange}
-              >
-                <option value="">Select a Task</option>
-                {tasks.map((task, index) => (
-                  // eslint-disable-next-line react/no-array-index-key
-                  <option key={index} value={task.id}>
-                    {task}
-                  </option>
-                ))}
-              </Input>
-              <Button onClick={handleAddTask} type="button" className={styles.addBtn}>
-                Add
+                type="text"
+                value="Select a Task"
+                className={styles.taskSelectInput}
+                readOnly
+              />
+              <Button onClick={handleOpenTaskModal} type="button" className={styles.addBtn}>
+                Select Task
               </Button>
             </div>
             {taskErrorMessage && <div className={styles.teamFormError}>{taskErrorMessage}</div>}
@@ -453,7 +501,7 @@ export default function CreateNewTeam() {
               </div>
               <div className={styles.badgeContainer}>
                 {assignedTasks.map((task, index) => {
-                  const isSelected = selectedTasksForBulk.includes(task);
+                  const isSelected = selectedTasksForBulk.includes(task.id);
                   return (
                     // eslint-disable-next-line react/no-array-index-key
                     <Badge
@@ -466,7 +514,7 @@ export default function CreateNewTeam() {
                       onClick={() => assignedTasks.length > 1 && handleToggleTaskForBulk(task)}
                       style={{ cursor: assignedTasks.length > 1 ? 'pointer' : 'default' }}
                     >
-                      {task}
+                      {task.projectName} / {task.wbsName} / {task.name}
                       <span
                         role="button"
                         tabIndex={0}
@@ -481,7 +529,7 @@ export default function CreateNewTeam() {
                             handleRemoveTask(task);
                           }
                         }}
-                        aria-label={`Remove task ${task}`}
+                        aria-label={`Remove task ${task.name}`}
                       >
                         &times;
                       </span>
