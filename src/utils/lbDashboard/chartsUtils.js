@@ -31,24 +31,27 @@ export function createChartOptions(metric, darkMode) {
       tooltip: {
         enabled: true,
         callbacks: {
-          label: function(context) {
+          label: function (context) {
             return `${context.dataset.label}: ${context.parsed.y}`;
           },
         },
       },
     },
     layout: {
-      padding: 20,
+      padding: { top: 50, right: 60, bottom: 30, left: 10 },
     },
     scales: {
       x: {
         title: { display: true, text: 'Month', color: darkMode ? '#fff' : '#222' },
         offset: true,
+        grid: { color: darkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)' },
+        border: { color: darkMode ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)' },
         ticks: {
-          autoSkip: false,
+          autoSkip: true,
+          maxTicksLimit: 8,
           maxRotation: 45,
-          minRotation: 30,
-          font: { size: 12 },
+          minRotation: 0,
+          font: { size: 11 },
           color: darkMode ? '#fff' : '#222',
         },
       },
@@ -59,6 +62,10 @@ export function createChartOptions(metric, darkMode) {
           color: darkMode ? '#fff' : '#222',
         },
         beginAtZero: true,
+        // Room above the max point so datalabels (align: top) are not clipped at the chart edge
+        grace: '12%',
+        grid: { color: darkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)' },
+        border: { color: darkMode ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)' },
         ticks: { font: { size: 12 }, color: darkMode ? '#fff' : '#222' },
       },
     },

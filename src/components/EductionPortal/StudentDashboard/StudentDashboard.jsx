@@ -156,8 +156,12 @@ const StudentDashboard = () => {
       <Container className={styles.mainContainer}>
         {/* Header */}
         <div className={styles.header}>
-          <h1 className={styles.title}>Student Dashboard</h1>
-          <p className={styles.subtitle}>Track your learning progress and manage your logs</p>
+          <div className={styles.headerContent}>
+            <div className={styles.headerText}>
+              <h1 className={styles.title}>Student Dashboard</h1>
+              <p className={styles.subtitle}>Track your learning progress and manage your logs</p>
+            </div>
+          </div>
         </div>
 
         {/* Summary Cards */}

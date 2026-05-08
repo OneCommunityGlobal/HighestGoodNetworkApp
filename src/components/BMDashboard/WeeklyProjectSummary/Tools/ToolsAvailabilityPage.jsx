@@ -6,7 +6,7 @@ import Select from 'react-select';
 import axios from 'axios';
 import ToolsHorizontalBarChart from './ToolsHorizontalBarChart';
 import { ENDPOINTS } from '../../../../utils/URL';
-import './ToolsAvailabilityPage.css';
+import './ToolsAvailabilityPage.module.css';
 
 function ToolsAvailabilityPage() {
   const darkMode = useSelector(state => state.theme.darkMode);
