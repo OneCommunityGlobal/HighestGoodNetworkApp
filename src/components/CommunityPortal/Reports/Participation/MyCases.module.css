@@ -125,12 +125,6 @@
   cursor: pointer;
 }
 
-.myCasesPageDark .filterDropdown {
-  background-color: #3A506B;
-  color: #ffffff;
-  border: 1px solid #555;
-}
-
 /* Hover and focus effects for the dropdown */
 .filterDropdown:hover,
 .filterDropdown:focus {
@@ -550,7 +544,7 @@
 }
 
 .myCasesPageDark .viewSwitcher button.active {
-  background-color: #007bff;
+  background-color: #0056b3;
   color: #ffffff;
 }
 
