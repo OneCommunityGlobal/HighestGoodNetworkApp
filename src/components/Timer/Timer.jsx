@@ -232,13 +232,9 @@ function Timer({ authUser, darkMode, isPopout }) {
   );
 
   const handleRefreshTimer = useCallback(() => {
-    // Close the existing socket gracefully, then remount by bumping the key
-    try {
-      getWebSocket()?.close();
-    } catch (e) {
-      // ignore if socket is already gone
-    }
+    getWebSocket()?.close();
     setCustomReadyState(ReadyState.CONNECTING);
+    setMessage(defaultMessage);
     setWsKey(k => k + 1);
   }, [getWebSocket]);
 
@@ -662,10 +658,10 @@ function Timer({ authUser, darkMode, isPopout }) {
   }, [weekEndModal]);
 
   useEffect(() => {
-    if (!isInitialJsonMessageReceived) return;
+    if (customReadyState !== ReadyState.OPEN) return; // only request when connected
 
     sendGetTimer();
-  }, [isInitialJsonMessageReceived, viewingUserId]);
+  }, [customReadyState, viewingUserId, wsKey]);
 
   // Enhanced cleanup when viewing user changes
   useEffect(() => {
