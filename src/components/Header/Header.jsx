@@ -430,7 +430,7 @@ export function Header(props) {
             <NavbarToggler onClick={toggle} ref={toggleRef} className={styles.navbarToggler} />
             <div
               ref={collapseRef}
-              className={`${styles.navCollapse} ${isOpen ? styles.navCollapseOpen : styles.navCollapseHidden}`}
+              className={`${styles.navCollapse} ${isOpen ? styles.navCollapseOpen : ''}`}
               role="menu"
               tabIndex={-1}
               onKeyDown={(e) => {
