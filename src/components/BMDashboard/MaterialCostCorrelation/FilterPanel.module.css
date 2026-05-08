@@ -2,17 +2,18 @@
   --filter-panel-bg: #f8f9fa;
   --filter-text: #1a202c;
   --filter-border: #e2e8f0;
-  --input-bg: #ffffff;
+  --input-bg: #fff;
   --input-border: #ced4da;
   --input-text: #1a202c;
   --button-bg: #007bff;
   --button-hover-bg: #0056b3;
-  --button-text: #ffffff;
+  --button-text: #fff;
   --preset-button-bg: #f8f9fa;
   --preset-button-hover-bg: #e9ecef;
   --preset-button-text: #1a202c;
   --reset-button-bg: #dc3545;
   --reset-button-hover-bg: #c82333;
+
   padding: 16px;
   background-color: var(--filter-panel-bg);
   border-radius: 8px;
@@ -30,7 +31,7 @@
   --input-text: #f7fafc;
   --button-bg: #3b82f6;
   --button-hover-bg: #2563eb;
-  --button-text: #ffffff;
+  --button-text: #fff;
   --preset-button-bg: #1e293b;
   --preset-button-hover-bg: #334155;
   --preset-button-text: #f7fafc;
@@ -40,6 +41,7 @@
 
 .filterGrid {
   display: grid;
+
   /* 160 px minimum lets the grid fit 2 columns in a ~380 px card column,
      while still expanding to 4 columns in full-width contexts. */
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -88,13 +90,14 @@
 .datePickerDark:focus {
   outline: none;
   border-color: var(--button-bg);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 10%);
 }
 
 .presetButtons {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
+
   /* Sits below the filter grid as a full-width row */
   margin-top: 12px;
 }
@@ -198,7 +201,7 @@
 
 .controlLight:focus-within {
   border-color: var(--button-bg) !important;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 10%) !important;
 }
 
 .controlDark {
@@ -215,21 +218,21 @@
 
 .controlDark:focus-within {
   border-color: var(--button-bg) !important;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 20%) !important;
 }
 
 .menuLight {
   background-color: var(--input-bg) !important;
   border: 1px solid var(--input-border) !important;
   border-radius: 6px !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%) !important;
 }
 
 .menuDark {
   background-color: var(--input-bg) !important;
   border: 1px solid var(--input-border) !important;
   border-radius: 6px !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 40%) !important;
 }
 
 .optionLight {
@@ -288,7 +291,7 @@
   color: var(--input-text) !important;
   border: 1px solid var(--input-border) !important;
   border-radius: 8px !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%) !important;
   font-family: inherit !important;
 }
 
@@ -343,14 +346,14 @@
 }
 
 /* Responsive Media Queries */
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
   .filterPanel {
     padding: 12px;
     margin-bottom: 8px;
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .filterPanel {
     padding: 10px;
     margin-bottom: 6px;
@@ -366,7 +369,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .filterPanel {
     padding: 8px;
     margin-bottom: 4px;

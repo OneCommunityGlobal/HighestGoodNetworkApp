@@ -1,19 +1,20 @@
 .container {
-  --chart-bg: #ffffff;
+  --chart-bg: #fff;
   --chart-text: #1a202c;
   --chart-border: #e2e8f0;
-  --chart-grid-color: rgba(0, 0, 0, 0.12);
-  --chart-tooltip-bg: rgba(255, 255, 255, 0.95);
+  --chart-grid-color: rgb(0 0 0 / 12%);
+  --chart-tooltip-bg: rgb(255 255 255 / 95%);
   --chart-tooltip-text: #1a202c;
   --chart-legend-color: #1a202c;
-  --chart-axis-color: #333333;
+  --chart-axis-color: #333;
   --filter-panel-bg: #f8f9fa;
   --button-bg: #007bff;
   --button-hover-bg: #0056b3;
-  --button-text: #ffffff;
-  --input-bg: #ffffff;
+  --button-text: #fff;
+  --input-bg: #fff;
   --input-border: #ced4da;
   --input-text: #1a202c;
+
   width: 100%;
   max-width: 1400px;
   min-width: 0; /* allow shrink in flex layouts to prevent horizontal overflow */
@@ -21,7 +22,7 @@
   padding: 12px;
   background-color: var(--chart-bg);
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 8%);
   color: var(--chart-text);
   box-sizing: border-box;
 }
@@ -30,19 +31,20 @@
   --chart-bg: #0f172a;
   --chart-text: #f7fafc;
   --chart-border: #334155;
-  --chart-grid-color: rgba(255, 255, 255, 0.16);
-  --chart-tooltip-bg: rgba(15, 23, 42, 0.95);
+  --chart-grid-color: rgb(255 255 255 / 16%);
+  --chart-tooltip-bg: rgb(15 23 42 / 95%);
   --chart-tooltip-text: #f7fafc;
   --chart-legend-color: #e2e8f0;
   --chart-axis-color: #cbd5e1;
   --filter-panel-bg: #1b2a41;
   --button-bg: #3b82f6;
   --button-hover-bg: #2563eb;
-  --button-text: #ffffff;
+  --button-text: #fff;
   --input-bg: #1e293b;
   --input-border: #475569;
   --input-text: #f7fafc;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+
+  box-shadow: 0 2px 8px rgb(0 0 0 / 40%);
 }
 
 .header {
@@ -99,6 +101,7 @@
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
@@ -198,7 +201,7 @@
 .customTooltip {
   padding: 12px;
   border-radius: 6px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
   border: 1px solid var(--chart-border);
 }
 
@@ -244,7 +247,7 @@
   font-size: 18px;
   font-weight: 600;
   color: var(--chart-text);
-  margin: 0 0 16px 0;
+  margin: 0 0 16px;
 }
 
 .legendContent {
@@ -294,7 +297,7 @@
 }
 
 /* Responsive Media Queries */
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
   .container {
     padding: 8px;
   }
@@ -308,7 +311,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .container {
     padding: 6px;
   }
@@ -338,7 +341,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .container {
     padding: 4px;
   }

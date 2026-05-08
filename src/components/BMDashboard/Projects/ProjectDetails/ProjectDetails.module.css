@@ -87,6 +87,15 @@
   padding: 0;
 }
 
+.darkMode .logBarSection h2 {
+  color: #f1f5f9;
+}
+
+.logBarSection ul {
+  list-style-type: none;
+  padding: 0;
+}
+
 /* Buttons */
 .button.btn {
   border: 0;
@@ -101,6 +110,13 @@
 .button.btn:hover {
   outline: auto;
   filter: brightness(130%);
+}
+
+/* LIGHT MODE hover */
+.buttonBtn:hover {
+  color: #fff; /* prevent blue text */
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 45%); /* prevent underline */
 }
 
 /* Button colors */
@@ -130,7 +146,36 @@
     margin-top: -0.5em;
     display: flex;
     justify-content: center;
-    gap:5px;
+    gap: 5px;
+  }
+
+  .button.btn {
+    width: auto;
+  }
+}
+
+.darkMode .blue {
+  background-color: #0b4c6a;
+}
+
+.darkMode .indigo {
+  background-color: #1b2f44;
+}
+
+.darkMode .maroon {
+  background-color: #7a0101;
+}
+
+@media (width >= 550px) {
+  .logBar {
+    flex-direction: column;
+  }
+
+  .logBarBtnGroup {
+    margin-top: -0.5em;
+    display: flex;
+    justify-content: center;
+    gap: 5px;
   }
 
   .button.btn {
@@ -144,11 +189,15 @@
     justify-content: center;
   }
 
+  .logBar {
+    flex-flow: row wrap;
+    justify-content: center;
+  }
+
   .logBarSection {
     width: 50%;
     flex: auto;
   }
-
 }
 
 /* =========================================
@@ -355,7 +404,6 @@
   }
 }
 
-
 @media (width <= 575px) {
   .singleCard {
     width: 90%;
@@ -428,7 +476,51 @@
   }
 }
 
+@media (width <= 768px) {
+  .projectLog td,
+  .projectLog th {
+    font-size: 0.6em;
+  }
+}
+
 ul.log-bar__btn-group {
-  gap:5px;
+  gap: 5px;
   padding: 0;
+}
+
+ul.logBarBtnGroup {
+  padding: 5px;
+} /* Row containing the RentedTools and Materials columns */
+
+/* Each column within the cardsRow */
+.cardsRow {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between; /* spread out columns */
+  gap: 1.5em;
+  margin-top: 2em;
+}
+
+.cardsCol {
+  flex: 1 1 45%; /* occupy roughly half of the row */
+  min-width: 350px; /* don't shrink too small */
+}
+
+/* Optional wrapper for padding/background */
+.cardsCol > * {
+  padding: 1em;
+  border-radius: 8px;
+  background-color: #f9fafb;
+}
+
+.darkMode .cardsCol > * {
+  background-color: #4b5563;
+  color: #e5e7eb;
+}
+
+@media (width <= 992px) {
+  .cardsCol {
+    flex: 1 1 100%; /* stack on smaller screens */
+    min-width: unset;
+  }
 }
