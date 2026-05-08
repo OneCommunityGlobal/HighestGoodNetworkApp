@@ -346,12 +346,8 @@
 .radioRow {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-top: 10px;
-}
-
-.radioRow {
   gap: 16px;
+  margin-top: 10px;
   align-items: center;
 }
 
