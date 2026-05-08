@@ -105,23 +105,20 @@ function ActivityList() {
   }, [activities]);
 
   const filteredActivities = activities
-  .filter(activity => showPastEvents || activity._dateObj >= startOfToday)
-  .filter(activity => {
-    return (
-      (!filter.type || fuzzySearch(activity.type, filter.type, 0.5)) &&
-      (!filter.date || activity.date === filter.date) &&
-      (!filter.location ||
-        fuzzySearch(activity.location, filter.location, 0.5))
-    );
-  })
-  .sort((a, b) => {
-    const dateA = new Date(a.date);
-    const dateB = new Date(b.date);
+    .filter(activity => showPastEvents || activity._dateObj >= startOfToday)
+    .filter(activity => {
+      return (
+        (!filter.type || fuzzySearch(activity.type, filter.type, 0.5)) &&
+        (!filter.date || activity.date === filter.date) &&
+        (!filter.location || fuzzySearch(activity.location, filter.location, 0.5))
+      );
+    })
+    .sort((a, b) => {
+      const dateA = new Date(a.date);
+      const dateB = new Date(b.date);
 
-    return sortOrder === 'earliest'
-      ? dateA - dateB
-      : dateB - dateA;
-  });
+      return sortOrder === 'earliest' ? dateA - dateB : dateB - dateA;
+    });
 
   return (
     <div
