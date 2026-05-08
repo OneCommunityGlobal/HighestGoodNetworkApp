@@ -60,6 +60,26 @@ const MOCK_AVAILABLE_DATES = [
   new Date(2026, 5, 12),
 ];
 
+const formatDateOnly = value => {
+  if (!value) return '';
+  const d = new Date(value);
+  return d.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: '2-digit',
+  });
+};
+
+const formatTimeOnly = value => {
+  if (!value) return '';
+  const d = new Date(value);
+  return d.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+  });
+};
+
 function Register() {
   const { activityId } = useParams();
 
@@ -115,8 +135,8 @@ function Register() {
         const normalized = {
           id: raw.id,
           name: raw.title || raw.name,
-          date: raw.date,
-          time: raw.time || raw.startTime,
+          date: formatDateOnly(raw.date || raw.startDate),
+          time: formatTimeOnly(raw.time || raw.startTime || raw.date),
           location: raw.location || raw.venue,
           organizer: raw.organizer,
           capacity: Number(raw.capacity ?? 0),
