@@ -1,7 +1,41 @@
 /* =========================
-   SHARE BUTTON
+   THEME VARIABLES
 ========================= */
+.overlay {
+  --bg-modal: #fff;
+  --bg-preview: #f8fafc;
+  --bg-input: #fff;
+  --text-main: #1f2937;
+  --text-muted: #475569;
+  --border-color: #e2e8f0;
+  --btn-secondary: #e5e7eb;
+  --overlay-color: rgb(0 0 0 / 60%);
 
+  position: fixed;
+  inset: 0;
+  background: var(--overlay-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999999;
+  padding: 20px;
+}
+
+/* Dark Mode Overrides */
+.overlay.darkMode {
+  --bg-modal: #111827;
+  --bg-preview: #1f2937;
+  --bg-input: #1f2937;
+  --text-main: #f9fafb;
+  --text-muted: #cbd5e1;
+  --border-color: #374151;
+  --btn-secondary: #374151;
+  --overlay-color: rgb(0 0 0 / 85%);
+}
+
+/* =========================
+   SHARE BUTTON (Main Trigger)
+========================= */
 .shareButton {
   background: #0029e2;
   color: #fff;
@@ -15,57 +49,21 @@
   align-items: center;
   gap: 8px;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgb(102 126 234 / 30%);
+  box-shadow: 0 4px 12px rgb(0 41 226 / 30%);
   margin-top: 10px;
 }
 
 .shareButton:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgb(102 126 234 / 40%);
-}
-
-.shareButton:active {
-  transform: translateY(0);
-}
-
-.shareButtonDark {
-  background: #0029e2;
-  box-shadow: 0 4px 12px rgb(102 126 234 / 20%);
-}
-
-.shareIcon {
-  font-size: 16px;
-}
-
-/* =========================
-   GLOBAL MODAL FIX
-========================= */
-
-body.modalOpen {
-  overflow: hidden;
-}
-
-/* =========================
-   OVERLAY
-========================= */
-
-.overlay {
-  position: fixed;
-  inset: 0;
-  background: rgb(0 0 0 / 60%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 999999;
-  padding: 20px;
+  box-shadow: 0 6px 16px rgb(0 41 226 / 40%);
 }
 
 /* =========================
    MODAL CONTAINER
 ========================= */
-
 .modal {
-  background-color: #fff;
+  background-color: var(--bg-modal);
+  color: var(--text-main);
   border-radius: 16px;
   width: 100%;
   max-width: 520px;
@@ -89,24 +87,18 @@ body.modalOpen {
   }
 }
 
-/* =========================
-   HEADER
-========================= */
-
 .modalHeader {
   padding: 20px;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--border-color);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
 }
 
 .modalTitle {
   margin: 0;
   font-size: 18px;
   font-weight: 700;
-  color: #1f2937;
 }
 
 .closeButton {
@@ -114,17 +106,16 @@ body.modalOpen {
   border: none;
   cursor: pointer;
   font-size: 22px;
-  color: #6b7280;
+  color: var(--text-muted);
 }
 
 /* =========================
    EVENT PREVIEW
 ========================= */
-
 .eventPreview {
   padding: 16px 20px;
-  background: #f8fafc;
-  border-bottom: 1px solid #e2e8f0;
+  background: var(--bg-preview);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .previewDetails {
@@ -132,20 +123,20 @@ body.modalOpen {
   flex-direction: column;
   gap: 6px;
   font-size: 14px;
-  color: #475569;
+  color: var(--text-muted);
+}
+
+.spotsBadge {
+  font-weight: 700;
+  color: #0029e2;
 }
 
 /* =========================
-   CONTENT
+   CONTENT & OPTIONS
 ========================= */
-
 .shareContent {
   padding: 20px;
 }
-
-/* =========================
-   OPTIONS GRID
-========================= */
 
 .shareOptions {
   display: grid;
@@ -156,95 +147,63 @@ body.modalOpen {
 
 .shareOption {
   padding: 14px;
-  border: 2px solid #e2e8f0;
+  border: 2px solid var(--border-color);
   border-radius: 10px;
   cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 6px;
-  text-align: center;
-  transition: 0.2s ease;
-  background: #fff;
+  background: var(--bg-modal);
   font-size: 13px;
   font-weight: 500;
-  color: #475569;
+  color: var(--text-muted);
+  transition: 0.2s ease;
 }
 
-.shareOption:hover {
+.shareOption:hover, .shareOptionActive {
   border-color: #667eea;
   background: #f3f0ff;
   color: #667eea;
 }
 
-/* =========================
-   INPUTS
-========================= */
-
-.urlContainer {
-  display: flex;
-  gap: 8px;
-}
-
-.urlInput {
-  flex: 1;
-  padding: 10px;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  font-size: 12px;
-  font-family: monospace;
+.darkMode .shareOption:hover, .darkMode .shareOptionActive {
+  background: #1e1b4b;
+  border-color: #6366f1;
+  color: #c7d2fe;
 }
 
 /* =========================
-   TEXTAREA
+   INPUTS & BUTTONS
 ========================= */
-
-.textArea {
-  width: 100%;
-  min-height: 120px;
-  padding: 12px;
-  margin-bottom: 12px;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  font-family: monospace;
-  font-size: 12px;
-  resize: vertical;
-}
-
-/* =========================
-   EMAIL INPUT
-========================= */
-
-.emailInput {
+.urlInput, .textArea, .emailInput {
   width: 100%;
   padding: 12px;
-  border: 1px solid #e2e8f0;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
   border-radius: 6px;
   font-size: 14px;
 }
 
-/* =========================
-   BUTTONS
-========================= */
+.textArea {
+  min-height: 100px;
+  font-family: monospace;
+  font-size: 12px;
+  margin-bottom: 12px;
+}
 
 .copyButton {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   background: #667eea;
   color: #fff;
   border: none;
   border-radius: 6px;
   cursor: pointer;
   font-weight: 600;
+  margin-top: 10px;
 }
-
-.copyButton:hover {
-  background: #5568d3;
-}
-
-/* =========================
-   SOCIAL BUTTONS
-========================= */
 
 .socialButtons {
   display: grid;
@@ -261,57 +220,70 @@ body.modalOpen {
   font-weight: 600;
 }
 
-.socialButton.twitter {
-  background: #1da1f2;
-}
-
-.socialButton.facebook {
-  background: #1877f2;
-}
-
-.socialButton.linkedin {
-  background: #0a66c2;
-}
-
-.socialButton.whatsapp {
-  background: #25d366;
-}
+.twitter { background: #1da1f2; }
+.facebook { background: #1877f2; }
+.linkedin { background: #0a66c2; }
+.whatsapp { background: #25d366; }
 
 /* =========================
    FOOTER
 ========================= */
-
 .modalFooter {
   padding: 16px 20px;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid var(--border-color);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
+}
+
+.disclaimer {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 0;
+  max-width: 70%;
 }
 
 .closeModalButton {
   padding: 10px 16px;
   border: none;
-  background: #e5e7eb;
+  background: var(--btn-secondary);
+  color: var(--text-main);
   border-radius: 6px;
   cursor: pointer;
 }
 
-/* =========================
-   RESPONSIVE
-========================= */
+/* Messages */
+.shareMessage {
+  margin-top: 15px;
+  padding: 10px;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 13px;
+}
+
+.shareMessageSuccess { 
+  background: #dcfce7; 
+  color: #166534; 
+}
+
+.shareMessageError { 
+  background: #fee2e2; 
+  color: #991b1b; 
+}
 
 @media (width <= 640px) {
-  .shareOptions {
-    grid-template-columns: 1fr;
-  }
-
+  .shareOptions,
   .socialButtons {
     grid-template-columns: 1fr;
   }
 
   .modalFooter {
     flex-direction: column;
+    text-align: center;
+  }
+
+  .disclaimer {
+    max-width: 100%;
+    margin-bottom: 10px;
   }
 }

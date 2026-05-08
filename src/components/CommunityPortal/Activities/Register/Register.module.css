@@ -2,254 +2,205 @@
    BASE LAYOUT
 ========================= */
 
-.mainContainer {
+.main-container {
   width: 100%;
   min-height: 100vh;
-  padding: 40px 0;
+  padding: 20px 0;
   background-color: #f9f9f9;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.mainContainerDark {
-  background-color: #0f172a;
-  color: #fff;
-}
-
-.contentWrapper {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
+/* GLOBAL DARK MODE WRAPPER (IMPORTANT FIX) */
+.dark-mode {
+  background-color: #1e2a3a;
+  color: #e0e0e0;
 }
 
 /* =========================
-   PAGE LAYOUT
+   REGISTER LAYOUT
 ========================= */
 
-.eventPage {
-  width: 100%;
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 32px 20px 48px;
+.register-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px;
+  gap: 20px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+/* FIX: ensure dark mode applies everywhere inside */
+.dark-mode .register-container {
+  background-color: transparent;
+  color: #e0e0e0;
+}
+
+/* =========================
+   COLUMNS
+========================= */
+
+.left-column,
+.middle-column,
+.right-column {
+  flex: 1;
+  min-width: 300px;
+}
+
+/* LEFT */
+.left-column {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  align-items: center;
+  gap: 10px;
 }
 
-/* =========================
-   HERO SECTION
-========================= */
-
-.heroSection {
-  display: grid;
-  grid-template-columns: 420px 1fr;
-  gap: 28px;
-  align-items: stretch;
-}
-
-.heroImageWrapper {
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 10px 30px rgb(15 23 42 / 8%);
-}
-
-.heroImage {
+.event-image {
   width: 100%;
-  height: 100%;
-  min-height: 320px;
+  max-width: 450px;
+  border-radius: 8px;
   object-fit: cover;
-  display: block;
+  box-shadow: 0 4px 8px rgb(0 0 0 / 20%);
 }
 
-.heroContent {
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 20px;
-  padding: 28px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.mainContainerDark .heroContent {
-  background: #111827;
-  border-color: #1f2937;
-}
-
-/* =========================
-   TYPOGRAPHY
-========================= */
-
-.eventTitle {
-  font-size: 2rem;
-  font-weight: 800;
-  margin: 0;
-}
-
-.eventDescription {
-  color: #4b5563;
-  line-height: 1.6;
-}
-
-.mainContainerDark .eventDescription {
-  color: #d1d5db;
-}
-
-/* =========================
-   META GRID
-========================= */
-
-.metaGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-.metaGrid > div {
-  padding: 12px;
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  font-size: 14px;
-}
-
-.mainContainerDark .metaGrid > div {
-  background: #0f172a;
-  border-color: #1f2937;
+/* MIDDLE */
+.middle-column h1 {
+  font-size: 1.8rem;
+  margin-bottom: 12px;
 }
 
 /* =========================
    BUTTONS
 ========================= */
 
-.heroActions {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.registerButton {
-  background-color: #007bff;
-  color: #fff;
-  padding: 12px 20px;
+.register-button {
+  background-color: #06c;
+  color: white;
+  padding: 10px 20px;
   border: none;
-  border-radius: 10px;
+  border-radius: 4px;
   cursor: pointer;
-  font-weight: 600;
-  transition: 0.2s ease;
+  margin-top: 15px;
 }
 
-/* FIX: selector order (no-descending-specificity) */
-.registerButton:disabled {
+.register-button:disabled {
   background-color: #6c757d;
   cursor: not-allowed;
-  opacity: 0.7;
 }
 
-.registerButton:hover:not(:disabled) {
-  background-color: #0056b3;
+/* SHARE BUTTON */
+.share-button {
+  margin-top: 8px;
+  padding: 8px 16px;
+  border: 1px solid #ccc;
+  background: #f3f4f6;
+  cursor: pointer;
+  border-radius: 4px;
 }
 
-/* =========================
-   CONTENT SECTION
-========================= */
-
-.contentSection {
-  display: grid;
-  grid-template-columns: 1fr 320px;
-  gap: 24px;
-  align-items: start;
-}
-
-.mainContent {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.sidebar {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  position: sticky;
-  top: 24px;
-}
-
-/* =========================
-   CARDS
-========================= */
-
-.infoCard,
-.sideCard {
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 16px;
-  padding: 20px;
-}
-
-.mainContainerDark .infoCard,
-.mainContainerDark .sideCard {
-  background: #111827;
-  border-color: #1f2937;
-}
-
-/* =========================
-   DESCRIPTION
-========================= */
-
-.descriptionSection {
-  margin-top: 20px;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 8%);
-  overflow: hidden;
-}
-
-.mainContainerDark .descriptionSection {
-  background: #0f172a;
-}
-
-/* =========================
-   STATUS
-========================= */
-
-.statusText {
-  font-weight: 600;
-  color: #374151;
-}
-
-.mainContainerDark .statusText {
+/* DARK MODE SHARE */
+.dark-mode .share-button {
+  background: #3d4f62;
   color: #e5e7eb;
+  border-color: #4b5563;
+}
+
+/* =========================
+   CALENDAR
+========================= */
+
+.calendarContainer {
+  margin-top: 20px;
+  width: 100%;
+  max-width: 400px;
+}
+
+/* BASE CALENDAR */
+.calendarContainer :global(.react-calendar) {
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: white;
+  transition: all 0.3s ease;
+}
+
+/* DARK MODE FIX */
+.dark-mode :global(.react-calendar) {
+  background: #1e2a3a !important;
+  color: #e0e0e0 !important;
+  border-color: #3a4a5c !important;
+}
+
+.dark-mode :global(.react-calendar__tile) {
+  color: #e0e0e0;
+}
+
+.dark-mode :global(.react-calendar__navigation button) {
+  background: #2c3e50;
+  color: #e0e0e0;
+}
+
+/* TILE BASE */
+.calendarContainer :global(.react-calendar__tile) {
+  position: relative;
+}
+
+/* BOOKED / AVAILABLE */
+.booked-indicator {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  color: #d32f2f;
+}
+
+.available-indicator {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  color: #2e7d32;
+}
+
+/* DARK INDICATORS */
+.dark-mode .available-indicator {
+  color: #81c784;
+}
+
+.dark-mode .booked-indicator {
+  color: #ff6b6b;
+}
+
+/* =========================
+   FEEDBACK
+========================= */
+
+.feedback-message {
+  margin-top: 15px;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+.feedback-message.success {
+  background: #e6ffe6;
+  color: #1b5e20;
+}
+
+.feedback-message.error {
+  background: #ffe6e6;
+  color: #c62828;
 }
 
 /* =========================
    RESPONSIVE
 ========================= */
 
-@media (width <= 1024px) {
-  .heroSection {
-    grid-template-columns: 1fr;
-  }
-
-  .contentSection {
-    grid-template-columns: 1fr;
-  }
-
-  .sidebar {
-    position: static;
+@media (width <= 1200px) {
+  .register-container {
+    flex-direction: column;
   }
 }
 
-@media (width <= 640px) {
-  .metaGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .heroActions {
-    flex-direction: column;
-  }
-
-  .registerButton,
-  .secondaryButton {
-    width: 100%;
+@media (width <= 768px) {
+  .middle-column h1 {
+    font-size: 1.5rem;
   }
 }

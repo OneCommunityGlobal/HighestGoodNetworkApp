@@ -1,32 +1,42 @@
-export const generateShareContent = (activity, availability, activityId) => {
+export const generateShareContent = (activity = {}, availability = 0, activityId) => {
   const baseUrl = window.location.origin;
   const eventPath = `/communityportal/Activities/Register/${activityId}`;
   const shareUrl = `${baseUrl}${eventPath}`;
 
-  const title = `Check Out: ${activity.name}`;
-  const eventDetails = `Event: ${activity.name}
-                        Date: ${activity.date}
-                        Time: ${activity.time}
-                        Location: ${activity.location || 'Not Specified'}
-                        Organizer: ${activity.organizer || 'Not Specified'}
-                        Available Spots: ${availability}
-                        Rating: ${activity.rating || 'Not Rated'}/5
-                        ${activity.description || ''}
+  const name = activity.name ?? 'Untitled Event';
+  const date = activity.date ?? 'Not specified';
+  const time = activity.time ?? activity.startTime ?? 'Not specified';
+  const location = activity.location ?? activity.venue ?? 'Not specified';
+  const organizer = activity.organizer ?? 'Not specified';
+  const rating = activity.rating ?? 'Not rated';
+  const description = activity.description ?? '';
 
-                        Register here: ${shareUrl}`;
+  const title = `Check Out: ${name}`;
 
-  const socialText = `Join me at "${activity.name}"!\n ${activity.date} at ${activity.time}\n ${activity.location || 'Not specified'}\n ${availability} spots available\n\nLink: ${shareUrl}`;       
-  
+  const eventDetails = `Event: ${name}
+Date: ${date}
+Time: ${time}
+Location: ${location}
+Organizer: ${organizer}
+Available Spots: ${Number.isFinite(Number(availability)) ? availability : 0}
+Rating: ${rating}/5
+
+${description}
+
+Register here: ${shareUrl}`;
+
+  const socialText = `Join me at "${name}"!\n${date} at ${time}\n${location}\n${availability ?? 0} spots available\n\nLink: ${shareUrl}`;
+
   return {
     title,
     shareUrl,
     fullText: eventDetails,
     socialText,
-    eventName: activity.name,
-    eventDate: activity.date,
-    eventTime: activity.time,
-    eventLocation: activity.location,
-    availableSpots: availability,
+    eventName: name,
+    eventDate: date,
+    eventTime: time,
+    eventLocation: location,
+    availableSpots: availability ?? 0,
   };
 };
 

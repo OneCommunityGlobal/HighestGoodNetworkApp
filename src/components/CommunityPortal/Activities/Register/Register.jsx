@@ -2,38 +2,63 @@ import { useState, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
 import axios from 'axios';
+
 import styles from './Register.module.css';
 import { ENDPOINTS } from '../../../../utils/URL';
+
 import EventDescription from './EventDescription';
 import ShareAvailability from './ShareAvailability';
 
-// Optional helpers (kept from development branch)
-function isTomorrow(dateString) {
-  const input = new Date(dateString);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const tomorrow = new Date(today);
-  tomorrow.setDate(today.getDate() + 1);
-  return input >= tomorrow && input < new Date(tomorrow.getTime() + 24 * 60 * 60 * 1000);
-}
+const MOCK_ACTIVITIES = [
+  {
+    id: 1,
+    name: 'Yoga Class',
+    rating: 4,
+    type: 'Fitness',
+    date: '03-10-2025',
+    time: '10:00 AM',
+    organizer: 'Alex Brian',
+    location: 'Community Center',
+    capacity: 10,
+    image: 'https://cdn.pixabay.com/photo/2024/06/21/07/46/yoga-8843808_1280.jpg',
+    description: 'A relaxing yoga session to improve flexibility and mindfulness.',
+  },
+  {
+    id: 2,
+    name: 'Book Club',
+    rating: 5,
+    type: 'Social',
+    date: '03-15-2025',
+    time: '5:00 PM',
+    organizer: 'Bob',
+    location: 'Library',
+    capacity: 5,
+    image: 'https://cdn.pixabay.com/photo/2019/01/30/08/30/book-3964050_1280.jpg',
+    description: 'A book club discussion on the latest bestsellers.',
+  },
+];
 
-function isComingWeekend(dateString) {
-  const input = new Date(dateString);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const day = today.getDay();
-  const daysUntilSaturday = (6 - day + 7) % 7 || 7;
-  const saturday = new Date(today);
-  saturday.setDate(today.getDate() + daysUntilSaturday);
-  const sunday = new Date(saturday);
-  sunday.setDate(saturday.getDate() + 1);
-  sunday.setHours(23, 59, 59, 999);
-  return input >= saturday && input <= sunday;
-}
+const MOCK_BOOKED_DATES = [
+  new Date(2025, 11, 15),
+  new Date(2025, 11, 20),
+  new Date(2025, 11, 25),
+  new Date(2026, 0, 5),
+];
+
+const MOCK_AVAILABLE_DATES = [
+  new Date(2026, 4, 10),
+  new Date(2026, 4, 15),
+  new Date(2026, 4, 22),
+  new Date(2026, 5, 5),
+  new Date(2026, 5, 12),
+];
 
 function Register() {
   const { activityId } = useParams();
+
   const darkMode = useSelector(state => state.theme?.darkMode);
   const userProfile = useSelector(state => state.userProfile);
   const authUser = useSelector(state => state.auth?.user);
@@ -42,53 +67,60 @@ function Register() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const [activityDate, setActivityDate] = useState('');
-  const [activityStartTime, setActivityStartTime] = useState('');
-  const [activityEndTime, setActivityEndTime] = useState('');
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
   const [availability, setAvailability] = useState(0);
   const [isRegistering, setIsRegistering] = useState(false);
   const [registrants, setRegistrants] = useState([]);
 
+  // ✅ ONLY STATE FOR SHARE MODAL
+  const [isShareOpen, setIsShareOpen] = useState(false);
+
   const storageKey = useMemo(() => `activity-${activityId}-registrants`, [activityId]);
 
-  // Decode token safely
-  const tokenPayload = useMemo(() => {
-    try {
-      const token = window.localStorage.getItem('token');
-      if (!token) return null;
-      const segment = token.split('.')[1];
-      const decoded = window.atob(segment);
-      return JSON.parse(decoded);
-    } catch {
-      return null;
-    }
-  }, []);
-
-  // Load registrants
   useEffect(() => {
     try {
-      const stored = localStorage.getItem(storageKey);
-      setRegistrants(stored ? JSON.parse(stored) : []);
+      const stored = globalThis.localStorage.getItem(storageKey);
+      const parsed = stored ? JSON.parse(stored) : [];
+      setRegistrants(Array.isArray(parsed) ? parsed : []);
     } catch {
       setRegistrants([]);
     }
   }, [storageKey]);
 
-  // Save registrants
   useEffect(() => {
-    localStorage.setItem(storageKey, JSON.stringify(registrants));
+    try {
+      globalThis.localStorage.setItem(storageKey, JSON.stringify(registrants));
+    } catch {}
   }, [registrants, storageKey]);
 
-  // Fetch activity
   useEffect(() => {
     const fetchActivity = async () => {
+      setLoading(true);
+      setError(null);
+
       try {
-        setLoading(true);
         const res = await axios.get(ENDPOINTS.EVENTS_BY_ID(activityId));
-        setActivity(res.data);
+        const raw = res.data;
+
+        const normalized = {
+          id: raw.id,
+          name: raw.title || raw.name,
+          date: raw.date,
+          time: raw.time || raw.startTime,
+          location: raw.location || raw.venue,
+          organizer: raw.organizer,
+          capacity: Number(raw.capacity ?? 0),
+          rating: raw.rating,
+          description: raw.description,
+          image: raw.coverImage || raw.image,
+        };
+
+        setActivity(normalized);
       } catch {
-        setError('Failed to load activity');
+        const mock = MOCK_ACTIVITIES.find(a => a.id === Number(activityId));
+        if (mock) setActivity(mock);
+        else setError('Activity not found');
       } finally {
         setLoading(false);
       }
@@ -97,153 +129,120 @@ function Register() {
     fetchActivity();
   }, [activityId]);
 
-  // Format date/time
   useEffect(() => {
     if (!activity) return;
 
-    const start = new Date(activity.startTime);
-    const end = new Date(activity.endTime);
+    const capacity = Number(activity.capacity ?? 0);
+    const used = registrants.length;
 
-    setActivityDate(start.toLocaleDateString());
-    setActivityStartTime(start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-    setActivityEndTime(end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-  }, [activity]);
-
-  // Availability
-  useEffect(() => {
-    if (!activity) return;
-    const remaining = activity.maxAttendees - activity.currentAttendees;
-    setAvailability(remaining > 0 ? remaining : 0);
+    setAvailability(Math.max(0, capacity - used));
   }, [activity, registrants]);
 
-  const resolveUserName = () =>
-    userProfile?.firstName
-      ? `${userProfile.firstName} ${userProfile.lastName || ''}`
-      : authUser?.email || 'Participant';
+  const isDateBooked = date =>
+    MOCK_BOOKED_DATES.some(
+      d =>
+        d.getDate() === date.getDate() &&
+        d.getMonth() === date.getMonth() &&
+        d.getFullYear() === date.getFullYear(),
+    );
 
-  const isAlreadyRegistered = useMemo(() => {
-    const name = resolveUserName();
-    return registrants.some(r => r.name === name);
-  }, [registrants]);
+  const isDateAvailable = date =>
+    MOCK_AVAILABLE_DATES.some(
+      d =>
+        d.getDate() === date.getDate() &&
+        d.getMonth() === date.getMonth() &&
+        d.getFullYear() === date.getFullYear(),
+    );
+
+  const tileClassName = ({ date, view }) => {
+    if (view !== 'month') return null;
+    if (isDateBooked(date)) return 'booked-date';
+    if (isDateAvailable(date)) return 'available-date';
+    return null;
+  };
+
+  const tileContent = ({ date, view }) => {
+    if (view !== 'month') return null;
+    if (isDateBooked(date)) return <div className={styles['booked-indicator']}>●</div>;
+    if (isDateAvailable(date)) return <div className={styles['available-indicator']}>●</div>;
+    return null;
+  };
+
+  const resolveUserName = () => {
+    const first = userProfile?.firstName || authUser?.firstName;
+    const last = userProfile?.lastName || authUser?.lastName;
+    if (first && last) return `${first} ${last}`;
+    return authUser?.email || 'Participant';
+  };
 
   const handleRegister = async () => {
     if (availability === 0) return toast.error('No spots available');
-    if (isAlreadyRegistered) return toast.error('Already registered');
 
     setIsRegistering(true);
 
     setTimeout(() => {
       setRegistrants(prev => [
         ...prev,
-        {
-          name: resolveUserName(),
-          registeredAt: new Date().toISOString(),
-        },
+        { name: resolveUserName(), registeredAt: new Date().toISOString() },
       ]);
       toast.success('Registered!');
       setIsRegistering(false);
     }, 1000);
   };
 
-  const handleShareAvailability = async () => {
-    try {
-      if (navigator.share) {
-        await navigator.share({
-          title: activity.title,
-          text: `Join me for ${activity.title}`,
-          url: window.location.href,
-        });
-      } else {
-        toast.info('Sharing not supported');
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  // ✅ SHARE = ONLY YOUR COMPONENT CONTROL
+  const openShareModal = () => setIsShareOpen(true);
+  const closeShareModal = () => setIsShareOpen(false);
 
-  // Loading
-  if (loading) {
-    return <div className={styles.mainContainer}>Loading...</div>;
-  }
+  if (loading) return <div className={styles.mainContainer}>Loading...</div>;
+  if (error || !activity) return <div className={styles.mainContainer}>Activity not found</div>;
 
-  // Error
-  if (error || !activity) {
-    return <div className={styles.mainContainer}>Activity not found</div>;
-  }
+  const displayTitle = activity.title || activity.name;
+  const displayImage = activity.coverImage || activity.image;
 
   return (
-    <div className={`${styles.mainContainer} ${darkMode ? styles.mainContainerDark : ''}`}>
-      <div className={styles.contentWrapper}>
-        <div className={styles.eventPage}>
-          {/* HERO */}
-          <section className={styles.heroSection}>
-            <div className={styles.heroImageWrapper}>
-              <img src={activity.coverImage} alt={activity.title} className={styles.heroImage} />
-            </div>
+    <div className={`${styles['main-container']} ${darkMode ? styles['dark-mode'] : ''}`}>
+      <div className={styles['register-container']}>
+        {/* LEFT */}
+        <div className={styles['left-column']}>
+          <img src={displayImage} alt={displayTitle} className={styles['event-image']} />
 
-            <div className={styles.heroContent}>
-              <h1 className={styles.eventTitle}>{activity.title}</h1>
+          <button
+            className={styles['register-button']}
+            onClick={handleRegister}
+            disabled={availability === 0 || isRegistering}
+          >
+            {isRegistering ? 'Registering...' : 'Register'}
+          </button>
 
-              <p className={styles.eventDescription}>{activity.description}</p>
+          <ShareAvailability
+            activity={activity}
+            availability={availability}
+            activityId={activityId}
+            onClose={closeShareModal}
+          />
+        </div>
 
-              <div className={styles.metaGrid}>
-                <div>{activityDate}</div>
-                <div>
-                  {activityStartTime} - {activityEndTime}
-                </div>
-              </div>
+        {/* MIDDLE */}
+        <div className={styles['middle-column']}>
+          <h1>{displayTitle}</h1>
+          <p>{activity.description}</p>
+        </div>
 
-              <div className={styles.heroActions}>
-                <button
-                  className={styles.registerButton}
-                  onClick={handleRegister}
-                  disabled={isAlreadyRegistered || availability === 0}
-                >
-                  {isAlreadyRegistered ? 'Registered' : 'Register'}
-                </button>
-              </div>
-
-              <p className={styles.statusText}>{availability} spots left</p>
-            </div>
-          </section>
-
-          {/* MAIN CONTENT */}
-          <section className={styles.contentSection}>
-            <div className={styles.mainContent}>
-              <div className={styles.infoCard}>
-                <h2>About</h2>
-                <p>{activity.description}</p>
-              </div>
-
-              <div className={styles.infoCard}>
-                <h2>Details</h2>
-                <p>Location: {activity.location}</p>
-                <p>Organizer: {activity.organizer}</p>
-              </div>
-            </div>
-
-            {/* SIDEBAR */}
-            <aside className={styles.sidebar}>
-              <div className={styles.sideCard}>
-                <p>Attendees: {activity.currentAttendees}</p>
-                <p>Max: {activity.maxAttendees}</p>
-                <p>Left: {availability}</p>
-              </div>
-
-              <ShareAvailability
-                activity={activity}
-                availability={availability}
-                activityId={activityId}
-              />
-            </aside>
-          </section>
-
-          {/* DESCRIPTION */}
-          <div className={styles.descriptionSection}>
-            <EventDescription activity={activity} registrants={registrants} />
+        {/* RIGHT */}
+        <div className={styles['right-column']}>
+          <div className={styles.calendarContainer}>
+            <Calendar
+              onChange={setSelectedDate}
+              value={selectedDate}
+              tileClassName={tileClassName}
+              tileContent={tileContent}
+            />
           </div>
         </div>
       </div>
+
+      <EventDescription activity={activity} registrants={registrants} />
     </div>
   );
 }
