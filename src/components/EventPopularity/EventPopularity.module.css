@@ -346,30 +346,36 @@
 }
 
 .epChartTooltip {
-  padding: 8px;
-  font-size: 12px;
+  background: rgba(17, 24, 39, 0.96);
+  color: #fff;
+  padding: 10px 12px;
+  border-radius: 10px;
+  min-width: 140px;
 }
 
 .epTooltipTime {
-  margin: 0 0 4px 0;
-  font-weight: bold;
-  color: var(--ep-text-color);
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: #fff;
 }
 
 .epTooltipRegistered {
-  margin: 2px 0;
-  color: var(--ep-primary);
+  font-size: 13px;
+  margin-bottom: 4px;
+  color: #dbeafe;
 }
 
 .epTooltipAttended {
-  margin: 2px 0;
-  color: var(--ep-primary-2);
+  font-size: 13px;
+  margin-bottom: 6px;
+  color: #bfdbfe;
 }
 
 .epTooltipHint {
-  margin: 4px 0 0 0;
-  color: var(--ep-text-light);
-  font-size: 11px;
+  font-size: 12px;
+  opacity: 0.8;
+  color: #93c5fd;
 }
 
 /* Participation Cards */

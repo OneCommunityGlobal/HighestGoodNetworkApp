@@ -16,12 +16,48 @@ import styles from './EventPopularity.module.css';
 
 // Sample data
 const eventTypeData = [
-  { name: 'Community Volunteer Day', registered: 75, attended: 65, id: 1 },
-  { name: 'Skill Development Workshop', registered: 60, attended: 52, id: 2 },
-  { name: 'Networking Mixer', registered: 55, attended: 48, id: 3 },
-  { name: 'Environmental Cleanup', registered: 50, attended: 42, id: 4 },
-  { name: 'Youth Membership Program', registered: 45, attended: 38, id: 5 },
-  { name: 'Cultural Exchange Event', registered: 40, attended: 32, id: 6 },
+  {
+    name: 'Community Volunteer Day',
+    registered: 75,
+    attended: 65,
+    id: 1,
+    date: '2026-05-01',
+  },
+  {
+    name: 'Skill Development Workshop',
+    registered: 60,
+    attended: 52,
+    id: 2,
+    date: '2026-05-03',
+  },
+  {
+    name: 'Networking Mixer',
+    registered: 55,
+    attended: 48,
+    id: 3,
+    date: '2026-05-05',
+  },
+  {
+    name: 'Environmental Cleanup',
+    registered: 50,
+    attended: 42,
+    id: 4,
+    date: '2026-05-06',
+  },
+  {
+    name: 'Youth Membership Program',
+    registered: 45,
+    attended: 38,
+    id: 5,
+    date: '2026-05-07',
+  },
+  {
+    name: 'Cultural Exchange Event',
+    registered: 40,
+    attended: 32,
+    id: 6,
+    date: '2026-05-08',
+  },
 ];
 
 const timeData = [
@@ -76,6 +112,7 @@ const allEventTypes = eventTypeData.map(e => e.name);
 const timeOfDayOptions = ['morning', 'afternoon', 'evening', 'night'];
 
 export default function EventDashboard() {
+  const today = new Date().toISOString().split('T')[0];
   // Filter states
   const [dateRange, setDateRange] = useState({ start: '', end: '' });
   const [selectedEventTypes, setSelectedEventTypes] = useState([]);
@@ -118,11 +155,23 @@ export default function EventDashboard() {
   const filteredEventTypeData = useMemo(() => {
     let filtered = [...eventTypeData];
 
+    // Event type filter
     if (selectedEventTypes.length > 0) {
       filtered = filtered.filter(event => selectedEventTypes.includes(event.name));
     }
+
+    // Start date filter
+    if (dateRange.start) {
+      filtered = filtered.filter(event => event.date >= dateRange.start);
+    }
+
+    // End date filter
+    if (dateRange.end) {
+      filtered = filtered.filter(event => event.date <= dateRange.end);
+    }
+
     return filtered;
-  }, [selectedEventTypes]);
+  }, [selectedEventTypes, dateRange]);
 
   // Filter time data based on selected time of day filters
   const filteredTimeData = useMemo(() => {
@@ -267,8 +316,14 @@ export default function EventDashboard() {
           <div className={styles.epDateInputs}>
             <input
               type="date"
+              max={today}
               value={dateRange.start}
-              onChange={e => setDateRange(prev => ({ ...prev, start: e.target.value }))}
+              onChange={e =>
+                setDateRange(prev => ({
+                  ...prev,
+                  start: e.target.value,
+                }))
+              }
               className={styles.epDateInput}
               placeholder="Start date"
               aria-label="Start date filter"
@@ -276,8 +331,15 @@ export default function EventDashboard() {
             <span className={styles.epDateSeparator}>to</span>
             <input
               type="date"
+              min={dateRange.start || undefined}
+              max={today}
               value={dateRange.end}
-              onChange={e => setDateRange(prev => ({ ...prev, end: e.target.value }))}
+              onChange={e =>
+                setDateRange(prev => ({
+                  ...prev,
+                  end: e.target.value,
+                }))
+              }
               className={styles.epDateInput}
               placeholder="End date"
               aria-label="End date filter"
@@ -432,26 +494,44 @@ export default function EventDashboard() {
                   <XAxis dataKey="time" stroke="var(--ep-chart-tick)" />
                   <YAxis stroke="var(--ep-chart-tick)" />
                   <Tooltip
+                    cursor={{
+                      fill: 'rgba(74, 144, 226, 0.12)',
+                    }}
                     contentStyle={{
-                      background: 'var(--ep-card-bg)',
-                      color: 'var(--ep-text-color)',
-                      border: '1px solid var(--ep-border-color)',
-                      borderRadius: '4px',
+                      background: 'rgba(17, 24, 39, 0.96)',
+                      backdropFilter: 'blur(6px)',
+                      color: '#ffffff',
+                      border: '1px solid rgba(74, 144, 226, 0.5)',
+                      borderRadius: '12px',
+                      boxShadow: '0 10px 30px rgba(0,0,0,0.45)',
+                      padding: '12px 14px',
+                    }}
+                    labelStyle={{
+                      color: '#ffffff',
+                      fontWeight: 600,
+                    }}
+                    itemStyle={{
+                      color: '#dbeafe',
                     }}
                     content={({ active, payload }) => {
                       if (active && payload && payload.length > 0) {
                         const data = payload[0].payload;
+
                         return (
                           <div className={styles.epChartTooltip}>
                             <p className={styles.epTooltipTime}>{data.time}</p>
+
                             <p className={styles.epTooltipRegistered}>
                               Registered: {data.registered}
                             </p>
+
                             <p className={styles.epTooltipAttended}>Attended: {data.attended}</p>
+
                             <p className={styles.epTooltipHint}>Click to drill down</p>
                           </div>
                         );
                       }
+
                       return null;
                     }}
                   />
