@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer, Label } from 'recharts';
 import axios from 'axios';
+import { useSelector } from 'react-redux';
 import styles from './ProjectStatusDonutChart.module.css';
 
 const COLORS = ['#B39DDB', '#80DEEA', '#FFABAB']; // Active, Completed, Delayed
 
 export default function ProjectStatusDonutChart() {
+  const darkMode = useSelector(state => state.theme?.darkMode || false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [statusData, setStatusData] = useState(null);
@@ -66,7 +68,7 @@ export default function ProjectStatusDonutChart() {
   // SHOW MESSAGE WHEN THERE IS NO DATA
   if (pieData.every(item => item.value === 0)) {
     return (
-      <div className={styles.container}>
+      <div className={`${styles.container} ${darkMode ? styles.dark : ''}`}>
         <h2 className={styles.title}>PROJECT STATUS</h2>
         <p className={styles.noDataMessage}>No project status data available.</p>
       </div>
@@ -84,7 +86,7 @@ export default function ProjectStatusDonutChart() {
     !statusData.activeProjects && !statusData.completedProjects && !statusData.delayedProjects;
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} ${darkMode ? styles.dark : ''}`}>
       <h2 className={styles.title}>PROJECT STATUS</h2>
 
       <div className={styles.filterRow}>
