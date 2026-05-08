@@ -60,16 +60,10 @@ function Timer({ authUser, darkMode, isPopout }) {
    * }
    */
 
-  /*const { sendMessage, sendJsonMessage, lastJsonMessage, getWebSocket } = useWebSocket(
-    ENDPOINTS.TIMER_SERVICE,
-    WSoptions,
-  );*/
-
   const { sendMessage, sendJsonMessage, lastJsonMessage, getWebSocket } = useWebSocket(
     ENDPOINTS.TIMER_SERVICE,
     {
       ...WSoptions,
-      // This makes the hook treat wsKey changes as a full reconnect
       queryParams: { reconnect: wsKey },
     },
   );
