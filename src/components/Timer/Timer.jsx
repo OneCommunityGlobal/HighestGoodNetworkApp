@@ -300,8 +300,6 @@ function Timer({ authUser, darkMode, isPopout }) {
     () => viewingUserId && !ALLOWED_ROLES_TO_INTERACT.includes(authUser?.role),
     [viewingUserId, authUser],
   );
-  // control whether to send GET_TIMER message to avoid message overriding
-  const isInitialJsonMessageReceived = useMemo(() => !!lastJsonMessage, [lastJsonMessage]);
 
   // Modify the sendStop function to track submitted time
   const wsJsonMessageHandler = useMemo(() => {
