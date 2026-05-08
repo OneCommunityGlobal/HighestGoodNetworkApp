@@ -7,7 +7,7 @@ import { ENDPOINTS } from '../../../utils/URL';
 import CalendarActivitySection from './CalendarActivitySection';
 import styles from './CommunityCalendar.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClock, faLocationDot, faTag, faCircleCheck } from '@fortawesome/free-solid-svg-icons';
+import { faClock, faLocationDot, faTag } from '@fortawesome/free-solid-svg-icons';
 
 const MOCK_EVENTS = [];
 
@@ -55,12 +55,13 @@ export default function CommunityCalendar() {
 
   const mappedEvents = useMemo(() => {
     return events.map(event => {
-      const eventDate = new Date(event.date);
-      const timeString = eventDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const parsed = new Date(event.date);
+      const eventDate = new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate());
+      const timeString = parsed.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
       return {
         ...event,
-        id: event.id || `${event.title}-${eventDate.getTime()}`,
+        id: event.id || `${event.title}-${parsed.getTime()}`,
         date: eventDate,
         type: event.type || 'General',
         status: normalizeStatus(event.status),
@@ -112,9 +113,7 @@ export default function CommunityCalendar() {
     [],
   );
 
-  const [overflowDate, setOverflowDate] = useState(false);
-
-  // Memoized helper function to get events for a specific date
+  const [overflowDate, setOverflowDate] = useState(null);
   const getEventsForDate = useCallback(
     date => {
       if (!date) return [];
@@ -369,8 +368,13 @@ export default function CommunityCalendar() {
             <button
               type="button"
               className={styles.moreEvents}
-              onClick={() => setOverflowDate(date)}
-              title="View all events"
+              onClick={ev => {
+                ev.stopPropagation();
+                const r = ev.currentTarget.getBoundingClientRect();
+                setOverflowDate({ date, x: r.right + 8, y: r.top });
+                handleDateSelect(date);
+              }}
+              title="View all events for this day"
             >
               +{hiddenCount} more
             </button>
@@ -596,50 +600,51 @@ export default function CommunityCalendar() {
                             darkMode ? styles.selectedEventCardDarkMode : ''
                           } ${isActive ? styles.selectedEventCardActive : ''}`}
                         >
-                          <header className={styles.selectedEventHeader}>
-                            <div>
-                              <h3>{event.title}</h3>
-                              <div>
-                                <ul className={styles.selectedEventMeta}>
-                                  <li className={styles.metaItem}>
-                                    <FontAwesomeIcon icon={faClock} className={styles.metaIcon} />
-                                    <span>{event.time}</span>
-                                  </li>
-
-                                  <li className={styles.metaItem}>
-                                    <FontAwesomeIcon
-                                      icon={faLocationDot}
-                                      className={styles.metaIcon}
-                                    />
-                                    <span>{event.location}</span>
-                                  </li>
-
-                                  <li className={styles.metaItem}>
-                                    <FontAwesomeIcon icon={faTag} className={styles.metaIcon} />
-                                    <span>{event.type}</span>
-                                  </li>
-
-                                  <li className={styles.metaItem}>
-                                    <FontAwesomeIcon
-                                      icon={faCircleCheck}
-                                      className={styles.metaIcon}
-                                    />
-                                    <span className={styles.statusInline}>
-                                      {statusIconMap[event.status] || ''} {event.status}
-                                    </span>
-                                  </li>
-                                </ul>
-                              </div>
-                            </div>
+                          {/* Row 2: title + view-details button */}
+                          <div className={styles.selectedEventTitleRow}>
+                            <h3
+                              className={`${styles.selectedEventTitle} ${
+                                darkMode ? styles.selectedEventTitleDark : ''
+                              }`}
+                            >
+                              {event.title}
+                            </h3>
                             <button
                               type="button"
                               className={styles.eventDetailButton}
                               onClick={() => handleEventClick(event)}
                             >
-                              View full details
+                              View details
                             </button>
-                          </header>
-                          <p className={styles.selectedEventDescription}>{event.description}</p>
+                          </div>
+
+                          {/* Row 3: location + type */}
+                          <div
+                            className={`${styles.selectedEventMetaRow} ${
+                              darkMode ? styles.selectedEventMetaRowDark : ''
+                            }`}
+                          >
+                            <span>
+                              <FontAwesomeIcon icon={faLocationDot} className={styles.metaIcon} />
+                              {event.location}
+                            </span>
+                            <span>
+                              <FontAwesomeIcon icon={faTag} className={styles.metaIcon} />
+                              {event.type}
+                            </span>
+                            <span>
+                              <FontAwesomeIcon icon={faClock} className={styles.metaIcon} />
+                              {event.time}
+                            </span>
+                            <span>
+                              {statusIconMap[event.status] || '⭐'}&nbsp;{event.status}
+                            </span>
+                          </div>
+
+                          {/* Row 4: description */}
+                          {event.description && (
+                            <p className={styles.selectedEventDescription}>{event.description}</p>
+                          )}
                         </article>
                       </li>
                     );
@@ -655,27 +660,56 @@ export default function CommunityCalendar() {
         </div>
       </main>
 
-      {/* Overflow popup */}
+      {/* Overflow day-summary popup */}
       {overflowDate && (
         <div
           ref={popupRef}
           className={`${styles.overflowPopup} ${darkMode ? styles.overflowPopupDark : ''}`}
+          style={{ left: overflowDate.x, top: overflowDate.y }}
         >
-          <div className={styles.overflowPopupInner}>
-            <h4>{overflowDate.toDateString()}</h4>
-            {getEventsForDate(overflowDate).map(e => (
+          <div
+            className={`${styles.overflowPopupHeader} ${
+              darkMode ? styles.overflowPopupHeaderDark : ''
+            }`}
+          >
+            <span>
+              {overflowDate.date.toLocaleDateString('en-US', {
+                weekday: 'long',
+                month: 'long',
+                day: 'numeric',
+              })}
+            </span>
+            <button
+              type="button"
+              className={`${styles.overflowPopupClose} ${
+                darkMode ? styles.overflowPopupCloseDark : ''
+              }`}
+              onClick={() => setOverflowDate(null)}
+              aria-label="Close popup"
+            >
+              ×
+            </button>
+          </div>
+          <div className={styles.overflowPopupList}>
+            {getEventsForDate(overflowDate.date).map(e => (
               <button
                 key={e.id}
                 type="button"
-                className={`${styles.eventItem} ${styles[statusMap[e.status]] || styles.statusNew}`}
-                onClick={() => handleEventClick(e)}
-                title={e.title}
+                className={`${styles.overflowEventRow} ${
+                  darkMode ? styles.overflowEventRowDark : ''
+                }`}
+                onClick={() => {
+                  handleEventClick(e);
+                  setOverflowDate(null);
+                }}
               >
-                <span className={styles.eventContent}>
-                  <span className={styles.eventIcon} aria-label={e.status} title={e.status}>
-                    {statusIconMap[e.status] || '⭐'}
-                  </span>
-                  <span className={styles.eventTitleText}>{e.title}</span>
+                <span className={styles.overflowEventTime}>{e.time}</span>
+                <span className={styles.overflowEventTitle}>{e.title}</span>
+                <span
+                  className={`${styles.overflowEventBadge} ${styles[statusMap[e.status]] ||
+                    styles.statusNew}`}
+                >
+                  {statusIconMap[e.status] || '⭐'}
                 </span>
               </button>
             ))}
