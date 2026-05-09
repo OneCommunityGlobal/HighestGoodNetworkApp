@@ -1,10 +1,11 @@
-import styles from '../styles/QuestionnaireInfo.module.css';
 import { useSelector } from 'react-redux';
+import styles from '../styles/QuestionnaireInfo.module.css';
 
 function QuestionnaireInfo() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const containerClass = `${styles.questionnaireInfo} ${darkMode ? styles.darkContainer : ''}`;
   const stripClass = `${styles.blueStrip} ${darkMode ? styles.darkStrip : ''}`;
+
   return (
     <div className={containerClass}>
       <div className={stripClass} />
@@ -22,7 +23,7 @@ function QuestionnaireInfo() {
       </ol>
       <p style={{ marginTop: 0 }}>Please answer with your best judgement, thank you!</p>
       <hr />
-      <p className={`${styles.required}`} style={{ color: 'red', margin: '15px' }}>
+      <p className={styles.required} style={{ color: 'red', margin: '15px' }}>
         * Indicates required question
       </p>
     </div>

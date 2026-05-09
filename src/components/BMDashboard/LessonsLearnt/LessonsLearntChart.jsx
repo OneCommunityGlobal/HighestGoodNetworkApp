@@ -6,6 +6,7 @@ import axios from 'axios';
 import Select from 'react-select';
 import DatePicker from 'react-datepicker';
 
+import { ENDPOINTS } from '../../../utils/URL';
 import styles from './LessonsLearntChart.module.css';
 import 'react-datepicker/dist/react-datepicker.css';
 
@@ -15,13 +16,18 @@ const useLessonsData = (selectedProjects, startDate, endDate) => {
   const [allProjects, setAllProjects] = useState([]);
   const [lessonsData, setLessonsData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await axios.get('/api/projects');
-        setAllProjects(response.data);
-      } catch (error) {}
+        const response = await axios.get(ENDPOINTS.BM_PROJECTS);
+        const projects = Array.isArray(response.data) ? response.data : [];
+        setAllProjects(projects);
+      } catch (err) {
+        console.error('Error fetching projects:', err);
+        setAllProjects([]);
+      }
     };
     fetchProjects();
   }, []);
@@ -29,15 +35,39 @@ const useLessonsData = (selectedProjects, startDate, endDate) => {
   useEffect(() => {
     const fetchLessons = async () => {
       setIsLoading(true);
+      setError(null);
       try {
-        const params = {
-          projects: selectedProjects.map(p => p.value).join(','),
-          from: startDate?.toISOString(),
-          to: endDate?.toISOString(),
-        };
-        const response = await axios.get('/api/lessons-learnt', { params });
-        setLessonsData(response.data);
-      } catch (error) {
+        const params = {};
+
+        if (selectedProjects && selectedProjects.length > 0) {
+          params.projectId = selectedProjects.length === 1 ? selectedProjects[0].value : 'ALL';
+        }
+
+        if (startDate) {
+          params.startDate = startDate.toISOString();
+        }
+        if (endDate) {
+          params.endDate = endDate.toISOString();
+        }
+
+        const response = await axios.get(`${ENDPOINTS.BM_LESSONS}-learnt`, { params });
+
+        const responseData = response.data?.data || response.data || [];
+        const lessonsArray = Array.isArray(responseData) ? responseData : [];
+
+        const transformedData = lessonsArray.map(item => ({
+          projectName: item.project || 'Unknown Project',
+          projectId: item.projectId,
+          lessonsCount: item.lessonsCount || 0,
+          percentage:
+            parseFloat((item.changePercentage || '0%').replace('%', '').replace('+', '')) || 0,
+          changePercentage: item.changePercentage || '0%',
+        }));
+
+        setLessonsData(transformedData);
+      } catch (err) {
+        console.error('Error fetching lessons learnt:', err);
+        setError(err.message || 'Failed to fetch lessons data');
         setLessonsData([]);
       } finally {
         setIsLoading(false);
@@ -46,7 +76,7 @@ const useLessonsData = (selectedProjects, startDate, endDate) => {
     fetchLessons();
   }, [selectedProjects, startDate, endDate]);
 
-  return { allProjects, lessonsData, isLoading };
+  return { allProjects, lessonsData, isLoading, error };
 };
 
 function ChartTitle({ title }) {
@@ -58,7 +88,7 @@ const LessonsLearntChart = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
 
-  const { allProjects, lessonsData, isLoading } = useLessonsData(
+  const { allProjects, lessonsData, isLoading, error } = useLessonsData(
     selectedProjects,
     startDate,
     endDate,
@@ -68,12 +98,27 @@ const LessonsLearntChart = () => {
     setSelectedProjects(selected || []);
   };
 
+  const projectOptions = Array.isArray(allProjects)
+    ? allProjects
+        .filter(proj => proj && (proj._id || proj.id))
+        .map(proj => ({
+          value: proj._id || proj.id,
+          label: proj.name || 'Unnamed Project',
+        }))
+    : [];
+
+  const safeLabels = Array.isArray(lessonsData)
+    ? lessonsData.map(d => d?.projectName || 'Unknown')
+    : [];
+
+  const safeData = Array.isArray(lessonsData) ? lessonsData.map(d => d?.lessonsCount || 0) : [];
+
   const chartData = {
-    labels: lessonsData.map(d => d.projectName),
+    labels: safeLabels,
     datasets: [
       {
-        label: 'Lessons Learnt',
-        data: lessonsData.map(d => d.percentage),
+        label: 'Lessons Count',
+        data: safeData,
         backgroundColor: '#10b981',
       },
     ],
@@ -81,9 +126,29 @@ const LessonsLearntChart = () => {
 
   const chartOptions = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       title: {
         display: false,
+      },
+      tooltip: {
+        callbacks: {
+          afterLabel: context => {
+            const dataIndex = context.dataIndex;
+            if (Array.isArray(lessonsData) && lessonsData[dataIndex]) {
+              return `Change: ${lessonsData[dataIndex].changePercentage || '0%'}`;
+            }
+            return '';
+          },
+        },
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          stepSize: 1,
+        },
       },
     },
   };
@@ -97,45 +162,55 @@ const LessonsLearntChart = () => {
           <label>Select Projects</label>
           <Select
             isMulti
-            options={allProjects.map(proj => ({
-              value: proj.id,
-              label: proj.name,
-            }))}
+            options={projectOptions}
             value={selectedProjects}
             onChange={handleProjectChange}
+            placeholder="Select projects..."
+            isClearable
           />
         </div>
         <div className={styles.filter}>
           <label>From</label>
-          <DatePicker selected={startDate} onChange={date => setStartDate(date)} />
+          <DatePicker
+            selected={startDate}
+            onChange={date => setStartDate(date)}
+            placeholderText="Start date"
+            isClearable
+          />
         </div>
         <div className={styles.filter}>
           <label>To</label>
-          <DatePicker selected={endDate} onChange={date => setEndDate(date)} />
+          <DatePicker
+            selected={endDate}
+            onChange={date => setEndDate(date)}
+            placeholderText="End date"
+            isClearable
+          />
         </div>
       </div>
 
       <div className={styles.chartWrapper}>
         {isLoading ? (
           <p>Loading...</p>
-        ) : lessonsData.length === 0 ? (
+        ) : error ? (
+          <p>Error loading data: {error}</p>
+        ) : !Array.isArray(lessonsData) || lessonsData.length === 0 ? (
           <p>No lessons data available for the selected criteria</p>
         ) : (
           <>
-            <Bar data={chartData} options={chartOptions} />
+            <div style={{ height: '400px', width: '100%' }}>
+              <Bar data={chartData} options={chartOptions} />
+            </div>
             <div className={styles.percentageLabels}>
               {lessonsData.map((d, idx) => (
                 <span
-                  key={idx}
+                  key={d?.projectId || idx}
                   className={styles.percentageLabel}
                   style={{
-                    left:
-                      lessonsData.length > 0
-                        ? `${(idx + 0.5) * (100 / lessonsData.length)}%`
-                        : '0%',
+                    left: `${(idx + 0.5) * (100 / lessonsData.length)}%`,
                   }}
                 >
-                  {d.percentage}%
+                  {d?.changePercentage || '0%'}
                 </span>
               ))}
             </div>

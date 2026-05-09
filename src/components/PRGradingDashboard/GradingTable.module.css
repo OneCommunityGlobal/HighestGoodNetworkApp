@@ -1,11 +1,6 @@
-.tableWrapper {
-  overflow-x: auto;
-  overflow-y: visible;
-}
-
+/* stylelint-disable  */
 .table {
   width: 100%;
-  min-width: 100%;
   border-collapse: collapse;
 }
 

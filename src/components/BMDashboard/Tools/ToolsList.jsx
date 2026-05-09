@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchTools } from '../../../actions/bmdashboard/toolActions';
 import ToolItemListView from '../ToolItemList/ToolItemListView';
 import UpdateToolModal from '../UpdateTools/UpdateToolModal';
+import { Link } from 'react-router-dom';
+import styles from '../InventoryTypesList/TypesList.module.css';
 
 function ToolsList() {
   const dispatch = useDispatch();
@@ -47,13 +49,18 @@ function ToolsList() {
   ];
 
   return (
-    <ToolItemListView
-      itemType={itemType}
-      items={toolsWithId}
-      errors={errors}
-      UpdateItemModal={UpdateToolModal}
-      dynamicColumns={dynamicColumns}
-    />
+    <>
+      <Link to="/bmdashboard/inventorytypes" className={styles.backLink}>
+        All Inventory Types
+      </Link>
+      <ToolItemListView
+        itemType={itemType}
+        items={toolsWithId}
+        errors={errors}
+        UpdateItemModal={UpdateToolModal}
+        dynamicColumns={dynamicColumns}
+      />
+    </>
   );
 }
 

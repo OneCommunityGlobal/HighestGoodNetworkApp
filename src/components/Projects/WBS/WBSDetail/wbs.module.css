@@ -1,5 +1,7 @@
+/* stylelint-disable declaration-property-value-keyword-no-deprecated */
 .container-tasks {
   margin: 20px;
+
   /* width: calc(100% - 40px); */
 }
 
@@ -8,7 +10,7 @@
 }
 
 .level-space-1 {
-  margin-left: 0px;
+  margin-left: 0;
 }
 
 .level-space-2 {
@@ -40,7 +42,7 @@
   z-index: 1000 !important;
   position: absolute !important; 
   pointer-events: none !important;
-  height: 0px !important; 
+  height: 0 !important; 
   overflow: visible !important;
 }
 
@@ -55,6 +57,7 @@
 .load {
   position: relative;
 }
+
 .dot {
   height: 24px;
   width: 24px;
@@ -104,22 +107,25 @@
 }
 
 .text-break {
-  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
   word-break: break-word !important;
 }
 
 .wbsTask {
   line-height: 22px;
 }
+
 /* Ensured task-action-buttons has a flex display to properly align the buttons */
 .task-action-buttons {
   display: flex;
   justify-content: flex-start;
 }
+
 /* Added controlBtn class to ensure uniform margin between buttons */
 .controlBtn {
   margin-right: 8px; /* Adds margin between buttons */
   float: left;
+
   /* margin-left: 10px; */
 }
 
@@ -143,6 +149,7 @@
   text-align: center;
   vertical-align: middle;
 }
+
 .table th {
   text-align: center; /* Centers the text horizontally */
   vertical-align: middle; /* Centers the text vertically */
@@ -180,7 +187,6 @@
 
 .resourceMoreToggle {
   display: flex;
-  
   justify-content: center; /* Centers horizontally */
   align-items: center; /* Centers vertically */
   gap: 6px;
@@ -193,6 +199,7 @@
   max-height: 1000px; /* Large enough to accommodate content dynamically */
   padding: 10px; /* Optional: add spacing during expansion */
 }
+
 .resourceMore {
   display: none;
   justify-content: center; /* Centers the element horizontally */
@@ -237,7 +244,7 @@
   width: 85px;
 }
 
-@media (max-width: 250px) {
+@media (width <= 250px) {
   .flex-responsive{
     flex-direction: column;
   }
@@ -247,7 +254,7 @@
   }
 }
 
-@media only screen and (max-width: 600px) {
+@media only screen and (width <= 600px) {
   .desktop-view {
     display: none;
   }
@@ -259,8 +266,7 @@
   }
 }
 
-@media (min-width: 200px) and (max-width: 1496px) {
-
+@media (width >= 200px) and (width <= 1496px) {
   .flex-responsive {
     display: flex;
     flex-direction: row;
@@ -282,6 +288,7 @@
   padding: .5em .25em;
   margin-left: .25em;
 }
+
 .add_new_task_form-input_area{
   width: 70%;
   padding: 0;
@@ -298,13 +305,15 @@
   background-color:#2f4157;
 }
 
-.tasks-detail-task-name { /* task column height and width changes*/
+.tasks-detail-task-name { /* task column height and width changes */
   width: 35%; 
   height: auto; 
 }
+
 .tasks-detail-actions {  /* action column width reduced */
   width: 6%; 
 }
+
 .wbs-button-group {
   justify-content: flex-start;
   gap: 10px;
@@ -315,7 +324,7 @@
   margin: 5px;
 }
 
-@media (max-width: 968px) {
+@media (width <= 968px) {
   .wbs-button-group {
     align-items: flex-start;
     margin-bottom: 10px;
@@ -323,12 +332,15 @@
 
   .datePicker {
     font-size: small !important; 
+
     --rdp-cell-size: auto !important;
+
     width: 100%;
     overflow: auto;
   }
+
   .datePicker :global(.rdp-cell) {
-    padding: 0px !important;
+    padding: 0 !important;
   }
 }
 
@@ -343,8 +355,24 @@
   z-index: 9999;
 }
 
-@media (max-width: 768px) { /* arranging the buttons */
+@media (width <= 768px) { /* arranging the buttons */
   .button-group button {
     margin-bottom: 10px;
   }
+}
+
+.taskTopActionButtons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+}
+
+.taskActionButton {
+  width: 90px;
+  margin: 0 !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
