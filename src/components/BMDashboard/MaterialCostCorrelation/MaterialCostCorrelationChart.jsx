@@ -11,7 +11,6 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
-import { toast } from 'react-toastify';
 import { BiErrorCircle, BiRefresh } from 'react-icons/bi';
 import FilterPanel from './FilterPanel';
 import logger from '../../../services/logService';
@@ -23,6 +22,7 @@ import {
   resetFilters,
 } from '../../../actions/bmdashboard/materialCostCorrelationActions';
 import styles from './MaterialCostCorrelationChart.module.css';
+import PropTypes from 'prop-types';
 
 /**
  * Custom Tooltip Component for Combined Chart
@@ -32,7 +32,7 @@ import styles from './MaterialCostCorrelationChart.module.css';
  * @param {boolean} darkMode - Whether dark mode is enabled
  */
 function CustomTooltip({ active, payload, darkMode }) {
-  if (!active || !payload || !payload.length) {
+  if (!active || !payload?.length) {
     return null;
   }
 
@@ -64,6 +64,71 @@ function CustomTooltip({ active, payload, darkMode }) {
       )}
     </div>
   );
+}
+
+CustomTooltip.propTypes = {
+  active: PropTypes.bool,
+  payload: PropTypes.arrayOf(PropTypes.shape({
+    dataKey: PropTypes.string,
+    value: PropTypes.number,
+    payload: PropTypes.shape({
+      projectName: PropTypes.string,
+    }),
+  })),
+  darkMode: PropTypes.bool,
+};
+
+CustomTooltip.defaultProps = {
+  active: false,
+  payload: [],
+  darkMode: false,
+};
+
+// Determine error type from error message
+const getErrorType = errorMessage => {
+  if (!errorMessage) return 'unknown';
+  const message = errorMessage.toLowerCase();
+  if (message.includes('session') || message.includes('expired') || message.includes('log in')) {
+    return 'authentication';
+  }
+  if (message.includes('permission') || message.includes('access')) {
+    return 'permission';
+  }
+  if (message.includes('network') || message.includes('connect')) {
+    return 'network';
+  }
+  if (message.includes('start date') || message.includes('end date')) {
+    return 'validation';
+  }
+  return 'general';
+};
+
+function getXAxisConfig(isNarrow, isMedium, dataLength) {
+  if (isNarrow) {
+    return {
+      xAxisAngle: -90,
+      xAxisHeight: 90,
+      xAxisTickFontSize: 10,
+      xAxisMaxNameLength: 8,
+      xAxisInterval: dataLength > 5 ? Math.ceil(dataLength / 5) - 1 : 0,
+    };
+  }
+  if (isMedium) {
+    return {
+      xAxisAngle: -90,
+      xAxisHeight: 85,
+      xAxisTickFontSize: 11,
+      xAxisMaxNameLength: 10,
+      xAxisInterval: dataLength > 8 ? Math.ceil(dataLength / 8) - 1 : 0,
+    };
+  }
+  return {
+    xAxisAngle: -45,
+    xAxisHeight: 100,
+    xAxisTickFontSize: 12,
+    xAxisMaxNameLength: 15,
+    xAxisInterval: dataLength > 12 ? Math.ceil(dataLength / 12) - 1 : 0,
+  };
 }
 
 function MaterialCostCorrelationChart() {
@@ -150,34 +215,16 @@ function MaterialCostCorrelationChart() {
     }
 
     const dataLength = barChartData?.length || 0;
-    let xAxisInterval;
-    let xAxisAngle;
-    let xAxisHeight;
-    let xAxisTickFontSize;
-    let xAxisMaxNameLength;
+    const { xAxisAngle, xAxisHeight, xAxisTickFontSize, xAxisMaxNameLength, xAxisInterval } = getXAxisConfig(isNarrow, isMedium, dataLength);
 
+    let yAxisWidth;
     if (isNarrow) {
-      // Vertical labels + aggressive skipping to prevent label pile-up
-      xAxisAngle = -90;
-      xAxisHeight = 90;
-      xAxisTickFontSize = 10;
-      xAxisMaxNameLength = 8;
-      xAxisInterval = dataLength > 5 ? Math.ceil(dataLength / 5) - 1 : 0;
+      yAxisWidth = 44;
     } else if (isMedium) {
-      xAxisAngle = -90;
-      xAxisHeight = 85;
-      xAxisTickFontSize = 11;
-      xAxisMaxNameLength = 10;
-      xAxisInterval = dataLength > 8 ? Math.ceil(dataLength / 8) - 1 : 0;
+      yAxisWidth = 52;
     } else {
-      xAxisAngle = -45;
-      xAxisHeight = 100;
-      xAxisTickFontSize = 12;
-      xAxisMaxNameLength = 15;
-      xAxisInterval = dataLength > 12 ? Math.ceil(dataLength / 12) - 1 : 0;
+      yAxisWidth = 64;
     }
-
-    const yAxisWidth = isNarrow ? 44 : isMedium ? 52 : 64;
     const shortYAxisLabels = isNarrow;
 
     return {
@@ -222,25 +269,6 @@ function MaterialCostCorrelationChart() {
       </div>
     );
   }
-
-  // Determine error type from error message
-  const getErrorType = errorMessage => {
-    if (!errorMessage) return 'unknown';
-    const message = errorMessage.toLowerCase();
-    if (message.includes('session') || message.includes('expired') || message.includes('log in')) {
-      return 'authentication';
-    }
-    if (message.includes('permission') || message.includes('access')) {
-      return 'permission';
-    }
-    if (message.includes('network') || message.includes('connect')) {
-      return 'network';
-    }
-    if (message.includes('start date') || message.includes('end date')) {
-      return 'validation';
-    }
-    return 'general';
-  };
 
   const errorType = error ? getErrorType(error) : null;
 
@@ -331,7 +359,11 @@ function MaterialCostCorrelationChart() {
         {hasData ? (
           <ResponsiveContainer
             width="100%"
-            height={containerWidth < 500 ? 400 : containerWidth < 700 ? 450 : 500}
+            height={(() => {
+              if (containerWidth < 500) return 400;
+              if (containerWidth < 700) return 450;
+              return 500;
+            })()}
           >
             <ComposedChart data={barChartData} margin={chartConfig.margin}>
               <CartesianGrid strokeDasharray="3 3" stroke={chartConfig.gridColor} />

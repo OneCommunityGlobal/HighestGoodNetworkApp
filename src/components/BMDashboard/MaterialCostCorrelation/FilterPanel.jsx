@@ -6,6 +6,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { fetchBMProjects } from '../../../actions/bmdashboard/projectActions';
 import { fetchMaterialTypes } from '../../../actions/bmdashboard/invTypeActions';
 import styles from './FilterPanel.module.css';
+import PropTypes from 'prop-types';
 
 /**
  * Filter Panel Component
@@ -131,8 +132,6 @@ function FilterPanel({
         newEndDate = today;
         break;
       case 'allTime':
-        newStartDate = null;
-        newEndDate = null;
         break;
       default:
         return;
@@ -274,5 +273,29 @@ function FilterPanel({
     </div>
   );
 }
+
+FilterPanel.propTypes = {
+  selectedProjects: PropTypes.arrayOf(PropTypes.string),
+  selectedMaterialTypes: PropTypes.arrayOf(PropTypes.string),
+  startDate: PropTypes.instanceOf(Date),
+  endDate: PropTypes.instanceOf(Date),
+  onProjectChange: PropTypes.func,
+  onMaterialTypeChange: PropTypes.func,
+  onDateRangeChange: PropTypes.func,
+  onResetFilters: PropTypes.func,
+  darkMode: PropTypes.bool,
+};
+
+FilterPanel.defaultProps = {
+  selectedProjects: [],
+  selectedMaterialTypes: [],
+  startDate: null,
+  endDate: null,
+  onProjectChange: () => {},
+  onMaterialTypeChange: () => {},
+  onDateRangeChange: () => {},
+  onResetFilters: () => {},
+  darkMode: false,
+};
 
 export default FilterPanel;
