@@ -1,22 +1,24 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Bar } from 'react-chartjs-2';
 import Select, { components } from 'react-select';
 import { fetchIssues } from '../../../actions/bmdashboard/issueChartActions';
 import 'chart.js/auto';
-import { Chart as ChartJS } from 'chart.js';
 import styles from './issueChart.module.css';
 
 function IssueChart() {
   const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme.darkMode);
   const { loading, issues, error } = useSelector(state => state.bmissuechart);
+  const chartRef = useRef(null);
 
   const [filters, setFilters] = useState({ issueTypes: [], years: [] });
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 640);
+
   const stripNumericSuffix = value => {
     const str = String(value);
     let end = str.length;
+
     while (end > 0) {
       const code = str.charCodeAt(end - 1);
       if (code >= 48 && code <= 57) {
@@ -25,6 +27,7 @@ function IssueChart() {
         break;
       }
     }
+
     const base = str.slice(0, end).trim();
     return base || str;
   };
@@ -43,6 +46,7 @@ function IssueChart() {
             .map(year => parseInt(year, 10)),
         ),
       ].sort((a, b) => a - b);
+
       setFilters({ issueTypes: allIssueTypes, years: allYears });
     }
   }, [issues]);
@@ -58,6 +62,7 @@ function IssueChart() {
 
   const extractDropdownOptions = () => {
     const rawIssueTypes = [...new Set(Object.keys(issues || {}))];
+
     const issueTypeGroups = rawIssueTypes.reduce((acc, name) => {
       const base = stripNumericSuffix(name);
       if (!acc[base]) acc[base] = [];
@@ -69,6 +74,7 @@ function IssueChart() {
       const options = names
         .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
         .map(issue => ({ label: issue, value: issue }));
+
       return names.length > 1
         ? {
             label: `${base} (e.g., ${names.slice(0, 3).join(', ')}${
@@ -79,9 +85,7 @@ function IssueChart() {
         : options[0];
     });
 
-    const issueTypes = groupedIssueTypes;
-
-    const years = [
+    const yearOptions = [
       ...new Set(
         Object.values(issues || {})
           .flatMap(issueData => Object.keys(issueData))
@@ -92,49 +96,53 @@ function IssueChart() {
       .map(year => ({ label: year.toString(), value: year }));
 
     return {
-      issueTypes,
-      years,
+      issueTypes: groupedIssueTypes,
+      years: yearOptions,
     };
   };
 
   const { issueTypes, years } = extractDropdownOptions();
+
   const flattenOptions = options =>
     options.flatMap(option => (option.options ? option.options : option));
+
   const flatIssueTypeOptions = flattenOptions(issueTypes);
-  const uniqueYears = years.filter(y => y.value !== 'All').map(y => y.value);
+  const uniqueYears = years.map(y => y.value);
 
   const generateColor = idx => `hsl(${(idx * 60) % 360}, 70%, 50%)`;
+
   const yearColorMap = uniqueYears.reduce((acc, year, idx) => {
     acc[year] = generateColor(idx);
     return acc;
   }, {});
 
   const handleFilterChange = (selected, field) => {
-    const cleaned = selected
+    const cleaned = (selected || [])
       .filter(option => option?.value != null)
       .map(option => option.value)
       .filter(value => {
         const lower = String(value).toLowerCase();
         return lower !== '__all__' && lower !== 'select all' && lower !== 'all';
       });
-    setFilters({
-      ...filters,
+
+    setFilters(prev => ({
+      ...prev,
       [field]: cleaned,
-    });
+    }));
   };
 
   const handleSelectAll = field => {
-    setFilters({
-      ...filters,
+    setFilters(prev => ({
+      ...prev,
       [field]: field === 'issueTypes' ? Object.keys(issues || {}) : uniqueYears,
-    });
+    }));
   };
 
   const handleClearField = field => {
-    setFilters({
-      ...filters,
+    setFilters(prev => ({
+      ...prev,
       [field]: [],
-    });
+    }));
   };
 
   const handleClearFilters = () => {
@@ -145,18 +153,24 @@ function IssueChart() {
   };
 
   const chartData = useMemo(() => {
-    if (!issues || Object.keys(issues).length === 0) return { labels: [], datasets: [] };
+    if (!issues || Object.keys(issues).length === 0) {
+      return { labels: [], datasets: [] };
+    }
 
     const getBase = name => stripNumericSuffix(name);
+
     const issueTypeKeys = Object.keys(issues || {}).sort((a, b) => {
       const aLower = String(a).toLowerCase();
       const bLower = String(b).toLowerCase();
       const aIsNull = aLower === 'null';
       const bIsNull = bLower === 'null';
+
       if (aIsNull && !bIsNull) return 1;
       if (!aIsNull && bIsNull) return -1;
+
       return aLower.localeCompare(bLower, undefined, { numeric: true });
     });
+
     const groupMap = issueTypeKeys.reduce((acc, type) => {
       const base = getBase(type);
       if (!acc[base]) acc[base] = [];
@@ -166,18 +180,23 @@ function IssueChart() {
 
     const selectedTypes = filters.issueTypes.length ? filters.issueTypes : issueTypeKeys;
     const selectedTypeSet = new Set(selectedTypes.map(t => String(t).toLowerCase()));
+
     const selectedBases = [...new Set(selectedTypes.map(getBase))].sort((a, b) => {
       const aLower = String(a).toLowerCase();
       const bLower = String(b).toLowerCase();
       const aIsNull = aLower === 'null';
       const bIsNull = bLower === 'null';
+
       if (aIsNull && !bIsNull) return 1;
       if (!aIsNull && bIsNull) return -1;
+
       return aLower.localeCompare(bLower, undefined, { numeric: true });
     });
+
     const filteredYears = filters.years.length ? filters.years : uniqueYears;
 
     const labels = selectedBases;
+
     const datasets = filteredYears.map(year => ({
       label: year.toString(),
       data: labels.map(base =>
@@ -199,9 +218,10 @@ function IssueChart() {
     const datasets = chartData?.datasets ?? [];
 
     const totalByYear = {};
+
     datasets.forEach(ds => {
       const year = ds.label;
-      const total = (ds.data || []).reduce((sum, v) => sum + (Number(v) || 0), 0);
+      const total = (ds.data || []).reduce((sum, value) => sum + (Number(value) || 0), 0);
       totalByYear[year] = total;
     });
 
@@ -212,63 +232,68 @@ function IssueChart() {
     const topIssueTypeIndex =
       totalsByIssueType.length > 0
         ? totalsByIssueType.reduce(
-            (bestIdx, val, idx, arr) => (val > arr[bestIdx] ? idx : bestIdx),
+            (bestIdx, value, idx, arr) => (value > arr[bestIdx] ? idx : bestIdx),
             0,
           )
         : -1;
 
     let peak = { value: -Infinity, year: null, issueType: null };
+
     datasets.forEach(ds => {
-      (ds.data || []).forEach((v, idx) => {
-        const value = Number(v) || 0;
-        if (value > peak.value) {
-          peak = { value, year: ds.label, issueType: labels[idx] ?? null };
+      (ds.data || []).forEach((value, idx) => {
+        const numericValue = Number(value) || 0;
+
+        if (numericValue > peak.value) {
+          peak = {
+            value: numericValue,
+            year: ds.label,
+            issueType: labels[idx] ?? null,
+          };
         }
       });
     });
 
-    let insightText = '';
-    if (peak.value > 0 && peak.year && peak.issueType) {
-      insightText = `${peak.issueType} issues peak in ${peak.year} (${peak.value}).`;
-    } else {
-      insightText = `No issues found for the selected filters.`;
-    }
+    const insightText =
+      peak.value > 0 && peak.year && peak.issueType
+        ? `${peak.issueType} issues peak in ${peak.year} (${peak.value}).`
+        : 'No issues found for the selected filters.';
 
     return { totalByYear, topIssueTypeIndex, insightText };
   }, [chartData]);
 
-  const xAxisBackgroundPlugin = darkMode => ({
-    id: 'xAxisBackground',
-    beforeDraw: chart => {
-      const { ctx, chartArea, scales } = chart;
-      const xScale = scales.x;
-      if (!xScale) return;
+  const xAxisBackgroundPlugin = useMemo(
+    () => ({
+      id: 'xAxisBackground',
+      beforeDraw: chart => {
+        const { ctx, chartArea, scales } = chart;
+        const xScale = scales.x;
 
-      ctx.save();
+        if (!xScale) return;
 
-      const ticks = xScale.ticks.length;
+        ctx.save();
 
-      xScale.ticks.forEach((_, index) => {
-        // Shade ONLY alternate labels: one shaded, one normal
-        if (index % 2 !== 0) return;
+        const tickCount = xScale.ticks.length;
 
-        const center = xScale.getPixelForTick(index);
+        xScale.ticks.forEach((_, index) => {
+          if (index % 2 !== 0) return;
 
-        const left = index === 0 ? xScale.left : (xScale.getPixelForTick(index - 1) + center) / 2;
+          const center = xScale.getPixelForTick(index);
+          const left = index === 0 ? xScale.left : (xScale.getPixelForTick(index - 1) + center) / 2;
 
-        const right =
-          index === ticks - 1 ? xScale.right : (center + xScale.getPixelForTick(index + 1)) / 2;
+          const right =
+            index === tickCount - 1
+              ? xScale.right
+              : (center + xScale.getPixelForTick(index + 1)) / 2;
 
-        ctx.fillStyle = darkMode
-          ? 'rgba(255,255,255,0.05)' // dark mode band
-          : 'rgba(0,0,0,0.08)'; // light mode band (more visible)
+          ctx.fillStyle = darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.08)';
+          ctx.fillRect(left, chartArea.top, right - left, chartArea.bottom - chartArea.top);
+        });
 
-        ctx.fillRect(left, chartArea.top, right - left, chartArea.bottom - chartArea.top);
-      });
-
-      ctx.restore();
-    },
-  });
+        ctx.restore();
+      },
+    }),
+    [darkMode],
+  );
 
   const chartOptions = useMemo(
     () => ({
@@ -283,7 +308,7 @@ function IssueChart() {
         legend: {
           display: true,
           position: 'top',
-          onClick: (e, legendItem, legend) => {
+          onClick: (event, legendItem, legend) => {
             const index = legendItem.datasetIndex;
             const chart = legend.chart;
             const visible = chart.isDatasetVisible(index);
@@ -306,20 +331,19 @@ function IssueChart() {
           enabled: true,
           mode: 'nearest',
           intersect: true,
-          backgroundColor: darkMode ? '#232323' : '#fff',
-          titleColor: darkMode ? '#fff' : '#232323',
-          bodyColor: darkMode ? '#fff' : '#232323',
+          backgroundColor: darkMode ? '#232323' : '#ffffff',
+          titleColor: darkMode ? '#ffffff' : '#232323',
+          bodyColor: darkMode ? '#ffffff' : '#232323',
           callbacks: {
-            title: items => {
-              return items?.[0]?.label ?? '';
-            },
+            title: items => items?.[0]?.label ?? '',
             label: ctx => {
+              const issueType = ctx.label;
               const year = ctx.dataset.label;
-              const value = Number(ctx.raw) || 0;
+              const count = Number(ctx.raw) || 0;
               const total = chartAnalysis.totalByYear?.[year] ?? 0;
-              const pct = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
+              const pct = total > 0 ? ((count / total) * 100).toFixed(1) : '0.0';
 
-              return `${year}: ${value} (${pct}%)`;
+              return `${issueType} | ${year}: ${count} (${pct}%)`;
             },
           },
         },
@@ -359,22 +383,22 @@ function IssueChart() {
             color: darkMode ? '#cfd7e3' : '#232323',
           },
           grid: { display: false },
-          barPercentage: 0.9,
-          categoryPercentage: 0.8,
           ticks: {
             color: darkMode ? '#e8f0fe' : '#1a1a1a',
             stepSize: 1,
             padding: 10,
             align: 'center',
             autoSkip: false,
-            maxRotation: isMobile ? 90 : 0,
-            minRotation: isMobile ? 90 : 0,
+            maxRotation: isMobile ? 90 : 35,
+            minRotation: isMobile ? 90 : 20,
             font: { size: 12, weight: '500' },
             callback: (value, index, ticks) => {
               const label = chartData?.labels?.[index] ?? ticks?.[index]?.label ?? String(value);
+
               if (isMobile) return label;
 
               const maxCharsPerLine = 10;
+
               if (label.length <= maxCharsPerLine) return label;
 
               const words = label.split(' ');
@@ -385,12 +409,13 @@ function IssueChart() {
                 if ((currentLine + ' ' + word).trim().length <= maxCharsPerLine) {
                   currentLine = (currentLine + ' ' + word).trim();
                 } else {
-                  lines.push(currentLine);
+                  if (currentLine) lines.push(currentLine);
                   currentLine = word;
                 }
               });
 
               if (currentLine) lines.push(currentLine);
+
               return lines;
             },
           },
@@ -407,26 +432,28 @@ function IssueChart() {
             color: darkMode ? '#cfd7e3' : '#232323',
           },
           beginAtZero: true,
-          ticks: { stepSize: 1, color: darkMode ? '#cfd7e3' : '#232323' },
-          grid: { color: darkMode ? '#353535' : '#efefef' },
+          ticks: {
+            stepSize: 1,
+            color: darkMode ? '#cfd7e3' : '#232323',
+          },
+          grid: {
+            color: darkMode ? '#353535' : '#efefef',
+          },
         },
       },
     }),
     [darkMode, isMobile, chartAnalysis, chartData],
   );
 
-  const chartPlugins = useMemo(() => [xAxisBackgroundPlugin(darkMode)], [
-    darkMode,
-    chartData.labels,
-  ]);
+  const chartPlugins = useMemo(() => [xAxisBackgroundPlugin], [xAxisBackgroundPlugin]);
 
   const selectStyles = useMemo(
     () => ({
       control: provided => ({
         ...provided,
         backgroundColor: darkMode ? '#22272e' : '#ffffff',
-        borderColor: darkMode ? '#3d444d' : '#ccc',
-        color: darkMode ? '#cfd7e3' : '#333',
+        borderColor: darkMode ? '#3d444d' : '#cccccc',
+        color: darkMode ? '#cfd7e3' : '#333333',
         minHeight: 48,
         height: 'auto',
         alignItems: 'center',
@@ -434,7 +461,7 @@ function IssueChart() {
         paddingBottom: 2,
         boxShadow: 'none',
         '&:hover': {
-          borderColor: darkMode ? '#3d444d' : '#bbb',
+          borderColor: darkMode ? '#3d444d' : '#bbbbbb',
         },
       }),
       valueContainer: provided => ({
@@ -453,12 +480,12 @@ function IssueChart() {
         margin: 0,
         padding: 0,
         lineHeight: 'normal',
-        color: darkMode ? '#cfd7e3' : '#333',
+        color: darkMode ? '#cfd7e3' : '#333333',
       }),
       menu: provided => ({
         ...provided,
         backgroundColor: darkMode ? '#1e1e1e' : '#ffffff',
-        color: darkMode ? '#cfd7e3' : '#333',
+        color: darkMode ? '#cfd7e3' : '#333333',
       }),
       menuList: provided => ({
         ...provided,
@@ -480,7 +507,7 @@ function IssueChart() {
       }),
       singleValue: provided => ({
         ...provided,
-        color: darkMode ? '#cfd7e3' : '#333',
+        color: darkMode ? '#cfd7e3' : '#333333',
       }),
       multiValue: provided => ({
         ...provided,
@@ -489,12 +516,18 @@ function IssueChart() {
       }),
       multiValueLabel: provided => ({
         ...provided,
-        color: darkMode ? '#cfd7e3' : '#333',
+        color: darkMode ? '#cfd7e3' : '#333333',
       }),
       option: (provided, state) => ({
         ...provided,
         backgroundColor: state.isFocused ? (darkMode ? '#4caf50' : '#e2e8f0') : 'transparent',
-        color: state.isFocused ? (darkMode ? '#fff' : '#1a202c') : darkMode ? '#cfd7e3' : '#333',
+        color: state.isFocused
+          ? darkMode
+            ? '#ffffff'
+            : '#1a202c'
+          : darkMode
+          ? '#cfd7e3'
+          : '#333333',
         paddingTop: 8,
         paddingBottom: 8,
       }),
@@ -524,6 +557,7 @@ function IssueChart() {
       props.selectProps && typeof props.selectProps.onMenuClose === 'function'
         ? props.selectProps.onMenuClose
         : undefined;
+
     return (
       <components.MenuList {...props}>
         <div className={styles.filterMenuActions}>
@@ -537,18 +571,65 @@ function IssueChart() {
           >
             Select All
           </button>
+          <button
+            type="button"
+            className={styles.filterMenuButton}
+            onClick={() => {
+              if (field) handleClearField(field);
+              if (onMenuClose) onMenuClose();
+            }}
+          >
+            Clear All
+          </button>
         </div>
         {props.children}
       </components.MenuList>
     );
   };
+
   FilterMenuList.displayName = 'IssueChartFilterMenuList';
+
+  const handleExportCSV = () => {
+    if (!chartData || chartData.labels.length === 0) return;
+
+    const rows = [['Issue Type', 'Year', 'Count']];
+
+    chartData.datasets.forEach(dataset => {
+      dataset.data.forEach((count, index) => {
+        rows.push([chartData.labels[index], dataset.label, count]);
+      });
+    });
+
+    const csvContent = rows.map(row => row.join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'issues_chart_data.csv';
+    link.click();
+
+    URL.revokeObjectURL(url);
+  };
+
+  const handleExportPNG = () => {
+    if (!chartRef.current) return;
+
+    const chart = chartRef.current;
+    const url = chart.toBase64Image();
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'issues_chart.png';
+    link.click();
+  };
 
   const activeFilterSummary = useMemo(() => {
     const issueTypeCount = filters.issueTypes.length || Object.keys(issues || {}).length;
     const yearList = filters.years.length ? filters.years : uniqueYears;
     const range =
       yearList.length > 0 ? `${Math.min(...yearList)}–${Math.max(...yearList)}` : 'No years';
+
     return `${issueTypeCount} Issue Types | ${range}`;
   }, [filters.issueTypes, filters.years, issues, uniqueYears]);
 
@@ -571,6 +652,17 @@ function IssueChart() {
         >
           Issues Chart
         </h2>
+
+        <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+          <button type="button" onClick={handleExportCSV} disabled={chartData.labels.length === 0}>
+            Export CSV
+          </button>
+
+          <button type="button" onClick={handleExportPNG} disabled={chartData.labels.length === 0}>
+            Export PNG
+          </button>
+        </div>
+
         <div
           className={styles.selectContainer}
           style={{ justifyContent: 'center', gap: '20px', flexWrap: 'wrap' }}
@@ -579,10 +671,39 @@ function IssueChart() {
             <label
               htmlFor="issue-type-select"
               className={`${styles.issueChartLabel} ${darkMode ? styles.issueChartLabelDark : ''}`}
-              title="Issue types with similar names are grouped (e.g., Technical, Technical1, Technical2)"
+              title="Issue types with similar names are grouped."
             >
-              Issue Type:
+              Issue Type ({filters.issueTypes.length} selected):
             </label>
+
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '6px' }}>
+              <button
+                type="button"
+                onClick={() =>
+                  setFilters(prev => ({
+                    ...prev,
+                    issueTypes: Object.keys(issues || {}),
+                  }))
+                }
+                style={{ cursor: 'pointer', fontSize: '12px' }}
+              >
+                Select All
+              </button>
+
+              <button
+                type="button"
+                onClick={() =>
+                  setFilters(prev => ({
+                    ...prev,
+                    issueTypes: [],
+                  }))
+                }
+                style={{ cursor: 'pointer', fontSize: '12px' }}
+              >
+                Clear All
+              </button>
+            </div>
+
             <Select
               inputId="issue-type-select"
               className={`${styles.issueChartSelect} ${
@@ -601,13 +722,43 @@ function IssueChart() {
               filterField="issueTypes"
             />
           </div>
+
           <div style={{ minWidth: 200 }}>
             <label
               htmlFor="year-select"
               className={`${styles.issueChartLabel} ${darkMode ? styles.issueChartLabelDark : ''}`}
             >
-              Year:
+              Year ({filters.years.length} selected):
             </label>
+
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '6px' }}>
+              <button
+                type="button"
+                onClick={() =>
+                  setFilters(prev => ({
+                    ...prev,
+                    years: uniqueYears,
+                  }))
+                }
+                style={{ cursor: 'pointer', fontSize: '12px' }}
+              >
+                Select All
+              </button>
+
+              <button
+                type="button"
+                onClick={() =>
+                  setFilters(prev => ({
+                    ...prev,
+                    years: [],
+                  }))
+                }
+                style={{ cursor: 'pointer', fontSize: '12px' }}
+              >
+                Clear All
+              </button>
+            </div>
+
             <Select
               inputId="year-select"
               className={`${styles.issueChartSelect} ${
@@ -624,6 +775,7 @@ function IssueChart() {
               filterField="years"
             />
           </div>
+
           <div style={{ display: 'flex', alignItems: 'flex-end' }}>
             <button
               type="button"
@@ -648,7 +800,11 @@ function IssueChart() {
         {loading && <p>Loading...</p>}
         {error && <p>Error: {error}</p>}
 
-        {!loading && !error && (
+        {!loading && !error && chartData.labels.length === 0 && (
+          <p className={styles.noDataText}>No data for selected filters</p>
+        )}
+
+        {!loading && !error && chartData.labels.length > 0 && (
           <div
             className={`${styles.issueChartYearGroup} ${styles.issueTypeGroup} ${
               darkMode ? styles.issueChartYearGroupDark : ''
@@ -656,6 +812,7 @@ function IssueChart() {
             style={{ marginTop: 24 }}
           >
             <div className={styles.activeFilterSummary}>{activeFilterSummary}</div>
+
             <div
               className={`${styles.chartWrapper} ${darkMode ? styles.chartWrapperDark : ''}`}
               style={{
@@ -667,11 +824,13 @@ function IssueChart() {
               }}
             >
               <Bar
+                ref={chartRef}
                 data={chartData}
                 options={chartOptions}
                 plugins={chartPlugins}
                 aria-labelledby="chart-title"
               />
+
               <p
                 style={{
                   marginTop: 10,
