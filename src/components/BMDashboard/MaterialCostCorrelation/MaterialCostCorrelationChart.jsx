@@ -103,32 +103,33 @@ const getErrorType = errorMessage => {
   return 'general';
 };
 
+function getXAxisInterval(isNarrow, isMedium, dataLength) {
+  if (isNarrow) return dataLength > 5 ? Math.ceil(dataLength / 5) - 1 : 0;
+  if (isMedium) return dataLength > 8 ? Math.ceil(dataLength / 8) - 1 : 0;
+  return dataLength > 12 ? Math.ceil(dataLength / 12) - 1 : 0;
+}
+
 function getXAxisConfig(isNarrow, isMedium, dataLength) {
+  const xAxisInterval = getXAxisInterval(isNarrow, isMedium, dataLength);
   if (isNarrow) {
-    return {
-      xAxisAngle: -90,
-      xAxisHeight: 90,
-      xAxisTickFontSize: 10,
-      xAxisMaxNameLength: 8,
-      xAxisInterval: dataLength > 5 ? Math.ceil(dataLength / 5) - 1 : 0,
-    };
+    return { xAxisAngle: -90, xAxisHeight: 90, xAxisTickFontSize: 10, xAxisMaxNameLength: 8, xAxisInterval };
   }
   if (isMedium) {
-    return {
-      xAxisAngle: -90,
-      xAxisHeight: 85,
-      xAxisTickFontSize: 11,
-      xAxisMaxNameLength: 10,
-      xAxisInterval: dataLength > 8 ? Math.ceil(dataLength / 8) - 1 : 0,
-    };
+    return { xAxisAngle: -90, xAxisHeight: 85, xAxisTickFontSize: 11, xAxisMaxNameLength: 10, xAxisInterval };
   }
-  return {
-    xAxisAngle: -45,
-    xAxisHeight: 100,
-    xAxisTickFontSize: 12,
-    xAxisMaxNameLength: 15,
-    xAxisInterval: dataLength > 12 ? Math.ceil(dataLength / 12) - 1 : 0,
-  };
+  return { xAxisAngle: -45, xAxisHeight: 100, xAxisTickFontSize: 12, xAxisMaxNameLength: 15, xAxisInterval };
+}
+
+function getMarginConfig(isNarrow, isMedium) {
+  if (isNarrow) return { top: 10, right: 40, left: 40, bottom: 90 };
+  if (isMedium) return { top: 10, right: 50, left: 50, bottom: 90 };
+  return { top: 10, right: 60, left: 60, bottom: 80 };
+}
+
+function getYAxisWidth(isNarrow, isMedium) {
+  if (isNarrow) return 44;
+  if (isMedium) return 52;
+  return 64;
 }
 
 function MaterialCostCorrelationChart() {
@@ -205,26 +206,12 @@ function MaterialCostCorrelationChart() {
     const isNarrow = containerWidth < 500;
     const isMedium = containerWidth < 700;
 
-    let margin;
-    if (isNarrow) {
-      margin = { top: 10, right: 40, left: 40, bottom: 90 };
-    } else if (isMedium) {
-      margin = { top: 10, right: 50, left: 50, bottom: 90 };
-    } else {
-      margin = { top: 10, right: 60, left: 60, bottom: 80 };
-    }
+    const margin = getMarginConfig(isNarrow, isMedium);
 
     const dataLength = barChartData?.length || 0;
     const { xAxisAngle, xAxisHeight, xAxisTickFontSize, xAxisMaxNameLength, xAxisInterval } = getXAxisConfig(isNarrow, isMedium, dataLength);
 
-    let yAxisWidth;
-    if (isNarrow) {
-      yAxisWidth = 44;
-    } else if (isMedium) {
-      yAxisWidth = 52;
-    } else {
-      yAxisWidth = 64;
-    }
+    const yAxisWidth = getYAxisWidth(isNarrow, isMedium);
     const shortYAxisLabels = isNarrow;
 
     return {
