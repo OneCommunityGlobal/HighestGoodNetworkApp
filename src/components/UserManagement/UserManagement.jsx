@@ -6,6 +6,7 @@
  **************************************************************** */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Container } from 'reactstrap';
 import { Table } from 'react-bootstrap';
@@ -21,6 +22,7 @@ import {
   deleteUser,
   enableEditUserInfo,
   disableEditUserInfo,
+  updateUserPauseStatus,
 } from '../../actions/userManagement';
 import UserTableHeader from './UserTableHeader';
 import UserTableData from './UserTableData';
@@ -41,8 +43,6 @@ import SetupNewUserPopup from './setupNewUserPopup';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 import {
   scheduleDeactivationAction,
-  activateUserAction,
-  pauseUserAction,
   deactivateImmediatelyAction,
 } from '../../actions/userLifecycleActions';
 
@@ -116,8 +116,6 @@ class UserManagement extends React.PureComponent {
   }
 
   handleResize = () => {
-    // eslint-disable-next-line no-console
-    console.log(window.innerWidth);
     this.setState({ isMobile: window.innerWidth <= 750 });
   };
 
@@ -220,12 +218,8 @@ class UserManagement extends React.PureComponent {
               activeInactivePopupOpen: false,
             });
           }}
-          onCancelScheduledDeactivation={() =>
-            activateUserAction(this.props.dispatch, this.state.selectedUser, this.props.getAllUserProfile)
-          }
-          onReactivateUser={() =>
-            activateUserAction(this.props.dispatch, this.state.selectedUser, this.props.getAllUserProfile)
-          }
+          onCancelScheduledDeactivation={this.reactivateUser}
+          onReactivateUser={this.reactivateUser}
         />
         <SetUpFinalDayPopUp
           open={this.state.finalDayPopupOpen}
@@ -421,8 +415,13 @@ class UserManagement extends React.PureComponent {
     if (status === UserStatus.Inactive) {
       this.setState({ activationDateOpen: true });
     } else {
-      await activateUserAction(this.props.dispatch, user, this.props.getAllUserProfile);
+      await this.reactivateUser(user);
     }
+  };
+
+  reactivateUser = async (user = this.state.selectedUser) => {
+    await this.props.dispatch(updateUserPauseStatus(user, UserStatus.Active, Date.now()));
+    await this.props.getAllUserProfile();
   };
 
   onUserUpdate = (updatedUser) => {
@@ -480,7 +479,7 @@ class UserManagement extends React.PureComponent {
       return;
     }
     if (status === FinalDay.RemoveFinalDay) {
-      await activateUserAction(this.props.dispatch, user, this.props.getAllUserProfile);
+      await this.reactivateUser(user);
     } else {
       this.setState({
         finalDayDateOpen: true,
@@ -508,14 +507,10 @@ class UserManagement extends React.PureComponent {
   };
 
   pauseUser = async (reactivationDate) => {
-    // eslint-disable-next-line no-console
-    console.log('Pausing user with reactivation date:', reactivationDate);
-    await pauseUserAction(
-      this.props.dispatch,
-      this.state.selectedUser,
-      reactivationDate,
-      this.props.getAllUserProfile,
+    await this.props.dispatch(
+      updateUserPauseStatus(this.state.selectedUser, UserStatus.Inactive, reactivationDate),
     );
+    await this.props.getAllUserProfile();
 
     this.setState({
       activationDateOpen: false,
@@ -800,6 +795,49 @@ class UserManagement extends React.PureComponent {
     );
   }
 }
+
+UserManagement.propTypes = {
+  dispatch: PropTypes.func,
+  getAllTimeOffRequests: PropTypes.func,
+  getAllUserProfile: PropTypes.func,
+  deleteUser: PropTypes.func,
+  enableEditUserInfo: PropTypes.func,
+  disableEditUserInfo: PropTypes.func,
+  hasPermission: PropTypes.func,
+  state: PropTypes.shape({
+    theme: PropTypes.shape({
+      darkMode: PropTypes.bool,
+    }).isRequired,
+    auth: PropTypes.shape({
+      user: PropTypes.shape({
+        role: PropTypes.string,
+      }),
+    }).isRequired,
+    userProfile: PropTypes.shape({
+      email: PropTypes.string,
+      jobTitle: PropTypes.string,
+    }).isRequired,
+    allUserProfiles: PropTypes.shape({
+      userProfiles: PropTypes.array,
+    }).isRequired,
+    role: PropTypes.shape({
+      roles: PropTypes.array,
+    }).isRequired,
+    timeOffRequests: PropTypes.shape({
+      requests: PropTypes.object,
+    }).isRequired,
+    userPagination: PropTypes.shape({
+      pagestats: PropTypes.shape({
+        selectedPage: PropTypes.number,
+        pageSize: PropTypes.number,
+      }).isRequired,
+      editable: PropTypes.bool,
+    }).isRequired,
+    userProfileEdit: PropTypes.shape({
+      editable: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
+    }).isRequired,
+  }).isRequired,
+};
 
 const mapStateToProps = (state) => {
   return { state };
