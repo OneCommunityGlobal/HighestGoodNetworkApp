@@ -320,8 +320,7 @@ function ShareAvailability({ activity, availability, activityId }) {
         className={`${styles.shareButton} ${darkMode ? styles.shareButtonDark : ''}`}
         onClick={handleShareClick}
       >
-        <span className={styles.shareIcon}>📤</span>
-        Share Availability
+        <span className={styles.shareIcon}>📤</span> Share Availability
       </button>
       {showShareModal && (
         <div className={`${styles.overlay} ${darkMode ? styles.darkMode : ''}`}>
