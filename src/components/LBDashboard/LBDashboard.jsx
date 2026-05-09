@@ -105,18 +105,23 @@ const CategoryControls = ({
 
   const isDisabled = availableMetrics.length === 0;
   const isSelectedCategory = METRIC_OPTIONS[categoryKey].some(m => m.key === selectedMetricKey);
-  const btnActiveClass = isSelectedCategory
-    ? darkMode
-      ? styles.darkActiveFilterBtn
-      : styles.activeFilterBtn
-    : darkMode
-    ? styles.darkFilterBtn
-    : '';
+
+  let btnActiveClass = '';
+  if (isSelectedCategory) {
+    btnActiveClass = darkMode ? styles.darkActiveFilterBtn : styles.activeFilterBtn;
+  } else if (darkMode) {
+    btnActiveClass = styles.darkFilterBtn;
+  }
+
+  let btnColor;
+  if (darkMode) {
+    btnColor = isSelectedCategory ? 'dark' : 'success';
+  }
 
   return (
     <>
       <Button
-        color={darkMode ? (isSelectedCategory ? 'dark' : 'success') : undefined}
+        color={btnColor}
         className={`${styles.filterBtn} ${btnActiveClass}`}
         disabled={isDisabled}
         title={isDisabled ? 'Not available for Listing type' : undefined}
@@ -132,7 +137,7 @@ const CategoryControls = ({
       >
         <DropdownToggle
           caret
-          color={darkMode ? (isSelectedCategory ? 'dark' : 'success') : undefined}
+          color={btnColor}
           disabled={isDisabled}
           className={`${styles.filterBtn} ${btnActiveClass}`}
         />
