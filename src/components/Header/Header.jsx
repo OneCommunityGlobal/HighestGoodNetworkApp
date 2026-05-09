@@ -39,7 +39,6 @@ import {
   BLUE_SQUARE_EMAIL_MANAGEMENT,
   DASHBOARD,
   JOB_ANALYTICS_REPORT,
-  BM_DASHBOARD,
   LOGOUT,
   OTHER_LINKS,
   PERMISSIONS_MANAGEMENT,
@@ -408,10 +407,6 @@ export function Header(props) {
   if (location.pathname === '/login') return null;
 
   const viewingUser = JSON.parse(window.sessionStorage.getItem('viewingUser'));
-
-  const showBMDashboard = location.pathname.startsWith('/bmdashboard');
-
-
   return (
     <div className={`${styles.headerWrapper}`} data-testid="header">
       <Navbar className={`py-3 ${styles.navbar}`} color="dark" dark expand="xl">
@@ -508,14 +503,6 @@ export function Header(props) {
                   </NavLink>
                 </NavItem>
 
-                {showBMDashboard && (
-                  <NavItem>
-                    <NavLink tag={Link} to="/bmdashboard" disabled={headerDisabled}>
-                      <span>{BM_DASHBOARD}</span>
-                    </NavLink>
-                  </NavItem>
-                )}
-  
                 <NavItem>
                   <NavLink tag={Link} to="/timelog#currentWeek" disabled={headerDisabled}>
                     <span>{TIMELOG}</span>
@@ -533,9 +520,6 @@ export function Header(props) {
                       }`}
                       disabled={headerDisabled}
                     >
-                      <DropdownItem tag={Link} to="/bmdashboard/inventorytypes" className={fontColor}>
-                        All Inventory Types
-                      </DropdownItem>
                       <DropdownItem tag={Link} to="/bmdashboard/materials/add" className={fontColor}>
                         Add Material
                       </DropdownItem>
