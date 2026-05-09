@@ -8,6 +8,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable react/button-has-type */
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useSelector } from 'react-redux';
 import {
   FaMapMarkerAlt,
   FaRegCommentDots,
@@ -88,6 +89,7 @@ const withVillageFallback = async (
 };
 
 function Home() {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [viewMode, setViewMode] = useState('Grid');
   const [activeTab, setActiveTab] = useState('listings');
   const [selectedVillage, setSelectedVillage] = useState('');
@@ -341,17 +343,19 @@ function Home() {
   }, []);
 
   return (
-    <div className={`${styles.lbOutsideContainer}`}>
+    <div
+      className={`${styles.lbOutsideContainer} ${darkMode ? styles.lbOutsideContainerDark : ''}`}
+    >
       {/* Logo Section */}
       <div className={`${styles.lbLogo}`}>
         <img src={logo} alt="Logo" />
       </div>
 
       {/* Navigation Bar */}
-      <nav className={`${styles.lbNavbar}`}>
+      <nav className={`${styles.lbNavbar} ${darkMode ? styles.lbNavbarDark : ''}`}>
         <div className={`${styles.lbNavLeft}`}>
           <select
-            className={`${styles.lbVillageFilter}`}
+            className={`${styles.lbVillageFilter} ${darkMode ? styles.lbVillageFilterDark : ''}`}
             value={selectedVillage}
             onChange={e => setSelectedVillage(e.target.value)}
           >
@@ -362,28 +366,35 @@ function Home() {
               </option>
             ))}
           </select>
-          <button className={`${styles.lbGoButton}`} onClick={handleGoButtonClick}>
+          <button
+            className={`${styles.lbGoButton} ${darkMode ? styles.lbGoButtonDark : ''}`}
+            onClick={handleGoButtonClick}
+          >
             Go
           </button>
         </div>
         <div className={`${styles.lbNavRight}`}>
-          <span className={`${styles.lbWelcomeText}`}>WELCOME {userName}</span>
+          <span className={`${styles.lbWelcomeText} ${darkMode ? styles.lbWelcomeTextDark : ''}`}>
+            WELCOME {userName}
+          </span>
           <FaRegCommentDots
-            className={`${styles.lbNavIcon}`}
+            className={`${styles.lbNavIcon} ${darkMode ? styles.lbNavIconDark : ''}`}
             title="Messages"
             // eslint-disable-next-line no-return-assign
             onClick={() => (window.location.href = '/chat')}
           />
           <div className={`${styles.lbNotificationBadge}`}>
             <FaRegBell
-              className={`${styles.lbNavIcon}`}
+              className={`${styles.lbNavIcon} ${darkMode ? styles.lbNavIconDark : ''}`}
               title="Notifications"
               onClick={() => setShowNotifications(true)}
             />
             <span className={`${styles.lbBadge}`}>3</span>
           </div>
           <FaUser
-            className={`${styles.lbNavIcon} ${styles.lbUserIcon}`}
+            className={`${styles.lbNavIcon} ${styles.lbUserIcon} ${
+              darkMode ? styles.lbNavIconDark : ''
+            }`}
             title="Profile"
             // eslint-disable-next-line no-return-assign
             onClick={() => (window.location.href = '/profile')}
@@ -392,7 +403,9 @@ function Home() {
       </nav>
 
       {/* Main Content Container */}
-      <div className={`${styles.lbInsideContainer}`}>
+      <div
+        className={`${styles.lbInsideContainer} ${darkMode ? styles.lbInsideContainerDark : ''}`}
+      >
         {/* Content Header with Map Link */}
         <div className={`${styles.lbContentHeader}`}>
           <div
@@ -417,15 +430,23 @@ function Home() {
 
             {/* Tabs Section */}
             <div className={`${styles.lbTabsSection}`}>
-              <button className={styles.lbTab} onClick={() => setActiveTab('listings')}>
+              <button
+                type="button"
+                className={`${styles.lbTab} ${
+                  activeTab === 'listings' ? styles.lbActiveTab : styles.lbInactiveTab
+                }`}
+                onClick={() => setActiveTab('listings')}
+              >
                 Listings
               </button>
               <button
                 type="button"
-                className={styles.lbTab}
-                onClick={() => setActiveTab('listings')}
+                className={`${styles.lbTab} ${
+                  activeTab !== 'listings' ? styles.lbActiveTab : styles.lbInactiveTab
+                }`}
+                onClick={() => setActiveTab('bidding')}
               >
-                Listings
+                Bidding
               </button>
             </div>
 

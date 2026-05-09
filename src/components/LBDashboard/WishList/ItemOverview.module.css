@@ -16,16 +16,22 @@
 .item__navbar-left{
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
+  gap: 0.75rem;
 }
 
 .item__selector{
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  min-height: 38px;
   width: 200px;
+  max-width: min(200px, 50vw);
   background-color: #fff;
   border-radius: 5px;
-  margin-right: 0.7rem;
-  padding: 0.1rem 0.4rem 0.1rem 0.2rem;
+  margin-right: 0;
+  padding: 0.25rem 0.5rem;
   cursor: pointer;
 }
 
@@ -34,12 +40,19 @@
   border: none;
   outline: none;
   font-size: 14px;
+  line-height: 1.25;
   cursor: pointer;
+  background: transparent;
 }
 
 .item__button{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-height: 38px;
+  padding: 0.35rem 0.75rem;
   background-color: rgb(190 190 190);
-  padding: 0.2rem 0.5rem;
   border-radius: 5px;
   border: 1px solid black;
   cursor: pointer;
@@ -65,11 +78,12 @@
 
 .item__navbar-right{
   display: flex;
-  flex-direction: row;
+  flex-flow: row wrap;
   justify-content: flex-end;
   align-items: center;
+  gap: 0.5rem 1rem;
   width: 100%;
-  padding: 1rem 0 0;
+  padding: 0;
 }
 
 .item__navbar-right h2{
@@ -78,6 +92,8 @@
   font-size: 14px;
   padding: 0;
   margin: 0;
+  line-height: 1.25;
+  align-self: center;
 }
 
 .item__navbar-right--dark h2 {
