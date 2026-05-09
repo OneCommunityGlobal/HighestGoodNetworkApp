@@ -56,13 +56,44 @@ font-size: .8em;
 .toolFormError {
   font-weight: 500;
   font-size: 11px !important;
-  color: red;
+  color: red !important;
   display: flex;
   justify-content: flex-start;
 }
 
-.fieldRequired{
-  color: red;
+.fieldRequired {
+  color: red !important;
+}
+
+/* Dark mode: phone country dropdown */
+.addToolFormDark :global(.react-tel-input .country-list) {
+  background-color: #1a1a2e;
+  border-color: #555;
+  color: #fff;
+}
+
+.addToolFormDark :global(.react-tel-input .country-list .country:hover),
+.addToolFormDark :global(.react-tel-input .country-list .country.highlight) {
+  background-color: #2d2d4e;
+}
+
+.addToolFormDark :global(.react-tel-input .country-list .country-name) {
+  color: #fff;
+}
+
+.addToolFormDark :global(.react-tel-input .country-list .dial-code) {
+  color: #aaa;
+}
+
+.addToolFormDark :global(.react-tel-input .country-list .search) {
+  background-color: #1a1a2e;
+  padding: 10px 10px 6px;
+}
+
+.addToolFormDark :global(.react-tel-input .country-list .search-box) {
+  background-color: #1a1a2e;
+  color: #fff;
+  border-color: #555;
 }
 
 @media screen and (width <= 640px) {

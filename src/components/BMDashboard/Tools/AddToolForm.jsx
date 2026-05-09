@@ -178,7 +178,10 @@ export default function AddToolForm() {
   };
 
   return (
-    <Form className={`${styles.addToolForm} container`} onSubmit={handleSubmit}>
+    <Form
+      className={`${styles.addToolForm} ${darkMode ? styles.addToolFormDark : ''} container`}
+      onSubmit={handleSubmit}
+    >
       <FormGroup>
         <Label for="tool">
           Tool name <span className={`${styles.fieldRequired}`}>*</span>
@@ -305,6 +308,7 @@ export default function AddToolForm() {
             name="from-date"
             value={formData.fromDate}
             onChange={event => handleInputChange('fromDate', event.target.value)}
+            style={{ colorScheme: darkMode ? 'dark' : 'light' }}
           />
           {errors.fromDate && (
             <Label for="fromDateErr" sm={12} className={`${styles.toolFormError}`}>
@@ -321,6 +325,7 @@ export default function AddToolForm() {
             value={formData.toDate}
             onChange={event => handleInputChange('toDate', event.target.value)}
             disabled={isPurchased}
+            style={{ colorScheme: darkMode ? 'dark' : 'light' }}
           />
           {errors.toDate && (
             <Label for="toDateErr" sm={12} className={`${styles.toolFormError}`}>

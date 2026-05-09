@@ -1,0 +1,50 @@
+/* stylelint-disable no-descending-specificity */
+.form {
+  max-width: 580px;
+  padding: 1.5rem 1rem;
+}
+
+.formGroup {
+  margin-bottom: 1.25rem;
+}
+
+.formGroup label {
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  display: block;
+}
+
+.requiredLabel::after {
+  content: ' *';
+  color: #dc3545;
+}
+
+.btnGroup {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.btnGroup button {
+  min-width: 100px;
+}
+
+/* Keep validation feedback red even when dark mode overrides color to white */
+.form :global(.invalid-feedback) {
+  color: #dc3545 !important;
+  font-weight: 500;
+}
+
+/* Dark mode input and select styling */
+.formDark :global(input),
+.formDark :global(textarea),
+.formDark :global(select) {
+  background-color: #2a2d3e !important;
+  color: #f1f5f9 !important;
+  border-color: #4b5563 !important;
+}
+
+.formDark :global(input::placeholder),
+.formDark :global(textarea::placeholder) {
+  color: #9ca3af !important;
+}
