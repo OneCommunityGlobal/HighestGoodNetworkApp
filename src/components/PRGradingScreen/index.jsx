@@ -69,18 +69,33 @@ const PRGradingScreenContainer = () => {
             gradedPrs: (entry.gradedPrs || []).map(pr => ({ ...pr, id: uuidv4() })),
           }));
           setReviewers(mapped);
-        } else if (config?.reviewerNames?.length > 0) {
-          // No grading yet — populate from config reviewer names
-          const mapped = config.reviewerNames.map((name, index) => ({
+        } else {
+          // No grading yet — populate from config using reviewerCount, auto-fill missing names
+          const count = config?.reviewerCount || 0;
+          const names = config?.reviewerNames || [];
+          const getPrsNeeded = dataType => {
+            switch (dataType) {
+              case 'minimal':
+                return 1;
+              case 'mixed':
+                return 5;
+              case 'edge cases':
+                return 12;
+              case 'custom':
+                return 10;
+              default:
+                return 10;
+            }
+          };
+
+          const mapped = Array.from({ length: count }, (_, index) => ({
             id: uuidv4(),
-            reviewer: name || `Reviewer ${index + 1}`,
-            prsNeeded: 10,
+            reviewer: names[index] || `Reviewer ${index + 1}`,
+            prsNeeded: getPrsNeeded(config?.testDataType),
             prsReviewed: 0,
             gradedPrs: [],
           }));
           setReviewers(mapped);
-        } else {
-          setReviewers([]);
         }
       } catch {
         setReviewers([]);
