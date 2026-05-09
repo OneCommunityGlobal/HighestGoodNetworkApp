@@ -27,7 +27,7 @@ import IssueCharts from '../Issues/openIssueCharts';
 import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
-
+import FinancialsTrackingCard from './ExpenditureChart/FinancialsTrackingCard';
 const projectStatusButtons = [
   {
     title: 'Total Projects',
@@ -265,7 +265,7 @@ function WeeklyProjectSummary() {
           } else if (index === 2) {
             content = <TotalMaterialCostPerProject />;
           } else {
-            content = <p>📊 Card</p>;
+            content = null;
           }
           const uniqueId = uuidv4();
           return (
@@ -335,13 +335,13 @@ function WeeklyProjectSummary() {
         className: 'large',
         content: (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
-            <div className="weekly-project-summary-card financial-small">📊 Card</div>
             <div className="weekly-project-summary-card financial-small financial-chart">
               <ExpenseBarChart />
             </div>
-            <div className="weekly-project-summary-card financial-small">📊 Card</div>
-            <div className="weekly-project-summary-card financial-small">📊 Card</div>
-            <div className="weekly-project-summary-card financial-big">📊 Big Card</div>
+
+            <div className="weekly-project-summary-card financial-small">
+              <CostPredictionChart />
+            </div>
           </div>
         ),
       },
@@ -386,7 +386,7 @@ function WeeklyProjectSummary() {
         title: 'Financials Tracking',
         key: 'Financials Tracking',
         className: 'full',
-        content: [1, 2, 3, 4].map((_, index) => {
+        content: [1, 2, 3].map((_, index) => {
           const uniqueId = uuidv4();
           return (
             <div
@@ -394,9 +394,10 @@ function WeeklyProjectSummary() {
               className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
             >
               {(() => {
-                if (index === 2) return <CostPredictionChart projectId={1} />;
-                if (index === 3) return <ActualVsPlannedCost />;
-                return '📊 Card';
+                if (index === 0) return <FinancialsTrackingCard />;
+                if (index === 1) return <CostPredictionChart projectId={1} />;
+                if (index === 2) return <ActualVsPlannedCost />;
+                return null;
               })()}
             </div>
           );
