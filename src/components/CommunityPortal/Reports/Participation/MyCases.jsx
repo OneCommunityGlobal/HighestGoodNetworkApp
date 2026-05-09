@@ -199,11 +199,17 @@ function MyCases() {
           )}
         </div>
       </header>
-      <main className={`${styles.content}`}>
-        {view === 'card' && renderCardView()}
-        {view === 'list' && renderListView()}
-        {view === 'calendar' && renderCalendarView()}
-      </main>
+      {visibleEvents.length === 0 ? (
+        <div className={`${styles.emptyState} ${darkMode ? styles.emptyStateDark : ''}`}>
+          No upcoming events found.
+        </div>
+      ) : (
+        <main className={`${styles.content}`}>
+          {view === 'card' && renderCardView()}
+          {view === 'list' && renderListView()}
+          {view === 'calendar' && renderCalendarView()}
+        </main>
+      )}
       <CreateEventModal
         isOpen={isCreateModalOpen}
         toggle={() => setIsCreateModalOpen(!isCreateModalOpen)}
