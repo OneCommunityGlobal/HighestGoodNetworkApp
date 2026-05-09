@@ -91,7 +91,6 @@ GraphCard.propTypes = {
 const CategoryControls = ({
   categoryKey,
   label,
-  activeCategory,
   selectedMetricKey,
   openDD,
   darkMode,
@@ -105,13 +104,20 @@ const CategoryControls = ({
   );
 
   const isDisabled = availableMetrics.length === 0;
+  const isSelectedCategory = METRIC_OPTIONS[categoryKey].some(m => m.key === selectedMetricKey);
+  const btnActiveClass = isSelectedCategory
+    ? darkMode
+      ? styles.darkActiveFilterBtn
+      : styles.activeFilterBtn
+    : darkMode
+    ? styles.darkFilterBtn
+    : '';
 
   return (
     <>
       <Button
-        className={`${styles.filterBtn} ${activeCategory === categoryKey ? styles.active : ''} ${
-          darkMode ? styles.darkFilterBtn : ''
-        }`}
+        color={darkMode ? (isSelectedCategory ? 'dark' : 'success') : undefined}
+        className={`${styles.filterBtn} ${btnActiveClass}`}
         disabled={isDisabled}
         title={isDisabled ? 'Not available for Listing type' : undefined}
         onClick={() => !isDisabled && onCategoryClick(categoryKey)}
@@ -122,14 +128,13 @@ const CategoryControls = ({
       <ButtonDropdown
         isOpen={openDD[categoryKey]}
         toggle={() => !isDisabled && onToggleDD(categoryKey)}
-        className={styles.dd}
+        className={`${styles.dd} ${isSelectedCategory ? styles.ddActive : ''}`}
       >
         <DropdownToggle
           caret
+          color={darkMode ? (isSelectedCategory ? 'dark' : 'success') : undefined}
           disabled={isDisabled}
-          className={`${styles.filterBtn} ${activeCategory === categoryKey ? styles.active : ''} ${
-            darkMode ? styles.darkFilterBtn : ''
-          }`}
+          className={`${styles.filterBtn} ${btnActiveClass}`}
         />
         <DropdownMenu
           className={`${styles.dropdownMenu} ${darkMode ? styles.darkDropdownMenu : ''}`}
@@ -155,7 +160,6 @@ const CategoryControls = ({
 CategoryControls.propTypes = {
   categoryKey: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
-  activeCategory: PropTypes.string.isRequired,
   selectedMetricKey: PropTypes.string.isRequired,
   openDD: PropTypes.object.isRequired,
   darkMode: PropTypes.bool,
@@ -291,7 +295,6 @@ const FilterSection = ({
         <CategoryControls
           categoryKey="DEMAND"
           label="Demand"
-          activeCategory={activeCategory}
           selectedMetricKey={selectedMetricKey}
           openDD={openDD}
           darkMode={darkMode}
@@ -303,7 +306,6 @@ const FilterSection = ({
         <CategoryControls
           categoryKey="VACANCY"
           label="Vacancy"
-          activeCategory={activeCategory}
           selectedMetricKey={selectedMetricKey}
           openDD={openDD}
           darkMode={darkMode}
@@ -315,7 +317,6 @@ const FilterSection = ({
         <CategoryControls
           categoryKey="REVENUE"
           label="Revenue"
-          activeCategory={activeCategory}
           selectedMetricKey={selectedMetricKey}
           openDD={openDD}
           darkMode={darkMode}
@@ -630,7 +631,7 @@ export function LBDashboard() {
                   showYAxisTitle={true}
                   yTickFormatter={stripVillageWord}
                   yCategoryWidth={120}
-                  margins={{ top: 60, right: 50, bottom: 50, left: 20 }}
+                  margins={{ top: 60, right: 110, bottom: 50, left: 20 }}
                   barSize={24}
                   maxBars={6}
                   height={480}

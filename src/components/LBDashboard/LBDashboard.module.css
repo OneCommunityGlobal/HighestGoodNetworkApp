@@ -167,8 +167,8 @@ body {
 }
 
 .filterBtn {
-  background: #6a4ff7 !important;
-  border-color: #6a4ff7 !important;
+  background: #5cb85c !important;
+  border-color: #5cb85c !important;
   color: #fff !important;
   border-radius: 16px;
   padding: 6px 14px;
@@ -177,6 +177,8 @@ body {
 }
 
 .filterBtn:hover {
+  background: #4cae4c !important;
+  border-color: #4cae4c !important;
   color: #fff !important;
 }
 
@@ -192,31 +194,31 @@ body {
 }
 
 .darkFilterBtn {
-  background: #34495E !important;
-  border-color: #4A5F7F !important;
+  background: #5cb85c !important;
+  border-color: #5cb85c !important;
 }
 
 .darkFilterBtn:hover {
-  background: #4A5F7F !important;
-  border-color: #5D7FA3 !important;
+  background: #4cae4c !important;
+  border-color: #4cae4c !important;
 }
 
 .darkFilterBtn.active {
-  background: #E74C3C !important;
-  border-color: #E74C3C !important;
+  background: #1e7e34 !important;
+  border-color: #1e7e34 !important;
 }
 
 .dd :global(.dropdown-toggle) {
-  background: #6a4ff7 !important;
-  border-color: #6a4ff7 !important;
+  background: #5cb85c !important;
+  border-color: #5cb85c !important;
   color: #fff !important;
   border-radius: 16px !important;
   padding: 6px 10px;
 }
 
 .dd :global(.dropdown-toggle:hover) {
-  background: #593dd8 !important;
-  border-color: #593dd8 !important;
+  background: #4cae4c !important;
+  border-color: #4cae4c !important;
   color: #fff !important;
 }
 
@@ -246,6 +248,34 @@ body {
 
 .dropdownActive {
   background: #000 !important;
+  color: #fff !important;
+}
+
+/* Dedicated active-button classes — used instead of compound selectors */
+.activeFilterBtn {
+  background: #115b22 !important;
+  border-color: #0a4b18 !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+}
+
+.darkActiveFilterBtn {
+  background: #115b22 !important;
+  border-color: #0a4b18 !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.25) !important;
+}
+
+.ddActive :global(.dropdown-toggle) {
+  background: #115b22 !important;
+  border-color: #0a4b18 !important;
+  color: #fff !important;
+}
+
+.ddActive :global(.dropdown-toggle:hover) {
+  background: #0d4720 !important;
+  border-color: #0d4720 !important;
   color: #fff !important;
 }
 
@@ -682,14 +712,15 @@ body {
 }
 
 .darkFilterBtn {
-  background: #3a506b !important;
-  border-color: #3a506b !important;
+  background: #5cb85c !important;
+  border-color: #5cb85c !important;
   color: #fff !important;
 }
 
 .active.darkFilterBtn {
-  background: #225163 !important;
-  border-color: #225163 !important;
+  background: #1e7e34 !important;
+  border-color: #1e7e34 !important;
+  color: #fff !important;
 }
 
 .darkDropdown {
@@ -705,6 +736,11 @@ body {
 
 .darkDropdownItem:hover {
   background: #3a506b !important;
+  color: #fff !important;
+}
+
+.darkDropdownItem.dropdownActive {
+  background: #6a4ff7 !important;
   color: #fff !important;
 }
 
