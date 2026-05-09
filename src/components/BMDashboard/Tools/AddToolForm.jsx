@@ -231,7 +231,11 @@ export default function AddToolForm() {
             onChange={event => handleInputChange('unitPrice', event.target.value)}
           />
           {errors.unitPrice && (
-            <Label for="toolUnitPriceErr" sm={12} className={`${styles.toolFormError} bm-error-red`}>
+            <Label
+              for="toolUnitPriceErr"
+              sm={12}
+              className={`${styles.toolFormError} bm-error-red`}
+            >
               {errors.unitPrice}
             </Label>
           )}
@@ -431,7 +435,11 @@ export default function AddToolForm() {
           onChange={event => handleInputChange('description', event.target.value)}
         />
         {errors.description && (
-          <Label for="toolDescriptionErr" sm={12} className={`${styles.toolFormError} bm-error-red`}>
+          <Label
+            for="toolDescriptionErr"
+            sm={12}
+            className={`${styles.toolFormError} bm-error-red`}
+          >
             {errors.description}
           </Label>
         )}

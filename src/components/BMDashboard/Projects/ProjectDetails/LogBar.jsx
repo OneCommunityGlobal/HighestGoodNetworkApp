@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Button } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import PropTypes from 'prop-types';
 import styles from './ProjectDetails.module.css';
 
 // button styles for each section
@@ -80,9 +81,6 @@ function LogBar({ projectId }) {
   );
 }
 
-LogBar.propTypes = {
-  projectId: PropTypes.string.isRequired,
-};
 LogBar.propTypes = {
   projectId: PropTypes.string.isRequired,
 };
