@@ -1,6 +1,6 @@
 import axios from 'axios';
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Button, Card, Col, Container, Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
@@ -25,6 +25,12 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [roleFilter, setRoleFilter] = useState('');
+  const [promotionCandidate, setPromotionCandidate] = useState(null);
+  const [confirmedPromotions, setConfirmedPromotions] = useState([]);
+  const [selectedForPromotion, setSelectedForPromotion] = useState([]);
+  const [showBatchConfirm, setShowBatchConfirm] = useState(false);
 
   useEffect(() => {
     if (!teamData?.teamCode) return;
@@ -55,10 +61,24 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [teamData?.teamCode]);
-  const [promotionCandidate, setPromotionCandidate] = useState(null);
-  const [confirmedPromotions, setConfirmedPromotions] = useState([]);
-  const [selectedForPromotion, setSelectedForPromotion] = useState([]);
-  const [showBatchConfirm, setShowBatchConfirm] = useState(false);
+
+  const availableRoles = useMemo(() => {
+    const roles = reviewerData.map(r => r.role).filter(Boolean);
+    return [...new Set(roles)];
+  }, [reviewerData]);
+
+  const filteredReviewers = useMemo(() => {
+    return reviewerData.filter(r => {
+      const nameMatch = r.reviewer.toLowerCase().includes(searchTerm.toLowerCase());
+      const roleMatch = roleFilter ? r.role === roleFilter : true;
+      return nameMatch && roleMatch;
+    });
+  }, [reviewerData, searchTerm, roleFilter]);
+
+  const handleClearSearch = () => {
+    setSearchTerm('');
+    setRoleFilter('');
+  };
 
   if (!teamData || !reviewers) {
     return <div>Error: Missing required props</div>;
@@ -150,6 +170,10 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
   /* ---------------- SAVE / FINALIZE ---------------- */
 
   const handleFinalize = async () => {
+    if (!teamData.teamCode) {
+      setSaveMessage('Error: Team code is missing. Cannot save grades.');
+      return;
+    }
     setIsSaving(true);
     setSaveMessage('');
     try {
@@ -160,9 +184,7 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
         gradedPrs: r.gradedPrs.map(pr => ({ prNumbers: pr.prNumbers, grade: pr.grade })),
       }));
 
-      await dispatch(
-        saveWeeklyGrading(teamData.teamCode, teamData.dateRange?.start, gradings, token),
-      );
+      await dispatch(saveWeeklyGrading(teamData.teamCode, teamData.dateRange?.start, gradings));
       setIsFinalized(true);
       setSaveMessage('Grades saved successfully!');
     } catch {
@@ -171,6 +193,7 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
       setIsSaving(false);
     }
   };
+
   /* ---------------- PROMOTION ---------------- */
 
   const handlePromoteClick = async reviewer => {
@@ -188,8 +211,7 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
             ? response.data.weeklyPRs
             : [{ week: teamData.dateRange.start, count: reviewer.gradedPrs.length }],
       });
-    } catch (error) {
-      // fallback to local data if API fails
+    } catch {
       setPromotionCandidate({
         reviewerId: reviewer.id,
         reviewerName: reviewer.reviewer,
@@ -207,7 +229,7 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
           memberIds: [reviewerId],
         });
       }
-    } catch (error) {
+    } catch {
       // silently continue even if API fails
     }
     setConfirmedPromotions(prev => [...prev, reviewerName]);
@@ -217,6 +239,7 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
   const handleCancelPromotion = () => {
     setPromotionCandidate(null);
   };
+
   /* ---------------- BATCH PROMOTION ---------------- */
 
   const handleCheckboxChange = reviewerId => {
@@ -232,7 +255,7 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
           memberIds: selectedForPromotion,
         });
       }
-    } catch (error) {
+    } catch {
       // silently continue
     }
     const selectedNames = reviewerData
@@ -300,6 +323,50 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
             </Card.Header>
 
             <Card.Body className={darkMode ? styles['dark-mode'] : ''}>
+              {/* Search Bar */}
+              <div
+                className={`${styles['pr-grading-screen-search-bar']} ${
+                  darkMode ? styles['dark-mode'] : ''
+                }`}
+              >
+                <input
+                  type="text"
+                  placeholder="Search reviewers by name..."
+                  value={searchTerm}
+                  onChange={e => setSearchTerm(e.target.value)}
+                  className={`${styles['pr-grading-screen-search-input']} ${
+                    darkMode ? styles['dark-mode'] : ''
+                  }`}
+                />
+                {availableRoles.length > 0 && (
+                  <select
+                    value={roleFilter}
+                    onChange={e => setRoleFilter(e.target.value)}
+                    className={`${styles['pr-grading-screen-role-select']} ${
+                      darkMode ? styles['dark-mode'] : ''
+                    }`}
+                  >
+                    <option value="">All roles</option>
+                    {availableRoles.map(role => (
+                      <option key={role} value={role}>
+                        {role}
+                      </option>
+                    ))}
+                  </select>
+                )}
+                {(searchTerm || roleFilter) && (
+                  <button
+                    type="button"
+                    onClick={handleClearSearch}
+                    className={`${styles['pr-grading-screen-clear-btn']} ${
+                      darkMode ? styles['dark-mode'] : ''
+                    }`}
+                  >
+                    ✕ Clear
+                  </button>
+                )}
+              </div>
+
               <table
                 className={`${styles['pr-grading-screen-table']} ${
                   darkMode ? styles['dark-mode'] : ''
@@ -314,156 +381,168 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {reviewerData.map(reviewer => (
-                    <React.Fragment key={reviewer.id}>
-                      <tr>
-                        <td>{reviewer.reviewer}</td>
-                        <td>
-                          <input
-                            type="number"
-                            value={reviewer.gradedPrs.length}
-                            readOnly
-                            disabled={isFinalized}
-                            className={`${styles['pr-grading-screen-pr-input']} ${
-                              darkMode ? styles['dark-mode'] : ''
-                            }`}
-                          />
-                        </td>
-                        <td>{reviewer.prsNeeded}</td>
-                        <td className={styles['pr-grading-screen-td-numbers']}>
-                          {reviewer.gradedPrs.map(pr => (
-                            <span
-                              key={pr.id}
-                              role="button"
-                              tabIndex={0}
-                              className={`${styles['pr-grading-screen-pr-number']} ${
-                                pr.prNumbers.includes('+') ? styles['pr-grading-screen-pair'] : ''
-                              } ${darkMode ? styles['dark-mode'] : ''}`}
-                              onClick={() => handlePRNumberClick(reviewer.id)}
-                              onKeyDown={e => {
-                                if (e.key === 'Enter' || e.key === ' ') {
-                                  e.preventDefault();
-                                  handlePRNumberClick(reviewer.id);
-                                }
-                              }}
-                            >
-                              {pr.prNumbers}
-                            </span>
-                          ))}
-
-                          {!isFinalized && activeInput !== reviewer.id && (
-                            <Button
-                              variant="success"
-                              size="sm"
-                              className={styles['pr-grading-screen-add-btn']}
-                              onClick={() => handleAddNewClick(reviewer.id)}
-                            >
-                              + Add new
-                            </Button>
-                          )}
-
-                          {!isFinalized && activeInput === reviewer.id && (
-                            <div className={styles['pr-grading-screen-input-container']}>
-                              <input
-                                type="text"
-                                value={inputValue}
-                                onChange={e => {
-                                  setInputValue(e.target.value);
-                                  setInputError('');
-                                }}
-                                className={`${styles['pr-grading-screen-pr-number-input']} ${
-                                  inputError ? styles['pr-grading-screen-input-error'] : ''
-                                } ${darkMode ? styles['dark-mode'] : ''}`}
-                                placeholder="1070 or 1070 + 1256"
-                              />
-                              <Button
-                                variant="primary"
-                                size="sm"
-                                onClick={() => handleInputSubmit(reviewer.id)}
-                              >
-                                Add
-                              </Button>
-                              <Button variant="secondary" size="sm" onClick={handleCancel}>
-                                Cancel
-                              </Button>
-                              {inputError && (
-                                <div
-                                  className={`${styles['pr-grading-screen-error-message']} ${
-                                    darkMode ? styles['dark-mode'] : ''
-                                  }`}
-                                >
-                                  {inputError}
-                                </div>
-                              )}
-                            </div>
-                          )}
-
-                          {reviewer.gradedPrs.length > 0 && (
-                            <Button
-                              variant="outline-secondary"
-                              size="sm"
-                              className={styles['pr-grading-screen-add-btn']}
-                              onClick={() => handlePRNumberClick(reviewer.id)}
-                            >
-                              Done
-                            </Button>
-                          )}
-                        </td>
-                      </tr>
-
-                      {/* Inline summary row per reviewer */}
-                      {reviewer.gradedPrs.length > 0 && (
-                        <tr
-                          key={`${reviewer.id}-summary`}
-                          className={`${styles['pr-grading-screen-summary-row']} ${
-                            darkMode ? styles['dark-mode'] : ''
-                          }`}
-                        >
-                          <td colSpan={4} className={styles['pr-grading-screen-summary-cell']}>
-                            <table
-                              className={`${styles['pr-grading-screen-summary-table']} ${
+                  {filteredReviewers.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan={4}
+                        className={`${styles['pr-grading-screen-no-results']} ${
+                          darkMode ? styles['dark-mode'] : ''
+                        }`}
+                      >
+                        No reviewers found
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredReviewers.map(reviewer => (
+                      <React.Fragment key={reviewer.id}>
+                        <tr>
+                          <td>{reviewer.reviewer}</td>
+                          <td>
+                            <input
+                              type="number"
+                              value={reviewer.gradedPrs.length}
+                              readOnly
+                              disabled={isFinalized}
+                              className={`${styles['pr-grading-screen-pr-input']} ${
                                 darkMode ? styles['dark-mode'] : ''
                               }`}
-                            >
-                              <thead>
-                                <tr>
-                                  <th>PR Number</th>
-                                  <th>Exceptional</th>
-                                  <th>Okay</th>
-                                  <th>Unsatisfactory</th>
-                                  <th>No Correct Image</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                {reviewer.gradedPrs.map(pr => (
-                                  <tr key={pr.id}>
-                                    <td>{pr.prNumbers}</td>
-                                    {[
-                                      'Exceptional',
-                                      'Okay',
-                                      'Unsatisfactory',
-                                      'No Correct Image',
-                                    ].map(grade => (
-                                      <td key={grade}>
-                                        <input
-                                          type="checkbox"
-                                          disabled={isFinalized}
-                                          checked={pr.grade === grade}
-                                          onChange={() =>
-                                            handleGradeChange(reviewer.id, pr.id, grade)
-                                          }
-                                        />
-                                      </td>
-                                    ))}
-                                  </tr>
-                                ))}
-                              </tbody>
-                            </table>
+                            />
+                          </td>
+                          <td>{reviewer.prsNeeded}</td>
+                          <td className={styles['pr-grading-screen-td-numbers']}>
+                            {reviewer.gradedPrs.map(pr => (
+                              <span
+                                key={pr.id}
+                                role="button"
+                                tabIndex={0}
+                                className={`${styles['pr-grading-screen-pr-number']} ${
+                                  pr.prNumbers.includes('+') ? styles['pr-grading-screen-pair'] : ''
+                                } ${darkMode ? styles['dark-mode'] : ''}`}
+                                onClick={() => handlePRNumberClick(reviewer.id)}
+                                onKeyDown={e => {
+                                  if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault();
+                                    handlePRNumberClick(reviewer.id);
+                                  }
+                                }}
+                              >
+                                {pr.prNumbers}
+                              </span>
+                            ))}
+
+                            {!isFinalized && activeInput !== reviewer.id && (
+                              <Button
+                                variant="success"
+                                size="sm"
+                                className={styles['pr-grading-screen-add-btn']}
+                                onClick={() => handleAddNewClick(reviewer.id)}
+                              >
+                                + Add new
+                              </Button>
+                            )}
+
+                            {!isFinalized && activeInput === reviewer.id && (
+                              <div className={styles['pr-grading-screen-input-container']}>
+                                <input
+                                  type="text"
+                                  value={inputValue}
+                                  onChange={e => {
+                                    setInputValue(e.target.value);
+                                    setInputError('');
+                                  }}
+                                  className={`${styles['pr-grading-screen-pr-number-input']} ${
+                                    inputError ? styles['pr-grading-screen-input-error'] : ''
+                                  } ${darkMode ? styles['dark-mode'] : ''}`}
+                                  placeholder="1070 or 1070 + 1256"
+                                />
+                                <Button
+                                  variant="primary"
+                                  size="sm"
+                                  onClick={() => handleInputSubmit(reviewer.id)}
+                                >
+                                  Add
+                                </Button>
+                                <Button variant="secondary" size="sm" onClick={handleCancel}>
+                                  Cancel
+                                </Button>
+                                {inputError && (
+                                  <div
+                                    className={`${styles['pr-grading-screen-error-message']} ${
+                                      darkMode ? styles['dark-mode'] : ''
+                                    }`}
+                                  >
+                                    {inputError}
+                                  </div>
+                                )}
+                              </div>
+                            )}
+
+                            {reviewer.gradedPrs.length > 0 && (
+                              <Button
+                                variant="outline-secondary"
+                                size="sm"
+                                className={styles['pr-grading-screen-add-btn']}
+                                onClick={() => handlePRNumberClick(reviewer.id)}
+                              >
+                                Done
+                              </Button>
+                            )}
                           </td>
                         </tr>
-                      )}
-                    </React.Fragment>
-                  ))}
+
+                        {/* Inline summary row per reviewer */}
+                        {reviewer.gradedPrs.length > 0 && (
+                          <tr
+                            className={`${styles['pr-grading-screen-summary-row']} ${
+                              darkMode ? styles['dark-mode'] : ''
+                            }`}
+                          >
+                            <td colSpan={4} className={styles['pr-grading-screen-summary-cell']}>
+                              <table
+                                className={`${styles['pr-grading-screen-summary-table']} ${
+                                  darkMode ? styles['dark-mode'] : ''
+                                }`}
+                              >
+                                <thead>
+                                  <tr>
+                                    <th>PR Number</th>
+                                    <th>Exceptional</th>
+                                    <th>Okay</th>
+                                    <th>Unsatisfactory</th>
+                                    <th>No Correct Image</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {reviewer.gradedPrs.map(pr => (
+                                    <tr key={pr.id}>
+                                      <td>{pr.prNumbers}</td>
+                                      {[
+                                        'Exceptional',
+                                        'Okay',
+                                        'Unsatisfactory',
+                                        'No Correct Image',
+                                      ].map(grade => (
+                                        <td key={grade}>
+                                          <input
+                                            type="checkbox"
+                                            disabled={isFinalized}
+                                            checked={pr.grade === grade}
+                                            onChange={() =>
+                                              handleGradeChange(reviewer.id, pr.id, grade)
+                                            }
+                                          />
+                                        </td>
+                                      ))}
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </td>
+                          </tr>
+                        )}
+                      </React.Fragment>
+                    ))
+                  )}
                 </tbody>
               </table>
             </Card.Body>
@@ -575,6 +654,7 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
           </div>
         </div>
       )}
+
       {selectedForPromotion.length > 0 && (
         <div
           style={{
@@ -626,6 +706,7 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
           </button>
         </div>
       )}
+
       {showBatchConfirm && (
         <div
           className={`${styles['pr-grading-screen-modal-overlay']} ${
@@ -720,6 +801,7 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
           </div>
         </div>
       )}
+
       {promotionCandidate && (
         <PromotionConfirmationBox
           reviewer={promotionCandidate}
