@@ -464,19 +464,6 @@
   --card-elev-hover: rgb(0 0 0 / 18%);
 }
 
-/* ---------------- DARK MODE VARIABLES ---------------- */
-:root {
-  --bg-color: #ffffff;
-  --text-color: #000000;
-  --card-bg: #fafafa;
-  --card-shadow: rgba(0, 0, 0, 0.1);
-  --section-bg: white;
-  --section-title-bg: white;
-  --section-title-hover: #e0e0e0;
-  --button-bg: black;
-  --button-hover: #333;
-}
-
 /* ---------------- DARK MODE STYLES ---------------- */
 .darkMode {
   --bg-color: #1b2a41;
@@ -500,7 +487,6 @@
 
 /* MERGED: keep background + FORCE all title text visible in dark mode */
 .darkMode .weeklyProjectSummaryDashboardCategoryTitle {
-  color: #fff;
   background: #2d4059;
   color: #ffffff;
 }
