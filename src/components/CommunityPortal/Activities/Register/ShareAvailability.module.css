@@ -6,8 +6,8 @@
   --bg-preview: #f8fafc;
   --bg-input: #fff;
   --text-main: #1f2937;
-  --text-muted: #475569;
-  --border-color: #e2e8f0;
+  --text-muted: #334155;
+  --border-color: #d1d5db;
   --btn-secondary: #e5e7eb;
   --overlay-color: rgb(0 0 0 / 60%);
 
@@ -21,20 +21,22 @@
   padding: 20px;
 }
 
-/* Dark Mode Overrides */
+/* =========================
+   DARK MODE
+========================= */
 .overlay.darkMode {
   --bg-modal: #111827;
   --bg-preview: #1f2937;
   --bg-input: #1f2937;
   --text-main: #f9fafb;
-  --text-muted: #cbd5e1;
-  --border-color: #374151;
+  --text-muted: #e2e8f0;
+  --border-color: #4b5563;
   --btn-secondary: #374151;
   --overlay-color: rgb(0 0 0 / 85%);
 }
 
 /* =========================
-   SHARE BUTTON (Main Trigger)
+   SHARE BUTTON
 ========================= */
 .shareButton {
   background: #0029e2;
@@ -59,7 +61,7 @@
 }
 
 /* =========================
-   MODAL CONTAINER
+   MODAL
 ========================= */
 .modal {
   background-color: var(--bg-modal);
@@ -99,6 +101,7 @@
   margin: 0;
   font-size: 18px;
   font-weight: 700;
+  color: var(--text-main);
 }
 
 .closeButton {
@@ -118,6 +121,10 @@
   border-bottom: 1px solid var(--border-color);
 }
 
+.previewTitle {
+  color: var(--text-main);
+}
+
 .previewDetails {
   display: flex;
   flex-direction: column;
@@ -128,16 +135,34 @@
 
 .spotsBadge {
   font-weight: 700;
-  color: #0029e2;
+  color: #1d4ed8;
+}
+
+.overlay.darkMode .spotsBadge {
+  color: #93c5fd;
 }
 
 /* =========================
-   CONTENT & OPTIONS
+   CONTENT
 ========================= */
 .shareContent {
   padding: 20px;
 }
 
+.contentLabel {
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+.actionDescription {
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* =========================
+   OPTIONS
+========================= */
 .shareOptions {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -156,27 +181,31 @@
   gap: 6px;
   background: var(--bg-modal);
   font-size: 13px;
-  font-weight: 500;
-  color: var(--text-muted);
+  font-weight: 600;
+  color: var(--text-main);
   transition: 0.2s ease;
 }
 
-.shareOption:hover, .shareOptionActive {
-  border-color: #667eea;
-  background: #f3f0ff;
-  color: #667eea;
+.shareOption:hover,
+.shareOptionActive {
+  border-color: #4f46e5;
+  background: #e0e7ff;
+  color: #312e81;
 }
 
-.darkMode .shareOption:hover, .darkMode .shareOptionActive {
-  background: #1e1b4b;
-  border-color: #6366f1;
-  color: #c7d2fe;
+.darkMode .shareOption:hover,
+.darkMode .shareOptionActive {
+  background: #312e81;
+  border-color: #818cf8;
+  color: #eef2ff;
 }
 
 /* =========================
-   INPUTS & BUTTONS
+   INPUTS
 ========================= */
-.urlInput, .textArea, .emailInput {
+.urlInput,
+.textArea,
+.emailInput {
   width: 100%;
   padding: 12px;
   background: var(--bg-input);
@@ -186,6 +215,12 @@
   font-size: 14px;
 }
 
+.urlInput::placeholder,
+.textArea::placeholder,
+.emailInput::placeholder {
+  color: var(--text-muted);
+}
+
 .textArea {
   min-height: 100px;
   font-family: monospace;
@@ -193,16 +228,23 @@
   margin-bottom: 12px;
 }
 
+/* =========================
+   BUTTONS
+========================= */
 .copyButton {
   width: 100%;
   padding: 12px;
-  background: #667eea;
+  background: #4f46e5;
   color: #fff;
   border: none;
   border-radius: 6px;
   cursor: pointer;
   font-weight: 600;
   margin-top: 10px;
+}
+
+.copyButton:hover {
+  background: #4338ca;
 }
 
 .socialButtons {
@@ -217,13 +259,28 @@
   border: none;
   color: #fff;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 700;
 }
 
-.twitter { background: #1da1f2; }
-.facebook { background: #1877f2; }
-.linkedin { background: #0a66c2; }
-.whatsapp { background: #25d366; }
+.twitter {
+  background: #374151;
+}
+
+.twitter:hover {
+  background: #4b5563;
+}
+
+.facebook {
+  background: #1858d6;
+}
+
+.linkedin {
+  background: #005582;
+}
+
+.whatsapp {
+  background: #15803d;
+}
 
 /* =========================
    FOOTER
@@ -238,6 +295,7 @@
 
 .disclaimer {
   font-size: 12px;
+  line-height: 1.5;
   color: var(--text-muted);
   margin: 0;
   max-width: 70%;
@@ -250,27 +308,44 @@
   color: var(--text-main);
   border-radius: 6px;
   cursor: pointer;
+  font-weight: 600;
 }
 
-/* Messages */
+/* =========================
+   MESSAGES
+========================= */
 .shareMessage {
   margin-top: 15px;
   padding: 10px;
   border-radius: 6px;
   text-align: center;
   font-size: 13px;
+  font-weight: 600;
 }
 
-.shareMessageSuccess { 
-  background: #dcfce7; 
-  color: #166534; 
+.shareMessageSuccess {
+  background: #dcfce7;
+  color: #14532d;
 }
 
-.shareMessageError { 
-  background: #fee2e2; 
-  color: #991b1b; 
+.shareMessageError {
+  background: #fee2e2;
+  color: #7f1d1d;
 }
 
+.overlay.darkMode .shareMessageSuccess {
+  background: #14532d;
+  color: #dcfce7;
+}
+
+.overlay.darkMode .shareMessageError {
+  background: #7f1d1d;
+  color: #fee2e2;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
 @media (width <= 640px) {
   .shareOptions,
   .socialButtons {
@@ -280,10 +355,10 @@
   .modalFooter {
     flex-direction: column;
     text-align: center;
+    gap: 12px;
   }
 
   .disclaimer {
     max-width: 100%;
-    margin-bottom: 10px;
   }
 }

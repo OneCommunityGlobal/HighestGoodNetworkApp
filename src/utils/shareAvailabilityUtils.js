@@ -1,4 +1,4 @@
-export const generateShareContent = (activity = {}, availability = 0, activityId) => {
+export const generateShareContent = (activity = {}, availability = 0, activityId = '') => {
   const baseUrl = window.location.origin;
   const eventPath = `/communityportal/Activities/Register/${activityId}`;
   const shareUrl = `${baseUrl}${eventPath}`;

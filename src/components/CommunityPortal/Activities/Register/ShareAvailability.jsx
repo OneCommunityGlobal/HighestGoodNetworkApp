@@ -1,179 +1,194 @@
 import { useEffect, useState, useRef } from 'react';
-import { CopyToClipboard, generateShareContent } from '../../../../utils/shareAvailabilityUtils';
+import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
+
+import { CopyToClipboard, generateShareContent } from '../../../../utils/shareAvailabilityUtils';
+
 import styles from './ShareAvailability.module.css';
+
+const isValidEmail = email => {
+  const input = document.createElement('input');
+  input.type = 'email';
+  input.value = email;
+
+  return input.checkValidity();
+};
+
+const buildSocialShareUrl = (platform, shareContent) => {
+  const url = encodeURIComponent(shareContent.shareUrl);
+
+  switch (platform) {
+    case 'facebook':
+      return `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+
+    case 'x':
+      return `https://x.com/intent/tweet?url=${url}&text=${encodeURIComponent(shareContent.title)}`;
+
+    case 'linkedin':
+      return `https://www.linkedin.com/sharing/share-offsite/?url=${url}&text=${encodeURIComponent(
+        shareContent.fullText,
+      )}`;
+
+    case 'whatsapp':
+      return `https://wa.me/?text=${encodeURIComponent(
+        `${shareContent.title}\n${shareContent.shareUrl}`,
+      )}`;
+
+    default:
+      return '';
+  }
+};
+
+const getErrorMessage = action => {
+  const messages = {
+    copyLink: 'Failed to copy link. Please try again.',
+    copyText: 'Failed to copy text. Please try again.',
+    email: 'Failed to share via email. Please try again.',
+    social: 'Sharing failed. Try again.',
+  };
+
+  return messages[action];
+};
 
 function ShareAvailability({ activity, availability, activityId }) {
   const darkMode = useSelector(state => state.theme?.darkMode);
+
   const [showShareModal, setShowShareModal] = useState(false);
   const [shareMessage, setShareMessage] = useState(null);
   const [selectedMethod, setSelectedMethod] = useState(null);
   const [emailInput, setEmailInput] = useState('');
+
   const shareModalRef = useRef(null);
 
   const shareContent = generateShareContent(activity, availability, activityId);
 
-  const handleShareClick = () => {
-    setShowShareModal(true);
+  const resetModalState = () => {
     setSelectedMethod(null);
     setShareMessage(null);
     setEmailInput('');
   };
 
+  const closeModal = () => {
+    setShowShareModal(false);
+    resetModalState();
+  };
+
+  const showSuccessMessage = text => {
+    setShareMessage({
+      type: 'success',
+      text,
+    });
+  };
+
+  const showErrorMessage = text => {
+    setShareMessage({
+      type: 'error',
+      text,
+    });
+  };
+
+  const handleShareClick = () => {
+    setShowShareModal(true);
+    resetModalState();
+  };
+
   const handleCopyLink = async () => {
     try {
-      const shareUrl = shareContent.shareUrl;
-      await CopyToClipboard(shareUrl);
+      await CopyToClipboard(shareContent.shareUrl);
 
-      setShareMessage({
-        type: 'success',
-        text: 'Event Link Copied to Clipboard ',
-      });
+      showSuccessMessage('Event link copied to clipboard.');
+
       setTimeout(() => {
-        setShowShareModal(false);
-        setShareMessage(null);
+        closeModal();
       }, 2000);
     } catch (error) {
-      setShareMessage({
-        type: 'error',
-        text: 'Failed to Copy Link. Please try again',
-      });
+      console.error('Copy link failed:', error);
+
+      showErrorMessage(getErrorMessage('copyLink'));
     }
   };
 
   const handleCopyText = async () => {
     try {
-      const fullText = shareContent.fullText;
-      await CopyToClipboard(fullText);
+      await CopyToClipboard(shareContent.fullText);
 
-      setShareMessage({
-        type: 'success',
-        text: 'Event Link Copied to Clipboard ',
-      });
+      showSuccessMessage('Event details copied to clipboard.');
+
       setTimeout(() => {
-        setShowShareModal(false);
-        setShareMessage(null);
+        closeModal();
       }, 2000);
     } catch (error) {
-      setShareMessage({
-        type: 'error',
-        text: 'Failed to Copy Text. Please try again',
-      });
+      console.error('Copy text failed:', error);
+
+      showErrorMessage(getErrorMessage('copyText'));
     }
   };
 
-  const handleEmailShare = async () => {
+  const handleEmailShare = () => {
     if (!emailInput.trim()) {
-      setShareMessage({
-        type: 'error',
-        text: 'Please enter an email address',
-      });
+      showErrorMessage('Please enter an email address');
+      return;
+    }
+
+    if (!isValidEmail(emailInput)) {
+      showErrorMessage('Please enter a valid email address');
       return;
     }
 
     try {
-      const isValidEmail = email => {
-        const input = document.createElement('input');
-        input.type = 'email';
-        input.value = email;
-        return input.checkValidity();
-      };
-
-      if (!isValidEmail(emailInput)) {
-        setShareMessage({
-          type: 'error',
-          text: 'Please enter a valid email address',
-        });
-        return;
-      }
-
       const emailSubject = encodeURIComponent(shareContent.title);
       const emailBody = encodeURIComponent(shareContent.fullText);
-      window.location.href = `mailto:${emailInput}?subject=${emailSubject}&body=${emailBody}`;
 
-      setShareMessage({
-        type: 'success',
-        text: 'Opening email client',
-      });
+      globalThis.location.href = `mailto:${emailInput}?subject=${emailSubject}&body=${emailBody}`;
+
+      showSuccessMessage('Opening email client.');
 
       setTimeout(() => {
-        setShowShareModal(false);
-        setShareMessage(null);
-        setEmailInput('');
+        closeModal();
       }, 1500);
     } catch (error) {
-      setShareMessage({
-        type: 'error',
-        text: 'Failed to share via email. Please try again',
-      });
+      console.error('Email share failed:', error);
+
+      showErrorMessage(getErrorMessage('email'));
     }
   };
 
   const handleSocialShare = async platform => {
-    const url = encodeURIComponent(shareContent.shareUrl);
-    const text = encodeURIComponent(shareContent.title);
-    const content = encodeURIComponent(shareContent.fullText);
-
     try {
-      let socialUrl = '';
+      if (platform === 'facebook') {
+        await CopyToClipboard(shareContent.fullText);
 
-      switch (platform) {
-        case 'facebook': {
-          // ✅ Facebook: copy text + open link (no text support)
-          await CopyToClipboard(shareContent.fullText);
-
-          setShareMessage({
-            type: 'success',
-            text: 'Copied! Paste it into Facebook.',
-          });
-
-          socialUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
-          break;
-        }
-
-        case 'x': {
-          // ✅ Twitter (X): MUST use encoded text
-          const text = encodeURIComponent(shareContent.title);
-          socialUrl = `https://x.com/intent/tweet?url=${url}&text=${text}`;
-          break;
-        }
-
-        case 'linkedin': {
-          // ✅ LinkedIn: ONLY supports URL (text often ignored)
-          socialUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${url}&text=${content}`;
-          break;
-        }
-
-        case 'whatsapp': {
-          const text = encodeURIComponent(`${shareContent.title}\n${shareContent.shareUrl}`);
-          socialUrl = `https://wa.me/?text=${text}`;
-          break;
-        }
-
-        default:
-          return;
+        showSuccessMessage('Copied! Paste it into Facebook.');
       }
 
-      window.open(socialUrl, '_blank', 'width=600,height=400');
+      const socialUrl = buildSocialShareUrl(platform, shareContent);
+
+      if (!socialUrl) {
+        return;
+      }
+
+      globalThis.open(socialUrl, '_blank', 'width=600,height=400');
     } catch (error) {
-      setShareMessage({
-        type: 'error',
-        text: 'Sharing failed. Try again.',
-      });
+      console.error('Social share failed:', error);
+
+      showErrorMessage(getErrorMessage('social'));
     }
   };
 
   useEffect(() => {
     const handleClickOutside = event => {
       if (shareModalRef.current && !shareModalRef.current.contains(event.target)) {
-        setShowShareModal(false);
+        closeModal();
       }
     };
 
     if (showShareModal) {
       document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
     }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, [showShareModal]);
 
   return (
@@ -195,10 +210,11 @@ function ShareAvailability({ activity, availability, activityId }) {
               <h2 className={`${styles.modalTitle} ${darkMode ? styles.modalTitleDark : ''}`}>
                 Share Event Availability
               </h2>
+
               <button
                 type="button"
                 className={`${styles.closeButton} ${darkMode ? styles.closeButtonDark : ''}`}
-                onClick={() => setShowShareModal(false)}
+                onClick={closeModal}
                 aria-label="Close share modal"
               >
                 ✕
@@ -209,18 +225,22 @@ function ShareAvailability({ activity, availability, activityId }) {
               <h3 className={`${styles.previewTitle} ${darkMode ? styles.previewTitleDark : ''}`}>
                 {activity.name}
               </h3>
+
               <div className={styles.previewDetails}>
                 <p>
                   <strong>📅 Date:</strong> {activity.date}
                 </p>
+
                 <p>
                   <strong>⏰ Time:</strong> {activity.time}
                 </p>
+
                 <p>
                   <strong>📍 Location:</strong> {activity.location || 'Not specified'}
                 </p>
+
                 <p>
-                  <strong>🎯 Availability:</strong>{' '}
+                  <strong>🎯 Availability:</strong>&nbsp;
                   <span className={styles.spotsBadge}>{availability} spots left</span>
                 </p>
               </div>
@@ -232,7 +252,6 @@ function ShareAvailability({ activity, availability, activityId }) {
               </p>
 
               <div className={styles.shareOptions}>
-                {/* Copy Link Option */}
                 <button
                   type="button"
                   className={`${styles.shareOption} ${
@@ -241,10 +260,10 @@ function ShareAvailability({ activity, availability, activityId }) {
                   onClick={() => setSelectedMethod('link')}
                 >
                   <span className={styles.optionIcon}>🔗</span>
+
                   <span className={styles.optionText}>Copy Link</span>
                 </button>
 
-                {/* Copy Text Option */}
                 <button
                   type="button"
                   className={`${styles.shareOption} ${
@@ -253,10 +272,10 @@ function ShareAvailability({ activity, availability, activityId }) {
                   onClick={() => setSelectedMethod('text')}
                 >
                   <span className={styles.optionIcon}>📋</span>
+
                   <span className={styles.optionText}>Copy Details</span>
                 </button>
 
-                {/* Email Option */}
                 <button
                   type="button"
                   className={`${styles.shareOption} ${
@@ -265,10 +284,10 @@ function ShareAvailability({ activity, availability, activityId }) {
                   onClick={() => setSelectedMethod('email')}
                 >
                   <span className={styles.optionIcon}>✉️</span>
+
                   <span className={styles.optionText}>Email</span>
                 </button>
 
-                {/* Social Share Option */}
                 <button
                   type="button"
                   className={`${styles.shareOption} ${
@@ -277,11 +296,11 @@ function ShareAvailability({ activity, availability, activityId }) {
                   onClick={() => setSelectedMethod('social')}
                 >
                   <span className={styles.optionIcon}>🌐</span>
+
                   <span className={styles.optionText}>Social Media</span>
                 </button>
               </div>
 
-              {/* Copy Link Action */}
               {selectedMethod === 'link' && (
                 <div className={`${styles.actionPanel} ${darkMode ? styles.actionPanelDark : ''}`}>
                   <p
@@ -291,6 +310,7 @@ function ShareAvailability({ activity, availability, activityId }) {
                   >
                     Share a direct link to this event:
                   </p>
+
                   <div className={styles.urlContainer}>
                     <input
                       type="text"
@@ -298,6 +318,7 @@ function ShareAvailability({ activity, availability, activityId }) {
                       readOnly
                       className={`${styles.urlInput} ${darkMode ? styles.urlInputDark : ''}`}
                     />
+
                     <button
                       type="button"
                       className={`${styles.copyButton} ${darkMode ? styles.copyButtonDark : ''}`}
@@ -309,7 +330,6 @@ function ShareAvailability({ activity, availability, activityId }) {
                 </div>
               )}
 
-              {/* Copy Text Action */}
               {selectedMethod === 'text' && (
                 <div className={`${styles.actionPanel} ${darkMode ? styles.actionPanelDark : ''}`}>
                   <p
@@ -319,11 +339,13 @@ function ShareAvailability({ activity, availability, activityId }) {
                   >
                     Copy event details to share via messaging or email:
                   </p>
+
                   <textarea
                     value={shareContent.fullText}
                     readOnly
                     className={`${styles.textArea} ${darkMode ? styles.textAreaDark : ''}`}
                   />
+
                   <button
                     type="button"
                     className={`${styles.copyButton} ${darkMode ? styles.copyButtonDark : ''}`}
@@ -334,7 +356,6 @@ function ShareAvailability({ activity, availability, activityId }) {
                 </div>
               )}
 
-              {/* Email Action */}
               {selectedMethod === 'email' && (
                 <div className={`${styles.actionPanel} ${darkMode ? styles.actionPanelDark : ''}`}>
                   <p
@@ -344,6 +365,7 @@ function ShareAvailability({ activity, availability, activityId }) {
                   >
                     Enter email address to send event details:
                   </p>
+
                   <input
                     type="email"
                     placeholder="Enter email address"
@@ -351,6 +373,7 @@ function ShareAvailability({ activity, availability, activityId }) {
                     onChange={e => setEmailInput(e.target.value)}
                     className={`${styles.emailInput} ${darkMode ? styles.emailInputDark : ''}`}
                   />
+
                   <button
                     type="button"
                     className={`${styles.copyButton} ${darkMode ? styles.copyButtonDark : ''}`}
@@ -361,7 +384,6 @@ function ShareAvailability({ activity, availability, activityId }) {
                 </div>
               )}
 
-              {/* Social Media Action */}
               {selectedMethod === 'social' && (
                 <div className={`${styles.actionPanel} ${darkMode ? styles.actionPanelDark : ''}`}>
                   <p
@@ -371,6 +393,7 @@ function ShareAvailability({ activity, availability, activityId }) {
                   >
                     Share on social media:
                   </p>
+
                   <div className={styles.socialButtons}>
                     <button
                       type="button"
@@ -382,6 +405,7 @@ function ShareAvailability({ activity, availability, activityId }) {
                     >
                       𝕏 Twitter
                     </button>
+
                     <button
                       type="button"
                       className={`${styles.socialButton} ${styles.facebook} ${
@@ -392,6 +416,7 @@ function ShareAvailability({ activity, availability, activityId }) {
                     >
                       f Facebook
                     </button>
+
                     <button
                       type="button"
                       className={`${styles.socialButton} ${styles.linkedin} ${
@@ -402,6 +427,7 @@ function ShareAvailability({ activity, availability, activityId }) {
                     >
                       in LinkedIn
                     </button>
+
                     <button
                       type="button"
                       className={`${styles.socialButton} ${styles.whatsapp} ${
@@ -416,7 +442,6 @@ function ShareAvailability({ activity, availability, activityId }) {
                 </div>
               )}
 
-              {/* Share Message */}
               {shareMessage && (
                 <div
                   className={`${styles.shareMessage} ${
@@ -441,12 +466,13 @@ function ShareAvailability({ activity, availability, activityId }) {
                 Event information updates in real-time. Recipients will see current availability
                 when they visit.
               </p>
+
               <button
                 type="button"
                 className={`${styles.closeModalButton} ${
                   darkMode ? styles.closeModalButtonDark : ''
                 }`}
-                onClick={() => setShowShareModal(false)}
+                onClick={closeModal}
               >
                 Close
               </button>
@@ -457,5 +483,16 @@ function ShareAvailability({ activity, availability, activityId }) {
     </>
   );
 }
+
+ShareAvailability.propTypes = {
+  activity: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    date: PropTypes.string.isRequired,
+    time: PropTypes.string.isRequired,
+    location: PropTypes.string,
+  }).isRequired,
+  availability: PropTypes.number.isRequired,
+  activityId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+};
 
 export default ShareAvailability;
