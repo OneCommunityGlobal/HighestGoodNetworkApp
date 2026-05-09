@@ -131,6 +131,48 @@ function getYAxisWidth(isNarrow, isMedium) {
   if (isMedium) return 52;
   return 64;
 }
+function ErrorDisplay({ error, errorType, darkMode, onRetry }) {
+  const shouldShowRetry = errorType !== 'permission' && errorType !== 'authentication';
+  return (
+    <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
+      <div className={styles.errorContainer}>
+        <div className={styles.errorContent}>
+          <BiErrorCircle className={styles.errorIcon} />
+          <p className={styles.errorText}>{error}</p>
+          {errorType === 'authentication' && (
+            <p className={styles.errorHint}>You will be redirected to the login page shortly...</p>
+          )}
+          {errorType === 'permission' && (
+            <p className={styles.errorHint}>This error is not transient. Please contact an administrator for assistance.</p>
+          )}
+          {errorType === 'network' && (
+            <p className={styles.errorHint}>Please check your internet connection and try again.</p>
+          )}
+          {errorType === 'general' && (
+            <p className={styles.errorHint}>If this problem persists, please try different filters or contact support.</p>
+          )}
+        </div>
+        {shouldShowRetry && (
+          <button type="button" onClick={onRetry} className={styles.retryButton}>
+            <BiRefresh className={styles.retryIcon} />
+            Retry
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+ErrorDisplay.propTypes = {
+  error: PropTypes.string.isRequired,
+  errorType: PropTypes.string.isRequired,
+  darkMode: PropTypes.bool,
+  onRetry: PropTypes.func.isRequired,
+};
+
+ErrorDisplay.defaultProps = {
+  darkMode: false,
+};
 
 function MaterialCostCorrelationChart() {
   const dispatch = useDispatch();
@@ -261,57 +303,18 @@ function MaterialCostCorrelationChart() {
 
   // Render error state
   if (error && errorType !== 'validation') {
-    const shouldShowRetry = errorType !== 'permission' && errorType !== 'authentication';
-    const errorIcon = <BiErrorCircle className={styles.errorIcon} />;
-
     return (
-      <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
-        <div className={styles.errorContainer}>
-          <div className={styles.errorContent}>
-            {errorIcon}
-            <p className={styles.errorText}>{error}</p>
-            {errorType === 'authentication' && (
-              <p className={styles.errorHint}>
-                You will be redirected to the login page shortly...
-              </p>
-            )}
-            {errorType === 'permission' && (
-              <p className={styles.errorHint}>
-                This error is not transient. Please contact an administrator for assistance.
-              </p>
-            )}
-            {errorType === 'network' && (
-              <p className={styles.errorHint}>
-                Please check your internet connection and try again.
-              </p>
-            )}
-            {errorType === 'general' && (
-              <p className={styles.errorHint}>
-                If this problem persists, please try different filters or contact support.
-              </p>
-            )}
-          </div>
-          {shouldShowRetry && (
-            <button
-              type="button"
-              onClick={() =>
-                dispatch(
-                  fetchMaterialCostCorrelation(
-                    filters.selectedProjects || [],
-                    filters.selectedMaterialTypes || [],
-                    filters.startDate,
-                    filters.endDate,
-                  ),
-                )
-              }
-              className={styles.retryButton}
-            >
-              <BiRefresh className={styles.retryIcon} />
-              Retry
-            </button>
-          )}
-        </div>
-      </div>
+      <ErrorDisplay
+        error={error}
+        errorType={errorType}
+        darkMode={darkMode}
+        onRetry={() => dispatch(fetchMaterialCostCorrelation(
+          filters.selectedProjects || [],
+          filters.selectedMaterialTypes || [],
+          filters.startDate,
+          filters.endDate,
+        ))}
+      />
     );
   }
 
