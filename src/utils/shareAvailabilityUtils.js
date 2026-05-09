@@ -1,5 +1,9 @@
-export const generateShareContent = (activity = {}, availability = 0, activityId = '') => {
-  const baseUrl = window.location.origin;
+export const generateShareContent = (
+  activity = {},
+  availability = 0,
+  activityId = '',
+) => {
+  const baseUrl = globalThis.location.origin;
   const eventPath = `/communityportal/Activities/Register/${activityId}`;
   const shareUrl = `${baseUrl}${eventPath}`;
 
@@ -11,6 +15,10 @@ export const generateShareContent = (activity = {}, availability = 0, activityId
   const rating = activity.rating ?? 'Not rated';
   const description = activity.description ?? '';
 
+  const safeAvailability = Number.isFinite(Number(availability))
+    ? availability
+    : 0;
+
   const title = `Check Out: ${name}`;
 
   const eventDetails = `Event: ${name}
@@ -18,14 +26,19 @@ Date: ${date}
 Time: ${time}
 Location: ${location}
 Organizer: ${organizer}
-Available Spots: ${Number.isFinite(Number(availability)) ? availability : 0}
+Available Spots: ${safeAvailability}
 Rating: ${rating}/5
 
 ${description}
 
 Register here: ${shareUrl}`;
 
-  const socialText = `Join me at "${name}"!\n${date} at ${time}\n${location}\n${availability ?? 0} spots available\n\nLink: ${shareUrl}`;
+  const socialText = `Join me at "${name}"!
+${date} at ${time}
+${location}
+${safeAvailability} spots available
+
+Link: ${shareUrl}`;
 
   return {
     title,
@@ -36,42 +49,50 @@ Register here: ${shareUrl}`;
     eventDate: date,
     eventTime: time,
     eventLocation: location,
-    availableSpots: availability ?? 0,
+    availableSpots: safeAvailability,
   };
 };
 
-export const CopyToClipboard = async(text) => {
-  try{
-    if(navigator.clipboard && window.isSecureContext) {
-      await navigator.clipboard.writeText(text);
-      return true;
-    }
-    return CopyToClipboardFallback(text);
-  }
-  catch(error){
-    console.error('Copy to Clipboard failed: ', error);
-    return CopyToClipboardFallback(text);
-  }
-};
-
-const CopyToClipboardFallback = (text) => {
+const copyToClipboardFallback = text => {
   const textArea = document.createElement('textarea');
+
   textArea.value = text;
   textArea.style.position = 'fixed';
   textArea.style.left = '-999999px';
   textArea.style.top = '-999999px';
+
   document.body.appendChild(textArea);
 
   try {
     textArea.focus();
     textArea.select();
+
     const successful = document.execCommand('copy');
-    document.body.removeChild(textArea);
+
+    textArea.remove();
+
     return successful;
   } catch (error) {
-    // eslint-disable-next-line no-console
     console.error('Fallback copy failed:', error);
-    document.body.removeChild(textArea);
+
+    textArea.remove();
+
     return false;
+  }
+};
+
+export const CopyToClipboard = async text => {
+  try {
+    if (navigator.clipboard && globalThis.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+
+      return true;
+    }
+
+    return copyToClipboardFallback(text);
+  } catch (error) {
+    console.error('Copy to clipboard failed:', error);
+
+    return copyToClipboardFallback(text);
   }
 };

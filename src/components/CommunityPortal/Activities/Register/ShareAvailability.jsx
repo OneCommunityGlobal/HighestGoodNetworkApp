@@ -8,6 +8,7 @@ import styles from './ShareAvailability.module.css';
 
 const isValidEmail = email => {
   const input = document.createElement('input');
+
   input.type = 'email';
   input.value = email;
 
@@ -175,6 +176,140 @@ function ShareAvailability({ activity, availability, activityId }) {
     }
   };
 
+  const renderOptionButton = (method, icon, label) => (
+    <button
+      type="button"
+      className={`${styles.shareOption} ${
+        selectedMethod === method ? styles.shareOptionActive : ''
+      } ${darkMode ? styles.shareOptionDark : ''}`}
+      onClick={() => setSelectedMethod(method)}
+    >
+      <span className={styles.optionIcon}>{icon}</span>
+
+      <span className={styles.optionText}>{label}</span>
+    </button>
+  );
+
+  const renderLinkPanel = () => (
+    <div className={`${styles.actionPanel} ${darkMode ? styles.actionPanelDark : ''}`}>
+      <p className={`${styles.actionDescription} ${darkMode ? styles.actionDescriptionDark : ''}`}>
+        Share a direct link to this event:
+      </p>
+
+      <div className={styles.urlContainer}>
+        <input
+          type="text"
+          value={shareContent.shareUrl}
+          readOnly
+          className={`${styles.urlInput} ${darkMode ? styles.urlInputDark : ''}`}
+        />
+
+        <button
+          type="button"
+          className={`${styles.copyButton} ${darkMode ? styles.copyButtonDark : ''}`}
+          onClick={handleCopyLink}
+        >
+          Copy
+        </button>
+      </div>
+    </div>
+  );
+
+  const renderTextPanel = () => (
+    <div className={`${styles.actionPanel} ${darkMode ? styles.actionPanelDark : ''}`}>
+      <p className={`${styles.actionDescription} ${darkMode ? styles.actionDescriptionDark : ''}`}>
+        Copy event details to share via messaging or email:
+      </p>
+
+      <textarea
+        value={shareContent.fullText}
+        readOnly
+        className={`${styles.textArea} ${darkMode ? styles.textAreaDark : ''}`}
+      />
+
+      <button
+        type="button"
+        className={`${styles.copyButton} ${darkMode ? styles.copyButtonDark : ''}`}
+        onClick={handleCopyText}
+      >
+        Copy to Clipboard
+      </button>
+    </div>
+  );
+
+  const renderEmailPanel = () => (
+    <div className={`${styles.actionPanel} ${darkMode ? styles.actionPanelDark : ''}`}>
+      <p className={`${styles.actionDescription} ${darkMode ? styles.actionDescriptionDark : ''}`}>
+        Enter email address to send event details:
+      </p>
+
+      <input
+        type="email"
+        placeholder="Enter email address"
+        value={emailInput}
+        onChange={e => setEmailInput(e.target.value)}
+        className={`${styles.emailInput} ${darkMode ? styles.emailInputDark : ''}`}
+      />
+
+      <button
+        type="button"
+        className={`${styles.copyButton} ${darkMode ? styles.copyButtonDark : ''}`}
+        onClick={handleEmailShare}
+      >
+        Send Email
+      </button>
+    </div>
+  );
+
+  const renderSocialPanel = () => (
+    <div className={`${styles.actionPanel} ${darkMode ? styles.actionPanelDark : ''}`}>
+      <p className={`${styles.actionDescription} ${darkMode ? styles.actionDescriptionDark : ''}`}>
+        Share on social media:
+      </p>
+
+      <div className={styles.socialButtons}>
+        <button
+          type="button"
+          className={`${styles.socialButton} ${styles.twitter}`}
+          onClick={() => handleSocialShare('x')}
+          title="Share on Twitter"
+        >
+          𝕏 Twitter
+        </button>
+
+        <button
+          type="button"
+          className={`${styles.socialButton} ${styles.facebook}`}
+          onClick={() => handleSocialShare('facebook')}
+          title="Share on Facebook"
+        >
+          f Facebook
+        </button>
+
+        <button
+          type="button"
+          className={`${styles.socialButton} ${styles.linkedin}`}
+          onClick={() => handleSocialShare('linkedin')}
+          title="Share on LinkedIn"
+        >
+          in LinkedIn
+        </button>
+
+        <button
+          type="button"
+          className={`${styles.socialButton} ${styles.whatsapp}`}
+          onClick={() => handleSocialShare('whatsapp')}
+          title="Share on WhatsApp"
+        >
+          💬 WhatsApp
+        </button>
+      </div>
+    </div>
+  );
+
+  const shareMessageClass =
+    shareMessage?.type === 'success' ? styles.shareMessageSuccess : styles.shareMessageError;
+
   useEffect(() => {
     const handleClickOutside = event => {
       if (shareModalRef.current && !shareModalRef.current.contains(event.target)) {
@@ -252,203 +387,20 @@ function ShareAvailability({ activity, availability, activityId }) {
               </p>
 
               <div className={styles.shareOptions}>
-                <button
-                  type="button"
-                  className={`${styles.shareOption} ${
-                    selectedMethod === 'link' ? styles.shareOptionActive : ''
-                  } ${darkMode ? styles.shareOptionDark : ''}`}
-                  onClick={() => setSelectedMethod('link')}
-                >
-                  <span className={styles.optionIcon}>🔗</span>
-
-                  <span className={styles.optionText}>Copy Link</span>
-                </button>
-
-                <button
-                  type="button"
-                  className={`${styles.shareOption} ${
-                    selectedMethod === 'text' ? styles.shareOptionActive : ''
-                  } ${darkMode ? styles.shareOptionDark : ''}`}
-                  onClick={() => setSelectedMethod('text')}
-                >
-                  <span className={styles.optionIcon}>📋</span>
-
-                  <span className={styles.optionText}>Copy Details</span>
-                </button>
-
-                <button
-                  type="button"
-                  className={`${styles.shareOption} ${
-                    selectedMethod === 'email' ? styles.shareOptionActive : ''
-                  } ${darkMode ? styles.shareOptionDark : ''}`}
-                  onClick={() => setSelectedMethod('email')}
-                >
-                  <span className={styles.optionIcon}>✉️</span>
-
-                  <span className={styles.optionText}>Email</span>
-                </button>
-
-                <button
-                  type="button"
-                  className={`${styles.shareOption} ${
-                    selectedMethod === 'social' ? styles.shareOptionActive : ''
-                  } ${darkMode ? styles.shareOptionDark : ''}`}
-                  onClick={() => setSelectedMethod('social')}
-                >
-                  <span className={styles.optionIcon}>🌐</span>
-
-                  <span className={styles.optionText}>Social Media</span>
-                </button>
+                {renderOptionButton('link', '🔗', 'Copy Link')}
+                {renderOptionButton('text', '📋', 'Copy Details')}
+                {renderOptionButton('email', '✉️', 'Email')}
+                {renderOptionButton('social', '🌐', 'Social Media')}
               </div>
 
-              {selectedMethod === 'link' && (
-                <div className={`${styles.actionPanel} ${darkMode ? styles.actionPanelDark : ''}`}>
-                  <p
-                    className={`${styles.actionDescription} ${
-                      darkMode ? styles.actionDescriptionDark : ''
-                    }`}
-                  >
-                    Share a direct link to this event:
-                  </p>
-
-                  <div className={styles.urlContainer}>
-                    <input
-                      type="text"
-                      value={shareContent.shareUrl}
-                      readOnly
-                      className={`${styles.urlInput} ${darkMode ? styles.urlInputDark : ''}`}
-                    />
-
-                    <button
-                      type="button"
-                      className={`${styles.copyButton} ${darkMode ? styles.copyButtonDark : ''}`}
-                      onClick={handleCopyLink}
-                    >
-                      Copy
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {selectedMethod === 'text' && (
-                <div className={`${styles.actionPanel} ${darkMode ? styles.actionPanelDark : ''}`}>
-                  <p
-                    className={`${styles.actionDescription} ${
-                      darkMode ? styles.actionDescriptionDark : ''
-                    }`}
-                  >
-                    Copy event details to share via messaging or email:
-                  </p>
-
-                  <textarea
-                    value={shareContent.fullText}
-                    readOnly
-                    className={`${styles.textArea} ${darkMode ? styles.textAreaDark : ''}`}
-                  />
-
-                  <button
-                    type="button"
-                    className={`${styles.copyButton} ${darkMode ? styles.copyButtonDark : ''}`}
-                    onClick={handleCopyText}
-                  >
-                    Copy to Clipboard
-                  </button>
-                </div>
-              )}
-
-              {selectedMethod === 'email' && (
-                <div className={`${styles.actionPanel} ${darkMode ? styles.actionPanelDark : ''}`}>
-                  <p
-                    className={`${styles.actionDescription} ${
-                      darkMode ? styles.actionDescriptionDark : ''
-                    }`}
-                  >
-                    Enter email address to send event details:
-                  </p>
-
-                  <input
-                    type="email"
-                    placeholder="Enter email address"
-                    value={emailInput}
-                    onChange={e => setEmailInput(e.target.value)}
-                    className={`${styles.emailInput} ${darkMode ? styles.emailInputDark : ''}`}
-                  />
-
-                  <button
-                    type="button"
-                    className={`${styles.copyButton} ${darkMode ? styles.copyButtonDark : ''}`}
-                    onClick={handleEmailShare}
-                  >
-                    Send Email
-                  </button>
-                </div>
-              )}
-
-              {selectedMethod === 'social' && (
-                <div className={`${styles.actionPanel} ${darkMode ? styles.actionPanelDark : ''}`}>
-                  <p
-                    className={`${styles.actionDescription} ${
-                      darkMode ? styles.actionDescriptionDark : ''
-                    }`}
-                  >
-                    Share on social media:
-                  </p>
-
-                  <div className={styles.socialButtons}>
-                    <button
-                      type="button"
-                      className={`${styles.socialButton} ${styles.twitter} ${
-                        darkMode ? styles.socialButtonDark : ''
-                      }`}
-                      onClick={() => handleSocialShare('x')}
-                      title="Share on Twitter"
-                    >
-                      𝕏 Twitter
-                    </button>
-
-                    <button
-                      type="button"
-                      className={`${styles.socialButton} ${styles.facebook} ${
-                        darkMode ? styles.socialButtonDark : ''
-                      }`}
-                      onClick={() => handleSocialShare('facebook')}
-                      title="Share on Facebook"
-                    >
-                      f Facebook
-                    </button>
-
-                    <button
-                      type="button"
-                      className={`${styles.socialButton} ${styles.linkedin} ${
-                        darkMode ? styles.socialButtonDark : ''
-                      }`}
-                      onClick={() => handleSocialShare('linkedin')}
-                      title="Share on LinkedIn"
-                    >
-                      in LinkedIn
-                    </button>
-
-                    <button
-                      type="button"
-                      className={`${styles.socialButton} ${styles.whatsapp} ${
-                        darkMode ? styles.socialButtonDark : ''
-                      }`}
-                      onClick={() => handleSocialShare('whatsapp')}
-                      title="Share on WhatsApp"
-                    >
-                      💬 WhatsApp
-                    </button>
-                  </div>
-                </div>
-              )}
+              {selectedMethod === 'link' && renderLinkPanel()}
+              {selectedMethod === 'text' && renderTextPanel()}
+              {selectedMethod === 'email' && renderEmailPanel()}
+              {selectedMethod === 'social' && renderSocialPanel()}
 
               {shareMessage && (
                 <div
-                  className={`${styles.shareMessage} ${
-                    shareMessage.type === 'success'
-                      ? styles.shareMessageSuccess
-                      : styles.shareMessageError
-                  } ${
+                  className={`${styles.shareMessage} ${shareMessageClass} ${
                     darkMode && shareMessage.type === 'success'
                       ? styles.shareMessageSuccessDark
                       : ''
