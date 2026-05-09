@@ -34,7 +34,7 @@ describe('SetUpFinalDayPopUp Component', () => {
   it('should render the modal with proper title and buttons', () => {
     renderComponent(store, { open: true, onClose: onCloseMock, onSave: onSaveMock });
 
-    expect(screen.getByText('Set Your Final Day')).toBeInTheDocument();
+    expect(screen.getByText("Set User's Final Day")).toBeInTheDocument();
     expect(screen.getByText('Save')).toBeInTheDocument();
     expect(screen.getByText('Close')).toBeInTheDocument();
   });
@@ -84,7 +84,7 @@ describe('SetUpFinalDayPopUp Component', () => {
     
     const dialog = await screen.findByRole('dialog');
     expect(dialog).toBeInTheDocument();
-    expect(within(dialog).getByRole('heading', { name: 'Set Your Final Day' })).toBeInTheDocument();
+    expect(within(dialog).getByRole('heading', { name: "Set User's Final Day" })).toBeInTheDocument();
 
     const dateInput = within(dialog).getByTestId('date-input');
     expect(dateInput).toHaveClass('bg-darkmode-liblack', 'text-light', 'border-0', 'calendar-icon-dark');
@@ -118,7 +118,7 @@ describe('SetUpFinalDayPopUp Component', () => {
   it('should not render the modal content when the open prop is false', () => {
     renderComponent(store, { open: false, onClose: onCloseMock, onSave: onSaveMock });
 
-    expect(screen.queryByText('Set Your Final Day')).not.toBeInTheDocument();
+    expect(screen.queryByText("Set User's Final Day")).not.toBeInTheDocument();
     expect(screen.queryByText('Save')).not.toBeInTheDocument();
     expect(screen.queryByText('Close')).not.toBeInTheDocument();
   });

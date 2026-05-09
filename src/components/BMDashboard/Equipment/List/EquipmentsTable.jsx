@@ -211,7 +211,7 @@ function EquipmentsTable({ equipment, project }) {
                         className={styles.linkButton}
                         data-tip="Open equipment details"
                       >
-                        {rec.itemType?.name}
+                        {rec.itemType?.name || rec.name || 'View Details'}
                       </Link>
                     </td>
                     <td>{rec.purchaseStatus === 'Purchased' ? 'Yes' : 'No'}</td>

@@ -1,6 +1,8 @@
 /* eslint-disable testing-library/no-node-access */
 import { useSelector } from 'react-redux';
 import { useRef, useState, useCallback } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFilePdf } from '@fortawesome/free-solid-svg-icons';
 import MyCases from './MyCases';
 import DropOffTracking from './DropOffTracking';
 import NoShowInsights from './NoShowInsights';
@@ -63,7 +65,14 @@ function EventParticipation() {
           disabled={exporting}
           aria-busy={exporting}
         >
-          {exporting ? 'Preparing…' : '📄 Save as PDF'}
+          {exporting ? (
+            'Preparing…'
+          ) : (
+            <>
+              <FontAwesomeIcon icon={faFilePdf} style={{ marginRight: '6px' }} />
+              Save as PDF
+            </>
+          )}
         </button>
       </header>
 
