@@ -67,8 +67,8 @@ function TopCommunityMembers() {
     >
       <h2>Top 15 Community Members</h2>
 
-      <div style={{ marginBottom: '20px' }}>
-        <label htmlFor="skill-select">Select Skill: </label>
+      <div className={styles.filterRow}>
+        <label htmlFor="skill-select">Select Skill:</label>
         <select
           id="skill-select"
           className={darkMode ? styles.selectDark : styles.select}
@@ -83,6 +83,7 @@ function TopCommunityMembers() {
         </select>
       </div>
 
+      <div style={{ overflowX: 'auto', width: '100%' }}>
       <table className={darkMode ? styles.tableDark : styles.table}>
         <thead>
           <tr>
@@ -94,6 +95,13 @@ function TopCommunityMembers() {
           </tr>
         </thead>
         <tbody>
+          {sortedMembers.length === 0 && (
+            <tr>
+              <td colSpan={5} className={styles.emptyState}>
+                No members found for this skill.
+              </td>
+            </tr>
+          )}
           {sortedMembers.slice(0, 15).map((member, index) => {
             const scoreVal = scoreOf(member);
             return (
@@ -189,6 +197,7 @@ function TopCommunityMembers() {
           })}
         </tbody>
       </table>
+      </div>
       <Link
         to={{ pathname: '/hgnhelp/community', state: { initialSkills: [selectedSkill] } }}
         className={darkMode ? styles.underlineLinkDark : styles.underlineLink}
