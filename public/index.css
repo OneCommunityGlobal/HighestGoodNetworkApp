@@ -32,6 +32,14 @@ body.bm-dashboard-dark:not(.no-global-theme) label {
   color: #ffffff !important;
 }
 
+/* Error/validation messages must stay red even in dark mode */
+body.dark-mode:not(.no-global-theme) label.bm-error-red,
+body.dark-mode:not(.no-global-theme) div.bm-error-red,
+body.bm-dashboard-dark:not(.no-global-theme) label.bm-error-red,
+body.bm-dashboard-dark:not(.no-global-theme) div.bm-error-red {
+  color: #dc3545 !important;
+}
+
 /* Headings */
 body.dark-mode:not(.no-global-theme) h1,
 body.dark-mode:not(.no-global-theme) h2,

@@ -195,8 +195,7 @@ export default function AddToolForm() {
           onChange={event => handleInputChange('name', event.target.value)}
         />
         {errors.name && (
-          <Label for="toolNameErr" sm={12} className={`${styles.toolFormError}`}>
-            {/* Tool &quot;name&quot; length must be at least 4 characters that are not space. */}
+          <Label for="toolNameErr" sm={12} className={`${styles.toolFormError} bm-error-red`}>
             {errors.name}
           </Label>
         )}
@@ -214,7 +213,7 @@ export default function AddToolForm() {
           onChange={event => handleInputChange('invoice', event.target.value)}
         />
         {errors.invoice && (
-          <Label for="toolInvoiceErr" sm={12} className={`${styles.toolFormError}`}>
+          <Label for="toolInvoiceErr" sm={12} className={`${styles.toolFormError} bm-error-red`}>
             {errors.invoice}
           </Label>
         )}
@@ -232,7 +231,7 @@ export default function AddToolForm() {
             onChange={event => handleInputChange('unitPrice', event.target.value)}
           />
           {errors.unitPrice && (
-            <Label for="toolUnitPriceErr" sm={12} className={`${styles.toolFormError}`}>
+            <Label for="toolUnitPriceErr" sm={12} className={`${styles.toolFormError} bm-error-red`}>
               {errors.unitPrice}
             </Label>
           )}
@@ -263,7 +262,7 @@ export default function AddToolForm() {
             onChange={event => handleInputChange('quantity', event.target.value)}
           />
           {errors.quantity && (
-            <Label for="toolQuantityErr" sm={12} className={`${styles.toolFormError}`}>
+            <Label for="toolQuantityErr" sm={12} className={`${styles.toolFormError} bm-error-red`}>
               {errors.quantity}
             </Label>
           )}
@@ -311,7 +310,7 @@ export default function AddToolForm() {
             style={{ colorScheme: darkMode ? 'dark' : 'light' }}
           />
           {errors.fromDate && (
-            <Label for="fromDateErr" sm={12} className={`${styles.toolFormError}`}>
+            <Label for="fromDateErr" sm={12} className={`${styles.toolFormError} bm-error-red`}>
               Enter Date
             </Label>
           )}
@@ -328,7 +327,7 @@ export default function AddToolForm() {
             style={{ colorScheme: darkMode ? 'dark' : 'light' }}
           />
           {errors.toDate && (
-            <Label for="toDateErr" sm={12} className={`${styles.toolFormError}`}>
+            <Label for="toDateErr" sm={12} className={`${styles.toolFormError} bm-error-red`}>
               Return Date must be after Rental Date
             </Label>
           )}
@@ -432,8 +431,7 @@ export default function AddToolForm() {
           onChange={event => handleInputChange('description', event.target.value)}
         />
         {errors.description && (
-          <Label for="toolDescriptionErr" sm={12} className={`${styles.toolFormError}`}>
-            {/* Tool &quot;description&quot; length must be at least 4 characters that are not space. */}
+          <Label for="toolDescriptionErr" sm={12} className={`${styles.toolFormError} bm-error-red`}>
             {errors.description}
           </Label>
         )}
@@ -454,7 +452,7 @@ export default function AddToolForm() {
           errors.unitPrice ||
           errors.toDate ||
           errors.fromDate) && (
-          <div className={`${styles.toolFormError}`}> Missing Required Field </div>
+          <div className={`${styles.toolFormError} bm-error-red`}> Missing Required Field </div>
         )}
       <div className={`${styles.addToolButtons}`}>
         <Button outline style={darkMode ? boxStyleDark : boxStyle} onClick={handleCancelClick}>
