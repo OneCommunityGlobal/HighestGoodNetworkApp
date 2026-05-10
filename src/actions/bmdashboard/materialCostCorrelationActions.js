@@ -118,6 +118,51 @@ const extractErrorDetails = (error, projectIds, materialTypeIds, startDate, endD
   return { errorMessage, errorType, statusCode };
 };
 
+const getAutoClose = errorType =>
+  errorType === 'network' || errorType === 'permission' ? false : 5000;
+
+const validateInputs = (projectIds, materialTypeIds, startDate, endDate, dispatch) => {
+  const dateValidation = validateDateRange(startDate, endDate);
+  if (!dateValidation.valid) {
+    const validationError = dateValidation.error;
+    logger.logInfo(
+      `[MaterialCostCorrelation] Validation failed: ${validationError} - Start: ${startDate}, End: ${endDate}`,
+    );
+    toast.warning(validationError, { toastId: 'materialCostCorrelationValidation', autoClose: 5000 });
+    dispatch(fetchMaterialCostCorrelationFailure(validationError));
+    return false;
+  }
+
+  const invalidProjectIds = projectIds?.length > 0 ? projectIds.filter(id => !isValidObjectId(id)) : [];
+  const invalidMaterialTypeIds = materialTypeIds?.length > 0 ? materialTypeIds.filter(id => !isValidObjectId(id)) : [];
+
+  if (invalidProjectIds.length > 0 || invalidMaterialTypeIds.length > 0) {
+    const validationError = 'Invalid project or material type IDs provided';
+    logger.logInfo(
+      `[MaterialCostCorrelation] Validation failed: ${validationError} - Invalid Project IDs: ${JSON.stringify(invalidProjectIds)}, Invalid Material Type IDs: ${JSON.stringify(invalidMaterialTypeIds)}`,
+    );
+    toast.warning(validationError, { toastId: 'materialCostCorrelationValidation', autoClose: 5000 });
+    dispatch(fetchMaterialCostCorrelationFailure(validationError));
+    return false;
+  }
+
+  return true;
+};
+
+const buildRequestUrl = (projectIds, materialTypeIds, startDate, endDate) => {
+  const params = new URLSearchParams();
+  if (projectIds?.length > 0) params.append('projectId', projectIds.join(','));
+  if (materialTypeIds?.length > 0) params.append('materialType', materialTypeIds.join(','));
+  const formattedStartDate = formatDate(startDate);
+  if (formattedStartDate) params.append('startDate', formattedStartDate);
+  const formattedEndDate = formatDate(endDate);
+  if (formattedEndDate) params.append('endDate', formattedEndDate);
+  const queryString = params.toString();
+  return queryString
+    ? `${ENDPOINTS.BM_MATERIAL_COST_CORRELATION}?${queryString}`
+    : ENDPOINTS.BM_MATERIAL_COST_CORRELATION;
+};
+
 // Thunk Action for Fetching Data
 export const fetchMaterialCostCorrelation = (
   projectIds = [],
@@ -126,82 +171,17 @@ export const fetchMaterialCostCorrelation = (
   endDate = null,
 ) => async dispatch => {
   try {
-    // Client-side validation
-    const dateValidation = validateDateRange(startDate, endDate);
-    if (!dateValidation.valid) {
-      const validationError = dateValidation.error;
-      logger.logInfo(
-        `[MaterialCostCorrelation] Validation failed: ${validationError} - Start: ${startDate}, End: ${endDate}`,
-      );
-      toast.warning(validationError, {
-        toastId: 'materialCostCorrelationValidation',
-        autoClose: 5000,
-      });
-      dispatch(fetchMaterialCostCorrelationFailure(validationError));
-      return;
-    }
-
-    // Validate ObjectIds if provided
-    const invalidProjectIds =
-      projectIds && projectIds.length > 0
-        ? projectIds.filter(id => !isValidObjectId(id))
-        : [];
-    const invalidMaterialTypeIds =
-      materialTypeIds && materialTypeIds.length > 0
-        ? materialTypeIds.filter(id => !isValidObjectId(id))
-        : [];
-
-    if (invalidProjectIds.length > 0 || invalidMaterialTypeIds.length > 0) {
-      const validationError = 'Invalid project or material type IDs provided';
-      logger.logInfo(
-        `[MaterialCostCorrelation] Validation failed: ${validationError} - Invalid Project IDs: ${JSON.stringify(invalidProjectIds)}, Invalid Material Type IDs: ${JSON.stringify(invalidMaterialTypeIds)}`,
-      );
-      toast.warning(validationError, {
-        toastId: 'materialCostCorrelationValidation',
-        autoClose: 5000,
-      });
-      dispatch(fetchMaterialCostCorrelationFailure(validationError));
-      return;
-    }
+    if (!validateInputs(projectIds, materialTypeIds, startDate, endDate, dispatch)) return;
 
     dispatch(fetchMaterialCostCorrelationRequest());
 
-    // Build query parameters
-    const params = new URLSearchParams();
-
-    if (projectIds && projectIds.length > 0) {
-      params.append('projectId', projectIds.join(','));
-    }
-
-    if (materialTypeIds && materialTypeIds.length > 0) {
-      params.append('materialType', materialTypeIds.join(','));
-    }
-
-    const formattedStartDate = formatDate(startDate);
-    if (formattedStartDate) {
-      params.append('startDate', formattedStartDate);
-    }
-
-    const formattedEndDate = formatDate(endDate);
-    if (formattedEndDate) {
-      params.append('endDate', formattedEndDate);
-    }
-
-    // Construct URL with query string
-    const queryString = params.toString();
-    const url = queryString
-      ? `${ENDPOINTS.BM_MATERIAL_COST_CORRELATION}?${queryString}`
-      : ENDPOINTS.BM_MATERIAL_COST_CORRELATION;
-
-    // Make API request
+    const url = buildRequestUrl(projectIds, materialTypeIds, startDate, endDate);
     const response = await axios.get(url);
 
-    // Validate response structure
     if (!response.data) {
       throw new Error('Invalid response: missing data property');
     }
 
-    // Dispatch success action with response data
     dispatch(fetchMaterialCostCorrelationSuccess(response.data));
   } catch (error) {
     const { errorMessage, errorType, statusCode } = extractErrorDetails(
@@ -216,14 +196,12 @@ export const fetchMaterialCostCorrelation = (
 
     dispatch(fetchMaterialCostCorrelationFailure(errorMessage));
 
-    const toastOptions = {
+    toast.error(errorMessage, {
       toastId: `materialCostCorrelationError-${errorType}`,
-      autoClose: errorType === 'network' || errorType === 'permission' ? false : 5000,
+      autoClose: getAutoClose(errorType),
       position: 'top-right',
       closeOnClick: true,
       pauseOnHover: true,
-    };
-
-    toast.error(errorMessage, toastOptions);
+    });
   }
 };
