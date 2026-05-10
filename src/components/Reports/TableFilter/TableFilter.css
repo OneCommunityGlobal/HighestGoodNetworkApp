@@ -53,6 +53,18 @@ select {
   color: #fff;
 }
 
+.text-light select.table-filter-input {
+  background-color: #2c2c2c;
+  border-color: #4a4a4a;
+  color: #fff;
+  color-scheme: dark;
+}
+
+.text-light select.table-filter-input option {
+  background-color: #2c2c2c;
+  color: #fff;
+}
+
 .text-light .table-filter-input::placeholder {
   color: #a0a0a0;
 }

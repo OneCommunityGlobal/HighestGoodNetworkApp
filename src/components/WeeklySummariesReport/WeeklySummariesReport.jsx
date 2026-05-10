@@ -1700,6 +1700,10 @@ const WeeklySummariesReport = props => {
           canEditSummaryCount: props.hasPermission('editSummaryHoursCount'),
           canSeeBioHighlight: props.hasPermission('highlightEligibleBios'),
           hasSeeBadgePermission: props.hasPermission('seeBadges'),
+          canManageFilter:
+            props.hasPermission('manageSummariesFilters') ||
+            props.auth?.user?.role === 'Owner' ||
+            props.auth?.user?.role === 'Administrator',
         }));
       } catch (error) {
         console.error('Failed to fetch badges or permissions', error);
@@ -1760,9 +1764,11 @@ const WeeklySummariesReport = props => {
         <style>
           {`
             .custom-select__input-container {
-              display: inline-block !important;
+              display: inline-flex !important;
               margin: 0 !important;
               padding: 0 !important;
+              min-height: 0 !important;
+              height: 30px !important;
             }
           `}
         </style>
@@ -2036,31 +2042,44 @@ const WeeklySummariesReport = props => {
               ))}
             </div>
           )}
+          <div className={styles.filterRow} style={{ marginTop: '12px' }}>
+            <WeeklySummariesToggleFilter
+              state={state}
+              setState={setState}
+              hasPermissionToFilter={hasPermissionToFilter}
+              editable={true}
+              formId="report"
+              hasPermission={props.hasPermission}
+              darkMode={darkMode}
+            />
+          </div>
         </Col>
         <Col lg={{ size: 5 }} md={{ size: 6 }} xs={{ size: 12 }}>
           <div>Select Color</div>
-          <Select
-            isMulti
-            isSearchable
-            closeMenuOnSelect={false}
-            hideSelectedOptions={false}
-            blurInputOnSelect={false}
-            options={state.colorOptions}
-            value={state.selectedColors}
-            onChange={handleSelectColorChange}
-            components={{
-              Option: CheckboxOption,
-              MenuList: CustomMenuList,
-            }}
-            placeholder="Select color filters..."
-            classNamePrefix="custom-select"
-            className={`${styles.multiSelectFilter} text-dark ${darkMode ? 'dark-mode' : ''}`}
-            styles={customStyles}
-          />
+          <div style={{ marginTop: '8px' }}>
+            <Select
+              isMulti
+              isSearchable
+              closeMenuOnSelect={false}
+              hideSelectedOptions={false}
+              blurInputOnSelect={false}
+              options={state.colorOptions}
+              value={state.selectedColors}
+              onChange={handleSelectColorChange}
+              components={{
+                Option: CheckboxOption,
+                MenuList: CustomMenuList,
+              }}
+              placeholder="Select color filters..."
+              classNamePrefix="custom-select"
+              className={`${styles.multiSelectFilter} text-dark ${darkMode ? 'dark-mode' : ''}`}
+              styles={customStyles}
+            />
+          </div>
           <div className={styles.filtersPanel}>
             {hasPermissionToFilter && (
               <div className={styles.filterRow}>
-                <div className={styles.specialColorsRow}>
+                <div className={styles.specialColorsRow} style={{ marginTop: '12px' }}>
                   <span className={styles.filterGroupLabel}>Filter by Special Colors:</span>
 
                   {['purple', 'green', 'navy'].map(color => {
@@ -2114,59 +2133,57 @@ const WeeklySummariesReport = props => {
                 )}
               </div>
             )}
-
-            <div className={styles.filterRow}>
-              <WeeklySummariesToggleFilter
-                state={state}
-                setState={setState}
-                hasPermissionToFilter={hasPermissionToFilter}
-                editable={true}
-                formId="report"
-                hasPermission={props.hasPermission}
-                darkMode={darkMode}
-              />
-            </div>
           </div>
         </Col>
       </Row>
       <Row className={styles['mx-max-sm-0']}>
-        <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 12 }} className="mb-3">
+        <Col
+          lg={{ size: 5, offset: 1 }}
+          md={{ size: 6 }}
+          xs={{ size: 12 }}
+          className="mb-3"
+          style={{ marginTop: '12px' }}
+        >
           <div>Select Extra Members</div>
-          <MultiSelect
-            className={`${styles['report-multi-select-filter']} ${styles.textDark} 
+          <div style={{ marginTop: '8px' }}>
+            <MultiSelect
+              className={`${styles['report-multi-select-filter']} ${styles.textDark} 
               ${darkMode ? 'dark-mode' : ''}`}
-            options={state.membersFromUnselectedTeam}
-            value={state.selectedExtraMembers}
-            onChange={handleSelectExtraMembersChange}
-          />
+              options={state.membersFromUnselectedTeam}
+              value={state.selectedExtraMembers}
+              onChange={handleSelectExtraMembersChange}
+            />
+          </div>
         </Col>
-        <Col lg={{ size: 5 }} md={{ size: 6 }} xs={{ size: 12 }}>
+        <Col lg={{ size: 5 }} md={{ size: 6 }} xs={{ size: 12 }} style={{ marginTop: '12px' }}>
           <div>Logged Hours Range</div>
-          <Select
-            isMulti
-            classNamePrefix="custom-select"
-            placeholder="Select range..."
-            components={{
-              Option: CheckboxOption,
-              MenuList: CustomMenuList,
-            }}
-            options={[
-              { value: '0', label: '0' },
-              { value: '0-10', label: '0-10' },
-              { value: '10-20', label: '10-20' },
-              { value: '20-40', label: '20-40' },
-              { value: '>40', label: '>40' },
-            ]}
-            hideSelectedOptions={false}
-            blurInputOnSelect={false}
-            closeMenuOnSelect={false}
-            className={`${styles.multiSelectFilter} text-dark ${darkMode ? 'dark-mode' : ''}`}
-            styles={customStyles}
-            value={state.selectedLoggedHoursRange}
-            onChange={selectedOption =>
-              setState({ ...state, selectedLoggedHoursRange: selectedOption })
-            }
-          />
+          <div style={{ marginTop: '8px' }}>
+            <Select
+              isMulti
+              classNamePrefix="custom-select"
+              placeholder="Select range..."
+              components={{
+                Option: CheckboxOption,
+                MenuList: CustomMenuList,
+              }}
+              options={[
+                { value: '0', label: '0' },
+                { value: '0-10', label: '0-10' },
+                { value: '10-20', label: '10-20' },
+                { value: '20-40', label: '20-40' },
+                { value: '>40', label: '>40' },
+              ]}
+              hideSelectedOptions={false}
+              blurInputOnSelect={false}
+              closeMenuOnSelect={false}
+              className={`${styles.multiSelectFilter} text-dark ${darkMode ? 'dark-mode' : ''}`}
+              styles={customStyles}
+              value={state.selectedLoggedHoursRange}
+              onChange={selectedOption =>
+                setState({ ...state, selectedLoggedHoursRange: selectedOption })
+              }
+            />
+          </div>
         </Col>
       </Row>
 
@@ -2313,7 +2330,7 @@ const WeeklySummariesReport = props => {
                               badges={state.badges}
                               loadBadges={state.loadBadges}
                               canEditTeamCode={permissionState.codeEditPermission}
-                              auth={state.auth}
+                              auth={props.auth}
                               canSeeBioHighlight={permissionState.canSeeBioHighlight}
                               darkMode={darkMode}
                               handleTeamCodeChange={handleTeamCodeChange}

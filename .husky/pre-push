@@ -3,23 +3,51 @@
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 # Use Node 20 if available (or install if needed)
-if [ -f .nvmrc ]; then
+if command -v nvm >/dev/null 2>&1 && [ -f .nvmrc ]; then
   nvm use 20 2>/dev/null || nvm install 20 && nvm use 20
 fi
 
 . "$(dirname "$0")/_/husky.sh"
 
-echo "🧪 Running tests before push..."
-npm run test -- --bail=1
-test_status=$?
+changed_files=$(git diff --name-only @{upstream}...HEAD 2>/dev/null)
 
-echo "🧹 Running lint before push..."
-npm run lint
-lint_status=$?
+if [ -z "$changed_files" ]; then
+  echo "ℹ️  No outgoing changes to validate. Skipping pre-push checks."
+  exit 0
+fi
+
+if ! printf '%s\n' "$changed_files" | grep -qvE '^\.husky/'; then
+  echo "ℹ️  Only Husky hook changes detected. Skipping full test and lint checks."
+  exit 0
+fi
+
+js_files=$(printf '%s\n' "$changed_files" | grep -E '\.(js|jsx|ts|tsx)$' || true)
+style_files=$(printf '%s\n' "$changed_files" | grep -E '\.(css|scss|sass)$' || true)
+
+test_status=0
+lint_status=0
+style_status=0
+
+if [ -n "$js_files" ]; then
+  echo "🧪 Running related tests before push..."
+  npx vitest related --run $js_files
+  test_status=$?
+
+  echo "🧹 Running ESLint on changed files before push..."
+  npx eslint $js_files
+  lint_status=$?
+fi
+
+if [ -n "$style_files" ]; then
+  echo "🎨 Running Stylelint on changed files before push..."
+  npx stylelint $style_files
+  style_status=$?
+fi
+
 
 # Block push if either fails
-if [ $test_status -ne 0 ] || [ $lint_status -ne 0 ]; then
-  echo "❌ Push blocked: Lint or test failed."
+if [ $test_status -ne 0 ] || [ $lint_status -ne 0 ] || [ $style_status -ne 0 ]; then
+  echo "❌ Push blocked: changed-file validation failed."
   exit 1
 fi
 

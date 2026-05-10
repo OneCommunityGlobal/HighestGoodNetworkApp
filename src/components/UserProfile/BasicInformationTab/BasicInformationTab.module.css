@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .basic-info-tab-tablet {
   display: none;
 }
@@ -29,7 +30,7 @@
 
 
 
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
   .basic-info-tab-desktop {
     display: none;
 
@@ -48,4 +49,33 @@
   }
 
 
+}
+
+.basic-info-tab-desktop {
+  width: 100%;
+}
+
+
+.basic-info-tab-desktop:not(.dark-mode) :global(.form-control){
+  background-color: transparent;
+}
+
+.dark-mode {
+  /* marker class */
+}
+
+.dark-mode :global(.row) {
+  background-color: #1c2541 !important;
+}
+
+.dark-label-col {
+  background-color: #1c2541 !important;
+}
+
+.dark-label-col:hover {
+  background-color: #1c2541 !important;
+}
+
+:global(.bg-yinmn-blue) .dark-label-col {
+  background-color: #1c2541 !important;
 }

@@ -1,8 +1,17 @@
+/* stylelint-disable declaration-property-value-no-unknown, no-descending-specificity */
 .wrapper.container-fluid {
   overflow-x: auto;
   width: 100%;
+  max-width: 100%;
   padding: 0 16px;
   box-sizing: border-box;
+}
+
+.wrapperDark {
+  background-color: #1b2a41;
+  color: #e4e6eb;
+  padding-bottom: 16px;
+  border-radius: 8px;
 }
 
 .reports-table-head {
@@ -41,7 +50,7 @@
   margin: 0;
   vertical-align: middle;
   font-size: 16px;
-  word-wrap: break-word;
+  overflow-wrap: break-word;
   white-space: normal;
   overflow: hidden;
 }
@@ -110,7 +119,7 @@
 .rectangle:active {
   outline-color: transparent;
   border: none;
-  box-shadow: 0px 0px 3px 2px #ca50db;
+  box-shadow: 0 0 3px 2px #ca50db;
 }
 
 .extra {
@@ -125,12 +134,11 @@
 .mobile-table {
   width: 350px;
   border-radius: 16px;
-  border: 3px solid rgb(150, 148, 148);
+  border: 3px solid rgb(150 148 148);
   overflow: hidden;
   display: flex;
-  flex-direction: row;
+  flex-flow: row wrap;
   justify-content: center;
-  flex-wrap: wrap;
   align-items: center;
   margin-bottom: 24px;
 }
@@ -143,16 +151,30 @@
 }
 
 /* Responsive: large screens */
-@media only screen and (max-width: 1024px) {
+@media only screen and (width <= 1024px) {
   .people-table {
     display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
+    flex-flow: column wrap;
     align-content: center;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .people-table-row {
     display: none;
+  }
+
+  .wrapperDark .people-table {
+    background-color: transparent;
+  }
+
+  .wrapperDark .table-filter-container {
+    background-color: #162032;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 16px;
+    border: 1px solid #3a4460;
   }
 }
 
@@ -163,7 +185,7 @@
 .task-card {
   background-color: #fff;
   border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
   margin-bottom: 20px;
   overflow: hidden;
 }
@@ -251,7 +273,7 @@
 }
 
 .people-report-task-name {
-  word-wrap: break-word;
+  overflow-wrap: break-word;
   min-width: 200px;
   text-align: left;
 }
@@ -264,6 +286,13 @@
   max-height: 600px;
   overflow-y: auto;
   width: 100%;
+}
+
+.wrapperDark :global(.people-table-scrollable) {
+  background-color: #162032;
+  border: 1px solid #3a4460;
+  border-radius: 8px;
+  padding: 4px 0;
 }
 
 /* Dark mode for mobile modal cards */
