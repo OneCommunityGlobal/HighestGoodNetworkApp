@@ -5,7 +5,6 @@
 import moment from 'moment-timezone';
 import { Component } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
-import './index.css';
 import { connect } from 'react-redux';
 import { Button, Container } from 'reactstrap';
 import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
@@ -27,7 +26,6 @@ import LostTimeHistory from './LostTime/LostTimeHistory';
 import PeopleTable from './PeopleTable';
 import ProjectTable from './ProjectTable';
 import ReportFilter from './ReportFilter/ReportFilter';
-import './reportsPage.module.css';
 import TeamTable from './TeamTable';
 import TotalContributorsReport from './TotalReport/TotalContributorsReport';
 import TotalPeopleReport from './TotalReport/TotalPeopleReport';

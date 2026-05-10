@@ -3,7 +3,6 @@ import { useDispatch, connect, useSelector } from 'react-redux';
 import MemberAutoComplete from '~/components/Teams/MembersAutoComplete';
 import AddProjectsAutoComplete from '~/components/UserProfile/TeamsAndProjects/AddProjectsAutoComplete';
 import AddTeamsAutoComplete from '~/components/UserProfile/TeamsAndProjects/AddTeamsAutoComplete';
-import '../index.css';
 import styles from "../reportsPage.module.css";
 import { Editor } from '@tinymce/tinymce-react';
 import moment from 'moment-timezone';
