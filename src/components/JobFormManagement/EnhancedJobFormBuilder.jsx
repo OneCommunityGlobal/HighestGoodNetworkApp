@@ -448,10 +448,14 @@ const EnhancedJobFormBuilder = () => {
             </div>
 
             <div className={styles.positionField}>
-              <label className={`${jb.jbformLabel} ${dm(styles.darkText)}`}>
+              <label
+                htmlFor="job-form-position-title"
+                className={`${jb.jbformLabel} ${dm(styles.darkText)}`}
+              >
                 Position the form is for
               </label>
               <input
+                id="job-form-position-title"
                 type="text"
                 className={jb.jobformInput}
                 value={formData.title}
@@ -689,7 +693,9 @@ const EnhancedJobFormBuilder = () => {
               {['checkbox', 'radio', 'dropdown'].includes(draftQuestionType) && (
                 <>
                   <div
-                    className={`${styles.optionDraftRow} ${darkMode ? styles.optionDraftRowDark : ''}`}
+                    className={`${styles.optionDraftRow} ${
+                      darkMode ? styles.optionDraftRowDark : ''
+                    }`}
                   >
                     <input
                       type="text"
@@ -760,7 +766,11 @@ const EnhancedJobFormBuilder = () => {
                     <span className="small">
                       {link.title} — {link.url}
                     </span>
-                    <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => removeGeneralLink(i)}>
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-outline-danger"
+                      onClick={() => removeGeneralLink(i)}
+                    >
                       Remove
                     </button>
                   </div>
