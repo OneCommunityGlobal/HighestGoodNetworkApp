@@ -41,7 +41,6 @@ function CustomTooltip({ active, payload, darkMode }) {
     return null;
   }
 
-  // Find cost and quantity from payload
   const costPayload = payload.find(p => p.dataKey === 'totalCostK');
   const quantityPayload = payload.find(p => p.dataKey === 'quantityUsed');
 
@@ -164,6 +163,29 @@ function formatTickValue(value, maxLength) {
   return value;
 }
 
+function getYAxisProps(shortYAxisLabels, textColor, yAxisWidth) {
+  const fontSize = shortYAxisLabels ? 10 : 12;
+  const tick = { fill: textColor, fontSize };
+  return {
+    costLabel: {
+      value: shortYAxisLabels ? 'Cost (×1k$)' : 'Total Material Cost (×1000$)',
+      angle: -90,
+      position: 'insideLeft',
+      offset: 8,
+      style: { textAnchor: 'middle', fill: textColor, fontSize },
+    },
+    quantityLabel: {
+      value: shortYAxisLabels ? 'Qty Used' : 'Quantity of Materials Used',
+      angle: 90,
+      position: 'insideRight',
+      offset: 8,
+      style: { textAnchor: 'middle', fill: textColor, fontSize },
+    },
+    tick,
+    width: yAxisWidth,
+  };
+}
+
 function ErrorDisplay({ error, errorType, darkMode, onRetry }) {
   const shouldShowRetry = errorType !== 'permission' && errorType !== 'authentication';
   return (
@@ -219,8 +241,6 @@ function MaterialCostCorrelationChart() {
   );
 
   const chartContainerRef = useRef(null);
-  // Track the actual rendered container width so breakpoints work correctly
-  // whether the chart is full-width or inside a narrow grid column.
   const [containerWidth, setContainerWidth] = useState(400);
 
   useEffect(() => {
@@ -232,7 +252,6 @@ function MaterialCostCorrelationChart() {
     return () => observer.disconnect();
   }, []);
 
-  // Fetch data when filters change
   useEffect(() => {
     dispatch(
       fetchMaterialCostCorrelation(
@@ -250,13 +269,11 @@ function MaterialCostCorrelationChart() {
     filters.endDate,
   ]);
 
-  // Prepare data for combined chart (grouped by project) with error handling
   const barChartData = useMemo(() => {
     try {
       if (!data || !Array.isArray(data) || data.length === 0) {
         return null;
       }
-
       return data.map(project => ({
         projectName: project?.projectName || 'Unknown Project',
         totalCostK: project?.totals?.totalCostK || 0,
@@ -273,20 +290,12 @@ function MaterialCostCorrelationChart() {
     }
   }, [data]);
 
-  // Chart configuration — breakpoints use the actual rendered container width,
-  // not the window width, so the chart looks correct inside a narrow grid column.
-  // narrow < 500 px  (column card on any desktop or a small phone)
-  // medium < 700 px  (half-width layout or portrait tablet)
-  // wide   ≥ 700 px  (full-width on desktop)
   const chartConfig = useMemo(() => {
     const textColor = darkMode ? '#f7fafc' : '#1a202c';
     const gridColor = darkMode ? '#4a5568' : '#e2e8f0';
-
     const isNarrow = containerWidth < 500;
     const isMedium = containerWidth < 700;
-
     const margin = getMarginConfig(isNarrow, isMedium);
-
     const dataLength = barChartData?.length || 0;
     const {
       xAxisAngle,
@@ -295,10 +304,8 @@ function MaterialCostCorrelationChart() {
       xAxisMaxNameLength,
       xAxisInterval,
     } = getXAxisConfig(isNarrow, isMedium, dataLength);
-
     const yAxisWidth = getYAxisWidth(isNarrow, isMedium);
     const shortYAxisLabels = isNarrow;
-
     return {
       textColor,
       gridColor,
@@ -313,7 +320,6 @@ function MaterialCostCorrelationChart() {
     };
   }, [darkMode, containerWidth, barChartData?.length]);
 
-  // Handlers
   const handleProjectChange = projectIds => {
     dispatch(setProjectFilter(projectIds));
   };
@@ -330,7 +336,6 @@ function MaterialCostCorrelationChart() {
     dispatch(resetFilters());
   };
 
-  // Render loading state
   if (loading) {
     return (
       <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
@@ -344,7 +349,6 @@ function MaterialCostCorrelationChart() {
 
   const errorType = error ? getErrorType(error) : null;
 
-  // Render error state
   if (error && errorType !== 'validation') {
     return (
       <ErrorDisplay
@@ -365,20 +369,22 @@ function MaterialCostCorrelationChart() {
     );
   }
 
-  // Determine if we have data to display
   const hasData = barChartData;
+  const yAxisProps = getYAxisProps(
+    chartConfig.shortYAxisLabels,
+    chartConfig.textColor,
+    chartConfig.yAxisWidth,
+  );
 
   return (
     <div
       className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}
       ref={chartContainerRef}
     >
-      {/* Header */}
       <div className={styles.header}>
         <h2 className={styles.title}>Material Usage vs Cost Correlation</h2>
       </div>
 
-      {/* Filter Panel */}
       <FilterPanel
         selectedProjects={filters.selectedProjects || []}
         selectedMaterialTypes={filters.selectedMaterialTypes || []}
@@ -391,7 +397,6 @@ function MaterialCostCorrelationChart() {
         darkMode={darkMode}
       />
 
-      {/* Chart Section */}
       <div className={styles.chartContainer}>
         {hasData ? (
           <ResponsiveContainer width="100%" height={getChartHeight(containerWidth)}>
@@ -411,44 +416,16 @@ function MaterialCostCorrelationChart() {
               />
               <YAxis
                 yAxisId="cost"
-                label={{
-                  value: chartConfig.shortYAxisLabels
-                    ? 'Cost (×1k$)'
-                    : 'Total Material Cost (×1000$)',
-                  angle: -90,
-                  position: 'insideLeft',
-                  offset: 8,
-                  style: {
-                    textAnchor: 'middle',
-                    fill: chartConfig.textColor,
-                    fontSize: chartConfig.shortYAxisLabels ? 10 : 12,
-                  },
-                }}
-                tick={{
-                  fill: chartConfig.textColor,
-                  fontSize: chartConfig.shortYAxisLabels ? 10 : 12,
-                }}
-                width={chartConfig.yAxisWidth}
+                label={yAxisProps.costLabel}
+                tick={yAxisProps.tick}
+                width={yAxisProps.width}
               />
               <YAxis
                 yAxisId="quantity"
                 orientation="right"
-                label={{
-                  value: chartConfig.shortYAxisLabels ? 'Qty Used' : 'Quantity of Materials Used',
-                  angle: 90,
-                  position: 'insideRight',
-                  offset: 8,
-                  style: {
-                    textAnchor: 'middle',
-                    fill: chartConfig.textColor,
-                    fontSize: chartConfig.shortYAxisLabels ? 10 : 12,
-                  },
-                }}
-                tick={{
-                  fill: chartConfig.textColor,
-                  fontSize: chartConfig.shortYAxisLabels ? 10 : 12,
-                }}
-                width={chartConfig.yAxisWidth}
+                label={yAxisProps.quantityLabel}
+                tick={yAxisProps.tick}
+                width={yAxisProps.width}
               />
               <Tooltip content={<CustomTooltip darkMode={darkMode} />} />
               <Legend />
