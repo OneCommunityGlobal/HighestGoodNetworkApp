@@ -414,7 +414,7 @@ function WarningTrackerModal({
                 placeholder="warning title"
                 className={`${styles.warnings__descriptions__title} ${
                   warning.activeWarning ? '' : styles['warnings__descriptions__title--gray']
-                } ${darkMode ? styles.darkMode : ''}`}
+                }`}
               />
             </li>
           ))}

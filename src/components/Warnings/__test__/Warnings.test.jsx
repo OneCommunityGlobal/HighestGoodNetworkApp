@@ -14,6 +14,15 @@ vi.mock('../../../actions/warnings', () => ({
   deleteWarningsById: vi.fn(() => () => Promise.resolve([])),
 }));
 
+vi.mock('react-redux', async () => {
+  const actual = await vi.importActual('react-redux');
+  return {
+    __esModule: true,
+    ...actual,
+    useSelector: vi.fn(),
+  };
+});
+
 const mockStore = configureStore([thunk]);
 
 describe('Warning Component', () => {

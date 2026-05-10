@@ -249,16 +249,12 @@ input[type='text'] {
   width: 20%;
 }
 
-.warnings__descriptions__title.darkMode {
-  color: black !important;
-}
-
 .icon {
   border: 1px solid black;
   border-radius: 50%;
   width: 10px;
   height: 10px;
-  margin: 0em 0.175em;
+  margin: 0 0.175em;
   color: white;
 }
 
@@ -279,7 +275,7 @@ input[type='text'] {
 }
 
 .popoverDarkMode h4 {
-  background-color: rgb(109, 109, 109) !important;
+  background-color: rgb(109 109 109) !important;
 }
 
 /* Media query for screens smaller than 767px */
