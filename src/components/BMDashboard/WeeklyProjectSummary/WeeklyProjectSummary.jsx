@@ -27,6 +27,7 @@ import IssueCharts from '../Issues/openIssueCharts';
 import LossTrackingLineChart from './Financials/LossTrackingLineCharts/LossTrackingLineChart';
 import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
+import LessonsLearntChart from '../LessonsLearnt/LessonsLearntChart';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
 
 const projectStatusButtons = [
@@ -327,6 +328,12 @@ function WeeklyProjectSummary() {
             className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
           >
             <InjuryCategoryBarChart />
+          </div>,
+          <div
+            key="lessons-learnt-chart"
+            className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+          >
+            <LessonsLearntChart darkMode={darkMode} />
           </div>,
         ],
       },
