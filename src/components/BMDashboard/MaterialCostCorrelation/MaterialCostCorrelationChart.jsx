@@ -68,13 +68,15 @@ function CustomTooltip({ active, payload, darkMode }) {
 
 CustomTooltip.propTypes = {
   active: PropTypes.bool,
-  payload: PropTypes.arrayOf(PropTypes.shape({
-    dataKey: PropTypes.string,
-    value: PropTypes.number,
-    payload: PropTypes.shape({
-      projectName: PropTypes.string,
+  payload: PropTypes.arrayOf(
+    PropTypes.shape({
+      dataKey: PropTypes.string,
+      value: PropTypes.number,
+      payload: PropTypes.shape({
+        projectName: PropTypes.string,
+      }),
     }),
-  })),
+  ),
   darkMode: PropTypes.bool,
 };
 
@@ -112,12 +114,30 @@ function getXAxisInterval(isNarrow, isMedium, dataLength) {
 function getXAxisConfig(isNarrow, isMedium, dataLength) {
   const xAxisInterval = getXAxisInterval(isNarrow, isMedium, dataLength);
   if (isNarrow) {
-    return { xAxisAngle: -90, xAxisHeight: 90, xAxisTickFontSize: 10, xAxisMaxNameLength: 8, xAxisInterval };
+    return {
+      xAxisAngle: -90,
+      xAxisHeight: 90,
+      xAxisTickFontSize: 10,
+      xAxisMaxNameLength: 8,
+      xAxisInterval,
+    };
   }
   if (isMedium) {
-    return { xAxisAngle: -90, xAxisHeight: 85, xAxisTickFontSize: 11, xAxisMaxNameLength: 10, xAxisInterval };
+    return {
+      xAxisAngle: -90,
+      xAxisHeight: 85,
+      xAxisTickFontSize: 11,
+      xAxisMaxNameLength: 10,
+      xAxisInterval,
+    };
   }
-  return { xAxisAngle: -45, xAxisHeight: 100, xAxisTickFontSize: 12, xAxisMaxNameLength: 15, xAxisInterval };
+  return {
+    xAxisAngle: -45,
+    xAxisHeight: 100,
+    xAxisTickFontSize: 12,
+    xAxisMaxNameLength: 15,
+    xAxisInterval,
+  };
 }
 
 function getMarginConfig(isNarrow, isMedium) {
@@ -131,6 +151,19 @@ function getYAxisWidth(isNarrow, isMedium) {
   if (isMedium) return 52;
   return 64;
 }
+
+function getChartHeight(width) {
+  if (width < 500) return 400;
+  if (width < 700) return 450;
+  return 500;
+}
+
+function formatTickValue(value, maxLength) {
+  if (!value) return '';
+  if (value.length > maxLength) return `${value.substring(0, maxLength)}...`;
+  return value;
+}
+
 function ErrorDisplay({ error, errorType, darkMode, onRetry }) {
   const shouldShowRetry = errorType !== 'permission' && errorType !== 'authentication';
   return (
@@ -143,13 +176,17 @@ function ErrorDisplay({ error, errorType, darkMode, onRetry }) {
             <p className={styles.errorHint}>You will be redirected to the login page shortly...</p>
           )}
           {errorType === 'permission' && (
-            <p className={styles.errorHint}>This error is not transient. Please contact an administrator for assistance.</p>
+            <p className={styles.errorHint}>
+              This error is not transient. Please contact an administrator for assistance.
+            </p>
           )}
           {errorType === 'network' && (
             <p className={styles.errorHint}>Please check your internet connection and try again.</p>
           )}
           {errorType === 'general' && (
-            <p className={styles.errorHint}>If this problem persists, please try different filters or contact support.</p>
+            <p className={styles.errorHint}>
+              If this problem persists, please try different filters or contact support.
+            </p>
           )}
         </div>
         {shouldShowRetry && (
@@ -251,7 +288,13 @@ function MaterialCostCorrelationChart() {
     const margin = getMarginConfig(isNarrow, isMedium);
 
     const dataLength = barChartData?.length || 0;
-    const { xAxisAngle, xAxisHeight, xAxisTickFontSize, xAxisMaxNameLength, xAxisInterval } = getXAxisConfig(isNarrow, isMedium, dataLength);
+    const {
+      xAxisAngle,
+      xAxisHeight,
+      xAxisTickFontSize,
+      xAxisMaxNameLength,
+      xAxisInterval,
+    } = getXAxisConfig(isNarrow, isMedium, dataLength);
 
     const yAxisWidth = getYAxisWidth(isNarrow, isMedium);
     const shortYAxisLabels = isNarrow;
@@ -308,12 +351,16 @@ function MaterialCostCorrelationChart() {
         error={error}
         errorType={errorType}
         darkMode={darkMode}
-        onRetry={() => dispatch(fetchMaterialCostCorrelation(
-          filters.selectedProjects || [],
-          filters.selectedMaterialTypes || [],
-          filters.startDate,
-          filters.endDate,
-        ))}
+        onRetry={() =>
+          dispatch(
+            fetchMaterialCostCorrelation(
+              filters.selectedProjects || [],
+              filters.selectedMaterialTypes || [],
+              filters.startDate,
+              filters.endDate,
+            ),
+          )
+        }
       />
     );
   }
@@ -347,14 +394,7 @@ function MaterialCostCorrelationChart() {
       {/* Chart Section */}
       <div className={styles.chartContainer}>
         {hasData ? (
-          <ResponsiveContainer
-            width="100%"
-            height={(() => {
-              if (containerWidth < 500) return 400;
-              if (containerWidth < 700) return 450;
-              return 500;
-            })()}
-          >
+          <ResponsiveContainer width="100%" height={getChartHeight(containerWidth)}>
             <ComposedChart data={barChartData} margin={chartConfig.margin}>
               <CartesianGrid strokeDasharray="3 3" stroke={chartConfig.gridColor} />
               <XAxis
@@ -367,13 +407,7 @@ function MaterialCostCorrelationChart() {
                 textAnchor="end"
                 height={chartConfig.xAxisHeight}
                 interval={chartConfig.xAxisInterval}
-                tickFormatter={value => {
-                  const maxLength = chartConfig.xAxisMaxNameLength;
-                  if (value && value.length > maxLength) {
-                    return `${value.substring(0, maxLength)}...`;
-                  }
-                  return value || '';
-                }}
+                tickFormatter={value => formatTickValue(value, chartConfig.xAxisMaxNameLength)}
               />
               <YAxis
                 yAxisId="cost"
