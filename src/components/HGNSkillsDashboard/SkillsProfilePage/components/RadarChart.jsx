@@ -310,7 +310,7 @@ function RadarChart({ profileData, compact = true, onSkillsDataReady }) {
             },
             weight: '500',
           },
-          color: darkMode ? '#e6e6e6' : compact ? '#555' : '#333',
+          color: darkMode ? '#e2e8f0' : compact ? '#555' : '#333',
           padding: compact ? 10 : 15,
           callback: function(value) {
             if (window.innerWidth < 600 && value.length > 15) {

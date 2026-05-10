@@ -6,14 +6,14 @@ import { useRowSelection } from './SelectionContext';
 const GRADE_OPTIONS = ['Unsatisfactory', 'Okay', 'Exceptional', 'No Correct Image'];
 
 function SummaryList({ gradings, onUpdateGrade, onRemovePR }) {
-  const { activeId } = useRowSelection();
+  const { activeId, scrollKey } = useRowSelection();
   const rowRefs = useRef({});
 
   useEffect(() => {
     if (activeId && rowRefs.current[activeId]) {
       rowRefs.current[activeId].scrollIntoView({ behavior: 'smooth' });
     }
-  }, [activeId]);
+  }, [activeId, scrollKey]);
 
   return (
     <div className={styles.container}>

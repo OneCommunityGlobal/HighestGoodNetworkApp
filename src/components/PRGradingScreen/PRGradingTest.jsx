@@ -33,6 +33,8 @@ const PRGradingTest = () => {
             cfg.testDataType
           }${cfg.notes ? ` — ${cfg.notes}` : ''}`,
           fromDB: true,
+          reviewerCount: cfg.reviewerCount,
+          reviewerNames: cfg.reviewerNames || [],
         }));
         setDynamicTeams(fetched);
       } catch {
@@ -47,7 +49,8 @@ const PRGradingTest = () => {
   const allTeams = [...STATIC_TEAMS, ...dynamicTeams];
 
   const handleTeamSelect = teamId => {
-    history.push('/pr-grading-screen', { teamId });
+    const team = allTeams.find(t => t.id === teamId);
+    history.push('/pr-grading-screen', { teamId, config: team });
   };
 
   const handleDeleteConfig = async (e, teamId) => {
