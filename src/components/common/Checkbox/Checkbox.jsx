@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import styles from './Checkbox.module.css';
 
 // eslint-disable-next-line import/prefer-default-export, react/function-component-definition
@@ -36,4 +37,22 @@ export const Checkbox = ({
       </label>
     </div>
   );
+};
+
+Checkbox.propTypes = {
+  onChange: PropTypes.func,
+  value: PropTypes.bool,
+  label: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
+  wrapperClassname: PropTypes.string,
+  backgroundColorCN: PropTypes.string,
+  textColorCN: PropTypes.string,
+  darkMode: PropTypes.bool,
+};
+
+Checkbox.defaultProps = {
+  wrapperClassname: '',
+  backgroundColorCN: '',
+  textColorCN: '',
+  darkMode: false,
 };

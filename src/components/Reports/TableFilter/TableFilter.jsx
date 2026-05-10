@@ -1,8 +1,9 @@
+import PropTypes from 'prop-types';
 import { useState, forwardRef } from 'react';
 import DatePicker from 'react-datepicker';
 import { FiCalendar } from 'react-icons/fi';
 import 'react-datepicker/dist/react-datepicker.css';
-import './TableFilter.css';
+import styles from './TableFilter.module.css';
 import { Checkbox } from '~/components/common/Checkbox';
 import TextSuggestion from '../../UserManagement/TextSuggestion';
 import DropDownSearchBox from '../../UserManagement/DropDownSearchBox';
@@ -12,13 +13,13 @@ const InputWithCalendarIcon = forwardRef(({ value, onClick }, ref) => {
     <>
       <input
         type="text"
-        className="table-filter-datePicker table-filter-item table-filter-input"
+        className={`${styles.tableFilterDatePicker} ${styles.tableFilterItem} ${styles.tableFilterInput}`}
         value={value}
         onClick={onClick}
         ref={ref}
         readOnly
       />
-      <FiCalendar className="date-picker-icon" onClick={onClick} />
+      <FiCalendar className={styles.datePickerIcon} onClick={onClick} />
     </>
   );
 });
@@ -58,12 +59,12 @@ function TableFilter({
   const uniquetaskResource = [...new Set(taskResource)];
 
   return (
-    <div className="table-filter-wrapper">
+    <div className={styles.tableFilterWrapper}>
       <TextSuggestion
         id="name_search"
         list={taskName}
         searchCallback={onTaskNameSearch}
-        className="table-filter-input table-filter-item"
+        className={`${styles.tableFilterInput} ${styles.tableFilterItem}`}
         value={name}
         placeholder="Task name"
       />
@@ -73,28 +74,28 @@ function TableFilter({
         searchCallback={searchEstimatedHours}
         value={estimatedHours}
         placeholder="Estimated Hours"
-        className="table-filter-item table-filter-input"
+        className={`${styles.tableFilterItem} ${styles.tableFilterInput}`}
       />
       <TextSuggestion
         list={uniquetaskResource}
         searchCallback={searchResources}
         value={resources}
         placeholder="Resources"
-        className="table-filter-item table-filter-input"
+        className={`${styles.tableFilterItem} ${styles.tableFilterInput}`}
       />
       <DropDownSearchBox
         items={taskStatus}
         searchCallback={searchStatus}
         value={status}
         placeholder="Any status"
-        className="table-filter-item table-filter-input"
+        className={`${styles.tableFilterItem} ${styles.tableFilterInput}`}
       />
       <DropDownSearchBox
         items={taskPriority}
         searchCallback={searchPriority}
         value={priority}
         placeholder="Any priority"
-        className="table-filter-item table-filter-input"
+        className={`${styles.tableFilterItem} ${styles.tableFilterInput}`}
       />
       <DatePicker
         customInput={<InputWithCalendarIcon />}
@@ -117,7 +118,7 @@ function TableFilter({
           searchActive(checked ? 'Yes' : 'No');
         }}
         id="active"
-        wrapperClassname="table-filter-item"
+        wrapperClassname={styles.tableFilterItem}
         label="Active"
         darkMode={darkMode}
       />
@@ -128,7 +129,7 @@ function TableFilter({
           searchAssign(checked ? 'Yes' : 'No');
         }}
         id="assign"
-        wrapperClassname="table-filter-item"
+        wrapperClassname={styles.tableFilterItem}
         label="Assign"
         darkMode={darkMode}
       />
@@ -136,4 +137,31 @@ function TableFilter({
   );
 }
 InputWithCalendarIcon.displayName = 'InputWithCalendarIcon';
+
+TableFilter.propTypes = {
+  onTaskNameSearch: PropTypes.func,
+  searchPriority: PropTypes.func,
+  searchStatus: PropTypes.func,
+  searchResources: PropTypes.func,
+  searchActive: PropTypes.func,
+  searchAssign: PropTypes.func,
+  searchEstimatedHours: PropTypes.func,
+  name: PropTypes.string,
+  taskNameList: PropTypes.arrayOf(PropTypes.object),
+  estimatedHours: PropTypes.string,
+  resources: PropTypes.string,
+  status: PropTypes.string,
+  priority: PropTypes.string,
+  StartDate: PropTypes.instanceOf(Date),
+  EndDate: PropTypes.instanceOf(Date),
+  UpdateStartDate: PropTypes.func,
+  UpdateEndDate: PropTypes.func,
+  darkMode: PropTypes.bool,
+};
+
+TableFilter.defaultProps = {
+  taskNameList: [],
+  darkMode: false,
+};
+
 export default TableFilter;
