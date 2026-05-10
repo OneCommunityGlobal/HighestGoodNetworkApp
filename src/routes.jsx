@@ -352,7 +352,17 @@ export default (
     />
     <LBProtectedRoute path="/lbdashboard/home" component={LBHome} />
 
-    <Route path="/EventPopularity" component={EventPopularity} />
+    <Route
+      path="/EventPopularity"
+      render={() => (
+        <>
+          <HeaderRenderer />
+          <AutoUpdate />
+          <ToastContainer />
+          <EventPopularity />
+        </>
+      )}
+    />
     <Route path="/MaterialSummary" component={MaterialSummary} />
     <Route path="/form" component={FormEditor} />
     <Route path="/formviewer" component={FormViewer} />
@@ -873,6 +883,11 @@ export default (
           path="/communityportal/activity/:activityId/logattendance"
           exact
           component={NoShowList}
+        />
+        <CPProtectedRoute
+          path="/communityportal/reports/participation"
+          exact
+          component={EventParticipation}
         />
         <CPProtectedRoute
           path="/communityportal/reports/participation"
