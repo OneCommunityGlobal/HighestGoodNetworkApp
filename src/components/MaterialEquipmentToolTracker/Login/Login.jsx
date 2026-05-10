@@ -6,6 +6,7 @@ import { User, Lock } from 'lucide-react';
 import isEmail from 'validator/lib/isEmail';
 import { loginBMUser } from '~/actions/authActions';
 import styles from './Login.module.css';
+import { useForm } from 'react-hook-form';
 
 function Login() {
   const dispatch = useDispatch();
@@ -13,18 +14,21 @@ function Login() {
   const location = useLocation();
   const auth = useSelector(state => state.auth);
   const darkMode = useSelector(state => state.theme.darkMode);
-
-  const [enteredemail, setEnteredemail] = useState('');
-  const [enteredPassword, setEnteredPassword] = useState('');
-  const [loading, setLoading] = useState(false);
   const supportEmail = process.env.REACT_APP_SUPPORT_EMAIL;
   const [showPassword, setShowPassword] = useState(false);
-  const [fieldErrors, setFieldErrors] = useState({});
-  const [touched, setTouched] = useState({ email: false, password: false });
   const [backendError, setBackendError] = useState('');
   const [hasAccess, setHasAccess] = useState(false);
   const prevLocation = location?.state?.from || { pathname: '/bmdashboard' };
   const [capsLockOn, setCapsLockOn] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    mode: 'onChange', // inline validation while typing
+  });
 
   useEffect(() => {
     if (hasAccess || auth.user.access?.canAccessBMPortal) {
@@ -32,59 +36,18 @@ function Login() {
     }
   }, [hasAccess, auth.user.access, history, prevLocation.pathname]);
 
-  //Live Validation
-  const validateField = (name, value) => {
-    value = value.trim();
-    if (name === 'email') {
-      if (!value) return 'email is required';
-      if (!isEmail(value)) return 'Invalid email';
-      return '';
-    }
-    if (name === 'password') {
-      if (!value) return 'Password is required';
-      if (value.length < 8) return 'Password must be at least 8 characters';
-    }
-    return '';
-  };
+  const onSubmit = async data => {
+    const res = await dispatch(loginBMUser(data));
 
-  const handleChange = ({ target }) => {
-    const { name, value } = target;
-    if (!touched[name]) setTouched(prev => ({ ...prev, [name]: true }));
-
-    if (name === 'email') setEnteredemail(value);
-    if (name === 'password') setEnteredPassword(value);
-
-    const errorMsg = validateField(name, value);
-    setFieldErrors(prev => ({ ...prev, [name]: errorMsg }));
-
-    if (backendError && !errorMsg) setBackendError('');
-  };
-
-  const handleSubmit = async e => {
-    e.preventDefault();
-    // Final client-side validation
-    const emailError = validateField('email', enteredemail);
-    const passwordError = validateField('password', enteredPassword);
-    if (emailError || passwordError) {
-      setFieldErrors({ email: emailError, password: passwordError });
-      setTouched({ email: true, password: true });
-      return;
-    }
-    setLoading(true);
-    // Dispatch login action
-    const res = await dispatch(loginBMUser({ email: enteredemail, password: enteredPassword }));
-    //Handle Backend errors
     if (res.status !== 200) {
-      //Validation error
       if (res.status === 422 && res.data?.label) {
-        setFieldErrors(prev => ({
-          ...prev,
-          [res.data.label]: res.data.message,
-        }));
+        setError(res.data.label, {
+          type: 'server',
+          message: res.data.message,
+        });
       } else {
         setBackendError(res.data?.message || 'Something went wrong');
       }
-      setLoading(false);
       return;
     }
     setBackendError('');
@@ -94,13 +57,12 @@ function Login() {
   if (!auth.isAuthenticated) {
     return <Redirect to={{ pathname: '/login', state: { from: location } }} />;
   }
-
   return (
     <div className={styles.loginContainer}>
       <h1 className={styles.pageTitle}>Highest Good Network</h1>
       <h1 className={styles.pageTitle}> Material Equipemnt Tool Tracker</h1>
       <div className={`${styles.formContainer} ${darkMode ? styles.darkBg : ''}`}>
-        <Form onSubmit={handleSubmit}>
+        <Form onSubmit={handleSubmit(onSubmit)}>
           {/* Backend/general error */}
           {backendError && (
             <div className="alert alert-danger" role="alert">
@@ -114,21 +76,27 @@ function Login() {
               <User size="30" strokeWidth={1.5} aria-hidden="true" />
               <Input
                 type="text"
-                placeholder="email"
-                name="email"
                 id="email"
-                value={enteredemail}
+                placeholder="email"
+                innerRef={
+                  register('email', {
+                    required: 'Email is required',
+                    validate: value => isEmail(value) || 'Invalid email',
+                  }).ref
+                }
+                onChange={register('email').onChange}
+                onBlur={register('email').onBlur}
+                name="email"
                 className={`${styles.inputBox} ${darkMode ? styles.darkMail : ''}`}
-                onChange={handleChange}
                 aria-label="email input field"
-                invalid={touched.email && !!fieldErrors.email}
-                aria-invalid={touched.email && !!fieldErrors.email}
-                aria-describedby={touched.email && !!fieldErrors.email ? 'email-error' : undefined}
+                invalid={!!errors.email}
+                aria-invalid={!!errors.email}
+                aria-describedby={!!errors.email ? 'email-error' : undefined}
               />
             </div>
-            {touched.email && fieldErrors.email && (
+            {errors.email && (
               <FormFeedback className="d-block error" id="email-error">
-                {fieldErrors.email}
+                {errors.email.message}
               </FormFeedback>
             )}
           </FormGroup>
@@ -141,14 +109,22 @@ function Login() {
                 id="password"
                 className={styles.inputBox}
                 type={showPassword ? 'text' : 'password'}
-                value={enteredPassword}
-                onChange={handleChange}
-                invalid={touched.password && !!fieldErrors.password}
-                aria-label="Password"
-                aria-invalid={touched.password && !!fieldErrors.password}
-                aria-describedby={
-                  touched.password && !!fieldErrors.password ? 'password-error' : undefined
+                innerRef={
+                  register('password', {
+                    required: 'Password is required',
+                    minLength: {
+                      value: 8,
+                      message: 'Password must be at least 8 characters',
+                    },
+                  }).ref
                 }
+                onChange={register('password').onChange}
+                onBlur={register('password').onBlur}
+                onKeyUp={e => setCapsLockOn(e.getModifierState('CapsLock'))}
+                invalid={!!errors.password}
+                aria-label="Password"
+                aria-invalid={!!errors.password}
+                aria-describedby={!!errors.password ? 'password-error' : undefined}
               />
               <span
                 role="button"
@@ -163,9 +139,10 @@ function Login() {
                 <i className={showPassword ? 'fa fa-eye-slash' : 'fa fa-eye'} />
               </span>
             </div>
-            {touched.password && fieldErrors.password && (
+            {capsLockOn && <span className={styles.capsMsg}> &nbsp; Caps Lock is ON</span>}
+            {errors.password && (
               <FormFeedback id="password-error" className="d-block error">
-                {fieldErrors.password}
+                {errors.password.message}
               </FormFeedback>
             )}
           </FormGroup>
@@ -174,16 +151,8 @@ function Login() {
           </div>
           {/* Login Button */}
           <div>
-            <Button
-              className={styles.logInBtn}
-              disabled={
-                !enteredemail ||
-                !enteredPassword ||
-                Object.values(fieldErrors).some(Boolean) ||
-                loading
-              }
-            >
-              {loading ? 'Logging in...' : 'Login'}
+            <Button className={styles.logInBtn} disabled={isSubmitting}>
+              {isSubmitting ? 'Logging in...' : 'Login'}
             </Button>
           </div>
           <div>

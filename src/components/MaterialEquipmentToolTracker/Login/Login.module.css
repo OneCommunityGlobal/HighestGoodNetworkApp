@@ -110,3 +110,9 @@ span {
     caret-color: #fff;
     transition: background-color 5000s ease-in-out 0s;
 }
+
+.capsMsg {
+    color: #ff7b00;
+    font-size: 12px;
+    float: right;
+}
