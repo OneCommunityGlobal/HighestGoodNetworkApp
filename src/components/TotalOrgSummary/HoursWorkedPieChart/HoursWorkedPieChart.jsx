@@ -258,7 +258,10 @@ export default function HoursWorkedPieChart({
               ))}
           </Pie>
           {renderCenterLabel({ darkMode, isMobile, totalHours: displayTotalHours })}
-          <Tooltip content={<CustomTooltip tooltipType="hoursDistribution" />} />
+          {/* <Tooltip content={<CustomTooltip tooltipType="hoursDistribution" />} /> */}
+          <Tooltip
+            content={<CustomTooltip tooltipType="hoursDistribution" darkMode={darkMode} />}
+          />
         </PieChart>
       </ResponsiveContainer>
     </div>

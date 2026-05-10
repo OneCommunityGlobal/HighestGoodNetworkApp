@@ -53,7 +53,8 @@ export default function TinyBarChart(props) {
             style: { textAnchor: 'middle' },
           }}
         />
-        <Tooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
+        {/*<Tooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />*/}
+        <Tooltip content={<CustomTooltip darkMode={darkMode} />} cursor={{ fill: 'transparent' }} />
         <Bar dataKey="amount" fill="#8884d8">
           {chartData.map((entry, index) => (
             <Cell key={`cell-${entry.name}-${entry.amount}`} fill={entry.color[index]} />

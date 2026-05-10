@@ -25,6 +25,7 @@ function LessonList(props) {
   const [showDeleteDropdown, setShowDeleteDropdown] = useState(false);
   const [tagsToDelete, setTagsToDelete] = useState([]);
   const [confirmModal, setConfirmModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [showExportModal, setShowExportModal] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
 
@@ -35,25 +36,26 @@ function LessonList(props) {
       try {
         const parsedTags = JSON.parse(savedTags);
         if (Array.isArray(parsedTags) && parsedTags.length > 0) {
-          // Remove duplicates when loading from localStorage
           const uniqueTags = [...new Set(parsedTags)];
           setTags(uniqueTags);
         }
-      } catch (error) {
-        // If parsing fails, ignore and use empty array
-        console.error('Failed to parse saved tags:', error);
+      } catch (e) {
+        console.error('Failed to parse saved tags:', e);
       }
     }
   }, []);
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       try {
         await dispatch(fetchBMLessons());
         const tagsResponse = await axios.get(`${ENDPOINTS.BM_TAGS}`);
         setAvailableTags(tagsResponse.data);
-      } catch (error) {
+      } catch (e) {
         toast.error('Failed to load data');
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchData();
@@ -249,12 +251,7 @@ function LessonList(props) {
 
   const removeTag = tagToRemove => {
     if (!tagToRemove) return;
-
-    setTags(prevTags => {
-      // Filter out the tag to remove, using exact match
-      const newTags = prevTags.filter(tag => tag !== tagToRemove);
-      return newTags;
-    });
+    setTags(prevTags => prevTags.filter(tag => tag !== tagToRemove));
   };
 
   useEffect(() => {
@@ -265,7 +262,7 @@ function LessonList(props) {
       }
       let filtered = [...lessons];
 
-      // 1. Apply tag filtering
+      // 1) tags
       if (tags.length > 0) {
         filtered = filtered.filter(lesson => {
           if (!lesson.tags) return false;
@@ -318,12 +315,8 @@ function LessonList(props) {
     };
 
     applyFiltersAndSort();
-  }, [lessons, tags, filterOption, sortOption, tagFilterLogic, tagCounts]); // All dependencies that should trigger filtering
+  }, [lessons, tags, filterOption, sortOption, tagFilterLogic, tagCounts]);
 
-  /**
-   * Safely removes HTML tags from a string using DOMParser.
-   * This approach is ReDoS-safe and handles all HTML content consistently.
-   */
   const stripHtmlTags = htmlString => {
     if (!htmlString || typeof htmlString !== 'string') {
       return String(htmlString || '');
@@ -625,6 +618,7 @@ function LessonList(props) {
                   aria-label="Default select example"
                   value={filterOption}
                   onChange={event => setFilterOption(event.target.value)}
+                  disabled={isLoading}
                 >
                   <option value="1">Select a Filter</option>
                   <option value="2">This Year</option>
@@ -642,6 +636,7 @@ function LessonList(props) {
                   aria-label="Default select example"
                   value={sortOption}
                   onChange={event => setSortOption(event.target.value)}
+                  disabled={isLoading}
                 >
                   <option value="1">Newest</option>
                   <option value="2">Date</option>
@@ -665,6 +660,8 @@ function LessonList(props) {
               </Form.Group>
             </div>
           </div>
+
+          {/* Tags input */}
           <Form.Group controlId="tagInput">
             <Form.Label>Tags:</Form.Label>
             {tags.length > 1 && (
@@ -705,6 +702,7 @@ function LessonList(props) {
                   }}
                   onFocus={() => setShowDropdown(true)}
                   className={`form-control ${styles.formControl}`}
+                  disabled={isLoading}
                 />
                 {showDropdown && inputValue && (
                   <div className={`${styles.tagDropdown}`}>
@@ -717,6 +715,7 @@ function LessonList(props) {
                           addTag(tag);
                           setShowDropdown(false);
                         }}
+                        disabled={isLoading}
                       >
                         {tag} ({tagCounts[tag] || 0})
                       </button>
@@ -772,6 +771,7 @@ function LessonList(props) {
               )}
             </div>
 
+            {/* Delete tags */}
             <Form.Label>Delete Tags (Press enter to add a tag to delete): </Form.Label>
             <div className={`tags-input-container ${styles.tagsInputContainer}`}>
               <div className={`${styles.deleteInputWrapper}`}>
@@ -786,6 +786,7 @@ function LessonList(props) {
                   }}
                   onFocus={() => setShowDeleteDropdown(true)}
                   onKeyDown={handleDeleteKeyDown}
+                  disabled={isLoading}
                 />
                 {showDeleteDropdown && deleteValue && (
                   <div className={`${styles.tagDropdown}`}>
@@ -795,6 +796,7 @@ function LessonList(props) {
                         type="button"
                         className={styles.tagDropdownItem}
                         onClick={() => addDeleteTag(tag)}
+                        disabled={isLoading}
                       >
                         {tag}
                       </button>
@@ -806,8 +808,7 @@ function LessonList(props) {
                     const handleRemoveDeleteTag = e => {
                       e.preventDefault();
                       e.stopPropagation();
-                      const newTags = tagsToDelete.filter(t => t !== tag);
-                      setTagsToDelete(newTags);
+                      setTagsToDelete(prev => prev.filter(t => t !== tag));
                     };
 
                     return (
@@ -844,6 +845,7 @@ function LessonList(props) {
                 <Button
                   style={{ backgroundColor: 'red', marginLeft: '10px' }}
                   onClick={handleDeleteButtonClick}
+                  disabled={isLoading}
                 >
                   Delete
                 </Button>
@@ -857,6 +859,10 @@ function LessonList(props) {
             </div>
           </Form.Group>
         </Form>
+        {isLoading && <div className={styles.loading}>Loading lessons…</div>}
+        {!isLoading && filteredLessons.length === 0 && (
+          <div className={styles.emptyState}>No lessons match this filter.</div>
+        )}
         <ExportConfirmationModal
           showExportModal={showExportModal}
           setShowExportModal={setShowExportModal}

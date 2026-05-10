@@ -33,17 +33,17 @@ style_status=0
 
 if [ -n "$js_files" ]; then
   echo "🧪 Running related tests before push..."
-  npx vitest related --run $js_files
+  echo "$js_files" | tr ' ' '\n' | xargs npx vitest related --run
   test_status=$?
 
   echo "🧹 Running ESLint on changed files before push..."
-  npx eslint $js_files
+  echo "$js_files" | tr ' ' '\n' | xargs npx eslint
   lint_status=$?
 fi
 
 if [ -n "$style_files" ]; then
   echo "🎨 Running Stylelint on changed files before push..."
-  npx stylelint $style_files
+  echo "$style_files" | tr ' ' '\n' | xargs npx stylelint
   style_status=$?
 fi
 

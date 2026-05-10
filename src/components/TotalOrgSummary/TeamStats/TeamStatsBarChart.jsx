@@ -62,7 +62,11 @@ function TeamStatsBarChart({ data, yAxisLabel }) {
             className={styles.teamStatsYAxis}
             tick={{ fill: darkMode ? 'white' : '#666' }}
           />
-          <Tooltip content={props => <CustomTooltip {...props} yAxisLabel={yAxisLabel} />} />
+          <Tooltip
+            content={props => (
+              <CustomTooltip {...props} yAxisLabel={yAxisLabel} darkMode={darkMode} />
+            )}
+          />
           <Bar dataKey="value" fill="#1B6DDF">
             {data.map((_, index) => (
               <Cell key={`cell-${data[index].value}`} fill={data[index].color} />

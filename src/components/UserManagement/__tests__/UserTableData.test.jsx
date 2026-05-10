@@ -21,7 +21,7 @@ const jaeAccountMock = {
     iat: 1597272666,
     userid: '1',
     permissions: {
-      frontPermissions: ['deleteUserProfile', 'updatePassword', 'changeUserStatus'],
+      frontPermissions: ['deleteUserProfile', 'updatePassword', 'changeUserStatus', 'interactWithPauseUserButton'],
       backPermissions: [],
     },
     role: 'Administrator',
@@ -42,7 +42,7 @@ const nonJaeAccountMock = {
     iat: 1597272666,
     userid: '2',
     permissions: {
-      frontPermissions: ['deleteUserProfile', 'updatePassword', 'changeUserStatus'],
+      frontPermissions: ['deleteUserProfile', 'updatePassword', 'changeUserStatus', 'interactWithPauseUserButton'],
       backPermissions: [],
     },
     role: 'Administrator',
@@ -66,7 +66,7 @@ const ownerAccountMock = {
     iat: 1597272666,
     userid: '3',
     permissions: {
-      frontPermissions: ['deleteUserProfile', 'updatePassword', 'changeUserStatus'],
+      frontPermissions: ['deleteUserProfile', 'updatePassword', 'changeUserStatus', 'interactWithPauseUserButton'],
       backPermissions: [],
     },
     role: 'Owner',
@@ -78,27 +78,6 @@ const ownerAccountMock = {
   email: 'devadmin@hgn.net',
 };
 
-const setupAxios = (mode) => {
-  if (mode === 'non-jae') {
-    axios.get.mockResolvedValue({
-      data: [
-        { id: 1, name: 'Administrator' },
-        { id: 2, name: 'User' },
-      ],
-    });
-  } else {
-    axios.get.mockResolvedValue({
-      data: {
-        _id: jaeAccountMock._id,
-        firstName: jaeAccountMock.firstName,
-        lastName: jaeAccountMock.lastName,
-        role: jaeAccountMock.role,
-        email: jaeAccountMock.email,
-      },
-    });
-  }
-};
-
 const createStore = ({ authState, profileState, roleName }) =>
   mockStore({
     auth: authState,
@@ -107,7 +86,12 @@ const createStore = ({ authState, profileState, roleName }) =>
       roles: [
         {
           roleName,
-          permissions: ['deleteUserProfile', 'updatePassword', 'changeUserStatus'],
+          permissions: [
+            'deleteUserProfile',
+            'updatePassword',
+            'changeUserStatus',
+            'interactWithPauseUserButton',
+          ],
         },
       ],
     },
@@ -119,6 +103,28 @@ const createHandlers = () => ({
   onDeleteClick: vi.fn(),
   onActiveInactiveClick: vi.fn(),
 });
+
+const setupAxios = mode => {
+  if (mode === 'non-jae') {
+    axios.get.mockResolvedValue({
+      data: [
+        { id: 1, name: 'Administrator' },
+        { id: 2, name: 'User' },
+      ],
+    });
+    return;
+  }
+
+  axios.get.mockResolvedValue({
+    data: {
+      _id: jaeAccountMock._id,
+      firstName: jaeAccountMock.firstName,
+      lastName: jaeAccountMock.lastName,
+      role: jaeAccountMock.role,
+      email: jaeAccountMock.email,
+    },
+  });
+};
 
 const renderUserRow = ({ store, user, handlers }) => {
   renderWithProvider(

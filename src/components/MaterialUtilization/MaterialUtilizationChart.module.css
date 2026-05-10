@@ -80,3 +80,46 @@
   margin-bottom: 4px;
   color: #374151;
 }
+
+
+:global(body.dark-mode) .container {
+  background-color: #1f2937;
+  color: #f9fafb;
+}
+
+:global(body.dark-mode) .title,
+:global(body.dark-mode) .subtitle,
+:global(body.dark-mode) .filterLabel,
+:global(body.dark-mode) .infoMessage,
+:global(body.dark-mode) .tooltipLabel,
+:global(body.dark-mode) .tooltipItem {
+  color: #f9fafb;
+}
+
+:global(body.dark-mode) .dateInput {
+  background-color: #2b3e59;
+  color: #fff;
+  border: 1px solid #5b6b82;
+  color-scheme: dark;
+}
+
+:global(body.dark-mode) .dateInput::placeholder {
+  color: #cbd5e1;
+  opacity: 1;
+}
+
+:global(body.dark-mode) .dateInput::-webkit-calendar-picker-indicator {
+  filter: invert(1) brightness(1.2);
+  cursor: pointer;
+}
+
+:global(body.dark-mode) .dateInput:focus {
+  outline: none;
+  border-color: #93c5fd;
+  box-shadow: 0 0 0 2px rgb(147 197 253 / 20%);
+}
+
+:global(body.dark-mode) .tooltip {
+  background-color: #111827;
+  border-color: #374151;
+}

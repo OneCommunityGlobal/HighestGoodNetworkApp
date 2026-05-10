@@ -1,0 +1,130 @@
+/* Component-scoped variables and dark-mode overrides */
+.eventpopularity {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+
+  /* default (light) tokens scoped to this component */
+  --ep-text-color: #111827;
+  --ep-muted-text: #666666;
+  --ep-card-bg: #ffffff;
+  --ep-card-alt-bg: #f5f5f5;
+  --ep-primary: #4A90E2;
+  --ep-primary-2: #82B7FF;
+  --ep-card-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --ep-grid-stroke: #e0e0e0;
+  --ep-chart-tick: #222222;
+}
+
+/* dark variant applied via module class */
+.dark {
+  --ep-text-color: #e5e7eb;
+  --ep-muted-text: #b5bac5;
+  --ep-card-bg: #0f1724;
+  --ep-card-alt-bg: #111827;
+  --ep-primary: #4A90E2;
+  --ep-primary-2: #82B7FF;
+  --ep-card-shadow: none;
+  --ep-grid-stroke: #2f4157;
+  --ep-chart-tick: #ffffff;
+}
+
+.epheader{
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: center;
+  color: var(--ep-text-color);
+}
+
+.epgrid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.epCard {
+  background: var(--ep-card-bg);
+  border-radius: 8px;
+  box-shadow: var(--ep-card-shadow);
+  padding: 20px;
+  color: var(--ep-text-color);
+}
+
+.epRowLabel {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: var(--ep-muted-text);
+  margin-bottom: 10px;
+}
+
+.epEventName {
+  width: 100px;
+  margin-right: 10px;
+  font-size: 14px;
+  color: var(--ep-muted-text);
+}
+
+.epProgressBar {
+  flex-grow: 1;
+  height: 8px;
+  background: var(--ep-grid-stroke);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.epProgressFill {
+  height: 100%;
+  background: var(--ep-primary);
+}
+
+.epStatsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.epStatCard {
+  background: var(--ep-card-alt-bg);
+  border-radius: 4px;
+  padding: 10px;
+  text-align: center;
+  color: var(--ep-text-color);
+}
+
+.epStatSubtitle {
+  font-size: 12px;
+  color: var(--ep-muted-text);
+}
+
+.epChartCard {
+  background: var(--ep-card-bg);
+  border-radius: 8px;
+  box-shadow: var(--ep-card-shadow);
+  padding: 20px;
+  color: var(--ep-text-color);
+}
+
+.epParticipationGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.epParticipationCard {
+  background: var(--ep-card-alt-bg);
+  border-radius: 4px;
+  padding: 10px;
+  color: var(--ep-text-color);
+}
+
+.trendPositive {
+  color: #22c55e;
+}
+
+.trendNegative {
+  color: #ef4444;
+}
