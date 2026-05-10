@@ -204,50 +204,9 @@ export const fetchMaterialCostCorrelation = (
     // Dispatch success action with response data
     dispatch(fetchMaterialCostCorrelationSuccess(response.data));
   } catch (error) {
-    // Extract error message based on error type
-    let errorMessage = 'Failed to fetch material cost correlation data';
-    let errorType = 'unknown';
-    let statusCode = null;
-
-    if (error.response) {
-      // Server responded with error status
-      statusCode = error.response.status;
-      errorType = 'server';
-
-      if (statusCode === 401) {
-        errorMessage = 'Your session has expired. Please log in again.';
-        // Store attempted action for retry after login
-        sessionStorage.setItem(
-          'materialCostCorrelationRetryAction',
-          JSON.stringify({ projectIds, materialTypeIds, startDate, endDate }),
-        );
-        // Redirect to login after short delay
-        setTimeout(() => {
-          globalThis.location.href = '/bmdashboard/login';
-        }, 2000);
-      } else if (statusCode === 403) {
-        errorMessage =
-          'You do not have permission to access this data. Please contact an administrator for BM Portal access.';
-        errorType = 'permission';
-      } else if (statusCode >= 500) {
-        errorMessage = 'Server error. Please try again later or contact support if the issue persists.';
-      } else {
-        errorMessage =
-          error.response.data?.error ||
-          error.response.data?.message ||
-          `Request failed with status ${statusCode}`;
-      }
-    } else if (error.request) {
-      // Request was made but no response received
-      errorMessage = 'Network error: Unable to connect to server. Please check your internet connection.';
-      errorType = 'network';
-    } else {
-      // Something else happened
-      errorMessage = error.message || errorMessage;
-      if (errorMessage.includes('Invalid response')) {
-        errorType = 'malformed';
-      }
-    }
+    const { errorMessage, errorType, statusCode } = extractErrorDetails(
+      error, projectIds, materialTypeIds, startDate, endDate,
+    );
 
     logger.logError(
       new Error(
@@ -255,13 +214,11 @@ export const fetchMaterialCostCorrelation = (
       ),
     );
 
-    // Dispatch failure action
     dispatch(fetchMaterialCostCorrelationFailure(errorMessage));
 
-    // Display error toast notification with appropriate configuration
     const toastOptions = {
       toastId: `materialCostCorrelationError-${errorType}`,
-      autoClose: errorType === 'network' || false : errorType === 'permission' ? false : 5000,
+      autoClose: errorType === 'network' || errorType === 'permission' ? false : 5000,
       position: 'top-right',
       closeOnClick: true,
       pauseOnHover: true,
@@ -270,4 +227,3 @@ export const fetchMaterialCostCorrelation = (
     toast.error(errorMessage, toastOptions);
   }
 };
-
