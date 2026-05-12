@@ -10,11 +10,6 @@ import Popover from 'react-bootstrap/Popover';
 import styles from './Warnings.module.css';
 import { useSelector } from 'react-redux';
 
-const colors = {
-  blue: 'blue',
-  red: 'red',
-  yellow: '#ffc107',
-};
 function WarningIcon({
   userProfileModal,
   id,
@@ -35,7 +30,6 @@ function WarningIcon({
   //   numberOfWarnings,
   // } = props;
 
-  const btnColor = color ? colors[color] : 'white';
   const darkMode = useSelector(state => state.theme.darkMode);
 
   // eslint-disable-next-line no-shadow
