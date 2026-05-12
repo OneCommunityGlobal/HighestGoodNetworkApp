@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClock, faLocationDot, faTag, faCircleCheck } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
 import CalendarActivitySection from './CalendarActivitySection';
+import GOVERNMENT_HOLIDAYS from './governmentHolidays';
 import styles from './CommunityCalendar.module.css';
 import {
   FaCalendarAlt,
@@ -62,56 +63,81 @@ export default function CommunityCalendar() {
     fetchEvents();
   }, []);
 
-  const mappedEvents = useMemo(() => {
-    return events.map(event => {
-      const eventDateTime = new Date(event.startTime);
-      const timeString = new Intl.DateTimeFormat('en-US', {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true,
-        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      }).format(eventDateTime);
+const mappedEvents = useMemo(() => {
+  const holidayEvents = GOVERNMENT_HOLIDAYS.map(holiday => ({
+    id: holiday.id,
+    title: holiday.title,
+    date: new Date(holiday.date),
+    type: 'Government Holiday',
+    status: 'Holiday',
+    time: 'All Day',
+    endTime: 'All Day',
+    description: `${holiday.title} holiday`,
+    location: 'National',
+    isHoliday: true,
+    isOver: new Date(holiday.date) < new Date(),
+  }));
 
-      const eventEndTime = new Date(event.endTime);
-      const endTimeString = new Intl.DateTimeFormat('en-US', {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true,
-        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      }).format(eventEndTime);
+  const communityEvents = events.map(event => {
+    const eventDateTime = new Date(event.startTime || event.date);
 
-      const eventDate = new Date(
-        new Intl.DateTimeFormat('en-US', {
+    const timeString = new Intl.DateTimeFormat('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    }).format(eventDateTime);
+
+    const eventEndTime = event.endTime ? new Date(event.endTime) : null;
+
+    const endTimeString = eventEndTime
+      ? new Intl.DateTimeFormat('en-US', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true,
           timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-        }).format(eventDateTime),
-      );
+        }).format(eventEndTime)
+      : event.endTime;
 
-      return {
-        ...event,
-        id: event.id || `${event.title}-${eventDate.getTime()}`,
-        date: eventDate,
-        type: event.type || 'General',
-        status: normalizeStatus(event.status),
-        time: event.time || timeString,
-        endTime: endTimeString || event.endTime,
-        description: event.description || `Join us for ${event.title}`,
-        location: event.location || 'Online',
-        isOver: eventDate < new Date(),
-      };
-    });
-  }, [events]);
+    const eventDate = new Date(
+      new Intl.DateTimeFormat('en-US', {
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      }).format(eventDateTime),
+    );
+
+    return {
+      ...event,
+      id: event.id || `${event.title}-${eventDate.getTime()}`,
+      date: eventDate,
+      type: event.type || 'General',
+      status: normalizeStatus(event.status),
+      time: event.time || timeString,
+      endTime: endTimeString || event.endTime,
+      description: event.description || `Join us for ${event.title}`,
+      location: event.location || 'Online',
+      isOver: eventDate < new Date(),
+    };
+  });
+
+  return [...communityEvents, ...holidayEvents];
+}, [events]);
 
   const filteredEvents = useMemo(
     () =>
-      mappedEvents.filter(
-        e =>
+      mappedEvents.filter(e => {
+        if (e.isHoliday) {
+          return true;
+        }
+
+        return (
           (filter.type === 'all' || e.type === filter.type) &&
           (filter.location === 'all' || e.location === filter.location) &&
-          (filter.status === 'all' || e.status === filter.status),
-      ),
+          (filter.status === 'all' || e.status === filter.status)
+        );
+      }),
     [mappedEvents, filter],
   );
 
@@ -401,6 +427,7 @@ export default function CommunityCalendar() {
     'Needs Attendees': 'statusNeedsAttendees',
     'Filling Fast': 'statusFillingFast',
     'Full Event': 'statusFull',
+    Holiday: 'statusHoliday',
   };
 
   const statusIconMap = {
@@ -408,6 +435,7 @@ export default function CommunityCalendar() {
     'Needs Attendees': '🙋',
     'Filling Fast': '⚡',
     'Full Event': '⛔',
+    Holiday: '🎉',
     Full: '⛔',
   };
 
