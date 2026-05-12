@@ -246,19 +246,20 @@
   font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  border-bottom: 2px solid #2f4157;
+  border: 1px solid #2f4157;
+  border-bottom-width: 2px;
 }
 
 .tableDark td {
   padding: 10px 14px;
   text-align: left;
-  border-bottom: 1px solid #2a3a4e;
+  border: 1px solid #2a3a4e;
   vertical-align: middle;
   color: #e2e8f0;
 }
 
 .tableDark tr:last-child td {
-  border-bottom: none;
+  border-bottom: 1px solid #2a3a4e;
 }
 
 .tableDark tbody tr:hover {
@@ -320,83 +321,7 @@
   color: #400d40; /* darker shade on hover */
 }
 
-.centerContainer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh; /* Full height of viewport */
-  flex-direction: column;
-}
 
-.underlineLink {
-  text-decoration: underline;
-  color: rgb(3 3 7);
-  cursor: pointer;
-  font-size: 16px;
-}
-
-.underlineLink:hover {
-  text-decoration: none;
-  color: rgb(3 3 7);
-}
-
-.componentBox {
-  border: 1px solid #ccc; /* Light gray border */
-  padding: 20px;
-  border-radius: 10px; /* Rounded corners */
-  box-shadow: 0 4px 8px rgb(0 0 0 / 10%); /* Soft shadow */
-  background-color: #fff; /* Optional: white background */
-  border-radius: 10px; /* Rounded corners */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow */
-  background-color: #fff; /* Optional: white background */
-  width: 90%;
-  max-width: 700px;
-  margin: auto;
-}
-
-.table {
-  border-collapse: collapse;
-  width: 100%;
-}
-
-.table th,
-.table td {
-  padding: 12px 20px; /* Adjust as needed for vertical & horizontal spacing */
-  text-align: left;
-}
-
-.table thead {
-  background-color: #f2f2f2;
-}
-
-.table tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-.table td a,
-.table td span {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px; /* gap between icon and text if needed */
-}
-
-.select {
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background-color: #fff;
-  color: #333;
-  font-size: 14px;
-}
-
-/* ============================================
-   DARK MODE STYLES
-   ============================================ */
-
-.darkMode {
-  background-color: #1b2a41 !important;
-  color: #fff !important;
-}
 
 .darkMode .componentBox {
   background-color: #2b3e59 !important;
