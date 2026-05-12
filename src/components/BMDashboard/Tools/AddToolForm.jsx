@@ -41,6 +41,7 @@ export default function AddToolForm() {
   const [isPurchased, setIsPurchased] = useState(true);
   const [areaCode, setAreaCode] = useState('1');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [isPhoneValid, setIsPhoneValid] = useState(true);
   const [uploadedFiles, setUploadedFiles] = useState([]); // log here for correct state snapshot (will show each render)
   const [errors, setErrors] = useState({});
   const dispatch = useDispatch();
@@ -80,6 +81,13 @@ export default function AddToolForm() {
       .min(1)
       .required(),
     fromDate: Joi.date().required(),
+    phoneNumber: Joi.string()
+      .pattern(/^\d{6,15}$/)
+      .allow('')
+      .optional()
+      .messages({
+        'string.pattern.base': 'Phone number must be 6-15 digits.',
+      }),
     toDate: Joi.date()
       .when('purchaseRental', {
         is: 'rental',
@@ -132,17 +140,26 @@ export default function AddToolForm() {
   const totalTax = calculateTotalTax(Number(taxes), totalPrice);
   const totalPriceWithShipping = (totalPrice + totalTax + Number(shippingFee)).toFixed(2);
 
-  const phoneChange = (name, phone) => {
+  const phoneChange = (name, phone, country) => {
     setFormData(prevData => ({
       ...prevData,
       [name]: phone,
     }));
+    // Validate: phone (with country code) must have at least 6 user-entered digits
+    const dialCodeLen = country?.dialCode?.length || 1;
+    // phone contains full number incl. country code; "no input" means only the country code is present
+    const isValid = phone.length <= dialCodeLen || phone.length >= dialCodeLen + 6;
+    setIsPhoneValid(isValid);
   };
 
   const handleSubmit = async event => {
     event.preventDefault();
     const validationErrors = validate(formData);
     setErrors(validationErrors || {});
+
+    if (!isPhoneValid) {
+      return;
+    }
 
     if (validationErrors) {
       return;
@@ -171,6 +188,7 @@ export default function AddToolForm() {
     setUploadedFiles([]);
     setAreaCode(1);
     setPhoneNumber('');
+    setIsPhoneValid(true);
   };
 
   const handleRemoveFile = index => {
@@ -369,7 +387,7 @@ export default function AddToolForm() {
           regions={['america', 'europe', 'asia', 'oceania', 'africa']}
           limitMaxLength
           value={formData.phoneNumber}
-          onChange={phone => phoneChange('phoneNumber', phone)}
+          onChange={(phone, country) => phoneChange('phoneNumber', phone, country)}
           inputStyle={{
             height: 'auto',
             width: 'calc(100% - 52px)',
@@ -387,6 +405,14 @@ export default function AddToolForm() {
             color: darkMode ? '#fff' : '#000',
           }}
         />
+        {!isPhoneValid && (
+          <Label className={`${styles.toolFormError} bm-error-red`}>
+            Phone number must be 6–15 digits (excluding country code).
+          </Label>
+        )}
+        {errors.phoneNumber && (
+          <Label className={`${styles.toolFormError} bm-error-red`}>{errors.phoneNumber}</Label>
+        )}
       </FormGroup>
       <FormGroup>
         <Label for="imageUpload">Upload Tool/Equipment Picture</Label>

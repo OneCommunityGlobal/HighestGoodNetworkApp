@@ -32,12 +32,17 @@ export default function AddTypeForm() {
   const history = useHistory();
   const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme.darkMode);
+  const existingEquipments = useSelector(state => state.bmEquipments?.equipmentslist ?? []);
   const [name, setName] = useState('');
   const [desc, setDesc] = useState('');
   const [fuel, setFuel] = useState(FuelTypes.dies);
   const [errInput, setErrInput] = useState('');
   const [errType, setErrType] = useState('');
   const [isRedirected, setIsRedirected] = useState(false);
+
+  useEffect(() => {
+    dispatch(fetchAllEquipments());
+  }, [dispatch]);
 
   useEffect(() => {
     if (isRedirected) {
@@ -66,6 +71,16 @@ export default function AddTypeForm() {
       setErrType(validate.error.details[0].type);
       return;
     }
+
+    // Client-side duplicate check
+    const isDuplicate = existingEquipments.some(
+      eq => eq.name?.trim().toLowerCase() === name.trim().toLowerCase(),
+    );
+    if (isDuplicate) {
+      toast.error('Error: that type already exists.');
+      return;
+    }
+
     const response = await addEquipmentType({ name, description: desc, fuel });
     if (response.status === 201) {
       toast.success('Success: new equipment type added.');
