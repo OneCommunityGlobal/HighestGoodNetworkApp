@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import './FaqSection.css';
+import styles from './FaqSection.module.css';
 
 function FaqSection() {
   const faqs = [
@@ -88,26 +88,28 @@ function FaqSection() {
   });
 
   return (
-    <div className="faq-container">
-      <h2 className="faq-title">Frequently Asked Questions</h2>
-      <p className="faq-subtitle">
+    <div className={styles.faqContainer}>
+      <h2 className={styles.faqTitle}>Frequently Asked Questions</h2>
+      <p className={styles.faqSubtitle}>
         These are the most frequently asked questions about One Community.
       </p>
 
       <input
         type="text"
-        className="faq-search"
+        className={styles.faqSearch}
         placeholder="Search FAQs..."
         value={searchTerm}
         onChange={handleSearchChange}
       />
 
-      <div className="faq-buttons">
+      <div className={styles.faqButtons}>
         {['All', 'General', 'Events', 'Participation', 'Other'].map(category => (
           <button
             key={category}
             type="button"
-            className={`faq-category ${selectedCategory === category ? 'active' : ''}`}
+            className={`${styles.faqCategory} ${
+              selectedCategory === category ? styles.active : ''
+            }`}
             onClick={() => handleCategoryClick(category)}
           >
             {category}
@@ -115,16 +117,16 @@ function FaqSection() {
         ))}
       </div>
 
-      <div className="faq-list">
+      <div className={styles.faqList}>
         {filteredFaqs.length === 0 ? (
-          <div className="no-results">
+          <div className={styles.noResults}>
             <p>No FAQs found matching your criteria.</p>
           </div>
         ) : (
           filteredFaqs.map(faq => (
-            <div key={faq.id} className="faq-item">
+            <div key={faq.id} className={styles.faqItem}>
               <div
-                className="faq-question"
+                className={styles.faqQuestion}
                 onClick={() => toggleFaq(faq.id)}
                 onKeyDown={e => {
                   if (e.key === 'Enter' || e.key === ' ') {
@@ -137,9 +139,11 @@ function FaqSection() {
                 aria-expanded={openIndex === faq.id}
               >
                 {faq.question}
-                <span className={`faq-arrow ${openIndex === faq.id ? 'open' : ''}`}>&#9662;</span>
+                <span className={`${styles.faqArrow} ${openIndex === faq.id ? styles.open : ''}`}>
+                  &#9662;
+                </span>
               </div>
-              <div className={`faq-answer ${openIndex === faq.id ? 'open' : ''}`}>
+              <div className={`${styles.faqAnswer} ${openIndex === faq.id ? styles.open : ''}`}>
                 <div>{faq.answer}</div>
               </div>
             </div>
@@ -147,10 +151,10 @@ function FaqSection() {
         )}
       </div>
 
-      <p className="faq-contact">
+      <p className={styles.faqContact}>
         Still have questions? Feel free to{' '}
         <span
-          className="contact-link"
+          className={styles.contactLink}
           onClick={handleContactClick}
           onKeyDown={e => {
             if (e.key === 'Enter' || e.key === ' ') {
@@ -163,7 +167,7 @@ function FaqSection() {
         >
           contact us
         </span>
-        .{copied && <span className="copied-message"> Copied!</span>}
+        .{copied && <span className={styles.copiedMessage}> Copied!</span>}
       </p>
     </div>
   );
