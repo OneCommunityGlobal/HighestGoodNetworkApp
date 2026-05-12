@@ -36,6 +36,63 @@ const initialFormState = {
   description: '',
 };
 
+const calculateTotalPrice = (price, qty) => price * qty;
+const calculateTotalTax = (taxPct, total) => (taxPct * total) / 100;
+
+function getPhoneBorderStyle(phoneInvalid, isDarkMode) {
+  if (phoneInvalid) return '1px solid #dc3545';
+  return isDarkMode ? '1px solid #555' : '1px solid #ccc';
+}
+
+const toolSchema = Joi.object({
+  name: Joi.string()
+    .min(3)
+    .max(15)
+    .required(),
+  description: Joi.string()
+    .min(5)
+    .max(500)
+    .required(),
+  invoice: Joi.string().required(),
+  quantity: Joi.number()
+    .min(1)
+    .max(999)
+    .integer()
+    .required(),
+  unitPrice: Joi.number()
+    .min(1)
+    .required(),
+  fromDate: Joi.date().required(),
+  phoneNumber: Joi.string()
+    .pattern(/^\d{6,15}$/)
+    .allow('')
+    .optional()
+    .messages({
+      'string.pattern.base': 'Phone number must be 6-15 digits.',
+    }),
+  toDate: Joi.date()
+    .when('purchaseRental', {
+      is: 'rental',
+      then: Joi.date()
+        .greater(Joi.ref('fromDate'))
+        .required(),
+    })
+    .when('purchaseRental', {
+      is: 'purchase',
+      then: Joi.date().allow(''),
+    }),
+}).unknown();
+
+function validateToolForm(data) {
+  const result = toolSchema.validate(data, { abortEarly: false });
+  if (!result.error) return null;
+  const errorMessages = {};
+  result.error.details.forEach(detail => {
+    errorMessages[detail.path[0]] = detail.message;
+  });
+  return errorMessages;
+}
+
 export default function AddToolForm() {
   const [formData, setFormData] = useState(initialFormState);
   const [isPurchased, setIsPurchased] = useState(true);
@@ -47,6 +104,7 @@ export default function AddToolForm() {
   const dispatch = useDispatch();
   const postBuildingInventoryResult = useSelector(state => state.bmInvTypes.postedResult);
   const darkMode = useSelector(state => state.theme.darkMode);
+  const phoneHasError = !isPhoneValid;
 
   useEffect(() => {
     if (postBuildingInventoryResult?.error === true) {
@@ -62,58 +120,6 @@ export default function AddToolForm() {
     }
   }, [postBuildingInventoryResult]);
 
-  const validationObj = {
-    name: Joi.string()
-      .min(3)
-      .max(15)
-      .required(),
-    description: Joi.string()
-      .min(5)
-      .max(500)
-      .required(),
-    invoice: Joi.string().required(),
-    quantity: Joi.number()
-      .min(1)
-      .max(999)
-      .integer()
-      .required(),
-    unitPrice: Joi.number()
-      .min(1)
-      .required(),
-    fromDate: Joi.date().required(),
-    phoneNumber: Joi.string()
-      .pattern(/^\d{6,15}$/)
-      .allow('')
-      .optional()
-      .messages({
-        'string.pattern.base': 'Phone number must be 6-15 digits.',
-      }),
-    toDate: Joi.date()
-      .when('purchaseRental', {
-        is: 'rental',
-        then: Joi.date()
-          .greater(Joi.ref('fromDate'))
-          .required(),
-      })
-      .when('purchaseRental', {
-        is: 'purchase',
-        then: Joi.date().allow(''),
-      }),
-  };
-
-  const schema = Joi.object(validationObj).unknown();
-
-  const validate = data => {
-    const result = schema.validate(data, { abortEarly: false });
-    if (!result.error) return null;
-
-    const errorMessages = {};
-    result.error.details.forEach(detail => {
-      errorMessages[detail.path[0]] = detail.message;
-    });
-    return errorMessages;
-  };
-
   const handleInputChange = (name, value) => {
     setFormData(prevData => ({
       ...prevData,
@@ -123,18 +129,11 @@ export default function AddToolForm() {
 
   const handlePurchaseRentalChange = event => {
     const selectedOption = event.target.value;
-    if (selectedOption === 'purchase') {
-      setIsPurchased(true);
-    } else {
-      setIsPurchased(false);
-    }
+    setIsPurchased(selectedOption === 'purchase');
     handleInputChange('purchaseRental', selectedOption);
   };
 
   const { unitPrice, quantity, taxes, shippingFee } = formData;
-
-  const calculateTotalPrice = (price, totalQuantity) => price * totalQuantity;
-  const calculateTotalTax = (taxPercentage, totalPrice) => (taxPercentage * totalPrice) / 100;
 
   const totalPrice = calculateTotalPrice(unitPrice, quantity);
   const totalTax = calculateTotalTax(Number(taxes), totalPrice);
@@ -154,7 +153,7 @@ export default function AddToolForm() {
 
   const handleSubmit = async event => {
     event.preventDefault();
-    const validationErrors = validate(formData);
+    const validationErrors = validateToolForm(formData);
     setErrors(validationErrors || {});
 
     // Also catch empty phone that was never touched (isPhoneValid stays true by default)
@@ -399,26 +398,18 @@ export default function AddToolForm() {
             fontSize: 'inherit',
             backgroundColor: darkMode ? '#1a1a2e' : '#fff',
             color: darkMode ? '#fff' : '#000',
-            border: !isPhoneValid
-              ? '1px solid #dc3545'
-              : darkMode
-              ? '1px solid #555'
-              : '1px solid #ccc',
+            border: getPhoneBorderStyle(phoneHasError, darkMode),
           }}
           buttonStyle={{
             backgroundColor: darkMode ? '#1a1a2e' : '#fff',
-            border: !isPhoneValid
-              ? '1px solid #dc3545'
-              : darkMode
-              ? '1px solid #555'
-              : '1px solid #ccc',
+            border: getPhoneBorderStyle(phoneHasError, darkMode),
           }}
           dropdownStyle={{
             backgroundColor: darkMode ? '#1a1a2e' : '#fff',
             color: darkMode ? '#fff' : '#000',
           }}
         />
-        {!isPhoneValid && (
+        {phoneHasError && (
           <Label className={`${styles.toolFormError} bm-error-red`}>
             Phone number must be 6–15 digits (excluding country code).
           </Label>
