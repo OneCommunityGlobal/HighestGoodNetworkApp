@@ -1,6 +1,7 @@
 /* eslint-disable no-nested-ternary */
 import { useState } from 'react';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
+import PropTypes from 'prop-types';
 import styles from './WeeklySummariesReport.module.scss';
 
 function BioFunction(props) {
@@ -54,5 +55,16 @@ function BioFunction(props) {
     </div>
   );
 }
+
+BioFunction.propTypes = {
+  bioPosted: PropTypes.string,
+  totalTangibleHrs: PropTypes.number,
+  totalValidWeeklySummaries: PropTypes.number,
+  textColors: PropTypes.object,
+  summary: PropTypes.object,
+  bioCanEdit: PropTypes.bool,
+  handleProfileChange: PropTypes.func,
+  userId: PropTypes.string,
+};
 
 export default BioFunction;

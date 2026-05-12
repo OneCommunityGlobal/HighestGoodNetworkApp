@@ -1105,6 +1105,7 @@ Index.propTypes = {
     startDate: PropTypes.string,
     endDate: PropTypes.string,
     trophyFollowedUp: PropTypes.bool,
+    weeklySummariesCount: PropTypes.number,
     timeOffFrom: PropTypes.string,
     timeOffTill: PropTypes.string,
   }).isRequired,
