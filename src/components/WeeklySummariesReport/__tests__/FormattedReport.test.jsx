@@ -71,7 +71,7 @@ const dummySummary = {
     .add(1, 'days')
     .format(),
   totalTangibleHrs: 100,
-  daysInTeam: 70,
+  weeklySummariesCount: 10,
   bioPosted: 'default',
   weeklySummaryOption: 'Default',
 };
