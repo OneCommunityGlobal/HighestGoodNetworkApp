@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClock, faLocationDot, faTag } from '@fortawesome/free-solid-svg-icons';
@@ -52,9 +53,11 @@ function CalendarActivitySection({ selectedDate, events = [], onEventClick }) {
             darkMode ? styles.activityDateSummaryDark : ''
           }`}
         >
-          {eventsForDate.length === 0
-            ? 'No events scheduled'
-            : `${eventsForDate.length} event${eventsForDate.length === 1 ? '' : 's'} scheduled`}
+          {(() => {
+            if (eventsForDate.length === 0) return 'No events scheduled';
+            const word = eventsForDate.length === 1 ? 'event' : 'events';
+            return `${eventsForDate.length} ${word} scheduled`;
+          })()}
         </p>
       )}
 
@@ -131,5 +134,27 @@ function CalendarActivitySection({ selectedDate, events = [], onEventClick }) {
     </div>
   );
 }
+
+CalendarActivitySection.propTypes = {
+  selectedDate: PropTypes.instanceOf(Date),
+  events: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string,
+      date: PropTypes.instanceOf(Date),
+      title: PropTypes.string,
+      status: PropTypes.string,
+      time: PropTypes.string,
+      location: PropTypes.string,
+      type: PropTypes.string,
+    }),
+  ),
+  onEventClick: PropTypes.func,
+};
+
+CalendarActivitySection.defaultProps = {
+  selectedDate: null,
+  events: [],
+  onEventClick: null,
+};
 
 export default CalendarActivitySection;
