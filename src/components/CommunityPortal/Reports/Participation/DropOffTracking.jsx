@@ -89,19 +89,27 @@ function DropOffTracking() {
 
       <div className={styles.trackingSummary}>
         <div className={`${styles.trackingRate} ${darkMode ? styles.trackingRateDark : ''}`}>
-          <p className={styles.trackingRateValue}>
-            +5% <span>Last week</span>
-          </p>
           <p className={styles.trackingRateSubheading}>
-            <span> Drop-off rate</span>
+            <span>
+              <b>Drop-off rate</b>
+            </span>
+          </p>
+          <p className={styles.trackingRateValue}>
+            <span className={styles.trackingRateValuePositive}>+5%</span>{' '}
+            <span>since Last week</span>
           </p>
         </div>
         <div className={`${styles.trackingRate} ${darkMode ? styles.trackingRateDark : ''}`}>
-          <p className={styles.trackingRateValue}>
-            +5% <span>Last week</span>
-          </p>
           <p className={styles.trackingRateSubheading}>
-            <span> No-show rate </span>
+            <span>
+              <b>No-show rate</b>
+            </span>
+          </p>
+          <p className={styles.trackingRateValue}>
+            <span className={styles.trackingRateValueNegative}>
+              <b>-5%</b>
+            </span>{' '}
+            <span>since Last week</span>
           </p>
         </div>
       </div>
@@ -119,17 +127,49 @@ function DropOffTracking() {
           <thead>
             <tr>
               <th>Event name</th>
-              <th>No-show rate</th>
-              <th>Drop-off rate</th>
-              <th>Get list</th>
+
+              <th>
+                No-show rate
+                <span
+                  className={styles.infoIcon}
+                  title="Percentage of registered participants who did not attend the event. Calculated per event based on total registrations."
+                >
+                  ℹ️
+                </span>
+              </th>
+
+              <th>
+                Drop-off rate
+                <span
+                  className={styles.infoIcon}
+                  title="Percentage of participants who joined the event but left before it was completed. Calculated per event based on total registrations."
+                >
+                  ℹ️
+                </span>
+              </th>
+
+              <th>
+                Get list
+                <span
+                  className={styles.infoIcon}
+                  title="View the list of no-show participants for this event and send follow-up emails."
+                >
+                  ℹ️
+                </span>
+              </th>
             </tr>
           </thead>
+
           <tbody>
             {filteredEvents.map(event => (
               <tr key={event.id}>
                 <td>{event.eventName}</td>
-                <td className={styles.trackingRateGreen}>{event.noShowRate}</td>
-                <td className={styles.trackingRateRed}>{event.dropOffRate}</td>
+                <td className={styles.trackingRateGreen} style={{ color: 'green' }}>
+                  {event.noShowRate}
+                </td>
+                <td className={styles.trackingRateRed} style={{ color: 'red' }}>
+                  {event.dropOffRate}
+                </td>
                 <td>
                   <button
                     type="button"
@@ -201,7 +241,6 @@ function DropOffTracking() {
                 className={styles.sendEmailBtn}
                 disabled={selectedUsers.length === 0}
                 onClick={() => {
-                  console.log('Send email to:', selectedUsers);
                   handleCloseModal();
                 }}
               >

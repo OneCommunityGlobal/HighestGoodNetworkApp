@@ -1,5 +1,15 @@
 import { CHART_COLORS, METRIC_LABELS, METRIC_CATEGORIES } from '../../constants/lbDashboard/chartsConstants';
 
+const CURRENCY_METRICS = new Set(['averageBid', 'finalPrice']);
+
+export function getMetricFormatter(metric) {
+  if (CURRENCY_METRICS.has(metric)) return v => `₹${Number(v).toLocaleString()}`;
+  if (metric === 'occupancyRate') return v => `${v}%`;
+  if (metric === 'averageDuration') return v => `${v} days`;
+  if (metric === 'averageRating') return v => Number(v).toFixed(1);
+  return v => v;
+}
+
 export function getItemColors(items) {
   const colorMap = {};
   items.forEach((item, idx) => {
@@ -9,6 +19,7 @@ export function getItemColors(items) {
 }
 
 export function createChartOptions(metric, darkMode) {
+  const fmt = getMetricFormatter(metric);
   return {
     responsive: true,
     maintainAspectRatio: false,
@@ -26,29 +37,32 @@ export function createChartOptions(metric, darkMode) {
         offset: 4,
         clip: false,
         display: 'auto',
-        formatter: value => value,
+        formatter: fmt,
       },
       tooltip: {
         enabled: true,
         callbacks: {
-          label: function(context) {
-            return `${context.dataset.label}: ${context.parsed.y}`;
+          label: function (context) {
+            return `${context.dataset.label}: ${fmt(context.parsed.y)}`;
           },
         },
       },
     },
     layout: {
-      padding: 20,
+      padding: { top: 50, right: 60, bottom: 30, left: 10 },
     },
     scales: {
       x: {
         title: { display: true, text: 'Month', color: darkMode ? '#fff' : '#222' },
         offset: true,
+        grid: { color: darkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)' },
+        border: { color: darkMode ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)' },
         ticks: {
-          autoSkip: false,
+          autoSkip: true,
+          maxTicksLimit: 8,
           maxRotation: 45,
-          minRotation: 30,
-          font: { size: 12 },
+          minRotation: 0,
+          font: { size: 11 },
           color: darkMode ? '#fff' : '#222',
         },
       },
@@ -59,7 +73,15 @@ export function createChartOptions(metric, darkMode) {
           color: darkMode ? '#fff' : '#222',
         },
         beginAtZero: true,
-        ticks: { font: { size: 12 }, color: darkMode ? '#fff' : '#222' },
+        // Room above the max point so datalabels (align: top) are not clipped at the chart edge
+        grace: '12%',
+        grid: { color: darkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)' },
+        border: { color: darkMode ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)' },
+        ticks: {
+          font: { size: 12 },
+          color: darkMode ? '#fff' : '#222',
+          callback: fmt,
+        },
       },
     },
   };

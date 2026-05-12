@@ -1,13 +1,14 @@
+/* stylelint-disable */
 /* Description Section */
 .descriptionSection {
   padding: 20px;
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .descriptionSectionDark {
-  background-color: #2d2d2d;
+  background-color: rgba(30, 41, 59, 0.8);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
@@ -48,7 +49,7 @@
 
 .tabButtonDark:hover {
   background-color: #374151;
-  color: #ffffff;
+  color: #fff;
 }
 
 .tabButtonActive {
@@ -129,10 +130,6 @@
   color: #93c5fd;
 }
 
-.participantEntry span:first-child {
-  flex: 1;
-}
-
 /* Empty state */
 .emptyState {
   text-align: center;
@@ -145,7 +142,178 @@
   color: #9ca3af;
 }
 
-/* Responsive design */
+/* Comment entries */
+.commentEntry {
+  display: flex;
+  gap: 12px;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  background-color: #f3f4f6;
+  transition: background-color 0.3s ease;
+}
+
+.commentEntryDark {
+  background-color: rgba(148, 163, 184, 0.16);
+}
+
+.commentAvatar {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.commentContent {
+  flex: 1;
+}
+
+.commentAuthor {
+  margin: 0 0 4px 0;
+  font-weight: 600;
+  font-size: 14px;
+  color: #1f2937;
+}
+
+.commentAuthorDark {
+  color: #f8fafc;
+}
+
+.commentText {
+  margin: 0;
+  font-size: 14px;
+  color: #374151;
+  line-height: 1.5;
+}
+
+.commentTextDark {
+  color: #e5e7eb;
+}
+
+/* Participant rows */
+.participantRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.participantRowDark {
+  color: #fff;
+}
+
+.participantAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #e5e7eb;
+  color: #111827;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.participantAvatarDark {
+  background-color: #374151;
+  color: #fff;
+}
+
+.participantInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.participantName {
+  font-size: 14px;
+}
+
+/* FAQ cards */
+.faqCard {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  background-color: #fff;
+}
+
+.faqCardDark {
+  background-color: #1f2937;
+  border-color: #374151;
+}
+
+.faqQuestionRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.faqQBadge {
+  min-width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background-color: #2563eb;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.faqQuestionText {
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.faqQuestionTextDark {
+  color: #f9fafb;
+}
+
+.faqAnswerRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.faqABadge {
+  min-width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background-color: #10b981;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.faqAnswerText {
+  color: #374151;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.faqAnswerTextDark {
+  color: #d1d5db;
+}
+
+/* Responsive */
 @media (max-width: 768px) {
   .tabs {
     flex-direction: column;

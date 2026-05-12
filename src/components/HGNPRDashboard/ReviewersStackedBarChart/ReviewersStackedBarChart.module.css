@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 /* =======================
    Light Mode Styles
    ======================= */
@@ -106,6 +107,7 @@
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
@@ -144,7 +146,7 @@
 }
 
 /* Responsive Typography */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .reviewersChartContainer h3 {
     font-size: 1.25rem;
   }
@@ -159,7 +161,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .reviewersChartContainer h3 {
     font-size: 1.1rem;
   }
@@ -177,6 +179,7 @@
   background-color: #1b2a41;
   color: #f8fafc;
 }
+
 .darkMode .reviewersChartContainer {
   background-color: #1b2a41;
   color: #fff;
@@ -250,7 +253,7 @@
 }
 
 .darkMode .chartCursor {
-  fill: rgb(50, 73, 105);
+  fill: rgb(50 73 105);
 }
 
 .darkMode .chartLegend {

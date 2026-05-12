@@ -140,3 +140,8 @@ export const rejectConsumablePurchase = purchaseId => {
     }
   };
 };
+
+export default {
+  approveConsumablePurchase,
+  rejectConsumablePurchase,
+};

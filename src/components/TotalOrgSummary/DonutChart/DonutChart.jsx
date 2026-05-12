@@ -28,6 +28,9 @@ function DonutChart(props) {
           size: 16,
         },
         formatter: value => {
+          if (totalCount === 0 || isNaN(totalCount) || !isFinite(totalCount)) {
+            return `${value}`;
+          }
           const percentage = ((value / totalCount) * 100).toFixed(0);
           return `${value}\n(${percentage}%)`;
         },
