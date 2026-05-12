@@ -8,7 +8,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Modal, ModalBody, ModalFooter, ModalHeader, Progress, Table } from 'reactstrap';
 import CopyToClipboard from '~/components/common/Clipboard/CopyToClipboard';
 import UserStateDisplay from '../UserState/UserStateDisplay';
@@ -53,6 +53,7 @@ const TeamMemberTask = React.memo(
     onCatalogChange,
     userStateSelection = [],
     onSelectionChange,
+    expandAll = false,
   }) => {
     const darkMode = useSelector(state => state.theme.darkMode);
     const taskCounts = useSelector(state => state.dashboard?.taskCounts ?? {});
@@ -133,6 +134,9 @@ const TeamMemberTask = React.memo(
 
     const canTruncate = activeTasks.length > NUM_TASKS_SHOW_TRUNCATE;
     const [isTruncated, setIsTruncated] = useState(canTruncate);
+    useEffect(() => {
+      if (canTruncate) setIsTruncated(!expandAll);
+    }, [expandAll, canTruncate]);
     const [isTimeOffContentOpen, setIsTimeOffContentOpen] = useState(
       showWhoHasTimeOff && (onTimeOff || goingOnTimeOff),
     );
@@ -831,6 +835,7 @@ TeamMemberTask.propTypes = {
   onCatalogChange: PropTypes.func,
   userStateSelection: PropTypes.array,
   onSelectionChange: PropTypes.func,
+  expandAll: PropTypes.bool,
 };
 
 TeamMemberTask.displayName = 'TeamMemberTask';
