@@ -157,7 +157,10 @@ export default function AddToolForm() {
     const validationErrors = validate(formData);
     setErrors(validationErrors || {});
 
-    if (!isPhoneValid) {
+    // Also catch empty phone that was never touched (isPhoneValid stays true by default)
+    const phoneVal = formData.phoneNumber || '';
+    if (phoneVal.length === 0 || !isPhoneValid) {
+      setIsPhoneValid(false);
       return;
     }
 
@@ -381,7 +384,9 @@ export default function AddToolForm() {
       </div>
 
       <FormGroup>
-        <Label for="phone-number">Contact Phone Number</Label>
+        <Label for="phone-number">
+          Contact Phone Number <span style={{ color: '#dc3545' }}>*</span>
+        </Label>
         <PhoneInput
           country="us"
           regions={['america', 'europe', 'asia', 'oceania', 'africa']}
@@ -394,11 +399,19 @@ export default function AddToolForm() {
             fontSize: 'inherit',
             backgroundColor: darkMode ? '#1a1a2e' : '#fff',
             color: darkMode ? '#fff' : '#000',
-            border: darkMode ? '1px solid #555' : '1px solid #ccc',
+            border: !isPhoneValid
+              ? '1px solid #dc3545'
+              : darkMode
+              ? '1px solid #555'
+              : '1px solid #ccc',
           }}
           buttonStyle={{
             backgroundColor: darkMode ? '#1a1a2e' : '#fff',
-            border: darkMode ? '1px solid #555' : '1px solid #ccc',
+            border: !isPhoneValid
+              ? '1px solid #dc3545'
+              : darkMode
+              ? '1px solid #555'
+              : '1px solid #ccc',
           }}
           dropdownStyle={{
             backgroundColor: darkMode ? '#1a1a2e' : '#fff',
