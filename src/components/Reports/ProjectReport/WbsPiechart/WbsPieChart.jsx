@@ -72,7 +72,7 @@ export function WbsPieChart({
       <h5> Owners, Managers and Admins in {projectName} </h5>
       <div className= "pie-chart-title" >
         <div>
-          <label className={`${darkMode ? 'text-light' : ''} pr-4`} >{isChecked ? 'Weekly Commited Hours By Active Member(Hide Piechart)' : 'Weekly Commited Hours By Member(Show Piechart)'}</label>
+          <label className={`${darkMode ? 'text-light' : ''} pr-4`} >{isChecked ? 'Weekly Committed Hours By Active Member(Hide Piechart)' : 'Weekly Committed Hours By Member(Show Piechart)'}</label>
           <input
             type="checkbox"
             // className="pie-chart-checkbox"

@@ -1,7 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { Provider } from 'react-redux';
+import { Provider, useDispatch } from 'react-redux';
 import { configureStore } from 'redux-mock-store';
-import { useDispatch } from 'react-redux';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import TaskButton from '../TaskButton';
@@ -111,10 +110,13 @@ describe('TaskButton', () => {
         endstateInfo: task.endstateInfo,
         classification: task.classification,
       });
-      expect(deleteSelectedTaskSpy).toHaveBeenCalledWith(task._id, task.mother);
-      expect(getAllUserProfileSpy).toHaveBeenCalled();
-      expect(fetchAllTasksSpy).toHaveBeenCalled();
     });
+
+    await waitFor(() => expect(deleteSelectedTaskSpy).toHaveBeenCalledWith(task._id, task.mother));
+
+    await waitFor(() => expect(getAllUserProfileSpy).toHaveBeenCalled());
+
+    await waitFor(() => expect(fetchAllTasksSpy).toHaveBeenCalled());
   });
 
   test('does not render button when task status is Complete', () => {

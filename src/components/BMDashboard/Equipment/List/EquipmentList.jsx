@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import useTheme from '../../../../hooks/useTheme';
 import EquipmentsTable from './EquipmentsTable';
 import EquipmentsInputs from './EquipmentsInputs';
 import styles from './Equipments.module.css';
@@ -6,6 +7,9 @@ import styles from './Equipments.module.css';
 function EquipmentList() {
   const [equipment, setEquipment] = useState({ label: 'All Equipments', value: '0' });
   const [project, setProject] = useState({ label: 'All Projects', value: '0' });
+
+  // Use the custom hook to handle dark mode
+  useTheme();
 
   return (
     <div className={`${styles.PageViewContainer}`}>

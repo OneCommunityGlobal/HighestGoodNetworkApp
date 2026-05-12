@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from 'redux-mock-store';
 import { themeMock } from '../../../__tests__/mockStates';
@@ -29,9 +29,14 @@ describe('DiffedText Component', () => {
         <DiffedText oldText="Hello world" newText="Hello React world" />
       </Provider>,
     );
-    expect(getByText('Hello')).toHaveStyle('color: rgb(255, 255, 255)');
-    expect(getByText('world')).toHaveStyle('color: rgb(255, 255, 255)');
-    expect(getByText('React')).toHaveStyle('color: rgb(0, 128, 0)');
+    // Vitest/jsdom may return color names instead of RGB, so check for both
+    const helloColor = window.getComputedStyle(screen.getByText('Hello')).color;
+    const worldColor = window.getComputedStyle(screen.getByText('world')).color;
+    const reactColor = window.getComputedStyle(screen.getByText('React')).color;
+
+    expect(['rgb(255, 255, 255)', 'white']).toContain(helloColor);
+    expect(['rgb(255, 255, 255)', 'white']).toContain(worldColor);
+    expect(['rgb(0, 128, 0)', 'green']).toContain(reactColor);
   });
 
   it('handles text removal correctly', () => {
@@ -44,8 +49,11 @@ describe('DiffedText Component', () => {
         <DiffedText oldText="Hello world" newText="Hello" />
       </Provider>,
     );
-    expect(getByText('world')).toHaveStyle(
-      'textDecorationLine: line-through; color: rgb(255, 0, 0)',
-    );
+    const worldElement = screen.getByText('world');
+    const textDecoration = window.getComputedStyle(worldElement).textDecorationLine;
+    const color = window.getComputedStyle(worldElement).color;
+
+    expect(textDecoration).toBe('line-through');
+    expect(['rgb(255, 0, 0)', 'red']).toContain(color);
   });
 });

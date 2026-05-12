@@ -1,407 +1,289 @@
-import { useState, useMemo } from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import getApplicationData from './api';
+import { useState, useMemo, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { ENDPOINTS } from '../../utils/URL';
+import httpService from '../../services/httpService';
+import { getAggregatedMockForChart } from './api';
+import styles from './ApplicationTimeChart.module.css';
+
+const NO_MATCH_VALUE = '__no_match__';
+
+function uniqueRolesFromRows(rows) {
+  return [...new Set((rows || []).map(r => r?.role).filter(Boolean))].sort((a, b) =>
+    a.localeCompare(b),
+  );
+}
+
+function mergeRoleOptions(prev, rows) {
+  const fromData = uniqueRolesFromRows(rows);
+  const fromPrev = prev.filter(r => r !== 'all');
+  const combined = new Set([...fromPrev, ...fromData]);
+  return ['all', ...Array.from(combined).sort((a, b) => a.localeCompare(b))];
+}
 
 function ApplicationTimeChart() {
+  const darkMode = useSelector(state => state.theme?.darkMode);
+
   const [dateFilter, setDateFilter] = useState('all');
   const [selectedRole, setSelectedRole] = useState('all');
 
-  // Get raw data
-  const rawData = getApplicationData();
+  const [data, setData] = useState([]);
+  const [availableRoles, setAvailableRoles] = useState(['all']);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  // Process data with filters and outlier removal
-  const processedData = useMemo(() => {
-    let filtered = [...rawData];
+  const resetFilters = () => {
+    setDateFilter('all');
+    setSelectedRole('all');
+  };
 
-    // Remove outliers (applications taking more than 30 minutes)
-    filtered = filtered.filter(item => item.timeToApply <= 30);
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
 
-    // Apply date filter
-    if (dateFilter !== 'all') {
-      const now = new Date();
-      filtered = filtered.filter(item => {
-        const itemDate = new Date(item.timestamp);
-        const daysAgo = Math.floor((now - itemDate) / (1000 * 60 * 60 * 24));
+      let startDate = null;
+      let endDate = null;
 
-        switch (dateFilter) {
-          case 'weekly':
-            return daysAgo <= 7;
-          case 'monthly':
-            return daysAgo <= 30;
-          case 'yearly':
-            return daysAgo <= 365;
-          default:
-            return true;
+      try {
+        const now = new Date();
+
+        if (dateFilter !== 'all') {
+          switch (dateFilter) {
+            case 'weekly':
+              startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+              break;
+            case 'monthly':
+              startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+              break;
+            case 'yearly':
+              startDate = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+              break;
+            default:
+              break;
+          }
+          endDate = now;
         }
-      });
-    }
 
-    // Apply role filter
-    if (selectedRole !== 'all') {
-      filtered = filtered.filter(item => item.role === selectedRole);
-    }
+        const roleParam =
+          selectedRole !== 'all' && selectedRole !== NO_MATCH_VALUE ? [selectedRole] : [];
 
-    // Group by role and calculate averages
-    const roleGroups = {};
-    filtered.forEach(item => {
-      if (!roleGroups[item.role]) {
-        roleGroups[item.role] = [];
+        const url = ENDPOINTS.APPLICATION_TIME_DATA(
+          startDate ? startDate.toISOString() : null,
+          endDate ? endDate.toISOString() : null,
+          roleParam,
+        );
+
+        const response = await httpService.get(url);
+
+        let rows = [];
+
+        if (response.data?.data && Array.isArray(response.data.data)) {
+          rows = response.data.data;
+        } else if (Array.isArray(response.data)) {
+          rows = response.data;
+        } else {
+          throw new Error('Unexpected data format from server');
+        }
+
+        setData(rows);
+        setAvailableRoles(prev => mergeRoleOptions(prev, rows));
+      } catch (err) {
+        console.error('Error fetching application time data:', err);
+
+        const status = err?.response?.status;
+
+        if (status === 404) {
+          const rows = getAggregatedMockForChart();
+          setData(rows);
+          setAvailableRoles(prev => mergeRoleOptions(prev, rows));
+        } else {
+          setError(err.message || 'Failed to fetch data');
+          setData([]);
+        }
+      } finally {
+        setLoading(false);
       }
-      roleGroups[item.role].push(item.timeToApply);
-    });
+    };
 
-    // Calculate averages and create chart data
-    const chartData = Object.entries(roleGroups)
-      .map(([role, times]) => {
-        const avg = times.reduce((a, b) => a + b, 0) / times.length;
-        return {
-          role,
-          avgTime: Math.round(avg * 10) / 10, // Round to 1 decimal place
-          count: times.length,
-        };
-      })
-      .sort((a, b) => b.avgTime - a.avgTime); // Sort highest to lowest
+    fetchData();
+  }, [dateFilter, selectedRole]);
 
-    return chartData;
-  }, [rawData, dateFilter, selectedRole]);
+  const processedData = useMemo(() => {
+    if (selectedRole === NO_MATCH_VALUE) return [];
 
-  // Get unique roles for dropdown
-  const roles = useMemo(() => {
-    const uniqueRoles = [...new Set(rawData.map(item => item.role))];
-    return ['all', ...uniqueRoles];
-  }, [rawData]);
+    if (!Array.isArray(data) || data.length === 0) return [];
+
+    let rows = data;
+
+    if (selectedRole !== 'all') {
+      rows = rows.filter(item => item?.role === selectedRole);
+    }
+
+    return rows
+      .map(item => ({
+        role: item.role,
+        avgTime: item.timeToApplyMinutes || (item.timeToApply ? item.timeToApply / 60 : 0),
+        count: item.totalApplications || 1,
+        formattedTime:
+          item.timeToApplyFormatted ||
+          `${Math.round((item.timeToApplyMinutes || 0) * 10) / 10} min`,
+      }))
+      .sort((a, b) => b.avgTime - a.avgTime);
+  }, [data, selectedRole]);
 
   const maxTime = Math.max(...processedData.map(item => item.avgTime), 10);
+  const xTickCount = Math.ceil(maxTime / 5);
+  const xTicks = Array.from({ length: xTickCount + 1 }, (_, i) => i * 5);
+
+  const fastest = processedData[processedData.length - 1];
+  const slowest = processedData[0];
+
+  const showEmptyState = !loading && !error && processedData.length === 0;
+
+  if (loading) {
+    return (
+      <div className={`${styles.atc} ${darkMode ? styles.dark : ''}`}>
+        <div className={styles.atcLoading}>Loading…</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={`${styles.atc} ${darkMode ? styles.dark : ''}`}>
+        <div className={styles.atcLoading}>Error: {error}</div>
+      </div>
+    );
+  }
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'flex-start',
-        gap: '20px',
-        width: '100%',
-        maxWidth: '1200px',
-        margin: '0 auto',
-        padding: '20px',
-      }}
-    >
-      {/* Chart Container */}
-      <div
-        style={{
-          flex: 1,
-          border: '2px solid #4285f4',
-          borderRadius: '8px',
-          backgroundColor: '#ffffff',
-          padding: '20px',
-        }}
-      >
-        {/* Title */}
-        <h2
-          style={{
-            fontSize: '20px',
-            fontWeight: '400',
-            color: '#5f6368',
-            margin: '0 0 30px 0',
-            fontFamily: 'Arial, sans-serif',
-          }}
-        >
-          Comparing the Average Time Taken to Fill an Application by Role
-        </h2>
+    <div className={`${styles.atc} ${darkMode ? styles.dark : ''}`}>
+      <div className={styles.atcMain}>
+        {/* ── Chart card ── */}
+        <div className={styles.atcCard}>
+          <h2 className={styles.atcTitle}>
+            Comparing the Average Time Taken to Fill an Application by Role
+          </h2>
 
-        {/* Chart */}
-        <div
-          style={{
-            minHeight: '400px',
-            position: 'relative',
-            paddingLeft: '140px',
-            paddingRight: '60px',
-            paddingTop: '20px',
-            paddingBottom: '40px',
-          }}
-        >
-          {processedData.length > 0 ? (
+          {showEmptyState ? (
+            /* ── Empty state ── */
+            <div className={styles.atcEmpty}>
+              <p className={styles.atcEmptyText}>No data available for the selected filters</p>
+              <button
+                className={styles.atcResetBtn}
+                onClick={resetFilters}
+                aria-label="Reset all filters"
+              >
+                Reset Filters
+              </button>
+            </div>
+          ) : (
+            /* ── Chart ── */
             <>
-              {/* Grid Lines */}
-              <div
-                style={{
-                  position: 'absolute',
-                  left: '140px',
-                  right: '60px',
-                  top: '20px',
-                  bottom: '40px',
-                  backgroundImage: `
-                  linear-gradient(to right, #e0e0e0 1px, transparent 1px),
-                  linear-gradient(to bottom, #e0e0e0 1px, transparent 1px)
-                `,
-                  backgroundSize: `${100 / 6}% ${100 / processedData.length}%`,
-                  opacity: 0.5,
-                }}
-              />
+              {/* Chart rows: y-labels + bars */}
+              <div className={styles.atcChart}>
+                {/* Vertical grid lines behind bars */}
+                <div className={styles.atcGrid} aria-hidden="true" />
 
-              {/* Y-axis (Roles) */}
-              <div
-                style={{
-                  position: 'absolute',
-                  left: '0',
-                  top: '20px',
-                  bottom: '40px',
-                  width: '130px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                }}
-              >
-                {processedData.map(item => (
-                  <div
-                    key={uuidv4()}
-                    style={{
-                      height: `${100 / processedData.length}%`,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'flex-end',
-                      paddingRight: '10px',
-                      fontSize: '12px',
-                      color: '#5f6368',
-                      borderRight: '1px solid #9aa0a6',
-                    }}
-                  >
-                    {item.role}
-                  </div>
-                ))}
-              </div>
-
-              {/* X-axis */}
-              <div
-                style={{
-                  position: 'absolute',
-                  left: '140px',
-                  right: '60px',
-                  bottom: '0',
-                  height: '40px',
-                  borderTop: '1px solid #9aa0a6',
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  paddingTop: '5px',
-                }}
-              >
-                {[0, 5, 10, 15, 20, 25, 30].map(tick => (
-                  <div
-                    key={tick}
-                    style={{
-                      position: 'absolute',
-                      left: `${(tick / maxTime) * 100}%`,
-                      fontSize: '12px',
-                      color: '#5f6368',
-                      transform: 'translateX(-50%)',
-                    }}
-                  >
-                    {tick <= maxTime ? tick : ''}
-                  </div>
-                ))}
-              </div>
-
-              {/* Bars */}
-              <div
-                style={{
-                  position: 'absolute',
-                  left: '140px',
-                  right: '60px',
-                  top: '20px',
-                  bottom: '40px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                }}
-              >
-                {processedData.map(item => (
-                  <div
-                    key={uuidv4()}
-                    style={{
-                      height: `${100 / processedData.length}%`,
-                      display: 'flex',
-                      alignItems: 'center',
-                      paddingTop: '10px',
-                      paddingBottom: '10px',
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: `${(item.avgTime / maxTime) * 100}%`,
-                        height: '60%',
-                        backgroundColor: '#93c47d',
-                        border: '1px solid #6aa84f',
-                        borderRadius: '0 4px 4px 0',
-                        position: 'relative',
-                        minWidth: '2px',
-                      }}
-                    >
-                      {/* Data Label */}
-                      <div
-                        style={{
-                          position: 'absolute',
-                          right: '-35px',
-                          top: '50%',
-                          transform: 'translateY(-50%)',
-                          fontSize: '14px',
-                          fontWeight: '600',
-                          color: '#2d5016',
-                          whiteSpace: 'nowrap',
-                        }}
-                      >
-                        {item.avgTime} min
+                <div className={styles.atcBars}>
+                  {processedData.map(item => {
+                    const pct = (item.avgTime / (xTickCount * 5)) * 100;
+                    return (
+                      <div key={item.role} className={styles.atcRow}>
+                        {/* Role label */}
+                        <div className={styles.atcLabel} title={item.role}>
+                          {item.role}
+                        </div>
+                        {/* Bar track */}
+                        <div className={styles.atcTrack}>
+                          <div className={styles.atcBar} style={{ width: `${pct}%` }}>
+                            <span
+                              className={styles.atcBarValue}
+                              data-outside={pct < 20 ? 'true' : 'false'}
+                            >
+                              {item.formattedTime}
+                            </span>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* X-axis ticks */}
+              <div className={styles.atcXaxis}>
+                {xTicks.map(tick => (
+                  <span key={tick}>{tick}</span>
                 ))}
               </div>
 
-              {/* X-axis Label */}
-              <div
-                style={{
-                  position: 'absolute',
-                  bottom: '-25px',
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  fontSize: '12px',
-                  color: '#5f6368',
-                }}
-              >
+              {/* X-axis label */}
+              <div className={styles.atcXaxisLabel}>
                 Average Time taken to fill application (in minutes)
               </div>
+
+              {/* Summary strip */}
+              <div className={styles.atcFooter}>
+                <div>
+                  <strong>Showing:</strong> {processedData.length} role(s)
+                </div>
+                {fastest && (
+                  <div>
+                    <strong>Fastest:</strong> {fastest.role} ({fastest.formattedTime})
+                  </div>
+                )}
+                {slowest && (
+                  <div>
+                    <strong>Slowest:</strong> {slowest.role} ({slowest.formattedTime})
+                  </div>
+                )}
+              </div>
             </>
-          ) : (
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: '400px',
-                color: '#5f6368',
-                fontSize: '16px',
-              }}
-            >
-              No data available for the selected filters
-            </div>
           )}
         </div>
 
-        {/* Summary Info */}
-        {processedData.length > 0 && (
-          <div
-            style={{
-              marginTop: '20px',
-              padding: '15px',
-              backgroundColor: '#f8f9fa',
-              borderRadius: '4px',
-              fontSize: '14px',
-              color: '#5f6368',
-            }}
-          >
-            <div>
-              <strong>Showing:</strong> {processedData.length} role(s)
-            </div>
-            <div>
-              <strong>Fastest:</strong> {processedData[processedData.length - 1]?.role} (
-              {processedData[processedData.length - 1]?.avgTime} min)
-            </div>
-            <div>
-              <strong>Slowest:</strong> {processedData[0]?.role} ({processedData[0]?.avgTime} min)
-            </div>
+        {/* ── Filters panel ── */}
+        <aside className={styles.atcFilters}>
+          {/* Dates */}
+          <div className={styles.atcFilter}>
+            <div className={styles.atcFilterLabel}>Dates</div>
+            <select
+              className={styles.atcSelect}
+              value={dateFilter}
+              onChange={e => setDateFilter(e.target.value)}
+              aria-label="Filter by date range"
+            >
+              <option value="all">ALL</option>
+              <option value="weekly">Last 7 Days</option>
+              <option value="monthly">Last 30 Days</option>
+              <option value="yearly">Last Year</option>
+            </select>
           </div>
-        )}
-      </div>
 
-      {/* Filters Panel */}
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '20px',
-          minWidth: '150px',
-        }}
-      >
-        {/* Dates Filter */}
-        <div
-          style={{
-            border: '1px solid #dadce0',
-            borderRadius: '4px',
-            padding: '12px',
-            backgroundColor: '#ffffff',
-          }}
-        >
-          <div
-            style={{
-              fontSize: '14px',
-              fontWeight: '500',
-              color: '#3c4043',
-              marginBottom: '8px',
-            }}
-          >
-            Dates
+          {/* Role — includes selectable sentinel to demo empty state */}
+          <div className={styles.atcFilter}>
+            <div className={styles.atcFilterLabel}>Role</div>
+            <select
+              className={`${styles.atcSelect} ${
+                selectedRole === NO_MATCH_VALUE ? styles.atcSelectNoMatch : ''
+              }`}
+              value={selectedRole}
+              onChange={e => setSelectedRole(e.target.value)}
+              aria-label="Filter by role"
+            >
+              <option value="all">ALL</option>
+              <option value={NO_MATCH_VALUE}>-- No Matching Role --</option>
+              {availableRoles
+                .filter(role => role !== 'all')
+                .map(role => (
+                  <option key={role} value={role}>
+                    {role}
+                  </option>
+                ))}
+            </select>
           </div>
-          <select
-            value={dateFilter}
-            onChange={e => {
-              setDateFilter(e.target.value);
-            }}
-            style={{
-              width: '100%',
-              padding: '4px 8px',
-              border: '1px solid #dadce0',
-              borderRadius: '4px',
-              fontSize: '14px',
-              backgroundColor: '#ffffff',
-              color: '#3c4043',
-            }}
-          >
-            <option value="all">ALL</option>
-            <option value="weekly">Last 7 Days</option>
-            <option value="monthly">Last 30 Days</option>
-            <option value="yearly">Last Year</option>
-          </select>
-        </div>
-
-        {/* Role Filter */}
-        <div
-          style={{
-            border: '1px solid #dadce0',
-            borderRadius: '4px',
-            padding: '12px',
-            backgroundColor: '#ffffff',
-          }}
-        >
-          <div
-            style={{
-              fontSize: '14px',
-              fontWeight: '500',
-              color: '#3c4043',
-              marginBottom: '8px',
-            }}
-          >
-            Role
-          </div>
-          <select
-            value={selectedRole}
-            onChange={e => {
-              setSelectedRole(e.target.value);
-            }}
-            style={{
-              width: '100%',
-              padding: '4px 8px',
-              border: '1px solid #dadce0',
-              borderRadius: '4px',
-              fontSize: '14px',
-              backgroundColor: '#ffffff',
-              color: '#3c4043',
-            }}
-          >
-            {roles.map(role => (
-              <option key={role} value={role}>
-                {role === 'all' ? 'ALL' : role}
-              </option>
-            ))}
-          </select>
-        </div>
+        </aside>
       </div>
     </div>
   );
