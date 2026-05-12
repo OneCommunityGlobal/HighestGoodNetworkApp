@@ -109,11 +109,12 @@ function UpdateDocumentTitle() {
     { pattern: /^\/$/, title: `Dashboard - ${fullName}` },
     { pattern: /^\/kitchenandinventory\/login$/, title: 'Kitchen and Inventory Login' },
     { pattern: /^\/kitchenandinventory$/, title: 'Kitchen and Inventory Dashboard' },
-    { pattern: /.*/, title: 'HGN APP' }, // Default case
+    { pattern: /^\/bmdashboard\/lessons\/add$/, title: 'Add Lessons' },
     {
       pattern: /^\/communityportal\/activity\/activityid\/feedback$/,
       title: 'Activity Feedback',
     },
+    { pattern: /.*/, title: 'HGN APP' }, // Default case
   ];
 
   useEffect(() => {
