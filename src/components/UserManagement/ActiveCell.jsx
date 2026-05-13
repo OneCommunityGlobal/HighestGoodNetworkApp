@@ -15,6 +15,7 @@ function ActiveCell(props) {
   const now = moment();
 
   function deriveUserStatus({ isActive, reactivationDate, endDate }) {
+
   if (reactivationDate) return UserStatus.Paused;
 
   if (!isActive) return UserStatus.Inactive;
@@ -24,9 +25,15 @@ function ActiveCell(props) {
   return UserStatus.Active;
 }
 
-  const isScheduled = deriveUserStatus({ isActive, reactivationDate, endDate }) === UserStatus.Scheduled;
-  const isPaused = deriveUserStatus({ isActive, reactivationDate, endDate }) === UserStatus.Paused;
-  const isSeparated = deriveUserStatus({ isActive, reactivationDate, endDate }) === UserStatus.Inactive;
+  const userStatus = deriveUserStatus({
+    isActive,
+    reactivationDate,
+    endDate,
+  });
+
+  const isScheduled = userStatus === UserStatus.Scheduled;
+  const isPaused = userStatus === UserStatus.Paused;
+  const isSeparated = userStatus === UserStatus.Inactive;
 
 
   const className = (() => {
