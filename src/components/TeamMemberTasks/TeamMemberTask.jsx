@@ -680,9 +680,9 @@ const TeamMemberTask = React.memo(
                                                   darkMode ? 'text-light' : ''
                                                 }`}
                                               >
-                                                {`${parseFloat(
+                                                {`${Number.parseFloat(
                                                   task.hoursLogged.toFixed(2),
-                                                )} of ${parseFloat(
+                                                )} of ${Number.parseFloat(
                                                   task.estimatedHours.toFixed(2),
                                                 )}`}
                                               </p>
