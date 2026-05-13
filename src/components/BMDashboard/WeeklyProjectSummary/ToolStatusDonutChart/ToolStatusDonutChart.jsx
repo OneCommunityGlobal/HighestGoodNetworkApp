@@ -5,13 +5,8 @@ import Select from 'react-select';
 import axios from 'axios';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { fetchToolAvailability, fetchTools } from '../../../../actions/bmdashboard/toolActions';
-<<<<<<< HEAD
 import styles from './ToolStatusDonutChart.module.css';
-=======
-import { ENDPOINTS } from '../../../../utils/URL';
-import { getStandardSelectStyles } from '../../../../utils/reactSelectUtils';
-import './ToolStatusDonutChart.css';
->>>>>>> 5216f1f61 (fix(tools-charts): resolve SonarQube issues and reduce code duplication)
+import PropTypes from 'prop-types';
 
 const COLORS = {
   AVAILABLE: '#220F57',

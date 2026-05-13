@@ -6,6 +6,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGri
 import axios from 'axios';
 import { ENDPOINTS } from '../../../../utils/URL';
 import styles from './ToolsHorizontalBarChart.module.css';
+import PropTypes from 'prop-types';
 
 function CustomTooltip({ active, payload, label, darkMode }) {
   if (!active || !payload || !payload.length) {

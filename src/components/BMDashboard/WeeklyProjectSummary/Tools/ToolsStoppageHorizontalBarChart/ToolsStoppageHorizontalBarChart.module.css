@@ -1,8 +1,11 @@
 /* React-select styles are handled EXCLUSIVELY via inline styles in the component */
+
 /* No global CSS overrides - inline styles have higher specificity and are the proper way */
+
 /* Removing any global overrides that might conflict */
 
 /* Date picker input - consistent sizing in all modes */
+
 /* Base styles define size - dark mode only changes colors */
 :global(.datePickerInput),
 :global(.react-datepicker-wrapper input),
@@ -17,8 +20,8 @@
   box-sizing: border-box !important;
   width: 100% !important;
   min-width: 0 !important;
-  background-color: #ffffff !important;
-  color: #000000 !important;
+  background-color: #fff !important;
+  color: #000 !important;
   border-color: #ccc !important;
 }
 
@@ -32,30 +35,30 @@
 :global(.react-datepicker-wrapper.darkThemeDatePickerWrapper input[type="text"].datePickerInput) {
   /* Only override colors - sizes inherit from base */
   background-color: #2b3e59 !important;
-  color: #ffffff !important;
+  color: #fff !important;
   border-color: #666 !important;
 }
 
 /* Light mode calendar styles */
 :global(.customCalendar) {
-  background-color: #ffffff !important;
-  color: #000000 !important;
+  background-color: #fff !important;
+  color: #000 !important;
   border: 1px solid #ccc !important;
 }
 
 :global(.customCalendar .react-datepicker__header) {
   background-color: #f0f0f0 !important;
-  color: #000000 !important;
+  color: #000 !important;
   border-bottom: 1px solid #ccc !important;
 }
 
 :global(.customCalendar .react-datepicker__day) {
-  color: #000000 !important;
+  color: #000 !important;
 }
 
 :global(.customCalendar .react-datepicker__day--keyboard-selected) {
   background-color: #5a5a5a !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 :global(.customCalendar .react-datepicker__navigation-icon::before) {
@@ -65,31 +68,31 @@
 /* Hover day styling in dark theme */
 :global(.customCalendar .react-datepicker__day:hover) {
   background-color: #e0e0e0 !important;
-  color: #000000 !important;
+  color: #000 !important;
   border-radius: 50%;
 }
 
 :global(.customCalendar .react-datepicker__day--selected) {
-  background-color: #0066cc !important;
-  color: #ffffff !important;
+  background-color: #06c !important;
+  color: #fff !important;
   border-radius: 50%;
 }
 
 :global(.customCalendar .react-datepicker__current-month),
 :global(.customCalendar .react-datepicker__day-name) {
-  color: #000000 !important;
+  color: #000 !important;
 }
 
 /* Dark theme calendar container */
 :global(.darkThemeCalendar) { 
   background-color: #2b3e59 !important;
-  color: #ffffff !important;
+  color: #fff !important;
   border: 1px solid #6b6767 !important;
 }
 
 :global(.darkThemeCalendar .react-datepicker__current-month),
 :global(.darkThemeCalendar .react-datepicker__day-name) {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 /* Dark theme header */
@@ -102,7 +105,7 @@
 
 /* Selected day styling in dark theme */
 :global(.darkThemeCalendar .react-datepicker__day--selected) {
-  background-color: #0050a8 !important;
+  background-color: #1a5fa8 !important;
   color: #fff !important;
   border-radius: 50%;
 }
@@ -119,6 +122,7 @@
 }
 
 /* React-select styling is handled ONLY via inline styles in JSX */
+
 /* No CSS overrides needed or wanted - inline styles are the proper method */
 
 /* Chart container - sized by explicit chart height, no overflow clipping */
@@ -128,7 +132,7 @@
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  background-color: #ffffff !important; /* White background to show through transparent canvas */
+  background-color: #fff !important; /* White background to show through transparent canvas */
   overflow: visible; /* Allow chart labels and tooltips to render outside */
 }
 
@@ -139,7 +143,7 @@
 
 /* Ensure Chart.js canvas wrapper has background */
 :global(.tools-horizontal-chart-container > div) {
-  background-color: #ffffff !important;
+  background-color: #fff !important;
 }
 
 :global(.tools-availability-page.dark-mode .tools-horizontal-chart-container > div) {
@@ -154,7 +158,7 @@
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
-  background-color: #ffffff !important; /* White background in light mode to prevent grey parent card background from showing through - !important to override any conflicting styles */
+  background-color: #fff !important; /* White background in light mode to prevent grey parent card background from showing through - !important to override any conflicting styles */
   display: flex;
   flex-direction: column;
 }
@@ -167,7 +171,7 @@
 /* Chart title styling */
 :global(.tools-availability-page .tools-chart-title) {
   flex-shrink: 0;
-  color: #000000;
+  color: #000;
   font-size: 1.25rem;
   font-weight: 600;
   margin-bottom: 1rem;
@@ -176,7 +180,7 @@
 
 /* Dark mode for chart title */
 :global(.tools-availability-page.dark-mode .tools-chart-title) {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 :global(.tools-availability-page .row) {
@@ -255,7 +259,7 @@
 .filterLabel {
   font-size: 13px;
   font-weight: 600;
-  color: #000000;
+  color: #000;
   margin: 0;
   line-height: 1.4;
   display: block;
@@ -265,11 +269,11 @@
 /* Dark mode for filter labels - white text */
 :global(.tools-availability-page.dark-mode) .filterLabel,
 :global(.tools-availability-page.dark-mode .filterLabel) {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 /* Filter controls layout for small screens - gradient scaling */
-@media (max-width: 480px) {
+@media (width <= 480px) {
   :global(.tools-availability-page) {
     padding: 4px;
   }
@@ -323,7 +327,7 @@
   }
 }
 
-@media (min-width: 481px) and (max-width: 768px) {
+@media (width >= 481px) and (width <= 768px) {
   :global(.tools-availability-page) {
     padding: 6px;
   }
@@ -370,7 +374,7 @@
   }
 
 /* Tablet adjustments */
-@media (min-width: 769px) and (max-width: 1024px) {
+@media (width >= 769px) and (width <= 1024px) {
   :global(.tools-availability-page) {
     padding: 10px;
   }
