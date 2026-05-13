@@ -3,6 +3,7 @@ import { faClock } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { MultiSelect } from 'react-multi-select-component';
 import { connect, useDispatch, useSelector } from 'react-redux';
@@ -388,9 +389,9 @@ const TeamMemberTasks = React.memo(props => {
     setShowWhoHasTimeOff(prev => !prev);
   };
 
-  const handleShowTrackers = () => {
+  function handleShowTrackers() {
     setShowTrackers(prev => !prev);
-  };
+  }
 
   const handleSelectTeamNames = event => {
     filteredUserTeamIds?.length > 0 && setTeamList(usersWithTasks);
@@ -859,6 +860,22 @@ const TeamMemberTasks = React.memo(props => {
     </div>
   );
 });
+
+TeamMemberTasks.propTypes = {
+  authUser: PropTypes.shape({
+    userid: PropTypes.string,
+    role: PropTypes.string,
+  }),
+  displayUser: PropTypes.shape({
+    _id: PropTypes.string,
+    role: PropTypes.string,
+    email: PropTypes.string,
+  }),
+  usersWithTasks: PropTypes.arrayOf(PropTypes.object),
+  usersWithTimeEntries: PropTypes.arrayOf(PropTypes.object),
+  darkMode: PropTypes.bool,
+  filteredUserTeamIds: PropTypes.arrayOf(PropTypes.string),
+};
 
 const mapStateToProps = state => ({
   authUser: state.auth.user,
