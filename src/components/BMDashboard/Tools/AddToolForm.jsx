@@ -99,6 +99,8 @@ export default function AddToolForm() {
   const [areaCode, setAreaCode] = useState('1');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [isPhoneValid, setIsPhoneValid] = useState(true);
+  const [expectedPhoneDigits, setExpectedPhoneDigits] = useState(null);
+  const [phoneErrorMsg, setPhoneErrorMsg] = useState('');
   const [uploadedFiles, setUploadedFiles] = useState([]); // log here for correct state snapshot (will show each render)
   const [errors, setErrors] = useState({});
   const dispatch = useDispatch();
@@ -144,10 +146,26 @@ export default function AddToolForm() {
       ...prevData,
       [name]: phone,
     }));
-    // Validate: phone (with country code) must have at least 6 user-entered digits
     const dialCodeLen = country?.dialCode?.length || 1;
-    // phone contains full number incl. country code; "no input" means only the country code is present
-    const isValid = phone.length <= dialCodeLen || phone.length >= dialCodeLen + 6;
+    const userDigits = phone.length - dialCodeLen;
+    // Count dots in format mask (e.g. "+. (...) ...-....") to get exact expected total digits
+    const expectedTotal = (country?.format?.match(/\./g) || []).length;
+    const expectedUserDigits = expectedTotal > 0 ? expectedTotal - dialCodeLen : null;
+    setExpectedPhoneDigits(expectedTotal || null);
+    if (userDigits <= 0) {
+      setPhoneErrorMsg('Please enter a phone number.');
+      setIsPhoneValid(false);
+      return;
+    }
+    const isValid =
+      expectedTotal > 0 ? phone.length === expectedTotal : userDigits >= 6 && userDigits <= 15;
+    if (!isValid) {
+      const msg =
+        expectedUserDigits != null
+          ? `Phone number must be exactly ${expectedUserDigits} digits for the selected country.`
+          : 'Phone number length is invalid for the selected country.';
+      setPhoneErrorMsg(msg);
+    }
     setIsPhoneValid(isValid);
   };
 
@@ -159,6 +177,7 @@ export default function AddToolForm() {
     // Also catch empty phone that was never touched (isPhoneValid stays true by default)
     const phoneVal = formData.phoneNumber || '';
     if (phoneVal.length === 0 || !isPhoneValid) {
+      if (phoneVal.length === 0) setPhoneErrorMsg('Please enter a phone number.');
       setIsPhoneValid(false);
       return;
     }
@@ -191,6 +210,8 @@ export default function AddToolForm() {
     setAreaCode(1);
     setPhoneNumber('');
     setIsPhoneValid(true);
+    setPhoneErrorMsg('');
+    setExpectedPhoneDigits(null);
   };
 
   const handleRemoveFile = index => {
@@ -411,7 +432,7 @@ export default function AddToolForm() {
         />
         {phoneHasError && (
           <Label className={`${styles.toolFormError} bm-error-red`}>
-            Phone number must be 6–15 digits (excluding country code).
+            {phoneErrorMsg || 'Please enter a valid phone number for the selected country.'}
           </Label>
         )}
         {errors.phoneNumber && (
