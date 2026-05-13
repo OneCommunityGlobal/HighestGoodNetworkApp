@@ -161,9 +161,9 @@ export default function AddToolForm() {
       setPhoneErrorMsg('');
     } else {
       const msg =
-        expectedUserDigits != null
-          ? `Phone number must be exactly ${expectedUserDigits} digits for the selected country.`
-          : 'Phone number length is invalid for the selected country.';
+        expectedUserDigits === null
+          ? 'Phone number length is invalid for the selected country.'
+          : `Phone number must be exactly ${expectedUserDigits} digits for the selected country.`;
       setPhoneErrorMsg(msg);
     }
     setIsPhoneValid(isValid);
