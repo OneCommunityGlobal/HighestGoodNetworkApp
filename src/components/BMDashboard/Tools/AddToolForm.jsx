@@ -99,7 +99,6 @@ export default function AddToolForm() {
   const [areaCode, setAreaCode] = useState('1');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [isPhoneValid, setIsPhoneValid] = useState(true);
-  const [expectedPhoneDigits, setExpectedPhoneDigits] = useState(null);
   const [phoneErrorMsg, setPhoneErrorMsg] = useState('');
   const [uploadedFiles, setUploadedFiles] = useState([]); // log here for correct state snapshot (will show each render)
   const [errors, setErrors] = useState({});
@@ -151,7 +150,6 @@ export default function AddToolForm() {
     // Count dots in format mask (e.g. "+. (...) ...-....") to get exact expected total digits
     const expectedTotal = (country?.format?.match(/\./g) || []).length;
     const expectedUserDigits = expectedTotal > 0 ? expectedTotal - dialCodeLen : null;
-    setExpectedPhoneDigits(expectedTotal || null);
     if (userDigits <= 0) {
       setPhoneErrorMsg('Please enter a phone number.');
       setIsPhoneValid(false);
@@ -176,32 +174,28 @@ export default function AddToolForm() {
 
     // Also catch empty phone that was never touched (isPhoneValid stays true by default)
     const phoneVal = formData.phoneNumber || '';
-    if (phoneVal.length === 0 || !isPhoneValid) {
-      if (phoneVal.length === 0) setPhoneErrorMsg('Please enter a phone number.');
-      setIsPhoneValid(false);
+    if (phoneVal.length > 0 && isPhoneValid) {
+      if (validationErrors) {
+        return;
+      }
+      const imageURL = uploadedFiles.map(file => URL.createObjectURL(file));
+      const updatedFormData = {
+        ...formData,
+        category: 'Tool',
+        images: imageURL[0],
+        areaCode,
+        phoneNumber,
+        totalPriceWithShipping,
+      };
+      dispatch(postBuildingToolType(updatedFormData));
+      setFormData(initialFormState);
+      setUploadedFiles([]);
+      setAreaCode(1);
+      setPhoneNumber('');
       return;
     }
-
-    if (validationErrors) {
-      return;
-    }
-    const imageURL = uploadedFiles.map(file => URL.createObjectURL(file));
-    const updatedFormData = {
-      ...formData,
-      category: 'Tool',
-      images: imageURL[0],
-      areaCode,
-      phoneNumber,
-      totalPriceWithShipping,
-    };
-    dispatch(postBuildingToolType(updatedFormData));
-    setFormData(initialFormState);
-    setUploadedFiles([]);
-    setAreaCode(1);
-    setPhoneNumber('');
-    // }
-    // TODO: validate form data
-    // TODO: submit data to API
+    if (phoneVal.length === 0) setPhoneErrorMsg('Please enter a phone number.');
+    setIsPhoneValid(false);
   };
 
   const handleCancelClick = () => {
@@ -211,7 +205,6 @@ export default function AddToolForm() {
     setPhoneNumber('');
     setIsPhoneValid(true);
     setPhoneErrorMsg('');
-    setExpectedPhoneDigits(null);
   };
 
   const handleRemoveFile = index => {
