@@ -49,6 +49,7 @@ const TeamMemberTasks = React.memo(props => {
   const [isTimeFilterActive, setIsTimeFilterActive] = useState(false);
   const [taskModalOption, setTaskModalOption] = useState('');
   const [showWhoHasTimeOff, setShowWhoHasTimeOff] = useState(true);
+  const [showTrackers, setShowTrackers] = useState(false);
 
   const userOnTimeOff = useSelector(state => state.timeOffRequests.onTimeOff);
   const userGoingOnTimeOff = useSelector(state => state.timeOffRequests.goingOnTimeOff);
@@ -78,7 +79,10 @@ const TeamMemberTasks = React.memo(props => {
 
   // Fetch all selections in ONE call once teamList is ready
   useEffect(() => {
-    if (usersWithTasks.length === 0) return;
+    if (usersWithTasks.length === 0) {
+      setSelectionsLoaded(true);
+      return;
+    }
     const userIds = usersWithTasks.map(u => u.personId);
     axios
       .post(ENDPOINTS.USER_STATE_SELECTIONS_BATCH, { userIds })
@@ -384,6 +388,10 @@ const TeamMemberTasks = React.memo(props => {
     setShowWhoHasTimeOff(prev => !prev);
   };
 
+  const handleShowTrackers = () => {
+    setShowTrackers(prev => !prev);
+  };
+
   const handleSelectTeamNames = event => {
     filteredUserTeamIds?.length > 0 && setTeamList(usersWithTasks);
     setSelectedTeamNames(event);
@@ -681,6 +689,29 @@ const TeamMemberTasks = React.memo(props => {
                           icon={faClock}
                           title="Total Remaining Hours"
                         />
+                        <div>
+                          <button
+                            type="button"
+                            onClick={handleShowTrackers}
+                            className={[
+                              styles.m1,
+                              darkMode ? styles.boxShadowDark : styles.boxShadowLight,
+                            ].join(' ')}
+                            style={{
+                              marginTop: '6px',
+                              padding: '2px 8px',
+                              fontSize: '12px',
+                              borderRadius: '4px',
+                              border: '1px solid #17a2b8',
+                              backgroundColor: showTrackers ? '#17a2b8' : 'white',
+                              color: showTrackers ? 'white' : '#17a2b8',
+                              cursor: 'pointer',
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
+                            {showTrackers ? 'Hide Trackers' : 'Show Trackers'}
+                          </button>
+                        </div>
                       </th>
                     </tr>
                   </thead>
@@ -753,6 +784,7 @@ const TeamMemberTasks = React.memo(props => {
                         updateTaskStatus={updateTaskStatus}
                         userId={displayUser._id}
                         showWhoHasTimeOff={showWhoHasTimeOff}
+                        showTrackers={showTrackers}
                         onTimeOff={userOnTimeOff[user.personId]}
                         goingOnTimeOff={userGoingOnTimeOff[user.personId]}
                         displayUser={displayUser}
@@ -786,6 +818,7 @@ const TeamMemberTasks = React.memo(props => {
                         updateTaskStatus={updateTaskStatus}
                         userId={displayUser._id}
                         showWhoHasTimeOff={showWhoHasTimeOff}
+                        showTrackers={showTrackers}
                         onTimeOff={userOnTimeOff[user.personId]}
                         goingOnTimeOff={userGoingOnTimeOff[user.personId]}
                         userStateCatalog={userStateCatalog}
