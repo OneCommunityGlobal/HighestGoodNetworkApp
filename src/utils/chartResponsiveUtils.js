@@ -16,7 +16,7 @@ export function getValueForBreakpoints(windowWidth, values) {
   for (let i = 0; i < BREAKPOINTS.length; i++) {
     if (windowWidth <= BREAKPOINTS[i]) return values[i];
   }
-  return values[values.length - 1];
+  return values.at(-1);
 }
 
 /** Chart height in px: 180 → 300 from small phone to desktop */
