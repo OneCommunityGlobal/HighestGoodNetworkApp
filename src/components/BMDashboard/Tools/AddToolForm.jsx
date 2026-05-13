@@ -157,7 +157,9 @@ export default function AddToolForm() {
     }
     const isValid =
       expectedTotal > 0 ? phone.length === expectedTotal : userDigits >= 6 && userDigits <= 15;
-    if (!isValid) {
+    if (isValid) {
+      setPhoneErrorMsg('');
+    } else {
       const msg =
         expectedUserDigits != null
           ? `Phone number must be exactly ${expectedUserDigits} digits for the selected country.`
