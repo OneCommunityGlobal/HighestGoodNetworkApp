@@ -1,7 +1,8 @@
+/* stylelint-disable  */
 /* Simple styling for Blue Square Email Management */
 .bgOxfordBlue {
   background-color: #1a1a1a;
-  color: #ffffff;
+  color: #fff;
 }
 
 /* Card styling for consistent height */
@@ -23,28 +24,32 @@
 }
 
 /* Button styling to remove weird lining */
-.btn {
+:global(.btn) {
   border: none !important;
   outline: none !important;
   text-decoration: none !important;
 }
 
-.btn:focus {
+:global(.btn:focus) {
   box-shadow: none !important;
   outline: none !important;
 }
 
-.btn:active {
+:global(.btn:active) {
   transform: none !important;
 }
 
 /* Loading spinner animation */
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .faSpinner {
   animation: spin 1s linear infinite;
 }
-

@@ -2,12 +2,13 @@ import jwtDecode from 'jwt-decode';
 import axios from 'axios';
 import httpService from '../services/httpService';
 import config from '../config.json';
-import { ENDPOINTS } from '~/utils/URL';
+import { ENDPOINTS } from '../utils/URL';
 import { GET_ERRORS } from '../constants/errors';
 import {
   SET_CURRENT_USER,
   SET_HEADER_DATA,
   START_FORCE_LOGOUT,
+  STOP_FORCE_LOGOUT,
 } from '../constants/auth';
 
 const { tokenKey } = config;
@@ -22,6 +23,21 @@ export const setHeaderData = data => ({
   payload: data,
 });
 
+/**
+ * Stops any active force logout timer and clears related state
+ */
+export const stopForceLogout = () => (dispatch, getState) => {
+  const { auth } = getState();
+  if (auth?.timerId) {
+    try {
+      clearTimeout(auth.timerId);
+    } catch (e) {
+      // Timer already cleared or invalid
+    }
+  }
+  dispatch({ type: STOP_FORCE_LOGOUT });
+};
+
 export const loginUser = credentials => dispatch => {
   return httpService
     .post(ENDPOINTS.LOGIN, credentials)
@@ -33,6 +49,8 @@ export const loginUser = credentials => dispatch => {
       localStorage.setItem(tokenKey, res.data.token);
       httpService.setjwt(res.data.token);
       const decoded = jwtDecode(res.data.token);
+      // Ensure any existing timers from a previous session are cleared
+      dispatch(stopForceLogout());
       dispatch(setCurrentUser(decoded));
       return { success: true };
     })
@@ -97,7 +115,9 @@ export const getHeaderData = userId => {
   };
 };
 
-export const logoutUser = () => dispatch => {
+export const logoutUser = () => (dispatch) => {
+  // Clear any active force-logout timer before logging out
+  dispatch(stopForceLogout());
   localStorage.removeItem(tokenKey);
   httpService.setjwt(false);
   dispatch(setCurrentUser(null));
@@ -115,10 +135,10 @@ export const startForceLogout = (delayMs = 20000) => (dispatch, getState) => {
   const timerId = setTimeout(async () => {
     try {
       const { userProfile } = getState();
-      
+
       if (userProfile && userProfile._id) {
         const { firstName: name, lastName, personalLinks, adminLinks, _id } = userProfile;
-        
+
         await axios.put(ENDPOINTS.USER_PROFILE(_id), {
           firstName: name,
           lastName,
@@ -126,7 +146,7 @@ export const startForceLogout = (delayMs = 20000) => (dispatch, getState) => {
           adminLinks,
           isAcknowledged: true,
         });
-        
+
         // eslint-disable-next-line no-console
         console.log('Permission changes acknowledged during force logout');
       }
@@ -134,6 +154,9 @@ export const startForceLogout = (delayMs = 20000) => (dispatch, getState) => {
       // eslint-disable-next-line no-console
       console.error('Error acknowledging permissions during force logout:', error);
     } finally {
+      // Set flag to indicate user was force logged out due to permission changes
+      // This helps distinguish "force logged out" vs "first login after permission change"
+      sessionStorage.setItem('wasForceLoggedOut', 'true');
       dispatch(logoutUser());
     }
   }, delayMs);

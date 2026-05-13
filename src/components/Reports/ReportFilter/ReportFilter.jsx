@@ -1,7 +1,8 @@
+import PropTypes from 'prop-types';
 import { Component } from 'react';
-import ReportTableSearchPanel from '../ReportTableSearchPanel';
-import { boxStyle, boxStyleDark } from '~/styles';
 import { Button } from 'reactstrap';
+import { boxStyle, boxStyleDark } from '~/styles';
+import ReportTableSearchPanel from '../ReportTableSearchPanel';
 
 class ReportFilter extends Component {
   constructor(props) {
@@ -36,14 +37,14 @@ class ReportFilter extends Component {
   render() {
     const { darkMode } = this.props;
     return (
-      <div>
+       <div style={{ color: darkMode ? '#fff' : 'inherit' }}>
         <div>
-          <button type="button" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'inherit', textDecoration: 'none' }}>
+          <button type="button" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: '#007bff', textDecoration: 'none' }}>
             Select a Filter
           </button>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div>
+        <div style={{ color: darkMode ? '#fff' : 'inherit' }}>
           <input
             name="radio"
             type="radio"
@@ -102,5 +103,26 @@ class ReportFilter extends Component {
     );
   }
 }
+ReportFilter.propTypes = {
+  darkMode: PropTypes.bool,
+  filterStatus: PropTypes.string,
+  setFilterStatus: PropTypes.func,
+  onWildCardSearch: PropTypes.func,
+  wildCardSearchText: PropTypes.string,
+  onCreateNewTeamShow: PropTypes.func,
+  scrollToResults: PropTypes.func,
+  onSearchClick: PropTypes.func,
+};
+
+ReportFilter.defaultProps = {
+  darkMode: false,
+  filterStatus: 'all',
+  setFilterStatus: () => {},
+  onWildCardSearch: () => {},
+  wildCardSearchText: '',
+  onCreateNewTeamShow: () => {},
+  scrollToResults: () => {},
+  onSearchClick: () => {},
+};
 
 export default ReportFilter;

@@ -4,6 +4,7 @@ import { ENDPOINTS } from '~/utils/URL';
 
 import {
   RECEIVE_ALL_USER_TEAMS,
+  CLEAR_TEAM_MEMBERS,
   USER_TEAMS_UPDATE,
   UPDATE_TEAM,
   ADD_NEW_TEAM,
@@ -25,6 +26,10 @@ export const teamMembersFectchACtion = payload => ({
   type: RECEIVE_ALL_USER_TEAMS,
   payload,
 });
+
+export const clearTeamMembers = () => dispatch => {
+  dispatch({ type: CLEAR_TEAM_MEMBERS });
+};
 
 /**
  * Action for Updating an teams
@@ -122,7 +127,6 @@ export const getAllUserTeams = () => {
       .then(res => {
         dispatch(teamMembersFectchACtion(res.data));
         return res.data;
-        // console.log("getAllUserTeams: res:", res.data)
       })
       .catch(() => {
         dispatch(teamMembersFectchACtion(undefined));
@@ -178,7 +182,7 @@ export const deleteTeam = teamId => {
  * updating the team status
  */
 export const updateTeam = (teamName, teamId, isActive, teamCode) => {
-  const requestData = { teamName, isActive, teamCode };
+  const requestData = { teamName, isActive, teamCode: teamCode || '' };
   const url = ENDPOINTS.TEAM_DATA(teamId);
   return async dispatch => {
     try {
@@ -199,17 +203,15 @@ export const updateTeam = (teamName, teamId, isActive, teamCode) => {
  * fetching team members
  */
 export const getTeamMembers = teamId => {
-  const teamMembersPromise = axios.get(ENDPOINTS.TEAM_USERS(teamId));
   return async dispatch => {
     await dispatch(teamUsersFetchAction());
-    return teamMembersPromise
-      .then(res => {
-        dispatch(teamUsersFetchCompleteAction(res.data));
-        return res.data;
-      })
-      .catch(() => {
-        dispatch(teamUsersFetchErrorAction());
-      });
+    try {
+      const res = await axios.get(ENDPOINTS.TEAM_USERS(teamId));
+      dispatch(teamUsersFetchCompleteAction(res.data));
+      return res.data;
+    } catch {
+      dispatch(teamUsersFetchErrorAction());
+    }
   };
 };
 
@@ -219,24 +221,28 @@ export const getTeamMembers = teamId => {
  */
 export const deleteTeamMember = (teamId, userId) => {
   const requestData = { userId, operation: 'UnAssign' };
-  const teamMemberDeletePromise = axios.post(ENDPOINTS.TEAM_USERS(teamId), requestData);
   return async dispatch => {
-    teamMemberDeletePromise.then(() => {
-      dispatch(teamMemberDeleteAction(userId));
-    });
+    await axios.post(ENDPOINTS.TEAM_USERS(teamId), requestData);
+    dispatch(teamMemberDeleteAction(userId));
   };
 };
 
 /**
- * Adding an existing user to team
+ * add an existing team member
+ * @param {*} teamId  - the team to be deleted
+ * @param {*} teamId  - the team to be deleted
  */
 export const addTeamMember = (teamId, userId) => {
   const requestData = { userId, operation: 'Assign' };
-  const teamMemberAddPromise = axios.post(ENDPOINTS.TEAM_USERS(teamId), requestData);
   return async dispatch => {
-    teamMemberAddPromise.then(res => {
-      dispatch(teamMemberAddAction(res.data.newMember));
-    });
+    const res = await axios.post(ENDPOINTS.TEAM_USERS(teamId), requestData);
+    dispatch(
+      teamMemberAddAction({
+        ...res.data.newMember,
+        addDateTime: new Date().toISOString(), //newMember data doesn't have the date - required to update the Date Added column
+      }),
+    );
+    return res.data; // return so caller can await
   };
 };
 
@@ -245,14 +251,18 @@ export const updateTeamMemeberVisibility = (teamId, userId, visibility) => {
   const updateVisibilityPromise = axios.put(ENDPOINTS.TEAM, updateData);
 
   return async dispatch => {
-    updateVisibilityPromise
+    return updateVisibilityPromise
       .then(() => {
         dispatch(updateVisibilityAction(visibility, userId, teamId));
       })
       .catch(error => {
         if (error.response) {
           // The request was made and the server responded with a status code
-          toast.error('Error updating visibility:', error.response.data);
+          const msg =
+            error.response?.data?.message ||
+            error.response?.data?.error ||
+            (typeof error.response?.data === 'string' ? error.response.data : 'Unknown error');
+          toast.error(`Error updating visibility: ${msg}`);
         } else if (error.request) {
           // The request was made but no response was received
           toast.error('Error updating visibility: No response received');
@@ -280,10 +290,13 @@ export const fetchAllTeamCodeSucess = payload => ({
  * @returns
  */
 
-export const getAllTeamCode = () => {
+export const getAllTeamCode = (includePRTeams = false) => {
   return async dispatch => {
     try {
-      const res = await axios.get(ENDPOINTS.USER_ALL_TEAM_CODE);
+      const url = includePRTeams 
+        ? `${ENDPOINTS.USER_ALL_TEAM_CODE}?includePRTeams=true`
+        : ENDPOINTS.USER_ALL_TEAM_CODE;
+      const res = await axios.get(url);
       if (!res || !res.data) {
         throw new Error('Invalid response from server');
       }

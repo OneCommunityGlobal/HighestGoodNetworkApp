@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Alert, Form } from 'reactstrap';
 import Input from '../common/Input';
 import { boxStyle, boxStyleDark } from '../../styles';
-import '../Header/DarkMode.css';
+import '../Header/index.css';
 /**
  * Modal popup to show the reset password action
  */

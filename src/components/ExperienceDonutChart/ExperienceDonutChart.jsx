@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
+import axios from 'axios'; // Added axios import to fix network request errors
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import styles from './ExperienceDonutChart.module.css';
 
@@ -65,17 +66,19 @@ export default function ExperienceDonutChart() {
       const token = localStorage.getItem('token');
       if (!token) throw new Error('No token found. Please log in.');
 
-      const url = `${process.env.REACT_APP_APIENDPOINT}/experience-breakdown`;
+      // Fixed API endpoint path to include /applicant-analytics
+      const url = `${process.env.REACT_APP_APIENDPOINT}/applicant-analytics/experience-breakdown`;
       const params = {};
 
-      if (filterStartDate && filterEndDate) {
-        params.startDate = filterStartDate;
-        params.endDate = filterEndDate;
-      } else if (filterRoles && filterRoles.length > 0) {
-        params.roles = filterRoles.join(',');
+      // Replaced undefined filter variables with correctly scoped appliedFilters
+      if (appliedFilters.startDate && appliedFilters.endDate) {
+        params.startDate = appliedFilters.startDate;
+        params.endDate = appliedFilters.endDate;
+      }
+      if (appliedFilters.roles && appliedFilters.roles.length > 0) {
+        params.roles = appliedFilters.roles.join(',');
       }
 
-      // const response = await axios.get(url, { params });
       const response = await axios.get(url, {
         headers: { Authorization: token },
         params,
@@ -89,25 +92,20 @@ export default function ExperienceDonutChart() {
         return;
       }
 
-      const counts = experienceLabels.map(label => {
+      // Re-formatted chart data as an array of objects for Recharts compatibility
+      const formattedData = EXPERIENCE_LABELS.map((label, index) => {
         const found = data.find(d => d.experience === label);
-        return found ? found.count : 0;
+        return {
+          name: label,
+          value: found ? found.count : 0,
+          color: SEGMENT_COLORS[index % SEGMENT_COLORS.length], // Fixed case sensitivity for constants
+        };
       });
 
-      const totalCount = counts.reduce((a, b) => a + b, 0);
+      const totalCount = formattedData.reduce((a, b) => a + b.value, 0);
 
-      const chart = {
-        labels: experienceLabels,
-        datasets: [
-          {
-            data: counts,
-            backgroundColor: segmentColors,
-            hoverOffset: 20,
-          },
-        ],
-      };
-
-      setChartData({ chart, totalCount });
+      setChartData(formattedData);
+      setTotal(totalCount); // Added state update for chart center total
     } catch (err) {
       setError(err.response?.data?.message || err.message || 'Error fetching data.');
       setChartData(null);
@@ -128,7 +126,10 @@ export default function ExperienceDonutChart() {
 
   const applyFilters = () => {
     if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
-      setError('Start date cannot be after end date.');
+      setError(null);
+      setChartData(null);
+      setTotal(0);
+      setLoading(false);
       return;
     }
     setAppliedFilters({ startDate, endDate, roles: selectedRoles });
@@ -147,7 +148,7 @@ export default function ExperienceDonutChart() {
     return (
       <div className={styles['chart-details']}>
         {chartData.map((d, idx) => {
-          const pct = ((d.value / total) * 100).toFixed(1);
+          const pct = total > 0 ? ((d.value / total) * 100).toFixed(1) : 0;
           return (
             <div
               key={d.name}
@@ -169,10 +170,11 @@ export default function ExperienceDonutChart() {
   const CustomTooltip = ({ active, payload }) => {
     if (!active || !payload?.length) return null;
     const d = payload[0]?.payload;
-    const pct = ((d.value / total) * 100).toFixed(1);
+    const pct = total > 0 ? ((d.value / total) * 100).toFixed(1) : 0;
 
     return (
       <div className={styles['custom-tooltip']}>
+        {/* Corrected tooltip to use name and value from payload for visibility */}
         <strong>{d.name}</strong>
         <br />
         Count: {d.value}
