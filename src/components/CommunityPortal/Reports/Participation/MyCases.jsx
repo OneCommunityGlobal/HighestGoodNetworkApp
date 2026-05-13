@@ -12,7 +12,47 @@ function MyCases() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const isExporting =
-    typeof document !== 'undefined' && document.documentElement?.dataset?.exporting === 'true'; // Sonar: prefer .
+    typeof document !== 'undefined' && document.documentElement?.dataset?.exporting === 'true';
+
+  const filterEvents = events => {
+    const now = new Date();
+
+    const nowTime = now.getTime();
+
+    const upcomingEvents = events.filter(event => {
+      const eventTime = new Date(event.eventDate).getTime();
+      return eventTime >= nowTime;
+    });
+
+    if (filter === 'today') {
+      return upcomingEvents.filter(event => {
+        const eventDate = new Date(event.eventDate);
+        return (
+          eventDate.getDate() === now.getDate() &&
+          eventDate.getMonth() === now.getMonth() &&
+          eventDate.getFullYear() === now.getFullYear()
+        );
+      });
+    }
+    if (filter === 'thisWeek') {
+      const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
+      const endOfWeek = new Date(startOfWeek);
+      endOfWeek.setDate(endOfWeek.getDate() + 6);
+      return upcomingEvents.filter(event => {
+        const eventDate = new Date(event.eventTime);
+        return eventDate >= startOfWeek && eventDate <= endOfWeek;
+      });
+    }
+    if (filter === 'thisMonth') {
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      return upcomingEvents.filter(event => {
+        const eventDate = new Date(event.eventTime);
+        return eventDate >= startOfMonth && eventDate <= endOfMonth;
+      });
+    }
+    return upcomingEvents;
+  };
 
   const darkMode = useSelector(state => state.theme.darkMode);
 
