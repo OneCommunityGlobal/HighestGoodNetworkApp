@@ -1,13 +1,21 @@
 import PropTypes from 'prop-types';
 import { Doughnut } from 'react-chartjs-2';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { Chart, ArcElement } from 'chart.js';
+import externalLabelGuidesPlugin from '../VolunteerStatus/externalLabelGuidesPlugin';
 import styles from './DonutChart.module.css';
 
 Chart.register(ArcElement);
 
 function DonutChart(props) {
   const { title, totalCount, percentageChange, data, colors, comparisonType, darkMode } = props;
+
+  const getPercentage = value => {
+    if (totalCount === 0 || isNaN(totalCount) || !isFinite(totalCount)) {
+      return 0;
+    }
+
+    return ((value / totalCount) * 100).toFixed(0);
+  };
 
   const chartData = {
     labels: data.map(item => item.label),
@@ -23,17 +31,7 @@ function DonutChart(props) {
   const options = {
     plugins: {
       datalabels: {
-        color: '#000000',
-        font: {
-          size: 16,
-        },
-        formatter: value => {
-          if (totalCount === 0 || isNaN(totalCount) || !isFinite(totalCount)) {
-            return `${value}`;
-          }
-          const percentage = ((value / totalCount) * 100).toFixed(0);
-          return `${value}\n(${percentage}%)`;
-        },
+        display: false,
       },
       legend: {
         display: false,
@@ -41,9 +39,20 @@ function DonutChart(props) {
       tooltip: {
         enabled: false,
       },
+      externalLabelGuides: {
+        offset: 22,
+        horizontalSpread: 28,
+        horizontalSpreadMap: { 0: 28, 1: 36, 2: 44, 3: 36, 4: 28 },
+        verticalOffsetMap: { 0: -48, 1: -18, 2: 12, 3: 42, 4: 68 },
+        total: totalCount,
+        formatter: ({ value, percentage }) => [`${value}`, `(${percentage}%)`],
+      },
     },
     maintainAspectRatio: false,
     cutout: '55%',
+    layout: {
+      padding: 44,
+    },
   };
 
   const percentageChangeColor = percentageChange >= 0 ? 'var(--success)' : 'var(--danger)';
@@ -52,7 +61,7 @@ function DonutChart(props) {
     <div className={styles.donutContainer}>
       <div className={styles.donutScrollable}>
         <div className={styles.donutChart}>
-          <Doughnut data={chartData} options={options} plugins={[ChartDataLabels]} />
+          <Doughnut data={chartData} options={options} plugins={[externalLabelGuidesPlugin]} />
           <div className={styles.donutCenter}>
             <h5 className="donut-heading" style={{ color: darkMode ? 'white' : 'black' }}>
               {title}
@@ -77,7 +86,10 @@ function DonutChart(props) {
                 className={styles.donutColor}
                 style={{ backgroundColor: chartData.datasets[0].backgroundColor[index] }}
               />
-              {item.label}
+              <span>{item.label}</span>
+              <span className={styles.donutLabelValue}>
+                {item.value} ({getPercentage(item.value)}%)
+              </span>
             </div>
           ))}
         </div>
