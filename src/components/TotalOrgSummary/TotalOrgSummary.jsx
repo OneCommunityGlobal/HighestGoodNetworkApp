@@ -494,6 +494,7 @@ function TotalOrgSummary(props) {
         if (cacheRef.current[cacheKey]) {
           if (!cancelled) {
             setVolunteerStats(cacheRef.current[cacheKey]);
+            console.log('Loaded volunteer stats from cache:', cacheRef.current[cacheKey]);
             setIsLoading(false);
           }
           return;
@@ -516,6 +517,7 @@ function TotalOrgSummary(props) {
           };
           cacheRef.current[cacheKey] = merged;
           setVolunteerStats(merged);
+          console.log('Fetched volunteer stats: ', merged);
           setIsLoading(false);
         }
       } catch (catchFetchError) {
