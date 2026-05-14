@@ -725,10 +725,6 @@
   color: #fff;
 }
 
-.eventModalDark .eventDescription label {
-  color: #cbd5e0;
-}
-
 .eventDescription p {
   margin: 0;
   font-size: 1rem;
@@ -739,10 +735,6 @@
 .activityNoEventsMessage p {
   margin: 0;
   font-size: 1rem;
-}
-
-.eventModalDark .eventDescription p {
-  color: #f7fafc;
 }
 
 .modalActions {
@@ -794,7 +786,6 @@
 
 .btnDisabled{
   background-color: #c0c0c0;
-  color: white;
   cursor: not-allowed;
 }
 
@@ -1000,10 +991,6 @@
 .overflowPopupDark h4 {
   color: #e2e8f0;
   border-bottom-color: #4a5568;
-}
-
-.overflowPopup .eventItem:hover {
-  transform: translateY(-1px);
 }
 
 .detailLabel {
