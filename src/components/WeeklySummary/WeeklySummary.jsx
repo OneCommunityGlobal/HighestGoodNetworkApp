@@ -50,7 +50,50 @@ import {
   updateWeeklySummaries,
 } from '../../actions/weeklySummaries';
 import CurrentPromptModal from './CurrentPromptModal';
+import { useServerTime } from '~/context/ServerTimeContext';
 // import WriteItForMeModal from './WriteForMeModal';
+
+const SERVER_TIMEZONE = 'America/Los_Angeles';
+
+const buildDueDateState = serverDateISO => {
+  const serverMoment = serverDateISO
+    ? moment(serverDateISO).tz(SERVER_TIMEZONE)
+    : moment().tz(SERVER_TIMEZONE);
+
+  const dueDate = serverMoment
+    .clone()
+    .endOf('week')
+    .toISOString();
+  const dueDateLastWeek = serverMoment
+    .clone()
+    .subtract(1, 'week')
+    .endOf('week')
+    .toISOString();
+  const dueDateBeforeLast = serverMoment
+    .clone()
+    .subtract(2, 'week')
+    .endOf('week')
+    .toISOString();
+  const dueDateThreeWeeksAgo = serverMoment
+    .clone()
+    .subtract(3, 'week')
+    .endOf('week')
+    .toISOString();
+
+  return {
+    dueDate,
+    dueDateLastWeek,
+    dueDateBeforeLast,
+    dueDateThreeWeeksAgo,
+    uploadDatesElements: {
+      uploadDate: dueDate,
+      uploadDateLastWeek: dueDateLastWeek,
+      uploadDateBeforeLast: dueDateBeforeLast,
+      uploadDateThreeWeeksAgo: dueDateThreeWeeksAgo,
+    },
+    submittedDate: serverMoment.toISOString(),
+  };
+};
 
 // Images are not allowed in weekly summary
 const customImageUploadHandler = () =>
@@ -61,68 +104,44 @@ const customImageUploadHandler = () =>
 
 // Need this export here in order for automated testing to work.
 export class WeeklySummary extends Component {
-  // eslint-disable-next-line react/state-in-constructor
-  state = {
-    summariesCountShowing: 0,
-    originSummaries: {
-      summary: '',
-      summaryLastWeek: '',
-      summaryBeforeLast: '',
-      summaryThreeWeeksAgo: '',
-    },
-    formElements: {
-      summary: '',
-      wordCount: 0,
-      summaryLastWeek: '',
-      summaryBeforeLast: '',
-      summaryThreeWeeksAgo: '',
-      mediaUrl: '',
-      weeklySummariesCount: 0,
-      mediaConfirm: false,
-      editorConfirm: false,
-      proofreadConfirm: false,
-    },
-    dueDate: moment()
-      .tz('America/Los_Angeles')
-      .endOf('week')
-      .toISOString(),
-    dueDateLastWeek: moment()
-      .tz('America/Los_Angeles')
-      .endOf('week')
-      .subtract(1, 'week')
-      .toISOString(),
-    dueDateBeforeLast: moment()
-      .tz('America/Los_Angeles')
-      .endOf('week')
-      .subtract(2, 'week')
-      .toISOString(),
-    dueDateThreeWeeksAgo: moment()
-      .tz('America/Los_Angeles')
-      .endOf('week')
-      .subtract(3, 'week')
-      .toISOString(),
-    uploadDatesElements: {
-      uploadDate: this.dueDate,
-      uploadDateLastWeek: this.dueDateLastWeek,
-      uploadDateBeforeLast: this.dueDateBeforeLast,
-      uploadDateThreeWeeksAgo: this.dueDateThreeWeeksAgo,
-    },
-    submittedDate: moment()
-      .tz('America/Los_Angeles')
-      .toISOString(),
-    submittedCountInFourWeeks: 0,
-    activeTab: '1',
-    errors: {},
-    fetchError: null,
-    loading: true,
-    editPopup: false,
-    mediaChangeConfirm: false,
-    mediaFirstChange: false,
-    moveSelect: '-1',
-    movePopup: false,
-    moveConfirm: false,
-    isSavingMove: false,
-  };
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      summariesCountShowing: 0,
+      originSummaries: {
+        summary: '',
+        summaryLastWeek: '',
+        summaryBeforeLast: '',
+        summaryThreeWeeksAgo: '',
+      },
+      formElements: {
+        summary: '',
+        wordCount: 0,
+        summaryLastWeek: '',
+        summaryBeforeLast: '',
+        summaryThreeWeeksAgo: '',
+        mediaUrl: '',
+        weeklySummariesCount: 0,
+        mediaConfirm: false,
+        editorConfirm: false,
+        proofreadConfirm: false,
+      },
+      ...buildDueDateState(props.serverDateISO),
+      submittedCountInFourWeeks: 0,
+      activeTab: '1',
+      errors: {},
+      fetchError: null,
+      loading: true,
+      editPopup: false,
+      mediaChangeConfirm: false,
+      mediaFirstChange: false,
+      moveSelect: '-1',
+      movePopup: false,
+      moveConfirm: false,
+      isSavingMove: false,
+    };
+  }
 
   // Minimum word count of 50 (handle words that also use non-ASCII characters by counting whitespace rather than word character sequences).
   regexPattern = /^\s*(?:\S+(?:\s+|$)){50,}$/;
@@ -141,7 +160,7 @@ export class WeeklySummary extends Component {
       .regex(this.regexPattern)
       .label('Minimum 50 words'),
 
-    // allow 0 so your default state (0) doesn’t error
+    // allow 0 so your default state (0) doesn't error
     wordCount: Joi.number()
       .min(50)
       .allow(0)
@@ -202,14 +221,14 @@ export class WeeklySummary extends Component {
 
     weeklySummariesCount: Joi.any(),
 
-    // these three “invalid(false)” rules will fail if false
+    // these three invalid(false) rules will fail if false
     mediaConfirm: Joi.boolean().invalid(false),
     editorConfirm: Joi.boolean().invalid(false),
     proofreadConfirm: Joi.boolean().invalid(false),
   });
 
   async componentDidMount() {
-    const { dueDate: _dueDate } = this.state;
+    const { dueDate: fallbackDueDate } = buildDueDateState(this.props.serverDateISO);
     // eslint-disable-next-line no-shadow
     const {
       getWeeklySummaries,
@@ -248,8 +267,7 @@ export class WeeklySummary extends Component {
     }
 
     const dueDateThisWeek = weeklySummaries && weeklySummaries[0] && weeklySummaries[0].dueDate;
-    // Make sure server dueDate is not before the localtime dueDate.
-    const dueDate = moment(dueDateThisWeek).isBefore(_dueDate) ? _dueDate : dueDateThisWeek;
+    const dueDate = dueDateThisWeek || fallbackDueDate;
 
     // Calculate due dates for the last three weeks by subtracting 1, 2, and 3 weeks from the current due date
     // and then setting the due date to the end of the ISO week (Saturday) for each respective week
@@ -321,12 +339,15 @@ export class WeeklySummary extends Component {
   }
 
   doesDateBelongToWeek = (dueDate, weekIndex) => {
-    const pstStartOfWeek = moment()
-      .tz('America/Los_Angeles')
+    const referenceMoment = this.props.serverDateISO
+      ? moment(this.props.serverDateISO).tz(SERVER_TIMEZONE)
+      : moment().tz(SERVER_TIMEZONE);
+    const pstStartOfWeek = referenceMoment
+      .clone()
       .startOf('week')
       .subtract(weekIndex, 'week');
-    const pstEndOfWeek = moment()
-      .tz('America/Los_Angeles')
+    const pstEndOfWeek = referenceMoment
+      .clone()
       .endOf('week')
       .subtract(weekIndex, 'week');
     const fromDate = moment(pstStartOfWeek).toDate();
@@ -361,8 +382,7 @@ export class WeeklySummary extends Component {
   handleMove = () => {
     const { isNotAllowedToEdit } = this.props;
     if (isNotAllowedToEdit) {
-      // eslint-disable-next-line no-alert
-      alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
+      toast.warn(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
       return;
     }
     const { moveSelect, formElements, activeTab, movePopup } = this.state;
@@ -428,7 +448,7 @@ export class WeeklySummary extends Component {
       } else if (key === 'proofreadConfirm') {
         customMessage = 'Please confirm that you have proofread your summary.';
       } else {
-        // leave Joi’s default message for everything else
+        // leave Joi's default message for everything else
         customMessage = message;
       }
       return { ...errs, [key]: customMessage };
@@ -445,7 +465,7 @@ export class WeeklySummary extends Component {
     const rule = this.fieldSchemas[name];
     if (!rule) return null;
 
-    // build a one‐field schema and validate
+    // build a one-field schema and validate
     const singleSchema = Joi.object({ [name]: rule });
     const { error } = singleSchema.validate({ [name]: attr });
 
@@ -462,7 +482,7 @@ export class WeeklySummary extends Component {
       return 'Please confirm that you have proofread your summary.';
     }
 
-    // otherwise, return Joi’s default
+    // otherwise, return Joi's default
     return error.details[0].message;
   };
 
@@ -625,7 +645,7 @@ export class WeeklySummary extends Component {
   // Handler for success scenario after save
   handleSaveSuccess = async toastIdOnSave => {
     const { displayUserId, currentUser } = this.props;
-    toast.success('✔ The data was saved successfully!', {
+    toast.success('The data was saved successfully!', {
       toastId: toastIdOnSave,
       pauseOnFocusLoss: false,
       autoClose: 3000,
@@ -636,7 +656,7 @@ export class WeeklySummary extends Component {
 
   // Handler for error scenario after save
   handleSaveError = toastIdOnSave => {
-    toast.error('✘ The data could not be saved!', {
+    toast.error('The data could not be saved!', {
       toastId: toastIdOnSave,
       pauseOnFocusLoss: false,
       autoClose: 3000,
@@ -672,11 +692,9 @@ export class WeeklySummary extends Component {
     const { isNotAllowedToEdit, displayUserEmail } = this.props;
     if (isNotAllowedToEdit) {
       if (displayUserEmail === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
-        // eslint-disable-next-line no-alert, prettier/prettier
-        alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
+        toast.warn(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
       } else {
-        // eslint-disable-next-line no-alert, prettier/prettier
-        alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
+        toast.warn(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
       }
       return;
     }
@@ -699,11 +717,9 @@ export class WeeklySummary extends Component {
     const { isNotAllowedToEdit, displayUserEmail } = this.props;
     if (isNotAllowedToEdit) {
       if (displayUserEmail === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
-        // eslint-disable-next-line no-alert, prettier/prettier
-        alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
+        toast.warn(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
       } else {
-        // eslint-disable-next-line no-alert, prettier/prettier
-        alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
+        toast.warn(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
       }
       return;
     }
@@ -762,7 +778,7 @@ export class WeeklySummary extends Component {
     const TINY_MCE_INIT_OPTIONS = {
       license_key: 'gpl',
       menubar: false,
-      placeholder: `Did you: Write it in 3rd person with a minimum of 50-words? Remember to run it through ChatGPT or other AI editor using the “Current AI Editing Prompt” from above? Remember to read and do a final edit before hitting Save?`,
+      placeholder: `Did you: Write it in 3rd person with a minimum of 50 words? Remember to run it through ChatGPT or another AI editor using the "Current AI Editing Prompt" from above? Remember to read and do a final edit before hitting Save?`,
       plugins: 'advlist autolink autoresize lists link charmap table help wordcount',
       toolbar:
         'bold italic underline link removeformat | bullist numlist outdent indent | styleselect fontsizeselect | table| strikethrough forecolor backcolor | subscript superscript charmap | help',
@@ -1043,7 +1059,7 @@ export class WeeklySummary extends Component {
                         style={boxStyling}
                         disabled={this.state.isSavingMove || this.state.moveSelect === '-1'}
                       >
-                        {this.state.isSavingMove ? 'Saving…' : 'Confirm and Save'}
+                        {this.state.isSavingMove ? 'Saving...' : 'Confirm and Save'}
                       </Button>
                       <Button
                         onClick={this.toggleMovePopup}
@@ -1181,6 +1197,7 @@ WeeklySummary.propTypes = {
   summaries: PropTypes.object.isRequired,
   updateWeeklySummaries: PropTypes.func.isRequired,
   initialActiveTab: PropTypes.string,
+  serverDateISO: PropTypes.string,
 };
 
 const mapStateToProps = ({ auth, weeklySummaries }) => ({
@@ -1199,4 +1216,15 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(WeeklySummary);
+const WeeklySummaryWithServerTime = props => {
+  const { getServerDateISO } = useServerTime();
+
+  return <WeeklySummary {...props} serverDateISO={getServerDateISO()} />;
+};
+
+WeeklySummaryWithServerTime.propTypes = {
+  // eslint-disable-next-line react/forbid-prop-types
+  currentUser: PropTypes.object,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(WeeklySummaryWithServerTime);

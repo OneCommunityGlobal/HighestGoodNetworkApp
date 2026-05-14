@@ -29,7 +29,7 @@ function AssignBadgePopup(props) {
   // Update: Added toast message effect for success and error. Added restriction: Jae's badges only editable by Jae or Owner
   const assignBadges = async () => {
     if (props.isRecordBelongsToJaeAndUneditable) {
-      alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
+      toast.warn(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
       return;
     }
     try {
@@ -43,8 +43,8 @@ function AssignBadgePopup(props) {
       toast.success('Badge update successfully');
       // 🔹 Clear selected badges in Redux after a successful save
       props.clearNameAndSelected();
-    } catch (e) {
-      toast.error('Badge update failed');
+    } catch (error) {
+      toast.error(error?.response?.data?.message || 'Badge update failed');
     }
     setConfirmButtonDisable(false);
     props.handleSubmit();
@@ -60,7 +60,10 @@ function AssignBadgePopup(props) {
       const response = await axios.get(ENDPOINTS.BADGE());
       setBadgeList(response.data);
       setisLoadingBadge(false);
-    } catch (error) {}
+    } catch (error) {
+      setisLoadingBadge(false);
+      toast.error(error?.response?.data?.message || 'Unable to load badges right now.');
+    }
   };
 
   const filterBadges = (allBadges = []) => {

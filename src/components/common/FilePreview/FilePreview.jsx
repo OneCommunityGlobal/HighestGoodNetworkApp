@@ -9,7 +9,6 @@ const FilePreview = ({ file, index, darkMode, onRemove }) => {
 
   const handleImageError = useCallback(
     e => {
-      console.error('Failed to load preview for:', file?.name);
       e.target.style.display = 'none';
       const fallback = e.target.parentElement.querySelector('.preview-fallback');
       if (fallback) {

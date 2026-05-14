@@ -27,8 +27,11 @@ export default function SupportLogin() {
 
       history.push('/support/dashboard');
     } catch (err) {
-      console.error(err);
-      setError('Login failed. Please check your credentials and try again.');
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        setError('Login failed. Please check your credentials and try again.');
+      } else {
+        setError('Unable to reach the support portal right now. Please try again later.');
+      }
     } finally {
       setIsSubmitting(false);
     }
