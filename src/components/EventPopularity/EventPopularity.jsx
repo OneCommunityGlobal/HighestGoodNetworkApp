@@ -61,13 +61,55 @@ const eventTypeData = [
 ];
 
 const timeData = [
-  { time: '9:00 AM', registered: 8, attended: 12, timeSlot: 'morning', hour: 9 },
-  { time: '11:00 AM', registered: 15, attended: 18, timeSlot: 'morning', hour: 11 },
-  { time: '1:00 PM', registered: 20, attended: 25, timeSlot: 'afternoon', hour: 1 },
-  { time: '3:00 PM', registered: 25, attended: 30, timeSlot: 'afternoon', hour: 3 },
-  { time: '5:00 PM', registered: 18, attended: 20, timeSlot: 'evening', hour: 5 },
-  { time: '7:00 PM', registered: 10, attended: 15, timeSlot: 'evening', hour: 7 },
-  { time: '9:00 PM', registered: 5, attended: 8, timeSlot: 'night', hour: 9 },
+  {
+    time: '9:00 AM',
+    date: '2026-05-01',
+    registered: 8,
+    attended: 12,
+    timeSlot: 'morning',
+    hour: 9,
+  },
+  {
+    time: '11:00 AM',
+    date: '2026-05-03',
+    registered: 15,
+    attended: 18,
+    timeSlot: 'morning',
+    hour: 11,
+  },
+  {
+    time: '1:00 PM',
+    date: '2026-05-05',
+    registered: 20,
+    attended: 25,
+    timeSlot: 'afternoon',
+    hour: 1,
+  },
+  {
+    time: '3:00 PM',
+    date: '2026-05-06',
+    registered: 25,
+    attended: 30,
+    timeSlot: 'afternoon',
+    hour: 3,
+  },
+  {
+    time: '5:00 PM',
+    date: '2026-05-07',
+    registered: 18,
+    attended: 20,
+    timeSlot: 'evening',
+    hour: 5,
+  },
+  {
+    time: '7:00 PM',
+    date: '2026-05-08',
+    registered: 10,
+    attended: 15,
+    timeSlot: 'evening',
+    hour: 7,
+  },
+  { time: '9:00 PM', date: '2026-05-08', registered: 5, attended: 8, timeSlot: 'night', hour: 9 },
 ];
 
 const participationCards = [
@@ -112,6 +154,8 @@ const allEventTypes = eventTypeData.map(e => e.name);
 const timeOfDayOptions = ['morning', 'afternoon', 'evening', 'night'];
 
 export default function EventDashboard() {
+  const isDark =
+    typeof document !== 'undefined' && document.documentElement.classList.contains('dark-mode');
   const today = new Date().toISOString().split('T')[0];
   // Filter states
   const [dateRange, setDateRange] = useState({ start: '', end: '' });
@@ -177,11 +221,22 @@ export default function EventDashboard() {
   const filteredTimeData = useMemo(() => {
     let filtered = [...timeData];
 
+    // Time of day filter
     if (selectedTimeOfDay.length > 0) {
       filtered = filtered.filter(item => selectedTimeOfDay.includes(item.timeSlot));
     }
+
+    // 🔥 ADD DATE FILTER (this is what's missing)
+    if (dateRange.start) {
+      filtered = filtered.filter(item => item.date >= dateRange.start);
+    }
+
+    if (dateRange.end) {
+      filtered = filtered.filter(item => item.date <= dateRange.end);
+    }
+
     return filtered;
-  }, [selectedTimeOfDay]);
+  }, [selectedTimeOfDay, dateRange]);
 
   // Calculate stats from filtered event type data
   const stats = useMemo(() => {
@@ -498,20 +553,19 @@ export default function EventDashboard() {
                       fill: 'rgba(74, 144, 226, 0.12)',
                     }}
                     contentStyle={{
-                      background: 'rgba(17, 24, 39, 0.96)',
-                      backdropFilter: 'blur(6px)',
-                      color: '#ffffff',
-                      border: '1px solid rgba(74, 144, 226, 0.5)',
+                      background: 'var(--ep-card-bg)',
+                      color: 'var(--ep-text-color)',
+                      border: '1px solid var(--ep-border-color)',
                       borderRadius: '12px',
-                      boxShadow: '0 10px 30px rgba(0,0,0,0.45)',
+                      boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
                       padding: '12px 14px',
                     }}
                     labelStyle={{
-                      color: '#ffffff',
+                      color: 'var(--ep-text-color)',
                       fontWeight: 600,
                     }}
                     itemStyle={{
-                      color: '#dbeafe',
+                      color: 'var(--ep-text-muted)',
                     }}
                     content={({ active, payload }) => {
                       if (active && payload && payload.length > 0) {
@@ -531,7 +585,6 @@ export default function EventDashboard() {
                           </div>
                         );
                       }
-
                       return null;
                     }}
                   />
@@ -540,14 +593,19 @@ export default function EventDashboard() {
                     dataKey="registered"
                     name="Registered Users"
                     fill="var(--ep-primary)"
-                    onClick={e => handleBarClick(e)}
+                    activeBar={{
+                      fill: isDark ? 'rgba(74, 144, 226, 0.18)' : 'rgba(74, 144, 226, 0.08)',
+                    }}
                     style={{ cursor: 'pointer' }}
                   />
+
                   <Bar
                     dataKey="attended"
                     name="Attended Users"
                     fill="var(--ep-primary-2)"
-                    onClick={e => handleBarClick(e)}
+                    activeBar={{
+                      fill: isDark ? 'rgba(130, 183, 255, 0.18)' : 'rgba(130, 183, 255, 0.08)',
+                    }}
                     style={{ cursor: 'pointer' }}
                   />
                 </BarChart>

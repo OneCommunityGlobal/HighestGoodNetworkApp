@@ -1,29 +1,45 @@
 :root {
   --ep-primary: #4a90e2;
   --ep-primary-2: #82b7ff;
+
   --ep-secondary: #f5f5f5;
+  --ep-background: #f9f9f9;
+
   --ep-text-color: #333;
   --ep-text-muted: #666;
   --ep-text-light: #999;
+
   --ep-border-color: #ddd;
+
   --ep-card-bg: #fff;
+
   --ep-grid-stroke: #e0e0e0;
   --ep-chart-tick: #999;
+
   --ep-success: #27ae60;
   --ep-warning: #e74c3c;
-  --ep-background: #f9f9f9;
 }
 
-.dark {
-  --ep-text-color: #e5e7eb;
-  --ep-muted-text: #b5bac5;
-  --ep-card-bg: #0f1724;
-  --ep-card-alt-bg: #111827;
-  --ep-primary: #4A90E2;
-  --ep-primary-2: #82B7FF;
-  --ep-card-shadow: none;
-  --ep-grid-stroke: #2f4157;
-  --ep-chart-tick: #ffffff;
+:global(.dark-mode) {
+  --ep-primary: #4a90e2;
+  --ep-primary-2: #82b7ff;
+
+  --ep-secondary: #1f2937;
+  --ep-background: #111827;
+
+  --ep-text-color: #f3f4f6;
+  --ep-text-muted: #cbd5e1;
+  --ep-text-light: #94a3b8;
+
+  --ep-border-color: #374151;
+
+  --ep-card-bg: #0f172a;
+
+  --ep-grid-stroke: #334155;
+  --ep-chart-tick: #e5e7eb;
+
+  --ep-success: #4ade80;
+  --ep-warning: #f87171;
 }
 
 .eventpopularity {
@@ -33,18 +49,7 @@
   font-family: Arial, sans-serif;
   background-color: var(--ep-background);
   min-height: 100vh;
-}
-
-.eventpopularity.dark {
-  --ep-text-color: #e0e0e0;
-  --ep-text-muted: #b0b0b0;
-  --ep-text-light: #888;
-  --ep-card-bg: #2a2a2a;
-  --ep-secondary: #3a3a3a;
-  --ep-border-color: #444;
-  --ep-grid-stroke: #444;
-  --ep-chart-tick: #888;
-  --ep-background: #1a1a1a;
+  color: var(--ep-text-color);
 }
 
 /* Header */
@@ -69,9 +74,10 @@
 .epFilterPanel {
   background: var(--ep-card-bg);
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
   padding: 20px;
   margin-bottom: 20px;
+  border: 1px solid var(--ep-border-color);
 }
 
 .epFilterHeader {
@@ -144,6 +150,36 @@
   box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.1);
 }
 
+/* Dark mode date input fixes */
+:global(.dark-mode) .epDateInput {
+  background-color: #111827;
+  color: #f3f4f6;
+  border-color: #374151;
+}
+
+:global(.dark-mode) .epDateInput::-webkit-calendar-picker-indicator {
+  filter: invert(1) brightness(1.8);
+  cursor: pointer;
+}
+
+:global(.dark-mode) .epDateInput::-webkit-datetime-edit {
+  color: #f3f4f6;
+}
+
+:global(.dark-mode) .epDateInput::-webkit-datetime-edit-fields-wrapper {
+  color: #f3f4f6;
+}
+
+:global(.dark-mode) .epDateInput::-webkit-datetime-edit-text {
+  color: #cbd5e1;
+}
+
+:global(.dark-mode) .epDateInput::-webkit-datetime-edit-month-field,
+:global(.dark-mode) .epDateInput::-webkit-datetime-edit-day-field,
+:global(.dark-mode) .epDateInput::-webkit-datetime-edit-year-field {
+  color: #f3f4f6;
+}
+
 .epDateSeparator {
   color: var(--ep-text-light);
   font-size: 12px;
@@ -168,8 +204,12 @@
 }
 
 .epFilterBtn:hover {
-  background-color: var(--ep-secondary);
   border-color: var(--ep-primary);
+  background-color: #eef6ff;
+}
+
+:global(.dark-mode) .epFilterBtn:hover {
+  background-color: rgba(74, 144, 226, 0.12);
 }
 
 .epFilterBtn:focus {
@@ -201,8 +241,9 @@
 .epChartCard {
   background: var(--ep-card-bg);
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
   padding: 20px;
+  border: 1px solid var(--ep-border-color);
 }
 
 .epCardTitle {
@@ -240,8 +281,16 @@
 }
 
 .epEventRow:hover {
-  background-color: var(--ep-secondary);
+  background-color: #f8fafc !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 }
+
+/* Dark mode override */
+:global(.dark-mode) .eventpopularity .epEventRow:hover {
+  background-color: rgba(74, 144, 226, 0.12) !important;
+  box-shadow: none;
+}
+
 
 .epEventRow:focus {
   outline: none;
@@ -249,9 +298,14 @@
 }
 
 .epEventRow.epEventRowActive {
-  background-color: rgba(74, 144, 226, 0.1);
+  background-color: #eef6ff;
   border-left-color: var(--ep-primary);
   padding-left: 5px;
+}
+
+/* Dark mode active row */
+:global(.dark-mode) .epEventRow.epEventRowActive {
+  background-color: rgba(74, 144, 226, 0.16);
 }
 
 .epEventName {
@@ -346,36 +400,42 @@
 }
 
 .epChartTooltip {
-  background: rgba(17, 24, 39, 0.96);
-  color: #fff;
+  background: var(--ep-card-bg);
+  color: var(--ep-text-color);
   padding: 10px 12px;
   border-radius: 10px;
   min-width: 140px;
+  border: 1px solid var(--ep-border-color);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
 }
 
 .epTooltipTime {
   font-size: 14px;
   font-weight: 700;
   margin-bottom: 6px;
-  color: #fff;
+  color: var(--ep-text-color);
 }
 
 .epTooltipRegistered {
   font-size: 13px;
   margin-bottom: 4px;
-  color: #dbeafe;
+  color: var(--ep-text-muted);
 }
 
 .epTooltipAttended {
   font-size: 13px;
   margin-bottom: 6px;
-  color: #bfdbfe;
+  color: var(--ep-text-muted);
 }
 
 .epTooltipHint {
   font-size: 12px;
   opacity: 0.8;
-  color: #93c5fd;
+  color: var(--ep-text-light);
+}
+
+:global(.dark-mode) .recharts-legend-item-text {
+  color: #f3f4f6 !important;
 }
 
 /* Participation Cards */
@@ -395,8 +455,12 @@
 }
 
 .epParticipationCard:hover {
-  background-color: rgba(74, 144, 226, 0.05);
+  background-color: #f5f9ff;
   transform: scale(1.02);
+}
+
+:global(.dark-mode) .epParticipationCard:hover {
+  background-color: rgba(74, 144, 226, 0.16);
 }
 
 .epParticipationCard:focus {
@@ -451,8 +515,9 @@
   margin-top: 20px;
   background: var(--ep-card-bg);
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
   padding: 20px;
+  border: 1px solid var(--ep-border-color);
   animation: slideIn 0.3s ease;
 }
 
@@ -461,6 +526,7 @@
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -545,6 +611,10 @@
   color: var(--ep-success);
 }
 
+.epDetailDescription {
+  color: var(--ep-text-muted);
+}
+
 .epDetailActionBtn {
   padding: 10px 20px;
   background-color: var(--ep-primary);
@@ -565,6 +635,12 @@
 
 .epDetailActionBtn:active {
   transform: translateY(0);
+}
+
+.epEmptyState {
+  padding: 24px;
+  text-align: center;
+  color: var(--ep-text-muted);
 }
 
 /* Responsive Design */
@@ -657,4 +733,14 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+:global(.dark-mode) .recharts-tooltip-wrapper {
+  filter: none !important;
+}
+
+:global(.dark-mode) .recharts-default-tooltip {
+  background: rgba(17, 24, 39, 0.96) !important;
+  border: 1px solid rgba(74, 144, 226, 0.4) !important;
+  color: #fff !important;
 }
