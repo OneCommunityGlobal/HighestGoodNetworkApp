@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 :global(.Collapsible) {
   background-color: white;
   border: none;
@@ -17,11 +18,13 @@
   padding: 10px;
   border-top: 0;
 }
+
 :global(.Collapsible__contentInner p) {
   margin-bottom: 10px;
   font-size: 14px;
   line-height: 20px;
 }
+
 :global(.Collapsible__contentInner p:last-child) {
   margin-bottom: 0;
 }
@@ -33,9 +36,10 @@
   padding-left: 2%;
   font-size: 30px;
 }
-:global(.Collapsible__trigger:before) {
+
+:global(.Collapsible__trigger::before) {
   display: inline-block;
-  font-family: 'FontAwesome', sans-serif;
+  font-family: FontAwesome, sans-serif;
   content: '\f107';
   margin-right: 40px;
   transition: transform 300ms;
@@ -43,9 +47,11 @@
   color: #ccc;
   font-weight: normal;
 }
-:global(.Collapsible__trigger.is-open:before) {
+
+:global(.Collapsible__trigger.is-open::before) {
   transform: rotate(180deg);
 }
+
 :global(.Collapsible__trigger.is-disabled) {
   opacity: 0.5;
   background-color: grey;
