@@ -932,16 +932,6 @@
   letter-spacing: 0.5px;
 }
 
-.eventDescription label {
-  display: block;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #718096;
-  margin-bottom: 8px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
 .eventModalDark .detailItem label {
   color: #cbd5e0;
 }
@@ -954,14 +944,6 @@
 
 .eventModalDark .detailItem span {
   color: #fff;
-}
-
-.eventDescription {
-  margin-bottom: 24px;
-}
-
-.eventModalDark .eventDescription label {
-  color: #cbd5e0;
 }
 
 .eventDescription p {
@@ -1572,6 +1554,7 @@
   min-width: 0;        /* CRITICAL */
   overflow: hidden;
 }
+
 .eventIcon {
   font-size: 0.75rem;
   flex-shrink: 0;
