@@ -451,18 +451,10 @@ function ReviewButton({ user, task, updateTask }) {
   const buttonFormat = () => {
     if (user.personId === myUserId && reviewStatus === 'Unsubmitted') {
       return (
-        // <Button
-        //   className={style['reviewBtn']}
-        //   color="primary"
-        //   onClick={toggleModal}
-        //   style={darkMode ? boxStyleDark : boxStyle}
-        //   disabled={isSubmitting}
-        // >
-        //   Submit for Review
-        // </Button>
         <button
           className={`${style.reviewBtn} btn btn-primary`}
           onClick={toggleModal}
+          type="button"
           style={darkMode ? boxStyleDark : boxStyle}
           disabled={isSubmitting}
         >
