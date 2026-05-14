@@ -8,7 +8,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Modal, ModalBody, ModalFooter, ModalHeader, Progress, Table } from 'reactstrap';
 import CopyToClipboard from '~/components/common/Clipboard/CopyToClipboard';
 import UserStateDisplay from '../UserState/UserStateDisplay';
@@ -729,6 +729,23 @@ const TeamMemberTask = React.memo(
                                           )}
                                           className={styles['team-task-progress-bar']}
                                         />
+                                        {task.createdDatetime &&
+                                          (() => {
+                                            const days = Math.floor(
+                                              (Date.now() - new Date(task.createdDatetime)) /
+                                                (1000 * 60 * 60 * 24),
+                                            );
+                                            let ageClass = styles['task-age-badge'];
+                                            if (days <= 7)
+                                              ageClass += ` ${styles['task-age-badge-new']}`;
+                                            else if (days <= 30)
+                                              ageClass += ` ${styles['task-age-badge-recent']}`;
+                                            else if (days <= 90)
+                                              ageClass += ` ${styles['task-age-badge-old']}`;
+                                            else
+                                              ageClass += ` ${styles['task-age-badge-very-old']}`;
+                                            return <div className={ageClass}>{days} Days Old</div>;
+                                          })()}
                                       </div>
                                     </td>
                                   )}
