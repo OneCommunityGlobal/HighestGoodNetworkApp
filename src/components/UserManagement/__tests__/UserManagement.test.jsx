@@ -5,6 +5,15 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
 
+import { updateUserPauseStatus } from '../../../actions/userManagement';
+
+vi.mock('../../../actions/userManagement', async () => {
+  const actual = await vi.importActual('../../../actions/userManagement');
+  return {
+    ...actual,
+    updateUserPauseStatus: vi.fn(() => async () => undefined),
+  };
+});
 
 const createThunkStore = () => ({
   getState: () => ({
@@ -70,10 +79,10 @@ describe('UserManagement Component', () => {
     expect(screen.getByTestId('user-management-table')).toBeInTheDocument();
   });
 
-  it('calls activateUserAction when resuming user', () => {
+  it('calls updateUserPauseStatus when resuming user', () => {
     renderUserManagement(<UserManagement {...props} />);
     fireEvent.click(screen.getByTestId('pause-resume-button-0'));
-    expect(props.getAllUserProfile).toHaveBeenCalled();
+    expect(updateUserPauseStatus).toHaveBeenCalled();
   });
 
   it('handles final day action when clicked', () => {

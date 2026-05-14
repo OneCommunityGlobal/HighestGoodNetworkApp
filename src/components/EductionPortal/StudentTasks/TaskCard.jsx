@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import styles from './StudentTasks.module.css';
 import RubricModal from './RubricModal';
-import HoursLogPanel from './HoursLogPanel';
 
 const getStatusClass = (status, css) => {
   if (status === 'Incomplete') return css.incomplete;
@@ -14,9 +12,7 @@ const getStatusClass = (status, css) => {
 
 const TaskCard = ({ task, onOpenRubric }) => {
   const history = useHistory();
-  const darkMode = useSelector(state => state.theme?.darkMode ?? false);
   const [showRubric, setShowRubric] = useState(false);
-  const [showHoursPanel, setShowHoursPanel] = useState(false);
 
   const goToDetails = () => {
     history.push(`/educationportal/student/tasks/${task.id}`, { task });
@@ -26,11 +22,6 @@ const TaskCard = ({ task, onOpenRubric }) => {
     e.stopPropagation();
     setShowRubric(true);
     onOpenRubric?.();
-  };
-
-  const handleHoursClick = e => {
-    e.stopPropagation();
-    setShowHoursPanel(prev => !prev);
   };
 
   const statusClass = getStatusClass(task.status, styles);
@@ -71,20 +62,8 @@ const TaskCard = ({ task, onOpenRubric }) => {
         <button className={styles.rubricButton} type="button" onClick={handleRubricClick}>
           View Grading Rubric
         </button>
-        <button
-          className={styles.logHoursButton}
-          type="button"
-          onClick={handleHoursClick}
-          aria-label="Log hours for this task"
-          aria-expanded={showHoursPanel}
-        >
-          ⏱ Log Hours
-        </button>
       </div>
 
-      {showHoursPanel && (
-        <HoursLogPanel task={task} darkMode={darkMode} onClose={() => setShowHoursPanel(false)} />
-      )}
       {showRubric && <RubricModal task={task} onClose={() => setShowRubric(false)} />}
     </>
   );
@@ -92,27 +71,17 @@ const TaskCard = ({ task, onOpenRubric }) => {
 
 TaskCard.propTypes = {
   task: PropTypes.shape({
-    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    id: PropTypes.number.isRequired,
     title: PropTypes.string.isRequired,
     subject: PropTypes.string,
     colorLevel: PropTypes.string,
     activityGroup: PropTypes.string,
     strategy: PropTypes.string,
     description: PropTypes.string.isRequired,
-    status: PropTypes.oneOf([
-      'Incomplete',
-      'Submitted',
-      'Graded',
-      'assigned',
-      'in_progress',
-      'completed',
-      'graded',
-    ]).isRequired,
+    status: PropTypes.oneOf(['Incomplete', 'Submitted', 'Graded']).isRequired,
     progress: PropTypes.number.isRequired,
     dueDate: PropTypes.string.isRequired,
     rubric: PropTypes.arrayOf(PropTypes.string),
-    logged_hours: PropTypes.number,
-    suggested_total_hours: PropTypes.number,
   }).isRequired,
   onOpenRubric: PropTypes.func,
 };

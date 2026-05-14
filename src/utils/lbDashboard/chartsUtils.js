@@ -1,15 +1,5 @@
 import { CHART_COLORS, METRIC_LABELS, METRIC_CATEGORIES } from '../../constants/lbDashboard/chartsConstants';
 
-const CURRENCY_METRICS = new Set(['averageBid', 'finalPrice']);
-
-export function getMetricFormatter(metric) {
-  if (CURRENCY_METRICS.has(metric)) return v => `₹${Number(v).toLocaleString()}`;
-  if (metric === 'occupancyRate') return v => `${v}%`;
-  if (metric === 'averageDuration') return v => `${v} days`;
-  if (metric === 'averageRating') return v => Number(v).toFixed(1);
-  return v => v;
-}
-
 export function getItemColors(items) {
   const colorMap = {};
   items.forEach((item, idx) => {
@@ -19,7 +9,6 @@ export function getItemColors(items) {
 }
 
 export function createChartOptions(metric, darkMode) {
-  const fmt = getMetricFormatter(metric);
   return {
     responsive: true,
     maintainAspectRatio: false,
@@ -37,13 +26,13 @@ export function createChartOptions(metric, darkMode) {
         offset: 4,
         clip: false,
         display: 'auto',
-        formatter: fmt,
+        formatter: value => value,
       },
       tooltip: {
         enabled: true,
         callbacks: {
           label: function (context) {
-            return `${context.dataset.label}: ${fmt(context.parsed.y)}`;
+            return `${context.dataset.label}: ${context.parsed.y}`;
           },
         },
       },
@@ -77,11 +66,7 @@ export function createChartOptions(metric, darkMode) {
         grace: '12%',
         grid: { color: darkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)' },
         border: { color: darkMode ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)' },
-        ticks: {
-          font: { size: 12 },
-          color: darkMode ? '#fff' : '#222',
-          callback: fmt,
-        },
+        ticks: { font: { size: 12 }, color: darkMode ? '#fff' : '#222' },
       },
     },
   };
