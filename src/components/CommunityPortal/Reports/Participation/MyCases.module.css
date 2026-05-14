@@ -64,12 +64,6 @@
   margin: 0;
 }
 
-.headerActions {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
 
 @media (max-width: 1024px) {
   .headerActions {

@@ -44,24 +44,6 @@ function DropOffTracking() {
     }
   };
 
-  const parseRate = val => Number.parseFloat(val);
-
-  const sortedEvents = [...filteredEvents].sort((a, b) => {
-    if (!sortColumn) return 0;
-    let aVal = a[sortColumn];
-    let bVal = b[sortColumn];
-    if (sortColumn === 'noShowRate' || sortColumn === 'dropOffRate') {
-      aVal = parseRate(aVal);
-      bVal = parseRate(bVal);
-    } else {
-      aVal = aVal?.toLowerCase() ?? '';
-      bVal = bVal?.toLowerCase() ?? '';
-    }
-    if (aVal < bVal) return sortDirection === 'asc' ? -1 : 1;
-    if (aVal > bVal) return sortDirection === 'asc' ? 1 : -1;
-    return 0;
-  });
-
   const sortIndicator = column => {
     if (sortColumn !== column) return <ArrowUpDown size={14} />;
     return sortDirection === 'asc' ? <ArrowUp size={14} /> : <ArrowDown size={14} />;
