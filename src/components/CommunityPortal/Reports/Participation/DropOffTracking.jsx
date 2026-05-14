@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import styles from './Participation.module.css';
-import { ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 import mockEvents from './mockData';
 
 function DropOffTracking() {
@@ -11,8 +10,6 @@ function DropOffTracking() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeEvent, setActiveEvent] = useState(null);
   const [selectedUsers, setSelectedUsers] = useState([]);
-  const [sortColumn, setSortColumn] = useState(null);
-  const [sortDirection, setSortDirection] = useState('asc');
 
   const darkMode = useSelector(state => state.theme.darkMode);
 
@@ -63,38 +60,6 @@ function DropOffTracking() {
     setIsModalOpen(false);
     setActiveEvent(null);
     setSelectedUsers([]);
-  };
-
-  const handleSort = column => {
-    if (sortColumn === column) {
-      setSortDirection(prev => (prev === 'asc' ? 'desc' : 'asc'));
-    } else {
-      setSortColumn(column);
-      setSortDirection('asc');
-    }
-  };
-
-  const parseRate = val => Number.parseFloat(val);
-
-  const sortedEvents = [...filteredEvents].sort((a, b) => {
-    if (!sortColumn) return 0;
-    let aVal = a[sortColumn];
-    let bVal = b[sortColumn];
-    if (sortColumn === 'noShowRate' || sortColumn === 'dropOffRate') {
-      aVal = parseRate(aVal);
-      bVal = parseRate(bVal);
-    } else {
-      aVal = aVal?.toLowerCase() ?? '';
-      bVal = bVal?.toLowerCase() ?? '';
-    }
-    if (aVal < bVal) return sortDirection === 'asc' ? -1 : 1;
-    if (aVal > bVal) return sortDirection === 'asc' ? 1 : -1;
-    return 0;
-  });
-
-  const sortIndicator = column => {
-    if (sortColumn !== column) return <ArrowUpDown size={14} />;
-    return sortDirection === 'asc' ? <ArrowUp size={14} /> : <ArrowDown size={14} />;
   };
 
   return (
@@ -161,27 +126,42 @@ function DropOffTracking() {
         >
           <thead>
             <tr>
-              <th onClick={() => handleSort('eventName')} className={styles.sortableHeader}>
-                <span className={styles.sortableHeaderContent}>
-                  Event name {sortIndicator('eventName')}
+              <th>Event name</th>
+
+              <th>
+                No-show rate
+                <span
+                  className={styles.infoIcon}
+                  title="Percentage of registered participants who did not attend the event. Calculated per event based on total registrations."
+                >
+                  ℹ️
                 </span>
               </th>
-              <th onClick={() => handleSort('noShowRate')} className={styles.sortableHeader}>
-                <span className={styles.sortableHeaderContent}>
-                  No-show rate {sortIndicator('noShowRate')}
+
+              <th>
+                Drop-off rate
+                <span
+                  className={styles.infoIcon}
+                  title="Percentage of participants who joined the event but left before it was completed. Calculated per event based on total registrations."
+                >
+                  ℹ️
                 </span>
               </th>
-              <th onClick={() => handleSort('dropOffRate')} className={styles.sortableHeader}>
-                <span className={styles.sortableHeaderContent}>
-                  Drop-off rate {sortIndicator('dropOffRate')}
+
+              <th>
+                Get list
+                <span
+                  className={styles.infoIcon}
+                  title="View the list of no-show participants for this event and send follow-up emails."
+                >
+                  ℹ️
                 </span>
               </th>
-              <th>Get list</th>
             </tr>
           </thead>
 
           <tbody>
-            {sortedEvents.map(event => (
+            {filteredEvents.map(event => (
               <tr key={event.id}>
                 <td>{event.eventName}</td>
                 <td className={styles.trackingRateGreen} style={{ color: 'green' }}>

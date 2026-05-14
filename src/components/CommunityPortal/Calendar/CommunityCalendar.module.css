@@ -2,8 +2,7 @@
 .calendarContainer {
   display: flex;
   flex-direction: row;
-  width: 100%;
-  min-width: 0;
+  min-width: 100%;
   align-items: stretch;
   gap: 20px;
 }
@@ -23,7 +22,6 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  min-width: 0;
 }
 
 .calendarActivitySectionDarkMode,
@@ -70,6 +68,8 @@
   font-size: 1.2rem;
   border: 2px solid #ddd;
   border-radius: 8px;
+
+  /* overflow: hidden; */
   background-color: #fff;
   padding: 2rem;
 }
@@ -158,13 +158,21 @@
   margin-bottom: 0 !important;
 }
 
-.reactCalendar :global(.react-calendar__tile),
+.reactCalendar :global(.react-calendar__tile) {
+  display: grid;
+  height: 100px;
+  border: 1px solid #dee2e6 !important;
+  box-sizing: border-box;
+  transition: background 0.3s, border-color 0.3s ease;
+  overflow: visible !important;
+  position: relative;
+  padding: 4px;
+  color: #1a202c;
+}
+
 .reactCalendarDarkMode :global(.react-calendar__tile) {
-  height: 110px !important;
-  max-height: 110px !important;
-  overflow: hidden !important;
-  display: flex !important;
-  flex-direction: column !important;
+  background: transparent;
+  color: #fff;
 }
 
 .reactCalendar :global(.react-calendar__tile):hover {
@@ -1366,46 +1374,26 @@
   display: block;
 }
 
-.detailIcon {
-  margin-right: 8px;
-  vertical-align: middle;
-  color: #718096;
-  font-size: 1rem;
-}
-
-.eventModalDark .detailIcon {
-  color: #cbd5e0;
-}
-
-.weekGridRoot {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  min-width: 0;
-}
-
 /* Week Grid Styles */
-.weekGridRoot .weekGridContainer {
+.weekGridContainer {
   display: flex;
   flex-direction: column;
   background: #fff;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   height: 700px;
-  max-width: 100%;
   overflow: hidden;
   margin-bottom: 20px;
 }
 
-.weekGridRoot .weekGridBody {
+.weekGridBody {
   flex: 1;
-  overflow-y: auto;
+  overflow-y: scroll;
   background: #fff;
-  min-width: 0;
 }
 
 @media (width <= 1024px) {
-  .calendarContainer {
+  .calendarContainer{
     flex-direction: column;
   }
 
@@ -1413,10 +1401,6 @@
     padding: 1rem;
   }
 
-  .weekGridRoot .weekGridContainer {
-    height: auto;
-    min-height: 500px;
-  }
 }
 
 .dateLabel {
@@ -1425,12 +1409,11 @@
   color: #1e293b;
 }
 
-.weekGridRoot .hourRow {
+.hourRow {
   display: grid;
-  grid-template-columns: 80px repeat(7, minmax(0, 1fr));
+  grid-template-columns: 80px repeat(7, 1fr);
   min-height: 80px;
   border-bottom: 1px solid #f1f5f9;
-  width: 100%;
 }
 
 .timeLabel {
@@ -1443,16 +1426,11 @@
   border-right: 1px solid #e2e8f0;
 }
 
-.weekGridRoot .gridCell {
-  min-width: 0;              /* CRITICAL */
-  max-width: 100%;          /* CRITICAL */
-  overflow: hidden;         /* prevents bleed */
+.gridCell {
   border-left: 1px solid #f1f5f9;
   position: relative;
   padding: 4px;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
+  transition: background 0.2s;
 }
 
 .gridCell:hover {
@@ -1460,23 +1438,14 @@
 }
 
 .gridEvent {
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  overflow: hidden;          /* CRITICAL */
-  box-sizing: border-box;
   background: #dcfce7;
   border-left: 4px solid #22c55e;
   border-radius: 6px;
   padding: 6px;
   font-size: 0.75rem;
   cursor: pointer;
-  display: flex;
-  flex-direction: column;
-}
-
-.gridEvent * {
-  min-width: 0;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 5%);
+  margin-bottom: 4px;
 }
 
 .gridEventTitle {
@@ -1545,9 +1514,9 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  min-width: 0;        /* CRITICAL */
   overflow: hidden;
 }
+
 .eventIcon {
   font-size: 0.75rem;
   flex-shrink: 0;
@@ -1556,8 +1525,6 @@
 }
 
 .eventTitleText {
-  flex: 1;
-  min-width: 0;        /* CRITICAL */
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1569,4 +1536,3 @@
   gap: 4px;
   font-weight: 600;
 }
-

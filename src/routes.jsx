@@ -352,17 +352,7 @@ export default (
     />
     <LBProtectedRoute path="/lbdashboard/home" component={LBHome} />
 
-    <Route
-      path="/EventPopularity"
-      render={() => (
-        <>
-          <HeaderRenderer />
-          <AutoUpdate />
-          <ToastContainer />
-          <EventPopularity />
-        </>
-      )}
-    />
+    <Route path="/EventPopularity" component={EventPopularity} />
     <Route path="/MaterialSummary" component={MaterialSummary} />
     <Route path="/form" component={FormEditor} />
     <Route path="/formviewer" component={FormViewer} />
@@ -716,11 +706,7 @@ export default (
         {/* ----- BEGIN BM Dashboard Routing ----- */}
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
         <Route path="/bmdashboard/login" component={BMLogin} />
-        <BMProtectedRoute
-          path="/bmdashboard/lessons-learnt-chart"
-          fallback
-          component={LessonsLearntChart}
-        />
+        <Route path="/LessonsLearntChart" component={LessonsLearntChart} />
         <Route path="/UtilizationChart" component={UtilizationChart} />
         <BMProtectedRoute path="/mostsusceptibletoolschart" component={SimpleToolChart} />
         <Route path="/projectglobaldistribution" component={ProjectsGlobalDistribution} />
@@ -887,11 +873,6 @@ export default (
           path="/communityportal/activity/:activityId/logattendance"
           exact
           component={NoShowList}
-        />
-        <CPProtectedRoute
-          path="/communityportal/reports/participation"
-          exact
-          component={EventParticipation}
         />
         <CPProtectedRoute
           path="/communityportal/reports/participation"

@@ -3,8 +3,6 @@ import { useState, useEffect, useMemo } from 'react';
 import { useSelector, useStore } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import styles from './ActivityList.module.css';
-// import { useHistory } from 'react-router-dom';
-import { fuzzySearch } from '../../../utils/fuzzySearch';
 import { mockActivities } from './mockActivities';
 
 function ActivityList() {
@@ -108,15 +106,15 @@ function ActivityList() {
     .filter(activity => showPastEvents || activity._dateObj >= startOfToday)
     .filter(activity => {
       return (
-        (!filter.type || fuzzySearch(activity.type, filter.type, 0.5)) &&
+        (!filter.type || activity.type === filter.type) &&
         (!filter.date || activity.date === filter.date) &&
-        (!filter.location || fuzzySearch(activity.location, filter.location, 0.5))
+        (!filter.location ||
+          activity.location.toLowerCase().startsWith(filter.location.toLowerCase()))
       );
     })
     .sort((a, b) => {
       const dateA = new Date(a.date);
       const dateB = new Date(b.date);
-
       return sortOrder === 'earliest' ? dateA - dateB : dateB - dateA;
     });
 

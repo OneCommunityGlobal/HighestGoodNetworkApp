@@ -18,12 +18,13 @@ export const MARK_INTERMEDIATE_TASK_DONE = 'MARK_INTERMEDIATE_TASK_DONE';
  * Fetch intermediate tasks for a parent task
  */
 export const fetchIntermediateTasks = taskId => {
-  return async () => {
+  return async dispatch => {
     try {
       const response = await httpService.get(ENDPOINTS.INTERMEDIATE_TASKS_BY_PARENT(taskId));
       return response.data;
-    } catch {
-      return [];
+    } catch (error) {
+      toast.error('Failed to fetch sub-tasks');
+      throw error;
     }
   };
 };

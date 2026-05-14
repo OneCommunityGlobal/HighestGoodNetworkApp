@@ -1,13 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
 import { Form, FormGroup, Label, Input, Button, Badge } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import Joi from 'joi';
-import { toast } from 'react-toastify';
 import { boxStyle } from '../../../../styles';
 import styles from './CreateNewTeam.module.css';
 import { getUserProfileBasicInfo } from '../../../../actions/userManagement';
-import { postNewTeam, addTeamMember } from '../../../../actions/allTeamsAction';
+import { toast } from 'react-toastify';
 
 const initialFormState = {
   teamName: '',
@@ -20,7 +18,6 @@ export default function CreateNewTeam() {
   const [formData, setFormData] = useState(initialFormState);
   const [errors, setErrors] = useState({});
   const dispatch = useDispatch();
-  const history = useHistory();
   const userProfilesBasicInfo = useSelector(
     state => state.allUserProfilesBasicInfo?.userProfilesBasicInfo,
   );
@@ -39,6 +36,8 @@ export default function CreateNewTeam() {
     assignedMembers: false,
     additionalInformation: false,
   });
+
+  const user = useSelector(state => state.auth.user);
 
   const dummyTasks = ['Task 1', 'Task 2', 'Task 3', 'Task 4', 'Task 5'];
 
@@ -124,28 +123,28 @@ export default function CreateNewTeam() {
       return;
     }
 
-    try {
-      const res = await dispatch(postNewTeam(formData.teamName, true));
-      if (res?.status !== 200) {
-        const errMsg = res?.data?.error || res?.message || 'Failed to create team.';
-        toast.error(errMsg);
-        return;
-      }
+    const updatedFormData = {
+      ...formData,
+      teamMembers: assignedMembers,
+      tasks: assignedTasks,
+    };
 
-      const newTeamId = res.data._id;
+    // eslint-disable-next-line no-console
+    console.log('Form Submitted:', updatedFormData);
 
-      // Assign each selected member to the newly created team
-      await Promise.all(assignedMembers.map(userId => dispatch(addTeamMember(newTeamId, userId))));
+    toast.success('Team created successfully!');
 
-      toast.success(`Team "${formData.teamName}" created successfully!`);
-      history.push('/bmdashboard');
-    } catch (err) {
-      const errMsg =
-        err?.response?.data?.error ||
-        err?.message ||
-        'An unexpected error occurred. Please try again.';
-      toast.error(errMsg);
-    }
+    setSelectedMember('');
+    setAssignedMembers([]);
+    setSelectedTask('');
+    setAssignedTasks([]);
+    setFormData(initialFormState);
+    setErrors({});
+    setTouchedFields({
+      teamName: false,
+      assignedMembers: false,
+      additionalInformation: false,
+    });
   };
 
   const handleCancelClick = () => {
@@ -274,10 +273,10 @@ export default function CreateNewTeam() {
                 {Array.isArray(members) && members.length > 0 ? (
                   <>
                     <option value="">Select a Member</option>
-                    {members.map((member, index) => (
+                    {members.map((user, index) => (
                       // eslint-disable-next-line react/no-array-index-key
-                      <option key={index} value={member.id}>
-                        {member.firstName} {member.lastName}
+                      <option key={index} value={user.id}>
+                        {user.firstName} {user.lastName}
                       </option>
                     ))}
                   </>
@@ -312,23 +311,19 @@ export default function CreateNewTeam() {
             </label>
           )}
           <div className={`${styles.badgeContainer}`}>
-            {assignedMembers.map((memberId, index) => {
-              const foundMember = members?.find(m => m.id === memberId);
-              const displayName = foundMember
-                ? `${foundMember.firstName} ${foundMember.lastName}`
-                : memberId;
+            {assignedMembers.map((member, index) => {
               return (
                 // eslint-disable-next-line react/no-array-index-key
                 <Badge key={index} pill color="info" className="mr-2">
-                  {displayName}
+                  {member}
                   <span
                     role="button"
                     tabIndex={0}
-                    onClick={() => handleRemoveMember(memberId)}
+                    onClick={() => handleRemoveMember(member)}
                     onKeyDown={e =>
-                      (e.key === 'Enter' || e.key === ' ') && handleRemoveMember(memberId)
+                      (e.key === 'Enter' || e.key === ' ') && handleRemoveMember(member)
                     }
-                    aria-label={`Remove member ${displayName}`}
+                    aria-label={`Remove member ${member}`}
                   >
                     X
                   </span>
