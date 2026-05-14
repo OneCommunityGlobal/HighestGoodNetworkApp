@@ -15,23 +15,25 @@ function ActiveCell(props) {
   const now = moment();
 
   function deriveUserStatus({ isActive, reactivationDate, endDate }) {
-    if (reactivationDate) return UserStatus.Paused;
-  
-  
-    if (isActive === false) return UserStatus.Inactive;
-  
-  
-    if (isActive && !!endDate && moment(endDate).isAfter(now)) return UserStatus.Scheduled;
-  
-    if (endDate) return UserStatus.Inactive;
-    if (isActive) return UserStatus.Active;
-  
-    return UserStatus.Inactive;
-  }
 
-  const isScheduled = deriveUserStatus({ isActive, reactivationDate, endDate }) === UserStatus.Scheduled;
-  const isPaused = deriveUserStatus({ isActive, reactivationDate, endDate }) === UserStatus.Paused;
-  const isSeparated = deriveUserStatus({ isActive, reactivationDate, endDate }) === UserStatus.Inactive;
+  if (reactivationDate) return UserStatus.Paused;
+
+  if (!isActive) return UserStatus.Inactive;
+
+  if (!!endDate && moment(endDate).isAfter(now)) return UserStatus.Scheduled;
+
+  return UserStatus.Active;
+}
+
+  const userStatus = deriveUserStatus({
+    isActive,
+    reactivationDate,
+    endDate,
+  });
+
+  const isScheduled = userStatus === UserStatus.Scheduled;
+  const isPaused = userStatus === UserStatus.Paused;
+  const isSeparated = userStatus === UserStatus.Inactive;
 
 
   const className = (() => {

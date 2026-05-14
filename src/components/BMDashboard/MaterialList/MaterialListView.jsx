@@ -12,8 +12,6 @@ import {
 import { fetchAllMaterials, resetMaterialUpdate } from '~/actions/bmdashboard/materialsActions';
 import ItemListView from '../ItemList/ItemListView';
 import UpdateMaterialModal from '../UpdateMaterials/UpdateMaterialModal';
-import { Link } from 'react-router-dom';
-import styles from '../InventoryTypesList/TypesList.module.css';
 
 function MaterialListView() {
   const dispatch = useDispatch();
@@ -84,47 +82,42 @@ function MaterialListView() {
   ];
 
   return (
-    <>
-      <Link to="/bmdashboard/inventorytypes" className={styles.backLink}>
-        All Inventory Types
-      </Link>
-      <Container fluid className="p-0 mt-3">
-        <ItemListView
-          itemType="Materials"
-          items={filteredMaterials}
-          errors={errors}
-          UpdateItemModal={UpdateMaterialModal}
-          dynamicColumns={dynamicColumns}
-        >
-          <FormGroup check className="m-0 d-flex align-items-center">
-            <Label check style={{ fontWeight: '600', cursor: 'pointer', margin: 0 }}>
-              <Input
-                type="checkbox"
-                checked={showOnlyLowStock}
-                onChange={() => setShowOnlyLowStock(!showOnlyLowStock)}
-              />{' '}
-              Show only low-stock materials
-            </Label>
-          </FormGroup>
-          <InputGroup style={{ width: '350px' }}>
+    <Container fluid className="p-0 mt-3">
+      <ItemListView
+        itemType="Materials"
+        items={filteredMaterials}
+        errors={errors}
+        UpdateItemModal={UpdateMaterialModal}
+        dynamicColumns={dynamicColumns}
+      >
+        <FormGroup check className="m-0 d-flex align-items-center">
+          <Label check style={{ fontWeight: '600', cursor: 'pointer', margin: 0 }}>
             <Input
-              type="text"
-              placeholder="Search Material, PID, Unit..."
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-            />
-            {searchTerm && (
-              <InputGroupAddon addonType="append">
-                <Button color="secondary" onClick={() => setSearchTerm('')}>
-                  <i className="fa fa-times" aria-hidden="true" style={{ marginRight: '5px' }}></i>{' '}
-                  Clear
-                </Button>
-              </InputGroupAddon>
-            )}
-          </InputGroup>
-        </ItemListView>
-      </Container>
-    </>
+              type="checkbox"
+              checked={showOnlyLowStock}
+              onChange={() => setShowOnlyLowStock(!showOnlyLowStock)}
+            />{' '}
+            Show only low-stock materials
+          </Label>
+        </FormGroup>
+        <InputGroup style={{ width: '350px' }}>
+          <Input
+            type="text"
+            placeholder="Search Material, PID, Unit..."
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+          />
+          {searchTerm && (
+            <InputGroupAddon addonType="append">
+              <Button color="secondary" onClick={() => setSearchTerm('')}>
+                <i className="fa fa-times" aria-hidden="true" style={{ marginRight: '5px' }}></i>{' '}
+                Clear
+              </Button>
+            </InputGroupAddon>
+          )}
+        </InputGroup>
+      </ItemListView>
+    </Container>
   );
 }
 
