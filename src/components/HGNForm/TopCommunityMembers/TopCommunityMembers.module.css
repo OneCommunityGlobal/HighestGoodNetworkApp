@@ -1,50 +1,303 @@
 /* stylelint-disable  */
-.top-members-container {
-  padding: 20px;
-  font-family: Arial, sans-serif;
+
+/* ============================================
+   PAGE WRAPPER
+   ============================================ */
+.centerContainer {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  min-height: 100vh;
+  flex-direction: column;
+  padding: 2rem 1rem;
 }
 
-.members-table {
+.componentBox {
+  border: 1px solid #e0e4ea;
+  padding: 2rem 2.5rem 2.5rem;
+  border-radius: 14px;
+  box-shadow: 0 4px 18px rgb(0 0 0 / 8%);
+  background-color: #fff;
   width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+/* ============================================
+   HEADING
+   ============================================ */
+.componentBox h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a2a40;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #e0e4ea;
+  letter-spacing: 0.01em;
+}
+
+/* ============================================
+   SKILL SELECTOR ROW
+   ============================================ */
+.filterRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.filterRow label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #444;
+  white-space: nowrap;
+}
+
+.select {
+  padding: 7px 14px;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  background-color: #fff;
+  color: #333;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.select:focus {
+  border-color: #4a90d9;
+  outline: none;
+  box-shadow: 0 0 0 2px rgb(74 144 217 / 20%);
+}
+
+/* ============================================
+   TABLE - LIGHT MODE
+   ============================================ */
+.table {
   border-collapse: collapse;
-  margin-top: 15px;
+  width: 100%;
+  font-size: 0.875rem;
+  margin-bottom: 1.25rem;
 }
 
-.members-table th,
-.members-table td {
-  border: 1px solid #ddd;
-  padding: 10px;
-  text-align: center;
+.table th {
+  padding: 10px 14px;
+  text-align: left;
+  background-color: #f0f4f8;
+  color: #3a4a5c;
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 2px solid #dce3ec;
 }
 
+.table td {
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid #eef0f3;
+  vertical-align: middle;
+  color: #2d3748;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.table tbody tr:hover {
+  background-color: #f7f9fc;
+}
+
+.table td a,
+.table td span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* ============================================
+   SCORE & PRIVATE HELPERS
+   ============================================ */
 .lowScore {
-  color: red;
-  font-weight: bold;
+  color: #e53e3e;
+  font-weight: 700;
 }
 
 .highScore {
-  color: green;
-  font-weight: bold;
+  color: #38a169;
+  font-weight: 700;
 }
 
 .private {
-  color: gray;
+  color: #a0aec0;
   cursor: help;
   font-style: italic;
+  font-size: 0.82rem;
 }
 
-.team-btn {
-  background-color: #007bff;
-  color: white;
-  padding: 10px 20px;
-  margin-top: 20px;
-  border: none;
-  border-radius: 6px;
+/* ============================================
+   ICON LINKS
+   ============================================ */
+.iconLink {
+  color: #3182ce;
+  transition: color 0.2s;
+  font-size: 0.875rem;
+}
+
+.iconLink:hover {
+  color: #1a5fa8;
+  text-decoration: underline;
+}
+
+.iconSlack {
+  color: #611f69;
+  font-size: 18px;
+  transition: color 0.2s ease;
+}
+
+.iconSlack:hover {
+  color: #400d40;
+}
+
+/* ============================================
+   FOOTER LINK
+   ============================================ */
+.underlineLink {
+  display: inline-block;
+  margin-top: 0.5rem;
+  text-decoration: underline;
+  color: #3182ce;
   cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.2s;
 }
 
-.team-btn:hover {
-  background-color: #0056b3;
+.underlineLink:hover {
+  color: #1a5fa8;
+  text-decoration: none;
+}
+
+/* ============================================
+   EMPTY STATE
+   ============================================ */
+.emptyState {
+  text-align: center;
+  color: #888;
+  padding: 2rem 0;
+  font-size: 0.95rem;
+}
+
+/* ============================================
+   DARK MODE
+   ============================================ */
+.darkMode {
+  background-color: #111827;
+  color: #f1f5f9;
+}
+
+.darkMode.componentBox {
+  background-color: #1e2c3f;
+  border-color: #2f4157;
+  box-shadow: 0 4px 18px rgb(0 0 0 / 30%);
+}
+
+.darkMode h2 {
+  color: #e2e8f0;
+  border-bottom-color: #2f4157;
+}
+
+.darkMode .filterRow label {
+  color: #cbd5e0;
+}
+
+.selectDark {
+  padding: 7px 14px;
+  border: 1px solid #4a5a77;
+  border-radius: 6px;
+  background-color: #2d3f55;
+  color: #e2e8f0;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.selectDark:focus {
+  border-color: #e8a71c;
+  outline: none;
+  box-shadow: 0 0 0 2px rgb(232 167 28 / 25%);
+}
+
+.tableDark {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.875rem;
+  margin-bottom: 1.25rem;
+  color: #e2e8f0;
+}
+
+.tableDark th {
+  padding: 10px 14px;
+  text-align: left;
+  background-color: #243447;
+  color: #94a3b8;
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border: 1px solid #2f4157;
+  border-bottom-width: 2px;
+}
+
+.tableDark td {
+  padding: 10px 14px;
+  text-align: left;
+  border: 1px solid #2a3a4e;
+  vertical-align: middle;
+  color: #e2e8f0;
+}
+
+.tableDark tr:last-child td {
+  border-bottom: 1px solid #2a3a4e;
+}
+
+.tableDark tbody tr:hover {
+  background-color: #1e3248;
+}
+
+.tableDark td a,
+.tableDark td span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.iconLinkDark {
+  color: #60a5fa;
+  transition: color 0.2s;
+  font-size: 0.875rem;
+}
+
+.iconLinkDark:hover {
+  color: #93c5fd;
+  text-decoration: underline;
+}
+
+.underlineLinkDark {
+  display: inline-block;
+  margin-top: 0.5rem;
+  text-decoration: underline;
+  color: #60a5fa;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.underlineLinkDark:hover {
+  color: #93c5fd;
+  text-decoration: none;
 }
 
 .iconLink {
@@ -68,81 +321,7 @@
   color: #400d40; /* darker shade on hover */
 }
 
-.centerContainer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh; /* Full height of viewport */
-  flex-direction: column;
-}
 
-.underlineLink {
-  text-decoration: underline;
-  color: rgb(3 3 7);
-  cursor: pointer;
-  font-size: 16px;
-}
-
-.underlineLink:hover {
-  text-decoration: none;
-  color: rgb(3 3 7);
-}
-
-.componentBox {
-  border: 1px solid #ccc;        /* Light gray border */
-  padding: 20px;
-  border-radius: 10px; /* Rounded corners */
-  box-shadow: 0 4px 8px rgb(0 0 0 / 10%); /* Soft shadow */
-  background-color: #fff; /* Optional: white background */
-  border-radius: 10px;           /* Rounded corners */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* Soft shadow */
-  background-color: #fff;        /* Optional: white background */
-  width: 90%;
-  max-width: 700px;
-  margin: auto;
-}
-
-.table {
-  border-collapse: collapse;
-  width: 100%;
-}
-
-.table th, .table td {
-  padding: 12px 20px; /* Adjust as needed for vertical & horizontal spacing */
-  text-align: left;
-}
-
-.table thead {
-  background-color: #f2f2f2;
-}
-
-.table tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-.table td a, .table td span {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px; /* gap between icon and text if needed */
-}
-
-.select {
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background-color: #fff;
-  color: #333;
-  font-size: 14px;
-}
-
-/* ============================================
-   DARK MODE STYLES
-   ============================================ */
-
-.darkMode {
-  background-color: #1b2a41 !important;
-  color: #fff !important;
-}
 
 .darkMode .componentBox {
   background-color: #2b3e59 !important;
@@ -179,7 +358,8 @@
   color: #fff;
 }
 
-.tableDark th, .tableDark td {
+.tableDark th,
+.tableDark td {
   padding: 12px 20px;
   text-align: left;
   border: 1px solid #4a5a77;
@@ -202,7 +382,8 @@
   background-color: #2f4157;
 }
 
-.tableDark td a, .tableDark td span {
+.tableDark td a,
+.tableDark td span {
   display: inline-flex;
   align-items: center;
   gap: 5px;
