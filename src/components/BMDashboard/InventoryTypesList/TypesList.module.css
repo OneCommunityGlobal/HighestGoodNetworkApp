@@ -623,3 +623,18 @@
   color: #fff !important;
   border-color: #3a506b !important;
 }
+
+/* Category icons */
+.categoryIcon {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 8px;
+  font-size: 1rem;
+  vertical-align: middle;
+  color: var(--color-h500);
+}
+
+:global(.dark-mode) .categoryIcon,
+:global(.bm-dashboard-dark) .categoryIcon {
+  color: #5eb3e4;
+}
