@@ -140,7 +140,7 @@ function UserPermissionsPopUp({
 
   //prettier-ignore
   const normalizeSearchInput = text => text.toLowerCase().split('').filter(char => char !== ' ').join('');
-  
+
   const filteredUsers = allUserProfiles
     // eslint-disable-next-line array-callback-return, consistent-return
     .filter(user => {
@@ -231,9 +231,7 @@ function UserPermissionsPopUp({
               }`}
               style={{ marginTop: '0px', width: '100%' }}
             >
-              {filteredUsers.length === 0 && searchText !== '' ? (
-                <div style={{ padding: '5px' }}>No user found</div>
-              ) : filteredUsers.length > 0 &&(
+              {filteredUsers.length > 0 ? (
                 filteredUsers.map(user => (
                   <div
                     className={styles['user__auto-complete']}
@@ -259,7 +257,7 @@ function UserPermissionsPopUp({
                   </div>
                 ))
               ) : (
-                <div className="user__auto-complete">No users found</div>
+                <div className="user__auto-complete text-center">No users found</div>
               )}
             </div>
           ) : (
