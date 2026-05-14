@@ -10,14 +10,9 @@ describe('user table search header row', () => {
   let onTitleSearch;
   let onEmailSearch;
   let onWeeklyHrsSearch;
-  beforeEach(() => {
-    onFirstNameSearch = vi.fn();
-    onLastNameSearch = vi.fn();
-    onRoleSearch = vi.fn();
-    onTitleSearch = vi.fn();
-    onEmailSearch = vi.fn();
-    onWeeklyHrsSearch = vi.fn();
-    render(
+
+  const setup = () => {
+     render(
       <table>
         <tbody>
           <UserTableSearchHeader
@@ -32,66 +27,89 @@ describe('user table search header row', () => {
         </tbody>
       </table>,
     );
+  }
+  beforeEach(() => {
+    onFirstNameSearch = vi.fn();
+    onLastNameSearch = vi.fn();
+    onRoleSearch = vi.fn();
+    onTitleSearch = vi.fn();
+    onEmailSearch = vi.fn();
+    onWeeklyHrsSearch = vi.fn();
+   
   });
   describe('Structure', () => {
     it('should render a row', () => {
+      setup();
       expect(screen.getByRole('row')).toBeInTheDocument();
     });
     it('should render 4 text field', () => {
+      setup();
       expect(screen.getAllByRole('textbox')).toHaveLength(5);
     });
     it('should render one dropdown box', () => {
+      setup();
       expect(screen.getByRole('combobox')).toBeInTheDocument();
     });
   });
   describe('Behavior', () => {
     it('should fire onFirstNameSearch once the user type something in the first name search box', async () => {
+      setup();
       await userEvent.type(screen.getAllByRole('textbox')[0], 'test', { allAtOnce: false });
       expect(onFirstNameSearch).toHaveBeenCalledTimes(4);
     });
     it('should fire onLastNameSearch once the user tyep something the last name search box', async () => {
+      setup();
       await userEvent.type(screen.getAllByRole('textbox')[1], 'test', { allAtOnce: false });
       expect(onLastNameSearch).toHaveBeenCalledTimes(4);
     });
-    it('should fire onRoleSearch once the user select some thing in the dropdown search box', () => {
-      userEvent.selectOptions(screen.getByRole('combobox'), '2');
+    it('should fire onRoleSearch once the user select some thing in the dropdown search box', async() => {
+      setup();
+      await userEvent.selectOptions(screen.getByRole('combobox'), '2');
       expect(onRoleSearch).toHaveBeenCalled();
       expect(onRoleSearch).toHaveBeenCalledWith('2');
     });
-    it('should fire onRoleSearch once the user select some thing in the dropdown search box', () => {
-      userEvent.selectOptions(screen.getByRole('combobox'), 'Volunteer');
+    it('should fire onRoleSearch once the user select some thing in the dropdown search box', async() => {
+      setup();
+      await userEvent.selectOptions(screen.getByRole('combobox'), 'Volunteer');
       expect(onRoleSearch).toHaveBeenCalled();
       expect(onRoleSearch).toHaveBeenCalledWith('Volunteer');
     });
-    it('should fire onRoleSearch once the user select some thing in the dropdown search box', () => {
-      userEvent.selectOptions(screen.getByRole('combobox'), 'Owner');
+    it('should fire onRoleSearch once the user select some thing in the dropdown search box', async() => {
+      setup();
+      await userEvent.selectOptions(screen.getByRole('combobox'), 'Owner');
       expect(onRoleSearch).toHaveBeenCalled();
       expect(onRoleSearch).toHaveBeenCalledWith('Owner');
     });
-    it('should fire onRoleSearch once the user select some thing in the dropdown search box', () => {
-      userEvent.selectOptions(screen.getByRole('combobox'), 'Manager');
+    it('should fire onRoleSearch once the user select some thing in the dropdown search box', async() => {
+      setup();
+      await userEvent.selectOptions(screen.getByRole('combobox'), 'Manager');
       expect(onRoleSearch).toHaveBeenCalled();
       expect(onRoleSearch).toHaveBeenCalledWith('Manager');
     });
     it('should fire Title search once the user type something in the title search box', async () => {
+      setup();
       await userEvent.type(screen.getAllByRole('textbox')[2], 'test', { allAtOnce: false });
       expect(onTitleSearch).toHaveBeenCalledTimes(4);
     });
     it('should fire Email search once the user type something in the email search box', async () => {
+      setup();
       await userEvent.type(screen.getAllByRole('textbox')[3], 'test', { allAtOnce: false });
       expect(onEmailSearch).toHaveBeenCalledTimes(4);
     });
     it('should fire Email search once the user type something in the email search box', async () => {
+      setup();
       await userEvent.type(screen.getAllByRole('textbox')[3], 'Jhon.wick@email.com', {
         allAtOnce: true,
       });
       expect(onEmailSearch).toHaveBeenCalled();
     });
     it('should fire onWeeklyHrsSearch once the user type something in the weeklycommitted hrs search box', async () => {
+      setup();
       await userEvent.type(screen.getAllByRole('textbox')[4], 'test', { allAtOnce: false });
       expect(onWeeklyHrsSearch).toHaveBeenCalledTimes(4);
     });
     it('should fire onWeeklyHrsSearch once the user type something in the weeklycommitted hrs search box', async () => {
+      setup();
       await userEvent.type(screen.getAllByRole('textbox')[4], '15', { allAtOnce: true });
       expect(onWeeklyHrsSearch).toHaveBeenCalled();
     });

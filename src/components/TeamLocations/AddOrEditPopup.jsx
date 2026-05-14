@@ -7,7 +7,7 @@ import Input from '~/components/common/Input';
 import { createLocation, editLocation } from '~/services/mapLocationsService';
 import { ENDPOINTS } from '~/utils/URL';
 import { boxStyle, boxStyleDark } from '~/styles';
-import '../Header/DarkMode.css';
+import '../Header/index.css';
 import CustomInput from './CustomInput';
 
 const initialLocationData = {

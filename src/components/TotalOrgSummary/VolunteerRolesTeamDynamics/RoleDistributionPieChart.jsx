@@ -2,46 +2,32 @@ import { ResponsiveContainer, PieChart, Pie, Cell, Legend, Tooltip } from 'recha
 import Loading from '~/components/common/Loading';
 
 const COLORS = [
-  '#F285BB',
-  '#77A9EE',
-  '#F2AB53',
-  '#1B6DDF',
-  '#C92929',
-  '#1BC590',
-  '#7ff0f0',
-  '#6e33cc',
-  '#cc2fa7',
-  '#EE9322',
-  '#86ebcc',
-  '#bafc03',
-  '#cf583a',
-  '#46d130',
+  '#2F80ED', // blue
+  '#56CCF2', // light blue
+  '#27AE60', // green
+  '#6FCF97', // light green
+  '#F2994A', // orange
+  '#F2C94C', // yellow
+  '#E14848', // red
+  '#9B51E0', // purple
+  '#F765A3', // pink
+  '#4F4F4F', // dark
+  '#828282', // grey
 ];
 
-function CustomTooltip({ active, payload }) {
-  if (active && payload && payload.length) {
-    return (
-      <div
-        style={{
-          backgroundColor: 'white',
-          border: '1px solid #ccc',
-          padding: '10px',
-          borderRadius: '4px',
-        }}
-      >
-        {payload.map(entry => (
-          <p key={entry} style={{ color: 'black' }}>
-            {`${entry.name} : ${entry.value}`}
-          </p>
-        ))}
-      </div>
-    );
-  }
+// Explicit role-to-color mapping to keep key roles visually distinct and stable.
+const ROLE_COLOR_MAP = {
+  Volunteer: '#8ebfff',
+  Manager: '#27AE60',
+  Administrator: '#fb0505',
+  'Core Team': '#8100fa',
+  Owner: '#f68d42',
+  Mentor: '#f2ff00',
+};
 
-  return null;
-}
+import CustomTooltip from '../../CustomTooltip';
 
-export default function RoleDistributionPieChart({ isLoading, roleDistributionStats, darkMode }) {
+const RoleDistributionPieChart = ({ roleDistributionStats = [], isLoading, darkMode }) => {
   if (isLoading) {
     return (
       <div className="d-flex justify-content-center align-items-center">
@@ -56,7 +42,8 @@ export default function RoleDistributionPieChart({ isLoading, roleDistributionSt
   const data = roleDistributionStats.map((item, index) => ({
     name: item._id,
     value: item.count,
-    color: COLORS[index],
+    // Use a stable role mapping first, otherwise fallback by index.
+    color: ROLE_COLOR_MAP[item._id] || COLORS[index % COLORS.length],
   }));
   const totalValue = data.reduce((sum, entry) => sum + entry.value, 0);
 
@@ -153,36 +140,40 @@ export default function RoleDistributionPieChart({ isLoading, roleDistributionSt
   };
 
   return (
-    <div style={{ margin: '15px 10px 10px 10px' }}>
-      <ResponsiveContainer width="100%" height="100%" minWidth={400} minHeight={430}>
-        <PieChart className="test2">
-          <Pie
-            data={data}
-            cx="50%"
-            cy="50%"
-            innerRadius="50%"
-            outerRadius="100%"
-            legendType="square"
-            labelLine={false}
-            label={renderCustomizedLabel}
-            startAngle={-270}
-            endAngle={90}
-            stroke="none"
-            dataKey="value"
-          >
-            {data.map(entry => (
-              <Cell key={`cell-${entry.name}`} fill={entry.color} />
-            ))}
-          </Pie>
-          <Legend
-            layout="vertical"
-            verticalAlign="middle"
-            align="right"
-            content={renderCustomLegend}
-          />
-          <Tooltip content={<CustomTooltip />} />
-        </PieChart>
-      </ResponsiveContainer>
+    <div style={{ margin: '15px 10px 10px 10px', overflowX: 'auto' }}>
+      <div style={{ minWidth: 500 }}>
+        <ResponsiveContainer width="100%" height="100%" minWidth={400} minHeight={430}>
+          <PieChart>
+            <Pie
+              data={data}
+              cx="50%"
+              cy="50%"
+              innerRadius="50%"
+              outerRadius="100%"
+              legendType="square"
+              labelLine={false}
+              label={renderCustomizedLabel}
+              startAngle={-270}
+              endAngle={90}
+              stroke="none"
+              dataKey="value"
+            >
+              {data.map(entry => (
+                <Cell key={`cell-${entry.name}`} fill={entry.color} />
+              ))}
+            </Pie>
+            <Legend
+              layout="vertical"
+              verticalAlign="middle"
+              align="right"
+              content={renderCustomLegend}
+            />
+            <Tooltip content={<CustomTooltip darkMode={darkMode} />} />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
-}
+};
+
+export default RoleDistributionPieChart;

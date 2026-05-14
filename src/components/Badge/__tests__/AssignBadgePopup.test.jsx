@@ -61,20 +61,18 @@ describe('AssignBadgePopup component', () => {
   });
 
   it('Check if tool tip renders the text when hovered', async () => {
-    const { container } = renderComponent();
-    const iconElement = container.querySelector('.fa.fa-info-circle');
+    renderComponent();
+    const iconElement = screen.getByTestId('select-info-icon');
 
     fireEvent.mouseEnter(iconElement);
 
-    await waitFor(() => {
-      const updatedText = screen.getByRole('tooltip');
-      expect(updatedText.textContent).toContain(
-        'Check those boxes to select the badges you wish to assign a person. Click the "Confirm" button at the bottom when you\'ve selected all you wish to add.',
-      );
-      expect(updatedText.textContent).toContain(
-        'Want to assign multiple of the same badge to a person? Repeat the process!',
-      );
-    });
+    const updatedText = await screen.findByRole('tooltip');
+    expect(updatedText.textContent).toContain(
+      'Check those boxes to select the badges you wish to assign a person. Click the "Confirm" button at the bottom when you\'ve selected all you wish to add.',
+    );
+    expect(updatedText.textContent).toContain(
+      'Want to assign multiple of the same badge to a person? Repeat the process!',
+    );
 
     fireEvent.mouseLeave(iconElement);
     await waitFor(() => {

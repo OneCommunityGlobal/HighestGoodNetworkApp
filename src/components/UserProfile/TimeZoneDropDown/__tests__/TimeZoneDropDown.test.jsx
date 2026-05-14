@@ -32,7 +32,7 @@ describe('TimeZoneDropDown Component', () => {
   it('filters time zones based on filter prop', () => {
     render(<Provider store={store}><TimeZoneDropDown filter='London' onChange={mockOnChange} /></Provider>);
     expect(screen.queryByText(/America\/New_York/)).not.toBeInTheDocument();
-    expect(screen.queryByText(/Europe\/London/)).toBeInTheDocument();
+    expect(screen.getByText(/Europe\/London/)).toBeInTheDocument();
   });
 
   it('calls onChange when a different time zone is selected', () => {

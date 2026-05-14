@@ -83,6 +83,7 @@ describe('WBSTasks component', () => {
     const history = createMemoryHistory();
 
     await waitFor(() => {
+      // eslint-disable-next-line testing-library/no-wait-for-side-effects
       render(
         <Router history={history}>
           <Provider store={store}>
@@ -93,7 +94,7 @@ describe('WBSTasks component', () => {
         </Router>,
       );
     });
-    expect(screen.queryByText('WBS Name: wbs name 1')).toBeInTheDocument();
+    expect(screen.getByText('WBS Name: wbs name 1')).toBeInTheDocument();
   });
   it('check link to the projectId', async () => {
     axios.get.mockResolvedValue({
@@ -103,6 +104,7 @@ describe('WBSTasks component', () => {
     const history = createMemoryHistory();
 
     await waitFor(() => {
+      // eslint-disable-next-line testing-library/no-wait-for-side-effects
       const { container } = render(
         <Router history={history}>
           <Provider store={store}>
@@ -112,7 +114,7 @@ describe('WBSTasks component', () => {
           </Provider>
         </Router>,
       );
-
+      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
       const linkElement = container.querySelector('.nav-item');
       const hrefElement = linkElement.getAttribute('href');
       expect(hrefElement).toBe(`/project/wbs/${projectId}`);
@@ -126,6 +128,7 @@ describe('WBSTasks component', () => {
     const history = createMemoryHistory();
 
     await waitFor(() => {
+      // eslint-disable-next-line testing-library/no-wait-for-side-effects
       const { container } = render(
         <Router history={history}>
           <Provider store={store}>
@@ -135,7 +138,9 @@ describe('WBSTasks component', () => {
           </Provider>
         </Router>,
       );
+      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
       const buttonElement = container.querySelector('.btn.btn-secondary');
+      // eslint-disable-next-line testing-library/no-wait-for-side-effects
       fireEvent.click(buttonElement);
       expect(history.location.pathname).toBe(`/project/wbs/${projectId}`);
     });
@@ -178,6 +183,7 @@ describe('WBSTasks component', () => {
     const history = createMemoryHistory();
 
     await waitFor(() => {
+      // eslint-disable-next-line testing-library/no-wait-for-side-effects
       render(
         <Router history={history}>
           <Provider store={testStore}>
@@ -188,7 +194,7 @@ describe('WBSTasks component', () => {
         </Router>,
       );
     });
-    expect(screen.queryByText('Add Task')).toBeInTheDocument();
+    expect(screen.getByText('Add Task')).toBeInTheDocument();
   });
   it('check if addTaskModal is not displayed when postTask permission is not present', async () => {
     axios.get.mockResolvedValue({
@@ -227,6 +233,7 @@ describe('WBSTasks component', () => {
     });
     const history = createMemoryHistory();
     await waitFor(() => {
+      // eslint-disable-next-line testing-library/no-wait-for-side-effects
       render(
         <Router history={history}>
           <Provider store={testStore}>
@@ -323,6 +330,7 @@ describe('test state updates', () => {
     const history = createMemoryHistory();
 
     await waitFor(() => {
+      // eslint-disable-next-line testing-library/no-wait-for-side-effects
       render(
         <Router history={history}>
           <Provider store={store}>
@@ -345,6 +353,7 @@ describe('test state updates', () => {
     const history = createMemoryHistory();
 
     await waitFor(() => {
+      // eslint-disable-next-line testing-library/no-wait-for-side-effects
       render(
         <Router history={history}>
           <Provider store={store}>
@@ -367,6 +376,7 @@ describe('test state updates', () => {
     const history = createMemoryHistory();
 
     await waitFor(() => {
+      // eslint-disable-next-line testing-library/no-wait-for-side-effects
       render(
         <Router history={history}>
           <Provider store={store}>
@@ -390,6 +400,7 @@ describe('test state updates', () => {
     const history = createMemoryHistory();
 
     await waitFor(() => {
+      // eslint-disable-next-line testing-library/no-wait-for-side-effects
       render(
         <Router history={history}>
           <Provider store={store}>
@@ -413,6 +424,7 @@ describe('test state updates', () => {
     const history = createMemoryHistory();
 
     await waitFor(() => {
+      // eslint-disable-next-line testing-library/no-wait-for-side-effects
       render(
         <Router history={history}>
           <Provider store={store}>
@@ -436,6 +448,7 @@ describe('test state updates', () => {
     const history = createMemoryHistory();
 
     await waitFor(() => {
+      // eslint-disable-next-line testing-library/no-wait-for-side-effects
       render(
         <Router history={history}>
           <Provider store={store}>
