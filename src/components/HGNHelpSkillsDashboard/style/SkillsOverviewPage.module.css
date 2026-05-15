@@ -228,3 +228,15 @@
   color: #f9fafb !important;
   border-color: #4b5563 !important;
 }
+
+.skillButton.darkButton.selected {
+  background-color: #3b82f6 !important;
+  border-color: #3b82f6 !important;
+  color: #fff !important;
+}
+
+.preferenceButton.darkButton.selected {
+  background-color: #22c55e !important;
+  border-color: #22c55e !important;
+  color: #fff !important;
+}

@@ -6,6 +6,17 @@ import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
 import CalendarActivitySection from './CalendarActivitySection';
 import styles from './CommunityCalendar.module.css';
+import {
+  FaCalendarAlt,
+  FaClock,
+  FaMapMarkerAlt,
+  FaTag,
+  FaAlignLeft,
+  FaVideo,
+  FaUsers,
+  FaGlassCheers,
+} from 'react-icons/fa';
+import { GrWorkshop } from 'react-icons/gr';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClock, faLocationDot, faTag, faCircleCheck } from '@fortawesome/free-solid-svg-icons';
 
@@ -51,8 +62,7 @@ export default function CommunityCalendar() {
           setEvents(apiEvents);
         }
       } catch (err) {
-        console.warn('API failed → using mock events');
-        setEvents(MOCK_EVENTS);
+        setError('Failed to load events');
       } finally {
         setIsLoading(false);
       }
@@ -75,6 +85,7 @@ export default function CommunityCalendar() {
         time: event.time || timeString,
         description: event.description || `Join us for ${event.title}`,
         location: event.location || 'Online',
+        isOver: eventDate < new Date(),
       };
     });
   }, [events]);
@@ -455,6 +466,21 @@ export default function CommunityCalendar() {
     [darkMode],
   );
 
+  const getTypeIcon = type => {
+    switch (type) {
+      case 'Workshop':
+        return <GrWorkshop />;
+      case 'Webinar':
+        return <FaVideo />;
+      case 'Meeting':
+        return <FaUsers />;
+      case 'Social Gathering':
+        return <FaGlassCheers />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className={calendarClasses.container}>
       {/* Inline styles to ensure selected date number is visible in dark mode - force dark background */}
@@ -739,35 +765,52 @@ export default function CommunityCalendar() {
                   {statusIconMap[selectedEvent.status] || ''} {selectedEvent.status}
                 </span>
               </div>
-
               <div className={styles.eventDetailsGrid}>
-                <div className={styles.detailItem}>
-                  <span>Type:</span>
-                  <span>{selectedEvent.type}</span>
-                </div>
-                <div className={styles.detailItem}>
-                  <span>Location:</span>
-                  <span>{selectedEvent.location}</span>
-                </div>
-                <div className={styles.detailItem}>
-                  <span>Date:</span>
-                  <span>{selectedEvent.date.toLocaleDateString()}</span>
-                </div>
-                <div className={styles.detailItem}>
-                  <span>Time:</span>
-                  <span>{selectedEvent.time}</span>
-                </div>
+                {[
+                  [FaTag, 'Type', selectedEvent.type],
+                  [FaMapMarkerAlt, 'Location', selectedEvent.location],
+                  [FaCalendarAlt, 'Date', selectedEvent.date.toLocaleDateString()],
+                  [FaClock, 'Time', selectedEvent.time],
+                ].map(([Icon, label, value]) => (
+                  <div key={label} className={styles.detailItem}>
+                    <span className={styles.detailLabel}>
+                      <Icon className={styles.detailIcon} />
+                      {label}:
+                    </span>
+
+                    <span>
+                      {label === 'Type' ? getTypeIcon(selectedEvent.type) : null} {value}
+                    </span>
+                  </div>
+                ))}
               </div>
 
               <div className={styles.eventDescription}>
-                <span>Description:</span>
+                <span className={styles.detailLabel}>
+                  <FaAlignLeft className={styles.detailIcon} />
+                  Description:
+                </span>
+
                 <p>{selectedEvent.description}</p>
               </div>
             </div>
 
             <div className={styles.modalActions}>
-              <button className={styles.btnPrimary}>Register for Event</button>
-              <button className={styles.btnSecondary}>Add to Calendar</button>
+              {selectedEvent.isOver ? (
+                <button type="button" className={styles.btnDisabled} disabled>
+                  Completed
+                </button>
+              ) : (
+                <>
+                  <button type="button" className={styles.btnPrimary}>
+                    Register for Event
+                  </button>
+
+                  <button type="button" className={styles.btnSecondary}>
+                    Add to Calendar
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
