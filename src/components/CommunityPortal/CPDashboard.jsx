@@ -288,7 +288,9 @@ export function CPDashboard() {
               <FixedRatioImage src={event.coverImage} alt={event.title} fallback={FALLBACK_IMG} />
             </div>
             <CardBody className={`${styles.eventCardBody} ${darkMode ? styles.darkEventCard : ''}`}>
-              <h5 className={styles.eventTitle}>{event.title}</h5>
+              <h5 className={styles.eventTitle} data-event-title={event.title || 'Untitled event'}>
+                <span className={styles.eventTitleText}>{event.title}</span>
+              </h5>
               <p className={styles.eventDate}>
                 <FaCalendarAlt
                   className={`${darkMode ? styles.eventIconDark : styles.eventIcon}`}
