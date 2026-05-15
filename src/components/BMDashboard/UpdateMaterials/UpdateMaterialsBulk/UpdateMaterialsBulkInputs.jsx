@@ -79,17 +79,19 @@ function UpdateMaterialsBulkInputs({ date, setDate, project, setProject }) {
                       backgroundColor: darkMode ? '#0f172a' : base.backgroundColor,
                       borderColor: darkMode ? '#475569' : base.borderColor,
                     }),
-                    option: (base, state) => ({
-                      ...base,
-                      backgroundColor: darkMode
-                        ? state.isSelected
-                          ? '#1C8BCC'
-                          : state.isFocused
-                          ? '#334155'
-                          : '#0f172a'
-                        : base.backgroundColor,
-                      color: darkMode ? '#ffffff' : base.color,
-                    }),
+                    option: (base, state) => {
+                      let optionBgColor = base.backgroundColor;
+                      if (darkMode) {
+                        if (state.isSelected) optionBgColor = '#1C8BCC';
+                        else if (state.isFocused) optionBgColor = '#334155';
+                        else optionBgColor = '#0f172a';
+                      }
+                      return {
+                        ...base,
+                        backgroundColor: optionBgColor,
+                        color: darkMode ? '#ffffff' : base.color,
+                      };
+                    },
                     singleValue: base => ({
                       ...base,
                       color: darkMode ? '#ffffff' : base.color,
