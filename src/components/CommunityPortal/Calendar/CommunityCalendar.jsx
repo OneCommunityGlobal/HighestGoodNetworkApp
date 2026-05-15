@@ -62,8 +62,7 @@ export default function CommunityCalendar() {
           setEvents(apiEvents);
         }
       } catch (err) {
-        console.warn('API failed → using mock events');
-        setEvents(MOCK_EVENTS);
+        setError('Failed to load events');
       } finally {
         setIsLoading(false);
       }
@@ -86,6 +85,7 @@ export default function CommunityCalendar() {
         time: event.time || timeString,
         description: event.description || `Join us for ${event.title}`,
         location: event.location || 'Online',
+        isOver: eventDate < new Date(),
       };
     });
   }, [events]);
@@ -765,7 +765,6 @@ export default function CommunityCalendar() {
                   {statusIconMap[selectedEvent.status] || ''} {selectedEvent.status}
                 </span>
               </div>
-
               <div className={styles.eventDetailsGrid}>
                 {[
                   [FaTag, 'Type', selectedEvent.type],
@@ -797,8 +796,21 @@ export default function CommunityCalendar() {
             </div>
 
             <div className={styles.modalActions}>
-              <button className={styles.btnPrimary}>Register for Event</button>
-              <button className={styles.btnSecondary}>Add to Calendar</button>
+              {selectedEvent.isOver ? (
+                <button type="button" className={styles.btnDisabled} disabled>
+                  Completed
+                </button>
+              ) : (
+                <>
+                  <button type="button" className={styles.btnPrimary}>
+                    Register for Event
+                  </button>
+
+                  <button type="button" className={styles.btnSecondary}>
+                    Add to Calendar
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
