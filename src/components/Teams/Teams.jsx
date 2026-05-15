@@ -17,6 +17,7 @@ import {
   addTeamMember,
   updateTeamMemeberVisibility,
   clearTeamMembers,
+  postNewTeam,
 } from '../../actions/allTeamsAction';
 import { getAllUserProfile } from '../../actions/userManagement';
 import Loading from '../common/Loading';
@@ -28,6 +29,7 @@ import TeamMembersPopup from './TeamMembersPopup';
 import DeleteTeamPopup from './DeleteTeamPopup';
 import TeamStatusPopup from './TeamStatusPopup';
 import AddTeamPopup from '../UserProfile/TeamsAndProjects/AddTeamPopup';
+import CreateNewTeamPopup from './CreateNewTeamPopup';
 // constants
 const FILTER_ALL = 'all';
 const FILTER_ACTIVE = 'active';
@@ -53,6 +55,7 @@ class Teams extends React.PureComponent {
       selectedFilter: FILTER_ALL,
       // Features from HEAD
       addTeamPopupOpen: false,
+      createNewTeamPopupOpen: false,
       isEdit: false,
       membersFetching: false,
       selectedTeamMembers: [],
@@ -207,6 +210,7 @@ class Teams extends React.PureComponent {
               onActiveClick={() => this.setFilter(FILTER_ACTIVE)}
               onInactiveClick={() => this.setFilter(FILTER_INACTIVE)}
               selectedFilter={this.state.selectedFilter}
+              darkMode={darkMode}
             />
             <TeamTableSearchPanel
               onSearch={this.onWildCardSearch}
@@ -322,8 +326,7 @@ class Teams extends React.PureComponent {
               await this.props.getAllUserTeams();
               await this.props.getAllUserProfile();
             } catch (error) {
-              console.error('Error updating team list:', error);
-              toast.error('Error updating team list. Please refresh the page.');
+              toast.error(error?.message || 'Error updating team list. Please refresh the page.');
             }
           }}
           handleSubmit={() => {}}
@@ -355,6 +358,11 @@ class Teams extends React.PureComponent {
           selectedStatus={isActive}
           onConfirmClick={this.onConfirmClick}
           selectedTeamCode={selectedTeamCode}
+        />
+        <CreateNewTeamPopup
+          open={this.state.createNewTeamPopupOpen}
+          onClose={this.onCreateNewTeamPopupClose}
+          onOkClick={this.onCreateNewTeamOkClick}
         />
       </>
     );
@@ -427,14 +435,26 @@ class Teams extends React.PureComponent {
   };
 
   onCreateNewTeamShow = () => {
-    this.setState({
-      addTeamPopupOpen: true,
-      isEdit: false,
-      selectedTeam: '',
-      selectedTeamId: undefined,
-      selectedTeamCode: '',
-      isActive: '',
-    });
+    this.setState({ createNewTeamPopupOpen: true });
+  };
+
+  onCreateNewTeamPopupClose = () => {
+    this.setState({ createNewTeamPopupOpen: false });
+  };
+
+  onCreateNewTeamOkClick = async teamName => {
+    try {
+      const res = await this.props.postNewTeam(teamName, true);
+      if (res?.status === 200) {
+        toast.success(`Team "${teamName}" created successfully!`);
+        this.setState({ createNewTeamPopupOpen: false });
+        await this.props.getAllUserTeams();
+      } else {
+        toast.error(res?.data?.error || 'Failed to create team. Please try again.');
+      }
+    } catch (err) {
+      toast.error(err?.message || 'An unexpected error occurred. Please try again.');
+    }
   };
 
   onAddTeamPopupClose = () => {
@@ -540,6 +560,7 @@ Teams.propTypes = {
   addTeamMember: PropTypes.func.isRequired,
   updateTeamMemeberVisibility: PropTypes.func.isRequired,
   clearTeamMembers: PropTypes.func.isRequired,
+  postNewTeam: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({ state });
@@ -554,4 +575,5 @@ export default connect(mapStateToProps, {
   addTeamMember,
   updateTeamMemeberVisibility,
   clearTeamMembers,
+  postNewTeam,
 })(Teams);

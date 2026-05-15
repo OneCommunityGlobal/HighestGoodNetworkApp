@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { v4 as uuidv4 } from 'uuid';
 import { Button } from 'reactstrap';
 import { Link } from 'react-router-dom';
@@ -11,19 +12,23 @@ const buttonStyles = {
   team: 'indigo',
 };
 
-function LogBar(props) {
-  const { projectId } = props;
+function LogBar({ projectId }) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const buttonLabels = {
     dailyLogging: {
       name: ['Time', 'Material', 'Tool/Equipment'],
-      url: ['/bmdashboard/timelog', '/bmdashboard/materials/add', '/bmdashboard/tools/log'],
+      url: [
+        `/bmdashboard/timelog/${projectId}`,
+        '/bmdashboard/materials/add',
+        '/bmdashboard/tools/log',
+      ],
     },
     newItem: {
-      name: ['Team', 'Material', 'Tool/Equipment', 'Lessons'],
+      name: ['Team', 'Material', 'Add Equipment', 'Add Tool', 'Lessons'],
       url: [
         '/teams',
         '/bmdashboard/materials/add',
+        '/bmdashboard/equipment/add',
         '/bmdashboard/tools/add',
         `/bmdashboard/lessonform/${projectId}`,
       ],
@@ -74,5 +79,9 @@ function LogBar(props) {
     </div>
   );
 }
+
+LogBar.propTypes = {
+  projectId: PropTypes.string.isRequired,
+};
 
 export default LogBar;
