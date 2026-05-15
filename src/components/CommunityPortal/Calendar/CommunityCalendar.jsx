@@ -19,8 +19,6 @@ import {
   FaGlassCheers,
 } from 'react-icons/fa';
 import { GrWorkshop } from 'react-icons/gr';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClock, faLocationDot, faTag, faCircleCheck } from '@fortawesome/free-solid-svg-icons';
 
 const MOCK_EVENTS = [];
 
@@ -107,6 +105,7 @@ export default function CommunityCalendar() {
         type: event.type || 'General',
         status: normalizeStatus(event.status),
         time: event.time || timeString,
+        endTime: endTimeString || event.endTime,
         description: event.description || `Join us for ${event.title}`,
         location: event.location || 'Online',
         isOver: eventDate < new Date(),
