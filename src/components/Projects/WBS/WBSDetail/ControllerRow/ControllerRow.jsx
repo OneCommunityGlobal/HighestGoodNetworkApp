@@ -141,7 +141,7 @@ function ControllerRow(props) {
             color="secondary"
             size="sm"
             className={styles["controlBtn"]}
-            onClick={() => onCopy(props.taskId)}
+            onClick={onCopy}
             style={darkMode ? boxStyleDark : boxStyle}
           >
             {isCopied ? 'Copied' : 'Copy'}

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import {
   Bar,
   BarChart,
@@ -102,6 +103,8 @@ const InfoTooltip = ({ text, children }) => {
 };
 
 export default function EventDashboard() {
+  const darkMode = useSelector(state => state.theme?.darkMode);
+
   const currentDate = new Date();
 
   const thirtyDaysAgo = new Date(currentDate.getTime() - 30 * 24 * 60 * 60 * 1000);
@@ -109,7 +112,7 @@ export default function EventDashboard() {
   const dateRangeLabel = `${thirtyDaysAgo.toLocaleDateString()} - ${currentDate.toLocaleDateString()}`;
 
   return (
-    <div className={styles.dashboardContainer}>
+    <div className={`${styles.dashboardContainer} ${darkMode ? styles.dark : ''}`}>
       <div className={styles.headerSection}>
         <h1 className={styles.pageTitle}>Event Attendance Dashboard</h1>
 
@@ -205,13 +208,21 @@ export default function EventDashboard() {
                   bottom: 40,
                 }}
               >
-                <CartesianGrid strokeDasharray="3 3" stroke="#d1d5db" />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--ep-grid-stroke, #d1d5db)" />
 
-                <XAxis dataKey="time" interval={0} angle={-35} textAnchor="end" height={60} />
+                <XAxis
+                  dataKey="time"
+                  interval={0}
+                  angle={-35}
+                  textAnchor="end"
+                  height={60}
+                  stroke="var(--ep-chart-tick, #64748b)"
+                />
 
                 <YAxis
                   width={80}
                   tick={{ fontSize: 12 }}
+                  stroke="var(--ep-chart-tick, #64748b)"
                   label={{
                     value: 'Number of Users',
                     angle: -90,
@@ -219,7 +230,7 @@ export default function EventDashboard() {
                     dx: -25,
                     style: {
                       textAnchor: 'middle',
-                      fill: '#64748b',
+                      fill: 'var(--ep-chart-tick, #64748b)',
                       fontSize: 12,
                     },
                   }}
@@ -233,9 +244,13 @@ export default function EventDashboard() {
                   }}
                 />
 
-                <Bar dataKey="registered" name="Registered Users" fill="#4A90E2" />
+                <Bar
+                  dataKey="registered"
+                  name="Registered Users"
+                  fill="var(--ep-primary, #4A90E2)"
+                />
 
-                <Bar dataKey="attended" name="Attended Users" fill="#82B7FF" />
+                <Bar dataKey="attended" name="Attended Users" fill="var(--ep-primary-2, #82B7FF)" />
               </BarChart>
             </ResponsiveContainer>
           </div>

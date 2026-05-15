@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import './ImageCarousel.css';
+import styles from './ImageCarousel.module.css';
 
 export default function ImageCarousel({ images }) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -19,30 +19,35 @@ export default function ImageCarousel({ images }) {
   };
 
   return (
-    <div className="carousel-container">
-      <div className="carousel-wrapper">
+    <div className={`${styles.carouselContainer}`}>
+      <div className={`${styles.carouselWrapper}`}>
         <div
-          className="carousel-track"
+          className={`${styles.carouselTrack}`}
           style={{ transform: `translateX(-${currentIndex * 100}%)` }}
         >
           {images.map((image, index) => (
-            <img key={image} className="carousel-image" src={image} alt={`Slide ${index + 1}`} />
+            <img
+              key={image}
+              className={`${styles.carouselImage}`}
+              src={image}
+              alt={`Slide ${index + 1}`}
+            />
           ))}
         </div>
       </div>
-      <button type="button" className="img-arrow left" onClick={handlePrev}>
+      <button type="button" className={`${styles.imgArrow} ${styles.left}`} onClick={handlePrev}>
         ❮
       </button>
-      <button type="button" className="img-arrow right" onClick={handleNext}>
+      <button type="button" className={`${styles.imgArrow} ${styles.right}`} onClick={handleNext}>
         ❯
       </button>
-      <div className="carousel-indicators">
+      <div className={`${styles.carouselIndicators}`}>
         {images.map((image, index) => (
           <span
             key={image}
             role="button"
             tabIndex={0}
-            className={`indicator ${index === currentIndex ? 'active' : ''}`}
+            className={`${styles.indicator} ${index === currentIndex ? styles.active : ''}`}
             onClick={() => handleIndicatorClick(index)}
             onKeyDown={e => {
               if (e.key === 'Enter' || e.key === ' ') {

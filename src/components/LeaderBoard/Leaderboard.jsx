@@ -153,7 +153,7 @@ function LeaderBoard({
         setTeams(response.data.teams);
         setUserRole(response.data.role);
       } catch (error) {
-        toast.error(error);
+        toast.error(error?.message || String(error));
       }
     };
 
@@ -176,14 +176,22 @@ function LeaderBoard({
 
   useEffect(() => {
     const checkAbbreviatedView = () => {
-      const isAbbrev = window.innerWidth < window.screen.width * 0.75;
+      const isAbbrev = window.innerWidth < 1500;
       setIsAbbreviatedView(isAbbrev);
     };
 
-    checkAbbreviatedView(); // run on mount
-    window.addEventListener('resize', checkAbbreviatedView);
+    let timer;
+    const debouncedCheck = () => {
+      clearTimeout(timer);
+      timer = setTimeout(checkAbbreviatedView, 200); // increase to 200ms
+    };
 
-    return () => window.removeEventListener('resize', checkAbbreviatedView);
+    checkAbbreviatedView();
+    window.addEventListener('resize', debouncedCheck);
+    return () => {
+      window.removeEventListener('resize', debouncedCheck);
+      clearTimeout(timer);
+    };
   }, []);
 
   const updateOrganizationData = (usersTaks, contUsers) => {
@@ -691,7 +699,7 @@ function LeaderBoard({
               className={`leaderboard table-fixed ${
                 darkMode ? 'text-light dark-mode bg-yinmn-blue' : ''
               } ${isAbbreviatedView ? 'abbreviated-mode' : ''}`}
-              style={{ minWidth: '500px' }}
+              style={{ width: '100%', tableLayout: isAbbreviatedView ? 'fixed' : 'auto' }}
             >
               <thead className="responsive-font-size">
                 <tr className={darkMode ? 'bg-space-cadet' : ''} style={darkModeStyle}>
@@ -700,16 +708,24 @@ function LeaderBoard({
                   </th>
                   <th style={darkModeStyle}>
                     <div className="d-flex align-items-center">
-                      <span>{isAbbreviatedView ? 'Name' : 'Name'}</span>
-                      <EditableInfoModal
-                        areaName="Leaderboard"
-                        areaTitle="Team Members Navigation"
-                        role={loggedInUser.role}
-                        fontSize={18}
-                        isPermissionPage
-                        darkMode={darkMode}
-                        className="p-2"
-                      />
+                      <span className="mr-2">{isAbbreviatedView ? 'Name' : 'Name'}</span>
+                      <span
+                        style={{
+                          position: 'relative',
+                          top: isAbbreviatedView ? '-13px' : '2px',
+                          left: isAbbreviatedView ? '10px' : '0px',
+                        }}
+                      >
+                        <EditableInfoModal
+                          areaName="Leaderboard"
+                          areaTitle="Team Members Navigation"
+                          role={loggedInUser.role}
+                          fontSize={isAbbreviatedView ? 13 : 18}
+                          isPermissionPage
+                          darkMode={darkMode}
+                          className="p-2"
+                        />
+                      </span>
                     </div>
                   </th>
                   <th style={darkModeStyle}>
@@ -751,7 +767,7 @@ function LeaderBoard({
                         <span>{stateOrganizationData.name}</span>
                         <br />
                         {viewZeroHouraMembers(loggedInUser.role) && (
-                          <span className="leaderboard-totals-title">
+                          <span className={styles.leaderboardTotalsTitle}>
                             0 hrs Totals:{' '}
                             {filteredUsers.filter(user => user.weeklycommittedHours === 0).length}{' '}
                             Members
@@ -766,7 +782,7 @@ function LeaderBoard({
                         <span>{stateOrganizationData.name}</span>
                         <br />
                         {viewZeroHouraMembers(loggedInUser.role) && (
-                          <span className="leaderboard-totals-title">
+                          <span className={styles.leaderboardTotalsTitle}>
                             0 hrs Totals:{' '}
                             {filteredUsers.filter(user => user.weeklycommittedHours === 0).length}{' '}
                             Members
@@ -969,8 +985,13 @@ function LeaderBoard({
                             onClick={() => trophyIconToggle(item)}
                             onKeyDown={() => trophyIconToggle(item)}
                           >
-                            <p style={{ fontSize: '10px', marginLeft: '1px' }}>
-                              <strong>{iconContent}</strong>
+                            <p
+                              className={darkMode ? styles.trophyTextWhite : undefined}
+                              style={{ fontSize: '10px', marginLeft: '1px' }}
+                            >
+                              <strong className={darkMode ? styles.trophyTextWhite : undefined}>
+                                {iconContent}
+                              </strong>
                             </p>
                           </i>
                         )}
@@ -1074,7 +1095,7 @@ function LeaderBoard({
                           title={mouseoverTextValue}
                           id="Total time"
                           className={
-                            item.totalintangibletime_hrs > 0 ? 'leaderboard-totals-title' : null
+                            item.totalintangibletime_hrs > 0 ? styles.leaderboardTotalsTitle : null
                           }
                         >
                           {item.totaltime}

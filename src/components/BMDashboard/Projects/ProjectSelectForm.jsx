@@ -8,7 +8,6 @@ function ProjectSelectForm() {
   const darkMode = useSelector(state => state.theme?.darkMode || false);
 
   const [selectedProject, setSelectedProject] = useState('');
-
   const history = useHistory();
 
   const handleGo = () => {
@@ -54,8 +53,21 @@ function ProjectSelectForm() {
         <Button
           onClick={handleGo}
           disabled={!selectedProject}
-          style={buttonStyles}
-          className={darkMode ? 'btn-dark-mode' : ''}
+          style={
+            darkMode
+              ? {
+                  whiteSpace: 'nowrap',
+                  backgroundColor: '#00ffff',
+                  borderColor: '#00ffff',
+                  color: '#000',
+                }
+              : {
+                  whiteSpace: 'nowrap',
+                  backgroundColor: '#2F4F4F',
+                  borderColor: '#2F4F4F',
+                  color: '#fff',
+                }
+          }
         >
           Go to Project Dashboard
         </Button>
