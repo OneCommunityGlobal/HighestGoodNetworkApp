@@ -515,27 +515,15 @@ export default function CommunityCalendar() {
             .react-calendar__tile.selectedDate .eventItem {
               color: inherit !important;
             }
-              /* 1. Target the button and any text inside it */
+              /* Navigation button hover/focus — dark mode */
             .react-calendar__navigation button:enabled:hover,
             .react-calendar__navigation button:enabled:hover *,
             .react-calendar__navigation button:enabled:focus,
             .react-calendar__navigation button:enabled:focus * {
-              background-color: #e6e6e6 !important;
-              color: #000000 !important;
-              /* This handles cases where they use text-shadows or strokes */
+              background-color: #2d3748 !important;
+              color: #ffffff !important;
               text-shadow: none !important;
               -webkit-text-stroke: 0px transparent !important;
-            }
-
-            /* 2. Target the specific arrows (the << < > >> symbols) */
-            .react-calendar__navigation__arrow:enabled:hover {
-              color: #000000 !important;
-            }
-
-            /* 3. If they are using pseudo-elements (common in some versions) */
-            .react-calendar__navigation button:enabled:hover::before,
-            .react-calendar__navigation button:enabled:hover::after {
-              color: #000000 !important;
             }
           `}
         </style>
@@ -791,8 +779,9 @@ export default function CommunityCalendar() {
             <div className={styles.modalContent}>
               <div className={styles.eventStatus}>
                 <span
-                  className={`${styles.statusBadge} ${styles[statusMap[selectedEvent.status]] ||
-                    ''} ${darkMode ? styles.darkModeStatusBadge : ''}`}
+                  className={`${darkMode ? styles.darkModeStatusBadge : styles.statusBadge} ${
+                    darkMode ? '' : styles[statusMap[selectedEvent.status]] || ''
+                  }`}
                 >
                   {statusIconMap[selectedEvent.status] || ''} {selectedEvent.status}
                 </span>
