@@ -340,18 +340,20 @@ export default function ToolsStoppageHorizontalBarChart() {
       <Row className="mb-3 align-items-center">
         <Col xs={12} md={6}>
           <div className={styles.datepickerWrapper}>
-            <DatePicker
-              selectsRange
-              startDate={startDate}
-              endDate={endDate}
-              onChange={update => {
-                setDateRange(update);
-              }}
-              placeholderText={dateRangeLabel || 'Filter by Date Range'}
-              className={`${styles.datePickerInput} form-control ${darkMode ? 'darkTheme' : ''}`}
-              wrapperClassName={styles.datePickerControl}
-              calendarClassName={darkMode ? 'darkThemeCalendar' : 'customCalendar'}
-            />
+            <div className={styles.datePickerContainer}>
+              <DatePicker
+                selectsRange
+                startDate={startDate}
+                endDate={endDate}
+                onChange={update => {
+                  setDateRange(update);
+                }}
+                placeholderText={dateRangeLabel || 'Filter by Date Range'}
+                className={`${styles.datePickerInput} form-control ${darkMode ? 'darkTheme' : ''}`}
+                wrapperClassName={styles.datePickerControl}
+                calendarClassName={darkMode ? 'darkThemeCalendar' : 'customCalendar'}
+              />
+            </div>
             <Button
               variant="outline-danger"
               size="sm"

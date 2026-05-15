@@ -1,20 +1,51 @@
-/* Light mode for multi select*/
+/* Light mode for multi select */
 :global(.customSelect__control) {
   background-color: #fff !important;
   color: #000 !important;
   border-color: #ccc;
-  font-size: 10px;
+  font-size: 1rem;
 }
 
 :global(.customSelect__single-value) {
-  font-size: 10px;
+  font-size: 1rem;
   color: #000 !important;
 }
 
-:global(.datePickerInput) {
-  font-size: 10px !important;
+.datepickerWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.datePickerContainer {
+  flex: 0 0 auto;
+  position: relative;
+}
+
+.datePickerControl {
+  display: block;
+}
+
+.datepickerWrapper :global(.btn) {
+  flex: 0 0 auto;
+}
+
+:global(.customSelect__placeholder),
+:global(.customSelect__input-container) {
+  font-size: 1rem;
+}
+
+.datePickerInput {
+  font-size: 1rem !important;
   padding: 6px 8px;
   border-radius: 4px;
+}
+
+.datePickerInput:global(.darkTheme) {
+  background-color: #2b3e59 !important;
+  color: #fff !important;
+  border: 1px solid #666 !important;
+  font-size: 1rem !important;
 }
 
 :global(.darkTheme .form-control .datePickerInput) {
@@ -26,6 +57,10 @@
 
 :global(.customCalendar .react-datepicker__day--keyboard-selected) {
   background-color: #7d7e7f !important;
+}
+
+:global(.customCalendar .react-datepicker__navigation-icon::before) {
+  border-color: #222 !important;
 }
 
 /* Hover day styling in dark theme */
@@ -68,12 +103,12 @@
   border-radius: 50%;
 }
 
-/* Dark mode for multi select*/
+/* Dark mode for multi select */
 :global(.darkTheme .customSelect__control) {
   background-color: #fff!important;
   color: #000!important;
   border-color: #ccc!important;
-  font-size: 10px!important;
+  font-size: 1rem!important;
 }
 
 :global(.darkTheme .customSelect__menu) {
@@ -97,14 +132,20 @@
 
 .darkSelectWrapper :global(.customSelect__control) {
   background-color: #1a1a1a !important;
-  border-color: rgba(255, 255, 255, 0.2);
+  border-color: rgb(255 255 255 / 20%);
+  color: #f5f7fa !important;
+}
+
+.darkSelectWrapper :global(.customSelect__single-value),
+.darkSelectWrapper :global(.customSelect__input-container),
+.darkSelectWrapper :global(.customSelect__placeholder) {
   color: #f5f7fa !important;
 }
 
 
 
 /* Filter controls layout for small screens */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   :global(.datepickerWrapper) {
     display: flex;
     flex-direction: column;
@@ -117,10 +158,10 @@
   }
 
   :global(.customSelect__control) {
-    font-size: 10px;
+    font-size: 1rem;
   }
 
   :global(.customSelect__multi-value) {
-    font-size: 10px;
+    font-size: 1rem;
   }
 }
