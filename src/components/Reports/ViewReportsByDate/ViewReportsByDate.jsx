@@ -4,7 +4,7 @@ import DatePicker from 'react-datepicker';
 import { Button } from 'reactstrap';
 import { boxStyle, boxStyleDark } from '~/styles';
 import 'react-datepicker/dist/react-datepicker.css';
-import '../../Header/DarkMode.css';
+import '../../Header/index.css';
 
 class ViewReportByDate extends Component {
   constructor(props) {
@@ -34,11 +34,19 @@ class ViewReportByDate extends Component {
   }
 
   clearDates() {
-    this.setState({
+    try {
+       this.setState({
       startDate: new Date(this.props.minDate),
       endDate: new Date(),
     });
     this.props.onClearFilters();
+    } catch (error) {
+      this.setState({
+      startDate: new Date(this.props.minDate),
+      endDate: new Date(),
+    });
+    }
+   
   }
 
   render() {

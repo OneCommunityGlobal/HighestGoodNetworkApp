@@ -2,6 +2,54 @@
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 
+// Mock @tanstack/react-query FIRST - must be hoisted before any imports that use it
+vi.mock('@tanstack/react-query', () => {
+  const React = require('react');
+  return {
+    useQuery: vi.fn(() => ({
+      data: undefined,
+      isLoading: false,
+      isError: false,
+      error: null,
+      refetch: vi.fn(),
+    })),
+    useMutation: vi.fn(() => ({
+      mutate: vi.fn(),
+      mutateAsync: vi.fn(),
+      isLoading: false,
+      isError: false,
+      error: null,
+    })),
+    QueryClient: class QueryClient {
+      constructor() {
+        this.setQueryData = vi.fn();
+        this.getQueryData = vi.fn();
+        this.invalidateQueries = vi.fn();
+        this.refetchQueries = vi.fn();
+      }
+    },
+    QueryClientProvider: ({ children }) => React.createElement('div', {}, children),
+  };
+});
+
+// Mock URL APIs used by plotly
+const mockCreateObjectURL = vi.fn(() => 'mock-url');
+const mockRevokeObjectURL = vi.fn();
+
+if (!global.URL) {
+  global.URL = {};
+}
+global.URL.createObjectURL = mockCreateObjectURL;
+global.URL.revokeObjectURL = mockRevokeObjectURL;
+
+if (typeof window !== 'undefined') {
+  if (!window.URL) {
+    window.URL = {};
+  }
+  window.URL.createObjectURL = mockCreateObjectURL;
+  window.URL.revokeObjectURL = mockRevokeObjectURL;
+}
+
 // Mock axios with proper error handling
 vi.mock('axios', () => {
   const mockAxios = {
@@ -40,22 +88,45 @@ vi.mock('axios', () => {
 
 vi.mock('msw', () => ({
   rest: {
-    get:     vi.fn(),
-    post:    vi.fn(),
-    patch:   vi.fn(),
-    put:     vi.fn(),
-    delete:  vi.fn(),
+    get: vi.fn(),
+    post: vi.fn(),
+    patch: vi.fn(),
+    put: vi.fn(),
+    delete: vi.fn(),
     options: vi.fn(),
   },
-}))
+}));
 
 vi.mock('msw/node', () => ({
   setupServer: () => ({
-    listen: () => {},
-    resetHandlers: () => {},
-    close: () => {},
+    listen: () => { },
+    resetHandlers: () => { },
+    close: () => { },
   }),
 }));
+
+const createStorageMock = () => {
+  let store = {};
+  return {
+    getItem: key => (key in store ? store[key] : null),
+    setItem: (key, value) => {
+      store[key] = value !== undefined && value !== null ? String(value) : '';
+    },
+    removeItem: key => {
+      delete store[key];
+    },
+    clear: () => {
+      store = {};
+    },
+    key: index => Object.keys(store)[index] || null,
+    get length() {
+      return Object.keys(store).length;
+    },
+  };
+};
+
+globalThis.localStorage = createStorageMock();
+globalThis.sessionStorage = createStorageMock();
 
 // Mock react-toastify
 vi.mock('react-toastify', () => {
@@ -67,6 +138,8 @@ vi.mock('react-toastify', () => {
       warn: vi.fn(),
       dark: vi.fn(),
       configure: vi.fn(),
+      loading: vi.fn(),
+      dismiss: vi.fn(),
     },
     ToastContainer: vi.fn(() => null),
   };
@@ -74,37 +147,59 @@ vi.mock('react-toastify', () => {
 
 // Mock html2canvas
 vi.mock('html2canvas', () => ({
-  default: () => Promise.resolve({}),
+  __esModule: true,
+  default: vi.fn(() => Promise.resolve({
+    toDataURL: vi.fn(() => 'data:image/jpeg;base64,mock'),
+    width: 800,
+    height: 600,
+  })),
 }));
 
 // Mock jspdf
 vi.mock('jspdf', () => ({
   jsPDF: vi.fn().mockImplementation(() => ({
     addPage: vi.fn(),
+    addImage: vi.fn(),
     save: vi.fn(),
   })),
 }));
 
-// Mock d3
-vi.mock('d3', () => ({
-  select: vi.fn().mockReturnThis(),
-  scaleOrdinal: vi.fn().mockReturnValue({
-    range: vi.fn(),
-  }),
-  pie: vi.fn().mockReturnValue({
-    value: vi.fn(),
-  }),
-  arc: vi.fn().mockReturnThis(),
-  axisBottom: vi.fn(),
-  axisLeft: vi.fn(),
-  scaleTime: vi.fn().mockReturnValue({
-    domain: vi.fn().mockReturnThis(),
-    range: vi.fn(),
-  }),
-  line: vi.fn().mockReturnThis(),
-  timeFormat: vi.fn().mockReturnValue('Formatted Date'),
-  format: vi.fn(),
+// Mock joi-browser (use joi instead) - hoisted to top level
+vi.mock('joi-browser', async () => {
+  const joi = await import('joi');
+  return joi;
+});
+
+
+// Mock react-day-picker
+vi.mock('react-day-picker', () => ({
+  DayPicker: ({ selected, onSelect, className, mode }) => {
+    const React = require('react');
+    return React.createElement('div', {
+      role: 'grid',
+      'data-testid': 'day-picker',
+      className,
+    }, 'DayPicker Mock');
+  },
 }));
+
+// Mock antd
+vi.mock('antd', () => ({
+  Select: ({ children, ...props }) => {
+    const React = require('react');
+    return React.createElement('select', props, children);
+  },
+  DatePicker: (props) => {
+    const React = require('react');
+    return React.createElement('input', { type: 'date', ...props });
+  },
+  Spin: ({ children, ...props }) => {
+    const React = require('react');
+    return React.createElement('div', props, children);
+  },
+}));
+
+// CSS imports are handled by Vite's CSS plugin, no need to mock
 
 // Suppress React warnings
 let originalConsoleError;
@@ -131,3 +226,11 @@ afterAll(() => {
     console.error = originalConsoleError;
   }
 });
+
+class ResizeObserver {
+  observe() { return undefined; }      // noop
+  unobserve() { return undefined; }    // noop
+  disconnect() { return undefined; }   // noop
+}
+
+global.ResizeObserver = ResizeObserver;

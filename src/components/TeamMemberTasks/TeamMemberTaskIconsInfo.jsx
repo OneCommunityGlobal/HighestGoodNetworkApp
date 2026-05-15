@@ -5,7 +5,7 @@ import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 import { boxStyle, boxStyleDark } from '~/styles';
 import styles from './style.module.css';
-import '../Header/DarkMode.css';
+import '../Header/index.css';
 import { useSelector } from 'react-redux';
 import infoTaskIconContent from './infoTaskIconContent';
 
