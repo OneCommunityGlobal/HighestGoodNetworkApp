@@ -1,3 +1,4 @@
+/* stylelint-disable no-descending-specificity */
 .feedback-modal {
   font-family: Arial, sans-serif;
 }
@@ -62,7 +63,7 @@
   max-height: 200px;
   overflow-y: auto;
   z-index: 1000;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgb(0 0 0 / 10%);
   margin-top: 4px;
 }
 
@@ -177,6 +178,7 @@ body.dark-mode .user-details {
 body.dark-mode .loading {
   color: #fff;
 }
+
 /* Dark Mode Support - Issues #6 & #7 */
 :global(body.dark-mode) .feedback-modal :global(.modal-content) {
   background-color: #1e1e1e !important;

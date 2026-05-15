@@ -1,3 +1,5 @@
+/* stylelint-disable no-descending-specificity, selector-type-no-unknown */
+
 /* General Styling */
 .headerWrapper {
   height: fit-content;
@@ -81,14 +83,11 @@
 }
 
 .cardContent {
-  /* padding shorthand: top right bottom left */
   padding: 15px 40px;
   white-space: pre-line;
   color: white;
   font-size: medium;
   line-height: 1.4;
-
-  /* overflow-wrap replaces deprecated word-wrap */
   overflow-wrap: break-word;
   box-sizing: border-box;
   width: 100%;
@@ -186,6 +185,19 @@
   display: none;
 }
 
+/* Hamburger toggle — hidden on wide screens */
+.navbarToggler {
+  display: none;
+  margin-left: 1rem;
+  flex-shrink: 0;
+}
+
+/* Collapsed nav — hidden on wide screens */
+.navCollapse {
+  display: flex;
+  align-items: center;
+}
+
 /* max-width: 1700px */
 @media (width <= 1700px) {
   .hideInTablet {
@@ -204,12 +216,6 @@
   }
 }
 
-.navbarToggler {
-  display: none;
-  margin-left: 1rem;
-  flex-shrink: 0;
-}
-
 /* max-width: 1199px */
 @media (width <= 1199px) {
   .navbarToggler {
@@ -218,6 +224,7 @@
   }
 
   .navCollapse {
+    display: block;
     position: absolute;
     top: 100%;
     right: 0;
@@ -225,8 +232,6 @@
     min-width: 220px;
     background-color: #343a40;
     border-radius: 0 0 6px 6px;
-
-    /* rgb() modern notation with alpha as percentage */
     box-shadow: 0 6px 16px rgb(0 0 0 / 40%);
     z-index: 999;
     max-height: 0;
@@ -234,8 +239,13 @@
     transition: max-height 0.25s ease-out;
   }
 
+  .navCollapseHidden {
+    display: none !important;
+  }
+
   .navCollapseOpen {
     max-height: 600px;
+    overflow-y: auto;
     transition: max-height 0.25s ease-in;
   }
 

@@ -45,28 +45,68 @@ const allData = {
 
 const allInsights = {
   'This Week': [
-    { title: 'Most waste event type', value: 'Kids event', color: '#dcfce7' },
-    { title: 'Most vulnerable materials', value: 'Flower', color: '#f3e8ff' },
-    { title: 'Top rated venues', value: 'Kevin building', color: '#dcfce7' },
-    { title: 'Lowest rated venues', value: 'Community centers', color: '#ffe4e6' },
-    { title: 'Highest cost venues/hr', value: 'Kevin building', color: '#dcfce7' },
-    { title: 'Most vulnerable equipment', value: 'Chair', color: '#ffe4e6' },
+    { title: 'Most waste event type', value: 'Kids event', color: '#b0d9cb', textColor: '#1a5c3a' },
+    { title: 'Most vulnerable materials', value: 'Flower', color: '#c3b8e8', textColor: '#4a2f8a' },
+    { title: 'Top rated venues', value: 'Kevin building', color: '#b0d9cb', textColor: '#1a5c3a' },
+    {
+      title: 'Lowest rated venues',
+      value: 'Community centers',
+      color: '#fdcdb6',
+      textColor: '#8b1a2a',
+    },
+    {
+      title: 'Highest cost venues/hr',
+      value: 'Kevin building',
+      color: '#b0d9cb',
+      textColor: '#1a5c3a',
+    },
+    { title: 'Most vulnerable equipment', value: 'Chair', color: '#fdcdb6', textColor: '#8b1a2a' },
   ],
   'Last Week': [
-    { title: 'Most waste event type', value: 'Sports event', color: '#dcfce7' },
-    { title: 'Most vulnerable materials', value: 'Paper', color: '#f3e8ff' },
-    { title: 'Top rated venues', value: 'Sports center', color: '#dcfce7' },
-    { title: 'Lowest rated venues', value: 'Old hall', color: '#ffe4e6' },
-    { title: 'Highest cost venues/hr', value: 'Sports center', color: '#dcfce7' },
-    { title: 'Most vulnerable equipment', value: 'Table', color: '#ffe4e6' },
+    {
+      title: 'Most waste event type',
+      value: 'Sports event',
+      color: '#b0d9cb',
+      textColor: '#1a5c3a',
+    },
+    { title: 'Most vulnerable materials', value: 'Paper', color: '#c3b8e8', textColor: '#4a2f8a' },
+    { title: 'Top rated venues', value: 'Sports center', color: '#b0d9cb', textColor: '#1a5c3a' },
+    { title: 'Lowest rated venues', value: 'Old hall', color: '#fdcdb6', textColor: '#8b1a2a' },
+    {
+      title: 'Highest cost venues/hr',
+      value: 'Sports center',
+      color: '#b0d9cb',
+      textColor: '#1a5c3a',
+    },
+    { title: 'Most vulnerable equipment', value: 'Table', color: '#fdcdb6', textColor: '#8b1a2a' },
   ],
   'This Month': [
-    { title: 'Most waste event type', value: 'Community event', color: '#dcfce7' },
-    { title: 'Most vulnerable materials', value: 'Plastic', color: '#f3e8ff' },
-    { title: 'Top rated venues', value: 'Community hall', color: '#dcfce7' },
-    { title: 'Lowest rated venues', value: 'Small rooms', color: '#ffe4e6' },
-    { title: 'Highest cost venues/hr', value: 'Community hall', color: '#dcfce7' },
-    { title: 'Most vulnerable equipment', value: 'Microphone', color: '#ffe4e6' },
+    {
+      title: 'Most waste event type',
+      value: 'Community event',
+      color: '#b0d9cb',
+      textColor: '#1a5c3a',
+    },
+    {
+      title: 'Most vulnerable materials',
+      value: 'Plastic',
+      color: '#c3b8e8',
+      textColor: '#4a2f8a',
+    },
+    { title: 'Top rated venues', value: 'Community hall', color: '#b0d9cb', textColor: '#1a5c3a' },
+    { title: 'Lowest rated venues', value: 'Small rooms', color: '#fdcdb6', textColor: '#8b1a2a' },
+    {
+      title: 'Highest cost venues/hr',
+      value: 'Community hall',
+      color: '#b0d9cb',
+      textColor: '#1a5c3a',
+    },
+    {
+      title: 'Most vulnerable equipment',
+      value: 'Microphone',
+      color: '#fdcdb6',
+      textColor: '#8b1a2a',
+    },
   ],
 };
 
@@ -189,10 +229,14 @@ export default function ResourceUsage() {
 
           {data && data.length > 0 ? (
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data} margin={{ top: 20, right: 30, left: 30, bottom: 80 }}>
+              <BarChart
+                data={data}
+                margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+                barCategoryGap="15%"
+              >
                 <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke={darkMode ? '#3A506B' : '#eee'}
+                  strokeDasharray="0"
+                  stroke={darkMode ? '#3A506B' : '#e5e7eb'}
                   vertical={false}
                 />
 
@@ -210,6 +254,9 @@ export default function ResourceUsage() {
                 <YAxis
                   axisLine={false}
                   tickLine={false}
+                  tickCount={5}
+                  domain={[0, 'auto']}
+                  width={40}
                   tick={{
                     fill: darkMode ? '#ffffff' : '#666',
                     fontWeight: 700,
@@ -225,11 +272,28 @@ export default function ResourceUsage() {
                   iconType="circle"
                   iconSize={8}
                   wrapperStyle={{
+                    top: 0,
+                    right: 0,
+                    paddingBottom: '4px',
                     color: darkMode ? '#ffffff' : '#666',
+                    fontSize: '0.875rem',
+                    lineHeight: '1.5',
                   }}
+                  formatter={value => (
+                    <span
+                      style={{
+                        color: darkMode ? '#ffffff' : '#666',
+                        marginLeft: '1px',
+                        marginRight: '0px',
+                        fontSize: '0.875rem',
+                      }}
+                    >
+                      {value.charAt(0).toUpperCase() + value.slice(1)}
+                    </span>
+                  )}
                 />
 
-                <Bar dataKey="returned" stackId="a" fill="#22c55e" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="returned" stackId="a" fill="#22c55e" radius={[0, 0, 0, 0]} />
                 <Bar dataKey="loaned" stackId="a" fill="#fca5a5" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -288,7 +352,7 @@ export default function ResourceUsage() {
                 <div
                   ref={el => (badgeRefs.current[idx] = el)}
                   className={styles.insightBadge}
-                  style={{ backgroundColor: insight.color }}
+                  style={{ backgroundColor: insight.color, color: insight.textColor }}
                 >
                   {insight.value}
                 </div>
