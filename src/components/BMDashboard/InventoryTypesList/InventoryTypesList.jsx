@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Link } from 'react-router-dom';
 import { fetchInvTypeByType } from '~/actions/bmdashboard/invTypeActions';
 import { fetchInvUnits } from '~/actions/bmdashboard/invUnitActions';
 import { Accordion, Card, Button } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import {
-  FaBoxes,
+  FaCubes,
   FaShoppingCart,
   FaTools,
   FaRecycle,
@@ -21,7 +21,7 @@ import AccordionToggle from './AccordionToggle';
 import styles from './TypesList.module.css';
 
 const categoryIcons = {
-  Materials: <FaBoxes />,
+  Materials: <FaCubes />,
   Consumables: <FaShoppingCart />,
   Equipments: <FaTools />,
   Reusables: <FaRecycle />,
@@ -31,7 +31,13 @@ const categoryIcons = {
 export function InventoryTypesList(props) {
   const { invUnits, errors, dispatch } = props;
   const history = useHistory();
-  const categories = ['Materials', 'Consumables', 'Equipments', 'Reusables', 'Tools'];
+  const categories = [
+    { label: 'Materials', route: '/bmdashboard/materials' },
+    { label: 'Consumables', route: '/bmdashboard/consumables' },
+    { label: 'Equipments', route: '/bmdashboard/equipment' },
+    { label: 'Reusables', route: '/bmdashboard/reusables' },
+    { label: 'Tools', route: '/bmdashboard/tools' },
+  ];
   const [isError, setIsError] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
 
@@ -77,14 +83,20 @@ export function InventoryTypesList(props) {
       <Accordion>
         {categories?.map((category, index) => {
           return (
-            <Card key={category}>
+            <Card key={category.label}>
               <AccordionToggle as={Card.Header} eventKey={index + 1}>
-                <span className={styles.categoryIcon}>{categoryIcons[category]}</span>
-                {category}
+                <span className={styles.categoryIcon}>{categoryIcons[category.label]}</span>
+                <Link
+                  to={category.route}
+                  className={styles.categoryLink}
+                  onClick={e => e.stopPropagation()}
+                >
+                  {category.label}
+                </Link>
               </AccordionToggle>
               <Accordion.Collapse eventKey={index + 1}>
                 <Card.Body className={`${styles.accordionCollapse}`}>
-                  <TypesTable category={category} />
+                  <TypesTable category={category.label} />
                 </Card.Body>
               </Accordion.Collapse>
             </Card>

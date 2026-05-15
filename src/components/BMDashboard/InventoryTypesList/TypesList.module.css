@@ -638,3 +638,25 @@
 :global(.bm-dashboard-dark) .categoryIcon {
   color: #5eb3e4;
 }
+
+/* Category hyperlinks */
+.categoryLink {
+  color: var(--color-text);
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.categoryLink:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+:global(.dark-mode) .categoryLink,
+:global(.bm-dashboard-dark) .categoryLink {
+  color: #fff;
+}
+
+:global(.dark-mode) .categoryLink:hover,
+:global(.bm-dashboard-dark) .categoryLink:hover {
+  color: #5eb3e4;
+}
