@@ -41,7 +41,7 @@ useEffect(() => {
       className={darkMode ? 'text-light dark-mode' : ''}
     >
       <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>
-        Set Your Final Day
+        Set User&apos;s Final Day
       </ModalHeader>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Input
