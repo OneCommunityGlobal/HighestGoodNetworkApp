@@ -538,6 +538,7 @@ export default function AddMaterialForm() {
                 enableLongNumbers={false}
                 inputStyle={{ height: 'auto', width: '40%', fontSize: 'inherit' }}
                 inputProps={{ id: 'phone-number' }}
+                containerClass={darkMode ? styles.phoneDark : ''}
               />
               {showPhoneValidationError && !phoneValid && formData.phoneNumber && (
                 <div
@@ -559,6 +560,7 @@ export default function AddMaterialForm() {
               value={formData.images}
               // onFilesSelected={handleFilesSelected}
               updateUploadedFiles={setUploadedFiles}
+              wrapperClass={darkMode ? styles.dragWrapper : ''}
             />
             {uploadedFiles.length > 0 && (
               <div className={`${styles.filePreviewContainer}`}>
