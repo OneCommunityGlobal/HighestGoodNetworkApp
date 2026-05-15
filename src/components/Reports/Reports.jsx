@@ -2,36 +2,36 @@
 /* eslint-disable react/no-unused-state */
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable react/sort-comp */
-import { Component } from 'react';
-import { connect } from 'react-redux';
-import { Container, Button } from 'reactstrap';
 import moment from 'moment-timezone';
-import { boxStyle, boxStyleDark } from '~/styles';
-import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
-import { searchWithAccent } from '~/utils/search';
-import { fetchAllProjects } from '../../actions/projects';
-import { getAllUserTeams } from '../../actions/allTeamsAction';
-import TeamTable from './TeamTable';
-import PeopleTable from './PeopleTable';
-import ProjectTable from './ProjectTable';
-import { getUserProfileBasicInfo } from '../../actions/userManagement';
-import { fetchAllTasks } from '../../actions/task';
+import { Component } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
-import './reportsPage.css';
-import projectsImage from './images/Projects.svg';
+import { connect } from 'react-redux';
+import { Button, Container } from 'reactstrap';
+import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
+import { boxStyle, boxStyleDark } from '~/styles';
+import { searchWithAccent } from '~/utils/search';
+import { getAllUserTeams } from '../../actions/allTeamsAction';
+import { fetchAllProjects } from '../../actions/projects';
+import { fetchAllTasks } from '../../actions/task';
+import { getUsersTotalHoursForSpecifiedPeriod } from '../../actions/timeEntries';
+import { getUserProfileBasicInfo } from '../../actions/userManagement';
+import Loading from '../common/Loading';
+import '../Header/index.css';
+import styles from './reportsPage.module.css';
 import peopleImage from './images/People.svg';
+import projectsImage from './images/Projects.svg';
 import teamsImage from './images/Teams.svg';
-import TotalPeopleReport from './TotalReport/TotalPeopleReport';
-import TotalTeamReport from './TotalReport/TotalTeamReport';
-import TotalProjectReport from './TotalReport/TotalProjectReport';
-import TotalContributorsReport from './TotalReport/TotalContributorsReport';
 import AddLostTime from './LostTime/AddLostTime';
 import LostTimeHistory from './LostTime/LostTimeHistory';
-import '../Header/index.css';
-import ViewReportByDate from './ViewReportsByDate/ViewReportsByDate';
+import PeopleTable from './PeopleTable';
+import ProjectTable from './ProjectTable';
 import ReportFilter from './ReportFilter/ReportFilter';
-import Loading from '../common/Loading';
-import { getUsersTotalHoursForSpecifiedPeriod } from '../../actions/timeEntries';
+import TeamTable from './TeamTable';
+import TotalContributorsReport from './TotalReport/TotalContributorsReport';
+import TotalPeopleReport from './TotalReport/TotalPeopleReport';
+import TotalProjectReport from './TotalReport/TotalProjectReport';
+import TotalTeamReport from './TotalReport/TotalTeamReport';
+import ViewReportByDate from './ViewReportsByDate/ViewReportsByDate';
 
 const DATE_PICKER_MIN_DATE = '01/01/2010';
 
@@ -158,8 +158,18 @@ class ReportsPage extends Component {
 
   handleClearFilters() {
     this.setState({
-      startDate: new Date(DATE_PICKER_MIN_DATE),
-      endDate: new Date(),
+     startDate: moment()
+  .tz('America/Los_Angeles')
+  .subtract(1, 'week')
+  .startOf('week')
+  .toDate(),
+
+endDate: moment()
+  .tz('America/Los_Angeles')
+  .subtract(1, 'week')
+  .endOf('week')
+  .toDate(),
+
       wildCardSearchText: '',
       filterStatus: 'all',
     });
@@ -512,9 +522,9 @@ class ReportsPage extends Component {
     const boxStyling = darkMode ? boxStyleDark : boxStyle;
 
     return (
-      <Container fluid className={`mb-5 container-component-wrapper ${isOxfordBlue}`}>
+      <Container fluid className={`mb-5 ${styles['container-component-wrapper']} ${isOxfordBlue}`} style={darkMode ? { backgroundColor: '#1C2B3A' } : {}}>
         <div
-          className={`category-data-container ${isOxfordBlue} ${
+          className={`${styles['category-data-container']} ${isOxfordBlue} ${
             this.state.showPeople ||
             this.state.showProjects ||
             this.state.showTeams ||
@@ -527,15 +537,16 @@ class ReportsPage extends Component {
             this.state.showAddProjHistory ||
             this.state.showContributorsReport
               ? ''
-              : 'no-active-selection'
+              : styles['no-active-selection']
           }`}
+          style={darkMode ? { backgroundColor: '#1C2B3A' } : {}}
           type="button"
         >
-          <div className="container-component-category">
+          <div className={styles['container-component-category']}>
             <h2 className="mt-3 ">
               {/* Loading spinner at the top */}
               {this.state.loading && (
-                <div className="loading-spinner-top">
+                <div className={styles['loading-spinner-top']}>
                   <Loading align="center" darkMode={darkMode} />
                 </div>
               )}
@@ -555,18 +566,21 @@ class ReportsPage extends Component {
             <div>
               <p >Select a Category</p>
             </div>
-            <div className='report-container-data'>
-              <div className='data-container' style={this.state.showCharts ? {width: '50%'} : {width: '100%'}}>
-                <div className="category-container">
+            <div className={styles['report-container-data']}>
+              <div className={styles['data-container']} style={this.state.showCharts ? {width: '50%'} : {width: '100%'}}>
+                <div className={styles['category-container']}>
                   <button
                     type="button"
-                    className={`card-category-item ${this.state.showProjects ? 'selected' : ''
+                    className={`${styles['card-category-item']} ${this.state.showProjects ? styles.selected : ''
                       } ${isYinmnBlue}`}
-                    style={boxStyling}
+                    style={{
+                      ...(darkMode ? boxStyleDark : boxStyle),
+                      ...(darkMode ? { backgroundColor: '#2a3f6f', color: '#fff' } : {})
+                    }}
                     onClick={this.showProjectTable}
                   >
-                    <h3 className="card-category-item-title"> Projects</h3>
-                    <h3 className="card-category-item-number">
+                    <h3 className={styles['card-category-item-title']}> Projects</h3>
+                    <h3 className={styles['card-category-item-number']}>
                       {this.state.projectSearchData.length}
                       {' '}
                     </h3>
@@ -574,26 +588,32 @@ class ReportsPage extends Component {
                   </button>
                   <button
                     type="button"
-                    className={`card-category-item ${this.state.showPeople ? 'selected' : ''
+                    className={`${styles['card-category-item']} ${this.state.showPeople ? styles.selected : ''
                       } ${isYinmnBlue}`}
-                    style={boxStyling}
+                    style={{
+                      ...(darkMode ? boxStyleDark : boxStyle),
+                      ...(darkMode ? { backgroundColor: '#2a3f6f', color: '#fff' } : {})
+                    }}
                     onClick={this.showPeopleTable}
                   >
-                    <h3 className="card-category-item-title"> People </h3>
-                    <h3 className="card-category-item-number">
+                    <h3 className={styles['card-category-item-title']}> People </h3>
+                    <h3 className={styles['card-category-item-number']}>
                       {this.state.peopleSearchData.length}
                     </h3>
                     <img src={peopleImage} alt="that representes the people" />
                   </button>
                   <button
                     type="button"
-                    className={`card-category-item ${this.state.showTeams ? 'selected' : ''
+                    className={`${styles['card-category-item']} ${this.state.showTeams ? styles.selected : ''
                       } ${isYinmnBlue}`}
-                    style={boxStyling}
+                    style={{
+                      ...(darkMode ? boxStyleDark : boxStyle),
+                      ...(darkMode ? { backgroundColor: '#2a3f6f', color: '#fff' } : {})
+                    }}
                     onClick={this.showTeamsTable}
                   >
-                    <h3 className="card-category-item-title"> Teams </h3>
-                    <h3 className="card-category-item-number">{this.state.teamSearchData?.length}</h3>
+                    <h3 className={styles['card-category-item-title']}> Teams </h3>
+                    <h3 className={styles['card-category-item-number']}>{this.state.teamSearchData?.length}</h3>
                     <img src={teamsImage} alt="that representes the teams" />
                   </button>
                 </div>
@@ -617,8 +637,8 @@ class ReportsPage extends Component {
                     onDateChange={this.onDateChange}
                     darkMode={darkMode}
                   />
-                  <div className="total-report-container">
-                    <div className="total-report-item">
+                  <div className={styles['total-report-container']}>
+                    <div className={styles['total-report-item']}>
                       <Button type="button" color="info" onClick={this.showTotalProject}>
                         {this.state.showTotalProject
                           ? 'Hide Total Project Report'
@@ -635,7 +655,7 @@ class ReportsPage extends Component {
                         />
                       </div>
                     </div>
-                    <div className="total-report-item">
+                    <div className={styles['total-report-item']}>
                       <Button type="button" color="info" onClick={this.showTotalPeople}>
                         {this.state.showTotalPeople
                           ? 'Hide Total People Report'
@@ -652,7 +672,7 @@ class ReportsPage extends Component {
                         />
                       </div>
                     </div>
-                    <div className="total-report-item">
+                    <div className={styles['total-report-item']}>
                       <Button color="info" onClick={this.showTotalTeam}>
                         {this.state.showTotalTeam
                           ? 'Hide Total Team Report'
@@ -670,7 +690,7 @@ class ReportsPage extends Component {
                       </div>
 
                     </div>
-                    <div className="total-report-item">
+                    <div className={styles['total-report-item']}>
                       <Button
                         type="button"
                         color="info"
@@ -694,8 +714,8 @@ class ReportsPage extends Component {
                     </div>
                   </div>
                   {myRole !== 'Owner' && (
-                    <div className="lost-time-container">
-                      <div className="lost-time-item">
+                    <div className={styles['lost-time-container']}>
+                      <div className={styles['lost-time-item']}>
                         <Button color="info" onClick={this.showAddProjHistory}>
                           {this.state.showAddProjHistory
                             ? 'Hide Project Lost Time'
@@ -712,7 +732,7 @@ class ReportsPage extends Component {
                           />
                         </div>
                       </div>
-                      <div className="lost-time-item">
+                      <div className={styles['lost-time-item']}>
                         <Button color="info" onClick={this.showAddPersonHistory}>
                           {this.state.showAddPersonHistory
                             ? 'Hide Person Lost Time'
@@ -729,7 +749,7 @@ class ReportsPage extends Component {
                           />
                         </div>
                       </div>
-                      <div className="lost-time-item">
+                      <div className={styles['lost-time-item']}>
                         <Button color="info" onClick={this.showAddTeamHistory}>
                           {this.state.showAddTeamHistory
                             ? 'Hide Team Lost Time'
@@ -755,8 +775,8 @@ class ReportsPage extends Component {
                     className={`mt-4 p-3 rounded-lg ${darkMode ? 'bg-yinmn-blue' : 'bg-white'}`}
                     style={darkMode ? boxStyleDark : boxStyle}
                   >
-                    <div className="lost-time-container">
-                      <div className="lost-time-item">
+                    <div className={styles['lost-time-container']}>
+                      <div className={styles['lost-time-item']}>
                         <Button color="success" onClick={this.setAddTime}>
                           Add Lost Time
                         </Button>
@@ -772,8 +792,8 @@ class ReportsPage extends Component {
                         </div>
                       </div>
                     </div>
-                    <div className="lost-time-container">
-                      <div className="lost-time-item">
+                    <div className={styles['lost-time-container']}>
+                      <div className={styles['lost-time-item']}>
                         <Button color="info" onClick={this.showAddProjHistory}>
                           {this.state.showAddProjHistory
                             ? 'Hide Project Lost Time'

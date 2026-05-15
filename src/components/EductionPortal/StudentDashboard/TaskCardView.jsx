@@ -1,10 +1,12 @@
 import React from 'react';
 import styles from './TaskCardView.module.css';
 import TaskCard from './TaskCard';
+import { taskViewPropTypes, taskViewDefaultProps } from './taskPropTypes';
 
 const TaskCardView = ({
   tasks,
   onMarkAsDone,
+  onLogTime,
   intermediateTasks,
   expandedTasks,
   onToggleIntermediateTasks,
@@ -26,6 +28,7 @@ const TaskCardView = ({
           key={task._id || task.id}
           task={task}
           onMarkAsDone={onMarkAsDone}
+          onLogTime={onLogTime}
           intermediateTasks={intermediateTasks[task.id] || []}
           isExpanded={expandedTasks[task.id] || false}
           onToggleIntermediateTasks={onToggleIntermediateTasks}
@@ -36,5 +39,8 @@ const TaskCardView = ({
     </div>
   );
 };
+
+TaskCardView.propTypes = taskViewPropTypes;
+TaskCardView.defaultProps = taskViewDefaultProps;
 
 export default TaskCardView;

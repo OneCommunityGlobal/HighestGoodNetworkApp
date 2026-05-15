@@ -27,10 +27,12 @@ import {
   ADD_MATERIAL,
   LOG_MATERIAL,
   MATERIAL_LIST,
-  ADD_EQUIPMENT_TOOL,
+  ADD_EQUIPMENT,
+  ADD_TOOL,
   LOG_EQUIPMENT_TOOL,
   UPDATE_EQUIPMENT_TOOL,
   EQUIPMENT_TOOL_LIST,
+  CONSUMABLE_LIST,
   ISSUE,
   LESSON,
   TIMELOG,
@@ -166,8 +168,11 @@ export function Header(props) {
                     <DropdownItem tag={Link} to="/bmdashboard/materials-list">
                       {MATERIAL_LIST}
                     </DropdownItem>
-                    <DropdownItem tag={Link} to="/bmdashboard/add-equipment-tool">
-                      {ADD_EQUIPMENT_TOOL}
+                    <DropdownItem tag={Link} to="/bmdashboard/equipment/add">
+                      {ADD_EQUIPMENT}
+                    </DropdownItem>
+                    <DropdownItem tag={Link} to="/bmdashboard/tools/add">
+                      {ADD_TOOL}
                     </DropdownItem>
                     <DropdownItem tag={Link} to="/bmdashboard/log-equipment-tool">
                       {LOG_EQUIPMENT_TOOL}
@@ -177,6 +182,9 @@ export function Header(props) {
                     </DropdownItem>
                     <DropdownItem tag={Link} to="/bmdashboard/equipment-tool-list">
                       {EQUIPMENT_TOOL_LIST}
+                    </DropdownItem>
+                    <DropdownItem tag={Link} to="/bmdashboard/consumables">
+                      {CONSUMABLE_LIST}
                     </DropdownItem>
                     <DropdownItem tag={Link} to="/bmdashboard/issue">
                       {ISSUE}
