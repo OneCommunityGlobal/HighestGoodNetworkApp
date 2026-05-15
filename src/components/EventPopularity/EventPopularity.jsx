@@ -11,8 +11,8 @@ import {
   Tooltip,
   Legend,
 } from 'recharts';
-
 import styles from './EventPopularity.module.css';
+import { useSelector } from 'react-redux';
 
 // Sample data
 const eventTypeData = [
@@ -315,7 +315,11 @@ export default function EventDashboard() {
 
   // Handle bar click to drill down into time slot details
   const handleBarClick = useCallback(data => {
-    setSelectedTimeSlot(data.time);
+    const actual = data?.payload;
+
+    if (!actual) return;
+
+    setSelectedTimeSlot(actual.time);
     setDetailView('timeSlot');
     setSelectedEventTypeDetail(null);
   }, []);
@@ -597,6 +601,7 @@ export default function EventDashboard() {
                       fill: isDark ? 'rgba(74, 144, 226, 0.18)' : 'rgba(74, 144, 226, 0.08)',
                     }}
                     style={{ cursor: 'pointer' }}
+                    onClick={handleBarClick}
                   />
 
                   <Bar
@@ -607,6 +612,7 @@ export default function EventDashboard() {
                       fill: isDark ? 'rgba(130, 183, 255, 0.18)' : 'rgba(130, 183, 255, 0.08)',
                     }}
                     style={{ cursor: 'pointer' }}
+                    onClick={handleBarClick}
                   />
                 </BarChart>
               </ResponsiveContainer>
@@ -677,7 +683,7 @@ export default function EventDashboard() {
             </button>
           </div>
 
-          {detailView === 'timeSlot' && timeSlotDetails && (
+          {detailView === 'timeSlot' && !!timeSlotDetails && (
             <div className={styles.epDetailGrid}>
               <div className={styles.epDetailCard}>
                 <p className={styles.epDetailLabel}>Time</p>
