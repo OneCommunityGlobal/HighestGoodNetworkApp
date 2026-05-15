@@ -105,6 +105,28 @@ function ActualVsPlannedCost() {
 
   const filterSummary = `${selectedProjectName || 'Loading...'} - ${selectedCategory}`;
 
+  const chartDataWithVariance = chartData.map(item => {
+    const variance = item.actualCost - item.plannedCost;
+    return {
+      ...item,
+      variance,
+      variancePct: item.plannedCost > 0 ? (variance / item.plannedCost) * 100 : null,
+      budgetStatus: variance > 0 ? 'Over Budget' : variance < 0 ? 'Under Budget' : 'On Budget',
+    };
+  });
+
+  const hasData =
+    chartDataWithVariance.length > 0 &&
+    !(
+      chartDataWithVariance.length === 1 &&
+      chartDataWithVariance[0].actualCost === 0 &&
+      chartDataWithVariance[0].plannedCost === 0
+    );
+
+  const totalVariance = totals.actual - totals.planned;
+  const totalVariancePct = totals.planned > 0 ? (totalVariance / totals.planned) * 100 : null;
+  const isTotalOverrun = totalVariance > 0;
+
   let chartContent;
   if (loading || isFiltering) {
     chartContent = (
@@ -121,10 +143,7 @@ function ActualVsPlannedCost() {
         <span style={{ marginLeft: '10px' }}>Updating chart...</span>
       </div>
     );
-  } else if (
-    !chartData.length ||
-    (chartData.length === 1 && chartData[0].actualCost === 0 && chartData[0].plannedCost === 0)
-  ) {
+  } else if (!hasData) {
     chartContent = (
       <div
         style={{
@@ -143,7 +162,11 @@ function ActualVsPlannedCost() {
     chartContent = (
       <div style={{ width: '100%', height: 200 }}>
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={chartData} margin={{ top: 20, right: 5, left: 5, bottom: 0 }} barGap={20}>
+          <BarChart
+            data={chartDataWithVariance}
+            margin={{ top: 20, right: 5, left: 5, bottom: 0 }}
+            barGap={20}
+          >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis
               dataKey="category"
@@ -153,11 +176,17 @@ function ActualVsPlannedCost() {
             />
             <YAxis tick={{ fill: 'var(--text-color)', fontSize: '12px' }} />
             <Tooltip
+              cursor={{ fill: 'transparent' }}
+              allowEscapeViewBox={{ x: true, y: true }}
               contentStyle={{
-                backgroundColor: 'var(--card-bg)',
-                borderColor: 'var(--button-hover)',
+                backgroundColor: darkMode ? '#1f242b' : 'var(--card-bg)',
+                borderColor: darkMode ? '#45505e' : 'var(--button-hover)',
+                borderRadius: '6px',
+                color: 'var(--text-color)',
               }}
               labelStyle={{ color: 'var(--text-color)', fontSize: '12px' }}
+              itemStyle={{ color: 'var(--text-color)', fontSize: '12px' }}
+              wrapperStyle={{ pointerEvents: 'none', zIndex: 12 }}
             />
             <Legend
               verticalAlign="top"
@@ -188,7 +217,7 @@ function ActualVsPlannedCost() {
   }
 
   return (
-    <div style={{ padding: 10 }}>
+    <div style={{ padding: 10 }} className={darkMode ? styles.darkMode : ''}>
       <div style={{ textAlign: 'center', marginBottom: '15px' }}>
         <h2 style={{ fontSize: 'large', margin: '0 0 5px 0' }} className={styles.title}>
           Actual vs Planned Costs
@@ -234,6 +263,60 @@ function ActualVsPlannedCost() {
       </div>
 
       {chartContent}
+
+      {!loading && !isFiltering && hasData && (
+        <div className={styles.varianceSummaryContainer}>
+          <div className={styles.varianceSummaryHeader}>
+            <h3 className={styles.varianceSummaryTitle}>Variance and Budget Indicators</h3>
+            <div className={isTotalOverrun ? styles.totalOverrunBadge : styles.totalOnTrackBadge}>
+              Total Variance: {isTotalOverrun ? '+' : ''}
+              {totalVariance.toLocaleString()}
+              {totalVariancePct !== null &&
+                ` (${isTotalOverrun ? '+' : ''}${totalVariancePct.toFixed(1)}%)`}
+            </div>
+          </div>
+
+          <div className={styles.varianceCardsRow}>
+            {chartDataWithVariance.map(item => {
+              const isOverrun = item.variance > 0;
+              const isUnderBudget = item.variance < 0;
+              const cardClass = isOverrun
+                ? styles.varianceOverrun
+                : isUnderBudget
+                ? styles.varianceUnder
+                : styles.varianceNeutral;
+
+              return (
+                <div key={item.category} className={`${styles.varianceCard} ${cardClass}`}>
+                  <div className={styles.varianceCardCategory}>{item.category}</div>
+                  <div className={styles.varianceCardRow}>
+                    <span>Planned:</span>
+                    <span>{item.plannedCost.toLocaleString()}</span>
+                  </div>
+                  <div className={styles.varianceCardRow}>
+                    <span>Actual:</span>
+                    <span>{item.actualCost.toLocaleString()}</span>
+                  </div>
+                  <div className={styles.varianceCardRow}>
+                    <span>Variance:</span>
+                    <span>
+                      {isOverrun ? '+' : ''}
+                      {item.variance.toLocaleString()}
+                    </span>
+                  </div>
+                  {item.variancePct !== null && (
+                    <div className={styles.varianceCardPct}>
+                      {isOverrun ? '+' : ''}
+                      {item.variancePct.toFixed(1)}%
+                    </div>
+                  )}
+                  <div className={styles.varianceCardStatus}>{item.budgetStatus}</div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
