@@ -5,15 +5,14 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
+  Legend,
   ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  Tooltip,
-  Legend,
 } from 'recharts';
 import styles from './EventPopularity.module.css';
 
-// Sample data
 const eventTypeData = [
   { name: 'Community Volunteer Day', registered: 75 },
   { name: 'Skill Development Workshop', registered: 60 },
@@ -67,8 +66,27 @@ const participationCards = [
   },
 ];
 
+const CustomTooltip = ({ active, payload, label }) => {
+  if (!active || !payload?.length) {
+    return null;
+  }
+
+  return (
+    <div className={styles.tooltipBox}>
+      <div className={styles.tooltipTitle}>{label}</div>
+
+      {payload.map(item => (
+        <div key={item.dataKey} className={styles.tooltipRow}>
+          <span>{item.name}</span>
+          <strong>{item.value} users</strong>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 const InfoTooltip = ({ text, children }) => {
-  const [showToolTip, setShowTooltip] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
 
   return (
     <div
@@ -77,322 +95,120 @@ const InfoTooltip = ({ text, children }) => {
       onMouseLeave={() => setShowTooltip(false)}
     >
       {children}
-      {showToolTip && (
-        <div className={styles.infotooltipheading}>
-          {text}
-          <div className={styles.infotooltiptext}></div>
-        </div>
-      )}
+
+      {showTooltip && <div className={styles.infotooltipheading}>{text}</div>}
     </div>
   );
 };
 
 export default function EventDashboard() {
   const currentDate = new Date();
+
   const thirtyDaysAgo = new Date(currentDate.getTime() - 30 * 24 * 60 * 60 * 1000);
+
   const dateRangeLabel = `${thirtyDaysAgo.toLocaleDateString()} - ${currentDate.toLocaleDateString()}`;
 
-  const CustomTooltip = ({ active, payload, label }) => {
-    if (!active || !payload?.length) return null;
-
-    return (
-      <div className={styles.tooltipBox}>
-        <div className={styles.tooltipTitle}>{label}</div>
-        {payload.map((p, i) => (
-          <div key={i} className={styles.tooltipRow}>
-            <span>{p.name}:</span> <b>{p.value} users</b>
-          </div>
-        ))}
-      </div>
-    );
-  };
-
   return (
-    <div
-      style={{
-        maxWidth: '1200px',
-        margin: '0 auto',
-        padding: '20px',
-        fontFamily: 'Arial, sans-serif',
-      }}
-    >
-      <div
-        style={{
-          marginBottom: '30px',
-        }}
-      >
-        <h1
-          style={{
-            fontSize: '24px',
-            fontWeight: 'bold',
-            marginBottom: '10px',
-            textAlign: 'center',
-          }}
-        >
-          Event Attendance Dashboard
-        </h1>
-        <div
-          style={{
-            textAlign: 'center',
-            fontSize: '14px',
-            color: '#666',
-            marginBottom: '5px',
-          }}
-        >
+    <div className={styles.dashboardContainer}>
+      <div className={styles.headerSection}>
+        <h1 className={styles.pageTitle}>Event Attendance Dashboard</h1>
+
+        <div className={styles.timePeriod}>
           <strong>Time Period:</strong> Last 30 days ({dateRangeLabel})
         </div>
-        <div
-          style={{
-            textAlign: 'center',
-            fontSize: '13px',
-            color: '#999',
-          }}
-        >
+
+        <div className={styles.subHeader}>
           All metrics below reflect data from the selected time period
         </div>
       </div>
 
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: '20px',
-        }}
-      >
-        {/* Event Registration Trend (Type) */}
-        <div
-          style={{
-            background: 'white',
-            borderRadius: '8px',
-            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-            padding: '20px',
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              marginBottom: '20px',
-            }}
-          >
-            <h2
-              style={{
-                fontSize: '18px',
-                fontWeight: '600',
-                margin: 0,
-                marginRight: '8px',
-              }}
-            >
-              Event Registration by Type
-            </h2>
-            <InfoTooltip text="Total users who registered (signed up) for each event type">
-              <span
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '18px',
-                  height: '18px',
-                  background: '#4A90E2',
-                  color: 'white',
-                  borderRadius: '50%',
-                  fontSize: '12px',
-                  fontWeight: 'bold',
-                  cursor: 'help',
-                }}
-              >
-                ?
-              </span>
+      <div className={styles.dashboardGrid}>
+        {/* Registration by Type */}
+        <div className={styles.chartCard}>
+          <div className={styles.cardHeader}>
+            <h2 className={styles.cardTitle}>Event Registration by Type</h2>
+
+            <InfoTooltip text="Total users who registered for each event type">
+              <span className={styles.infoIcon}>?</span>
             </InfoTooltip>
           </div>
 
-          <div
-            style={{
-              marginBottom: '20px',
-            }}
-          >
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                fontSize: '12px',
-                color: '#999',
-                marginBottom: '12px',
-                fontWeight: '600',
-                textTransform: 'uppercase',
-              }}
-            >
+          <div className={styles.eventList}>
+            <div className={styles.tableHeader}>
               <span>Event Name</span>
               <span>Registered Users</span>
             </div>
+
             {eventTypeData.map(event => (
-              <div
-                key={event.name}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  marginBottom: '14px',
-                }}
-              >
-                <span
-                  style={{
-                    width: '140px',
-                    marginRight: '10px',
-                    fontSize: '13px',
-                    color: '#333',
-                    fontWeight: '500',
-                  }}
-                >
-                  {event.name}
-                </span>
-                <div
-                  style={{
-                    flexGrow: 1,
-                    height: '10px',
-                    background: '#e8e8e8',
-                    borderRadius: '5px',
-                    overflow: 'hidden',
-                  }}
-                >
+              <div key={event.name} className={styles.eventRow}>
+                <span className={styles.eventName}>{event.name}</span>
+
+                <div className={styles.progressBarBackground}>
                   <div
+                    className={styles.progressBarFill}
                     style={{
-                      height: '100%',
-                      background: '#4A90E2',
                       width: `${(event.registered / 75) * 100}%`,
                     }}
                   />
                 </div>
-                <span
-                  style={{
-                    marginLeft: '12px',
-                    fontSize: '13px',
-                    color: '#333',
-                    fontWeight: '600',
-                    minWidth: '35px',
-                    textAlign: 'right',
-                  }}
-                >
-                  {event.registered} users
-                </span>
+
+                <span className={styles.eventCount}>{event.registered} users</span>
               </div>
             ))}
           </div>
 
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(3, 1fr)',
-              gap: '10px',
-            }}
-          >
+          <div className={styles.statsGrid}>
             {[
               {
                 title: '325 Users',
                 subtitle: 'Total Registrations',
                 isPrimary: true,
-                description: 'Total users who registered across all event types',
               },
               {
                 title: 'Community Volunteer Day',
                 subtitle: 'Most Popular',
-                description: 'Event type with highest registrations',
               },
               {
                 title: 'Cultural Exchange Event',
                 subtitle: 'Least Popular',
-                description: 'Event type with lowest registrations',
               },
-            ].map((card, idx) => (
-              <div
-                key={idx}
-                style={{
-                  background: '#f9f9f9',
-                  borderRadius: '6px',
-                  padding: '12px',
-                  textAlign: 'center',
-                  border: '1px solid #f0f0f0',
-                }}
-              >
-                <h3
-                  style={{
-                    fontSize: card.isPrimary ? '16px' : '14px',
-                    fontWeight: card.isPrimary ? '700' : '600',
-                    color: card.isPrimary ? '#4A90E2' : '#333',
-                    margin: '0 0 4px 0',
-                  }}
-                >
+            ].map(card => (
+              <div key={card.title} className={styles.statCard}>
+                <h3 className={card.isPrimary ? styles.primaryStatTitle : styles.statTitle}>
                   {card.title}
                 </h3>
-                <p
-                  style={{
-                    fontSize: '11px',
-                    color: '#999',
-                    margin: '4px 0',
-                  }}
-                >
-                  {card.subtitle}
-                </p>
+
+                <p className={styles.statSubtitle}>{card.subtitle}</p>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Event Registration Trend (Time) */}
-        <div
-          style={{
-            background: 'white',
-            borderRadius: '8px',
-            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-            padding: '20px',
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              marginBottom: '20px',
-            }}
-          >
-            <h2
-              style={{
-                fontSize: '18px',
-                fontWeight: '600',
-                margin: 0,
-                marginRight: '8px',
-              }}
-            >
-              Event Attendance by Time Slot
-            </h2>
-            <InfoTooltip text="Registered = sign-ups | Attended = actual participants who showed up">
-              <span
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '18px',
-                  height: '18px',
-                  background: '#4A90E2',
-                  color: 'white',
-                  borderRadius: '50%',
-                  fontSize: '12px',
-                  fontWeight: 'bold',
-                  cursor: 'help',
-                }}
-              >
-                ?
-              </span>
+        {/* Attendance by Time */}
+        <div className={styles.chartCard}>
+          <div className={styles.cardHeader}>
+            <h2 className={styles.cardTitle}>Event Attendance by Time Slot</h2>
+
+            <InfoTooltip text="Registered = sign-ups | Attended = actual participants">
+              <span className={styles.infoIcon}>?</span>
             </InfoTooltip>
           </div>
 
-          <div
-            style={{
-              marginBottom: '20px',
-            }}
-          >
+          <div className={styles.chartWrapper}>
             <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={timeData} margin={{ top: 20, right: 20, left: 80, bottom: 40 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+              <BarChart
+                data={timeData}
+                margin={{
+                  top: 20,
+                  right: 20,
+                  left: 80,
+                  bottom: 40,
+                }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="#d1d5db" />
+
                 <XAxis dataKey="time" interval={0} angle={-35} textAnchor="end" height={60} />
+
                 <YAxis
                   width={80}
                   tick={{ fontSize: 12 }}
@@ -403,108 +219,48 @@ export default function EventDashboard() {
                     dx: -25,
                     style: {
                       textAnchor: 'middle',
-                      fill: '#666',
+                      fill: '#64748b',
                       fontSize: 12,
                     },
                   }}
                 />
+
                 <Tooltip content={<CustomTooltip />} />
+
                 <Legend
                   wrapperStyle={{
                     paddingTop: '20px',
                   }}
                 />
-                <Bar dataKey="registered" name="Registered Users (Sign-ups)" fill="#4A90E2" />
-                <Bar dataKey="attended" name="Attended Users (Show-ups)" fill="#82B7FF" />
+
+                <Bar dataKey="registered" name="Registered Users" fill="#4A90E2" />
+
+                <Bar dataKey="attended" name="Attended Users" fill="#82B7FF" />
               </BarChart>
             </ResponsiveContainer>
           </div>
 
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(4, 1fr)',
-              gap: '10px',
-            }}
-          >
-            {participationCards.map((card, idx) => (
-              <div
-                key={idx}
-                style={{
-                  background: '#f9f9f9',
-                  borderRadius: '6px',
-                  padding: '12px',
-                  border: '1px solid #f0f0f0',
-                  position: 'relative',
-                }}
-              >
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'flex-start',
-                    marginBottom: '6px',
-                  }}
-                >
-                  <h3
-                    style={{
-                      fontSize: '15px',
-                      fontWeight: '700',
-                      margin: 0,
-                      color: '#333',
-                    }}
-                  >
-                    {card.title}
-                  </h3>
+          <div className={styles.participationGrid}>
+            {participationCards.map(card => (
+              <div key={card.title} className={styles.participationCard}>
+                <div className={styles.participationHeader}>
+                  <h3 className={styles.participationTitle}>{card.title}</h3>
+
                   <InfoTooltip text={card.description}>
-                    <span
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '16px',
-                        height: '16px',
-                        background: '#ddd',
-                        color: '#666',
-                        borderRadius: '50%',
-                        fontSize: '11px',
-                        fontWeight: 'bold',
-                        cursor: 'help',
-                        flexShrink: 0,
-                      }}
-                    >
-                      ?
-                    </span>
+                    <span className={styles.smallInfoIcon}>?</span>
                   </InfoTooltip>
                 </div>
-                <p
-                  style={{
-                    fontSize: '11px',
-                    color: '#999',
-                    margin: '0 0 6px 0',
-                    fontWeight: '500',
-                  }}
-                >
-                  {card.subtitle}
-                </p>
-                {card.participants && (
-                  <div
-                    style={{
-                      fontSize: '12px',
-                      marginTop: '6px',
-                      color: '#666',
-                    }}
-                  >
-                    <span style={{ fontSize: '14px' }}>👥</span> {card.participants} users
-                  </div>
+
+                <p className={styles.participationSubtitle}>{card.subtitle}</p>
+
+                {Boolean(card.participants) && (
+                  <div className={styles.participantCount}>👥 {card.participants} users</div>
                 )}
+
                 <p
-                  style={{
-                    fontSize: '12px',
-                    fontWeight: 'bold',
-                    color: card.trendType === 'positive' ? '#27ae60' : '#e74c3c',
-                    margin: '6px 0 0 0',
-                  }}
+                  className={
+                    card.trendType === 'positive' ? styles.positiveTrend : styles.negativeTrend
+                  }
                 >
                   {card.trend} vs last month
                 </p>
@@ -513,17 +269,6 @@ export default function EventDashboard() {
           </div>
         </div>
       </div>
-
-      <style>{`
-        @media (max-width: 768px) {
-          div {
-            grid-template-columns: 1fr !important;
-          }
-          div > div:nth-child(2) {
-            grid-template-columns: 1fr !important;
-          }
-        }
-      `}</style>
     </div>
   );
 }
