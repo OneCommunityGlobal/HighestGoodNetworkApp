@@ -1,21 +1,21 @@
+import cs from 'classnames';
+import moment from 'moment';
+import { useRef, useState } from 'react';
 import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-progressbar';
-import { Input } from 'reactstrap';
 import {
+  BsArrowCounterclockwise,
   BsFillPenFill,
+  BsHourglassBottom,
+  BsHourglassSplit,
+  BsHourglassTop,
   BsPauseFill,
   BsPlay,
   BsStopFill,
-  BsArrowCounterclockwise,
-  BsHourglassTop,
-  BsHourglassSplit,
-  BsHourglassBottom,
   BsXLg,
 } from 'react-icons/bs';
-import { FaSave, FaAngleUp, FaAngleDown } from 'react-icons/fa';
-import moment from 'moment';
-import { useRef, useState } from 'react';
-import cs from 'classnames';
+import { FaAngleDown, FaAngleUp, FaSave } from 'react-icons/fa';
 import { toast } from 'react-toastify';
+import { Input } from 'reactstrap';
 import css from './Countdown.module.css';
 
 function getClockIcon(index) {
@@ -208,7 +208,12 @@ export default function Countdown({
             </div>
             <div className={css.operators}>
               {running ? (
-                <button type="button" onClick={sendPause} aria-label="Pause timer">
+                <button
+                  type="button"
+                  onClick={sendPause}
+                  onMouseDown={e => e.preventDefault()}
+                  aria-label="Pause timer"
+                >
                   <BsPauseFill
                     className={cs(css.transitionColor, css.operator)}
                     fontSize="2.5rem"
@@ -216,7 +221,12 @@ export default function Countdown({
                   />
                 </button>
               ) : (
-                <button type="button" onClick={handleStartButton} aria-label="Start timer">
+                <button
+                  type="button"
+                  onClick={handleStartButton}
+                  onMouseDown={e => e.preventDefault()}
+                  aria-label="Start timer"
+                >
                   <BsPlay
                     className={cs(
                       css.transitionColor,

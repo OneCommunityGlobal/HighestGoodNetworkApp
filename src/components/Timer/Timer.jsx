@@ -1,30 +1,29 @@
 /* eslint-disable jsx-a11y/media-has-caption */
+import cs from 'classnames';
 import moment from 'moment';
-import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Progress } from 'reactstrap';
-import useWebSocket, { ReadyState } from 'react-use-websocket';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BsAlarmFill, BsArrowClockwise } from 'react-icons/bs';
 import {
-  FaPlusCircle,
   FaMinusCircle,
-  FaPlayCircle,
   FaPauseCircle,
+  FaPlayCircle,
+  FaPlusCircle,
   FaStopCircle,
   FaUndoAlt,
 } from 'react-icons/fa';
-import { toast } from 'react-toastify';
-import cs from 'classnames';
 import { connect, useDispatch } from 'react-redux';
-import css from './Timer.module.css';
-import '../Header/index.css';
+import { toast } from 'react-toastify';
+import useWebSocket, { ReadyState } from 'react-use-websocket';
+import { Button, Modal, ModalBody, ModalFooter, ModalHeader, Progress } from 'reactstrap';
 import { ENDPOINTS } from '~/utils/URL';
 import config from '../../config.json';
+import '../Header/index.css';
 import TimeEntryForm from '../Timelog/TimeEntryForm';
 import Countdown from './Countdown';
-import TimerStatus from './TimerStatus';
+import css from './Timer.module.css';
 import TimerPopout from './TimerPopout';
-import { postTimeEntry, editTimeEntry } from '../../actions/timeEntries';
+import TimerStatus from './TimerStatus';
 
 function Timer({ authUser, darkMode, isPopout }) {
   const dispatch = useDispatch();

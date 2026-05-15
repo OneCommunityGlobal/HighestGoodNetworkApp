@@ -78,7 +78,10 @@ const TeamMemberTasks = React.memo(props => {
 
   // Fetch all selections in ONE call once teamList is ready
   useEffect(() => {
-    if (usersWithTasks.length === 0) return;
+    if (usersWithTasks.length === 0) {
+      setSelectionsLoaded(true);
+      return;
+    }
     const userIds = usersWithTasks.map(u => u.personId);
     axios
       .post(ENDPOINTS.USER_STATE_SELECTIONS_BATCH, { userIds })
