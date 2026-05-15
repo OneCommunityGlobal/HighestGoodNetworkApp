@@ -9,10 +9,10 @@
   font-size: 1.5em;
   text-align: center;
   margin-top: 2em;
-  color:#fff
+  color: #fff;
 }
 
-.darkBmDashboardMain{
+.darkBmDashboardMain {
   background-color: #1b2a41;
 }
 
@@ -120,6 +120,7 @@
 .bm-dashboard-dark .bm-dashboard__button.btn.btn-secondary:hover {
   background-color: #4a607b;
   border-color: #6a8aab;
+}
 
 .bmDashboardButton {
   background-color: #2e5061;
@@ -134,303 +135,328 @@
 }
 
 .container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1em;
-}
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1em;
+  }
 
-.projectSummary {
-  background-color: #e8f4f9;
-  margin: 1em;
-  padding: 1em;
-  border-radius: 5px;
-  transition: transform 0.2s;
-}
+  .projectSummary {
+    background-color: #e8f4f9;
+    margin: 1em;
+    padding: 1em;
+    border-radius: 5px;
+    transition: transform 0.2s;
+  }
 
-.darkProjectSummary {
-  background-color: #3a506b;
-  margin: 1em;
-  padding: 1em;
-  border-radius: 5px;
-  transition: transform 0.2s;
-}
+  .darkProjectSummary {
+    background-color: #3a506b;
+    margin: 1em;
+    padding: 1em;
+    border-radius: 5px;
+    transition: transform 0.2s;
+  }
 
-.projectSummary:hover, .darkProjectSummary:hover {
-  transform: scale(1.02);
-}
+  .projectSummary:hover,
+  .darkProjectSummary:hover {
+    transform: scale(1.02);
+  }
 
-.projectsList {
-  width: 100%;
-  max-width: 1200px;
-  list-style-type: none;
-  max-height: 80vh;
-  overflow: hidden auto;
-  padding: 0;
-  margin: 1em auto;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  box-shadow: 0 2px 5px rgb(0 0 0 / 10%);
-}
+  .projectsList {
+    width: 100%;
+    max-width: 1200px;
+    list-style-type: none;
+    max-height: 80vh;
+    overflow: hidden auto;
+    padding: 0;
+    margin: 1em auto;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgb(0 0 0 / 10%);
+  }
 
-.darkProjectsList {
-  background-color: #222831;
-}
+  .darkProjectsList {
+    background-color: #222831;
+  }
 
-.lightProjectsList {
-  background-color: #f9f9f9;
-}
+  .lightProjectsList {
+    background-color: #f9f9f9;
+  }
 
-.bmErrorPage {
-  width: 100%;
-  max-width: 1536px;
-  margin: 1rem auto;
-  padding: 0 1rem;
-}
+  .bmErrorPage {
+    width: 100%;
+    max-width: 1536px;
+    margin: 1rem auto;
+    padding: 0 1rem;
+  }
 
-.bmErrorPage section {
-  margin-top: 2rem;
-}
+  .bmErrorPage section {
+    margin-top: 2rem;
+  }
 
-.invFormPageContainer {
-  width: 100%;
-  max-width: 800px;
-  margin: 1rem auto;
-  padding: 2rem;
-  border: 1px solid #ccc;
-  border-radius: 40px;
-}
-
-.invForm {
-  margin: 2rem auto;
-}
-
-.invFormInfo {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-  margin: 1rem 0;
-}
-
-.invFormGroup {
-  margin: 1.5rem auto;
-}
-
-.invForm input,
-.invForm select,
-.invForm textarea {
-  background-color: rgb(249 249 249);
-}
-
-.invFormBtnGroup {
-  display: flex;
-  gap: 1rem;
-  margin: 4rem auto 2rem;
-}
-
-.invFormBtnGroup button {
-  width: 50%;
-}
-
-.invFormRequired::after {
-  content: '*';
-  color: red;
-}
-
-@media screen and (width <= 800px) {
   .invFormPageContainer {
-    width: 95%;
+    width: 100%;
+    max-width: 800px;
+    margin: 1rem auto;
+    padding: 2rem;
+    border: 1px solid #ccc;
+    border-radius: 40px;
   }
-}
 
-@media screen and (width <= 480px) {
-  .invFormPageContainer h2 {
-    font-size: 1.7rem;
+  .invFormPageHeader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 0.5rem;
   }
-}
 
-.formFooter {
-  font-size: 0.875em;
-  margin-top: 3px;
-}
+  .invFormPageHeader h2 {
+    font-size: clamp(1.5rem, 2.5vw, 2.2rem);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
 
-.projectsList::-webkit-scrollbar {
-  width: 8px;
-}
+  .invFormPageHeader .invFormInfo {
+    justify-content: center;
+    margin-bottom: 0.75rem;
+  }
 
-.projectsList::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
+  .invFormPageHeader button {
+    margin: 0 auto;
+    display: block;
+  }
 
-.projectsList::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 4px;
-}
+  .invForm {
+    margin: 2rem auto;
+  }
 
-.projectsList::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
+  .invFormInfo {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin: 1rem 0;
+  }
 
-.bm-dashboard-dark .projects-list::-webkit-scrollbar-thumb:hover {
-  background: #6a8aab;
-}
+  .invFormGroup {
+    margin: 1.5rem auto;
+  }
 
-/* Projects specific dark mode styles */
-.bm-dashboard-dark .projects-list-dark {
-  color: #e0e0e0;
-}
+  .invForm input,
+  .invForm select,
+  .invForm textarea {
+    background-color: rgb(249 249 249);
+  }
 
-.bm-dashboard-dark .projects-list-dark .text-light {
-  color: #e0e0e0 !important;
-}
+  .invFormBtnGroup {
+    display: flex;
+    gap: 1rem;
+    margin: 4rem auto 2rem;
+  }
 
-.bm-dashboard-dark .project-select-form-dark .form-control-dark {
-  background-color: #2a3f5f;
-  border-color: #3a506b;
-  color: #e0e0e0;
-}
+  .invFormBtnGroup button {
+    width: 50%;
+  }
 
-.bm-dashboard-dark .project-select-form-dark .form-control-dark option {
-  background-color: #2a3f5f;
-  color: #e0e0e0;
-}
+  .invFormRequired::after {
+    content: '*';
+    color: red;
+  }
 
-.bm-dashboard-dark .project-select-form-dark .btn-dark-mode {
-  background-color: #3a506b !important;
-  border-color: #3a506b !important;
-}
+  @media screen and (width <= 800px) {
+    .invFormPageContainer {
+      width: 95%;
+    }
+  }
 
-.bm-dashboard-dark .project-select-form-dark .btn-dark-mode:hover {
-  background-color: #5a7a9b !important;
-  border-color: #5a7a9b !important;
-}
+  @media screen and (width <= 480px) {
+    .invFormPageContainer h2 {
+      font-size: 1.7rem;
+    }
+  }
 
-.bm-dashboard-dark .project-select-form-dark .btn-dark-mode:disabled {
-  background-color: #1c2541 !important;
-  border-color: #1c2541 !important;
-  opacity: 0.6;
-}
+  .formFooter {
+    font-size: 0.875em;
+    margin-top: 3px;
+  }
 
-/* ULTIMATE TEXT VISIBILITY OVERRIDE - NUCLEAR LEVEL */
-.bm-dashboard-dark,
-.bm-dashboard-dark > *,
-.bm-dashboard-dark > * > *,
-.bm-dashboard-dark > * > * > *,
-.bm-dashboard-dark > * > * > * > *,
-.bm-dashboard-dark > * > * > * > * > *,
-.bm-dashboard-dark .container,
-.bm-dashboard-dark .container *,
-.bm-dashboard-dark .projects-list,
-.bm-dashboard-dark .projects-list *,
-.bm-dashboard-dark .project-summary,
-.bm-dashboard-dark .project-summary *,
-.bm-dashboard-dark .project-select-form,
-.bm-dashboard-dark .project-select-form *,
-.bm-dashboard-dark header,
-.bm-dashboard-dark header *,
-.bm-dashboard-dark main,
-.bm-dashboard-dark main * {
-  color: #fff !important;
-  text-shadow: 0 1px 2px rgb(0 0 0 / 70%) !important;
-}
+  .projectsList::-webkit-scrollbar {
+    width: 8px;
+  }
 
-/* Force background colors for better contrast */
-.bm-dashboard-dark .container,
-.bm-dashboard-dark .projects-list,
-.bm-dashboard-dark .project-summary,
-.bm-dashboard-dark .inv-form-page-container,
-.bm-dashboard-dark .bm-error-page {
-  background-color: #1b2a41 !important;
-  color: #fff !important;
-}
+  .projectsList::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
 
-/* Override any Bootstrap or other framework styles */
-.bm-dashboard-dark .text-primary,
-.bm-dashboard-dark .text-secondary,
-.bm-dashboard-dark .text-success,
-.bm-dashboard-dark .text-info,
-.bm-dashboard-dark .text-warning,
-.bm-dashboard-dark .text-danger,
-.bm-dashboard-dark .text-light,
-.bm-dashboard-dark .text-dark,
-.bm-dashboard-dark .text-body,
-.bm-dashboard-dark .text-muted {
-  color: #fff !important;
-}
+  .projectsList::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+  }
 
-/* Force all buttons and interactive elements */
-.bm-dashboard-dark button,
-.bm-dashboard-dark .btn,
-.bm-dashboard-dark .btn-primary,
-.bm-dashboard-dark .btn-secondary,
-.bm-dashboard-dark .btn-success,
-.bm-dashboard-dark .btn-info,
-.bm-dashboard-dark .btn-warning,
-.bm-dashboard-dark .btn-danger,
-.bm-dashboard-dark .btn-light,
-.bm-dashboard-dark .btn-dark,
-.bm-dashboard-dark .btn-outline-primary,
-.bm-dashboard-dark .btn-outline-secondary {
-  background-color: #3a506b !important;
-  color: #fff !important;
-  border-color: #5a7a9b !important;
-}
+  .projectsList::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
 
-.bm-dashboard-dark button:hover,
-.bm-dashboard-dark .btn:hover {
-  background-color: #4a607b !important;
-  color: #fff !important;
-  border-color: #6a8aab !important;
-}
+  .bm-dashboard-dark .projects-list::-webkit-scrollbar-thumb:hover {
+    background: #6a8aab;
+  }
 
-/* LogBar specific overrides for BMDashboard */
-.bm-dashboard-dark .log-bar,
-.bm-dashboard-dark .log-bar-dark {
-  background-color: #1b2a41 !important;
-  color: #fff !important;
-}
+  /* Projects specific dark mode styles */
+  .bm-dashboard-dark .projects-list-dark {
+    color: #e0e0e0;
+  }
 
-.bm-dashboard-dark .log-bar h2,
-.bm-dashboard-dark .log-bar-dark h2,
-.bm-dashboard-dark .log-bar__section h2 {
-  color: #fff !important;
-  text-shadow: 0 1px 2px rgb(0 0 0 / 70%) !important;
-}
+  .bm-dashboard-dark .projects-list-dark .text-light {
+    color: #e0e0e0 !important;
+  }
 
-.bm-dashboard-dark .log-bar .button.btn,
-.bm-dashboard-dark .log-bar-dark .button.btn {
-  color: #fff !important;
-}
+  .bm-dashboard-dark .project-select-form-dark .form-control-dark {
+    background-color: #2a3f5f;
+    border-color: #3a506b;
+    color: #e0e0e0;
+  }
 
-/* Light mode LogBar overrides */
-.bm-dashboard-container:not(.bm-dashboard-dark) .log-bar h2,
-.bm-dashboard-container:not(.bm-dashboard-dark) .log-bar__section h2 {
-  color: #333 !important;
-  text-shadow: none !important;
-}
+  .bm-dashboard-dark .project-select-form-dark .form-control-dark option {
+    background-color: #2a3f5f;
+    color: #e0e0e0;
+  }
 
-.bm-dashboard-container:not(.bm-dashboard-dark) .log-bar .button.btn {
-  color: #fff !important;
-}
+  .bm-dashboard-dark .project-select-form-dark .btn-dark-mode {
+    background-color: #3a506b !important;
+    border-color: #3a506b !important;
+  }
 
-/* Image clarity improvements for BMDashboard */
-.bm-dashboard-container img,
-.bm-dashboard-dark img,
-.bm-dashboard-light img {
-  image-rendering: auto !important;
-  filter: none !important;
-  backface-visibility: hidden !important;
-  transform: translateZ(0) !important;
-  -webkit-font-smoothing: antialiased !important;
-  -moz-osx-font-smoothing: grayscale !important;
-}
+  .bm-dashboard-dark .project-select-form-dark .btn-dark-mode:hover {
+    background-color: #5a7a9b !important;
+    border-color: #5a7a9b !important;
+  }
 
-.bm-dashboard-container .single-card__img img,
-.bm-dashboard-dark .single-card__img img,
-.bm-dashboard-light .single-card__img img {
-  object-fit: cover !important;
-  object-position: center !important;
-  max-width: 100% !important;
-  height: auto !important;
-  image-rendering: auto !important;
-}
-}
+  .bm-dashboard-dark .project-select-form-dark .btn-dark-mode:disabled {
+    background-color: #1c2541 !important;
+    border-color: #1c2541 !important;
+    opacity: 0.6;
+  }
+
+  /* ULTIMATE TEXT VISIBILITY OVERRIDE - NUCLEAR LEVEL */
+  .bm-dashboard-dark,
+  .bm-dashboard-dark > *,
+  .bm-dashboard-dark > * > *,
+  .bm-dashboard-dark > * > * > *,
+  .bm-dashboard-dark > * > * > * > *,
+  .bm-dashboard-dark > * > * > * > * > *,
+  .bm-dashboard-dark .container,
+  .bm-dashboard-dark .container *,
+  .bm-dashboard-dark .projects-list,
+  .bm-dashboard-dark .projects-list *,
+  .bm-dashboard-dark .project-summary,
+  .bm-dashboard-dark .project-summary *,
+  .bm-dashboard-dark .project-select-form,
+  .bm-dashboard-dark .project-select-form *,
+  .bm-dashboard-dark header,
+  .bm-dashboard-dark header *,
+  .bm-dashboard-dark main,
+  .bm-dashboard-dark main * {
+    color: #fff !important;
+    text-shadow: 0 1px 2px rgb(0 0 0 / 70%) !important;
+  }
+
+  /* Force background colors for better contrast */
+  .bm-dashboard-dark .container,
+  .bm-dashboard-dark .projects-list,
+  .bm-dashboard-dark .project-summary,
+  .bm-dashboard-dark .inv-form-page-container,
+  .bm-dashboard-dark .bm-error-page {
+    background-color: #1b2a41 !important;
+    color: #fff !important;
+  }
+
+  /* Override any Bootstrap or other framework styles */
+  .bm-dashboard-dark .text-primary,
+  .bm-dashboard-dark .text-secondary,
+  .bm-dashboard-dark .text-success,
+  .bm-dashboard-dark .text-info,
+  .bm-dashboard-dark .text-warning,
+  .bm-dashboard-dark .text-danger,
+  .bm-dashboard-dark .text-light,
+  .bm-dashboard-dark .text-dark,
+  .bm-dashboard-dark .text-body,
+  .bm-dashboard-dark .text-muted {
+    color: #fff !important;
+  }
+
+  /* Force all buttons and interactive elements */
+  .bm-dashboard-dark button,
+  .bm-dashboard-dark .btn,
+  .bm-dashboard-dark .btn-primary,
+  .bm-dashboard-dark .btn-secondary,
+  .bm-dashboard-dark .btn-success,
+  .bm-dashboard-dark .btn-info,
+  .bm-dashboard-dark .btn-warning,
+  .bm-dashboard-dark .btn-danger,
+  .bm-dashboard-dark .btn-light,
+  .bm-dashboard-dark .btn-dark,
+  .bm-dashboard-dark .btn-outline-primary,
+  .bm-dashboard-dark .btn-outline-secondary {
+    background-color: #3a506b !important;
+    color: #fff !important;
+    border-color: #5a7a9b !important;
+  }
+
+  .bm-dashboard-dark button:hover,
+  .bm-dashboard-dark .btn:hover {
+    background-color: #4a607b !important;
+    color: #fff !important;
+    border-color: #6a8aab !important;
+  }
+
+  /* LogBar specific overrides for BMDashboard */
+  .bm-dashboard-dark .log-bar,
+  .bm-dashboard-dark .log-bar-dark {
+    background-color: #1b2a41 !important;
+    color: #fff !important;
+  }
+
+  .bm-dashboard-dark .log-bar h2,
+  .bm-dashboard-dark .log-bar-dark h2,
+  .bm-dashboard-dark .log-bar__section h2 {
+    color: #fff !important;
+    text-shadow: 0 1px 2px rgb(0 0 0 / 70%) !important;
+  }
+
+  .bm-dashboard-dark .log-bar .button.btn,
+  .bm-dashboard-dark .log-bar-dark .button.btn {
+    color: #fff !important;
+  }
+
+  /* Light mode LogBar overrides */
+  .bm-dashboard-container:not(.bm-dashboard-dark) .log-bar h2,
+  .bm-dashboard-container:not(.bm-dashboard-dark) .log-bar__section h2 {
+    color: #333 !important;
+    text-shadow: none !important;
+  }
+
+  .bm-dashboard-container:not(.bm-dashboard-dark) .log-bar .button.btn {
+    color: #fff !important;
+  }
+
+  /* Image clarity improvements for BMDashboard */
+  .bm-dashboard-container img,
+  .bm-dashboard-dark img,
+  .bm-dashboard-light img {
+    image-rendering: auto !important;
+    filter: none !important;
+    backface-visibility: hidden !important;
+    transform: translateZ(0) !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+  }
+
+  .bm-dashboard-container .single-card__img img,
+  .bm-dashboard-dark .single-card__img img,
+  .bm-dashboard-light .single-card__img img {
+    object-fit: cover !important;
+    object-position: center !important;
+    max-width: 100% !important;
+    height: auto !important;
+    image-rendering: auto !important;
+  }
+

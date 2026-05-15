@@ -80,6 +80,7 @@ export default function CommunityCalendar() {
         time: event.time || timeString,
         description: event.description || `Join us for ${event.title}`,
         location: event.location || 'Online',
+        isOver: eventDate < new Date(),
       };
     });
   }, [events]);
@@ -786,7 +787,6 @@ export default function CommunityCalendar() {
                   {statusIconMap[selectedEvent.status] || ''} {selectedEvent.status}
                 </span>
               </div>
-
               <div className={styles.eventDetailsGrid}>
                 {[
                   [FaTag, 'Type', selectedEvent.type],
@@ -818,14 +818,26 @@ export default function CommunityCalendar() {
             </div>
 
             <div className={styles.modalActions}>
-              <Link
-                to={`/communityportal/Activities/Register/${selectedEvent._id}`}
-                className={styles.btnPrimary}
-                onClick={closeEventModal}
-              >
-                Register for Event
-              </Link>
-              <button className={styles.btnSecondary}>Add to Calendar</button>
+              {selectedEvent.isOver ? (
+                <button type="button" className={styles.btnDisabled} disabled>
+                  Completed
+                </button>
+              ) : (
+                <>
+                  <button type="button" className={styles.btnPrimary}>
+                    <Link
+                      to={`/communityportal/Activities/Register/${selectedEvent._id}`}
+                      className={styles.btnPrimary}
+                      onClick={closeEventModal}
+                    >
+                      Register for Event
+                    </Link>
+                  </button>
+                  <button type="button" className={styles.btnSecondary}>
+                    Add to Calendar
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
