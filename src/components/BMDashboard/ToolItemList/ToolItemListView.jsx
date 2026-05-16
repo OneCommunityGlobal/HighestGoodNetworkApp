@@ -264,7 +264,6 @@ function ToolItemListViewInner({ itemType, items, errors = {}, UpdateItemModal, 
               title={cat.label}
             >
               <span className={styles.iconWrapper}>{cat.icon}</span>
-              <span className={styles.iconLabel}>{cat.label}</span>
             </Link>
           ))}
         </div>
