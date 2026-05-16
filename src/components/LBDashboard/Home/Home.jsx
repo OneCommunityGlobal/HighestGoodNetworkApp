@@ -26,9 +26,11 @@ import 'leaflet/dist/leaflet.css';
 import { useHistory, useLocation } from 'react-router-dom';
 import L from 'leaflet';
 import logo from '../../../assets/images/logo2.png';
-import { fetchVillages, fetchListings, fetchBiddings, FIXED_VILLAGES } from './data';
+import { fetchVillages, FIXED_VILLAGES } from './data';
 import styles from './Home.module.css';
 import ThemeIconToggle from '../ThemeIconToggle';
+import { stripVillageSuffix, filterItemsByVillage } from './homeApiUtils';
+import { useHomeTabData } from './useHomeTabData';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -43,51 +45,6 @@ const unitIcon = new L.Icon({
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
 });
-
-const VILLAGE_SUFFIX = 'village';
-
-const stripVillageSuffix = value => {
-  const input = String(value || '').trim();
-  if (!input) return '';
-  const lower = input.toLowerCase();
-  if (!lower.endsWith(VILLAGE_SUFFIX)) return input;
-  return input.slice(0, -VILLAGE_SUFFIX.length).trim();
-};
-
-const buildApiFilters = (selectedVillage, dateRange) => {
-  const filters = {};
-  if (selectedVillage) filters.village = selectedVillage;
-  if (dateRange.startDate) filters.availableFrom = dateRange.startDate;
-  if (dateRange.endDate) filters.availableTo = dateRange.endDate;
-  return filters;
-};
-
-const withVillageFallback = async (
-  fetcher,
-  currentPage,
-  pageSize,
-  filters,
-  selectedVillage,
-  villageFilterCandidates,
-) => {
-  let response = await fetcher(currentPage, pageSize, filters);
-  if (!selectedVillage || (response.items || []).length > 0) return response;
-
-  const fallbackVillages = villageFilterCandidates(selectedVillage).filter(
-    v => v !== filters.village,
-  );
-  for (const villageCandidate of fallbackVillages) {
-    const retryResponse = await fetcher(currentPage, pageSize, {
-      ...filters,
-      village: villageCandidate,
-    });
-    if ((retryResponse.items || []).length > 0) {
-      response = retryResponse;
-      break;
-    }
-  }
-  return response;
-};
 
 function Home() {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -175,77 +132,24 @@ function Home() {
     [filteredVillages.length, villagePagination.pageSize],
   );
 
-  useEffect(() => {
-    const loadListings = async filters => {
-      const listingsData = await withVillageFallback(
-        fetchListings,
-        pagination.currentPage,
-        pagination.pageSize,
-        filters,
-        selectedVillage,
-        villageFilterCandidates,
-      );
-      setAllListings(listingsData.items || []);
-      setPagination(prev => ({
-        ...prev,
-        totalPages: listingsData.pagination.totalPages || 1,
-      }));
-    };
-
-    const loadBiddings = async filters => {
-      const biddingsData = await withVillageFallback(
-        fetchBiddings,
-        pagination.currentPage,
-        pagination.pageSize,
-        filters,
-        selectedVillage,
-        villageFilterCandidates,
-      );
-      setAllBiddings(biddingsData.items || []);
-      setPagination(prev => ({
-        ...prev,
-        totalPages: biddingsData.pagination.totalPages || 1,
-      }));
-    };
-
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        const filters = buildApiFilters(selectedVillage, dateRange);
-        if (activeTab === 'listings') await loadListings(filters);
-        else await loadBiddings(filters);
-
-        setIsLoading(false);
-      } catch (error) {
-        console.error(`API Error (${activeTab}):`, error);
-        if (activeTab === 'listings') setAllListings([]);
-        else setAllBiddings([]);
-        setError('Failed to load data. Please try again later.');
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [
-    pagination.currentPage,
-    pagination.pageSize,
+  useHomeTabData({
+    activeTab,
+    pagination,
     selectedVillage,
     dateRange,
-    activeTab,
     villageFilterCandidates,
-  ]);
+    setAllListings,
+    setAllBiddings,
+    setPagination,
+    setIsLoading,
+    setError,
+  });
 
   const baseItems = activeTab === 'listings' ? allListings : allBiddings;
-  const currentItems = useMemo(() => {
-    if (!selectedVillage) return baseItems;
-    const selectedKey = normalizeVillageName(selectedVillage);
-    const strictMatches = baseItems.filter(
-      item => normalizeVillageName(item.village) === selectedKey,
-    );
-    // If backend returns unresolved village ids/names that do not match dropdown labels,
-    // avoid showing an empty page while data actually exists.
-    return strictMatches.length > 0 ? strictMatches : baseItems;
-  }, [baseItems, normalizeVillageName, selectedVillage]);
+  const currentItems = useMemo(
+    () => filterItemsByVillage(baseItems, selectedVillage, normalizeVillageName),
+    [baseItems, normalizeVillageName, selectedVillage],
+  );
   const allItems = currentItems;
 
   const handlePageChange = useCallback(

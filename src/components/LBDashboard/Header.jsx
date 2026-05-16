@@ -95,12 +95,11 @@ function LBDashboardHeader(props) {
               <div className={itemStyles.item__icons}>
                 <Nav className="ml-auto">
                   <ThemeIconToggle
-                    buttonClassName={cx(
+                    buttonClassName={`${cx(
                       itemStyles['item__nav-link'],
                       itemStyles['item__nav-link--dark'],
-                      itemStyles.item__themeIconBtn,
                       darkMode,
-                    )}
+                    )} ${itemStyles.item__themeIconBtn}`}
                     iconClassName={itemStyles['item__nav-icon']}
                   />
                   <Nav.Link
