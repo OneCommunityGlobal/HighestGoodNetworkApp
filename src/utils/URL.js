@@ -220,6 +220,7 @@ export const ENDPOINTS = {
   // Student Tasks (Education Portal)
   STUDENT_TASKS: () => `${APIEndpoint}/student/tasks`,
   STUDENT_TASK_MARK_DONE: taskId => `${APIEndpoint}/student/tasks/${taskId}/mark-done`,
+  STUDENT_TASK_LOG_HOURS: taskId => `${APIEndpoint}/student/tasks/${taskId}/log-hours`,
 
   // Intermediate Tasks (Education Portal)
   INTERMEDIATE_TASKS: () => `${APIEndpoint}/educator/intermediate-tasks`,
@@ -380,6 +381,7 @@ export const ENDPOINTS = {
   BM_TOOLS_PURCHASE: `${APIEndpoint}/bm/tools/purchase`,
   POST_LESSON: `${APIEndpoint}/bm/lessons/new`,
   BM_LESSONS: `${APIEndpoint}/bm/lessons`,
+  BM_LESSONS_LEARNT: `${APIEndpoint}/bm/lessons-learnt`,
   BM_LESSON: `${APIEndpoint}/bm/lesson/`,
   BM_LESSON_LIKES: lessonId => `${APIEndpoint}/bm/lesson/${lessonId}/like`,
   BM_EXTERNAL_TEAM: `${APIEndpoint}/bm/externalTeam`,
@@ -485,6 +487,7 @@ export const ENDPOINTS = {
   USER_STATE_CATALOG_USAGE: key => `${APIEndpoint}/userstate/catalog/${key}/usage`,
 
   HGN_FORM_GET_TEAM_MEMBERS_BY_SKILL: skill => `${APIEndpoint}/userProfile/skills/${skill}`,
+  HGN_FORM_GET_TEAM_MEMBERS_BY_SKILL_FALLBACK: skill => `${APIEndpoint}/team-skills/${skill}`,
 
   CREATE_JOB_FORM: `${APIEndpoint}/jobforms`,
   UPDATE_JOB_FORM: `${APIEndpoint}/jobforms`,
