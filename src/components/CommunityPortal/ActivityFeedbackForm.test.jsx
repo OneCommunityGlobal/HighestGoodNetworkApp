@@ -10,9 +10,9 @@ const mockStore = configureStore([]);
 vi.useFakeTimers();
 
 describe('ActivityFeedbackModal', () => {
-  const setup = () => {
+  const setup = ({ darkMode = false } = {}) => {
     const store = mockStore({
-      theme: { darkMode: false },
+      theme: { darkMode },
     });
 
     const onClose = vi.fn();
@@ -20,15 +20,29 @@ describe('ActivityFeedbackModal', () => {
     render(
       <Provider store={store}>
         <ActivityFeedbackModal onClose={onClose} />
-      </Provider>
+      </Provider>,
     );
 
     return { onClose };
   };
 
+  afterEach(() => {
+    vi.clearAllTimers();
+  });
+
   test('renders modal title', () => {
     setup();
     expect(screen.getByText('Activity Feedback')).toBeInTheDocument();
+  });
+
+  test('focuses the dialog when opened', () => {
+    setup();
+    expect(screen.getByRole('dialog')).toHaveFocus();
+  });
+
+  test('uses dark modal styling when dark mode is enabled', () => {
+    setup({ darkMode: true });
+    expect(screen.getByRole('dialog').className).toContain('modalDark');
   });
 
   test('requires rating before submission', () => {

@@ -1,38 +1,42 @@
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.6);
+  background: rgb(0 0 0 / 60%);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 2000;
 }
 
-.modalLight {
-  background: #ffffff;
-  color: #000;
+.modalLight,
+.modalDark {
   padding: 28px;
   width: 440px;
+  max-width: calc(100vw - 32px);
   border-radius: 12px;
   position: relative;
-  animation: modalPop 0.25s ease-out;
+  animation: modal-pop 0.25s ease-out;
+  box-shadow: 0 22px 60px rgb(15 23 42 / 32%);
+  outline: none;
+}
+
+.modalLight {
+  background: #fff;
+  color: #111827;
 }
 
 .modalDark {
-  background: #1b2a41;
-  color: #ffffff;
-  padding: 28px;
-  width: 440px;
-  border-radius: 12px;
-  position: relative;
-  animation: modalPop 0.25s ease-out;
+  background: #111827;
+  color: #f9fafb;
+  border: 1px solid #334155;
 }
 
-@keyframes modalPop {
+@keyframes modal-pop {
   from {
     opacity: 0;
     transform: scale(0.8);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -48,6 +52,7 @@
   font-size: 22px;
   color: inherit;
   cursor: pointer;
+  border-radius: 4px;
 }
 
 .heading {
@@ -77,22 +82,52 @@
 .starEmpty {
   width: 40px;
   height: 40px;
-  stroke: #ccc;
 }
 
 .starFilled {
   fill: #ffb400;
+  stroke: #ffb400;
 }
 
-.commentBox {
+.starEmpty {
+  fill: transparent;
+  stroke: #6b7280;
+}
+
+.modalDark .starEmpty {
+  stroke: #cbd5e1;
+}
+
+.commentBox,
+.moreDetailsBox {
   width: 100%;
-  min-height: 110px;
   padding: 12px;
   border-radius: 6px;
   border: 1px solid #ccc;
-  background-color: inherit;
+  background-color: #fff;
   color: inherit;
+}
+
+.commentBox {
+  min-height: 110px;
   margin-bottom: 8px;
+}
+
+.moreDetailsBox {
+  min-height: 80px;
+  margin-bottom: 8px;
+}
+
+.modalDark .commentBox,
+.modalDark .moreDetailsBox {
+  background: #0f172a;
+  border-color: #64748b;
+  color: #f8fafc;
+}
+
+.modalDark .commentBox::placeholder,
+.modalDark .moreDetailsBox::placeholder {
+  color: #cbd5e1;
 }
 
 .charCount {
@@ -117,21 +152,18 @@
   font-size: 14px;
 }
 
-.moreDetailsBox {
-  width: 100%;
-  min-height: 80px;
-  margin-bottom: 8px;
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  background: inherit;
-  color: inherit;
+.modalDark .moreDetailsBtn {
+  color: #93c5fd;
 }
 
 .error {
-  color: #ff4d4d;
+  color: #b91c1c;
   margin-bottom: 10px;
   font-size: 14px;
+}
+
+.modalDark .error {
+  color: #fca5a5;
 }
 
 .success {
@@ -147,18 +179,35 @@
   width: 100%;
   padding: 12px;
   background: #007bff;
-  color: white;
+  color: #fff;
   border: none;
   border-radius: 6px;
   cursor: pointer;
   font-size: 16px;
 }
 
+.submitButton:hover {
+  background: #005fcc;
+}
+
 .submitButtonDisabled {
   width: 100%;
   padding: 12px;
   background: #007bff;
+  color: #fff;
+  border: none;
   opacity: 0.4;
   border-radius: 6px;
   cursor: not-allowed;
+}
+
+.closeBtn:focus-visible,
+.starWrapper:focus-visible,
+.commentBox:focus,
+.moreDetailsBtn:focus-visible,
+.moreDetailsBox:focus,
+.submitButton:focus-visible,
+.submitButtonDisabled:focus-visible {
+  outline: 3px solid #93c5fd;
+  outline-offset: 2px;
 }

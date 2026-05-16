@@ -52,7 +52,10 @@ function NewBadges(props) {
           </CardTitle>
           <div className={`new_badges ${props.darkMode ? 'text-light' : ''}`}>
             {filteredBadges.length === 0 ? (
-              <strong style={{ opacity: 0.7 }} className="responsive-font-size">
+              <strong
+                style={{ opacity: 0.7 }}
+                className={`responsive-font-size ${props.darkMode ? 'text-light' : ''}`}
+              >
                 Get yourself a herd of new badges! New badges are earned at the close of each epic
                 week. Newest badges are placed here at the top for a week after you earn them so
                 everyone can bask in the awesomeness of your achievement(s)!

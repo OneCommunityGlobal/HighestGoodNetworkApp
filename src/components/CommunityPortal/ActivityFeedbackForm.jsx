@@ -18,12 +18,19 @@ const ActivityFeedbackModal = ({ onClose }) => {
   const errorRef = useRef(null);
 
   useEffect(() => {
-    const focusable = modalRef.current.querySelectorAll('button, textarea, [role="button"]');
-    const firstEl = focusable[0];
-    const lastEl = focusable[focusable.length - 1];
+    const getFocusableElements = () =>
+      Array.from(modalRef.current?.querySelectorAll('button, textarea, [role="button"]') || []);
+
+    modalRef.current?.focus();
 
     const trap = e => {
       if (e.key !== 'Tab') return;
+      const focusable = getFocusableElements();
+      const firstEl = focusable[0];
+      const lastEl = focusable[focusable.length - 1];
+
+      if (!firstEl || !lastEl) return;
+
       if (e.shiftKey && document.activeElement === firstEl) {
         e.preventDefault();
         lastEl.focus();
@@ -92,7 +99,6 @@ const ActivityFeedbackModal = ({ onClose }) => {
         role="dialog"
         aria-modal="true"
         tabIndex={-1}
-        onMouseDown={e => e.stopPropagation()}
       >
         <button className={styles.closeBtn} onClick={onClose} aria-label="Close feedback form">
           ✕
