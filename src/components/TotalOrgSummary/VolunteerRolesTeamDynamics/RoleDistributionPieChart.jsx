@@ -28,18 +28,17 @@ const ROLE_COLOR_MAP = {
 import CustomTooltip from '../../CustomTooltip';
 
 const RoleDistributionPieChart = ({ roleDistributionStats = [], isLoading, darkMode }) => {
-
   // Reusable function to sort data and assign colors.
-  const sortDataAndAssignColors =(statsData)=>{
+  const sortDataAndAssignColors = statsData => {
     statsData?.sort((a, b) => b.count - a.count);
     const mappedData = statsData?.map((item, index) => ({
-    name: item._id,
-    value: item.count,
-    // Use a stable role mapping first, otherwise fallback by index.
-    color: ROLE_COLOR_MAP[item._id] || COLORS[index % COLORS.length],
-  }));
-  return  mappedData;
-  }
+      name: item._id,
+      value: item.count,
+      // Use a stable role mapping first, otherwise fallback by index.
+      color: ROLE_COLOR_MAP[item._id] || COLORS[index % COLORS.length],
+    }));
+    return mappedData;
+  };
 
   if (isLoading) {
     return (
@@ -51,13 +50,13 @@ const RoleDistributionPieChart = ({ roleDistributionStats = [], isLoading, darkM
     );
   }
 
-  let data=[];
+  let data = [];
   // This is to handle the case when we are comparing the data with other time periods. In that case, the data structure is different and we need to access the comparison data.
-  if(roleDistributionStats?.comparison){ 
-    data = sortDataAndAssignColors(roleDistributionStats?.comparison); 
+  if (roleDistributionStats?.comparison) {
+    data = sortDataAndAssignColors(roleDistributionStats?.comparison);
   }
   // Fallback to the original data structure when we are not comparing the data with other time periods.
-  else{
+  else {
     data = sortDataAndAssignColors(roleDistributionStats);
   }
 
