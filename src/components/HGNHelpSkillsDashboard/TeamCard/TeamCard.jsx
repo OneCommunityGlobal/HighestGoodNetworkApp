@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import styles from './TeamCard.module.css';
 import { TeamMemberRow } from './TeamMemberRow';
@@ -36,13 +35,24 @@ ConfirmModal.propTypes = {
 
 export default function TeamCard() {
   const teamMembers = [
-    { id: 1, name: 'Shreya Laheri', score: '9/10' },
-    { id: 2, name: 'Shreya Vithala', score: '7/10' },
-    { id: 3, name: 'Jae Sabol', score: '5/10' },
-    { id: 4, name: 'Sara Sabol', score: '2/10' },
+    {
+      id: 1,
+      name: 'Shreya Laheri',
+      score: '9/10',
+      email: 'shreya.laheri@mock.com',
+      slackId: 'U12345001',
+    },
+    {
+      id: 2,
+      name: 'Shreya Vithala',
+      score: '7/10',
+      email: 'shreya.vithala@mock.com',
+      slackId: 'U12345002',
+    },
+    { id: 3, name: 'Jae Sabol', score: '5/10', email: '', slackId: '' },
+    { id: 4, name: 'Sara Sabol', score: '2/10', email: 'sara.sabol@mock.com', slackId: '' },
   ];
 
-  const darkMode = useSelector(state => state.theme.darkMode);
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [confirmAction, setConfirmAction] = useState(null);
 
@@ -78,7 +88,7 @@ export default function TeamCard() {
   const noneSelected = selectedMembers.length === 0;
 
   return (
-    <div className={styles.teamCardWrapper}>
+    <div className={styles.pageWrapper}>
       <div className={styles.teamCardContainer}>
         <div className={styles.teamCardHeader}>
           <h2 className={styles.teamCardTitle}>
@@ -157,7 +167,6 @@ export default function TeamCard() {
           count={selectedMembers.length}
           onConfirm={handleConfirm}
           onCancel={handleCancel}
-          darkMode={darkMode}
         />
       )}
     </div>

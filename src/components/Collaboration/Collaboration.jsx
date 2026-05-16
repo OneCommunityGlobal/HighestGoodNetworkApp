@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import hasPermission from '~/utils/permissions';
 import styles from './Collaboration.module.css';
 import { toast } from 'react-toastify';
 import { ApiEndpoint } from '~/utils/URL';
@@ -33,10 +32,7 @@ function Collaboration() {
   const [columns, setColumns] = useState(() => getColumnsFromMQ());
 
   const darkMode = useSelector(state => state.theme?.darkMode);
-  const dispatch = useDispatch();
   const history = useHistory();
-  const userHasPermission = permission => dispatch(hasPermission(permission));
-  const canReorderJobs = userHasPermission('reorderJobs');
 
   const calculateAdsPerPage = () => {
     const rows = 5;
@@ -497,8 +493,12 @@ function Collaboration() {
                     onClick={() => {
                       try {
                         if (history && typeof history.push === 'function') {
+                          const search = jobTitle
+                            ? `?jobTitle=${encodeURIComponent(jobTitle)}`
+                            : '';
                           history.push({
                             pathname: '/job-application',
+                            search,
                             state: {
                               jobId: ad._id,
                               jobTitle: jobTitle,
@@ -520,8 +520,12 @@ function Collaboration() {
                         e.preventDefault();
                         try {
                           if (history && typeof history.push === 'function') {
+                            const pathSearch = jobTitle
+                              ? `?jobTitle=${encodeURIComponent(jobTitle)}`
+                              : '';
                             history.push({
                               pathname: '/job-application',
+                              search: pathSearch,
                               state: {
                                 jobId: ad._id,
                                 jobTitle: jobTitle,
@@ -531,7 +535,7 @@ function Collaboration() {
                               },
                             });
                           } else {
-                            globalThis.globalThis.location.href = `/job-application`;
+                            globalThis.location.href = `/job-application`;
                           }
                         } catch (error) {
                           console.error('Error navigating to job application:', error);

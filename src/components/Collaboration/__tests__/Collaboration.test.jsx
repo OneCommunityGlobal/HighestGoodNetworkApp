@@ -6,13 +6,6 @@ import { vi } from 'vitest';
 // Mock Redux
 vi.mock('react-redux', () => ({
   useSelector: vi.fn(fn => fn({ theme: { darkMode: false } })),
-  useDispatch: () => vi.fn(),
-}));
-
-// Mock permissions
-vi.mock('~/utils/permissions', () => ({
-  __esModule: true,
-  default: () => true,
 }));
 
 // Mock toast
