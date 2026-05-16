@@ -22,14 +22,15 @@ const renderWithStore = (darkMode = false) => {
 describe('PopularEvents Component', () => {
   test('renders header', () => {
     renderWithStore();
-    expect(screen.getByRole('heading', { name: /Most Popular Event/i })).toBeInTheDocument();
+
+    expect(screen.getByRole('heading', { name: /most popular event/i })).toBeInTheDocument();
   });
 
   test('renders exactly 7 event labels initially', () => {
     renderWithStore();
 
-    const labels = screen.getAllByText(/Type of Event/i);
-    expect(labels.length).toBe(7);
+    const labels = screen.getAllByText(/Type of Event \d+/i);
+    expect(labels).toHaveLength(7);
   });
 
   test('filters events by type (Offline)', () => {
@@ -40,8 +41,8 @@ describe('PopularEvents Component', () => {
 
     fireEvent.change(typeSelect, { target: { value: 'Offline' } });
 
-    const labels = screen.getAllByText(/Type of Event/i);
-    expect(labels.length).toBe(4);
+    const labels = screen.getAllByText(/Type of Event \d+/i);
+    expect(labels).toHaveLength(4);
   });
 
   test('filters events by time (Morning)', () => {
@@ -51,21 +52,21 @@ describe('PopularEvents Component', () => {
 
     fireEvent.change(timeSelect, { target: { value: 'Morning' } });
 
-    const labels = screen.getAllByText(/Type of Event/i);
-    expect(labels.length).toBe(3);
+    const labels = screen.getAllByText(/Type of Event \d+/i);
+    expect(labels).toHaveLength(3);
   });
 
   test('changing filters multiple times restores all 7 events', () => {
     renderWithStore();
 
-    const select = screen.getAllByRole('combobox')[1];
+    const typeSelect = screen.getAllByRole('combobox')[1];
 
-    fireEvent.change(select, { target: { value: 'Offline' } });
-    fireEvent.change(select, { target: { value: 'Online' } });
-    fireEvent.change(select, { target: { value: 'All' } });
+    fireEvent.change(typeSelect, { target: { value: 'Offline' } });
+    fireEvent.change(typeSelect, { target: { value: 'Online' } });
+    fireEvent.change(typeSelect, { target: { value: 'All' } });
 
-    const labels = screen.getAllByText(/Type of Event/i);
-    expect(labels.length).toBe(7);
+    const labels = screen.getAllByText(/Type of Event \d+/i);
+    expect(labels).toHaveLength(7);
   });
 
   test('summary shows correct values', () => {
@@ -81,20 +82,24 @@ describe('PopularEvents Component', () => {
     renderWithStore(true);
 
     const heading = screen.getByRole('heading', {
-      name: 'Most Popular Event',
+      name: /most popular event/i,
     });
 
-    expect(heading.className.includes('text-light')).toBe(true);
+    // matches CSS module class name used in component
+    expect(heading.className).toMatch(/popularEventsHeaderDark/);
   });
 
   test('no summary cards when filteredData is empty', () => {
     renderWithStore();
 
     const timeSelect = screen.getAllByRole('combobox')[0];
+
     fireEvent.change(timeSelect, { target: { value: 'NonExistent' } });
 
-    expect(screen.getByRole('heading', { name: 'Most Popular Event' })).toBeInTheDocument();
+    // header should still exist
+    expect(screen.getByRole('heading', { name: /most popular event/i })).toBeInTheDocument();
 
+    // summary still renders structure text (based on your component logic)
     expect(screen.getByText('Most Popular Event')).toBeInTheDocument();
   });
 });
