@@ -40,23 +40,20 @@
   flex-wrap: wrap;
   gap: 0.5rem;
   align-items: flex-end;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
   flex-shrink: 0;
 }
 
-/* Base control group styles */
 .controlGroup {
   flex: 1 1 140px;
   min-width: 120px;
 }
 
-/* Make data source dropdown wider */
 .controlGroup:first-of-type {
   flex: 2 1 200px;
   min-width: 180px;
 }
 
-/* Make date fields smaller and just big enough */
 .controlGroup:nth-of-type(2),
 .controlGroup:nth-of-type(3) {
   flex: 0 1 110px;
@@ -90,6 +87,43 @@
   color: #f8fafc;
 }
 
+/* ── Source category legend ─────────────────────────────────────────────── */
+.mfkLegend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.5rem;
+  margin-bottom: 0.5rem;
+  flex-shrink: 0;
+}
+
+.mfkLegendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.18rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--cat-color);
+  background: var(--cat-bg);
+  border: 1px solid var(--cat-color);
+  opacity: 0.92;
+  white-space: nowrap;
+  transition: opacity 0.2s;
+}
+
+.mfkLegendItem:hover {
+  opacity: 1;
+}
+
+.mfkLegendDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── Datepicker ─────────────────────────────────────────────────────────── */
 .mfkDatepicker {
   width: 100%;
   min-height: 40px;
@@ -127,7 +161,6 @@
   box-shadow: 0 0 0 2px rgb(59 130 246 / 10%);
 }
 
-/* Placeholder alignment */
 .mfkDatepicker::placeholder {
   text-align: left;
 }
@@ -195,6 +228,7 @@
   transform: none;
 }
 
+/* ── States ─────────────────────────────────────────────────────────────── */
 .mfkLoading,
 .mfkError,
 .mfkEmpty {
@@ -210,6 +244,7 @@
   color: var(--error-color, #dc2626);
 }
 
+/* ── Chart container ────────────────────────────────────────────────────── */
 .mfkChartContainer {
   width: 100%;
   flex: 1;
@@ -230,6 +265,7 @@
   overflow: visible;
 }
 
+/* ── Calendar header ────────────────────────────────────────────────────── */
 .mfkCalendarHeader {
   display: flex;
   align-items: center;
@@ -259,7 +295,7 @@
   cursor: default;
 }
 
-/* Tablet responsive breakpoints */
+/* ── Tablet ─────────────────────────────────────────────────────────────── */
 @media (width <= 768px) {
   .mfkContainer {
     padding: 0.75rem;
@@ -288,9 +324,18 @@
   .mfkChartContainer {
     min-height: 200px;
   }
+
+  .mfkLegend {
+    gap: 0.25rem 0.35rem;
+  }
+
+  .mfkLegendItem {
+    font-size: 0.62rem;
+    padding: 0.14rem 0.42rem;
+  }
 }
 
-/* Mobile responsive breakpoints */
+/* ── Mobile ─────────────────────────────────────────────────────────────── */
 @media (width <= 480px) {
   .mfkContainer {
     padding: 0.5rem;
@@ -304,7 +349,6 @@
     width: 100%;
   }
 
-  /* Reset all control groups for mobile */
   .controlGroup,
   .controlGroup:first-of-type,
   .controlGroup:nth-of-type(2),
@@ -348,8 +392,18 @@
   .mfkChartContainer {
     min-height: 200px;
   }
+
+  .mfkLegend {
+    gap: 0.2rem 0.3rem;
+  }
+
+  .mfkLegendItem {
+    font-size: 0.6rem;
+    padding: 0.12rem 0.38rem;
+  }
 }
 
+/* ── Dark mode label / datepicker ───────────────────────────────────────── */
 .darkMode .mfkLabel {
   color: #cbd5e1;
 }
@@ -395,6 +449,7 @@
   box-shadow: none !important;
 }
 
+/* ── Dark calendar global overrides (unchanged) ─────────────────────────── */
 :global(.mfk-dark-popper) {
   z-index: 6;
   background-color: transparent !important;
@@ -501,7 +556,7 @@
   color: #fff !important;
 }
 
-/* React-select styles - consolidated */
+/* ── React-select styles (unchanged) ───────────────────────────────────── */
 .mfkContainer :global(.data-select__control) {
   min-height: 32px !important;
   background-color: #fff !important;
@@ -555,7 +610,6 @@
   text-transform: uppercase !important;
 }
 
-/* React-select mobile styles */
 @media (width <= 480px) {
   .mfkContainer :global(.data-select__control) {
     min-height: 36px !important;
@@ -589,7 +643,6 @@
   }
 }
 
-/* React-select dark mode */
 .darkMode :global(.data-select__control) {
   background-color: #334155 !important;
   border-color: #475569 !important;
@@ -660,7 +713,7 @@
   color: #94a3b8 !important;
 }
 
-/* React-datepicker base styles (light mode) - improved contrast */
+/* ── React-datepicker base styles (unchanged) ────────────────────────────── */
 .mfkContainer :global(.react-datepicker) {
   background-color: #fff !important;
   border: 1px solid #e2e8f0 !important;
@@ -794,8 +847,7 @@
   top: 0.5rem !important;
 }
 
-.mfkContainer
-  :global(.react-datepicker__navigation:hover .react-datepicker__navigation-icon::before) {
+.mfkContainer :global(.react-datepicker__navigation:hover .react-datepicker__navigation-icon::before) {
   border-color: #2563eb !important;
 }
 
@@ -803,7 +855,7 @@
   display: none !important;
 }
 
-/* React-datepicker dark mode - improved contrast */
+/* ── Dark datepicker (unchanged) ─────────────────────────────────────────── */
 .mfkContainer.darkMode :global(.react-datepicker) {
   background-color: #0f172a !important;
   border-color: #334155 !important;
@@ -881,8 +933,7 @@
   border-color: #cbd5e1 !important;
 }
 
-.mfkContainer.darkMode
-  :global(.react-datepicker__navigation:hover .react-datepicker__navigation-icon::before) {
+.mfkContainer.darkMode :global(.react-datepicker__navigation:hover .react-datepicker__navigation-icon::before) {
   border-color: #3b82f6 !important;
 }
 
@@ -891,7 +942,6 @@
   color: #fff !important;
 }
 
-/* Mobile-specific datepicker adjustments */
 @media (width <= 480px) {
   .mfkContainer :global(.react-datepicker) {
     font-size: 0.65rem !important;
@@ -936,7 +986,6 @@
   }
 }
 
-/* Final dark popup override for From/To calendars */
 :global(.mfk-dark-calendar-container) {
   background-color: transparent !important;
   border-radius: 0.75rem !important;
@@ -969,7 +1018,6 @@
   color: #f8fafc !important;
 }
 
-/* Exact override for the rendered datepicker DOM inside Most Frequent Keywords */
 .darkMode :global(.react-datepicker__tab-loop),
 .darkMode :global(.react-datepicker__tab-loop .react-datepicker),
 .darkMode :global(.react-datepicker__tab-loop .react-datepicker__month-container) {
