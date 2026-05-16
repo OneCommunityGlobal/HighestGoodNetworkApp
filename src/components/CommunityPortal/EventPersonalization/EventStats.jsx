@@ -81,6 +81,8 @@ export default function PopularEvents() {
   const [typeFilter, setTypeFilter] = useState('All');
   const [sortOption, setSortOption] = useState('HighToLow');
 
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   const calculatePercentage = (attended, enrolled) =>
     enrolled === 0 ? 0 : Math.round((attended / enrolled) * 100);
 
@@ -89,26 +91,22 @@ export default function PopularEvents() {
       return {
         icon: '↑',
         label: 'Increasing',
-        className: styles.pETrendUp,
+        className: styles.pETrendUp, // Always use the same class name
       };
     }
     if (currentPercentage < previousPercentage) {
       return {
-        label: 'Decreasing',
         icon: '↓',
-        className: styles.pETrendDown,
+        label: 'Decreasing',
+        className: styles.pETrendDown, // Always use the same class name
       };
     }
     return {
       icon: '-',
       label: 'Stable',
-      className: styles.pETrendStable,
+      className: styles.pETrendStable, // Always use the same class name
     };
   };
-
-  const darkMode = useSelector(state => state.theme.darkMode);
-
-  // ✅ KEEP YOUR SAFE FIX
 
   const getBarColor = percentage => {
     if (percentage > 60) return styles.pEBarGreen;
