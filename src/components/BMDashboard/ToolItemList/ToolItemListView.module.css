@@ -347,3 +347,90 @@
   color: #e5e7eb !important;
 }
 
+/* ── Inventory Navigation Bar ── */
+.inventoryNav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.returnBtn {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 16px;
+  background-color: #0d5675;
+  color: #fff;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.returnBtn:hover {
+  background-color: #4dabf7;
+  color: #fff;
+}
+
+.categoryIcons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.categoryIconLink {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 6px 10px;
+  border: 1px solid #4dabf7;
+  border-radius: 8px;
+  color: #0d5675;
+  text-decoration: none;
+  font-size: 0.75rem;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.categoryIconLink:hover {
+  background-color: #0d5675;
+  color: #fff;
+  border-color: #0d5675;
+}
+
+.iconWrapper {
+  font-size: 1.2rem;
+}
+
+.iconLabel {
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+body.dark-mode .returnBtn,
+body.bm-dashboard-dark .returnBtn {
+  background-color: #1a3a4d;
+  color: #fff;
+}
+
+body.dark-mode .returnBtn:hover,
+body.bm-dashboard-dark .returnBtn:hover {
+  background-color: #4dabf7;
+  color: #0f172a;
+}
+
+body.dark-mode .categoryIconLink,
+body.bm-dashboard-dark .categoryIconLink {
+  border-color: #4dabf7;
+  color: #4dabf7;
+}
+
+body.dark-mode .categoryIconLink:hover,
+body.bm-dashboard-dark .categoryIconLink:hover {
+  background-color: #4dabf7;
+  color: #0f172a;
+  border-color: #4dabf7;
+}

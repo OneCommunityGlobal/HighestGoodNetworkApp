@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
+import { FaCubes, FaShoppingCart, FaTools, FaRecycle } from 'react-icons/fa';
 import BMError from '../shared/BMError';
 import SelectForm from '../ItemList/SelectForm';
 import SelectItem from '../ItemList/SelectItem';
@@ -9,7 +11,13 @@ import ToolItemsTable from './ToolItemsTable';
 import styles from './ToolItemListView.module.css';
 import { ToolFiltersProvider, useToolFilters } from '../Tools/ToolFiltersContext';
 
-// Same logic as ToolItemsTable for Using / Available
+const siblingCategories = [
+  { label: 'Materials', route: '/bmdashboard/materials', icon: <FaCubes /> },
+  { label: 'Consumables', route: '/bmdashboard/consumables', icon: <FaShoppingCart /> },
+  { label: 'Equipment', route: '/bmdashboard/equipment', icon: <FaTools /> },
+  { label: 'Reusables', route: '/bmdashboard/reusables', icon: <FaRecycle /> },
+];
+
 const isItemUsing = item =>
   Array.isArray(item.itemType?.using) && item.itemType.using.includes(item._id);
 
@@ -216,11 +224,7 @@ function ToolItemListViewInner({ itemType, items, errors = {}, UpdateItemModal, 
     setFilteredItems(processedItems);
   }, [processedItems]);
 
-  const updateFilter = patch =>
-    setFilters(prev => ({
-      ...prev,
-      ...patch,
-    }));
+  const updateFilter = patch => setFilters(prev => ({ ...prev, ...patch }));
 
   const handleSort = columnKey => {
     updateFilter({
@@ -245,10 +249,30 @@ function ToolItemListViewInner({ itemType, items, errors = {}, UpdateItemModal, 
   return (
     <main className={`${styles.itemsListContainer} ${themeClass}`}>
       <h3>{itemType}</h3>
+
+      {/* Inventory Navigation Bar */}
+      <div className={styles.inventoryNav}>
+        <Link to="/bmdashboard/inventorytypes" className={styles.returnBtn}>
+          ← Return to All Inventory Types
+        </Link>
+        <div className={styles.categoryIcons}>
+          {siblingCategories.map(cat => (
+            <Link
+              key={cat.label}
+              to={cat.route}
+              className={styles.categoryIconLink}
+              title={cat.label}
+            >
+              <span className={styles.iconWrapper}>{cat.icon}</span>
+              <span className={styles.iconLabel}>{cat.label}</span>
+            </Link>
+          ))}
+        </div>
+      </div>
+
       <section>
         {items && (
           <div className={styles.filtersRow}>
-            {/* Row 1: Project + Tool */}
             <div className={styles.projectToolColumn}>
               <div className={styles.filterGroup}>
                 <SelectForm
@@ -260,7 +284,6 @@ function ToolItemListViewInner({ itemType, items, errors = {}, UpdateItemModal, 
                   isDarkMode={isDarkMode}
                 />
               </div>
-
               <div className={styles.filterGroup}>
                 <SelectItem
                   items={items}
@@ -273,7 +296,6 @@ function ToolItemListViewInner({ itemType, items, errors = {}, UpdateItemModal, 
               </div>
             </div>
 
-            {/* Row 2: Available / Using / Tool Status / Condition / Search */}
             <div className={styles.availSearchColumn}>
               <div className={styles.availSearchRow}>
                 <div className={styles.availUsingGroup}>
@@ -382,15 +404,9 @@ function ToolItemListViewInner({ itemType, items, errors = {}, UpdateItemModal, 
 
 ToolItemListViewInner.propTypes = {
   itemType: PropTypes.string,
-  items: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.number,
-      name: PropTypes.string,
-    }),
-  ).isRequired,
-  errors: PropTypes.shape({
-    message: PropTypes.string,
-  }),
+  items: PropTypes.arrayOf(PropTypes.shape({ id: PropTypes.number, name: PropTypes.string }))
+    .isRequired,
+  errors: PropTypes.shape({ message: PropTypes.string }),
   UpdateItemModal: PropTypes.oneOfType([PropTypes.func, PropTypes.elementType]),
   dynamicColumns: PropTypes.array,
 };
