@@ -3,12 +3,22 @@ import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { Link } from 'react-router-dom';
+import { FaCubes, FaShoppingCart, FaTools, FaRecycle, FaWrench } from 'react-icons/fa';
 
 import BMError from '../shared/BMError';
 import SelectForm from './SelectForm';
 import SelectItem from './SelectItem';
 import ItemsTable from './ItemsTable';
 import styles from './ItemListView.module.css';
+
+const allCategories = [
+  { label: 'Materials', route: '/bmdashboard/materials', icon: <FaCubes /> },
+  { label: 'Consumables', route: '/bmdashboard/consumables', icon: <FaShoppingCart /> },
+  { label: 'Equipments', route: '/bmdashboard/equipment', icon: <FaTools /> },
+  { label: 'Reusables', route: '/bmdashboard/reusables', icon: <FaRecycle /> },
+  { label: 'Tools', route: '/bmdashboard/tools', icon: <FaWrench /> },
+];
 
 export function ItemListView({
   itemType,
@@ -164,6 +174,28 @@ export function ItemListView({
   return (
     <main className={`${styles.itemsListContainer} ${darkMode ? styles.darkMode : ''}`}>
       <h3>{itemType}</h3>
+
+      {/* Inventory Navigation Bar */}
+      <div className={styles.inventoryNav}>
+        <Link to="/bmdashboard/inventorytypes" className={styles.returnBtn}>
+          ← All Inventory Types
+        </Link>
+        <div className={styles.categoryIcons}>
+          {allCategories
+            .filter(cat => cat.label !== itemType)
+            .map(cat => (
+              <Link
+                key={cat.label}
+                to={cat.route}
+                className={styles.categoryIconLink}
+                title={cat.label}
+              >
+                <span className={styles.iconWrapper}>{cat.icon}</span>
+                <span className={styles.iconLabel}>{cat.label}</span>
+              </Link>
+            ))}
+        </div>
+      </div>
 
       <section>
         <span>
