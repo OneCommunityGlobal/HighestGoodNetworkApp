@@ -19,7 +19,10 @@ const renderWithStore = (darkMode = false) => {
   );
 };
 
-const getEventBars = () => screen.getAllByText(/\d+% \(\d+\/\d+\)/); // unique per event row
+const getEventBars = () =>
+  screen.getAllByText((_, node) => {
+    return Boolean(node?.textContent?.match(/^\d{1,3}% \(\d{1,3}\/\d{1,3}\)$/));
+  }); // unique per event row
 
 describe('PopularEvents Component', () => {
   test('renders header', () => {
