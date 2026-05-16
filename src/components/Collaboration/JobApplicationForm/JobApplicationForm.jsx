@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useLocation } from 'react-router-dom';
 import styles from './JobApplicationForm.module.css';
@@ -33,6 +33,72 @@ function titlesLikelyMatch(jobTitle, formTitle) {
   return false;
 }
 
+const STOPWORDS = new Set([
+  'the',
+  'and',
+  'for',
+  'with',
+  'our',
+  'your',
+  'are',
+  'you',
+  'role',
+  'a',
+  'an',
+  'to',
+  'of',
+  'in',
+]);
+
+function tokenizeTitle(s) {
+  return normalizeTitleKey(s)
+    .split(/\s+/)
+    .filter(w => w.length > 1 && !STOPWORDS.has(w));
+}
+
+/** Match when most significant words from the job board appear in the saved form title. */
+function findFormByTokenOverlap(formsArr, jobTitle) {
+  const tokens = tokenizeTitle(jobTitle);
+  if (!tokens.length || !formsArr?.length) return null;
+  const need =
+    tokens.length >= 4
+      ? Math.max(2, Math.ceil(tokens.length * 0.5))
+      : Math.max(1, Math.ceil(tokens.length * 0.45));
+
+  let best = null;
+  let bestOverlap = -1;
+  for (const f of formsArr) {
+    const nk = normalizeTitleKey(f.title || '');
+    let overlap = 0;
+    for (const t of tokens) {
+      if (nk.includes(t)) overlap++;
+    }
+    if (overlap > bestOverlap) {
+      bestOverlap = overlap;
+      best = f;
+    }
+  }
+  return bestOverlap >= need ? best : null;
+}
+
+/**
+ * When both job and a form mention the same role family (e.g. "developer") and only one form fits,
+ * use it so ?jobTitle= from the board still resolves without noisy toasts.
+ */
+function findFormByDeveloperFamily(formsArr, jobTitle) {
+  const j = normalizeTitleKey(jobTitle);
+  if (!j.includes('developer') && !j.includes('engineer')) return null;
+  const candidates = formsArr.filter(f => {
+    const t = normalizeTitleKey(f.title || '');
+    return (
+      (j.includes('developer') && t.includes('developer')) ||
+      (j.includes('engineer') && t.includes('engineer'))
+    );
+  });
+  if (candidates.length !== 1) return null;
+  return candidates[0];
+}
+
 /** Match a job listing title to a saved application form (titles may differ slightly). */
 function findFormForJobTitle(formsArr, jobTitle) {
   if (!jobTitle || !formsArr?.length) return null;
@@ -47,6 +113,10 @@ function findFormForJobTitle(formsArr, jobTitle) {
   });
   if (m) return m;
   m = formsArr.find(f => titlesLikelyMatch(jobTitle, f.title));
+  if (m) return m;
+  m = findFormByTokenOverlap(formsArr, jobTitle);
+  if (m) return m;
+  m = findFormByDeveloperFamily(formsArr, jobTitle);
   return m || null;
 }
 
@@ -100,7 +170,72 @@ function getQuestionLabel(q, idx) {
 }
 
 function isQuestionRequired(q) {
-  return q.isRequired === true || q.required === true;
+  if (!q || typeof q !== 'object') return false;
+  return (
+    q.isRequired === true ||
+    q.required === true ||
+    q.mandatory === true ||
+    String(q.isRequired).toLowerCase() === 'true' ||
+    String(q.required).toLowerCase() === 'true'
+  );
+}
+
+/** True if two question objects carry nearly the same prompt (long repeated copy, minor edits). */
+function questionLabelsNearlyDuplicate(q1, q2) {
+  const raw1 = (q1?.label || q1?.questionText || '').trim();
+  const raw2 = (q2?.label || q2?.questionText || '').trim();
+  const c1 = stripLeadingQuestionEnumeration(raw1) || raw1;
+  const c2 = stripLeadingQuestionEnumeration(raw2) || raw2;
+  const a = normalizeTitleKey(c1);
+  const b = normalizeTitleKey(c2);
+  if (!a || !b) return false;
+  if (a === b) return true;
+  if (a.length < 45 || b.length < 45) return false;
+  return a.includes(b) || b.includes(a);
+}
+
+/** Drop exact and near-duplicate prompts (templates pasted twice, etc.). */
+function dedupeVisibleQuestions(questions) {
+  const kept = [];
+  for (const q of questions ?? []) {
+    const raw = (q.label || q.questionText || '').trim();
+    const cleaned = stripLeadingQuestionEnumeration(raw) || raw;
+    const key = normalizeTitleKey(cleaned);
+    const dupExact =
+      key &&
+      kept.some(k => {
+        const kr = (k.label || k.questionText || '').trim();
+        const kc = stripLeadingQuestionEnumeration(kr) || kr;
+        return normalizeTitleKey(kc) === key;
+      });
+    if (dupExact) continue;
+    if (kept.some(k => questionLabelsNearlyDuplicate(q, k))) continue;
+    kept.push(q);
+  }
+  return kept;
+}
+
+function getVisibleQuestionsForForm(form) {
+  if (!form?.questions) return [];
+  const filtered = form.questions.filter(q => q.visible !== false);
+  return dedupeVisibleQuestions(filtered);
+}
+
+function initialAnswersForQuestions(questions) {
+  return (questions ?? []).map(q => {
+    const t = getQuestionType(q);
+    if (t === 'checkbox') return [];
+    return '';
+  });
+}
+
+function isAnswerEmpty(answer, q) {
+  const t = getQuestionType(q);
+  if (t === 'checkbox') {
+    if (Array.isArray(answer)) return answer.length === 0;
+    return !String(answer ?? '').trim();
+  }
+  return !String(answer ?? '').trim();
 }
 
 /** Shown for every role when API text is missing or only a placeholder (e.g. "desc …"). */
@@ -134,6 +269,14 @@ function isValidId(id) {
   return /^[a-zA-Z0-9_-]+$/.test(id) && id.length <= 100;
 }
 
+const REQUIREMENT_ITEMS = [
+  { id: 'reactExperience', label: '1+ years of Full-Time ReactJS Experience' },
+  { id: 'twoMonthsCommitment', label: 'Minimum of 2 Months Commitment' },
+  { id: 'javascriptExperience', label: '1+ years of Full-Time JavaScript Experience' },
+  { id: 'timeZoneLocation', label: 'Time Zone and Location Matches' },
+  { id: 'tenHoursPerWeek', label: 'Minimum of 10 hours of work a week' },
+];
+
 function JobApplicationForm() {
   const location = useLocation();
   const [forms, setForms] = useState([]);
@@ -158,29 +301,48 @@ function JobApplicationForm() {
   const [hoursPerWeek, setHoursPerWeek] = useState('');
   const [roleSkills, setRoleSkills] = useState('');
   const [userQuestionnaireData, setUserQuestionnaireData] = useState(null);
+  /** Owner/Admin: optional manual toggles on top of auto-calculated requirement flags. */
+  const [requirementPreviewOverrides, setRequirementPreviewOverrides] = useState({});
 
   const darkMode = useSelector(state => state.theme?.darkMode);
   const isAdmin = useSelector(state => {
     try {
-      const user = state?.auth?.user;
-      const role = user?.role;
-      return (
-        role === 'Administrator' ||
-        role === 'Owner' ||
-        role === 'admin' ||
-        role === 'ADMINISTRATOR' ||
-        role === 'OWNER'
-      );
+      const role = state?.auth?.user?.role;
+      if (role == null || role === '') return false;
+      const r = String(role).toLowerCase();
+      return r === 'administrator' || r === 'owner' || r === 'admin';
     } catch (err) {
       console.error('Error checking admin status:', err);
       return false;
     }
   });
 
-  const visibleQuestions = useMemo(
-    () => (filteredForm?.questions ?? []).filter(q => q.visible !== false),
-    [filteredForm],
-  );
+  /* Global back-to-top lives outside #root in index.html; hide it on this long form page. */
+  useEffect(() => {
+    const btn = document.querySelector('.back-to-top');
+    if (!btn) return undefined;
+    const prev = btn.style.display;
+    btn.style.display = 'none';
+    return () => {
+      btn.style.display = prev;
+    };
+  }, []);
+
+  /*
+   * Match html/body/#root to the page strip. Global #root is white; dark mode uses !important —
+   * route class + :global rules in the module CSS set backgrounds with !important while mounted.
+   */
+  useEffect(() => {
+    const c = 'job-application-route';
+    document.documentElement.classList.add(c);
+    document.body.classList.add(c);
+    return () => {
+      document.documentElement.classList.remove(c);
+      document.body.classList.remove(c);
+    };
+  }, []);
+
+  const visibleQuestions = useMemo(() => getVisibleQuestionsForForm(filteredForm), [filteredForm]);
 
   const applyQuestionnairePreFill = data => {
     if (!data) return;
@@ -262,11 +424,16 @@ function JobApplicationForm() {
           (jobDataFromRedirect?.jobTitle && String(jobDataFromRedirect.jobTitle).trim()) ||
           getJobTitleFromNavigation(location);
         const navState = { ...location.state, jobTitle: navTitle || location.state?.jobTitle };
+        const formMatch = navTitle ? findFormForJobTitle(formsArr, navTitle) : null;
         const chosen = pickInitialForm(formsArr, navState);
-        if (navTitle && !findFormForJobTitle(formsArr, navTitle)) {
+        if (navTitle && !formMatch && chosen) {
+          toast.info(
+            `Could not match "${navTitle}" to a form title. Showing "${chosen.title}" — pick another role from the dropdown if this is not the right application.`,
+            { autoClose: 7000 },
+          );
+        } else if (navTitle && !formMatch && !chosen) {
           toast.warn(
-            `No application form matched "${navTitle}". Pick the correct role from the dropdown or enter the exact form title.`,
-            { autoClose: 8000 },
+            'No application form is available. Please contact support or try again later.',
           );
         }
         if (chosen) {
@@ -278,8 +445,8 @@ function JobApplicationForm() {
           } else {
             setBannerJobTitle(chosen.title);
           }
-          const n = (chosen.questions ?? []).filter(q => q.visible !== false).length;
-          setAnswers(new Array(n).fill(''));
+          const qs = getVisibleQuestionsForForm(chosen);
+          setAnswers(initialAnswersForQuestions(qs));
         } else {
           setSelectedJob('');
           setFilteredForm(null);
@@ -307,8 +474,8 @@ function JobApplicationForm() {
     if (!selectedJob) return;
     const form = forms.find(f => f.title === selectedJob);
     setFilteredForm(form);
-    const n = (form?.questions ?? []).filter(q => q.visible !== false).length;
-    setAnswers(new Array(n).fill(''));
+    const qs = getVisibleQuestionsForForm(form);
+    setAnswers(initialAnswersForQuestions(qs));
   }, [selectedJob, forms]);
 
   const handleJobChange = e => {
@@ -343,6 +510,42 @@ function JobApplicationForm() {
     setAnswers(newAnswers);
   };
 
+  /** Checkbox question with multiple options: toggle selection in an array stored at answers[idx]. */
+  const toggleCheckboxOption = (idx, opt) => {
+    const prev = answers[idx];
+    const arr = Array.isArray(prev) ? [...prev] : prev !== '' && prev != null ? [String(prev)] : [];
+    const i = arr.indexOf(opt);
+    if (i >= 0) arr.splice(i, 1);
+    else arr.push(opt);
+    handleAnswerChange(idx, arr);
+  };
+
+  const isCheckboxOptionChecked = (answer, opt) => {
+    if (Array.isArray(answer)) return answer.includes(opt);
+    return answer === opt;
+  };
+
+  // Copy answers for typical prompts into requirement evaluation state (avoids duplicating those fields in the UI).
+  useEffect(() => {
+    if (!visibleQuestions.length) return;
+    visibleQuestions.forEach((q, idx) => {
+      const label = (q.label || q.questionText || '').toLowerCase();
+      const v = answers[idx];
+      const str = Array.isArray(v)
+        ? v.filter(Boolean).join(', ')
+        : v != null && v !== ''
+        ? String(v)
+        : '';
+      if (!str.trim()) return;
+
+      if (/(skill|what skills|experience do you|possess\?)/i.test(label)) setRoleSkills(str);
+      else if (/hours per week|volunteer hours|commit to/i.test(label)) setHoursPerWeek(str);
+      else if (/how long|wish to volunteer|in months/i.test(label)) setMonthsVolunteer(str);
+      else if (/full.?time|years of.*experience|full time experience/i.test(label))
+        setFullTimeYears(str);
+    });
+  }, [answers, visibleQuestions]);
+
   const handleShowDescription = e => {
     e.preventDefault();
     setShowDescription(true);
@@ -367,7 +570,7 @@ function JobApplicationForm() {
     setResumeFile(f);
   };
 
-  const handleResumeChange = e => {
+  const evaluateRequirements = (data = {}) => {
     const {
       fullTimeYears: years = '',
       monthsVolunteer: months = '',
@@ -401,14 +604,44 @@ function JobApplicationForm() {
       locationTimezone,
     });
 
-  const checkUserRequirements = () =>
-    evaluateRequirements({
-      fullTimeYears: fullTimeYears || userQuestionnaireData?.fullTimeYears || '',
-      monthsVolunteer: monthsVolunteer || userQuestionnaireData?.monthsVolunteer || '',
-      hoursPerWeek: hoursPerWeek || userQuestionnaireData?.hoursPerWeek || '',
-      roleSkills: roleSkills || userQuestionnaireData?.roleSkills || '',
-      locationTimezone: locationTimezone || userQuestionnaireData?.locationTimezone || '',
+  const requirementsForDisplay = useMemo(() => {
+    const computed = evaluateRequirements({
+      fullTimeYears,
+      monthsVolunteer,
+      hoursPerWeek,
+      roleSkills,
+      locationTimezone,
     });
+    const merged = { ...computed };
+    Object.entries(requirementPreviewOverrides).forEach(([id, val]) => {
+      if (val !== undefined) merged[id] = val;
+    });
+    return merged;
+  }, [
+    fullTimeYears,
+    monthsVolunteer,
+    hoursPerWeek,
+    roleSkills,
+    locationTimezone,
+    requirementPreviewOverrides,
+  ]);
+
+  const toggleRequirementPreview = useCallback(
+    id => {
+      setRequirementPreviewOverrides(prev => {
+        const computed = evaluateRequirements({
+          fullTimeYears,
+          monthsVolunteer,
+          hoursPerWeek,
+          roleSkills,
+          locationTimezone,
+        });
+        const current = prev[id] !== undefined ? prev[id] : computed[id];
+        return { ...prev, [id]: !current };
+      });
+    },
+    [fullTimeYears, monthsVolunteer, hoursPerWeek, roleSkills, locationTimezone],
+  );
 
   const validateBeforeSubmit = () => {
     const missing = [];
@@ -417,7 +650,7 @@ function JobApplicationForm() {
 
     if (visibleQuestions.length) {
       for (const [idx, q] of visibleQuestions.entries()) {
-        if (isQuestionRequired(q) && !String(answers[idx] ?? '').trim()) {
+        if (isQuestionRequired(q) && isAnswerEmpty(answers[idx], q)) {
           missing.push(getQuestionLabel(q, idx));
         }
       }
@@ -449,7 +682,8 @@ function JobApplicationForm() {
     setMonthsVolunteer('');
     setHoursPerWeek('');
     setRoleSkills('');
-    setAnswers(new Array(visibleQuestions.length).fill(''));
+    setAnswers(initialAnswersForQuestions(visibleQuestions));
+    setRequirementPreviewOverrides({});
   };
 
   return (
@@ -490,7 +724,7 @@ function JobApplicationForm() {
         </section>
         <section className={styles.formContainer}>
           <h1 className={styles.formTitle}>
-            FORM FOR {(bannerJobTitle || selectedJob || '').toUpperCase()} POSITION
+            Job Application – {(bannerJobTitle || selectedJob || 'this role').trim()}
           </h1>
           <p className={styles.formSubtitle}>
             <a href="#learnMore" onClick={handleShowDescription}>
@@ -537,63 +771,126 @@ function JobApplicationForm() {
             </div>
           )}
           <form className={styles.form} onSubmit={handleSubmit}>
-            {isAdmin ? (
-              <RequirementsSection requirements={checkRequirements()} darkMode={darkMode} />
-            ) : (
-              <RequirementsSection
-                requirements={checkUserRequirements()}
-                darkMode={darkMode}
-                variant="user"
-              />
+            {isAdmin && (
+              <>
+                <p className={styles.adminRequirementsNote}>
+                  Admin preview: boxes start from your answers; you can override any item for
+                  review.
+                </p>
+                <RequirementsSection
+                  requirements={requirementsForDisplay}
+                  darkMode={darkMode}
+                  interactive
+                  onToggle={toggleRequirementPreview}
+                />
+              </>
             )}
+            <p className={styles.formHint}>
+              <span className={styles.requiredMark} aria-hidden="true">
+                *
+              </span>{' '}
+              indicates a required field. Complete all required items before you submit.
+            </p>
             <div>
               Here is a questionnaire to apply to work with us. To complete your application and
               schedule a Zoom interview, please answer the pre-interview questions below.
             </div>
             <div className={styles.formContentGroup}>
               <div className={styles.formProfileDetailGroup}>
-                <input
-                  type="text"
-                  placeholder="Name"
-                  className={styles.inputField}
-                  value={applicantName}
-                  onChange={e => setApplicantName(e.target.value)}
-                />
-                <input
-                  type="email"
-                  placeholder="Email"
-                  className={styles.inputField}
-                  value={applicantEmail}
-                  onChange={e => setApplicantEmail(e.target.value)}
-                />
-                <input
-                  type="text"
-                  placeholder="Location & Timezone"
-                  className={styles.inputField}
-                  value={locationTimezone}
-                  onChange={e => setLocationTimezone(e.target.value)}
-                />
-                <input
-                  type="text"
-                  placeholder="Phone Number"
-                  className={styles.inputField}
-                  value={phone}
-                  onChange={e => setPhone(e.target.value)}
-                />
-                <input
-                  type="text"
-                  placeholder="Company & Position"
-                  className={styles.inputField}
-                  value={companyPosition}
-                  onChange={e => setCompanyPosition(e.target.value)}
-                />
-                <input
-                  type="text"
-                  placeholder="Primary Website/Social"
-                  className={styles.inputField}
-                  value={websiteSocial}
-                  onChange={e => setWebsiteSocial(e.target.value)}
-                />
+                <div className={styles.profileField}>
+                  <label htmlFor="jaf-applicant-name" className={styles.fieldLabel}>
+                    Name
+                    <span className={styles.requiredMark} aria-hidden="true">
+                      *
+                    </span>
+                  </label>
+                  <input
+                    id="jaf-applicant-name"
+                    type="text"
+                    placeholder="Name"
+                    className={styles.inputField}
+                    value={applicantName}
+                    onChange={e => setApplicantName(e.target.value)}
+                    required
+                    aria-required="true"
+                    autoComplete="name"
+                  />
+                </div>
+                <div className={styles.profileField}>
+                  <label htmlFor="jaf-applicant-email" className={styles.fieldLabel}>
+                    Email
+                    <span className={styles.requiredMark} aria-hidden="true">
+                      *
+                    </span>
+                  </label>
+                  <input
+                    id="jaf-applicant-email"
+                    type="email"
+                    placeholder="Email"
+                    className={styles.inputField}
+                    value={applicantEmail}
+                    onChange={e => setApplicantEmail(e.target.value)}
+                    required
+                    aria-required="true"
+                    autoComplete="email"
+                  />
+                </div>
+                <div className={styles.profileField}>
+                  <label htmlFor="jaf-location-tz" className={styles.fieldLabel}>
+                    Location &amp; timezone
+                  </label>
+                  <input
+                    id="jaf-location-tz"
+                    type="text"
+                    placeholder="Location & Timezone"
+                    className={styles.inputField}
+                    value={locationTimezone}
+                    onChange={e => setLocationTimezone(e.target.value)}
+                    autoComplete="off"
+                  />
+                </div>
+                <div className={styles.profileField}>
+                  <label htmlFor="jaf-phone" className={styles.fieldLabel}>
+                    Phone number
+                  </label>
+                  <input
+                    id="jaf-phone"
+                    type="text"
+                    placeholder="Phone Number"
+                    className={styles.inputField}
+                    value={phone}
+                    onChange={e => setPhone(e.target.value)}
+                    autoComplete="tel"
+                  />
+                </div>
+                <div className={styles.profileField}>
+                  <label htmlFor="jaf-company" className={styles.fieldLabel}>
+                    Company &amp; position
+                  </label>
+                  <input
+                    id="jaf-company"
+                    type="text"
+                    placeholder="Company & Position"
+                    className={styles.inputField}
+                    value={companyPosition}
+                    onChange={e => setCompanyPosition(e.target.value)}
+                    autoComplete="organization-title"
+                  />
+                </div>
+                <div className={styles.profileField}>
+                  <label htmlFor="jaf-social" className={styles.fieldLabel}>
+                    Primary website / social
+                  </label>
+                  <input
+                    id="jaf-social"
+                    type="text"
+                    placeholder="Primary Website/Social"
+                    className={styles.inputField}
+                    value={websiteSocial}
+                    onChange={e => setWebsiteSocial(e.target.value)}
+                    autoComplete="url"
+                  />
+                </div>
                 <label className={styles.resumeLabel}>
                   Upload Resume (optional)
                   <input
@@ -604,93 +901,85 @@ function JobApplicationForm() {
                   />
                 </label>
               </div>
-              <div className={styles.formGroup}>
-                <h2>What skills/experience do you possess?</h2>
-                <input
-                  type="text"
-                  placeholder="Type your response here"
-                  value={roleSkills}
-                  onChange={e => setRoleSkills(e.target.value)}
-                  className={styles.inputField}
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <h2>How many volunteer hours per week are you willing to commit to?</h2>
-                <input
-                  type="number"
-                  min="0"
-                  placeholder="Type your response here"
-                  value={hoursPerWeek}
-                  onChange={e => setHoursPerWeek(e.target.value)}
-                  className={styles.inputField}
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <h2>
-                  For how long do you wish to volunteer with us? (Enter your answer in months)
-                </h2>
-                <input
-                  type="number"
-                  min="0"
-                  placeholder="Type your response here"
-                  value={monthsVolunteer}
-                  onChange={e => setMonthsVolunteer(e.target.value)}
-                  className={styles.inputField}
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <h2>How Many Years of FULL TIME experience do you have?</h2>
-                <input
-                  type="number"
-                  min="0"
-                  placeholder="Enter years of experience"
-                  value={fullTimeYears}
-                  onChange={e => setFullTimeYears(e.target.value)}
-                  className={styles.inputField}
-                />
-              </div>
               {visibleQuestions.map((q, idx) => {
                 const qt = getQuestionType(q);
                 const label = getQuestionLabel(q, idx);
+                const req = isQuestionRequired(q);
                 const formKey = filteredForm?._id
                   ? `${filteredForm._id}-q-${idx}`
                   : `q-${idx}-${label.slice(0, 24)}`;
 
                 return (
                   <div className={styles.formGroup} key={formKey}>
-                    <h2>
-                      {idx + 1}. {label}
+                    <h2 className={styles.formGroupTitle} id={`${formKey}-heading`}>
+                      <span className={styles.questionNumber}>{idx + 1}.</span> {label}
+                      {req && (
+                        <>
+                          <span className={styles.requiredMark} aria-hidden="true">
+                            {' '}
+                            *
+                          </span>
+                          <span className={styles.visuallyHidden}> (required)</span>
+                        </>
+                      )}
                     </h2>
                     {['textbox', 'text'].includes(qt) && (
                       <input
                         type="text"
                         placeholder={q.placeholder || 'Type your response here'}
-                        value={answers[idx] || ''}
+                        value={Array.isArray(answers[idx]) ? '' : answers[idx] || ''}
                         onChange={e => handleAnswerChange(idx, e.target.value)}
+                        required={req}
+                        aria-required={req}
+                        aria-labelledby={`${formKey}-heading`}
+                        className={styles.inputField}
                       />
                     )}
                     {qt === 'textarea' && (
                       <textarea
                         placeholder={q.placeholder || 'Type your response here'}
-                        value={answers[idx] || ''}
+                        value={Array.isArray(answers[idx]) ? '' : answers[idx] || ''}
                         onChange={e => handleAnswerChange(idx, e.target.value)}
                         rows={5}
+                        required={req}
+                        aria-required={req}
+                        aria-labelledby={`${formKey}-heading`}
+                        className={styles.inputField}
                       />
                     )}
                     {qt === 'date' && (
                       <input
                         type="date"
                         className={styles.dateInput}
-                        value={answers[idx] || ''}
+                        value={Array.isArray(answers[idx]) ? '' : answers[idx] || ''}
                         onChange={e => handleAnswerChange(idx, e.target.value)}
+                        required={req}
+                        aria-required={req}
+                        aria-labelledby={`${formKey}-heading`}
                       />
                     )}
-                    {['checkbox', 'radio'].includes(qt) && q.options && q.options.length > 0 && (
-                      <div>
+                    {qt === 'checkbox' && q.options && q.options.length > 0 && (
+                      <div role="group" aria-labelledby={`${formKey}-heading`}>
                         {q.options.map(opt => (
-                          <label key={opt}>
+                          <label key={String(opt)}>
                             <input
-                              type={qt === 'checkbox' ? 'checkbox' : 'radio'}
+                              type="checkbox"
+                              name={`question-${formKey}-${String(opt)}`}
+                              value={opt}
+                              checked={isCheckboxOptionChecked(answers[idx], opt)}
+                              onChange={() => toggleCheckboxOption(idx, opt)}
+                            />{' '}
+                            {opt}
+                          </label>
+                        ))}
+                      </div>
+                    )}
+                    {qt === 'radio' && q.options && q.options.length > 0 && (
+                      <div role="radiogroup" aria-labelledby={`${formKey}-heading`}>
+                        {q.options.map(opt => (
+                          <label key={String(opt)}>
+                            <input
+                              type="radio"
                               name={`question-${formKey}`}
                               value={opt}
                               checked={answers[idx] === opt}
@@ -704,8 +993,11 @@ function JobApplicationForm() {
                     {qt === 'dropdown' && (
                       <select
                         className={styles.selectField}
-                        value={answers[idx] || ''}
+                        value={Array.isArray(answers[idx]) ? '' : answers[idx] || ''}
                         onChange={e => handleAnswerChange(idx, e.target.value)}
+                        required={req}
+                        aria-required={req}
+                        aria-labelledby={`${formKey}-heading`}
                       >
                         <option value="">Select an option</option>
                         {(q.options || []).map(opt => (
@@ -727,15 +1019,19 @@ function JobApplicationForm() {
                       <input
                         type="text"
                         placeholder="Type your response here"
-                        value={answers[idx] || ''}
+                        value={Array.isArray(answers[idx]) ? '' : answers[idx] || ''}
                         onChange={e => handleAnswerChange(idx, e.target.value)}
+                        required={req}
+                        aria-required={req}
+                        aria-labelledby={`${formKey}-heading`}
+                        className={styles.inputField}
                       />
                     )}
                   </div>
                 );
               })}
               <button type="submit" className={styles.submitButton}>
-                Proceed to submit with details
+                Submit your application
               </button>
             </div>
           </form>
@@ -753,14 +1049,6 @@ const requirementsPropType = PropTypes.shape({
   tenHoursPerWeek: PropTypes.bool,
 });
 
-const REQUIREMENT_ITEMS = [
-  { id: 'reactExperience', label: '1+ years of Full-Time ReactJS Experience' },
-  { id: 'twoMonthsCommitment', label: 'Minimum of 2 Months Commitment' },
-  { id: 'javascriptExperience', label: '1+ years of Full-Time JavaScript Experience' },
-  { id: 'timeZoneLocation', label: 'Time Zone and Location Matches' },
-  { id: 'tenHoursPerWeek', label: 'Minimum of 10 hours of work a week' },
-];
-
 const CheckIcon = () => (
   <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path
@@ -773,13 +1061,22 @@ const CheckIcon = () => (
   </svg>
 );
 
-function RequirementsSection({ requirements, darkMode, variant = 'admin' }) {
-  const sectionClass =
+function RequirementsSection({
+  requirements,
+  darkMode,
+  variant = 'admin',
+  interactive = false,
+  onToggle,
+}) {
+  const baseClass =
     variant === 'user' ? styles.userRequirementsSection : styles.adminRequirementsSection;
+  const sectionClass = interactive
+    ? `${baseClass} ${styles.requirementsSectionInteractive}`
+    : baseClass;
   const requirementList = REQUIREMENT_ITEMS.map(({ id, label }) => ({
     id,
     label,
-    satisfied: requirements[id],
+    satisfied: !!requirements[id],
   }));
 
   return (
@@ -793,11 +1090,13 @@ function RequirementsSection({ requirements, darkMode, variant = 'admin' }) {
                 type="checkbox"
                 className={styles.requirementCheckboxInput}
                 checked={req.satisfied}
-                readOnly
-                disabled
+                onChange={interactive && onToggle ? () => onToggle(req.id) : undefined}
+                disabled={!interactive}
               />
               <span
-                className={`${styles.requirementCheckboxCustom} ${req.satisfied ? styles.checked : ''}`}
+                className={`${styles.requirementCheckboxCustom} ${
+                  req.satisfied ? styles.checked : ''
+                }`}
               >
                 {req.satisfied && <CheckIcon />}
               </span>
@@ -813,10 +1112,14 @@ RequirementsSection.propTypes = {
   requirements: requirementsPropType.isRequired,
   darkMode: PropTypes.bool,
   variant: PropTypes.oneOf(['admin', 'user']),
+  interactive: PropTypes.bool,
+  onToggle: PropTypes.func,
 };
 RequirementsSection.defaultProps = {
   darkMode: false,
   variant: 'admin',
+  interactive: false,
+  onToggle: undefined,
 };
 
 export default JobApplicationForm;

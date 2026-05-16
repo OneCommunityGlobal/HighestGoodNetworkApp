@@ -2,6 +2,8 @@
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
+  padding-bottom: 2.5rem;
+  box-sizing: border-box;
   background-color: #d9d9d9;
   width: 100%;
   min-height: 100vh;
@@ -18,23 +20,27 @@
 .header {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   padding: 0;
   margin: 0;
   border-radius: 5px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .headerContent {
   display: flex;
   gap: 10px;
   background-color: #98cb03;
-  width: 75%;
-  padding: 2%;
+  width: min(960px, 92vw);
+  max-width: 100%;
+  padding: clamp(0.75rem, 2vw, 1.25rem);
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
   box-sizing: border-box;
+  border-radius: 12px 12px 0 0;
 }
 
 .headerLeft {
@@ -77,15 +83,78 @@
 
 .formContainer {
   background-color: #f9f9f9;
-  padding: 2%;
-  width: 75%;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: clamp(1rem, 2.5vw, 1.75rem);
+  width: min(960px, 92vw);
+  max-width: 100%;
+  margin-inline: auto;
+  box-shadow: 0 0 10px rgb(0 0 0 / 10%);
+  border-radius: 0 0 12px 12px;
+  box-sizing: border-box;
 }
 
 .formTitle {
   text-align: center;
   font-size: 1.5em;
   margin-bottom: 10px;
+}
+
+.formHint {
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: #444;
+  margin: 0 0 1rem;
+}
+
+.requiredMark {
+  color: #b00020;
+  font-weight: 700;
+}
+
+.fieldLabel {
+  display: block;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 0.35rem;
+  color: #222;
+}
+
+.profileField {
+  margin-bottom: 0.9rem;
+}
+
+.formGroupTitle {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+  text-align: left;
+  color: #111;
+}
+
+.questionNumber {
+  color: #555;
+  font-weight: 600;
+}
+
+.adminRequirementsNote {
+  font-size: 0.85rem;
+  color: #555;
+  margin: 0 0 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: #f0f7ff;
+  border-radius: 6px;
+  border: 1px solid #cfe8ff;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }
 
 .jaHeader {
@@ -123,21 +192,29 @@
   display: flex;
   flex-direction: column;
   gap: 15px;
-  background-color: #d9d9d9;
-  padding: 2%;
-  border-radius: 1%;
+  background-color: transparent;
+  padding: 0;
+  border-radius: 0;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .formContentGroup {
   display: flex;
   flex-direction: column;
   gap: 15px;
-  margin-left: 2%;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .formGroup {
   display: flex;
   flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .formProfileDetailGroup {
@@ -163,7 +240,8 @@
 }
 
 .formGroup input,
-.formGroup select {
+.formGroup select,
+.formGroup textarea {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -171,6 +249,14 @@
   min-height: 40px;
   box-sizing: border-box;
   font-size: 1rem;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.formGroup textarea {
+  min-height: 120px;
+  resize: vertical;
 }
 
 .inputField {
@@ -181,6 +267,9 @@
   min-height: 40px;
   box-sizing: border-box;
   font-size: 1rem;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .selectField,
@@ -203,15 +292,13 @@
   border-radius: 5px;
   cursor: pointer;
   align-self: center;
+  margin-top: 0.5rem;
 }
 
 .popupOverlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(30, 41, 65, 0.7);
+  inset: 0;
+  background: rgb(30 41 65 / 70%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -227,7 +314,7 @@
   max-width: 860px;
   width: min(860px, calc(100vw - 48px));
   min-width: 320px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.32);
+  box-shadow: 0 8px 32px rgb(0 0 0 / 32%);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -355,7 +442,7 @@
   cursor: pointer;
   padding: 8px 12px;
   border-radius: 8px;
-  background: #ffffff;
+  background: #fff;
   border: 1px solid #cfcfcf;
   color: #222;
   font-size: 14px;
@@ -366,7 +453,7 @@
 
 .resumeLabel:hover {
   background: #f6f6f6;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 6px 18px rgb(0 0 0 / 4%);
   transform: translateY(-1px);
 }
 
@@ -392,7 +479,7 @@
 .darkMode .formContainer {
   background: #1c2541;
   color: #e0e0e0;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 70%);
   transition: background 0.3s, color 0.3s;
 }
 
@@ -431,13 +518,13 @@
 .darkMode .btn {
   background: #225163;
   color: #f1f1f1;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 18%);
   transition: background 0.3s, color 0.3s;
 }
 
 .darkMode .form {
-  background: #23272a;
-  border-radius: 8px;
+  background: transparent;
+  border-radius: 0;
   transition: background 0.3s;
 }
 
@@ -446,14 +533,36 @@
   transition: color 0.3s;
 }
 
+.darkMode .formHint {
+  color: #cbd5e1;
+}
+
+.darkMode .fieldLabel {
+  color: #e5e7eb;
+}
+
+.darkMode .formGroupTitle {
+  color: #f1f5f9;
+}
+
+.darkMode .questionNumber {
+  color: #94a3b8;
+}
+
+.darkMode .adminRequirementsNote {
+  color: #e2e8f0;
+  background: rgb(15 23 42 / 80%);
+  border-color: rgb(56 189 248 / 25%);
+}
+
 .darkMode .popupOverlay {
-  background: rgba(30, 41, 65, 0.85);
+  background: rgb(30 41 65 / 85%);
 }
 
 .darkMode .popupContent {
   background: #225163;
   color: #f1f1f1;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 8px 32px rgb(0 0 0 / 70%);
 }
 
 .darkMode .popupCloseBtn {
@@ -523,7 +632,7 @@
 }
 
 .darkMode .jaTitle {
-  color: #ffffff;
+  color: #fff;
 }
 
 .darkMode .jaDesc {
@@ -539,13 +648,13 @@
 
 .darkMode .resumeLabel:hover {
   background: #22364e;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 6px 18px rgb(0 0 0 / 35%);
 }
 
 .darkMode .resumeLabel .fileName {
-  background: rgba(255, 255, 255, 0.04);
+  background: rgb(255 255 255 / 4%);
   color: #cfe7ff;
-  border-color: rgba(255, 255, 255, 0.05);
+  border-color: rgb(255 255 255 / 5%);
 }
 
 /* Admin Requirements Section */
@@ -577,7 +686,7 @@
 .requirementsTitle {
   font-size: 1.1rem;
   font-weight: 600;
-  margin: 0 0 15px 0;
+  margin: 0 0 15px;
   color: #333;
   text-align: left;
 }
@@ -588,7 +697,7 @@
   gap: 12px;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .requirementsList {
     grid-template-columns: 1fr;
   }
@@ -610,10 +719,27 @@
   width: 100%;
 }
 
+.requirementsSectionInteractive .requirementCheckbox {
+  position: relative;
+  cursor: pointer;
+}
+
 .requirementCheckboxInput {
   position: absolute;
   opacity: 0;
   pointer-events: none;
+}
+
+.requirementsSectionInteractive .requirementCheckboxInput {
+  left: 0;
+  top: 50%;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  transform: translateY(-50%);
+  z-index: 2;
+  pointer-events: auto;
+  cursor: pointer;
 }
 
 .requirementCheckboxCustom {
@@ -634,14 +760,26 @@
   display: none;
 }
 
+.darkMode .requirementCheckboxCustom {
+  border-color: #4a5a6b;
+  background-color: #2a2a2a;
+}
+
+.requirementsSectionInteractive .requirementCheckboxCustom {
+  pointer-events: none;
+}
+
 .requirementCheckboxInput:checked + .requirementCheckboxCustom,
 .requirementCheckboxCustom.checked {
   background-color: #8cc63f;
   border-color: #8cc63f;
 }
 
-.requirementCheckboxInput:checked + .requirementCheckboxCustom svg,
 .requirementCheckboxCustom.checked svg {
+  display: block;
+}
+
+.requirementCheckboxInput:checked + .requirementCheckboxCustom svg {
   display: block;
 }
 
@@ -670,11 +808,6 @@
   color: #e5e7eb;
 }
 
-.darkMode .requirementCheckboxCustom {
-  border-color: #4a5a6b;
-  background-color: #2a2a2a;
-}
-
 .darkMode .requirementCheckboxInput:checked + .requirementCheckboxCustom,
 .darkMode .requirementCheckboxCustom.checked {
   background-color: #8cc63f;
@@ -683,4 +816,19 @@
 
 .darkMode .requirementCheckbox span:last-child {
   color: #e0e0e0;
+}
+
+/* Paint the real scroll canvas (html / body / #root), not only the form div — avoids a white band under long pages. */
+:global(html.job-application-route:not(.dark-mode)),
+:global(body.job-application-route:not(.dark-mode)),
+:global(html.job-application-route:not(.dark-mode) #root),
+:global(body.job-application-route:not(.dark-mode) #root) {
+  background-color: #d9d9d9 !important;
+}
+
+:global(html.dark-mode.job-application-route),
+:global(body.dark-mode.job-application-route),
+:global(html.dark-mode.job-application-route #root),
+:global(body.dark-mode.job-application-route #root) {
+  background-color: #1b2a41 !important;
 }
