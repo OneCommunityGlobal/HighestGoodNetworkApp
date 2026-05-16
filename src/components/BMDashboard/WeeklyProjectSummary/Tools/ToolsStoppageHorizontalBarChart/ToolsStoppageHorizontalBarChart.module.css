@@ -87,7 +87,7 @@
 
 /* Selected day styling in dark theme */
 :global(.darkThemeCalendar .react-datepicker__day--selected) {
-  background-color: #4a90e2 !important;
+  background-color: #0050a8 !important;
   color: #fff !important;
   border-radius: 50%;
 }

@@ -255,7 +255,8 @@ export default function ToolsStoppageHorizontalBarChart() {
         const response = await axios.get(ENDPOINTS.BM_TOOL_PROJECTS);
         setProjects(response.data);
       } catch (err) {
-        setError('Failed to load projects. Please try again.');
+        const errorMessage = err?.response?.data?.message || err?.message || 'Please try again.';
+        setError(`Failed to load projects. ${errorMessage}`);
       } finally {
         setLoading(false);
       }
@@ -282,7 +283,8 @@ export default function ToolsStoppageHorizontalBarChart() {
         });
       } catch (err) {
         setData(emptyData);
-        setError('Failed to load tools stoppage reason data. Please try again.');
+        const errorMessage = err?.response?.data?.message || err?.message || 'Please try again.';
+        setError(`Failed to load tools stoppage reason data. ${errorMessage}`);
       } finally {
         setLoading(false);
       }

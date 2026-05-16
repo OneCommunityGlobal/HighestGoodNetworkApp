@@ -30,7 +30,6 @@ import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHo
 import ToolsStoppageHorizontalBarChart from './Tools/ToolsStoppageHorizontalBarChart/ToolsStoppageHorizontalBarChart';
 import IssueCharts from '../Issues/openIssueCharts';
 import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
-import FinancialStatButtons from './Financials/FinancialStatButtons';
 
 const projectStatusButtons = [
   {
