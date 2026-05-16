@@ -1,0 +1,83 @@
+.formContainer {
+  max-width: 600px;
+  margin: auto;
+  background: #f7f9fc;
+  border-radius: 10px;
+  padding: 1.5rem;
+}
+
+.tagBadge {
+  padding: 4px 10px;
+  font-size: 0.85rem;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+  vertical-align: middle;
+  line-height: 1;
+}
+
+.fileUploadBox {
+  border: 2px dashed #6c757d;
+  border-radius: 10px;
+  padding: 30px;
+  text-align: center;
+  color: #6c757d;
+  background-color: #f8f9fa;
+  cursor: pointer;
+}
+
+.tagDeleteButton {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 0.9rem;
+  margin-left: 6px;
+  margin-top: -2px;
+  padding: 0;
+  cursor: pointer;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tagDeleteButton:hover {
+  color: black;
+  background-color: #6c757d;
+}
+
+.darkPageWrapper {
+  background-color: #1B2A41;
+  min-height: 100vh;
+  padding: 2rem 0;
+}
+
+.darkPageWrapper .formContainer {
+  background-color: #162e4a;
+  color: #f0f0f0;
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
+}
+
+.darkPageWrapper :global(.form-control),
+.darkPageWrapper :global(.dropdown-menu) {
+  background-color: #1B2A41;
+  color: #fff;
+  border-color: #555;
+}
+
+.darkPageWrapper :global(.form-label),
+.darkPageWrapper :global(.text) {
+  color: #ccc;
+}
+
+.darkPageWrapper :global(.dropdown-item) {
+  color: #fff;
+}
+
+.darkPageWrapper :global(.dropdown-item:hover) {
+  background-color: #444;
+}
