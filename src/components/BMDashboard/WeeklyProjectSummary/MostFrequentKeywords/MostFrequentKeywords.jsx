@@ -9,10 +9,7 @@ import Select, { components as selectComponents } from 'react-select';
 import PropTypes from 'prop-types';
 
 const formatCalendarMonth = date =>
-  date.toLocaleString('en-US', {
-    month: 'long',
-    year: 'numeric',
-  });
+  date.toLocaleString('en-US', { month: 'long', year: 'numeric' });
 
 const DropdownIndicator = props => (
   <selectComponents.DropdownIndicator {...props}>
@@ -22,7 +19,6 @@ const DropdownIndicator = props => (
 
 // ── Keyword → source category mapping ────────────────────────────────────────
 const KEYWORD_SOURCE_MAP = {
-  // Risk
   'Solar Panels': 'energy',
   'Wind Energy': 'energy',
   'Recycled Materials': 'materials',
@@ -70,7 +66,6 @@ const KEYWORD_SOURCE_MAP = {
   Landscaping: 'delay',
 };
 
-// Source category config: label, colour, icon, description
 const SOURCE_CATEGORIES = {
   risk: {
     label: 'Risk',
@@ -167,11 +162,20 @@ const getKeywordSource = tag => {
   return key ? KEYWORD_SOURCE_MAP[key] : 'general';
 };
 
+// ── Zoom constants ────────────────────────────────────────────────────────────
+const ZOOM_MIN = 0.4;
+const ZOOM_MAX = 4;
+const ZOOM_STEP = 0.3;
+
 // ─────────────────────────────────────────────────────────────────────────────
 
 function MostFrequentKeywords({ darkMode: propDarkMode }) {
   const svgRef = useRef();
   const containerRef = useRef();
+  const zoomRef = useRef(null); // d3 zoom behaviour
+  const zoomGroupRef = useRef(null); // the <g> element we zoom/pan
+  const zoomStateRef = useRef({ k: 1, x: 0, y: 0 }); // current transform snapshot
+
   const [projects, setProjects] = useState([]);
   const [selectedOption, setSelectedOption] = useState(null);
   const [startDate, setStartDate] = useState(null);
@@ -182,6 +186,8 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
   const [error, setError] = useState('');
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [isMobile, setIsMobile] = useState(false);
+  const [zoomLevel, setZoomLevel] = useState(1);
+  const [activeCategory, setActiveCategory] = useState(null);
   const [tooltip, setTooltip] = useState({
     visible: false,
     text: '',
@@ -191,6 +197,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
     count: 0,
     fullTag: '',
   });
+
   const API_BASE = process.env.REACT_APP_APIENDPOINT;
   const reduxDarkMode = useSelector(state => state.theme.darkMode);
   const darkMode = propDarkMode !== undefined ? propDarkMode : reduxDarkMode;
@@ -295,9 +302,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
       });
       setProjects(res.data || []);
     } catch (err) {
-      if (process.env.NODE_ENV !== 'production') {
-        console.error('Failed to fetch projects', err);
-      }
+      if (process.env.NODE_ENV !== 'production') console.error('Failed to fetch projects', err);
     }
   };
 
@@ -360,8 +365,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
       } catch {
         // fallthrough
       }
-      const generatedData = generateProjectSpecificData(projectName);
-      setAllTags(generatedData);
+      setAllTags(generateProjectSpecificData(projectName));
     } finally {
       setIsLoading(false);
     }
@@ -369,6 +373,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
 
   const handleOptionChange = selected => {
     setSelectedOption(selected);
+    setActiveCategory(null);
     if (!selected) {
       setAllTags([]);
       setTags([]);
@@ -576,11 +581,12 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
     [getBubbleSize, getResponsiveSizes, isMobile],
   );
 
-  // ── Node color: source-category tinted ────────────────────────────────────
+  // ── Node color: source-category tinted ───────────────────────────────────
   const getNodeColor = useCallback(
-    (index, tag) => {
+    (index, tag, dimmed) => {
       const sourceKey = getKeywordSource(tag || '');
       const cat = SOURCE_CATEGORIES[sourceKey] || SOURCE_CATEGORIES.general;
+      const opacity = dimmed ? 0.25 : 1;
       if (darkMode) {
         return {
           fill: cat.darkBg,
@@ -588,6 +594,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
           text: '#FFFFFF',
           accentColor: cat.color,
           sourceKey,
+          opacity,
         };
       }
       return {
@@ -596,12 +603,41 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
         text: '#1e293b',
         accentColor: cat.color,
         sourceKey,
+        opacity,
       };
     },
     [darkMode],
   );
 
-  // ── Tooltip state (rich) ───────────────────────────────────────────────────
+  // ── Zoom helpers ──────────────────────────────────────────────────────────
+  const applyZoom = useCallback(newK => {
+    if (!zoomRef.current || !svgRef.current) return;
+    const svg = d3.select(svgRef.current);
+    const clamped = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, newK));
+    const { x, y } = zoomStateRef.current;
+    svg.call(zoomRef.current.transform, d3.zoomIdentity.translate(x, y).scale(clamped));
+  }, []);
+
+  const handleZoomIn = useCallback(() => {
+    applyZoom(zoomStateRef.current.k + ZOOM_STEP);
+  }, [applyZoom]);
+
+  const handleZoomOut = useCallback(() => {
+    applyZoom(zoomStateRef.current.k - ZOOM_STEP);
+  }, [applyZoom]);
+
+  const handleZoomReset = useCallback(() => {
+    if (!zoomRef.current || !svgRef.current) return;
+    const svg = d3.select(svgRef.current);
+    svg.call(zoomRef.current.transform, d3.zoomIdentity);
+  }, []);
+
+  // ── Category filter toggle ────────────────────────────────────────────────
+  const handleCategoryToggle = useCallback(key => {
+    setActiveCategory(prev => (prev === key ? null : key));
+  }, []);
+
+  // ── Tooltip state ─────────────────────────────────────────────────────────
   const handleMouseEnter = (event, fullTag, count) => {
     const svgRect = svgRef.current.getBoundingClientRect();
     const mouseX = event.clientX - svgRect.left;
@@ -665,7 +701,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
     }));
   };
 
-  // ── Bubble rendering helpers ───────────────────────────────────────────────
+  // ── Bubble rendering helpers ──────────────────────────────────────────────
   const createHitArea = (nodeGroup, r) =>
     nodeGroup
       .append('ellipse')
@@ -685,6 +721,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
       .attr('fill', colors.fill)
       .attr('stroke', colors.stroke)
       .attr('stroke-width', 2)
+      .style('opacity', colors.opacity)
       .style(
         'filter',
         darkMode
@@ -693,8 +730,8 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
       )
       .style('pointer-events', 'none');
 
-  // ── Draw frequency weight bar inside bubble ───────────────────────────────
-  const createWeightBar = (svg, x, y, count, allCounts, r, colors) => {
+  // ── Frequency weight bar inside bubble ───────────────────────────────────
+  const createWeightBar = (g, count, allCounts, r, colors) => {
     const minCount = Math.min(...allCounts);
     const maxCount = Math.max(...allCounts);
     const ratio = maxCount === minCount ? 0.5 : (count - minCount) / (maxCount - minCount);
@@ -704,13 +741,13 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
     const barY = r * 0.28;
     const fillW = barW * ratio;
 
-    const g = svg
+    const barGroup = g
       .append('g')
-      .attr('transform', `translate(${x}, ${y})`)
-      .style('pointer-events', 'none');
+      .style('pointer-events', 'none')
+      .style('opacity', colors.opacity);
 
-    // Track
-    g.append('rect')
+    barGroup
+      .append('rect')
       .attr('x', -barW / 2)
       .attr('y', barY)
       .attr('width', barW)
@@ -718,8 +755,8 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
       .attr('rx', barH / 2)
       .attr('fill', darkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.1)');
 
-    // Fill
-    g.append('rect')
+    barGroup
+      .append('rect')
       .attr('x', -barW / 2)
       .attr('y', barY)
       .attr('width', fillW)
@@ -728,9 +765,9 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
       .attr('fill', colors.accentColor)
       .style('opacity', 0.85);
 
-    // Percentage label (only if r is large enough)
     if (r >= 38) {
-      g.append('text')
+      barGroup
+        .append('text')
         .attr('x', barW / 2 + 3)
         .attr('y', barY + barH)
         .attr('text-anchor', 'start')
@@ -742,11 +779,11 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
     }
   };
 
-  const createTextElements = (svg, x, y, tag, count, r, sizes, colors) => {
-    const textGroup = svg
+  const createTextElements = (g, tag, count, r, sizes, colors) => {
+    const textGroup = g
       .append('g')
-      .attr('transform', `translate(${x}, ${y})`)
-      .style('pointer-events', 'none');
+      .style('pointer-events', 'none')
+      .style('opacity', colors.opacity);
     const tagFontSize = sizes.isMobile
       ? Math.min(sizes.maxFontSize, Math.max(9, r * 0.22))
       : Math.min(sizes.maxFontSize, Math.max(10, r * 0.22));
@@ -754,7 +791,6 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
     const maxTagLength = Math.floor(r / (sizes.isMobile ? 4 : 3.8));
     const displayTag = getDisplayText(tag, maxTagLength);
 
-    // Keyword label
     textGroup
       .append('text')
       .attr('x', 0)
@@ -765,7 +801,6 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
       .attr('fill', colors.text)
       .text(displayTag);
 
-    // Count — bold, accent colored
     textGroup
       .append('text')
       .attr('x', 0)
@@ -778,55 +813,66 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
       .text(`×${count}`);
   };
 
-  const addBubbleEventHandlers = (hitArea, fullTag, count, colors) => {
+  const addBubbleEventHandlers = (hitArea, fullTag, count, colors, nodeGroup) => {
     hitArea
       .on('mouseenter', event => {
         handleMouseEnter(event, fullTag, count);
-        d3.select(event.currentTarget.parentNode)
+        nodeGroup
           .select('ellipse.bubble-fill')
-          .attr('stroke-width', 3)
-          .attr('stroke', colors.accentColor);
+          .attr('stroke-width', 3.5)
+          .attr('stroke', colors.accentColor)
+          .style(
+            'filter',
+            darkMode
+              ? `drop-shadow(0 0 8px ${colors.accentColor}88)`
+              : `drop-shadow(0 0 6px ${colors.accentColor}66)`,
+          );
       })
       .on('mousemove', handleMouseMove)
       .on('mouseleave', () => {
         handleMouseLeave();
-        d3.selectAll('.bubble-fill')
+        nodeGroup
+          .select('ellipse.bubble-fill')
           .attr('stroke-width', 2)
-          .each(function(d, j) {
-            // restore — we don't have easy access to per-node colour here so just keep stroke
-          });
+          .style(
+            'filter',
+            darkMode
+              ? 'drop-shadow(0 1px 3px rgba(0,0,0,0.5))'
+              : 'drop-shadow(0 1px 3px rgba(0,0,0,0.12))',
+          );
       })
-      .on('touchstart', event => {
-        handleTouchStart(event, fullTag, count);
-      })
+      .on('touchstart', event => handleTouchStart(event, fullTag, count))
       .on('touchmove', handleTouchMove)
       .on('touchend', handleTouchEnd)
       .on('touchcancel', handleTouchEnd);
   };
 
-  const renderSingleBubble = (svg, pos, i, sizes, allCounts) => {
+  const renderSingleBubble = (zoomG, pos, i, sizes, allCounts) => {
     const { x, y, r, tag, count, fullTag } = pos;
-    const colors = getNodeColor(i, tag);
-    const nodeGroup = svg
+    const dimmed = activeCategory !== null && getKeywordSource(tag) !== activeCategory;
+    const colors = getNodeColor(i, tag, dimmed);
+
+    const nodeGroup = zoomG
       .append('g')
       .attr('transform', `translate(${x}, ${y})`)
       .attr('class', 'bubble-group');
+
     const hitArea = createHitArea(nodeGroup, r);
-    addBubbleEventHandlers(hitArea, fullTag, count, colors);
+    if (!dimmed) addBubbleEventHandlers(hitArea, fullTag, count, colors, nodeGroup);
     createVisibleBubble(nodeGroup, colors, r);
-    createWeightBar(svg, x, y, count, allCounts, r, colors);
-    createTextElements(svg, x, y, tag, count, r, sizes, colors);
+    createWeightBar(nodeGroup, count, allCounts, r, colors);
+    createTextElements(nodeGroup, tag, count, r, sizes, colors);
   };
 
   const renderBubbles = useCallback(
-    (svg, positions, sizes) => {
+    (zoomG, positions, sizes) => {
       const allCounts = positions.map(p => p.count);
-      positions.forEach((pos, i) => renderSingleBubble(svg, pos, i, sizes, allCounts));
+      positions.forEach((pos, i) => renderSingleBubble(zoomG, pos, i, sizes, allCounts));
     },
-    [getNodeColor, darkMode],
+    [getNodeColor, darkMode, activeCategory],
   );
 
-  // ── Rich tooltip with source category ─────────────────────────────────────
+  // ── Rich tooltip (rendered in SVG overlay, outside zoom group) ───────────
   const renderTooltip = useCallback(
     (svg, tooltip, sizes, width, height) => {
       if (!tooltip.visible) return;
@@ -846,7 +892,6 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
         .attr('class', 'tooltip-group')
         .attr('transform', `translate(${tooltipX}, ${tooltipY})`);
 
-      // Card background
       ttGroup
         .append('rect')
         .attr('x', bx)
@@ -861,7 +906,6 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
         .style('filter', 'drop-shadow(0 6px 16px rgba(0,0,0,0.22))')
         .style('pointer-events', 'none');
 
-      // Coloured top accent strip
       ttGroup
         .append('rect')
         .attr('x', bx)
@@ -873,7 +917,6 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
         .attr('fill', cat.color)
         .style('pointer-events', 'none');
 
-      // Triangle
       ttGroup
         .append('path')
         .attr('d', `M${-8},${by + ttH} L0,${by + ttH + 12} L8,${by + ttH} Z`)
@@ -886,7 +929,6 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
       const mutedColor = darkMode ? '#94a3b8' : '#64748b';
       const fs = sizes.isMobile ? 10.5 : 12;
 
-      // Keyword name
       ttGroup
         .append('text')
         .attr('x', 0)
@@ -898,7 +940,6 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
         .style('pointer-events', 'none')
         .text(tooltip.fullTag.length > 22 ? tooltip.fullTag.slice(0, 20) + '…' : tooltip.fullTag);
 
-      // Count row
       ttGroup
         .append('text')
         .attr('x', bx + 10)
@@ -909,7 +950,6 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
         .style('pointer-events', 'none')
         .text(`Frequency: ${tooltip.count}`);
 
-      // Source badge background
       const badgeY = by + 46;
       const badgeH = sizes.isMobile ? 16 : 18;
       ttGroup
@@ -923,7 +963,6 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
         .style('opacity', 0.15)
         .style('pointer-events', 'none');
 
-      // Icon + source label
       ttGroup
         .append('text')
         .attr('x', bx + 16)
@@ -935,7 +974,6 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
         .style('pointer-events', 'none')
         .text(`${cat.icon} ${cat.label}`);
 
-      // Description
       ttGroup
         .append('text')
         .attr('x', 0)
@@ -949,9 +987,9 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
     [darkMode],
   );
 
-  // ── Center circle ──────────────────────────────────────────────────────────
-  const drawCenterCircle = (svg, centerX, centerY, sizes) => {
-    const centerGroup = svg.append('g').attr('transform', `translate(${centerX}, ${centerY})`);
+  // ── Center circle ─────────────────────────────────────────────────────────
+  const drawCenterCircle = (zoomG, centerX, centerY, sizes) => {
+    const centerGroup = zoomG.append('g').attr('transform', `translate(${centerX}, ${centerY})`);
     centerGroup
       .append('circle')
       .attr('r', sizes.centerSize)
@@ -985,16 +1023,17 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
       .text(sizes.isMobile ? 'Words' : 'Frequent');
   };
 
-  // ── Connection lines ───────────────────────────────────────────────────────
-  const drawConnectionLines = (svg, positions, centerX, centerY, centerSize, sizes) => {
-    positions.forEach((pos, i) => {
+  // ── Connection lines ──────────────────────────────────────────────────────
+  const drawConnectionLines = (zoomG, positions, centerX, centerY, centerSize, sizes) => {
+    positions.forEach(pos => {
       const angle = pos.angle;
       const startX = centerX + centerSize * Math.cos(angle);
       const startY = centerY + centerSize * Math.sin(angle);
       const endX = pos.x - pos.r * 0.2 * Math.cos(angle);
       const endY = pos.y - pos.r * 0.2 * Math.sin(angle);
       const cat = SOURCE_CATEGORIES[getKeywordSource(pos.tag)] || SOURCE_CATEGORIES.general;
-      svg
+      const dimmed = activeCategory !== null && getKeywordSource(pos.tag) !== activeCategory;
+      zoomG
         .append('line')
         .attr('x1', startX)
         .attr('y1', startY)
@@ -1002,13 +1041,13 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
         .attr('y2', endY)
         .attr('stroke', cat.color)
         .attr('stroke-width', sizes.isMobile ? 1.5 : 2)
-        .attr('stroke-opacity', 0.5)
+        .attr('stroke-opacity', dimmed ? 0.08 : 0.5)
         .attr('stroke-linecap', 'round')
         .attr('stroke-dasharray', '4 3');
     });
   };
 
-  // ── Main draw ──────────────────────────────────────────────────────────────
+  // ── Main draw ─────────────────────────────────────────────────────────────
   const drawChart = useCallback(() => {
     const svgEl = svgRef.current;
     if (!tags?.length || !svgEl || dimensions.width === 0) return;
@@ -1025,10 +1064,36 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
       Math.min(height * (isMobile ? 0.37 : 0.35), height - (sizes.centerSize + 96)),
     );
 
-    drawCenterCircle(svg, centerX, centerY, sizes);
+    // ── Zoomable group ──────────────────────────────────────────────────────
+    const zoomG = svg.append('g').attr('class', 'zoom-group');
+    zoomGroupRef.current = zoomG.node();
+
+    // Set up d3 zoom
+    const zoom = d3
+      .zoom()
+      .scaleExtent([ZOOM_MIN, ZOOM_MAX])
+      .on('zoom', event => {
+        const { x, y, k } = event.transform;
+        zoomStateRef.current = { x, y, k };
+        setZoomLevel(k);
+        zoomG.attr('transform', event.transform);
+      });
+
+    zoomRef.current = zoom;
+    svg.call(zoom);
+    // Restore previous transform if any
+    const { k, x, y } = zoomStateRef.current;
+    if (k !== 1 || x !== 0 || y !== 0) {
+      svg.call(zoom.transform, d3.zoomIdentity.translate(x, y).scale(k));
+    }
+
+    // Draw into zoomG
+    drawCenterCircle(zoomG, centerX, centerY, sizes);
     const positions = getPositions(tags, width, height, centerX, centerY);
-    drawConnectionLines(svg, positions, centerX, centerY, sizes.centerSize, sizes);
-    renderBubbles(svg, positions, sizes);
+    drawConnectionLines(zoomG, positions, centerX, centerY, sizes.centerSize, sizes);
+    renderBubbles(zoomG, positions, sizes);
+
+    // Tooltip overlay outside zoom group (screen-space)
     renderTooltip(svg, tooltip, sizes, width, height);
   }, [
     tags,
@@ -1040,6 +1105,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
     renderTooltip,
     darkMode,
     isMobile,
+    activeCategory,
   ]);
 
   useEffect(() => {
@@ -1047,10 +1113,16 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
     return () => clearTimeout(drawTimeout);
   }, [drawChart]);
 
-  // ── Legend ─────────────────────────────────────────────────────────────────
+  // Reset zoom state when data source changes
+  useEffect(() => {
+    zoomStateRef.current = { k: 1, x: 0, y: 0 };
+    setZoomLevel(1);
+  }, [selectedOption]);
+
+  // ── Legend / active sources ───────────────────────────────────────────────
   const activeSources = tags.length > 0 ? [...new Set(tags.map(t => getKeywordSource(t.tag)))] : [];
 
-  // ── Dropdown options ───────────────────────────────────────────────────────
+  // ── Dropdown options ──────────────────────────────────────────────────────
   const getDropdownOptions = useCallback(() => {
     const options = [];
     options.push({
@@ -1084,7 +1156,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
     setError('');
   };
 
-  // ── React-Select style helpers (unchanged from original) ──────────────────
+  // ── React-Select styles ───────────────────────────────────────────────────
   const getControlStyles = (base, state) => ({
     ...base,
     backgroundColor: palette.controlBg,
@@ -1176,11 +1248,11 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
     backgroundColor: palette.menuBg,
   });
 
-  // ── Calendar helpers (unchanged) ───────────────────────────────────────────
+  // ── Calendar helpers ──────────────────────────────────────────────────────
   const applyDarkCalendarTheme = useCallback(() => {
     requestAnimationFrame(() => {
       const poppers = Array.from(document.querySelectorAll('.react-datepicker-popper'));
-      const activePopper = poppers.find(popper => popper.offsetParent !== null) || poppers.at(-1);
+      const activePopper = poppers.find(p => p.offsetParent !== null) || poppers.at(-1);
       if (!activePopper) return;
       const datepicker = activePopper.querySelector('.react-datepicker');
       const monthContainer = activePopper.querySelector('.react-datepicker__month-container');
@@ -1245,7 +1317,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
     [],
   );
 
-  // ── Render ─────────────────────────────────────────────────────────────────
+  // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div
       className={`${styles.mfkContainer} ${darkMode ? styles.darkMode : ''} ${
@@ -1291,6 +1363,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
             }}
           />
         </div>
+
         <div className={styles.controlGroup}>
           <label htmlFor="start-date" className={styles.mfkLabel}>
             From
@@ -1311,6 +1384,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
             renderCustomHeader={darkMode ? renderCalendarHeader : undefined}
           />
         </div>
+
         <div className={styles.controlGroup}>
           <label htmlFor="end-date" className={styles.mfkLabel}>
             To
@@ -1331,29 +1405,47 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
             renderCustomHeader={darkMode ? renderCalendarHeader : undefined}
           />
         </div>
+
         {(startDate || endDate) && (
-          <button className={styles.clearButton} onClick={handleClearDates} title="Clear">
+          <button className={styles.clearButton} onClick={handleClearDates} title="Clear dates">
             ✕
           </button>
         )}
       </div>
 
-      {/* ── Source legend ── */}
+      {/* ── Source legend with category filter ── */}
       {activeSources.length > 0 && (
         <div className={styles.mfkLegend}>
           {activeSources.map(key => {
             const cat = SOURCE_CATEGORIES[key];
+            const isActive = activeCategory === key;
             return (
-              <span
+              <button
                 key={key}
-                className={styles.mfkLegendItem}
+                type="button"
+                className={`${styles.mfkLegendItem} ${isActive ? styles.mfkLegendItemActive : ''} ${
+                  activeCategory && !isActive ? styles.mfkLegendItemDimmed : ''
+                }`}
                 style={{ '--cat-color': cat.color, '--cat-bg': darkMode ? cat.darkBg : cat.bg }}
+                onClick={() => handleCategoryToggle(key)}
+                title={`${isActive ? 'Show all' : 'Filter by'} ${cat.label}`}
+                aria-pressed={isActive}
               >
                 <span className={styles.mfkLegendDot} style={{ background: cat.color }} />
                 {cat.icon} {cat.label}
-              </span>
+              </button>
             );
           })}
+          {activeCategory && (
+            <button
+              type="button"
+              className={styles.mfkLegendClear}
+              onClick={() => setActiveCategory(null)}
+              title="Clear category filter"
+            >
+              ✕ Clear filter
+            </button>
+          )}
         </div>
       )}
 
@@ -1364,7 +1456,50 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
           <div className={styles.mfkEmpty}>{selectedOption ? 'No data' : 'Select source'}</div>
         )}
         {!isLoading && !error && tags.length > 0 && (
-          <svg ref={svgRef} style={{ width: '100%', height: '100%' }} />
+          <>
+            <svg ref={svgRef} style={{ width: '100%', height: '100%' }} />
+
+            {/* ── Zoom controls overlay ── */}
+            <div
+              className={`${styles.mfkZoomControls} ${darkMode ? styles.mfkZoomControlsDark : ''}`}
+            >
+              <button
+                type="button"
+                className={styles.mfkZoomBtn}
+                onClick={handleZoomIn}
+                disabled={zoomLevel >= ZOOM_MAX}
+                title="Zoom in"
+                aria-label="Zoom in"
+              >
+                +
+              </button>
+              <span className={styles.mfkZoomLabel}>{Math.round(zoomLevel * 100)}%</span>
+              <button
+                type="button"
+                className={styles.mfkZoomBtn}
+                onClick={handleZoomOut}
+                disabled={zoomLevel <= ZOOM_MIN}
+                title="Zoom out"
+                aria-label="Zoom out"
+              >
+                −
+              </button>
+              <button
+                type="button"
+                className={`${styles.mfkZoomBtn} ${styles.mfkZoomReset}`}
+                onClick={handleZoomReset}
+                title="Reset view"
+                aria-label="Reset zoom and pan"
+              >
+                ⊙
+              </button>
+            </div>
+
+            {/* ── Pan hint ── */}
+            {!isMobile && zoomLevel === 1 && (
+              <div className={styles.mfkPanHint}>Scroll to zoom · Drag to pan</div>
+            )}
+          </>
         )}
       </div>
     </div>
