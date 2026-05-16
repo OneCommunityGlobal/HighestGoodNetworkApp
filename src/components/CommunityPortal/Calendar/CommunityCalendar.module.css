@@ -158,13 +158,22 @@
   margin-bottom: 0 !important;
 }
 
+.reactCalendar :global(.react-calendar__tile) {
+  display: block;
+  height: 90px;
+  background: #fff;
+  border: 1px solid #dee2e6 !important;
+  box-sizing: border-box;
+  transition: background 0.3s, border-color 0.3s ease;
+  overflow: hidden;
+  padding: 4px;
+  color: #1a202c;
+}
+
 .reactCalendar :global(.react-calendar__tile),
 .reactCalendarDarkMode :global(.react-calendar__tile) {
-  height: 110px !important;
-  max-height: 110px !important;
-  overflow: hidden !important;
-  display: flex !important;
-  flex-direction: column !important;
+  background: transparent;
+  color: #fff;
 }
 
 .reactCalendar :global(.react-calendar__tile):hover {
@@ -727,7 +736,7 @@
   width: 90%;
   max-height: 80vh;
   overflow-y: auto;
-  animation: slideIn 0.3s ease-out;
+  animation: slide-in 0.3s ease-out;
   position: relative;
   z-index: 2;
 }
@@ -895,6 +904,20 @@
   margin-bottom: 20px;
 }
 
+.eventDescription {
+  margin-bottom: 24px;
+}
+
+.eventDescription label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #718096;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
 .detailItem {
   display: flex;
   flex-direction: column;
@@ -905,16 +928,6 @@
   font-weight: 600;
   color: #718096;
   margin-bottom: 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.eventDescription label {
-  display: block;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #718096;
-  margin-bottom: 8px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -931,14 +944,6 @@
 
 .eventModalDark .detailItem span {
   color: #fff;
-}
-
-.eventDescription {
-  margin-bottom: 24px;
-}
-
-.eventModalDark .eventDescription label {
-  color: #cbd5e0;
 }
 
 .eventDescription p {
@@ -971,7 +976,8 @@
 }
 
 .btnPrimary,
-.btnSecondary {
+.btnSecondary,
+.btnDisabled {
   padding: 10px 20px;
   border: none;
   border-radius: 8px;
@@ -1001,6 +1007,11 @@
 .btnSecondary:hover {
   background-color: #cbd5e0;
   transform: translateY(-1px);
+}
+
+.btnDisabled{
+  background-color: #c0c0c0;
+  cursor: not-allowed;
 }
 
 .eventModalDark .btnSecondary {
@@ -1329,7 +1340,7 @@
   width: 400px;
   max-height: 70vh;
   overflow-y: auto;
-  animation: fadeIn 0.2s ease-out;
+  animation: fade-in 0.2s ease-out;
 }
 
 .overflowPopupDark {
@@ -1399,9 +1410,8 @@
 
 .weekGridRoot .weekGridBody {
   flex: 1;
-  overflow-y: auto;
+  overflow-y: scroll;
   background: #fff;
-  min-width: 0;
 }
 
 @media (width <= 1024px) {
@@ -1471,12 +1481,8 @@
   padding: 6px;
   font-size: 0.75rem;
   cursor: pointer;
-  display: flex;
-  flex-direction: column;
-}
-
-.gridEvent * {
-  min-width: 0;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 5%);
+  margin-bottom: 4px;
 }
 
 .gridEventTitle {
@@ -1541,6 +1547,19 @@
   color: #a7f3d0;
 }
 
+.metaItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+}
+
+.metaIcon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  opacity: 0.85;
+}
 .eventContent {
   display: flex;
   align-items: center;
@@ -1548,6 +1567,7 @@
   min-width: 0;        /* CRITICAL */
   overflow: hidden;
 }
+
 .eventIcon {
   font-size: 0.75rem;
   flex-shrink: 0;
