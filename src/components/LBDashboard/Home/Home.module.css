@@ -82,7 +82,20 @@
 .lbNavRight {
   display: flex;
   align-items: center;
-  gap: 25px;
+  flex-wrap: wrap;
+  gap: 1rem 1.5rem;
+}
+
+.lbThemeIconBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  line-height: 1;
 }
 
 .lbWelcomeText {
@@ -123,7 +136,7 @@
   font-weight: bold;
 }
 
-/* LB listings home — theme follows global Redux theme (toggle lives in main Header) */
+/* LB listings home — theme toggle in nav bar (shared Redux theme) */
 .lbOutsideContainerDark {
   background-color: #0f1629;
   color: #e8eaef;

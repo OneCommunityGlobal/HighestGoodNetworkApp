@@ -28,6 +28,7 @@ import L from 'leaflet';
 import logo from '../../../assets/images/logo2.png';
 import { fetchVillages, fetchListings, fetchBiddings, FIXED_VILLAGES } from './data';
 import styles from './Home.module.css';
+import ThemeIconToggle from '../ThemeIconToggle';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -377,6 +378,10 @@ function Home() {
           <span className={`${styles.lbWelcomeText} ${darkMode ? styles.lbWelcomeTextDark : ''}`}>
             WELCOME {userName}
           </span>
+          <ThemeIconToggle
+            buttonClassName={`${styles.lbThemeIconBtn} ${darkMode ? styles.lbNavIconDark : ''}`}
+            iconClassName={styles.lbNavIcon}
+          />
           <FaRegCommentDots
             className={`${styles.lbNavIcon} ${darkMode ? styles.lbNavIconDark : ''}`}
             title="Messages"

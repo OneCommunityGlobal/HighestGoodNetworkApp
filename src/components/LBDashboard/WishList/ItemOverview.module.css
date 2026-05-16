@@ -6,6 +6,20 @@
   background-color: #9dd425 !important;
   padding: 1.5rem !important; 
   margin: 0 !important;
+  overflow: visible !important;
+}
+
+.item__navbarContainer {
+  overflow: visible !important;
+}
+
+.item__navbarToolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  width: 100%;
+  gap: 0.75rem 1.25rem;
+  overflow: visible;
 }
 
 .item__navbar--dark {
@@ -18,21 +32,31 @@
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
-  gap: 0.75rem;
+  gap: 1rem;
+  flex: 0 0 auto;
+  flex-shrink: 0;
+  min-width: 0;
 }
 
 .item__selector{
   display: flex;
   align-items: center;
   box-sizing: border-box;
+  position: relative;
+  z-index: 2;
   min-height: 38px;
   width: 200px;
-  max-width: min(200px, 50vw);
+  max-width: min(220px, calc(100vw - 8rem));
   background-color: #fff;
   border-radius: 5px;
   margin-right: 0;
   padding: 0.25rem 0.5rem;
   cursor: pointer;
+  flex-shrink: 0;
+}
+
+.item__selector:focus-within {
+  z-index: 50;
 }
 
 .item__selector select{
@@ -76,13 +100,28 @@
   margin: 0;
 }
 
+.item__navbarCollapse {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: visible !important;
+}
+
+.item__navbar :global(.navbar-collapse) {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: visible !important;
+}
+
 .item__navbar-right{
   display: flex;
   flex-flow: row wrap;
   justify-content: flex-end;
   align-items: center;
-  gap: 0.5rem 1rem;
-  width: 100%;
+  gap: 0.5rem 1.25rem;
+  width: auto;
+  flex: 1 1 auto;
+  min-width: 0;
+  margin-left: auto;
   padding: 0;
 }
 
@@ -100,9 +139,58 @@
   color: #fff !important;
 }
 
+@media screen and (width >= 992px) {
+  .item__navbarToolbar {
+    flex-wrap: nowrap;
+  }
+
+  .item__navbar-right {
+    padding-top: 0;
+  }
+}
+
+@media screen and (width <= 991px) {
+  .item__navbarToolbar {
+    align-items: flex-start;
+  }
+
+  .item__navbar-left {
+    flex: 1 1 auto;
+    max-width: calc(100% - 3.5rem);
+  }
+
+  .item__navbar :global(.navbar-collapse) {
+    flex: 1 1 100%;
+    width: 100%;
+  }
+
+  .item__navbar-right {
+    width: 100%;
+    margin-left: 0;
+    justify-content: space-between;
+    padding: 0.75rem 0 0;
+  }
+}
+
 .item__icons{
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.75rem;
   padding-left: 0.5rem;
   margin: 0;
+}
+
+.item__themeIconBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  line-height: 1;
 }
 
 .item__nav-icon{

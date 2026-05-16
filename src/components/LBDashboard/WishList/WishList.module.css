@@ -84,7 +84,7 @@
 }
 
 .wishlistLinkDark {
-  color: #81b0ff !important;
+  color: #7eb8ff !important;
 }
 
 .listItemTitle {
@@ -212,9 +212,22 @@ h1.listItemTitleMobile {
 
 .footerLink {
   display: inline-block;
+  color: #1565c0;
   text-decoration: underline;
   overflow-wrap: anywhere;
   line-height: 1.4;
+}
+
+.pageRootDark .footerLink,
+.pageRootDark .footerLink:visited {
+  color: #7eb8ff !important;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.pageRootDark .footerLink:hover,
+.pageRootDark .footerLink:focus-visible {
+  color: #b8d9ff !important;
 }
 
 .chatButton {
