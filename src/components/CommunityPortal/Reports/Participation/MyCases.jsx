@@ -134,6 +134,24 @@ function MyCases() {
     </div>
   );
 
+  const renderContent = () => {
+  if (visibleEvents.length === 0) {
+    return (
+      <div className={`${styles.emptyState} ${darkMode ? styles.emptyStateDark : ''}`}>
+        No upcoming events found.
+      </div>
+    );
+  }
+
+  return (
+    <main className={styles.content}>
+      {view === 'card' && renderCardView()}
+      {view === 'list' && renderListView()}
+      {view === 'calendar' && renderCalendarView()}
+    </main>
+  );
+};
+
   return (
     <div
       className={`my-cases-global ${styles.myCasesPage} ${darkMode ? styles.myCasesPageDark : ''}`}
@@ -199,17 +217,7 @@ function MyCases() {
           )}
         </div>
       </header>
-      {visibleEvents.length === 0 ? (
-        <div className={`${styles.emptyState} ${darkMode ? styles.emptyStateDark : ''}`}>
-          No upcoming events found.
-        </div>
-      ) : (
-        <main className={`${styles.content}`}>
-          {view === 'card' && renderCardView()}
-          {view === 'list' && renderListView()}
-          {view === 'calendar' && renderCalendarView()}
-        </main>
-      )}
+      {renderContent()}
       <CreateEventModal
         isOpen={isCreateModalOpen}
         toggle={() => setIsCreateModalOpen(!isCreateModalOpen)}
