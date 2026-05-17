@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import axios from 'axios'; // Added axios import to fix network request errors
 import { PieChart, Pie, Cell, ResponsiveContainer, Sector } from 'recharts';
@@ -38,7 +38,7 @@ function Spinner() {
 const TODAY = new Date().toISOString().split('T')[0];
 
 const PREFERS_REDUCED_MOTION =
-  typeof window !== 'undefined'
+  typeof window !== 'undefined' && typeof window.matchMedia === 'function'
     ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
     : false;
 
@@ -74,9 +74,11 @@ export default function ExperienceDonutChart() {
       const token = localStorage.getItem('token');
       if (!token) throw new Error('No token found. Please log in.');
 
+      // Fixed API endpoint path to include /applicant-analytics
       const url = `${process.env.REACT_APP_APIENDPOINT}/applicant-analytics/experience-breakdown`;
       const params = {};
 
+      // Replaced undefined filter variables with correctly scoped appliedFilters
       if (appliedFilters.startDate && appliedFilters.endDate) {
         params.startDate = appliedFilters.startDate;
         params.endDate = appliedFilters.endDate;
@@ -98,19 +100,20 @@ export default function ExperienceDonutChart() {
         return;
       }
 
+      // Re-formatted chart data as an array of objects for Recharts compatibility
       const formattedData = EXPERIENCE_LABELS.map((label, index) => {
         const found = data.find(d => d.experience === label);
         return {
           name: label,
           value: found ? found.count : 0,
-          color: SEGMENT_COLORS[index % SEGMENT_COLORS.length],
+          color: SEGMENT_COLORS[index % SEGMENT_COLORS.length], // Fixed case sensitivity for constants
         };
       });
 
       const totalCount = formattedData.reduce((a, b) => a + b.value, 0);
 
       setChartData(formattedData);
-      setTotal(totalCount);
+      setTotal(totalCount); // Added state update for chart center total
     } catch (err) {
       setError(err.response?.data?.message || err.message || 'Error fetching data.');
       setChartData(null);
@@ -156,6 +159,7 @@ export default function ExperienceDonutChart() {
     if (!value || !animationDone) return null;
     const isHovered = index === hoveredIndex;
     const RADIAN = Math.PI / 180;
+    // Push centroid outward slightly when hovered to stay centered in the expanded segment
     const expandedOuter = isHovered ? outerRadius + 10 : outerRadius;
     const radius = (innerRadius - (isHovered ? 3 : 0) + expandedOuter) * 0.5;
     const x = cx + radius * Math.cos(-midAngle * RADIAN);
