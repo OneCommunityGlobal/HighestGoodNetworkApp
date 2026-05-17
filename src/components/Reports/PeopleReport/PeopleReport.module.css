@@ -256,27 +256,31 @@ body {
 }
 
 .peopleReportTimeLogsWrapper.threeBoxes > .peopleReportTimeLogBlock {
-  flex: 0 1 calc((100% - 2rem) / 3); /* 3 per row */
+  flex: 0 1 28%; /* Smaller boxes that fit in one line */
+  min-width: 120px; /* Minimum width to keep readable */
 }
 
 /* Prevent wrapping weirdly at mid-screen sizes for 3-box layout */
 @media (width <= 1488px) {
   .peopleReportTimeLogsWrapper.threeBoxes > .peopleReportTimeLogBlock {
-    flex: 0 1 calc((100% - 2rem) / 3);
+    flex: 0 1 28%;
+    min-width: 120px;
   }
 }
 
 @media (width <= 1155px) {
-  .peopleReportTimeLogsWrapper.threeBoxes {
-    justify-content: center;
-    gap: 1.5rem;
-  }
-
   .peopleReportTimeLogsWrapper.threeBoxes > .peopleReportTimeLogBlock {
-    flex: 0 1 100%; /* Stack only on smaller screens */
+    flex: 0 1 28%;
+    min-width: 120px;
   }
 }
 
+@media (width <= 850px) {
+  .peopleReportTimeLogsWrapper.threeBoxes > .peopleReportTimeLogBlock {
+    flex: 0 1 28%;
+    min-width: 120px;
+  }
+}
 
 .infringementContainer {
   display: flex;
@@ -403,10 +407,9 @@ body {
   width: 23vw;
   display: flex;
   flex-direction: column;
-  min-height: 100%;
   margin-top: 2rem;
-  height: 140vh; 
-  overflow: hidden;
+  height: auto;
+  overflow: visible;
 }
 
 .peopleReportProfileWrapper {
@@ -468,7 +471,7 @@ body {
   font-weight: 600 !important; /* or 700 if you prefer */
 }
 
-@media (width <= 960px) {
+@media (width <= 640px) {
   .peopleReportFlexLayout {
     flex-flow: column wrap;
   }
@@ -479,8 +482,13 @@ body {
   }
 
   .peopleReportRight {
-    margin-top: 1rem;
+    order: -1;
+    margin-top: 0;
     height: auto !important; /* override the 140vh */
+  }
+
+  .peopleReportLeft {
+    order: 0;
   }
 
   .peopleReportTimeLogsWrapper {
@@ -519,4 +527,56 @@ body {
     justify-content: center;
     align-items: center;
   }
+
+  .card {
+  border-radius: 16px;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+.lightCard {
+  background: #fff;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 8%);
+}
+
+.darkCard {
+  background: #1e3a5f;
+  color: #f5f5f5;
+}
+
+.userName {
+  font-size: 22px;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 15px;
+  text-decoration: none;
+}
+
+.userName:hover {
+  text-decoration: underline;
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.label {
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 4px;
+}
+
+.value {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.checkboxWrapper {
+  margin-top: 10px;
+}
+
+  
 }

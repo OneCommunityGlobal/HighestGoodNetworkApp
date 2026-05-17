@@ -3,8 +3,6 @@
     display: flex;
     align-items: center;
     justify-content: flex-start;
-
-    /* overflow: hidden; */
   }
 
   .donut-box {
@@ -64,7 +62,7 @@
   .data-legend-info-part:not(:last-child) {
     margin-right: 24px;
   }
-
+  
   @media (width <= 670px) {
     .pie-chart-wrapper {
       flex-direction: column;
@@ -110,7 +108,7 @@
     transition: 0.4s;
     border-radius: 34px;
   }
-
+  
   .slider::before {
     position: absolute;
     content: "";
@@ -122,6 +120,11 @@
     transition: 0.4s;
     border-radius: 50%;
   }
+  
+/* Optional: Dark mode adjustments */
+  .text-light .slider {
+    background-color: #fff;
+  }
 
   input:checked + .slider {
     background-color: #2196F3;
@@ -130,14 +133,9 @@
   input:checked + .slider::before {
     transform: translateX(14px);
   }
-
-  /* Optional: Dark mode adjustments */
-  .text-light .slider {
-    background-color: #555;
-  }
-
-  .text-light .slider::before {
-    background-color: #fff;
+  
+  .text-light input:checked + .slider {
+    background-color: #4CAF50;
   }
 
   .pie-chart-legend-container {
@@ -226,7 +224,8 @@
 
   @media (width <= 671px) {
     .pie-chart-legend-table-wrapper {
-      max-height: 200px;
+      max-height: 200px; 
+      flex-wrap: wrap;
     }
   }
 
@@ -271,4 +270,15 @@
 .pie-chart-legend-container td:nth-child(3) {
   width: 80px; /* Hours column */
   text-align: right;
+}
+
+@media (width <= 1200px) {
+  .pie-chart-wrapper {
+    flex-flow: row wrap;
+  }
+
+  .pie-chart-legend-container {
+    flex: 1;
+    min-width: 300px; /* prevents crushing */
+  }
 }
