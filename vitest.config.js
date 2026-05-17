@@ -101,6 +101,16 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./src/setupTests.js'],
     testTimeout: 30000, // 30 seconds timeout
+    fakeTimers: {
+      toFake: [
+        'setTimeout',
+        'clearTimeout',
+        'setInterval',
+        'clearInterval',
+        'setImmediate',
+        'clearImmediate',
+      ],
+    },
     pool: 'threads',
     poolOptions: {
       threads: {
