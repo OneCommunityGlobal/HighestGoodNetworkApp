@@ -26,13 +26,242 @@
   --error-color: #f87171;
 }
 
+/* ── Title row (title + action buttons) ─────────────────────────────────── */
+.mfkTitleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  flex-shrink: 0;
+}
+
+.mfkTitleActions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
 .mfkTitle {
   font-size: 1.1rem;
   font-weight: 600;
-  margin-bottom: 0.75rem;
+  margin: 0;
   color: var(--title-color, #1e3a8a);
   transition: color 0.3s ease;
+}
+
+/* ── Icon buttons (help + export trigger) ───────────────────────────────── */
+.mfkIconBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background: #f8fafc;
+  color: #475569;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.mfkIconBtn:hover {
+  background: #e2e8f0;
+  border-color: #94a3b8;
+  color: #1e293b;
+}
+
+.mfkIconBtnDark {
+  background: #243447;
+  border-color: #475569;
+  color: #cbd5e1;
+}
+
+.mfkIconBtnDark:hover {
+  background: #31465f;
+  border-color: #64748b;
+  color: #f1f5f9;
+}
+
+.mfkHelpIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #3b82f6;
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+/* Export button specifics */
+.mfkExportBtn {
+  border-color: #3b82f6;
+  color: #3b82f6;
+  background: #eff6ff;
+}
+
+.mfkExportBtn:hover {
+  background: #dbeafe;
+  border-color: #2563eb;
+  color: #1d4ed8;
+}
+
+.mfkIconBtnDark.mfkExportBtn {
+  border-color: #60a5fa;
+  color: #60a5fa;
+  background: #172554;
+}
+
+.mfkIconBtnDark.mfkExportBtn:hover {
+  background: #1e3a8a;
+  border-color: #93c5fd;
+  color: #93c5fd;
+}
+
+.mfkExportIcon {
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.mfkExportLabel {
+  font-size: 0.75rem;
+}
+
+/* ── Export dropdown menu ───────────────────────────────────────────────── */
+.mfkExportWrapper {
+  position: relative;
+}
+
+.mfkExportMenu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 200;
+  min-width: 230px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.13);
+  overflow: hidden;
+  animation: mfkMenuIn 0.15s ease;
+}
+
+.mfkExportMenuDark {
+  background: #1e293b;
+  border-color: #334155;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+@keyframes mfkMenuIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.mfkExportMenuItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  color: inherit;
+  font-family: inherit;
+  transition: background 0.12s;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.mfkExportMenuDark .mfkExportMenuItem {
+  border-bottom-color: #334155;
+  color: #f1f5f9;
+}
+
+.mfkExportMenuItem:last-child {
+  border-bottom: none;
+}
+
+.mfkExportMenuItem:hover {
+  background: #f1f5f9;
+}
+
+.mfkExportMenuDark .mfkExportMenuItem:hover {
+  background: #243447;
+}
+
+.mfkExportMenuItem strong {
+  display: block;
+  font-size: 0.8rem;
+  margin-bottom: 1px;
+}
+
+.mfkExportMenuItem small {
+  font-size: 0.7rem;
+  color: #64748b;
+  line-height: 1.3;
+}
+
+.mfkExportMenuDark .mfkExportMenuItem small {
+  color: #94a3b8;
+}
+
+.mfkExportMenuIcon {
+  font-size: 1.2rem;
   flex-shrink: 0;
+  width: 28px;
+  text-align: center;
+}
+
+/* ── Export / status toast ──────────────────────────────────────────────── */
+.mfkToast {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  animation: mfkToastIn 0.2s ease;
+  flex-shrink: 0;
+}
+
+@keyframes mfkToastIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.mfkToastSuccess {
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  color: #15803d;
+}
+
+.darkMode .mfkToastSuccess {
+  background: #052e16;
+  border-color: #166534;
+  color: #86efac;
+}
+
+.mfkToastError {
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  color: #dc2626;
+}
+
+.darkMode .mfkToastError {
+  background: #450a0a;
+  border-color: #991b1b;
+  color: #fca5a5;
 }
 
 .mfkControls {
@@ -265,6 +494,84 @@
   overflow: visible;
 }
 
+/* ── Zoom controls ──────────────────────────────────────────────────────── */
+.mfkZoomControls {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+
+.mfkZoomControlsDark {
+  background: rgba(30, 41, 59, 0.92);
+  border-color: #475569;
+}
+
+.mfkZoomBtn {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.mfkZoomBtn:hover:not(:disabled) {
+  background: #f1f5f9;
+}
+
+.mfkZoomControlsDark .mfkZoomBtn {
+  color: #cbd5e1;
+}
+
+.mfkZoomControlsDark .mfkZoomBtn:hover:not(:disabled) {
+  background: #334155;
+}
+
+.mfkZoomBtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.mfkZoomLabel {
+  font-size: 0.6rem;
+  color: #94a3b8;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.mfkZoomReset {
+  font-size: 1.1rem;
+}
+
+/* ── Pan hint ───────────────────────────────────────────────────────────── */
+.mfkPanHint {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.65rem;
+  color: #94a3b8;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
 /* ── Calendar header ────────────────────────────────────────────────────── */
 .mfkCalendarHeader {
   display: flex;
@@ -295,6 +602,341 @@
   cursor: default;
 }
 
+/* ════════════════════════════════════════════════════════════════════════════
+   NEW: Help / Legend Modal
+════════════════════════════════════════════════════════════════════════════ */
+.mfkModalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(15, 23, 42, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: mfkFadeIn 0.18s ease;
+  backdrop-filter: blur(2px);
+}
+
+@keyframes mfkFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.mfkModal {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
+  width: 100%;
+  max-width: 600px;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: mfkSlideUp 0.2s ease;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+@keyframes mfkSlideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.mfkModalDark {
+  background: #1e293b;
+  color: #f1f5f9;
+}
+
+.mfkModalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem 1.4rem 0.9rem;
+  border-bottom: 1px solid #e2e8f0;
+  flex-shrink: 0;
+}
+
+.mfkModalDark .mfkModalHeader {
+  border-bottom-color: #334155;
+}
+
+.mfkModalTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0;
+  color: #0f172a;
+}
+
+.mfkModalDark .mfkModalTitle {
+  color: #f1f5f9;
+}
+
+.mfkModalClose {
+  border: none;
+  background: #f1f5f9;
+  color: #475569;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+
+.mfkModalClose:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+.mfkModalDark .mfkModalClose {
+  background: #334155;
+  color: #cbd5e1;
+}
+
+.mfkModalDark .mfkModalClose:hover {
+  background: #475569;
+  color: #f1f5f9;
+}
+
+.mfkModalBody {
+  overflow-y: auto;
+  padding: 1.2rem 1.4rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.mfkModalFooter {
+  padding: 0.9rem 1.4rem;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+
+.mfkModalDark .mfkModalFooter {
+  border-top-color: #334155;
+}
+
+.mfkModalOk {
+  padding: 0.45rem 1.4rem;
+  background: #3b82f6;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.mfkModalOk:hover {
+  background: #2563eb;
+}
+
+/* ── Help sections ──────────────────────────────────────────────────────── */
+.mfkHelpSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.mfkHelpSectionTitle {
+  font-size: 0.82rem;
+  font-weight: 700;
+  margin: 0;
+  color: #1e293b;
+  letter-spacing: 0.01em;
+}
+
+.mfkModalDark .mfkHelpSectionTitle {
+  color: #e2e8f0;
+}
+
+.mfkHelpDesc {
+  font-size: 0.78rem;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.mfkModalDark .mfkHelpDesc {
+  color: #94a3b8;
+}
+
+/* Anatomy cards */
+.mfkHelpGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+
+@media (max-width: 480px) {
+  .mfkHelpGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.mfkHelpCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 10px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  font-size: 0.75rem;
+  color: #475569;
+  line-height: 1.45;
+}
+
+.mfkModalDark .mfkHelpCard {
+  background: #243447;
+  border-color: #334155;
+  color: #94a3b8;
+}
+
+.mfkHelpCard strong {
+  display: block;
+  color: #1e293b;
+  font-size: 0.77rem;
+  margin-bottom: 2px;
+}
+
+.mfkModalDark .mfkHelpCard strong {
+  color: #e2e8f0;
+}
+
+.mfkHelpCard p {
+  margin: 0;
+}
+
+.mfkHelpCardIcon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+  text-align: center;
+}
+
+/* Category list */
+.mfkHelpCategories {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.mfkHelpCatRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  padding: 0.25rem 0;
+}
+
+.mfkHelpCatDot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.mfkHelpCatIcon {
+  width: 18px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.mfkHelpCatLabel {
+  min-width: 80px;
+  font-size: 0.75rem;
+}
+
+.mfkHelpCatDesc {
+  color: #64748b;
+  font-size: 0.72rem;
+}
+
+.mfkModalDark .mfkHelpCatDesc {
+  color: #94a3b8;
+}
+
+/* Interactions */
+.mfkHelpInteractions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.mfkHelpInterRow {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: #475569;
+}
+
+.mfkModalDark .mfkHelpInterRow {
+  color: #94a3b8;
+}
+
+.mfkKbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.1rem 0.45rem;
+  border-radius: 5px;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-bottom-width: 2px;
+  font-size: 0.68rem;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-weight: 600;
+  color: #1e293b;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.mfkModalDark .mfkKbd {
+  background: #334155;
+  border-color: #475569;
+  color: #e2e8f0;
+}
+
+/* Bullet list */
+.mfkHelpList {
+  margin: 0;
+  padding: 0 0 0 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  color: #475569;
+  line-height: 1.5;
+}
+
+.mfkModalDark .mfkHelpList {
+  color: #94a3b8;
+}
+
+.mfkHelpList li strong {
+  color: #1e293b;
+}
+
+.mfkModalDark .mfkHelpList li strong {
+  color: #e2e8f0;
+}
+
 /* ── Tablet ─────────────────────────────────────────────────────────────── */
 @media (width <= 768px) {
   .mfkContainer {
@@ -303,7 +945,6 @@
 
   .mfkTitle {
     font-size: 1rem;
-    margin-bottom: 0.5rem;
   }
 
   .mfkControls {
@@ -339,6 +980,20 @@
 @media (width <= 480px) {
   .mfkContainer {
     padding: 0.5rem;
+  }
+
+  .mfkTitle {
+    font-size: 0.9rem;
+  }
+
+  .mfkIconBtn {
+    padding: 0.25rem 0.45rem;
+    font-size: 0.7rem;
+  }
+
+  .mfkExportMenu {
+    right: 0;
+    min-width: 200px;
   }
 
   .mfkControls {
@@ -400,6 +1055,18 @@
   .mfkLegendItem {
     font-size: 0.6rem;
     padding: 0.12rem 0.38rem;
+  }
+
+  .mfkModal {
+    max-height: 92vh;
+    border-radius: 12px;
+  }
+
+  .mfkModalHeader,
+  .mfkModalBody,
+  .mfkModalFooter {
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
 }
 

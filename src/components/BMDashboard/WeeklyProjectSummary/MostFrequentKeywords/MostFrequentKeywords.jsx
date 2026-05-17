@@ -172,9 +172,9 @@ const ZOOM_STEP = 0.3;
 function MostFrequentKeywords({ darkMode: propDarkMode }) {
   const svgRef = useRef();
   const containerRef = useRef();
-  const zoomRef = useRef(null); // d3 zoom behaviour
-  const zoomGroupRef = useRef(null); // the <g> element we zoom/pan
-  const zoomStateRef = useRef({ k: 1, x: 0, y: 0 }); // current transform snapshot
+  const zoomRef = useRef(null);
+  const zoomGroupRef = useRef(null);
+  const zoomStateRef = useRef({ k: 1, x: 0, y: 0 });
 
   const [projects, setProjects] = useState([]);
   const [selectedOption, setSelectedOption] = useState(null);
@@ -197,6 +197,11 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
     count: 0,
     fullTag: '',
   });
+
+  // ── NEW: Help modal & export state ───────────────────────────────────────
+  const [showHelp, setShowHelp] = useState(false);
+  const [showExportMenu, setShowExportMenu] = useState(false);
+  const [exportStatus, setExportStatus] = useState(''); // 'success' | 'error' | ''
 
   const API_BASE = process.env.REACT_APP_APIENDPOINT;
   const reduxDarkMode = useSelector(state => state.theme.darkMode);
@@ -302,6 +307,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
       });
       setProjects(res.data || []);
     } catch (err) {
+      // eslint-disable-next-line no-console
       if (process.env.NODE_ENV !== 'production') console.error('Failed to fetch projects', err);
     }
   };
@@ -581,7 +587,6 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
     [getBubbleSize, getResponsiveSizes, isMobile],
   );
 
-  // ── Node color: source-category tinted ───────────────────────────────────
   const getNodeColor = useCallback(
     (index, tag, dimmed) => {
       const sourceKey = getKeywordSource(tag || '');
@@ -632,7 +637,6 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
     svg.call(zoomRef.current.transform, d3.zoomIdentity);
   }, []);
 
-  // ── Category filter toggle ────────────────────────────────────────────────
   const handleCategoryToggle = useCallback(key => {
     setActiveCategory(prev => (prev === key ? null : key));
   }, []);
@@ -730,7 +734,6 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
       )
       .style('pointer-events', 'none');
 
-  // ── Frequency weight bar inside bubble ───────────────────────────────────
   const createWeightBar = (g, count, allCounts, r, colors) => {
     const minCount = Math.min(...allCounts);
     const maxCount = Math.max(...allCounts);
@@ -872,7 +875,6 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
     [getNodeColor, darkMode, activeCategory],
   );
 
-  // ── Rich tooltip (rendered in SVG overlay, outside zoom group) ───────────
   const renderTooltip = useCallback(
     (svg, tooltip, sizes, width, height) => {
       if (!tooltip.visible) return;
@@ -987,7 +989,6 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
     [darkMode],
   );
 
-  // ── Center circle ─────────────────────────────────────────────────────────
   const drawCenterCircle = (zoomG, centerX, centerY, sizes) => {
     const centerGroup = zoomG.append('g').attr('transform', `translate(${centerX}, ${centerY})`);
     centerGroup
@@ -1023,7 +1024,6 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
       .text(sizes.isMobile ? 'Words' : 'Frequent');
   };
 
-  // ── Connection lines ──────────────────────────────────────────────────────
   const drawConnectionLines = (zoomG, positions, centerX, centerY, centerSize, sizes) => {
     positions.forEach(pos => {
       const angle = pos.angle;
@@ -1047,7 +1047,6 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
     });
   };
 
-  // ── Main draw ─────────────────────────────────────────────────────────────
   const drawChart = useCallback(() => {
     const svgEl = svgRef.current;
     if (!tags?.length || !svgEl || dimensions.width === 0) return;
@@ -1064,11 +1063,9 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
       Math.min(height * (isMobile ? 0.37 : 0.35), height - (sizes.centerSize + 96)),
     );
 
-    // ── Zoomable group ──────────────────────────────────────────────────────
     const zoomG = svg.append('g').attr('class', 'zoom-group');
     zoomGroupRef.current = zoomG.node();
 
-    // Set up d3 zoom
     const zoom = d3
       .zoom()
       .scaleExtent([ZOOM_MIN, ZOOM_MAX])
@@ -1081,19 +1078,16 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
 
     zoomRef.current = zoom;
     svg.call(zoom);
-    // Restore previous transform if any
     const { k, x, y } = zoomStateRef.current;
     if (k !== 1 || x !== 0 || y !== 0) {
       svg.call(zoom.transform, d3.zoomIdentity.translate(x, y).scale(k));
     }
 
-    // Draw into zoomG
     drawCenterCircle(zoomG, centerX, centerY, sizes);
     const positions = getPositions(tags, width, height, centerX, centerY);
     drawConnectionLines(zoomG, positions, centerX, centerY, sizes.centerSize, sizes);
     renderBubbles(zoomG, positions, sizes);
 
-    // Tooltip overlay outside zoom group (screen-space)
     renderTooltip(svg, tooltip, sizes, width, height);
   }, [
     tags,
@@ -1113,16 +1107,188 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
     return () => clearTimeout(drawTimeout);
   }, [drawChart]);
 
-  // Reset zoom state when data source changes
   useEffect(() => {
     zoomStateRef.current = { k: 1, x: 0, y: 0 };
     setZoomLevel(1);
   }, [selectedOption]);
 
+  // ── NEW: Export as PNG ────────────────────────────────────────────────────
+  const handleExportImage = useCallback(() => {
+    setShowExportMenu(false);
+    const svgEl = svgRef.current;
+    if (!svgEl || !tags.length) return;
+
+    try {
+      const svgClone = svgEl.cloneNode(true);
+      const w = dimensions.width || 800;
+      const h = dimensions.height || 500;
+      svgClone.setAttribute('width', w);
+      svgClone.setAttribute('height', h);
+      svgClone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+
+      // Add background rect
+      const bgRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      bgRect.setAttribute('width', '100%');
+      bgRect.setAttribute('height', '100%');
+      bgRect.setAttribute('fill', darkMode ? '#1e293b' : '#ffffff');
+      svgClone.insertBefore(bgRect, svgClone.firstChild);
+
+      // Add watermark title
+      const title = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      title.setAttribute('x', '12');
+      title.setAttribute('y', '20');
+      title.setAttribute('font-size', '11');
+      title.setAttribute('font-family', 'Inter, sans-serif');
+      title.setAttribute('fill', darkMode ? '#94a3b8' : '#64748b');
+      title.textContent = `Most Frequent Keywords${
+        selectedOption ? ` — ${selectedOption.label}` : ''
+      } · ${new Date().toLocaleDateString()}`;
+      svgClone.appendChild(title);
+
+      const svgData = new XMLSerializer().serializeToString(svgClone);
+      const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(svgBlob);
+
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const scale = 2; // retina
+        canvas.width = w * scale;
+        canvas.height = h * scale;
+        const ctx = canvas.getContext('2d');
+        ctx.scale(scale, scale);
+        ctx.drawImage(img, 0, 0);
+        URL.revokeObjectURL(url);
+
+        canvas.toBlob(blob => {
+          if (!blob) {
+            setExportStatus('error');
+            return;
+          }
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = `keyword-mindmap-${Date.now()}.png`;
+          a.click();
+          URL.revokeObjectURL(a.href);
+          setExportStatus('success');
+          setTimeout(() => setExportStatus(''), 3000);
+        }, 'image/png');
+      };
+      img.onerror = () => {
+        setExportStatus('error');
+        setTimeout(() => setExportStatus(''), 3000);
+      };
+      img.src = url;
+    } catch {
+      setExportStatus('error');
+      setTimeout(() => setExportStatus(''), 3000);
+    }
+  }, [tags, dimensions, darkMode, selectedOption]);
+
+  // ── NEW: Export as CSV summary ────────────────────────────────────────────
+  const handleExportCSV = useCallback(() => {
+    setShowExportMenu(false);
+    if (!tags.length) return;
+
+    const rows = [
+      ['Rank', 'Keyword', 'Frequency', 'Category', 'Category Description'],
+      ...tags
+        .slice()
+        .sort((a, b) => b.count - a.count)
+        .map((t, i) => {
+          const srcKey = getKeywordSource(t.tag);
+          const cat = SOURCE_CATEGORIES[srcKey] || SOURCE_CATEGORIES.general;
+          return [i + 1, t.tag, t.count, cat.label, cat.description];
+        }),
+    ];
+
+    const csv = rows
+      .map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(','))
+      .join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `keyword-summary-${Date.now()}.csv`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+    setExportStatus('success');
+    setTimeout(() => setExportStatus(''), 3000);
+  }, [tags]);
+
+  // ── NEW: Export as text report ────────────────────────────────────────────
+  const handleExportText = useCallback(() => {
+    setShowExportMenu(false);
+    if (!tags.length) return;
+
+    const sorted = [...tags].sort((a, b) => b.count - a.count);
+    const dateRange =
+      startDate || endDate
+        ? `Date range: ${startDate ? startDate.toLocaleDateString() : 'Any'} – ${
+            endDate ? endDate.toLocaleDateString() : 'Any'
+          }`
+        : 'Date range: All time';
+
+    const lines = [
+      '═══════════════════════════════════════════',
+      '  MOST FREQUENT KEYWORDS — SUMMARY REPORT  ',
+      '═══════════════════════════════════════════',
+      `Source: ${selectedOption?.label || 'Unknown'}`,
+      dateRange,
+      `Generated: ${new Date().toLocaleString()}`,
+      '',
+      'KEYWORD RANKINGS',
+      '─────────────────────────────────────────',
+      ...sorted.map((t, i) => {
+        const srcKey = getKeywordSource(t.tag);
+        const cat = SOURCE_CATEGORIES[srcKey] || SOURCE_CATEGORIES.general;
+        const bar = '█'.repeat(Math.round((t.count / sorted[0].count) * 20)).padEnd(20, '░');
+        return `${String(i + 1).padStart(2)}. ${t.tag.padEnd(24)} ×${String(t.count).padStart(
+          4,
+        )}  ${bar}  [${cat.label}]`;
+      }),
+      '',
+      'CATEGORY BREAKDOWN',
+      '─────────────────────────────────────────',
+      ...Object.entries(
+        sorted.reduce((acc, t) => {
+          const k = getKeywordSource(t.tag);
+          if (!acc[k]) acc[k] = { count: 0, keywords: [] };
+          acc[k].count += t.count;
+          acc[k].keywords.push(t.tag);
+          return acc;
+        }, {}),
+      )
+        .sort((a, b) => b[1].count - a[1].count)
+        .map(([k, v]) => {
+          const cat = SOURCE_CATEGORIES[k] || SOURCE_CATEGORIES.general;
+          return `  ${cat.icon} ${cat.label}: ${v.keywords.join(', ')} (total ×${v.count})`;
+        }),
+      '',
+      '═══════════════════════════════════════════',
+    ];
+
+    const text = lines.join('\n');
+    const blob = new Blob([text], { type: 'text/plain;charset=utf-8;' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `keyword-report-${Date.now()}.txt`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+    setExportStatus('success');
+    setTimeout(() => setExportStatus(''), 3000);
+  }, [tags, selectedOption, startDate, endDate]);
+
+  // ── Close export menu on outside click ───────────────────────────────────
+  useEffect(() => {
+    if (!showExportMenu) return;
+    const handler = () => setShowExportMenu(false);
+    document.addEventListener('click', handler);
+    return () => document.removeEventListener('click', handler);
+  }, [showExportMenu]);
+
   // ── Legend / active sources ───────────────────────────────────────────────
   const activeSources = tags.length > 0 ? [...new Set(tags.map(t => getKeywordSource(t.tag)))] : [];
 
-  // ── Dropdown options ──────────────────────────────────────────────────────
   const getDropdownOptions = useCallback(() => {
     const options = [];
     options.push({
@@ -1324,9 +1490,103 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
         isMobile ? styles.mobile : ''
       }`}
     >
-      <h3 className={styles.mfkTitle}>
-        {isMobile ? '📊 Top Keywords' : '📊 Most Frequent Keywords'}
-      </h3>
+      {/* ── Title row with help & export buttons ── */}
+      <div className={styles.mfkTitleRow}>
+        <h3 className={styles.mfkTitle}>
+          {isMobile ? '📊 Top Keywords' : '📊 Most Frequent Keywords'}
+        </h3>
+        <div className={styles.mfkTitleActions}>
+          {/* Help icon */}
+          <button
+            type="button"
+            className={`${styles.mfkIconBtn} ${darkMode ? styles.mfkIconBtnDark : ''}`}
+            onClick={() => setShowHelp(true)}
+            title="How to read this chart"
+            aria-label="Help: how to read this chart"
+          >
+            <span className={styles.mfkHelpIcon}>?</span>
+          </button>
+
+          {/* Export button + dropdown */}
+          {tags.length > 0 && (
+            <div className={styles.mfkExportWrapper}>
+              <button
+                type="button"
+                className={`${styles.mfkIconBtn} ${styles.mfkExportBtn} ${
+                  darkMode ? styles.mfkIconBtnDark : ''
+                }`}
+                onClick={e => {
+                  e.stopPropagation();
+                  setShowExportMenu(v => !v);
+                }}
+                title="Export"
+                aria-label="Export mind map"
+              >
+                <span className={styles.mfkExportIcon}>↓</span>
+                {!isMobile && <span className={styles.mfkExportLabel}>Export</span>}
+              </button>
+              {showExportMenu && (
+                <div
+                  className={`${styles.mfkExportMenu} ${darkMode ? styles.mfkExportMenuDark : ''}`}
+                  onClick={e => e.stopPropagation()}
+                  onKeyDown={e => e.stopPropagation()}
+                  role="presentation"
+                >
+                  <button
+                    type="button"
+                    className={styles.mfkExportMenuItem}
+                    onClick={handleExportImage}
+                  >
+                    <span className={styles.mfkExportMenuIcon}>🖼</span>
+                    <span>
+                      <strong>Image (PNG)</strong>
+                      <br />
+                      <small>Save mind map as picture</small>
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.mfkExportMenuItem}
+                    onClick={handleExportCSV}
+                  >
+                    <span className={styles.mfkExportMenuIcon}>📊</span>
+                    <span>
+                      <strong>Spreadsheet (CSV)</strong>
+                      <br />
+                      <small>Ranked keyword list with categories</small>
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.mfkExportMenuItem}
+                    onClick={handleExportText}
+                  >
+                    <span className={styles.mfkExportMenuIcon}>📄</span>
+                    <span>
+                      <strong>Text Report (.txt)</strong>
+                      <br />
+                      <small>Summary with frequency bars</small>
+                    </span>
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Export status toast */}
+      {exportStatus && (
+        <div
+          className={`${styles.mfkToast} ${
+            exportStatus === 'success' ? styles.mfkToastSuccess : styles.mfkToastError
+          }`}
+        >
+          {exportStatus === 'success'
+            ? '✓ Export downloaded successfully'
+            : '✗ Export failed — try again'}
+        </div>
+      )}
 
       <div className={styles.mfkControls}>
         <div className={styles.controlGroup}>
@@ -1502,6 +1762,206 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
           </>
         )}
       </div>
+
+      {showHelp && (
+        <div
+          className={styles.mfkModalOverlay}
+          onClick={() => setShowHelp(false)}
+          onKeyDown={e => {
+            if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') {
+              setShowHelp(false);
+            }
+          }}
+          role="button"
+          tabIndex={0}
+          aria-label="Close help modal"
+        >
+          <div
+            className={`${styles.mfkModal} ${darkMode ? styles.mfkModalDark : ''}`}
+            onClick={e => e.stopPropagation()}
+            role="presentation"
+          >
+            <div className={styles.mfkModalHeader}>
+              <h2 className={styles.mfkModalTitle}>📊 How to Read This Mind Map</h2>
+              <button
+                type="button"
+                className={styles.mfkModalClose}
+                onClick={() => setShowHelp(false)}
+                aria-label="Close help"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className={styles.mfkModalBody}>
+              {/* Visual anatomy section */}
+              <section className={styles.mfkHelpSection}>
+                <h3 className={styles.mfkHelpSectionTitle}>🗺 Chart Anatomy</h3>
+                <div className={styles.mfkHelpGrid}>
+                  <div className={styles.mfkHelpCard}>
+                    <div
+                      className={styles.mfkHelpCardIcon}
+                      style={{ background: '#eff6ff', border: '2px solid #3b82f6' }}
+                    >
+                      ●
+                    </div>
+                    <div>
+                      <strong>Center Circle</strong>
+                      <p>The hub labeled Most Frequent. All keywords radiate outward from here.</p>
+                    </div>
+                  </div>
+                  <div className={styles.mfkHelpCard}>
+                    <div
+                      className={styles.mfkHelpCardIcon}
+                      style={{ background: '#f0fdf4', border: '2px solid #22c55e' }}
+                    >
+                      ◉
+                    </div>
+                    <div>
+                      <strong>Keyword Bubbles</strong>
+                      <p>
+                        Each ellipse represents one keyword.{' '}
+                        <strong>Larger bubbles = higher frequency.</strong> The <code>×N</code>{' '}
+                        count shows how many times it appeared.
+                      </p>
+                    </div>
+                  </div>
+                  <div className={styles.mfkHelpCard}>
+                    <div
+                      className={styles.mfkHelpCardIcon}
+                      style={{ borderTop: '2px dashed #6366f1', width: 32, marginTop: 10 }}
+                    ></div>
+                    <div>
+                      <strong>Dashed Lines</strong>
+                      <p>
+                        Connect each keyword back to the center. Line color matches the keywords
+                        category.
+                      </p>
+                    </div>
+                  </div>
+                  <div className={styles.mfkHelpCard}>
+                    <div
+                      className={styles.mfkHelpCardIcon}
+                      style={{
+                        background: 'linear-gradient(90deg,#3b82f6 60%,#e2e8f0 40%)',
+                        borderRadius: 4,
+                        height: 8,
+                        width: 36,
+                        marginTop: 14,
+                      }}
+                    ></div>
+                    <div>
+                      <strong>Frequency Bar</strong>
+                      <p>
+                        The small progress bar inside each bubble shows the keywords frequency
+                        relative to the highest-ranked keyword (100% = top).
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              {/* Category legend */}
+              <section className={styles.mfkHelpSection}>
+                <h3 className={styles.mfkHelpSectionTitle}>🎨 Category Colors</h3>
+                <p className={styles.mfkHelpDesc}>
+                  Each keyword is automatically assigned to a category based on its content. Click a
+                  category badge on the chart to isolate that group.
+                </p>
+                <div className={styles.mfkHelpCategories}>
+                  {Object.entries(SOURCE_CATEGORIES).map(([key, cat]) => (
+                    <div key={key} className={styles.mfkHelpCatRow}>
+                      <span className={styles.mfkHelpCatDot} style={{ background: cat.color }} />
+                      <span className={styles.mfkHelpCatIcon}>{cat.icon}</span>
+                      <strong className={styles.mfkHelpCatLabel} style={{ color: cat.color }}>
+                        {cat.label}
+                      </strong>
+                      <span className={styles.mfkHelpCatDesc}>{cat.description}</span>
+                    </div>
+                  ))}
+                </div>
+              </section>
+
+              {/* Interactions */}
+              <section className={styles.mfkHelpSection}>
+                <h3 className={styles.mfkHelpSectionTitle}>🖱 Interactions</h3>
+                <div className={styles.mfkHelpInteractions}>
+                  <div className={styles.mfkHelpInterRow}>
+                    <kbd className={styles.mfkKbd}>Hover</kbd>
+                    <span>bubble to see full keyword name, frequency, and category details</span>
+                  </div>
+                  <div className={styles.mfkHelpInterRow}>
+                    <kbd className={styles.mfkKbd}>Scroll</kbd>
+                    <span>on the chart to zoom in / out</span>
+                  </div>
+                  <div className={styles.mfkHelpInterRow}>
+                    <kbd className={styles.mfkKbd}>Drag</kbd>
+                    <span>to pan the chart when zoomed in</span>
+                  </div>
+                  <div className={styles.mfkHelpInterRow}>
+                    <kbd className={styles.mfkKbd}>Click legend</kbd>
+                    <span>pills to filter by a single category; click again to clear</span>
+                  </div>
+                  <div className={styles.mfkHelpInterRow}>
+                    <kbd className={styles.mfkKbd}>⊙ Reset</kbd>
+                    <span>button restores the original zoom and pan position</span>
+                  </div>
+                </div>
+              </section>
+
+              {/* Data & filters */}
+              <section className={styles.mfkHelpSection}>
+                <h3 className={styles.mfkHelpSectionTitle}>🔧 Filters & Data</h3>
+                <ul className={styles.mfkHelpList}>
+                  <li>
+                    <strong>Data Source</strong> — Select a test dataset or a real project from the
+                    dropdown to populate the chart.
+                  </li>
+                  <li>
+                    <strong>From / To dates</strong> — Narrows keywords to those recorded within the
+                    selected date range. Clear the range to see all-time data.
+                  </li>
+                  <li>
+                    Up to <strong>8 keywords</strong> (6 on mobile) are shown at once, ranked by
+                    recency then frequency.
+                  </li>
+                </ul>
+              </section>
+
+              {/* Export */}
+              <section className={styles.mfkHelpSection}>
+                <h3 className={styles.mfkHelpSectionTitle}>📤 Exporting</h3>
+                <ul className={styles.mfkHelpList}>
+                  <li>
+                    <strong>Image (PNG)</strong> — Downloads a high-resolution screenshot of the
+                    current mind map, suitable for presentations and reports.
+                  </li>
+                  <li>
+                    <strong>Spreadsheet (CSV)</strong> — Downloads a ranked table of all visible
+                    keywords with their frequency count and category, ready for Excel or Google
+                    Sheets.
+                  </li>
+                  <li>
+                    <strong>Text Report (.txt)</strong> — Downloads a plain-text summary with ASCII
+                    frequency bars and a category breakdown, ideal for pasting into documents or
+                    emails.
+                  </li>
+                </ul>
+              </section>
+            </div>
+
+            <div className={styles.mfkModalFooter}>
+              <button
+                type="button"
+                className={styles.mfkModalOk}
+                onClick={() => setShowHelp(false)}
+              >
+                Got it
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
