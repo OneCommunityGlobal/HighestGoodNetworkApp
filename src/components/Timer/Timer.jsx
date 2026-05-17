@@ -157,7 +157,8 @@ function Timer({ authUser, darkMode, isPopout }) {
         const updatedHistory = [...existingHistory, submissionRecord].slice(-10); // Keep last 10 entries
         localStorage.setItem('timerSubmissionHistory', JSON.stringify(updatedHistory));
       } catch (_error) {
-        // Ignore localStorage errors
+        // localStorage unavailable - non-critical, safe to ignore
+        void _error;
       }
     },
     [goal, remaining, sessionId, viewingUserId, authUser?.userid],
@@ -261,21 +262,23 @@ function Timer({ authUser, darkMode, isPopout }) {
     }
   }, [running, paused, started, updateTimerState]);
 
+  const pauseAudioRef = ref => {
+    if (!ref.current) return;
+    ref.current.pause();
+    ref.current.currentTime = 0;
+  };
+
   useEffect(() => {
     const unlockAudio = () => {
       if (audioUnlockedRef.current) return;
-      const tryUnlockRef = ref => {
-        if (!ref.current) return;
-        ref.current
-          .play()
-          .then(() => {
-            ref.current.pause();
-          })
-          .catch(() => {});
-        ref.current.currentTime = 0;
-      };
-      tryUnlockRef(timeIsOverAudioRef);
-      tryUnlockRef(forcedPausedAudioRef);
+      if (timeIsOverAudioRef.current) {
+        timeIsOverAudioRef.current.play().catch(() => {});
+        pauseAudioRef(timeIsOverAudioRef);
+      }
+      if (forcedPausedAudioRef.current) {
+        forcedPausedAudioRef.current.play().catch(() => {});
+        pauseAudioRef(forcedPausedAudioRef);
+      }
       audioUnlockedRef.current = true;
     };
     document.addEventListener('click', unlockAudio, { once: true });
