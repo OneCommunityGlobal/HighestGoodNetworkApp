@@ -13,6 +13,7 @@ import {
   LabelList,
   Cell,
 } from 'recharts';
+import { Spinner } from 'reactstrap';
 import { fetchBMProjects } from '../../../../actions/bmdashboard/projectActions';
 import { ENDPOINTS } from '../../../../utils/URL';
 import styles from './ActualVsPlannedCost.module.css';
@@ -22,53 +23,81 @@ function ActualVsPlannedCost() {
   const projects = useSelector(state => state.bmProjects) || [];
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const [selectedProject, setSelectedProject] = useState('');
+  // Persisted filters
+  const [selectedProject, setSelectedProject] = useState(
+    () => localStorage.getItem('bm_avsp_project') || '',
+  );
+  const [selectedCategory, setSelectedCategory] = useState(
+    () => localStorage.getItem('bm_avsp_category') || 'Overall',
+  );
+
+  // Component state
   const [breakdown, setBreakdown] = useState([]);
   const [totals, setTotals] = useState({ actual: 0, planned: 0 });
   const [loading, setLoading] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState('Overall');
+  const [isFiltering, setIsFiltering] = useState(false);
 
   const selectedProjectName = useMemo(
     () => projects.find(p => p._id === selectedProject)?.name ?? '',
     [projects, selectedProject],
   );
 
-  const fetchExpenses = projectId => {
-    setLoading(true);
-    axios
-      .get(ENDPOINTS.BM_PROJECT_EXPENSE_BY_ID(projectId))
-      .then(({ data }) => {
-        setTotals({
-          actual: Math.round(data.totalActualCost),
-          planned: Math.round(data.totalPlannedCost),
-        });
-        setBreakdown(
-          data.breakdown.map(item => ({
-            category: item.category,
-            actualCost: Math.round(item.actualCost),
-            plannedCost: Math.round(item.plannedCost),
-          })),
-        );
-      })
-      .catch(() => {
-        setTotals({ actual: 0, planned: 0 });
-        setBreakdown([]);
-      })
-      .finally(() => setLoading(false));
-  };
+  // Sync filters to local storage
+  useEffect(() => {
+    if (selectedProject) {
+      localStorage.setItem('bm_avsp_project', selectedProject);
+    }
+    localStorage.setItem('bm_avsp_category', selectedCategory);
+  }, [selectedProject, selectedCategory]);
 
   useEffect(() => {
     dispatch(fetchBMProjects());
   }, [dispatch]);
 
+  // Default to first project if none selected
   useEffect(() => {
-    if (!selectedProject && projects.length) {
-      const firstId = projects[0]._id;
-      setSelectedProject(firstId);
-      fetchExpenses(firstId);
+    if (!selectedProject && projects.length > 0) {
+      setSelectedProject(projects[0]._id);
     }
   }, [projects, selectedProject]);
 
+  // Filter transition effect
+  useEffect(() => {
+    setIsFiltering(true);
+    const timeout = setTimeout(() => {
+      setIsFiltering(false);
+    }, 400);
+    return () => clearTimeout(timeout);
+  }, [selectedProject, selectedCategory]);
+
+  // Fetch project expenses
+  useEffect(() => {
+    if (selectedProject) {
+      setLoading(true);
+      axios
+        .get(ENDPOINTS.BM_PROJECT_EXPENSE_BY_ID(selectedProject))
+        .then(({ data }) => {
+          setTotals({
+            actual: Math.round(data.totalActualCost),
+            planned: Math.round(data.totalPlannedCost),
+          });
+          setBreakdown(
+            data.breakdown.map(item => ({
+              category: item.category,
+              actualCost: Math.round(item.actualCost),
+              plannedCost: Math.round(item.plannedCost),
+            })),
+          );
+        })
+        .catch(() => {
+          setTotals({ actual: 0, planned: 0 });
+          setBreakdown([]);
+        })
+        .finally(() => setLoading(false));
+    }
+  }, [selectedProject]);
+
+  // Derived chart data
   const categories = ['Overall', ...new Set(breakdown.map(d => d.category))];
   const chartData =
     selectedCategory === 'Overall'
@@ -88,12 +117,42 @@ function ActualVsPlannedCost() {
     return darkMode ? '#c0392b' : '#e74a3b';
   };
 
-  // ---- Extracted chart content ----
+  const filterSummary = `${selectedProjectName || 'Loading...'} - ${selectedCategory}`;
+
   let chartContent;
-  if (loading) {
-    chartContent = <p>Loading data…</p>;
-  } else if (!chartData.length) {
-    chartContent = <p>No data available for this category.</p>;
+  if (loading || isFiltering) {
+    chartContent = (
+      <div
+        style={{
+          display: 'flex',
+          height: 200,
+          justifyContent: 'center',
+          alignItems: 'center',
+          color: 'var(--text-color)',
+        }}
+      >
+        <Spinner color="primary" size="sm" />
+        <span style={{ marginLeft: '10px' }}>Updating chart...</span>
+      </div>
+    );
+  } else if (
+    !chartData.length ||
+    (chartData.length === 1 && chartData[0].actualCost === 0 && chartData[0].plannedCost === 0)
+  ) {
+    chartContent = (
+      <div
+        style={{
+          display: 'flex',
+          height: 200,
+          justifyContent: 'center',
+          alignItems: 'center',
+          color: 'var(--text-color)',
+          fontStyle: 'italic',
+        }}
+      >
+        No data available for the selected filters.
+      </div>
+    );
   } else {
     chartContent = (
       <>
@@ -101,7 +160,7 @@ function ActualVsPlannedCost() {
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={chartData}
-              margin={{ top: 5, right: 5, left: 5, bottom: 0 }}
+              margin={{ top: 20, right: 5, left: 5, bottom: 0 }}
               barGap={20}
             >
               <CartesianGrid strokeDasharray="3 3" />
@@ -162,9 +221,14 @@ function ActualVsPlannedCost() {
 
   return (
     <div style={{ padding: 10 }}>
-      <h2 style={{ fontSize: 'large', marginBottom: '3px' }} className={styles.title}>
-        Actual vs Planned Costs
-      </h2>
+      <div style={{ textAlign: 'center', marginBottom: '15px' }}>
+        <h2 style={{ fontSize: 'large', margin: '0 0 5px 0' }} className={styles.title}>
+          Actual vs Planned Costs
+        </h2>
+        <div style={{ fontSize: '0.85rem', color: 'var(--text-color)', fontWeight: 'bold' }}>
+          Viewing: {filterSummary}
+        </div>
+      </div>
 
       <div className={styles.selectorsContainer}>
         <div className={styles.selectorGroup}>
@@ -173,9 +237,7 @@ function ActualVsPlannedCost() {
             id="ActualVsPlannedCost-project-select"
             value={selectedProject}
             onChange={e => {
-              const id = e.target.value;
-              setSelectedProject(id);
-              fetchExpenses(id);
+              setSelectedProject(e.target.value);
               setSelectedCategory('Overall');
             }}
           >
@@ -203,7 +265,6 @@ function ActualVsPlannedCost() {
         </div>
       </div>
 
-      {/* Render chart/loading/no-data */}
       {chartContent}
     </div>
   );

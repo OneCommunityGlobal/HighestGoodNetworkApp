@@ -87,6 +87,8 @@ import { jobApplicationReducer } from './jobApplication/jobApplicationReducer';
 // lbdashboard
 import wishListReducer from './listBidDashboard/wishListItemReducer';
 
+import { optStatusBreakdownReducer } from './optStatusBreakdownReducer';
+
 // listing and biddding dashboard
 
 import {
@@ -100,6 +102,7 @@ import reviewsInsightReducer from './prAnalytics/reviewsInsightReducer';
 
 // job analytics
 import { hoursPledgedReducer } from './jobAnalytics/hoursPledgedReducer';
+import { JobsHitsApplicationsReducer } from './jobAnalytics/JobsHitsApplicationsReducer';
 import { studentTasksReducer } from './studentTasksReducer';
 
 // Education Dashboard Reducers
@@ -181,6 +184,8 @@ const localReducers = {
   lbmessaging: messageReducer,
   lbuserpreferences: userPreferencesReducer,
 
+  optStatusBreakdown: optStatusBreakdownReducer,
+
   WishListItem: wishListReducer,
 
   listOverview: listOverviewReducer,
@@ -190,6 +195,7 @@ const localReducers = {
 
   // job analytics
   hoursPledged: hoursPledgedReducer,
+  jobsHitsApplications: JobsHitsApplicationsReducer,
 
   // student tasks
   studentTasks: studentTasksReducer,
