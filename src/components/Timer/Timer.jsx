@@ -156,7 +156,9 @@ function Timer({ authUser, darkMode, isPopout }) {
         const existingHistory = JSON.parse(localStorage.getItem('timerSubmissionHistory') || '[]');
         const updatedHistory = [...existingHistory, submissionRecord].slice(-10); // Keep last 10 entries
         localStorage.setItem('timerSubmissionHistory', JSON.stringify(updatedHistory));
-      } catch (error) {}
+      } catch (_error) {
+        // Ignore localStorage errors
+      }
     },
     [goal, remaining, sessionId, viewingUserId, authUser?.userid],
   );
@@ -262,15 +264,18 @@ function Timer({ authUser, darkMode, isPopout }) {
   useEffect(() => {
     const unlockAudio = () => {
       if (audioUnlockedRef.current) return;
-      [timeIsOverAudioRef, forcedPausedAudioRef].forEach(ref => {
-        if (ref.current) {
-          ref.current
-            .play()
-            .then(() => ref.current.pause())
-            .catch(() => {});
-          ref.current.currentTime = 0;
-        }
-      });
+      const tryUnlockRef = ref => {
+        if (!ref.current) return;
+        ref.current
+          .play()
+          .then(() => {
+            ref.current.pause();
+          })
+          .catch(() => {});
+        ref.current.currentTime = 0;
+      };
+      tryUnlockRef(timeIsOverAudioRef);
+      tryUnlockRef(forcedPausedAudioRef);
       audioUnlockedRef.current = true;
     };
     document.addEventListener('click', unlockAudio, { once: true });
