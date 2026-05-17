@@ -179,6 +179,23 @@ function MyCases() {
     </div>
   );
 
+  const renderContent = () => {
+    if (visibleEvents.length === 0) {
+      return (
+        <div className={`${styles.emptyState} ${darkMode ? styles.emptyStateDark : ''}`}>
+          No upcoming events found.
+        </div>
+      );
+    }
+
+    return (
+      <main className={styles.content}>
+        {view === 'card' && renderCardView()}
+        {view === 'list' && renderListView()}
+        {view === 'calendar' && renderCalendarView()}
+      </main>
+    );
+  };
   if (isLoading) return <p>Loading events...</p>;
   if (fetchError) return <p>{fetchError}</p>;
 
@@ -262,13 +279,7 @@ function MyCases() {
           )}
         </div>
       </header>
-
-      <main className={styles.content}>
-        {view === 'card' && renderCardView()}
-        {view === 'list' && renderListView()}
-        {view === 'calendar' && renderCalendarView()}
-      </main>
-
+      {renderContent()}
       <CreateEventModal
         isOpen={isCreateModalOpen}
         toggle={() => setIsCreateModalOpen(!isCreateModalOpen)}
