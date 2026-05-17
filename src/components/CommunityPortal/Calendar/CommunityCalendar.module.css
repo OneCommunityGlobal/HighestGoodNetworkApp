@@ -159,17 +159,18 @@
 }
 
 .reactCalendar :global(.react-calendar__tile) {
-  display: grid;
-  height: 100px;
+  display: block;
+  height: 90px;
+  background: #fff;
   border: 1px solid #dee2e6 !important;
   box-sizing: border-box;
   transition: background 0.3s, border-color 0.3s ease;
-  overflow: visible !important;
-  position: relative;
+  overflow: hidden;
   padding: 4px;
   color: #1a202c;
 }
 
+.reactCalendar :global(.react-calendar__tile),
 .reactCalendarDarkMode :global(.react-calendar__tile) {
   background: transparent;
   color: #fff;
@@ -735,7 +736,7 @@
   width: 90%;
   max-height: 80vh;
   overflow-y: auto;
-  animation: slideIn 0.3s ease-out;
+  animation: slide-in 0.3s ease-out;
   position: relative;
   z-index: 2;
 }
@@ -903,6 +904,20 @@
   margin-bottom: 20px;
 }
 
+.eventDescription {
+  margin-bottom: 24px;
+}
+
+.eventDescription label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #718096;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
 .detailItem {
   display: flex;
   flex-direction: column;
@@ -913,16 +928,6 @@
   font-weight: 600;
   color: #718096;
   margin-bottom: 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.eventDescription label {
-  display: block;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #718096;
-  margin-bottom: 8px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -939,14 +944,6 @@
 
 .eventModalDark .detailItem span {
   color: #fff;
-}
-
-.eventDescription {
-  margin-bottom: 24px;
-}
-
-.eventModalDark .eventDescription label {
-  color: #cbd5e0;
 }
 
 .eventDescription p {
@@ -979,7 +976,8 @@
 }
 
 .btnPrimary,
-.btnSecondary {
+.btnSecondary,
+.btnDisabled {
   padding: 10px 20px;
   border: none;
   border-radius: 8px;
@@ -1009,6 +1007,11 @@
 .btnSecondary:hover {
   background-color: #cbd5e0;
   transform: translateY(-1px);
+}
+
+.btnDisabled{
+  background-color: #c0c0c0;
+  cursor: not-allowed;
 }
 
 .eventModalDark .btnSecondary {
@@ -1337,7 +1340,7 @@
   width: 400px;
   max-height: 70vh;
   overflow-y: auto;
-  animation: fadeIn 0.2s ease-out;
+  animation: fade-in 0.2s ease-out;
 }
 
 .overflowPopupDark {
@@ -1510,6 +1513,19 @@
   color: #a7f3d0;
 }
 
+.metaItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+}
+
+.metaIcon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  opacity: 0.85;
+}
 .eventContent {
   display: flex;
   align-items: center;
