@@ -315,6 +315,16 @@
   color: #fff !important;
 }
 
+.emptyState {
+  text-align: center;
+  padding: 48px;
+  color: #64748b;
+}
+
+.emptyStateDark {
+  color: #94a3b8;
+}
+
 .attendeesInfo {
   display: flex;
   align-items: center;
