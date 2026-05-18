@@ -86,20 +86,19 @@
 
 .viewSwitcher button {
   background-color: #fff;
-  border-radius: 0;
+  border-radius: 6px;
   padding: 8px 16px;
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
   color: #333;
   border: none;
-  border-right: 1px solid #ccc;
+  border: 1px solid #ccc;
 }
 
 /* Dark mode */
 .viewSwitcherDarkMode {
   display: flex;
-  border: 1px solid #555;
   border-radius: 6px;
   overflow: hidden;
 }
@@ -114,6 +113,11 @@
   font-weight: 500;
   color: #f1f5f9;
   border: 1px solid #555;
+}
+
+.viewSwitcher button.active {
+  background-color: #007bff;
+  color: #fff;
 }
 
 .viewSwitcherDarkMode button.active {
