@@ -9,7 +9,7 @@ import thunk from 'redux-thunk';
 // eslint-disable-next-line no-unused-vars
 import { Route } from 'react-router-dom';
 // eslint-disable-next-line no-unused-vars
-import configureMockStore from 'redux-mock-store';
+
 // eslint-disable-next-line no-unused-vars
 import { authMock, userProfileMock, timeEntryMock, userProjectMock } from '../../../__tests__/mockStates';
 // eslint-disable-next-line no-unused-vars
