@@ -69,6 +69,7 @@ export const ENDPOINTS = {
   BADGE_COUNT: userId => `${APIEndpoint}/badge/badgecount/${userId}`,
   BADGE_COUNT_RESET: userId => `${APIEndpoint}/badge/badgecount/reset/${userId}`,
   PROJECT_MEMBER: projectId => `${APIEndpoint}/project/${projectId}/users`,
+  PROJECT_MEMBER_ALLTIME: projectId => `${APIEndpoint}/project/${projectId}/alltimeusers`,
   PROJECT_MEMBER_SUMMARY: projectId => `${APIEndpoint}/project/${projectId}/users/summary`,
   PROJECT_MEMBER_ACTIVE: projectId =>
     `${APIEndpoint}/project/${projectId}/users?fields=_id,activeUserCount`,

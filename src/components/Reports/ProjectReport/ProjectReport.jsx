@@ -1,25 +1,25 @@
 import { useEffect, useState } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
-import { useDispatch, useSelector } from 'react-redux';
 import { FiBox } from 'react-icons/fi';
-import {WbsPieChart}  from './WbsPiechart/WbsPieChart';
+import { useDispatch, useSelector } from 'react-redux';
+import { getTimeEntryByProjectSpecifiedPeriod } from '../../../actions/index';
 import { getProjectDetail } from '../../../actions/project';
-import {getTimeEntryByProjectSpecifiedPeriod} from '../../../actions/index'
-import { fetchAllMembers, getProjectActiveUser } from '../../../actions/projectMembers';
-import { fetchAllTasks} from '../../../actions/task';
+import { fetchAllMembers, fetchAllTimeMembers, getProjectActiveUser } from '../../../actions/projectMembers';
+import { fetchAllTasks } from '../../../actions/task';
 import { fetchAllWBS } from '../../../actions/wbs';
-import { ProjectMemberTable } from '../ProjectMemberTable';
-import { ReportPage } from '../sharedComponents/ReportPage';
-import Paging from '../../common/Paging';
-import { TasksTable } from '../TasksTable';
-import { WbsTable } from '../WbsTable';
+import { boxStyle, boxStyleDark } from '../../../styles';
 import hasPermission from '../../../utils/permissions';
 import viewWBSpermissionsRequired from '../../../utils/viewWBSpermissionsRequired';
-import { projectReportViewData } from './selectors';
+import Paging from '../../common/Paging';
 import '../../Teams/Team.module.css';
-import './ProjectReport.css';
-import { boxStyle, boxStyleDark } from '../../../styles';
+import { ProjectMemberTable } from '../ProjectMemberTable';
+import { ReportPage } from '../sharedComponents/ReportPage';
+import { TasksTable } from '../TasksTable';
+import { WbsTable } from '../WbsTable';
 import { PieChartByProject } from './PiechartByProject/PieChartByProject';
+import './ProjectReport.css';
+import { projectReportViewData } from './selectors';
+import { WbsPieChart } from './WbsPiechart/WbsPieChart';
 
 
 // eslint-disable-next-line import/prefer-default-export
@@ -85,7 +85,9 @@ export function ProjectReport({ match }) {
     if (match) {
       dispatch(getProjectDetail(match.params.projectId));
       dispatch(fetchAllWBS(match.params.projectId));
-      dispatch(fetchAllMembers(match.params.projectId));
+      dispatch(fetchAllMembers(match.params.projectId)).then(() => {
+      dispatch(fetchAllTimeMembers(match.params.projectId));
+    });
       setTasks([]);
     }
   }, [match?.params.projectId]);

@@ -6,8 +6,8 @@
  * Author: Henry Ng - 02/03/20
  ******************************************************************************* */
 import axios from 'axios';
-import * as types from '../constants/projectMembership';
 import { ENDPOINTS } from '~/utils/URL';
+import * as types from '../constants/projectMembership';
 /** *****************************************
  * ACTION CREATORS
  ****************************************** */
@@ -55,7 +55,6 @@ export const findUserProfiles = (keyword, activeOnly = true) => {
 
       // DEBUG: Log the API response for troubleshooting
       // eslint-disable-next-line no-console
-      console.log('findUserProfiles API response:', data);
 
       // FIX: Support both array and object with 'users' property
       let userList = [];
@@ -99,6 +98,21 @@ export const fetchAllMembers = projectId => {
     }
   };
 };
+
+/**
+ * Call API to get all-time members (includes unassigned)
+ */
+export const fetchAllTimeMembers = projectId => {
+  return async dispatch => {
+    try {
+      const response = await axios.get(ENDPOINTS.PROJECT_MEMBER_ALLTIME(projectId));
+      dispatch({ type: types.RECEIVE_ALLTIME_MEMBERS, members: response.data });
+    } catch (err) {
+      dispatch(setMembersError(err));
+    }
+  };
+};
+
 
 /**
  * Call API to get members summary (lightweight, no profile pics)

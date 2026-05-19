@@ -8,6 +8,7 @@ const allMembershipInital = {
   foundUsers: [],
   foundProjectMembers: [],
   activeMemberCounts: {},
+  allTimeMembers: [],
   error: '',
 };
 
@@ -88,6 +89,17 @@ export const projectMembershipReducer = (allMembership = allMembershipInital, ac
       return {
         error: action.payload,
       };
+
+    case types.RECEIVE_ALLTIME_MEMBERS: {
+      console.log('RECEIVE_ALLTIME_MEMBERS received:', action.members?.length);
+      return {
+        ...allMembership,
+        allTimeMembers: action.members,
+        fetched: true,
+        fetching: false,
+        error: 'none',
+      };
+    }
 
     default:
       return allMembership;

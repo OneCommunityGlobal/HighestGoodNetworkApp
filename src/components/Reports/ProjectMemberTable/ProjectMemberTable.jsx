@@ -9,7 +9,7 @@ export function ProjectMemberTable({ projectMembers, skip, take, handleMemberCou
   const [allMemberList, setAllMemberList] = useState([]);
   const [activeMemberList, setActiveMemberList] = useState([]);
   const [memberFilter, setMemberFilter] = useState('active');
-  const { fetched, foundUsers, members } = projectMembers;
+  const { fetched, foundUsers = [], members = [], allTimeMembers = [] } = projectMembers || {};
 
   useEffect(() => {
     setMemberFilter('active');
@@ -21,11 +21,11 @@ export function ProjectMemberTable({ projectMembers, skip, take, handleMemberCou
 
   useEffect(() => {
   // Reset lists when project changes or data is not yet fetched
-  if (!fetched) {
-    setAllMemberList([]);
-    setActiveMemberList([]);
-    return;
-  }
+  if (!fetched && members.length === 0 && allTimeMembers.length === 0) {
+  setAllMemberList([]);
+  setActiveMemberList([]);
+  return;
+}
 
   const memberList = [];
   const activeList = [];
@@ -37,18 +37,22 @@ export function ProjectMemberTable({ projectMembers, skip, take, handleMemberCou
     });
   }
 
+  // ACTIVE list — current members only
   members.forEach(member => {
-    if (currentActive.has(member._id)) {
-      memberList.push({ ...member, active: true });
-      activeList.push({ ...member, active: true });
-    } else {
-      memberList.push({ ...member, active: false });
-    }
+  if (member.isActive) {
+    activeList.push({ ...member, active: true });
+  }
+});
+
+  // ALL-TIME list — from projectHistory via new endpoint
+  (allTimeMembers || []).forEach(member => {
+    memberList.push({ ...member, active: currentActive.has(member._id) });
   });
 
   setAllMemberList(memberList);
   setActiveMemberList(activeList);
-}, [fetched, members, foundUsers]);
+
+  }, [fetched, members, foundUsers, allTimeMembers]);
 
   const activeMemberTable = activeMemberList.slice(skip, skip + take).map((member, index) => (
     <div className="project-member-table-row" id={`tr_${  member._id}`} key={`ac_${  member._id}`}>
