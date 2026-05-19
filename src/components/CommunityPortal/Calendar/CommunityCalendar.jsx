@@ -10,17 +10,6 @@ import { toast } from 'react-toastify';
 import CalendarActivitySection from './CalendarActivitySection';
 import GOVERNMENT_HOLIDAYS from './governmentHolidays';
 import styles from './CommunityCalendar.module.css';
-import {
-  FaCalendarAlt,
-  FaClock,
-  FaMapMarkerAlt,
-  FaTag,
-  FaAlignLeft,
-  FaVideo,
-  FaUsers,
-  FaGlassCheers,
-} from 'react-icons/fa';
-import { GrWorkshop } from 'react-icons/gr';
 
 const normalizeStatus = status => {
   if (!status) return 'New';

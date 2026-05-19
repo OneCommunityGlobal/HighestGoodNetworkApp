@@ -1,4 +1,5 @@
 import styles from './UtilizationChart.module.css';
+import PropTypes from 'prop-types';
 
 function ResourceBalancingPanel({ suggestions }) {
   return (
@@ -10,8 +11,8 @@ function ResourceBalancingPanel({ suggestions }) {
         <p className={styles.emptyPanel}>Resources are balanced. No action needed.</p>
       ) : (
         <ul className={styles.balancingList}>
-          {suggestions.map((item, index) => (
-            <li key={`balance-${index}`} className={styles.balancingItem}>
+          {suggestions.map(item => (
+            <li key={item.suggestion} className={styles.balancingItem}>
               <p className={styles.suggestionText}>{item.suggestion}</p>
               <div className={styles.balancingDetail}>
                 <span className={styles.fromTool}>
@@ -31,5 +32,16 @@ function ResourceBalancingPanel({ suggestions }) {
     </section>
   );
 }
+
+ResourceBalancingPanel.propTypes = {
+  suggestions: PropTypes.arrayOf(
+    PropTypes.shape({
+      suggestion: PropTypes.string,
+      fromTool: PropTypes.string,
+      toTool: PropTypes.string,
+      rationale: PropTypes.string,
+    }),
+  ).isRequired,
+};
 
 export default ResourceBalancingPanel;

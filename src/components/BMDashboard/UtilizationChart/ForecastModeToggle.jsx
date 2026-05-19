@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import { FORECAST_MODE_LABELS } from './constants';
 import styles from './UtilizationChart.module.css';
+import PropTypes from 'prop-types';
 
 const MODES = Object.entries(FORECAST_MODE_LABELS);
 
@@ -47,5 +48,10 @@ function ForecastModeToggle({ value, onChange }) {
     </div>
   );
 }
+
+ForecastModeToggle.propTypes = {
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+};
 
 export default ForecastModeToggle;

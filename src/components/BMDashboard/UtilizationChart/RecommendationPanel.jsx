@@ -1,5 +1,6 @@
 import { TRAFFIC_LIGHT_COLORS } from './constants';
 import styles from './UtilizationChart.module.css';
+import PropTypes from 'prop-types';
 
 function RecommendationPanel({ recommendations }) {
   return (
@@ -33,5 +34,17 @@ function RecommendationPanel({ recommendations }) {
     </section>
   );
 }
+
+RecommendationPanel.propTypes = {
+  recommendations: PropTypes.arrayOf(
+    PropTypes.shape({
+      toolName: PropTypes.string,
+      trafficLight: PropTypes.string,
+      label: PropTypes.string,
+      action: PropTypes.string,
+      utilizationRate: PropTypes.number,
+    }),
+  ).isRequired,
+};
 
 export default RecommendationPanel;

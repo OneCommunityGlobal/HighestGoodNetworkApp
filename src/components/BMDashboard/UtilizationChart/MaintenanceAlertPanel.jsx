@@ -1,5 +1,6 @@
 import { URGENCY_STYLES } from './constants';
 import styles from './UtilizationChart.module.css';
+import PropTypes from 'prop-types';
 
 function MaintenanceAlertPanel({ alerts }) {
   const sortedAlerts = [...alerts].sort((a, b) =>
@@ -38,5 +39,16 @@ function MaintenanceAlertPanel({ alerts }) {
     </section>
   );
 }
+
+MaintenanceAlertPanel.propTypes = {
+  alerts: PropTypes.arrayOf(
+    PropTypes.shape({
+      toolName: PropTypes.string,
+      alertType: PropTypes.string,
+      urgency: PropTypes.string,
+      message: PropTypes.string,
+    }),
+  ).isRequired,
+};
 
 export default MaintenanceAlertPanel;

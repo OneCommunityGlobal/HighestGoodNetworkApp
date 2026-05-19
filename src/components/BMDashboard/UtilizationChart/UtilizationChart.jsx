@@ -39,10 +39,6 @@ function UtilizationChart() {
   const [projectFilter, setProjectFilter] = useState('ALL');
   const [toolTypes, setToolTypes] = useState([]);
   const [projects, setProjects] = useState([]);
-  const [comparisonMode, setComparisonMode] = useState(false);
-  const [showIncreasedOnly, setShowIncreasedOnly] = useState(false);
-  const [downloadMenuOpen, setDownloadMenuOpen] = useState(false);
-  const downloadMenuRef = useRef(null);
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const { toolsData, loading: chartLoading, error: chartError, fetchData } = useUtilizationData();
@@ -122,8 +118,9 @@ function UtilizationChart() {
           backgroundColor: toolsData.map(tool => getBarColor(tool.classification?.trafficLight)),
           borderRadius: 6,
         },
-        ...(forecastMode !== FORECAST_MODES.HISTORICAL
-          ? [
+        ...(forecastMode === FORECAST_MODES.HISTORICAL
+          ? []
+          : [
               {
                 label: 'Predicted Utilization (%)',
                 data: toolsData.map(tool => tool.forecast?.predictedRate ?? null),
@@ -142,8 +139,7 @@ function UtilizationChart() {
                     : '#94a3b8',
                 ),
               },
-            ]
-          : []),
+            ]),
       ],
     }),
     [toolsData, forecastMode],

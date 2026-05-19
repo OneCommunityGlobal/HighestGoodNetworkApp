@@ -93,7 +93,7 @@
 :global(body:not(.dark-mode)) :global(.react-datepicker__day--in-selecting-range),
 :global(body:not(.dark-mode)) :global(.react-datepicker__day--in-range) {
   background-color: #3b82f6;
-  color: #f0f0f0 !important;
+  color: #fff !important;
 }
 
 .button {
@@ -111,7 +111,7 @@
 
 .activeButton {
   background-color: #4caf50 !important;
-  color: #fff !important;
+  color: #1a1a1a !important;
   border: none;
 }
 
@@ -299,32 +299,6 @@
   gap: 1rem;
   margin-bottom: 1.5rem;
   flex-wrap: wrap;
-}
-
-.summaryCard {
-  flex: 1;
-  min-width: 120px;
-  padding: 1rem;
-  border-radius: 8px;
-  background-color: var(--card-bg, #f9fafb);
-  border: 1px solid var(--panel-border, #e5e7eb);
-  text-align: center;
-}
-
-.summaryValue {
-  display: block;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--text-color, #111);
-}
-
-.summaryLabel {
-  display: block;
-  font-size: 0.75rem;
-  color: var(--text-secondary, #6b7280);
-  margin-top: 0.25rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
 }
 
 .summaryCardGreen {

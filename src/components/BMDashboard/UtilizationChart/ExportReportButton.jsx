@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { ENDPOINTS } from '../../../utils/URL';
@@ -28,14 +29,14 @@ function ExportReportButton({ tool, project, startDate, endDate }) {
       const filenameMatch = contentDisposition.match(/filename="?([^"]+)"?/);
       const filename = filenameMatch ? filenameMatch[1] : `tool-utilization-report.${format}`;
 
-      const url = window.URL.createObjectURL(response.data);
+      const url = globalThis.URL.createObjectURL(response.data);
       const link = document.createElement('a');
       link.href = url;
       link.download = filename;
       document.body.appendChild(link);
       link.click();
       link.remove();
-      window.URL.revokeObjectURL(url);
+      globalThis.URL.revokeObjectURL(url);
     } catch {
       toast.error(`Failed to export ${format.toUpperCase()} report.`);
     } finally {
@@ -67,5 +68,19 @@ function ExportReportButton({ tool, project, startDate, endDate }) {
     </div>
   );
 }
+
+ExportReportButton.propTypes = {
+  tool: PropTypes.string,
+  project: PropTypes.string,
+  startDate: PropTypes.shape({ toISOString: PropTypes.func }),
+  endDate: PropTypes.shape({ toISOString: PropTypes.func }),
+};
+
+ExportReportButton.defaultProps = {
+  tool: 'ALL',
+  project: 'ALL',
+  startDate: null,
+  endDate: null,
+};
 
 export default ExportReportButton;
