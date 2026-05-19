@@ -7,8 +7,8 @@ import '@testing-library/jest-dom/extend-expect';
 import { Provider } from 'react-redux';
 // eslint-disable-next-line no-unused-vars
 import thunk from 'redux-thunk';
-// eslint-disable-next-line no-unused-vars
-import configureMockStore from 'redux-mock-store';
+
+
 // eslint-disable-next-line no-unused-vars
 import { rolesMock } from '__tests__/mockStates';
 // eslint-disable-next-line no-unused-vars
