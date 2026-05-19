@@ -57,7 +57,6 @@ import {
   VIEW_PROFILE,
   WEEKLY_SUMMARIES_REPORT,
   WELCOME,
-  BM_DASHBOARD
 } from '../../languages/en/ui';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import PermissionWatcher from '../Auth/PermissionWatcher';
@@ -84,7 +83,15 @@ export function Header(props) {
   const collapseRef = useRef(null);
   const toggleRef = useRef(null);
   const [isAckLoading, setIsAckLoading] = useState(false);
-  const [ showPromotionsPopup, setShowPromotionsPopup ] = useState(false);
+  const [showPromotionsPopup, setShowPromotionsPopup] = useState(false);
+
+  // BM Dashboard accordion state
+  const [bmProjectsOpen, setBmProjectsOpen] = useState(false);
+  const [expandedSection, setExpandedSection] = useState(null);
+
+  const toggleSection = (section) => {
+    setExpandedSection(prev => prev === section ? null : section);
+  };
 
   const ALLOWED_ROLES_TO_INTERACT = useMemo(() => ['Owner', 'Administrator'], []);
   const canInteractWithViewingUser = useMemo(
@@ -94,73 +101,70 @@ export function Header(props) {
   const headerDisabled = isAuthUser ? false : !canInteractWithViewingUser;
 
   // Reports
-  const canGetReports = props.hasPermission(
-    'getReports',
-    !isAuthUser ,
-  );
-  const canGetWeeklySummaries = props.hasPermission(
-    'getWeeklySummaries',
-    !isAuthUser,
-  );
+  const canGetReports = props.hasPermission('getReports', !isAuthUser);
+  const canGetWeeklySummaries = props.hasPermission('getWeeklySummaries', !isAuthUser);
   const canGetWeeklyVolunteerSummary = props.hasPermission('getWeeklySummaries');
   const canGetJobAnalytics = props.hasPermission('getJobReports');
 
   // Users
   const canAccessUserManagement =
-    props.hasPermission('postUserProfile', !isAuthUser ) ||
-    props.hasPermission('deleteUserProfile', !isAuthUser ) ||
-    props.hasPermission('changeUserStatus', !isAuthUser ) ||
-    props.hasPermission('getUserProfiles', !isAuthUser ) ||
+    props.hasPermission('postUserProfile', !isAuthUser) ||
+    props.hasPermission('deleteUserProfile', !isAuthUser) ||
+    props.hasPermission('changeUserStatus', !isAuthUser) ||
+    props.hasPermission('getUserProfiles', !isAuthUser) ||
     props.hasPermission('setFinalDay', !isAuthUser) ||
     props.hasPermission('interactWithPauseUserButton', !isAuthUser);
 
   // Badges
   const canAccessBadgeManagement =
-    props.hasPermission('seeBadges', !isAuthUser ) ||
-    props.hasPermission('createBadges', !isAuthUser ) ||
+    props.hasPermission('seeBadges', !isAuthUser) ||
+    props.hasPermission('createBadges', !isAuthUser) ||
     props.hasPermission('updateBadges', !isAuthUser) ||
-    props.hasPermission('deleteBadges', !isAuthUser );
+    props.hasPermission('deleteBadges', !isAuthUser);
+
   // Projects
   const canAccessProjects =
-    props.hasPermission('postProject', !isAuthUser ) ||
-    props.hasPermission('deleteProject', !isAuthUser ) ||
-    props.hasPermission('putProject', !isAuthUser ) ||
-    props.hasPermission('getProjectMembers', !isAuthUser ) ||
-    props.hasPermission('assignProjectToUsers', !isAuthUser ) ||
-    props.hasPermission('postWbs', !isAuthUser ) ||
-    props.hasPermission('deleteWbs', !isAuthUser ) ||
-    props.hasPermission('postTask', !isAuthUser ) ||
-    props.hasPermission('updateTask', !isAuthUser ) ||
+    props.hasPermission('postProject', !isAuthUser) ||
+    props.hasPermission('deleteProject', !isAuthUser) ||
+    props.hasPermission('putProject', !isAuthUser) ||
+    props.hasPermission('getProjectMembers', !isAuthUser) ||
+    props.hasPermission('assignProjectToUsers', !isAuthUser) ||
+    props.hasPermission('postWbs', !isAuthUser) ||
+    props.hasPermission('deleteWbs', !isAuthUser) ||
+    props.hasPermission('postTask', !isAuthUser) ||
+    props.hasPermission('updateTask', !isAuthUser) ||
     props.hasPermission('deleteTask', !isAuthUser);
+
   // Tasks
-  const canUpdateTask = props.hasPermission(
-    'updateTask',
-    !isAuthUser,
-  );
+  const canUpdateTask = props.hasPermission('updateTask', !isAuthUser);
+
   // Teams
   const canAccessTeams =
-    props.hasPermission('postTeam', !isAuthUser ) ||
+    props.hasPermission('postTeam', !isAuthUser) ||
     props.hasPermission('putTeam', !isAuthUser) ||
-    props.hasPermission('deleteTeam', !isAuthUser ) ||
+    props.hasPermission('deleteTeam', !isAuthUser) ||
     props.hasPermission('assignTeamToUsers', !isAuthUser);
+
   // Popups
   const canAccessPopups =
     props.hasPermission('createPopup', !isAuthUser) ||
-    props.hasPermission('updatePopup', !isAuthUser );
+    props.hasPermission('updatePopup', !isAuthUser);
+
   // SendEmails
   const canAccessSendEmails = props.hasPermission('sendEmails', !isAuthUser);
+
   // Permissions
   const canAccessPermissionsManagement =
-    props.hasPermission('postRole', !isAuthUser ) ||
-    props.hasPermission('putRole', !isAuthUser ) ||
-    props.hasPermission('deleteRole', !isAuthUser ) ||
+    props.hasPermission('postRole', !isAuthUser) ||
+    props.hasPermission('putRole', !isAuthUser) ||
+    props.hasPermission('deleteRole', !isAuthUser) ||
     props.hasPermission('putUserProfilePermissions', !isAuthUser);
 
   // Blue Square Email Management
   const canAccessBlueSquareEmailManagement = props.hasPermission('resendBlueSquareAndSummaryEmails', !isAuthUser);
+
   // PR Dashboard
   const canAccessPRDashboard = props.hasPermission('accessPRTeamDashboard', !isAuthUser);
-
 
   const userId = user.userid;
   const [isModalVisible, setModalVisible] = useState(false);
@@ -169,10 +173,11 @@ export function Header(props) {
   const [hasProfileLoaded, setHasProfileLoaded] = useState(false);
   const dismissalKey = `lastDismissed_${userId}`;
   const [lastDismissed, setLastDismissed] = useState(localStorage.getItem(dismissalKey));
-  const unreadNotifications = props.notification?.unreadNotifications; // List of unread notifications
+  const unreadNotifications = props.notification?.unreadNotifications;
   const dispatch = useDispatch();
   const history = useHistory();
-  const [showProjectDropdown, setShowProjectDropdown] = useState(false);
+
+  const showBMDashboard = location.pathname.startsWith('/bmdashboard');
 
   useEffect(() => {
     const handleStorageEvent = () => {
@@ -190,26 +195,18 @@ export function Header(props) {
       }
     };
 
-    // Set the initial state when the component mounts
     handleStorageEvent();
-
-    // Add the event listener
     window.addEventListener('storage', handleStorageEvent);
-
-    // Clean up the event listener when the component unmounts
     return () => {
       window.removeEventListener('storage', handleStorageEvent);
     };
   }, [user.userid, props.auth.firstName]);
 
-  // Debugging Enhancement: Monitor window resize events for responsive testing
   useEffect(() => {
     const handleResize = () => {
       const currentWidth = window.innerWidth;
       // eslint-disable-next-line no-console
       console.log(`[Header Debug] Window resized to: ${currentWidth}px`);
-
-      // Log breakpoint information for debugging
       if (currentWidth >= 1728) {
         // eslint-disable-next-line no-console
         console.log(`[Header Debug] Breakpoint: Large screen (90%+) - Owner message below timer`);
@@ -228,13 +225,8 @@ export function Header(props) {
       }
     };
 
-    // Log initial window size
     handleResize();
-
-    // Add resize event listener
     window.addEventListener('resize', handleResize);
-
-    // Cleanup event listener on component unmount
     return () => {
       window.removeEventListener('resize', handleResize);
     };
@@ -248,14 +240,13 @@ export function Header(props) {
       }
     }
   }, [props.auth.isAuthenticated]);
+
   const roles = props.role?.roles;
 
   useEffect(() => {
     if (roles.length === 0 && isAuthenticated) {
       props.getAllRoles();
     }
-    // Fetch unread notification - always use the logged-in user's ID,
-    // not displayUserId, which may be a viewed user (causing a 403 error)
     if (isAuthenticated && user.userid) {
       dispatch(getUnreadUserNotifications(user.userid));
     }
@@ -269,26 +260,23 @@ export function Header(props) {
   }, [props.notification?.error]);
 
   const toggle = () => {
-  setIsOpen(prevIsOpen => !prevIsOpen);
-};
+    setIsOpen(prevIsOpen => !prevIsOpen);
+  };
 
   const openModal = () => {
     setLogoutPopup(true);
   };
 
   const handlePermissionChangeAck = async () => {
-    // handle setting the ack true
     try {
       setIsAckLoading(true);
       const { firstName: name, lastName, personalLinks, adminLinks, _id } = props.userProfile;
       axios
         .put(ENDPOINTS.USER_PROFILE(_id), {
-          // req fields for updation
           firstName: name,
           lastName,
           personalLinks,
           adminLinks,
-
           isAcknowledged: true,
         })
         .then(() => {
@@ -307,6 +295,7 @@ export function Header(props) {
     props.getWeeklySummaries(user.userid);
     history.push('/dashboard');
   };
+
   const closeModal = () => {
     setModalVisible(false);
     const today = new Date();
@@ -317,11 +306,9 @@ export function Header(props) {
   const getMostRecentThursday = date => {
     const mostRecentThursday = new Date(date);
     if (date.getDay() === 4) {
-      // If today is Thursday, return today's date
       mostRecentThursday.setHours(0, 0, 0, 0);
       return mostRecentThursday;
     }
-    // Otherwise, find the previous Thursday
     mostRecentThursday.setDate(date.getDate() - ((date.getDay() + 3) % 7));
     mostRecentThursday.setHours(0, 0, 0, 0);
     return mostRecentThursday;
@@ -333,7 +320,7 @@ export function Header(props) {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const newUserProfile = response?.data;
       setUserDashboardProfile(newUserProfile);
-      setHasProfileLoaded(true); // Set flag to true after loading the profile
+      setHasProfileLoaded(true);
     } catch (err) {
       // eslint-disable-next-line no-console
       console.log('User Profile not loaded.', err);
@@ -351,27 +338,21 @@ export function Header(props) {
     const today = new Date();
     const lastDismissedDate = lastDismissed ? new Date(lastDismissed) : null;
 
-    // Check if lastDismissed date is ahead of today
     if (lastDismissedDate > today) {
-      // Clear lastDismissed in both the state and localStorage
       setLastDismissed(null);
       localStorage.removeItem(dismissalKey);
     }
 
-    // Check if today is Thursday or the stored date is before the most recent Thursday
     if (!lastDismissed || lastDismissedDate < getMostRecentThursday(today)) {
       if (userDashboardProfile?.teams?.length > 0) {
         if (user.role === 'Assistant Manager' || user.role === 'Volunteer') {
           setModalVisible(true);
-          // Assistant Manager or Volunteer message
           setModalContent(
             `If you are seeing this, it's because you are on a team! As a member of a team, you need to turn in your work 24 hours earlier, i.e. FRIDAY night at midnight Pacific Time. This is so your manager has time to review it and submit and report on your entire team's work by the usual Saturday night deadline. For any work you plan on completing Saturday, please take pictures as best you can and include it in your summary as if it were already done.\n\nBy dismissing this notice, you acknowledge you understand and will do this.`,
           );
         } else if (user.role === 'Manager') {
           setModalVisible(true);
-          // Manager message
-          setModalContent(`If you are seeing this, it's because you are a Manager of a team! Remember to turn in your team's work by the Saturday night at midnight (Pacific Time) deadline. Every member of your team gets a notice like this too. Theirs tells them to get you their work 24 hours early so you have time to review it and submit it. If you have to remind them repeatedly (4+ times, track it on their Google Doc), they should receive a blue square.
-          `);
+          setModalContent(`If you are seeing this, it's because you are a Manager of a team! Remember to turn in your team's work by the Saturday night at midnight (Pacific Time) deadline. Every member of your team gets a notice like this too. Theirs tells them to get you their work 24 hours early so you have time to review it and submit it. If you have to remind them repeatedly (4+ times, track it on their Google Doc), they should receive a blue square.`);
         }
       }
     } else {
@@ -380,36 +361,29 @@ export function Header(props) {
   }, [lastDismissed, userId, userDashboardProfile]);
 
   useEffect(() => {
-    setShowProjectDropdown(location.pathname.startsWith('/bmdashboard/projects/'));
-  }, [location.pathname]);
+    if (!isOpen) return;
 
- useEffect(() => {
-  if (!isOpen) return;
+    const handleClickOutside = (event) => {
+      if (collapseRef.current?.contains(event.target)) return;
+      if (toggleRef.current?.contains(event.target)) return;
+      setIsOpen(false);
+    };
 
-  const handleClickOutside = (event) => {
-    if (collapseRef.current?.contains(event.target)) return;
-    if (toggleRef.current?.contains(event.target)) return;
-    setIsOpen(false);
-  };
+    const timer = setTimeout(() => {
+      document.addEventListener('click', handleClickOutside);
+    }, 0);
 
-  // Defer adding listener until after current click event finishes
-  const timer = setTimeout(() => {
-    document.addEventListener('click', handleClickOutside);
-  }, 0);
-
-  return () => {
-    clearTimeout(timer);
-    document.removeEventListener('click', handleClickOutside);
-  };
-}, [isOpen]);
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [isOpen]);
 
   const fontColor = darkMode ? `${styles.darkDropdownText} ${styles.darkDropdownItem}` : `${styles.mobileDropdownText} ${styles.mobileDropdownItem}`;
 
   if (location.pathname === '/login') return null;
 
   const viewingUser = JSON.parse(window.sessionStorage.getItem('viewingUser'));
-
-  const showBMDashboard = location.pathname.startsWith('/bmdashboard');
 
   return (
     <div className={`${styles.headerWrapper}`} data-testid="header">
@@ -418,14 +392,15 @@ export function Header(props) {
         {showPromotionsPopup && <DisplayBox onClose={() => setShowPromotionsPopup(false)} />}
 
         <div className={styles.headerRow}>
-            <div className={styles.leftSection}>
-              {isAuthenticated && <Timer darkMode={darkMode} />}
-            </div>
+          <div className={styles.leftSection}>
+            {isAuthenticated && <Timer darkMode={darkMode} />}
+          </div>
 
-            <div className={styles.centerSection}>
-              {isAuthenticated && <OwnerMessage />}
-            </div>
-            <div className={styles.rightSection}>
+          <div className={styles.centerSection}>
+            {isAuthenticated && <OwnerMessage />}
+          </div>
+
+          <div className={styles.rightSection}>
             <NavbarToggler onClick={toggle} ref={toggleRef} className={styles.navbarToggler} />
             <div
               ref={collapseRef}
@@ -436,7 +411,7 @@ export function Header(props) {
                 if (e.key === 'Escape') setIsOpen(false);
               }}
             >
-            <Nav className={`${styles.menuContainer} mr-3`} navbar>
+              <Nav className={`${styles.menuContainer} mr-3`} navbar>
                 <NavItem className={styles.showInMobile}>
                   <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
                     <img
@@ -450,41 +425,19 @@ export function Header(props) {
 
                 <UncontrolledDropdown nav inNavbar className={styles.showInMobile}>
                   <DropdownToggle nav caret>
-                    <span>
-                      {WELCOME}, {firstName}
-                    </span>
+                    <span>{WELCOME}, {firstName}</span>
                   </DropdownToggle>
-                  <DropdownMenu
-                    className={`${styles.noMaxHeight} ${
-                      darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
-                    }`}
-                  >
-
-                    <DropdownItem
-                      tag={Link}
-                      to={`/userprofile/${displayUserId}`}
-                      className={fontColor}
-                    >
+                  <DropdownMenu className={`${styles.noMaxHeight} ${darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown}`}>
+                    <DropdownItem tag={Link} to={`/userprofile/${displayUserId}`} className={fontColor}>
                       {VIEW_PROFILE}
                     </DropdownItem>
-
                     {!cantUpdateDevAdminDetails(props.userProfile.email, props.userProfile.email) && (
-                      <DropdownItem
-                        tag={Link}
-                        to={`/updatepassword/${displayUserId}`}
-                        className={fontColor}
-                      >
+                      <DropdownItem tag={Link} to={`/updatepassword/${displayUserId}`} className={fontColor}>
                         {UPDATE_PASSWORD}
                       </DropdownItem>
                     )}
-
-                    <DropdownItem className={fontColor}>
-                      <DarkModeButton />
-                    </DropdownItem>
-
-                    <DropdownItem onClick={openModal} className={fontColor}>
-                      {LOGOUT}
-                    </DropdownItem>
+                    <DropdownItem className={fontColor}><DarkModeButton /></DropdownItem>
+                    <DropdownItem onClick={openModal} className={fontColor}>{LOGOUT}</DropdownItem>
                   </DropdownMenu>
                 </UncontrolledDropdown>
 
@@ -507,193 +460,37 @@ export function Header(props) {
                   </NavLink>
                 </NavItem>
 
-                {showBMDashboard && (<NavItem>
-                  <NavLink tag={Link} to="/bmdashboard" disabled={headerDisabled}>
-                    <span>{BM_DASHBOARD}</span>
-                  </NavLink>
-                </NavItem>
-                )}
-  
                 <NavItem>
                   <NavLink tag={Link} to="/timelog#currentWeek" disabled={headerDisabled}>
                     <span>{TIMELOG}</span>
                   </NavLink>
                 </NavItem>
 
-                {showProjectDropdown && (
-                  <UncontrolledDropdown nav inNavbar>
-                    <DropdownToggle nav caret disabled={headerDisabled}>
-                      <span>{PROJECTS}</span>
-                    </DropdownToggle>
-                    <DropdownMenu
-                      className={`${styles.noMaxHeight} ${
-                        darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
-                      }`}
-                      disabled={headerDisabled}
-                    >
-                      <DropdownItem tag={Link} to="/bmdashboard/inventorytypes" className={fontColor}>
-                        All Inventory Types
-                      </DropdownItem>
-                      <DropdownItem tag={Link} to="/bmdashboard/materials/add" className={fontColor}>
-                        Add Material
-                      </DropdownItem>
-                      <DropdownItem
-                        tag={Link}
-                        to="/bmdashboard/logMaterial"
-                        className={fontColor}
-                        disabled={headerDisabled}
-                      >
-                        Log Material
-                      </DropdownItem>
-                      <DropdownItem
-                        tag={Link}
-                        to="/bmdashboard/materials"
-                        className={fontColor}
-                        disabled={headerDisabled}
-                      >
-                        Material List
-                      </DropdownItem>
-                      <DropdownItem
-                        tag={Link}
-                        to="/bmdashboard/equipment/add"
-                        className={fontColor}
-                        disabled={headerDisabled}
-                      >
-                        Add Equipment/Tool
-                      </DropdownItem>
-                      <DropdownItem
-                        tag={Link}
-                        to="/bmdashboard/equipment/:equipmentId"
-                        className={fontColor}
-                        disabled={headerDisabled}
-                      >
-                        Log Equipment/Tool
-                      </DropdownItem>
-                      <DropdownItem
-                        tag={Link}
-                        to="/bmdashboard/tools/:equipmentId/update"
-                        className={fontColor}
-                        disabled={headerDisabled}
-                      >
-                        Update Equipment/Tool
-                      </DropdownItem>
-                      <DropdownItem
-                        tag={Link}
-                        to="/bmdashboard/equipment"
-                        className={fontColor}
-                        disabled={headerDisabled}
-                      >
-                        Equipment/Tool List
-                      </DropdownItem>
-                      <DropdownItem
-                        tag={Link}
-                        to="/bmdashboard/Issue"
-                        className={fontColor}
-                        disabled={headerDisabled}
-                      >
-                        Issue
-                      </DropdownItem>
-                      <DropdownItem
-                        tag={Link}
-                        to="/bmdashboard/lessonform/"
-                        className={fontColor}
-                        disabled={headerDisabled}
-                      >
-                        Lesson
-                      </DropdownItem>
-                      <DropdownItem tag={Link} to="/teams" className={fontColor}>
-                        Team
-                      </DropdownItem>
-                    </DropdownMenu>
-                  </UncontrolledDropdown>
-                )}
-
                 {canGetReports || canGetWeeklySummaries || canGetWeeklyVolunteerSummary ? (
                   <UncontrolledDropdown nav inNavbar>
                     <DropdownToggle nav caret>
                       <span>{REPORTS}</span>
                     </DropdownToggle>
-                    <DropdownMenu
-                      className={`${styles.noMaxHeight} ${
-                        darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
-                      }`}
-                    >
+                    <DropdownMenu className={`${styles.noMaxHeight} ${darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown}`}>
                       {canGetReports && (
-                        <DropdownItem
-                          tag={Link}
-                          to="/reports"
-                          className={fontColor}
-                          disabled={headerDisabled}
-                        >
-                          {REPORTS}
-                        </DropdownItem>
+                        <DropdownItem tag={Link} to="/reports" className={fontColor} disabled={headerDisabled}>{REPORTS}</DropdownItem>
                       )}
                       {canGetWeeklySummaries && (
-                        <DropdownItem
-                          tag={Link}
-                          to="/weeklysummariesreport"
-                          className={fontColor}
-                          disabled={headerDisabled}
-                        >
-                          {WEEKLY_SUMMARIES_REPORT}
-                        </DropdownItem>
+                        <DropdownItem tag={Link} to="/weeklysummariesreport" className={fontColor} disabled={headerDisabled}>{WEEKLY_SUMMARIES_REPORT}</DropdownItem>
                       )}
                       {canGetWeeklyVolunteerSummary && (
-                        <DropdownItem
-                          tag={Link}
-                          to="/totalorgsummary"
-                          className={fontColor}
-                          disabled={headerDisabled}
-                        >
-                          {TOTAL_ORG_SUMMARY}
-                        </DropdownItem>
+                        <DropdownItem tag={Link} to="/totalorgsummary" className={fontColor} disabled={headerDisabled}>{TOTAL_ORG_SUMMARY}</DropdownItem>
                       )}
-                      <DropdownItem
-                        tag={Link}
-                        to="/actual-cost-breakdown"
-                        className={fontColor}
-                        disabled={headerDisabled}
-                      >
-                        {ACTUAL_COST_BREAKDOWN}
-                      </DropdownItem>
+                      <DropdownItem tag={Link} to="/actual-cost-breakdown" className={fontColor} disabled={headerDisabled}>{ACTUAL_COST_BREAKDOWN}</DropdownItem>
                       {canGetWeeklyVolunteerSummary && (
-                      <DropdownItem tag={Link} to="/TotalOrgSummaryEmail" className={fontColor}>
-                          {TOTAL_ORG_SUMMARY_EMAIL}
-                        </DropdownItem>
+                        <DropdownItem tag={Link} to="/TotalOrgSummaryEmail" className={fontColor}>{TOTAL_ORG_SUMMARY_EMAIL}</DropdownItem>
                       )}
                       {canGetJobAnalytics && (
-                        <DropdownItem
-                          tag={Link}
-                          to="/application/analytics"
-                          className={fontColor}
-                          disabled={headerDisabled}
-                        >
-                          {JOB_ANALYTICS_REPORT}
-                        </DropdownItem>
+                        <DropdownItem tag={Link} to="/application/analytics" className={fontColor} disabled={headerDisabled}>{JOB_ANALYTICS_REPORT}</DropdownItem>
                       )}
-                      <DropdownItem
-                        tag={Link}
-                        to="/teamlocations"
-                        className={fontColor}
-                        disabled={headerDisabled}
-                      >
-                        {TEAM_LOCATIONS}
-                      </DropdownItem>
-                      <DropdownItem
-                        tag={Link}
-                        to="/bmdashboard/totalconstructionsummary"
-                        className={fontColor}
-                        disabled={headerDisabled}
-                      >
-                        {TOTAL_CONSTRUCTION_SUMMARY}
-                      </DropdownItem>
-                      <DropdownItem
-                        onClick={() => setShowPromotionsPopup(true)}
-                        className={fontColor}
-                        disabled={headerDisabled}
-                      >
-                        {PR_PROMOTIONS}
-                      </DropdownItem>
+                      <DropdownItem tag={Link} to="/teamlocations" className={fontColor} disabled={headerDisabled}>{TEAM_LOCATIONS}</DropdownItem>
+                      <DropdownItem tag={Link} to="/bmdashboard/totalconstructionsummary" className={fontColor} disabled={headerDisabled}>{TOTAL_CONSTRUCTION_SUMMARY}</DropdownItem>
+                      <DropdownItem onClick={() => setShowPromotionsPopup(true)} className={fontColor} disabled={headerDisabled}>{PR_PROMOTIONS}</DropdownItem>
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 ) : (
@@ -716,83 +513,173 @@ export function Header(props) {
                     <DropdownToggle nav caret>
                       <span>{OTHER_LINKS}</span>
                     </DropdownToggle>
-                    <DropdownMenu
-                      className={`${styles.noMaxHeight} ${
-                        darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
-                      }`}
-                    >
+                    <DropdownMenu className={`${styles.noMaxHeight} ${darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown}`}>
                       {canAccessUserManagement && (
-                        <DropdownItem
-                          tag={Link}
-                          to="/usermanagement"
-                          className={fontColor}
-                          disabled={headerDisabled}
-                        >
-                          {USER_MANAGEMENT}
-                        </DropdownItem>
+                        <DropdownItem tag={Link} to="/usermanagement" className={fontColor} disabled={headerDisabled}>{USER_MANAGEMENT}</DropdownItem>
                       )}
                       {canAccessBadgeManagement && (
-                        <DropdownItem
-                          tag={Link}
-                          to="/badgemanagement"
-                          className={fontColor}
-                          disabled={headerDisabled}
-                        >
-                          {BADGE_MANAGEMENT}
-                        </DropdownItem>
+                        <DropdownItem tag={Link} to="/badgemanagement" className={fontColor} disabled={headerDisabled}>{BADGE_MANAGEMENT}</DropdownItem>
                       )}
                       {canAccessProjects && (
-                        <DropdownItem
-                          tag={Link}
-                          to="/projects"
-                          className={fontColor}
-                          disabled={headerDisabled}
-                        >
-                          {PROJECTS}
-                        </DropdownItem>
+                        <DropdownItem tag={Link} to="/projects" className={fontColor} disabled={headerDisabled}>{PROJECTS}</DropdownItem>
                       )}
                       {canAccessTeams && (
-                        <DropdownItem
-                          tag={Link}
-                          to="/teams"
-                          className={fontColor}
-                          disabled={headerDisabled}
-                        >
-                          {TEAMS}
-                        </DropdownItem>
+                        <DropdownItem tag={Link} to="/teams" className={fontColor} disabled={headerDisabled}>{TEAMS}</DropdownItem>
                       )}
                       {canAccessSendEmails && (
-                        <DropdownItem
-                          tag={Link}
-                          to="/announcements"
-                          className={fontColor}
-                          disabled={headerDisabled}
-                        >
-                          {SEND_EMAILS}
-                        </DropdownItem>
+                        <DropdownItem tag={Link} to="/announcements" className={fontColor} disabled={headerDisabled}>{SEND_EMAILS}</DropdownItem>
                       )}
                       {canAccessPermissionsManagement && (
                         <>
                           <DropdownItem divider className={styles.hideInMobile} />
-                          <DropdownItem
-                            tag={Link}
-                            to="/permissionsmanagement"
-                            className={fontColor}
-                            disabled={headerDisabled}
-                          >
-                            {PERMISSIONS_MANAGEMENT}
-                          </DropdownItem>
+                          <DropdownItem tag={Link} to="/permissionsmanagement" className={fontColor} disabled={headerDisabled}>{PERMISSIONS_MANAGEMENT}</DropdownItem>
                         </>
                       )}
                       {canAccessBlueSquareEmailManagement && (
-                        <DropdownItem
-                          tag={Link}
-                          to="/bluesquare-email-management"
-                          className={fontColor}
-                          disabled={headerDisabled}
-                        >
-                          {BLUE_SQUARE_EMAIL_MANAGEMENT}
-                        </DropdownItem>
+                        <DropdownItem tag={Link} to="/bluesquare-email-management" className={fontColor} disabled={headerDisabled}>{BLUE_SQUARE_EMAIL_MANAGEMENT}</DropdownItem>
+                      )}
+
+                      {/* BM Dashboard main link */}
+                      <DropdownItem tag={Link} to="/bmdashboard" className={fontColor}>
+                        BM Dashboard
+                      </DropdownItem>
+
+                      {/* BM Projects accordion — only shown when on /bmdashboard/* */}
+                      {showBMDashboard && (
+                        <>
+                          {/* BM Projects toggle */}
+                          <DropdownItem
+                            toggle={false}
+                            className={`${fontColor} ${styles.accordionToggle}`}
+                            onClick={() => {
+                              setBmProjectsOpen(prev => !prev);
+                              setExpandedSection(null);
+                            }}
+                          >
+                            <span>BM Projects</span>
+                            <span className={`${styles.accordionArrow} ${bmProjectsOpen ? styles.accordionArrowOpen : ''}`}>▶</span>
+                          </DropdownItem>
+
+                          {bmProjectsOpen && (
+                            <>
+                              {/* All Inventory Types */}
+                              <DropdownItem tag={Link} to="/bmdashboard/inventorytypes" className={`${fontColor} ${styles.bmSubItem}`}>
+                                All Inventory Types
+                              </DropdownItem>
+
+                              {/* Materials accordion */}
+                              <DropdownItem
+                                toggle={false}
+                                className={`${fontColor} ${styles.bmSubItem} ${styles.accordionToggle}`}
+                                onClick={() => toggleSection('materials')}
+                              >
+                                <span>Materials</span>
+                                <span className={`${styles.accordionArrow} ${expandedSection === 'materials' ? styles.accordionArrowOpen : ''}`}>▶</span>
+                              </DropdownItem>
+                              {expandedSection === 'materials' && (
+                                <>
+                                  <DropdownItem tag={Link} to="/bmdashboard/materials" className={`${fontColor} ${styles.bmSubSubItem}`}>
+                                    Material List
+                                  </DropdownItem>
+                                  <DropdownItem tag={Link} to="/bmdashboard/materials/add" className={`${fontColor} ${styles.bmSubSubItem}`}>
+                                    Add Material
+                                  </DropdownItem>
+                                  <DropdownItem tag={Link} to="/bmdashboard/logMaterial" className={`${fontColor} ${styles.bmSubSubItem}`}>
+                                    Log Material
+                                  </DropdownItem>
+                                </>
+                              )}
+
+                              {/* Consumables accordion */}
+                              <DropdownItem
+                                toggle={false}
+                                className={`${fontColor} ${styles.bmSubItem} ${styles.accordionToggle}`}
+                                onClick={() => toggleSection('consumables')}
+                              >
+                                <span>Consumables</span>
+                                <span className={`${styles.accordionArrow} ${expandedSection === 'consumables' ? styles.accordionArrowOpen : ''}`}>▶</span>
+                              </DropdownItem>
+                              {expandedSection === 'consumables' && (
+                                <>
+                                  <DropdownItem tag={Link} to="/bmdashboard/consumables" className={`${fontColor} ${styles.bmSubSubItem}`}>
+                                    Consumable List
+                                  </DropdownItem>
+                                </>
+                              )}
+
+                              {/* Equipment accordion */}
+                              <DropdownItem
+                                toggle={false}
+                                className={`${fontColor} ${styles.bmSubItem} ${styles.accordionToggle}`}
+                                onClick={() => toggleSection('equipment')}
+                              >
+                                <span>Equipment</span>
+                                <span className={`${styles.accordionArrow} ${expandedSection === 'equipment' ? styles.accordionArrowOpen : ''}`}>▶</span>
+                              </DropdownItem>
+                              {expandedSection === 'equipment' && (
+                                <>
+                                  <DropdownItem tag={Link} to="/bmdashboard/equipment" className={`${fontColor} ${styles.bmSubSubItem}`}>
+                                    Equipment List
+                                  </DropdownItem>
+                                  <DropdownItem tag={Link} to="/bmdashboard/equipment/add" className={`${fontColor} ${styles.bmSubSubItem}`}>
+                                    Add Equipment/Tool
+                                  </DropdownItem>
+                                  <DropdownItem tag={Link} to="/bmdashboard/equipment/:equipmentId" className={`${fontColor} ${styles.bmSubSubItem}`}>
+                                    Log Equipment/Tool
+                                  </DropdownItem>
+                                  <DropdownItem tag={Link} to="/bmdashboard/tools/:equipmentId/update" className={`${fontColor} ${styles.bmSubSubItem}`}>
+                                    Update Equipment/Tool
+                                  </DropdownItem>
+                                </>
+                              )}
+
+                              {/* Reusables accordion */}
+                              <DropdownItem
+                                toggle={false}
+                                className={`${fontColor} ${styles.bmSubItem} ${styles.accordionToggle}`}
+                                onClick={() => toggleSection('reusables')}
+                              >
+                                <span>Reusables</span>
+                                <span className={`${styles.accordionArrow} ${expandedSection === 'reusables' ? styles.accordionArrowOpen : ''}`}>▶</span>
+                              </DropdownItem>
+                              {expandedSection === 'reusables' && (
+                                <>
+                                  <DropdownItem tag={Link} to="/bmdashboard/reusables" className={`${fontColor} ${styles.bmSubSubItem}`}>
+                                    Reusable List
+                                  </DropdownItem>
+                                </>
+                              )}
+
+                              {/* Tools accordion */}
+                              <DropdownItem
+                                toggle={false}
+                                className={`${fontColor} ${styles.bmSubItem} ${styles.accordionToggle}`}
+                                onClick={() => toggleSection('tools')}
+                              >
+                                <span>Tools</span>
+                                <span className={`${styles.accordionArrow} ${expandedSection === 'tools' ? styles.accordionArrowOpen : ''}`}>▶</span>
+                              </DropdownItem>
+                              {expandedSection === 'tools' && (
+                                <>
+                                  <DropdownItem tag={Link} to="/bmdashboard/tools" className={`${fontColor} ${styles.bmSubSubItem}`}>
+                                    Tool List
+                                  </DropdownItem>
+                                </>
+                              )}
+
+                              {/* Other BM pages */}
+                              <DropdownItem tag={Link} to="/bmdashboard/Issue" className={`${fontColor} ${styles.bmSubItem}`}>
+                                Issues
+                              </DropdownItem>
+                              <DropdownItem tag={Link} to="/bmdashboard/lessonform" className={`${fontColor} ${styles.bmSubItem}`}>
+                                Lessons
+                              </DropdownItem>
+                              <DropdownItem tag={Link} to="/teams" className={`${fontColor} ${styles.bmSubItem}`}>
+                                Teams
+                              </DropdownItem>
+                            </>
+                          )}
+                        </>
                       )}
                     </DropdownMenu>
                   </UncontrolledDropdown>
@@ -803,60 +690,14 @@ export function Header(props) {
                     <DropdownToggle nav caret>
                       <span>PR Dashboard</span>
                     </DropdownToggle>
-                    <DropdownMenu
-                      className={`${styles.noMaxHeight} ${
-                        darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
-                      }`}
-                    >
-                      <DropdownItem
-                        tag={Link}
-                        to="/pr-dashboard"
-                        className={fontColor}
-                        disabled={headerDisabled}
-                      >
-                        PR Team Analysis Dashboard
-                      </DropdownItem>
+                    <DropdownMenu className={`${styles.noMaxHeight} ${darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown}`}>
+                      <DropdownItem tag={Link} to="/pr-dashboard" className={fontColor} disabled={headerDisabled}>PR Team Analysis Dashboard</DropdownItem>
                       <DropdownItem divider />
-                      <DropdownItem
-                        tag={Link}
-                        to="/pr-dashboard/overview"
-                        className={fontColor}
-                        disabled={headerDisabled}
-                      >
-                        PR Team Analytics
-                      </DropdownItem>
-                      <DropdownItem
-                        tag={Link}
-                        to="/pr-dashboard/analytics"
-                        className={fontColor}
-                        disabled={headerDisabled}
-                      >
-                        PR Analytics
-                      </DropdownItem>
-                      <DropdownItem
-                        tag={Link}
-                        to="/pr-dashboard/promotion-eligibility"
-                        className={fontColor}
-                        disabled={headerDisabled}
-                      >
-                        Promotion Eligibility
-                      </DropdownItem>
-                      <DropdownItem
-                        tag={Link}
-                        to="/pr-dashboard/top-reviewed-prs"
-                        className={fontColor}
-                        disabled={headerDisabled}
-                      >
-                        Top Reviewed PRs
-                      </DropdownItem>
-                      <DropdownItem
-                        tag={Link}
-                        to="/pr-dashboard/details"
-                        className={fontColor}
-                        disabled={headerDisabled}
-                      >
-                        PR Details
-                      </DropdownItem>
+                      <DropdownItem tag={Link} to="/pr-dashboard/overview" className={fontColor} disabled={headerDisabled}>PR Team Analytics</DropdownItem>
+                      <DropdownItem tag={Link} to="/pr-dashboard/analytics" className={fontColor} disabled={headerDisabled}>PR Analytics</DropdownItem>
+                      <DropdownItem tag={Link} to="/pr-dashboard/promotion-eligibility" className={fontColor} disabled={headerDisabled}>Promotion Eligibility</DropdownItem>
+                      <DropdownItem tag={Link} to="/pr-dashboard/top-reviewed-prs" className={fontColor} disabled={headerDisabled}>Top Reviewed PRs</DropdownItem>
+                      <DropdownItem tag={Link} to="/pr-dashboard/details" className={fontColor} disabled={headerDisabled}>PR Details</DropdownItem>
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 )}
@@ -864,8 +705,6 @@ export function Header(props) {
                 <NavItem className={styles.hideInMobile}>
                   <BellNotification userId={displayUserId} />
                 </NavItem>
-
-
 
                 <NavItem className={styles.hideInMobile}>
                   <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
@@ -884,56 +723,31 @@ export function Header(props) {
                     />
                   </NavLink>
                 </NavItem>
+
                 <UncontrolledDropdown nav className={styles.hideInMobile}>
                   <DropdownToggle nav caret>
-                    <span>
-                      {WELCOME}, {firstName}
-                    </span>
+                    <span>{WELCOME}, {firstName}</span>
                   </DropdownToggle>
-                  <DropdownMenu
-                    className={`${styles.noMaxHeight} ${
-                      darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
-                    }`}
-                  >
-                    <DropdownItem
-                      header
-                      className={darkMode ? 'text-custom-grey' : styles.mobileDropdownText}
-                    >
+                  <DropdownMenu className={`${styles.noMaxHeight} ${darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown}`}>
+                    <DropdownItem header className={darkMode ? 'text-custom-grey' : styles.mobileDropdownText}>
                       Hello {firstName}
                     </DropdownItem>
                     <DropdownItem divider />
-                    <DropdownItem
-                      tag={Link}
-                      to={`/userprofile/${displayUserId}`}
-                      className={fontColor}
-                      disabled={headerDisabled}
-                    >
-                      {VIEW_PROFILE}
-                    </DropdownItem>
-
+                    <DropdownItem tag={Link} to={`/userprofile/${displayUserId}`} className={fontColor} disabled={headerDisabled}>{VIEW_PROFILE}</DropdownItem>
                     {!cantUpdateDevAdminDetails(props.userProfile.email, props.userProfile.email) && (
-                      <DropdownItem
-                        tag={Link}
-                        to={`/updatepassword/${displayUserId}`}
-                        className={fontColor}
-                      >
-                        {UPDATE_PASSWORD}
-                      </DropdownItem>
+                      <DropdownItem tag={Link} to={`/updatepassword/${displayUserId}`} className={fontColor}>{UPDATE_PASSWORD}</DropdownItem>
                     )}
-                    <DropdownItem className={fontColor}>
-                      <DarkModeButton />
-                    </DropdownItem>
+                    <DropdownItem className={fontColor}><DarkModeButton /></DropdownItem>
                     <DropdownItem divider />
-                    <DropdownItem onClick={openModal} className={fontColor} disabled={headerDisabled}>
-                      {LOGOUT}
-                    </DropdownItem>
+                    <DropdownItem onClick={openModal} className={fontColor} disabled={headerDisabled}>{LOGOUT}</DropdownItem>
                   </DropdownMenu>
                 </UncontrolledDropdown>
               </Nav>
-              </div>
+            </div>
           </div>
         </div>
       </Navbar>
+
       {!isAuthUser && (
         <PopUpBar
           firstName={viewingUser.firstName}
@@ -955,19 +769,13 @@ export function Header(props) {
       )}
       <div>
         <Modal isOpen={popup} className={darkMode ? 'text-light' : ''}>
-          <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>
-            Return to your Dashboard
-          </ModalHeader>
+          <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>Return to your Dashboard</ModalHeader>
           <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
             <p>Are you sure you wish to return to your own dashboard?</p>
           </ModalBody>
           <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-            <Button variant="primary" onClick={removeViewingUser}>
-              Ok
-            </Button>{' '}
-            <Button variant="secondary" onClick={() => setPopup(prevPopup => !prevPopup)}>
-              Cancel
-            </Button>
+            <Button variant="primary" onClick={removeViewingUser}>Ok</Button>{' '}
+            <Button variant="secondary" onClick={() => setPopup(prevPopup => !prevPopup)}>Cancel</Button>
           </ModalFooter>
         </Modal>
       </div>
@@ -1001,6 +809,7 @@ const mapStateToProps = state => ({
   notification: state.notification,
   darkMode: state.theme.darkMode,
 });
+
 Header.propTypes = {
   hasPermission: PropTypes.func.isRequired,
   auth: PropTypes.shape({
@@ -1023,6 +832,7 @@ Header.propTypes = {
   darkMode: PropTypes.bool,
   taskEditSuggestionCount: PropTypes.number,
 };
+
 export default connect(mapStateToProps, {
   getHeaderData,
   getAllRoles,

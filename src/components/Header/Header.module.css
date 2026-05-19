@@ -407,3 +407,30 @@
     justify-content: center !important;
   }
 }
+
+/* ── BM Dashboard Accordion Styles ── */
+
+.accordionToggle {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  cursor: pointer !important;
+}
+
+.accordionArrow {
+  font-size: 0.65rem;
+  transition: transform 0.2s ease;
+  display: inline-block;
+}
+
+.accordionArrowOpen {
+  transform: rotate(90deg);
+}
+
+.bmSubItem {
+  padding-left: 1.8rem !important;
+}
+
+.bmSubSubItem {
+  padding-left: 3rem !important;
+}
