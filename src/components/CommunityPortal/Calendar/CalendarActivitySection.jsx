@@ -113,7 +113,7 @@ function CalendarActivitySection({ selectedDate, events = [], onEventClick }) {
                     {event.time} - {event.endTime}
                   </small>
                   <small
-                    className={`${styles.activityTime} ${
+                    className={`${styles.activityLocAndType} ${
                       darkMode ? styles.activityTimeDarkMode : ''
                     }`}
                   >
@@ -125,7 +125,7 @@ function CalendarActivitySection({ selectedDate, events = [], onEventClick }) {
                       <FontAwesomeIcon icon={faTag} className={styles.activityMetaIcon} />
                       {event.type}
                     </span>
-                  </div>
+                  </small>
                 </button>
               </li>
             );

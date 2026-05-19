@@ -94,7 +94,7 @@ export default function CommunityCalendar() {
 
       return {
         ...event,
-        id: event.id || `${event.title}-${parsed.getTime()}`,
+        id: event.id || `${event.title}-${eventDate.getTime()}`,
         date: eventDate,
         type: event.type || 'General',
         status: normalizeStatus(event.status),
@@ -682,32 +682,9 @@ export default function CommunityCalendar() {
                             >
                               View details
                             </button>
-                          </div>
+                          </header>
 
-                          {/* Row 3: location + type */}
-                          <div
-                            className={`${styles.selectedEventMetaRow} ${
-                              darkMode ? styles.selectedEventMetaRowDark : ''
-                            }`}
-                          >
-                            <span>
-                              <FontAwesomeIcon icon={faLocationDot} className={styles.metaIcon} />
-                              {event.location}
-                            </span>
-                            <span>
-                              <FontAwesomeIcon icon={faTag} className={styles.metaIcon} />
-                              {event.type}
-                            </span>
-                            <span>
-                              <FontAwesomeIcon icon={faClock} className={styles.metaIcon} />
-                              {event.time}
-                            </span>
-                            <span>
-                              {statusIconMap[event.status] || '⭐'}&nbsp;{event.status}
-                            </span>
-                          </div>
-
-                          {/* Row 4: description */}
+                          {/* Row 3: description */}
                           {event.description && (
                             <p className={styles.selectedEventDescription}>{event.description}</p>
                           )}
