@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { connect, useDispatch, useSelector } from 'react-redux';
-import { Button, Table, UncontrolledTooltip } from 'reactstrap';
+import { Button, Table, Spinner, UncontrolledTooltip } from 'reactstrap';
 import Select from 'react-select';
+import { toast } from 'react-toastify';
 
 import { fetchBMProjects } from '~/actions/bmdashboard/projectActions';
 import {
@@ -10,7 +11,6 @@ import {
 } from '~/actions/bmdashboard/equipmentActions';
 import { getHeaderData } from '~/actions/authActions';
 import { getUserProfile } from '~/actions/userProfile';
-import { toast } from 'react-toastify';
 
 import styles from './EDailyActivityLog.module.css';
 
@@ -139,10 +139,10 @@ function EDailyActivityLog(props) {
   const [logType, setLogType] = useState('check-in'); // 'check-in' | 'check-out'
 
   const [rows, setRows] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
-  // Deriving validation states
   const isMissingProject = !selectedProject;
   const isInvalidDate = !date || isNaN(Date.parse(date));
   const hasNoEquipments = isMissingProject || rows.length === 0;
@@ -197,35 +197,48 @@ function EDailyActivityLog(props) {
     setRows([]);
     setLogType('check-in');
     setDate(getToday());
+    setIsSubmitting(false);
+    toast.info('Form has been reset');
   };
 
   const handleSubmit = () => {
     if (isSubmitDisabled) return;
     setShowConfirm(true);
   };
-  const confirmSubmit = () => {
-    const payload = rows.flatMap(r =>
-      r.selectedNumbers.map(() => ({
-        equipmentId: r.id,
-        logEntry: {
-          createdBy: user.userid,
-          responsibleUser: null,
-          type: logType === 'check-in' ? 'Check In' : 'Check Out',
-          date,
-        },
-      })),
-    );
 
-    dispatch(updateMultipleEquipmentLogs(selectedProject.value, payload));
+  const confirmSubmit = async () => {
     setShowConfirm(false);
-    toast.success(
-      logType === 'check-in'
-        ? 'Equipment checked in successfully'
-        : 'Equipment checked out successfully',
-    );
+    setIsSubmitting(true);
 
-    // Clear selections immediately so UI responds while backend async request finishes
-    setRows(prev => prev.map(r => ({ ...r, selectedNumbers: [] })));
+    try {
+      const payload = rows.flatMap(r =>
+        r.selectedNumbers.map(() => ({
+          equipmentId: r.id,
+          logEntry: {
+            createdBy: user.userid,
+            responsibleUser: null,
+            type: logType === 'check-in' ? 'Check In' : 'Check Out',
+            date,
+          },
+        })),
+      );
+
+      await dispatch(updateMultipleEquipmentLogs(selectedProject.value, payload));
+      await dispatch(fetchAllEquipments(selectedProject.value));
+
+      toast.success(
+        logType === 'check-in'
+          ? 'Equipment checked in successfully'
+          : 'Equipment checked out successfully',
+      );
+
+      setRows(prev => prev.map(r => ({ ...r, selectedNumbers: [] })));
+    } catch (error) {
+      console.error('Failed to submit equipment log:', error);
+      toast.error('Failed to update equipment logs. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const projectSelectStyles = getSelectStyles(darkMode, false);
@@ -515,16 +528,23 @@ function EDailyActivityLog(props) {
         </Table>
 
         <div className={styles.actionContainer}>
-          <Button color="secondary" onClick={handleCancel}>
+          <Button color="secondary" onClick={handleCancel} disabled={isSubmitting}>
             Cancel
           </Button>
           <Button
             color="primary"
             onClick={handleSubmit}
-            disabled={isSubmitDisabled}
-            style={isSubmitDisabled ? { cursor: 'not-allowed', opacity: 0.65 } : {}}
+            disabled={isSubmitDisabled || isSubmitting}
+            style={isSubmitDisabled || isSubmitting ? { cursor: 'not-allowed', opacity: 0.65 } : {}}
           >
-            Submit
+            {isSubmitting ? (
+              <>
+                <Spinner size="sm" className="me-2" />
+                Submitting...
+              </>
+            ) : (
+              'Submit'
+            )}
           </Button>
         </div>
       </div>
