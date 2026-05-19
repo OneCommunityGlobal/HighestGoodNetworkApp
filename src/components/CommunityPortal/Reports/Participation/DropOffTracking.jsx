@@ -1,3 +1,4 @@
+import { ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 import { useState } from 'react';
 import mockEvents from './mockData';
 import styles from './Participation.module.css';
