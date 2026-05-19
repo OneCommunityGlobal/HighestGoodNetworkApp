@@ -39,7 +39,6 @@ import {
   BLUE_SQUARE_EMAIL_MANAGEMENT,
   DASHBOARD,
   JOB_ANALYTICS_REPORT,
-  BM_DASHBOARD,
   LOGOUT,
   OTHER_LINKS,
   PERMISSIONS_MANAGEMENT,
@@ -58,6 +57,7 @@ import {
   VIEW_PROFILE,
   WEEKLY_SUMMARIES_REPORT,
   WELCOME,
+  BM_DASHBOARD
 } from '../../languages/en/ui';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import PermissionWatcher from '../Auth/PermissionWatcher';
@@ -411,7 +411,6 @@ export function Header(props) {
 
   const showBMDashboard = location.pathname.startsWith('/bmdashboard');
 
-
   return (
     <div className={`${styles.headerWrapper}`} data-testid="header">
       <Navbar className={`py-3 ${styles.navbar}`} color="dark" dark expand="xl">
@@ -508,12 +507,11 @@ export function Header(props) {
                   </NavLink>
                 </NavItem>
 
-                {showBMDashboard && (
-                  <NavItem>
-                    <NavLink tag={Link} to="/bmdashboard" disabled={headerDisabled}>
-                      <span>{BM_DASHBOARD}</span>
-                    </NavLink>
-                  </NavItem>
+                {showBMDashboard && (<NavItem>
+                  <NavLink tag={Link} to="/bmdashboard" disabled={headerDisabled}>
+                    <span>{BM_DASHBOARD}</span>
+                  </NavLink>
+                </NavItem>
                 )}
   
                 <NavItem>

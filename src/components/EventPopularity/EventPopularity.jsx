@@ -10,6 +10,8 @@ import {
   Tooltip,
   Legend,
 } from 'recharts';
+import styles from './EventPopularity.module.css';
+import { useSelector } from 'react-redux';
 
 // Sample data
 const eventTypeData = [
@@ -62,254 +64,90 @@ const participationCards = [
 ];
 
 export default function EventDashboard() {
+  const darkMode = useSelector(state => state.theme?.darkMode);
+
   return (
-    <div
-      style={{
-        maxWidth: '1200px',
-        margin: '0 auto',
-        padding: '20px',
-        fontFamily: 'Arial, sans-serif',
-      }}
-    >
-      <h1
-        style={{
-          fontSize: '24px',
-          fontWeight: 'bold',
-          marginBottom: '20px',
-          textAlign: 'center',
-        }}
-      >
-        Event Attendance Trend
-      </h1>
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: '20px',
-        }}
-      >
+    <div className={`${styles.eventpopularity} ${darkMode ? styles.dark : ''}`}>
+      <h1 className={styles.epheader}>Event Attendance Trend</h1>
+
+      <div className={styles.epgrid}>
         {/* Event Registration Trend (Type) */}
-        <div
-          style={{
-            background: 'white',
-            borderRadius: '8px',
-            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-            padding: '20px',
-          }}
-        >
-          <h2
-            style={{
-              fontSize: '18px',
-              marginBottom: '15px',
-            }}
-          >
-            Event Registration Trend (Type)
-          </h2>
-          <div
-            style={{
-              marginBottom: '20px',
-            }}
-          >
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                fontSize: '14px',
-                color: '#666',
-                marginBottom: '10px',
-              }}
-            >
+        <div className={styles.epCard}>
+          <h2>Event Registration Trend (Type)</h2>
+
+          <div>
+            <div className={styles.epRowLabel}>
               <span>Event Name</span>
               <span>Registered Members</span>
             </div>
+
             {eventTypeData.map(event => (
-              <div
-                key={event.name}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  marginBottom: '10px',
-                }}
-              >
-                <span
-                  style={{
-                    width: '100px',
-                    marginRight: '10px',
-                    fontSize: '14px',
-                    color: '#666',
-                  }}
-                >
-                  {event.name}
-                </span>
-                <div
-                  style={{
-                    flexGrow: 1,
-                    height: '8px',
-                    background: '#e0e0e0',
-                    borderRadius: '4px',
-                    overflow: 'hidden',
-                  }}
-                >
+              <div key={event.name} className={styles.epRowLabel}>
+                <span className={styles.epEventName}>{event.name}</span>
+
+                <div className={styles.epProgressBar}>
                   <div
-                    style={{
-                      height: '100%',
-                      background: '#4A90E2',
-                      width: `${(event.registered / 75) * 100}%`,
-                    }}
+                    className={styles.epProgressFill}
+                    style={{ width: `${(event.registered / 75) * 100}%` }}
                   />
                 </div>
-                <span
-                  style={{
-                    marginLeft: '10px',
-                    fontSize: '14px',
-                    color: '#666',
-                  }}
-                >
-                  {event.registered}
-                </span>
+
+                <span>{event.registered}</span>
               </div>
             ))}
           </div>
 
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(3, 1fr)',
-              gap: '10px',
-            }}
-          >
-            {[
-              { title: '325', subtitle: 'Total Registered Members', isPrimary: true },
-              { title: 'Event Type 1', subtitle: 'Most Popular Event Type' },
-              { title: 'Event Type 6', subtitle: 'Least Popular Event Type' },
-            ].map(card => (
-              <div
-                key={card}
-                style={{
-                  background: '#f5f5f5',
-                  borderRadius: '4px',
-                  padding: '10px',
-                  textAlign: 'center',
-                }}
-              >
-                <h3 style={card.isPrimary ? { color: '#4A90E2' } : {}}>{card.title}</h3>
-                <p
-                  style={{
-                    fontSize: '12px',
-                    color: '#666',
-                  }}
-                >
-                  {card.subtitle}
-                </p>
-              </div>
-            ))}
+          <div className={styles.epStatsGrid}>
+            <div className={styles.epStatCard}>
+              <h3 style={{ color: 'var(--ep-primary)' }}>325</h3>
+              <p className={styles.epStatSubtitle}>Total Registered Members</p>
+            </div>
+
+            <div className={styles.epStatCard}>
+              <h3>Event Type 1</h3>
+              <p className={styles.epStatSubtitle}>Most Popular Event Type</p>
+            </div>
+
+            <div className={styles.epStatCard}>
+              <h3>Event Type 6</h3>
+              <p className={styles.epStatSubtitle}>Least Popular Event Type</p>
+            </div>
           </div>
         </div>
 
         {/* Event Registration Trend (Time) */}
-        <div
-          style={{
-            background: 'white',
-            borderRadius: '8px',
-            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-            padding: '20px',
-          }}
-        >
-          <h2
-            style={{
-              fontSize: '18px',
-              marginBottom: '15px',
-            }}
-          >
-            Event Registration Trend (Time)
-          </h2>
-          <div
-            style={{
-              marginBottom: '20px',
-            }}
-          >
-            <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={timeData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="time" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="registered" name="Registered Users" fill="#4A90E2" />
-                <Bar dataKey="attended" name="Attended Users" fill="#82B7FF" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+        <div className={styles.epChartCard}>
+          <h2>Event Registration Trend (Time)</h2>
 
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(4, 1fr)',
-              gap: '10px',
-            }}
-          >
-            {participationCards.map(card => (
-              <div
-                key={card}
-                style={{
-                  background: '#f5f5f5',
-                  borderRadius: '4px',
-                  padding: '10px',
+          <ResponsiveContainer width="100%" height={200}>
+            <BarChart data={timeData}>
+              <CartesianGrid stroke="var(--ep-grid-stroke)" strokeDasharray="3 3" />
+              <XAxis dataKey="time" stroke="var(--ep-chart-tick)" />
+              <YAxis stroke="var(--ep-chart-tick)" />
+              <Tooltip
+                contentStyle={{
+                  background: 'var(--ep-card-bg)',
+                  color: 'var(--ep-text-color)',
                 }}
-              >
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: '5px',
-                  }}
-                >
-                  <h3
-                    style={{
-                      fontSize: '18px',
-                      margin: 0,
-                    }}
-                  >
-                    {card.title}
-                  </h3>
-                  <button
-                    type="button"
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      fontSize: '16px',
-                    }}
-                  >
-                    <span style={{ fontSize: '16px' }}>&#9654;</span>
-                  </button>
-                </div>
+              />
+              <Legend />
+              <Bar dataKey="registered" fill="var(--ep-primary)" />
+              <Bar dataKey="attended" fill="var(--ep-primary-2)" />
+            </BarChart>
+          </ResponsiveContainer>
+
+          <div className={styles.epParticipationGrid}>
+            {participationCards.map(card => (
+              <div key={card.title} className={styles.epParticipationCard}>
+                <h3>{card.title}</h3>
+                <p className={styles.epStatSubtitle}>{card.subtitle}</p>
+
+                {!!card.participants && <div> +{card.participants}</div>}
+
                 <p
-                  style={{
-                    fontSize: '12px',
-                    color: '#666',
-                    margin: '5px 0',
-                  }}
-                >
-                  {card.subtitle}
-                </p>
-                {card.participants && (
-                  <div
-                    style={{
-                      fontSize: '12px',
-                      marginTop: '5px',
-                    }}
-                  >
-                    <span style={{ fontSize: '16px' }}>&#128101;</span> +{card.participants}
-                  </div>
-                )}
-                <p
-                  style={{
-                    fontSize: '12px',
-                    fontWeight: 'bold',
-                    color: card.trendType === 'positive' ? 'green' : 'red',
-                  }}
+                  className={
+                    card.trendType === 'positive' ? styles.trendPositive : styles.trendNegative
+                  }
                 >
                   {card.trend} Monthly
                 </p>
@@ -318,16 +156,6 @@ export default function EventDashboard() {
           </div>
         </div>
       </div>
-      <style>{`
-        @media (max-width: 768px) {
-          div {
-            grid-template-columns: 1fr !important;
-          }
-          div > div:last-child > div:last-child {
-            grid-template-columns: repeat(2, 1fr) !important;
-          }
-        }
-      `}</style>
     </div>
   );
 }
