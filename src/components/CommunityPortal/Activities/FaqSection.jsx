@@ -125,24 +125,17 @@ function FaqSection() {
         ) : (
           filteredFaqs.map(faq => (
             <div key={faq.id} className={styles.faqItem}>
-              <div
+              <button
+                type="button"
                 className={styles.faqQuestion}
                 onClick={() => toggleFaq(faq.id)}
-                onKeyDown={e => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    toggleFaq(faq.id);
-                  }
-                }}
-                role="button"
-                tabIndex={0}
                 aria-expanded={openIndex === faq.id}
               >
                 {faq.question}
                 <span className={`${styles.faqArrow} ${openIndex === faq.id ? styles.open : ''}`}>
                   &#9662;
                 </span>
-              </div>
+              </button>
               <div className={`${styles.faqAnswer} ${openIndex === faq.id ? styles.open : ''}`}>
                 <div>{faq.answer}</div>
               </div>
@@ -153,20 +146,9 @@ function FaqSection() {
 
       <p className={styles.faqContact}>
         Still have questions? Feel free to{' '}
-        <span
-          className={styles.contactLink}
-          onClick={handleContactClick}
-          onKeyDown={e => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              handleContactClick();
-            }
-          }}
-          role="button"
-          tabIndex={0}
-        >
+        <button type="button" className={styles.contactLink} onClick={handleContactClick}>
           contact us
-        </span>
+        </button>
         .{copied && <span className={styles.copiedMessage}> Copied!</span>}
       </p>
     </div>
