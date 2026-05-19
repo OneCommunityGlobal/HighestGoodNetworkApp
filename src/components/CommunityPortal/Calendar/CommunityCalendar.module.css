@@ -1646,6 +1646,19 @@
   color: #a7f3d0;
 }
 
+.metaItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+}
+
+.metaIcon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  opacity: 0.85;
+}
 .eventContent {
   display: flex;
   align-items: center;

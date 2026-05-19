@@ -105,11 +105,16 @@ function CalendarActivitySection({ selectedDate, events = [], onEventClick }) {
                   >
                     {event.title}
                   </p>
-
-                  {/* Location + type */}
-                  <div
-                    className={`${styles.activityEventMeta} ${
-                      darkMode ? styles.activityEventMetaDark : ''
+                  <small
+                    className={`${styles.activityTime} ${
+                      darkMode ? styles.activityTimeDarkMode : ''
+                    }`}
+                  >
+                    {event.time} - {event.endTime}
+                  </small>
+                  <small
+                    className={`${styles.activityTime} ${
+                      darkMode ? styles.activityTimeDarkMode : ''
                     }`}
                   >
                     <span>
