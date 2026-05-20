@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import styles from './ItemOverview.module.css';
 import { useEffect, useState } from 'react';
 import { connect, useSelector } from 'react-redux';
@@ -215,7 +216,7 @@ function WishListItem(props) {
                   htmlFor="from"
                   className={getClassNames('', styles['item__form-label--dark'], darkMode)}
                 >
-                  Renting from
+                  <span>Renting from</span>
                   <input
                     type="date"
                     name="from"
@@ -232,7 +233,7 @@ function WishListItem(props) {
                   htmlFor="to"
                   className={getClassNames('', styles['item__form-label--dark'], darkMode)}
                 >
-                  Rent to
+                  <span>Rent to</span>
                   <input
                     type="date"
                     name="to"
@@ -251,7 +252,7 @@ function WishListItem(props) {
                   htmlFor="name"
                   className={getClassNames('', styles['item__form-label--dark'], darkMode)}
                 >
-                  Name:
+                  <span>Name:</span>
                   <input
                     type="text"
                     name="name"
@@ -268,7 +269,7 @@ function WishListItem(props) {
                   htmlFor="bidding"
                   className={getClassNames('', styles['item__form-label--dark'], darkMode)}
                 >
-                  Bidding Price:
+                  <span>Bidding Price:</span>
                   <input
                     type="number"
                     name="bidding"
@@ -354,6 +355,27 @@ function WishListItem(props) {
     </div>
   );
 }
+
+const wishlistEntryShape = PropTypes.shape({
+  id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  title: PropTypes.string,
+  unit: PropTypes.string,
+  images: PropTypes.arrayOf(PropTypes.string),
+  unitAmenities: PropTypes.arrayOf(PropTypes.string),
+  villageAmenities: PropTypes.arrayOf(PropTypes.string),
+  location: PropTypes.string,
+  price: PropTypes.string,
+});
+
+WishListItem.propTypes = {
+  wishlistItem: wishlistEntryShape,
+  wishlists: PropTypes.arrayOf(wishlistEntryShape),
+};
+
+WishListItem.defaultProps = {
+  wishlistItem: null,
+  wishlists: [],
+};
 
 const mapStateToProps = state => ({
   wishlistItem: state.wishlistItem.wishListItem,

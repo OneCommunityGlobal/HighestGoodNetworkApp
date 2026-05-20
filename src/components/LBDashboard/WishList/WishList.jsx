@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import styles from './WishList.module.css';
 import { connect, useDispatch, useSelector } from 'react-redux';
 import { FaMapMarkerAlt } from 'react-icons/fa';
@@ -132,6 +133,23 @@ function WishList(props) {
     </div>
   );
 }
+
+const wishlistEntryShape = PropTypes.shape({
+  id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  title: PropTypes.string,
+  unit: PropTypes.string,
+  images: PropTypes.arrayOf(PropTypes.string),
+  unitAmenities: PropTypes.arrayOf(PropTypes.string),
+  price: PropTypes.string,
+});
+
+WishList.propTypes = {
+  wishlists: PropTypes.arrayOf(wishlistEntryShape),
+};
+
+WishList.defaultProps = {
+  wishlists: [],
+};
 
 const mapStateToProps = state => ({
   authUser: state.auth.user,

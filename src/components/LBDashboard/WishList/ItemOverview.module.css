@@ -337,7 +337,7 @@
 }
 
 .item__error-link--dark {
-  color: #81b0ff !important;
+  color: #9ec5ff !important;
 }
 
 .item__location {
@@ -423,7 +423,7 @@
 }
 
 .item__form-input--dark::placeholder {
-  color: #9ca3af !important;
+  color: #b8c5d6 !important;
 }
 
 .item__form-input--dark::-webkit-calendar-picker-indicator {

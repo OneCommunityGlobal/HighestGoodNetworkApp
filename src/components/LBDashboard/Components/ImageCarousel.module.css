@@ -59,6 +59,8 @@
   width: 10px;
   height: 10px;
   margin: 0 5px;
+  padding: 0;
+  border: none;
   background-color: #bbb;
   border-radius: 50%;
   cursor: pointer;

@@ -72,21 +72,17 @@ export default function ImageCarousel({ images, darkMode = false }) {
       </button>
       <div className={styles.carouselIndicators}>
         {images.map((image, index) => (
-          <span
+          <button
             key={`dot-${index}-${image}`}
-            role="button"
-            tabIndex={0}
+            type="button"
             className={`${getClassNames(styles.indicator, styles['indicator--dark'], darkMode)} ${
               index === currentIndex
                 ? getClassNames(styles.active, styles['active--dark'], darkMode)
                 : ''
             }`}
             onClick={() => handleIndicatorClick(index)}
-            onKeyDown={e => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                handleIndicatorClick(index);
-              }
-            }}
+            aria-label={`Go to slide ${index + 1}`}
+            aria-current={index === currentIndex ? 'true' : undefined}
           />
         ))}
       </div>
