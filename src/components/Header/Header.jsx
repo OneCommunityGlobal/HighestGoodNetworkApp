@@ -86,6 +86,7 @@ export function Header(props) {
   const [showPromotionsPopup, setShowPromotionsPopup] = useState(false);
 
   // BM Dashboard accordion state
+  const [showProjectDropdown, setShowProjectDropdown] = useState(false);
   const [bmProjectsOpen, setBmProjectsOpen] = useState(false);
   const [expandedSection, setExpandedSection] = useState(null);
 
@@ -177,7 +178,9 @@ export function Header(props) {
   const dispatch = useDispatch();
   const history = useHistory();
 
-  const showBMDashboard = location.pathname.startsWith('/bmdashboard');
+  useEffect(() => {
+    setShowProjectDropdown(location.pathname.startsWith('/bmdashboard/projects/'));
+  }, [location.pathname]);
 
   useEffect(() => {
     const handleStorageEvent = () => {
@@ -539,13 +542,16 @@ export function Header(props) {
                         <DropdownItem tag={Link} to="/bluesquare-email-management" className={fontColor} disabled={headerDisabled}>{BLUE_SQUARE_EMAIL_MANAGEMENT}</DropdownItem>
                       )}
 
+                      {/* ── BM Dashboard Section ── */}
+                      <DropdownItem divider />
+
                       {/* BM Dashboard main link */}
                       <DropdownItem tag={Link} to="/bmdashboard" className={fontColor}>
                         BM Dashboard
                       </DropdownItem>
 
-                      {/* BM Projects accordion — only shown when on /bmdashboard/* */}
-                      {showBMDashboard && (
+                      {/* BM Projects accordion — only shown when a project is selected */}
+                      {showProjectDropdown && (
                         <>
                           {/* BM Projects toggle */}
                           <DropdownItem
@@ -600,11 +606,9 @@ export function Header(props) {
                                 <span className={`${styles.accordionArrow} ${expandedSection === 'consumables' ? styles.accordionArrowOpen : ''}`}>▶</span>
                               </DropdownItem>
                               {expandedSection === 'consumables' && (
-                                <>
-                                  <DropdownItem tag={Link} to="/bmdashboard/consumables" className={`${fontColor} ${styles.bmSubSubItem}`}>
-                                    Consumable List
-                                  </DropdownItem>
-                                </>
+                                <DropdownItem tag={Link} to="/bmdashboard/consumables" className={`${fontColor} ${styles.bmSubSubItem}`}>
+                                  Consumable List
+                                </DropdownItem>
                               )}
 
                               {/* Equipment accordion */}
@@ -643,11 +647,9 @@ export function Header(props) {
                                 <span className={`${styles.accordionArrow} ${expandedSection === 'reusables' ? styles.accordionArrowOpen : ''}`}>▶</span>
                               </DropdownItem>
                               {expandedSection === 'reusables' && (
-                                <>
-                                  <DropdownItem tag={Link} to="/bmdashboard/reusables" className={`${fontColor} ${styles.bmSubSubItem}`}>
-                                    Reusable List
-                                  </DropdownItem>
-                                </>
+                                <DropdownItem tag={Link} to="/bmdashboard/reusables" className={`${fontColor} ${styles.bmSubSubItem}`}>
+                                  Reusable List
+                                </DropdownItem>
                               )}
 
                               {/* Tools accordion */}
@@ -660,11 +662,9 @@ export function Header(props) {
                                 <span className={`${styles.accordionArrow} ${expandedSection === 'tools' ? styles.accordionArrowOpen : ''}`}>▶</span>
                               </DropdownItem>
                               {expandedSection === 'tools' && (
-                                <>
-                                  <DropdownItem tag={Link} to="/bmdashboard/tools" className={`${fontColor} ${styles.bmSubSubItem}`}>
-                                    Tool List
-                                  </DropdownItem>
-                                </>
+                                <DropdownItem tag={Link} to="/bmdashboard/tools" className={`${fontColor} ${styles.bmSubSubItem}`}>
+                                  Tool List
+                                </DropdownItem>
                               )}
 
                               {/* Other BM pages */}
