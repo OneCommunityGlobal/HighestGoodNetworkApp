@@ -1,9 +1,9 @@
 /* eslint-disable import/prefer-default-export */
 import { useEffect, useState } from 'react';
-import './ProjectMemberTable.css';
 import { Link } from 'react-router-dom';
 import CopyToClipboard from '~/components/common/Clipboard/CopyToClipboard';
 import { Stub } from '../../common/Stub';
+import './ProjectMemberTable.css';
 
 export function ProjectMemberTable({ projectMembers, skip, take, handleMemberCount, darkMode, counts }) {
   const [allMemberList, setAllMemberList] = useState([]);
@@ -12,31 +12,43 @@ export function ProjectMemberTable({ projectMembers, skip, take, handleMemberCou
   const { fetched, foundUsers, members } = projectMembers;
 
   useEffect(() => {
-    handleMemberCount(activeMemberList.length);
-  }, [activeMemberList])
+    setMemberFilter('active');
+  }, [fetched]);
 
   useEffect(() => {
-    if (fetched) {
-      const memberList = [];
-      const activeList = [];
-      const currentActive = new Set();
-      if (foundUsers.length > 0) {
-        foundUsers.forEach(member => {
-          currentActive.add(member._id);
-        });
-      }
-      members.forEach(member => {
-        if (currentActive.has(member._id)) {
-          memberList.push({ ...member, active: true });
-          activeList.push({ ...member, active: true });
-        } else {
-          memberList.push({ ...member, active: false });
-        }
-      });
-      setAllMemberList(memberList);
-      setActiveMemberList(activeList);
+    handleMemberCount(activeMemberList.length);
+  }, [activeMemberList, memberFilter]);
+
+  useEffect(() => {
+  // Reset lists when project changes or data is not yet fetched
+  if (!fetched) {
+    setAllMemberList([]);
+    setActiveMemberList([]);
+    return;
+  }
+
+  const memberList = [];
+  const activeList = [];
+  const currentActive = new Set();
+
+  if (foundUsers.length > 0) {
+    foundUsers.forEach(member => {
+      currentActive.add(member._id);
+    });
+  }
+
+  members.forEach(member => {
+    if (currentActive.has(member._id)) {
+      memberList.push({ ...member, active: true });
+      activeList.push({ ...member, active: true });
+    } else {
+      memberList.push({ ...member, active: false });
     }
-  }, [fetched]);
+  });
+
+  setAllMemberList(memberList);
+  setActiveMemberList(activeList);
+}, [fetched, members, foundUsers]);
 
   const activeMemberTable = activeMemberList.slice(skip, skip + take).map((member, index) => (
     <div className="project-member-table-row" id={`tr_${  member._id}`} key={`ac_${  member._id}`}>
@@ -100,12 +112,9 @@ export function ProjectMemberTable({ projectMembers, skip, take, handleMemberCou
       <div className="project-member-count-head">
       <div className="filter-members-mobile"
         onChange={e => {
-          setMemberFilter(e.target.value);
-          if (e.target.value === 'all-time') {
-            handleMemberCount(allMemberList.length);
-          } else {
-            handleMemberCount(activeMemberList.length);
-          }
+          const val = e.target.value;
+          setMemberFilter(val);
+          handleMemberCount(val === 'all-time' ? allMemberList.length : activeMemberList.length);
         }}
       >
         <input type="radio" name="memberFilter" value="active" id="active" defaultChecked />

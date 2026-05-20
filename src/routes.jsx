@@ -137,6 +137,7 @@ import EquipmentDetail from './components/BMDashboard/Equipment/Detail/Equipment
 import UpdateEquipment from './components/BMDashboard/Equipment/Update/UpdateEquipment';
 import ToolDetailPage from './components/BMDashboard/Tools/ToolDetailPage';
 import CheckTypes from './components/BMDashboard/shared/CheckTypes';
+import AttendanceStatistics from './components/AttendanceStats/AttendanceDashboard';
 import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import AddTool from './components/BMDashboard/Tools/AddTool';
 import AttendanceNoShow from './components/AttendanceSystem/AttendanceNoShowCharts';
@@ -351,12 +352,25 @@ export default (
     />
     <LBProtectedRoute path="/lbdashboard/home" component={LBHome} />
 
-    <Route path="/EventPopularity" component={EventPopularity} />
+    <Route
+      path="/EventPopularity"
+      render={() => (
+        <>
+          <HeaderRenderer />
+          <AutoUpdate />
+          <ToastContainer />
+          <EventPopularity />
+        </>
+      )}
+    />
     <Route path="/MaterialSummary" component={MaterialSummary} />
     <Route path="/form" component={FormEditor} />
     <Route path="/formviewer" component={FormViewer} />
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
     <Route path="/hours-pledged-chart" component={HoursPledgedChart} />
+    <Route path="/TestEventReg" component={TestEventRegistration} />
+    <Route path="/Participation" component={AttendanceStatistics} />
+
     <>
       {/* Comment out the Header component and its import during phase 2 development. */}
       {/* Uncomment BMHeader and its import during phase 2 development. */}
@@ -702,7 +716,11 @@ export default (
         {/* ----- BEGIN BM Dashboard Routing ----- */}
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
         <Route path="/bmdashboard/login" component={BMLogin} />
-        <Route path="/LessonsLearntChart" component={LessonsLearntChart} />
+        <BMProtectedRoute
+          path="/bmdashboard/lessons-learnt-chart"
+          fallback
+          component={LessonsLearntChart}
+        />
         <Route path="/UtilizationChart" component={UtilizationChart} />
         <BMProtectedRoute path="/mostsusceptibletoolschart" component={SimpleToolChart} />
         <Route path="/projectglobaldistribution" component={ProjectsGlobalDistribution} />
@@ -869,6 +887,11 @@ export default (
           path="/communityportal/activity/:activityId/logattendance"
           exact
           component={NoShowList}
+        />
+        <CPProtectedRoute
+          path="/communityportal/reports/participation"
+          exact
+          component={EventParticipation}
         />
         <CPProtectedRoute
           path="/communityportal/reports/participation"
