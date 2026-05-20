@@ -7,38 +7,57 @@ function handleRemoveEvent(e, onRemove, tag) {
   onRemove(tag);
 }
 
+function buildClassName(...classNames) {
+  return classNames.filter(Boolean).join(' ');
+}
+
+function getTagClassName(isFilter, darkMode) {
+  if (!isFilter) {
+    return styles.tag;
+  }
+  return buildClassName(styles.tag, darkMode && styles.tagDark);
+}
+
+function getCloseClassName(isFilter, darkMode) {
+  if (!isFilter) {
+    return styles.buttonClose;
+  }
+  return buildClassName(styles.buttonClose, darkMode && styles.buttonCloseDark);
+}
+
+function getRemoveAriaLabel(isFilter, tag) {
+  if (isFilter) {
+    return `Remove ${tag} tag`;
+  }
+  return `Remove ${tag} from delete list`;
+}
+
 function LessonListRemovableTag({ tag, darkMode, onRemove, variant }) {
   const isFilter = variant === 'filter';
-  const tagClass = isFilter ? `${styles.tag} ${darkMode ? styles.tagDark : ''}` : styles.tag;
-  const closeClass = isFilter
-    ? `${styles.buttonClose} ${darkMode ? styles.buttonCloseDark : ''}`
-    : styles.buttonClose;
+  const tagClass = getTagClassName(isFilter, darkMode);
+  const closeClass = getCloseClassName(isFilter, darkMode);
+  const removeAriaLabel = getRemoveAriaLabel(isFilter, tag);
+  const tagTextClass = isFilter && darkMode ? styles.tagTextDark : '';
+
+  const handleClick = e => handleRemoveEvent(e, onRemove, tag);
+  const handleKeyDown = e => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      handleRemoveEvent(e, onRemove, tag);
+    }
+  };
 
   return (
     <div className={tagClass}>
-      <span className={isFilter && darkMode ? styles.tagTextDark : ''}>{tag}</span>
-      <span
-        role="button"
-        tabIndex={0}
+      <span className={tagTextClass}>{tag}</span>
+      <button
+        type="button"
         className={closeClass}
-        onClick={e => handleRemoveEvent(e, onRemove, tag)}
-        onKeyDown={e => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            handleRemoveEvent(e, onRemove, tag);
-          }
-        }}
-        aria-label={isFilter ? `Remove ${tag} tag` : `Remove ${tag} from delete list`}
-        style={{
-          pointerEvents: 'auto',
-          zIndex: 100,
-          cursor: 'pointer',
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
+        onClick={handleClick}
+        onKeyDown={handleKeyDown}
+        aria-label={removeAriaLabel}
       >
         ×
-      </span>
+      </button>
     </div>
   );
 }
