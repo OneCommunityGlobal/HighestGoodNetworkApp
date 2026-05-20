@@ -20,6 +20,7 @@ export const initMessagingSocket = (token) => {
     try {
         messagingSocket = new WebSocket(webSocketURL, token);
     } catch (e) {
+        console.error('Failed to initialize messaging WebSocket:', e);
         return null;
     }
 
@@ -37,6 +38,7 @@ export const initMessagingSocket = (token) => {
         try {
             data = JSON.parse(message.data);
         } catch (e) {
+            console.error('Failed to parse messaging socket message:', e);
             return;
         }
 

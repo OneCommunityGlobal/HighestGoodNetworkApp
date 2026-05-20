@@ -80,7 +80,7 @@ export default function LBMessaging() {
       const { data } = await axios.get(`${ENDPOINTS.LB_SEARCH_USERS}?query=${query}`);
       setSearchResults(Array.isArray(data) ? data : []);
     } catch (error) {
-      Error('Error searching user profiles:', error);
+      console.error('Error searching user profiles:', error);
     }
   };
 
@@ -261,17 +261,17 @@ export default function LBMessaging() {
 
         // Refresh preferences after saving
         dispatch(fetchUserPreferences(currentUserId, selectedUser.userId)).then(response => {
-          if (response && response.payload) {
+          if (response?.payload) {
             setSelectedOption({
-              notifyInApp: response.payload.notifyInApp || false,
-              notifyEmail: response.payload.notifyEmail || false,
+              notifyInApp: response.payload.notifyInApp ?? false,
+              notifyEmail: response.payload.notifyEmail ?? false,
             });
           }
         });
       })
       .catch(error => {
         toast.error('Failed to update preferences. Please try again.');
-        Error('Error updating preferences:', error);
+        console.error('Error updating preferences:', error);
       });
   };
 
@@ -288,7 +288,7 @@ export default function LBMessaging() {
       setMessageText('');
     } else {
       toast.error('WebSocket is not connected. Please try again later.');
-      Error('WebSocket is not connected or is in an invalid state:', socket);
+      console.error('WebSocket is not connected or is in an invalid state:', socket);
     }
   };
 
@@ -425,10 +425,10 @@ export default function LBMessaging() {
                                 onChange={e => {
                                   const query = e.target.value;
                                   setSearchQuery(query);
-                                  if (query.trim() !== '') {
-                                    searchUserProfiles(query);
-                                  } else {
+                                  if (query.trim() === '') {
                                     setSearchResults([]);
+                                  } else {
+                                    searchUserProfiles(query);
                                   }
                                 }}
                               />
@@ -512,10 +512,10 @@ export default function LBMessaging() {
                         onChange={e => {
                           const query = e.target.value;
                           setSearchQuery(query);
-                          if (query.trim() !== '') {
-                            searchUserProfiles(query);
-                          } else {
+                          if (query.trim() === '') {
                             setSearchResults([]);
+                          } else {
+                            searchUserProfiles(query);
                           }
                         }}
                       />
@@ -637,7 +637,6 @@ export default function LBMessaging() {
                           </label>
                           <button
                             type="button"
-                            //Todo: Need to fix color
                             className={`${styles.lgMessagingSaveBtn}`}
                             onClick={saveUserPreferences}
                           >

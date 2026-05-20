@@ -438,6 +438,23 @@
   width: fit-content !important;
 }
 
+.lgMessagingSaveBtn {
+  margin-top: 6px;
+  padding: 8px 12px;
+  background-color: #4db7ab;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  align-self: flex-end;
+  transition: background-color 0.2s ease;
+}
+
+.lgMessagingSaveBtn:hover {
+  background-color: #3a9a8f;
+}
+
 .lgMessagingField {
   display: flex;
   flex-direction: column;
@@ -669,6 +686,15 @@
   background-color: #1f1f1f;
   border-color: #333;
   color: #f1f1f1;
+}
+
+:global(.dark-mode) .lgMessagingSaveBtn {
+  background-color: #3a9a8f;
+  color: #fff;
+}
+
+:global(.dark-mode) .lgMessagingSaveBtn:hover {
+  background-color: #2f8076;
 }
 
 :global(.dark-mode) .lgMessagingSectionTitle,

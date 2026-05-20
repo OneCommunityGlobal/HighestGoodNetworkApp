@@ -436,8 +436,8 @@
 }
 
 .item__form-submit {
-  background: #13ae5c;
-  color: white;
+  background: #006b32;
+  color: #fff;
   padding: 10px;
   border-radius: 10px;
   border: none;
@@ -448,7 +448,7 @@
 }
 
 .item__form-submit:hover {
-  background: #0f9a50;
+  background: #005528;
   transform: scale(1.01);
 }
 
@@ -457,12 +457,12 @@
 }
 
 .item__form-submit--dark {
-  background: #43a047;
-  color: white;
+  background: #1b5e20;
+  color: #fff;
 }
 
 .item__form-submit--dark:hover {
-  background: #388e3c;
+  background: #145214;
 }
 
 .item__rent {
@@ -490,7 +490,7 @@
 }
 
 .item__form button:hover {
-  background: #0f9a50;
+  background: #005528;
   transform: scale(1.01);
 }
 

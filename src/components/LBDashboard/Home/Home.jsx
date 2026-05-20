@@ -183,8 +183,8 @@ function Home() {
       }
     };
 
-    window.addEventListener('keydown', handleEsc);
-    return () => window.removeEventListener('keydown', handleEsc);
+    globalThis.addEventListener('keydown', handleEsc);
+    return () => globalThis.removeEventListener('keydown', handleEsc);
   }, [closeAllModals]);
 
   const applyFilters = useCallback(() => {
@@ -308,9 +308,7 @@ function Home() {
           <FaRegCommentDots
             className={`${styles.lbNavIcon} ${darkMode ? styles.lbNavIconDark : ''}`}
             title="Messages"
-            onClick={() => {
-              window.location.href = '/chat';
-            }}
+            onClick={() => navigate.push('/chat')}
           />
           <div className={styles.lbNotificationBadge}>
             <FaRegBell
@@ -325,9 +323,7 @@ function Home() {
               darkMode ? styles.lbNavIconDark : ''
             }`}
             title="Profile"
-            onClick={() => {
-              window.location.href = '/profile';
-            }}
+            onClick={() => navigate.push('/profile')}
           />
         </div>
       </nav>
