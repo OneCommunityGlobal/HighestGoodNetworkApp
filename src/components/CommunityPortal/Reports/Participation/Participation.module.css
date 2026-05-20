@@ -178,7 +178,7 @@
   box-sizing: border-box;
 }
 
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
   .analyticsSection {
     flex-direction: column;
     gap: 30px;
@@ -190,7 +190,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .trackingContainer,
   .insights {
     width: 100%;
@@ -214,7 +214,7 @@
 }
 
 
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
   .trackingHeader {
     flex-direction: column;
     align-items: center;
@@ -410,7 +410,7 @@
   justify-content: space-between;
 }
 
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
   .insightsHeader {
     flex-direction: column;
     align-items: center;
@@ -952,7 +952,7 @@
   .participationLandingPageDark .attendeesCountDark,
   .participationLandingPageDark .insightsLabelDark,
   .participationLandingPageDark .insightsPercentageDark {
-    color: #ffffff !important;
+    color: #fff !important;
   }
 
 .filterDropdown {
@@ -964,7 +964,7 @@
 
 .participationLandingPageDark .filterDropdown {
   background-color: #3A506B;
-  color: #ffffff;
+  color: #fff;
   border: 1px solid #555;
   color-scheme: dark;
 }
