@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { connect, useSelector } from 'react-redux';
 import { useState, useCallback } from 'react';
 import { useHistory, Link } from 'react-router-dom';
@@ -11,10 +12,13 @@ import { BsChat } from 'react-icons/bs';
 import { IoNotificationsOutline } from 'react-icons/io5';
 
 import { FIXED_VILLAGES } from './Home/data.jsx';
+import { formatVillageLabel } from './Home/homeFormatUtils';
 import itemStyles from './WishList/ItemOverview.module.css';
 import ThemeIconToggle from './ThemeIconToggle';
 
 const cx = (base, darkClass, darkMode) => `${base} ${darkMode ? darkClass : ''}`.trim();
+
+const getUserProfilePath = authUser => (authUser?.userid ? `/userprofile/${authUser.userid}` : '/');
 
 function LBDashboardHeader(props) {
   const [selectedVillage, setSelectedVillage] = useState('');
@@ -66,8 +70,7 @@ function LBDashboardHeader(props) {
                 <option value="">Select village</option>
                 {FIXED_VILLAGES.map(v => (
                   <option key={v} value={v}>
-                    {v}
-                    {v !== 'City Center' ? ' Village' : ''}
+                    {formatVillageLabel(v)}
                   </option>
                 ))}
               </select>
@@ -126,7 +129,7 @@ function LBDashboardHeader(props) {
                   </Nav.Link>
                   <Nav.Link
                     as={Link}
-                    to={authUser?.userid ? `/userprofile/${authUser.userid}` : '/'}
+                    to={getUserProfilePath(authUser)}
                     className={cx(
                       itemStyles['item__nav-link'],
                       itemStyles['item__nav-link--dark'],
@@ -144,6 +147,17 @@ function LBDashboardHeader(props) {
     </Navbar>
   );
 }
+
+LBDashboardHeader.propTypes = {
+  authUser: PropTypes.shape({
+    name: PropTypes.string,
+    userid: PropTypes.string,
+  }),
+};
+
+LBDashboardHeader.defaultProps = {
+  authUser: null,
+};
 
 const mapStateToProps = state => ({
   authUser: state.auth.user,
