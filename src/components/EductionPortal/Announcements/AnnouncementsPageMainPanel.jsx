@@ -1,12 +1,22 @@
 import PropTypes from 'prop-types';
 import AnnouncementsBoard from './AnnouncementsBoard';
 import AnnouncementsActiveFiltersBar from './AnnouncementsActiveFiltersBar';
+import AnnouncementsRoleModeBadge from './AnnouncementsRoleModeBadge';
+import { getAnnouncementsPanelTheme, getSectionBarStyle } from './announcementsPanelTheme';
 
 const getAudienceLabel = selectedAudience => {
   if (selectedAudience === 'all') return 'All Audiences';
   if (selectedAudience === 'students') return 'Students Only';
   return 'Educators Only';
 };
+
+const tabButtonStyle = textMuted => ({
+  background: 'none',
+  border: 'none',
+  color: textMuted,
+  fontSize: '14px',
+  cursor: 'pointer',
+});
 
 function AnnouncementsPageMainPanel({
   darkMode,
@@ -22,22 +32,15 @@ function AnnouncementsPageMainPanel({
   handleEditAnnouncement,
   announcements,
 }) {
+  const theme = getAnnouncementsPanelTheme(darkMode);
+  const sectionBarStyle = getSectionBarStyle(theme);
+  const isEducator = userRole === 'educator';
+
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-      <div
-        style={{
-          backgroundColor: darkMode ? '#1b2a41' : 'white',
-          padding: '15px 30px',
-          borderBottom: `1px solid ${darkMode ? '#3A506B' : '#e0e0e0'}`,
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
-      >
-        <h4 style={{ margin: 0, fontWeight: 'bold', color: darkMode ? '#e2e8f0' : '#333333' }}>
-          Announcements
-        </h4>
-        {userRole === 'educator' && (
+      <div style={{ ...sectionBarStyle, padding: '15px 30px' }}>
+        <h4 style={{ margin: 0, fontWeight: 'bold', color: theme.textPrimary }}>Announcements</h4>
+        {isEducator && (
           <button
             type="button"
             onClick={handleCreateAnnouncement}
@@ -55,16 +58,8 @@ function AnnouncementsPageMainPanel({
           </button>
         )}
       </div>
-      <div
-        style={{
-          backgroundColor: darkMode ? '#1b2a41' : 'white',
-          padding: '10px 30px',
-          borderBottom: `1px solid ${darkMode ? '#3A506B' : '#e0e0e0'}`,
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
-      >
+
+      <div style={{ ...sectionBarStyle, padding: '10px 30px' }}>
         <div style={{ display: 'flex', gap: '15px' }}>
           <span
             style={{
@@ -77,40 +72,13 @@ function AnnouncementsPageMainPanel({
           >
             Board
           </span>
-          <button
-            type="button"
-            style={{
-              background: 'none',
-              border: 'none',
-              color: darkMode ? '#94a3b8' : '#666',
-              fontSize: '14px',
-              cursor: 'pointer',
-            }}
-          >
+          <button type="button" style={tabButtonStyle(theme.textMuted)}>
             All
           </button>
-          <button
-            type="button"
-            style={{
-              background: 'none',
-              border: 'none',
-              color: darkMode ? '#94a3b8' : '#666',
-              fontSize: '14px',
-              cursor: 'pointer',
-            }}
-          >
+          <button type="button" style={tabButtonStyle(theme.textMuted)}>
             Unread
           </button>
-          <button
-            type="button"
-            style={{
-              background: 'none',
-              border: 'none',
-              color: darkMode ? '#94a3b8' : '#666',
-              fontSize: '14px',
-              cursor: 'pointer',
-            }}
-          >
+          <button type="button" style={tabButtonStyle(theme.textMuted)}>
             Scheduled
           </button>
         </div>
@@ -121,36 +89,21 @@ function AnnouncementsPageMainPanel({
           onChange={handleSearchQueryChange}
           style={{
             padding: '6px 12px',
-            border: `1px solid ${darkMode ? '#3A506B' : '#ccc'}`,
+            border: `1px solid ${theme.inputBorder}`,
             borderRadius: '4px',
             fontSize: '12px',
             width: '200px',
-            backgroundColor: darkMode ? '#243B5A' : 'white',
-            color: darkMode ? '#e2e8f0' : '#333333',
+            backgroundColor: theme.inputBg,
+            color: theme.textPrimary,
           }}
         />
       </div>
-      <div
-        style={{
-          backgroundColor: darkMode ? '#1b2a41' : 'white',
-          padding: '15px 30px',
-          borderBottom: `1px solid ${darkMode ? '#3A506B' : '#e0e0e0'}`,
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
-      >
-        <h6
-          style={{
-            margin: 0,
-            fontWeight: 'bold',
-            fontSize: '14px',
-            color: darkMode ? '#e2e8f0' : '#333333',
-          }}
-        >
+
+      <div style={{ ...sectionBarStyle, padding: '15px 30px' }}>
+        <h6 style={{ margin: 0, fontWeight: 'bold', fontSize: '14px', color: theme.textPrimary }}>
           Latest
         </h6>
-        <div style={{ fontSize: '12px', color: darkMode ? '#94a3b8' : '#666' }}>
+        <div style={{ fontSize: '12px', color: theme.textMuted }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '15px', flexWrap: 'wrap' }}>
             <span>
               Showing:{' '}
@@ -164,26 +117,12 @@ function AnnouncementsPageMainPanel({
               dateToFilter={dateToFilter}
               clearFilters={clearFilters}
             />
-            {userRole === 'educator' && (
-              <span style={{ color: '#28a745' }}>
-                {'\uD83D\uDC68\u200D\uD83C\uDFEB'} <strong>Educator Mode</strong> (Can create/edit)
-              </span>
-            )}
-            {userRole === 'student' && (
-              <span style={{ color: '#17a2b8' }}>
-                {'\uD83D\uDC68\u200D\uD83C\uDF93'} <strong>Student Mode</strong> (View only)
-              </span>
-            )}
+            <AnnouncementsRoleModeBadge userRole={userRole} />
           </div>
         </div>
       </div>
-      <div
-        style={{
-          flex: 1,
-          padding: '20px 30px',
-          backgroundColor: darkMode ? '#0d1b2a' : '#f8f9fa',
-        }}
-      >
+
+      <div style={{ flex: 1, padding: '20px 30px', backgroundColor: theme.contentBg }}>
         <AnnouncementsBoard
           userRole={userRole}
           onCreateAnnouncement={handleCreateAnnouncement}

@@ -4,24 +4,11 @@
 /* eslint-disable no-console */
 /* eslint-disable no-shadow */
 /* eslint-disable no-unused-vars */
-/* eslint-disable react/no-array-index-key */
-/* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable react/button-has-type */
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import {
-  FaMapMarkerAlt,
-  FaRegCommentDots,
-  FaRegBell,
-  FaUser,
-  FaTh,
-  FaList,
-  FaTimes,
-  FaChevronLeft,
-  FaChevronRight,
-} from 'react-icons/fa';
+import { FaMapMarkerAlt, FaRegCommentDots, FaRegBell, FaUser, FaTh, FaList } from 'react-icons/fa';
 import { BsSliders } from 'react-icons/bs';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useHistory, useLocation } from 'react-router-dom';
 import L from 'leaflet';
@@ -31,6 +18,12 @@ import styles from './Home.module.css';
 import ThemeIconToggle from '../ThemeIconToggle';
 import { stripVillageSuffix, filterItemsByVillage } from './homeApiUtils';
 import { useHomeTabData } from './useHomeTabData';
+import { formatVillageLabel } from './homeFormatUtils';
+import HomePropertiesPanel from './HomePropertiesPanel';
+import HomeDatePickerModal from './HomeDatePickerModal';
+import HomePropertyMapModal from './HomePropertyMapModal';
+import HomeNotificationsModal from './HomeNotificationsModal';
+import HomePropertyDetailsModal from './HomePropertyDetailsModal';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -45,6 +38,8 @@ const unitIcon = new L.Icon({
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
 });
+
+const PAGE_SIZE_OPTIONS = [12, 24, 36, 48];
 
 function Home() {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -77,7 +72,6 @@ function Home() {
     totalPages: 1,
   });
 
-  const pageSizeOptions = [12, 24, 36, 48];
   const navigate = useHistory();
   const location = useLocation();
 
@@ -107,8 +101,8 @@ function Home() {
       try {
         const villages = await fetchVillages();
         setAllVillages(villages);
-      } catch (error) {
-        console.error('Error fetching villages:', error);
+      } catch (fetchError) {
+        console.error('Error fetching villages:', fetchError);
         setAllVillages([...FIXED_VILLAGES]);
       }
     };
@@ -116,11 +110,13 @@ function Home() {
     fetchVillagesData();
   }, []);
 
-  const filteredVillages = useMemo(() => {
-    return allVillages.filter(village =>
-      village.toLowerCase().includes(villageSearchTerm.toLowerCase()),
-    );
-  }, [villageSearchTerm, allVillages]);
+  const filteredVillages = useMemo(
+    () =>
+      allVillages.filter(village =>
+        village.toLowerCase().includes(villageSearchTerm.toLowerCase()),
+      ),
+    [villageSearchTerm, allVillages],
+  );
 
   const paginatedVillages = useMemo(() => {
     const startIdx = (villagePagination.currentPage - 1) * villagePagination.pageSize;
@@ -150,7 +146,11 @@ function Home() {
     () => filterItemsByVillage(baseItems, selectedVillage, normalizeVillageName),
     [baseItems, normalizeVillageName, selectedVillage],
   );
-  const allItems = currentItems;
+
+  const mapItems = useMemo(() => {
+    if (!selectedVillage) return currentItems;
+    return currentItems.filter(item => item.village === selectedVillage);
+  }, [currentItems, selectedVillage]);
 
   const handlePageChange = useCallback(
     newPage => {
@@ -184,10 +184,7 @@ function Home() {
     };
 
     window.addEventListener('keydown', handleEsc);
-
-    return () => {
-      window.removeEventListener('keydown', handleEsc);
-    };
+    return () => window.removeEventListener('keydown', handleEsc);
   }, [closeAllModals]);
 
   const applyFilters = useCallback(() => {
@@ -208,7 +205,6 @@ function Home() {
 
       const startDate = new Date(dateRange.startDate);
       const endDate = new Date(dateRange.endDate);
-
       const daysToAdjust = direction === 'forward' ? 7 : -7;
       startDate.setDate(startDate.getDate() + daysToAdjust);
       endDate.setDate(endDate.getDate() + daysToAdjust);
@@ -230,10 +226,6 @@ function Home() {
 
   const handleGoButtonClick = useCallback(() => {
     setPagination(prev => ({ ...prev, currentPage: 1 }));
-  }, [selectedVillage]);
-
-  const handleMarkerClick = useCallback(property => {
-    setSelectedProperty(property);
   }, []);
 
   const viewPropertyDetailsFromMap = useCallback(property => {
@@ -242,23 +234,49 @@ function Home() {
     setShowPropertyMap(false);
   }, []);
 
-  const filterByVillageFromMap = useCallback(village => {
-    setSelectedVillage(village);
-    setPagination(prev => ({ ...prev, currentPage: 1 }));
+  const handleViewPropertyNavigate = useCallback(
+    (property, tab) => {
+      const path =
+        tab === 'listings'
+          ? `/lbdashboard/listOverview/${property.id}`
+          : `/lbdashboard/bidOverview/${property.id}`;
+      navigate.push(path);
+    },
+    [navigate],
+  );
+
+  const handlePageSizeChange = useCallback(e => {
+    const newSize = Number(e.target.value);
+    setPagination(prev => ({
+      ...prev,
+      pageSize: newSize,
+      currentPage: 1,
+    }));
   }, []);
+
+  const handleVillageSearchChange = useCallback(value => {
+    setVillageSearchTerm(value);
+    setVillagePagination(prev => ({ ...prev, currentPage: 1 }));
+  }, []);
+
+  const handleVillageChipClick = useCallback(village => {
+    setSelectedVillage(prev => (prev === village ? '' : village));
+  }, []);
+
+  const isListingsTab = activeTab === 'listings';
+  const listingsTabClass = isListingsTab ? styles.lbActiveTab : styles.lbInactiveTab;
+  const biddingTabClass = isListingsTab ? styles.lbInactiveTab : styles.lbActiveTab;
 
   return (
     <div
       className={`${styles.lbOutsideContainer} ${darkMode ? styles.lbOutsideContainerDark : ''}`}
     >
-      {/* Logo Section */}
-      <div className={`${styles.lbLogo}`}>
+      <div className={styles.lbLogo}>
         <img src={logo} alt="Logo" />
       </div>
 
-      {/* Navigation Bar */}
       <nav className={`${styles.lbNavbar} ${darkMode ? styles.lbNavbarDark : ''}`}>
-        <div className={`${styles.lbNavLeft}`}>
+        <div className={styles.lbNavLeft}>
           <select
             className={`${styles.lbVillageFilter} ${darkMode ? styles.lbVillageFilterDark : ''}`}
             value={selectedVillage}
@@ -267,18 +285,19 @@ function Home() {
             <option value="">Filter by Village</option>
             {allVillages.map(v => (
               <option key={v} value={v}>
-                {v} {v !== 'City Center' ? 'Village' : ''}
+                {formatVillageLabel(v)}
               </option>
             ))}
           </select>
           <button
+            type="button"
             className={`${styles.lbGoButton} ${darkMode ? styles.lbGoButtonDark : ''}`}
             onClick={handleGoButtonClick}
           >
             Go
           </button>
         </div>
-        <div className={`${styles.lbNavRight}`}>
+        <div className={styles.lbNavRight}>
           <span className={`${styles.lbWelcomeText} ${darkMode ? styles.lbWelcomeTextDark : ''}`}>
             WELCOME {userName}
           </span>
@@ -289,79 +308,73 @@ function Home() {
           <FaRegCommentDots
             className={`${styles.lbNavIcon} ${darkMode ? styles.lbNavIconDark : ''}`}
             title="Messages"
-            // eslint-disable-next-line no-return-assign
-            onClick={() => (window.location.href = '/chat')}
+            onClick={() => {
+              window.location.href = '/chat';
+            }}
           />
-          <div className={`${styles.lbNotificationBadge}`}>
+          <div className={styles.lbNotificationBadge}>
             <FaRegBell
               className={`${styles.lbNavIcon} ${darkMode ? styles.lbNavIconDark : ''}`}
               title="Notifications"
               onClick={() => setShowNotifications(true)}
             />
-            <span className={`${styles.lbBadge}`}>3</span>
+            <span className={styles.lbBadge}>3</span>
           </div>
           <FaUser
             className={`${styles.lbNavIcon} ${styles.lbUserIcon} ${
               darkMode ? styles.lbNavIconDark : ''
             }`}
             title="Profile"
-            // eslint-disable-next-line no-return-assign
-            onClick={() => (window.location.href = '/profile')}
+            onClick={() => {
+              window.location.href = '/profile';
+            }}
           />
         </div>
       </nav>
 
-      {/* Main Content Container */}
       <div
         className={`${styles.lbInsideContainer} ${darkMode ? styles.lbInsideContainerDark : ''}`}
       >
-        {/* Content Header with Map Link */}
-        <div className={`${styles.lbContentHeader}`}>
+        <div className={styles.lbContentHeader}>
           <div
-            className={`${styles.lbPropertyMap}`}
+            className={styles.lbPropertyMap}
             onClick={() => setShowPropertyMap(true)}
             title="View Property Map"
           >
-            <FaMapMarkerAlt className={`${styles.lbMapIcon}`} />
-            <span className={`${styles.lbMapText}`}>Property Map</span>
+            <FaMapMarkerAlt className={styles.lbMapIcon} />
+            <span className={styles.lbMapText}>Property Map</span>
           </div>
 
-          <div className={`${styles.lbHeaderContent}`}>
-            {/* Filter Section */}
+          <div className={styles.lbHeaderContent}>
             <div
-              className={`${styles.lbFilterSection}`}
+              className={styles.lbFilterSection}
               onClick={() => setShowDatePicker(true)}
               title="Filter by Date Range"
             >
-              <BsSliders className={`${styles.lbFilterIcon}`} />
-              <span className={`${styles.lbFilterText}`}>Filter by date</span>
+              <BsSliders className={styles.lbFilterIcon} />
+              <span className={styles.lbFilterText}>Filter by date</span>
             </div>
 
-            {/* Tabs Section */}
-            <div className={`${styles.lbTabsSection}`}>
+            <div className={styles.lbTabsSection}>
               <button
                 type="button"
-                className={`${styles.lbTab} ${
-                  activeTab === 'listings' ? styles.lbActiveTab : styles.lbInactiveTab
-                }`}
+                className={`${styles.lbTab} ${listingsTabClass}`}
                 onClick={() => setActiveTab('listings')}
               >
                 Listings
               </button>
               <button
                 type="button"
-                className={`${styles.lbTab} ${
-                  activeTab !== 'listings' ? styles.lbActiveTab : styles.lbInactiveTab
-                }`}
+                className={`${styles.lbTab} ${biddingTabClass}`}
                 onClick={() => setActiveTab('bidding')}
               >
                 Bidding
               </button>
             </div>
 
-            {/* View Toggle */}
-            <div className={`${styles.lbViewToggle}`}>
+            <div className={styles.lbViewToggle}>
               <button
+                type="button"
                 className={`${styles.lbViewBtn} ${viewMode === 'Grid' ? styles.active : ''}`}
                 onClick={() => setViewMode('Grid')}
                 title="Grid View"
@@ -369,6 +382,7 @@ function Home() {
                 <FaTh />
               </button>
               <button
+                type="button"
                 className={`${styles.lbViewBtn} ${viewMode === 'List' ? styles.active : ''}`}
                 onClick={() => setViewMode('List')}
                 title="List View"
@@ -379,391 +393,64 @@ function Home() {
           </div>
         </div>
 
-        {/* Loading State */}
-        {isLoading && <div className={`${styles.lbLoadingIndicator}`}>Loading properties...</div>}
-
-        {/* Error State */}
-        {error && <div className={`${styles.lbErrorMessage}`}>{error}</div>}
-
-        {/* No Results State */}
-        {!isLoading && !error && currentItems.length === 0 && (
-          <div className={`${styles.lbNoResults}`}>
-            No properties found matching your criteria. Try adjusting your filters.
-          </div>
-        )}
-
-        {/* Properties Container */}
-        {!isLoading && !error && (
-          <div className={`${styles.lbPropertiesContainer} ${styles[`lb${viewMode}View`]}`}>
-            {currentItems.map(unit => (
-              <div
-                key={unit.id}
-                className={`${styles.lbPropertyCard}`}
-                onClick={() => handlePropertySelect(unit)}
-              >
-                <div className={`${styles.lbPropertyImage}`}>
-                  <img
-                    src={unit.images[0]}
-                    alt={unit.title}
-                    onError={e => {
-                      e.currentTarget.onerror = null;
-                      e.currentTarget.src = 'https://picsum.photos/seed/lb-fallback/600/400';
-                    }}
-                  />
-                </div>
-                <div className={`${styles.lbPropertyDetails}`}>
-                  <div>
-                    <h3>{unit.title}</h3>
-                    <p>
-                      {unit.village} {unit.village !== 'City Center' ? 'Village' : ''}
-                    </p>
-                  </div>
-                  <div
-                    className={`${styles.lbPrice} ${unit.isBidding ? styles.lbBiddingPrice : ''}`}
-                  >
-                    ${unit.price}/{unit.perUnit}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Pagination Controls */}
-        {!isLoading && !error && currentItems.length > 0 && (
-          <div className={`${styles.lbPaginationControls}`}>
-            <button
-              onClick={() => handlePageChange(pagination.currentPage - 1)}
-              disabled={pagination.currentPage === 1}
-              className={`${styles.lbPaginationButton}`}
-            >
-              Prev
-            </button>
-            <span className={`${styles.lbPaginationInfo}`}>
-              Page {pagination.currentPage} of {pagination.totalPages}
-            </span>
-            <button
-              onClick={() => handlePageChange(pagination.currentPage + 1)}
-              disabled={pagination.currentPage === pagination.totalPages}
-              className={`${styles.lbPaginationButton}`}
-            >
-              Next
-            </button>
-            <div className={`${styles.lbPageSizeSelector}`}>
-              <span>Show:</span>
-              <select
-                value={pagination.pageSize}
-                onChange={e => {
-                  const newSize = Number(e.target.value);
-                  setPagination(prev => ({
-                    ...prev,
-                    pageSize: newSize,
-                    currentPage: 1,
-                  }));
-                }}
-              >
-                {pageSizeOptions.map(size => (
-                  <option key={size} value={size}>
-                    {size}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-        )}
+        <HomePropertiesPanel
+          isLoading={isLoading}
+          error={error}
+          currentItems={currentItems}
+          viewMode={viewMode}
+          pagination={pagination}
+          pageSizeOptions={PAGE_SIZE_OPTIONS}
+          onPropertySelect={handlePropertySelect}
+          onPageChange={handlePageChange}
+          onPageSizeChange={handlePageSizeChange}
+        />
       </div>
 
-      {/* Date Picker Modal */}
       {showDatePicker && (
-        <div className={`${styles.lbModalOverlay}`} onClick={() => setShowDatePicker(false)}>
-          <div className={`${styles.lbDatePickerContainer}`} onClick={e => e.stopPropagation()}>
-            <div className={`${styles.lbModalHeader}`}>
-              <h3>Select Date Range</h3>
-              <div className={`${styles.lbCloseButtonWrapper}`}>
-                <FaTimes
-                  className={`${styles.lbCloseButton}`}
-                  onClick={() => setShowDatePicker(false)}
-                />
-              </div>
-            </div>
-            <div className={`${styles.lbDatePickerContent}`}>
-              <div className={`${styles.lbDateInputs}`}>
-                <div className={`${styles.lbDateInputGroup}`}>
-                  <label>Start Date</label>
-                  <input
-                    type="date"
-                    value={dateRange.startDate}
-                    onChange={e => setDateRange({ ...dateRange, startDate: e.target.value })}
-                  />
-                </div>
-                <div className={`${styles.lbDateInputGroup}`}>
-                  <label>End Date</label>
-                  <input
-                    type="date"
-                    value={dateRange.endDate}
-                    onChange={e => setDateRange({ ...dateRange, endDate: e.target.value })}
-                    min={dateRange.startDate}
-                  />
-                </div>
-              </div>
-
-              {/* Date Navigation (week forward/backward) - Airbnb-like feature */}
-              {dateRange.startDate && dateRange.endDate && (
-                <div className={`${styles.lbDateNavigation}`}>
-                  <button
-                    className={`${styles.lbDateNavButton}`}
-                    onClick={() => adjustDatesByWeek('backward')}
-                  >
-                    <FaChevronLeft /> Previous Week
-                  </button>
-                  <button
-                    className={`${styles.lbDateNavButton}`}
-                    onClick={() => adjustDatesByWeek('forward')}
-                  >
-                    Next Week <FaChevronRight />
-                  </button>
-                </div>
-              )}
-
-              <div className={`${styles.lbDatePickerActions}`}>
-                <button className={`${styles.lbApplyButton}`} onClick={applyFilters}>
-                  Apply
-                </button>
-                <button className={`${styles.lbClearButton}`} onClick={clearFilters}>
-                  Clear All Filters
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <HomeDatePickerModal
+          dateRange={dateRange}
+          onClose={() => setShowDatePicker(false)}
+          onStartDateChange={value => setDateRange(prev => ({ ...prev, startDate: value }))}
+          onEndDateChange={value => setDateRange(prev => ({ ...prev, endDate: value }))}
+          onAdjustWeek={adjustDatesByWeek}
+          onApply={applyFilters}
+          onClear={clearFilters}
+        />
       )}
 
-      {/* Property Map Modal */}
       {showPropertyMap && (
-        <div className={`${styles.lbModalOverlay}`} onClick={() => setShowPropertyMap(false)}>
-          <div className={`${styles.lbPropertyMapModal}`} onClick={e => e.stopPropagation()}>
-            <div className={`${styles.lbModalHeader}`}>
-              <h3>
-                Property Map
-                {selectedVillage &&
-                  ` - ${selectedVillage} ${selectedVillage !== 'City Center' ? 'Village' : ''}`}
-              </h3>
-              <div className={`${styles.lbCloseButtonWrapper}`}>
-                <FaTimes
-                  className={`${styles.lbCloseButton}`}
-                  onClick={() => setShowPropertyMap(false)}
-                />
-              </div>
-            </div>
-            <div className={`${styles.lbModalContent}`}>
-              <MapContainer
-                center={[37.7749, -122.4194]}
-                zoom={13}
-                style={{ height: '500px', width: '100%' }}
-              >
-                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-
-                {/* Only show property units, not villages as requested */}
-                {(selectedVillage
-                  ? allItems.filter(item => item.village === selectedVillage)
-                  : allItems
-                ).map(unit => (
-                  <Marker
-                    key={`unit-${unit.id}`}
-                    position={[unit.coordinates[1], unit.coordinates[0]]}
-                    icon={unitIcon}
-                    eventHandlers={{
-                      click: () => handleMarkerClick(unit),
-                    }}
-                  >
-                    <Popup>
-                      <div className={`${styles.lbMapPopup}`}>
-                        <h4>{unit.title}</h4>
-                        <p>
-                          {unit.village} {unit.village !== 'City Center' ? 'Village' : ''}
-                        </p>
-                        <p>
-                          ${unit.price}/{unit.perUnit}
-                        </p>
-                        <button
-                          className={`${styles.lbViewDetailsButton}`}
-                          onClick={e => {
-                            e.stopPropagation();
-                            viewPropertyDetailsFromMap(unit);
-                          }}
-                        >
-                          View Details
-                        </button>
-                      </div>
-                    </Popup>
-                  </Marker>
-                ))}
-              </MapContainer>
-
-              <div className={`${styles.lbMapLegend}`}>
-                <h4>Villages</h4>
-                <div className={`${styles.lbVillageSearch}`}>
-                  <input
-                    type="text"
-                    className={`${styles.lbVillageSearchInput}`}
-                    placeholder="Search villages..."
-                    value={villageSearchTerm}
-                    onChange={e => {
-                      setVillageSearchTerm(e.target.value);
-                      setVillagePagination(prev => ({ ...prev, currentPage: 1 })); // Reset to first page on search
-                    }}
-                  />
-                </div>
-                <div className={`${styles.lbVillageChips}`}>
-                  {paginatedVillages.map(village => (
-                    <div
-                      key={village}
-                      className={`lb-village-chip ${selectedVillage === village ? 'active' : ''}`}
-                      onClick={() => {
-                        setSelectedVillage(village === selectedVillage ? '' : village);
-                      }}
-                    >
-                      {village}
-                    </div>
-                  ))}
-                </div>
-                {filteredVillages.length > villagePagination.pageSize && (
-                  <div className={`${styles.lbVillagePagination}`}>
-                    <button
-                      className={`${styles.lbPaginationButton}`}
-                      disabled={villagePagination.currentPage === 1}
-                      onClick={() =>
-                        setVillagePagination(prev => ({
-                          ...prev,
-                          currentPage: prev.currentPage - 1,
-                        }))
-                      }
-                    >
-                      Previous
-                    </button>
-                    <span className={`${styles.lbPaginationInfo}`}>
-                      Page {villagePagination.currentPage} of {totalVillagePages}
-                    </span>
-                    <button
-                      className={`${styles.lbPaginationButton}`}
-                      disabled={villagePagination.currentPage === totalVillagePages}
-                      onClick={() =>
-                        setVillagePagination(prev => ({
-                          ...prev,
-                          currentPage: prev.currentPage + 1,
-                        }))
-                      }
-                    >
-                      Next
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
+        <HomePropertyMapModal
+          unitIcon={unitIcon}
+          selectedVillage={selectedVillage}
+          mapItems={mapItems}
+          paginatedVillages={paginatedVillages}
+          filteredVillages={filteredVillages}
+          villageSearchTerm={villageSearchTerm}
+          villagePagination={villagePagination}
+          totalVillagePages={totalVillagePages}
+          onClose={() => setShowPropertyMap(false)}
+          onMarkerClick={setSelectedProperty}
+          onViewDetails={viewPropertyDetailsFromMap}
+          onVillageSearchChange={handleVillageSearchChange}
+          onVillagePagePrev={() =>
+            setVillagePagination(prev => ({ ...prev, currentPage: prev.currentPage - 1 }))
+          }
+          onVillagePageNext={() =>
+            setVillagePagination(prev => ({ ...prev, currentPage: prev.currentPage + 1 }))
+          }
+          onVillageChipClick={handleVillageChipClick}
+        />
       )}
 
-      {/* Notifications Modal */}
-      {showNotifications && (
-        <div className={`${styles.lbModalOverlay}`} onClick={() => setShowNotifications(false)}>
-          <div className={`${styles.lbNotificationModal}`} onClick={e => e.stopPropagation()}>
-            <div className={`${styles.lbModalHeader}`}>
-              <h3>Notifications</h3>
-              <div className={`${styles.lbCloseButtonWrapper}`}>
-                <FaTimes
-                  className={`${styles.lbCloseButton}`}
-                  onClick={() => setShowNotifications(false)}
-                />
-              </div>
-            </div>
-            <div className={`${styles.lbModalContent} ${styles.lbNotificationContent}`}>
-              <div className={`${styles.lbNotificationItem} ${styles.unread}`}>
-                <h4>New booking request</h4>
-                <p>Someone is interested in Unit 5</p>
-                <span className={`${styles.lbNotificationTime}`}>2 hours ago</span>
-              </div>
-              <div className={`${styles.lbNotificationItem} ${styles.unread}`}>
-                <h4>Price update</h4>
-                <p>Unit 12 price has been reduced</p>
-                <span className={`${styles.lbNotificationTime}`}>Yesterday</span>
-              </div>
-              <div className={`${styles.lbNotificationItem} ${styles.unread}`}>
-                <h4>Village announcement</h4>
-                <p>Community meeting this weekend</p>
-                <span className={`${styles.lbNotificationTime}`}>3 days ago</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {showNotifications && <HomeNotificationsModal onClose={() => setShowNotifications(false)} />}
 
-      {/* Property Details Modal */}
       {showPropertyDetails && selectedProperty && (
-        <div className={`${styles.lbModalOverlay}`} onClick={() => setShowPropertyDetails(false)}>
-          <div className={`${styles.lbPropertyDetailsModal}`} onClick={e => e.stopPropagation()}>
-            <div className={`${styles.lbModalHeader}`}>
-              <h3>{selectedProperty.title}</h3>
-              <div className={`${styles.lbCloseButtonWrapper}`}>
-                <FaTimes
-                  className={`${styles.lbCloseButton}`}
-                  onClick={() => setShowPropertyDetails(false)}
-                />
-              </div>
-            </div>
-            <div className={`${styles.lbModalContent} ${styles.lbPropertyDetailsContent}`}>
-              <div className={`${styles.lbPropertyDetailsImage}`}>
-                <img src={selectedProperty.images[0]} alt={selectedProperty.title} />
-              </div>
-              <div className={`${styles.lbPropertyDetailsInfo}`}>
-                <div className={`${styles.lbPropertyInfoItem}`}>
-                  <strong>Village:</strong> {selectedProperty.village}
-                  {selectedProperty.village !== 'City Center' ? 'Village' : ''}
-                </div>
-                <div className={`${styles.lbPropertyInfoItem}`}>
-                  <strong>Price:</strong> ${selectedProperty.price}/{selectedProperty.perUnit}
-                </div>
-                <div className={`${styles.lbPropertyInfoItem}`}>
-                  <strong>Available From:</strong>{' '}
-                  {selectedProperty.availableFrom.toLocaleDateString()}
-                </div>
-                <div className={`${styles.lbPropertyInfoItem}`}>
-                  <strong>Available To:</strong> {selectedProperty.availableTo.toLocaleDateString()}
-                </div>
-                <div className={`${styles.lbPropertyDescription}`}>
-                  <strong>Description:</strong> {selectedProperty.description}
-                </div>
-                {selectedProperty.amenities && selectedProperty.amenities.length > 0 && (
-                  <div className={`${styles.lbPropertyAmenities}`}>
-                    <strong>Amenities:</strong>
-                    <ul>
-                      {selectedProperty.amenities.map((amenity, index) => (
-                        <li key={index}>{amenity}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-              <div className={`${styles.lbPropertyDetailsActions}`}>
-                <button className={`${styles.lbActionButton} ${styles.lbContactButton}`}>
-                  Contact Owner
-                </button>
-                <button
-                  className={`${styles.lbActionButton} ${styles.lbBookButton}`}
-                  onClick={() => {
-                    if (activeTab === 'listings') {
-                      navigate.push(`/lbdashboard/listOverview/${selectedProperty.id}`); // Redirect to booking page
-                    } else {
-                      navigate.push(`/lbdashboard/bidOverview/${selectedProperty.id}`); // Redirect to bidding page
-                    }
-                  }}
-                >
-                  View Property
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <HomePropertyDetailsModal
+          property={selectedProperty}
+          activeTab={activeTab}
+          onClose={() => setShowPropertyDetails(false)}
+          onViewProperty={handleViewPropertyNavigate}
+        />
       )}
     </div>
   );
