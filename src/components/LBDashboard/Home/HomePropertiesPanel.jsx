@@ -4,6 +4,8 @@ import PropTypes from 'prop-types';
 import styles from './Home.module.css';
 import { formatVillageLabel } from './homeFormatUtils';
 
+const getViewModeClass = viewMode => (viewMode === 'Grid' ? styles.lbGridView : styles.lbListView);
+
 function HomePropertiesPanel({
   isLoading,
   error,
@@ -33,7 +35,7 @@ function HomePropertiesPanel({
 
   return (
     <>
-      <div className={`${styles.lbPropertiesContainer} ${styles[`lb${viewMode}View`]}`}>
+      <div className={`${styles.lbPropertiesContainer} ${getViewModeClass(viewMode)}`}>
         {currentItems.map(unit => (
           <div
             key={unit.id}
