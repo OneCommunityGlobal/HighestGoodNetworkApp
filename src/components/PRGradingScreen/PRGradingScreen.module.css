@@ -201,7 +201,6 @@
 .pr-grading-screen-reviewer-role {
   font-size: 0.8rem;
 
-  /* color: #6c757d; commenting this line to remove duplicate selector issue present in later section of this page */
   color: #b0b8c4;
   line-height: 1.3;
   text-align: center;
@@ -423,7 +422,6 @@
 }
 
 .pr-grading-screen-pair-message {
-  /* color: #155724; commenting this line due to duplicate selector issue replacing the color code with latest one */
   color: #a7f3d0;
   font-size: 0.75rem;
   margin-top: 4px;

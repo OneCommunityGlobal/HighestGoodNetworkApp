@@ -1,8 +1,10 @@
 /* eslint-disable import/prefer-default-export */
 
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 import { PieChart, Pie, Sector, ResponsiveContainer, LabelList} from 'recharts';
 import TwoWayToggleSwitch from '../../../common/TwoWayToggleSwitch/TwoWayToggleSwitch';
+import ProjectPieChartLabelContent from './ProjectPieChartLabelContent';
 import './ProjectPieChart.css';
 
 
@@ -83,8 +85,19 @@ const renderActiveShape = (props, darkMode, showAllValues, accumulatedValues) =>
   );
 };
 
-export function ProjectPieChart  ({ userData, windowSize, darkMode }) {
+const updateActiveIndicesOnCtrlClick = (prevIndices, index, userData, accumulatedValues) => {
+  if (prevIndices.includes(index)) {
+    const newIndices = prevIndices.filter(i => i !== index);
+    const newAccumulatedValues = newIndices.reduce((acc, i) => acc + userData[i].value, 0);
+    return { indices: newIndices, accumulated: newAccumulatedValues };
+  }
+  return {
+    indices: [...prevIndices, index],
+    accumulated: accumulatedValues + userData[index].value,
+  };
+};
 
+export function ProjectPieChart({ userData, windowSize, darkMode }) {
   const [activeIndices, setActiveIndices] = useState([]);
   const [showAllValues, setShowAllValues] = useState(false);
   const [accumulatedValues, setAccumulatedValues] = useState(0);
@@ -92,26 +105,32 @@ export function ProjectPieChart  ({ userData, windowSize, darkMode }) {
   const onPieEnter = (data, index, event) => {
     if (event.ctrlKey) {
       setActiveIndices(prevIndices => {
-        if (prevIndices.includes(index)) {
-          const newIndices = prevIndices.filter(i => i !== index);
-          const newAccumulatedValues = newIndices.reduce((acc, i) => acc + userData[i].value, 0);
-          setAccumulatedValues(newAccumulatedValues);
-          return newIndices;
-        } 
-          const newAccumulatedValues = accumulatedValues + userData[index].value;
-          setAccumulatedValues(newAccumulatedValues);
-          return [...prevIndices, index];
-        
+        const { indices, accumulated } = updateActiveIndicesOnCtrlClick(
+          prevIndices,
+          index,
+          userData,
+          accumulatedValues,
+        );
+        setAccumulatedValues(accumulated);
+        return indices;
       });
-    } else {
-      setActiveIndices([index]);
-      setAccumulatedValues(userData[index].value);
+      return;
     }
+    setActiveIndices([index]);
+    setAccumulatedValues(userData[index].value);
   };
 
   const toggleShowAllValues = () => {
     setShowAllValues(!showAllValues);
   };
+
+  const renderLabelContent = props => (
+    <ProjectPieChartLabelContent {...props} userData={userData} darkMode={darkMode} />
+  );
+
+  const renderActiveShapeWrapper = props =>
+    renderActiveShape(props, darkMode, showAllValues, accumulatedValues);
+
   let circleSize = 30;
   if (windowSize <= 1280) {
     circleSize = windowSize / 10 * 0.5;
@@ -126,7 +145,7 @@ export function ProjectPieChart  ({ userData, windowSize, darkMode }) {
         <PieChart>
           <Pie
             activeIndex={activeIndices}
-            activeShape={(props) => renderActiveShape(props, darkMode, showAllValues, accumulatedValues)}
+            activeShape={renderActiveShapeWrapper}
             data={userData}
             cx="50%"
             cy="50%"
@@ -143,20 +162,7 @@ export function ProjectPieChart  ({ userData, windowSize, darkMode }) {
                 position="outside"
                 fill={darkMode ? 'white' : '#333'}
                 color={darkMode ? "white" : "black"}
-                // eslint-disable-next-line react/no-unstable-nested-components
-                content={(props) => {
-                  const { cx, cy, value, index, viewBox} = props;
-                  const entry = userData[index];
-                  const midAngle = (viewBox.startAngle + viewBox.endAngle) / 2;
-                  const RADIAN = Math.PI / 180;
-                  const x = cx + (viewBox.outerRadius + 90) * Math.cos(-RADIAN * midAngle);
-                  const y = cy + (viewBox.outerRadius + 10) * Math.sin(-RADIAN * midAngle);
-                  return (
-                    <text x={x} y={y} fill={darkMode ? 'white' : '#333'} textAnchor="middle">
-                      {`${entry.name.substring(0, 14)} ${entry.lastName.substring(0, 1)} ${value.toFixed(2)}Hrs (${(value * 100 / entry.totalHoursCalculated).toFixed(2)}%)`}
-                    </text>
-                  );
-                }}
+                content={renderLabelContent}
               />
             )}
           </Pie>
@@ -165,3 +171,13 @@ export function ProjectPieChart  ({ userData, windowSize, darkMode }) {
       </div>
   )
 }
+
+ProjectPieChart.propTypes = {
+  userData: PropTypes.arrayOf(PropTypes.object).isRequired,
+  windowSize: PropTypes.number.isRequired,
+  darkMode: PropTypes.bool,
+};
+
+ProjectPieChart.defaultProps = {
+  darkMode: false,
+};

@@ -1,9 +1,11 @@
 /* eslint-disable import/prefer-default-export */
 import { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import {ProjectPieChart} from '../ProjectPieChart/ProjectPieChart';
 import './PieChartByProject.css';
 import TriMembersStateToggleSwitch from '../TriMembersStateToggleSwitch/TriMembersStateToggleSwitch'
 import style from '../../../UserProfile/UserProfileEdit/ToggleSwitch/ToggleSwitch.module.scss';
+import { resolvePieChartUserData } from './pieChartUserDataUtils';
 
 export function PieChartByProject({
   mergedProjectUsersArray,
@@ -30,80 +32,6 @@ export function PieChartByProject({
     totalHoursCalculated: totalHours,
     lastName: ""
   }];
-
-  useEffect(() => {
-    const totalHoursCalculated = mergedProjectUsersArray.reduce((acc, curr) => {
-      return ((acc + curr.totalSeconds));
-    }, 0) / 3600;
-    setTotalHours(totalHoursCalculated);
-    const activeUsers = mergedProjectUsersArray.filter(member => member.personId.isActive )
-    setActiveData(activeUsers);
-
-    const arrData = mergedProjectUsersArray.map(member => {
-      const data = {
-        name: `${member.personId.firstName}`,
-        value: member.totalSeconds/3600,
-        projectName,
-        totalHoursCalculated,
-        lastName: member.personId.lastName
-      }
-      return data
-    });
-
-
-    if (showMembers === false) {
-      const inactiveUsers = mergedProjectUsersArray.filter(member => !member.personId.isActive )
-      setInactiveData(inactiveUsers);
-
-      if (inactiveUsers.length ===0) {
-        setUserData(noDataPlaceholder)
-      }
-      else {
-        const totalHoursInactive = inactiveUsers.reduce((acc, curr) => {
-          return ((acc + curr.totalSeconds));
-        }, 0) / 3600;
-        setGlobalInactiveHours(totalHoursInactive);
-
-        const inactiveArr = inactiveData.map(member => {
-          const data = {
-            name: `${member.personId.firstName}`,
-            value: member.totalSeconds/3600,
-            projectName,
-            totalHoursCalculated: totalHoursInactive,
-            lastName: member.personId.lastName
-          }
-          return data;
-        });
-        const sortedArr = inactiveArr.sort((a, b) => (a.name).localeCompare(b.name))
-        setUserData(sortedArr)
-      }
-    } else    if (showMembers === true) {
-      const au = mergedProjectUsersArray.filter(member => member.personId.isActive )
-      setActiveData(au);
-
-      const totalHoursActive = activeUsers.reduce((acc, curr) => {
-        return ((acc + curr.totalSeconds));
-      }, 0) / 3600;
-      setGlobalActiveHours(totalHoursActive);
-
-      const activeArr = activeData.map(member => {
-        const data = {
-          name: `${member.personId.firstName}`,
-          value: member.totalSeconds/3600,
-          projectName,
-          totalHoursCalculated: totalHoursActive,
-          lastName: member.personId.lastName
-        }
-        return data;
-      });
-      const sortedArr = activeArr.sort((a, b) => (a.name).localeCompare(b.name))
-      setUserData(sortedArr)
-    } else {
-      const sortedArr = arrData.sort((a, b) => (a.name).localeCompare(b.name))
-      setUserData(sortedArr)
-    }
-
-  }, [mergedProjectUsersArray,showMembers])
 
   const updateWindowSize = () => {
     setWindowSize({
@@ -134,78 +62,19 @@ export function PieChartByProject({
   };
 
   useEffect(() => {
-    const totalHoursCalculated = mergedProjectUsersArray.reduce((acc, curr) => {
-      return ((acc + curr.totalSeconds));
-    }, 0) / 3600;
-    setTotalHours(totalHoursCalculated);
-    const activeUsers = mergedProjectUsersArray.filter(member => member.personId.isActive )
-    setActiveData(activeUsers);
-
-    const arrData = mergedProjectUsersArray.map(member => {
-      const data = {
-        name: `${member.personId.firstName}`,
-        value: member.totalSeconds/3600,
-        projectName,
-        totalHoursCalculated,
-        lastName: member.personId.lastName
-      }
-      return data
+    const chartData = resolvePieChartUserData({
+      mergedProjectUsersArray,
+      projectName,
+      showMembers,
+      noDataPlaceholder,
     });
-
-
-    if (showMembers === false) {
-      const inactiveUsers = mergedProjectUsersArray.filter(member => !member.personId.isActive )
-      setInactiveData(inactiveUsers);
-
-      if (inactiveUsers.length ===0) {
-        setUserData(noDataPlaceholder)
-      }
-      else {
-        const totalHoursInactive = inactiveUsers.reduce((acc, curr) => {
-          return ((acc + curr.totalSeconds));
-        }, 0) / 3600;
-        setGlobalInactiveHours(totalHoursInactive);
-
-        const inactiveArr = inactiveData.map(member => {
-          const data = {
-            name: `${member.personId.firstName}`,
-            value: member.totalSeconds/3600,
-            projectName,
-            totalHoursCalculated: totalHoursInactive,
-            lastName: member.personId.lastName
-          }
-          return data;
-        });
-        const sortedArr = inactiveArr.sort((a, b) => (a.name).localeCompare(b.name))
-        setUserData(sortedArr)
-      }
-    } else    if (showMembers === true) {
-      const au = mergedProjectUsersArray.filter(member => member.personId.isActive )
-      setActiveData(au);
-
-      const totalHoursActive = activeUsers.reduce((acc, curr) => {
-        return ((acc + curr.totalSeconds));
-      }, 0) / 3600;
-      setGlobalActiveHours(totalHoursActive);
-
-      const activeArr = activeData.map(member => {
-        const data = {
-          name: `${member.personId.firstName}`,
-          value: member.totalSeconds/3600,
-          projectName,
-          totalHoursCalculated: totalHoursActive,
-          lastName: member.personId.lastName
-        }
-        return data;
-      });
-      const sortedArr = activeArr.sort((a, b) => (a.name).localeCompare(b.name))
-      setUserData(sortedArr)
-    } else {
-      const sortedArr = arrData.sort((a, b) => (a.name).localeCompare(b.name))
-      setUserData(sortedArr)
-    }
-
-  }, [mergedProjectUsersArray,showMembers])
+    setTotalHours(chartData.totalHours);
+    setActiveData(chartData.activeData);
+    setInactiveData(chartData.inactiveData);
+    setGlobalInactiveHours(chartData.globalInactiveHours);
+    setGlobalActiveHours(chartData.globalactiveHours);
+    setUserData(chartData.userData);
+  }, [mergedProjectUsersArray, showMembers, projectName]);
 
   return (
     <div className={`${darkMode ? 'text-light' : ''} w-100`}>
@@ -255,4 +124,14 @@ export function PieChartByProject({
 
     </div>
   )  
-}  
+}
+
+PieChartByProject.propTypes = {
+  mergedProjectUsersArray: PropTypes.arrayOf(PropTypes.object).isRequired,
+  projectName: PropTypes.string.isRequired,
+  darkMode: PropTypes.bool,
+};
+
+PieChartByProject.defaultProps = {
+  darkMode: false,
+};
