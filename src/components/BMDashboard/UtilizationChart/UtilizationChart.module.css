@@ -93,7 +93,7 @@
 :global(body:not(.dark-mode)) :global(.react-datepicker__day--in-selecting-range),
 :global(body:not(.dark-mode)) :global(.react-datepicker__day--in-range) {
   background-color: #3b82f6;
-  color: #fff !important;
+  color: #1a1a1a !important;
 }
 
 .button {
