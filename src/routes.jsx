@@ -106,6 +106,7 @@ import MaterialSummary from './components/MaterialSummary/MaterialSummary';
 // Activity Feedback Modal
 import FeedbackRatingEntry from './components/FeedbackActivityModal/FeedbackActivityEntry';
 
+import AddLessons from './components/BMDashboard/Lessons/AddLessons';
 import Collaboration from './components/Collaboration';
 import SuggestedJobsList from './components/Collaboration/SuggestedJobsList';
 import Inventory from './components/Inventory';
@@ -138,15 +139,20 @@ import WeeklyProgressDashboard from './components/WeeklyProgress/WeeklyProgressD
 //mostwatedmaterials
 import MostWastedMaterials from './components/MostWastedMaterials/MostWastedMaterials.jsx';
 // BM Dashboard
+import AttendanceStatistics from './components/AttendanceStats/AttendanceDashboard';
 import AttendanceNoShow from './components/AttendanceSystem/AttendanceNoShowCharts.jsx';
 import BMDashboard from './components/BMDashboard';
 import EquipmentDetail from './components/BMDashboard/Equipment/Detail/EquipmentDetail';
 import EquipmentList from './components/BMDashboard/Equipment/List';
 import UpdateEquipment from './components/BMDashboard/Equipment/Update/UpdateEquipment';
-import LessonsLearntChart from './components/BMDashboard/LessonsLearnt/LessonsLearntChart';
-import BMLogin from './components/BMDashboard/Login';
 import CheckTypes from './components/BMDashboard/shared/CheckTypes';
 import ToolDetailPage from './components/BMDashboard/Tools/ToolDetailPage';
+
+//job analytics
+import HoursPledgedChart from './components/JobAnalytics/HoursPledgedChart/HoursPledgedChart';
+
+import LessonsLearntChart from './components/BMDashboard/LessonsLearnt/LessonsLearntChart';
+import BMLogin from './components/BMDashboard/Login';
 import UtilizationChart from './components/BMDashboard/UtilizationChart/UtilizationChart';
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
 import InjuriesDonutChart from './components/InjuriesAnalytics/InjuriesDonutChart';
@@ -157,7 +163,6 @@ import ReturnedLateChart from './components/BMDashboard/RentalChart/ReturnedLate
 import CreateNewTeam from './components/BMDashboard/Team/CreateNewTeam/CreateNewTeam';
 import JobsHitsApplicationsChart from './components/JobAnalytics/JobsHitsApplicationsChart/JobsHitsApplicationsChart';
 // import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChart';
-import HoursPledgedChart from './components/JobAnalytics/HoursPledgedChart/HoursPledgedChart';
 
 // Community Portal
 import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
@@ -187,6 +192,7 @@ import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPDashboard from './components/EductionPortal';
 import InsightWidget from './components/EductionPortal/AnalyticsDashboard/InsightsWidget';
 import ReportDownloadButton from './components/EductionPortal/AnalyticsDashboard/ReportDownloadButton';
+import AnnouncementsPage from './components/EductionPortal/Announcements/AnnouncementsPage';
 import BrowseLessonPlan from './components/EductionPortal/BrowseLessonPlan/BrowseLP';
 import TaskSubmissions from './components/EductionPortal/Educators/TaskSubmissions';
 import EvaluationResultsWrapper from './components/EductionPortal/EvaluationResultsWrapper';
@@ -354,7 +360,17 @@ export default (
     <LBProtectedRoute path="/lbdashboard/biddinghomepage" component={BiddingHomepage} />
     {/* ----- LB Dashboard Routing Ends----- */}
 
-    <Route path="/EventPopularity" component={EventPopularity} />
+    <Route
+      path="/EventPopularity"
+      render={() => (
+        <>
+          <HeaderRenderer />
+          <AutoUpdate />
+          <ToastContainer />
+          <EventPopularity />
+        </>
+      )}
+    />
     <Route path="/MaterialSummary" component={MaterialSummary} />
     <Route path="/form" component={FormEditor} />
     <Route path="/formviewer" component={FormViewer} />
@@ -362,6 +378,8 @@ export default (
     <Route path="/hours-pledged-chart" component={HoursPledgedChart} />
     <Route path="/TestEventReg" component={TestEventRegistration} />
     <Route path="/logattendance" component={AttendanceNoShow} />
+    <Route path="/Participation" component={AttendanceStatistics} />
+
     <>
       {/* Comment out the Header component and its import during phase 2 development. */}
       {/* Uncomment BMHeader and its import during phase 2 development. */}
@@ -870,7 +888,11 @@ export default (
         {/* ----- BEGIN BM Dashboard Routing ----- */}
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
         <Route path="/bmdashboard/login" component={BMLogin} />
-        <Route path="/LessonsLearntChart" component={LessonsLearntChart} />
+        <BMProtectedRoute
+          path="/bmdashboard/lessons-learnt-chart"
+          fallback
+          component={LessonsLearntChart}
+        />
         <Route path="/UtilizationChart" component={UtilizationChart} />
         <Route path="/mostsusceptibletoolschart" component={SimpleToolChart} />
         <Route path="/projectglobaldistribution" component={ProjectsGlobalDistribution} />
@@ -941,6 +963,7 @@ export default (
         <BMProtectedRoute path="/bmdashboard/tools/:toolId" component={ToolDetailPage} />
         <BMProtectedRoute path="/bmdashboard/lessonform/:projectId" component={LessonForm} />
         <BMProtectedRoute path="/bmdashboard/lessonform/" component={LessonForm} />
+        <BMProtectedRoute path="/bmdashboard/lessons/add" component={AddLessons} />
         <BMProtectedRoute
           path="/bmdashboard/inventorytypes"
           fallback
@@ -1021,6 +1044,11 @@ export default (
           component={EventParticipation}
         />
         <CPProtectedRoute
+          path="/communityportal/reports/participation"
+          exact
+          component={EventParticipation}
+        />
+        <CPProtectedRoute
           path="/communityportal/reports/event/personalization"
           exact
           component={EventStats}
@@ -1087,6 +1115,11 @@ export default (
           component={StudentProfile}
         />
         <EPProtectedRoute path="/educationportal/tasks/upload" exact component={WriteTaskUpload} />
+        <EPProtectedRoute
+          path="/educationportal/announcements"
+          exact
+          component={AnnouncementsPage}
+        />
         <EPProtectedRoute
           path="/educationportal/educator/task-submissions"
           exact

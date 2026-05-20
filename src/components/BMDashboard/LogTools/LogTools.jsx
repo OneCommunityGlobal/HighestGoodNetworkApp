@@ -200,9 +200,9 @@ function LogTools() {
   };
 
   return (
-    <div className={`${styles.page} ${darkMode ? 'dark-mode' : ''}`}>
-      <div className={`${styles.logFormContainer} ${darkMode ? 'dark-mode' : ''}`}>
-        <div className={`${styles.titleLabel} ${darkMode ? 'dark-mode' : ''}`}>
+    <div className={`${styles.page} ${darkMode ? styles['dark-mode'] : ''}`}>
+      <div className={`${styles.logFormContainer} ${darkMode ? styles['dark-mode'] : ''}`}>
+        <div className={`${styles.titleLabel} ${darkMode ? styles['dark-mode'] : ''}`}>
           <span>TOOL/EQUIPMENT DAILY ACTIVITIES LOG</span>
         </div>
 
@@ -210,7 +210,7 @@ function LogTools() {
           <FormGroup className={`${styles.selectInput}`}>
             <Label
               htmlFor="dateSelect"
-              className={`${styles.selectorLabel} ${darkMode ? 'dark-mode' : ''}`}
+              className={`${styles.selectorLabel} ${darkMode ? styles['dark-mode'] : ''}`}
             >
               Date:
             </Label>
@@ -228,7 +228,7 @@ function LogTools() {
           <FormGroup className={`${styles.selectInput}`}>
             <Label
               htmlFor="projectSelect"
-              className={`${styles.selectorLabel} ${darkMode ? 'dark-mode' : ''}`}
+              className={`${styles.selectorLabel} ${darkMode ? styles['dark-mode'] : ''}`}
             >
               Project:
             </Label>
@@ -259,7 +259,7 @@ function LogTools() {
           <FormGroup className={`${styles.selectInput}`}>
             <Label
               htmlFor="projectSelect"
-              className={`${styles.selectorLabel} ${darkMode ? 'dark-mode' : ''}`}
+              className={`${styles.selectorLabel} ${darkMode ? styles['dark-mode'] : ''}`}
             >
               Check In or Out:
             </Label>
@@ -297,17 +297,17 @@ function LogTools() {
 
         <Table className={darkMode ? 'table-dark' : ''}>
           <thead>
-            <tr className={`${styles.subtitleRow} ${darkMode ? 'dark-mode' : ''}`}>
+            <tr className={`${styles.subtitleRow} ${darkMode ? styles['dark-mode'] : ''}`}>
               <td colSpan="6">
-                <span className={`${styles.tableSubtitle} ${darkMode ? 'dark-mode' : ''}`}>
+                <span className={`${styles.tableSubtitle} ${darkMode ? styles['dark-mode'] : ''}`}>
                   Item
                 </span>
-                <span className={`${styles.tableSubtitle} ${darkMode ? 'dark-mode' : ''}`}>
+                <span className={`${styles.tableSubtitle} ${darkMode ? styles['dark-mode'] : ''}`}>
                   Quantity
                 </span>
                 <span
                   className={`${styles.tableSubtitle} ${styles.subtitleHighlight} ${
-                    darkMode ? 'dark-mode' : ''
+                    darkMode ? styles['dark-mode'] : ''
                   }`}
                 >
                   Daily Log Input
@@ -315,7 +315,7 @@ function LogTools() {
               </td>
             </tr>
 
-            <tr className={`${styles.toolTypeHead} ${darkMode ? 'dark-mode' : ''}`}>
+            <tr className={`${styles.toolTypeHead} ${darkMode ? styles['dark-mode'] : ''}`}>
               <td>ID </td>
               <td>Name </td>
               <td>Working </td>
@@ -330,7 +330,7 @@ function LogTools() {
               relevantToolTypes.map((toolType, index) => (
                 <tr
                   key={toolType._id}
-                  className={`${styles.toolTypeRow} ${darkMode ? 'dark-mode' : ''}`}
+                  className={`${styles.toolTypeRow} ${darkMode ? styles['dark-mode'] : ''}`}
                 >
                   <td>{index + 1}</td>
                   <td>{toolType.toolName}</td>
@@ -349,7 +349,7 @@ function LogTools() {
                 </tr>
               ))
             ) : (
-              <tr className={darkMode ? 'dark-mode' : ''}>
+              <tr className={darkMode ? styles['dark-mode'] : ''}>
                 <td colSpan="6">
                   There are no tools to {selectedAction.toLowerCase()} for this project
                 </td>

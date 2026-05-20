@@ -50,6 +50,36 @@ body.bm-dashboard-dark h4, body.bm-dashboard-dark h5, body.bm-dashboard-dark h6 
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
+/* Error/validation messages must stay red even in dark mode */
+label.bm-error-red,
+div.bm-error-red {
+  color: #dc3545 !important;
+}
+
+body.dark-mode:not(.no-global-theme) label.bm-error-red,
+body.dark-mode:not(.no-global-theme) div.bm-error-red,
+body.bm-dashboard-dark:not(.no-global-theme) label.bm-error-red,
+body.bm-dashboard-dark:not(.no-global-theme) div.bm-error-red {
+  color: #dc3545 !important;
+}
+
+/* Headings */
+body.dark-mode:not(.no-global-theme) h1,
+body.dark-mode:not(.no-global-theme) h2,
+body.dark-mode:not(.no-global-theme) h3,
+body.dark-mode:not(.no-global-theme) h4,
+body.dark-mode:not(.no-global-theme) h5,
+body.dark-mode:not(.no-global-theme) h6,
+body.bm-dashboard-dark:not(.no-global-theme) h1,
+body.bm-dashboard-dark:not(.no-global-theme) h2,
+body.bm-dashboard-dark:not(.no-global-theme) h3,
+body.bm-dashboard-dark:not(.no-global-theme) h4,
+body.bm-dashboard-dark:not(.no-global-theme) h5,
+body.bm-dashboard-dark:not(.no-global-theme) h6 {
+  color: #ffffff !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
 /* Muted text */
 body.dark-mode:not(.no-global-theme) .text-muted,
 body.bm-dashboard-dark:not(.no-global-theme) .text-muted {
@@ -135,6 +165,8 @@ body.bm-dashboard-dark:not(.no-global-theme) .form-control::placeholder {
 /* Dark-mode select arrow styling (Bootstrap selects) */
 body.dark-mode:not(.no-global-theme) select.form-control,
 body.bm-dashboard-dark:not(.no-global-theme) select.form-control {
+  appearance: none !important;
+  -webkit-appearance: none !important;
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e") !important;
   background-repeat: no-repeat !important;
   background-position: right 0.75rem center !important;
@@ -149,9 +181,9 @@ body.bm-dashboard-dark:not(.no-global-theme) option {
 }
 
 /* Light-mode form controls (Option B): Bootstrap `.form-control` only */
-body:not(.dark-mode) .form-control,
-body:not(.dark-mode) textarea.form-control,
-body:not(.dark-mode) select.form-control {
+body:not(.dark-mode):not(.bm-dashboard-dark) .form-control,
+body:not(.dark-mode):not(.bm-dashboard-dark) textarea.form-control,
+body:not(.dark-mode):not(.bm-dashboard-dark) select.form-control {
   background-color: #ffffff !important;
   color: #212529 !important;
   border-color: #ced4da !important;

@@ -154,7 +154,7 @@ const TeamMemberTask = React.memo(
     const canSeeReports =
       rolesAllowedToResolveTasks.includes(userRole) || dispatch(hasPermission('getReports'));
     const canUpdateTask = dispatch(hasPermission('updateTask'));
-    const canDeleteTask = dispatch(hasPermission('canDeleteTask'));
+    const canUnassignTask = dispatch(hasPermission('removeUserFromTask'));
     const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
 
     const colorsObjs = {
@@ -625,7 +625,7 @@ const TeamMemberTask = React.memo(
                                           />
                                         )}
 
-                                        {(canUpdateTask || canDeleteTask) && (
+                                        {canUnassignTask && (
                                           <FontAwesomeIcon
                                             className={styles['team-member-task-remove']}
                                             icon={faTimesCircle}
