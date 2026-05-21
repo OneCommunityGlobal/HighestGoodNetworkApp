@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import axios from 'axios';
+import PropTypes from 'prop-types';
 import {
   fetchCostBreakdown,
   fetchCostDetail,
@@ -22,47 +23,35 @@ const MAX_LABEL_LINES = 2;
 function fitLabelInDonut(text, availableWidth, maxFontSize, minFontSize) {
   const words = text.split(/\s+/);
 
-  for (let size = maxFontSize; size >= minFontSize; size -= 0.5) {
-    const charsPerLine = Math.floor(availableWidth / (size * CHAR_WIDTH_RATIO));
-    if (charsPerLine < 1) continue;
-
+  const buildLines = charsPerLine => {
     const lines = [];
     let currentLine = '';
-    for (let w = 0; w < words.length; w += 1) {
-      const testLine = currentLine ? `${currentLine} ${words[w]}` : words[w];
+    for (const word of words) {
+      const testLine = currentLine ? `${currentLine} ${word}` : word;
       if (testLine.length <= charsPerLine) {
         currentLine = testLine;
-      } else if (!currentLine) {
-        currentLine = words[w];
+      } else if (currentLine === '') {
+        currentLine = word;
       } else {
         lines.push(currentLine);
-        currentLine = words[w];
+        currentLine = word;
       }
     }
     if (currentLine) lines.push(currentLine);
+    return lines;
+  };
 
+  for (let size = maxFontSize; size >= minFontSize; size -= 0.5) {
+    const charsPerLine = Math.floor(availableWidth / (size * CHAR_WIDTH_RATIO));
+    if (charsPerLine < 1) continue;
+    const lines = buildLines(charsPerLine);
     if (lines.length <= MAX_LABEL_LINES) {
       return { fontSize: size, lines };
     }
   }
 
-  // At min size, wrap and truncate to MAX_LABEL_LINES
   const charsPerLine = Math.max(1, Math.floor(availableWidth / (minFontSize * CHAR_WIDTH_RATIO)));
-  const lines = [];
-  let currentLine = '';
-  for (let w = 0; w < words.length; w += 1) {
-    const testLine = currentLine ? `${currentLine} ${words[w]}` : words[w];
-    if (testLine.length <= charsPerLine) {
-      currentLine = testLine;
-    } else if (!currentLine) {
-      currentLine = words[w];
-    } else {
-      lines.push(currentLine);
-      currentLine = words[w];
-    }
-  }
-  if (currentLine) lines.push(currentLine);
-
+  const lines = buildLines(charsPerLine);
   const truncated = lines.slice(0, MAX_LABEL_LINES);
   if (lines.length > MAX_LABEL_LINES) {
     const last = truncated[MAX_LABEL_LINES - 1];
@@ -80,7 +69,7 @@ function formatCurrency(amount) {
       currency: 'USD',
       maximumFractionDigits: 0,
     }).format(Number(amount));
-  } catch (e) {
+  } catch {
     return `$${Number(amount).toFixed(0)}`;
   }
 }
@@ -103,6 +92,27 @@ function CustomTooltip({ active, payload, totalCost, darkMode }) {
     </div>
   );
 }
+
+CustomTooltip.propTypes = {
+  active: PropTypes.bool,
+  payload: PropTypes.arrayOf(
+    PropTypes.shape({
+      payload: PropTypes.shape({
+        name: PropTypes.string,
+        value: PropTypes.number,
+      }),
+    }),
+  ),
+  totalCost: PropTypes.number,
+  darkMode: PropTypes.bool,
+};
+
+CustomTooltip.defaultProps = {
+  active: false,
+  payload: [],
+  totalCost: 0,
+  darkMode: false,
+};
 
 export default function CostBreakDown() {
   const dispatch = useDispatch();
@@ -167,9 +177,9 @@ export default function CostBreakDown() {
     if (!data?.breakdown?.length) return [];
     return data.breakdown.map(item => ({
       name: item.category,
-      shortName: (CATEGORY_CONFIG[item.category] || {}).label || item.category,
+      shortName: CATEGORY_CONFIG[item.category]?.label || item.category,
       value: item.amount,
-      color: (CATEGORY_CONFIG[item.category] || {}).color || '#999',
+      color: CATEGORY_CONFIG[item.category]?.color || '#999',
     }));
   }, [data]);
 
@@ -340,14 +350,14 @@ export default function CostBreakDown() {
 
       {/* Empty state */}
       {!loading && !error && data && chartData.length === 0 && (
-        <div className={styles.empty} role="status">
+        <output className={styles.loading} aria-live="polite" aria-busy="true">
           <p>No cost data available</p>
           <p className={styles.emptySubtext}>
             {projectId
               ? 'Try selecting a different project or date range'
               : 'No cost records found'}
           </p>
-        </div>
+        </output>
       )}
 
       {/* Chart */}
@@ -420,7 +430,7 @@ export default function CostBreakDown() {
           </div>
 
           {/* Legend */}
-          <div className={styles.legend} role="list" aria-label="Chart legend">
+          <ul className={styles.legend} aria-label="Chart legend">
             {chartData.map(entry => (
               <button
                 key={entry.name}
@@ -435,14 +445,13 @@ export default function CostBreakDown() {
                 {entry.shortName}
               </button>
             ))}
-          </div>
+          </ul>
 
           {/* Detail panel */}
           {selectedCategory && (
-            <div
+            <section
               className={styles.detailPanel}
-              role="region"
-              aria-label={`${(CATEGORY_CONFIG[selectedCategory] || {}).label ||
+              aria-label={`${CATEGORY_CONFIG[selectedCategory]?.label ||
                 selectedCategory} breakdown by project`}
             >
               <div className={styles.detailHeader}>
@@ -467,7 +476,7 @@ export default function CostBreakDown() {
                 <div className={styles.detailError}>{detailError}</div>
               )}
               {!detailLoading && !detailError && detailData && renderProjectBreakdown()}
-            </div>
+            </section>
           )}
         </>
       )}
