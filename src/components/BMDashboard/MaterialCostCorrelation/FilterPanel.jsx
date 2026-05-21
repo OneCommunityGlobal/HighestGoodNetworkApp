@@ -140,13 +140,13 @@ function FilterPanel({
     onDateRangeChange(newStartDate, newEndDate);
   };
 
-  const selectedProjectOptions = projectOptions.filter(option =>
-    selectedProjects.includes(option.value),
-  );
+  const selectedProjectOptions = selectedProjects.length === 0
+    ? [{ value: 'all', label: 'All Projects' }]
+    : projectOptions.filter(option => selectedProjects.includes(option.value));
 
-  const selectedMaterialTypeOptions = materialTypeOptions.filter(option =>
-    selectedMaterialTypes.includes(option.value),
-  );
+  const selectedMaterialTypeOptions = selectedMaterialTypes.length === 0
+    ? [{ value: 'all', label: 'All Materials' }]
+    : materialTypeOptions.filter(option => selectedMaterialTypes.includes(option.value));
 
   return (
     <div className={`${styles.filterPanel} ${darkMode ? styles.darkMode : ''}`}>
@@ -157,7 +157,7 @@ function FilterPanel({
           <Select
             isMulti
             options={projectOptions}
-            value={selectedProjects.length === 0 ? [] : selectedProjectOptions}
+            value={selectedProjectOptions}
             onChange={handleProjectChange}
             placeholder="Select projects..."
             classNamePrefix="select"
@@ -178,7 +178,7 @@ function FilterPanel({
           <Select
             isMulti
             options={materialTypeOptions}
-            value={selectedMaterialTypes.length === 0 ? [] : selectedMaterialTypeOptions}
+            value={selectedMaterialTypeOptions}
             onChange={handleMaterialTypeChange}
             placeholder="Select material types..."
             classNamePrefix="select"

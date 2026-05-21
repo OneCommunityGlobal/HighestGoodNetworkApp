@@ -50,7 +50,7 @@ function CustomTooltip({ active, payload, darkMode }) {
         darkMode ? styles.customTooltipDark : styles.customTooltipLight
       }`}
     >
-      <div className={styles.tooltipTitle}>{data.projectName}</div>
+      <div className={styles.tooltipTitle}>{data.materialTypeName}</div>
       {costPayload && (
         <div className={styles.tooltipRow}>
           <strong>Total Material Cost:</strong> ${(costPayload.value * 1000).toFixed(2)}
@@ -61,6 +61,9 @@ function CustomTooltip({ active, payload, darkMode }) {
           <strong>Quantity Used:</strong> {quantityPayload.value.toFixed(2)}
         </div>
       )}
+      <div className={styles.tooltipHint}>
+        <strong>Cost per Unit:</strong> ${data.costPerUnit != null ? data.costPerUnit.toFixed(2) : '0.00'}
+      </div>
     </div>
   );
 }
@@ -72,7 +75,7 @@ CustomTooltip.propTypes = {
       dataKey: PropTypes.string,
       value: PropTypes.number,
       payload: PropTypes.shape({
-        projectName: PropTypes.string,
+        materialTypeName: PropTypes.string,
       }),
     }),
   ),
@@ -274,16 +277,29 @@ function MaterialCostCorrelationChart() {
       if (!data || !Array.isArray(data) || data.length === 0) {
         return null;
       }
-      return data.map(project => ({
-        projectName: project?.projectName || 'Unknown Project',
-        totalCostK: project?.totals?.totalCostK || 0,
-        quantityUsed: project?.totals?.quantityUsed || 0,
-      }));
+      // Flatten byMaterialType across all projects
+      const materialMap = new Map();
+      data.forEach(project => {
+        (project.byMaterialType || []).forEach(mat => {
+          const key = mat.materialTypeName || mat.materialTypeId;
+          if (!materialMap.has(key)) {
+            materialMap.set(key, {
+              materialTypeName: key,
+              quantityUsed: 0,
+              totalCostK: 0,
+              costPerUnit: mat.costPerUnit || 0,
+            });
+          }
+          const existing = materialMap.get(key);
+          existing.quantityUsed += mat.quantityUsed || 0;
+          existing.totalCostK += mat.totalCostK || 0;
+        });
+      });
+      return Array.from(materialMap.values());
     } catch (transformError) {
       logger.logError(
         new Error(
-          `[MaterialCostCorrelation] Chart data transformation error: ${transformError.message ||
-            transformError}`,
+          `[MaterialCostCorrelation] Chart data transformation error: ${transformError.message || transformError}`,
         ),
       );
       return null;
@@ -403,7 +419,7 @@ function MaterialCostCorrelationChart() {
             <ComposedChart data={barChartData} margin={chartConfig.margin}>
               <CartesianGrid strokeDasharray="3 3" stroke={chartConfig.gridColor} />
               <XAxis
-                dataKey="projectName"
+                dataKey="materialTypeName"
                 tick={{
                   fill: chartConfig.textColor,
                   fontSize: chartConfig.xAxisTickFontSize,
