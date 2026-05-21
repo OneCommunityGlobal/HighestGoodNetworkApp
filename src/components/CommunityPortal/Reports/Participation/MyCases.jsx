@@ -3,74 +3,43 @@ import { useSelector } from 'react-redux';
 import styles from './MyCases.module.css';
 import mockEvents from './mockData';
 import CreateEventModal from './CreateEventModal';
+import { filterEventsByDate } from './FilterByDate';
 
 function MyCases() {
   const [view, setView] = useState('card');
-  const [filter, setFilter] = useState('all');
+  const [filter, setFilter] = useState('All Time');
   const [expanded, setExpanded] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const isExporting =
     typeof document !== 'undefined' && document.documentElement?.dataset?.exporting === 'true'; // Sonar: prefer .dataset
 
-  const filterEvents = events => {
-    const now = new Date();
-    const nowTime = now.getTime();
-
-    const upcomingEvents = events.filter(event => {
-      const eventTime = new Date(event.eventDate).getTime();
-      return eventTime >= nowTime;
-    });
-
-    if (filter === 'today') {
-      return upcomingEvents.filter(event => {
-        const eventDate = new Date(event.eventDate);
-        return (
-          eventDate.getDate() === now.getDate() &&
-          eventDate.getMonth() === now.getMonth() &&
-          eventDate.getFullYear() === now.getFullYear()
-        );
-      });
-    }
-    if (filter === 'thisWeek') {
-      const startOfWeek = new Date(now);
-      startOfWeek.setDate(now.getDate() - now.getDay());
-      startOfWeek.setHours(0, 0, 0, 0);
-
-      const endOfWeek = new Date(startOfWeek);
-      endOfWeek.setDate(endOfWeek.getDate() + 6);
-      endOfWeek.setHours(23, 59, 59, 999);
-
-      return upcomingEvents.filter(event => {
-        const eventDate = new Date(event.eventDate);
-        return eventDate >= startOfWeek && eventDate <= endOfWeek;
-      });
-    }
-    if (filter === 'thisMonth') {
-      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-      const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-      endOfMonth.setHours(23, 59, 59, 999);
-
-      return upcomingEvents.filter(event => {
-        const eventDate = new Date(event.eventDate);
-        return eventDate >= startOfMonth && eventDate <= endOfMonth;
-      });
-    }
-    return upcomingEvents;
-  };
-
   const darkMode = useSelector(state => state.theme.darkMode);
-  const filteredEvents = filterEvents(mockEvents);
-
-  filteredEvents.sort((a, b) => new Date(a.eventDate).getTime() - new Date(b.eventDate).getTime());
+  const now = new Date();
+  const filteredEvents = filterEventsByDate(mockEvents, filter).filter(
+    event => new Date(event.eventDate).getTime() >= now.getTime(),
+  );
 
   // Sonar: extract nested ternary into independent statement
   let visibleEvents = filteredEvents;
   if (!isExporting) {
-    visibleEvents = expanded ? filteredEvents.slice(0, 40) : filteredEvents.slice(0, 10);
+    // Limit to 10 events by default, but show all when expanded.
+    visibleEvents = expanded
+      ? filteredEvents.slice(0, filteredEvents.length)
+      : filteredEvents.slice(0, 10);
   }
 
   const placeholderAvatar = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+
+  const isEventToday = dateString => {
+    const eventDate = new Date(dateString);
+    const now = new Date();
+    return (
+      eventDate.getDate() === now.getDate() &&
+      eventDate.getMonth() === now.getMonth() &&
+      eventDate.getFullYear() === now.getFullYear()
+    );
+  };
 
   const renderCardView = () => (
     <div
@@ -78,7 +47,7 @@ function MyCases() {
         expanded || isExporting ? styles.expanded : ''
       }`}
     >
-      {visibleEvents.map(event => (
+      {visibleEvents?.map(event => (
         <div
           className={`case-card-global ${styles.caseCard} ${darkMode ? styles.caseCardDark : ''}`}
           key={event.id}
@@ -89,9 +58,10 @@ function MyCases() {
           <span className={`${styles.eventTime} ${darkMode ? styles.eventTimeDark : ''}`}>
             {event.eventTime}
           </span>
-          <div className={`${styles.eventName} ${darkMode ? styles.eventNameDark : ''}`}>
+          <span className={`${styles.eventName} ${darkMode ? styles.eventNameDark : ''}`}>
+            {isEventToday(event.eventDate) ? "Today's " : ''}
             {event.eventName}
-          </div>
+          </span>
           <div className={`${styles.attendeesInfo} ${darkMode ? styles.attendeesInfoDark : ''}`}>
             <div className={styles.avatars}>
               <img
@@ -118,7 +88,7 @@ function MyCases() {
         expanded || isExporting ? styles.expanded : ''
       }`}
     >
-      {visibleEvents.map(event => (
+      {visibleEvents?.map(event => (
         <li
           className={`case-list-item-global ${styles.caseListItem} ${
             darkMode ? styles.caseListItemDark : ''
@@ -181,12 +151,13 @@ function MyCases() {
               value={filter}
               onChange={e => setFilter(e.target.value)}
             >
-              <option value="all">All Time</option>
-              <option value="today">Today</option>
-              <option value="thisWeek">This Week</option>
-              <option value="thisMonth">This Month</option>
+              <option value="All Time">All Time</option>
+              <option value="Today">Today</option>
+              <option value="This Week">This Week</option>
+              <option value="This Month">This Month</option>
             </select>
           </div>
+
           <button
             type="button"
             className={`${styles.createNew} ${darkMode ? styles.createNewDarkMode : ''}`}

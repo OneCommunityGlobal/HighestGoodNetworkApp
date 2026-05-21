@@ -39,6 +39,7 @@ describe('ResourceUsage Component', () => {
     // Find ALL "Venue" buttons
     const venueButtons = screen.getAllByRole('button', { name: 'Venue' });
 
+    // The LAST one is the dropdown menu option
     const menuOption = venueButtons[venueButtons.length - 1];
 
     fireEvent.click(menuOption);

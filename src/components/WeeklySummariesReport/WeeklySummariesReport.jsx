@@ -2042,17 +2042,6 @@ const WeeklySummariesReport = props => {
               ))}
             </div>
           )}
-          <div className={styles.filterRow} style={{ marginTop: '12px' }}>
-            <WeeklySummariesToggleFilter
-              state={state}
-              setState={setState}
-              hasPermissionToFilter={hasPermissionToFilter}
-              editable={true}
-              formId="report"
-              hasPermission={props.hasPermission}
-              darkMode={darkMode}
-            />
-          </div>
         </Col>
         <Col lg={{ size: 5 }} md={{ size: 6 }} xs={{ size: 12 }}>
           <div>Select Color</div>
@@ -2133,6 +2122,17 @@ const WeeklySummariesReport = props => {
                 )}
               </div>
             )}
+          </div>
+          <div className={styles.filterRow} style={{ marginTop: '8px' }}>
+            <WeeklySummariesToggleFilter
+              state={state}
+              setState={setState}
+              hasPermissionToFilter={hasPermissionToFilter}
+              editable={true}
+              formId="report"
+              hasPermission={props.hasPermission}
+              darkMode={darkMode}
+            />
           </div>
         </Col>
       </Row>

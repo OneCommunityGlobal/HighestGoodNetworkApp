@@ -32,6 +32,24 @@ vi.mock('@tanstack/react-query', () => {
   };
 });
 
+// Mock URL APIs used by plotly
+const mockCreateObjectURL = vi.fn(() => 'mock-url');
+const mockRevokeObjectURL = vi.fn();
+
+if (!global.URL) {
+  global.URL = {};
+}
+global.URL.createObjectURL = mockCreateObjectURL;
+global.URL.revokeObjectURL = mockRevokeObjectURL;
+
+if (typeof window !== 'undefined') {
+  if (!window.URL) {
+    window.URL = {};
+  }
+  window.URL.createObjectURL = mockCreateObjectURL;
+  window.URL.revokeObjectURL = mockRevokeObjectURL;
+}
+
 // Mock axios with proper error handling
 vi.mock('axios', () => {
   const mockAxios = {
@@ -135,6 +153,11 @@ vi.mock('html2canvas', () => ({
     width: 800,
     height: 600,
   })),
+}));
+
+// Mock AutoUpdate component to prevent intervals in tests
+vi.mock('../components/AutoUpdate', () => ({
+  default: () => null,
 }));
 
 // Mock jspdf

@@ -2,13 +2,12 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import axios from 'axios';
+import { useState, useMemo } from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { ENDPOINTS } from '~/utils/URL';
-import { events as mockEvents } from './mockData';
+import { events } from './mockData';
 import styles from './AttendanceNoShowCharts.module.css';
+import { useSelector } from 'react-redux';
 
 const attendanceColors = ['#0088FE', '#FF8042', '#FFBB28'];
 const noShowColors = ['#00C49F', '#FF0000'];
@@ -145,7 +144,9 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
 };
 
 const CustomTooltip = ({ active, payload }) => {
+  console.log(active, payload);
   if (active && payload && payload.length) {
+    console.log('Tooltip payload:', payload);
     return (
       <div className={styles.chartTooltip}>
         <p className={styles.chartTooltipItem}>{`${payload[0].name} : ${payload[0].value}`}</p>
@@ -156,76 +157,14 @@ const CustomTooltip = ({ active, payload }) => {
 };
 
 function AttendanceNoShowCharts() {
-  const [events, setEvents] = useState(mockEvents);
-  const [selectedEvent, setSelectedEvent] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [selectedId, setSelectedId] = useState(events[0].id);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const darkMode = useSelector(state => state.theme.darkMode);
-
-  // Fetch events data from backend
-  useEffect(() => {
-    const fetchEvents = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await axios.get(ENDPOINTS.EVENT_ATTENDANCE_STATS);
-
-        // Check if response has data in expected format
-        if (response.data && Array.isArray(response.data)) {
-          // Transform API data to match mock data format if needed
-          const transformedEvents = response.data.map(transformEvent);
-
-          setEvents(transformedEvents);
-          if (transformedEvents.length > 0) {
-            setSelectedEvent(transformedEvents[0]);
-          }
-        } else if (response.data && response.data.events && Array.isArray(response.data.events)) {
-          // Handle nested response structure
-          const transformedEvents = response.data.events.map(transformEvent);
-
-          setEvents(transformedEvents);
-          if (transformedEvents.length > 0) {
-            setSelectedEvent(transformedEvents[0]);
-          }
-        } else {
-          // If data format doesn't match, fall back to mock data
-          throw new Error('Unexpected data format from API');
-        }
-      } catch (err) {
-        // Fall back to mock data if API is unavailable or returns error
-        // eslint-disable-next-line no-console
-        console.warn('Failed to fetch events from API, using mock data:', err.message);
-        // Calculate status for mock events
-        const mockEventsWithStatus = mockEvents.map(event => ({
-          ...event,
-          status: calculateEventStatus(event) || event.status,
-        }));
-        setEvents(mockEventsWithStatus);
-        if (mockEventsWithStatus.length > 0) {
-          setSelectedEvent(mockEventsWithStatus[0]);
-        }
-        setError('Using mock data - API endpoint not available');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchEvents();
-  }, []);
-
-  // Update selectedEvent when events change
-  useEffect(() => {
-    if (events.length > 0 && !selectedEvent) {
-      setSelectedEvent(events[0]);
-    }
-  }, [events, selectedEvent]);
+  const selectedEvent = useMemo(() => events.find(e => e.id === selectedId), [selectedId]);
 
   const handleEventChange = e => {
-    const selectedEventId = e.target.value;
-    const newSelectedEvent = events.find(event => event.id === selectedEventId);
-    if (newSelectedEvent) {
-      setSelectedEvent(newSelectedEvent);
-    }
+    setSelectedId(e.target.value);
   };
 
   const calculatePercentage = (value, total) => {
@@ -479,14 +418,19 @@ function AttendanceNoShowCharts() {
               )}
 
               {/* No-Show Chart */}
-              <div className={styles.chartWrapper}>
-                <h3 className={styles.chartSectionTitle}>
-                  Registration vs Attendance
-                  {currentStatus === 'In Progress' && (
-                    <span className={styles.chartLiveBadge}>(Live)</span>
-                  )}
+              <div style={{ width: '100%' }}>
+                <h3
+                  style={{
+                    fontSize: '18px',
+                    fontWeight: '500',
+                    color: '#111827',
+                    marginBottom: '12px',
+                    textAlign: 'center',
+                  }}
+                >
+                  No-Show Breakdown
                 </h3>
-                <div className={styles.chartContainer}>
+                <div style={{ height: '300px', width: '100%' }}>
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
