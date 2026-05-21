@@ -1,12 +1,17 @@
 import { store } from "../store";
 import { ENDPOINTS } from "./URL";
 import { handleMessageReceived, handleMessageStatusUpdated } from "../handlers/LBDashboard/messagingHandlers";
+import { getUnreadUserNotifications } from "../actions/notificationAction";
 
 let messagingSocket = null;
 let reconnectAttempts = 0;
 
 export const initMessagingSocket = (token) => {
-    if (messagingSocket && messagingSocket.readyState === WebSocket.OPEN) {
+    if (
+        messagingSocket &&
+        (messagingSocket.readyState === WebSocket.OPEN ||
+            messagingSocket.readyState === WebSocket.CONNECTING)
+    ) {
         return messagingSocket;
     }
 
@@ -37,6 +42,11 @@ export const initMessagingSocket = (token) => {
                 type: "NEW_NOTIFICATION",
                 payload: data.payload,
             });
+            const state = store.getState();
+            const userId = state?.auth?.user?.userid || state?.auth?.user?.userId || state?.auth?.user?._id;
+            if (userId) {
+                store.dispatch(getUnreadUserNotifications(userId));
+            }
         }
     };
 

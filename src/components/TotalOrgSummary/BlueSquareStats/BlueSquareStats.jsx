@@ -1,5 +1,5 @@
 import { BLUE_SQUARE_STATS_COLORS } from '~/constants/totalOrgSummary';
-import './BlueSquareStats.css';
+import styles from './BlueSquareStats.module.css';
 import Loading from '~/components/common/Loading';
 import DonutChart from '../DonutChart/DonutChart';
 
@@ -44,8 +44,8 @@ function BlueSquareStats({ isLoading, blueSquareStats, comparisonType, darkMode 
   const hasData = data.every(item => item.value !== 0);
   const pctChange = totalBlueSquares.comparisonPercentage ?? totalBlueSquares.percentageChange ?? 0;
   return (
-    <section className="blue-square-stats">
-      <div className="blue-square-stats-pie-chart">
+    <section className={styles.blueSquareStats}>
+      <div className={styles.blueSquareStatsPieChart}>
         <DonutChart
           title="TOTAL BLUE SQUARES"
           totalCount={totalBlueSquares.count}

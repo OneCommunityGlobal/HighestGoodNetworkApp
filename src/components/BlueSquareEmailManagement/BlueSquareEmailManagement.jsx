@@ -6,7 +6,7 @@ import {
   resendBlueSquareEmails,
   resendWeeklySummaryEmails,
 } from '../../actions/blueSquareEmailActions';
-import './BlueSquareEmailManagement.css';
+import styles from './BlueSquareEmailManagement.module.css';
 
 const BlueSquareEmailManagement = ({
   auth,
@@ -52,7 +52,7 @@ const BlueSquareEmailManagement = ({
   if (!hasEmailPermission) {
     return (
       <div
-        className={darkMode ? 'bg-oxford-blue' : ''}
+        className={darkMode ? styles.bgOxfordBlue : ''}
         style={{
           padding: '5px 20px',
           minHeight: '100%',

@@ -32,8 +32,8 @@ const store = mockStore({
 });
 
 const mockProjects = [
-  { projectId: 1, projectName: 'Project A' },
-  { projectId: 2, projectName: 'Project B' },
+  { _id: 1, name: 'Project A' },
+  { _id: 2, name: 'Project B' },
 ];
 
 const mockCosts = [
@@ -44,7 +44,7 @@ const mockCosts = [
 describe('TotalMaterialCostPerProject', () => {
   beforeEach(() => {
     axios.get.mockImplementation(url => {
-      if (url.includes('/totalProjects')) {
+      if (url.includes('/bm/projects')) {
         return Promise.resolve({ data: mockProjects });
       }
       if (url.includes('/material-costs')) {
@@ -129,7 +129,7 @@ describe('TotalMaterialCostPerProject', () => {
 
   it('shows error toast when failed to load projects from api', async () => {
     axios.get.mockImplementation(url => {
-      if (url.includes('/totalProjects')) {
+      if (url.includes('/bm/projects')) {
         return Promise.reject(new Error('API error'));
       }
       if (url.includes('/material-costs')) {
@@ -147,7 +147,7 @@ describe('TotalMaterialCostPerProject', () => {
 
   it('shows error toast when failed to load projects cost from api', async () => {
     axios.get.mockImplementation(url => {
-      if (url.includes('/totalProjects')) {
+      if (url.includes('/bm/projects')) {
         return Promise.resolve({ data: mockProjects });
       }
       if (url.includes('/material-costs')) {
