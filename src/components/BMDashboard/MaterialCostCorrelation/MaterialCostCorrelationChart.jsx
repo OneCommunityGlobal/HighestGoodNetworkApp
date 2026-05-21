@@ -62,7 +62,8 @@ function CustomTooltip({ active, payload, darkMode }) {
         </div>
       )}
       <div className={styles.tooltipHint}>
-        <strong>Cost per Unit:</strong> ${data.costPerUnit != null ? data.costPerUnit.toFixed(2) : '0.00'}
+        <strong>Cost per Unit:</strong> $
+        {data.costPerUnit != null ? data.costPerUnit.toFixed(2) : '0.00'}
       </div>
     </div>
   );
@@ -299,7 +300,8 @@ function MaterialCostCorrelationChart() {
     } catch (transformError) {
       logger.logError(
         new Error(
-          `[MaterialCostCorrelation] Chart data transformation error: ${transformError.message || transformError}`,
+          `[MaterialCostCorrelation] Chart data transformation error: ${transformError.message ||
+            transformError}`,
         ),
       );
       return null;

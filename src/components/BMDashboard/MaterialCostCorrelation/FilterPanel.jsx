@@ -140,13 +140,15 @@ function FilterPanel({
     onDateRangeChange(newStartDate, newEndDate);
   };
 
-  const selectedProjectOptions = selectedProjects.length === 0
-    ? [{ value: 'all', label: 'All Projects' }]
-    : projectOptions.filter(option => selectedProjects.includes(option.value));
+  const selectedProjectOptions =
+    selectedProjects.length === 0
+      ? [{ value: 'all', label: 'All Projects' }]
+      : projectOptions.filter(option => selectedProjects.includes(option.value));
 
-  const selectedMaterialTypeOptions = selectedMaterialTypes.length === 0
-    ? [{ value: 'all', label: 'All Materials' }]
-    : materialTypeOptions.filter(option => selectedMaterialTypes.includes(option.value));
+  const selectedMaterialTypeOptions =
+    selectedMaterialTypes.length === 0
+      ? [{ value: 'all', label: 'All Materials' }]
+      : materialTypeOptions.filter(option => selectedMaterialTypes.includes(option.value));
 
   return (
     <div className={`${styles.filterPanel} ${darkMode ? styles.darkMode : ''}`}>
