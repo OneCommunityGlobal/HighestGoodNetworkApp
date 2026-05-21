@@ -156,25 +156,29 @@ const getSecureBase36 = length => {
 
 const createScheduleId = () => `schedule-${Date.now().toString(36)}-${getSecureBase36(6)}`;
 
+const fallbackDateTime = (dateString, timeString) =>
+  `${dateString}${timeString ? `, ${timeString}` : ''}`;
+
+const formatParsedDateTime = (parsed, timeString) => {
+  const formattedDate = parsed.toLocaleDateString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+  const formattedTime = timeString
+    ? parsed.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })
+    : '';
+  return formattedTime ? `${formattedDate} • ${formattedTime}` : formattedDate;
+};
+
 const formatDisplayDateTime = (dateString, timeString) => {
   if (!dateString) return '—';
   try {
-    const composed = `${dateString}T${timeString || '00:00'}`;
-    const parsed = new Date(composed);
-    if (Number.isNaN(parsed.getTime())) {
-      return `${dateString}${timeString ? `, ${timeString}` : ''}`;
-    }
-    const formattedDate = parsed.toLocaleDateString(undefined, {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    });
-    const formattedTime = timeString
-      ? parsed.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })
-      : '';
-    return formattedTime ? `${formattedDate} • ${formattedTime}` : formattedDate;
+    const parsed = new Date(`${dateString}T${timeString || '00:00'}`);
+    if (Number.isNaN(parsed.getTime())) return fallbackDateTime(dateString, timeString);
+    return formatParsedDateTime(parsed, timeString);
   } catch {
-    return `${dateString}${timeString ? `, ${timeString}` : ''}`;
+    return fallbackDateTime(dateString, timeString);
   }
 };
 
@@ -226,6 +230,41 @@ const buttonStyle = (variant, darkMode) => {
 };
 
 const fieldActionRow = { display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '12px' };
+
+// Renders a date or time input with its label and validation error for schedule fields.
+function ScheduleField({ id, type, label, value, min, onChange, attemptedSave, errorText }) {
+  const isInvalid = attemptedSave && !value;
+  return (
+    <div className={styles['reddit-scheduler__field']}>
+      <label htmlFor={id}>
+        {label} <span className={styles['reddit-field__required']}>*</span>
+      </label>
+      <input
+        id={id}
+        type={type}
+        value={value}
+        min={min}
+        onChange={onChange}
+        className={classNames(styles['reddit-field__input'], {
+          [styles['reddit-field__input--invalid']]: isInvalid,
+        })}
+        aria-invalid={isInvalid}
+      />
+      {isInvalid && <p className={styles['reddit-field__error']}>{errorText}</p>}
+    </div>
+  );
+}
+
+ScheduleField.propTypes = {
+  id: PropTypes.string.isRequired,
+  type: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+  value: PropTypes.string.isRequired,
+  min: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  attemptedSave: PropTypes.bool.isRequired,
+  errorText: PropTypes.string.isRequired,
+};
 
 function RedditAutoPoster({ platform }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -785,46 +824,26 @@ function RedditAutoPoster({ platform }) {
               </p>
             )}
             <div className={styles['reddit-scheduler__controls']}>
-              <div className={styles['reddit-scheduler__field']}>
-                <label htmlFor="reddit-schedule-date">
-                  Scheduled date <span className={styles['reddit-field__required']}>*</span>
-                </label>
-                <input
-                  id="reddit-schedule-date"
-                  type="date"
-                  value={scheduledDate}
-                  min={today}
-                  onChange={handleScheduleDateChange}
-                  className={classNames(styles['reddit-field__input'], {
-                    [styles['reddit-field__input--invalid']]:
-                      scheduleAttemptedSave && !scheduledDate,
-                  })}
-                  aria-invalid={scheduleAttemptedSave && !scheduledDate}
-                />
-                {scheduleAttemptedSave && !scheduledDate && (
-                  <p className={styles['reddit-field__error']}>Select a schedule date.</p>
-                )}
-              </div>
-              <div className={styles['reddit-scheduler__field']}>
-                <label htmlFor="reddit-schedule-time">
-                  Scheduled time <span className={styles['reddit-field__required']}>*</span>
-                </label>
-                <input
-                  id="reddit-schedule-time"
-                  type="time"
-                  value={scheduledTime}
-                  min={scheduleTimeMin}
-                  onChange={handleScheduleTimeChange}
-                  className={classNames(styles['reddit-field__input'], {
-                    [styles['reddit-field__input--invalid']]:
-                      scheduleAttemptedSave && !scheduledTime,
-                  })}
-                  aria-invalid={scheduleAttemptedSave && !scheduledTime}
-                />
-                {scheduleAttemptedSave && !scheduledTime && (
-                  <p className={styles['reddit-field__error']}>Select a schedule time.</p>
-                )}
-              </div>
+              <ScheduleField
+                id="reddit-schedule-date"
+                type="date"
+                label="Scheduled date"
+                value={scheduledDate}
+                min={today}
+                onChange={handleScheduleDateChange}
+                attemptedSave={scheduleAttemptedSave}
+                errorText="Select a schedule date."
+              />
+              <ScheduleField
+                id="reddit-schedule-time"
+                type="time"
+                label="Scheduled time"
+                value={scheduledTime}
+                min={scheduleTimeMin}
+                onChange={handleScheduleTimeChange}
+                attemptedSave={scheduleAttemptedSave}
+                errorText="Select a schedule time."
+              />
             </div>
             <label htmlFor="reddit-schedule-content">Scheduled draft</label>
             <textarea
