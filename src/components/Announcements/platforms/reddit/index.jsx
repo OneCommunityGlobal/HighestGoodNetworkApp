@@ -217,6 +217,19 @@ const buttonStyle = (variant, darkMode) => {
 
 const fieldActionRow = { display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '12px' };
 
+const clampScheduleDateTime = (targetDate, targetTime) => {
+  const refreshedToday = formatLocalDate(new Date());
+  const date = !targetDate || targetDate < refreshedToday ? refreshedToday : targetDate;
+
+  let time = targetTime || '00:00';
+  if (date === refreshedToday) {
+    const refreshedTime = formatLocalTime(new Date());
+    if (time < refreshedTime) time = refreshedTime;
+  }
+
+  return { date, time };
+};
+
 function RedditAutoPoster({ platform }) {
   const darkMode = useSelector(state => state.theme.darkMode);
 
@@ -392,22 +405,17 @@ function RedditAutoPoster({ platform }) {
   const handleEditSchedule = scheduleId => {
     const target = savedSchedules.find(s => s.id === scheduleId);
     if (!target) return;
-    const refreshedToday = formatLocalDate(new Date());
-    let nextDate = target.scheduledDate || refreshedToday;
-    if (nextDate < refreshedToday) nextDate = refreshedToday;
-    let nextTime = target.scheduledTime || '00:00';
-    if (nextDate === refreshedToday) {
-      const refreshedTime = formatLocalTime(new Date());
-      if (!nextTime || nextTime < refreshedTime) nextTime = refreshedTime;
-    }
+
+    const { date, time } = clampScheduleDateTime(target.scheduledDate, target.scheduledTime);
+
     setTitle(target.title || '');
     setUrl(target.url || '');
     setSubreddit(target.subreddit || '');
     setFlair(target.flair || '');
     setBody(target.body || '');
     setScheduledDraft(target.scheduledDraft || '');
-    setScheduledDate(nextDate);
-    setScheduledTime(nextTime);
+    setScheduledDate(date);
+    setScheduledTime(time);
     setScheduleAttemptedSave(false);
     setEditingScheduleId(target.id);
     setActiveSubTab('schedule');
