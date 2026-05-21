@@ -63,7 +63,7 @@ function CustomTooltip({ active, payload, darkMode }) {
       )}
       <div className={styles.tooltipHint}>
         <strong>Cost per Unit:</strong> $
-        {data.costPerUnit != null ? data.costPerUnit.toFixed(2) : '0.00'}
+        {data.costPerUnit == null ? '0.00' : data.costPerUnit.toFixed(2)}
       </div>
     </div>
   );
