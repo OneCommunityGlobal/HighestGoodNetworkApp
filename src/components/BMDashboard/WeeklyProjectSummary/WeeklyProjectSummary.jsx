@@ -309,7 +309,7 @@ function WeeklyProjectSummary() {
       {
         title: 'Tools and Equipment Tracking',
         key: 'Tools and Equipment Tracking',
-        className: 'half',
+        className: 'full',
         content: (
           <>
             {/* <div className="weekly-project-summary-card normal-card tools-tracking-layout"> */}
@@ -325,13 +325,7 @@ function WeeklyProjectSummary() {
             >
               <SupplierPerformanceGraph />
             </div>
-            <div
-              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
-              style={{ minHeight: '300px', gridColumn: 'span 2' }}
-            >
-              <ToolsStoppageHorizontalBarChart />
-            </div>
-          </>
+          </div>
         ),
       },
       {
