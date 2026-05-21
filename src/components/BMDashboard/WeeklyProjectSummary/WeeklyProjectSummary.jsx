@@ -25,7 +25,6 @@ import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMate
 import InteractiveMap from '../InteractiveMap/InteractiveMap';
 import styles from './WeeklyProjectSummary.module.css';
 import LossTrackingLineChart from './Financials/LossTrackingLineCharts/LossTrackingLineChart';
-import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 import LessonsLearntChart from '../LessonsLearnt/LessonsLearntChart';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
