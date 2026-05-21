@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 
 import { fetchInvTypeByType } from '~/actions/bmdashboard/invTypeActions';
 import { fetchInvUnits } from '~/actions/bmdashboard/invUnitActions';
-import { Accordion, Card } from 'react-bootstrap';
+import { Accordion, Card, Button } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
@@ -15,16 +16,18 @@ import styles from './TypesList.module.css';
 
 export function InventoryTypesList(props) {
   const { invUnits, errors, dispatch } = props;
+  const history = useHistory();
 
-  // NOTE: depend on redux action implementation
   const categories = ['Materials', 'Consumables', 'Equipments', 'Reusables', 'Tools'];
 
   const [isError, setIsError] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
 
-  // dispatch inventory type fetch action on load
+  const handleBack = () => {
+    history.goBack();
+  };
+
   useEffect(() => {
-    // NOTE: depend on redux action implementation
     dispatch(fetchInvTypeByType('Materials'));
     dispatch(fetchInvTypeByType('Consumables'));
     dispatch(fetchInvTypeByType('Equipments'));
@@ -33,12 +36,10 @@ export function InventoryTypesList(props) {
     dispatch(fetchInvUnits());
   }, []);
 
-  // trigger error state if an error object is added to props
   useEffect(() => {
     if (Object.entries(errors).length) setIsError(true);
   }, [errors]);
 
-  // error state
   if (isError) {
     return (
       <div>
@@ -60,8 +61,6 @@ export function InventoryTypesList(props) {
           dateFormat="MM-dd-yyyy hh:mm:ss"
           id="timestamp"
           showTimeInput
-          // NOTE: all users can edit since the User Class has not been implemented yet
-          // disabled
         />
       </div>
 
@@ -94,10 +93,9 @@ export function InventoryTypesList(props) {
       </Accordion>
 
       <div className={`${styles.buttonContainer}`}>
-        {/* NOTE: should redirect to the Equipment/Tool List Page, which is not implemented yet */}
-        <a href="#back-to-previous" target="_blank" id="back-to-previous" role="button">
+        <Button variant="primary" className={`${styles.backButton}`} onClick={handleBack}>
           Back to previous list page
-        </a>
+        </Button>
       </div>
     </div>
   );

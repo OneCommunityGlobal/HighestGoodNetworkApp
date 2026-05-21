@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { Dropdown, Input } from 'reactstrap';
 import './TeamsAndProjects.css';
 import { useSelector } from 'react-redux';
+
 const TEAM_NAME_MAX_LENGTH = 100;
 
 // eslint-disable-next-line react/display-name
@@ -9,6 +11,12 @@ const AddTeamsAutoComplete = React.memo((props) => {
   const { teamsData, searchText, setSearchText, setInputs, onCreateNewTeam } = props;
   const [isOpen, setIsOpen] = React.useState(false);
   const darkMode = useSelector((state) => state.theme.darkMode);
+  const inputRef = useRef(null);
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
 
 
   // Accept both shapes: { allTeams: [...] } OR just [...]
@@ -30,13 +38,14 @@ const AddTeamsAutoComplete = React.memo((props) => {
     setIsOpen(false);
   };
 
+  const trimmedSearchText = (searchText ?? '').toString().trim();
   const showCreateNew =
-    !!searchText &&
-    !allTeams.some((t) => normalize(t.teamName) === normalize(searchText));
+    trimmedSearchText.length > 0 &&
+    !allTeams.some((t) => normalize(t.teamName) === normalize(trimmedSearchText));
 
   // NEW: don’t show “No teams found” when input is empty
   const shouldShowNoTeams =
-    searchText.trim().length > 0 && suggestions.length === 0;
+    trimmedSearchText.length > 0 && suggestions.length === 0;
 
   return (
     <Dropdown
@@ -47,7 +56,8 @@ const AddTeamsAutoComplete = React.memo((props) => {
       <Input
         type="text"
         value={searchText}
-        autoFocus // eslint-disable-line jsx-a11y/no-autofocus
+        innerRef={inputRef}
+        //autoFocus // eslint-disable-line jsx-a11y/no-autofocus
         onFocus={() => setIsOpen(true)}
         onBlur={() => setTimeout(() => setIsOpen(false), 120)}
         onChange={(e) => {
@@ -100,10 +110,10 @@ const AddTeamsAutoComplete = React.memo((props) => {
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => {
                 setIsOpen(false);
-                onCreateNewTeam?.(searchText);
+                onCreateNewTeam?.(trimmedSearchText);
               }}
             >
-              Create new team: {searchText}
+              Create new team: {trimmedSearchText}
             </div>
           )}
         </div>
@@ -111,5 +121,22 @@ const AddTeamsAutoComplete = React.memo((props) => {
     </Dropdown>
   );
 });
+
+AddTeamsAutoComplete.propTypes = {
+  teamsData: PropTypes.oneOfType([
+    PropTypes.shape({ allTeams: PropTypes.array }),
+    PropTypes.array,
+  ]),
+  searchText: PropTypes.string,
+  setSearchText: PropTypes.func.isRequired,
+  setInputs: PropTypes.func.isRequired,
+  onCreateNewTeam: PropTypes.func,
+};
+
+AddTeamsAutoComplete.defaultProps = {
+  teamsData: {},
+  searchText: '',
+  onCreateNewTeam: undefined,
+};
 
 export default AddTeamsAutoComplete;
