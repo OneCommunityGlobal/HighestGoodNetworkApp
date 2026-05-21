@@ -229,7 +229,22 @@ const clampScheduleDateTime = (targetDate, targetTime) => {
 
   return { date, time };
 };
+const normalizeDate = (nextDateRaw, today) => {
+  if (!nextDateRaw) return null;
+  return nextDateRaw < today ? today : nextDateRaw;
+};
 
+const normalizeTimeForDate = (nextTimeRaw, scheduledDate, today) => {
+  if (!nextTimeRaw) return null;
+
+  // If scheduling for today, ensure time is not in the past
+  if (scheduledDate === today) {
+    const refreshedTime = formatLocalTime(new Date());
+    return nextTimeRaw >= refreshedTime ? nextTimeRaw : refreshedTime;
+  }
+
+  return nextTimeRaw;
+};
 function RedditAutoPoster({ platform }) {
   const darkMode = useSelector(state => state.theme.darkMode);
 
@@ -343,11 +358,12 @@ function RedditAutoPoster({ platform }) {
   const scheduleTimeMin = scheduledDate === today ? currentTime : '00:00';
 
   const handleScheduleDateChange = event => {
-    const nextDateRaw = event.target.value;
-    if (!nextDateRaw) return;
-    const nextDate = nextDateRaw < today ? today : nextDateRaw;
+    const nextDate = normalizeDate(event.target.value, today);
+    if (!nextDate) return;
+
     setScheduledDate(nextDate);
     setScheduleAttemptedSave(false);
+
     if (nextDate === today) {
       const refreshedTime = formatLocalTime(new Date());
       setScheduledTime(prev => (prev && prev >= refreshedTime ? prev : refreshedTime));
@@ -355,15 +371,12 @@ function RedditAutoPoster({ platform }) {
   };
 
   const handleScheduleTimeChange = event => {
-    const nextTimeRaw = event.target.value;
-    if (!nextTimeRaw) return;
-    if (scheduledDate === today) {
-      const refreshedTime = formatLocalTime(new Date());
-      setScheduledTime(nextTimeRaw >= refreshedTime ? nextTimeRaw : refreshedTime);
-      setScheduleAttemptedSave(false);
-      return;
-    }
-    setScheduledTime(nextTimeRaw);
+    const nextTime = event.target.value;
+    if (!nextTime) return;
+
+    const normalized = normalizeTimeForDate(nextTime, scheduledDate, today);
+
+    setScheduledTime(normalized);
     setScheduleAttemptedSave(false);
   };
 
