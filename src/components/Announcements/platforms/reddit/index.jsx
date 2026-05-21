@@ -93,7 +93,6 @@ const sanitizeSubreddit = raw =>
 const extractFlairSuggestions = (title, body, subreddit = '') => {
   const text = `${title} ${body}`.toLowerCase();
 
-  // subreddit-specific suggestions
   const subredditSuggestions = {
     reactjs: ['Help', 'Discussion', 'Showcase'],
     javascript: ['Question', 'Discussion', 'News'],
@@ -110,27 +109,22 @@ const extractFlairSuggestions = (title, body, subreddit = '') => {
   const matchedFlairs = [];
 
   for (const rule of FLAIR_RULES) {
-    const matched = rule.patterns.some(pattern => pattern.test(text));
-
-    if (matched && !matchedFlairs.includes(rule.flair)) {
+    if (rule.patterns.some(pattern => pattern.test(text)) && !matchedFlairs.includes(rule.flair)) {
       matchedFlairs.push(rule.flair);
     }
   }
 
-  // fallback keyword extraction
-  if (matchedFlairs.length === 0) {
-    const words = text.match(/[a-z0-9']+/g) || [];
-
-    const keywords = words
-      .map(word => word.replace(/'/g, ''))
-      .filter(word => word.length >= 4 && !STOP_WORDS.has(word))
-      .filter((word, index, arr) => arr.indexOf(word) === index)
-      .slice(0, 3);
-
-    return keywords;
+  if (matchedFlairs.length > 0) {
+    return matchedFlairs;
   }
 
-  return matchedFlairs;
+  // Fallback: keyword extraction
+  const words = text.match(/[a-z0-9']+/g) || [];
+  return words
+    .map(word => word.replace(/'/g, ''))
+    .filter(word => word.length >= 4 && !STOP_WORDS.has(word))
+    .filter((word, index, arr) => arr.indexOf(word) === index)
+    .slice(0, 3);
 };
 
 const buildPreview = ({ title, url, subreddit, flair, body }) =>
@@ -184,6 +178,22 @@ const formatDisplayDateTime = (dateString, timeString) => {
   }
 };
 
+/**
+ * Clamps a (date, time) pair so neither is in the past relative to right now.
+ * Used both when loading a saved schedule for editing and when the user changes
+ * the date/time picker values.
+ */
+const clampScheduleDateTime = (targetDate, targetTime) => {
+  const today = formatLocalDate(new Date());
+  const date = !targetDate || targetDate < today ? today : targetDate;
+  let time = targetTime || '00:00';
+  if (date === today) {
+    const nowTime = formatLocalTime(new Date());
+    if (time < nowTime) time = nowTime;
+  }
+  return { date, time };
+};
+
 const topCardActions = () => ({
   display: 'flex',
   flexWrap: 'wrap',
@@ -217,34 +227,6 @@ const buttonStyle = (variant, darkMode) => {
 
 const fieldActionRow = { display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '12px' };
 
-const clampScheduleDateTime = (targetDate, targetTime) => {
-  const refreshedToday = formatLocalDate(new Date());
-  const date = !targetDate || targetDate < refreshedToday ? refreshedToday : targetDate;
-
-  let time = targetTime || '00:00';
-  if (date === refreshedToday) {
-    const refreshedTime = formatLocalTime(new Date());
-    if (time < refreshedTime) time = refreshedTime;
-  }
-
-  return { date, time };
-};
-const normalizeDate = (nextDateRaw, today) => {
-  if (!nextDateRaw) return null;
-  return nextDateRaw < today ? today : nextDateRaw;
-};
-
-const normalizeTimeForDate = (nextTimeRaw, scheduledDate, today) => {
-  if (!nextTimeRaw) return null;
-
-  // If scheduling for today, ensure time is not in the past
-  if (scheduledDate === today) {
-    const refreshedTime = formatLocalTime(new Date());
-    return nextTimeRaw >= refreshedTime ? nextTimeRaw : refreshedTime;
-  }
-
-  return nextTimeRaw;
-};
 function RedditAutoPoster({ platform }) {
   const darkMode = useSelector(state => state.theme.darkMode);
 
@@ -331,16 +313,22 @@ function RedditAutoPoster({ platform }) {
     window.open(`https://www.reddit.com/${sub}submit`, '_blank', 'noopener,noreferrer');
   };
 
+  // Validates required fields and returns a comma-separated error string, or null if valid.
+  const getMissingScheduleFields = () => {
+    const missing = [];
+    if (!trimmedTitle) missing.push('Title');
+    if (!trimmedSubreddit) missing.push('Subreddit');
+    return missing.length > 0 ? missing.join(', ') : null;
+  };
+
   const handleScheduleClick = () => {
     if (!hasAnyInput) {
       toast.error('Nothing to schedule yet. Add details in Make Post first.');
       return;
     }
-    const missing = [];
-    if (!trimmedTitle) missing.push('Title');
-    if (!trimmedSubreddit) missing.push('Subreddit');
-    if (missing.length > 0) {
-      toast.error(`Add ${missing.join(', ')} before scheduling.`);
+    const missingFields = getMissingScheduleFields();
+    if (missingFields) {
+      toast.error(`Add ${missingFields} before scheduling.`);
       return;
     }
     const now = new Date();
@@ -357,27 +345,22 @@ function RedditAutoPoster({ platform }) {
   const currentTime = formatLocalTime(now);
   const scheduleTimeMin = scheduledDate === today ? currentTime : '00:00';
 
-  const handleScheduleDateChange = event => {
-    const nextDate = normalizeDate(event.target.value, today);
-    if (!nextDate) return;
-
-    setScheduledDate(nextDate);
+  // Shared handler: clamp the incoming (date, time) pair and commit to state.
+  const applyScheduleDateTime = (nextDate, nextTime) => {
+    const { date, time } = clampScheduleDateTime(nextDate, nextTime);
+    setScheduledDate(date);
+    setScheduledTime(time);
     setScheduleAttemptedSave(false);
+  };
 
-    if (nextDate === today) {
-      const refreshedTime = formatLocalTime(new Date());
-      setScheduledTime(prev => (prev && prev >= refreshedTime ? prev : refreshedTime));
-    }
+  const handleScheduleDateChange = event => {
+    if (!event.target.value) return;
+    applyScheduleDateTime(event.target.value, scheduledTime);
   };
 
   const handleScheduleTimeChange = event => {
-    const nextTime = event.target.value;
-    if (!nextTime) return;
-
-    const normalized = normalizeTimeForDate(nextTime, scheduledDate, today);
-
-    setScheduledTime(normalized);
-    setScheduleAttemptedSave(false);
+    if (!event.target.value) return;
+    applyScheduleDateTime(scheduledDate, event.target.value);
   };
 
   const handleBackToMake = () => {
@@ -435,6 +418,28 @@ function RedditAutoPoster({ platform }) {
     toast.info('Loaded scheduled post for editing.');
   };
 
+  const handleMakeTabClick = id => {
+    if (id === 'make') {
+      setEditingScheduleId(null);
+      setScheduledDraft('');
+      setScheduleAttemptedSave(false);
+    }
+    setActiveSubTab(id);
+  };
+
+  const handleSuggestFlair = () => {
+    const suggestions = extractFlairSuggestions(title, body, subreddit);
+    setFlairSuggestions(suggestions);
+    if (suggestions.length === 0) {
+      toast.info('No flair suggestions found.');
+    }
+  };
+
+  const handleClearFlair = () => {
+    setFlair('');
+    setFlairSuggestions([]);
+  };
+
   return (
     <div className={classNames(styles['reddit-autoposter'], { [styles.dark]: darkMode })}>
       <div className={classNames(styles['reddit-subtabs'], { [styles.dark]: darkMode })}>
@@ -445,14 +450,7 @@ function RedditAutoPoster({ platform }) {
             className={classNames(styles['reddit-subtab'], {
               [styles.active]: activeSubTab === id,
             })}
-            onClick={() => {
-              if (id === 'make') {
-                setEditingScheduleId(null);
-                setScheduledDraft('');
-                setScheduleAttemptedSave(false);
-              }
-              setActiveSubTab(id);
-            }}
+            onClick={() => handleMakeTabClick(id)}
           >
             {label}
           </button>
@@ -461,11 +459,10 @@ function RedditAutoPoster({ platform }) {
 
       {activeSubTab === 'make' ? (
         <>
-          {/* Top card – post type toggle */}
+          {/* Top card */}
           <section className={styles['reddit-card']}>
             <h3>Reddit Auto Poster</h3>
             <p>Compose your Reddit post, then copy each field or open Reddit directly.</p>
-
             <div style={topCardActions()}>
               <button type="button" style={buttonStyle('outline', darkMode)} onClick={handleReset}>
                 Clear fields
@@ -500,9 +497,7 @@ function RedditAutoPoster({ platform }) {
                   className={classNames(
                     styles['reddit-field__input'],
                     styles['reddit-field__input--subreddit'],
-                    {
-                      [styles['reddit-field__input--invalid']]: highlightSubreddit,
-                    },
+                    { [styles['reddit-field__input--invalid']]: highlightSubreddit },
                   )}
                   placeholder="programming"
                   maxLength={21}
@@ -642,15 +637,7 @@ function RedditAutoPoster({ platform }) {
                 <button
                   type="button"
                   style={buttonStyle('ghost', darkMode)}
-                  onClick={() => {
-                    const suggestions = extractFlairSuggestions(title, body, subreddit);
-
-                    setFlairSuggestions(suggestions);
-
-                    if (suggestions.length === 0) {
-                      toast.info('No flair suggestions found.');
-                    }
-                  }}
+                  onClick={handleSuggestFlair}
                 >
                   Suggest flair
                 </button>
@@ -661,27 +648,16 @@ function RedditAutoPoster({ platform }) {
                 >
                   Copy flair
                 </button>
-
                 <button
                   type="button"
                   style={buttonStyle('ghost', darkMode)}
-                  onClick={() => {
-                    setFlair('');
-                    setFlairSuggestions([]);
-                  }}
+                  onClick={handleClearFlair}
                 >
                   Clear flair
                 </button>
               </div>
               {flairSuggestions.length > 0 && (
-                <div
-                  style={{
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    gap: '8px',
-                    marginTop: '14px',
-                  }}
-                >
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '14px' }}>
                   {flairSuggestions.map(item => (
                     <button
                       key={item}
@@ -738,7 +714,7 @@ function RedditAutoPoster({ platform }) {
               )}
               {highlightBody && (
                 <p className={styles['reddit-field__error']}>
-                  Body exceeds Reddit's {BODY_MAX.toLocaleString()}-character limit.
+                  Body exceeds Reddit&apos;s {BODY_MAX.toLocaleString()}-character limit.
                 </p>
               )}
               <div style={fieldActionRow}>
@@ -804,8 +780,8 @@ function RedditAutoPoster({ platform }) {
             <p>Set your scheduled date and time, then save the post for later submission.</p>
             {editingSchedule && (
               <p className={styles['reddit-scheduler__note']}>
-                Editing saved schedule "{editingSchedule.title || 'Untitled draft'}". Saving will
-                overwrite the existing entry.
+                Editing saved schedule &quot;{editingSchedule.title || 'Untitled draft'}&quot;.
+                Saving will overwrite the existing entry.
               </p>
             )}
             <div className={styles['reddit-scheduler__controls']}>
