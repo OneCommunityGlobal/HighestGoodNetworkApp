@@ -5,233 +5,26 @@ import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
 import styles from './Reddit.module.css';
+import {
+  TITLE_MIN,
+  TITLE_MAX,
+  BODY_MAX,
+  sanitizeSubreddit,
+  buildPreview,
+  formatLocalDate,
+  formatLocalTime,
+  formatDisplayDateTime,
+  clampScheduleDateTime,
+  createScheduleId,
+  extractFlairSuggestions,
+  topCardActions,
+  buttonStyle,
+  fieldActionRow,
+} from './Reddithelpers';
 
-const TITLE_MIN = 5;
-const TITLE_MAX = 300;
-const BODY_MAX = 40000;
+// ─── ScheduleField sub-component ─────────────────────────────────────────────
+// Renders a labelled date/time input with inline validation error.
 
-const STOP_WORDS = new Set([
-  'about',
-  'after',
-  'also',
-  'another',
-  'because',
-  'been',
-  'being',
-  'between',
-  'can',
-  'could',
-  'during',
-  'each',
-  'from',
-  'have',
-  'into',
-  'more',
-  'other',
-  'over',
-  'since',
-  'some',
-  'than',
-  'that',
-  'their',
-  'there',
-  'these',
-  'they',
-  'this',
-  'through',
-  'under',
-  'until',
-  'where',
-  'which',
-  'while',
-  'with',
-  'within',
-]);
-
-const FLAIR_RULES = [
-  {
-    flair: 'Question',
-    patterns: [/\?/, /\bhow\b/, /\bwhat\b/, /\bwhy\b/, /\bhelp\b/, /\bissue\b/, /\bproblem\b/],
-  },
-  {
-    flair: 'Discussion',
-    patterns: [/\bdiscussion\b/, /\bthoughts\b/, /\bopinion\b/, /\bdebate\b/, /\bshould\b/],
-  },
-  {
-    flair: 'News',
-    patterns: [
-      /\bnews\b/,
-      /\breleased\b/,
-      /\blaunch\b/,
-      /\bannouncement\b/,
-      /\bupdate\b/,
-      /\bbreaking\b/,
-    ],
-  },
-  {
-    flair: 'Tutorial',
-    patterns: [/\btutorial\b/, /\bguide\b/, /\bstep[- ]by[- ]step\b/, /\blearn\b/],
-  },
-  {
-    flair: 'Showcase',
-    patterns: [/\bshowcase\b/, /\bproject\b/, /\bbuilt\b/, /\bmade\b/, /\bcreated\b/],
-  },
-  {
-    flair: 'Bug',
-    patterns: [/\bbug\b/, /\berror\b/, /\bfix\b/, /\bcrash\b/, /\bissue\b/],
-  },
-];
-
-// Subreddit name must be 3-21 chars, letters/digits/underscores only
-const sanitizeSubreddit = raw =>
-  raw
-    .trim()
-    .replace(/^r\//, '')
-    .replace(/[^a-zA-Z0-9_]/g, '')
-    .slice(0, 21);
-
-const extractFlairSuggestions = (title, body, subreddit = '') => {
-  const text = `${title} ${body}`.toLowerCase();
-
-  const subredditSuggestions = {
-    reactjs: ['Help', 'Discussion', 'Showcase'],
-    javascript: ['Question', 'Discussion', 'News'],
-    programming: ['Discussion', 'News', 'Tutorial'],
-    webdev: ['Showcase', 'Tutorial', 'Question'],
-  };
-
-  const normalizedSubreddit = subreddit.toLowerCase();
-
-  if (subredditSuggestions[normalizedSubreddit]) {
-    return subredditSuggestions[normalizedSubreddit];
-  }
-
-  const matchedFlairs = [];
-
-  for (const rule of FLAIR_RULES) {
-    if (rule.patterns.some(pattern => pattern.test(text)) && !matchedFlairs.includes(rule.flair)) {
-      matchedFlairs.push(rule.flair);
-    }
-  }
-
-  if (matchedFlairs.length > 0) {
-    return matchedFlairs;
-  }
-
-  // Fallback: keyword extraction
-  const words = text.match(/[a-z0-9']+/g) || [];
-  return words
-    .map(word => word.replace(/'/g, ''))
-    .filter(word => word.length >= 4 && !STOP_WORDS.has(word))
-    .filter((word, index, arr) => arr.indexOf(word) === index)
-    .slice(0, 3);
-};
-
-const buildPreview = ({ title, url, subreddit, flair, body }) =>
-  `Subreddit\nr/${subreddit?.trim() || '—'}\n\nTitle\n${title?.trim() ||
-    '—'}\n\nURL\n${url?.trim() || '—'}\n\nBody\n${body?.trim() || '—'}\n\nFlair\n${flair?.trim() ||
-    '(none)'}\n`;
-
-const padTimeUnit = value => String(value).padStart(2, '0');
-
-const formatLocalDate = date =>
-  `${date.getFullYear()}-${padTimeUnit(date.getMonth() + 1)}-${padTimeUnit(date.getDate())}`;
-
-const formatLocalTime = date => `${padTimeUnit(date.getHours())}:${padTimeUnit(date.getMinutes())}`;
-
-const getSecureBase36 = length => {
-  const chars = [];
-  const max = 36 * 7;
-  while (chars.length < length) {
-    const bytes = new Uint8Array(length);
-    globalThis.crypto.getRandomValues(bytes);
-    for (const byte of bytes) {
-      if (byte >= max) continue;
-      chars.push((byte % 36).toString(36));
-      if (chars.length === length) break;
-    }
-  }
-  return chars.join('');
-};
-
-const createScheduleId = () => `schedule-${Date.now().toString(36)}-${getSecureBase36(6)}`;
-
-const fallbackDateTime = (dateString, timeString) =>
-  `${dateString}${timeString ? `, ${timeString}` : ''}`;
-
-const formatParsedDateTime = (parsed, timeString) => {
-  const formattedDate = parsed.toLocaleDateString(undefined, {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  });
-  const formattedTime = timeString
-    ? parsed.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })
-    : '';
-  return formattedTime ? `${formattedDate} • ${formattedTime}` : formattedDate;
-};
-
-const formatDisplayDateTime = (dateString, timeString) => {
-  if (!dateString) return '—';
-  try {
-    const parsed = new Date(`${dateString}T${timeString || '00:00'}`);
-    if (Number.isNaN(parsed.getTime())) return fallbackDateTime(dateString, timeString);
-    return formatParsedDateTime(parsed, timeString);
-  } catch {
-    return fallbackDateTime(dateString, timeString);
-  }
-};
-
-/**
- * Clamps a (date, time) pair so neither is in the past relative to right now.
- * Used both when loading a saved schedule for editing and when the user changes
- * the date/time picker values.
- */
-const clampScheduleDateTime = (targetDate, targetTime) => {
-  const today = formatLocalDate(new Date());
-  const date = !targetDate || targetDate < today ? today : targetDate;
-  let time = targetTime || '00:00';
-  if (date === today) {
-    const nowTime = formatLocalTime(new Date());
-    if (time < nowTime) time = nowTime;
-  }
-  return { date, time };
-};
-
-const topCardActions = () => ({
-  display: 'flex',
-  flexWrap: 'wrap',
-  gap: '12px',
-  marginTop: '16px',
-});
-
-const buttonStyle = (variant, darkMode) => {
-  const base = {
-    borderRadius: '999px',
-    border: 'none',
-    cursor: 'pointer',
-    fontWeight: 600,
-    padding: '10px 18px',
-    transition: 'filter 0.2s ease',
-  };
-  if (variant === 'primary') return { ...base, backgroundColor: '#ff4500', color: '#fff' };
-  if (variant === 'outline')
-    return {
-      ...base,
-      backgroundColor: 'transparent',
-      color: darkMode ? '#ff8060' : '#ff4500',
-      border: `1px solid ${darkMode ? '#6b3020' : '#ff4500'}`,
-    };
-  return {
-    ...base,
-    backgroundColor: darkMode ? '#1c2b44' : '#fff0eb',
-    color: darkMode ? '#ffb8a0' : '#a33000',
-  };
-};
-
-const fieldActionRow = { display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '12px' };
-
-// Renders a date or time input with its label and validation error for schedule fields.
 function ScheduleField({ id, type, label, value, min, onChange, attemptedSave, errorText }) {
   const isInvalid = attemptedSave && !value;
   return (
@@ -266,6 +59,8 @@ ScheduleField.propTypes = {
   errorText: PropTypes.string.isRequired,
 };
 
+// ─── RedditAutoPoster ─────────────────────────────────────────────────────────
+
 function RedditAutoPoster({ platform }) {
   const darkMode = useSelector(state => state.theme.darkMode);
 
@@ -290,6 +85,8 @@ function RedditAutoPoster({ platform }) {
     ],
     [],
   );
+
+  // ── Derived validation state ──────────────────────────────────────────────
 
   const trimmedTitle = title.trim();
   const trimmedUrl = url.trim();
@@ -324,6 +121,8 @@ function RedditAutoPoster({ platform }) {
     [editingScheduleId, savedSchedules],
   );
 
+  // ── Handlers ──────────────────────────────────────────────────────────────
+
   const copyText = async (text, label) => {
     const value = text?.trim();
     if (!value) {
@@ -352,7 +151,6 @@ function RedditAutoPoster({ platform }) {
     window.open(`https://www.reddit.com/${sub}submit`, '_blank', 'noopener,noreferrer');
   };
 
-  // Validates required fields and returns a comma-separated error string, or null if valid.
   const getMissingScheduleFields = () => {
     const missing = [];
     if (!trimmedTitle) missing.push('Title');
@@ -384,7 +182,6 @@ function RedditAutoPoster({ platform }) {
   const currentTime = formatLocalTime(now);
   const scheduleTimeMin = scheduledDate === today ? currentTime : '00:00';
 
-  // Shared handler: clamp the incoming (date, time) pair and commit to state.
   const applyScheduleDateTime = (nextDate, nextTime) => {
     const { date, time } = clampScheduleDateTime(nextDate, nextTime);
     setScheduledDate(date);
@@ -440,9 +237,7 @@ function RedditAutoPoster({ platform }) {
   const handleEditSchedule = scheduleId => {
     const target = savedSchedules.find(s => s.id === scheduleId);
     if (!target) return;
-
     const { date, time } = clampScheduleDateTime(target.scheduledDate, target.scheduledTime);
-
     setTitle(target.title || '');
     setUrl(target.url || '');
     setSubreddit(target.subreddit || '');
@@ -469,15 +264,15 @@ function RedditAutoPoster({ platform }) {
   const handleSuggestFlair = () => {
     const suggestions = extractFlairSuggestions(title, body, subreddit);
     setFlairSuggestions(suggestions);
-    if (suggestions.length === 0) {
-      toast.info('No flair suggestions found.');
-    }
+    if (suggestions.length === 0) toast.info('No flair suggestions found.');
   };
 
   const handleClearFlair = () => {
     setFlair('');
     setFlairSuggestions([]);
   };
+
+  // ── Render ────────────────────────────────────────────────────────────────
 
   return (
     <div className={classNames(styles['reddit-autoposter'], { [styles.dark]: darkMode })}>
@@ -544,7 +339,7 @@ function RedditAutoPoster({ platform }) {
               </div>
               {!trimmedSubreddit && (
                 <p className={styles['reddit-field__hint']}>
-                  Enter the subreddit name without the "r/" prefix (3–21 characters).
+                  Enter the subreddit name without the &quot;r/&quot; prefix (3–21 characters).
                 </p>
               )}
               {highlightSubreddit && (
