@@ -22,7 +22,6 @@ import { ENDPOINTS } from '../../../../utils/URL';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-// Mock data fallback for local dev while backend endpoint is pending
 const MOCK_DB = [
   {
     project: 'Project Alpha',
@@ -271,13 +270,16 @@ export default function PaidLaborCost() {
   const [taskFilter, setTaskFilter] = useState([]);
   const [projectFilter, setProjectFilter] = useState('All Projects');
   const [dateRange, setDateRange] = useState({ startDate: null, endDate: null });
-
   const [allAvailableTasks, setAllAvailableTasks] = useState([]);
   const [allAvailableProjects, setAllAvailableProjects] = useState([]);
   const isFetchingRef = useRef(false);
 
   const fetchLaborCostData = useCallback(
     async (includeProjectFilter = true, includeTaskFilter = true) => {
+      if (isDevelopmentEnvironment()) {
+        return { data: MOCK_DB, totalCost: MOCK_DB.reduce((sum, item) => sum + item.cost, 0) };
+      }
+
       const params = new URLSearchParams();
       if (includeProjectFilter && projectFilter !== 'All Projects') {
         params.append('projects', JSON.stringify([projectFilter]));
@@ -355,12 +357,9 @@ export default function PaidLaborCost() {
 
       try {
         const params = new URLSearchParams();
-        if (projectFilter !== 'All Projects') {
+        if (projectFilter !== 'All Projects')
           params.append('projects', JSON.stringify([projectFilter]));
-        }
-        if (taskFilter.length > 0) {
-          params.append('tasks', JSON.stringify(taskFilter));
-        }
+        if (taskFilter.length > 0) params.append('tasks', JSON.stringify(taskFilter));
         if (dateRange.startDate || dateRange.endDate) {
           params.append(
             'date_range',
@@ -384,12 +383,12 @@ export default function PaidLaborCost() {
         };
 
         const response = await fetch(endpointPath, { method: 'GET', headers, cache: 'no-store' });
+
         if (!response.ok) throw new Error(`Status ${response.status}`);
 
         const apiData = await response.json();
         processApiResponse(apiData);
       } catch (error) {
-        // Fallback to mock data if API is unavailable during dev
         if (isDevelopmentEnvironment()) {
           let filteredMock = MOCK_DB;
 
@@ -427,14 +426,8 @@ export default function PaidLaborCost() {
   useEffect(() => {
     const fetchAllTasks = async () => {
       try {
-        let apiData;
-        try {
-          apiData = await fetchLaborCostData(true, false);
-        } catch (e) {
-          if (isDevelopmentEnvironment()) apiData = { data: MOCK_DB };
-        }
-
-        if (apiData && Array.isArray(apiData.data)) {
+        const apiData = await fetchLaborCostData(true, false);
+        if (Array.isArray(apiData.data)) {
           const uniqueTasks = [...new Set(apiData.data.map(item => item.task))];
           setAllAvailableTasks(uniqueTasks);
         }
@@ -448,14 +441,8 @@ export default function PaidLaborCost() {
   useEffect(() => {
     const fetchAllProjects = async () => {
       try {
-        let apiData;
-        try {
-          apiData = await fetchLaborCostData(false, true);
-        } catch (e) {
-          if (isDevelopmentEnvironment()) apiData = { data: MOCK_DB };
-        }
-
-        if (apiData && Array.isArray(apiData.data)) {
+        const apiData = await fetchLaborCostData(false, true);
+        if (Array.isArray(apiData.data)) {
           const uniqueProjects = [...new Set(apiData.data.map(item => item.project))];
           setAllAvailableProjects(uniqueProjects);
         }
@@ -488,7 +475,6 @@ export default function PaidLaborCost() {
   const taskOptions = useMemo(() => allAvailableTasks.map(task => ({ label: task, value: task })), [
     allAvailableTasks,
   ]);
-
   const projectOptions = useMemo(
     () => [
       { label: 'ALL', value: 'All Projects' },
@@ -691,16 +677,15 @@ export default function PaidLaborCost() {
                 isMulti
                 options={taskOptions}
                 value={taskOptions.filter(option => taskFilter.includes(option.value))}
-                onChange={selected => {
-                  setTaskFilter(selected ? selected.map(option => option.value) : []);
-                }}
+                onChange={selected =>
+                  setTaskFilter(selected ? selected.map(option => option.value) : [])
+                }
                 isClearable
                 placeholder="Select tasks (leave empty for all)"
                 classNamePrefix="select"
                 styles={selectStyles}
               />
             </div>
-
             <div className={styles.paidLaborCostFilterGroup}>
               <label className={styles.paidLaborCostFilterLabel} htmlFor="project-filter">
                 Project
@@ -709,16 +694,13 @@ export default function PaidLaborCost() {
                 id="project-filter"
                 options={projectOptions}
                 value={projectOptions.find(option => option.value === projectFilter)}
-                onChange={selected => {
-                  setProjectFilter(selected ? selected.value : 'All Projects');
-                }}
+                onChange={selected => setProjectFilter(selected ? selected.value : 'All Projects')}
                 isClearable={false}
                 placeholder="Select project"
                 classNamePrefix="select"
                 styles={selectStyles}
               />
             </div>
-
             <div className={styles.paidLaborCostFilterGroup}>
               <label className={styles.paidLaborCostFilterLabel} htmlFor="date-range">
                 Date Range
