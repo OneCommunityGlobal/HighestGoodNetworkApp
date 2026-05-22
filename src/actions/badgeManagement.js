@@ -24,7 +24,7 @@ const getAllBadges = allBadges => {
   const action = {
     type: GET_ALL_BADGE_DATA,
     allBadges,
-  };  
+  };
   return action;
 };
 
@@ -34,13 +34,13 @@ export const fetchAllBadges = (forceRefresh = false) => {
       // Check the endpoint
       const baseUrl = ENDPOINTS.BADGE();
       const url = forceRefresh ? `${baseUrl}?t=${Date.now()}` : baseUrl;
-      
+
       const response = await axios.get(url);
-      
+
       const actionResult = getAllBadges(response.data);
-      
+
       dispatch(actionResult);
-            
+
       return response.status;
     } catch (err) {
       return err.response?.status || 500;
@@ -168,7 +168,7 @@ export const returnUpdatedBadgesCollection = (badgeCollection, selectedBadgesId)
       const currentTs = Date.now();
       const currentDate = formatDate();
 
-      for (let i = 0; i < newBadgeCollection.length; i+=1) {
+      for (let i = 0; i < newBadgeCollection.length; i += 1) {
         const badgeObj = newBadgeCollection[i];
         if (badgeId === badgeObj.badge) {
           // If the badge is found, increment the count and mark it as included
@@ -257,8 +257,10 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
       return;
     }
     const { badgeCollection } = res.data;
-    for (let i = 0; i < badgeCollection.length; i+=1) {
-      badgeCollection[i].badge = badgeCollection[i].badge._id;
+    for (let i = 0; i < badgeCollection.length; i += 1) {
+      if (badgeCollection[i].badge && typeof badgeCollection[i].badge === 'object') {
+        badgeCollection[i].badge = badgeCollection[i].badge._id;
+      }
     }
 
     const userToBeAssignedBadge = res.data._id;

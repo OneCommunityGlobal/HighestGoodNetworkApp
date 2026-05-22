@@ -1,6 +1,7 @@
 import axios from 'axios';
 import classnames from 'classnames';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Image from 'react-bootstrap/Image';
 import { Link, useHistory } from 'react-router-dom';
@@ -988,7 +989,7 @@ setUpdatedTasks(prev => {
   }
 
   try {
-    const result = await props.updateUserProfile(userProfileToUpdate);
+    await props.updateUserProfile(userProfileToUpdate);
     clearCachedTeamMembers(); // clear all team caches on any profile save
     if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
       await props.refreshToken(userProfile._id);
@@ -2431,6 +2432,30 @@ setUpdatedTasks(prev => {
     </div>
   );
 }
+
+UserProfile.propTypes = {
+  auth: PropTypes.shape({
+    user: PropTypes.shape({
+      permissions: PropTypes.object,
+      role: PropTypes.string,
+      userid: PropTypes.string,
+    }).isRequired,
+  }).isRequired,
+  handleLinkModel: PropTypes.func,
+  handleSaveError: PropTypes.func,
+  hasPermission: PropTypes.func,
+  history: PropTypes.shape({
+    push: PropTypes.func,
+  }),
+  isAddNewUser: PropTypes.bool,
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      userId: PropTypes.string,
+    }),
+  }),
+  refreshToken: PropTypes.func,
+  updateUserProfile: PropTypes.func.isRequired,
+};
 
  const mapStateToProps = state => ({
    allProjects: state.allProjects || state.projects || {},   // <- gives you .projects array

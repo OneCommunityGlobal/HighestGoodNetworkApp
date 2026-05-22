@@ -76,15 +76,14 @@ function AssignBadgePopup(props) {
   }, [badgeList, searchedName]);
 
   const addExistBadges = () => {
-    if (props.userProfile && props.userProfile.badgeCollection) {
-      // store raw badge IDs, not "assign-badge-..."
-      const existBadges = props.userProfile.badgeCollection
-        .filter(b => b.badge !== null)
-        .map(b => b.badge._id);
-      return existBadges;
-    }
-    return [];
-  };
+  if (props.userProfile && props.userProfile.badgeCollection) {
+    const existBadges = props.userProfile.badgeCollection
+      .filter(b => b && b.badge && typeof b.badge === 'object' && b.badge._id)
+      .map(b => b.badge._id);
+    return existBadges;
+  }
+  return [];
+};
   let existBadges = addExistBadges();
 
   return (

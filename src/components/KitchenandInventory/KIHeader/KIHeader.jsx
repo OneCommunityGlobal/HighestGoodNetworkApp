@@ -14,7 +14,7 @@ import {
   DropdownMenu,
   DropdownItem,
 } from 'reactstrap';
-import DarkModeButton from '~/components/Header/DarkModeButton';
+import DarkModeButton from '../../Header/DarkModeButton';
 import { fetchTaskEditSuggestions } from '~/components/TaskEditSuggestions/thunks';
 import BellNotification from '~/components/Header/BellNotification';
 import { getHeaderData } from '../../../actions/authActions';

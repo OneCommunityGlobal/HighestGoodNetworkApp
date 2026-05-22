@@ -1,0 +1,167 @@
+/* Light mode for multi select */
+:global(.customSelect__control) {
+  background-color: #fff !important;
+  color: #000 !important;
+  border-color: #ccc;
+  font-size: 1rem;
+}
+
+:global(.customSelect__single-value) {
+  font-size: 1rem;
+  color: #000 !important;
+}
+
+.datepickerWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.datePickerContainer {
+  flex: 0 0 auto;
+  position: relative;
+}
+
+.datePickerControl {
+  display: block;
+}
+
+.datepickerWrapper :global(.btn) {
+  flex: 0 0 auto;
+}
+
+:global(.customSelect__placeholder),
+:global(.customSelect__input-container) {
+  font-size: 1rem;
+}
+
+.datePickerInput {
+  font-size: 1rem !important;
+  padding: 6px 8px;
+  border-radius: 4px;
+}
+
+.datePickerInput:global(.darkTheme) {
+  background-color: #2b3e59 !important;
+  color: #fff !important;
+  border: 1px solid #666 !important;
+  font-size: 1rem !important;
+}
+
+:global(.darkTheme .form-control .datePickerInput) {
+  background-color: #2b3e59 !important;
+  color: #fff !important;
+  border: 1px solid #666 !important;
+  font-size: 10px !important;
+}
+
+:global(.customCalendar .react-datepicker__day--keyboard-selected) {
+  background-color: #7d7e7f !important;
+}
+
+:global(.customCalendar .react-datepicker__navigation-icon::before) {
+  border-color: #222 !important;
+}
+
+/* Hover day styling in dark theme */
+:global(.customCalendar .react-datepicker__day:hover) {
+  background-color: #3b5a81 !important;
+  color: #fff !important;
+  border-radius: 50%;
+}
+
+/* Dark theme calendar container */
+:global(.darkThemeCalendar) { 
+  background-color: #2b3e59 !important;
+  color: #fff !important;
+  border: 1px solid #6b6767 !important;
+}
+
+/* Dark theme header */
+:global(.darkThemeCalendar .react-datepicker__header) {
+  background-color: #1c2541 !important;
+  color: #e0e0e0 !important;
+  border-bottom: 1px solid #666 !important;
+  font-size: 12px !important;
+}
+
+/* Selected day styling in dark theme */
+:global(.darkThemeCalendar .react-datepicker__day--selected) {
+  background-color: #0050a8 !important;
+  color: #fff !important;
+  border-radius: 50%;
+}
+
+:global(.darkThemeCalendar .react-datepicker__day--keyboard-selected) {
+  background-color: #316893 !important;
+}
+
+/* Hover day styling in dark theme */
+:global(.darkThemeCalendar .react-datepicker__day:hover) {
+  background-color: #3b5a81 !important;
+  color: #fff !important;
+  border-radius: 50%;
+}
+
+/* Dark mode for multi select */
+:global(.darkTheme .customSelect__control) {
+  background-color: #fff!important;
+  color: #000!important;
+  border-color: #ccc!important;
+  font-size: 1rem!important;
+}
+
+:global(.darkTheme .customSelect__menu) {
+  background-color: #2b3e59!important;
+  border-color: #666!important;
+  color: #fff!important;
+}
+
+:global(.darkTheme .customSelect__option) {
+  background-color: #2b3e59!important;
+  color: #fff!important;
+}
+
+:global(.darkTheme .customSelect__option--is-focused) {
+  background-color: #6c757d!important;
+}
+
+:global(.darkTheme .customSelect__option--is-selected) {
+  background-color: #007bff!important;
+}
+
+.darkSelectWrapper :global(.customSelect__control) {
+  background-color: #1a1a1a !important;
+  border-color: rgb(255 255 255 / 20%);
+  color: #f5f7fa !important;
+}
+
+.darkSelectWrapper :global(.customSelect__single-value),
+.darkSelectWrapper :global(.customSelect__input-container),
+.darkSelectWrapper :global(.customSelect__placeholder) {
+  color: #f5f7fa !important;
+}
+
+
+
+/* Filter controls layout for small screens */
+@media (width <= 768px) {
+  :global(.datepickerWrapper) {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  :global(.datepickerWrapper .btn) {
+    margin-top: 8px;
+    width: 100%;
+  }
+
+  :global(.customSelect__control) {
+    font-size: 1rem;
+  }
+
+  :global(.customSelect__multi-value) {
+    font-size: 1rem;
+  }
+}
