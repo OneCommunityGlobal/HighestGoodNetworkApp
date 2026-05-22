@@ -83,7 +83,7 @@ export const sanitizeSubreddit = raw =>
   raw
     .trim()
     .replace(/^r\//, '')
-    .replace(/[^a-zA-Z0-9_]/g, '')
+    .replace(/\W/g, '')
     .slice(0, 21);
 
 export const buildPreview = ({ title, url, subreddit, flair, body }) =>
@@ -101,8 +101,11 @@ export const formatLocalDate = date =>
 export const formatLocalTime = date =>
   `${padTimeUnit(date.getHours())}:${padTimeUnit(date.getMinutes())}`;
 
-const fallbackDateTime = (dateString, timeString) =>
-  `${dateString}${timeString ? `, ${timeString}` : ''}`;
+const fallbackDateTime = (dateString, timeString) => {
+  const formattedTime = timeString ? `, ${timeString}` : '';
+
+  return `${dateString}${formattedTime}`;
+};
 
 const formatParsedDateTime = (parsed, timeString) => {
   const formattedDate = parsed.toLocaleDateString(undefined, {
@@ -190,7 +193,7 @@ export const extractFlairSuggestions = (title, body, subreddit = '') => {
   // Fallback: keyword extraction
   const words = text.match(/[a-z0-9']+/g) || [];
   return words
-    .map(word => word.replace(/'/g, ''))
+    .map(word => word.replaceAll("'", ''))
     .filter(word => word.length >= 4 && !STOP_WORDS.has(word))
     .filter((word, index, arr) => arr.indexOf(word) === index)
     .slice(0, 3);

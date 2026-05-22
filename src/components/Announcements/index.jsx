@@ -182,8 +182,6 @@ function Announcements({ title, email: initialEmail }) {
             'slashdot',
             'blogger',
           ].map(platform => {
-            // const PlatformComposer =
-            //   platform === 'slashdot' ? SlashdotAutoPoster : SocialMediaComposer;
             let PlatformComposer;
             switch (platform) {
               case 'slashdot':
