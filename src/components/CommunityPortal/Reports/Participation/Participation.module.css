@@ -45,6 +45,34 @@
   letter-spacing: 0.5px;
 }
 
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.organizerDropdown {
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  background-color: #fff;
+  color: #333;
+  font-size: 14px;
+  min-width: 180px;
+  cursor: pointer;
+}
+
+.organizerDropdown:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.organizerDropdownDark {
+  background-color: #1e293b;
+  color: #fff;
+  border: 1px solid #475569;
+}
+
 /* ---------- Save as PDF button ---------- */
 .savePdfBtn {
   font-size: 14px;
@@ -1133,3 +1161,34 @@
   border: 1px solid #3A506B;
 }
 
+.insightsDark .insightsTab {
+  background-color: #3A506B;
+  color: #fff;
+  border-right: 1px solid #555;
+}
+
+.insightsDark .insightsTab.activeTab {
+  background-color: #007bff;
+  color: #fff;
+}
+
+/* ---------- Info Tooltip Icons ---------- */
+.infoIcon {
+  margin-left: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: #666;
+  vertical-align: middle;
+}
+
+.infoIcon:hover {
+  color: #000;
+}
+
+.trackingTableDark .infoIcon {
+  color: #ccc;
+}
+
+.trackingTableDark .infoIcon:hover {
+  color: #fff;
+}
