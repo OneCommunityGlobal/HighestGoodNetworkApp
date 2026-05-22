@@ -13,6 +13,7 @@ import {
 import hasPermission from '~/utils/permissions';
 import { boxStyle, boxStyleDark } from '~/styles';
 import '../Header/index.css';
+import styles from './TeamMembersPopup.module.css';
 import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
@@ -75,8 +76,8 @@ export const TeamMembersPopup = React.memo(props => {
   const [searchText, setSearchText] = useState('');
   const [duplicateUserAlert, setDuplicateUserAlert] = useState(false);
   const [sortOrder, setSortOrder] = useState(0);
-  const [deletedPopup, setDeletedPopup] = useState(false);
   const [infoModal, setInfoModal] = useState(false);
+  const [isLoading, setisLoading] = useState(false);
 
   // Normalize members
   const validation = useMemo(() => {
@@ -169,11 +170,9 @@ export const TeamMembersPopup = React.memo(props => {
   }, [props.open]);
 
   const toggleInfoModal = () => setInfoModal(p => !p);
-  const closeDeletedPopup = () => setDeletedPopup(p => !p);
 
   const handleDelete = id => {
     props.onDeleteClick(`${id}`);
-    setDeletedPopup(true);
   };
 
   const closePopup = () => {
@@ -188,15 +187,16 @@ export const TeamMembersPopup = React.memo(props => {
     setDuplicateUserAlert(false);
   };
 
-  // avoid negated condition
-  const onAddUser = () => {
+  const onAddUser = async () => {
     if (selectedUser) {
       const isDuplicate = validation.some(x => x?._id === selectedUser._id);
       if (isDuplicate) {
         setSearchText('');
         setDuplicateUserAlert(true);
       } else {
-        props.onAddUser(selectedUser);
+        setisLoading(true);
+        await props.onAddUser(selectedUser);
+        setisLoading(false);
         setSearchText('');
         setDuplicateUserAlert(false);
       }
@@ -218,7 +218,7 @@ export const TeamMembersPopup = React.memo(props => {
   const toggleOrder = useCallback(() => setSortOrder(pre => (pre === -1 ? 1 : pre - 1)), []);
 
   const emptyState = (
-    <tr>
+    <tr className={darkMode ? styles.noHover : ''}>
       <td colSpan={canAssignTeamToUsers ? 6 : 5} className="empty-data-message">
         There are no users on this team.
       </td>
@@ -254,7 +254,7 @@ export const TeamMembersPopup = React.memo(props => {
     );
 
     return (
-      <tr key={`${props.selectedTeamName}-${uid}`}>
+      <tr key={`${props.selectedTeamName}-${uid}`} className={darkMode ? styles.darkModeRow : ''}>
         <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>
           <div className={isActiveDot ? 'isActive' : 'isNotActive'}>
             <i className="fa fa-circle" aria-hidden="true" />
@@ -347,8 +347,9 @@ export const TeamMembersPopup = React.memo(props => {
                 color="primary"
                 onClick={onAddUser}
                 style={darkMode ? boxStyleDark : boxStyle}
+                disabled={isLoading}
               >
-                Add
+                {isLoading ? <Spinner color="light" size="sm" /> : 'Add'}
               </Button>
             </div>
           )}
@@ -468,7 +469,7 @@ export const TeamMembersPopup = React.memo(props => {
         </ModalFooter>
       </Modal>
 
-      <Modal
+      {/* <Modal
         isOpen={deletedPopup}
         toggle={closeDeletedPopup}
         className={darkMode ? 'dark-mode text-light' : ''}
@@ -486,7 +487,7 @@ export const TeamMembersPopup = React.memo(props => {
             ocean is now one drop smaller.
           </p>
         </ModalBody>
-      </Modal>
+      </Modal> */}
     </Container>
   );
 });
@@ -516,13 +517,6 @@ TeamMembersPopup.propTypes = {
   onClose: PropTypes.func.isRequired,
   onAddUser: PropTypes.func.isRequired,
   onUpdateTeamMemberVisibility: PropTypes.func.isRequired,
-};
-
-TeamMembersPopup.defaultProps = {
-  members: [],
-  teamData: [],
-  usersdata: [],
-  fetching: false,
 };
 
 export default TeamMembersPopup;
