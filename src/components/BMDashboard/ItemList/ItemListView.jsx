@@ -253,6 +253,7 @@ export function ItemListView({
             UpdateItemModal={UpdateItemModal}
             dynamicColumns={dynamicColumns}
             darkMode={darkMode}
+            itemType={itemType}
             sortConfig={sortConfig}
             onSort={handleSort}
             totalItems={totalItems}

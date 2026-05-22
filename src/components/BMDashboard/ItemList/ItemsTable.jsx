@@ -1,25 +1,17 @@
 import { useState } from 'react';
-import { Table, Button } from 'reactstrap';
+import { Table, Button, Badge } from 'reactstrap';
 import { BiPencil } from 'react-icons/bi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSortDown, faSort, faSortUp } from '@fortawesome/free-solid-svg-icons';
 import RecordsModal from './RecordsModal';
+import styles from './ItemListView.module.css';
 
 const rowsPerPageOptions = [25, 50, 100];
 
 function generatePageNumbers(current, total) {
-  if (total <= 7) {
-    return Array.from({ length: total }, (_, i) => i + 1);
-  }
-
-  if (current <= 3) {
-    return [1, 2, 3, 4, 5, '...', total];
-  }
-
-  if (current >= total - 2) {
-    return [1, '...', total - 4, total - 3, total - 2, total - 1, total];
-  }
-
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  if (current <= 3) return [1, 2, 3, 4, 5, '...', total];
+  if (current >= total - 2) return [1, '...', total - 4, total - 3, total - 2, total - 1, total];
   return [1, '...', current - 1, current, current + 1, '...', total];
 }
 
@@ -30,6 +22,7 @@ export default function ItemsTable({
   UpdateItemModal,
   dynamicColumns,
   darkMode = false,
+  itemType,
   sortConfig,
   onSort,
   totalItems,
@@ -60,9 +53,8 @@ export default function ItemsTable({
     setRecordType(type);
   };
 
-  const getNestedValue = (obj, path) => {
-    return path.split('.').reduce((acc, part) => (acc ? acc[part] : null), obj);
-  };
+  const getNestedValue = (obj, path) =>
+    path.split('.').reduce((acc, part) => (acc ? acc[part] : null), obj);
 
   const getIconFor = key => {
     if (!sortConfig?.key || sortConfig.key !== key) return faSort;
@@ -75,6 +67,28 @@ export default function ItemsTable({
     Available: 'available',
     Wasted: 'wasted',
     Hold: 'hold',
+  };
+
+  const numericKeys = ['stockBought', 'stockUsed', 'stockAvailable', 'stockWasted'];
+
+  const headerStyle = (key, isAction = false) => {
+    const base = { verticalAlign: 'middle' };
+    if (numericKeys.includes(key)) base.textAlign = 'right';
+    if (isAction) {
+      base.borderLeft = '2px solid #dee2e6';
+      base.textAlign = 'center';
+    }
+    return base;
+  };
+
+  const cellStyle = (key, isAction = false) => {
+    const base = { verticalAlign: 'middle' };
+    if (numericKeys.includes(key)) base.textAlign = 'right';
+    if (isAction) {
+      base.borderLeft = '2px solid #dee2e6';
+      base.textAlign = 'center';
+    }
+    return base;
   };
 
   return (
@@ -93,47 +107,81 @@ export default function ItemsTable({
         <Table className={darkMode ? styles.darkTable : ''}>
           <thead className={styles.stickyThead}>
             <tr>
-              <th onClick={() => onSort?.('project')} className={styles.sortableTh}>
+              <th
+                onClick={() => onSort?.('project')}
+                className={styles.sortableTh}
+                style={{ verticalAlign: 'middle' }}
+              >
                 Project <FontAwesomeIcon icon={getIconFor('project')} size="lg" />
               </th>
-
-              <th onClick={() => onSort?.('name')} className={styles.sortableTh}>
+              <th
+                onClick={() => onSort?.('name')}
+                className={styles.sortableTh}
+                style={{ verticalAlign: 'middle' }}
+              >
                 Name <FontAwesomeIcon icon={getIconFor('name')} size="lg" />
               </th>
-
-              {dynamicColumns.map(({ label }) => {
+              {dynamicColumns.map(({ label, key }) => {
                 const sortKey = dynamicSortKeyByLabel[label];
                 const clickable = Boolean(sortKey);
-
                 return (
                   <th
                     key={label}
                     onClick={clickable ? () => onSort?.(sortKey) : undefined}
                     className={clickable ? styles.sortableTh : undefined}
+                    style={headerStyle(key)}
                   >
                     {label} {clickable && <FontAwesomeIcon icon={getIconFor(sortKey)} size="lg" />}
                   </th>
                 );
               })}
-
-              <th>Usage Record</th>
-              <th>Updates</th>
-              <th>Purchases</th>
+              <th style={headerStyle(null, true)} title="View usage history and charts">
+                Usage Record
+              </th>
+              <th
+                style={{ verticalAlign: 'middle', textAlign: 'center' }}
+                title="View history of manual updates"
+              >
+                Updates
+              </th>
+              <th
+                style={{ verticalAlign: 'middle', textAlign: 'center' }}
+                title="View procurement history"
+              >
+                Purchases
+              </th>
             </tr>
           </thead>
-
           <tbody>
             {filteredItems && filteredItems.length > 0 ? (
               filteredItems.map(el => (
                 <tr key={el._id}>
-                  <td>{el.project?.name}</td>
-                  <td>{el.itemType?.name}</td>
-
-                  {dynamicColumns.map(({ label, key }) => (
-                    <td key={label}>{getNestedValue(el, key)}</td>
-                  ))}
-
-                  <td className={`${styles.itemsCell}`}>
+                  <td style={{ verticalAlign: 'middle' }}>{el.project?.name}</td>
+                  <td style={{ verticalAlign: 'middle' }}>{el.itemType?.name}</td>
+                  {dynamicColumns.map(({ label, key }) => {
+                    const value = getNestedValue(el, key);
+                    if (key === 'stockAvailable' && Number(value) < 10) {
+                      return (
+                        <td key={label} style={cellStyle(key)}>
+                          <Badge
+                            color="danger"
+                            pill
+                            className="me-2"
+                            style={{ marginRight: '8px' }}
+                          >
+                            Low
+                          </Badge>
+                          {value}
+                        </td>
+                      );
+                    }
+                    return (
+                      <td key={label} style={cellStyle(key)}>
+                        {value}
+                      </td>
+                    );
+                  })}
+                  <td className={styles.itemsCell} style={cellStyle(null, true)}>
                     <button
                       type="button"
                       onClick={() => handleEditRecordsClick(el, 'UsageRecord')}
@@ -150,8 +198,10 @@ export default function ItemsTable({
                       View
                     </Button>
                   </td>
-
-                  <td className={`${styles.itemsCell}`}>
+                  <td
+                    className={styles.itemsCell}
+                    style={{ verticalAlign: 'middle', textAlign: 'center' }}
+                  >
                     <button
                       type="button"
                       onClick={() => handleEditRecordsClick(el, 'Update')}
@@ -168,8 +218,7 @@ export default function ItemsTable({
                       View
                     </Button>
                   </td>
-
-                  <td>
+                  <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>
                     <Button
                       color="primary"
                       outline
@@ -206,16 +255,13 @@ export default function ItemsTable({
             ))}
           </select>
         </div>
-
         <div className={styles.rangeInfo}>
           {startRow}-{endRow} of {totalItems}
         </div>
-
         <div className={styles.pageButtons}>
           <button type="button" onClick={() => onPageChange?.(1)} disabled={currentPage === 1}>
             {'<<'}
           </button>
-
           <button
             type="button"
             onClick={() => onPageChange?.(currentPage - 1)}
@@ -223,7 +269,6 @@ export default function ItemsTable({
           >
             {'<'}
           </button>
-
           {generatePageNumbers(currentPage, totalPages).map((p, idx) =>
             typeof p === 'number' ? (
               <button
@@ -241,7 +286,6 @@ export default function ItemsTable({
               </span>
             ),
           )}
-
           <button
             type="button"
             onClick={() => onPageChange?.(currentPage + 1)}
@@ -249,7 +293,6 @@ export default function ItemsTable({
           >
             {'>'}
           </button>
-
           <button
             type="button"
             onClick={() => onPageChange?.(totalPages)}
