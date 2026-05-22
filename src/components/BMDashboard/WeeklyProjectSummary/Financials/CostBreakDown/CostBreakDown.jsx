@@ -457,6 +457,7 @@ export default function CostBreakDown() {
               <div className={styles.detailHeader}>
                 <h4 className={styles.detailTitle}>
                   {CATEGORY_CONFIG[selectedCategory]?.label || selectedCategory} by Project
+                </h4>
                 <button
                   type="button"
                   className={styles.detailClose}
