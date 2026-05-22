@@ -12,7 +12,7 @@
   width: 100%;
   max-width: 1100px;
   margin: 2rem auto;
-  padding: 1.75rem;
+  padding: 1.75rem 1.75rem 0.5rem;
   background: #fff;
   border-radius: 16px;
   box-shadow: 0 1px 0 rgb(0 0 0 / 4%), 0 12px 30px rgb(2 6 23 / 8%);
@@ -59,7 +59,7 @@
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   padding: 1.25rem;
-  margin-bottom: 1.25rem;
+  margin-bottom: 0rem;
   width: 100%;
 }
 
@@ -108,6 +108,37 @@
 .filter-select {
   resize: vertical;
   overflow-y: auto;
+}
+
+.checkbox-fieldset {
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+.checkbox-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.5rem 0;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: #334155;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-item input[type='checkbox'] {
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+  accent-color: #3b82f6;
+  flex-shrink: 0;
 }
 
 .filter-input:hover,
@@ -167,6 +198,19 @@
   transform: translateY(-1px);
 }
 
+.btn.ghost-active {
+  background: #fff1f2;
+  color: #dc2626;
+  border-color: #fca5a5;
+}
+
+.btn.ghost-active:hover {
+  background: #ffe4e6;
+  border-color: #f87171;
+  box-shadow: 0 6px 20px rgb(220 38 38 / 15%);
+  transform: translateY(-1px);
+}
+
 /* --- Normalize native date inputs across browsers --- */
 .filter-input[type='date'] {
   height: 44px;
@@ -213,8 +257,6 @@
   justify-content: center;
   width: 100%;
   max-width: 680px;
-  aspect-ratio: 1 / 1;
-  min-height: 400px;
   margin: 0 auto;
   overflow: visible;
 }
@@ -226,6 +268,7 @@
 .recharts-wrapper,
 .recharts-surface {
   display: block;
+  overflow: visible !important;
 }
 
 .chart-canvas,
@@ -336,6 +379,7 @@
   background: #232d53;
   color: #e5e7eb;
   border-color: #3b4a75;
+  color-scheme: dark;
 }
 
 .experience-donut-chart-dark-mode .filter-input:hover,
@@ -351,6 +395,10 @@
 
 .experience-donut-chart-dark-mode .filter-input[type='date']::-webkit-calendar-picker-indicator {
   filter: invert(1) opacity(0.9);
+}
+
+.experience-donut-chart-dark-mode .checkbox-item {
+  color: #dbe3ff;
 }
 
 /* ===================== Buttons (dark) ===================== */
@@ -375,6 +423,18 @@
 
 .experience-donut-chart-dark-mode .btn.ghost:hover {
   box-shadow: 0 6px 20px rgb(0 0 0 / 35%);
+}
+
+.experience-donut-chart-dark-mode .btn.ghost-active {
+  background: #3b1f28;
+  color: #fca5a5;
+  border-color: #7f2a3a;
+}
+
+.experience-donut-chart-dark-mode .btn.ghost-active:hover {
+  background: #4c2030;
+  border-color: #f87171;
+  box-shadow: 0 6px 20px rgb(220 38 38 / 25%);
 }
 
 /* ===================== Chart canvas (dark) ===================== */
@@ -418,8 +478,7 @@
   }
 
   .chart-canvas {
-    max-width: 360px;
-    min-height: 260px;
+    max-width: 100%;
   }
 }
 
@@ -446,4 +505,43 @@
   .pie-cell {
     transition: none;
   }
+}
+
+/* ===================== Mobile legend (shown instead of outside labels) ===================== */
+.mobile-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem 1rem;
+  padding: 0.75rem 0.5rem 0.25rem;
+  width: 100%;
+}
+
+.mobile-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.mobile-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.mobile-legend-pct {
+  color: #2563eb;
+  font-weight: 700;
+}
+
+.experience-donut-chart-dark-mode .mobile-legend-item {
+  color: #e2e8f0;
+}
+
+.experience-donut-chart-dark-mode .mobile-legend-pct {
+  color: #93c5fd;
 }

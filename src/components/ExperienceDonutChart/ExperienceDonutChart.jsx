@@ -61,9 +61,12 @@ export default function ExperienceDonutChart() {
       Boolean(
         appliedFilters.startDate ||
           appliedFilters.endDate ||
-          (appliedFilters.roles?.length ?? 0) > 0,
+          (appliedFilters.roles?.length ?? 0) > 0 ||
+          startDate ||
+          endDate ||
+          selectedRoles.length > 0,
       ),
-    [appliedFilters],
+    [appliedFilters, startDate, endDate, selectedRoles],
   );
 
   const fetchData = async () => {
@@ -138,6 +141,19 @@ export default function ExperienceDonutChart() {
 
   const [hoveredIndex, setHoveredIndex] = useState(null);
 
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== 'undefined' && window.innerWidth < 450,
+  );
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 450);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+  const pieMargin = isMobile
+    ? { top: 5, right: 5, bottom: 5, left: 5 }
+    : { top: 20, right: 115, bottom: 20, left: 115 };
+
   // Renders the hovered segment with a slightly larger outer radius
   const renderActiveShape = props => {
     const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } = props;
@@ -172,7 +188,7 @@ export default function ExperienceDonutChart() {
         dominantBaseline="central"
         fill={getContrastColor(visibleChartData[index]?.color ?? '#000')}
         style={{
-          fontSize: isHovered ? '1.2rem' : '1.05rem',
+          fontSize: isHovered ? '1.35rem' : '1.2rem',
           fontWeight: 800,
           pointerEvents: 'none',
           transition: 'font-size 0.15s ease',
@@ -186,11 +202,13 @@ export default function ExperienceDonutChart() {
   // Draws name on top line, percentage below — outside the segment, only after animation completes
   const renderOutsideLabel = ({ cx, cy, midAngle, outerRadius, name, percent, index }) => {
     if (!animationDone) return null;
+    // On very small screens hide outside labels — inside counts are still visible
+    if (isMobile) return null;
     const isHovered = index === hoveredIndex;
     const RADIAN = Math.PI / 180;
     const expandedOuter = isHovered ? outerRadius + 10 : outerRadius;
     const lineStart = expandedOuter + 8;
-    const lineEnd = expandedOuter + 50;
+    const lineEnd = expandedOuter + (isMobile ? 30 : 50);
     const sx = cx + lineStart * Math.cos(-midAngle * RADIAN);
     const sy = cy + lineStart * Math.sin(-midAngle * RADIAN);
     const ex = cx + lineEnd * Math.cos(-midAngle * RADIAN);
@@ -202,8 +220,8 @@ export default function ExperienceDonutChart() {
     const pct = `${(percent * 100).toFixed(1)}%`;
     const labelColor = darkMode ? '#f8fafc' : '#0f172a';
     const lineColor = darkMode ? '#94a3b8' : '#64748b';
-    const nameFontSize = isHovered ? '1.05rem' : '0.95rem';
-    const pctFontSize = isHovered ? '0.95rem' : '0.85rem';
+    const nameFontSize = isHovered ? '1.2rem' : '1.05rem';
+    const pctFontSize = isHovered ? '1.05rem' : '0.95rem';
     const strokeWidth = isHovered ? 2.5 : 1.5;
 
     return (
@@ -230,10 +248,6 @@ export default function ExperienceDonutChart() {
         </text>
       </g>
     );
-  };
-
-  const onRolesChange = e => {
-    setSelectedRoles(Array.from(e.target.selectedOptions, o => o.value));
   };
 
   const applyFilters = () => {
@@ -302,22 +316,32 @@ export default function ExperienceDonutChart() {
             </div>
 
             <div className={styles['filter-group']}>
-              <label className={styles['filter-label']} htmlFor="roles">
-                Roles
-              </label>
-              <select
-                id="roles"
-                className={styles['filter-select']}
-                multiple
-                value={selectedRoles}
-                onChange={onRolesChange}
-              >
-                <option value="Frontend Developer">Frontend Developer</option>
-                <option value="DevOps Engineer">DevOps Engineer</option>
-                <option value="Project Manager">Project Manager</option>
-                <option value="Junior Developer">Junior Developer</option>
-                <option value="Full Stack Developer">Full Stack Developer</option>
-              </select>
+              <fieldset className={styles['checkbox-fieldset']}>
+                <legend className={styles['filter-label']}>Roles</legend>
+                <div className={styles['checkbox-list']}>
+                  {[
+                    'Frontend Developer',
+                    'DevOps Engineer',
+                    'Project Manager',
+                    'Junior Developer',
+                    'Full Stack Developer',
+                  ].map(role => (
+                    <label key={role} className={styles['checkbox-item']}>
+                      <input
+                        type="checkbox"
+                        value={role}
+                        checked={selectedRoles.includes(role)}
+                        onChange={e => {
+                          setSelectedRoles(prev =>
+                            e.target.checked ? [...prev, role] : prev.filter(r => r !== role),
+                          );
+                        }}
+                      />
+                      {role}
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
             </div>
           </div>
 
@@ -326,7 +350,9 @@ export default function ExperienceDonutChart() {
               Apply
             </button>
             <button
-              className={`${styles.btn} ${styles.ghost}`}
+              className={`${styles.btn} ${styles.ghost} ${
+                hasFilters ? styles['ghost-active'] : ''
+              }`}
               onClick={resetFilters}
               disabled={!hasFilters}
             >
@@ -340,68 +366,87 @@ export default function ExperienceDonutChart() {
             {loading && <Spinner />}
 
             {!loading && !error && chartData && total > 0 && (
-              <div className={styles['chart-canvas']}>
-                <ResponsiveContainer width="100%" aspect={1}>
-                  <PieChart margin={{ top: 50, right: 100, bottom: 50, left: 100 }}>
-                    <Pie
-                      data={visibleChartData}
-                      cx="50%"
-                      cy="50%"
-                      dataKey="value"
-                      innerRadius="42%"
-                      outerRadius="78%"
-                      stroke={darkMode ? '#1c2441' : '#fff'}
-                      strokeWidth={3}
-                      labelLine={false}
-                      label={renderOutsideLabel}
-                      isAnimationActive={!PREFERS_REDUCED_MOTION}
-                      onAnimationEnd={() => setAnimationDone(true)}
-                      activeIndex={hoveredIndex}
-                      activeShape={renderActiveShape}
-                      onMouseEnter={(_, index) => setHoveredIndex(index)}
-                      onMouseLeave={() => setHoveredIndex(null)}
-                    >
-                      {visibleChartData.map(d => (
-                        <Cell key={d.name} fill={d.color} className={styles['pie-cell']} />
-                      ))}
-                    </Pie>
-                    {/* Inside counts rendered as a second label pass — animation disabled to prevent double-sweep */}
-                    <Pie
-                      data={visibleChartData}
-                      cx="50%"
-                      cy="50%"
-                      dataKey="value"
-                      innerRadius="42%"
-                      outerRadius="78%"
-                      stroke="none"
-                      strokeWidth={0}
-                      labelLine={false}
-                      label={renderInsideCount}
-                      isAnimationActive={false}
-                      style={{ pointerEvents: 'none' }}
-                    >
-                      {visibleChartData.map(d => (
-                        <Cell key={d.name} fill="transparent" />
-                      ))}
-                    </Pie>
-                    {animationDone && (
-                      <text
-                        x="50%"
-                        y="50%"
-                        dominantBaseline="middle"
-                        textAnchor="middle"
-                        style={{
-                          fontWeight: 800,
-                          fontSize: '1.1rem',
-                          fill: darkMode ? '#f8fafc' : '#0f172a',
-                        }}
+              <>
+                <div className={styles['chart-canvas']}>
+                  <ResponsiveContainer width="100%" aspect={1.2}>
+                    <PieChart margin={pieMargin}>
+                      <Pie
+                        data={visibleChartData}
+                        cx="50%"
+                        cy="50%"
+                        dataKey="value"
+                        innerRadius="42%"
+                        outerRadius="78%"
+                        stroke={darkMode ? '#1c2441' : '#fff'}
+                        strokeWidth={3}
+                        labelLine={false}
+                        label={renderOutsideLabel}
+                        isAnimationActive={!PREFERS_REDUCED_MOTION}
+                        onAnimationEnd={() => setAnimationDone(true)}
+                        activeIndex={hoveredIndex}
+                        activeShape={renderActiveShape}
+                        onMouseEnter={(_, index) => setHoveredIndex(index)}
+                        onMouseLeave={() => setHoveredIndex(null)}
                       >
-                        {total.toLocaleString()}
-                      </text>
-                    )}
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
+                        {visibleChartData.map(d => (
+                          <Cell key={d.name} fill={d.color} className={styles['pie-cell']} />
+                        ))}
+                      </Pie>
+                      {/* Inside counts rendered as a second label pass — animation disabled to prevent double-sweep */}
+                      <Pie
+                        data={visibleChartData}
+                        cx="50%"
+                        cy="50%"
+                        dataKey="value"
+                        innerRadius="42%"
+                        outerRadius="78%"
+                        stroke="none"
+                        strokeWidth={0}
+                        labelLine={false}
+                        label={renderInsideCount}
+                        isAnimationActive={false}
+                        style={{ pointerEvents: 'none' }}
+                      >
+                        {visibleChartData.map(d => (
+                          <Cell key={d.name} fill="transparent" />
+                        ))}
+                      </Pie>
+                      {animationDone && (
+                        <text
+                          x="50%"
+                          y="50%"
+                          dominantBaseline="middle"
+                          textAnchor="middle"
+                          style={{
+                            fontWeight: 800,
+                            fontSize: '1.25rem',
+                            fill: darkMode ? '#f8fafc' : '#0f172a',
+                          }}
+                        >
+                          {total.toLocaleString()}
+                        </text>
+                      )}
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+                {isMobile && (
+                  <div className={styles['mobile-legend']}>
+                    {visibleChartData.map(d => {
+                      const pct = total > 0 ? ((d.value / total) * 100).toFixed(1) : 0;
+                      return (
+                        <div key={d.name} className={styles['mobile-legend-item']}>
+                          <span
+                            className={styles['mobile-legend-dot']}
+                            style={{ backgroundColor: d.color }}
+                          />
+                          <span className={styles['mobile-legend-name']}>{d.name}</span>
+                          <span className={styles['mobile-legend-pct']}>{pct}%</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </>
             )}
 
             {!loading && !error && (!chartData || total === 0) && <p>No Data Available 😢</p>}
