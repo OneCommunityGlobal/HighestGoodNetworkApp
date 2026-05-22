@@ -147,6 +147,11 @@
   outline: none;
 }
 
+.darkHeader .dashboardSearchContainer {
+  border-color: #fff;
+  background: #1b2a41;
+}
+
 .dashboardSearchContainer:focus-within {
   border-color: #4da3ff;
   box-shadow: none;
@@ -154,11 +159,6 @@
 
 .dashboardSearchContainer:focus-within:not(:focus-visible) {
   outline: none;
-}
-
-.darkHeader .dashboardSearchContainer {
-  border-color: #fff;
-  background: #1b2a41;
 }
 
 .dashboardSearchTextarea {
@@ -527,6 +527,33 @@
   box-shadow: 0 8px 20px rgb(0 0 0 / 20%);
 }
 
+.eventTitle::after {
+  content: attr(data-event-title);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  z-index: 2;
+  max-width: min(280px, calc(100vw - 48px));
+  padding: 6px 10px;
+  color: #fff;
+  font-size: 0.9rem;
+  line-height: 1.3;
+  text-align: center;
+  white-space: normal;
+  overflow-wrap: break-word;
+  background-color: #000;
+  border-radius: 4px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -4px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.eventTitle:hover::after {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
 .darkEventCard {
   background: #1b2a41;
 }
@@ -558,16 +585,22 @@
 }
 
 .eventTitle {
+  position: relative;
   text-align: center;
   color: #2c3e50;
   margin: 0 0 15px;
   font-weight: bold;
   font-size: 1.3rem;
   line-height: 1.4;
+  overflow: visible;
+  cursor: default;
+}
+
+.eventTitleText {
+  display: block;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  cursor: default;
 }
 
 .eventDate,

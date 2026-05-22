@@ -1,127 +1,59 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import axios from 'axios';
 import styles from './MyCases.module.css';
+import mockEvents from './mockData';
 import CreateEventModal from './CreateEventModal';
-import { ENDPOINTS } from '../../../../utils/URL';
-
-const INITIAL_DISPLAY = 10;
-
-const normalizeEvent = e => ({
-  id: e._id,
-  eventType: e.type || 'Workshop',
-  eventDate: e.startTime,
-  eventTime: e.startTime
-    ? new Date(e.startTime).toLocaleString('en-US', {
-        hour: 'numeric',
-        minute: 'numeric',
-        hour12: true,
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-      })
-    : '',
-  eventName: e.title,
-  attendees: e.currentAttendees ?? 0,
-  location: e.location || 'TBD',
-});
+import { filterEventsByDate } from './FilterByDate';
 
 function MyCases() {
   const [view, setView] = useState('card');
   const [filter, setFilter] = useState('all');
+  const [expanded, setExpanded] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [showAll, setShowAll] = useState(false);
-
-  const [allEvents, setAllEvents] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [fetchError, setFetchError] = useState(null);
 
   const isExporting =
-    typeof document !== 'undefined' && document.documentElement?.dataset?.exporting === 'true';
+    typeof document !== 'undefined' && document.documentElement?.dataset?.exporting === 'true'; // Sonar: prefer .
 
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const fetchEvents = useCallback(async () => {
-    setIsLoading(true);
-    setFetchError(null);
-    try {
-      const response = await axios.get(ENDPOINTS.EVENTS);
-      const raw = response.data?.events || response.data || [];
-      setAllEvents(raw.map(normalizeEvent));
-    } catch {
-      setFetchError('Failed to load events.');
-    } finally {
-      setIsLoading(false);
+  const filteredEvents = filterEventsByDate(mockEvents, filter);
+
+  const filteredEventsByEventType = filteredEvents.filter(event => {
+    if (event.eventType === 'all') {
+      return true; // Simplified: just return true to keep the item
+    } else {
+      return event.eventType === filter;
     }
-  }, []);
+  });
 
-  useEffect(() => {
-    fetchEvents();
-  }, [fetchEvents]);
+  // Sonar: extract nested ternary into independent statement
+  let visibleEvents = filteredEventsByEventType;
+  if (!isExporting) {
+    // Limt to 10 events by default, but show all if when user clicks "More" or when exporting
+    visibleEvents = expanded
+      ? filteredEvents.slice(0, filteredEvents.length)
+      : filteredEvents.slice(0, 10);
+  }
 
-  const handleFilterChange = e => {
-    setFilter(e.target.value);
-    setShowAll(false);
-  };
+  const placeholderAvatar = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
 
-  const handleEventCreated = () => {
-    fetchEvents();
-    setShowAll(false);
-  };
-
-  const applyFilter = allEvts => {
+  const isEventToday = dateString => {
+    const eventDate = new Date(dateString);
     const now = new Date();
-
-    if (filter === 'today') {
-      return allEvts.filter(e => {
-        const d = new Date(e.eventDate);
-        return (
-          d.getDate() === now.getDate() &&
-          d.getMonth() === now.getMonth() &&
-          d.getFullYear() === now.getFullYear()
-        );
-      });
-    }
-    if (filter === 'thisWeek') {
-      const startOfWeek = new Date(now);
-      startOfWeek.setDate(now.getDate() - now.getDay());
-      startOfWeek.setHours(0, 0, 0, 0);
-      const endOfWeek = new Date(startOfWeek);
-      endOfWeek.setDate(startOfWeek.getDate() + 6);
-      endOfWeek.setHours(23, 59, 59, 999);
-      return allEvts.filter(e => {
-        const d = new Date(e.eventDate);
-        return d >= startOfWeek && d <= endOfWeek && d >= new Date();
-      });
-    }
-    if (filter === 'thisMonth') {
-      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-      const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
-      return allEvts.filter(e => {
-        const d = new Date(e.eventDate);
-        return d >= startOfMonth && d <= endOfMonth && d >= new Date();
-      });
-    }
-    return allEvts.filter(e => {
-      const d = new Date(e.eventDate);
-      return d > new Date();
-    });
+    return (
+      eventDate.getDate() === now.getDate() &&
+      eventDate.getMonth() === now.getMonth() &&
+      eventDate.getFullYear() === now.getFullYear()
+    );
   };
-
-  const filteredSorted = applyFilter(allEvents).sort(
-    (a, b) => new Date(a.eventDate).getTime() - new Date(b.eventDate).getTime(),
-  );
-
-  const displayEvents =
-    isExporting || showAll ? filteredSorted : filteredSorted.slice(0, INITIAL_DISPLAY);
-
-  const hasMore = !showAll && filteredSorted.length > INITIAL_DISPLAY;
-
-  const placeholderAvatar = 'https://picsum.photos/id/201/200/300';
 
   const renderCardView = () => (
-    <div className={`case-cards-global ${styles.caseCards} ${isExporting ? styles.expanded : ''}`}>
-      {displayEvents.map(event => (
+    <div
+      className={`case-cards-global ${styles.caseCards} ${
+        expanded || isExporting ? styles.expanded : ''
+      }`}
+    >
+      {visibleEvents?.map(event => (
         <div
           className={`case-card-global ${styles.caseCard} ${darkMode ? styles.caseCardDark : ''}`}
           key={event.id}
@@ -132,9 +64,10 @@ function MyCases() {
           <span className={`${styles.eventTime} ${darkMode ? styles.eventTimeDark : ''}`}>
             {event.eventTime}
           </span>
-          <div className={`${styles.eventName} ${darkMode ? styles.eventNameDark : ''}`}>
+          <span className={`${styles.eventName} ${darkMode ? styles.eventNameDark : ''}`}>
+            {isEventToday(event.eventDate) ? "Today's " : ''}
             {event.eventName}
-          </div>
+          </span>
           <div className={`${styles.attendeesInfo} ${darkMode ? styles.attendeesInfoDark : ''}`}>
             <div className={styles.avatars}>
               <img
@@ -156,7 +89,11 @@ function MyCases() {
   );
 
   const renderListView = () => (
-    <ul className={`case-list-global ${styles.caseList} ${isExporting ? styles.expanded : ''}`}>
+    <ul
+      className={`case-list-global ${styles.caseList} ${
+        expanded || isExporting ? styles.expanded : ''
+      }`}
+    >
       <li
         className={`${styles.caseListHeader} ${darkMode ? styles.caseListHeaderDark : ''}`}
         aria-hidden="true"
@@ -166,8 +103,7 @@ function MyCases() {
         <span className={styles.caseListHeaderLabel}>Event Name</span>
         <span className={styles.caseListHeaderLabel}>Attendees</span>
       </li>
-
-      {displayEvents.map(event => (
+      {visibleEvents?.map(event => (
         <li
           className={`case-list-item-global ${styles.caseListItem} ${
             darkMode ? styles.caseListItemDark : ''
@@ -188,9 +124,6 @@ function MyCases() {
       <p>Calendar View is under construction...</p>
     </div>
   );
-
-  if (isLoading) return <p>Loading events...</p>;
-  if (fetchError) return <p>{fetchError}</p>;
 
   return (
     <div
@@ -231,12 +164,12 @@ function MyCases() {
                 darkMode ? styles.filterDropdownDarkMode : ''
               }`}
               value={filter}
-              onChange={handleFilterChange}
+              onChange={e => setFilter(e.target.value)}
             >
-              <option value="all">All Time</option>
-              <option value="today">Today</option>
-              <option value="thisWeek">This Week</option>
-              <option value="thisMonth">This Month</option>
+              <option value="All Time">All Time</option>
+              <option value="Today">Today</option>
+              <option value="This Week">This Week</option>
+              <option value="This Month">This Month</option>
             </select>
           </div>
 
@@ -247,42 +180,25 @@ function MyCases() {
           >
             + Create New
           </button>
-
-          {!isExporting && view !== 'calendar' && (
-            <>
-              {hasMore && (
-                <button
-                  type="button"
-                  className={`more-btn-global ${styles.moreBtn}`}
-                  onClick={() => setShowAll(true)}
-                >
-                  More
-                </button>
-              )}
-              {showAll && filteredSorted.length > INITIAL_DISPLAY && (
-                <button
-                  type="button"
-                  className={`more-btn-global ${styles.moreBtn}`}
-                  onClick={() => setShowAll(false)}
-                >
-                  Less
-                </button>
-              )}
-            </>
+          {filteredEvents.length > 10 && !isExporting && (
+            <button
+              type="button"
+              className={`more-btn-global ${styles.moreBtn}`}
+              onClick={() => setExpanded(!expanded)}
+            >
+              {expanded ? 'Show Less' : 'More'}
+            </button>
           )}
         </div>
       </header>
-
-      <main className={styles.content}>
+      <main className={`${styles.content}`}>
         {view === 'card' && renderCardView()}
         {view === 'list' && renderListView()}
         {view === 'calendar' && renderCalendarView()}
       </main>
-
       <CreateEventModal
         isOpen={isCreateModalOpen}
         toggle={() => setIsCreateModalOpen(!isCreateModalOpen)}
-        onEventCreated={handleEventCreated}
       />
     </div>
   );
