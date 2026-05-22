@@ -80,7 +80,7 @@ function RedditAutoPoster({ platform }) {
 
   const subTabs = useMemo(
     () => [
-      { id: 'make', label: '📝 Make Post' },
+      { id: 'make', label: '📝 Create Post' },
       { id: 'schedule', label: '⏰ Scheduled Post' },
     ],
     [],
@@ -160,7 +160,7 @@ function RedditAutoPoster({ platform }) {
 
   const handleScheduleClick = () => {
     if (!hasAnyInput) {
-      toast.error('Nothing to schedule yet. Add details in Make Post first.');
+      toast.error('Nothing to schedule yet. Add details in Create Post first.');
       return;
     }
     const missingFields = getMissingScheduleFields();
@@ -648,7 +648,7 @@ function RedditAutoPoster({ platform }) {
                 styles['reddit-field__input'],
                 styles['reddit-scheduler__textarea'],
               )}
-              placeholder='Click "Schedule this post" in the Make Post tab to load content here.'
+              placeholder='Click "Schedule this post" in the Create Post tab to load content here.'
               rows={8}
               readOnly
             />
@@ -656,25 +656,25 @@ function RedditAutoPoster({ platform }) {
               <button
                 type="button"
                 style={buttonStyle('primary', darkMode)}
-                onClick={handleSaveSchedule}
                 disabled={!scheduleHasDraft}
+                onClick={handleSaveSchedule}
               >
                 {editingScheduleId ? 'Update scheduled post' : 'Save scheduled post'}
               </button>
               <button
                 type="button"
                 style={buttonStyle('ghost', darkMode)}
-                onClick={() => copyText(scheduledDraft, 'Scheduled draft')}
                 disabled={!scheduleHasDraft}
+                onClick={() => copyText(scheduledDraft, 'Scheduled draft')}
               >
-                Copy scheduled draft
+                Copy Scheduled draft
               </button>
               <button
                 type="button"
                 style={buttonStyle('outline', darkMode)}
                 onClick={handleBackToMake}
               >
-                Back to Make Post
+                Back to Create Post
               </button>
             </div>
           </section>
@@ -691,27 +691,30 @@ function RedditAutoPoster({ platform }) {
                 </p>
               ) : (
                 savedSchedules.map(schedule => {
-                  const isActive = schedule.id === editingScheduleId;
-                  const excerpt =
-                    schedule.scheduledDraft && schedule.scheduledDraft.length > 140
-                      ? `${schedule.scheduledDraft.slice(0, 140).trim()}...`
-                      : schedule.scheduledDraft || 'No content captured.';
+                  const isEditing = schedule.id === editingScheduleId;
+                  const draftText = schedule.scheduledDraft ?? '';
+                  const previewText =
+                    draftText.length > 140
+                      ? `${draftText.slice(0, 140).trim()}...`
+                      : draftText || 'No content captured.';
+
                   return (
                     <article
                       key={schedule.id}
-                      className={classNames(styles['reddit-saved__item'], {
-                        [styles['reddit-saved__item--active']]: isActive,
-                      })}
+                      className={classNames(
+                        styles['reddit-saved__item'],
+                        isEditing && styles['reddit-saved__item--active'],
+                      )}
                     >
                       <div className={styles['reddit-saved__header']}>
                         <h4 className={styles['reddit-saved__title']}>
-                          {schedule.title || 'Untitled draft'}
+                          {schedule.title ?? 'Untitled draft'}
                         </h4>
                         <span className={styles['reddit-saved__meta']}>
                           {formatDisplayDateTime(schedule.scheduledDate, schedule.scheduledTime)}
                         </span>
                       </div>
-                      <p className={styles['reddit-saved__excerpt']}>{excerpt}</p>
+                      <p className={styles['reddit-saved__excerpt']}>{previewText}</p>
                       <div className={styles['reddit-saved__actions']}>
                         <button
                           type="button"
@@ -725,7 +728,7 @@ function RedditAutoPoster({ platform }) {
                           style={buttonStyle('outline', darkMode)}
                           onClick={openRedditSubmit}
                         >
-                          Submit
+                          Submit to Reddit
                         </button>
                       </div>
                     </article>
