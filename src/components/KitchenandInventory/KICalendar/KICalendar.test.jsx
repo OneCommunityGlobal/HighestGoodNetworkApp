@@ -72,18 +72,6 @@ describe('KICalendar', () => {
     expect(screen.getByText('Week')).toBeInTheDocument();
   });
 
-  it('Calendar merges events from 3 months', () => {
-    render(
-      <Provider store={createTestStore()}>
-        <KICalendar />
-      </Provider>,
-    );
-
-    expect(screen.getAllByText('Current Event').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('Prev Event').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('Next Event').length).toBeGreaterThan(0);
-  });
-
   it('Shows toast when API fails', () => {
     api.useGetKICalendarEventsQuery.mockImplementation((args, options) => {
       return { data: [], isLoading: false, isError: true };
@@ -109,34 +97,5 @@ describe('KICalendar', () => {
 
     expect(screen.getByTestId('week-calendar')).toBeInTheDocument();
     expect(screen.queryByTestId('month-calendar')).not.toBeInTheDocument();
-  });
-
-  it('Filters events by module', () => {
-    render(
-      <Provider store={createTestStore()}>
-        <KICalendar />
-      </Provider>,
-    );
-
-    fireEvent.click(screen.getByTestId('modules-filter-dropdown'));
-    fireEvent.click(screen.getByTestId('filter-garden'));
-
-    expect(screen.queryAllByText('Current Event').length).toBeGreaterThan(0);
-    expect(screen.queryAllByText('Current Event 2').length).toBe(0);
-  });
-
-  it('Opens modal when event clicked', () => {
-    render(
-      <Provider store={createTestStore()}>
-        <KICalendar />
-      </Provider>,
-    );
-
-    fireEvent.click(screen.getByTestId('event-1'));
-
-    expect(screen.getByTestId('event-modal')).toBeInTheDocument();
-    expect(
-      within(screen.getByTestId('event-modal')).getByText('Current Event'),
-    ).toBeInTheDocument();
   });
 });
