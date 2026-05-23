@@ -8,22 +8,32 @@ import styles from './ProcessingLandingPage.module.css';
 const AddProcessingProjectModal = ({ isOpen, onClose, targetSection, onSave }) => {
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const [formData, setFormData] = useState({
+  const getTodayDateString = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const initialFormState = section => ({
     projectName: '',
-    type: targetSection || 'canning',
+    type: section || 'canning',
     priority: 'Low',
     quantity: '',
     trays: '',
     batches: '',
     storage: '',
-    date: new Date().toISOString().split('T')[0],
+    date: getTodayDateString(),
   });
 
+  const [formData, setFormData] = useState(() => initialFormState(targetSection));
+
   useEffect(() => {
-    if (targetSection) {
-      setFormData(prev => ({ ...prev, type: targetSection }));
+    if (isOpen) {
+      setFormData(initialFormState(targetSection));
     }
-  }, [targetSection]);
+  }, [isOpen, targetSection]);
 
   if (!isOpen) return null;
 
@@ -34,6 +44,11 @@ const AddProcessingProjectModal = ({ isOpen, onClose, targetSection, onSave }) =
 
   const handleSubmit = e => {
     e.preventDefault();
+    const todayStr = getTodayDateString();
+    if (formData.date < todayStr) {
+      alert('Scheduled date cannot be in the past.');
+      return;
+    }
     // Map frontend field names to backend schema
     const payload = {
       item_name: formData.projectName,
@@ -142,6 +157,7 @@ const AddProcessingProjectModal = ({ isOpen, onClose, targetSection, onSave }) =
                 id="date"
                 type="date"
                 name="date"
+                min={getTodayDateString()}
                 value={formData.date}
                 onChange={handleChange}
                 required
@@ -158,16 +174,6 @@ const AddProcessingProjectModal = ({ isOpen, onClose, targetSection, onSave }) =
                   type="number"
                   name="trays"
                   value={formData.trays}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <label htmlFor="batchesExtra">Batches</label>
-                <input
-                  id="batchesExtra"
-                  type="number"
-                  name="batches"
-                  value={formData.batches}
                   onChange={handleChange}
                 />
               </div>

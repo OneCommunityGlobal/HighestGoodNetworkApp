@@ -792,3 +792,18 @@
   border-color: #555;
   color: #aaa;
 }
+
+.formGroup input[type="date"] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.darkModeModal input[type="date"] {
+  color-scheme: dark;
+}
+
+.darkModeModal input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
+}
