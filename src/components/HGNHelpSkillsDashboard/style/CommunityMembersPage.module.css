@@ -103,6 +103,14 @@
   color: #f9fafb;
 }
 
+.darkMode .accordion {
+  border-color: #4b5563;
+}
+
+.darkMode .accordionContent {
+  background-color: #1b2a41;
+}
+
 .darkMode .skillButton,
 .darkMode .preferenceButton {
   background-color: #1f2937;
