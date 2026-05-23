@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import styles from './RegistrationPopup.module.css';
 
@@ -45,5 +46,7 @@ function Popup({ onClose }) {
     </div>
   );
 }
-
+Popup.propTypes = {
+  onClose: PropTypes.func.isRequired,
+};
 export default Popup;
