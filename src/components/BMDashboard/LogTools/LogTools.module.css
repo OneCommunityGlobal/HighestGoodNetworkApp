@@ -148,6 +148,7 @@
   color: #168dc0
 }
 
+
 .actionButtons {
   display: flex;
   flex-direction: row;
@@ -160,7 +161,43 @@
   border-bottom: 2px solid #aaacaf !important;
 }
 
-.toolTypeRow {
+.toolTypeRow td {
   border: none !important;
-  color:#aaacaf;
+  color: #1a1a1a;
+}
+
+/* Dark Mode */
+:global(.dark-mode) .logFormContainer {
+  background-color: #2b2b2b;
+  color: #ffffff;
+  border-color: #444;
+}
+
+:global(.dark-mode) .subtitleRow {
+  background-color: #1a1a1a;
+  border-bottom: 1px solid #444;
+}
+
+
+/* --- DARK MODE --- */
+:global(body.dark-mode) .logFormContainer {
+  background-color: #1b2a41;
+  color: #ffffff;
+  border-color: #444;
+}
+
+:global(body.dark-mode) .subPropertyHighlight {
+  color: #87CEFA !important;
+
+  border-bottom: 2px solid #444 !important;
+}
+
+:global(body.dark-mode) .logFormSubmitButton {
+  background-color: #ffffff !important;
+  color: #240404 !important;
+}
+
+:global(body.dark-mode) .logFormCancelButton {
+  background-color: #131516 !important;
+  color: #ffffff !important;
 }

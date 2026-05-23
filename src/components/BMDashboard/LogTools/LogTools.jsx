@@ -18,7 +18,7 @@ function LogTools() {
   const dispatch = useDispatch();
   const history = useHistory();
   const today = new Date().toISOString().split('T')[0];
-  const [selectedProject, setSelectedProject] = useState(projects[0].name);
+  const [selectedProject, setSelectedProject] = useState(projects?.[0]?.name || '');
   const [selectedAction, setSelectedAction] = useState('Check In');
   const [relevantToolTypes, setRelevantToolTypes] = useState([]);
   const [postObject, setPostObject] = useState({
@@ -84,19 +84,19 @@ function LogTools() {
       let availForSelectedProj = 0;
       let usingForSelectedProj = 0;
 
-      type.available.forEach(availItem => {
+      type.available?.forEach(availItem => {
         if (availItem.project.name === selectedProject) {
           availForSelectedProj += 1;
         }
       });
 
-      type.using.forEach(usingItem => {
+      type.using?.forEach(usingItem => {
         if (usingItem.project.name === selectedProject) {
           usingForSelectedProj += 1;
         }
       });
 
-      if (type[actionArray].length > 0) {
+      if (type[actionArray]?.length > 0) {
         const typeDetails = {
           toolName: type.name,
           _id: type._id,
@@ -104,8 +104,8 @@ function LogTools() {
           available: 0,
           items: [],
         };
-        if (type[actionArray].length > 0) {
-          type[actionArray].forEach(item => {
+        if (type[actionArray]?.length > 0) {
+          type[actionArray]?.forEach(item => {
             if (item.project.name === selectedProject) {
               const toolCodes = {
                 value: item._id,
@@ -224,6 +224,13 @@ function LogTools() {
     clearAllSelects();
   };
 
+  if (!projects || projects.length === 0) {
+    return (
+      <div className={`${styles.page}`}>
+        <p>Loading projects...</p>
+      </div>
+    );
+  }
   return (
     <div className={`${styles.page}`}>
       <div className={`${styles.logFormContainer}`}>
@@ -274,8 +281,10 @@ function LogTools() {
           <thead>
             <tr className={`${styles.subtitleRow}`}>
               <td colSpan="6">
-                <span className={`${styles.tableSubtitle}`}>Item</span>
-                <span className={`${styles.tableSubtitle}`}>Quantity</span>
+                <span className={`${styles.tableSubtitle} ${styles.subtitleHighlight}`}>Item</span>
+                <span className={`${styles.tableSubtitle} ${styles.subtitleHighlight}`}>
+                  Quantity
+                </span>
                 <span className={`${styles.tableSubtitle} ${styles.subtitleHighlight}`}>
                   Daily Log Input
                 </span>
@@ -283,12 +292,12 @@ function LogTools() {
             </tr>
 
             <tr className={`${styles.toolTypeHead}`}>
-              <td>ID </td>
-              <td>Name </td>
-              <td>Working </td>
-              <td>Available </td>
-              <td>Using </td>
-              <td>Tool/Equipment Number</td>
+              <td className={`${styles.subPropertyHighlight}`}>ID </td>
+              <td className={`${styles.subPropertyHighlight}`}>Name </td>
+              <td className={`${styles.subPropertyHighlight}`}>Working </td>
+              <td className={`${styles.subPropertyHighlight}`}>Available </td>
+              <td className={`${styles.subPropertyHighlight}`}>Using </td>
+              <td className={`${styles.subPropertyHighlight}`}>Tool/Equipment Number</td>
             </tr>
           </thead>
 
