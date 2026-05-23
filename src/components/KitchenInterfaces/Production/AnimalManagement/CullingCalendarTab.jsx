@@ -13,8 +13,21 @@ const CullingCalendarTab = ({ events, setEvents }) => {
     scheduledDate: '',
   });
 
+  const getTodayDateString = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   const handleScheduleCulling = e => {
     e.preventDefault();
+    const todayStr = getTodayDateString();
+    if (newEvent.scheduledDate < todayStr) {
+      alert('Scheduled date cannot be in the past.');
+      return;
+    }
     const eventData = {
       id: `CULL-${Date.now()}`,
       animalName: newEvent.animalName,
@@ -130,6 +143,7 @@ const CullingCalendarTab = ({ events, setEvents }) => {
                   id="scheduledDate"
                   required
                   type="date"
+                  min={getTodayDateString()}
                   value={newEvent.scheduledDate}
                   onChange={e => setNewEvent({ ...newEvent, scheduledDate: e.target.value })}
                 />

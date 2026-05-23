@@ -16,13 +16,26 @@ const AnimalOrdersTab = ({ orders, setOrders }) => {
     setOrders(orders.map(o => (o.id === id ? { ...o, status: nextStatus } : o)));
   };
 
+  const getTodayDateString = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   const handleCreateOrder = e => {
     e.preventDefault();
+    const todayStr = getTodayDateString();
+    if (newOrder.expectedDate < todayStr) {
+      alert('Expected date cannot be in the past.');
+      return;
+    }
     const orderData = {
       id: `AO-00${orders.length + 1}`,
       supplierName: newOrder.supplierName,
       items: newOrder.items,
-      orderedDate: new Date().toISOString().split('T')[0],
+      orderedDate: todayStr,
       expectedDate: newOrder.expectedDate,
       status: 'ordered',
     };
@@ -136,6 +149,7 @@ const AnimalOrdersTab = ({ orders, setOrders }) => {
                   id="expectedDate"
                   required
                   type="date"
+                  min={getTodayDateString()}
                   value={newOrder.expectedDate}
                   onChange={e => setNewOrder({ ...newOrder, expectedDate: e.target.value })}
                 />

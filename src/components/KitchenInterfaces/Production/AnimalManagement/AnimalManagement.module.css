@@ -410,11 +410,26 @@
   font-family: inherit;
 }
 
+.form-group input[type="date"] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .dark-mode .form-group input,
 .dark-mode .form-group textarea {
   background: #3a3b3c;
   border-color: #4a4b4c;
   color: #e4e6eb;
+}
+
+.dark-mode input[type="date"] {
+  color-scheme: dark;
+}
+
+.dark-mode input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
 }
 
 .modal-actions {
