@@ -506,6 +506,10 @@ function Timer({ authUser, darkMode, isPopout }) {
   const checkRemainingTime = () => {
     if (remaining === 0) {
       sendPause();
+      if (!timeIsOverModalOpen && !weekEndModal) {
+        setTimeIsOverModalIsOpen(true);
+        sendStartChime(true);
+      }
     }
   };
 
