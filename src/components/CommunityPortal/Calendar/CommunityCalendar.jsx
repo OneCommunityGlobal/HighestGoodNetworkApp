@@ -4,10 +4,21 @@ import ReactCalendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
-import CalendarActivitySection from './CalendarActivitySection';
-import styles from './CommunityCalendar.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClock, faLocationDot, faTag, faCircleCheck } from '@fortawesome/free-solid-svg-icons';
+import CalendarActivitySection from './CalendarActivitySection';
+import styles from './CommunityCalendar.module.css';
+import {
+  FaCalendarAlt,
+  FaClock,
+  FaMapMarkerAlt,
+  FaTag,
+  FaAlignLeft,
+  FaVideo,
+  FaUsers,
+  FaGlassCheers,
+} from 'react-icons/fa';
+import { GrWorkshop } from 'react-icons/gr';
 
 const MOCK_EVENTS = [];
 
@@ -51,8 +62,7 @@ export default function CommunityCalendar() {
           setEvents(apiEvents);
         }
       } catch (err) {
-        console.warn('API failed → using mock events');
-        setEvents(MOCK_EVENTS);
+        setError('Failed to load events');
       } finally {
         setIsLoading(false);
       }
@@ -63,8 +73,30 @@ export default function CommunityCalendar() {
 
   const mappedEvents = useMemo(() => {
     return events.map(event => {
-      const eventDate = new Date(event.date);
-      const timeString = eventDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const eventDateTime = new Date(event.startTime);
+      const timeString = new Intl.DateTimeFormat('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      }).format(eventDateTime);
+
+      const eventEndTime = new Date(event.endTime);
+      const endTimeString = new Intl.DateTimeFormat('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      }).format(eventEndTime);
+
+      const eventDate = new Date(
+        new Intl.DateTimeFormat('en-US', {
+          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+        }).format(eventDateTime),
+      );
 
       return {
         ...event,
@@ -73,8 +105,10 @@ export default function CommunityCalendar() {
         type: event.type || 'General',
         status: normalizeStatus(event.status),
         time: event.time || timeString,
+        endTime: endTimeString || event.endTime,
         description: event.description || `Join us for ${event.title}`,
         location: event.location || 'Online',
+        isOver: eventDate < new Date(),
       };
     });
   }, [events]);
@@ -455,6 +489,21 @@ export default function CommunityCalendar() {
     [darkMode],
   );
 
+  const getTypeIcon = type => {
+    switch (type) {
+      case 'Workshop':
+        return <GrWorkshop />;
+      case 'Webinar':
+        return <FaVideo />;
+      case 'Meeting':
+        return <FaUsers />;
+      case 'Social Gathering':
+        return <FaGlassCheers />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className={calendarClasses.container}>
       {/* Inline styles to ensure selected date number is visible in dark mode - force dark background */}
@@ -622,11 +671,13 @@ export default function CommunityCalendar() {
                           <header className={styles.selectedEventHeader}>
                             <div>
                               <h3>{event.title}</h3>
-                              <div>
+                              <div className={styles.selectedEventMeta}>
                                 <ul className={styles.selectedEventMeta}>
                                   <li className={styles.metaItem}>
                                     <FontAwesomeIcon icon={faClock} className={styles.metaIcon} />
-                                    <span>{event.time}</span>
+                                    <span>
+                                      {event.time} - {event.endTime}
+                                    </span>
                                   </li>
 
                                   <li className={styles.metaItem}>
@@ -739,35 +790,52 @@ export default function CommunityCalendar() {
                   {statusIconMap[selectedEvent.status] || ''} {selectedEvent.status}
                 </span>
               </div>
-
               <div className={styles.eventDetailsGrid}>
-                <div className={styles.detailItem}>
-                  <span>Type:</span>
-                  <span>{selectedEvent.type}</span>
-                </div>
-                <div className={styles.detailItem}>
-                  <span>Location:</span>
-                  <span>{selectedEvent.location}</span>
-                </div>
-                <div className={styles.detailItem}>
-                  <span>Date:</span>
-                  <span>{selectedEvent.date.toLocaleDateString()}</span>
-                </div>
-                <div className={styles.detailItem}>
-                  <span>Time:</span>
-                  <span>{selectedEvent.time}</span>
-                </div>
+                {[
+                  [FaTag, 'Type', selectedEvent.type],
+                  [FaMapMarkerAlt, 'Location', selectedEvent.location],
+                  [FaCalendarAlt, 'Date', selectedEvent.date.toLocaleDateString()],
+                  [FaClock, 'Time', selectedEvent.time],
+                ].map(([Icon, label, value]) => (
+                  <div key={label} className={styles.detailItem}>
+                    <span className={styles.detailLabel}>
+                      <Icon className={styles.detailIcon} />
+                      {label}:
+                    </span>
+
+                    <span>
+                      {label === 'Type' ? getTypeIcon(selectedEvent.type) : null} {value}
+                    </span>
+                  </div>
+                ))}
               </div>
 
               <div className={styles.eventDescription}>
-                <span>Description:</span>
+                <span className={styles.detailLabel}>
+                  <FaAlignLeft className={styles.detailIcon} />
+                  Description:
+                </span>
+
                 <p>{selectedEvent.description}</p>
               </div>
             </div>
 
             <div className={styles.modalActions}>
-              <button className={styles.btnPrimary}>Register for Event</button>
-              <button className={styles.btnSecondary}>Add to Calendar</button>
+              {selectedEvent.isOver ? (
+                <button type="button" className={styles.btnDisabled} disabled>
+                  Completed
+                </button>
+              ) : (
+                <>
+                  <button type="button" className={styles.btnPrimary}>
+                    Register for Event
+                  </button>
+
+                  <button type="button" className={styles.btnSecondary}>
+                    Add to Calendar
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
