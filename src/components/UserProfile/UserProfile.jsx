@@ -800,6 +800,7 @@ setUpdatedTasks(prev => {
         setUserProfile(prev => ({ ...prev, infringements: res.data.infringements }));
         setOriginalUserProfile(prev => ({ ...prev, infringements: res.data.infringements }));
       } catch (error) {
+        console.error('Failed to update Blue Square:', error);
         toast.error('Failed to update Blue Square!');
       }
     } else if (operation === 'delete') {
@@ -811,12 +812,13 @@ setUpdatedTasks(prev => {
           setUserProfile(prev => ({ ...prev, infringements: res.data.infringements }));
           setOriginalUserProfile(prev => ({ ...prev, infringements: res.data.infringements }));
         } catch (error) {
+          console.error('Failed to delete Blue Square:', error);
           toast.error('Failed to delete Blue Square!');
         }
       }
     }
   };
-  
+
   const fetchSpecialWarnings = async () => {
     const userId = props?.match?.params?.userId;
     try {
