@@ -2,6 +2,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 
 import thunk from 'redux-thunk';
+import configureMockStore from 'redux-mock-store';
 import OwnerMessage from '../OwnerMessage';
 
 // Create mock for the hasPermission utility
@@ -11,7 +12,7 @@ vi.mock('utils/permissions', () => {
 
 describe('OwnerMessage Component', () => {
   const middlewares = [thunk];
-  const mockStore = configureStore(middlewares);
+  const mockStore = configureMockStore(middlewares);
   const baseState = {
     auth: {
       user: {
