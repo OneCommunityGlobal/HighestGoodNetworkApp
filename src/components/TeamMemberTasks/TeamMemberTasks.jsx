@@ -655,12 +655,18 @@ const TeamMemberTasks = React.memo(props => {
                 >
                   <thead className={darkMode ? styles.darkStickyHeader : ''}>
                     <tr>
-                      <th className={darkMode ? styles.darkStickyHeader : ''}>User Status</th>
+                      <th
+                        className={darkMode ? styles.darkStickyHeader : ''}
+                        style={{ background: 'transparent' }}
+                      >
+                        User Status
+                      </th>
                       <th
                         className={[
                           styles['team-member-tasks-headers'],
                           styles['team-member-tasks-user-name'],
                           darkMode ? styles.darkStickyHeader : '',
+                          darkMode ? styles.transparentHeader : '',
                         ].join(' ')}
                       >
                         Team Member
@@ -690,7 +696,7 @@ const TeamMemberTasks = React.memo(props => {
                           icon={faClock}
                           title="Total Remaining Hours"
                         />
-                        <div>
+                        <div style={{ background: 'transparent' }}>
                           <button
                             type="button"
                             onClick={handleShowTrackers}
