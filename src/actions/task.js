@@ -190,7 +190,7 @@ export const deleteChildrenTasks = taskId => {
     try {
       await axios.post(ENDPOINTS.DELETE_CHILDREN(taskId));
     } catch (error) {
-      toast.info(error);
+      toast.info(error?.message || String(error));
     }
   };
 };
@@ -257,7 +257,7 @@ export const updateTask = (taskId, updatedTask, hasPermission, prevTask) => asyn
     }
   } catch (error) {
     // dispatch(fetchTeamMembersTaskError());
-    toast.info(error);
+    toast.info(error?.message || String(error));
     status = 400;
   }
   // TODO: DISPATCH TO TASKEDITSUGGESETIONS REDUCER TO UPDATE STATE

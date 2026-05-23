@@ -18,6 +18,9 @@ import { TeamMember } from './TeamMember';
 import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL.js';
 import { toast } from 'react-toastify';
+import {
+  useUpdateFiltersWithIndividualCodesChangeMutation
+} from '~/actions/weeklySummariesFilterAction';
 
 const UserTeamsTable = props => {
   const { darkMode } = props;
@@ -34,6 +37,10 @@ const UserTeamsTable = props => {
   const [teamCode, setTeamCode] = useState(userProfile?.teamCode ?? props.teamCode ?? '');
 
   const [isOpenModalTeamMember, setIsOpenModalTeamMember] = useState(false);
+
+  const [
+      updateFilterWithIndividualCodesChange,
+    ] = useUpdateFiltersWithIndividualCodesChangeMutation();
 
   const [members, setMembers] = useState({
     members: [],
@@ -67,6 +74,12 @@ const UserTeamsTable = props => {
           try {
             const url = ENDPOINTS.USER_PROFILE_PROPERTY(props.userProfile._id);
             await axios.patch(url, { key: 'teamCode', value: refInput.current });
+            // Update weekly summaries filter
+            const res = await updateFilterWithIndividualCodesChange({
+              oldTeamCode: teamCode,
+              newTeamCode: refInput.current,
+              userId: props.userProfile._id,
+            })
             toast.success('Team code updated!');
           } catch {
             toast.error('It is not possible to save the team code.');

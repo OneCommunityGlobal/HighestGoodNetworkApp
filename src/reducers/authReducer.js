@@ -1,5 +1,10 @@
 import { isEmpty } from 'lodash';
-import { SET_CURRENT_USER, SET_HEADER_DATA, START_FORCE_LOGOUT } from '../constants/auth';
+import {
+  SET_CURRENT_USER,
+  SET_HEADER_DATA,
+  START_FORCE_LOGOUT,
+  STOP_FORCE_LOGOUT,
+} from '../constants/auth';
 
 const initialState = {
   isAuthenticated: false,
@@ -45,6 +50,13 @@ export const authReducer = (auth = initialState, action) => {
       ...auth,
       forceLogoutAt: action.payload.forceLogoutAt,
       timerId: action.payload.timerId,
+    };
+  }
+  if (action.type === STOP_FORCE_LOGOUT) {
+    return {
+      ...auth,
+      forceLogoutAt: null,
+      timerId: null,
     };
   }
 

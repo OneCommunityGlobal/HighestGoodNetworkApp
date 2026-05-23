@@ -83,15 +83,15 @@ function TotalMaterialCostPerProject() {
     const fetchData = async () => {
       setDataLoaded(false);
       try {
-        const projectsResponse = await axios.get(ENDPOINTS.BM_PROJECTS_LIST_FOR_MATERIALS_COST);
+        const projectsResponse = await axios.get(ENDPOINTS.BM_PROJECTS);
         if (projectsResponse.status < 200 || projectsResponse.status >= 300) {
           throw new Error(
             `API request to get projects list failed with status ${projectsResponse.status}`,
           );
         }
         const projectsFilteredData = projectsResponse.data.map(project => ({
-          value: project.projectId,
-          label: project.projectName,
+          value: project._id,
+          label: project.name,
         }));
         setSelectedProjects(projectsFilteredData);
         setAllProjects(projectsFilteredData);
@@ -103,7 +103,7 @@ function TotalMaterialCostPerProject() {
           );
         }
         const projectCostsData = costResponse.data.reduce((acc, item) => {
-          acc[item.projectId] = item.totalCostK;
+          acc[item.project] = item.totalCostK;
           return acc;
         }, {});
         setProjectCosts(projectCostsData);
@@ -145,6 +145,8 @@ function TotalMaterialCostPerProject() {
         minHeight: 38,
         boxShadow: 'none',
         borderRadius: 8,
+        overflowX: 'auto',
+        whiteSpace: 'nowrap',
       }),
       menu: base => ({
         ...base,
@@ -165,14 +167,12 @@ function TotalMaterialCostPerProject() {
       }),
       option: (base, state) => ({
         ...base,
-        backgroundColor: state.isSelected
-          ? '#0d55b3'
-          : state.isFocused
-          ? '#0d55b3'
-          : darkMode
-          ? '#22272e'
-          : '#fff',
+        backgroundColor: state.isSelected ? '#0d55b3' : darkMode ? '#22272e' : '#fff',
         color: state.isSelected ? '#fff' : darkMode ? '#fff' : '#232323',
+        ':hover': {
+          color: '#fff',
+          backgroundColor: '#0d55b3',
+        },
         fontSize: 13,
         padding: '10px 16px',
         cursor: 'pointer',
@@ -183,6 +183,8 @@ function TotalMaterialCostPerProject() {
         borderRadius: 6,
         fontSize: 12,
         marginRight: 4,
+        maxWidth: 'none',
+        flexShrink: 0,
       }),
       multiValueLabel: base => ({
         ...base,
@@ -199,6 +201,18 @@ function TotalMaterialCostPerProject() {
         },
         borderRadius: 4,
         padding: 2,
+      }),
+      valueContainer: provided => ({
+        ...provided,
+        overflowX: 'auto',
+        flexWrap: 'nowrap',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        whiteSpace: 'nowrap',
+        maxWidth: '100%',
+        position: 'relative',
+        scrollbarWidth: 'none',
       }),
     }),
     [darkMode],
@@ -219,7 +233,6 @@ function TotalMaterialCostPerProject() {
               value={selectedProjects}
               onChange={setSelectedProjects}
               classNamePrefix="select"
-              className={styles.selectValueContainer}
               styles={selectStyles}
               menuPortalTarget={document.body}
               menuPosition="fixed"
