@@ -28,7 +28,7 @@ function BioFunction(props) {
     <div
       data-testid="bio-announcement"
       id="bio-announcement"
-      style={isMeetCriteria ? { backgroundColor: 'yellow' } : {}}
+      style={isMeetCriteria ? { backgroundColor: 'yellow', color: '#000000' } : {}}
     >
       <div className={styles.bioToggle}>
         <b style={style}>Bio announcement:</b>
