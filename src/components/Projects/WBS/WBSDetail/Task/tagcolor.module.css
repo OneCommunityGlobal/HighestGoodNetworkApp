@@ -5,15 +5,18 @@
 
 .tag_color_lv_1 {
   opacity: 1;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  box-shadow: 0 4px 8px 0 rgb(0 0 0 / 20%), 0 6px 20px 0 rgb(0 0 0 / 19%);
 }
+
 .tag_color_lv_2 {
   opacity: 0.8;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  box-shadow: 0 4px 8px 0 rgb(0 0 0 / 20%), 0 6px 20px 0 rgb(0 0 0 / 19%);
 }
+
 .tag_color_lv_3 {
   opacity: 0.5;
 }
+
 .tag_color_lv_4 {
   opacity: 0.3;
 }

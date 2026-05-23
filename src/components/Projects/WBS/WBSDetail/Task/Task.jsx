@@ -8,7 +8,7 @@ import {
   deleteTask,
   deleteChildrenTasks,
 } from '../../../../../actions/task.js';
-import './tagcolor.css';
+import tagStyles from './tagcolor.module.css';
 import styles from './task.module.css';
 import '../../../../Header/index.css'
 import { Editor } from '@tinymce/tinymce-react';
@@ -184,8 +184,11 @@ function Task(props) {
             id={props.taskId}
           >
             <td
-              className={`tag_color tag_color_${props.num?.length > 0 ? props.num.split('.')[0] : props.num
-                } tag_color_lv_${props.level}`}
+              className={`
+                ${tagStyles.tag_color}
+                ${tagStyles[`tag_color_${props.num?.length > 0 ? props.num.split('.')[0] : props.num}`] || ''}
+                ${tagStyles[`tag_color_lv_${props.level}`] || ''}
+                `}
             ></td>
             <td className={styles.centerAction}>
               <Button
