@@ -64,7 +64,7 @@ function CalendarActivitySection({ selectedDate, events = [], onEventClick }) {
                       darkMode ? styles.activityTimeDarkMode : ''
                     }`}
                   >
-                    {event.time}
+                    {event.time} - {event.endTime}
                   </small>
                   <small
                     className={`${styles.activityTime} ${
