@@ -5,7 +5,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgb(0 0 0 / 50%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -18,18 +18,18 @@
   padding: 20px;
   width: 400px;
   border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 10px rgb(0 0 0 / 20%);
   text-align: center;
   position: relative;
 }
 
 .popupDark {
-  background: #3A506B;
+  background: #3a506b;
   color: white;
   padding: 20px;
   width: 400px;
   border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 10px rgb(0 0 0 / 20%);
   text-align: center;
   position: relative;
 }
@@ -84,18 +84,18 @@
 }
 
 .calendarBtn {
-  background: #28a745;
+  background: #1a7a32;
   color: white;
 }
 
 .emailBtn {
-  background: #17a2b8;
+  background: #0d6b7a;
   color: white;
 }
 
 .downloadBtn {
-  background: #ffc107;
-  color: black;
+  background: #b38600;
+  color: white;
 }
 
 .popupFooter {
@@ -104,8 +104,8 @@
 }
 
 .popupDark .eventDetails {
-  color: #ffffff; /* White text for maximum contrast on dark background */
-  text-shadow: 0 1px 2px rgba(0,0,0,0.8); /* Optional: add shadow for better visibility */
+  color: #fff;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 80%);
 }
 
 .userFullName {
