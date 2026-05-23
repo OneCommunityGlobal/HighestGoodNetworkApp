@@ -129,6 +129,7 @@
   font-size: 0.9rem;
   margin-bottom: 0.25rem;
   font-weight: 500;
+}
 /* Consistent spacing between label and input */
 :global(.filter label) {
   margin-bottom: 6px;
@@ -327,4 +328,21 @@
 /* Recharts default tick text selector (X axis) */
 :global(.darkMode .recharts-xAxis .recharts-cartesian-axis-tick-value) {
   fill: #fff !important;
+}
+:global(.darkMode .injurySelect__multi-value) {
+  background-color: #375071 !important;
+}
+
+:global(.darkMode .injurySelect__multi-value__label) {
+  color: #ffffff !important;
+}
+
+:global(.darkMode .injurySelect__multi-value__remove) {
+  color: #ffffff !important;
+  background-color: transparent !important;
+}
+
+:global(.darkMode .injurySelect__multi-value__remove:hover) {
+  background-color: #0d55b3 !important;
+  color: #ffffff !important;
 }

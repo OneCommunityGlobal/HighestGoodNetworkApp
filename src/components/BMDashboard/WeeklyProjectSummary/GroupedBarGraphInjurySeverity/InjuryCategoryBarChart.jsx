@@ -323,7 +323,6 @@ function InjuryCategoryBarChart() {
               cursor={false}
               contentStyle={{
                 backgroundColor: darkMode ? '#2b3e59' : '#fff',
-                border: `1px solid ${darkMode ? '#4a5568' : '#cccccc'}`,
                 color: darkMode ? '#fff' : '#000',
                 border: darkMode ? '1px solid #555' : '1px solid #ccc',
               }}
