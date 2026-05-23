@@ -409,7 +409,6 @@
 }
 
 /* ── BM Dashboard Accordion Styles ── */
-
 .accordionToggle {
   display: flex !important;
   justify-content: space-between !important;
@@ -433,4 +432,16 @@
 
 .bmSubSubItem {
   padding-left: 3rem !important;
+}
+
+.bmIconLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.bmIcon {
+  font-size: 0.85rem;
+  opacity: 0.75;
+  flex-shrink: 0;
 }

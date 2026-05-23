@@ -21,6 +21,7 @@ import {
   NavLink,
   UncontrolledDropdown
 } from 'reactstrap';
+import { FaCubes, FaShoppingCart, FaTools, FaRecycle, FaWrench } from 'react-icons/fa';
 import { getWeeklySummaries } from '~/actions/weeklySummaries';
 import PopUpBar from '~/components/PopUpBar';
 import { fetchTaskEditSuggestions } from '~/components/TaskEditSuggestions/thunks';
@@ -419,6 +420,9 @@ export function Header(props) {
 
                       {/* ── BM Dashboard Section ── */}
                       <DropdownItem divider />
+                      <DropdownItem header className={darkMode ? 'text-custom-grey' : ''}>
+                        BM Dashboard
+                      </DropdownItem>
 
                       {/* BM Dashboard main link */}
                       <DropdownItem tag={Link} to="/bmdashboard" className={fontColor}>
@@ -447,7 +451,7 @@ export function Header(props) {
 
                               {/* Materials */}
                               <DropdownItem toggle={false} className={`${fontColor} ${styles.bmSubItem} ${styles.accordionToggle}`} onClick={() => toggleSection('materials')}>
-                                <span>Materials</span>
+                                <span className={styles.bmIconLabel}><FaCubes className={styles.bmIcon} /> Materials</span>
                                 <span className={`${styles.accordionArrow} ${expandedSection === 'materials' ? styles.accordionArrowOpen : ''}`}>▶</span>
                               </DropdownItem>
                               {expandedSection === 'materials' && (
@@ -462,7 +466,7 @@ export function Header(props) {
 
                               {/* Consumables */}
                               <DropdownItem toggle={false} className={`${fontColor} ${styles.bmSubItem} ${styles.accordionToggle}`} onClick={() => toggleSection('consumables')}>
-                                <span>Consumables</span>
+                                <span className={styles.bmIconLabel}><FaShoppingCart className={styles.bmIcon} /> Consumables</span>
                                 <span className={`${styles.accordionArrow} ${expandedSection === 'consumables' ? styles.accordionArrowOpen : ''}`}>▶</span>
                               </DropdownItem>
                               {expandedSection === 'consumables' && (
@@ -475,7 +479,7 @@ export function Header(props) {
 
                               {/* Equipment */}
                               <DropdownItem toggle={false} className={`${fontColor} ${styles.bmSubItem} ${styles.accordionToggle}`} onClick={() => toggleSection('equipment')}>
-                                <span>Equipment</span>
+                                <span className={styles.bmIconLabel}><FaTools className={styles.bmIcon} /> Equipment</span>
                                 <span className={`${styles.accordionArrow} ${expandedSection === 'equipment' ? styles.accordionArrowOpen : ''}`}>▶</span>
                               </DropdownItem>
                               {expandedSection === 'equipment' && (
@@ -488,7 +492,7 @@ export function Header(props) {
 
                               {/* Reusables */}
                               <DropdownItem toggle={false} className={`${fontColor} ${styles.bmSubItem} ${styles.accordionToggle}`} onClick={() => toggleSection('reusables')}>
-                                <span>Reusables</span>
+                                <span className={styles.bmIconLabel}><FaRecycle className={styles.bmIcon} /> Reusables</span>
                                 <span className={`${styles.accordionArrow} ${expandedSection === 'reusables' ? styles.accordionArrowOpen : ''}`}>▶</span>
                               </DropdownItem>
                               {expandedSection === 'reusables' && (
@@ -501,7 +505,7 @@ export function Header(props) {
 
                               {/* Tools */}
                               <DropdownItem toggle={false} className={`${fontColor} ${styles.bmSubItem} ${styles.accordionToggle}`} onClick={() => toggleSection('tools')}>
-                                <span>Tools</span>
+                                <span className={styles.bmIconLabel}><FaWrench className={styles.bmIcon} /> Tools</span>
                                 <span className={`${styles.accordionArrow} ${expandedSection === 'tools' ? styles.accordionArrowOpen : ''}`}>▶</span>
                               </DropdownItem>
                               {expandedSection === 'tools' && (
