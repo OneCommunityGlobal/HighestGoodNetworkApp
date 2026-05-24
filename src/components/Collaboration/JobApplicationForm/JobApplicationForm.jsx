@@ -139,6 +139,48 @@ function pickInitialForm(formsArr, navState) {
   return formsArr.find(f => f.questions?.length) || formsArr[0];
 }
 
+function parseFormsResponse(res) {
+  return Array.isArray(res.data.forms) ? res.data.forms : [];
+}
+
+function resolveNavigationJobTitle(jobDataFromRedirect, location) {
+  return (
+    (jobDataFromRedirect?.jobTitle && String(jobDataFromRedirect.jobTitle).trim()) ||
+    getJobTitleFromNavigation(location)
+  );
+}
+
+function notifyInitialFormSelection(navTitle, formMatch, chosen) {
+  if (!navTitle || formMatch) return;
+  if (chosen) {
+    toast.info(
+      `Could not match "${navTitle}" to a form title. Showing "${chosen.title}" — pick another role from the dropdown if this is not the right application.`,
+      { autoClose: 7000 },
+    );
+    return;
+  }
+  toast.warn('No application form is available. Please contact support or try again later.');
+}
+
+function getInitialFormState(chosen, navTitle) {
+  if (!chosen) {
+    return {
+      selectedJob: '',
+      filteredForm: null,
+      answers: [],
+      bannerJobTitle: '',
+      jobTitleInput: null,
+    };
+  }
+  return {
+    selectedJob: chosen.title,
+    filteredForm: chosen,
+    answers: initialAnswersForQuestions(getVisibleQuestionsForForm(chosen)),
+    bannerJobTitle: navTitle || chosen.title,
+    jobTitleInput: navTitle || null,
+  };
+}
+
 function getQuestionType(q) {
   return String(q.questionType || q.type || '').toLowerCase();
 }
@@ -222,11 +264,23 @@ function getVisibleQuestionsForForm(form) {
 }
 
 function initialAnswersForQuestions(questions) {
-  return (questions ?? []).map(q => {
-    const t = getQuestionType(q);
-    if (t === 'checkbox') return [];
-    return '';
-  });
+  return (questions ?? []).map(() => '');
+}
+
+function normalizeCheckboxAnswerArray(prev) {
+  if (Array.isArray(prev)) return [...prev];
+  if (prev !== '' && prev != null) return [String(prev)];
+  return [];
+}
+
+function answerValueToPrefillString(value) {
+  if (Array.isArray(value)) return value.filter(Boolean).join(', ');
+  if (value == null || value === '') return '';
+  return String(value);
+}
+
+function parseNumericInput(value) {
+  return value ? Number.parseFloat(value) : 0;
 }
 
 function isAnswerEmpty(answer, q) {
@@ -300,7 +354,6 @@ function JobApplicationForm() {
   const [monthsVolunteer, setMonthsVolunteer] = useState('');
   const [hoursPerWeek, setHoursPerWeek] = useState('');
   const [roleSkills, setRoleSkills] = useState('');
-  const [userQuestionnaireData, setUserQuestionnaireData] = useState(null);
   /** Owner/Admin: optional manual toggles on top of auto-calculated requirement flags. */
   const [requirementPreviewOverrides, setRequirementPreviewOverrides] = useState({});
 
@@ -360,7 +413,6 @@ function JobApplicationForm() {
     try {
       const response = await axios.get(`${ENDPOINTS.GET_USER_QUESTIONNAIRE}/${referralId}`);
       if (response.data) {
-        setUserQuestionnaireData(response.data);
         applyQuestionnairePreFill(response.data);
       }
     } catch (error) {
@@ -417,42 +469,21 @@ function JobApplicationForm() {
       try {
         const res = await axios.get(ENDPOINTS.GET_ALL_JOB_FORMS);
         if (cancelled) return;
-        const formsArr = Array.isArray(res.data.forms) ? res.data.forms : [];
+        const formsArr = parseFormsResponse(res);
         setForms(formsArr);
 
-        const navTitle =
-          (jobDataFromRedirect?.jobTitle && String(jobDataFromRedirect.jobTitle).trim()) ||
-          getJobTitleFromNavigation(location);
+        const navTitle = resolveNavigationJobTitle(jobDataFromRedirect, location);
         const navState = { ...location.state, jobTitle: navTitle || location.state?.jobTitle };
         const formMatch = navTitle ? findFormForJobTitle(formsArr, navTitle) : null;
         const chosen = pickInitialForm(formsArr, navState);
-        if (navTitle && !formMatch && chosen) {
-          toast.info(
-            `Could not match "${navTitle}" to a form title. Showing "${chosen.title}" — pick another role from the dropdown if this is not the right application.`,
-            { autoClose: 7000 },
-          );
-        } else if (navTitle && !formMatch && !chosen) {
-          toast.warn(
-            'No application form is available. Please contact support or try again later.',
-          );
-        }
-        if (chosen) {
-          setSelectedJob(chosen.title);
-          setFilteredForm(chosen);
-          if (navTitle) {
-            setJobTitleInput(navTitle);
-            setBannerJobTitle(navTitle);
-          } else {
-            setBannerJobTitle(chosen.title);
-          }
-          const qs = getVisibleQuestionsForForm(chosen);
-          setAnswers(initialAnswersForQuestions(qs));
-        } else {
-          setSelectedJob('');
-          setFilteredForm(null);
-          setAnswers([]);
-          setBannerJobTitle('');
-        }
+        notifyInitialFormSelection(navTitle, formMatch, chosen);
+
+        const initial = getInitialFormState(chosen, navTitle);
+        setSelectedJob(initial.selectedJob);
+        setFilteredForm(initial.filteredForm);
+        setAnswers(initial.answers);
+        setBannerJobTitle(initial.bannerJobTitle);
+        if (initial.jobTitleInput) setJobTitleInput(initial.jobTitleInput);
       } catch (err) {
         if (!cancelled) {
           setForms([]);
@@ -513,7 +544,7 @@ function JobApplicationForm() {
   /** Checkbox question with multiple options: toggle selection in an array stored at answers[idx]. */
   const toggleCheckboxOption = (idx, opt) => {
     const prev = answers[idx];
-    const arr = Array.isArray(prev) ? [...prev] : prev !== '' && prev != null ? [String(prev)] : [];
+    const arr = normalizeCheckboxAnswerArray(prev);
     const i = arr.indexOf(opt);
     if (i >= 0) arr.splice(i, 1);
     else arr.push(opt);
@@ -531,11 +562,7 @@ function JobApplicationForm() {
     visibleQuestions.forEach((q, idx) => {
       const label = (q.label || q.questionText || '').toLowerCase();
       const v = answers[idx];
-      const str = Array.isArray(v)
-        ? v.filter(Boolean).join(', ')
-        : v != null && v !== ''
-        ? String(v)
-        : '';
+      const str = answerValueToPrefillString(v);
       if (!str.trim()) return;
 
       if (/(skill|what skills|experience do you|possess\?)/i.test(label)) setRoleSkills(str);
@@ -581,16 +608,16 @@ function JobApplicationForm() {
 
     const reactKeywords = ['react', 'reactjs', 'react.js'];
     const skillsLower = (skills || '').toLowerCase();
-    const yearsNum = years ? parseFloat(years) : 0;
-    const monthsNum = months ? parseFloat(months) : 0;
-    const hoursNum = hours ? parseFloat(hours) : 0;
+    const yearsNum = parseNumericInput(years);
+    const monthsNum = parseNumericInput(months);
+    const hoursNum = parseNumericInput(hours);
 
     return {
       reactExperience:
         yearsNum >= 1 || reactKeywords.some(keyword => skillsLower.includes(keyword)),
       twoMonthsCommitment: monthsNum >= 2,
       javascriptExperience: yearsNum >= 1,
-      timeZoneLocation: !!(timezone && timezone.trim()),
+      timeZoneLocation: Boolean(timezone?.trim()),
       tenHoursPerWeek: hoursNum >= 10,
     };
   };

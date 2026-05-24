@@ -17,6 +17,20 @@ function getColumnsFromMQ() {
   return 1;
 }
 
+function clampPage(page, totalPages) {
+  if (page < 1) return 1;
+  if (page > totalPages) return totalPages;
+  return page;
+}
+
+function debounce(fn, ms = 150) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+
 function Collaboration() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -234,17 +248,32 @@ function Collaboration() {
   };
 
   const handleSetSummariesPage = page => {
-    const next = page < 1 ? 1 : page > summariesTotalPages ? summariesTotalPages : page;
-    setSummariesPage(next);
+    setSummariesPage(clampPage(page, summariesTotalPages));
     globalThis.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const debounce = (fn, ms = 150) => {
-    let t;
-    return (...args) => {
-      clearTimeout(t);
-      t = setTimeout(() => fn.apply(null, args), ms);
-    };
+  const navigateToJobApplication = (ad, jobTitle, jobCategory) => {
+    try {
+      if (history && typeof history.push === 'function') {
+        const search = jobTitle ? `?jobTitle=${encodeURIComponent(jobTitle)}` : '';
+        history.push({
+          pathname: '/job-application',
+          search,
+          state: {
+            jobId: ad._id,
+            jobTitle,
+            jobDescription: ad.description || '',
+            requirements: Array.isArray(ad.requirements) ? ad.requirements : [],
+            category: jobCategory,
+          },
+        });
+      } else {
+        globalThis.location.href = '/job-application';
+      }
+    } catch (error) {
+      console.error('Error navigating to job application:', error);
+      toast.error('Error opening job application');
+    }
   };
 
   const handleResize = debounce(() => {
@@ -444,23 +473,14 @@ function Collaboration() {
                   const categoryImage = getCategoryImage(categoryName);
 
                   return (
-                    <div
+                    <button
+                      type="button"
                       key={categoryName}
                       className={styles.jobAd}
                       onClick={() => {
                         setSelectedCategory(categoryName);
                         setCurrentPage(1);
                       }}
-                      onKeyDown={e => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          e.preventDefault();
-                          setSelectedCategory(categoryName);
-                          setCurrentPage(1);
-                        }
-                      }}
-                      role="button"
-                      tabIndex={0}
-                      style={{ cursor: 'pointer' }}
                     >
                       <img
                         src={categoryImage}
@@ -473,7 +493,7 @@ function Collaboration() {
                         }}
                       />
                       <h3 className={styles.categoryTitle}>{categoryName.toUpperCase()}</h3>
-                    </div>
+                    </button>
                   );
                 });
               }
@@ -481,71 +501,17 @@ function Collaboration() {
 
             if (jobAds.length > 0) {
               return jobAds.map(ad => {
-                if (!ad || !ad._id) return null;
+                if (!ad?._id) return null;
                 const jobTitle = ad.title || 'Untitled Position';
                 const jobCategory = ad.category || 'General';
                 const jobImageUrl = getCategoryImage(jobCategory);
 
                 return (
-                  <div
+                  <button
+                    type="button"
                     key={ad._id}
                     className={styles.jobAd}
-                    onClick={() => {
-                      try {
-                        if (history && typeof history.push === 'function') {
-                          const search = jobTitle
-                            ? `?jobTitle=${encodeURIComponent(jobTitle)}`
-                            : '';
-                          history.push({
-                            pathname: '/job-application',
-                            search,
-                            state: {
-                              jobId: ad._id,
-                              jobTitle: jobTitle,
-                              jobDescription: ad.description || '',
-                              requirements: Array.isArray(ad.requirements) ? ad.requirements : [],
-                              category: jobCategory,
-                            },
-                          });
-                        } else {
-                          globalThis.location.href = `/job-application`;
-                        }
-                      } catch (error) {
-                        console.error('Error navigating to job application:', error);
-                        toast.error('Error opening job application');
-                      }
-                    }}
-                    onKeyDown={e => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        try {
-                          if (history && typeof history.push === 'function') {
-                            const pathSearch = jobTitle
-                              ? `?jobTitle=${encodeURIComponent(jobTitle)}`
-                              : '';
-                            history.push({
-                              pathname: '/job-application',
-                              search: pathSearch,
-                              state: {
-                                jobId: ad._id,
-                                jobTitle: jobTitle,
-                                jobDescription: ad.description || '',
-                                requirements: Array.isArray(ad.requirements) ? ad.requirements : [],
-                                category: jobCategory,
-                              },
-                            });
-                          } else {
-                            globalThis.location.href = `/job-application`;
-                          }
-                        } catch (error) {
-                          console.error('Error navigating to job application:', error);
-                          toast.error('Error opening job application');
-                        }
-                      }
-                    }}
-                    role="button"
-                    tabIndex={0}
-                    style={{ cursor: 'pointer' }}
+                    onClick={() => navigateToJobApplication(ad, jobTitle, jobCategory)}
                   >
                     <img
                       src={jobImageUrl}
@@ -560,7 +526,7 @@ function Collaboration() {
                     <h3>
                       {jobTitle} - {jobCategory}
                     </h3>
-                  </div>
+                  </button>
                 );
               });
             }

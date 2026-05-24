@@ -67,7 +67,7 @@
   min-width: 240px;
 }
 
-@media (max-width: 380px) {
+@media (width <= 380px) {
   .searchForm input {
     width: 100%;
     max-width: 100%;
@@ -86,7 +86,7 @@
   justify-content: center;
   height: 38px;
   padding: 0 16px;
-  background-color: #1778f2;
+  background-color: #0958a8;
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -99,6 +99,10 @@
   transition: filter .15s ease, transform .02s ease;
 }
 
+.showSummaries {
+  padding: 0 22px;
+}
+
 .searchButton:hover,
 .resetButton:hover,
 .showSummaries:hover {
@@ -109,10 +113,6 @@
 .resetButton:active,
 .showSummaries:active {
   transform: translateY(1px);
-}
-
-.showSummaries {
-  padding: 0 22px;
 }
 
 .navbarRight select {
@@ -142,7 +142,7 @@
   letter-spacing: 1px;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .mainHeading {
     font-size: 1.4rem;
   }
@@ -159,31 +159,31 @@
   align-items: stretch;
 }
 
-@media (min-width: 480px) {
+@media (width >= 480px) {
   .jobList {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-@media (min-width: 768px) {
+@media (width >= 768px) {
   .jobList {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
-@media (min-width: 1017px) {
+@media (width >= 1017px) {
   .jobList {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
-@media (min-width: 1300px) {
+@media (width >= 1300px) {
   .jobList {
     grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 }
 
-@media (min-width: 1600px) {
+@media (width >= 1600px) {
   .jobList {
     grid-template-columns: repeat(6, minmax(0, 1fr));
   }
@@ -198,7 +198,7 @@
 .jobAd {
   border: 1px solid #ddd;
   border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 8px rgb(0 0 0 / 15%);
   overflow: hidden;
   background: #fff;
   transition: transform .3s, box-shadow .3s;
@@ -206,20 +206,24 @@
   display: flex;
   flex-direction: column;
   cursor: pointer;
+  width: 100%;
+  text-align: inherit;
+  font: inherit;
+  color: inherit;
 }
 
 .jobAd img {
   width: 100%;
   height: 200px;
   object-fit: cover;
-  background-color: #ffffff;
+  background-color: #fff;
   padding: 0;
   display: block;
   margin: 0;
 }
 
 .jobAd h3 {
-  margin: 10px 0 0 0;
+  margin: 10px 0 0;
   font-size: 1.05rem;
   font-weight: 700;
   color: #333;
@@ -241,7 +245,7 @@
 
 .jobAd:hover {
   transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 6px 12px rgb(0 0 0 / 20%);
 }
 
 .adminRequirementsSection {
@@ -254,7 +258,7 @@
 .requirementsTitle {
   font-size: 0.9rem;
   font-weight: 600;
-  margin: 0 0 12px 0;
+  margin: 0 0 12px;
   color: #333;
 }
 
@@ -303,6 +307,11 @@
   display: none;
 }
 
+.jobLandingDark .requirementCheckboxCustom {
+  border-color: #555;
+  background-color: #2a2a2a;
+}
+
 .requirementCheckboxInput:checked + .requirementCheckboxCustom {
   background-color: #8cc63f;
   border-color: #8cc63f;
@@ -336,7 +345,7 @@
   padding: 16px 0 !important;
   margin: 0 !important;
   text-align: left;
-  border-bottom: 1px solid rgba(0, 0, 0, .08);
+  border-bottom: 1px solid rgb(0 0 0 / 8%);
 }
 
 .summariesItem:last-child {
@@ -355,7 +364,7 @@
   text-decoration: none;
   line-height: 1.3;
   font-size: 1.85rem;
-  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .summariesItem h3 a:hover {
@@ -376,7 +385,7 @@
   font-size: 0.95rem;
 }
 
-@media (max-width: 640px) {
+@media (width <= 640px) {
   .summariesList {
     padding: 0 12px;
   }
@@ -415,7 +424,7 @@
 }
 
 .pagination button:hover {
-  background-color: #4a99ee;
+  background-color: #084a8c;
   color: #fff;
 }
 
@@ -439,7 +448,7 @@
   background-color: #f9f9f9;
 }
 
-@media (max-width: 800px) {
+@media (width <= 800px) {
   .navbar {
     flex-direction: column;
     align-items: center;
@@ -484,7 +493,7 @@
   }
 }
 
-@media (max-width: 350px) {
+@media (width <= 350px) {
   .navbarRight {
     width: 100%;
   }
@@ -499,7 +508,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .navbar {
     padding: 5px;
     text-align: center;
@@ -523,7 +532,7 @@
 .jobLandingDark .collabContainer {
   background-color: #2e3b55;
   color: #f1f1f1;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 8px rgb(0 0 0 / 30%);
   border-radius: 6px;
   padding: 0;
 }
@@ -547,7 +556,7 @@
 .jobLandingDark .resetButton,
 .jobLandingDark .showSummaries,
 .jobLandingDark .pagination button {
-  background-color: #1778f2 !important;
+  background-color: #0958a8 !important;
   color: #fff !important;
   border: none !important;
   border-radius: 8px;
@@ -556,7 +565,7 @@
 }
 
 .jobLandingDark .pagination button:hover {
-  background-color: #2563eb !important;
+  background-color: #084a8c !important;
   color: #fff !important;
 }
 
@@ -565,7 +574,7 @@
   background-color: #1c2541 !important;
   color: #fff !important;
   border-radius: 6px;
-  box-shadow: 0 2px 6px rgba(255, 255, 255, 0.05);
+  box-shadow: 0 2px 6px rgb(255 255 255 / 5%);
   border: 1px solid #444;
   padding: 1rem;
   transition: background-color .3s ease;
@@ -580,28 +589,19 @@
 }
 
 .jobLandingDark .headings h1 {
-  color: #ffffff;
+  color: #fff;
 }
 
 .jobLandingDark .headings p {
   color: #e5e7eb;
 }
 
-.jobLandingDark a {
-  color: #7db4ff;
-}
-
-.jobLandingDark a:hover {
-  color: #a6ceff;
-  text-decoration: underline;
-}
-
 .jobLandingDark .summariesList h1 {
-  color: #ffffff;
+  color: #fff;
 }
 
 .jobLandingDark .summariesItem {
-  border-bottom: 1px solid rgba(255, 255, 255, .12);
+  border-bottom: 1px solid rgb(255 255 255 / 12%);
 }
 
 .jobLandingDark .summariesItem h3 a {
@@ -609,7 +609,7 @@
 }
 
 .jobLandingDark .summariesItem h3 a:hover {
-  color: #ffffff;
+  color: #fff;
 }
 
 .jobLandingDark .summariesItem p {
@@ -635,11 +635,6 @@
   color: #e0e0e0;
 }
 
-.jobLandingDark .requirementCheckboxCustom {
-  border-color: #555;
-  background-color: #2a2a2a;
-}
-
 .jobLandingDark .requirementCheckbox span:last-child {
   color: #e0e0e0;
 }
@@ -652,10 +647,10 @@
 }
 
 .jobLandingDark .pagination button:disabled {
-  background-color: #ffffff !important;
+  background-color: #fff !important;
   color: black !important;
   border: none !important;
-  box-shadow: 0 0 0 2px rgba(14, 94, 215, 0.35) inset;
+  box-shadow: 0 0 0 2px rgb(14 94 215 / 35%) inset;
   cursor: default;
   opacity: 1;
 }
