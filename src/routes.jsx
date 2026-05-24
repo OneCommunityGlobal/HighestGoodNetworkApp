@@ -5,7 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import ApplicantsChart from './components/ApplicantsChart';
 import EducationExperienceDonutChart from './components/EducationExperienceDonutChart/EducationExperienceDonutChart';
 import AutoUpdate from './components/AutoUpdate';
-import AnimalManagement from './components/KitchenandInventory/AnimalManagement';
+
 import TaskEditSuggestions from './components/TaskEditSuggestions/TaskEditSuggestions';
 import RoutePermissions from './utils/routePermissions';
 import hasPermission from './utils/permissions';
@@ -309,6 +309,9 @@ const SuggestedJobsListBuilder = lazy(() => import('./components/Collaboration/S
 const ProcessingLandingPage = lazy(() =>
   import('./components/KitchenInterfaces/Processing/ProcessingLandingPage'),
 );
+const AnimalManagement = lazy(() =>
+  import('./components/KitchenInterfaces/Production/AnimalManagement/AnimalManagement'),
+);
 export default (
   <Switch>
     {/* ----- LB Dashboard Routing Starts----- */}
@@ -355,7 +358,6 @@ export default (
     />
     <LBProtectedRoute path="/lbdashboard/home" component={LBHome} />
     {/* ----- LB Dashboard Routing Ends----- */}
-
     <Route
       path="/EventPopularity"
       render={() => (
@@ -395,6 +397,7 @@ export default (
           component={ProcessingLandingPage}
           fallback
         />
+
         <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
         <Route path="/logattendance" component={AttendanceNoShow} />
         <ProtectedRoute path="/project/members/:projectId" fallback component={Members} />

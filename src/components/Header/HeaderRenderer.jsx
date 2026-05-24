@@ -15,7 +15,7 @@ export function HeaderRenderer(props) {
   const isCommunityPortal = location.pathname.startsWith('/communityportal');
   const isEducationEvaluation = location.pathname.startsWith('/educationportal/evaluation-results');
 
-  // Hide header for education portal evaluation results page
+  // Hide header or education portal evaluation results page
   if (isEducationEvaluation) {
     return null;
   }
