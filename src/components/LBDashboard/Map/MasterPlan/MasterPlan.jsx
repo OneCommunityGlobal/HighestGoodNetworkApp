@@ -1,35 +1,85 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+
 import logo from '../../../../assets/images/logo2.png';
 import mastermap from '../../../../assets/images/masterMap.png';
 import mapRouter from '../../../../assets/images/routeMarker.png';
 import pin from '../../../../assets/images/pin-point.png';
 import styles from './MasterPlan.module.css';
 import { getVillageDropdownFilterData } from '~/actions/lbdashboard/villageDetailsAction';
-import { useDispatch, useSelector } from 'react-redux';
+
+const PIN_HIDDEN_STYLE = { display: 'none' };
+
+function getVillageMarkerStyle(position) {
+  return {
+    '--top': position.top,
+    '--left': position.left,
+  };
+}
+
+function getPinStyle(village) {
+  if (!village) return PIN_HIDDEN_STYLE;
+  return {
+    '--top': village.position.top,
+    '--left': village.position.left,
+    display: 'block',
+  };
+}
+
+function getVillageButtonClassName(selectedVillage, village, styleModule) {
+  const isSelected = selectedVillage?._id === village._id;
+  return isSelected ? `${styleModule.selected} ${styleModule.village}` : styleModule.village;
+}
+
+const VILLAGE_BUTTON_STYLE = {
+  padding: '0 10px',
+  textAlign: 'center',
+  background: 'none',
+  border: 'none',
+  cursor: 'pointer',
+};
 
 function MasterPlan() {
   const [selectedVillage, setSelectedVillage] = useState(null);
   const history = useHistory();
-  const villages = useSelector(state => state.villageDetails.villages || []);
   const dispatch = useDispatch();
+  const villages = useSelector(state => state.villageDetails.villages || []);
 
   useEffect(() => {
     dispatch(getVillageDropdownFilterData());
   }, [dispatch]);
 
-  const handleVillageClick = village => {
-    if (selectedVillage && selectedVillage._id === village._id) {
-      const slug = village.name.replace(/\s+/g, '-');
-      history.push(`/lbdashboard/village/${slug}?id=${village._id}`);
-    } else {
-      setSelectedVillage(village);
-    }
-  };
+  const handleVillageClick = useCallback(
+    village => {
+      if (selectedVillage && selectedVillage._id === village._id) {
+        const slug = village.name.replace(/\s+/g, '-');
+        history.push(`/lbdashboard/village/${slug}?id=${village._id}`);
+      } else {
+        setSelectedVillage(village);
+      }
+    },
+    [selectedVillage, history],
+  );
 
-  const handleOutsideClick = () => {
+  const handleOutsideClick = useCallback(() => {
     setSelectedVillage(null);
-  };
+  }, []);
+
+  const handleOutsideKeyDown = useCallback(
+    e => {
+      if (e.key === 'Enter' || e.key === ' ') handleOutsideClick();
+    },
+    [handleOutsideClick],
+  );
+
+  const handleMarkerClick = useCallback(
+    (e, village) => {
+      e.stopPropagation();
+      handleVillageClick(village);
+    },
+    [handleVillageClick],
+  );
 
   return (
     <div
@@ -37,9 +87,7 @@ function MasterPlan() {
       onClick={handleOutsideClick}
       role="button"
       tabIndex={0}
-      onKeyDown={e => {
-        if (e.key === 'Enter' || e.key === ' ') handleOutsideClick();
-      }}
+      onKeyDown={handleOutsideKeyDown}
     >
       <div className={styles.logoContainer}>
         <img src={logo} alt="One Community Logo" />
@@ -56,28 +104,18 @@ function MasterPlan() {
                   {villages.map(v => (
                     <button
                       key={v._id}
-                      style={{
-                        '--top': v.position.top,
-                        '--left': v.position.left,
-                      }}
+                      style={getVillageMarkerStyle(v.position)}
                       className={styles.villageMarker}
                       type="button"
                       aria-label={`Marker for ${v.name}`}
-                      onClick={e => {
-                        e.stopPropagation();
-                        handleVillageClick(v);
-                      }}
+                      onClick={e => handleMarkerClick(e, v)}
                     />
                   ))}
                   <img
                     src={pin}
                     alt="Pin Point"
                     className={styles.pinPoint}
-                    style={{
-                      '--top': selectedVillage ? selectedVillage.position.top : '0%',
-                      '--left': selectedVillage ? selectedVillage.position.left : '0%',
-                      display: selectedVillage ? 'block' : 'none',
-                    }}
+                    style={getPinStyle(selectedVillage)}
                   />
                 </div>
               </div>
@@ -97,20 +135,9 @@ function MasterPlan() {
                   key={v._id}
                   type="button"
                   aria-label={`Select ${v.name}`}
-                  className={`${selectedVillage?._id === v._id ? `${styles.selected} ` : ''}${
-                    styles.village
-                  }`}
-                  onClick={e => {
-                    e.stopPropagation();
-                    handleVillageClick(v);
-                  }}
-                  style={{
-                    padding: '0 10px',
-                    textAlign: 'center',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                  }}
+                  className={getVillageButtonClassName(selectedVillage, v, styles)}
+                  onClick={e => handleMarkerClick(e, v)}
+                  style={VILLAGE_BUTTON_STYLE}
                 >
                   <img src={v.imageLink} alt={v.name} />
                 </button>

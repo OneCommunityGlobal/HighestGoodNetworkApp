@@ -6,29 +6,20 @@ import {
   Col,
   Button,
   Input,
-  InputGroup,
   Dropdown,
   DropdownToggle,
   DropdownMenu,
-  DropdownItem,
-  Pagination,
   PaginationItem,
   PaginationLink,
   Label,
+  Pagination,
 } from 'reactstrap';
 import { Link } from 'react-router-dom';
-import {
-  FaFilter,
-  FaMapMarkerAlt,
-  FaComment,
-  FaBell,
-  FaUser,
-  FaChevronLeft,
-  FaChevronRight,
-} from 'react-icons/fa';
+import { FaFilter, FaMapMarkerAlt, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import styles from './BiddingHomepage.module.css';
 import logo from '../../Collaboration/One-Community-Horizontal-Homepage-Header-980x140px-2.png';
 import Header from '../Header';
+
 const propertyListings = [
   {
     id: 405,
@@ -262,22 +253,22 @@ const propertyListings = [
   },
 ];
 
+const ITEMS_PER_PAGE = 6;
+const END_OF_DAY_HOURS = 23;
+const END_OF_DAY_MINUTES = 59;
+const END_OF_DAY_SECONDS = 59;
+const END_OF_DAY_MS = 999;
+
 function BiddingHomepage() {
   const darkMode = useSelector(state => state.theme.darkMode);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [selectedFilter, setSelectedFilter] = useState('Filter by Village');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedFilter] = useState('Filter by Village');
+  const [searchQuery] = useState('');
 
-  // Date filter states - replaced dropdown with date inputs
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [dateFilterDropdownOpen, setDateFilterDropdownOpen] = useState(false);
 
-  // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6; // Show 6 items per page
-
-  const toggle = () => setDropdownOpen(prevState => !prevState);
 
   const toggleDateFilterDropdown = () => setDateFilterDropdownOpen(prevState => !prevState);
 
@@ -285,6 +276,24 @@ function BiddingHomepage() {
     setStartDate('');
     setEndDate('');
     setCurrentPage(1);
+  };
+
+  const isWithinDateRange = propertyDate => {
+    if (startDate) {
+      const startFilterDate = new Date(startDate);
+      if (propertyDate < startFilterDate) return false;
+    }
+    if (endDate) {
+      const endFilterDate = new Date(endDate);
+      endFilterDate.setHours(
+        END_OF_DAY_HOURS,
+        END_OF_DAY_MINUTES,
+        END_OF_DAY_SECONDS,
+        END_OF_DAY_MS,
+      );
+      if (propertyDate > endFilterDate) return false;
+    }
+    return true;
   };
 
   const filteredProperties = propertyListings.filter(property => {
@@ -305,27 +314,15 @@ function BiddingHomepage() {
 
     if (startDate || endDate) {
       const propertyDate = new Date(property.createdDate);
-
-      if (startDate) {
-        const startFilterDate = new Date(startDate);
-        if (propertyDate < startFilterDate) return false;
-      }
-
-      if (endDate) {
-        const endFilterDate = new Date(endDate);
-        // Set end date to end of day for inclusive filtering
-        endFilterDate.setHours(23, 59, 59, 999);
-        if (propertyDate > endFilterDate) return false;
-      }
+      if (!isWithinDateRange(propertyDate)) return false;
     }
 
     return true;
   });
 
-  // Pagination logic
-  const totalPages = Math.ceil(filteredProperties.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
+  const totalPages = Math.ceil(filteredProperties.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
   const currentProperties = filteredProperties.slice(startIndex, endIndex);
 
   const handlePageChange = page => {
@@ -468,13 +465,12 @@ function BiddingHomepage() {
           )}
         </Row>
 
-        {/* Pagination */}
-        {filteredProperties.length > itemsPerPage && (
+        {filteredProperties.length > ITEMS_PER_PAGE && (
           <Row className="justify-content-center mb-4">
             <Col xs="auto">
               <Pagination className={`${styles.customPagination} ${darkMode ? 'dark-mode' : ''}`}>
                 <PaginationItem disabled={currentPage === 1}>
-                  <PaginationLink onClick={handlePrevPage}>
+                  <PaginationLink onClick={handlePrevPage} aria-label="Previous page">
                     <FaChevronLeft />
                   </PaginationLink>
                 </PaginationItem>
@@ -486,7 +482,7 @@ function BiddingHomepage() {
                 ))}
 
                 <PaginationItem disabled={currentPage === totalPages}>
-                  <PaginationLink onClick={handleNextPage}>
+                  <PaginationLink onClick={handleNextPage} aria-label="Next page">
                     <FaChevronRight />
                   </PaginationLink>
                 </PaginationItem>
@@ -495,7 +491,6 @@ function BiddingHomepage() {
           </Row>
         )}
 
-        {/* Results info */}
         <Row className="mb-3">
           <Col xs={12} className="text-center">
             <small className={`text-muted ${darkMode ? 'text-light' : ''}`}>

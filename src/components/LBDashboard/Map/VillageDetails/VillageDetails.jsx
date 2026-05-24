@@ -1,33 +1,40 @@
-import React, { useEffect } from 'react';
-import { useParams, Link, useLocation } from 'react-router-dom';
+import { useEffect, useMemo } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+
 import { getVillageDetailsData } from '~/actions/lbdashboard/villageDetailsAction';
 import logo from '../../../../assets/images/logo2.png';
 import styles from './VillageDetails.module.css';
 
-export default function VillageDetails() {
-  const { id: nameSlug } = useParams();
-  const location = useLocation();
-  const query = new URLSearchParams(location.search);
-  const villageId = query.get('id');
+const NOT_FOUND_STYLE = { textAlign: 'center' };
 
+function shouldFetchVillage(village, villageId) {
+  return villageId && (!village || village._id !== villageId);
+}
+
+export default function VillageDetails() {
+  const location = useLocation();
   const dispatch = useDispatch();
+
+  const villageId = useMemo(() => new URLSearchParams(location.search).get('id'), [
+    location.search,
+  ]);
+
   const village = useSelector(state => state.villageDetails.villageDetails[villageId]);
 
   useEffect(() => {
-    if (villageId && (!village || village._id !== villageId)) {
+    if (shouldFetchVillage(village, villageId)) {
       dispatch(getVillageDetailsData(villageId));
     }
   }, [dispatch, villageId, village]);
 
-  if (!village) return <h2 style={{ textAlign: 'center' }}>Village not found</h2>;
+  if (!village) return <h2 style={NOT_FOUND_STYLE}>Village not found</h2>;
 
   return (
     <div className={styles.mainContainer}>
       <div className={styles.logoContainer}>
         <img src={logo} alt="One Community Logo" />
       </div>
-
       <div className={styles.contentContainer}>
         <div className={styles.containerTop} />
         <div className={styles.containerMain}>
@@ -42,21 +49,18 @@ export default function VillageDetails() {
                   />
                 </div>
               )}
-
               <div className={styles.infoSection}>
                 <h2>{village.name}</h2>
-
                 {village.amenities?.length > 0 && (
                   <>
                     <h3>Amenities</h3>
                     <ul>
-                      {village.amenities.map((a, idx) => (
-                        <li key={idx}>{a}</li>
+                      {village.amenities.map(amenity => (
+                        <li key={amenity}>{amenity}</li>
                       ))}
                     </ul>
                   </>
                 )}
-
                 {village.properties?.length > 0 && (
                   <>
                     <h3>Properties</h3>
@@ -69,7 +73,6 @@ export default function VillageDetails() {
                     </div>
                   </>
                 )}
-
                 <Link to="/lbdashboard/masterplan" className={styles.masterplanLink}>
                   Go back to Map
                 </Link>

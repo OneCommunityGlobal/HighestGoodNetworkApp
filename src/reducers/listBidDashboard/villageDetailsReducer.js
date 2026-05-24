@@ -14,32 +14,39 @@ const initialState = {
   villageDetails: {},
 };
 
+function setLoading(state) {
+  return {
+    ...state,
+    loading: true,
+    error: null,
+  };
+}
+
+function setFailure(state, payload) {
+  return {
+    ...state,
+    loading: false,
+    error: payload,
+  };
+}
+
 export default function villageDetailsReducer(state = initialState, action) {
   switch (action.type) {
     case FETCH_ALL_VILLAGES_REQUEST:
-      return {
-        ...state,
-        loading: true,
-        error: null,
-      };
+    case FETCH_VILLAGE_DETAILS_REQUEST:
+      return setLoading(state);
+
     case FETCH_ALL_VILLAGES_SUCCESS:
       return {
         ...state,
         loading: false,
         villages: action.payload,
       };
+
     case FETCH_ALL_VILLAGES_FAILURE:
-      return {
-        ...state,
-        loading: false,
-        error: action.payload,
-      };
-    case FETCH_VILLAGE_DETAILS_REQUEST:
-      return {
-        ...state,
-        loading: true,
-        error: null,
-      };
+    case FETCH_VILLAGE_DETAILS_FAILURE:
+      return setFailure(state, action.payload);
+
     case FETCH_VILLAGE_DETAILS_SUCCESS:
       return {
         ...state,
@@ -49,12 +56,7 @@ export default function villageDetailsReducer(state = initialState, action) {
           [action.payload._id]: action.payload,
         },
       };
-    case FETCH_VILLAGE_DETAILS_FAILURE:
-      return {
-        ...state,
-        loading: false,
-        error: action.payload,
-      };
+
     default:
       return state;
   }
