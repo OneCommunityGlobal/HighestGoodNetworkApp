@@ -165,7 +165,10 @@ const KIInventory = () => {
                 setSearchTerm(e.target.value);
               }}
             />
-            <button className={`${styles.clearSearch}`} onClick={() => setSearchTerm('')}>
+            <button
+              className={`${styles.clearSearch} ${darkMode ? styles.darkClearSearch : ''}`}
+              onClick={() => setSearchTerm('')}
+            >
               x
             </button>
           </div>
@@ -201,11 +204,15 @@ const KIInventory = () => {
                   </p>
                 </div>
                 <div className={styles.notificationBody}>
-                  <p style={{ color: 'rgb(175, 124, 62)' }}>{preservedDesc.join(', ')}</p>
+                  <p style={{ color: darkMode ? 'white' : 'rgb(175, 124, 62)' }}>
+                    {preservedDesc.join(', ')}
+                  </p>
                   <div>
                     <button
                       className={styles.viewAllButton}
-                      style={darkMode ? { backgroundColor: 'rgb(245, 162, 61)' } : {}}
+                      style={
+                        darkMode ? { backgroundColor: 'rgb(245, 162, 61)', color: 'white' } : {}
+                      }
                     >
                       View All
                     </button>
