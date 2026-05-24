@@ -51,7 +51,6 @@ const SECTIONS = [
 ];
 
 import AddProcessingProjectModal from './AddProcessingProjectModal';
-// ... checks for imports
 
 const ProcessingLandingPage = () => {
   const [activeTab, setActiveTab] = useState('Processing Overview');

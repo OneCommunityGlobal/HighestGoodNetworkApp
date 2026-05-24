@@ -103,13 +103,14 @@
 }
 
 .activeNavItem {
-  background-color: #333; /* Or a specific green from branding */
-  color: white;
+  background-color: #e6f4ea; /* Light green background */
+  color: #2e7d32; /* Darker green text */
+  font-weight: 600;
 }
 
 .activeNavItem:hover {
-    background-color: #444;
-    color: white;
+  background-color: #dcedc8;
+  color: #1b5e20;
 }
 
 
@@ -128,6 +129,9 @@
 
 .sectionBox {
   background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 24px;
 }
 
 .sectionHeader {
@@ -193,7 +197,7 @@
 
 .methodStatus {
     font-size: 12px;
-    color: #1a6b28; /* Green for active */
+    color: #1b5e20; /* Darker green for accessibility */
     background: #e6f4ea;
     padding: 2px 8px;
     border-radius: 12px;
@@ -254,16 +258,17 @@
 .addSupplyBtn:hover {
     border-color: #888;
     color: #333;
-        background-color: #fafafa;
-    }
-    
-      /* Icon colors specific classes */
-      .iconPurple, .darkMode .iconPurple { color: #9c27b0; }
-  .iconOrange, .darkMode .iconOrange { color: #ed6c02; }
-  .iconBlue, .darkMode .iconBlue { color: #0288d1; }
-      .iconGreen, .darkMode .iconGreen { color: #2e7d32; }
-  
-  /* Placeholder Styles */.placeholderContainer {
+    background-color: #fafafa;
+}
+
+/* Icon colors specific classes */
+.iconPurple, .darkMode .iconPurple { color: #9c27b0; }
+.iconOrange, .darkMode .iconOrange { color: #ed6c02; }
+.iconBlue, .darkMode .iconBlue { color: #0288d1; }
+.iconGreen, .darkMode .iconGreen { color: #2e7d32; }
+
+/* Placeholder Styles */
+.placeholderContainer {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -348,8 +353,8 @@
 }
 
 .darkMode .methodStatus {
-  background-color: #1e3724;
-  color: #7ef592;
+  background-color: #1e3824; /* Solid equivalent of rgb(40 167 69 / 20%) over #1c1c1c */
+  color: #fff; /* Maximum contrast in dark mode */
   border: 1px solid #2ea043;
   box-shadow: none;
 }
@@ -693,8 +698,6 @@
   padding-bottom: 10px;
 }
 
-
-
 .closeButton {
   background: none;
   border: none;
@@ -806,4 +809,12 @@
 .darkModeModal input[type="date"]::-webkit-calendar-picker-indicator {
   filter: invert(1);
   cursor: pointer;
+}
+
+.darkMode .placeholderContent h2 {
+  color: #e0e0e0;
+}
+
+.darkMode .placeholderContent p {
+  color: #ccc;
 }
