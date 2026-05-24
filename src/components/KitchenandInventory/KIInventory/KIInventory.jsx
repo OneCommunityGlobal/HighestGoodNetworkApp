@@ -188,7 +188,10 @@ const KIInventory = () => {
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
             />
-            <button className={`${styles.clearSearch}`} onClick={() => setSearchTerm('')}>
+            <button
+              className={`${styles.clearSearch} ${darkMode ? styles.darkClearSearch : ''}`}
+              onClick={() => setSearchTerm('')}
+            >
               x
             </button>
           </div>

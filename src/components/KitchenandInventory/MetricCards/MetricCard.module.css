@@ -34,7 +34,7 @@
 .darkModeCard {
   background-color: #032c50;
   box-shadow: 4px 0 10px rgb(0 0 0 / 20%), -4px 0 10px rgb(0 0 0 / 20%);
-  color: #ffffff;
+  color: white;
 }
 
 .darkModeIcon svg{
