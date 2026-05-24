@@ -49,6 +49,7 @@ function WarningTrackerModal({
   const [isPermanent, setIsPermanent] = useState(false);
   const [error, setError] = useState(null);
   const [dragIndex, setDragIndex] = useState(null);
+  const [initialDragIndex, setInitialDragIndex] = useState(null);
   const [warningsEdited, setWarningsEdited] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
 
@@ -300,21 +301,35 @@ function WarningTrackerModal({
     );
   }
 
-  const handleDragStart = index => {
+  const handleDragStart = (index, disabled) => {
+    if (disabled) return;
     setDragIndex(index);
+    setInitialDragIndex(index);
   };
 
-  const handleDragOver = (e, index) => {
+  const handleDragOver = (e, index, disabled) => {
     e.preventDefault();
     if (dragIndex === index) return;
+    if (disabled) return;
 
-    const updatedWarningList = [...warningDescriptions];
-    const [movedWarning] = updatedWarningList.splice(dragIndex, 1);
-    updatedWarningList.splice(index, 0, movedWarning);
+    const warningList = [...warningDescriptions];
+    const [movedWarning] = warningList.splice(dragIndex, 1);
+    warningList.splice(index, 0, movedWarning);
 
     setDragIndex(index);
-    setWarningDescriptions(updatedWarningList);
+    setWarningDescriptions(warningList);
     setWarningsEdited(true);
+  };
+
+  const handleDragEnd = disabled => {
+    if (dragIndex === initialDragIndex) return;
+    if (disabled) return;
+
+    const warningList = [...warningDescriptions];
+    const updatedWarningList = warningList.map(warning => {
+      return { ...warning, reordering: true };
+    });
+    setWarningDescriptions(updatedWarningList);
   };
 
   return (
@@ -361,8 +376,9 @@ function WarningTrackerModal({
             <li
               className={styles.warnings__descriptions}
               key={warning._id}
-              onDragStart={() => handleDragStart(index)}
-              onDragOver={e => handleDragOver(e, index)}
+              onDragStart={() => handleDragStart(index, warning?.disabled)}
+              onDragOver={e => handleDragOver(e, index, warning?.disabled)}
+              onDragEnd={e => handleDragEnd(warning?.disabled)}
             >
               <img src={reorder} alt="reorder" className={styles.warning__reorder} />
               {warning.activeWarning ? (
@@ -410,7 +426,7 @@ function WarningTrackerModal({
                 type="text"
                 onChange={e => handleEditWarningDescription(e, warning._id)}
                 value={warning.warningTitle}
-                disabled={warning?.disabled || warning.isPermanent}
+                disabled={warning?.disabled || warning.isPermanent || warning?.reordering}
                 placeholder="warning title"
                 className={`${styles.warnings__descriptions__title} ${
                   warning.activeWarning ? '' : styles['warnings__descriptions__title--gray']
