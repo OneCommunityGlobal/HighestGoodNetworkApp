@@ -164,6 +164,16 @@
 .darkSearchInput {
   background-color: #151515 !important;
   border: none !important;
+  color: white;
+}
+
+.darkSearchInput::placeholder {
+  color: #888;
+}
+
+.darkClearSearch {
+  color: #ccc;
+  background-color: transparent;
 }
 
 .darkTabContent {

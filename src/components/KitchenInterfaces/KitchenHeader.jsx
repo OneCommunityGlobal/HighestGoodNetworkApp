@@ -52,7 +52,6 @@ const KitchenHeader = () => {
       {/* Overlay for mobile when menu is open */}
       {isMenuOpen && (
         <button
-          type="button"
           className={styles.overlay}
           onClick={() => setIsMenuOpen(false)}
           onKeyDown={e => {
@@ -60,7 +59,9 @@ const KitchenHeader = () => {
               setIsMenuOpen(false);
             }
           }}
+          tabIndex={0}
           aria-label="Close menu"
+          type="button"
         />
       )}
     </header>

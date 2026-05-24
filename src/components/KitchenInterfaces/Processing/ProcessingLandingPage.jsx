@@ -1,5 +1,6 @@
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import styles from './ProcessingLandingPage.module.css';
 import ProcessingQueue from './ProcessingQueue';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -50,7 +51,6 @@ const SECTIONS = [
 ];
 
 import AddProcessingProjectModal from './AddProcessingProjectModal';
-// ... checks for imports
 
 const ProcessingLandingPage = () => {
   const [activeTab, setActiveTab] = useState('Processing Overview');
@@ -284,15 +284,19 @@ const ProcessingLandingPage = () => {
         ))}
       </div>
 
-      {error && (
-        <div className="alert alert-danger" style={{ margin: '20px 0' }}>
-          {error}
-        </div>
-      )}
-      {!error && loading && (
-        <div style={{ padding: '40px', textAlign: 'center' }}>Loading projects...</div>
-      )}
-      {!error && !loading && renderContent()}
+      {(() => {
+        if (error) {
+          return (
+            <div className="alert alert-danger" style={{ margin: '20px 0' }}>
+              {error}
+            </div>
+          );
+        }
+        if (loading) {
+          return <div style={{ padding: '40px', textAlign: 'center' }}>Loading projects...</div>;
+        }
+        return renderContent();
+      })()}
 
       <AddProcessingProjectModal
         isOpen={isModalOpen}

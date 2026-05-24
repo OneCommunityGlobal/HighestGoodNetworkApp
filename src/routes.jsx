@@ -357,6 +357,7 @@ export default (
       )}
     />
     <LBProtectedRoute path="/lbdashboard/home" component={LBHome} />
+    {/* ----- LB Dashboard Routing Ends----- */}
     <Route
       path="/EventPopularity"
       render={() => (
