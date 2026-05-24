@@ -1,6 +1,8 @@
 /* eslint-disable testing-library/no-node-access */
 import { useSelector } from 'react-redux';
 import { useRef, useState, useCallback } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFilePdf } from '@fortawesome/free-solid-svg-icons';
 import MyCases from './MyCases';
 import DropOffTracking from './DropOffTracking';
 import NoShowInsights from './NoShowInsights';
@@ -47,11 +49,6 @@ function EventParticipation() {
       }`}
     >
       {/* Print-only page title header */}
-      <div className={`${styles.printOnly} ${styles.printHeader}`}>
-        <div className={styles.printHeaderTitle}>Social And Recreational Management</div>
-        <div className={styles.printHeaderSubtitle}>Event Participation</div>
-      </div>
-
       <header
         className={`${styles.landingPageHeaderContainer} ${styles.avoidBreak} ${styles.noPrintGap}`}
       >
@@ -68,21 +65,24 @@ function EventParticipation() {
           disabled={exporting}
           aria-busy={exporting}
         >
-          {exporting ? 'Preparing…' : '📄 Save as PDF'}
+          {exporting ? (
+            'Preparing…'
+          ) : (
+            <>
+              <FontAwesomeIcon icon={faFilePdf} style={{ marginRight: '6px' }} />
+              Save as PDF
+            </>
+          )}
         </button>
       </header>
 
       <MyCases />
-
-      <div className={styles.analyticsSection}>
+      <div className={`${styles.analyticsSection}`}>
         <DropOffTracking />
         <NoShowInsights />
       </div>
 
       {/* Print-only footer note */}
-      <div className={`${styles.printOnly} ${styles.printFooter}`}>
-        Generated from Event Participation
-      </div>
     </div>
   );
 }

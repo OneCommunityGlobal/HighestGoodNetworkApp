@@ -22,7 +22,7 @@ import {
   getUniqueEventTypes,
   getAttendanceByDay,
 } from '../../../actions/communityPortal/NoShowVizActions';
-import './NoshowViz.css';
+import styles from './NoshowViz.module.css';
 
 function EventNoShowChart() {
   const [period, setPeriod] = useState('month');
@@ -113,25 +113,25 @@ function EventNoShowChart() {
   );
 
   return (
-    <div className="event-container">
-      <h2 className="event-title">Event No Shows by Date</h2>
-      <div className="button-group">
+    <div className={`${styles.eventContainer}`}>
+      <h2 className={`${styles.eventTitle}`}>Event No Shows by Date</h2>
+      <div className={`${styles.buttonGroup}`}>
         <button
           type="button"
           onClick={() => setPeriod('month')}
-          className={`chart-button ${period === 'month' ? 'active' : ''}`}
+          className={`${styles.chartButton} ${period === 'month' ? styles.active : ''}`}
         >
           Month View
         </button>
         <button
           type="button"
           onClick={() => setPeriod('year')}
-          className={`chart-button ${period === 'year' ? 'active' : ''}`}
+          className={`${styles.chartButton} ${period === 'year' ? styles.active : ''}`}
         >
           Year View
         </button>
       </div>
-      <div className="chart-wrapper">
+      <div className={`${styles.chartWrapper}`}>
         <ResponsiveContainer width="100%" height={400}>
           <BarChart data={noShowPeriod}>
             <XAxis dataKey="date" />
@@ -157,8 +157,8 @@ function EventNoShowChart() {
           </BarChart>
         </ResponsiveContainer>
       </div>
-      <h2 className="event-title">Event No Shows by Location</h2>
-      <div className="chart-wrapper">
+      <h2 className={`${styles.eventTitle}`}>Event No Shows by Location</h2>
+      <div className={`${styles.chartWrapper}`}>
         <ResponsiveContainer width="100%" height={400}>
           <BarChart data={locationData}>
             <XAxis dataKey="location" />
@@ -179,8 +179,8 @@ function EventNoShowChart() {
         </ResponsiveContainer>
       </div>
 
-      <h2 className="event-title">No Shows by Age Group and Gender</h2>
-      <div className="chart-wrapper">
+      <h2 className={`${styles.eventTitle}`}>No Shows by Age Group and Gender</h2>
+      <div className={`${styles.chartWrapper}`}>
         <ResponsiveContainer width="100%" height={400}>
           <BarChart data={ageGroupData}>
             <XAxis dataKey="ageGroup" />
@@ -194,8 +194,8 @@ function EventNoShowChart() {
         </ResponsiveContainer>
       </div>
 
-      <h2 className="event-title">Proportion of No-Shows by Gender</h2>
-      <div className="chart-wrapper">
+      <h2 className={`${styles.eventTitle}`}>Proportion of No-Shows by Gender</h2>
+      <div className={`${styles.chartWrapper}`}>
         <ResponsiveContainer width="100%" height={400}>
           <PieChart>
             <Pie
@@ -218,7 +218,7 @@ function EventNoShowChart() {
         </ResponsiveContainer>
       </div>
 
-      <h2 className="event-title">Attendance Trend by Day of the Week</h2>
+      <h2 className={`${styles.eventTitle}`}>Attendance Trend by Day of the Week</h2>
       <label className="no-show-viz-label" htmlFor="event-type-select">
         Select Event Type:
       </label>
@@ -234,7 +234,7 @@ function EventNoShowChart() {
         ))}
       </select>
 
-      <div className="chart-wrapper">
+      <div className={`${styles.chartWrapper}`}>
         <ResponsiveContainer width="100%" height={400}>
           <LineChart data={attendanceByDay}>
             <XAxis dataKey="day" />

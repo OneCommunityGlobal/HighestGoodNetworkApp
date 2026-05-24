@@ -15,6 +15,7 @@ import styles from './LogTools.module.css';
 function LogTools() {
   const toolTypes = useSelector(state => state.bmInvTypes.list);
   const projects = useSelector(state => state.bmProjects);
+  const darkMode = useSelector(state => state.theme.darkMode);
   const dispatch = useDispatch();
   const history = useHistory();
   const today = new Date().toISOString().split('T')[0];
@@ -41,32 +42,6 @@ function LogTools() {
       date: today,
       typesArray: [],
     });
-  };
-
-  const multiSelectCustomStyles = {
-    control: provided => ({
-      ...provided,
-      width: 300,
-    }),
-    multiValue: provided => ({
-      ...provided,
-      padding: '5px',
-      backgroundColor: '#f7f7f7',
-      borderRadius: '5px',
-      border: '1px solid #aaacaf',
-    }),
-    multiValueLabel: provided => ({
-      ...provided,
-      color: '#aaacaf',
-    }),
-    multiValueRemove: provided => ({
-      ...provided,
-      svg: {
-        ...provided.svg,
-        width: 20,
-        height: 20,
-      },
-    }),
   };
 
   useEffect(() => {
@@ -232,21 +207,36 @@ function LogTools() {
     );
   }
   return (
-    <div className={`${styles.page}`}>
-      <div className={`${styles.logFormContainer}`}>
-        <div className={`${styles.titleLabel}`}>
+    <div className={`${styles.page} ${darkMode ? styles['dark-mode'] : ''}`}>
+      <div className={`${styles.logFormContainer} ${darkMode ? styles['dark-mode'] : ''}`}>
+        <div className={`${styles.titleLabel} ${darkMode ? styles['dark-mode'] : ''}`}>
           <span>TOOL/EQUIPMENT DAILY ACTIVITIES LOG</span>
         </div>
 
         <Form className={`${styles.selectors}`}>
           <FormGroup className={`${styles.selectInput}`}>
-            <Label htmlFor="dateSelect" className={`${styles.selectorLabel}`}>
+            <Label
+              htmlFor="dateSelect"
+              className={`${styles.selectorLabel} ${darkMode ? styles['dark-mode'] : ''}`}
+            >
               Date:
             </Label>
-            <Input type="date" defaultValue={today} disabled />
+            <Input
+              type="date"
+              defaultValue={today}
+              disabled
+              style={{
+                backgroundColor: darkMode ? '#343a40' : '#fff',
+                borderColor: darkMode ? '#495057' : '#ced4da',
+                color: darkMode ? '#fff' : '#000',
+              }}
+            />
           </FormGroup>
           <FormGroup className={`${styles.selectInput}`}>
-            <Label htmlFor="projectSelect" className={`${styles.selectorLabel}`}>
+            <Label
+              htmlFor="projectSelect"
+              className={`${styles.selectorLabel} ${darkMode ? styles['dark-mode'] : ''}`}
+            >
               Project:
             </Label>
             <Input
@@ -254,14 +244,30 @@ function LogTools() {
               name="projectSelect"
               type="select"
               onChange={handleProjectSelect}
+              style={{
+                backgroundColor: darkMode ? '#343a40' : '#fff',
+                borderColor: darkMode ? '#495057' : '#ced4da',
+                color: darkMode ? '#fff' : '#000',
+              }}
             >
               {projects.map(proj => (
-                <option key={proj._id}>{proj.name}</option>
+                <option
+                  key={proj._id}
+                  style={{
+                    backgroundColor: darkMode ? '#343a40' : '#fff',
+                    color: darkMode ? '#fff' : '#000',
+                  }}
+                >
+                  {proj.name}
+                </option>
               ))}
             </Input>
           </FormGroup>
           <FormGroup className={`${styles.selectInput}`}>
-            <Label htmlFor="projectSelect" className={`${styles.selectorLabel}`}>
+            <Label
+              htmlFor="projectSelect"
+              className={`${styles.selectorLabel} ${darkMode ? styles['dark-mode'] : ''}`}
+            >
               Check In or Out:
             </Label>
             <Input
@@ -270,16 +276,35 @@ function LogTools() {
               type="select"
               onChange={handleInOutSelect}
               value={selectedAction}
+              style={{
+                backgroundColor: darkMode ? '#343a40' : '#fff',
+                borderColor: darkMode ? '#495057' : '#ced4da',
+                color: darkMode ? '#fff' : '#000',
+              }}
             >
-              <option>Check In</option>
-              <option>Check Out</option>
+              <option
+                style={{
+                  backgroundColor: darkMode ? '#343a40' : '#fff',
+                  color: darkMode ? '#fff' : '#000',
+                }}
+              >
+                Check In
+              </option>
+              <option
+                style={{
+                  backgroundColor: darkMode ? '#343a40' : '#fff',
+                  color: darkMode ? '#fff' : '#000',
+                }}
+              >
+                Check Out
+              </option>
             </Input>
           </FormGroup>
         </Form>
 
-        <Table>
+        <Table className={darkMode ? 'table-dark' : ''}>
           <thead>
-            <tr className={`${styles.subtitleRow}`}>
+            <tr className={`${styles.subtitleRow} ${darkMode ? styles['dark-mode'] : ''}`}>
               <td colSpan="6">
                 <span className={`${styles.tableSubtitle} ${styles.subtitleHighlight}`}>Item</span>
                 <span className={`${styles.tableSubtitle} ${styles.subtitleHighlight}`}>
@@ -304,7 +329,10 @@ function LogTools() {
           <tbody>
             {relevantToolTypes.length > 0 ? (
               relevantToolTypes.map((toolType, index) => (
-                <tr key={toolType._id} className={`${styles.toolTypeRow}`}>
+                <tr
+                  key={toolType._id}
+                  className={`${styles.toolTypeRow} ${darkMode ? styles['dark-mode'] : ''}`}
+                >
                   <td>{index + 1}</td>
                   <td>{toolType.toolName}</td>
                   <td>{toolType.available + toolType.using}</td>
@@ -315,7 +343,6 @@ function LogTools() {
                       ref={selectRefs.current[index]}
                       options={toolType.items}
                       isMulti
-                      styles={multiSelectCustomStyles}
                       onChange={handleCodeSelect}
                       aria-label="Select Tool Code"
                     />
@@ -323,7 +350,7 @@ function LogTools() {
                 </tr>
               ))
             ) : (
-              <tr>
+              <tr className={darkMode ? styles['dark-mode'] : ''}>
                 <td colSpan="6">
                   There are no tools to {selectedAction.toLowerCase()} for this project
                 </td>
@@ -347,5 +374,4 @@ function LogTools() {
     </div>
   );
 }
-
 export default LogTools;

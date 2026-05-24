@@ -31,7 +31,7 @@ function MaterialCard({ material = {} }) {
           }}
         />
       </div>
-      <div className={styles['single-card__body']}>
+      <div className={`${styles.singleCardBody}`}>
         <h3>Card title</h3>
         <div
           className={styles['single-card__info']}
