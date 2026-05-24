@@ -73,8 +73,8 @@
 }
 
 .goButton {
-  background-color: #4caf50;
-  color: white;
+  background-color: #006b32;
+  color: #fff;
   border: none;
   padding: 5px 10px;
   border-radius: 5px;
@@ -217,6 +217,13 @@
   box-sizing: border-box;
 }
 
+.optionFieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
 .formProfileDetailGroup {
   display: flex;
   flex-wrap: wrap;
@@ -285,8 +292,8 @@
 }
 
 .submitButton {
-  background-color: #4caf50;
-  color: white;
+  background-color: #006b32;
+  color: #fff;
   border: none;
   padding: 10px;
   border-radius: 5px;
@@ -595,15 +602,15 @@
 }
 
 .darkMode .tagPill {
-  border-color: rgb(148 163 184 / 35%);
-  background: rgb(148 163 184 / 12%);
-  color: #e2e8f0;
+  border-color: rgb(148 163 184 / 45%);
+  background: #334155;
+  color: #f8fafc;
 }
 
 .darkMode .tagPillStrong {
-  border-color: rgb(56 189 248 / 35%);
-  background: rgb(56 189 248 / 14%);
-  color: #e0f2fe;
+  border-color: rgb(56 189 248 / 45%);
+  background: #1e3a5f;
+  color: #bae6fd;
 }
 
 .darkMode .gotItBtn {
@@ -652,9 +659,9 @@
 }
 
 .darkMode .resumeLabel .fileName {
-  background: rgb(255 255 255 / 4%);
-  color: #cfe7ff;
-  border-color: rgb(255 255 255 / 5%);
+  background: #22364e;
+  color: #e6eef6;
+  border-color: rgb(255 255 255 / 15%);
 }
 
 /* Admin Requirements Section */

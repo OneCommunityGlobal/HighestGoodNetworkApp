@@ -14,10 +14,10 @@ vi.mock('react-toastify', () => ({
 }));
 
 // Mock fetch globally
-global.fetch = vi.fn();
+globalThis.fetch = vi.fn();
 
 // Mock window.scrollTo
-global.window.scrollTo = vi.fn();
+globalThis.window.scrollTo = vi.fn();
 
 // Helper mock responses
 const mockCategories = {

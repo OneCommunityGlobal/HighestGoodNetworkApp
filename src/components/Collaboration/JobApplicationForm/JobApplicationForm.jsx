@@ -622,15 +622,6 @@ function JobApplicationForm() {
     };
   };
 
-  const checkRequirements = () =>
-    evaluateRequirements({
-      fullTimeYears,
-      monthsVolunteer,
-      hoursPerWeek,
-      roleSkills,
-      locationTimezone,
-    });
-
   const requirementsForDisplay = useMemo(() => {
     const computed = evaluateRequirements({
       fullTimeYears,
@@ -663,7 +654,7 @@ function JobApplicationForm() {
           roleSkills,
           locationTimezone,
         });
-        const current = prev[id] !== undefined ? prev[id] : computed[id];
+        const current = prev[id] === undefined ? computed[id] : prev[id];
         return { ...prev, [id]: !current };
       });
     },
@@ -826,7 +817,7 @@ function JobApplicationForm() {
               <div className={styles.formProfileDetailGroup}>
                 <div className={styles.profileField}>
                   <label htmlFor="jaf-applicant-name" className={styles.fieldLabel}>
-                    Name
+                    <span>Name</span>
                     <span className={styles.requiredMark} aria-hidden="true">
                       *
                     </span>
@@ -845,7 +836,7 @@ function JobApplicationForm() {
                 </div>
                 <div className={styles.profileField}>
                   <label htmlFor="jaf-applicant-email" className={styles.fieldLabel}>
-                    Email
+                    <span>Email</span>
                     <span className={styles.requiredMark} aria-hidden="true">
                       *
                     </span>
@@ -986,7 +977,10 @@ function JobApplicationForm() {
                       />
                     )}
                     {qt === 'checkbox' && q.options && q.options.length > 0 && (
-                      <div role="group" aria-labelledby={`${formKey}-heading`}>
+                      <fieldset
+                        className={styles.optionFieldset}
+                        aria-labelledby={`${formKey}-heading`}
+                      >
                         {q.options.map(opt => (
                           <label key={String(opt)}>
                             <input
@@ -999,10 +993,13 @@ function JobApplicationForm() {
                             {opt}
                           </label>
                         ))}
-                      </div>
+                      </fieldset>
                     )}
                     {qt === 'radio' && q.options && q.options.length > 0 && (
-                      <div role="radiogroup" aria-labelledby={`${formKey}-heading`}>
+                      <fieldset
+                        className={styles.optionFieldset}
+                        aria-labelledby={`${formKey}-heading`}
+                      >
                         {q.options.map(opt => (
                           <label key={String(opt)}>
                             <input
@@ -1015,7 +1012,7 @@ function JobApplicationForm() {
                             {opt}
                           </label>
                         ))}
-                      </div>
+                      </fieldset>
                     )}
                     {qt === 'dropdown' && (
                       <select
