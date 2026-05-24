@@ -1,11 +1,10 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useSelector } from 'react-redux';
+import { v4 as uuidv4 } from 'uuid';
 import { ENDPOINTS } from '../../utils/URL';
 import httpService from '../../services/httpService';
 import { getAggregatedMockForChart } from './api';
 import styles from './ApplicationTimeChart.module.css';
-
-const NO_MATCH_VALUE = '__no_match__';
 
 function uniqueRolesFromRows(rows) {
   return [...new Set((rows || []).map(r => r?.role).filter(Boolean))].sort((a, b) =>
@@ -21,14 +20,11 @@ function mergeRoleOptions(prev, rows) {
 }
 
 function ApplicationTimeChart() {
-  const darkMode = useSelector(state => state.theme?.darkMode);
-
   const [dateFilter, setDateFilter] = useState('all');
   const [selectedRole, setSelectedRole] = useState('all');
-
   const [data, setData] = useState([]);
   const [availableRoles, setAvailableRoles] = useState(['all']);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [tooltip, setTooltip] = useState({
     visible: false,
@@ -72,13 +68,16 @@ function ApplicationTimeChart() {
   // Fetch data from backend
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true);
-      setError(null);
+      try {
+        setLoading(true);
+        setError(null);
 
         let startDate = null;
         let endDate = null;
 
         if (dateFilter !== 'all') {
+          const now = new Date();
+
           switch (dateFilter) {
             case 'weekly':
               startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
@@ -92,16 +91,16 @@ function ApplicationTimeChart() {
             default:
               break;
           }
-          endDate = now;
-        }
 
-        const roleParam =
-          selectedRole !== 'all' && selectedRole !== NO_MATCH_VALUE ? [selectedRole] : [];
+          if (startDate) {
+            endDate = now;
+          }
+        }
 
         const url = ENDPOINTS.APPLICATION_TIME_DATA(
           startDate ? startDate.toISOString() : null,
           endDate ? endDate.toISOString() : null,
-          roleParam,
+          selectedRole !== 'all' ? [selectedRole] : [],
         );
 
         const response = await httpService.get(url);
@@ -115,22 +114,20 @@ function ApplicationTimeChart() {
           setData(rows);
           setAvailableRoles(prev => mergeRoleOptions(prev, rows));
         } else {
-          throw new Error('Unexpected data format from server');
+          console.error('Backend returned unexpected data format:', response.data);
+          setError('Unexpected data format from server');
+          setData([]);
         }
-
-        setData(rows);
-        setAvailableRoles(prev => mergeRoleOptions(prev, rows));
       } catch (err) {
         console.error('Error fetching application time data:', err);
-
         const status = err?.response?.status;
-
         if (status === 404) {
           const rows = getAggregatedMockForChart();
           setData(rows);
           setAvailableRoles(prev => mergeRoleOptions(prev, rows));
+          setError(null);
         } else {
-          setError(err.message || 'Failed to fetch data');
+          setError(err.message || 'Failed to fetch data from server');
           setData([]);
         }
       } finally {
@@ -147,9 +144,8 @@ function ApplicationTimeChart() {
     }
 
     let rows = data;
-
     if (selectedRole !== 'all') {
-      rows = rows.filter(item => item?.role === selectedRole);
+      rows = data.filter(item => item && item.role === selectedRole);
     }
 
     const chartData = rows
@@ -167,11 +163,6 @@ function ApplicationTimeChart() {
   }, [data, selectedRole]);
 
   const maxTime = Math.max(...processedData.map(item => item.avgTime), 10);
-  const xTickCount = Math.ceil(maxTime / 5);
-  const xTicks = Array.from({ length: xTickCount + 1 }, (_, i) => i * 5);
-
-  const fastest = processedData[processedData.length - 1];
-  const slowest = processedData[0];
 
   // ── Tooltip handlers ──────────────────────────────────────────────────────
   // Uses fixed positioning from clientX/Y so the tooltip is never clipped
@@ -219,16 +210,30 @@ function ApplicationTimeChart() {
 
   if (loading) {
     return (
-      <div className={`${styles.atc} ${darkMode ? styles.dark : ''}`}>
-        <div className={styles.atcLoading}>Loading…</div>
+      <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
+        <div className={`${styles.chartCard} ${darkMode ? styles.darkMode : ''}`}>
+          <h2 className={`${styles.title} ${darkMode ? styles.darkMode : ''}`}>
+            Comparing the Average Time Taken to Fill an Application by Role
+          </h2>
+          <div className={`${styles.noData} ${darkMode ? styles.darkMode : ''}`}>
+            Loading application time data...
+          </div>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className={`${styles.atc} ${darkMode ? styles.dark : ''}`}>
-        <div className={styles.atcLoading}>Error: {error}</div>
+      <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
+        <div className={`${styles.chartCard} ${darkMode ? styles.darkMode : ''}`}>
+          <h2 className={`${styles.title} ${darkMode ? styles.darkMode : ''}`}>
+            Comparing the Average Time Taken to Fill an Application by Role
+          </h2>
+          <div className={`${styles.noData} ${darkMode ? styles.darkMode : ''}`}>
+            Error loading data: {error}. Please try again later.
+          </div>
+        </div>
       </div>
     );
   }
