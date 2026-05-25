@@ -62,7 +62,6 @@ export default function CommunityCalendar() {
     fetchEvents();
   }, []);
 
-
   const mappedEvents = useMemo(() => {
     return events.map(event => {
       const eventDateTime = new Date(event.startTime);
