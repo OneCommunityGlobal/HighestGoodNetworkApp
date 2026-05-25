@@ -16,6 +16,27 @@ import styles from './wbs.module.css';
 import { useFetchWbsTasks } from './hook';
 import { FilterBar } from './FilterBar';
 
+const filterTasks = (tasks, filterState) => {
+  switch (filterState) {
+    case 'all':
+      return tasks;
+    case 'assigned':
+      return tasks.filter(task => task.isAssigned === true);
+    case 'unassigned':
+      return tasks.filter(task => task.isAssigned === false);
+    case 'active':
+      return tasks.filter(task => ['Active', 'Started'].includes(task.status));
+    case 'inactive':
+      return tasks.filter(task => ['Not Started', 'Paused'].includes(task.status));
+    case 'complete':
+      return tasks.filter(task => task.status === 'Complete');
+    case 'paused':
+      return tasks.filter(task => task.status === 'Paused');
+    default:
+      return tasks;
+  }
+};
+
 function WBSTasks(props) {
   // const { tasks, fetched, darkMode } = props;
   const { fetched, darkMode } = props;
@@ -57,26 +78,6 @@ function WBSTasks(props) {
 
   // permissions
   const canPostTask = props.hasPermission('postTask');
-  const filterTasks = (tasks, filterState) => {
-    switch (filterState) {
-      case 'all':
-        return tasks;
-      case 'assigned':
-        return tasks.filter(task => task.isAssigned === true);
-      case 'unassigned':
-        return tasks.filter(task => task.isAssigned === false);
-      case 'active':
-        return tasks.filter(task => ['Active', 'Started'].includes(task.status));
-      case 'inactive':
-        return tasks.filter(task => ['Not Started', 'Paused'].includes(task.status));
-      case 'complete':
-        return tasks.filter(task => task.status === 'Complete');
-      case 'paused':
-        return tasks.filter(task => task.status === 'Paused');
-    }
-  };
-
-  
 
   const deleteWBSTask = (taskId, mother) => {
     props.deleteTask(taskId, mother);
