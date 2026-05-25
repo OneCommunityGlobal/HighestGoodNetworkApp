@@ -145,11 +145,15 @@ export default function Countdown({
 
   return (
     <div className={css.countdown}>
-      <BsXLg
-        className={cs(css.transitionColor, css.crossIcon)}
+      <button
+        type="button"
         onClick={toggleTimer}
-        title="close timer dropdown"
-      />
+        onMouseDown={e => e.preventDefault()}
+        style={{ background: 'none', border: 'none', padding: 0 }}
+        aria-label="Close timer dropdown"
+      >
+        <BsXLg className={cs(css.transitionColor, css.crossIcon)} title="close timer dropdown" />
+      </button>
       <div className={css.infoDisplay}>
         <h4>{`Goal: ${moment.utc(goal).format('HH:mm:ss')}`}</h4>
         <h6>
@@ -174,12 +178,19 @@ export default function Countdown({
             {running ? (
               getClockIcon(remainingSeconds % 4)
             ) : (
-              <BsArrowCounterclockwise
+              <button
+                type="button"
                 onClick={() => setConfirmationResetModal(true)}
-                className={cs(css.transitionColor, css.resetIcon)}
-                fontSize="2rem"
-                title="Reset timer"
-              />
+                onMouseDown={e => e.preventDefault()}
+                style={{ background: 'none', border: 'none', padding: 0 }}
+                aria-label="Reset timer"
+              >
+                <BsArrowCounterclockwise
+                  className={cs(css.transitionColor, css.resetIcon)}
+                  fontSize="2rem"
+                  title="Reset timer"
+                />
+              </button>
             )}
             <span>Time Remaining</span>
             <div className={css.remainingTime}>
@@ -242,6 +253,7 @@ export default function Countdown({
                 <button
                   type="button"
                   onClick={handleStopButton}
+                  onMouseDown={e => e.preventDefault()}
                   aria-label="Stop timer and log timer"
                 >
                   <BsStopFill
