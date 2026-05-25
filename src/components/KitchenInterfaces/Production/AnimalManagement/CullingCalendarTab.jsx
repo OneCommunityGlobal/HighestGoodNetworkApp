@@ -13,8 +13,21 @@ const CullingCalendarTab = ({ events, setEvents }) => {
     scheduledDate: '',
   });
 
+  const getTodayDateString = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   const handleScheduleCulling = e => {
     e.preventDefault();
+    const todayStr = getTodayDateString();
+    if (newEvent.scheduledDate < todayStr) {
+      alert('Scheduled date cannot be in the past.');
+      return;
+    }
     const eventData = {
       id: `CULL-${Date.now()}`,
       animalName: newEvent.animalName,
@@ -45,26 +58,28 @@ const CullingCalendarTab = ({ events, setEvents }) => {
         {events.length === 0 ? (
           <div className={styles['empty-state']}>No culling events scheduled.</div>
         ) : (
-          events.map(ev => {
-            const statusClass = styles[`status-${ev.status}`] || '';
-            return (
-              <div key={ev.id} className={styles['list-item']}>
-                <div className={styles['item-main']}>
-                  <span className={styles['item-title']}>
-                    {ev.animalName} ({ev.count})
-                  </span>
-                  <p className={styles['item-details']} style={{ marginTop: '8px' }}>
-                    <FontAwesomeIcon icon={faClock} style={{ marginRight: '6px', color: '#888' }} />
-                    Scheduled: {ev.scheduledDate}
-                  </p>
-                  <p className={styles['item-details']}>Notes: {ev.notes}</p>
-                </div>
-                <div className={styles['item-status']}>
-                  <span className={`${styles['status-badge']} ${statusClass}`}>{ev.status}</span>
-                </div>
+          events.map(ev => (
+            <div key={ev.id} className={styles['list-item']}>
+              <div className={styles['item-main']}>
+                <span className={styles['item-title']}>
+                  {ev.animalName} ({ev.count})
+                </span>
+                <p className={styles['item-details']} style={{ marginTop: '8px' }}>
+                  <FontAwesomeIcon icon={faClock} style={{ marginRight: '6px', color: '#888' }} />
+                  Scheduled: {ev.scheduledDate}
+                </p>
+                <p className={styles['item-details']}>Notes: {ev.notes}</p>
               </div>
-            );
-          })
+              <div className={styles['item-status']}>
+                {(() => {
+                  const statusClass = styles[`status-${ev.status}`];
+                  return (
+                    <span className={`${styles['status-badge']} ${statusClass}`}>{ev.status}</span>
+                  );
+                })()}
+              </div>
+            </div>
+          ))
         )}
       </div>
 
@@ -86,10 +101,14 @@ const CullingCalendarTab = ({ events, setEvents }) => {
       </div>
 
       {showModal && (
-        /* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */
-        <div className={styles['modal-overlay']} onClick={() => setShowModal(false)}>
-          {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
-          <div className={styles['modal-content']} onClick={e => e.stopPropagation()}>
+        <>
+          <button
+            type="button"
+            className={styles['modal-overlay']}
+            onClick={() => setShowModal(false)}
+            aria-label="Close modal"
+          />
+          <dialog open className={styles['modal-content']} aria-modal="true">
             <div className={styles['modal-header']}>
               <h2>Schedule Culling Event</h2>
               <button className={styles['modal-close']} onClick={() => setShowModal(false)}>
@@ -124,6 +143,7 @@ const CullingCalendarTab = ({ events, setEvents }) => {
                   id="scheduledDate"
                   required
                   type="date"
+                  min={getTodayDateString()}
                   value={newEvent.scheduledDate}
                   onChange={e => setNewEvent({ ...newEvent, scheduledDate: e.target.value })}
                 />
@@ -151,15 +171,15 @@ const CullingCalendarTab = ({ events, setEvents }) => {
                 </button>
               </div>
             </form>
-          </div>
-        </div>
+          </dialog>
+        </>
       )}
     </div>
   );
 };
 
 CullingCalendarTab.propTypes = {
-  events: PropTypes.array.isRequired,
+  events: PropTypes.arrayOf(PropTypes.object).isRequired,
   setEvents: PropTypes.func.isRequired,
 };
 

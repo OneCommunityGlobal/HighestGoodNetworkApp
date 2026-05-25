@@ -134,7 +134,7 @@
 }
 
 .btn-primary {
-  background: #8c5a2b;
+  background: #8b5a2b; /* Darker brown for white text contrast */
   color: white;
   border: none;
   padding: 8px 20px;
@@ -241,12 +241,12 @@
 
 .status-shipped {
   background: #e7f5ff;
-  color: #115293;
+  color: #1864ab; /* Darker blue for contrast */
 }
 
 .status-delivered {
   background: #ebfbee;
-  color: #1c5d2a;
+  color: #1a5d2e; /* Darker green for contrast */
 }
 
 .status-scheduled {
@@ -346,19 +346,28 @@
   position: fixed;
   inset: 0;
   background: rgb(0 0 0 / 50%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  border: none;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
   z-index: 1000;
+  display: block;
 }
 
 .modal-content {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   background: white;
   padding: 30px;
   border-radius: 12px;
   width: 90%;
   max-width: 500px;
   box-shadow: 0 10px 25px rgb(0 0 0 / 20%);
+  z-index: 1001;
+  border: none;
+  margin: 0;
 }
 
 .dark-mode .modal-content {
@@ -401,11 +410,26 @@
   font-family: inherit;
 }
 
+.form-group input[type="date"] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .dark-mode .form-group input,
 .dark-mode .form-group textarea {
   background: #3a3b3c;
   border-color: #4a4b4c;
   color: #e4e6eb;
+}
+
+.dark-mode input[type="date"] {
+  color-scheme: dark;
+}
+
+.dark-mode input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
 }
 
 .modal-actions {
@@ -427,8 +451,8 @@
 }
 
 .dark-mode .status-delivered {
-  background: #1c5d2a !important;
-  color: #fff !important;
+  background: #1a5d2e !important; /* Even darker green for contrast */
+  color: #f0fff4 !important;
 }
 
 .dark-mode .status-scheduled {
@@ -437,8 +461,8 @@
 }
 
 .dark-mode .status-confirmed {
-  background: #495057 !important; /* Darkened for WCAG contrast with white text */
-  color: #fff !important;
+  background: #495057 !important;
+  color: #fff !important; /* High contrast white on dark gray */
 }
 
 
@@ -653,4 +677,3 @@
   background: #3d2e00 !important;
   color: #fff !important;
 }
-

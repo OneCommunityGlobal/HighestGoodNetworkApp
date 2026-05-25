@@ -1,7 +1,8 @@
+/* Main Container */
 .container {
   padding: 24px;
-  background-color: #fff; 
-  font-family: Inter, sans-serif; 
+  background-color: #fff; /* Clean white background */
+  font-family: Inter, sans-serif; /* Example modern font, adjust to match project if needed */
   color: #333;
   width: 100%;
 }
@@ -19,11 +20,11 @@
 
 .subtitle {
   font-size: 14px;
-  color: #595959;
+  color: #666;
   margin: 0;
 }
 
-
+/* Dashboard Cards */
 .cardsContainer {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -58,11 +59,13 @@
 .cardTitle {
   font-size: 14px;
   font-weight: 500;
-  color: #595959;
+  color: #666;
 }
 
 .cardIcon {
   font-size: 20px;
+
+  /* Colors for icons matching the screenshot roughly */
 }
 
 .cardValue {
@@ -72,7 +75,7 @@
   margin: 0;
 }
 
-
+/* Section Navbar */
 .navbar {
   display: flex;
   flex-wrap: wrap;
@@ -87,7 +90,7 @@
   border-radius: 20px;
   font-size: 14px;
   font-weight: 500;
-  color: #595959;
+  color: #666;
   cursor: pointer;
   background: none;
   border: none;
@@ -100,17 +103,18 @@
 }
 
 .activeNavItem {
-  background-color: #333; 
-  color: white;
+  background-color: #e6f4ea; /* Light green background */
+  color: #2e7d32; /* Darker green text */
+  font-weight: 600;
 }
 
 .activeNavItem:hover {
-    background-color: #444;
-    color: white;
+  background-color: #dcedc8;
+  color: #1b5e20;
 }
 
 
-
+/* Processing Overview Section Layout */
 .overviewContainer {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -125,6 +129,9 @@
 
 .sectionBox {
   background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 24px;
 }
 
 .sectionHeader {
@@ -139,12 +146,12 @@
 
 .sectionSubtitle {
     font-size: 14px;
-    color: #595959;
+    color: #666;
     margin: 0;
 }
 
 
-
+/* Processing Methods List */
 .methodList {
   display: flex;
   flex-direction: column;
@@ -154,7 +161,7 @@
 .methodItem {
   display: flex;
   justify-content: space-between;
-  align-items: center; 
+  align-items: center; /* Center vertically */
   padding: 16px;
   border: 1px solid #eee;
   border-radius: 8px;
@@ -174,7 +181,7 @@
 
 .methodSub {
   font-size: 13px;
-  color: #595959;
+  color: #888;
 }
 
 .methodStats {
@@ -190,7 +197,7 @@
 
 .methodStatus {
     font-size: 12px;
-    color: #1e7e34; 
+    color: #1b5e20; /* Darker green for accessibility */
     background: #e6f4ea;
     padding: 2px 8px;
     border-radius: 12px;
@@ -198,7 +205,7 @@
     margin-top: 4px;
 }
 
-
+/* Supplies List */
 .suppliesList {
     width: 100%;
 }
@@ -223,12 +230,12 @@
 }
 
 .supplyName {
-    color: #595959;
+    color: #666;
 }
 
 .supplyQuantity {
     font-weight: 500;
-    color: #595959;
+    color: #888;
 }
 
 .addSupplyBtn {
@@ -236,7 +243,7 @@
     padding: 12px;
     border: 1px dashed #ccc;
     background: white;
-    color: #595959;
+    color: #666;
     border-radius: 8px;
     cursor: pointer;
     font-weight: 500;
@@ -249,18 +256,18 @@
 }
 
 .addSupplyBtn:hover {
-    border-color: #595959;
+    border-color: #888;
     color: #333;
     background-color: #fafafa;
 }
 
+/* Icon colors specific classes */
+.iconPurple, .darkMode .iconPurple { color: #9c27b0; }
+.iconOrange, .darkMode .iconOrange { color: #ed6c02; }
+.iconBlue, .darkMode .iconBlue { color: #0288d1; }
+.iconGreen, .darkMode .iconGreen { color: #2e7d32; }
 
-.iconPurple { color: #9c27b0; }
-.iconOrange { color: #ed6c02; }
-.iconBlue { color: #0288d1; }
-.iconGreen { color: #2e7d32; }
-
-
+/* Placeholder Styles */
 .placeholderContainer {
   display: flex;
   justify-content: center;
@@ -274,7 +281,7 @@
 
 .placeholderContent {
   text-align: center;
-  color: #595959;
+  color: #888;
 }
 
 .placeholderIcon {
@@ -285,10 +292,384 @@
 
 .placeholderContent h2 {
   font-size: 20px;
-  color: #595959;
+  color: #666;
   margin-bottom: 8px;
 }
 
+/* Dark Mode Overrides */
+.darkMode {
+  background-color: #1c1c1c; /* bg-darkmode-liblack */
+  color: #fff;
+}
+
+.darkMode .title {
+  color: #fff;
+}
+
+.darkMode .subtitle {
+  color: #aaa;
+}
+
+.darkMode .card {
+  background-color: #1c2541; /* bg-space-cadet */
+  border-color: #2f4157;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 50%);
+}
+
+.darkMode .card:hover {
+  box-shadow: 0 4px 12px rgb(0 0 0 / 70%);
+}
+
+.darkMode .cardTitle {
+  color: #b0b0b0;
+}
+
+.darkMode .cardValue {
+  color: #fff;
+}
+
+.darkMode .navbar {
+  border-bottom-color: #444;
+}
+
+.darkMode .navItem {
+  color: #aaa;
+}
+
+.darkMode .navItem:hover {
+  background-color: #333;
+  color: #fff;
+}
+
+.darkMode .activeNavItem {
+  background-color: #fff !important;
+  color: #121212 !important;
+  font-weight: 600;
+}
+
+.darkMode .activeNavItem:hover {
+  background-color: #f0f0f0 !important;
+  color: #000 !important;
+}
+
+.darkMode .methodStatus {
+  background-color: #1e3824; /* Solid equivalent of rgb(40 167 69 / 20%) over #1c1c1c */
+  color: #fff; /* Maximum contrast in dark mode */
+  border: 1px solid #2ea043;
+  box-shadow: none;
+}
+
+.darkMode .sectionBox {
+  background-color: #1c1c1c;
+}
+
+.darkMode .sectionTitle {
+  color: #fff;
+}
+
+.darkMode .sectionSubtitle {
+  color: #aaa;
+}
+
+.darkMode .methodItem {
+  border-color: #444;
+}
+
+.darkMode .methodName {
+  color: #e0e0e0;
+}
+
+.darkMode .methodSub {
+  color: #888;
+}
+
+.darkMode .methodValue {
+  color: #fff;
+}
+
+.darkMode .categoryTitle {
+  color: #fff;
+}
+
+.darkMode .supplyItem {
+  border-bottom-color: #444;
+}
+
+.darkMode .supplyName {
+  color: #ccc;
+}
+
+.darkMode .supplyQuantity {
+  color: #aaa;
+}
+
+.darkMode .addSupplyBtn {
+  background-color: #2c2c2c;
+  border-color: #444;
+  color: #ddd;
+}
+
+.darkMode .addSupplyBtn:hover {
+  background-color: #333;
+  color: #fff;
+}
+
+.darkMode .placeholderContainer {
+  background-color: #2c2c2c;
+  border-color: #444;
+}
+
+.darkMode .placeholderIcon {
+  color: #555;
+}
+
+.modalHeader h2 {
+  margin: 0;
+  font-size: 20px;
+  color: #333;
+}
+
+.darkMode .placeholderContent h2 {
+  color: #ddd;
+}
+
+.darkMode .placeholderContent p {
+  color: #aaa;
+}
+
+/* Project Cards */
+.projectCard {
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.2s;
+}
+
+.projectCard:hover {
+  box-shadow: 0 2px 8px rgb(0 0 0 / 5%);
+  border-color: #ddd;
+}
+
+.projectHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.projectQuantity {
+  font-size: 13px;
+  color: #777;
+  margin-top: 2px;
+}
+
+.projectFooter {
+  display: flex;
+  gap: 48px;
+}
+
+.footerItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.footerLabel {
+  font-size: 12px;
+  color: #999;
+}
+
+.footerValue {
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+}
+
+.projectName {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 8px;
+}
+
+.priorityBadge {
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  text-transform: lowercase;
+  font-weight: 500;
+  border: 1px solid transparent;
+}
+
+.priorityHigh {
+  background-color: #ffebee;
+  color: #c62828;
+  border-color: #ffcdd2;
+}
+
+.priorityMedium {
+  background-color: #fff3e0;
+  color: #b23c00;
+  border-color: #ffe0b2;
+}
+
+.priorityLow {
+  background-color: #e3f2fd;
+  color: #1565c0;
+  border-color: #bbdefb;
+}
+
+.projectDetails {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+
+.detailItem {
+  display: flex;
+  flex-direction: column;
+  min-width: 100px;
+}
+
+.detailLabel {
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 2px;
+}
+
+.detailValue {
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+}
+
+/* Queue Header */
+.queueContainer {
+    background-color: white;
+    padding: 24px;
+    border-radius: 12px;
+    border: 1px solid #e0e0e0;
+}
+
+.queueHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+}
+
+.queueTitleGroup {
+    display: flex;
+    gap: 12px;
+}
+
+.queueIcon {
+    font-size: 24px;
+    margin-top: 4px;
+}
+
+.queueTitle {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 4px;
+}
+
+.queueSubtitle {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+}
+
+.addProjectBtn {
+    background-color: #b34700; /* Burnt orange/brownish */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s;
+}
+
+.addProjectBtn:hover {
+    background-color: #8a3700;
+}
+
+/* Dark Mode Extensions */
+.darkMode .queueContainer {
+    background-color: #1c1c1c;
+    border-color: #444;
+}
+
+.darkMode .queueTitle {
+    color: #fff;
+}
+
+.darkMode .queueSubtitle {
+    color: #aaa;
+}
+
+.darkModeCard {
+    background-color: #2c2c2c !important;
+    border-color: #444 !important;
+}
+
+.darkModeCard:hover {
+    border-color: #666 !important;
+}
+
+.darkMode .projectName {
+    color: #e0e0e0;
+}
+
+.darkMode .projectQuantity {
+    color: #aaa;
+}
+
+.darkMode .footerLabel {
+    color: #888;
+}
+
+.darkMode .footerValue {
+    color: #ccc;
+}
+
+.darkMode .detailLabel {
+    color: #aaa;
+}
+
+.darkMode .detailValue {
+    color: #ccc;
+}
+
+.darkMode .priorityHigh {
+    background-color: #3e1e1e;
+    border-color: #c62828;
+    color: #ffcdd2;
+}
+
+.darkMode .priorityMedium {
+    background-color: #462c16;
+    border-color: #ef6c00;
+    color: #ffe0b2;
+}
+
+.darkMode .priorityLow {
+    background-color: #1a2a3c;
+    border-color: #1565c0;
+    color: #bbdefb;
+}
+
+/* Modal Styles */
 .modalOverlay {
   position: fixed;
   inset: 0;
@@ -317,18 +698,12 @@
   padding-bottom: 10px;
 }
 
-.modalHeader > h2 {
-  margin: 0;
-  font-size: 20px;
-  color: #333;
-}
-
 .closeButton {
   background: none;
   border: none;
   font-size: 18px;
   cursor: pointer;
-  color: #595959;
+  color: #666;
 }
 
 .modalForm {
@@ -375,11 +750,11 @@
   padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
-  color: #595959;
+  color: #666;
 }
 
 .submitBtn {
-  background-color: #1a6e2d;
+  background-color: #1b7a32;
   color: white;
   border: none;
   padding: 8px 20px;
@@ -389,259 +764,10 @@
 }
 
 .submitBtn:hover {
-  background-color: #218838;
+  background-color: #155d27;
 }
 
-.projectCard {
-  background: white;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  padding: 16px 20px;
-  margin-bottom: 12px;
-  display: flex;
-  flex-direction: column;
-  transition: all 0.2s;
-}
-
-.projectCard:hover {
-  box-shadow: 0 2px 8px rgb(0 0 0 / 5%);
-  border-color: #ddd;
-}
-
-.projectHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 12px;
-}
-
-.projectQuantity {
-  font-size: 13px;
-  color: #595959;
-  margin-top: 2px;
-}
-
-.projectFooter {
-  display: flex;
-  gap: 48px;
-}
-
-.footerItem {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.footerLabel {
-  font-size: 12px;
-  color: #595959;
-}
-
-.footerValue {
-  font-size: 14px;
-  color: #333;
-  font-weight: 500;
-}
-
-.projectName {
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
-  margin: 0 0 8px;
-}
-
-.priorityBadge {
-  font-size: 11px;
-  padding: 4px 8px;
-  border-radius: 12px;
-  text-transform: lowercase;
-  font-weight: 500;
-  border: 1px solid transparent;
-}
-
-.priorityHigh {
-  background-color: #ffebee;
-  color: #c62828;
-  border-color: #ffcdd2;
-}
-
-.priorityMedium {
-  background-color: #fff3e0;
-  color: #c44500;
-  border-color: #ffe0b2;
-}
-
-.priorityLow {
-  background-color: #e3f2fd;
-  color: #1565c0;
-  border-color: #bbdefb;
-}
-
-.projectDetails {
-  display: flex;
-  gap: 24px;
-  align-items: center;
-}
-
-.detailItem {
-  display: flex;
-  flex-direction: column;
-  min-width: 100px;
-}
-
-.detailLabel {
-  font-size: 12px;
-  color: #595959;
-  margin-bottom: 2px;
-}
-
-.detailValue {
-  font-size: 14px;
-  color: #333;
-  font-weight: 500;
-}
-
-
-.queueContainer {
-    background-color: white;
-    padding: 24px;
-    border-radius: 12px;
-    border: 1px solid #e0e0e0;
-}
-
-.queueHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 24px;
-}
-
-.queueTitleGroup {
-    display: flex;
-    gap: 12px;
-}
-
-.queueIcon {
-    font-size: 24px;
-    margin-top: 4px;
-}
-
-.queueTitle {
-    font-size: 18px;
-    font-weight: 600;
-    color: #333;
-    margin: 0 0 4px;
-}
-
-.queueSubtitle {
-    font-size: 14px;
-    color: #595959;
-    margin: 0;
-}
-
-.addProjectBtn {
-    background-color: #bd4a00; 
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: background 0.2s;
-}
-
-.addProjectBtn:hover {
-    background-color: #e67e22;
-}
-
-.darkMode {
-  background-color: #1c1c1c; 
-  color: #fff;
-}
-
-.darkMode .title {
-  color: #fff;
-}
-
-.darkMode .subtitle {
-  color: #ccc;
-}
-
-.darkMode .card {
-  background-color: #1c2541; 
-  border-color: #2f4157;
-  box-shadow: 0 2px 4px rgb(0 0 0 / 50%);
-}
-
-.darkMode .card:hover {
-  box-shadow: 0 4px 12px rgb(0 0 0 / 70%);
-}
-
-.darkMode .cardTitle {
-  color: #ccc;
-}
-
-.darkMode .cardValue {
-  color: #fff;
-}
-
-.darkMode .navbar {
-  border-bottom-color: #444;
-}
-
-.darkMode .navItem {
-  color: #ccc;
-}
-
-.darkMode .navItem:hover {
-  background-color: #333;
-  color: #fff;
-}
-
-.darkMode .activeNavItem {
-  background-color: #fff !important;
-  color: #121212 !important;
-  font-weight: 600;
-}
-
-.darkMode .activeNavItem:hover {
-  background-color: #f0f0f0 !important;
-  color: #000 !important;
-}
-
-.darkMode .methodStatus {
-  background-color: #1e3824; /* Solid equivalent of rgb(40 167 69 / 20%) over #1c1c1c */
-  color: #fff;
-  border: 1px solid #2ea043;
-  box-shadow: none;
-}
-
-.darkMode .sectionBox {
-  background-color: #1c1c1c;
-}
-
-.darkMode .priorityHigh {
-    background-color: #3b1a1a; /* Solid equivalent of rgb(198 40 40 / 20%) over #1c1c1c */
-    border-color: #c62828;
-    color: #fff;
-}
-
-.darkMode .priorityMedium {
-    background-color: #382a1a; /* Solid equivalent of rgb(239 108 0 / 20%) over #1c1c1c */
-    border-color: #ef6c00;
-    color: #fff;
-}
-
-.darkMode .priorityLow {
-    background-color: #1a2438; /* Solid equivalent of rgb(21 101 192 / 20%) over #1c1c1c */
-    border-color: #1565c0;
-    color: #fff;
-}
-
+/* Dark Mode Modal */
 .darkModeModal {
   background-color: #2c2c2c;
   border: 1px solid #444;
@@ -652,7 +778,7 @@
 }
 
 .darkModeModal .closeButton {
-  color: #ccc;
+  color: #aaa;
 }
 
 .darkModeModal .formGroup label {
@@ -667,5 +793,28 @@
 
 .darkModeModal .cancelBtn {
   border-color: #555;
+  color: #aaa;
+}
+
+.formGroup input[type="date"] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.darkModeModal input[type="date"] {
+  color-scheme: dark;
+}
+
+.darkModeModal input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
+}
+
+.darkMode .placeholderContent h2 {
+  color: #e0e0e0;
+}
+
+.darkMode .placeholderContent p {
   color: #ccc;
 }

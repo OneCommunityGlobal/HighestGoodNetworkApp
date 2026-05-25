@@ -58,8 +58,10 @@ const ProcessingProjectCard = ({ project }) => {
 
 ProcessingProjectCard.propTypes = {
   project: PropTypes.shape({
+    _id: PropTypes.string,
+    id: PropTypes.string,
     item_name: PropTypes.string.isRequired,
-    quantity: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    quantity: PropTypes.number.isRequired,
     unit: PropTypes.string,
     priority: PropTypes.string,
     batches: PropTypes.number,

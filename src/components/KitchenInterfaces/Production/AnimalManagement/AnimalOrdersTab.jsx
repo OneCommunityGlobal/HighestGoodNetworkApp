@@ -16,14 +16,26 @@ const AnimalOrdersTab = ({ orders, setOrders }) => {
     setOrders(orders.map(o => (o.id === id ? { ...o, status: nextStatus } : o)));
   };
 
+  const getTodayDateString = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   const handleCreateOrder = e => {
     e.preventDefault();
-    const newIdNum = orders.length + 1;
+    const todayStr = getTodayDateString();
+    if (newOrder.expectedDate < todayStr) {
+      alert('Expected date cannot be in the past.');
+      return;
+    }
     const orderData = {
-      id: `AO-00${newIdNum}`,
+      id: `AO-00${orders.length + 1}`,
       supplierName: newOrder.supplierName,
       items: newOrder.items,
-      orderedDate: new Date().toISOString().split('T')[0],
+      orderedDate: todayStr,
       expectedDate: newOrder.expectedDate,
       status: 'ordered',
     };
@@ -48,52 +60,60 @@ const AnimalOrdersTab = ({ orders, setOrders }) => {
         {orders.length === 0 ? (
           <div className={styles['empty-state']}>No animal orders found.</div>
         ) : (
-          orders.map(order => {
-            const statusClass = styles[`status-${order.status}`] || '';
-            return (
-              <div key={order.id} className={styles['list-item']}>
-                <div className={styles['item-main']}>
-                  <span className={styles['item-title']}>{order.id}</span>
-                  <span className={styles['item-subtitle']}>{order.supplierName}</span>
-                  <p className={styles['item-details']}>Items: {order.items}</p>
-                  <div className={styles['item-dates']}>
-                    <span>Ordered: {order.orderedDate}</span>
-                    <span>Expected: {order.expectedDate}</span>
-                  </div>
-                  <div className={styles['item-actions']}>
-                    <button className={styles['btn-secondary']}>View Details</button>
-                    {order.status === 'ordered' && (
-                      <button
-                        className={styles['btn-secondary']}
-                        onClick={() => handleStatusChange(order.id, order.status)}
-                      >
-                        Mark as Shipped
-                      </button>
-                    )}
-                    {order.status === 'shipped' && (
-                      <button
-                        className={styles['btn-secondary']}
-                        onClick={() => handleStatusChange(order.id, order.status)}
-                      >
-                        Mark as Delivered
-                      </button>
-                    )}
-                  </div>
+          orders.map(order => (
+            <div key={order.id} className={styles['list-item']}>
+              <div className={styles['item-main']}>
+                <span className={styles['item-title']}>{order.id}</span>
+                <span className={styles['item-subtitle']}>{order.supplierName}</span>
+                <p className={styles['item-details']}>Items: {order.items}</p>
+                <div className={styles['item-dates']}>
+                  <span>Ordered: {order.orderedDate}</span>
+                  <span>Expected: {order.expectedDate}</span>
                 </div>
-                <div className={styles['item-status']}>
-                  <span className={`${styles['status-badge']} ${statusClass}`}>{order.status}</span>
+                <div className={styles['item-actions']}>
+                  <button className={styles['btn-secondary']}>View Details</button>
+                  {order.status === 'ordered' && (
+                    <button
+                      className={styles['btn-secondary']}
+                      onClick={() => handleStatusChange(order.id, order.status)}
+                    >
+                      Mark as Shipped
+                    </button>
+                  )}
+                  {order.status === 'shipped' && (
+                    <button
+                      className={styles['btn-secondary']}
+                      onClick={() => handleStatusChange(order.id, order.status)}
+                    >
+                      Mark as Delivered
+                    </button>
+                  )}
                 </div>
               </div>
-            );
-          })
+              <div className={styles['item-status']}>
+                {(() => {
+                  const statusClass = styles[`status-${order.status}`];
+                  return (
+                    <span className={`${styles['status-badge']} ${statusClass}`}>
+                      {order.status}
+                    </span>
+                  );
+                })()}
+              </div>
+            </div>
+          ))
         )}
       </div>
 
       {showModal && (
-        /* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */
-        <div className={styles['modal-overlay']} onClick={() => setShowModal(false)}>
-          {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
-          <div className={styles['modal-content']} onClick={e => e.stopPropagation()}>
+        <>
+          <button
+            type="button"
+            className={styles['modal-overlay']}
+            onClick={() => setShowModal(false)}
+            aria-label="Close modal"
+          />
+          <dialog open className={styles['modal-content']} aria-modal="true">
             <div className={styles['modal-header']}>
               <h2>Create New Order</h2>
               <button className={styles['modal-close']} onClick={() => setShowModal(false)}>
@@ -129,6 +149,7 @@ const AnimalOrdersTab = ({ orders, setOrders }) => {
                   id="expectedDate"
                   required
                   type="date"
+                  min={getTodayDateString()}
                   value={newOrder.expectedDate}
                   onChange={e => setNewOrder({ ...newOrder, expectedDate: e.target.value })}
                 />
@@ -146,15 +167,15 @@ const AnimalOrdersTab = ({ orders, setOrders }) => {
                 </button>
               </div>
             </form>
-          </div>
-        </div>
+          </dialog>
+        </>
       )}
     </div>
   );
 };
 
 AnimalOrdersTab.propTypes = {
-  orders: PropTypes.array.isRequired,
+  orders: PropTypes.arrayOf(PropTypes.object).isRequired,
   setOrders: PropTypes.func.isRequired,
 };
 

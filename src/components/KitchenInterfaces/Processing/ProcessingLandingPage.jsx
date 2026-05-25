@@ -21,32 +21,27 @@ const DASHBOARD_METRICS = [
   { id: 4, title: 'Cellar Storage', value: 180, icon: faWarehouse, iconClass: styles.iconGreen },
 ];
 
-const ACTIVE_STATUS = 'active';
-const UNITS_STR = 'units';
-
 const PROCESSING_METHODS = [
-  { id: 'canning', name: 'Canning', total: 245, thisMonth: 45, status: ACTIVE_STATUS },
-  { id: 'dehydration', name: 'Dehydration', total: 128, thisMonth: 28, status: ACTIVE_STATUS },
-  { id: 'freezeDrying', name: 'Freeze Drying', total: 67, thisMonth: 12, status: ACTIVE_STATUS },
-  { id: 'cellarStorage', name: 'Cellar Storage', total: 180, thisMonth: 52, status: ACTIVE_STATUS },
+  { id: 'canning', name: 'Canning', total: 245, thisMonth: 45, status: 'active' },
+  { id: 'dehydration', name: 'Dehydration', total: 128, thisMonth: 28, status: 'active' },
+  { id: 'freezeDrying', name: 'Freeze Drying', total: 67, thisMonth: 12, status: 'active' },
+  { id: 'cellarStorage', name: 'Cellar Storage', total: 180, thisMonth: 52, status: 'active' },
 ];
 
 const CANNING_SUPPLIES = [
-  { name: 'Quart Jars', quantity: `120 ${UNITS_STR}` },
-  { name: 'Pint Jars', quantity: `85 ${UNITS_STR}` },
-  { name: 'Canning Lids', quantity: `200 ${UNITS_STR}` },
+  { name: 'Quart Jars', quantity: '120 units' },
+  { name: 'Pint Jars', quantity: '85 units' },
+  { name: 'Canning Lids', quantity: '200 units' },
 ];
 
 const STORAGE_SUPPLIES = [
-  { name: 'Vacuum Seal Bags (Quart)', quantity: `45 ${UNITS_STR}` },
-  { name: 'Mylar Bags (Gallon)', quantity: `38 ${UNITS_STR}` },
-  { name: 'Cellar Storage Bins', quantity: `12 ${UNITS_STR}` },
+  { name: 'Vacuum Seal Bags (Quart)', quantity: '45 units' },
+  { name: 'Mylar Bags (Gallon)', quantity: '38 units' },
+  { name: 'Cellar Storage Bins', quantity: '12 units' },
 ];
 
-const OVERVIEW_STR = 'Processing Overview';
-
 const SECTIONS = [
-  OVERVIEW_STR,
+  'Processing Overview',
   'Canning',
   'Dehydration',
   'Freeze Drying',
@@ -56,7 +51,6 @@ const SECTIONS = [
 ];
 
 import AddProcessingProjectModal from './AddProcessingProjectModal';
-// ... checks for imports
 
 const ProcessingLandingPage = () => {
   const [activeTab, setActiveTab] = useState('Processing Overview');
@@ -290,15 +284,19 @@ const ProcessingLandingPage = () => {
         ))}
       </div>
 
-      {error && (
-        <div className="alert alert-danger" style={{ margin: '20px 0' }}>
-          {error}
-        </div>
-      )}
-      {loading && !error && (
-        <div style={{ padding: '40px', textAlign: 'center' }}>Loading projects...</div>
-      )}
-      {!loading && !error && renderContent()}
+      {(() => {
+        if (error) {
+          return (
+            <div className="alert alert-danger" style={{ margin: '20px 0' }}>
+              {error}
+            </div>
+          );
+        }
+        if (loading) {
+          return <div style={{ padding: '40px', textAlign: 'center' }}>Loading projects...</div>;
+        }
+        return renderContent();
+      })()}
 
       <AddProcessingProjectModal
         isOpen={isModalOpen}

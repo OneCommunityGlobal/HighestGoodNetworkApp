@@ -55,7 +55,7 @@ const ProcessingQueue = ({ title, subtitle, projects, onAddProject, type }) => {
             <p className={styles.queueSubtitle}>{subtitle}</p>
           </div>
         </div>
-        <button type="button" className={styles.addProjectBtn} onClick={onAddProject}>
+        <button className={styles.addProjectBtn} onClick={onAddProject}>
           <FontAwesomeIcon icon={faPlus} /> Add {type === 'cellarStorage' ? 'Item' : 'Project'}
         </button>
       </div>
@@ -78,7 +78,7 @@ const ProcessingQueue = ({ title, subtitle, projects, onAddProject, type }) => {
 ProcessingQueue.propTypes = {
   title: PropTypes.string.isRequired,
   subtitle: PropTypes.string.isRequired,
-  projects: PropTypes.array.isRequired,
+  projects: PropTypes.arrayOf(PropTypes.object).isRequired,
   onAddProject: PropTypes.func.isRequired,
   type: PropTypes.string.isRequired,
 };
