@@ -63,6 +63,7 @@ import { equipmentReducer } from './bmdashboard/equipmentReducer';
 import { bmProjectMemberReducer } from './bmdashboard/projectMemberReducer';
 import { bmTimeLoggerReducer } from './bmdashboard/timeLoggerReducer';
 import bmInjuryReducer from './bmdashboard/injuryReducer';
+import { costBreakdownReducer } from './bmdashboard/costBreakdownReducer';
 
 import dashboardReducer from './dashboardReducer';
 import { timeOffRequestsReducer } from './timeOffRequestReducer';
@@ -110,6 +111,7 @@ import { studentReducer } from './studentProfileReducer';
 import { atomReducer } from './educationPortal/atomReducer';
 import { weeklySummariesFiltersApi } from '../actions/weeklySummariesFilterAction';
 import browseLessonPlanReducer from './educationPortal/broweLPReducer';
+import KIInventoryReducer from './KIInventoryReducer';
 import formReducer from './formReducer';
 
 // Kitchen and Inventory Management
@@ -170,6 +172,7 @@ const localReducers = {
   dashboard: dashboardReducer,
   injuries: injuriesReducer,
   weeklyProjectSummary: weeklyProjectSummaryReducer,
+  costBreakdown: costBreakdownReducer,
 
   // lbdashboard
   wishlistItem: wishListReducer,
@@ -207,6 +210,7 @@ const localReducers = {
 
   // education portal
   browseLessonPlan: browseLessonPlanReducer,
+  kiInventory: KIInventoryReducer,
 
   // Kitchen and Inventory Management
   [kiCalendarApi.reducerPath]: kiCalendarApi.reducer,
