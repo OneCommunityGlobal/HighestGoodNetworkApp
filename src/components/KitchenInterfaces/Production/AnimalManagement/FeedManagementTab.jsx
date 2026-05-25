@@ -22,14 +22,28 @@ const FeedManagementTab = ({ feedOrders, setFeedOrders, feedInventory, setFeedIn
     setFeedOrders(feedOrders.map(o => (o.id === id ? { ...o, status: nextStatus } : o)));
   };
 
+  const getTodayDateString = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   const handleCreateOrder = e => {
     e.preventDefault();
+    const todayStr = getTodayDateString();
+    if (newOrder.expectedDate < todayStr) {
+      // eslint-disable-next-line no-alert
+      alert('Expected date cannot be in the past.');
+      return;
+    }
     const newIdNum = String(feedOrders.length + 1).padStart(3, '0');
     const order = {
       id: `FO-${newIdNum}`,
       supplierName: newOrder.supplierName,
       items: newOrder.items,
-      orderedDate: new Date().toISOString().split('T')[0],
+      orderedDate: todayStr,
       expectedDate: newOrder.expectedDate,
       status: 'ordered',
     };
@@ -217,6 +231,7 @@ const FeedManagementTab = ({ feedOrders, setFeedOrders, feedInventory, setFeedIn
                   id="feedExpectedDate"
                   required
                   type="date"
+                  min={getTodayDateString()}
                   value={newOrder.expectedDate}
                   onChange={e => setNewOrder({ ...newOrder, expectedDate: e.target.value })}
                 />
