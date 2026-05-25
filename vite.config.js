@@ -17,7 +17,8 @@ export default defineConfig(({ mode }) => {
           target: 'http://localhost:4500',
           changeOrigin: true,
           secure: false,
-          rewrite: path => path.replace(/^\/api/, ''),
+          // Keep the /api prefix when proxying so backend middleware whitelist checks work as expected
+          rewrite: (path) => path,
         },
       },
     },
