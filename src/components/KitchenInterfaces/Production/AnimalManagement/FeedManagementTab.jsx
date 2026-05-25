@@ -123,12 +123,7 @@ const FeedManagementTab = ({ feedOrders, setFeedOrders, feedInventory, setFeedIn
               return (
                 <div key={order.id} className={styles['list-item']}>
                   <div className={styles['item-main']}>
-                    <div className={styles['order-row-top']}>
-                      <span className={styles['item-title']}>{order.id}</span>
-                      <span className={`${styles['status-badge']} ${statusClass}`}>
-                        {order.status}
-                      </span>
-                    </div>
+                    <span className={styles['item-title']}>{order.id}</span>
                     <span className={styles['item-subtitle']}>{order.supplierName}</span>
                     <p className={styles['item-details']}>{order.items}</p>
                     <div className={styles['item-dates']}>
@@ -159,6 +154,11 @@ const FeedManagementTab = ({ feedOrders, setFeedOrders, feedInventory, setFeedIn
                         </button>
                       </div>
                     )}
+                  </div>
+                  <div className={styles['item-status']}>
+                    <span className={`${styles['status-badge']} ${statusClass}`}>
+                      {order.status}
+                    </span>
                   </div>
                 </div>
               );

@@ -797,9 +797,7 @@
 }
 
 .formGroup input[type="date"] {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  cursor: pointer;
 }
 
 .darkModeModal input[type="date"] {
@@ -807,14 +805,5 @@
 }
 
 .darkModeModal input[type="date"]::-webkit-calendar-picker-indicator {
-  filter: invert(1);
   cursor: pointer;
-}
-
-.darkMode .placeholderContent h2 {
-  color: #e0e0e0;
-}
-
-.darkMode .placeholderContent p {
-  color: #ccc;
 }

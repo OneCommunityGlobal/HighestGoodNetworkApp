@@ -411,9 +411,7 @@
 }
 
 .form-group input[type="date"] {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  cursor: pointer;
 }
 
 .dark-mode .form-group input,
@@ -428,7 +426,6 @@
 }
 
 .dark-mode input[type="date"]::-webkit-calendar-picker-indicator {
-  filter: invert(1);
   cursor: pointer;
 }
 
