@@ -678,9 +678,11 @@ const TeamMemberTask = React.memo(
                                                 darkMode ? 'text-light' : ''
                                               }`}
                                             >
-                                              {`${parseFloat(
+                                              {`${Number.parseFloat(
                                                 task.hoursLogged.toFixed(2),
-                                              )} of ${parseFloat(task.estimatedHours.toFixed(2))}`}
+                                              )} of ${Number.parseFloat(
+                                                task.estimatedHours.toFixed(2),
+                                              )}`}
                                             </p>
                                           </div>
                                           {canSeeFollowUpCheckButton && (
