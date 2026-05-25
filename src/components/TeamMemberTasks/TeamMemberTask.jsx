@@ -735,11 +735,6 @@ const TeamMemberTask = React.memo(
                                           />
                                           {task.createdDatetime &&
                                             (() => {
-                                              console.log(
-                                                'task createdDatetime:',
-                                                task._id,
-                                                task.createdDatetime,
-                                              );
                                               const days = Math.floor(
                                                 (Date.now() - new Date(task.createdDatetime)) /
                                                   (1000 * 60 * 60 * 24),
