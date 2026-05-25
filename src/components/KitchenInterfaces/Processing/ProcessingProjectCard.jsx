@@ -61,11 +61,11 @@ ProcessingProjectCard.propTypes = {
     _id: PropTypes.string,
     id: PropTypes.string,
     item_name: PropTypes.string.isRequired,
-    quantity: PropTypes.number.isRequired,
+    quantity: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     unit: PropTypes.string,
     priority: PropTypes.string,
-    batches: PropTypes.number,
-    scheduled_date: PropTypes.string,
+    batches: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    scheduled_date: PropTypes.string.isRequired,
   }).isRequired,
 };
 

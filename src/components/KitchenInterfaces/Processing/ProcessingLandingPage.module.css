@@ -810,11 +810,3 @@
   filter: invert(1);
   cursor: pointer;
 }
-
-.darkMode .placeholderContent h2 {
-  color: #e0e0e0;
-}
-
-.darkMode .placeholderContent p {
-  color: #ccc;
-}
