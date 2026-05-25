@@ -36,6 +36,7 @@ function Timer({ authUser, darkMode, isPopout }) {
    *  to CLOSED, and the user will be notified to refresh the page to reconnect to the server.
    * */
   const [customReadyState, setCustomReadyState] = useState(ReadyState.CONNECTING);
+  const [wsKey, setWsKey] = useState(0);
   const WSoptions = {
     share: false,
     protocols: localStorage.getItem(config.tokenKey),
@@ -61,7 +62,10 @@ function Timer({ authUser, darkMode, isPopout }) {
 
   const { sendMessage, sendJsonMessage, lastJsonMessage, getWebSocket } = useWebSocket(
     ENDPOINTS.TIMER_SERVICE,
-    WSoptions,
+    {
+      ...WSoptions,
+      queryParams: { reconnect: wsKey },
+    },
   );
 
   // This is the contract between server and client
@@ -228,8 +232,11 @@ function Timer({ authUser, darkMode, isPopout }) {
   );
 
   const handleRefreshTimer = useCallback(() => {
-    window.location.reload();
-  }, []);
+    getWebSocket()?.close();
+    setCustomReadyState(ReadyState.CONNECTING);
+    setMessage(defaultMessage);
+    setWsKey(k => k + 1);
+  }, [getWebSocket]);
 
   // Initialize session ID on component mount
   useEffect(() => {
@@ -293,8 +300,6 @@ function Timer({ authUser, darkMode, isPopout }) {
     () => viewingUserId && !ALLOWED_ROLES_TO_INTERACT.includes(authUser?.role),
     [viewingUserId, authUser],
   );
-  // control whether to send GET_TIMER message to avoid message overriding
-  const isInitialJsonMessageReceived = useMemo(() => !!lastJsonMessage, [lastJsonMessage]);
 
   // Modify the sendStop function to track submitted time
   const wsJsonMessageHandler = useMemo(() => {
@@ -651,10 +656,10 @@ function Timer({ authUser, darkMode, isPopout }) {
   }, [weekEndModal]);
 
   useEffect(() => {
-    if (!isInitialJsonMessageReceived) return;
+    if (customReadyState !== ReadyState.OPEN) return; // only request when connected
 
     sendGetTimer();
-  }, [isInitialJsonMessageReceived, viewingUserId]);
+  }, [customReadyState, viewingUserId, wsKey]);
 
   // Enhanced cleanup when viewing user changes
   useEffect(() => {
