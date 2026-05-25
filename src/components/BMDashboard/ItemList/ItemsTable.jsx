@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 import { Table, Button, Badge } from 'reactstrap';
 import { BiPencil } from 'react-icons/bi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -69,21 +70,11 @@ export default function ItemsTable({
     Hold: 'hold',
   };
 
-  const numericKeys = ['stockBought', 'stockUsed', 'stockAvailable', 'stockWasted'];
+  const numericKeys = new Set(['stockBought', 'stockUsed', 'stockAvailable', 'stockWasted']);
 
-  const headerStyle = (key, isAction = false) => {
+  const getColumnStyle = (key, isAction = false) => {
     const base = { verticalAlign: 'middle' };
-    if (numericKeys.includes(key)) base.textAlign = 'right';
-    if (isAction) {
-      base.borderLeft = '2px solid #dee2e6';
-      base.textAlign = 'center';
-    }
-    return base;
-  };
-
-  const cellStyle = (key, isAction = false) => {
-    const base = { verticalAlign: 'middle' };
-    if (numericKeys.includes(key)) base.textAlign = 'right';
+    if (numericKeys.has(key)) base.textAlign = 'right';
     if (isAction) {
       base.borderLeft = '2px solid #dee2e6';
       base.textAlign = 'center';
@@ -129,13 +120,13 @@ export default function ItemsTable({
                     key={label}
                     onClick={clickable ? () => onSort?.(sortKey) : undefined}
                     className={clickable ? styles.sortableTh : undefined}
-                    style={headerStyle(key)}
+                    style={getColumnStyle(key)}
                   >
                     {label} {clickable && <FontAwesomeIcon icon={getIconFor(sortKey)} size="lg" />}
                   </th>
                 );
               })}
-              <th style={headerStyle(null, true)} title="View usage history and charts">
+              <th style={getColumnStyle(null, true)} title="View usage history and charts">
                 Usage Record
               </th>
               <th
@@ -162,7 +153,7 @@ export default function ItemsTable({
                     const value = getNestedValue(el, key);
                     if (key === 'stockAvailable' && Number(value) < 10) {
                       return (
-                        <td key={label} style={cellStyle(key)}>
+                        <td key={label} style={getColumnStyle(key)}>
                           <Badge
                             color="danger"
                             pill
@@ -176,12 +167,12 @@ export default function ItemsTable({
                       );
                     }
                     return (
-                      <td key={label} style={cellStyle(key)}>
+                      <td key={label} style={getColumnStyle(key)}>
                         {value}
                       </td>
                     );
                   })}
-                  <td className={styles.itemsCell} style={cellStyle(null, true)}>
+                  <td className={styles.itemsCell} style={getColumnStyle(null, true)}>
                     <button
                       type="button"
                       onClick={() => handleEditRecordsClick(el, 'UsageRecord')}
@@ -305,3 +296,31 @@ export default function ItemsTable({
     </>
   );
 }
+
+ItemsTable.propTypes = {
+  selectedProject: PropTypes.string,
+  selectedItem: PropTypes.string,
+  filteredItems: PropTypes.arrayOf(PropTypes.object),
+  UpdateItemModal: PropTypes.elementType,
+  dynamicColumns: PropTypes.arrayOf(
+    PropTypes.shape({
+      label: PropTypes.string,
+      key: PropTypes.string,
+    }),
+  ).isRequired,
+  darkMode: PropTypes.bool,
+  itemType: PropTypes.string,
+  sortConfig: PropTypes.shape({
+    key: PropTypes.string,
+    direction: PropTypes.string,
+  }),
+  onSort: PropTypes.func,
+  totalItems: PropTypes.number,
+  currentPage: PropTypes.number,
+  totalPages: PropTypes.number,
+  rowsPerPage: PropTypes.number,
+  startRow: PropTypes.number,
+  endRow: PropTypes.number,
+  onPageChange: PropTypes.func,
+  onRowsPerPageChange: PropTypes.func,
+};
