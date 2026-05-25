@@ -160,6 +160,8 @@ export function Header(props) {
   const canAccessDocumentIndexing = ['Owner', 'Administrator', 'Manager'].includes(
     props.auth?.user?.role,
   );
+  // PR Dashboard
+  const canAccessPRDashboard = props.hasPermission('accessPRTeamDashboard', !isAuthUser);
 
   const userId = user.userid;
   const [isModalVisible, setModalVisible] = useState(false);
@@ -773,14 +775,6 @@ export function Header(props) {
                           </DropdownItem>
                         </>
                       )}
-                      <DropdownItem
-                        tag={Link}
-                        to="/pr-dashboard/overview"
-                        className={fontColor}
-                        disabled={headerDisabled}
-                      >
-                        PR Team Analytics
-                      </DropdownItem>
                       {canAccessBlueSquareEmailManagement && (
                         <DropdownItem
                           tag={Link}
@@ -791,6 +785,69 @@ export function Header(props) {
                           {BLUE_SQUARE_EMAIL_MANAGEMENT}
                         </DropdownItem>
                       )}
+                    </DropdownMenu>
+                  </UncontrolledDropdown>
+                )}
+
+                {canAccessPRDashboard && (
+                  <UncontrolledDropdown nav inNavbar>
+                    <DropdownToggle nav caret>
+                      <span>PR Dashboard</span>
+                    </DropdownToggle>
+                    <DropdownMenu
+                      className={`${styles.noMaxHeight} ${
+                        darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
+                      }`}
+                    >
+                      <DropdownItem
+                        tag={Link}
+                        to="/pr-dashboard"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        PR Team Analysis Dashboard
+                      </DropdownItem>
+                      <DropdownItem divider />
+                      <DropdownItem
+                        tag={Link}
+                        to="/pr-dashboard/overview"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        PR Team Analytics
+                      </DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/pr-dashboard/analytics"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        PR Analytics
+                      </DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/pr-dashboard/promotion-eligibility"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        Promotion Eligibility
+                      </DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/pr-dashboard/top-reviewed-prs"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        Top Reviewed PRs
+                      </DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/pr-dashboard/details"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        PR Details
+                      </DropdownItem>
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 )}

@@ -202,13 +202,11 @@ import SupportLogin from './components/SupportPortal/SupportLogin';
 import SupportDashboard from './components/SupportPortal/SupportDashboard';
 import SupportLogViewer from './components/SupportPortal/SupportLogViewer';
 import MaterialUtilizationChart from './components/MaterialUtilization/MaterialUtilizationChart';
+
+// Social Architecture
+import JobApplicationForm from './components/Collaboration/JobApplicationForm/JobApplicationForm';
 import Chatbot from './components/Chatbot/Chatbot';
 import DocumentUploadPage from './components/DocumentUpload/DocumentUploadPage';
-
-// Social Architecture
-
-import JobApplicationForm from './components/Collaboration/JobApplicationForm/JobApplicationForm';
-// Social Architecture
 const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
 const RequestResources = lazy(() => import('./components/SocialArchitecture/RequestResources'));
 const ReusableListView = lazy(() => import('./components/BMDashboard/ReusableList'));
@@ -343,15 +341,8 @@ export default (
 
       <AutoUpdate />
       <ToastContainer />
-      <Chatbot />
       <Switch>
         <ProtectedRoute path="/weekly-summary" exact component={WeeklySummaryPage} />
-        <ProtectedRoute
-          path="/chatbot/documents"
-          exact
-          component={DocumentUploadPage}
-          allowedRoles={[UserRole.Administrator, UserRole.Owner, UserRole.Manager]}
-        />
         <ProtectedRoute path="/hgnhelp" exact component={HelpPage} />
         <ProtectedRoute path="/dashboard" exact component={Dashboard} />
         <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
@@ -994,8 +985,15 @@ export default (
           component={PRDashboardTopReviewedPRs}
         />
         <ProtectedRoute path="/pr-dashboard/details" exact component={PRDashboardDetails} />
+        <ProtectedRoute
+          path="/chatbot/documents"
+          exact
+          component={DocumentUploadPage}
+          allowedRoles={[UserRole.Administrator, UserRole.Owner, UserRole.Manager]}
+        />
         <Route path="*" component={NotFoundPage} />
       </Switch>
+      <Chatbot />
     </>
   </Switch>
 );
