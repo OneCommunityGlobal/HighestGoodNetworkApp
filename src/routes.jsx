@@ -1052,11 +1052,6 @@ export default (
           component={OrchardManagement}
         />
         <Route path="/kitchenandinventory/login" exact component={KitchenandInventoryLogin} />
-        <KIProtectedRoute
-          path="/kitchenandinventory/recipes"
-          exact
-          component={RecipesLandingPage}
-        />
         <ProtectedRoute path="/kitchenandinventory/recipes" exact component={RecipesLandingPage} />
         {/* ----- End of Kitchen and Inventory Portal Routes ----- */}
         <Route path="/login" component={Login} />
