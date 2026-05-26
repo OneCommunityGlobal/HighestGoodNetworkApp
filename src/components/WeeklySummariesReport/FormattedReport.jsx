@@ -846,7 +846,7 @@ function Index({
   darkMode,
 }) {
   const colors = ['purple', 'green', 'navy'];
-  const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
+  const tangibleHoursLogged = (summary.totalTangibleSeconds?.[weekIndex] || 0) / 3600;
   const currentDate = moment.tz(TZ).startOf('day');
   const [setTrophyFollowedUp] = useState(summary?.trophyFollowedUp);
   const dispatch = useDispatch();
@@ -1040,12 +1040,15 @@ function Index({
       )}
       {Array.isArray(summary.promisedHoursByWeek) &&
         summary.promisedHoursByWeek.length > weekIndex &&
-        showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
+        showStar(tangibleHoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
           <i
             className="fa fa-star"
             title={`Weekly Committed: ${summary.promisedHoursByWeek[weekIndex]} hours`}
             style={{
-              color: assignStarDotColors(hoursLogged, summary.promisedHoursByWeek[weekIndex]),
+              color: assignStarDotColors(
+                tangibleHoursLogged,
+                summary.promisedHoursByWeek[weekIndex],
+              ),
               fontSize: '55px',
               marginLeft: '10px',
               verticalAlign: 'middle',
@@ -1063,7 +1066,9 @@ function Index({
                 fontSize: '10px',
               }}
             >
-              +{Math.round((hoursLogged / summary.promisedHoursByWeek[weekIndex] - 1) * 100)}%
+              +
+              {Math.round((tangibleHoursLogged / summary.promisedHoursByWeek[weekIndex] - 1) * 100)}
+              %
             </span>
           </i>
         )}
@@ -1082,61 +1087,35 @@ function Index({
           </small>
         </p>
       )}
-      {/* //newly added */}
-      {Array.isArray(summary.promisedHoursByWeek) &&
-        summary.promisedHoursByWeek.length > weekIndex &&
-        weekIndex !== null &&
-        weekIndex !== undefined &&
-        summary.promisedHoursByWeek[weekIndex] !== undefined &&
-        showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
-          <i
-            className="fa fa-star"
-            title={`Weekly Committed: ${summary.promisedHoursByWeek[weekIndex]} hours`}
-            style={{
-              color: assignStarDotColors(hoursLogged, summary.promisedHoursByWeek[weekIndex]),
-              fontSize: '55px',
-              marginLeft: '10px',
-              verticalAlign: 'middle',
-              position: 'relative',
-            }}
-          >
-            <span
-              style={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                color: 'white',
-                fontWeight: 'bold',
-                fontSize: '10px',
-              }}
-            >
-              +{Math.round((hoursLogged / summary.promisedHoursByWeek[weekIndex] - 1) * 100)}%
-              {/* +{Math.round((hoursLogged / promisedHoursByWeek[weekIndex] - 1) * 100)}% */}
-            </span>
-          </i>
-        )}
     </>
   );
 }
 
-// FormattedReport.propTypes = {
-//   // eslint-disable-next-line react/forbid-prop-types
-//   summaries: PropTypes.arrayOf(PropTypes.object).isRequired,
-//   weekIndex: PropTypes.number.isRequired,
-
-//   // Adding these to clarify structure for Sonar:
-//   // summary: PropTypes.shape({
-//   //   _id: PropTypes.string,
-//   //   filterColor: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
-//   //   promisedHoursByWeek: PropTypes.arrayOf(PropTypes.number),
-//   //   weeklySummaries: PropTypes.arrayOf(
-//   //     PropTypes.shape({
-//   //       summary: PropTypes.string,
-//   //     }),
-//   //   ),
-//   // }),
-// };
+Index.propTypes = {
+  summary: PropTypes.shape({
+    _id: PropTypes.string,
+    firstName: PropTypes.string,
+    lastName: PropTypes.string,
+    role: PropTypes.string,
+    totalSeconds: PropTypes.arrayOf(PropTypes.number),
+    totalTangibleSeconds: PropTypes.arrayOf(PropTypes.number),
+    promisedHoursByWeek: PropTypes.arrayOf(PropTypes.number),
+    filterColor: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
+    adminLinks: PropTypes.array,
+    startDate: PropTypes.string,
+    endDate: PropTypes.string,
+    trophyFollowedUp: PropTypes.bool,
+    timeOffFrom: PropTypes.string,
+    timeOffTill: PropTypes.string,
+  }).isRequired,
+  weekIndex: PropTypes.number.isRequired,
+  allRoleInfo: PropTypes.array,
+  auth: PropTypes.object,
+  loadTrophies: PropTypes.bool,
+  handleSpecialColorDotClick: PropTypes.func,
+  isFinalWeek: PropTypes.bool,
+  darkMode: PropTypes.bool,
+};
 
 FormattedReport.propTypes = {
   summaries: PropTypes.arrayOf(
@@ -1144,7 +1123,8 @@ FormattedReport.propTypes = {
       _id: PropTypes.string,
       filterColor: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
       promisedHoursByWeek: PropTypes.arrayOf(PropTypes.number),
-      totalSeconds: PropTypes.number,
+      totalSeconds: PropTypes.arrayOf(PropTypes.number),
+      totalTangibleSeconds: PropTypes.arrayOf(PropTypes.number),
       weeklySummaries: PropTypes.arrayOf(PropTypes.shape({ summary: PropTypes.string })),
     }),
   ).isRequired,

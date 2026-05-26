@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Progress } from 'reactstrap';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
-import { BsAlarmFill } from 'react-icons/bs';
+import { BsAlarmFill, BsArrowClockwise } from 'react-icons/bs';
 import {
   FaPlusCircle,
   FaMinusCircle,
@@ -36,6 +36,7 @@ function Timer({ authUser, darkMode, isPopout }) {
    *  to CLOSED, and the user will be notified to refresh the page to reconnect to the server.
    * */
   const [customReadyState, setCustomReadyState] = useState(ReadyState.CONNECTING);
+  const [wsKey, setWsKey] = useState(0);
   const WSoptions = {
     share: false,
     protocols: localStorage.getItem(config.tokenKey),
@@ -61,7 +62,10 @@ function Timer({ authUser, darkMode, isPopout }) {
 
   const { sendMessage, sendJsonMessage, lastJsonMessage, getWebSocket } = useWebSocket(
     ENDPOINTS.TIMER_SERVICE,
-    WSoptions,
+    {
+      ...WSoptions,
+      queryParams: { reconnect: wsKey },
+    },
   );
 
   // This is the contract between server and client
@@ -124,18 +128,6 @@ function Timer({ authUser, darkMode, isPopout }) {
   const logMinutes = timeToLog.minutes();
 
   const sendJsonMessageNoQueue = useCallback(msg => sendJsonMessage(msg, false), [sendMessage]);
-
-  const previewDuration = moment.duration(remaining);
-  const previewHoursDisplay = Math.floor(previewDuration.asHours()).toString();
-  const previewMinutesDisplay = previewDuration
-    .minutes()
-    .toString()
-    .padStart(2, '0');
-  const previewSecondsDisplay = previewDuration
-    .seconds()
-    .toString()
-    .padStart(2, '0');
-  const previewTimeDisplay = `${previewHoursDisplay}:${previewMinutesDisplay}:${previewSecondsDisplay}`;
 
   // Enhanced function to clear submitted time with better logging
   const clearSubmittedTime = useCallback(() => {
@@ -239,6 +231,13 @@ function Timer({ authUser, darkMode, isPopout }) {
     [timerState],
   );
 
+  const handleRefreshTimer = useCallback(() => {
+    getWebSocket()?.close();
+    setCustomReadyState(ReadyState.CONNECTING);
+    setMessage(defaultMessage);
+    setWsKey(k => k + 1);
+  }, [getWebSocket]);
+
   // Initialize session ID on component mount
   useEffect(() => {
     // Use cryptographically secure random values for session ID generation
@@ -301,8 +300,6 @@ function Timer({ authUser, darkMode, isPopout }) {
     () => viewingUserId && !ALLOWED_ROLES_TO_INTERACT.includes(authUser?.role),
     [viewingUserId, authUser],
   );
-  // control whether to send GET_TIMER message to avoid message overriding
-  const isInitialJsonMessageReceived = useMemo(() => !!lastJsonMessage, [lastJsonMessage]);
 
   // Modify the sendStop function to track submitted time
   const wsJsonMessageHandler = useMemo(() => {
@@ -659,10 +656,10 @@ function Timer({ authUser, darkMode, isPopout }) {
   }, [weekEndModal]);
 
   useEffect(() => {
-    if (!isInitialJsonMessageReceived) return;
+    if (customReadyState !== ReadyState.OPEN) return; // only request when connected
 
     sendGetTimer();
-  }, [isInitialJsonMessageReceived, viewingUserId]);
+  }, [customReadyState, viewingUserId, wsKey]);
 
   // Enhanced cleanup when viewing user changes
   useEffect(() => {
@@ -886,6 +883,7 @@ function Timer({ authUser, darkMode, isPopout }) {
               readyState={customReadyState}
               message={message}
               toggleTimer={() => window.close()}
+              handleRefreshTimer={handleRefreshTimer}
             />
           )}
         </div>
@@ -912,6 +910,7 @@ function Timer({ authUser, darkMode, isPopout }) {
           <BsAlarmFill fontSize="2rem" title="Open timer dropdown" />
         </div>
       </button>
+
       <div className={css.previewContainer} title="Open timer dropdown">
         <Progress multi style={{ height: '6px' }}>
           <Progress bar value={100 * (1 - remaining / goal)} color="success" animated={running} />
@@ -925,10 +924,21 @@ function Timer({ authUser, darkMode, isPopout }) {
             className={css.preview}
             onClick={toggleTimer}
           >
-            {previewTimeDisplay}
+            {moment.utc(remaining).format('HH:mm:ss')}
           </button>
         ) : (
-          <div className={css.disconnected}>Disconnected</div>
+          <div className={css.disconnected}>
+            <span>Disconnected</span>
+            <button
+              type="button"
+              onClick={handleRefreshTimer}
+              className={css.disconnectedRefreshBtn}
+              aria-label="Reload timer"
+              title="Reload timer"
+            >
+              <BsArrowClockwise />
+            </button>
+          </div>
         )}
       </div>
       {customReadyState === ReadyState.OPEN && (
@@ -1081,6 +1091,7 @@ function Timer({ authUser, darkMode, isPopout }) {
                 readyState={customReadyState}
                 message={message}
                 toggleTimer={toggleTimer}
+                handleRefreshTimer={handleRefreshTimer}
               />
             )}
           </div>

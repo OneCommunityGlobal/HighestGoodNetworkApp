@@ -1,7 +1,7 @@
-import { Bar } from 'react-chartjs-2';
 import PropTypes from 'prop-types';
-import sharedStyles from './ReviewsInsight.module.css';
+import { Bar } from 'react-chartjs-2';
 import { useSelector } from 'react-redux';
+import sharedStyles from './ReviewsInsight.module.css';
 
 function ActionDoneGraph({ selectedTeams, teamData, orderedTeamIds }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -90,6 +90,35 @@ function ActionDoneGraph({ selectedTeams, teamData, orderedTeamIds }) {
         },
         ticks: {
           color: darkMode ? '#fff' : '#000',
+          callback: function(value, index) {
+            const team = teamsToDisplay[index];
+            const memberCount = teamData[team]?.memberCount || 0;
+            const circles = [
+              '⓪',
+              '①',
+              '②',
+              '③',
+              '④',
+              '⑤',
+              '⑥',
+              '⑦',
+              '⑧',
+              '⑨',
+              '⑩',
+              '⑪',
+              '⑫',
+              '⑬',
+              '⑭',
+              '⑮',
+              '⑯',
+              '⑰',
+              '⑱',
+              '⑲',
+              '⑳',
+            ];
+            const circle = memberCount <= 20 ? circles[memberCount] : `(${memberCount})`;
+            return `${team} ${circle}`;
+          },
         },
       },
     },
@@ -126,7 +155,8 @@ ActionDoneGraph.propTypes = {
   ),
   teamData: PropTypes.objectOf(
     PropTypes.shape({
-      actionSummary: PropTypes.objectOf(PropTypes.number),
+      actionSummary: PropTypes.object,
+      memberCount: PropTypes.number,
     }),
   ),
   orderedTeamIds: PropTypes.arrayOf(PropTypes.string),

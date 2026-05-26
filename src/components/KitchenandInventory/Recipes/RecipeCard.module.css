@@ -1,9 +1,10 @@
+/* stylelint-disable  */
 /* Recipe Card */
 .recipeCard {
   background: white;
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
   transition: transform 0.2s, box-shadow 0.2s;
   display: flex;
   flex-direction: column;
@@ -12,7 +13,7 @@
 
 .recipeCard:hover {
   transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
 }
 
 /* Recipe Name */
@@ -131,7 +132,7 @@
 /* Dark Mode */
 :global(.dark-mode) .recipeCard {
   background-color: #2a2a2a;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 30%);
 }
 
 :global(.dark-mode) .recipeName {
