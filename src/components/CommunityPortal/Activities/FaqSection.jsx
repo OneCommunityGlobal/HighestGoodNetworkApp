@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import styles from './FaqSection.module.css';
 
 function FaqSection() {
@@ -51,6 +52,7 @@ function FaqSection() {
   const [copied, setCopied] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const toggleFaq = id => {
     setOpenIndex(openIndex === id ? null : id);
@@ -96,7 +98,7 @@ function FaqSection() {
 
       <input
         type="text"
-        className={styles.faqSearch}
+        className={`${styles.faqSearch} ${darkMode ? styles.faqSearchDark : ''}`}
         placeholder="Search FAQs..."
         value={searchTerm}
         onChange={handleSearchChange}
@@ -109,7 +111,7 @@ function FaqSection() {
             type="button"
             className={`${styles.faqCategory} ${
               selectedCategory === category ? styles.active : ''
-            }`}
+            } ${darkMode ? styles.faqCategoryDark : ''}`}
             onClick={() => handleCategoryClick(category)}
           >
             {category}
@@ -127,7 +129,7 @@ function FaqSection() {
             <div key={faq.id} className={styles.faqItem}>
               <button
                 type="button"
-                className={styles.faqQuestion}
+                className={`${styles.faqQuestion} ${darkMode ? styles.faqQuestionDark : ''}`}
                 onClick={() => toggleFaq(faq.id)}
                 aria-expanded={openIndex === faq.id}
               >

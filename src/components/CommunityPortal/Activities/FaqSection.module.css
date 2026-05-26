@@ -128,3 +128,23 @@
   text-align: center;
   color: gray;
 }
+
+.faqSearchDark {
+  background-color: #2b3e59;
+  color: #ffffff;
+  border-color: #4a5a77;
+}
+
+.faqSearchDark::placeholder {
+  color: #8899aa;
+}
+
+.faqCategoryDark {
+  background-color: #2b3e59;
+  color: #ffffff;
+  border: 1px solid #4a5a77;
+}
+
+.faqQuestionDark {
+  color: #ffffff;
+}
