@@ -27,7 +27,7 @@ import TimerStatus from './TimerStatus';
 
 function Timer({ authUser, darkMode, isPopout }) {
   const dispatch = useDispatch();
-  const realIsPopout = typeof isPopout === 'boolean' ? isPopout : !!window.opener;
+  const realIsPopout = typeof isPopout === 'boolean' ? isPopout : !!globalThis.opener;
   /**
    *  Because the websocket can not be closed when internet is cut off (lost server connection),
    *  the readyState will be stuck at OPEN, so here we need to use a custom readyState to
@@ -227,7 +227,7 @@ function Timer({ authUser, darkMode, isPopout }) {
   );
 
   const handleRefreshTimer = useCallback(() => {
-    window.location.reload();
+    globalThis.location.reload();
   }, []);
 
   // Initialize session ID on component mount
@@ -267,7 +267,7 @@ function Timer({ authUser, darkMode, isPopout }) {
 
   useEffect(() => {
     const handleStorageEvent = () => {
-      const sessionStorageData = JSON.parse(window.sessionStorage.getItem('viewingUser'));
+      const sessionStorageData = JSON.parse(globalThis.sessionStorage.getItem('viewingUser'));
       if (sessionStorageData) {
         setViewingUserId(sessionStorageData.userId);
       } else {
@@ -279,11 +279,11 @@ function Timer({ authUser, darkMode, isPopout }) {
     handleStorageEvent();
 
     // Add the event listener
-    window.addEventListener('storage', handleStorageEvent);
+    globalThis.addEventListener('storage', handleStorageEvent);
 
     // Clean up the event listener when the component unmounts
     return () => {
-      window.removeEventListener('storage', handleStorageEvent);
+      globalThis.removeEventListener('storage', handleStorageEvent);
     };
   }, []);
 
@@ -611,10 +611,10 @@ function Timer({ authUser, darkMode, isPopout }) {
 
   useEffect(() => {
     if (timeIsOverModalOpen) {
-      window.focus();
+      globalThis.focus();
       timeIsOverAudioRef.current.play();
     } else {
-      window.focus();
+      globalThis.focus();
       timeIsOverAudioRef.current.pause();
       timeIsOverAudioRef.current.currentTime = 0;
     }
@@ -629,10 +629,10 @@ function Timer({ authUser, darkMode, isPopout }) {
 
   useEffect(() => {
     if (inacModal) {
-      window.focus();
+      globalThis.focus();
       forcedPausedAudioRef.current.play();
     } else {
-      window.focus();
+      globalThis.focus();
       forcedPausedAudioRef.current.pause();
       forcedPausedAudioRef.current.currentTime = 0;
     }
@@ -640,10 +640,10 @@ function Timer({ authUser, darkMode, isPopout }) {
 
   useEffect(() => {
     if (weekEndModal) {
-      window.focus();
+      globalThis.focus();
       timeIsOverAudioRef.current.play();
     } else {
-      window.focus();
+      globalThis.focus();
       timeIsOverAudioRef.current.pause();
       timeIsOverAudioRef.current.currentTime = 0;
     }
@@ -869,14 +869,14 @@ function Timer({ authUser, darkMode, isPopout }) {
               handleAddButton={handleAddButton}
               handleSubtractButton={handleSubtractButton}
               handleStopButton={handleStopButton}
-              toggleTimer={() => window.close()}
+              toggleTimer={() => globalThis.close()}
             />
           )}
           {customReadyState !== ReadyState.OPEN && (
             <TimerStatus
               readyState={customReadyState}
               message={message}
-              toggleTimer={() => window.close()}
+              toggleTimer={() => globalThis.close()}
               handleRefreshTimer={handleRefreshTimer}
             />
           )}
