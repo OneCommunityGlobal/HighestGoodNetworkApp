@@ -101,7 +101,7 @@ export default function Warning({
     todaysDate: dateAssigned,
     warningText,
   }) => {
-    const { firstName, lastName, email } = displayUser;
+    const { firstName, lastName, email } = displayUser || {};
     const monitorData = {
       firstName,
       lastName,
