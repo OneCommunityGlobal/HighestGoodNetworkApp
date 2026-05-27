@@ -673,6 +673,9 @@ export const ENDPOINTS = {
   GET_SAVED: `${APIEndpoint}/education/student/saved-interests`,
   REMOVE_INTEREST: `${APIEndpoint}/education/student/saved-interests`,
   CHECK_IF_SAVED: `${APIEndpoint}/education/student/saved-interests/check`,
+  // Kitchen and Inventory
+  KITCHEN_PROCESSING_PROJECTS: `${APIEndpoint}/kitchenandinventory/processing`,
+
   EDUCATOR_REPORT_EXPORT: (type, format, params = {}) => {
     const { studentId, classId, startDate, endDate } = params;
     let url = `${APIEndpoint}/educator/reports/export?type=${type}&format=${format}`;
@@ -684,8 +687,10 @@ export const ENDPOINTS = {
   },
 
   HGN_FORM_RESPONSES: () => `${APIEndpoint}/hgnform`,
-  // Kitchen and Inventory Management endpoints
   KI_CALENDAR_EVENTS: (month, year) => `${APIEndpoint}/kitchenandinventory/calendar?month=${month}&year=${year}`,
+  KI_INVENTORY_ITEMS: `${APIEndpoint}/kitchenandinventory/inventory/items`,
+  KI_INVENTORY_STATS: `${APIEndpoint}/kitchenandinventory/inventory/items/stats`,
+  KI_INVENTORY_PRESERVED: `${APIEndpoint}/kitchenandinventory/inventory/items/ingredients/preserved`,
 
   // Help Request & Feedback Modal endpoints
   HGN_FORM_RANKED: `${APIEndpoint}/hgnform/ranked`,

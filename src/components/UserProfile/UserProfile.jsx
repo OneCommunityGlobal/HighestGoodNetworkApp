@@ -752,65 +752,38 @@ setUpdatedTasks(prev => {
   const modifyBlueSquares = async (id, dateStamp, summary, operation) => {
     setShowModal(false);
     if (operation === 'add') {
-      /* peizhou: check that the date of the blue square is not future or empty. */
       if (moment(dateStamp).isAfter(moment().format('YYYY-MM-DD')) || dateStamp === '') {
         if (moment(dateStamp).isAfter(moment().format('YYYY-MM-DD'))) {
-          // eslint-disable-next-line no-console
           console.log('WARNING: Future Blue Square');
-          // eslint-disable-next-line no-alert
           alert('WARNING: Cannot Assign Blue Square with a Future Date');
         }
         if (dateStamp === '') {
-          // eslint-disable-next-line no-console
           console.log('WARNING: Empty Date');
-          // eslint-disable-next-line no-alert
           alert('WARNING: Cannot Assign Blue Square with an Empty Date');
         }
       } else {
         const newBlueSquare = {
           date: dateStamp,
           description: summary,
-          // createdDate: moment
-          //   .tz('America/Los_Angeles')
-          //   .toISOString()
-          //   .split('T')[0],
           createdDate: moment().format('YYYY-MM-DD'),
-          // Track manual assignment - note: backend uses 'manullyAssigned' (typo in field name)
           manullyAssigned: true,
           manullyAssignedBy: requestorId,
         };
         setModalTitle('Blue Square');
         axios
-          .post(ENDPOINTS.ADD_BLUE_SQUARE(userProfile._id), {
-            blueSquare: newBlueSquare,
-          })
+          .post(ENDPOINTS.ADD_BLUE_SQUARE(userProfile._id), { blueSquare: newBlueSquare })
           .then(res => {
-
-            const updatedInfringements = [
-              ...userProfile.infringements,
-              {
-                _id: res.data._id,
-                ...newBlueSquare,
-              }
-            ];
-
-            setOriginalUserProfile(prev => ({
-              ...prev,
-              infringements: updatedInfringements,
-            }));
-
-            setUserProfile(prev => ({
-              ...prev,
-              infringements: updatedInfringements,
-            }));
+            // Use API response as source of truth
+            setUserProfile(prev => ({ ...prev, infringements: res.data.infringements }));
+            setOriginalUserProfile(prev => ({ ...prev, infringements: res.data.infringements }));
           })
           .catch(error => {
-            // eslint-disable-next-line no-console
             console.log('error in modifying bluesquare', error);
             toast.error('Failed to add Blue Square!');
           });
       }
     } else if (operation === 'update') {
+<<<<<<< fix/badge-assign-duplicate
       const currentBlueSquares = [...(userProfile?.infringements || [])];
       if (dateStamp != null && currentBlueSquares.length !== 0) {
         currentBlueSquares.find(blueSquare => blueSquare._id === id).date = dateStamp;
@@ -820,29 +793,45 @@ setUpdatedTasks(prev => {
       }
       await axios
         .put(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id), {
+=======
+      try {
+        const res = await axios.put(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id), {
+>>>>>>> development
           dateStamp,
           summary,
           editedBy: requestorId,
-        })
-        .catch(error => {
-          toast.error('Failed to update Blue Square!');
         });
-      toast.success('Blue Square Updated!');
-      setUserProfile({ ...userProfile, infringements: currentBlueSquares });
-      setOriginalUserProfile({ ...userProfile, infringements: currentBlueSquares });
+        toast.success('Blue Square Updated!');
+        // Use API response as source of truth
+        setUserProfile(prev => ({ ...prev, infringements: res.data.infringements }));
+        setOriginalUserProfile(prev => ({ ...prev, infringements: res.data.infringements }));
+      } catch (error) {
+        console.error('Failed to update Blue Square:', error);
+        toast.error('Failed to update Blue Square!');
+      }
     } else if (operation === 'delete') {
+<<<<<<< fix/badge-assign-duplicate
       let newInfringements = [...(userProfile?.infringements || [])];
       if (newInfringements.length !== 0) {
         newInfringements = newInfringements.filter(infringement => infringement._id !== id);
         await axios.delete(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id)).catch(error => {
+=======
+      if (userProfile?.infringements?.length !== 0) {
+        try {
+          const res = await axios.delete(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id));
+          toast.success('Blue Square Deleted!');
+          // Use API response as source of truth
+          setUserProfile(prev => ({ ...prev, infringements: res.data.infringements }));
+          setOriginalUserProfile(prev => ({ ...prev, infringements: res.data.infringements }));
+        } catch (error) {
+          console.error('Failed to delete Blue Square:', error);
+>>>>>>> development
           toast.error('Failed to delete Blue Square!');
-        });
-        toast.success('Blue Square Deleted!');
-        setUserProfile({ ...userProfile, infringements: newInfringements });
-        setOriginalUserProfile({ ...userProfile, infringements: newInfringements });
+        }
       }
     }
   };
+
   const fetchSpecialWarnings = async () => {
     const userId = props?.match?.params?.userId;
     try {
