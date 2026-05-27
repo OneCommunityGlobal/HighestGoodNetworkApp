@@ -48,14 +48,17 @@ export default function Warning({
     dispatch(hasPermission('deleteWarningTracker'));
 
   const fetchUsersWarningsById = async () => {
-    dispatch(getWarningsByUserId(personId)).then(res => {
-      if (res.error) {
-        setError(res);
+    dispatch(getWarningsByUserId(personId))
+      .then(res => {
+        if (!res || res.error) {
+          setUsersWarnings([]);
+          return;
+        }
+        setUsersWarnings(res);
+      })
+      .catch(() => {
         setUsersWarnings([]);
-        return;
-      }
-      setUsersWarnings(res);
-    });
+      });
   };
 
   const handleToggle = () => {
@@ -77,7 +80,7 @@ export default function Warning({
 
   const handleDeleteWarning = async warningId => {
     dispatch(deleteWarningsById(warningId, personId)).then(res => {
-      if (res.error) {
+      if (!res || res.error) {
         setError(res);
         setUsersWarnings([]);
         return;
