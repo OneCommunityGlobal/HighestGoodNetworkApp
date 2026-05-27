@@ -12,6 +12,7 @@ import {
   Legend,
 } from 'recharts';
 import styles from './EventPopularity.module.css';
+import PropTypes from 'prop-types';
 
 // Sample data
 const eventTypeData = [
@@ -151,6 +152,29 @@ const participationCards = [
 
 const allEventTypes = eventTypeData.map(e => e.name);
 const timeOfDayOptions = ['morning', 'afternoon', 'evening', 'night'];
+
+function ChartTooltip({ active, payload, styles }) {
+  if (active && payload && payload.length > 0) {
+    const data = payload[0].payload;
+
+    return (
+      <div className={styles.epChartTooltip}>
+        <p className={styles.epTooltipTime}>{data.time}</p>
+        <p className={styles.epTooltipRegistered}>Registered: {data.registered}</p>
+        <p className={styles.epTooltipAttended}>Attended: {data.attended}</p>
+        <p className={styles.epTooltipHint}>Click to drill down</p>
+      </div>
+    );
+  }
+
+  return null;
+}
+
+ChartTooltip.propTypes = {
+  active: PropTypes.bool,
+  payload: PropTypes.array,
+  styles: PropTypes.object.isRequired,
+};
 
 export default function EventDashboard() {
   const isDark =
@@ -341,23 +365,6 @@ export default function EventDashboard() {
     setSelectedTimeSlot(null);
     setSelectedEventTypeDetail(null);
   }, []);
-
-  function ChartTooltip({ active, payload, styles }) {
-    if (active && payload && payload.length > 0) {
-      const data = payload[0].payload;
-
-      return (
-        <div className={styles.epChartTooltip}>
-          <p className={styles.epTooltipTime}>{data.time}</p>
-          <p className={styles.epTooltipRegistered}>Registered: {data.registered}</p>
-          <p className={styles.epTooltipAttended}>Attended: {data.attended}</p>
-          <p className={styles.epTooltipHint}>Click to drill down</p>
-        </div>
-      );
-    }
-
-    return null;
-  }
 
   let detailTitle = '📊 Participation Details';
 
@@ -619,17 +626,11 @@ export default function EventDashboard() {
           {/* Summary Cards for Time */}
           <div className={styles.epParticipationGrid}>
             {participationCards.slice(0, 2).map(card => (
-              <div
+              <button
                 key={card.id}
+                type="button"
                 onClick={() => handleCardClick(card.id)}
                 className={styles.epParticipationCard}
-                role="button"
-                tabIndex={0}
-                onKeyDown={e => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    handleCardClick(card.id);
-                  }
-                }}
                 title={`Click to view ${card.title} details`}
               >
                 <div className={styles.epCardHeader}>
@@ -649,7 +650,7 @@ export default function EventDashboard() {
                 >
                   {card.trend} Monthly
                 </p>
-              </div>
+              </button>
             ))}
           </div>
         </div>
