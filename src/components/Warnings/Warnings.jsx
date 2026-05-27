@@ -1,5 +1,6 @@
 import axios from 'axios';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { Alert, Button } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
@@ -166,9 +167,8 @@ export default function Warning({
       });
   };
 
-  const warnings = !toggle
-    ? null
-    : usersWarnings.map(warning => (
+  const warnings = toggle
+    ? usersWarnings.map(warning => (
         <div className={`${styles['warning-item-container']}`} key={warning.title}>
           <div className={`${styles['warning-wrapper']}`}>
             <p className={`${styles['warning-text']}`}> {warning.title}</p>
@@ -181,16 +181,15 @@ export default function Warning({
             />
           </div>
         </div>
-      ));
+      ))
+    : null;
 
   return (
     <div className={`${styles['warnings-container']}`}>
       <div className={styles.button__container}>
         {canViewTrackerButton && (
           <Button
-            className={`btn ${toggle ? 'btn-warning' : 'btn-warning'} warning-btn ${
-              styles.tracking__btn
-            }`}
+            className={`btn btn-warning warning-btn ${styles.tracking__btn}`}
             size="sm"
             onClick={handleToggle}
           >
@@ -241,3 +240,11 @@ export default function Warning({
     </div>
   );
 }
+
+Warning.propTypes = {
+  personId: PropTypes.string.isRequired,
+  username: PropTypes.string,
+  userRole: PropTypes.string,
+  displayUser: PropTypes.object,
+  showTrackers: PropTypes.bool,
+};

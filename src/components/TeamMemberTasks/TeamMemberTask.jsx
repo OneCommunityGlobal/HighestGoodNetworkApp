@@ -833,6 +833,7 @@ TeamMemberTask.propTypes = {
   }).isRequired,
   userRole: PropTypes.string.isRequired,
   showTrackers: PropTypes.bool,
+  showTasks: PropTypes.bool,
   userId: PropTypes.string.isRequired,
   displayUser: PropTypes.object,
   userStateCatalog: PropTypes.array,
