@@ -783,20 +783,8 @@ setUpdatedTasks(prev => {
           });
       }
     } else if (operation === 'update') {
-<<<<<<< fix/badge-assign-duplicate
-      const currentBlueSquares = [...(userProfile?.infringements || [])];
-      if (dateStamp != null && currentBlueSquares.length !== 0) {
-        currentBlueSquares.find(blueSquare => blueSquare._id === id).date = dateStamp;
-      }
-      if (summary != null && currentBlueSquares.length !== 0) {
-        currentBlueSquares.find(blueSquare => blueSquare._id === id).description = summary;
-      }
-      await axios
-        .put(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id), {
-=======
       try {
         const res = await axios.put(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id), {
->>>>>>> development
           dateStamp,
           summary,
           editedBy: requestorId,
@@ -810,12 +798,6 @@ setUpdatedTasks(prev => {
         toast.error('Failed to update Blue Square!');
       }
     } else if (operation === 'delete') {
-<<<<<<< fix/badge-assign-duplicate
-      let newInfringements = [...(userProfile?.infringements || [])];
-      if (newInfringements.length !== 0) {
-        newInfringements = newInfringements.filter(infringement => infringement._id !== id);
-        await axios.delete(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id)).catch(error => {
-=======
       if (userProfile?.infringements?.length !== 0) {
         try {
           const res = await axios.delete(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id));
@@ -825,7 +807,6 @@ setUpdatedTasks(prev => {
           setOriginalUserProfile(prev => ({ ...prev, infringements: res.data.infringements }));
         } catch (error) {
           console.error('Failed to delete Blue Square:', error);
->>>>>>> development
           toast.error('Failed to delete Blue Square!');
         }
       }
