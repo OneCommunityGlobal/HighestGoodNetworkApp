@@ -200,7 +200,11 @@ export const returnUpdatedBadgesCollection = (badgeCollection, selectedBadgesId)
 };
 
 export const returnUpdatedBadgesCollectionSingleUser = (badgeCollection, selectedBadgesId) => {
-  const newBadgeCollection = badgeCollection.map(b => ({ ...b, earnedDate: [...b.earnedDate] }));
+  const newBadgeCollection = badgeCollection.map(b => ({
+    ...b,
+    earnedDate: [...(b.earnedDate || [])],
+    badge: b.badge && typeof b.badge === 'object' ? b.badge._id : b.badge,
+  }));
   const currentTs = Date.now();
   const currentDate = formatDate();
 
