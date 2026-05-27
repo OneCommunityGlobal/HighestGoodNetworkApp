@@ -12,7 +12,6 @@ import {
   Legend,
 } from 'recharts';
 import styles from './EventPopularity.module.css';
-import { useSelector } from 'react-redux';
 
 // Sample data
 const eventTypeData = [
@@ -274,7 +273,7 @@ export default function EventDashboard() {
       return null;
     }
     const diff = slot.registered - slot.attended;
-    const noShow = diff > 0 ? diff : 0;
+    const noShow = Math.max(diff, 0);
     const attendanceRate =
       slot.registered > 0 ? Math.round((slot.attended / slot.registered) * 100) : 0;
 
@@ -300,7 +299,7 @@ export default function EventDashboard() {
     }
 
     const diff = eventType.registered - eventType.attended;
-    const noShow = diff > 0 ? diff : 0;
+    const noShow = Math.max(diff, 0);
     const attendanceRate =
       eventType.registered > 0 ? Math.round((eventType.attended / eventType.registered) * 100) : 0;
 
@@ -342,6 +341,31 @@ export default function EventDashboard() {
     setSelectedTimeSlot(null);
     setSelectedEventTypeDetail(null);
   }, []);
+
+  function ChartTooltip({ active, payload, styles }) {
+    if (active && payload && payload.length > 0) {
+      const data = payload[0].payload;
+
+      return (
+        <div className={styles.epChartTooltip}>
+          <p className={styles.epTooltipTime}>{data.time}</p>
+          <p className={styles.epTooltipRegistered}>Registered: {data.registered}</p>
+          <p className={styles.epTooltipAttended}>Attended: {data.attended}</p>
+          <p className={styles.epTooltipHint}>Click to drill down</p>
+        </div>
+      );
+    }
+
+    return null;
+  }
+
+  let detailTitle = '📊 Participation Details';
+
+  if (detailView === 'timeSlot') {
+    detailTitle = `⏰ Time Slot Details: ${selectedTimeSlot}`;
+  } else if (detailView === 'eventType') {
+    detailTitle = `📅 Event Type Details: ${selectedEventTypeDetail}`;
+  }
 
   return (
     <div className={`${styles.eventpopularity}`}>
@@ -465,19 +489,13 @@ export default function EventDashboard() {
 
             {filteredEventTypeData.length > 0 ? (
               filteredEventTypeData.map(event => (
-                <div
+                <button
                   key={event.id}
+                  type="button"
                   onClick={() => handleEventTypeClick(event.name)}
                   className={`${styles.epEventRow} ${
                     selectedEventTypeDetail === event.name ? styles.epEventRowActive : ''
                   }`}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={e => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      handleEventTypeClick(event.name);
-                    }
-                  }}
                   title={`Click to view details for ${event.name}`}
                 >
                   <span className={styles.epEventName}>{event.name}</span>
@@ -492,7 +510,7 @@ export default function EventDashboard() {
                   <span className={styles.epEventStats}>
                     {event.registered} / {event.attended}
                   </span>
-                </div>
+                </button>
               ))
             ) : (
               <div className={styles.epEmptyState}>
@@ -521,22 +539,16 @@ export default function EventDashboard() {
                 id: 'event-card-2',
               },
             ].map(card => (
-              <div
+              <button
                 key={card.id}
+                type="button"
                 onClick={() => handleCardClick(card.id)}
-                className={`${styles.epStatCard} ${card.isPrimary ? styles.epStatCardPrimary : ''}`}
-                role="button"
-                tabIndex={0}
-                onKeyDown={e => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    handleCardClick(card.id);
-                  }
-                }}
-                title="Click to view details"
+                className={styles.epParticipationCard}
+                title={`Click to view ${card.title} details`}
               >
                 <h3 className={styles.epStatTitle}>{card.title}</h3>
                 <p className={styles.epStatSubtitle}>{card.subtitle}</p>
-              </div>
+              </button>
             ))}
           </div>
         </div>
@@ -571,26 +583,7 @@ export default function EventDashboard() {
                     itemStyle={{
                       color: 'var(--ep-text-muted)',
                     }}
-                    content={({ active, payload }) => {
-                      if (active && payload && payload.length > 0) {
-                        const data = payload[0].payload;
-
-                        return (
-                          <div className={styles.epChartTooltip}>
-                            <p className={styles.epTooltipTime}>{data.time}</p>
-
-                            <p className={styles.epTooltipRegistered}>
-                              Registered: {data.registered}
-                            </p>
-
-                            <p className={styles.epTooltipAttended}>Attended: {data.attended}</p>
-
-                            <p className={styles.epTooltipHint}>Click to drill down</p>
-                          </div>
-                        );
-                      }
-                      return null;
-                    }}
+                    content={<ChartTooltip styles={styles} />}
                   />
                   <Legend />
                   <Bar
@@ -666,13 +659,7 @@ export default function EventDashboard() {
       {detailView && (
         <div className={styles.epDetailViewPanel}>
           <div className={styles.epDetailHeader}>
-            <h2 className={styles.epDetailTitle}>
-              {detailView === 'timeSlot'
-                ? `⏰ Time Slot Details: ${selectedTimeSlot}`
-                : detailView === 'eventType'
-                ? `📅 Event Type Details: ${selectedEventTypeDetail}`
-                : '📊 Participation Details'}
-            </h2>
+            <h2 className={styles.epDetailTitle}>{detailTitle}</h2>
             <button
               onClick={closeDetailView}
               className={styles.epCloseBtn}
