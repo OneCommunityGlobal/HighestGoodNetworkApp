@@ -811,7 +811,7 @@ setUpdatedTasks(prev => {
           });
       }
     } else if (operation === 'update') {
-      const currentBlueSquares = [...userProfile?.infringements] || [];
+      const currentBlueSquares = [...(userProfile?.infringements || [])];
       if (dateStamp != null && currentBlueSquares.length !== 0) {
         currentBlueSquares.find(blueSquare => blueSquare._id === id).date = dateStamp;
       }
@@ -831,7 +831,7 @@ setUpdatedTasks(prev => {
       setUserProfile({ ...userProfile, infringements: currentBlueSquares });
       setOriginalUserProfile({ ...userProfile, infringements: currentBlueSquares });
     } else if (operation === 'delete') {
-      let newInfringements = [...userProfile?.infringements] || [];
+      let newInfringements = [...(userProfile?.infringements || [])];
       if (newInfringements.length !== 0) {
         newInfringements = newInfringements.filter(infringement => infringement._id !== id);
         await axios.delete(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id)).catch(error => {

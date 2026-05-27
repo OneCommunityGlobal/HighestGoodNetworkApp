@@ -7,7 +7,6 @@ import { Button, Spinner, Table, UncontrolledTooltip } from 'reactstrap';
 import { PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from '~/utils/constants';
 import { ENDPOINTS } from '~/utils/URL';
 import {
-  addSelectBadge,
   assignBadgesByUserID,
   clearNameAndSelected,
 } from '../../actions/badgeManagement';
@@ -77,7 +76,7 @@ function AssignBadgePopup(props) {
   }, [badgeList, searchedName]);
 
   const addExistBadges = () => {
-  if (props.userProfile && props.userProfile.badgeCollection) {
+  if (props.userProfile?.badgeCollection) {
     const existBadges = props.userProfile.badgeCollection
       .filter(b => b && b.badge && typeof b.badge === 'object' && b.badge._id)
       .map(b => b.badge._id);
@@ -134,7 +133,7 @@ function AssignBadgePopup(props) {
             </thead>
             <tbody>
               {filteredBadges.map((value, index) => (
-                <AssignTableRow badge={value} index={index} key={index} propExistBadges={existBadges} />
+                <AssignTableRow badge={value} index={index} key={value._id || index} propExistBadges={existBadges} />
               ))}
             </tbody>
           </Table>
@@ -180,7 +179,6 @@ const mapDispatchToProps = dispatch => {
     assignBadgesByUserID: (userId, selectedBadge) =>
       assignBadgesByUserID(userId, selectedBadge)(dispatch),
     clearNameAndSelected: () => dispatch(clearNameAndSelected()),
-    addSelectBadge: badgeId => dispatch(addSelectBadge(badgeId)),
   };
 };
 
@@ -198,7 +196,6 @@ AssignBadgePopup.propTypes = {
   close: PropTypes.func,
   assignBadgesByUserID: PropTypes.func,
   clearNameAndSelected: PropTypes.func,
-  addSelectBadge: PropTypes.func,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(AssignBadgePopup);
