@@ -18,7 +18,6 @@ import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader, Progress } from 'reactstrap';
 import { ENDPOINTS } from '~/utils/URL';
 import config from '../../config.json';
-import '../Header/index.css';
 import '../Header/index.module.css';
 import TimeEntryForm from '../Timelog/TimeEntryForm';
 import Countdown from './Countdown';
