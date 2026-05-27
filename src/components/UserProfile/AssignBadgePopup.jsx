@@ -1,4 +1,5 @@
 import axios from 'axios';
+import PropTypes from 'prop-types';
 import { useEffect, useMemo, useState } from 'react';
 import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -98,7 +99,7 @@ function AssignBadgePopup(props) {
         }}
       />
       <div style={{ overflowY: 'scroll', height: '75vh' }}>
-        {!isLoadingBadge && (props.isTableOpen ?? filteredBadges.length > 0) ? (
+        {!isLoadingBadge && (props.isTableOpen !== undefined ? props.isTableOpen : filteredBadges.length > 0) ? (
           <Table data-testid="test-badgeResults" className={darkMode ? 'text-light' : ''}>
             <thead
               style={
@@ -181,6 +182,23 @@ const mapDispatchToProps = dispatch => {
     clearNameAndSelected: () => dispatch(clearNameAndSelected()),
     addSelectBadge: badgeId => dispatch(addSelectBadge(badgeId)),
   };
+};
+
+AssignBadgePopup.propTypes = {
+  userProfile: PropTypes.shape({
+    _id: PropTypes.string,
+    badgeCollection: PropTypes.array,
+  }),
+  selectedBadges: PropTypes.array,
+  darkMode: PropTypes.bool,
+  isRecordBelongsToJaeAndUneditable: PropTypes.bool,
+  isTableOpen: PropTypes.bool,
+  setUserProfile: PropTypes.func,
+  handleSubmit: PropTypes.func,
+  close: PropTypes.func,
+  assignBadgesByUserID: PropTypes.func,
+  clearNameAndSelected: PropTypes.func,
+  addSelectBadge: PropTypes.func,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(AssignBadgePopup);

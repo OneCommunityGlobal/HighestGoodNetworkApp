@@ -4,6 +4,7 @@ import moment from 'moment';
 import 'moment-timezone';
 import pdfMake from 'pdfmake/build/pdfmake';
 import 'pdfmake/build/vfs_fonts';
+import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { toast, ToastContainer } from 'react-toastify';
@@ -395,7 +396,7 @@ function BadgeReport(props) {
             <tbody>
               {sortBadges && sortBadges.length ? (
                 sortBadges.map((value, index) => (
-                  <tr key={index}>
+                  <tr key={value._id || index}>
                     <td className="badge_image_sm">
                       {' '}
                       <BadgeImage
@@ -403,7 +404,7 @@ function BadgeReport(props) {
                         count={value.count}
                         badgeData={value.badge}
                         index={index}
-                        key={index}
+                        key={value._id || index}
                         cssSuffix={'_report'}
                       />
                     </td>
@@ -577,7 +578,7 @@ function BadgeReport(props) {
             <tbody>
               {sortBadges && sortBadges.length ? (
                 sortBadges.map((value, index) => (
-                  <tr key={index}>
+                  <tr key={value._id || index}>
                     <td className="badge_image_sm">
                       {' '}
                       <BadgeImage
@@ -585,7 +586,7 @@ function BadgeReport(props) {
                         count={value.count}
                         badgeData={value.badge}
                         index={index}
-                        key={index}
+                        key={value._id || index}
                         cssSuffix={'_report'}
                       />
                     </td>
@@ -786,5 +787,21 @@ const mapDispatchToProps = dispatch => ({
   getUserProfile: userId => dispatch(getUserProfile(userId)),
   hasPermission: permission => dispatch(hasPermission(permission)),
 });
+
+BadgeReport.propTypes = {
+  badges: PropTypes.array,
+  userId: PropTypes.string,
+  darkMode: PropTypes.bool,
+  role: PropTypes.string,
+  firstName: PropTypes.string,
+  lastName: PropTypes.string,
+  close: PropTypes.func,
+  setUserProfile: PropTypes.func,
+  setOriginalUserProfile: PropTypes.func,
+  handleSubmit: PropTypes.func,
+  isUserSelf: PropTypes.bool,
+  isRecordBelongsToJaeAndUneditable: PropTypes.bool,
+  personalBestMaxHrs: PropTypes.number,
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(BadgeReport);
