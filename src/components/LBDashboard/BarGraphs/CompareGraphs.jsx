@@ -116,7 +116,6 @@ export function CompareBarGraph({
   height = 420,
   yCategoryWidth = 70,
   margins = { top: 16, right: 20, bottom: 46, left: 0 },
-  maxBars,
   showYAxisTitle = true,
   yTickFormatter,
   darkMode = false,
@@ -165,75 +164,95 @@ export function CompareBarGraph({
         </div>
 
         {/* chart */}
-        <div className={styles.graphCanvas}>
-          <ResponsiveContainer width="100%" height={height}>
-            <BarChart
-              data={data}
-              layout={isHorizontal ? 'vertical' : 'horizontal'}
-              margin={margins}
+        <div
+          className={styles.graphCanvas}
+          style={{
+            width: '100%',
+            minHeight: `${height}px`,
+          }}
+        >
+          {!data?.length ? (
+            <div
+              style={{
+                height,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: darkMode ? '#e1e1e1' : '#666',
+              }}
             >
-              <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-              {isHorizontal
-                ? (() => {
-                    const axes = getHorizontalAxes({
-                      xDomain,
-                      xTicks,
-                      valueFormatter,
-                      tickColor,
-                      xLabel,
-                      nameKey,
-                      yCategoryWidth,
-                      yTickFormatter,
-                      showYAxisTitle,
-                      yLabel,
-                    });
-                    return (
-                      <>
-                        {axes.xAxis}
-                        {axes.yAxis}
-                      </>
-                    );
-                  })()
-                : (() => {
-                    const axes = getVerticalAxes(
-                      nameKey,
-                      tickColor,
-                      xLabel,
-                      yDomain,
-                      yTicks,
-                      valueFormatter,
-                      yLabel,
-                    );
-                    return (
-                      <>
-                        {axes.xAxis}
-                        {axes.yAxis}
-                      </>
-                    );
-                  })()}
+              No data available
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height={height}>
+              <BarChart
+                data={data}
+                layout={isHorizontal ? 'vertical' : 'horizontal'}
+                margin={margins}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+                {isHorizontal
+                  ? (() => {
+                      const axes = getHorizontalAxes({
+                        xDomain,
+                        xTicks,
+                        valueFormatter,
+                        tickColor,
+                        xLabel,
+                        nameKey,
+                        yCategoryWidth,
+                        yTickFormatter,
+                        showYAxisTitle,
+                        yLabel,
+                      });
+                      return (
+                        <>
+                          {axes.xAxis}
+                          {axes.yAxis}
+                        </>
+                      );
+                    })()
+                  : (() => {
+                      const axes = getVerticalAxes(
+                        nameKey,
+                        tickColor,
+                        xLabel,
+                        yDomain,
+                        yTicks,
+                        valueFormatter,
+                        yLabel,
+                      );
+                      return (
+                        <>
+                          {axes.xAxis}
+                          {axes.yAxis}
+                        </>
+                      );
+                    })()}
 
-              <Tooltip
-                formatter={v => [valueFormatter(v), tooltipLabel || metricLabel || title]}
-                labelFormatter={lbl => `${lbl}`}
-                contentStyle={{
-                  background: darkMode ? '#1c2541' : '#fff',
-                  border: `1px solid ${darkMode ? '#3a506b' : '#ccc'}`,
-                  color: darkMode ? '#e1e1e1' : '#333',
-                }}
-                itemStyle={{ color: darkMode ? '#e1e1e1' : '#333' }}
-                labelStyle={{ color: darkMode ? '#e1e1e1' : '#333', fontWeight: 600 }}
-              />
-              <Bar dataKey={valueKey} radius={[4, 4, 4, 4]} fill={barColor} barSize={barSize}>
-                <LabelList
-                  dataKey={valueKey}
-                  position={isHorizontal ? 'right' : 'top'}
-                  formatter={valueFormatter}
-                  style={{ fontSize: 15, fontWeight: 600 }}
-                  offset={8}
+                <Tooltip
+                  formatter={v => [valueFormatter(v), tooltipLabel || metricLabel || title]}
+                  labelFormatter={lbl => `${lbl}`}
+                  contentStyle={{
+                    background: darkMode ? '#1c2541' : '#fff',
+                    border: `1px solid ${darkMode ? '#3a506b' : '#ccc'}`,
+                    color: darkMode ? '#e1e1e1' : '#333',
+                  }}
+                  itemStyle={{ color: darkMode ? '#e1e1e1' : '#333' }}
+                  labelStyle={{ color: darkMode ? '#e1e1e1' : '#333', fontWeight: 600 }}
                 />
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+                <Bar dataKey={valueKey} radius={[4, 4, 4, 4]} fill={barColor} barSize={barSize}>
+                  <LabelList
+                    dataKey={valueKey}
+                    position={isHorizontal ? 'right' : 'top'}
+                    formatter={valueFormatter}
+                    style={{ fontSize: 15, fontWeight: 600 }}
+                    offset={8}
+                  />
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          )}
         </div>
       </CardBody>
     </Card>
@@ -272,7 +291,6 @@ CompareBarGraph.propTypes = {
     bottom: PropTypes.number,
     left: PropTypes.number,
   }),
-  maxBars: PropTypes.number,
   showYAxisTitle: PropTypes.bool,
   yTickFormatter: PropTypes.func,
   darkMode: PropTypes.bool,
