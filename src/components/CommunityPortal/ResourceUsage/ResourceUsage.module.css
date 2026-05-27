@@ -1,6 +1,7 @@
 /* stylelint-disable  */
 .resourceUsageContainer {
   display: flex;
+  flex-wrap: wrap;
   min-height: 100vh;
 }
 
@@ -9,8 +10,9 @@
 }
 
 .chartSection {
-  flex: 1;
-  padding: 2rem;
+  flex: 1 1 350px;
+  min-width: 0;
+  padding: 1.5rem;
 }
 
 .darkChartSection {
@@ -27,16 +29,19 @@
 }
 
 .customDropdown {
+  background: transparent !important;
   border: 1px solid #e5e7eb !important;
+  color: #374151 !important;
   padding: 0.5rem 1rem !important;
-  border-radius: 0.375rem !important;
+  width: 8.75rem !important;
   font-size: 0.875rem !important;
-
-  /* Your enhancements */
+  border-radius: 0.375rem !important;
   box-shadow: none !important;
   display: flex !important;
   align-items: center !important;
+  justify-content: space-between !important;
   gap: 0.5rem !important;
+  white-space: nowrap !important;
 }
 
 .customDropdown:hover,
@@ -50,7 +55,8 @@
 }
 
 .chartContainer {
-  height: calc(100vh - 200px);
+  height: 360px;
+  min-height: 250px;
   position: relative;
 }
 
@@ -66,8 +72,10 @@
 /* ---------------- INSIGHTS ---------------- */
 
 .insightsSection {
-  width: 400px;
-  padding: 2rem;
+  flex: 0 0 400px;
+  min-width: 300px;
+  max-width: 100%;
+  padding: 1.5rem;
   border-left: 1px solid #e5e7eb;
 }
 
@@ -254,4 +262,61 @@
   font-size: 12px;
   font-weight: 700;
   fill: #666;
+}
+
+/* ─── Responsive breakpoints ─── */
+
+/* Narrow desktop / large tablet: shrink insights panel */
+@media (width <= 1024px) {
+  .insightsSection {
+    flex: 0 0 320px;
+    min-width: 280px;
+  }
+}
+
+/* Tablet: stack chart above insights */
+@media (width <= 768px) {
+  .resourceUsageContainer {
+    flex-direction: column;
+  }
+
+  .chartSection {
+    flex: 1 1 auto;
+    width: 100%;
+  }
+
+  .insightsSection {
+    flex: 1 1 auto;
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid #e5e7eb;
+  }
+
+  .chartContainer {
+    height: 300px;
+  }
+}
+
+/* Mobile: single-column insights, smaller padding and chart */
+@media (width <= 480px) {
+  .chartSection,
+  .insightsSection {
+    padding: 1rem;
+  }
+
+  .chartContainer {
+    height: 240px;
+  }
+
+  .headerSection h1 {
+    font-size: 1.5rem;
+  }
+
+  .insightsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .filters {
+    flex-wrap: wrap;
+  }
 }
