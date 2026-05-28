@@ -3,7 +3,6 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { LabelList, Pie, PieChart, ResponsiveContainer, Sector } from 'recharts';
 import TwoWayToggleSwitch from '../../../common/TwoWayToggleSwitch/TwoWayToggleSwitch';
-import './ProjectPieChart.module.css';
 
 const RAD = Math.PI / 180;
 

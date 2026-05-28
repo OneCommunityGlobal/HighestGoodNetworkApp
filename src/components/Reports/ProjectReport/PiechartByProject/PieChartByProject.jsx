@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import toggleStyles from '../../../UserProfile/UserProfileEdit/ToggleSwitch/ToggleSwitch.module.scss';
 import { ProjectPieChart } from '../ProjectPieChart/ProjectPieChart';
 import TriMembersStateToggleSwitch from '../TriMembersStateToggleSwitch/TriMembersStateToggleSwitch';
-import './PieChartByProject.module.css';
 import styles from './PieChartByProject.module.css';
 
 export function PieChartByProject({

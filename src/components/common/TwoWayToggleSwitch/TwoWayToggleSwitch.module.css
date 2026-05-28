@@ -44,7 +44,7 @@
 .toggle-switch-inner::before {
   content: "All";
   padding-left: 2px;
-  background-color: #09c;
+  background-color: #0077a8;
   color: #fff;
   text-align: center;
 }

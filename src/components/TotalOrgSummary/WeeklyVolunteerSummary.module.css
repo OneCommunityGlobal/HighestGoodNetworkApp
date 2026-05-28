@@ -113,7 +113,7 @@
 }
 
 .edit-button {
-  background-color: #007bff; /* Blue color for the button */
+  background-color: #0056b3; /* Blue color for the button */
   color: #fff; /* White text color */
   border: none; /* Remove the border */
   padding: 8px 16px; /* Adjust padding as needed */
@@ -173,7 +173,7 @@
   position: relative;
   border: 1px solid white;
   padding: 10px;
-  background: #00ac9d;
+  background: #007a6e;
   color: white;
 }
 
