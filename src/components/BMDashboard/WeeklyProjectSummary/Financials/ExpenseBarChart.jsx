@@ -4,6 +4,63 @@ import { useState, useEffect } from 'react';
 const categories = ['Plumbing', 'Electrical', 'Structural', 'Mechanical'];
 const projects = ['Project A', 'Project B', 'Project C'];
 
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    const chartData = payload[0].payload;
+
+    const isOverBudget = chartData.variance > 0;
+
+    return (
+      <div
+        style={{
+          backgroundColor: 'rgba(25, 25, 25, 0.95)',
+          border: '1px solid #444',
+          color: '#f8f9fa',
+          padding: '12px',
+          fontSize: '12px',
+          borderRadius: '6px',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+        }}
+      >
+        <p
+          style={{
+            fontWeight: 'bold',
+            margin: '0 0 8px 0',
+            borderBottom: '1px solid #444',
+            paddingBottom: '6px',
+            color: '#adb5bd',
+          }}
+        >
+          {label}
+        </p>
+
+        <p style={{ margin: '0 0 4px 0' }}>
+          Planned: <strong>${chartData.planned}</strong>
+        </p>
+
+        <p style={{ margin: '0 0 4px 0' }}>
+          Actual: <strong>${chartData.actual}</strong>
+        </p>
+
+        <p
+          style={{
+            margin: '8px 0 0 0',
+
+            color: isOverBudget ? '#ff6b6b' : '#51cf66',
+
+            fontWeight: 'bold',
+          }}
+        >
+          Variance: {chartData.variance > 0 ? '+' : ''}${chartData.variance} (
+          {chartData.variancePercent})
+        </p>
+      </div>
+    );
+  }
+
+  return null;
+};
+
 export default function ExpenseBarChart({ darkMode }) {
   const [projectId, setProjectId] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('ALL');
