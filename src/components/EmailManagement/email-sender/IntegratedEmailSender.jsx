@@ -37,9 +37,8 @@ import {
   ModalBody,
   ModalFooter,
   ModalHeader,
-  Progress,
   Spinner,
-  Table,
+  Table
 } from 'reactstrap';
 import { ENDPOINTS } from '~/utils/URL';
 import {
@@ -251,6 +250,20 @@ const VariableRow = React.memo(
 
 VariableRow.displayName = 'VariableRow';
 
+VariableRow.propTypes = {
+  variable: PropTypes.shape({
+    name: PropTypes.string,
+    type: PropTypes.string,
+    required: PropTypes.bool,
+  }),
+  value: PropTypes.string,
+  extractedValue: PropTypes.string,
+  error: PropTypes.string,
+  onVariableChange: PropTypes.func,
+  onImageSourceChange: PropTypes.func,
+  onImageLoadStatusChange: PropTypes.func,
+};
+
 const initialEmailState = {
   selectedTemplate: null,
   customContent: '',
@@ -458,22 +471,7 @@ const IntegratedEmailSender = ({
   }, []);
   const timeoutRefs = useRef([]);
   const progressIntervalRef = useRef(null);
-  const editorLoadTimeoutRef = useRef(null);
 
-  const EnhancedLoader = useMemo(() => {
-    const LoaderComponent = ({ message = 'Loading...', progress = 0, showProgress = true }) => (
-      <div className="enhanced-loader">
-        <div className="d-flex align-items-center mb-3">
-          <FaSpinner className="fa-spin me-2" />
-          <span>{message}</span>
-        </div>
-        {showProgress && <Progress value={progress} className="mb-2" />}
-        <small className="text-muted">Please wait while we load your content...</small>
-      </div>
-    );
-    LoaderComponent.displayName = 'EnhancedLoader';
-    return LoaderComponent;
-  }, []);
 
   const FallbackComponent = useMemo(() => {
     const FallbackComponentInner = ({
@@ -862,15 +860,6 @@ const IntegratedEmailSender = ({
     }
   }, [fetchEmailTemplates, clearEmailTemplateError, isRetrying, retryCount]);
 
-  const clearError = useCallback(() => {
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-    dispatch({ type: 'SET_API_ERROR', payload: null });
-    dispatch({ type: 'SET_RETRY_COUNT', payload: 0 });
-    dispatch({ type: 'SET_IS_RETRYING', payload: false });
-    clearEmailTemplateError();
-  }, [clearEmailTemplateError]);
 
   useEffect(() => {
     if (error) {
