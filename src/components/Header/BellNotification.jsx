@@ -298,11 +298,11 @@ export default function BellNotification({ userId }) {
     setHasMessageNotification(false);
 
     // Clear any message notifications if needed
-    try {
-      // dispatch(clearNotifications());
-      // dispatch(clearDBNotifications());
-    } catch (e) {
-      console.error('Error clearing notifications:', e);
+      try {
+        dispatch(clearNotifications());
+        dispatch(clearDBNotifications());
+      } catch (e) {
+        console.error('Error clearing notifications:', e);
     }
   };
 
@@ -314,10 +314,10 @@ export default function BellNotification({ userId }) {
     setShowNotification(false);
     setHasMessageNotification(false);
     try {
-      // dispatch(clearNotifications());
-      // dispatch(clearDBNotifications());
-    } catch (e) {
-      console.error('Error clearing notifications:', e);
+        dispatch(clearNotifications());
+        dispatch(clearDBNotifications());
+      } catch (e) {
+        console.error('Error clearing notifications:', e);
     }
   };
 
@@ -350,6 +350,12 @@ export default function BellNotification({ userId }) {
     const leftHours = Math.floor(left);
     const leftMinutes = Math.round((left % 1) * 60);
     return formatTime(leftHours, leftMinutes);
+  };
+
+  const getProgressColor = percent => {
+    if (percent >= 90) return '#dc3545';
+    if (percent >= 75) return '#ffc107';
+    return '#28a745';
   };
 
   const bellHasDot = hasHoursAlert || hasTaskAlerts || hasMessageNotification;
@@ -471,7 +477,8 @@ export default function BellNotification({ userId }) {
                     <div style={{
                       height: '100%',
                       width: `${Math.min(a.percent, 100)}%`,
-                      backgroundColor: a.percent >= 90 ? '#dc3545' : a.percent >= 75 ? '#ffc107' : '#28a745',
+                      // eslint-disable-next-line no-nested-ternary
+                      backgroundColor: getProgressColor(a.percent),
                       borderRadius: '4px',
                     }} />
                   </div>
