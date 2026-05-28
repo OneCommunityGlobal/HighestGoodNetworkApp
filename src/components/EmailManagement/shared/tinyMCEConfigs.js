@@ -298,9 +298,7 @@ export const getEmailSenderConfig = darkMode => ({
           const files = e.dataTransfer?.files;
 
           if (files && files.length > 0) {
-            for (let i = 0; i < files.length; i++) {
-              const file = files[i];
-
+            for (const file of files) {
               if (file.type.match('image.*')) {
                 const reader = new FileReader();
 

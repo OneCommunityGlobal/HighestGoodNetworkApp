@@ -1,7 +1,7 @@
 // Type-safe, centralized validation for email template variables
 
 const IMAGE_EXT_REGEX = /\.(jpg|jpeg|png|gif|webp|svg)(\?.*)?$/i;
-const EMAIL_URL_REGEX = /^(https?:)\/\/[\w.-]+(?:\:[0-9]+)?(?:[\/\?#][^\s]*)?$/i;
+const EMAIL_URL_REGEX = /^(https?:)\/\/[\w.-]+(?:\:\d+)?(?:[\/\?#][^\s]*)?$/i;
 
 const YOUTUBE_ID_REGEX = /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/;
 const YOUTUBE_VIDEO_ID_VALID = /^[a-zA-Z0-9_-]{11}$/;

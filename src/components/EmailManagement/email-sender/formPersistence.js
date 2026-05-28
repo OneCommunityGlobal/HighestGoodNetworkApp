@@ -92,7 +92,7 @@ export const hasDraft = () => {
     }
 
     return true;
-  } catch (error) {
+  } catch {
     return false;
   }
 };

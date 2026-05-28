@@ -1,12 +1,11 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { FaSpinner } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import { Alert, Button } from 'reactstrap';
-import { FaSpinner } from 'react-icons/fa';
 import { toast } from 'react-toastify';
-import { EmailTemplateList, EmailTemplateEditor } from './templates';
+import { Alert, Button } from 'reactstrap';
 import '../EmailManagement.module.css';
+import { EmailTemplateEditor, EmailTemplateList } from './templates';
 
 const EmailTemplateManager = () => {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -50,7 +49,7 @@ const EmailTemplateManager = () => {
   }, [location.pathname]);
 
   const [currentView, setCurrentView] = useState(() => getCurrentViewFromURL());
-  const [selectedTemplate, setSelectedTemplate] = useState(null);
+  const [, setSelectedTemplate] = useState(null);
   const [editingTemplateId, setEditingTemplateId] = useState(() => getTemplateIdFromURL());
   const [retryAttempts, setRetryAttempts] = useState(0);
   const [isRetrying, setIsRetrying] = useState(false);
@@ -371,12 +370,12 @@ const EmailTemplateManager = () => {
       handleError(err, { componentStack: 'window.onerror' });
     };
 
-    window.addEventListener('error', windowErrorListener);
-    window.addEventListener('unhandledrejection', handleUnhandledRejection);
+    globalThis.addEventListener('error', windowErrorListener);
+    globalThis.addEventListener('unhandledrejection', handleUnhandledRejection);
 
     return () => {
-      window.removeEventListener('error', windowErrorListener);
-      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+      globalThis.removeEventListener('error', windowErrorListener);
+      globalThis.removeEventListener('unhandledrejection', handleUnhandledRejection);
     };
   }, []);
 
