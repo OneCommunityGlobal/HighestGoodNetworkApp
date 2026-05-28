@@ -54,8 +54,15 @@ export default function Countdown({
   const [editing, setEditing] = useState(false);
   const [initialHours, setInitialHours] = useState(moment.duration(initialGoal).hours());
   const [initialMinutes, setInitialMinutes] = useState(moment.duration(initialGoal).minutes());
+  const containerRef = useRef(null);
   const hourRef = useRef(null);
   const minRef = useRef(null);
+
+  useEffect(() => {
+    if (containerRef.current) {
+      containerRef.current.focus();
+    }
+  }, []);
 
   const remainingHours = moment.duration(remaining).hours();
   const remainingMinutes = moment.duration(remaining).minutes();
@@ -144,7 +151,7 @@ export default function Countdown({
   };
 
   return (
-    <div className={css.countdown}>
+    <div className={css.countdown} ref={containerRef} tabIndex={-1}>
       <button
         type="button"
         onClick={toggleTimer}
