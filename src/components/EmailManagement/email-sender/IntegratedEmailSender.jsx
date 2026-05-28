@@ -38,7 +38,7 @@ import {
   ModalFooter,
   ModalHeader,
   Spinner,
-  Table
+  Table,
 } from 'reactstrap';
 import { ENDPOINTS } from '~/utils/URL';
 import {
@@ -448,7 +448,6 @@ const IntegratedEmailSender = ({
     loadingProgress,
     isEditorLoaded,
     editorError,
-    showRetryOptions,
     lastSuccessfulLoad,
     fullTemplateContent,
     previewLoading,
@@ -457,7 +456,6 @@ const IntegratedEmailSender = ({
     componentError,
     showDraftNotification,
     draftAge,
-    isOnline,
     showOfflineWarning,
   } = state;
 
@@ -471,7 +469,6 @@ const IntegratedEmailSender = ({
   }, []);
   const timeoutRefs = useRef([]);
   const progressIntervalRef = useRef(null);
-
 
   const FallbackComponent = useMemo(() => {
     const FallbackComponentInner = ({
@@ -506,9 +503,16 @@ const IntegratedEmailSender = ({
       </Card>
     );
     FallbackComponentInner.displayName = 'FallbackComponent';
+    FallbackComponentInner.propTypes = {
+      title: PropTypes.string,
+      message: PropTypes.string,
+      onRetry: PropTypes.func,
+      onDismiss: PropTypes.func,
+      retryCount: PropTypes.number,
+      showRetryOptions: PropTypes.bool,
+    };
     return FallbackComponentInner;
   }, []);
-
   const TemplateSelectLoader = useMemo(() => {
     const TemplateLoaderComponent = () => (
       <div className="template-loading-simple d-flex align-items-center" style={{ gap: '8px' }}>
@@ -734,12 +738,12 @@ const IntegratedEmailSender = ({
       });
     };
 
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
+    globalThis.addEventListener('online', handleOnline);
+    globalThis.addEventListener('offline', handleOffline);
 
     return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
+      globalThis.removeEventListener('online', handleOnline);
+      globalThis.removeEventListener('offline', handleOffline);
       if (offlineToastId !== null) {
         toast.dismiss(offlineToastId);
       }
@@ -859,7 +863,6 @@ const IntegratedEmailSender = ({
       }
     }
   }, [fetchEmailTemplates, clearEmailTemplateError, isRetrying, retryCount]);
-
 
   useEffect(() => {
     if (error) {
@@ -1347,7 +1350,9 @@ const IntegratedEmailSender = ({
   }, []);
 
   const handleClearDraft = useCallback(() => {
-    if (window.confirm('Are you sure you want to clear the saved draft? This cannot be undone.')) {
+    if (
+      globalThis.confirm('Are you sure you want to clear the saved draft? This cannot be undone.')
+    ) {
       clearDraft();
       dispatch({ type: 'RESET_FORM' });
       dispatch({ type: 'SET_SHOW_DRAFT_NOTIFICATION', payload: false });
@@ -1373,8 +1378,8 @@ const IntegratedEmailSender = ({
       dispatch({ type: 'SET_COMPONENT_ERROR', payload: error.message });
     };
 
-    window.addEventListener('error', handleError);
-    return () => window.removeEventListener('error', handleError);
+    globalThis.addEventListener('error', handleError);
+    return () => globalThis.removeEventListener('error', handleError);
   }, []);
 
   useEffect(() => {
@@ -1401,7 +1406,7 @@ const IntegratedEmailSender = ({
                 size="sm"
                 onClick={() => {
                   dispatch({ type: 'SET_COMPONENT_ERROR', payload: null });
-                  window.location.reload();
+                  globalThis.location.reload();
                 }}
               >
                 <FaRedo className="me-1" />
