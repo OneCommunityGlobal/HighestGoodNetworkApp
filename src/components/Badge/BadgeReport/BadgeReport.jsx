@@ -1,51 +1,47 @@
-import { useState, useEffect } from 'react';
-import {
-  Table,
-  Button,
-  ButtonGroup,
-  Input,
-  Card,
-  CardTitle,
-  CardBody,
-  CardImg,
-  CardText,
-  DropdownToggle,
-  FormGroup,
-  UncontrolledDropdown,
-  UncontrolledPopover,
-  DropdownMenu,
-  DropdownItem,
-  UncontrolledTooltip,
-} from 'reactstrap';
-import pdfMake from 'pdfmake/build/pdfmake';
-import * as pdfFonts from 'pdfmake/build/vfs_fonts';
+/* eslint-disable */
 import htmlToPdfmake from 'html-to-pdfmake';
 import moment from 'moment';
 import 'moment-timezone';
+import pdfMake from 'pdfmake/build/pdfmake';
+import 'pdfmake/build/vfs_fonts';
+import PropTypes from 'prop-types';
+import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
+import {
+  Button,
+  ButtonGroup,
+  Card,
+  CardBody,
+  CardImg,
+  CardText,
+  CardTitle,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+  FormGroup,
+  Input,
+  Table,
+  UncontrolledDropdown,
+  UncontrolledPopover,
+  UncontrolledTooltip,
+} from 'reactstrap';
+import { changeBadgesByUserID } from '~/actions/badgeManagement';
+import { getUserProfile } from '~/actions/userProfile';
 import { boxStyle, boxStyleDark } from '~/styles';
+import { PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from '~/utils/constants';
 import { formatDate } from '~/utils/formatDate';
 import hasPermission from '~/utils/permissions';
-import { changeBadgesByUserID } from '../../../actions/badgeManagement';
-import './../Badge.module.css';
-import { getUserProfile } from '../../../actions/userProfile';
-import { PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from '~/utils/constants';
 import BadgeImage from '../BadgeImage';
-import PropTypes from 'prop-types';
+import '../Badge.module.css';
+import '../BadgeReport.module.css';
 import DeleteBadgeModal from './DeleteBadgeModal';
-
-pdfMake.vfs = pdfFonts.vfs;
 
 export async function imageToUri(url, callback) {
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
   const baseImage = new Image();
   baseImage.crossOrigin = 'anonymous';
-
-  // Fallback image URL or blank image data URL
-  // const fallbackImage =
-  //   'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAwAB/4H6YwAAAABJRU5ErkJggg=='; // 1x1 transparent PNG
 
   baseImage.src = url.replace('dropbox.com', 'dl.dropboxusercontent.com');
   baseImage.src = baseImage.src.replace('www.dropbox.com', 'dl.dropboxusercontent.com');
@@ -62,7 +58,6 @@ export async function imageToUri(url, callback) {
   };
 
   baseImage.onerror = function handleImageError() {
-    // Use fallback image on error
     canvas.width = 1;
     canvas.height = 1;
     ctx.fillStyle = 'white';
@@ -357,7 +352,7 @@ function BadgeReport(props) {
             <tbody>
               {sortBadges?.length ? (
                 sortBadges.map((value, index) => (
-                  <tr key={value._id}>
+                  <tr key={value._id || index}>
                     <td className="badge_image_sm">
                       <span id={'popover_' + index} style={{ display: 'inline-block' }}>
                         <BadgeImage
@@ -535,7 +530,7 @@ function BadgeReport(props) {
             <tbody>
               {sortBadges?.length ? (
                 sortBadges.map((value, index) => (
-                  <tr key={value._id}>
+                  <tr key={value._id || index}>
                     <td className="badge_image_sm">
                       {' '}
                       <BadgeImage
@@ -731,6 +726,9 @@ BadgeReport.propTypes = {
 
   badges: PropTypes.arrayOf(PropTypes.object).isRequired, // array of badge objects
   userId: PropTypes.string.isRequired,
+  role: PropTypes.string,
+  firstName: PropTypes.string,
+  lastName: PropTypes.string,
   darkMode: PropTypes.bool,
 
   setUserProfile: PropTypes.func.isRequired,
