@@ -1,11 +1,11 @@
-import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import TeamMemberTask from '~/components/TeamMemberTasks/TeamMemberTask';
-import { authMock, rolesMock, userProfileMock, themeMock } from '../../../__tests__/mockStates.js';
-import thunk from 'redux-thunk';
-import { configureStore } from 'redux-mock-store';
-import { MemoryRouter } from 'react-router-dom';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
+import { MemoryRouter } from 'react-router-dom';
+import { configureStore } from 'redux-mock-store';
+import thunk from 'redux-thunk';
+import TeamMemberTask from '~/components/TeamMemberTasks/TeamMemberTask';
+import { authMock, rolesMock, themeMock, userProfileMock } from '../../../__tests__/mockStates.js';
 
 // sample props used for testing purpose. You can change the props according to your test.
 // currently used admin props to conduct the test
@@ -70,6 +70,7 @@ const renderComponent = mockProps => {
               userRole={mockProps.role}
               userId={mockProps.personId}
               updateTaskStatus={updateTaskStatus}
+              showTrackers
             />
           </tbody>
         </table>
@@ -85,10 +86,11 @@ describe('Team Member Task Component', () => {
     // verify if the icon changes to red or green based on whether the user has completed their weekly committed hours
 
     const icon = screen.getByTestId('icon');
+    const iconColor = window.getComputedStyle(icon).color;
     if (props.totaltangibletime_hrs >= props.weeklycommittedHours) {
-      expect(icon).toHaveStyle('color: rgb(0, 128, 0)');
+      expect(['rgb(0, 128, 0)', 'green']).toContain(iconColor);
     } else {
-      expect(icon).toHaveStyle('color: red');
+      expect(['rgb(255, 0, 0)', 'red']).toContain(iconColor);
     }
   });
   it('team member name and link should be displayed properly', () => {
