@@ -50,6 +50,7 @@ import savedFilterReducer from './savedFilterReducer';
 
 // bm dashboard
 import { consumablesReducer } from './bmdashboard/consumablesReducer';
+import { costBreakdownReducer } from './bmdashboard/costBreakdownReducer';
 import { equipmentReducer } from './bmdashboard/equipmentReducer';
 import bmInjuryReducer from './bmdashboard/injuryReducer';
 import { bmInvTypeReducer } from './bmdashboard/inventoryTypeReducer';
@@ -63,8 +64,6 @@ import { reusablesReducer } from './bmdashboard/reusablesReducer';
 import { bmTimeLoggerReducer } from './bmdashboard/timeLoggerReducer';
 import toolAvailabilityReducer from './bmdashboard/toolAvailabilityReducer';
 import { toolReducer } from './bmdashboard/toolReducer';
-import bmInjuryReducer from './bmdashboard/injuryReducer';
-import { costBreakdownReducer } from './bmdashboard/costBreakdownReducer';
 
 import { allUsersTimeEntriesReducer } from './allUsersTimeEntriesReducer';
 import issueReducer from './bmdashboard/issueReducer';
@@ -112,8 +111,8 @@ import { studentTasksReducer } from './studentTasksReducer';
 import { weeklySummariesFiltersApi } from '../actions/weeklySummariesFilterAction';
 import { atomReducer } from './educationPortal/atomReducer';
 import browseLessonPlanReducer from './educationPortal/broweLPReducer';
-import KIInventoryReducer from './KIInventoryReducer';
 import formReducer from './formReducer';
+import KIInventoryReducer from './KIInventoryReducer';
 import { studentReducer } from './studentProfileReducer';
 
 // Kitchen and Inventory Management
@@ -240,3 +239,4 @@ const sessionReducers = {
 };
 
 export { localReducers, sessionReducers };
+
