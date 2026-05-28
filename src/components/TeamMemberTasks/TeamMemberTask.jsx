@@ -54,6 +54,7 @@ const TeamMemberTask = React.memo(
     onCatalogChange,
     userStateSelection = [],
     onSelectionChange,
+    expandAll = false,
   }) => {
     const darkMode = useSelector(state => state.theme.darkMode);
     const taskCounts = useSelector(state => state.dashboard?.taskCounts ?? {});
@@ -134,6 +135,9 @@ const TeamMemberTask = React.memo(
 
     const canTruncate = activeTasks.length > NUM_TASKS_SHOW_TRUNCATE;
     const [isTruncated, setIsTruncated] = useState(canTruncate);
+    useEffect(() => {
+      if (canTruncate) setIsTruncated(!expandAll);
+    }, [expandAll, canTruncate]);
     const [isTimeOffContentOpen, setIsTimeOffContentOpen] = useState(
       showWhoHasTimeOff && (onTimeOff || goingOnTimeOff),
     );
@@ -837,6 +841,7 @@ TeamMemberTask.propTypes = {
   onCatalogChange: PropTypes.func,
   userStateSelection: PropTypes.array,
   onSelectionChange: PropTypes.func,
+  expandAll: PropTypes.bool,
 };
 
 TeamMemberTask.displayName = 'TeamMemberTask';

@@ -70,6 +70,7 @@ const TeamMemberTasks = React.memo(props => {
   const [userStateCatalog, setUserStateCatalog] = useState([]);
   const [userStateSelections, setUserStateSelections] = useState({});
   const [selectionsLoaded, setSelectionsLoaded] = useState(false);
+  const [expandAll, setExpandAll] = useState(false);
 
   useEffect(() => {
     axios
@@ -457,6 +458,13 @@ const TeamMemberTasks = React.memo(props => {
       <header className={styles['header-box']}>
         <section className={[styles.dFlex, styles.flexColumn].join(' ')}>
           <h1 className={darkMode ? styles.textLight : ''}>Team Member Tasks</h1>
+          <button
+            type="button"
+            className={`btn btn-sm ${darkMode ? 'btn-outline-light' : 'btn-outline-secondary'}`}
+            onClick={() => setExpandAll(prev => !prev)}
+          >
+            {expandAll ? 'Truncate All' : 'Expand All'}
+          </button>
         </section>
 
         {finishLoading ? (
@@ -801,10 +809,10 @@ const TeamMemberTasks = React.memo(props => {
                         onSelectionChange={(uid, updated) =>
                           setUserStateSelections(prev => ({ ...prev, [uid]: updated }))
                         }
+                        expandAll={expandAll}
                       />
                     );
                   }
-
                   return (
                     <Fragment key={user.personId}>
                       <TeamMemberTask
@@ -834,6 +842,7 @@ const TeamMemberTasks = React.memo(props => {
                         onSelectionChange={(uid, updated) =>
                           setUserStateSelections(prev => ({ ...prev, [uid]: updated }))
                         }
+                        expandAll={expandAll}
                       />
 
                       {timeEntriesList.length > 0 &&
