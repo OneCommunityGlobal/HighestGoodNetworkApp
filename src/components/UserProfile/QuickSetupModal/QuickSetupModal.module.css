@@ -1,13 +1,13 @@
 #qsc-outer-wrapper {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px; /* Adds space between the buttons */
+  gap: 8px; 
 }
 
 .role-button {
     border-radius: 10%;
     padding: 4px;
-    background-color: #17a2b8;
+    background-color: #117a8b;
     color: white;
   }
 
@@ -21,7 +21,7 @@
   
   .role-buttons {
     display: block;
-    background-color: #17a2b8;
+    background-color: #117a8b;
     border-radius: 5px;
     padding: 5px 10px;
     margin: 5px 0;
@@ -38,8 +38,6 @@
     color: #ddd;
     top:30px;
     left: 30px;
-    /* height: 2rem;
-    width: 150px; */
     display: none;
     white-space: nowrap;
     z-index: 10;
