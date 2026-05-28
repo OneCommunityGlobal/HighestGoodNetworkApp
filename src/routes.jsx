@@ -7,9 +7,6 @@ import ApplicationAnalyticsContainer from './components/ApplicationAnalytics';
 import ApplicationTimeChartPage from './components/ApplicationTimeChart';
 import AutoUpdate from './components/AutoUpdate';
 
-import TaskEditSuggestions from './components/TaskEditSuggestions/TaskEditSuggestions';
-import RoutePermissions from './utils/routePermissions';
-import hasPermission from './utils/permissions';
 import Dashboard from './components/Dashboard';
 import ForcePasswordUpdate from './components/ForcePasswordUpdate';
 import PRDashboardDetails from './components/HGNPRDashboard/PRDashboardDetails';
@@ -17,7 +14,6 @@ import PRDashboardOverview from './components/HGNPRDashboard/PRDashboardOverview
 import PRDashboardPromotionEligibility from './components/HGNPRDashboard/PRDashboardPromotionEligibility';
 import PRDashboardTopReviewedPRs from './components/HGNPRDashboard/PRDashboardTopReviewedPRs';
 import UserSkillsProfile from './components/HGNSkillsDashboard/SkillsProfilePage/components/UserSkillsProfile';
-import AnimalManagement from './components/KitchenandInventory/AnimalManagement';
 import Login from './components/Login';
 import ForgotPassword from './components/Login/ForgotPassword';
 import Logout from './components/Logout/Logout';
@@ -184,9 +180,7 @@ import EventStats from './components/CommunityPortal/EventPersonalization/EventS
 import CommunityCalendar from './components/CommunityPortal/Calendar/CommunityCalendar';
 import PRGradingDashboard from './components/PRGradingDashboard/PRGradingDashboard';
 // Kicthen and Inventory Portal
-import KIProtectedRoute from './components/common/KitchenandInventory/KIProtectedRoute';
 import KICalendar from './components/KitchenandInventory/KICalendar/KICalendar';
-import KitchenandInventoryLogin from './components/KitchenandInventory/Login';
 
 import KIDashboard from './components/KitchenandInventory/KIDashboard/KIDashboard';
 import KIINVENTORY from './components/KitchenandInventory/KIInventory/KIInventory';
@@ -412,7 +406,6 @@ export default (
           component={ProcessingLandingPage}
           fallback
         />
-
         <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
         <ProtectedRoute path="/project/members/:projectId" fallback component={Members} />
         <ProtectedRoute path="/timelog/" exact render={() => <Timelog userId={null} />} />
