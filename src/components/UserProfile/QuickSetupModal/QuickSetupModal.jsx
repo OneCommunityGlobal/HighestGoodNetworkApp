@@ -91,7 +91,7 @@ function QuickSetupModal(props) {
   }, [stateTeamCodes, props.fetchTeamCodeAllUsers, props.setTeamCodes]);
 
   return (
-    <div className={`container pt-3 ${darkMode ? 'bg-yinmn-blue text-light border-0' : ''}`}>
+    <div className={darkMode ? 'bg-yinmn-blue text-light border-0' : ''}>
       {canAssignTitle || canEditTitle || canAddTitle ? (
         <QuickSetupCodes
           setSaved={props.setSaved}
@@ -109,62 +109,60 @@ function QuickSetupModal(props) {
         ''
       )}
 
-      <div className={`col ${styles['text-center']} mt-3 flex`}>
-        {canAddTitle ? (
+      <div className="d-flex justify-content-start mt-3 gap-2">
+      {canAddTitle ? (
+        <Button
+          color="primary"
+          className="mx-2"
+          onClick={() => setShowAddTitle(true)}
+          style={{ ...(darkMode ? boxStyleDark : boxStyle), width: '150px' }}
+          disabled={editMode == true}
+          title="Click this to add a new Quick Setup Title"
+        >
+          Add New QST
+        </Button>
+      ) : ''}
+      {canAddTitle ? (
+        <Button
+          color="primary"
+          className="mx-2"
+          onClick={() => showEditModal(true)}
+          style={{ ...(darkMode ? boxStyleDark : boxStyle), width: '150px' }}
+          disabled={editMode == true}
+          title="Click this to change the order of QST codes"
+        >
+          Change Order
+        </Button>
+      ) : ''}
+      {canEditTitle ? (
+        !editMode ? (
           <Button
             color="primary"
-            onClick={() => setShowAddTitle(true)}
-            style={darkMode ? boxStyleDark : boxStyle}
-            disabled={editMode == true}
-            title="Click this to add a new Quick Setup Title"
+            className="mx-2"
+            onClick={() => setEditMode(true)}
+            style={{ ...(darkMode ? boxStyleDark : boxStyle), width: '150px' }}
           >
-            Add New QST
+            Edit
           </Button>
         ) : (
-          ''
-        )}
-        {canAddTitle ? (
           <Button
-            color="primary mx-2"
-            onClick={() => showEditModal(true)}
-            style={darkMode ? boxStyleDark : boxStyle}
-            disabled={editMode == true}
-            title="Click this to change the order of QST codes"
+            color="primary"
+            className="mx-2"
+            onClick={() => setEditMode(false)}
+            style={{ ...(darkMode ? boxStyleDark : boxStyle), width: '150px' }}
           >
-            Change Order
+            Save
           </Button>
-        ) : (
-          ''
-        )}
-        {canEditTitle ? (
-          !editMode ? (
-            <Button
-              color="primary mx-2"
-              onClick={() => setEditMode(true)}
-              style={darkMode ? boxStyleDark : boxStyle}
-            >
-              Edit
-            </Button>
-          ) : (
-            <Button
-              color="primary mx-2"
-              onClick={() => setEditMode(false)}
-              style={darkMode ? boxStyleDark : boxStyle}
-            >
-              Save
-            </Button>
-          )
-        ) : (
-          ''
-        )}
-        <EditTitlesModal
-          isOpen={editModal}
-          toggle={() => showEditModal(false)}
-          titles={titles}
-          refreshModalTitles={refreshModalTitles}
-          darkMode={darkMode}
-        />
-      </div>
+        )
+      ) : ''}
+    </div>
+    <EditTitlesModal
+      isOpen={editModal}
+      toggle={() => showEditModal(false)}
+      titles={titles}
+      refreshModalTitles={refreshModalTitles}
+      darkMode={darkMode}
+    />
       {showAddTitle || editMode ? (
         <AddNewTitleModal
           teamsData={props.teamsData}

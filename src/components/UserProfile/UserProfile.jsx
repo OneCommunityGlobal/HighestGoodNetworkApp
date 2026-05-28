@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useId, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import {
   Row,
   Input,
@@ -49,6 +50,7 @@ import Badges from './Badges';
 import { getAllTeamCode , getAllUserTeams } from '../../actions/allTeamsAction';
 import TimeEntryEditHistory from './TimeEntryEditHistory';
 import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
+
 import { updateRehireableStatus, toggleVisibility } from '../../actions/userManagement';
 import { updateUserProfile } from "../../actions/userProfile";
 import BlueSquareLayout from './BlueSquareLayout';
@@ -82,7 +84,7 @@ import { InactiveReason } from '../../utils/enums';
 import { activateUserAction, deactivateImmediatelyAction, scheduleDeactivationAction } from '../../actions/userLifecycleActions';
 import { clearCachedTeamMembers } from '../Teams/teamMembersCache';
 
-function UserProfile(props) { 
+function UserProfile(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
   /* Constant values */
   const initialFormValid = {
@@ -94,8 +96,7 @@ function UserProfile(props) {
   const dispatch = useDispatch();
   const history = useHistory();
 
-
-   // TO-DO Performance Optimization: Replace fetchTeamCodeAllUsers with getAllTeamCode(), a leener version API to retrieve all team codes (reduce data payload and response time)
+  // TO-DO Performance Optimization: Replace fetchTeamCodeAllUsers with getAllTeamCode(), a leener version API to retrieve all team codes (reduce data payload and response time)
   //        Also, replace passing inputAutoComplete, inputAutoStatus, and isLoading to the
   //        child component with access global redux store data (complexity)
   // Explaination:
@@ -131,7 +132,6 @@ function UserProfile(props) {
       setIsLoading(false);
     }
   }, []);
-
 
   /* Hooks */
   const [showLoading, setShowLoading] = useState(true);
@@ -202,7 +202,7 @@ function UserProfile(props) {
 
   const [userStartDate, setUserStartDate] = useState('');
   const [userEndDate, setUserEndDate] = useState('');
-  const [calculatedStartDate, setCalculatedStartDate] = useState(''); 
+  const [calculatedStartDate, setCalculatedStartDate] = useState('');
 
   const [inputAutoComplete, setInputAutoComplete] = useState([]);
   const [inputAutoStatus, setInputAutoStatus] = useState();
@@ -223,7 +223,6 @@ function UserProfile(props) {
     fetchSpecialWarnings();
   }, []);
 
- 
   const updateProjectTouserProfile = () => {
     return new Promise(resolve => {
       checkIsProjectsEqual();
@@ -383,7 +382,11 @@ function UserProfile(props) {
     }
     try {
       const startDate = await dispatch(
-        getTimeStartDateEntriesByPeriod(userId, userProfileData.createdDate, userProfileData.endDate),
+        getTimeStartDateEntriesByPeriod(
+          userId,
+          userProfileData.createdDate,
+          userProfileData.endDate,
+        ),
       );
 
       if (startDate !== 'N/A') {
@@ -391,18 +394,14 @@ function UserProfile(props) {
         setCalculatedStartDate(formattedStartDate);
       } else {
         // No time entries yet, use createdDate as fallback
-        const createdDate = userProfile?.createdDate
-          ? userProfile.createdDate.split('T')[0]
-          : '';
+        const createdDate = userProfile?.createdDate ? userProfile.createdDate.split('T')[0] : '';
         setCalculatedStartDate(createdDate);
       }
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Error fetching calculated start date:', error);
       // Fallback to createdDate on error
-      const createdDate = userProfile?.createdDate
-        ? userProfile.createdDate.split('T')[0]
-        : '';
+      const createdDate = userProfile?.createdDate ? userProfile.createdDate.split('T')[0] : '';
       setCalculatedStartDate(createdDate);
     }
   };
@@ -452,9 +451,9 @@ function UserProfile(props) {
         const { data } = await axios.get(
           ENDPOINTS.USER_PROJECTS
             ? ENDPOINTS.USER_PROJECTS(userId)
-            : `${ENDPOINTS.PROJECTS}/user/${userId}`
+            : `${ENDPOINTS.PROJECTS}/user/${userId}`,
         );
-        const normalized = (data || []).map((row) => {
+        const normalized = (data || []).map(row => {
           // common shapes: {project: {...}}, {projectId: {...}}, or already {...}
           if (row?.project?.projectName) return row.project;
           if (row?.projectId?.projectName) return row.projectId;
@@ -669,11 +668,13 @@ setUpdatedTasks(prev => {
     if (evt) evt.preventDefault();
     const file = evt.target.files?.[0];
     if (!file) return;
-  
+
     const filesizeKB = file.size / 1024;
     const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
-    const allowedTypesString = `File type not permitted. Allowed types are ${allowedTypes.join(', ')}`;
-  
+    const allowedTypesString = `File type not permitted. Allowed types are ${allowedTypes.join(
+      ', ',
+    )}`;
+
     // type check
     if (!allowedTypes.includes(file.type)) {
       setType('image');
@@ -688,21 +689,21 @@ setUpdatedTasks(prev => {
       setShowModal(true);
       setModalTitle('Profile Pic Error');
       setModalMessage(
-        'The file you are trying to upload exceeds the maximum size of 50KB. You can either choose a different file, or use an online file compressor.'
+        'The file you are trying to upload exceeds the maximum size of 50KB. You can either choose a different file, or use an online file compressor.',
       );
       return;
     }
-  
+
     const fileReader = new FileReader();
-  
+
     fileReader.onloadend = async () => {
       const base64 = fileReader.result;
-  
+
       // optimistic preview
       const prevProfile = userProfileRef.current;
       const nextProfile = { ...prevProfile, profilePic: base64 };
       setUserProfile(nextProfile);
-  
+
       // persist immediately
       setIsSavingImage(true);
       try {
@@ -718,10 +719,9 @@ setUpdatedTasks(prev => {
         setIsSavingImage(false);
       }
     };
-  
+
     fileReader.readAsDataURL(file);
   };
-  
 
   const handleBlueSquare = (status = true, type = 'message', blueSquareID = '') => {
     if (targetIsDevAdminUneditable) {
@@ -758,93 +758,67 @@ setUpdatedTasks(prev => {
   const modifyBlueSquares = async (id, dateStamp, summary, operation) => {
     setShowModal(false);
     if (operation === 'add') {
-      /* peizhou: check that the date of the blue square is not future or empty. */
       if (moment(dateStamp).isAfter(moment().format('YYYY-MM-DD')) || dateStamp === '') {
         if (moment(dateStamp).isAfter(moment().format('YYYY-MM-DD'))) {
-          // eslint-disable-next-line no-console
           console.log('WARNING: Future Blue Square');
-          // eslint-disable-next-line no-alert
           alert('WARNING: Cannot Assign Blue Square with a Future Date');
         }
         if (dateStamp === '') {
-          // eslint-disable-next-line no-console
           console.log('WARNING: Empty Date');
-          // eslint-disable-next-line no-alert
           alert('WARNING: Cannot Assign Blue Square with an Empty Date');
         }
       } else {
         const newBlueSquare = {
           date: dateStamp,
           description: summary,
-          // createdDate: moment
-          //   .tz('America/Los_Angeles')
-          //   .toISOString()
-          //   .split('T')[0],
           createdDate: moment().format('YYYY-MM-DD'),
+          manullyAssigned: true,
+          manullyAssignedBy: requestorId,
         };
         setModalTitle('Blue Square');
         axios
-          .post(ENDPOINTS.ADD_BLUE_SQUARE(userProfile._id), {
-            blueSquare: newBlueSquare,
-          })
+          .post(ENDPOINTS.ADD_BLUE_SQUARE(userProfile._id), { blueSquare: newBlueSquare })
           .then(res => {
-
-            const updatedInfringements = [
-              ...userProfile.infringements,
-              {
-                _id: res.data._id,
-                ...newBlueSquare,
-              }
-            ];
-
-            setOriginalUserProfile(prev => ({
-              ...prev,
-              infringements: updatedInfringements,
-            }));
-
-            setUserProfile(prev => ({
-              ...prev,
-              infringements: updatedInfringements,
-            }));
+            // Use API response as source of truth
+            setUserProfile(prev => ({ ...prev, infringements: res.data.infringements }));
+            setOriginalUserProfile(prev => ({ ...prev, infringements: res.data.infringements }));
           })
           .catch(error => {
-            // eslint-disable-next-line no-console
             console.log('error in modifying bluesquare', error);
             toast.error('Failed to add Blue Square!');
           });
       }
     } else if (operation === 'update') {
-      const currentBlueSquares = [...userProfile?.infringements] || [];
-      if (dateStamp != null && currentBlueSquares.length !== 0) {
-        currentBlueSquares.find(blueSquare => blueSquare._id === id).date = dateStamp;
-      }
-      if (summary != null && currentBlueSquares.length !== 0) {
-        currentBlueSquares.find(blueSquare => blueSquare._id === id).description = summary;
-      }
-      await axios
-        .put(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id), {
+      try {
+        const res = await axios.put(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id), {
           dateStamp,
           summary,
-        })
-        .catch(error => {
-          toast.error('Failed to update Blue Square!');
+          editedBy: requestorId,
         });
-      toast.success('Blue Square Updated!');
-      setUserProfile({ ...userProfile, infringements: currentBlueSquares });
-      setOriginalUserProfile({ ...userProfile, infringements: currentBlueSquares });
+        toast.success('Blue Square Updated!');
+        // Use API response as source of truth
+        setUserProfile(prev => ({ ...prev, infringements: res.data.infringements }));
+        setOriginalUserProfile(prev => ({ ...prev, infringements: res.data.infringements }));
+      } catch (error) {
+        console.error('Failed to update Blue Square:', error);
+        toast.error('Failed to update Blue Square!');
+      }
     } else if (operation === 'delete') {
-      let newInfringements = [...userProfile?.infringements] || [];
-      if (newInfringements.length !== 0) {
-        newInfringements = newInfringements.filter(infringement => infringement._id !== id);
-        await axios.delete(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id)).catch(error => {
+      if (userProfile?.infringements?.length !== 0) {
+        try {
+          const res = await axios.delete(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id));
+          toast.success('Blue Square Deleted!');
+          // Use API response as source of truth
+          setUserProfile(prev => ({ ...prev, infringements: res.data.infringements }));
+          setOriginalUserProfile(prev => ({ ...prev, infringements: res.data.infringements }));
+        } catch (error) {
+          console.error('Failed to delete Blue Square:', error);
           toast.error('Failed to delete Blue Square!');
-        });
-        toast.success('Blue Square Deleted!');
-        setUserProfile({ ...userProfile, infringements: newInfringements });
-        setOriginalUserProfile({ ...userProfile, infringements: newInfringements });
+        }
       }
     }
   };
+
   const fetchSpecialWarnings = async () => {
     const userId = props?.match?.params?.userId;
     try {
@@ -991,7 +965,7 @@ setUpdatedTasks(prev => {
   }
 
   try {
-    const result = await props.updateUserProfile(userProfileToUpdate);
+    await props.updateUserProfile(userProfileToUpdate);
     clearCachedTeamMembers(); // clear all team caches on any profile save
     if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
       await props.refreshToken(userProfile._id);
@@ -1190,13 +1164,28 @@ setUpdatedTasks(prev => {
     setShowToggleVisibilityModal(false);
   };
 
-  if ((showLoading && !props.isAddNewUser) || userProfile === undefined) {
-    return ( 
+  if (showLoading && !props.isAddNewUser) {
+    return (
       <Container fluid className={darkMode ? 'bg-oxford-blue' : ''}>
         <Row className="text-center" data-test="loading">
           <SkeletonLoading template="UserProfile" />
         </Row>
       </Container>
+    );
+  } else if (userProfile === undefined) {
+    return (
+      <div className={`messageUserNotFound ${darkMode ? 'bg-oxford-blue' : ''}`}>
+        <div className={`test`} style={{backgroundColor: `${darkMode? '#3a506b' : 'white'}`}}>
+          <h1 className={`${darkMode ? 'text-white' : 'text-dark'}`}>User Not Found</h1>
+          <h3 className={`${darkMode ? 'text-white' : 'text-dark'}`}>
+            This does not exist, but you can go back to the dashboard by clicking the button below.
+          </h3>
+          {/* Back to the dashboard page */}
+          <Link to="/" className="btn btn-primary">
+            Back to Dashboard
+          </Link>
+        </div>
+      </div>
     );
   }
 
@@ -1256,7 +1245,7 @@ setUpdatedTasks(prev => {
     setUserProfile(prev => ({
       ...prev,
       startDate: startDate,
-      isStartDateManuallyModified: true
+      isStartDateManuallyModified: true,
     }));
   };
 
@@ -1346,7 +1335,7 @@ setUpdatedTasks(prev => {
         {/* <div className='containerProfile' > */}
 
         <div className="left-top">
-        <div className="profile-img" style={{ position: 'relative' }}>
+          <div className="profile-img" style={{ position: 'relative' }}>
             <Image
               src={profilePic && profilePic.trim().length > 0 ? profilePic : '/pfp-default.png'}
               alt="Profile Picture"
@@ -1430,7 +1419,7 @@ setUpdatedTasks(prev => {
             titleOnSet={titleOnSet}
             setTitleOnSet={setTitleOnSet}
             updateUserProfile={props.updateUserProfile}
-            fetchTeamCodeAllUsers = {fetchTeamCodeAllUsers}
+            fetchTeamCodeAllUsers={fetchTeamCodeAllUsers}
           />
         </div>
 
@@ -1518,13 +1507,11 @@ setUpdatedTasks(prev => {
                   style={{ padding: '0', border: 'none', background: 'none' }}
                   size="sm"
                   onClick={() => setShowAccessManagementModal(true)}
-                  title={
-                    'Click to add user access to GitHub, Dropbox, Slack, and Sentry.'
-                  }
+                  title={'Click to add user access to GitHub, Dropbox, Slack, and Sentry.'}
                 >
                   <img
-                    src='/HGN_Add_Access.png'
-                    alt='Add Access'
+                    src="/HGN_Add_Access.png"
+                    alt="Add Access"
                     style={{ width: '20px', height: '20px' }}
                   />
                 </Button>
@@ -1582,7 +1569,10 @@ setUpdatedTasks(prev => {
             )}
           </div>
           <h6 className={darkMode ? 'text-light' : 'text-azure'}>{jobTitle}</h6>
-          <p className={`proile-rating ${darkMode ? 'text-light' : ''}`} style={{ textAlign: 'left' }}>
+          <p
+            className={`proile-rating ${darkMode ? 'text-light' : ''}`}
+            style={{ textAlign: 'left' }}
+          >
             {/* use converted date without tz otherwise the record's will updated with timezoned ts for start date.  */}
             From:{' '}
             <span className={darkMode ? 'text-light' : ''}>
@@ -1777,7 +1767,9 @@ setUpdatedTasks(prev => {
                   isVisible={userProfile.isVisible}
                   canEditVisibility={canEditVisibility}
                   handleSubmit={handleSubmit}
-                  disabled={!formValid.firstName || !formValid.lastName || !formValid.email || !codeValid}
+                  disabled={
+                    !formValid.firstName || !formValid.lastName || !formValid.email || !codeValid
+                  }
                   canEditTeamCode={canEditTeamCode}
                   setUserProfile={setUserProfile}
                   userProfile={userProfile}
@@ -1816,7 +1808,6 @@ setUpdatedTasks(prev => {
                     />
                   )
                 }
-
               </TabPane>
               <TabPane tabId="5">
                 <TimeEntryEditHistory
@@ -2418,6 +2409,30 @@ setUpdatedTasks(prev => {
   );
 }
 
+UserProfile.propTypes = {
+  auth: PropTypes.shape({
+    user: PropTypes.shape({
+      permissions: PropTypes.object,
+      role: PropTypes.string,
+      userid: PropTypes.string,
+    }).isRequired,
+  }).isRequired,
+  handleLinkModel: PropTypes.func,
+  handleSaveError: PropTypes.func,
+  hasPermission: PropTypes.func,
+  history: PropTypes.shape({
+    push: PropTypes.func,
+  }),
+  isAddNewUser: PropTypes.bool,
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      userId: PropTypes.string,
+    }),
+  }),
+  refreshToken: PropTypes.func,
+  updateUserProfile: PropTypes.func.isRequired,
+};
+
  const mapStateToProps = state => ({
    allProjects: state.allProjects || state.projects || {},   // <- gives you .projects array
    allTeams: state.allTeams || {},
@@ -2429,4 +2444,3 @@ export default connect(
   mapStateToProps,
   { hasPermission, updateUserProfile, getTimeEntriesForWeek }
 )(UserProfile);
-

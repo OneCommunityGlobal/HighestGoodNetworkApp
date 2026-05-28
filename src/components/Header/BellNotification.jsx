@@ -202,20 +202,27 @@ export default function BellNotification({ userId }) {
   const hasTaskAlerts = taskHoursAlerts.length > 0;
 
   // ---------- DB + socket notifications ----------
+
   useEffect(() => {
-    if (!userId) return;
-    const fetchDbNotifications = async () => {
-      try {
-        const { data } = await axios.get(`${ENDPOINTS.NOTIFICATIONS}/unread/user/${userId}`);
-        const notifications = Array.isArray(data) ? data : [];
-        setDbNotifications(notifications);
-        if (notifications.length > 0) setHasMessageNotification(true);
-      } catch (error) {
-        console.error('Error fetching notifications from DB:', error);
+  if (!userId) return;
+  const fetchDbNotifications = async () => {
+    try {
+      const response = await axios.get(`${ENDPOINTS.NOTIFICATIONS}/unread/user/${userId}`);
+      const notificationsData = response?.data || [];
+      // Ensure it's always an array
+      setDbNotifications(Array.isArray(notificationsData) ? notificationsData : []);
+      if (Array.isArray(notificationsData) && notificationsData.length > 0) {
+        setHasMessageNotification(true);
       }
-    };
-    fetchDbNotifications();
-  }, [userId]);
+    } catch (error) {
+      console.error('Error fetching notifications from DB:', error);
+      // Ensure we set an empty array on error
+      setDbNotifications([]);
+    }
+  };
+  fetchDbNotifications();
+}, [userId]);
+
 
   useEffect(() => {
     if (notifications.length > 0) {
@@ -292,8 +299,8 @@ export default function BellNotification({ userId }) {
 
     // Clear any message notifications if needed
     try {
-      dispatch(clearNotifications());
-      dispatch(clearDBNotifications());
+      // dispatch(clearNotifications());
+      // dispatch(clearDBNotifications());
     } catch (e) {
       console.error('Error clearing notifications:', e);
     }
@@ -307,8 +314,8 @@ export default function BellNotification({ userId }) {
     setShowNotification(false);
     setHasMessageNotification(false);
     try {
-      dispatch(clearNotifications());
-      dispatch(clearDBNotifications());
+      // dispatch(clearNotifications());
+      // dispatch(clearDBNotifications());
     } catch (e) {
       console.error('Error clearing notifications:', e);
     }
