@@ -1,6 +1,6 @@
 import cs from 'classnames';
 import moment from 'moment';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-progressbar';
 import {
   BsArrowCounterclockwise,
