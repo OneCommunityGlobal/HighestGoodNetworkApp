@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Select from 'react-select';
 import { fetchSupplierProjects, fetchSupplierPerformance } from '../../../actions/summaryDashboard';
 import styles from './SupplierPerformanceGraph.module.css';
+import { buildChartSelectStyles } from './sharedSelectStyles';
 
 const getDateRangeOptions = () => {
   const today = new Date();
@@ -77,46 +78,7 @@ const SupplierPerformanceDashboard = function({ height = 420, onDataLoaded }) {
     labelFill: darkMode ? '#ffffff' : '#333',
   };
 
-  // Unified react-select styles matching WeeklyProjectSummary's selectStyles
-  const selectStyles = {
-    control: base => ({
-      ...base,
-      backgroundColor: darkMode ? '#22272e' : '#fff',
-      borderColor: darkMode ? '#375071' : '#ccc',
-      color: darkMode ? '#fff' : '#232323',
-      minHeight: 38,
-      fontSize: 12,
-      boxShadow: 'none',
-    }),
-    menu: base => ({
-      ...base,
-      backgroundColor: darkMode ? '#22272e' : '#fff',
-      fontSize: 12,
-      zIndex: 10001,
-      color: darkMode ? '#fff' : '#232323',
-    }),
-    menuList: base => ({
-      ...base,
-      backgroundColor: darkMode ? '#22272e' : '#fff',
-      color: darkMode ? '#fff' : '#232323',
-      padding: 0,
-    }),
-    option: (base, state) => {
-      let bg = darkMode ? '#22272e' : '#fff';
-      if (state.isSelected || state.isFocused) bg = '#0d55b3';
-      return {
-        ...base,
-        backgroundColor: bg,
-        color: state.isSelected || state.isFocused ? '#fff' : darkMode ? '#fff' : '#232323',
-        fontSize: 12,
-        cursor: 'pointer',
-      };
-    },
-    singleValue: base => ({
-      ...base,
-      color: darkMode ? '#fff' : '#232323',
-    }),
-  };
+  const selectStyles = buildChartSelectStyles(darkMode);
 
   useEffect(() => {
     const loadProjects = async () => {
