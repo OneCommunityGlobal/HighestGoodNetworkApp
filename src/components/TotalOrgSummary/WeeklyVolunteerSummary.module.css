@@ -17,8 +17,9 @@
 }
 
 .btn--white-smoke:hover:not([disabled]) {
-  background-color: #ffffff !important;
+  background-color: #fff !important;
 }
+
 .btn:disabled {
   cursor: not-allowed;
 }
@@ -36,7 +37,7 @@
 }
 
 .text--silver {
-  color: #acacac;
+  color: #767676;
 }
 
 .media-url {
@@ -86,6 +87,7 @@
   margin-left: 5px;
   padding-top: 5px;
 }
+
 .summaryContentTooltip,
 .summaryTabsTooltip,
 .mediaURLTooltip {
@@ -124,20 +126,20 @@
   background-color: #0056b3; /* Darker blue color on hover */
 }
 
-@media screen and (min-width: 992px) {
+@media screen and (width >= 992px) {
   .left-col-dashboard {
     margin-top: -200px;
   }
 }
 
-@media screen and (min-width: 576px) and (max-width: 992px) {
+@media screen and (width >= 576px) and (width <= 992px) {
   .modal-dialog.weekly-summary-modal {
     max-width: 85%;
   }
 }
 
 /* Small devices (landscape phones, 544px and up) */
-@media (max-width: 544px) {
+@media (width <= 544px) {
   .weeklysummarypane {
     max-height: 350px;
     overflow: auto;
@@ -153,11 +155,13 @@
   border: 1px solid #ebebeb;
   border-top: 0;
 }
+
 .Collapsible__contentInner p {
   margin-bottom: 10px;
   font-size: 14px;
   line-height: 20px;
 }
+
 .Collapsible__contentInner p:last-child {
   margin-bottom: 0;
 }
@@ -173,8 +177,8 @@
   color: white;
 }
 
-.Collapsible__trigger:after {
-  font-family: 'FontAwesome', sans-serif;
+.Collapsible__trigger::after {
+  font-family: FontAwesome, sans-serif;
   content: '\f107';
   position: absolute;
   right: 10px;
@@ -182,9 +186,11 @@
   display: block;
   transition: transform 300ms;
 }
-.Collapsible__trigger.is-open:after {
+
+.Collapsible__trigger.is-open::after {
   transform: rotateZ(180deg);
 }
+
 .Collapsible__trigger.is-disabled {
   opacity: 0.5;
   background-color: grey;
