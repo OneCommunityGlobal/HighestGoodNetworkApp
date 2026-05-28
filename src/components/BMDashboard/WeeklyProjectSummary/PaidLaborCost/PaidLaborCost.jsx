@@ -178,6 +178,27 @@ const isDevelopmentEnvironment = () => {
   );
 };
 
+const getFilteredMockData = (projectFilter, taskFilter, dateRange, mockDb) => {
+  let filteredMock = mockDb;
+
+  if (projectFilter !== 'All Projects') {
+    filteredMock = filteredMock.filter(d => d.project === projectFilter);
+  }
+  if (taskFilter.length > 0) {
+    filteredMock = filteredMock.filter(d => taskFilter.includes(d.task));
+  }
+  if (dateRange.startDate) {
+    const start = moment(dateRange.startDate).startOf('day');
+    filteredMock = filteredMock.filter(d => moment(d.date).isSameOrAfter(start));
+  }
+  if (dateRange.endDate) {
+    const end = moment(dateRange.endDate).endOf('day');
+    filteredMock = filteredMock.filter(d => moment(d.date).isSameOrBefore(end));
+  }
+
+  return filteredMock;
+};
+
 function aggregateData(data, taskFilter, projectFilter) {
   if (!Array.isArray(data)) {
     return { labels: [], aggregation: {}, tasksToInclude: [] };
@@ -274,35 +295,35 @@ export default function PaidLaborCost() {
   const [allAvailableProjects, setAllAvailableProjects] = useState([]);
   const isFetchingRef = useRef(false);
 
+  const buildLaborCostEndpoint = useCallback(() => {
+    const params = new URLSearchParams();
+    if (projectFilter !== 'All Projects') {
+      params.append('projects', JSON.stringify([projectFilter]));
+    }
+    if (taskFilter.length > 0) {
+      params.append('tasks', JSON.stringify(taskFilter));
+    }
+    if (dateRange.startDate || dateRange.endDate) {
+      params.append(
+        'date_range',
+        JSON.stringify({
+          start_date: dateToISOString(dateRange.startDate),
+          end_date: dateToISOString(dateRange.endDate),
+        }),
+      );
+    }
+    const queryString = params.toString();
+    const apiBaseUrl = ENDPOINTS.APIEndpoint();
+    return queryString ? `${apiBaseUrl}/labor-cost?${queryString}` : `${apiBaseUrl}/labor-cost`;
+  }, [projectFilter, taskFilter, dateRange.startDate, dateRange.endDate]);
+
   const fetchLaborCostData = useCallback(
     async (includeProjectFilter = true, includeTaskFilter = true) => {
       if (isDevelopmentEnvironment()) {
         return { data: MOCK_DB, totalCost: MOCK_DB.reduce((sum, item) => sum + item.cost, 0) };
       }
 
-      const params = new URLSearchParams();
-      if (includeProjectFilter && projectFilter !== 'All Projects') {
-        params.append('projects', JSON.stringify([projectFilter]));
-      }
-      if (includeTaskFilter && Array.isArray(taskFilter) && taskFilter.length > 0) {
-        params.append('tasks', JSON.stringify(taskFilter));
-      }
-      if (dateRange.startDate || dateRange.endDate) {
-        params.append(
-          'date_range',
-          JSON.stringify({
-            start_date: dateToISOString(dateRange.startDate),
-            end_date: dateToISOString(dateRange.endDate),
-          }),
-        );
-      }
-
-      const queryString = params.toString();
-      const apiBaseUrl = ENDPOINTS.APIEndpoint();
-      const endpointPath = queryString
-        ? `${apiBaseUrl}/labor-cost?${queryString}`
-        : `${apiBaseUrl}/labor-cost`;
-
+      const endpointPath = buildLaborCostEndpoint();
       const token = localStorage.getItem(config.tokenKey);
       const headers = {
         'Content-Type': 'application/json',
@@ -315,7 +336,7 @@ export default function PaidLaborCost() {
       if (!response.ok) throw new Error(`API request failed with status ${response.status}`);
       return response.json();
     },
-    [projectFilter, taskFilter, dateRange.startDate, dateRange.endDate],
+    [buildLaborCostEndpoint],
   );
 
   const isValidDataItem = useCallback(item => {
@@ -356,26 +377,7 @@ export default function PaidLaborCost() {
       setLoading(true);
 
       try {
-        const params = new URLSearchParams();
-        if (projectFilter !== 'All Projects')
-          params.append('projects', JSON.stringify([projectFilter]));
-        if (taskFilter.length > 0) params.append('tasks', JSON.stringify(taskFilter));
-        if (dateRange.startDate || dateRange.endDate) {
-          params.append(
-            'date_range',
-            JSON.stringify({
-              start_date: dateToISOString(dateRange.startDate),
-              end_date: dateToISOString(dateRange.endDate),
-            }),
-          );
-        }
-
-        const queryString = params.toString();
-        const apiBaseUrl = ENDPOINTS.APIEndpoint();
-        const endpointPath = queryString
-          ? `${apiBaseUrl}/labor-cost?${queryString}`
-          : `${apiBaseUrl}/labor-cost`;
-
+        const endpointPath = buildLaborCostEndpoint();
         const token = localStorage.getItem(config.tokenKey);
         const headers = {
           'Content-Type': 'application/json',
@@ -390,23 +392,7 @@ export default function PaidLaborCost() {
         processApiResponse(apiData);
       } catch (error) {
         if (isDevelopmentEnvironment()) {
-          let filteredMock = MOCK_DB;
-
-          if (projectFilter !== 'All Projects') {
-            filteredMock = filteredMock.filter(d => d.project === projectFilter);
-          }
-          if (taskFilter.length > 0) {
-            filteredMock = filteredMock.filter(d => taskFilter.includes(d.task));
-          }
-          if (dateRange.startDate) {
-            const start = moment(dateRange.startDate).startOf('day');
-            filteredMock = filteredMock.filter(d => moment(d.date).isSameOrAfter(start));
-          }
-          if (dateRange.endDate) {
-            const end = moment(dateRange.endDate).endOf('day');
-            filteredMock = filteredMock.filter(d => moment(d.date).isSameOrBefore(end));
-          }
-
+          const filteredMock = getFilteredMockData(projectFilter, taskFilter, dateRange, MOCK_DB);
           const mockTotal = filteredMock.reduce((sum, item) => sum + item.cost, 0);
           processApiResponse({ data: filteredMock, totalCost: mockTotal });
         } else {
@@ -421,7 +407,14 @@ export default function PaidLaborCost() {
     };
 
     fetchData();
-  }, [projectFilter, taskFilter, dateRange.startDate, dateRange.endDate, processApiResponse]);
+  }, [
+    projectFilter,
+    taskFilter,
+    dateRange.startDate,
+    dateRange.endDate,
+    processApiResponse,
+    buildLaborCostEndpoint,
+  ]);
 
   useEffect(() => {
     const fetchAllTasks = async () => {
@@ -475,6 +468,7 @@ export default function PaidLaborCost() {
   const taskOptions = useMemo(() => allAvailableTasks.map(task => ({ label: task, value: task })), [
     allAvailableTasks,
   ]);
+
   const projectOptions = useMemo(
     () => [
       { label: 'ALL', value: 'All Projects' },
@@ -609,7 +603,11 @@ export default function PaidLaborCost() {
         opacity: darkMode ? 0.6 : 1,
         fontSize: '14px',
       }),
-      singleValue: base => ({ ...base, color: darkMode ? '#ffffff' : '#000', fontSize: '14px' }),
+      singleValue: base => ({
+        ...base,
+        color: darkMode ? '#ffffff' : '#000',
+        fontSize: '14px',
+      }),
       menu: base => ({
         ...base,
         width: '100%',
@@ -636,20 +634,29 @@ export default function PaidLaborCost() {
         cursor: 'pointer',
         padding: '10px 12px',
         fontSize: '14px',
-        ':active': { backgroundColor: darkMode ? '#3a506b' : '#e0e0e0' },
+        ':active': {
+          backgroundColor: darkMode ? '#3a506b' : '#e0e0e0',
+        },
       }),
-      indicatorSeparator: base => ({ ...base, backgroundColor: darkMode ? '#2d4059' : '#ccc' }),
+      indicatorSeparator: base => ({
+        ...base,
+        backgroundColor: darkMode ? '#2d4059' : '#ccc',
+      }),
       dropdownIndicator: base => ({
         ...base,
         color: darkMode ? '#ffffff' : '#999',
         padding: '4px',
-        ':hover': { color: darkMode ? '#ffffff' : '#666' },
+        ':hover': {
+          color: darkMode ? '#ffffff' : '#666',
+        },
       }),
       clearIndicator: base => ({
         ...base,
         color: darkMode ? '#ffffff' : '#999',
         padding: '4px',
-        ':hover': { color: darkMode ? '#ffffff' : '#666' },
+        ':hover': {
+          color: darkMode ? '#ffffff' : '#666',
+        },
       }),
     }),
     [darkMode, getOptionBackgroundColor, getOptionColor],
