@@ -192,8 +192,6 @@ export function CPDashboard() {
     setPagination(prev => ({ ...prev, currentPage: 1 }));
   };
 
-  const now = new Date();
-
   const isPastEvent = event => {
     const ref = event.startTime || event.date;
     if (!ref) return false;

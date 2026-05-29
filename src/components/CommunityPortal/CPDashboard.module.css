@@ -268,7 +268,7 @@
 ========================= */
 
 .clearBtn {
-  background: #95a5a6;
+  background: #6c757d; /* darker gray */
   color: #fff;
 }
 
@@ -277,12 +277,12 @@
 }
 
 .applyBtn {
-  background: #27ae60;
+  background: #1f8f4d;
   color: #fff;
 }
 
 .applyBtn:hover {
-  background: #229954;
+  background: #187a40;
 }
 
 /* =========================
