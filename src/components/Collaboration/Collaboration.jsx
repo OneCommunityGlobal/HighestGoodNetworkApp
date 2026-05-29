@@ -152,22 +152,6 @@ function Collaboration() {
     }
   };
 
-  const handleJobClick = ad => {
-    const title = ad.title || '';
-    const search = title ? `?jobTitle=${encodeURIComponent(title)}` : '';
-    history.push({
-      pathname: '/job-application',
-      search,
-      state: {
-        jobId: ad._id,
-        jobTitle: title,
-        jobDescription: ad.description || '',
-        requirements: ad.requirements || [],
-        category: ad.category || 'General',
-      },
-    });
-  };
-
   /* ================= SUMMARIES VIEW ================= */
   if (summaries) {
     return (
