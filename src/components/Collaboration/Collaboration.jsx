@@ -27,7 +27,6 @@ function Collaboration() {
   const categoryRef = useRef(null);
   const positionRef = useRef(null);
 
-  const history = useHistory();
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const slugify = s =>
