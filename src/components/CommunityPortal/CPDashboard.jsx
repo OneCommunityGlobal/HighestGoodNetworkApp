@@ -429,7 +429,7 @@ export function CPDashboard() {
                 <Input
                   type="date"
                   placeholder="Ending After"
-                  className={styles['date-filter']}
+                  className={`${styles.dateFilter} ${darkMode ? styles.darkDateFilter : ''}`}
                   value={selectedDate}
                   onChange={e => {
                     setSelectedDate(e.target.value);

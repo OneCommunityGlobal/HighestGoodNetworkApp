@@ -83,10 +83,8 @@
   outline: none;
   background: transparent;
   resize: none;
-
   font-size: 1rem;
   line-height: 1.5;
-
   overflow-y: auto;
   overflow-wrap: break-word;
   white-space: pre-wrap;
@@ -161,6 +159,10 @@
   box-shadow: 0 0 5px rgb(44 62 80 / 40%);
 }
 
+.dateFilter {
+  width: 100%;
+}
+
 /* =========================
    DARK INPUT FIX (clear green issue)
 ========================= */
@@ -210,6 +212,54 @@
 
 .darkMain .noEvents {
   color: #9ca3af;
+}
+
+.darkSearchContainer {
+  background: #34495e;
+  border-color: #4a6572;
+}
+
+.darkSearchContainer:focus-within {
+  border-color: #4da3ff;
+}
+
+.darkSearchTextarea {
+  background: transparent;
+  color: #fff;
+}
+
+.darkSearchTextarea::placeholder {
+  color: #cbd5e1;
+}
+
+.darkSearchContainer .dashboardClearBtn,
+.darkSearchContainer .dashboardSearchIconBtn {
+  color: #fff;
+}
+
+.darkDateFilter {
+  color: #fff !important;
+  background-color: #34495e !important;
+  color-scheme: dark; 
+}
+
+.darkSidebar :global(.form-control).dateFilter {
+  background-color: #34495e !important;
+  border-color: #4a6572 !important;
+  color: #fff !important;
+}
+
+.darkDateFilter::-webkit-datetime-edit-text,
+.darkDateFilter::-webkit-datetime-edit-month-field,
+.darkDateFilter::-webkit-datetime-edit-day-field,
+.darkDateFilter::-webkit-datetime-edit-year-field {
+  color: #fff !important;
+}
+
+.darkDateFilter:focus, 
+.darkDateFilter:active {
+  background-color: #34495e !important;
+  color: #fff !important;
 }
 
 /* =========================
