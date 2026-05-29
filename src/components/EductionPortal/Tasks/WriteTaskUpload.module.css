@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 :root {
   --rail-w: 148px;
   --row-h: 58px;
@@ -39,6 +40,7 @@
     linear-gradient(#000, #000) 0 8px/24px 2px no-repeat,
     linear-gradient(#000, #000) 0 16px/24px 2px no-repeat;
 }
+
 /* vertical icon stack */
 .iconList {
   width: 100%;
@@ -122,24 +124,29 @@
   padding: 6px 0 18px;
   border-bottom: 1px solid #eaeaea;
 }
+
 .header h1 {
   font-size: 28px;
   font-weight: 600;
   margin: 0;
 }
+
 .headerRight {
   display: flex;
   align-items: center;
   gap: 10px;
   color: #111;
 }
+
 .welcome {
   font-weight: 600;
 }
+
 .bellIcon {
   display: inline-block;
   line-height: 0;
 }
+
 .bellIcon path {
   stroke: #000 !important;
   fill: none !important;
@@ -151,6 +158,7 @@
   display: grid;
   place-items: center;
 }
+
 .chartCard {
   border: 0;
   background: transparent;
@@ -161,6 +169,7 @@
   display: grid;
   place-items: center;
 }
+
 .chartImg {
   width: 100%;
   max-width: 980px;
@@ -179,6 +188,7 @@
   margin-top: 22px;
   align-items: start;
 }
+
 .leftColumn {
   display: grid;
   gap: 18px;
@@ -190,14 +200,16 @@
   background: #fff;
   border: 1px solid #e9e9e9;
   border-radius: 20px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 6px 24px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 4%), 0 6px 24px rgb(0 0 0 / 6%);
   padding: 22px 24px;
 }
+
 .pillRow {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 28px;
 }
+
 .pillInput {
   height: 46px;
   display: flex;
@@ -209,7 +221,7 @@
   font-weight: 600;
   font-size: 18px;
   color: #101010;
-  box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.03);
+  box-shadow: inset 0 1px 0 rgb(0 0 0 / 3%);
 }
 
 /* Long input + side icons */
@@ -223,10 +235,12 @@
   padding: 18px 16px;
   background: #fff;
 }
+
 .longCol {
   display: grid;
   gap: 10px;
 }
+
 .longTextArea {
   width: 100%;
   min-height: 110px;
@@ -236,6 +250,7 @@
   resize: vertical;
   font: inherit;
 }
+
 .linkInput {
   width: 100%;
   height: 46px;
@@ -244,6 +259,7 @@
   padding: 0 14px;
   font: inherit;
 }
+
 .fieldError {
   color: #d10;
   font-size: 13px;
@@ -258,6 +274,7 @@
   align-content: start;
   justify-items: center;
 }
+
 .sideBtn {
   width: 42px;
   height: 42px;
@@ -269,9 +286,10 @@
   cursor: pointer;
   transition: background 0.15s ease, box-shadow 0.15s ease;
 }
+
 .sideBtn:hover {
   background: #efefef;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 6%);
 }
 
 /* Upload area spacing */
@@ -285,12 +303,14 @@
   top: 90px;
   align-self: start;
 }
+
 .progressCard {
   border: 1px solid var(--border);
   border-radius: 12px;
   background: #fff;
   padding: 16px 14px 18px;
 }
+
 .progressHeading {
   font-size: 18px;
   font-weight: 700;
@@ -298,9 +318,11 @@
   margin: 4px 0 12px;
   color: #000;
 }
+
 .progressBlock {
   margin-bottom: 14px;
 }
+
 .progressRow {
   display: flex;
   justify-content: space-between;
@@ -308,6 +330,7 @@
   margin-bottom: 6px;
   color: #000;
 }
+
 .progressBar {
   position: relative;
   height: 16px;
@@ -315,6 +338,7 @@
   border-radius: 999px;
   overflow: hidden;
 }
+
 .progressBar > span {
   position: absolute;
   inset: 0 auto 0 0;
@@ -326,6 +350,7 @@
 .historyWrap {
   margin-top: 24px;
 }
+
 .historyHeader {
   width: 100%;
   text-align: left;
@@ -336,10 +361,12 @@
   font-weight: 700;
   cursor: default;
 }
+
 .chev {
   display: inline-block;
   margin-right: 10px;
 }
+
 .simpleList {
   margin-top: 10px;
   border: 1px solid var(--border);
@@ -347,6 +374,7 @@
   overflow: hidden;
   background: #fff;
 }
+
 .simpleRow {
   display: grid;
   grid-template-columns: 1fr auto;
@@ -355,9 +383,11 @@
   padding: 12px 14px;
   border-top: 1px solid var(--border);
 }
+
 .simpleRow:first-child {
   border-top: none;
 }
+
 .simpleLink {
   background: transparent;
   border: none;
@@ -368,25 +398,29 @@
   cursor: pointer;
   text-align: left;
 }
+
 .simpleLink:hover {
   color: #000;
   border-bottom-color: #000;
 }
+
 .simpleTime {
   color: #555;
   font-size: 13px;
 }
 
 /* Responsive */
-@media (max-width: 980px) {
+@media (width <= 980px) {
   .formGrid {
     grid-template-columns: 1fr;
   }
+
   .progressPane {
     position: static;
   }
 }
-@media (max-width: 860px) {
+
+@media (width <= 860px) {
   .pillRow {
     grid-template-columns: 1fr;
     gap: 16px;

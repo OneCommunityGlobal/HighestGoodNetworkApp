@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .bg-WhiteSmoke {
   background-color: #f6f6f3;
 }
@@ -604,8 +605,8 @@
 
 .filterRow {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
   gap: 20px;
 }
 
@@ -686,4 +687,12 @@
 :global(.dark-mode) :global(.select-item.selected) {
   background-color: #4c566a !important;
   font-weight: bold;
+}
+
+.report-multi-select-filter :global(.dropdown-container) {
+  min-height: 35px !important;
+}
+
+.report-multi-select-filter :global(.dropdown-heading) {
+  height: 35px !important;
 }
