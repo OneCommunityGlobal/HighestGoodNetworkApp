@@ -1,7 +1,6 @@
 // eslint-disable-next-line no-unused-vars
-import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { fireEvent, render, screen } from '@testing-library/react';
 import Countdown from '../Countdown';
 
 describe('Countdown Component', () => {
@@ -47,7 +46,7 @@ describe('Countdown Component', () => {
     // eslint-disable-next-line react/jsx-props-no-spreading
     render(<Countdown {...defaultProps} />);
     const closeButton = screen.getByTitle('close timer dropdown');
-    fireEvent.click(closeButton);
+    fireEvent.pointerDown(closeButton);
     expect(defaultProps.toggleTimer).toHaveBeenCalled();
   });
 
@@ -72,7 +71,7 @@ describe('Countdown Component', () => {
     // eslint-disable-next-line react/jsx-props-no-spreading
     render(<Countdown {...defaultProps} />);
     const startButton = screen.getByLabelText('Start timer');
-    fireEvent.click(startButton);
+    fireEvent.pointerDown(startButton);
     expect(defaultProps.handleStartButton).toHaveBeenCalled();
   });
 
@@ -85,7 +84,7 @@ describe('Countdown Component', () => {
     // eslint-disable-next-line react/jsx-props-no-spreading
     render(<Countdown {...props} />);
     const stopButton = screen.getByLabelText('Stop timer and log timer');
-    fireEvent.click(stopButton);
+    fireEvent.pointerDown(stopButton);
     expect(defaultProps.handleStopButton).toHaveBeenCalled();
   });
 
