@@ -4,6 +4,7 @@
   align-items: center;
   justify-content: center;
   width: 100%;
+  overflow-x: auto;
   padding: 0.6rem;
   margin-top: 20px;
   margin-bottom: -35px;
@@ -11,10 +12,11 @@
 
 .donutScrollable {
   display: grid;
-  grid-template-columns: minmax(24rem, 3fr) minmax(12rem, 2fr);
-  column-gap: 1.5rem;
+  grid-template-columns: minmax(21.25rem, 3fr) minmax(10rem, 2fr);
+  column-gap: 0.75rem;
   align-items: center;
   width: 100%;
+  min-width: max-content;
 }
 
 .donutChart {
@@ -22,7 +24,7 @@
   width: 100%;
   max-width: 21.25rem;
   height: 21.25rem;
-  margin-left: auto;
+  margin-left: 0;
   overflow: visible;
 }
 
@@ -69,9 +71,13 @@
 .donutLabel {
   display: flex;
   align-items: center;
-  margin-left: 20px;
+  margin-left: 0;
   gap: 0.5rem;
   line-height: 1.25;
+}
+
+.donutLabel span:last-child {
+  overflow-wrap: anywhere;
 }
 
 .donutLabelValue {
@@ -106,7 +112,6 @@
 
 @media (width <= 615px) {
   .donutContainer {
-    overflow-x: scroll;
     justify-content: start;
   }
 }

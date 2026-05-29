@@ -32,10 +32,12 @@ function DonutChart(props) {
         enabled: false,
       },
       externalLabelGuides: {
-        offset: 22,
-        horizontalSpread: 28,
-        horizontalSpreadMap: { 0: 28, 1: 36, 2: 44, 3: 36, 4: 28 },
-        verticalOffsetMap: { 0: -48, 1: -18, 2: 12, 3: 42, 4: 68 },
+        offset: 28,
+        horizontalSpread: 44,
+        horizontalSpreadMap: { 0: 44, 1: 52, 2: 60, 3: 52, 4: 44 },
+        verticalOffsetMap: { 0: -58, 1: -28, 2: 6, 3: 40, 4: 70 },
+        sideMap: { 0: -1, 1: -1, 2: -1, 3: -1, 4: -1 },
+        allowSideMapOverride: true,
         total: totalCount,
         formatter: ({ value, percentage }) => [`${value}`, `(${percentage}%)`],
       },
@@ -43,7 +45,7 @@ function DonutChart(props) {
     maintainAspectRatio: false,
     cutout: '55%',
     layout: {
-      padding: 44,
+      padding: 56,
     },
   };
 

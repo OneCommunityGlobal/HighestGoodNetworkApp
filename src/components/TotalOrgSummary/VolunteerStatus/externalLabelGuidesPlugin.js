@@ -210,6 +210,7 @@ const externalLabelGuidesPlugin = {
       guideBendRatio: 0.55,
       horizontalSpread: 32,
       sideMap: undefined,
+      allowSideMapOverride: false,
       horizontalSpreadMap: undefined,
       verticalOffsetMap: undefined,
       containmentPadding: 12,
@@ -256,7 +257,9 @@ const externalLabelGuidesPlugin = {
 
       let direction = getMappedOption(options.sideMap, index, Math.cos(angle) >= 0 ? 1 : -1);
       direction = Math.sign(direction) || 1;
-      direction = Math.cos(angle) >= 0 ? Math.abs(direction) : -Math.abs(direction);
+      if (!options.allowSideMapOverride) {
+        direction = Math.cos(angle) >= 0 ? Math.abs(direction) : -Math.abs(direction);
+      }
       const baseX = x + Math.cos(angle) * outerRadius;
       const baseY = y + Math.sin(angle) * outerRadius;
       const midX = x + Math.cos(angle) * (outerRadius + options.offset * options.guideBendRatio);
