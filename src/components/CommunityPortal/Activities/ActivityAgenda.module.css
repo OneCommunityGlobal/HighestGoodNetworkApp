@@ -1,3 +1,4 @@
+/* stylelint-disable no-descending-specificity */
 * {
   margin: 0;
   padding: 0;
@@ -6,8 +7,8 @@
 
 /* Light mode fallback */
 .activityAgendaPage {
-  --bg-color: #ffffff;
-  --text-color: #000000;
+  --bg-color: #fff;
+  --text-color: #000;
   --heading-color: navy;
 
   min-height: 100vh;
@@ -18,9 +19,9 @@
 /* Dark mode variables override */
 .activityAgendaDarkMode {
   --bg-color: #1b2a41;
-  --text-color: #ffffff;
+  --text-color: #fff;
   --heading-color: #e8a71c;
-  --card-shadow: rgba(255, 255, 255, 0.1);
+  --card-shadow: rgb(255 255 255 / 10%);
 }
 
 /* Apply shadow on image in dark mode */
@@ -74,11 +75,11 @@
 .activityMetadata {
   margin-bottom: 20px;
   padding-bottom: 15px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgb(0 0 0 / 10%);
 }
 
 .activityAgendaDarkMode .activityMetadata {
-  border-bottom-color: rgba(255, 255, 255, 0.2);
+  border-bottom-color: rgb(255 255 255 / 20%);
 }
 
 .metaRow {
@@ -108,7 +109,7 @@
 }
 
 .activityAgendaDarkMode .scheduleItem {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: rgb(255 255 255 / 5%);
 }
 
 .scheduleItemTime {
@@ -127,7 +128,7 @@
 }
 
 /* Responsive */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .activityAgendaContainer {
     flex-direction: column;
     align-items: center;
@@ -149,7 +150,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .activityAgendaContent h1 {
     font-size: 1.5rem;
   }
