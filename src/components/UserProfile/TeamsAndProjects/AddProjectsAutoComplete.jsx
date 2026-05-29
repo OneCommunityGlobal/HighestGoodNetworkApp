@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Dropdown, Input } from 'reactstrap';
-import './TeamsAndProjects.css';
+import './TeamsAndProjects.module.css';
 import { useSelector } from 'react-redux';
 
 // eslint-disable-next-line react/display-name
@@ -9,8 +9,12 @@ const AddProjectsAutoComplete = React.memo(props => {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
-    if (!props.selectedProject) props.onInputChange('');
-    else props.onInputChange(props.selectedProject.projectName);
+    try {
+      if (!props.selectedProject) props.onInputChange('');
+     else props.onInputChange(props.selectedProject.projectName);
+    } catch (error) {
+      if (!props.selectedProject) props.onInputChange('');
+    }
   }, [props.selectedProject]);
 
   return (

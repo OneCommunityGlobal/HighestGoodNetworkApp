@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { ApiEndpoint } from '../../utils/URL';
 import { toast } from 'react-toastify';
 import OneCommunityImage from '../../assets/images/logo2.png';
-import './SuggestedJobsList.css';
+import styles from './SuggestedJobsList.module.css';
 
 function SuggestedJobsList() {
   const [categories, setCategories] = useState([]);
@@ -104,8 +104,8 @@ function SuggestedJobsList() {
   };
 
   return (
-    <div className={`job-landing ${darkMode ? 'bg-oxford-blue text-light' : ''}`}>
-      <div className="job-header" style={{ textAlign: 'center', marginBottom: '20px' }}>
+    <div className={`${styles.jobLanding} ${darkMode ? 'bg-oxford-blue text-light' : ''}`}>
+      <div className={styles.jobHeader} style={{ textAlign: 'center', marginBottom: '20px' }}>
         <a
           href="https://www.onecommunityglobal.org/collaboration/"
           target="_blank"
@@ -115,7 +115,7 @@ function SuggestedJobsList() {
         </a>
       </div>
       <nav
-        className="job-navbar"
+        className={styles.jobNavbar}
         style={{
           maxWidth: '600px',
           margin: '0 auto 30px',
@@ -124,13 +124,15 @@ function SuggestedJobsList() {
           alignItems: 'center',
         }}
       >
-        <form className="search-form" style={{ display: 'flex' }} onSubmit={handleSubmit}>
+        <form className={styles.searchForm} style={{ display: 'flex' }} onSubmit={handleSubmit}>
           <input
             name="searchInput"
             type="text"
             placeholder="Search by title..."
             defaultValue={query}
-            className={`${darkMode ? 'bg-space-cadet text-light dark-mode-placeholder' : ''}`}
+            className={`${
+              darkMode ? `bg-space-cadet text-light ${styles.darkModePlaceholder}` : ''
+            }`}
             style={{ padding: '8px' }}
           />
 
@@ -140,7 +142,7 @@ function SuggestedJobsList() {
         </form>
 
         <select
-          className={`job-select ${darkMode ? 'bg-space-cadet text-light' : ''}`}
+          className={`${styles.jobSelect} ${darkMode ? 'bg-space-cadet text-light' : ''}`}
           value={category}
           onChange={handleCategoryChange}
         >
@@ -154,12 +156,14 @@ function SuggestedJobsList() {
       </nav>
 
       {/* Job ads listing */}
-      <div className="job-grid" style={{ margin: '0 auto' }}>
+      <div className={styles.jobGrid} style={{ margin: '0 auto' }}>
         {jobAds.length > 0 &&
           jobAds.map(ad => (
             <div
               key={ad._id}
-              className={`job-ad ${darkMode ? 'bg-yinmn-blue text-light boxStyleDark' : ''}`}
+              className={`${styles.jobAd} ${
+                darkMode ? 'bg-yinmn-blue text-light boxStyleDark' : ''
+              }`}
               style={{
                 marginBottom: '20px',
                 borderBottom: '1px solid #ccc',
@@ -175,15 +179,17 @@ function SuggestedJobsList() {
                   marginLeft: 'auto',
                   marginRight: 'auto',
                 }}
-                className="category-icon"
+                className={styles.categoryIcon}
               />
-              <h2 className="job-role-name" style={{ color: darkMode ? 'white' : undefined }}>
+              <h2 className={styles.jobRoleName} style={{ color: darkMode ? 'white' : undefined }}>
                 {ad.title}
               </h2>
 
               <div
-                className={`job-location-tag ${
-                  ad.location?.toLowerCase() !== 'remote' ? 'in-person' : 'remote'
+                className={`${styles.jobLocationTag} ${
+                  ad.location?.toLowerCase() !== 'remote'
+                    ? styles.jobLocationTagInPerson
+                    : styles.jobLocationTagRemote
                 }`}
                 style={{
                   backgroundColor: ad.location?.toLowerCase() !== 'remote' ? '#ffeb3b' : '#d1ecf1',
@@ -202,12 +208,12 @@ function SuggestedJobsList() {
                   : 'Remote'}
               </div>
 
-              <p className="job-details" style={{ color: darkMode ? 'white' : undefined }}>
+              <p className={styles.jobDetails} style={{ color: darkMode ? 'white' : undefined }}>
                 {ad.description || 'No detailed description available.'}
               </p>
 
               {ad.requirements && ad.requirements.length > 0 && (
-                <div className="job-requirements">
+                <div className={styles.jobRequirements}>
                   <h4>Requirements:</h4>
                   <ul>
                     {ad.requirements.map(req => (
@@ -222,7 +228,7 @@ function SuggestedJobsList() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <button type="submit" className="btn btn-primary apply-now-btn">
+                <button type="submit" className={`btn btn-primary ${styles.applyNowBtn}`}>
                   Apply Now
                 </button>
               </a>
@@ -231,7 +237,7 @@ function SuggestedJobsList() {
 
         {jobAds.length === 0 && hasSearched && (
           <div
-            className={`no-jobs-notice ${darkMode ? 'text-light' : ''}`}
+            className={`${styles.noJobsNotice} ${darkMode ? 'text-light' : ''}`}
             style={{ textAlign: 'center', padding: '2rem' }}
           >
             <img
@@ -248,7 +254,7 @@ function SuggestedJobsList() {
 
         {jobAds.length === 0 && !hasSearched && (
           <div
-            className={`job-placeholder ${darkMode ? 'text-light' : ''}`}
+            className={`${styles.jobPlaceholder} ${darkMode ? 'text-light' : ''}`}
             style={{ textAlign: 'center', padding: '2rem' }}
           >
             <h2>🔍 Begin Your Search</h2>
@@ -279,7 +285,7 @@ function SuggestedJobsList() {
       {/* Pagination */}
       {totalPages > 1 && (
         <div
-          className={`pagination-controls ${darkMode ? 'text-light' : ''}`}
+          className={`${styles.paginationControls} ${darkMode ? 'text-light' : ''}`}
           style={{ textAlign: 'center', marginTop: '20px' }}
         >
           <button

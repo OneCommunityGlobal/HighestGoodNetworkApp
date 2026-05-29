@@ -1,4 +1,5 @@
 import { useSelector } from 'react-redux';
+import styles from '../BlueSquares/BlueSquare.module.css'
 
 function QuickSetupCodes({
   titles,
@@ -11,7 +12,7 @@ function QuickSetupCodes({
 }) {
 
   return (
-    <div className="blueSquares mt-3" id="qsc-outer-wrapper">
+    <div className={`${styles.blueSquares} mt-3`} id="qsc-outer-wrapper">
       {titles.map(title => {
         const isTeamCodeInList = teamCodes.some(code => code.value === title.teamCode);
         return (
@@ -32,7 +33,7 @@ function QuickSetupCodes({
             value={title.titleName}
           >
             {title?.titleCode ? title.titleCode : title?.titleName?.substring(0, 7)}
-            <div className="title">
+            <div className={styles.title}>
               <span className="setup-title-name">{title?.titleName}</span>
             </div>
           </div>
