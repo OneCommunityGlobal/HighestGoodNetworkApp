@@ -1,17 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import {
-  Container,
-  Row,
-  Alert,
-  Col,
-  Card,
-  CardBody,
-  Button,
-  Input,
-  FormGroup,
-  Label,
-} from 'reactstrap';
+import { Container, Row, Alert, Col, Card, CardBody, Button, Input } from 'reactstrap';
 import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt, FaSearch, FaTimes } from 'react-icons/fa';
 import styles from './CPDashboard.module.css';
 import { ENDPOINTS } from '../../utils/URL';
@@ -304,7 +293,9 @@ export function CPDashboard() {
               <FixedRatioImage src={event.coverImage} alt={event.title} fallback={FALLBACK_IMG} />
             </div>
             <CardBody className={`${styles.eventCardBody} ${darkMode ? styles.darkEventCard : ''}`}>
-              <h5 className={styles.eventTitle}>{event.title}</h5>
+              <h5 className={styles.eventTitle} data-event-title={event.title || 'Untitled event'}>
+                <span className={styles.eventTitleText}>{event.title}</span>
+              </h5>
               <p className={styles.eventDate}>
                 <FaCalendarAlt
                   className={`${darkMode ? styles.eventIconDark : styles.eventIcon}`}
