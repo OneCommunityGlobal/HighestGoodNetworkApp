@@ -9,14 +9,6 @@ Chart.register(ArcElement);
 function DonutChart(props) {
   const { title, totalCount, percentageChange, data, colors, comparisonType, darkMode } = props;
 
-  const getPercentage = value => {
-    if (totalCount === 0 || isNaN(totalCount) || !isFinite(totalCount)) {
-      return 0;
-    }
-
-    return ((value / totalCount) * 100).toFixed(0);
-  };
-
   const chartData = {
     labels: data.map(item => item.label),
     datasets: [
@@ -87,9 +79,6 @@ function DonutChart(props) {
                 style={{ backgroundColor: chartData.datasets[0].backgroundColor[index] }}
               />
               <span>{item.label}</span>
-              <span className={styles.donutLabelValue}>
-                {item.value} ({getPercentage(item.value)}%)
-              </span>
             </div>
           ))}
         </div>

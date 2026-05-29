@@ -20,9 +20,8 @@
 .donutChart {
   position: relative;
   width: 100%;
-  min-width: 24rem;
-  max-width: 27rem;
-  height: 27rem;
+  max-width: 21.25rem;
+  height: 21.25rem;
   margin-left: auto;
   overflow: visible;
 }
