@@ -56,9 +56,6 @@ function CreateEventModal({ isOpen, toggle }) {
   const handleToggle = () => {
     if (!loading) {
       toggle();
-      if (!isOpen) {
-        resetForm();
-      }
     }
   };
 
@@ -77,6 +74,11 @@ function CreateEventModal({ isOpen, toggle }) {
 
   const validateForm = () => {
     const newErrors = {};
+    const maxAttendees = Number(formData.maxAttendees);
+
+    if (!Number.isInteger(maxAttendees) || maxAttendees < 1) {
+      newErrors.maxAttendees = 'Max Attendees must be a positive integer';
+    }
 
     if (!formData.title.trim()) {
       newErrors.title = 'Title is required';
@@ -96,14 +98,6 @@ function CreateEventModal({ isOpen, toggle }) {
 
     if (!formData.endTime) {
       newErrors.endTime = 'End time is required';
-    }
-
-    if (formData.maxAttendees < 1) {
-      newErrors.maxAttendees = 'Max attendees must be at least 1';
-    }
-
-    if (formData.maxAttendees < 0 || !Number.isInteger(formData.maxAttendees)) {
-      newErrors.maxAttendees = 'Max Attendees must be a Positive Integer';
     }
 
     // Validate that end time is after start time
@@ -155,8 +149,8 @@ function CreateEventModal({ isOpen, toggle }) {
     try {
       const result = await dispatch(createEvent(eventData));
       if (result?.success) {
-        handleToggle();
-        // The events list will be refreshed when the component re-renders
+        resetForm();
+        toggle();
       }
     } catch (error) {
       // Error handling is done in the action
