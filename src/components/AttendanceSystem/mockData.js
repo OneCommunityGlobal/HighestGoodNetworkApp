@@ -12,7 +12,7 @@ export const events = [
     registrations: 100,
     attendees: 78,
     completed: 75,
-    walkouts: 5,
+    walkouts: 3,
     date: getDateString(-30), // Past date - will show as Completed
     time: '09:00 AM - 05:00 PM',
     link: 'https://conferencea.com',
@@ -27,7 +27,7 @@ export const events = [
     registrations: 50,
     attendees: 44,
     completed: 38,
-    walkouts: 2,
+    walkouts: 6,
     date: getDateString(7), // Future date - will show as Upcoming
     time: '10:00 AM - 02:00 PM',
     link: 'https://workshopb.com',
@@ -42,7 +42,7 @@ export const events = [
     registrations: 75,
     attendees: 63,
     completed: 55,
-    walkouts: 5,
+    walkouts: 8,
     date: getDateString(0), // Today - will show as In Progress if current time is within range
     time: '12:00 AM - 11:59 PM',
     link: 'https://seminarc.com',
