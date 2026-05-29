@@ -1,18 +1,22 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import styles from './MyCases.module.css';
 import mockEvents from './mockData';
 import CreateEventModal from './CreateEventModal';
 import { filterEventsByDate } from './FilterByDate';
+import Calendar from 'react-calendar';
 
 function MyCases() {
   const [view, setView] = useState('card');
   const [filter, setFilter] = useState('all');
   const [expanded, setExpanded] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [calendarDate, setCalendarDate] = useState(new Date());
+  const history = useHistory();
 
   const isExporting =
-    typeof document !== 'undefined' && document.documentElement?.dataset?.exporting === 'true'; // Sonar: prefer .
+    typeof document !== 'undefined' && document.documentElement?.dataset?.exporting === 'true';
 
   const darkMode = useSelector(state => state.theme.darkMode);
 
@@ -110,11 +114,82 @@ function MyCases() {
     </ul>
   );
 
-  const renderCalendarView = () => (
-    <div className={`${styles.calendarView} ${darkMode ? styles.calendarViewDark : ''}`}>
-      <p>Calendar View is under construction...</p>
-    </div>
-  );
+  const eventsByDate = useMemo(() => {
+    const map = {};
+    filteredEvents.forEach(event => {
+      const baseDate = new Date(event.eventDate || event.eventTime);
+      const key = baseDate.toISOString().slice(0, 10);
+      if (!map[key]) map[key] = [];
+      map[key].push(event);
+    });
+    return map;
+  }, [filteredEvents]);
+
+  const renderCalendarTileContent = ({ date, view }) => {
+    if (view !== 'month') return null;
+
+    const key = date.toISOString().slice(0, 10);
+    const dayEvents = eventsByDate[key];
+
+    if (!dayEvents || dayEvents.length === 0) return null;
+
+    return <div className={styles.calendarBubble}>{dayEvents.length}</div>;
+  };
+
+  const renderCalendarView = () => {
+    const selectedKey = calendarDate.toISOString().slice(0, 10);
+    const selectedEvents = eventsByDate[selectedKey] || [];
+
+    const formattedSelectedDate = calendarDate.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+
+    return (
+      <div className={`${styles.calendarView} ${darkMode ? styles.calendarViewDark : ''}`}>
+        <div className={styles.calendarHeaderRow}>
+          <span className={styles.calendarMonthLabel}>
+            {calendarDate.toLocaleString('en-US', { month: 'long', year: 'numeric' })}
+          </span>
+        </div>
+
+        <Calendar
+          onChange={setCalendarDate}
+          value={calendarDate}
+          tileContent={renderCalendarTileContent}
+          className={styles.reactCalendar}
+        />
+
+        <div className={styles.calendarEventsList}>
+          <h3 className={styles.calendarEventsTitle}>Events on {formattedSelectedDate}</h3>
+
+          {selectedEvents.length === 0 && (
+            <p className={styles.calendarEventsEmpty}>No events scheduled for this day.</p>
+          )}
+
+          {selectedEvents.map(event => (
+            <div
+              key={event.id}
+              className={`${styles.calendarEventItem} ${
+                darkMode ? styles.calendarEventItemDark : ''
+              }`}
+            >
+              <div className={styles.calendarEventItemHeader}>
+                <span className={styles.calendarEventName}>{event.eventName}</span>
+                <span className={styles.calendarEventType}>{event.eventType}</span>
+              </div>
+              <div className={styles.calendarEventMeta}>
+                <span>{event.eventTime}</span>
+                <span>{event.location}</span>
+                <span>{`+${event.attendees} attendees`}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div

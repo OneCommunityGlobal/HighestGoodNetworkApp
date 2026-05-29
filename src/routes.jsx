@@ -95,6 +95,8 @@ import EventList from './components/CommunityPortal/Event/EventList/EventList';
 import ResourcesUsage from './components/CommunityPortal/Activities/activityId/ResourcesUsage';
 import EventParticipation from './components/CommunityPortal/Reports/Participation/EventParticipation';
 import NoShowList from './components/CommunityPortal/Activities/NoShow/NoShowList';
+import Demographics from './components/CommunityPortal/Reports/Participation/Demographics';
+import Personalization from './components/CommunityPortal/Reports/Participation/Personalization';
 
 import MaterialSummary from './components/MaterialSummary/MaterialSummary';
 // Activity Feedback Modal
@@ -1033,6 +1035,21 @@ export default (
           render={() => <Activity initialTab="FAQs" />}
         />
         <CPProtectedRoute path="/communityportal/activity/:activityId" exact component={Activity} />
+        <CPProtectedRoute
+          path="/communityportal/reports/participation/demographics"
+          exact
+          component={Demographics}
+        />
+        <CPProtectedRoute
+          path="/communityportal/reports/participation/personalization"
+          exact
+          component={Personalization}
+        />
+        <CPProtectedRoute
+          path="/communityportal/events/create"
+          exact
+          component={TestEventRegistration}
+        />
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
         {/* <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} /> */}
