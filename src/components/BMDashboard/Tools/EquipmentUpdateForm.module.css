@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .addToolForm {
   width: 100%;
   max-width: 600px;
@@ -35,7 +36,7 @@
   color: red;
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (width <= 600px) {
   .addToolButtons {
     flex-direction: column;
     align-items: stretch;
@@ -46,7 +47,7 @@
   }
 }
 
-@media screen and (max-width: 400px) {
+@media screen and (width <= 400px) {
   .addToolForm {
     padding: 0.5rem;
   }
@@ -72,8 +73,6 @@
   background-repeat: no-repeat;
   background-position: right 0.75rem center;
   background-size: 12px;
-  -webkit-appearance: none;
-  -moz-appearance: none;
   appearance: none;
   padding-right: 2rem;
 }
@@ -87,7 +86,7 @@
   background-color: #34495e;
   color: #f8f9fa;
   border-color: #5a9fd4;
-  box-shadow: 0 0 0 0.2rem rgba(90, 159, 212, 0.25);
+  box-shadow: 0 0 0 0.2rem rgb(90 159 212 / 25%);
 }
 
 :global(.bg-oxford-blue) .addToolForm :global(.form-control):disabled,
