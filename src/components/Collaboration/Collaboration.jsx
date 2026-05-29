@@ -1,6 +1,5 @@
 // src/pages/Collaboration/Collaboration.jsx
 import { useEffect, useState, useMemo, useRef } from 'react';
-import { useHistory } from 'react-router-dom';
 import styles from './Collaboration.module.css';
 import { toast } from 'react-toastify';
 import { ApiEndpoint } from '~/utils/URL';
