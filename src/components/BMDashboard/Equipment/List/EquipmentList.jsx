@@ -27,7 +27,7 @@ function EquipmentList() {
           {/* Inventory Navigation Bar */}
           <div className={styles.inventoryNav}>
             <Link to="/bmdashboard/inventorytypes" className={styles.returnBtn}>
-              ← Return to All Inventory Types
+              ← All Inventory Types
             </Link>
             <div className={styles.categoryIcons}>
               {siblingCategories.map(cat => (

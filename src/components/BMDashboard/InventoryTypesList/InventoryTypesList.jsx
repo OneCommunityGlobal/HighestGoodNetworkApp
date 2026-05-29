@@ -41,10 +41,6 @@ export function InventoryTypesList(props) {
   const [isError, setIsError] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
 
-  const handleBack = () => {
-    history.goBack();
-  };
-
   useEffect(() => {
     dispatch(fetchInvTypeByType('Materials'));
     dispatch(fetchInvTypeByType('Consumables'));
@@ -116,11 +112,6 @@ export function InventoryTypesList(props) {
           </Accordion.Collapse>
         </Card>
       </Accordion>
-      <div className={`${styles.buttonContainer}`}>
-        <Button variant="primary" className={`${styles.backButton}`} onClick={handleBack}>
-          Back to previous list page
-        </Button>
-      </div>
     </div>
   );
 }

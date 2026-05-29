@@ -95,6 +95,11 @@ export function Header(props) {
     setExpandedSection(prev => prev === section ? null : section);
   };
 
+  const resetBMAccordion = () => {
+    setBmProjectsOpen(false);
+    setExpandedSection(null);
+  };
+
   const ALLOWED_ROLES_TO_INTERACT = useMemo(() => ['Owner', 'Administrator'], []);
   const canInteractWithViewingUser = useMemo(
     () => ALLOWED_ROLES_TO_INTERACT.includes(props.auth.user.role),
@@ -168,7 +173,7 @@ export function Header(props) {
   const history = useHistory();
 
   useEffect(() => {
-    setShowProjectDropdown(location.pathname.startsWith('/bmdashboard/projects/'));
+    setShowProjectDropdown(location.pathname.startsWith('/bmdashboard/'));
   }, [location.pathname]);
 
   useEffect(() => {
@@ -400,7 +405,11 @@ export function Header(props) {
                 )}
 
                 {(canAccessUserManagement || canAccessBadgeManagement || canAccessProjects || canAccessTeams || canAccessPopups || canAccessSendEmails || canAccessPermissionsManagement || canAccessBlueSquareEmailManagement) && (
-                  <UncontrolledDropdown nav inNavbar>
+                  <UncontrolledDropdown
+                    nav
+                    inNavbar
+                    onToggle={(event, isDropdownOpen) => { if (!isDropdownOpen) resetBMAccordion(); }}
+                  >
                     <DropdownToggle nav caret><span>{OTHER_LINKS}</span></DropdownToggle>
                     <DropdownMenu className={`${styles.noMaxHeight} ${darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown}`}>
                       {canAccessUserManagement && <DropdownItem tag={Link} to="/usermanagement" className={fontColor} disabled={headerDisabled}>{USER_MANAGEMENT}</DropdownItem>}
@@ -420,16 +429,13 @@ export function Header(props) {
 
                       {/* ── BM Dashboard Section ── */}
                       <DropdownItem divider />
-                      <DropdownItem header className={darkMode ? 'text-custom-grey' : ''}>
-                        BM Dashboard
-                      </DropdownItem>
 
                       {/* BM Dashboard main link */}
                       <DropdownItem tag={Link} to="/bmdashboard" className={fontColor}>
                         BM Dashboard
                       </DropdownItem>
 
-                      {/* BM Projects accordion — only shown when a project is selected */}
+                      {/* BM Projects accordion — only shown when on a bmdashboard route */}
                       {showProjectDropdown && (
                         <>
                           {/* BM Projects toggle */}
@@ -439,7 +445,7 @@ export function Header(props) {
                             onClick={() => { setBmProjectsOpen(prev => !prev); setExpandedSection(null); }}
                           >
                             <span>BM Projects</span>
-                            <span className={`${styles.accordionArrow} ${bmProjectsOpen ? styles.accordionArrowOpen : ''}`}>▶</span>
+                            <span className={`${styles.accordionArrow} ${bmProjectsOpen ? styles.accordionArrowOpen : ''}`} />
                           </DropdownItem>
 
                           {bmProjectsOpen && (
@@ -452,7 +458,7 @@ export function Header(props) {
                               {/* Materials */}
                               <DropdownItem toggle={false} className={`${fontColor} ${styles.bmSubItem} ${styles.accordionToggle}`} onClick={() => toggleSection('materials')}>
                                 <span className={styles.bmIconLabel}><FaCubes className={styles.bmIcon} /> Materials</span>
-                                <span className={`${styles.accordionArrow} ${expandedSection === 'materials' ? styles.accordionArrowOpen : ''}`}>▶</span>
+                                <span className={`${styles.accordionArrow} ${expandedSection === 'materials' ? styles.accordionArrowOpen : ''}`} />
                               </DropdownItem>
                               {expandedSection === 'materials' && (
                                 <>
@@ -467,7 +473,7 @@ export function Header(props) {
                               {/* Consumables */}
                               <DropdownItem toggle={false} className={`${fontColor} ${styles.bmSubItem} ${styles.accordionToggle}`} onClick={() => toggleSection('consumables')}>
                                 <span className={styles.bmIconLabel}><FaShoppingCart className={styles.bmIcon} /> Consumables</span>
-                                <span className={`${styles.accordionArrow} ${expandedSection === 'consumables' ? styles.accordionArrowOpen : ''}`}>▶</span>
+                                <span className={`${styles.accordionArrow} ${expandedSection === 'consumables' ? styles.accordionArrowOpen : ''}`} />
                               </DropdownItem>
                               {expandedSection === 'consumables' && (
                                 <>
@@ -480,7 +486,7 @@ export function Header(props) {
                               {/* Equipment */}
                               <DropdownItem toggle={false} className={`${fontColor} ${styles.bmSubItem} ${styles.accordionToggle}`} onClick={() => toggleSection('equipment')}>
                                 <span className={styles.bmIconLabel}><FaTools className={styles.bmIcon} /> Equipment</span>
-                                <span className={`${styles.accordionArrow} ${expandedSection === 'equipment' ? styles.accordionArrowOpen : ''}`}>▶</span>
+                                <span className={`${styles.accordionArrow} ${expandedSection === 'equipment' ? styles.accordionArrowOpen : ''}`} />
                               </DropdownItem>
                               {expandedSection === 'equipment' && (
                                 <>
@@ -493,7 +499,7 @@ export function Header(props) {
                               {/* Reusables */}
                               <DropdownItem toggle={false} className={`${fontColor} ${styles.bmSubItem} ${styles.accordionToggle}`} onClick={() => toggleSection('reusables')}>
                                 <span className={styles.bmIconLabel}><FaRecycle className={styles.bmIcon} /> Reusables</span>
-                                <span className={`${styles.accordionArrow} ${expandedSection === 'reusables' ? styles.accordionArrowOpen : ''}`}>▶</span>
+                                <span className={`${styles.accordionArrow} ${expandedSection === 'reusables' ? styles.accordionArrowOpen : ''}`} />
                               </DropdownItem>
                               {expandedSection === 'reusables' && (
                                 <>
@@ -506,7 +512,7 @@ export function Header(props) {
                               {/* Tools */}
                               <DropdownItem toggle={false} className={`${fontColor} ${styles.bmSubItem} ${styles.accordionToggle}`} onClick={() => toggleSection('tools')}>
                                 <span className={styles.bmIconLabel}><FaWrench className={styles.bmIcon} /> Tools</span>
-                                <span className={`${styles.accordionArrow} ${expandedSection === 'tools' ? styles.accordionArrowOpen : ''}`}>▶</span>
+                                <span className={`${styles.accordionArrow} ${expandedSection === 'tools' ? styles.accordionArrowOpen : ''}`} />
                               </DropdownItem>
                               {expandedSection === 'tools' && (
                                 <>
