@@ -1,6 +1,6 @@
 import cs from 'classnames';
 import moment from 'moment';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-progressbar';
 import {
   BsArrowCounterclockwise,
@@ -57,12 +57,6 @@ export default function Countdown({
   const containerRef = useRef(null);
   const hourRef = useRef(null);
   const minRef = useRef(null);
-
-  useEffect(() => {
-    if (containerRef.current) {
-      containerRef.current.focus();
-    }
-  }, []);
 
   const remainingHours = moment.duration(remaining).hours();
   const remainingMinutes = moment.duration(remaining).minutes();
@@ -154,8 +148,10 @@ export default function Countdown({
     <div className={css.countdown} ref={containerRef} tabIndex={-1}>
       <button
         type="button"
-        onClick={toggleTimer}
-        onMouseDown={e => e.preventDefault()}
+        onPointerDown={e => {
+          e.preventDefault();
+          toggleTimer();
+        }}
         style={{ background: 'none', border: 'none', padding: 0 }}
         aria-label="Close timer dropdown"
       >
@@ -187,8 +183,10 @@ export default function Countdown({
             ) : (
               <button
                 type="button"
-                onClick={() => setConfirmationResetModal(true)}
-                onMouseDown={e => e.preventDefault()}
+                onPointerDown={e => {
+                  e.preventDefault();
+                  setConfirmationResetModal(true);
+                }}
                 style={{ background: 'none', border: 'none', padding: 0 }}
                 aria-label="Reset timer"
               >
@@ -228,8 +226,10 @@ export default function Countdown({
               {running ? (
                 <button
                   type="button"
-                  onClick={sendPause}
-                  onMouseDown={e => e.preventDefault()}
+                  onPointerDown={e => {
+                    e.preventDefault();
+                    sendPause();
+                  }}
                   aria-label="Pause timer"
                 >
                   <BsPauseFill
@@ -241,8 +241,10 @@ export default function Countdown({
               ) : (
                 <button
                   type="button"
-                  onClick={handleStartButton}
-                  onMouseDown={e => e.preventDefault()}
+                  onPointerDown={e => {
+                    e.preventDefault();
+                    handleStartButton();
+                  }}
                   aria-label="Start timer"
                 >
                   <BsPlay
@@ -259,8 +261,10 @@ export default function Countdown({
               {started && (
                 <button
                   type="button"
-                  onClick={handleStopButton}
-                  onMouseDown={e => e.preventDefault()}
+                  onPointerDown={e => {
+                    e.preventDefault();
+                    handleStopButton();
+                  }}
                   aria-label="Stop timer and log timer"
                 >
                   <BsStopFill
