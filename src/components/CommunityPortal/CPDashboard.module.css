@@ -277,12 +277,13 @@
 }
 
 .applyBtn {
-  background: #1f8f4d;
-  color: #fff;
+  background-color: #198754 !important;
+  color: #fff !important;
+  border: none;
 }
 
 .applyBtn:hover {
-  background: #187a40;
+  background-color: #146c43 !important;
 }
 
 /* =========================
