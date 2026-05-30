@@ -1,36 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import styles from './GardenManagement.module.css';
-
-function useDarkMode() {
-  const [darkMode, setDarkMode] = useState(false);
-
-  useEffect(() => {
-    const check = () => {
-      setDarkMode(
-        document.body.classList.contains('dark-mode') ||
-          document.body.getAttribute('data-theme') === 'dark' ||
-          document.documentElement.classList.contains('dark-mode') ||
-          window.matchMedia('(prefers-color-scheme: dark)').matches,
-      );
-    };
-
-    check();
-
-    const obs = new MutationObserver(check);
-    obs.observe(document.body, { attributes: true, attributeFilter: ['class', 'data-theme'] });
-    obs.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-
-    const mq = window.matchMedia('(prefers-color-scheme: dark)');
-    mq.addEventListener('change', check);
-
-    return () => {
-      obs.disconnect();
-      mq.removeEventListener('change', check);
-    };
-  }, []);
-
-  return darkMode;
-}
 
 // --- Mock Data ---
 
@@ -149,7 +119,7 @@ const calendarSections = [
 // --- Main Component ---
 
 function GardenManagement() {
-  const darkMode = useDarkMode();
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [activeSection, setActiveSection] = useState('Calendars');
 
   return (
