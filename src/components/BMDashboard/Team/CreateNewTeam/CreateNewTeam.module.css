@@ -250,8 +250,8 @@
 }
 
 .addTeamButtons button#submit-button {
-  background-color: #388e3c;
-  border-color: #388e3c;
+  background-color: #2e7d32;
+  border-color: #2e7d32;
   color: #fff;
 }
 
@@ -399,7 +399,7 @@
 :global(body.bm-dashboard-dark) .addBtn {
   background-color: #f49441 !important;
   border-color: #f49441 !important;
-  color: #fff !important;
+  color: #000 !important;
 }
 
 :global(body.dark-mode) .addBtn:hover,
@@ -431,8 +431,8 @@
 
 :global(body.dark-mode) .addTeamButtons button#submit-button,
 :global(body.bm-dashboard-dark) .addTeamButtons button#submit-button {
-  background-color: #388e3c !important;
-  border-color: #388e3c !important;
+  background-color: #2e7d32 !important;
+  border-color: #2e7d32 !important;
   color: #fff !important;
 }
 

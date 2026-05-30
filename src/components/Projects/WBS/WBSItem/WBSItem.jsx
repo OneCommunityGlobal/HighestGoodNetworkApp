@@ -75,11 +75,33 @@ const WBSItem = ({ darkMode, index, name, wbsId, projectId, getPopupById, delete
 };
 
 WBSItem.propTypes = {
+  darkMode: PropTypes.bool,
+  index: PropTypes.number,
+  name: PropTypes.string,
+  wbsId: PropTypes.string,
+  projectId: PropTypes.string,
+  getPopupById: PropTypes.func,
+  deleteWbs: PropTypes.func,
+  hasPermission: PropTypes.func,
+  popupEditor: PropTypes.shape({
+    currPopup: PropTypes.shape({
+      popupContent: PropTypes.string,
+    }),
+  }),
   taskSelectionMode: PropTypes.bool,
   taskSelectionReturnPath: PropTypes.string,
 };
 
 WBSItem.defaultProps = {
+  darkMode: false,
+  index: 0,
+  name: '',
+  wbsId: '',
+  projectId: '',
+  getPopupById: () => {},
+  deleteWbs: () => {},
+  hasPermission: () => false,
+  popupEditor: { currPopup: { popupContent: '' } },
   taskSelectionMode: false,
   taskSelectionReturnPath: '',
 };
