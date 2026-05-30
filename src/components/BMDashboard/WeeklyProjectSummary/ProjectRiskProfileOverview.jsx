@@ -8,6 +8,8 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  LineChart,
+  Line,
 } from 'recharts';
 import Select from 'react-select';
 import httpService from '../../../services/httpService';
@@ -25,6 +27,7 @@ export default function ProjectRiskProfileOverview() {
   const [selectedDates, setSelectedDates] = useState([]);
   const [showDateDropdown, setShowDateDropdown] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
+  const [trendData, setTrendData] = useState({});
 
   const projectWrapperRef = useRef(null);
   const dateWrapperRef = useRef(null);
@@ -59,6 +62,8 @@ export default function ProjectRiskProfileOverview() {
         const dates = Array.from(new Set(result.flatMap(p => p.dates || [])));
         setAllDates(dates);
         setSelectedDates(dates);
+        // create trend history used for movement indicators and timeline
+        generateTrendData(result);
       } catch (err) {
         setError('Failed to fetch project risk profile data.');
       } finally {
@@ -67,6 +72,39 @@ export default function ProjectRiskProfileOverview() {
     }
     fetchData();
   }, []);
+
+  const generateTrendData = riskData => {
+    const trends = {};
+    riskData.forEach(item => {
+      const key = item.projectName || 'Unknown';
+      if (!trends[key]) trends[key] = [];
+      const date = (item.dates && item.dates[0]) || item.date || new Date().toLocaleDateString();
+      trends[key].push({
+        date,
+        // Risk metrics for timeline
+        costOverrun: item.predictedCostOverrun || 0,
+        issues: item.totalOpenIssues || 0,
+        timeDelay: item.predictedTimeDelay || 0,
+        // Risk attributes for historical tracking
+        severity: item.severity || 'N/A',
+        likelihood: item.likelihood || 'N/A',
+        status: item.status || 'N/A',
+        owner: item.owner || 'N/A',
+        mitigationState: item.mitigationState || 'N/A',
+      });
+    });
+    Object.keys(trends).forEach(k => {
+      trends[k].sort((a, b) => new Date(a.date) - new Date(b.date));
+    });
+    setTrendData(trends);
+  };
+
+  const getTrendIndicator = (current, previous) => {
+    if (previous === undefined || previous === null) return null;
+    if (current > previous) return { symbol: '↑', color: '#EA4335', label: 'Increased' };
+    if (current < previous) return { symbol: '↓', color: '#34A853', label: 'Decreased' };
+    return { symbol: '→', color: '#FBBC05', label: 'Unchanged' };
+  };
 
   const filteredData = data.filter(
     p =>
@@ -170,6 +208,12 @@ export default function ProjectRiskProfileOverview() {
         <div className={`${styles.error}`}>{error}</div>
       </div>
     );
+
+  const getTimelineData = () => {
+    if (selectedProjects.length !== 1) return [];
+    const projectName = selectedProjects[0];
+    return trendData[projectName] || [];
+  };
 
   return (
     <div className={`${styles.wrapper} ${darkMode ? styles.darkMode : ''}`}>
@@ -325,6 +369,172 @@ export default function ProjectRiskProfileOverview() {
           )}
         </div>
       </div>
+
+      {/* Trend Indicators Section */}
+      {filteredData.length > 0 && (
+        <div className={`${styles.trendSection}`}>
+          <h3 className={`${styles.trendTitle}`}>Risk Movement Tracking</h3>
+          <div className={`${styles.trendGrid}`}>
+            {filteredData.map(project => {
+              const prevData =
+                trendData[project.projectName] && trendData[project.projectName].length > 1
+                  ? trendData[project.projectName][trendData[project.projectName].length - 2]
+                  : trendData[project.projectName]?.[0];
+              const costTrend = getTrendIndicator(
+                project.predictedCostOverrun,
+                prevData?.costOverrun,
+              );
+              const issueTrend = getTrendIndicator(project.totalOpenIssues, prevData?.issues);
+              const timeTrend = getTrendIndicator(project.predictedTimeDelay, prevData?.timeDelay);
+              const currentData =
+                trendData[project.projectName]?.[trendData[project.projectName]?.length - 1];
+
+              return (
+                <div key={project.projectName} className={`${styles.trendCard}`}>
+                  <div className={`${styles.projectName}`}>{project.projectName}</div>
+
+                  {/* Risk Metrics with Trends */}
+                  <div className={`${styles.trendRow}`}>
+                    <span>Cost Overrun:</span>
+                    {costTrend && (
+                      <span
+                        className={`${styles.trendIndicator}`}
+                        style={{ color: costTrend.color }}
+                        title={costTrend.label}
+                      >
+                        {costTrend.symbol}
+                      </span>
+                    )}
+                    <span>{project.predictedCostOverrun || 0}%</span>
+                  </div>
+                  <div className={`${styles.trendRow}`}>
+                    <span>Issues:</span>
+                    {issueTrend && (
+                      <span
+                        className={`${styles.trendIndicator}`}
+                        style={{ color: issueTrend.color }}
+                        title={issueTrend.label}
+                      >
+                        {issueTrend.symbol}
+                      </span>
+                    )}
+                    <span>{project.totalOpenIssues || 0}</span>
+                  </div>
+                  <div className={`${styles.trendRow}`}>
+                    <span>Time Delay:</span>
+                    {timeTrend && (
+                      <span
+                        className={`${styles.trendIndicator}`}
+                        style={{ color: timeTrend.color }}
+                        title={timeTrend.label}
+                      >
+                        {timeTrend.symbol}
+                      </span>
+                    )}
+                    <span>{project.predictedTimeDelay || 0}%</span>
+                  </div>
+
+                  {/* Risk Attributes */}
+                  {currentData && (
+                    <>
+                      <div className={`${styles.attributeRow}`}>
+                        <span className={`${styles.label}`}>Status:</span>
+                        <span className={`${styles.value}`}>{currentData.status}</span>
+                      </div>
+                      <div className={`${styles.attributeRow}`}>
+                        <span className={`${styles.label}`}>Severity:</span>
+                        <span className={`${styles.value}`}>{currentData.severity}</span>
+                      </div>
+                      <div className={`${styles.attributeRow}`}>
+                        <span className={`${styles.label}`}>Likelihood:</span>
+                        <span className={`${styles.value}`}>{currentData.likelihood}</span>
+                      </div>
+                      <div className={`${styles.attributeRow}`}>
+                        <span className={`${styles.label}`}>Owner:</span>
+                        <span className={`${styles.value}`}>{currentData.owner}</span>
+                      </div>
+                      <div className={`${styles.attributeRow}`}>
+                        <span className={`${styles.label}`}>Mitigation:</span>
+                        <span className={`${styles.value}`}>{currentData.mitigationState}</span>
+                      </div>
+                    </>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Timeline Chart for Single Project */}
+      {selectedProjects.length === 1 && getTimelineData().length > 1 && (
+        <div className={`${styles.timelineSection}`}>
+          <h3 className={`${styles.trendTitle}`}>Historical Risk Trend - {selectedProjects[0]}</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart
+              data={getTimelineData()}
+              margin={{ top: 20, right: 30, left: 0, bottom: 30 }}
+            >
+              <CartesianGrid
+                strokeDasharray="5 5"
+                stroke={darkMode ? '#3a3a3a' : '#e8e8e8'}
+                horizontal={true}
+                vertical={false}
+              />
+              <XAxis
+                dataKey="date"
+                tick={{ fontSize: 11, fill: darkMode ? '#888' : '#666' }}
+                axisLine={{ stroke: darkMode ? '#555' : '#d5d5d5', strokeWidth: 1 }}
+              />
+              <YAxis
+                tick={{ fontSize: 11, fill: darkMode ? '#888' : '#666' }}
+                axisLine={{ stroke: darkMode ? '#555' : '#d5d5d5', strokeWidth: 1 }}
+              />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: darkMode ? '#333' : '#fff',
+                  border: `1px solid ${darkMode ? '#666' : '#e0e0e0'}`,
+                  borderRadius: '6px',
+                  padding: '10px',
+                  color: darkMode ? '#fff' : '#333',
+                  fontSize: '12px',
+                }}
+              />
+              <Legend
+                wrapperStyle={{
+                  paddingTop: '20px',
+                  fontSize: '12px',
+                  color: darkMode ? '#ddd' : '#444',
+                }}
+              />
+              <Line
+                type="monotone"
+                dataKey="costOverrun"
+                stroke="#4285F4"
+                name="Cost Overrun %"
+                dot={{ r: 4 }}
+                strokeWidth={2}
+              />
+              <Line
+                type="monotone"
+                dataKey="issues"
+                stroke="#EA4335"
+                name="Issues"
+                dot={{ r: 4 }}
+                strokeWidth={2}
+              />
+              <Line
+                type="monotone"
+                dataKey="timeDelay"
+                stroke="#FBBC05"
+                name="Time Delay %"
+                dot={{ r: 4 }}
+                strokeWidth={2}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      )}
     </div>
   );
 }

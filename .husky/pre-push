@@ -3,13 +3,16 @@
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 # Use Node 20 if available (or install if needed)
-if [ -f .nvmrc ]; then
+if command -v nvm >/dev/null 2>&1 && [ -f .nvmrc ]; then
   nvm use 20 2>/dev/null || nvm install 20 && nvm use 20
 fi
 
-. "$(dirname "$0")/_/husky.sh"
-
-changed_files=$(git diff --name-only @{upstream}...HEAD 2>/dev/null)
+if git rev-parse --abbrev-ref @{upstream} >/dev/null 2>&1; then
+  changed_files=$(git diff --name-only @{upstream}...HEAD)
+else
+  echo "ℹ️  No upstream branch set. Skipping pre-push checks."
+  exit 0
+fi
 
 if [ -z "$changed_files" ]; then
   echo "ℹ️  No outgoing changes to validate. Skipping pre-push checks."
@@ -30,19 +33,20 @@ style_status=0
 
 if [ -n "$js_files" ]; then
   echo "🧪 Running related tests before push..."
-  yarn vitest related --run $js_files
+  echo "$js_files" | tr ' ' '\n' | xargs npx vitest related --run
   test_status=$?
 
   echo "🧹 Running ESLint on changed files before push..."
-  yarn eslint $js_files
+  echo "$js_files" | tr ' ' '\n' | xargs npx eslint
   lint_status=$?
 fi
 
 if [ -n "$style_files" ]; then
   echo "🎨 Running Stylelint on changed files before push..."
-  yarn stylelint $style_files
+  echo "$style_files" | tr ' ' '\n' | xargs npx stylelint
   style_status=$?
 fi
+
 
 # Block push if either fails
 if [ $test_status -ne 0 ] || [ $lint_status -ne 0 ] || [ $style_status -ne 0 ]; then

@@ -1,18 +1,22 @@
+/* stylelint-disable  */
 /* ======================================================
    BASE LAYOUT
    ====================================================== */
 
 .jobLanding {
   width: 100%;
-  min-height: 100%;
+  min-height: 100vh;
+  padding: 32px 0 48px;
 }
 
 .userCollaborationContainer {
-  width: 90%;
+  width: 92%;
+  max-width: 1200px;
   margin: 0 auto;
   background-color: #fff;
-  border-radius: 10px;
-  padding-bottom: 24px;
+  border-radius: 12px;
+  padding: 24px 24px 32px;
+  box-shadow: 0 8px 20px rgb(15 23 42 / 8%);
 }
 
 /* ================= DARK MODE VARIABLES ================= */
@@ -83,6 +87,33 @@
 .searchForm {
   display: flex;
   gap: 8px;
+}
+
+.emptyState {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  text-align: center;
+  color: #666; 
+  min-height: 250px;
+  border-radius: 12px;
+  background: transparent;
+}
+
+.emptyState.dark {
+  color: #ccc; /* Dark mode text color */
+}
+
+.emptyState p {
+  margin: 0.5rem 0;
+  font-size: 1rem;
+}
+
+.emptyState button {
+  margin-top: 1rem;
 }
 
 /* Buttons FIRST to avoid specificity issues */
@@ -226,9 +257,9 @@
 
 .jobList {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 20px;
-  padding: 20px;
+  padding: 24px 20px 8px;
 }
 
 .jobAd {

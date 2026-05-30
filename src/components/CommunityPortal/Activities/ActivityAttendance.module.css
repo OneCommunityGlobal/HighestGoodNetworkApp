@@ -1,14 +1,15 @@
+/* stylelint-disable  */
 /* ======================================
    1) Light mode fallback
    ====================================== */
 .activityAttendancePage {
-  --bg-color: #ffffff;
-  --text-color: #000000;
+  --bg-color: #fff;
+  --text-color: #000;
   --heading-color: navy;
-  --card-bg: #ffffff;
-  --panel-bg: #ffffff;
+  --card-bg: #fff;
+  --panel-bg: #fff;
   --border-color: #e0e0e0;
-  --shadow-color: rgba(0, 0, 0, 0.1);
+  --shadow-color: rgb(0 0 0 / 10%);
 
   min-height: 100vh;
   background-color: var(--bg-color);
@@ -46,14 +47,13 @@
    ====================================== */
 .activityAttendanceDarkMode {
   --bg-color: #1b2a41;
-  --text-color: #ffffff;
+  --text-color: #fff;
   --heading-color: #e8a71c;
   --card-bg: #2a3a57;
   --panel-bg: #22304a;
   --border-color: #3b4a66;
-  --shadow-color: rgba(255, 255, 255, 0.1);
-  --card-shadow: rgba(255, 255, 255, 0.1);
-
+  --shadow-color: rgb(255 255 255 / 10%);
+  --card-shadow: rgb(255 255 255 / 10%);
   --stat-green: #4caf50;
   --stat-blue: #2196f3;
   --stat-red: #f44336;
@@ -136,7 +136,7 @@
   margin-top: 15px;
 }
 
-@media (min-width: 600px) {
+@media (width >= 600px) {
   .searchContainer {
     margin-top: 0;
   }
@@ -341,7 +341,7 @@
   border-color: var(--heading-color);
 }
 
-@media (min-width: 500px) {
+@media (width >= 500px) {
   .statusFilterBtn {
     margin-top: 0;
   }
@@ -463,26 +463,28 @@
 /* ======================================
    11) MEDIA QUERIES
    ====================================== */
-@media (min-width: 600px) {
+@media (width >= 600px) {
   .searchContainer {
     margin-top: 0;
   }
 }
 
-@media (min-width: 500px) {
+@media (width >= 500px) {
   .exportBtn {
     margin-top: 0;
   }
 }
 
-@media (max-width: 750px) {
+@media (width <= 750px) {
   .statsChartContainer {
     flex-direction: column;
     align-items: center;
   }
+
   .chartContainer {
     margin-bottom: 20px;
   }
+
   /* Make stats cards full width */
   .statsGrid {
     grid-template-columns: 1fr;
@@ -507,6 +509,7 @@
   .searchContainer {
     width: 100%;
   }
+
   .exportBtn {
     width: 100%;
     text-align: center;
@@ -530,7 +533,7 @@
 .student-detail-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgb(0 0 0 / 40%);
   display: flex;
   align-items: center;
   justify-content: center;
