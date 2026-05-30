@@ -887,7 +887,11 @@ const BasicInformationTab = props => {
       <Col md={desktopDisplay ? '6' : ''} className={darkMode ? 'bg-yinmn-blue' : ''}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
           <p className={`text-right ${darkMode ? 'text-light' : ''}`} style={{ margin: '0' }}>
-            {userProfile.isActive ? 'Active' : userProfile.reactivationDate ? 'Paused until ' + formatDateCompany(userProfile.reactivationDate) : 'Inactive'}
+            {(() => {
+              if (userProfile.isActive) return 'Active';
+              if (userProfile.reactivationDate) return 'Paused until ' + formatDateCompany(userProfile.reactivationDate);
+              return 'Inactive';
+            })()}
           </p>
           {canEdit && canEditStatus && (
             <PauseAndResumeButton

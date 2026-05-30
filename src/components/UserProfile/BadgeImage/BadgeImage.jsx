@@ -1,6 +1,8 @@
+import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { Card, CardBody, CardImg, CardText, CardTitle, Popover } from 'reactstrap';
 import styles from '../Badge.module.css';
+
 
 const BadgeImage = props => {
   const [isOpen, setOpen] = useState(false);
@@ -75,6 +77,20 @@ const BadgeImage = props => {
       </Popover>
     </>
   );
+};
+
+BadgeImage.propTypes = {
+  badgeData: PropTypes.shape({
+    imageUrl: PropTypes.string,
+    type: PropTypes.string,
+    badgeName: PropTypes.string,
+    description: PropTypes.string,
+    ranking: PropTypes.number,
+  }),
+  count: PropTypes.number,
+  index: PropTypes.number,
+  time: PropTypes.string,
+  personalBestMaxHrs: PropTypes.number,
 };
 
 export default BadgeImage;
