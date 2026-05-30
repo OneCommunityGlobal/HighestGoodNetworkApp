@@ -20,6 +20,14 @@ const allCategories = [
   { label: 'Tools', route: '/bmdashboard/tools', icon: <FaWrench /> },
 ];
 
+const categoryIcons = {
+  Materials: <FaCubes />,
+  Consumables: <FaShoppingCart />,
+  Equipment: <FaTools />,
+  Reusables: <FaRecycle />,
+  Tools: <FaWrench />,
+};
+
 export function ItemListView({
   itemType,
   items,
@@ -173,7 +181,10 @@ export function ItemListView({
 
   return (
     <main className={`${styles.itemsListContainer} ${darkMode ? styles.darkMode : ''}`}>
-      <h3>{itemType}</h3>
+      <h3 className={styles.pageTitle}>
+        <span className={styles.pageTitleIcon}>{categoryIcons[itemType]}</span>
+        {itemType}
+      </h3>
 
       {/* Inventory Navigation Bar */}
       <div className={styles.inventoryNav}>

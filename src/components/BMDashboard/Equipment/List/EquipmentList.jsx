@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FaCubes, FaShoppingCart, FaRecycle, FaWrench } from 'react-icons/fa';
+import { FaCubes, FaShoppingCart, FaRecycle, FaWrench, FaTools } from 'react-icons/fa';
 import useTheme from '../../../../hooks/useTheme';
 import EquipmentsTable from './EquipmentsTable';
 import EquipmentsInputs from './EquipmentsInputs';
@@ -22,7 +22,9 @@ function EquipmentList() {
     <div className={`${styles.PageViewContainer}`}>
       <div className={`${styles.Page}`}>
         <div className={`${styles.Box}`}>
-          <div className={`${styles.BuildingTitle}`}>EQUIPMENT</div>
+          <div className={`${styles.BuildingTitle}`}>
+            <FaTools className={styles.pageTitleIcon} /> EQUIPMENT
+          </div>
 
           {/* Inventory Navigation Bar */}
           <div className={styles.inventoryNav}>

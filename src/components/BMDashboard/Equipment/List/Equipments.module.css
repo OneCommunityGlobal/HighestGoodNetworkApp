@@ -106,7 +106,7 @@
 
 /* Link Styling */
 .linkButton {
-  color: #0d6efd; 
+  color: #0d6efd;
   text-decoration: none;
   font-weight: 500;
   transition: all 0.2s ease;
@@ -213,7 +213,6 @@ body.bm-dashboard-dark table {
   border-color: #404040 !important;
 }
 
-/* Table headers - FORCE background */
 body.dark-mode table thead,
 body.dark-mode table thead tr,
 body.dark-mode table thead th,
@@ -225,7 +224,6 @@ body.bm-dashboard-dark table thead th {
   border-color: #404040 !important;
 }
 
-/* Table body - FORCE background */
 body.dark-mode table tbody,
 body.dark-mode table tbody tr,
 body.dark-mode table tbody td,
@@ -237,7 +235,6 @@ body.bm-dashboard-dark table tbody td {
   border-color: #404040 !important;
 }
 
-/* Remove any white backgrounds on hover */
 body.dark-mode table tbody tr:hover,
 body.dark-mode table tbody tr:hover td,
 body.bm-dashboard-dark table tbody tr:hover,
@@ -246,7 +243,6 @@ body.bm-dashboard-dark table tbody tr:hover td {
   color: #fff !important;
 }
 
-/* Reactstrap table classes */
 body.dark-mode .table,
 body.dark-mode .table-responsive,
 body.bm-dashboard-dark .table,
@@ -265,13 +261,11 @@ body.bm-dashboard-dark .table-responsive {
   color: #fff !important;
 }
 
-/* Force all table descendants */
 body.dark-mode .table *,
 body.bm-dashboard-dark .table * {
   border-color: #404040 !important;
 }
 
-/* Buttons inside tables */
 body.dark-mode table button,
 body.dark-mode table .btn,
 body.bm-dashboard-dark table button,
@@ -290,7 +284,6 @@ body.bm-dashboard-dark table .btn:hover {
   border-color: #4dabf7 !important;
 }
 
-/* Specific button styles */
 body.dark-mode .btn-outline-primary,
 body.bm-dashboard-dark .btn-outline-primary {
   color: #4dabf7 !important;
@@ -309,7 +302,6 @@ body.bm-dashboard-dark .btn-outline-primary:active {
   border-color: #4dabf7 !important;
 }
 
-/* Icon buttons */
 body.dark-mode table button[type="button"],
 body.bm-dashboard-dark table button[type="button"] {
   color: #4dabf7 !important;
@@ -322,7 +314,6 @@ body.bm-dashboard-dark table button[type="button"]:hover {
   color: #74c0fc !important;
 }
 
-/* Links in tables */
 body.dark-mode table a,
 body.bm-dashboard-dark table a {
   color: #4dabf7 !important;
@@ -334,7 +325,6 @@ body.bm-dashboard-dark table a:hover {
   color: #74c0fc !important;
 }
 
-/* React-Select in dark mode */
 body.dark-mode .css-b62m3t-container,
 body.dark-mode .css-b62m3t-container *,
 body.bm-dashboard-dark .css-b62m3t-container,
@@ -385,7 +375,6 @@ body.bm-dashboard-dark .css-10wo9uf-option:hover {
   background-color: #3d3d3d !important;
 }
 
-/* Modal styling */
 body.dark-mode .modal-content,
 body.dark-mode .modal-header,
 body.dark-mode .modal-body,
@@ -399,7 +388,6 @@ body.bm-dashboard-dark .modal-footer {
   border-color: #404040 !important;
 }
 
-/* Form labels */
 body.dark-mode label,
 body.dark-mode .form-label,
 body.bm-dashboard-dark label,
@@ -407,7 +395,6 @@ body.bm-dashboard-dark .form-label {
   color: #fff !important;
 }
 
-/* Tooltip */
 body.dark-mode .tooltip,
 body.dark-mode .tooltip-inner,
 body.bm-dashboard-dark .tooltip,
@@ -416,7 +403,6 @@ body.bm-dashboard-dark .tooltip-inner {
   color: #fff !important;
 }
 
-/* Container backgrounds */
 body.dark-mode .container,
 body.dark-mode .container-fluid,
 body.bm-dashboard-dark .container,
@@ -424,7 +410,6 @@ body.bm-dashboard-dark .container-fluid {
   background-color: transparent !important;
 }
 
-/* Row backgrounds */
 body.dark-mode .row,
 body.dark-mode .col,
 body.dark-mode [class*="col-"],
@@ -434,7 +419,6 @@ body.bm-dashboard-dark [class*="col-"] {
   background-color: transparent !important;
 }
 
-/* Dark Mode Additional Enhancements */
 body.dark-mode .Box,
 body.bm-dashboard-dark .Box {
   background: #1a1a1a !important;
@@ -453,23 +437,23 @@ body.bm-dashboard-dark .PageViewContainer {
 }
 
 /* Responsive Design */
-@media (width <= 768px) {
+@media (width <=768px) {
   .PageViewContainer {
     padding: 1rem 0.5rem;
   }
-  
+
   .Box {
     padding: 1rem;
   }
-  
+
   .BuildingTitle {
     font-size: 1.5rem;
   }
-  
+
   .tableWrapper {
     border-radius: 6px;
   }
-  
+
   .tableWrapper tbody td,
   .BuildingTableHeaderLine th {
     padding: 0.75rem 0.5rem;
@@ -563,4 +547,19 @@ body.bm-dashboard-dark .categoryIconLink:hover {
   background-color: #4dabf7;
   color: #0f172a;
   border-color: #4dabf7;
+}
+
+/* ── Page Title with Icon ── */
+.pageTitleIcon {
+  display: inline-flex;
+  align-items: center;
+  font-size: 1.5rem;
+  color: #1a1a1a;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+
+body.dark-mode .pageTitleIcon,
+body.bm-dashboard-dark .pageTitleIcon {
+  color: #4dabf7;
 }

@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import { FaCubes, FaShoppingCart, FaTools, FaRecycle } from 'react-icons/fa';
+import { FaCubes, FaShoppingCart, FaTools, FaRecycle, FaWrench } from 'react-icons/fa';
 import BMError from '../shared/BMError';
 import SelectForm from '../ItemList/SelectForm';
 import SelectItem from '../ItemList/SelectItem';
@@ -248,7 +248,12 @@ function ToolItemListViewInner({ itemType, items, errors = {}, UpdateItemModal, 
 
   return (
     <main className={`${styles.itemsListContainer} ${themeClass}`}>
-      <h3>{itemType}</h3>
+      <h3 className={styles.pageTitle}>
+        <span className={styles.pageTitleIcon}>
+          <FaWrench />
+        </span>
+        {itemType}
+      </h3>
 
       {/* Inventory Navigation Bar */}
       <div className={styles.inventoryNav}>

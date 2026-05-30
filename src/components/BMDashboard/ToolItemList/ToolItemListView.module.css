@@ -410,27 +410,41 @@
   font-weight: 500;
 }
 
-body.dark-mode .returnBtn,
-body.bm-dashboard-dark .returnBtn {
+.darkTheme .returnBtn {
   background-color: #1a3a4d;
   color: #fff;
 }
 
-body.dark-mode .returnBtn:hover,
-body.bm-dashboard-dark .returnBtn:hover {
+.darkTheme .returnBtn:hover {
   background-color: #4dabf7;
   color: #0f172a;
 }
 
-body.dark-mode .categoryIconLink,
-body.bm-dashboard-dark .categoryIconLink {
+.darkTheme .categoryIconLink {
   border-color: #4dabf7;
   color: #4dabf7;
 }
 
-body.dark-mode .categoryIconLink:hover,
-body.bm-dashboard-dark .categoryIconLink:hover {
+.darkTheme .categoryIconLink:hover {
   background-color: #4dabf7;
   color: #0f172a;
   border-color: #4dabf7;
+}
+
+/* ── Page Title with Icon ── */
+.pageTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pageTitleIcon {
+  display: inline-flex;
+  align-items: center;
+  font-size: 1.2rem;
+  color: #0d5675;
+}
+
+.darkTheme .pageTitleIcon {
+  color: #4dabf7;
 }

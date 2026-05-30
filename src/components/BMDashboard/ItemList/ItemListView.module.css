@@ -650,3 +650,21 @@ table td {
   color: #fff;
   border-color: #4a9bc2;
 }
+
+/* ── Page Title with Icon ── */
+.pageTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pageTitleIcon {
+  display: inline-flex;
+  align-items: center;
+  font-size: 1.2rem;
+  color: #0d5675;
+}
+
+.darkMode .pageTitleIcon {
+  color: #5eb3e4;
+}
