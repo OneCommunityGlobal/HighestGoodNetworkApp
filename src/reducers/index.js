@@ -63,6 +63,7 @@ import { equipmentReducer } from './bmdashboard/equipmentReducer';
 import { bmProjectMemberReducer } from './bmdashboard/projectMemberReducer';
 import { bmTimeLoggerReducer } from './bmdashboard/timeLoggerReducer';
 import bmInjuryReducer from './bmdashboard/injuryReducer';
+import { costBreakdownReducer } from './bmdashboard/costBreakdownReducer';
 
 import dashboardReducer from './dashboardReducer';
 import { timeOffRequestsReducer } from './timeOffRequestReducer';
@@ -87,6 +88,8 @@ import { jobApplicationReducer } from './jobApplication/jobApplicationReducer';
 // lbdashboard
 import wishListReducer from './listBidDashboard/wishListItemReducer';
 
+import { optStatusBreakdownReducer } from './optStatusBreakdownReducer';
+
 // listing and biddding dashboard
 
 import {
@@ -100,6 +103,7 @@ import reviewsInsightReducer from './prAnalytics/reviewsInsightReducer';
 
 // job analytics
 import { hoursPledgedReducer } from './jobAnalytics/hoursPledgedReducer';
+import { JobsHitsApplicationsReducer } from './jobAnalytics/JobsHitsApplicationsReducer';
 import { studentTasksReducer } from './studentTasksReducer';
 
 // Education Dashboard Reducers
@@ -107,6 +111,11 @@ import { studentReducer } from './studentProfileReducer';
 import { atomReducer } from './educationPortal/atomReducer';
 import { weeklySummariesFiltersApi } from '../actions/weeklySummariesFilterAction';
 import browseLessonPlanReducer from './educationPortal/broweLPReducer';
+import KIInventoryReducer from './KIInventoryReducer';
+import formReducer from './formReducer';
+
+// Kitchen and Inventory Management
+import { kiCalendarApi } from '../actions/kiCalendarAction';
 
 const localReducers = {
   auth: authReducer,
@@ -163,6 +172,7 @@ const localReducers = {
   dashboard: dashboardReducer,
   injuries: injuriesReducer,
   weeklyProjectSummary: weeklyProjectSummaryReducer,
+  costBreakdown: costBreakdownReducer,
 
   // lbdashboard
   wishlistItem: wishListReducer,
@@ -178,6 +188,8 @@ const localReducers = {
   lbmessaging: messageReducer,
   lbuserpreferences: userPreferencesReducer,
 
+  optStatusBreakdown: optStatusBreakdownReducer,
+
   WishListItem: wishListReducer,
 
   listOverview: listOverviewReducer,
@@ -187,6 +199,7 @@ const localReducers = {
 
   // job analytics
   hoursPledged: hoursPledgedReducer,
+  jobsHitsApplications: JobsHitsApplicationsReducer,
 
   // student tasks
   studentTasks: studentTasksReducer,
@@ -197,6 +210,11 @@ const localReducers = {
 
   // education portal
   browseLessonPlan: browseLessonPlanReducer,
+  kiInventory: KIInventoryReducer,
+
+  // Kitchen and Inventory Management
+  [kiCalendarApi.reducerPath]: kiCalendarApi.reducer,
+  form: formReducer,
 };
 
 const sessionReducers = {

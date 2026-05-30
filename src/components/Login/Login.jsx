@@ -1,4 +1,4 @@
-import Joi from 'joi-browser';
+import Joi from 'joi';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
 import NetlifyPoweredLink from '~/components/Footer/NetlifyPoweredLink';
