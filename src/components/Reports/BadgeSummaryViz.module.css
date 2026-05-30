@@ -4,14 +4,15 @@
 }
 
 .badge_summary_viz_button {
-  box-shadow: '2px 2px 4px 1px lightgray';
+  box-shadow: 2px 2px 4px 1px lightgray;
   margin: 5px;
 }
 
-@media screen and (max-width: 1024px) {
+@media screen and (width <= 1024px) {
   .badge_summary_viz_footer {
     width: 100%;
   }
+
   .badge_summary_viz_button {
     width: 100%;
     float: none;
@@ -23,7 +24,7 @@
   border-radius: 50%;
   width: 20px;
   height: 20px;
-  background: #007bff;
+  background: #0056b3;
   color: #fff;
   text-align: center;
   font: 15px Arial, sans-serif;
@@ -38,7 +39,7 @@
 	border-radius: 45%;
 	width: 19px;
 	height: 19px;
-	background: #800080;
+	background: #6a006a;
 	color: #fff;
 	text-align: center;
 	font: 11px Arial, sans-serif;
@@ -52,7 +53,7 @@
   border-radius: 50%;
   width: 20px;
   height: 15px;
-  background: #007bff;
+  background: #0056b3;
   color: #fff;
   text-align: center;
   font: 11px Arial, sans-serif;

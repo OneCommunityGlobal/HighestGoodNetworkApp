@@ -21,8 +21,6 @@ import {
 } from 'react-icons/fa';
 import { GrWorkshop } from 'react-icons/gr';
 
-const MOCK_EVENTS = [];
-
 const normalizeStatus = status => {
   if (!status) return 'New';
 
@@ -46,7 +44,6 @@ export default function CommunityCalendar() {
   const [showEventModal, setShowEventModal] = useState(false);
   const [tooltip, setTooltip] = useState(null);
   const darkMode = useSelector(state => state.theme.darkMode);
-  const currentDate = new Date();
 
   useEffect(() => {
     const fetchEvents = async () => {
