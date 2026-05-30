@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import Select from 'react-select';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
@@ -27,8 +28,8 @@ function CustomTooltip({ active, payload, label, darkMode }) {
       >
         {label}
       </p>
-      {payload.map((entry, index) => (
-        <p key={index} style={{ color: entry.color }}>
+      {payload.map(entry => (
+        <p key={entry.name} style={{ color: entry.color }}>
           {entry.name}: {entry.value}
         </p>
       ))}
@@ -44,6 +45,19 @@ function CustomTooltip({ active, payload, label, darkMode }) {
     </div>
   );
 }
+
+CustomTooltip.propTypes = {
+  active: PropTypes.bool,
+  payload: PropTypes.arrayOf(PropTypes.object),
+  label: PropTypes.string,
+  darkMode: PropTypes.bool,
+};
+CustomTooltip.defaultProps = {
+  active: false,
+  payload: [],
+  label: '',
+  darkMode: false,
+};
 
 function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
   const reduxDarkMode = useSelector(state => state.theme.darkMode);
@@ -83,6 +97,8 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
           setSelectedProject(null);
         }
       } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error('Failed to load projects:', err);
         setError('Failed to load projects');
         setAllProjects([]);
         setSelectedProject(null);
@@ -157,6 +173,8 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
           setData([]);
         }
       } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error('Failed to load tools data:', err);
         setError('Failed to load tools data');
         setData([]);
         setAllTools([]);
@@ -355,8 +373,17 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
             overflow: 'hidden',
             cursor: 'default',
           }}
+          role="button"
+          aria-label="Chart preview - select a project to load data"
+          tabIndex={0}
           onMouseEnter={() => setIsPreviewHovering(true)}
           onMouseLeave={() => setIsPreviewHovering(false)}
+          onFocus={() => setIsPreviewHovering(true)}
+          onBlur={() => setIsPreviewHovering(false)}
+          onClick={() => setIsPreviewHovering(prev => !prev)}
+          onKeyDown={e => {
+            if (e.key === 'Enter' || e.key === ' ') setIsPreviewHovering(prev => !prev);
+          }}
         >
           <div
             style={{
@@ -417,9 +444,9 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
               >
                 Select a project to load data
               </div>
-              {[80, 55, 70].map((w, i) => (
+              {[80, 55, 70].map(w => (
                 <div
-                  key={i}
+                  key={w}
                   style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}
                 >
                   <div
@@ -497,5 +524,12 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
     </div>
   );
 }
+
+ToolsHorizontalBarChart.propTypes = {
+  darkMode: PropTypes.bool,
+};
+ToolsHorizontalBarChart.defaultProps = {
+  darkMode: undefined,
+};
 
 export default ToolsHorizontalBarChart;
