@@ -732,10 +732,7 @@ export default (
           component={GardenManagement}
         />
         <Route path="/kitchenandinventory/orchardmanagement" component={OrchardManagementPage} />
-        <Route
-          path="/kitchenandinventory/dashboard/foodcategories"
-          component={FoodCategoriesChart}
-        />
+
         <ProtectedRoute path="/jobformbuilder" fallback component={JobFormBuilder} />
         <Route path="/suggestedjobslist" component={SuggestedJobsList} />
         <ProtectedRoute path="/infoCollections" component={EditableInfoModal} />
