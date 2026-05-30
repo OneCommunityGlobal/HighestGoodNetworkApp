@@ -1,7 +1,7 @@
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import BlueSquare from '../BlueSquares/BlueSquare';
 import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
-import './BlueSquaresTable.css';
+import './BlueSquaresTable.module.css';
 
 const BlueSquaresTable = ({ userProfile ,canEdit, isPrivate , handleUserProfile , handleBlueSquare, darkMode}) => {
   return (
@@ -32,7 +32,7 @@ const BlueSquaresTable = ({ userProfile ,canEdit, isPrivate , handleUserProfile 
       </div>
       {canEdit ? (
         <BlueSquare blueSquares={userProfile?.infringements} handleBlueSquare={handleBlueSquare} darkMode={darkMode}/>
-      ) : !isPrivate ? (
+      ) : isPrivate ? (
         <div className="pl-1">Blue Square Info is Private</div>
       ) : (
         <BlueSquare blueSquares={userProfile?.infringements} handleBlueSquare={handleBlueSquare} darkMode={darkMode}/>

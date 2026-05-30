@@ -35,7 +35,7 @@ import TangibleInfoModal from './TangibleInfoModal';
 import ReminderModal from './ReminderModal';
 import TimeLogConfirmationModal from './TimeLogConfirmationModal';
 import { ENDPOINTS } from '../../../utils/URL';
-import '../../Header/index.css';
+import '../../Header/index.module.css';
 import styles from '../Timelog.module.css';
 
 import { updateIndividualTaskTime } from '../../TeamMemberTasks/actions';
@@ -451,7 +451,7 @@ function TimeEntryForm(props) {
       if (edit) {
         await props.editTimeEntry(data._id, timeEntry, initialDateOfWork);
       } else {
-        await props.postTimeEntry(timeEntry);
+        await props.postTimeEntry(timeEntry, { displayedUserId: props.displayedUserId });
       }
 
       await handlePostSubmitActions();
@@ -948,6 +948,7 @@ const mapStateToProps = state => ({
   authUser: state.auth.user,
   darkMode: state.theme.darkMode,
   userProjects: state.userProjects.projects,
+  displayedUserId: state.userProfile?._id,
 });
 
 export default connect(mapStateToProps, {

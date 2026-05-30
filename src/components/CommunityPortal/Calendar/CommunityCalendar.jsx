@@ -1,9 +1,12 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import ReactCalendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faClock, faLocationDot, faTag, faCircleCheck } from '@fortawesome/free-solid-svg-icons';
 import CalendarActivitySection from './CalendarActivitySection';
 import styles from './CommunityCalendar.module.css';
 import {
@@ -17,10 +20,6 @@ import {
   FaGlassCheers,
 } from 'react-icons/fa';
 import { GrWorkshop } from 'react-icons/gr';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClock, faLocationDot, faTag, faCircleCheck } from '@fortawesome/free-solid-svg-icons';
-
-const MOCK_EVENTS = [];
 
 const normalizeStatus = status => {
   if (!status) return 'New';
@@ -43,27 +42,18 @@ export default function CommunityCalendar() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showEventModal, setShowEventModal] = useState(false);
-  const [hoveredEventId, setHoveredEventId] = useState(null);
+  const [tooltip, setTooltip] = useState(null);
   const darkMode = useSelector(state => state.theme.darkMode);
-  const currentDate = new Date();
 
   useEffect(() => {
     const fetchEvents = async () => {
       setIsLoading(true);
       try {
         const response = await axios.get(ENDPOINTS.EVENTS);
-
         const apiEvents = response.data?.events || response.data || [];
-
-        if (!apiEvents || apiEvents.length === 0) {
-          console.warn('API returned empty → using mock events');
-          setEvents(MOCK_EVENTS);
-        } else {
-          setEvents(apiEvents);
-        }
+        setEvents(apiEvents);
       } catch (err) {
-        console.warn('API failed → using mock events');
-        setEvents(MOCK_EVENTS);
+        setError('Error fetching Events. Please try again later.');
       } finally {
         setIsLoading(false);
       }
@@ -74,8 +64,30 @@ export default function CommunityCalendar() {
 
   const mappedEvents = useMemo(() => {
     return events.map(event => {
-      const eventDate = new Date(event.date);
-      const timeString = eventDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const eventDateTime = new Date(event.startTime);
+      const timeString = new Intl.DateTimeFormat('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      }).format(eventDateTime);
+
+      const eventEndTime = new Date(event.endTime);
+      const endTimeString = new Intl.DateTimeFormat('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      }).format(eventEndTime);
+
+      const eventDate = new Date(
+        new Intl.DateTimeFormat('en-US', {
+          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+        }).format(eventDateTime),
+      );
 
       return {
         ...event,
@@ -84,8 +96,10 @@ export default function CommunityCalendar() {
         type: event.type || 'General',
         status: normalizeStatus(event.status),
         time: event.time || timeString,
+        endTime: endTimeString || event.endTime,
         description: event.description || `Join us for ${event.title}`,
         location: event.location || 'Online',
+        isOver: eventDate < new Date(),
       };
     });
   }, [events]);
@@ -131,9 +145,7 @@ export default function CommunityCalendar() {
     [],
   );
 
-  const [overflowDate, setOverflowDate] = useState(false);
-
-  // Memoized helper function to get events for a specific date
+  const [overflowDate, setOverflowDate] = useState(null);
   const getEventsForDate = useCallback(
     date => {
       if (!date) return [];
@@ -368,8 +380,11 @@ export default function CommunityCalendar() {
                   e_obj.stopPropagation();
                   handleEventClick(e);
                 }}
-                onMouseEnter={() => setHoveredEventId(e.id)}
-                onMouseLeave={() => setHoveredEventId(null)}
+                onMouseEnter={ev => {
+                  const r = ev.currentTarget.getBoundingClientRect();
+                  setTooltip({ event: e, x: r.right + 8, y: r.top });
+                }}
+                onMouseLeave={() => setTooltip(null)}
                 aria-label={`Click to view details for ${e.title}`}
               >
                 <span className={styles.eventContent}>
@@ -378,24 +393,6 @@ export default function CommunityCalendar() {
                   </span>
                   <span className={styles.eventTitleText}>{e.title}</span>
                 </span>
-
-                {hoveredEventId === e.id && (
-                  <div
-                    className={`${styles.eventTooltip} ${darkMode ? styles.eventTooltipDark : ''}`}
-                  >
-                    <strong>{e.title}</strong>
-                    <span className={styles.tooltipDetail}>
-                      <strong>Time:</strong> {e.time}
-                    </span>
-                    <span className={styles.tooltipDetail}>
-                      <strong>Location:</strong> {e.location}
-                    </span>
-                    <span className={styles.tooltipDetail}>
-                      <strong>Status:</strong> {e.status}
-                    </span>
-                    <small>Click for more details</small>
-                  </div>
-                )}
               </button>
             );
           })}
@@ -403,8 +400,13 @@ export default function CommunityCalendar() {
             <button
               type="button"
               className={styles.moreEvents}
-              onClick={() => setOverflowDate(date)}
-              title="View all events"
+              onClick={ev => {
+                ev.stopPropagation();
+                const r = ev.currentTarget.getBoundingClientRect();
+                setOverflowDate({ date, x: r.right + 8, y: r.top });
+                handleDateSelect(date);
+              }}
+              title="View all events for this day"
             >
               +{hiddenCount} more
             </button>
@@ -412,7 +414,7 @@ export default function CommunityCalendar() {
         </div>
       );
     },
-    [getEventsForDate, handleEventClick, darkMode, hoveredEventId],
+    [getEventsForDate, handleEventClick, darkMode],
   );
 
   // Memoized tile class name function
@@ -533,27 +535,15 @@ export default function CommunityCalendar() {
             .react-calendar__tile.selectedDate .eventItem {
               color: inherit !important;
             }
-              /* 1. Target the button and any text inside it */
+              /* Navigation button hover/focus — dark mode */
             .react-calendar__navigation button:enabled:hover,
             .react-calendar__navigation button:enabled:hover *,
             .react-calendar__navigation button:enabled:focus,
             .react-calendar__navigation button:enabled:focus * {
-              background-color: #e6e6e6 !important;
-              color: #000000 !important;
-              /* This handles cases where they use text-shadows or strokes */
+              background-color: #2d3748 !important;
+              color: #ffffff !important;
               text-shadow: none !important;
               -webkit-text-stroke: 0px transparent !important;
-            }
-
-            /* 2. Target the specific arrows (the << < > >> symbols) */
-            .react-calendar__navigation__arrow:enabled:hover {
-              color: #000000 !important;
-            }
-
-            /* 3. If they are using pseudo-elements (common in some versions) */
-            .react-calendar__navigation button:enabled:hover::before,
-            .react-calendar__navigation button:enabled:hover::after {
-              color: #000000 !important;
             }
           `}
         </style>
@@ -648,11 +638,13 @@ export default function CommunityCalendar() {
                           <header className={styles.selectedEventHeader}>
                             <div>
                               <h3>{event.title}</h3>
-                              <div>
+                              <div className={styles.selectedEventMeta}>
                                 <ul className={styles.selectedEventMeta}>
                                   <li className={styles.metaItem}>
                                     <FontAwesomeIcon icon={faClock} className={styles.metaIcon} />
-                                    <span>{event.time}</span>
+                                    <span>
+                                      {event.time} - {event.endTime}
+                                    </span>
                                   </li>
 
                                   <li className={styles.metaItem}>
@@ -685,10 +677,14 @@ export default function CommunityCalendar() {
                               className={styles.eventDetailButton}
                               onClick={() => handleEventClick(event)}
                             >
-                              View full details
+                              View details
                             </button>
                           </header>
-                          <p className={styles.selectedEventDescription}>{event.description}</p>
+
+                          {/* Row 3: description */}
+                          {event.description && (
+                            <p className={styles.selectedEventDescription}>{event.description}</p>
+                          )}
                         </article>
                       </li>
                     );
@@ -704,31 +700,80 @@ export default function CommunityCalendar() {
         </div>
       </main>
 
-      {/* Overflow popup */}
+      {/* Overflow day-summary popup */}
       {overflowDate && (
         <div
           ref={popupRef}
           className={`${styles.overflowPopup} ${darkMode ? styles.overflowPopupDark : ''}`}
+          style={{ left: overflowDate.x, top: overflowDate.y }}
         >
-          <div className={styles.overflowPopupInner}>
-            <h4>{overflowDate.toDateString()}</h4>
-            {getEventsForDate(overflowDate).map(e => (
+          <div
+            className={`${styles.overflowPopupHeader} ${
+              darkMode ? styles.overflowPopupHeaderDark : ''
+            }`}
+          >
+            <span>
+              {overflowDate.date.toLocaleDateString('en-US', {
+                weekday: 'long',
+                month: 'long',
+                day: 'numeric',
+              })}
+            </span>
+            <button
+              type="button"
+              className={`${styles.overflowPopupClose} ${
+                darkMode ? styles.overflowPopupCloseDark : ''
+              }`}
+              onClick={() => setOverflowDate(null)}
+              aria-label="Close popup"
+            >
+              ×
+            </button>
+          </div>
+          <div className={styles.overflowPopupList}>
+            {getEventsForDate(overflowDate.date).map(e => (
               <button
                 key={e.id}
                 type="button"
-                className={`${styles.eventItem} ${styles[statusMap[e.status]] || styles.statusNew}`}
-                onClick={() => handleEventClick(e)}
-                title={e.title}
+                className={`${styles.overflowEventRow} ${
+                  darkMode ? styles.overflowEventRowDark : ''
+                }`}
+                onClick={() => {
+                  handleEventClick(e);
+                  setOverflowDate(null);
+                }}
               >
-                <span className={styles.eventContent}>
-                  <span className={styles.eventIcon} aria-label={e.status} title={e.status}>
-                    {statusIconMap[e.status] || '⭐'}
-                  </span>
-                  <span className={styles.eventTitleText}>{e.title}</span>
+                <span className={styles.overflowEventTime}>{e.time}</span>
+                <span className={styles.overflowEventTitle}>{e.title}</span>
+                <span
+                  className={`${styles.overflowEventBadge} ${styles[statusMap[e.status]] ||
+                    styles.statusNew}`}
+                >
+                  {statusIconMap[e.status] || '⭐'}
                 </span>
               </button>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* Hover tooltip — fixed so it escapes overflow: hidden on tiles */}
+      {tooltip && (
+        <div
+          className={`${styles.eventTooltip} ${darkMode ? styles.eventTooltipDark : ''}`}
+          style={{ left: tooltip.x, top: tooltip.y }}
+        >
+          <strong>{tooltip.event.title}</strong>
+          <span className={styles.tooltipDetail}>
+            <strong>Time:</strong> {tooltip.event.time}
+          </span>
+          <span className={styles.tooltipDetail}>
+            <strong>Location:</strong> {tooltip.event.location}
+          </span>
+          <span className={styles.tooltipDetail}>
+            <strong>Status:</strong> {tooltip.event.status}
+          </span>
+          <small>Click for more details</small>
         </div>
       )}
 
@@ -759,13 +804,13 @@ export default function CommunityCalendar() {
             <div className={styles.modalContent}>
               <div className={styles.eventStatus}>
                 <span
-                  className={`${styles.statusBadge} ${styles[statusMap[selectedEvent.status]] ||
-                    ''} ${darkMode ? styles.darkModeStatusBadge : ''}`}
+                  className={`${darkMode ? styles.darkModeStatusBadge : styles.statusBadge} ${
+                    darkMode ? '' : styles[statusMap[selectedEvent.status]] || ''
+                  }`}
                 >
                   {statusIconMap[selectedEvent.status] || ''} {selectedEvent.status}
                 </span>
               </div>
-
               <div className={styles.eventDetailsGrid}>
                 {[
                   [FaTag, 'Type', selectedEvent.type],
@@ -797,8 +842,26 @@ export default function CommunityCalendar() {
             </div>
 
             <div className={styles.modalActions}>
-              <button className={styles.btnPrimary}>Register for Event</button>
-              <button className={styles.btnSecondary}>Add to Calendar</button>
+              {selectedEvent.isOver ? (
+                <button type="button" className={styles.btnDisabled} disabled>
+                  Completed
+                </button>
+              ) : (
+                <>
+                  <button type="button" className={styles.btnPrimary}>
+                    <Link
+                      to={`/communityportal/Activities/Register/${selectedEvent._id}`}
+                      className={styles.btnPrimary}
+                      onClick={closeEventModal}
+                    >
+                      Register for Event
+                    </Link>
+                  </button>
+                  <button type="button" className={styles.btnSecondary}>
+                    Add to Calendar
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
