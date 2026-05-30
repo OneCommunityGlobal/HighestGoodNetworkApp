@@ -160,8 +160,9 @@ const VariableRow = React.memo(
                         src={computedSrc}
                         alt="Preview"
                         style={{
-                          maxWidth: '100%',
-                          width: '100%',
+                          maxWidth: '200px',
+                          maxHeight: '150px',
+                          width: 'auto',
                           height: 'auto',
                           objectFit: 'contain',
                           borderRadius: '4px',

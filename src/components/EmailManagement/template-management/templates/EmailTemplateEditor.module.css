@@ -57,7 +57,7 @@
 
 .email-template-editor .template-name-field input:focus {
   border-color: #007bff;
-  box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.15);
+  box-shadow: 0 0 0 0.25rem rgb(0 123 255 / 15%);
   outline: none;
 }
 
@@ -96,6 +96,7 @@
   0%, 100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.6;
   }
@@ -120,9 +121,18 @@
   min-width: auto;
 }
 
+.email-template-editor .variables-header .btn {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-weight: 500;
+  transition: all 0.15s ease-in-out;
+  white-space: nowrap;
+}
+
 .email-template-editor .action-buttons .btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 8px rgb(0 0 0 / 15%);
 }
 
 .email-template-editor .action-buttons .btn:active {
@@ -175,7 +185,7 @@
 
 .email-template-editor .retry-button:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
 }
 
 .email-template-editor .retry-button:disabled {
@@ -212,7 +222,7 @@
   padding: 0.5rem 0.75rem;
   font-size: 0.875rem;
   transition: all 0.15s ease-in-out;
-  background-color: #ffffff;
+  background-color: #fff;
   width: 100%;
   box-sizing: border-box;
 }
@@ -220,8 +230,8 @@
 .email-template-editor .form-control:focus {
   border-color: #3b82f6;
   outline: 0;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 10%);
+  background-color: #fff;
 }
 
 .email-template-editor .form-control::placeholder {
@@ -254,18 +264,10 @@
   align-items: center;
 }
 
-.email-template-editor .variables-header .btn {
-  font-size: 0.75rem;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
-  font-weight: 500;
-  transition: all 0.15s ease-in-out;
-  white-space: nowrap;
-}
 
 .email-template-editor .variables-header .btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
 }
 
 /* Template Variable Count Badge */
@@ -291,7 +293,7 @@
 
 .email-template-editor .template-variable-count:hover {
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
 }
 
 /* Auto Extract Button */
@@ -305,7 +307,7 @@
 
 .email-template-editor .btn-auto-extract:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 8px rgb(0 0 0 / 15%);
 }
 
 .email-template-editor .btn-auto-extract:disabled {
@@ -328,24 +330,24 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: #ffffff;
+  background: #fff;
   border: 1.5px solid #dee2e6;
   border-radius: 20px;
   padding: 8px 12px;
   transition: all 0.2s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
   white-space: nowrap;
 }
 
 .email-template-editor .variable-chip:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 8px rgb(0 0 0 / 15%);
   border-color: #007bff;
   transform: translateY(-2px);
   background: #f8f9fa;
 }
 
 .email-template-editor .variable-code {
-  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+  font-family: 'SF Mono', Monaco, Inconsolata, 'Roboto Mono', monospace;
   background: #e9ecef;
   padding: 3px 8px;
   border-radius: 4px;
@@ -461,7 +463,7 @@
 
 .email-template-management.dark-mode .email-template-editor .template-name-field input:focus {
   border-color: #63b3ed;
-  box-shadow: 0 0 0 0.25rem rgba(99, 179, 237, 0.15);
+  box-shadow: 0 0 0 0.25rem rgb(99 179 237 / 15%);
 }
 
 .email-template-management.dark-mode .email-template-editor .template-name-field input::placeholder {
@@ -470,7 +472,7 @@
 
 /* Dark Mode - Unsaved Changes Indicator */
 .email-template-management.dark-mode .email-template-editor .unsaved-changes-indicator {
-  background: rgba(255, 193, 7, 0.2);
+  background: rgb(255 193 7 / 20%);
   border-color: #ffc107;
 }
 
@@ -585,7 +587,7 @@
 .email-template-management.dark-mode .email-template-editor .form-control:focus,
 .email-template-management.dark-mode .email-template-editor .form-select:focus {
   border-color: #60a5fa;
-  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+  box-shadow: 0 0 0 3px rgb(96 165 250 / 10%);
   background-color: #1f2937;
 }
 
@@ -598,7 +600,7 @@
    ========================================================================== */
 
 /* Extra Small Devices (phones, 576px and down) */
-@media (max-width: 575.98px) {
+@media (width <= 575.98px) {
   .email-template-editor .editor-header {
     padding: 0.75rem 0;
     margin-bottom: 0.5rem;
@@ -689,7 +691,7 @@
 }
 
 /* Small Devices (landscape phones, 576px and up) */
-@media (min-width: 576px) and (max-width: 767.98px) {
+@media (width >= 576px) and (width <= 767.98px) {
   .email-template-editor .header-container {
     flex-direction: column;
     gap: 0.75rem;
@@ -711,7 +713,7 @@
 }
 
 /* Medium Devices (tablets, 768px and up) */
-@media (min-width: 768px) and (max-width: 991.98px) {
+@media (width >= 768px) and (width <= 991.98px) {
   .email-template-editor .header-container {
     flex-direction: column;
     gap: 0.75rem;
@@ -733,7 +735,7 @@
 }
 
 /* Large Devices (desktops, 992px and up) */
-@media (min-width: 992px) {
+@media (width >= 992px) {
   .email-template-editor .template-editor-content {
     padding: 0;
   }
@@ -777,7 +779,7 @@
   padding: 0;
   margin: -1px;
   overflow: hidden;
-  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
   white-space: nowrap;
   border: 0;
 }
@@ -793,7 +795,55 @@
 
 /* Fix for Safari flexbox bugs */
 .email-template-editor .d-flex {
-  -webkit-box-align: center;
-  -webkit-align-items: center;
   align-items: center;
 }
+
+/* Dark Mode - Add/Edit Variable Modal */
+:global(body.bm-dashboard-dark) :global(.modal-content) {
+  background-color: #1a2a3a;
+  color: #e0e0e0;
+  border-color: #2e5061;
+}
+
+:global(body.bm-dashboard-dark) :global(.modal-header) {
+  background-color: #1a2a3a;
+  border-bottom-color: #2e5061;
+  color: #e0e0e0;
+}
+
+:global(body.bm-dashboard-dark) :global(.modal-body) {
+  background-color: #1a2a3a;
+  color: #e0e0e0;
+}
+
+:global(body.bm-dashboard-dark) :global(.modal-footer) {
+  background-color: #1a2a3a;
+  border-top-color: #2e5061;
+}
+
+:global(body.bm-dashboard-dark) :global(.modal-body) :global(.form-control),
+:global(body.bm-dashboard-dark) :global(.modal-body) :global(.form-select) {
+  background-color: #0d1f2d;
+  color: #e0e0e0;
+  border-color: #2e5061;
+}
+
+:global(body.bm-dashboard-dark) :global(.modal-body) :global(label),
+:global(body.bm-dashboard-dark) :global(.modal-body) :global(.col-form-label) {
+  color: #e0e0e0;
+}
+
+:global(body.bm-dashboard-dark) :global(.modal-title),
+:global(body.bm-dashboard-dark) :global(.modal-header) :global(.btn-close) {
+  color: #e0e0e0;
+  filter: invert(1);
+}
+
+/* Dark Mode - Type Selection Modal ListGroup */
+:global(body.bm-dashboard-dark) :global(.list-group-item) {
+  background-color: #0d1f2d;
+  color: #e0e0e0;
+  border-color: #2e5061;
+}
+
+
