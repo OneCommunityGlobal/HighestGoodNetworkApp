@@ -1,6 +1,5 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
 import ReactCalendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import axios from 'axios';
@@ -191,8 +190,8 @@ export default function CommunityCalendar() {
     const timeMatch = event.time?.match(/^(\d{1,2}):(\d{2})\s?(AM|PM)$/i);
 
     if (timeMatch) {
-      let hour = parseInt(timeMatch[1], 10);
-      const minute = parseInt(timeMatch[2], 10);
+      let hour = Number.parseInt(timeMatch[1], 10);
+      const minute = Number.parseInt(timeMatch[2], 10);
       const meridian = timeMatch[3].toUpperCase();
 
       if (meridian === 'PM' && hour !== 12) hour += 12;
@@ -204,14 +203,35 @@ export default function CommunityCalendar() {
     return eventDateTime < new Date();
   }, []);
 
+  const canRegisterForEvent = useCallback(
+    event => {
+      if (!event) return false;
+
+      if (isEventInPast(event)) {
+        toast.info('Registration is closed for past events.', {
+          position: 'top-right',
+          autoClose: 3000,
+        });
+        return false;
+      }
+
+      if (registeredEventIds.has(event.id)) {
+        toast.info(`You are already registered for "${event.title}".`, {
+          position: 'top-right',
+          autoClose: 3000,
+        });
+        return false;
+      }
+
+      return true;
+    },
+    [registeredEventIds, isEventInPast],
+  );
+
   const handleRegister = useCallback(async () => {
     if (!selectedEvent) return;
 
-    if (isEventInPast(selectedEvent)) {
-      toast.info('Registration is closed for past events.', {
-        position: 'top-right',
-        autoClose: 3000,
-      });
+    if (!canRegisterForEvent(selectedEvent)) {
       return;
     }
 
@@ -223,11 +243,12 @@ export default function CommunityCalendar() {
       return;
     }
 
-    const confirmed = window.confirm(
+    const confirmed = globalThis.confirm(
       `Register for "${
         selectedEvent.title
       }"?\n\nDate: ${selectedEvent.date.toDateString()}\nTime: ${selectedEvent.time}`,
     );
+
     if (!confirmed) return;
 
     setIsRegistering(true);
@@ -250,6 +271,8 @@ export default function CommunityCalendar() {
         closeEventModal();
       }, 500);
     } catch (error) {
+      console.error('Event registration failed:', error);
+
       toast.error('Registration failed. Please try again.', {
         position: 'top-right',
         autoClose: 3000,
@@ -257,7 +280,7 @@ export default function CommunityCalendar() {
     } finally {
       setIsRegistering(false);
     }
-  }, [selectedEvent, registeredEventIds, closeEventModal, isEventInPast]);
+  }, [selectedEvent, registeredEventIds, closeEventModal]);
 
   const eventHasEnded = selectedEvent && isEventInPast(selectedEvent);
 
@@ -288,7 +311,7 @@ export default function CommunityCalendar() {
       `&details=${encodeURIComponent(selectedEvent.description)}` +
       `&location=${encodeURIComponent(selectedEvent.location)}`;
 
-    const opened = window.open(url, '_blank', 'noopener,noreferrer');
+    const opened = globalThis.open(url, '_blank', 'noopener,noreferrer');
     if (!opened) {
       toast.info('Please allow pop-ups to add this event to your calendar.');
     }
@@ -315,15 +338,21 @@ export default function CommunityCalendar() {
     setShowEventModal(true);
   }, []);
 
-  const handleEventKeyPress = useCallback(
-    (e, event) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        handleEventClick(event);
-      }
-    },
-    [handleEventClick],
-  );
+  const registerButtonText = useMemo(() => {
+    if (eventHasEnded) {
+      return 'Event Ended';
+    }
+
+    if (registeredEventIds.has(selectedEvent?.id)) {
+      return 'Already Registered';
+    }
+
+    if (isRegistering) {
+      return 'Registering...';
+    }
+
+    return 'Register for Event';
+  }, [eventHasEnded, registeredEventIds, selectedEvent, isRegistering]);
 
   // Close on ESC
   useEffect(() => {
@@ -434,7 +463,7 @@ export default function CommunityCalendar() {
                 const cellEvents = events.filter(e => {
                   const eventDate = new Date(e.date);
                   const [hStr] = e.time.split(':');
-                  let h = parseInt(hStr, 10);
+                  let h = Number.parseInt(hStr, 10);
                   const isPM = e.time.toLowerCase().includes('pm');
                   const isAM = e.time.toLowerCase().includes('am');
                   if (isPM && h !== 12) h += 12;
@@ -976,13 +1005,7 @@ export default function CommunityCalendar() {
                   isRegistering || registeredEventIds.has(selectedEvent?.id) || eventHasEnded
                 }
               >
-                {eventHasEnded
-                  ? 'Event Ended'
-                  : registeredEventIds.has(selectedEvent?.id)
-                  ? 'Already Registered'
-                  : isRegistering
-                  ? 'Registering...'
-                  : 'Register for Event'}
+                {registerButtonText}
               </button>
 
               <button type="button" className={styles.btnSecondary} onClick={handleAddToCalendar}>
