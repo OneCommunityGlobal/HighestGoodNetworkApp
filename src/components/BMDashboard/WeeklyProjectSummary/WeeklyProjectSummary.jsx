@@ -320,7 +320,7 @@ function WeeklyProjectSummary() {
             className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
             style={{ minHeight: '520px', height: 'auto', overflow: 'visible' }}
           >
-            <MostFrequentKeywords darkMode={darkMode} />
+            <MostFrequentKeywords />
           </div>,
           <div
             key="injury-chart"
