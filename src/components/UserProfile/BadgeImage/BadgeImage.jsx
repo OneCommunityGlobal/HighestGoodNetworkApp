@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardTitle, CardBody, CardImg, CardText, Popover } from 'reactstrap';
+import { useEffect, useState } from 'react';
+import { Card, CardBody, CardImg, CardText, CardTitle, Popover } from 'reactstrap';
+import styles from '../Badge.module.css';
 
 const BadgeImage = props => {
   const [isOpen, setOpen] = useState(false);
@@ -29,8 +30,8 @@ const BadgeImage = props => {
 
   return (
     <>
-      <div className="badge_md_image_container">
-        <div className="badge_image_md" data-testid="badge-image-wrapper">
+      <div className={styles.badge_md_image_container}>
+        <div className={styles.badge_image_md} data-testid="badge-image-wrapper">
           <img
             data-testid={`badge-image-${props.index}`}
             src={props?.badgeData?.imageUrl}
@@ -39,13 +40,13 @@ const BadgeImage = props => {
           />
 
           {props.badgeData.type == 'Personal Max' ? (
-            <span data-testid="badge_featured_count_personalmax" className={'badge_featured_count_personalmax'}>
+            <span data-testid="badge_featured_count_personalmax" className={styles.badge_featured_count_personalmax}>
               {`${Math.floor(badgeValue)} ${Math.floor(badgeValue) <= 1 ? ' hr' : ' hrs'}`}
             </span>
           ) : props.count < 100 ? (
-            <span data-testid="badge_featured_count" className={'badge_featured_count'}>{Math.round(badgeValue)}</span>
+            <span data-testid="badge_featured_count" className={styles.badge_featured_count}>{Math.round(badgeValue)}</span>
           ) : (
-            <span data-testid="badge_featured_count_3_digit" className="badge_featured_count_3_digit">{Math.round(badgeValue)}</span>
+            <span data-testid="badge_featured_count_3_digit"className={styles.badge_featured_count_3_digit}>{Math.round(badgeValue)}</span>
           )}
         </div>
       </div>
@@ -55,8 +56,8 @@ const BadgeImage = props => {
         toggle={toggle}
         target={'popover_' + props.time + props.index.toString()}
       >
-        <Card className="text-center">
-          <CardImg className="badge_image_lg" src={props?.badgeData?.imageUrl} />
+        <Card className="text-center" style={{maxWidth: '220px'}}>
+          <CardImg style={{width: '120px', height: '120px', margin: '0 auto', display: 'block'}} src={props?.badgeData?.imageUrl} />
           <CardBody>
             <CardTitle
               style={{
