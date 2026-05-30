@@ -179,21 +179,21 @@ export default function ProjectRiskProfileOverview() {
       border: darkMode ? '1px solid #555' : '1px solid #e2e2e2',
       boxShadow: darkMode ? '0 4px 16px rgba(0, 0, 0, 0.45)' : '0 4px 16px rgba(0,0,0,0.12)',
     }),
-    option: (base, state) => ({
-      ...base,
-      color: darkMode ? '#eee' : '#333',
-      backgroundColor: state.isSelected
-        ? darkMode
-          ? '#4a4a4a'
-          : '#dbe7ff'
-        : state.isFocused
-        ? darkMode
-          ? '#3a3a3a'
-          : '#f5f5f5'
-        : darkMode
-        ? '#2c2c2c'
-        : '#fff',
-    }),
+    option: (base, state) => {
+      let optionBg;
+      if (state.isSelected) {
+        optionBg = darkMode ? '#4a4a4a' : '#dbe7ff';
+      } else if (state.isFocused) {
+        optionBg = darkMode ? '#3a3a3a' : '#f5f5f5';
+      } else {
+        optionBg = darkMode ? '#2c2c2c' : '#fff';
+      }
+      return {
+        ...base,
+        color: darkMode ? '#eee' : '#333',
+        backgroundColor: optionBg,
+      };
+    },
   };
 
   if (loading)
