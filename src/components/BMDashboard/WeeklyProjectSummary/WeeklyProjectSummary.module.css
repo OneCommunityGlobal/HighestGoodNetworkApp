@@ -119,6 +119,7 @@
 }
 
 /* Share Button — override Bootstrap .btn so it lines up with .form-control selects */
+
 /* Bootstrap .btn defaults to flex-shrink: 1; when the row is tight the button shrinks and
    the label overflows outside the painted background (overlapping the last dropdown). */
 .weeklySummaryShareBtn {
@@ -151,10 +152,6 @@
   vertical-align: middle;
 }
 
-.weeklySummaryShareBtn:hover:not(:disabled) {
-  background-color: var(--button-hover) !important;
-}
-
 .weeklySummaryShareBtn:focus {
   outline: none;
   box-shadow: 0 0 0 2px rgb(59 130 246 / 50%);
@@ -163,6 +160,18 @@
 .weeklySummaryShareBtn:disabled {
   opacity: 0.7;
   cursor: not-allowed;
+}
+
+.darkMode .weeklySummaryShareBtn {
+  background-color: var(--button-bg) !important;
+}
+
+.darkMode .weeklySummaryShareBtn:hover {
+  background-color: var(--button-hover) !important;
+}
+
+.weeklySummaryShareBtn:hover:not(:disabled) {
+  background-color: var(--button-hover) !important;
 }
 
 /* Spinner for PDF generation */
@@ -219,8 +228,7 @@
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
-  overflow-x: hidden;
-  overflow-y: visible;
+  overflow: hidden visible;
 }
 
 .darkMode .weeklyProjectSummaryCard {
@@ -488,7 +496,7 @@
 /* MERGED: keep background + FORCE all title text visible in dark mode */
 .darkMode .weeklyProjectSummaryDashboardCategoryTitle {
   background: #2d4059;
-  color: #ffffff;
+  color: #fff;
 }
 
 .darkMode .weeklyProjectSummaryDashboardCategoryTitle:hover {
@@ -498,14 +506,6 @@
 .darkMode .weeklySummaryHeaderContainer {
   background: var(--section-bg);
   color: var(--text-color);
-}
-
-.darkMode .weeklySummaryShareBtn {
-  background-color: var(--button-bg) !important;
-}
-
-.darkMode .weeklySummaryShareBtn:hover {
-  background-color: var(--button-hover) !important;
 }
 
 /* ---------------- STATUS CARD (base) ---------------- */
@@ -607,6 +607,7 @@
 }
 
 /* ---------------- RESPONSIVE GRID LAYOUT ---------------- */
+
 /* MERGED: keep ONLY one projectStatusGrid */
 .projectStatusGrid {
   display: grid;
@@ -618,6 +619,7 @@
   max-width: 1600px;
   margin: auto;
 }
+
 /* .projectStatusGrid {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
