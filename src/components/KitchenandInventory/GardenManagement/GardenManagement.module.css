@@ -11,11 +11,13 @@
   padding: 24px 20px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #3e3a36;
-  background-color: transparent;
+  background-color: #ffffff;
+  min-height: 100vh;
 }
 
 .container.dark {
   color: #e0ddd8;
+  background-color: #1a1816;
 }
 
 /* --- Page Header --- */
