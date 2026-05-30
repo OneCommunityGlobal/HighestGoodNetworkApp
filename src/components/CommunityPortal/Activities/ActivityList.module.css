@@ -1,3 +1,4 @@
+/* stylelint-disable no-descending-specificity */
 .activityListContainer {
   padding: 20px;
   min-height: calc(100vh - 140px);

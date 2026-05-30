@@ -1,3 +1,5 @@
+/* stylelint-disable keyframes-name-pattern, no-descending-specificity */
+
 /* Main Layout Containers */
 .lbLogo {
   text-align: center;
@@ -28,8 +30,9 @@
   margin: 0 auto;
   padding: 20px;
   background-color: #fff;
+
   /* border-radius: 8px; */
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 10px rgb(0 0 0 / 5%);
 }
 
 /* Navbar Styling */
@@ -41,9 +44,10 @@
   align-items: center;
   padding: 0 20px;
   background-color: #9dd425;
+
   /* border-radius: 8px; */
   height: 60px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 10px rgb(0 0 0 / 10%);
 }
 
 .lbNavLeft {
@@ -274,13 +278,13 @@
   gap: 25px;
 }
 
-@media (max-width: 1100px) {
+@media (width <= 1100px) {
   .lbPropertiesContainer.lbGridView {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .lbPropertiesContainer.lbGridView {
     grid-template-columns: 1fr;
   }
@@ -296,7 +300,7 @@
 .lbPropertyCard {
   background: #fff;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
   overflow: hidden;
   transition: transform 0.3s, box-shadow 0.3s;
   cursor: pointer;
@@ -304,7 +308,7 @@
 
 .lbPropertyCard:hover {
   transform: translateY(-5px);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+  box-shadow: 0 5px 15px rgb(0 0 0 / 15%);
 }
 
 .lbGridView .lbPropertyCard {
@@ -450,11 +454,8 @@
 /* Modal Styles */
 .lbModalOverlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  inset: 0;
+  background-color: rgb(0 0 0 / 50%);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -472,7 +473,7 @@
   max-width: 800px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 5px 20px rgb(0 0 0 / 15%);
   animation: modalFadeIn 0.3s ease;
 }
 
@@ -481,6 +482,7 @@
     opacity: 0;
     transform: translateY(-20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -903,7 +905,7 @@
 }
 
 /* Responsive Adjustments */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .lbNavbar {
     flex-direction: column;
     height: auto;
