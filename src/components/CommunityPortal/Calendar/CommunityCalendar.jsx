@@ -160,8 +160,37 @@ export default function CommunityCalendar() {
     setSelectedEvent(null);
   }, []);
 
+  const isEventInPast = useCallback(event => {
+    if (!event) return false;
+
+    const eventDateTime = new Date(event.date);
+
+    const timeMatch = event.time?.match(/^(\d{1,2}):(\d{2})\s?(AM|PM)$/i);
+
+    if (timeMatch) {
+      let hour = parseInt(timeMatch[1], 10);
+      const minute = parseInt(timeMatch[2], 10);
+      const meridian = timeMatch[3].toUpperCase();
+
+      if (meridian === 'PM' && hour !== 12) hour += 12;
+      if (meridian === 'AM' && hour === 12) hour = 0;
+
+      eventDateTime.setHours(hour, minute, 0, 0);
+    }
+
+    return eventDateTime < new Date();
+  }, []);
+
   const handleRegister = useCallback(async () => {
     if (!selectedEvent) return;
+
+    if (isEventInPast(selectedEvent)) {
+      toast.info('Registration is closed for past events.', {
+        position: 'top-right',
+        autoClose: 3000,
+      });
+      return;
+    }
 
     if (registeredEventIds.has(selectedEvent.id)) {
       toast.info(`You are already registered for "${selectedEvent.title}".`, {
@@ -205,7 +234,9 @@ export default function CommunityCalendar() {
     } finally {
       setIsRegistering(false);
     }
-  }, [selectedEvent, registeredEventIds, closeEventModal]);
+  }, [selectedEvent, registeredEventIds, closeEventModal, isEventInPast]);
+
+  const eventHasEnded = selectedEvent && isEventInPast(selectedEvent);
 
   const handleAddToCalendar = useCallback(() => {
     if (!selectedEvent) return;
@@ -865,9 +896,13 @@ export default function CommunityCalendar() {
                 type="button"
                 className={styles.btnPrimary}
                 onClick={handleRegister}
-                disabled={isRegistering || registeredEventIds.has(selectedEvent?.id)}
+                disabled={
+                  isRegistering || registeredEventIds.has(selectedEvent?.id) || eventHasEnded
+                }
               >
-                {registeredEventIds.has(selectedEvent?.id)
+                {eventHasEnded
+                  ? 'Event Ended'
+                  : registeredEventIds.has(selectedEvent?.id)
                   ? 'Already Registered'
                   : isRegistering
                   ? 'Registering...'
