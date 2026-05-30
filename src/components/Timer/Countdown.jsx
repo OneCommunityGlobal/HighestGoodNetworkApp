@@ -54,7 +54,6 @@ export default function Countdown({
   const [editing, setEditing] = useState(false);
   const [initialHours, setInitialHours] = useState(moment.duration(initialGoal).hours());
   const [initialMinutes, setInitialMinutes] = useState(moment.duration(initialGoal).minutes());
-  const containerRef = useRef(null);
   const hourRef = useRef(null);
   const minRef = useRef(null);
 
@@ -145,13 +144,10 @@ export default function Countdown({
   };
 
   return (
-    <div className={css.countdown} ref={containerRef} tabIndex={-1}>
+    <div className={css.countdown}>
       <button
         type="button"
-        onPointerDown={e => {
-          e.preventDefault();
-          toggleTimer();
-        }}
+        onClick={toggleTimer}
         style={{ background: 'none', border: 'none', padding: 0 }}
         aria-label="Close timer dropdown"
       >
@@ -183,10 +179,7 @@ export default function Countdown({
             ) : (
               <button
                 type="button"
-                onPointerDown={e => {
-                  e.preventDefault();
-                  setConfirmationResetModal(true);
-                }}
+                onClick={() => setConfirmationResetModal(true)}
                 style={{ background: 'none', border: 'none', padding: 0 }}
                 aria-label="Reset timer"
               >
@@ -194,6 +187,7 @@ export default function Countdown({
                   className={cs(css.transitionColor, css.resetIcon)}
                   fontSize="2rem"
                   title="Reset timer"
+                  style={{ pointerEvents: 'none' }}
                 />
               </button>
             )}
@@ -224,29 +218,16 @@ export default function Countdown({
             </div>
             <div className={css.operators}>
               {running ? (
-                <button
-                  type="button"
-                  onPointerDown={e => {
-                    e.preventDefault();
-                    sendPause();
-                  }}
-                  aria-label="Pause timer"
-                >
+                <button type="button" onClick={sendPause} aria-label="Pause timer">
                   <BsPauseFill
                     className={cs(css.transitionColor, css.operator)}
                     fontSize="2.5rem"
                     title="Pause timer"
+                    style={{ pointerEvents: 'none' }}
                   />
                 </button>
               ) : (
-                <button
-                  type="button"
-                  onPointerDown={e => {
-                    e.preventDefault();
-                    handleStartButton();
-                  }}
-                  aria-label="Start timer"
-                >
+                <button type="button" onClick={handleStartButton} aria-label="Start timer">
                   <BsPlay
                     className={cs(
                       css.transitionColor,
@@ -255,22 +236,21 @@ export default function Countdown({
                     )}
                     fontSize="2.5rem"
                     title="Start timer"
+                    style={{ pointerEvents: 'none' }}
                   />
                 </button>
               )}
               {started && (
                 <button
                   type="button"
-                  onPointerDown={e => {
-                    e.preventDefault();
-                    handleStopButton();
-                  }}
+                  onClick={handleStopButton}
                   aria-label="Stop timer and log timer"
                 >
                   <BsStopFill
                     className={cs(css.transitionColor, css.operator)}
                     fontSize="2.5rem"
                     title="Stop timer and log time"
+                    style={{ pointerEvents: 'none' }}
                   />
                 </button>
               )}
