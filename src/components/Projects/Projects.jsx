@@ -153,22 +153,6 @@ const Projects = function(props) {
     return 'DEFAULT';
   };
 
-  const generateJSXList = projectsArray => {
-    return (projectsArray || []).map((project, index) => (
-      <Project
-        key={`${project._id}-${project.isActive}`}
-        index={index}
-        projectData={project}
-        onUpdateProject={onUpdateProject}
-        onClickArchiveBtn={onClickArchiveBtn}
-        onClickProjectStatusBtn={onClickProjectStatusBtn}
-        darkMode={darkMode}
-        taskSelectionMode={taskSelectionMode}
-        taskSelectionReturnPath={taskSelectionReturnPath}
-      />
-    ));
-  };
-
   const handleSort = column => {
     setSorter(prev => {
       if (prev.column === column) {
@@ -212,10 +196,6 @@ const Projects = function(props) {
   };
 
   const generateProjectList = (categorySelectedForSort, showStatus, isShowingArchived) => {
-    console.log('generateProjectList called, isShowingArchived:', isShowingArchived);
-    console.log('total projects:', allReduxProjects.length);
-    console.log('archived projects:', allReduxProjects.filter(p => p.isArchived).length);
-    console.log('non-archived projects:', allReduxProjects.filter(p => !p.isArchived).length);
     const activeMemberCounts = props.state.projectMembers?.activeMemberCounts || {};
     const filteredProjects = allReduxProjects
       .filter(project => isShowingArchived ? project.isArchived : !project.isArchived)
@@ -298,7 +278,6 @@ const Projects = function(props) {
   }, []);
 
   useEffect(() => {
-    console.log('useEffect triggered, showArchived:', showArchived);
     generateProjectList(categorySelectedForSort, showStatus, showArchived);
     if (status !== 200) {
       setModalData({

@@ -3,6 +3,7 @@
  * Author: Henry Ng - 08/01/20
  * Display member of the members list
  ********************************************************************************/
+import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { connect, useSelector } from 'react-redux';
 import ModalDelete from './../../../common/Modal';
@@ -72,6 +73,17 @@ const WBSItem = ({ darkMode, index, name, wbsId, projectId, getPopupById, delete
     </React.Fragment>
   );
 };
+
+WBSItem.propTypes = {
+  taskSelectionMode: PropTypes.bool,
+  taskSelectionReturnPath: PropTypes.string,
+};
+
+WBSItem.defaultProps = {
+  taskSelectionMode: false,
+  taskSelectionReturnPath: '',
+};
+
 const mapStateToProps = (state) => state;
 export default connect(mapStateToProps, {
   deleteWbs,

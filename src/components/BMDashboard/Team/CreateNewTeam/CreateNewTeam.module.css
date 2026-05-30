@@ -83,7 +83,7 @@
   font-size: 9px;
   font-weight: 700;
   color: #fff;
-  background-color: #bbb;
+  background-color: #666;
   border-radius: 50%;
   cursor: help;
   vertical-align: middle;
@@ -250,31 +250,31 @@
 }
 
 .addTeamButtons button#submit-button {
-  background-color: #4CAF50;
-  border-color: #4CAF50;
+  background-color: #388e3c;
+  border-color: #388e3c;
   color: #fff;
 }
 
 .addTeamButtons button#submit-button:disabled {
-  background-color: #a5d6a7;
-  border-color: #a5d6a7;
+  background-color: #2e7d32;
+  border-color: #2e7d32;
   color: #fff;
   cursor: not-allowed;
   opacity: 0.65;
 }
 
 .addTeamButtons button#submit-button:hover:not(:disabled) {
-  background-color: #43a047;
+  background-color: #2e7d32;
 }
 
 .addTeamButtons button#cancel-button {
-  background-color: #f44336;
-  border-color: #f44336;
+  background-color: #c62828;
+  border-color: #c62828;
   color: #fff;
 }
 
 .addTeamButtons button#cancel-button:hover {
-  background-color: #e53935;
+  background-color: #b71c1c;
 }
 
 /* Responsive */
@@ -431,8 +431,8 @@
 
 :global(body.dark-mode) .addTeamButtons button#submit-button,
 :global(body.bm-dashboard-dark) .addTeamButtons button#submit-button {
-  background-color: #4CAF50 !important;
-  border-color: #4CAF50 !important;
+  background-color: #388e3c !important;
+  border-color: #388e3c !important;
   color: #fff !important;
 }
 
@@ -440,14 +440,14 @@
 :global(body.bm-dashboard-dark) .addTeamButtons button#submit-button:disabled {
   background-color: #2e6631 !important;
   border-color: #2e6631 !important;
-  color: #8a8 !important;
+  color: #c8e6c9 !important;
   opacity: 0.7;
 }
 
 :global(body.dark-mode) .addTeamButtons button#cancel-button,
 :global(body.bm-dashboard-dark) .addTeamButtons button#cancel-button {
-  background-color: #f44336 !important;
-  border-color: #f44336 !important;
+  background-color: #c62828 !important;
+  border-color: #c62828 !important;
   color: #fff !important;
 }
 

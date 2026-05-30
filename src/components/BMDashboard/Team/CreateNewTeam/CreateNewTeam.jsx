@@ -44,15 +44,8 @@ export default function CreateNewTeam() {
     additionalInformation: false,
   });
 
-  const [loadingMembers, setLoadingMembers] = useState(false);
   useEffect(() => {
-    setLoadingMembers(true);
-    const result = dispatch(getUserProfileBasicInfo({ source: 'CreateNewTeam' }));
-    if (result && typeof result.then === 'function') {
-      result.finally(() => setLoadingMembers(false));
-    } else {
-      setLoadingMembers(false);
-    }
+    dispatch(getUserProfileBasicInfo({ source: 'CreateNewTeam' }));
   }, [dispatch]);
 
   useEffect(() => {
@@ -65,7 +58,8 @@ export default function CreateNewTeam() {
         setAssignedMembers(draft.assignedMembers || []);
         setAssignedTasks(draft.assignedTasks || []);
       } catch (e) {
-        // ignore malformed draft
+        // eslint-disable-next-line no-console
+        console.error('Failed to parse saved team draft:', e);
       }
       sessionStorage.removeItem('createTeamDraft');
     }
@@ -112,7 +106,7 @@ export default function CreateNewTeam() {
         }
       });
     }
-    const currentMembers = membersList !== undefined ? membersList : assignedMembers;
+    const currentMembers = membersList === undefined ? assignedMembers : membersList;
     if (currentMembers.length === 0) {
       errorMessages.assignedMembers = 'You must assign at least one member.';
     } else {
@@ -218,19 +212,17 @@ export default function CreateNewTeam() {
       setErrorMessage('This member is already assigned!');
       return;
     }
-    if (selectedMember && !assignedMembers.includes(selectedMember)) {
-      setAssignedMembers(prevMembers => {
-        const updatedMembers = [...prevMembers, selectedMember];
-        const validationErrors = validate(
-          { ...formData, teamMembers: updatedMembers },
-          updatedMembers,
-        );
-        setErrors(validationErrors || {});
-        setErrorMessage('');
-        return updatedMembers;
-      });
-      setSelectedMember('');
-    }
+    setAssignedMembers(prevMembers => {
+      const updatedMembers = [...prevMembers, selectedMember];
+      const validationErrors = validate(
+        { ...formData, teamMembers: updatedMembers },
+        updatedMembers,
+      );
+      setErrors(validationErrors || {});
+      setErrorMessage('');
+      return updatedMembers;
+    });
+    setSelectedMember('');
   };
 
   const handleRemoveMember = member => {
@@ -250,22 +242,6 @@ export default function CreateNewTeam() {
     );
   };
 
-  const resetTaskPicker = () => {
-    setTaskErrorMessage('');
-  };
-
-  const handleTaskProjectChange = e => {
-    e.preventDefault();
-  };
-
-  const handleTaskWbsChange = e => {
-    e.preventDefault();
-  };
-
-  const handleTaskSelectionChange = e => {
-    e.preventDefault();
-  };
-
   const handleOpenTaskModal = () => {
     setTaskErrorMessage('');
     sessionStorage.setItem(
@@ -273,23 +249,6 @@ export default function CreateNewTeam() {
       JSON.stringify({ formData, assignedMembers, assignedTasks }),
     );
     history.push('/projects', { taskSelectionMode: true, returnPath: '/bmdashboard/AddNewTeam' });
-  };
-
-  const handleCloseTaskModal = () => {
-    resetTaskPicker();
-  };
-
-  const handleNavigateToWbsPage = () => {
-    handleOpenTaskModal();
-  };
-
-  const handleAddTask = task => {
-    if (!task) return;
-    if (assignedTasks.some(t => t.id === task.id)) {
-      setTaskErrorMessage('This task is already assigned!');
-      return;
-    }
-    setAssignedTasks(prev => [...prev, task]);
   };
 
   const handleRemoveTask = task => {
@@ -375,9 +334,8 @@ export default function CreateNewTeam() {
               >
                 <option value="">Select a Member</option>
                 {Array.isArray(members) &&
-                  members.map((user, index) => (
-                    // eslint-disable-next-line react/no-array-index-key
-                    <option key={index} value={user.id}>
+                  members.map(user => (
+                    <option key={user.id} value={user.id}>
                       {user.firstName} {user.lastName}
                     </option>
                   ))}
@@ -410,12 +368,11 @@ export default function CreateNewTeam() {
                 )}
               </div>
               <div className={styles.badgeContainer}>
-                {assignedMembers.map((member, index) => {
+                {assignedMembers.map(member => {
                   const isSelected = selectedMembersForBulk.includes(member);
                   return (
-                    // eslint-disable-next-line react/no-array-index-key
                     <Badge
-                      key={index}
+                      key={member}
                       pill
                       color="info"
                       className={`${styles.assignedBadge} ${
@@ -458,7 +415,7 @@ export default function CreateNewTeam() {
           <h5 className={styles.sectionTitle}>Tasks</h5>
           <FormGroup>
             <Label for="tasks-select">
-              Add Main Tasks
+              Add Main Tasks{' '}
               <span id="tasksTooltip" className={styles.tooltipIcon}>
                 ?
               </span>
@@ -503,12 +460,11 @@ export default function CreateNewTeam() {
                 )}
               </div>
               <div className={styles.badgeContainer}>
-                {assignedTasks.map((task, index) => {
+                {assignedTasks.map(task => {
                   const isSelected = selectedTasksForBulk.includes(task.id);
                   return (
-                    // eslint-disable-next-line react/no-array-index-key
                     <Badge
-                      key={index}
+                      key={task.id}
                       pill
                       color="info"
                       className={`${styles.assignedBadge} ${

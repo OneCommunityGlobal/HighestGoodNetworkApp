@@ -249,6 +249,8 @@ Project.propTypes = {
   onClickArchiveBtn: PropTypes.func,
   projectId: PropTypes.string,
   activeMemberCounts: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  taskSelectionMode: PropTypes.bool,
+  taskSelectionReturnPath: PropTypes.string,
 };
 
 // Default props
@@ -262,6 +264,8 @@ Project.defaultProps = {
   onClickArchiveBtn: () => {},
   projectId: '',
   activeMemberCounts: '',
+  taskSelectionMode: false,
+  taskSelectionReturnPath: '',
 };
 
 const mapStateToProps = state => state;

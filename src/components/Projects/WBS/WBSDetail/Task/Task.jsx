@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { connect } from 'react-redux';
 import { Modal, ModalBody, Button, ModalHeader } from 'reactstrap';
@@ -485,6 +486,20 @@ function Task(props) {
     </>
   );
 }
+
+Task.propTypes = {
+  taskSelectionMode: PropTypes.bool,
+  onSelectTask: PropTypes.func,
+  taskId: PropTypes.string,
+  name: PropTypes.string,
+};
+
+Task.defaultProps = {
+  taskSelectionMode: false,
+  onSelectTask: () => {},
+  taskId: '',
+  name: '',
+};
 
 const mapStateToProps = state => ({
   // tasks: state.tasks.taskItems,
