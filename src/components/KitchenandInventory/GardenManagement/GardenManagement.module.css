@@ -4,20 +4,28 @@
    Earth-tone palette | Light + Dark mode | Responsive
    ============================================================ */
 
-/* --- Page Container --- */
+/* --- Page Wrapper (full-width, owns the background) --- */
+.pageWrapper {
+  min-height: 100vh;
+  width: 100%;
+  background-color: #ffffff;
+}
+
+.pageWrapper.dark {
+  background-color: #1a1816;
+}
+
+/* --- Page Container (max-width, owns layout/spacing) --- */
 .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 24px 20px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #3e3a36;
-  background-color: #ffffff;
-  min-height: 100vh;
 }
 
-.container.dark {
+.pageWrapper.dark .container {
   color: #e0ddd8;
-  background-color: #1a1816;
 }
 
 /* --- Page Header --- */

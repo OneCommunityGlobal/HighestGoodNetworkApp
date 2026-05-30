@@ -123,111 +123,113 @@ function GardenManagement() {
   const [activeSection, setActiveSection] = useState('Calendars');
 
   return (
-    <div className={`${styles.container} ${darkMode ? styles.dark : ''}`}>
-      {/* Page Header */}
-      <header className={styles.pageHeader}>
-        <h1 className={`${styles.pageTitle} ${darkMode ? styles.dark : ''}`}>
-          🌿 Garden Management
-        </h1>
-        <p className={`${styles.pageSubtitle} ${darkMode ? styles.dark : ''}`}>
-          Track seed varieties, plantings, harvests, and garden schedules.
-        </p>
-      </header>
+    <div className={`${styles.pageWrapper} ${darkMode ? styles.dark : ''}`}>
+      <div className={styles.container}>
+        {/* Page Header */}
+        <header className={styles.pageHeader}>
+          <h1 className={`${styles.pageTitle} ${darkMode ? styles.dark : ''}`}>
+            🌿 Garden Management
+          </h1>
+          <p className={`${styles.pageSubtitle} ${darkMode ? styles.dark : ''}`}>
+            Track seed varieties, plantings, harvests, and garden schedules.
+          </p>
+        </header>
 
-      {/* Dashboard Cards */}
-      <section className={styles.dashboardGrid} aria-label="Dashboard summary">
-        {dashboardStats.map(stat => (
-          <div
-            key={stat.id}
-            className={`${styles.dashboardCard} ${styles[`card_${stat.color}`]} ${
-              darkMode ? styles.dark : ''
-            }`}
-          >
-            <div className={styles.cardIcon}>{stat.icon}</div>
-            <div className={styles.cardContent}>
-              <span className={styles.cardValue}>{stat.value}</span>
-              <span className={styles.cardLabel}>{stat.label}</span>
-            </div>
-          </div>
-        ))}
-      </section>
-
-      {/* Section Navbar */}
-      <nav
-        className={`${styles.sectionNavbar} ${darkMode ? styles.dark : ''}`}
-        aria-label="Section navigation"
-      >
-        {sectionTabs.map(tab => (
-          <button
-            key={tab}
-            type="button"
-            className={`${styles.sectionTab} ${activeSection === tab ? styles.activeTab : ''} ${
-              darkMode ? styles.dark : ''
-            }`}
-            onClick={() => setActiveSection(tab)}
-          >
-            {tab}
-          </button>
-        ))}
-      </nav>
-
-      {/* Calendars Section */}
-      {activeSection === 'Calendars' && (
-        <section aria-label="Garden Calendars">
-          <div className={styles.calendarsGrid}>
-            {calendarSections.map(section => (
-              <div
-                key={section.id}
-                className={`${styles.calendarSection} ${darkMode ? styles.dark : ''}`}
-              >
-                <div className={styles.calendarHeader}>
-                  <h3 className={`${styles.calendarTitle} ${darkMode ? styles.dark : ''}`}>
-                    {section.title}
-                  </h3>
-                  <button
-                    type="button"
-                    className={`${styles.addBtn} ${darkMode ? styles.dark : ''}`}
-                  >
-                    + {section.addLabel}
-                  </button>
-                </div>
-
-                <div className={styles.eventList}>
-                  {section.events.map(event => (
-                    <div
-                      key={event.id}
-                      className={`${styles.eventCard} ${darkMode ? styles.dark : ''}`}
-                    >
-                      <div className={styles.eventTop}>
-                        <span className={styles.eventCrop}>{event.crop}</span>
-                        <span
-                          className={`${styles.statusTag} ${styles[`status_${event.status}`]} ${
-                            darkMode ? styles.dark : ''
-                          }`}
-                        >
-                          {event.status}
-                        </span>
-                      </div>
-                      <div className={styles.eventMeta}>
-                        <span>📅 {event.dateRange}</span>
-                        <span>📍 {event.location}</span>
-                        <span>⚖️ {event.yield}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+        {/* Dashboard Cards */}
+        <section className={styles.dashboardGrid} aria-label="Dashboard summary">
+          {dashboardStats.map(stat => (
+            <div
+              key={stat.id}
+              className={`${styles.dashboardCard} ${styles[`card_${stat.color}`]} ${
+                darkMode ? styles.dark : ''
+              }`}
+            >
+              <div className={styles.cardIcon}>{stat.icon}</div>
+              <div className={styles.cardContent}>
+                <span className={styles.cardValue}>{stat.value}</span>
+                <span className={styles.cardLabel}>{stat.label}</span>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </section>
-      )}
 
-      {/* Placeholder for other sections */}
-      {activeSection !== 'Calendars' && (
-        <div className={`${styles.placeholderSection} ${darkMode ? styles.dark : ''}`}>
-          <p>{activeSection} section coming soon.</p>
-        </div>
-      )}
+        {/* Section Navbar */}
+        <nav
+          className={`${styles.sectionNavbar} ${darkMode ? styles.dark : ''}`}
+          aria-label="Section navigation"
+        >
+          {sectionTabs.map(tab => (
+            <button
+              key={tab}
+              type="button"
+              className={`${styles.sectionTab} ${activeSection === tab ? styles.activeTab : ''} ${
+                darkMode ? styles.dark : ''
+              }`}
+              onClick={() => setActiveSection(tab)}
+            >
+              {tab}
+            </button>
+          ))}
+        </nav>
+
+        {/* Calendars Section */}
+        {activeSection === 'Calendars' && (
+          <section aria-label="Garden Calendars">
+            <div className={styles.calendarsGrid}>
+              {calendarSections.map(section => (
+                <div
+                  key={section.id}
+                  className={`${styles.calendarSection} ${darkMode ? styles.dark : ''}`}
+                >
+                  <div className={styles.calendarHeader}>
+                    <h3 className={`${styles.calendarTitle} ${darkMode ? styles.dark : ''}`}>
+                      {section.title}
+                    </h3>
+                    <button
+                      type="button"
+                      className={`${styles.addBtn} ${darkMode ? styles.dark : ''}`}
+                    >
+                      + {section.addLabel}
+                    </button>
+                  </div>
+
+                  <div className={styles.eventList}>
+                    {section.events.map(event => (
+                      <div
+                        key={event.id}
+                        className={`${styles.eventCard} ${darkMode ? styles.dark : ''}`}
+                      >
+                        <div className={styles.eventTop}>
+                          <span className={styles.eventCrop}>{event.crop}</span>
+                          <span
+                            className={`${styles.statusTag} ${styles[`status_${event.status}`]} ${
+                              darkMode ? styles.dark : ''
+                            }`}
+                          >
+                            {event.status}
+                          </span>
+                        </div>
+                        <div className={styles.eventMeta}>
+                          <span>📅 {event.dateRange}</span>
+                          <span>📍 {event.location}</span>
+                          <span>⚖️ {event.yield}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Placeholder for other sections */}
+        {activeSection !== 'Calendars' && (
+          <div className={`${styles.placeholderSection} ${darkMode ? styles.dark : ''}`}>
+            <p>{activeSection} section coming soon.</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
