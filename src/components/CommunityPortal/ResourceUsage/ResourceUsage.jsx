@@ -129,6 +129,23 @@ export default function ResourceUsage() {
     setInsights(allInsights[insightsTimePeriod] || allInsights['Last Week']);
   }, [insightsTimePeriod]);
 
+  const YAxisLabel = ({ viewBox, darkMode }) => {
+    const { x, y } = viewBox;
+    return (
+      <text
+        x={x - 19}
+        y={y - 10}
+        textAnchor="start"
+        dx={8}
+        dy={0}
+        fill={darkMode ? '#eee' : '#666'}
+        fontSize={14}
+      >
+        Amount
+      </text>
+    );
+  };
+
   return (
     <div className={`${styles.resourceUsageContainer} ${darkMode ? styles.darkContainer : ''}`}>
       {/* Left Section - Chart */}
@@ -162,7 +179,7 @@ export default function ResourceUsage() {
         <div className={styles.chartContainer}>
           {data && data.length > 0 ? (
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 80 }}>
+              <BarChart data={data} margin={{ top: 20, right: 60, left: 20, bottom: 80 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#eee" vertical={false} />
                 <XAxis
                   dataKey="name"
@@ -171,9 +188,11 @@ export default function ResourceUsage() {
                   tick={{ fill: darkMode ? '#eee' : '#666', fontSize: 12 }}
                 />
                 <YAxis
+                  orientation="right"
                   axisLine={false}
                   tickLine={false}
                   tick={{ fill: darkMode ? '#eee' : '#666', fontSize: 12 }}
+                  label={<YAxisLabel darkMode={darkMode} />}
                 />
                 <Tooltip content={<CustomTooltip darkMode={darkMode} />} />
                 <Legend
