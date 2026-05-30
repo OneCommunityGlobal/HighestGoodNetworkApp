@@ -14,9 +14,9 @@ else
   exit 0
 fi
 
-# Skip checks if the most recent commit is a merge commit (has two parents)
-if git log -1 --pretty=%P HEAD | grep -q ' '; then
-  echo "ℹ️  Last commit is a merge commit. Skipping lint/test checks."
+# Skip checks if any outgoing commit is a merge commit
+if git log @{upstream}..HEAD --merges --oneline | grep -q .; then
+  echo "ℹ️  Outgoing commits include a merge commit. Skipping lint/test checks."
   exit 0
 fi
 
