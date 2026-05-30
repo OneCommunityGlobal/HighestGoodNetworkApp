@@ -525,6 +525,10 @@
   color: var(--text-color);
 }
 
+.darkMode .weeklySummaryShareBtn:hover {
+  background-color: var(--button-hover) !important;
+}
+
 /* ---------------- RESPONSIVE DESIGN ---------------- */
 @media (width <= 1024px) {
   .weeklySummaryHeaderContainer {
