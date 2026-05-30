@@ -16,6 +16,27 @@ import styles from './wbs.module.css';
 import { useFetchWbsTasks } from './hook';
 import { FilterBar } from './FilterBar';
 
+const filterTasks = (tasks, filterState) => {
+  switch (filterState) {
+    case 'all':
+      return tasks;
+    case 'assigned':
+      return tasks.filter(task => task.isAssigned === true);
+    case 'unassigned':
+      return tasks.filter(task => task.isAssigned === false);
+    case 'active':
+      return tasks.filter(task => ['Active', 'Started'].includes(task.status));
+    case 'inactive':
+      return tasks.filter(task => ['Not Started', 'Paused'].includes(task.status));
+    case 'complete':
+      return tasks.filter(task => task.status === 'Complete');
+    case 'paused':
+      return tasks.filter(task => task.status === 'Paused');
+    default:
+      return tasks;
+  }
+};
+
 function WBSTasks(props) {
   // const { tasks, fetched, darkMode } = props;
   const { fetched, darkMode } = props;
@@ -28,7 +49,6 @@ function WBSTasks(props) {
   // states from hooks
   const [filterState, setFilterState] = useState('all');
   const [openAll, setOpenAll] = useState(false);
-  const [showImport, setShowImport] = useState(false);
   // const [isLoading, setIsLoading] = useState(true);
   const [isDeleted, setIsDeleted] = useState(false);
   const [levelOneTasks, setLevelOneTasks] = useState([]);
@@ -76,26 +96,6 @@ function WBSTasks(props) {
 
   // permissions
   const canPostTask = props.hasPermission('postTask');
-  const filterTasks = (tasks, filterState) => {
-    switch (filterState) {
-      case 'all':
-        return tasks;
-      case 'assigned':
-        return tasks.filter(task => task.isAssigned === true);
-      case 'unassigned':
-        return tasks.filter(task => task.isAssigned === false);
-      case 'active':
-        return tasks.filter(task => ['Active', 'Started'].includes(task.status));
-      case 'inactive':
-        return tasks.filter(task => ['Not Started', 'Paused'].includes(task.status));
-      case 'complete':
-        return tasks.filter(task => task.status === 'Complete');
-      case 'paused':
-        return tasks.filter(task => task.status === 'Paused');
-    }
-  };
-
-  
 
   const deleteWBSTask = (taskId, mother) => {
     props.deleteTask(taskId, mother);
@@ -172,7 +172,7 @@ function WBSTasks(props) {
         />
       )}
 
-      {!isLoading && showImport && (
+      {!isLoading && (
         <ImportTask
           wbsId={wbsId}
           projectId={projectId}
@@ -201,17 +201,6 @@ function WBSTasks(props) {
         disabled={isLoading}
       >
         {openAll ? 'Fold All' : 'Unfold All'}
-      </Button>
-      
-      <Button
-        color="info"
-        size="sm"
-        className="ml-2"
-        onClick={() => setShowImport(!showImport)}
-        style={darkMode ? boxStyleDark : boxStyle}
-        disabled={isLoading}
-      >
-        <i className="fa fa-upload" aria-hidden="true" /> {showImport ? 'Hide Import' : 'Import Tasks'}
       </Button>
       
       <FilterBar currentFilter={filterState} onChange={setFilterState} isLoading={isLoading} />

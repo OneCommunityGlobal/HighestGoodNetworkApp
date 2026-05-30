@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Form, FormGroup, Label, Input, Button, Badge, Tooltip } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import Joi from 'joi-browser';
+import Joi from 'joi';
+import { toast } from 'react-toastify';
 import { boxStyle } from '../../../../styles';
 import styles from './CreateNewTeam.module.css';
 import { getUserProfileBasicInfo } from '../../../../actions/userManagement';
+import { postNewTeam, addTeamMember } from '../../../../actions/allTeamsAction';
 
 const initialFormState = {
   teamName: '',
@@ -42,8 +44,15 @@ export default function CreateNewTeam() {
     additionalInformation: false,
   });
 
+  const [loadingMembers, setLoadingMembers] = useState(false);
   useEffect(() => {
-    dispatch(getUserProfileBasicInfo({ source: 'CreateNewTeam' }));
+    setLoadingMembers(true);
+    const result = dispatch(getUserProfileBasicInfo({ source: 'CreateNewTeam' }));
+    if (result && typeof result.then === 'function') {
+      result.finally(() => setLoadingMembers(false));
+    } else {
+      setLoadingMembers(false);
+    }
   }, [dispatch]);
 
   useEffect(() => {
@@ -141,7 +150,7 @@ export default function CreateNewTeam() {
     setErrors(validationErrors || {});
   };
 
-  const handleSubmit = event => {
+  const handleSubmit = async event => {
     event.preventDefault();
     setTouchedFields({
       teamName: true,
@@ -154,35 +163,28 @@ export default function CreateNewTeam() {
       return;
     }
 
-    const updatedFormData = {
-      ...formData,
-      teamMembers: assignedMembers,
-      tasks: assignedTasks.map(task => ({
-        taskId: task.id,
-        taskName: task.name,
-        projectId: task.projectId,
-        projectName: task.projectName,
-        wbsId: task.wbsId,
-        wbsName: task.wbsName,
-      })),
-    };
+    try {
+      const res = await dispatch(postNewTeam(formData.teamName, true));
+      if (res?.status !== 200) {
+        const errMsg = res?.data?.error || res?.message || 'Failed to create team.';
+        toast.error(errMsg);
+        return;
+      }
 
-    // eslint-disable-next-line no-console
-    console.log('Form Submitted:', updatedFormData);
+      const newTeamId = res.data._id;
 
-    setSelectedMember('');
-    setAssignedMembers([]);
-    setAssignedTasks([]);
-    setFormData(initialFormState);
-    setErrors({});
-    setSelectedMembersForBulk([]);
-    setSelectedTasksForBulk([]);
-    setTaskErrorMessage('');
-    setTouchedFields({
-      teamName: false,
-      assignedMembers: false,
-      additionalInformation: false,
-    });
+      // Assign each selected member to the newly created team
+      await Promise.all(assignedMembers.map(userId => dispatch(addTeamMember(newTeamId, userId))));
+
+      toast.success(`Team "${formData.teamName}" created successfully!`);
+      history.push('/bmdashboard');
+    } catch (err) {
+      const errMsg =
+        err?.response?.data?.error ||
+        err?.message ||
+        'An unexpected error occurred. Please try again.';
+      toast.error(errMsg);
+    }
   };
 
   const handleCancelClick = () => {
@@ -194,6 +196,7 @@ export default function CreateNewTeam() {
     setSelectedMembersForBulk([]);
     setSelectedTasksForBulk([]);
     setTaskErrorMessage('');
+    setErrorMessage('');
     setTouchedFields({
       teamName: false,
       assignedMembers: false,

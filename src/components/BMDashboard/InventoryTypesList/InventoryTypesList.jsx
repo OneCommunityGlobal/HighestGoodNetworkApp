@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+
 import { fetchInvTypeByType } from '~/actions/bmdashboard/invTypeActions';
 import { fetchInvUnits } from '~/actions/bmdashboard/invUnitActions';
 import { Accordion, Card, Button } from 'react-bootstrap';
@@ -17,7 +18,6 @@ export function InventoryTypesList(props) {
   const { invUnits, errors, dispatch } = props;
   const history = useHistory();
 
-  // NOTE: depend on redux action implementation
   const categories = ['Materials', 'Consumables', 'Equipments', 'Reusables', 'Tools'];
 
   const [isError, setIsError] = useState(false);
@@ -27,9 +27,7 @@ export function InventoryTypesList(props) {
     history.goBack();
   };
 
-  // dispatch inventory type fetch action on load
   useEffect(() => {
-    // NOTE: depend on redux action implementation
     dispatch(fetchInvTypeByType('Materials'));
     dispatch(fetchInvTypeByType('Consumables'));
     dispatch(fetchInvTypeByType('Equipments'));
@@ -38,12 +36,10 @@ export function InventoryTypesList(props) {
     dispatch(fetchInvUnits());
   }, []);
 
-  // trigger error state if an error object is added to props
   useEffect(() => {
     if (Object.entries(errors).length) setIsError(true);
   }, [errors]);
 
-  // error state
   if (isError) {
     return (
       <div>
@@ -65,8 +61,6 @@ export function InventoryTypesList(props) {
           dateFormat="MM-dd-yyyy hh:mm:ss"
           id="timestamp"
           showTimeInput
-          // NOTE: all users can edit since the User Class has not been implemented yet
-          // disabled
         />
       </div>
 

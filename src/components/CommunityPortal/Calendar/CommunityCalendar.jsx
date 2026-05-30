@@ -1,16 +1,38 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import ReactCalendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-import CalendarActivitySection from './CalendarActivitySection';
-import styles from './CommunityCalendar.module.css';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faClock, faLocationDot, faTag, faCircleCheck } from '@fortawesome/free-solid-svg-icons';
+import CalendarActivitySection from './CalendarActivitySection';
+import styles from './CommunityCalendar.module.css';
+import {
+  FaCalendarAlt,
+  FaClock,
+  FaMapMarkerAlt,
+  FaTag,
+  FaAlignLeft,
+  FaVideo,
+  FaUsers,
+  FaGlassCheers,
+} from 'react-icons/fa';
+import { GrWorkshop } from 'react-icons/gr';
 
-const STATUSES = ['New', 'Needs Attendees', 'Filling Fast', 'Full Event'];
-const EVENT_TYPES = ['Workshop', 'Meetup', 'Lecture', 'Social'];
-const LOCATIONS = ['Community Hall', 'Online', 'Park', 'Library'];
-const TIMES = ['10:00 AM', '2:00 PM', '6:00 PM', '8:00 PM'];
+const normalizeStatus = status => {
+  if (!status) return 'New';
+
+  const s = status.toLowerCase();
+
+  if (s.includes('need')) return 'Needs Attendees';
+  if (s.includes('fill')) return 'Filling Fast';
+  if (s.includes('full')) return 'Full Event';
+  if (s.includes('new')) return 'New';
+
+  return 'New';
+};
 
 export default function CommunityCalendar() {
   const [events, setEvents] = useState([]);
@@ -20,44 +42,64 @@ export default function CommunityCalendar() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showEventModal, setShowEventModal] = useState(false);
-  const [overflowDate, setOverflowDate] = useState(null);
-  const popupRef = useRef(null);
-  const [calendarView, setCalendarView] = useState('month');
-
-  const currentDate = new Date();
-  const currentMonth = currentDate.getMonth();
-  const currentYear = currentDate.getFullYear();
+  const [tooltip, setTooltip] = useState(null);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
     const fetchEvents = async () => {
       setIsLoading(true);
       try {
         const response = await axios.get(ENDPOINTS.EVENTS);
-        setEvents(response.data.events || []);
+        const apiEvents = response.data?.events || response.data || [];
+        setEvents(apiEvents);
       } catch (err) {
-        setError('Failed to load events');
-        console.error('Error fetching calendar events:', err);
+        setError('Error fetching Events. Please try again later.');
       } finally {
         setIsLoading(false);
       }
     };
+
     fetchEvents();
   }, []);
 
   const mappedEvents = useMemo(() => {
     return events.map(event => {
-      const eventDate = new Date(event.date);
-      const timeString = eventDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const eventDateTime = new Date(event.startTime);
+      const timeString = new Intl.DateTimeFormat('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      }).format(eventDateTime);
+
+      const eventEndTime = new Date(event.endTime);
+      const endTimeString = new Intl.DateTimeFormat('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      }).format(eventEndTime);
+
+      const eventDate = new Date(
+        new Intl.DateTimeFormat('en-US', {
+          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+        }).format(eventDateTime),
+      );
 
       return {
         ...event,
+        id: event.id || `${event.title}-${eventDate.getTime()}`,
         date: eventDate,
         type: event.type || 'General',
-        status: event.status || 'New',
+        status: normalizeStatus(event.status),
         time: event.time || timeString,
+        endTime: endTimeString || event.endTime,
         description: event.description || `Join us for ${event.title}`,
-        // Ensure location is present or default
         location: event.location || 'Online',
+        isOver: eventDate < new Date(),
       };
     });
   }, [events]);
@@ -73,6 +115,7 @@ export default function CommunityCalendar() {
     [mappedEvents, filter],
   );
 
+  // Enhanced event caching by date - memoized for performance
   const eventCache = useMemo(() => {
     const map = new Map();
     filteredEvents.forEach(e => {
@@ -92,9 +135,24 @@ export default function CommunityCalendar() {
     return map;
   }, [filteredEvents]);
 
-  const getEventsForDate = useCallback(date => eventCache.get(date.toDateString()) || [], [
-    eventCache,
-  ]);
+  const handleFilterChange = useCallback(
+    filterType => e => {
+      setFilter(prev => ({
+        ...prev,
+        [filterType]: e.target.value,
+      }));
+    },
+    [],
+  );
+
+  const [overflowDate, setOverflowDate] = useState(null);
+  const getEventsForDate = useCallback(
+    date => {
+      if (!date) return [];
+      return eventCache.get(new Date(date).toDateString()) || [];
+    },
+    [eventCache],
+  );
 
   const selectedDateEvents = useMemo(() => {
     const dateKey = selectedDate?.toDateString();
@@ -129,14 +187,13 @@ export default function CommunityCalendar() {
     },
     [getEventsForDate],
   );
-
   const handleEventClick = useCallback(event => {
-    setSelectedEvent(event);
-    setShowEventModal(true);
-    // Also select the date of the event so the sidebar shows events for that date
-    setSelectedDate(event.date);
-  }, []);
+    setSelectedDate(new Date(event.date));
 
+    setSelectedEvent(event);
+
+    setShowEventModal(true);
+  }, []);
   const closeEventModal = useCallback(() => {
     setShowEventModal(false);
     setSelectedEvent(null);
@@ -155,6 +212,8 @@ export default function CommunityCalendar() {
   }, [closeEventModal]);
 
   // Close overflow popup on outside click
+
+  const popupRef = useRef(null);
   useEffect(() => {
     const handleClickOutside = e => {
       if (popupRef.current && !popupRef.current.contains(e.target)) {
@@ -167,30 +226,34 @@ export default function CommunityCalendar() {
 
   useEffect(() => {
     const eventsForDate = getEventsForDate(selectedDate);
+
     if (eventsForDate.length === 0) {
       if (selectedEvent !== null) {
         setSelectedEvent(null);
-      }
-      if (showEventModal) {
-        setShowEventModal(false);
       }
       return;
     }
 
     const hasSelectedEvent = eventsForDate.some(event => event.id === selectedEvent?.id);
+
     if (!hasSelectedEvent) {
       setSelectedEvent(eventsForDate[0]);
-      if (showEventModal) {
-        setShowEventModal(false);
-      }
     }
-  }, [getEventsForDate, selectedDate, selectedEvent, showEventModal]);
+  }, [getEventsForDate, selectedDate]);
 
   const statusMap = {
     New: 'statusNew',
     'Needs Attendees': 'statusNeedsAttendees',
     'Filling Fast': 'statusFillingFast',
     'Full Event': 'statusFull',
+  };
+
+  const statusIconMap = {
+    New: '⭐',
+    'Needs Attendees': '🙋',
+    'Filling Fast': '⚡',
+    'Full Event': '⛔',
+    Full: '⛔',
   };
 
   function WeeklyTimeGrid({ events, selectedDate, onEventClick, darkMode }) {
@@ -306,7 +369,8 @@ export default function CommunityCalendar() {
       return (
         <div className={styles.tileEvents}>
           {visible.map(e => {
-            const statusKey = statusMap[e.status];
+            const statusKey = statusMap[e.status] || 'statusNew';
+
             return (
               <button
                 key={e.id}
@@ -316,9 +380,19 @@ export default function CommunityCalendar() {
                   e_obj.stopPropagation();
                   handleEventClick(e);
                 }}
-                title={e.title}
+                onMouseEnter={ev => {
+                  const r = ev.currentTarget.getBoundingClientRect();
+                  setTooltip({ event: e, x: r.right + 8, y: r.top });
+                }}
+                onMouseLeave={() => setTooltip(null)}
+                aria-label={`Click to view details for ${e.title}`}
               >
-                {e.title}
+                <span className={styles.eventContent}>
+                  <span className={styles.eventIcon} aria-label={e.status} title={e.status}>
+                    {statusIconMap[e.status] || '⭐'}
+                  </span>
+                  <span className={styles.eventTitleText}>{e.title}</span>
+                </span>
               </button>
             );
           })}
@@ -326,10 +400,13 @@ export default function CommunityCalendar() {
             <button
               type="button"
               className={styles.moreEvents}
-              onClick={e_obj => {
-                e_obj.stopPropagation();
-                setOverflowDate(date);
+              onClick={ev => {
+                ev.stopPropagation();
+                const r = ev.currentTarget.getBoundingClientRect();
+                setOverflowDate({ date, x: r.right + 8, y: r.top });
+                handleDateSelect(date);
               }}
+              title="View all events for this day"
             >
               +{hiddenCount} more
             </button>
@@ -337,9 +414,10 @@ export default function CommunityCalendar() {
         </div>
       );
     },
-    [getEventsForDate, handleEventClick],
+    [getEventsForDate, handleEventClick, darkMode],
   );
 
+  // Memoized tile class name function
   const tileClassName = useCallback(
     ({ date, view }) => {
       const classNames = [];
@@ -354,14 +432,10 @@ export default function CommunityCalendar() {
     [eventCountByDate, selectedDate],
   );
 
-  // Get events for the selected date
-  const eventsForSelectedDate = useMemo(() => {
-    if (!selectedDate) return [];
-    return getEventsForDate(selectedDate);
-  }, [selectedDate, getEventsForDate]);
-
-  const handleFilterChange = field => e =>
-    setFilter(prev => ({ ...prev, [field]: e.target.value }));
+  // Memoized filter change handlers
+  /*   const handleTypeFilterChange = useCallback(e => {
+    setFilter(prev => ({ ...prev, type: e.target.value }));
+  }, []); */
 
   const uniqueFilterValues = useMemo(
     () => ({
@@ -372,13 +446,13 @@ export default function CommunityCalendar() {
     [mappedEvents],
   );
 
-  const darkMode = useSelector(s => s.theme.darkMode);
-
+  // Memoized CSS classes
   const calendarClasses = useMemo(
     () => ({
       container: `${styles.communityCalendar} ${darkMode ? styles.communityCalendarDarkMode : ''}`,
       header: `${styles.calendarHeader} ${darkMode ? styles.calendarHeaderDarkMode : ''}`,
       filters: `${styles.calendarFilters} ${darkMode ? styles.calendarFiltersDarkMode : ''}`,
+      select: `${styles.filterSelect} ${darkMode ? styles.filterSelectDarkMode : ''}`,
       main: styles.calendarMain,
       calendarContainer: `${styles.calendarContainer} ${
         darkMode ? styles.calendarContainerDarkMode : ''
@@ -393,6 +467,21 @@ export default function CommunityCalendar() {
     }),
     [darkMode],
   );
+
+  const getTypeIcon = type => {
+    switch (type) {
+      case 'Workshop':
+        return <GrWorkshop />;
+      case 'Webinar':
+        return <FaVideo />;
+      case 'Meeting':
+        return <FaUsers />;
+      case 'Social Gathering':
+        return <FaGlassCheers />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className={calendarClasses.container}>
@@ -415,7 +504,9 @@ export default function CommunityCalendar() {
               background: #1a2332 !important;
               color: #ffffff !important;
             }
+
             /* Force white text on dark background */
+
             .react-calendar__tile.selectedDate abbr,
             .react-calendar__tile.selectedDate abbr[title],
             .react-calendar__tile.selectedDate > abbr,
@@ -444,6 +535,16 @@ export default function CommunityCalendar() {
             .react-calendar__tile.selectedDate .eventItem {
               color: inherit !important;
             }
+              /* Navigation button hover/focus — dark mode */
+            .react-calendar__navigation button:enabled:hover,
+            .react-calendar__navigation button:enabled:hover *,
+            .react-calendar__navigation button:enabled:focus,
+            .react-calendar__navigation button:enabled:focus * {
+              background-color: #2d3748 !important;
+              color: #ffffff !important;
+              text-shadow: none !important;
+              -webkit-text-stroke: 0px transparent !important;
+            }
           `}
         </style>
       )}
@@ -451,30 +552,32 @@ export default function CommunityCalendar() {
         <h1>Community Calendar</h1>
         <div className={calendarClasses.filters}>
           <select
-            value={calendarView}
-            onChange={e => setCalendarView(e.target.value)}
-            className={styles.viewSelector}
+            className={calendarClasses.select}
+            value={filter.type}
+            onChange={handleFilterChange('type')}
           >
-            <option value="month">Day View (Month)</option>
-            <option value="week">Week View (Time Grid)</option>
-            <option value="year">Month View (Year)</option>
-            <option value="decade">Year View (Decade)</option>
-          </select>
-          <select value={filter.type} onChange={handleFilterChange('type')}>
             <option value="all">All Types</option>
             {uniqueFilterValues.types.map(t => (
               <option key={t}>{t}</option>
             ))}
           </select>
 
-          <select value={filter.location} onChange={handleFilterChange('location')}>
+          <select
+            className={calendarClasses.select}
+            value={filter.location}
+            onChange={handleFilterChange('location')}
+          >
             <option value="all">All Locations</option>
             {uniqueFilterValues.locations.map(l => (
               <option key={l}>{l}</option>
             ))}
           </select>
 
-          <select value={filter.status} onChange={handleFilterChange('status')}>
+          <select
+            className={calendarClasses.select}
+            value={filter.status}
+            onChange={handleFilterChange('status')}
+          >
             <option value="all">All Statuses</option>
             {uniqueFilterValues.statuses.map(s => (
               <option key={s}>{s}</option>
@@ -488,30 +591,18 @@ export default function CommunityCalendar() {
           <div className={calendarClasses.activitySection}>
             <CalendarActivitySection
               selectedDate={selectedDate}
-              events={eventsForSelectedDate}
+              events={selectedDateEvents}
               onEventClick={handleEventClick}
             />
           </div>
           <div className={calendarClasses.calendarSection}>
-            {calendarView === 'week' ? (
-              <WeeklyTimeGrid
-                events={filteredEvents}
-                selectedDate={selectedDate}
-                onEventClick={handleEventClick}
-                darkMode={darkMode}
-              />
-            ) : (
-              <ReactCalendar
-                className={calendarClasses.reactCalendar}
-                tileContent={tileContent}
-                tileClassName={tileClassName}
-                onClickDay={handleDateSelect}
-                value={selectedDate}
-                view={calendarView}
-                onViewChange={({ view }) => setCalendarView(view)}
-              />
-            )}
-
+            <ReactCalendar
+              className={calendarClasses.reactCalendar}
+              tileContent={tileContent}
+              tileClassName={tileClassName}
+              onClickDay={handleDateSelect}
+              value={selectedDate}
+            />
             <section
               className={`${styles.selectedDatePanel} ${
                 darkMode ? styles.selectedDatePanelDarkMode : ''
@@ -548,10 +639,37 @@ export default function CommunityCalendar() {
                             <div>
                               <h3>{event.title}</h3>
                               <div className={styles.selectedEventMeta}>
-                                <span>{event.time}</span>
-                                <span>{event.location}</span>
-                                <span>{event.type}</span>
-                                <span>{event.status}</span>
+                                <ul className={styles.selectedEventMeta}>
+                                  <li className={styles.metaItem}>
+                                    <FontAwesomeIcon icon={faClock} className={styles.metaIcon} />
+                                    <span>
+                                      {event.time} - {event.endTime}
+                                    </span>
+                                  </li>
+
+                                  <li className={styles.metaItem}>
+                                    <FontAwesomeIcon
+                                      icon={faLocationDot}
+                                      className={styles.metaIcon}
+                                    />
+                                    <span>{event.location}</span>
+                                  </li>
+
+                                  <li className={styles.metaItem}>
+                                    <FontAwesomeIcon icon={faTag} className={styles.metaIcon} />
+                                    <span>{event.type}</span>
+                                  </li>
+
+                                  <li className={styles.metaItem}>
+                                    <FontAwesomeIcon
+                                      icon={faCircleCheck}
+                                      className={styles.metaIcon}
+                                    />
+                                    <span className={styles.statusInline}>
+                                      {statusIconMap[event.status] || ''} {event.status}
+                                    </span>
+                                  </li>
+                                </ul>
                               </div>
                             </div>
                             <button
@@ -559,10 +677,14 @@ export default function CommunityCalendar() {
                               className={styles.eventDetailButton}
                               onClick={() => handleEventClick(event)}
                             >
-                              View full details
+                              View details
                             </button>
                           </header>
-                          <p className={styles.selectedEventDescription}>{event.description}</p>
+
+                          {/* Row 3: description */}
+                          {event.description && (
+                            <p className={styles.selectedEventDescription}>{event.description}</p>
+                          )}
                         </article>
                       </li>
                     );
@@ -578,26 +700,80 @@ export default function CommunityCalendar() {
         </div>
       </main>
 
-      {/* Overflow popup */}
+      {/* Overflow day-summary popup */}
       {overflowDate && (
         <div
           ref={popupRef}
           className={`${styles.overflowPopup} ${darkMode ? styles.overflowPopupDark : ''}`}
+          style={{ left: overflowDate.x, top: overflowDate.y }}
         >
-          <div className={styles.overflowPopupInner}>
-            <h4>{overflowDate.toDateString()}</h4>
-            {getEventsForDate(overflowDate).map(e => (
+          <div
+            className={`${styles.overflowPopupHeader} ${
+              darkMode ? styles.overflowPopupHeaderDark : ''
+            }`}
+          >
+            <span>
+              {overflowDate.date.toLocaleDateString('en-US', {
+                weekday: 'long',
+                month: 'long',
+                day: 'numeric',
+              })}
+            </span>
+            <button
+              type="button"
+              className={`${styles.overflowPopupClose} ${
+                darkMode ? styles.overflowPopupCloseDark : ''
+              }`}
+              onClick={() => setOverflowDate(null)}
+              aria-label="Close popup"
+            >
+              ×
+            </button>
+          </div>
+          <div className={styles.overflowPopupList}>
+            {getEventsForDate(overflowDate.date).map(e => (
               <button
                 key={e.id}
                 type="button"
-                className={`${styles.eventItem} ${styles[statusMap[e.status]]}`}
-                onClick={() => handleEventClick(e)}
-                title={e.title}
+                className={`${styles.overflowEventRow} ${
+                  darkMode ? styles.overflowEventRowDark : ''
+                }`}
+                onClick={() => {
+                  handleEventClick(e);
+                  setOverflowDate(null);
+                }}
               >
-                {e.title}
+                <span className={styles.overflowEventTime}>{e.time}</span>
+                <span className={styles.overflowEventTitle}>{e.title}</span>
+                <span
+                  className={`${styles.overflowEventBadge} ${styles[statusMap[e.status]] ||
+                    styles.statusNew}`}
+                >
+                  {statusIconMap[e.status] || '⭐'}
+                </span>
               </button>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* Hover tooltip — fixed so it escapes overflow: hidden on tiles */}
+      {tooltip && (
+        <div
+          className={`${styles.eventTooltip} ${darkMode ? styles.eventTooltipDark : ''}`}
+          style={{ left: tooltip.x, top: tooltip.y }}
+        >
+          <strong>{tooltip.event.title}</strong>
+          <span className={styles.tooltipDetail}>
+            <strong>Time:</strong> {tooltip.event.time}
+          </span>
+          <span className={styles.tooltipDetail}>
+            <strong>Location:</strong> {tooltip.event.location}
+          </span>
+          <span className={styles.tooltipDetail}>
+            <strong>Status:</strong> {tooltip.event.status}
+          </span>
+          <small>Click for more details</small>
         </div>
       )}
 
@@ -628,40 +804,64 @@ export default function CommunityCalendar() {
             <div className={styles.modalContent}>
               <div className={styles.eventStatus}>
                 <span
-                  className={`${styles.statusBadge} ${styles[statusMap[selectedEvent.status]] ||
-                    ''}`}
+                  className={`${darkMode ? styles.darkModeStatusBadge : styles.statusBadge} ${
+                    darkMode ? '' : styles[statusMap[selectedEvent.status]] || ''
+                  }`}
                 >
-                  {selectedEvent.status}
+                  {statusIconMap[selectedEvent.status] || ''} {selectedEvent.status}
                 </span>
               </div>
-
               <div className={styles.eventDetailsGrid}>
                 {[
-                  ['Type', selectedEvent.type],
-                  ['Location', selectedEvent.location],
-                  ['Date', selectedEvent.date.toLocaleDateString()],
-                  ['Time', selectedEvent.time],
-                ].map(([label, value]) => (
+                  [FaTag, 'Type', selectedEvent.type],
+                  [FaMapMarkerAlt, 'Location', selectedEvent.location],
+                  [FaCalendarAlt, 'Date', selectedEvent.date.toLocaleDateString()],
+                  [FaClock, 'Time', selectedEvent.time],
+                ].map(([Icon, label, value]) => (
                   <div key={label} className={styles.detailItem}>
-                    <span className={styles.detailLabel}>{label}:</span>
-                    <span>{value}</span>
+                    <span className={styles.detailLabel}>
+                      <Icon className={styles.detailIcon} />
+                      {label}:
+                    </span>
+
+                    <span>
+                      {label === 'Type' ? getTypeIcon(selectedEvent.type) : null} {value}
+                    </span>
                   </div>
                 ))}
               </div>
 
               <div className={styles.eventDescription}>
-                <span className={styles.detailLabel}>Description:</span>
+                <span className={styles.detailLabel}>
+                  <FaAlignLeft className={styles.detailIcon} />
+                  Description:
+                </span>
+
                 <p>{selectedEvent.description}</p>
               </div>
             </div>
 
             <div className={styles.modalActions}>
-              <button type="button" className={styles.btnPrimary}>
-                Register for Event
-              </button>
-              <button type="button" className={styles.btnSecondary}>
-                Add to Calendar
-              </button>
+              {selectedEvent.isOver ? (
+                <button type="button" className={styles.btnDisabled} disabled>
+                  Completed
+                </button>
+              ) : (
+                <>
+                  <button type="button" className={styles.btnPrimary}>
+                    <Link
+                      to={`/communityportal/Activities/Register/${selectedEvent._id}`}
+                      className={styles.btnPrimary}
+                      onClick={closeEventModal}
+                    >
+                      Register for Event
+                    </Link>
+                  </button>
+                  <button type="button" className={styles.btnSecondary}>
+                    Add to Calendar
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>

@@ -1,5 +1,5 @@
 // src/pages/Collaboration/Collaboration.jsx
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import styles from './Collaboration.module.css';
 import { toast } from 'react-toastify';
 import { ApiEndpoint } from '~/utils/URL';
@@ -18,10 +18,13 @@ function Collaboration() {
   const [totalPages, setTotalPages] = useState(1);
   const [categories, setCategories] = useState([]);
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
+  const [showPositionDropdown, setShowPositionDropdown] = useState(false);
   const [summaries, setSummaries] = useState(null);
-
-  // Modal
-  const [selectedJob, setSelectedJob] = useState(null);
+  // const [positions, setPositions] = useState([]);
+  const [selectedPosition, setSelectedPosition] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const categoryRef = useRef(null);
+  const positionRef = useRef(null);
 
   const darkMode = useSelector(state => state.theme.darkMode);
 
@@ -38,28 +41,21 @@ function Collaboration() {
       const url =
         `${ApiEndpoint}/jobs` +
         `?search=${encodeURIComponent(searchTerm || '')}` +
-        `&category=${encodeURIComponent(categoriesSelected.join(',') || '')}`;
+        `&category=${encodeURIComponent(selectedCategory || '')}`;
 
       const res = await fetch(url);
       const data = await res.json();
-      const jobs = data.jobs || [];
-
-      setAllJobs(jobs);
-
-      // ✅ ALWAYS allow at least 2 pages when jobs exist (test requirement)
-      const calculatedPages = Math.ceil(jobs.length / ADS_PER_PAGE);
-      setTotalPages(jobs.length > 0 ? Math.max(calculatedPages, 2) : 1);
+      setAllJobs(data.jobs || []);
     } catch {
       toast.error('Error fetching jobs');
     }
   };
 
-  /* ================= FETCH CATEGORIES ================= */
   const fetchCategories = async () => {
     try {
       const res = await fetch(`${ApiEndpoint}/jobs/categories`);
       const data = await res.json();
-      setCategories((data.categories || []).sort());
+      setCategories((data.categories || []).sort((a, b) => a.localeCompare(b)));
     } catch {
       toast.error('Error fetching categories');
     }
@@ -73,19 +69,61 @@ function Collaboration() {
   useEffect(() => {
     setCurrentPage(1);
     fetchJobs();
-  }, [searchTerm, categoriesSelected]);
+  }, [searchTerm, selectedCategory]);
+
+  const filteredJobs = useMemo(() => {
+    if (!selectedPosition) return allJobs;
+
+    return allJobs.filter(job =>
+      (job.position || job.title || '').toLowerCase().includes(selectedPosition.toLowerCase()),
+    );
+  }, [allJobs, selectedPosition]);
+
+  const positions = useMemo(() => {
+    const uniquePositions = [
+      ...new Set(
+        allJobs
+          .filter(
+            job =>
+              !selectedCategory || job.category?.toLowerCase() === selectedCategory.toLowerCase(),
+          )
+          .map(job => job.position || job.title)
+          .filter(Boolean),
+      ),
+    ];
+
+    return uniquePositions.sort((a, b) => a.localeCompare(b));
+  }, [allJobs, selectedCategory]);
 
   useEffect(() => {
     const start = (currentPage - 1) * ADS_PER_PAGE;
-    setJobAds(allJobs.slice(start, start + ADS_PER_PAGE));
-  }, [allJobs, currentPage]);
+    setJobAds(filteredJobs.slice(start, start + ADS_PER_PAGE));
+
+    const calculatedPages = Math.ceil(filteredJobs.length / ADS_PER_PAGE);
+    setTotalPages(Math.max(calculatedPages, 1));
+  }, [filteredJobs, currentPage]);
 
   useEffect(() => {
-    if (!selectedJob) return;
-    const esc = e => e.key === 'Escape' && setSelectedJob(null);
-    window.addEventListener('keydown', esc);
-    return () => window.removeEventListener('keydown', esc);
-  }, [selectedJob]);
+    // no-op placeholder; keep hook list stable if needed in future
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = event => {
+      if (categoryRef.current && !categoryRef.current.contains(event.target)) {
+        setShowCategoryDropdown(false);
+      }
+
+      if (positionRef.current && !positionRef.current.contains(event.target)) {
+        setShowPositionDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   /* ================= HANDLERS ================= */
   const handleSubmit = e => {
@@ -94,7 +132,8 @@ function Collaboration() {
   };
 
   const handleClearAllFilters = () => {
-    setCategoriesSelected([]);
+    setSelectedCategory('');
+    setSelectedPosition('');
     setSearchTerm('');
     setQuery('');
     setCurrentPage(1);
@@ -103,9 +142,7 @@ function Collaboration() {
   const handleShowSummaries = async () => {
     try {
       const res = await fetch(
-        `${ApiEndpoint}/jobs/summaries?search=${searchTerm}&category=${categoriesSelected.join(
-          ',',
-        )}`,
+        `${ApiEndpoint}/jobs/summaries?search=${searchTerm}&category=${selectedCategory}`,
       );
       setSummaries(await res.json());
     } catch {
@@ -169,33 +206,76 @@ function Collaboration() {
             <button className="btn btn-secondary">Go</button>
           </form>
 
-          <button
-            type="button"
-            onClick={() => setShowCategoryDropdown(p => !p)}
-            aria-expanded={showCategoryDropdown}
-          >
-            Select Categories ▼
-          </button>
+          <div className={styles.dropdownWrapper} ref={categoryRef}>
+            <button
+              type="button"
+              onClick={() => {
+                setShowCategoryDropdown(prev => !prev);
+                setShowPositionDropdown(false);
+              }}
+              aria-expanded={showCategoryDropdown}
+            >
+              {selectedCategory || 'Select Categories'} ▼
+            </button>
 
-          {/* CATEGORY DROPDOWN */}
-          {showCategoryDropdown && (
-            <div className={styles.jobSelect}>
-              {categories.map(cat => (
-                <label key={cat} className={styles.dropdownItem}>
-                  <input
-                    type="checkbox"
-                    checked={categoriesSelected.includes(cat)}
-                    onChange={() =>
-                      setCategoriesSelected(prev =>
-                        prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat],
-                      )
-                    }
-                  />
-                  {cat}
-                </label>
-              ))}
-            </div>
-          )}
+            {showCategoryDropdown && (
+              <div className={styles.jobSelect}>
+                {categories.map(cat => (
+                  <button
+                    key={cat}
+                    type="button"
+                    className={styles.dropdownItem}
+                    onClick={() => {
+                      setSelectedCategory(cat);
+                      setSelectedPosition('');
+                      setShowCategoryDropdown(false);
+                      setCurrentPage(1);
+                    }}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className={styles.dropdownWrapper} ref={positionRef}>
+            <button
+              type="button"
+              disabled={!selectedCategory}
+              onClick={() => {
+                if (!selectedCategory) return;
+                setShowPositionDropdown(prev => !prev);
+                setShowCategoryDropdown(false);
+              }}
+              aria-expanded={showPositionDropdown}
+            >
+              {selectedPosition || 'Select Positions'} ▼
+            </button>
+
+            {showPositionDropdown && selectedCategory && (
+              <div className={styles.jobSelect}>
+                {positions.length > 0 ? (
+                  positions.map(pos => (
+                    <button
+                      key={pos}
+                      type="button"
+                      className={styles.dropdownItem}
+                      onClick={() => {
+                        setSelectedPosition(pos);
+                        setShowPositionDropdown(false);
+                        setCurrentPage(1);
+                      }}
+                    >
+                      {pos}
+                    </button>
+                  ))
+                ) : (
+                  <div className={styles.dropdownItem}>No positions found</div>
+                )}
+              </div>
+            )}
+          </div>
         </nav>
 
         {/* HEADINGS */}
@@ -211,8 +291,10 @@ function Collaboration() {
           <p>
             {searchTerm
               ? `Listing results for '${searchTerm}'`
-              : categoriesSelected.length
-              ? 'Listing results for selected categories'
+              : selectedPosition
+              ? `Listing results for '${selectedPosition}' in '${selectedCategory}'`
+              : selectedCategory
+              ? `Listing results for '${selectedCategory}'`
               : 'Listing all job ads.'}
           </p>
           <button className="btn btn-secondary" onClick={handleShowSummaries}>
@@ -221,13 +303,10 @@ function Collaboration() {
         </div>
 
         {/* FILTER CHIPS */}
-        {categoriesSelected.length > 0 && (
+        {(selectedCategory || selectedPosition) && (
           <div className={styles.jobQueries}>
-            {categoriesSelected.map(cat => (
-              <span key={cat} className={styles.chip}>
-                {cat}
-              </span>
-            ))}
+            {selectedCategory && <span className={styles.chip}>{selectedCategory}</span>}
+            {selectedPosition && <span className={styles.chip}>{selectedPosition}</span>}
             <button className={styles.clearAllButton} onClick={handleClearAllFilters}>
               Clear All
             </button>
@@ -236,28 +315,38 @@ function Collaboration() {
 
         {/* JOB GRID */}
         <div className={styles.jobList}>
-          {jobAds.map(ad => (
-            <button
-              key={ad._id}
-              type="button"
-              className={styles.jobAd}
-              onClick={() => setSelectedJob(ad)}
-            >
-              <img
-                src={
-                  ad.imageUrl ||
-                  `/api/placeholder/640/480?text=${encodeURIComponent(ad.category || 'Job')}`
-                }
-                alt={ad.title}
-              />
-              <h3>{ad.title}</h3>
-            </button>
-          ))}
+          {jobAds.length > 0 ? (
+            jobAds.map(ad => (
+              <button
+                key={ad._id}
+                type="button"
+                className={styles.jobAd}
+                onClick={() => setSelectedJob(ad)}
+              >
+                <img
+                  src={
+                    ad.imageUrl ||
+                    `/api/placeholder/640/480?text=${encodeURIComponent(ad.category || 'Job')}`
+                  }
+                  alt={ad.title}
+                />
+                <h3>{ad.title}</h3>
+              </button>
+            ))
+          ) : (
+            <div className={styles.emptyState}>
+              <p>No job listings found matching your criteria.</p>
+              <p>Try clearing filters or adjusting your search terms.</p>
+              <button className="btn btn-secondary" onClick={handleClearAllFilters}>
+                Clear All Filters
+              </button>
+            </div>
+          )}
         </div>
 
         {/* PAGINATION */}
         <div className={styles.pagination}>
-          {Array.from({ length: Math.max(totalPages, 2) }, (_, i) => (
+          {Array.from({ length: totalPages }, (_, i) => (
             <button
               key={i}
               onClick={() => setCurrentPage(i + 1)}
@@ -270,42 +359,6 @@ function Collaboration() {
           ))}
         </div>
       </div>
-
-      {/* MODAL */}
-      {selectedJob && (
-        <div className={styles.modalOverlay} aria-hidden="true">
-          <div className={styles.modal}>
-            <button
-              type="button"
-              className={styles.closeButton}
-              aria-label="Close role details"
-              onClick={() => setSelectedJob(null)}
-            >
-              ×
-            </button>
-
-            <h2>{selectedJob.title}</h2>
-            <p>
-              <strong>Category:</strong> {selectedJob.category}
-            </p>
-            <p>{selectedJob.description}</p>
-
-            <div className={styles.modalActions}>
-              <a
-                className="btn btn-secondary"
-                href={`https://www.onecommunityglobal.org/collaboration/seeking-${slugify(
-                  selectedJob.category,
-                )}`}
-              >
-                View Full Details
-              </a>
-              <button className="btn btn-primary" disabled>
-                Apply Now
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

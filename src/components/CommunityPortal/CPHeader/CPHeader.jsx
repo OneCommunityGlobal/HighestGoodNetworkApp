@@ -47,9 +47,10 @@ import {
   SEND_EMAILS,
   ACTIVITY_RESOURCE_MANGEMENT,
   ACTIVITY_RESOURCE_USAGE,
+  EVENT_DATABASE_DESIGN,
 } from '../../../languages/en/ui';
 import Logout from '../../Logout/Logout';
-// import './CPHeader.css';
+// import './CPHeader.module.css';
 import styles from '../../Header/Header.module.css';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../../utils/permissions';
 
@@ -318,6 +319,13 @@ export function Header(props) {
                     className={fontColor}
                   >
                     {REGISTRATION}
+                  </DropdownItem>
+                  <DropdownItem
+                    tag={Link}
+                    to="/communityportal/database/design"
+                    className={fontColor}
+                  >
+                    {EVENT_DATABASE_DESIGN}
                   </DropdownItem>
                 </DropdownMenu>
               </UncontrolledDropdown>
