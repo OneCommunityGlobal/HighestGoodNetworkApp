@@ -52,7 +52,7 @@ import EDailyActivityLog from './components/BMDashboard/Equipment/DailyActivityL
 import LogTools from './components/BMDashboard/LogTools/LogTools';
 import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import OrdersPage from './components/KitchenInventory/Orders/OrdersPage';
-import GardenManagementPage from './components/KitchenInventory/GardenManagement/GardenManagementPage';
+import GardenManagement from './components/KitchenandInventory/GardenManagement/GardenManagement';
 import OrchardManagementPage from './components/KitchenandInventory/OrchardManagement/OrchardManagementPage';
 import AddTool from './components/BMDashboard/Tools/AddTool';
 import ToolDetailPage from './components/BMDashboard/Tools/ToolDetailPage';
@@ -726,7 +726,11 @@ export default (
         <Route path="/unsubscribe" component={UnsubscribePage} />
         <Route path="/collaboration" component={Collaboration} />
         <Route path="/kitchenandinventory/orders" component={OrdersPage} />
-        <Route path="/kitchenandinventory/gardenmanagement" component={GardenManagementPage} />
+        <ProtectedRoute
+          path="/kitchenandinventory/gardenmanagement"
+          exact
+          component={GardenManagement}
+        />
         <Route path="/kitchenandinventory/orchardmanagement" component={OrchardManagementPage} />
         <Route
           path="/kitchenandinventory/dashboard/foodcategories"
