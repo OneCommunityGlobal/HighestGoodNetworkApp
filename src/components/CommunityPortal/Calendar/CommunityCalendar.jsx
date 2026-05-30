@@ -22,7 +22,6 @@ import {
 } from 'react-icons/fa';
 import { GrWorkshop } from 'react-icons/gr';
 
-
 const normalizeStatus = status => {
   if (!status) return 'New';
 
