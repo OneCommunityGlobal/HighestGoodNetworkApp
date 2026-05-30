@@ -45,8 +45,8 @@ describe('Countdown Component', () => {
   it('calls toggleTimer when the close button is clicked', () => {
     // eslint-disable-next-line react/jsx-props-no-spreading
     render(<Countdown {...defaultProps} />);
-    const closeButton = screen.getByTitle('close timer dropdown');
-    fireEvent.pointerDown(closeButton);
+    const closeButton = screen.getByLabelText('Close timer dropdown');
+    fireEvent.click(closeButton);
     expect(defaultProps.toggleTimer).toHaveBeenCalled();
   });
 
@@ -71,7 +71,7 @@ describe('Countdown Component', () => {
     // eslint-disable-next-line react/jsx-props-no-spreading
     render(<Countdown {...defaultProps} />);
     const startButton = screen.getByLabelText('Start timer');
-    fireEvent.pointerDown(startButton);
+    fireEvent.click(startButton);
     expect(defaultProps.handleStartButton).toHaveBeenCalled();
   });
 
@@ -84,7 +84,7 @@ describe('Countdown Component', () => {
     // eslint-disable-next-line react/jsx-props-no-spreading
     render(<Countdown {...props} />);
     const stopButton = screen.getByLabelText('Stop timer and log timer');
-    fireEvent.pointerDown(stopButton);
+    fireEvent.click(stopButton);
     expect(defaultProps.handleStopButton).toHaveBeenCalled();
   });
 
