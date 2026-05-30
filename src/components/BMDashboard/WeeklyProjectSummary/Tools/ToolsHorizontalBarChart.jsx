@@ -360,7 +360,8 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
       </div>
 
       {!selectedProject?.value && (
-        <div
+        <button
+          type="button"
           style={{
             position: 'relative',
             height: '200px',
@@ -372,18 +373,15 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
             justifyContent: 'center',
             overflow: 'hidden',
             cursor: 'default',
+            width: '100%',
+            padding: 0,
           }}
-          role="button"
           aria-label="Chart preview - select a project to load data"
-          tabIndex={0}
           onMouseEnter={() => setIsPreviewHovering(true)}
           onMouseLeave={() => setIsPreviewHovering(false)}
           onFocus={() => setIsPreviewHovering(true)}
           onBlur={() => setIsPreviewHovering(false)}
           onClick={() => setIsPreviewHovering(prev => !prev)}
-          onKeyDown={e => {
-            if (e.key === 'Enter' || e.key === ' ') setIsPreviewHovering(prev => !prev);
-          }}
         >
           <div
             style={{
@@ -469,7 +467,7 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
               ))}
             </div>
           </div>
-        </div>
+        </button>
       )}
 
       {selectedProject?.value && loading && (

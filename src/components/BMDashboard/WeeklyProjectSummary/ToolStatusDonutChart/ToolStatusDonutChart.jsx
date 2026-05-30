@@ -83,7 +83,7 @@ const CustomTooltip = ({
   toolId,
   darkMode,
 }) => {
-  if (!active || !payload || !payload.length) return null;
+  if (!active || !payload?.length) return null;
   if (total === 0) return <NoMatchTooltip darkMode={darkMode} />;
   if (hasNoData && toolId) return <NoDataTooltip darkMode={darkMode} toolName={toolName} />;
 
