@@ -9,7 +9,6 @@ import { jsPDF } from 'jspdf';
 import { toast } from 'react-toastify';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
 import CostPredictionChart from './CostPredictionChart';
-import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
@@ -18,15 +17,20 @@ import IssuesBreakdownChart from './IssuesBreakdownChart';
 import InjuryCategoryBarChart from './GroupedBarGraphInjurySeverity/InjuryCategoryBarChart';
 import ToolsHorizontalBarChart from './Tools/ToolsHorizontalBarChart';
 import ExpenseBarChart from './Financials/ExpenseBarChart';
+import CostBreakDown from './Financials/CostBreakDown/CostBreakDown';
 import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
 import EmbedInteractiveMap from '../InteractiveMap/EmbedInteractiveMap';
 import InteractiveMap from '../InteractiveMap/InteractiveMap';
 import styles from './WeeklyProjectSummary.module.css';
-import IssueCharts from '../Issues/openIssueCharts';
+import LossTrackingLineChart from './Financials/LossTrackingLineCharts/LossTrackingLineChart';
 import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
+import LessonsLearntChart from '../LessonsLearnt/LessonsLearntChart';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
+import ToolsStoppageHorizontalBarChart from './Tools/ToolsStoppageHorizontalBarChart/ToolsStoppageHorizontalBarChart';
+import IssueCharts from '../Issues/openIssueCharts';
+import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
 
 const projectStatusButtons = [
   {
@@ -291,22 +295,29 @@ function WeeklyProjectSummary() {
       {
         title: 'Tools and Equipment Tracking',
         key: 'Tools and Equipment Tracking',
-        className: 'full',
+        className: 'half',
         content: (
-          <div className="weekly-project-summary-card normal-card tools-tracking-layout">
-            <div className="tools-donut-wrap">
+          <>
+            {/* <div className="weekly-project-summary-card normal-card tools-tracking-layout"> */}
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
               <ToolStatusDonutChart />
             </div>
-            <div className="weekly-project-summary-card normal-card" style={{ minHeight: '300px' }}>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
               <ToolsHorizontalBarChart darkMode={darkMode} />
             </div>
             <div
-              className="weekly-project-summary-card normal-card"
+              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
               style={{ minHeight: '300px', gridColumn: 'span 2' }}
             >
               <SupplierPerformanceGraph />
             </div>
-          </div>
+            <div
+              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+              style={{ minHeight: '300px', gridColumn: 'span 2' }}
+            >
+              <ToolsStoppageHorizontalBarChart />
+            </div>
+          </>
         ),
       },
       {
@@ -327,6 +338,12 @@ function WeeklyProjectSummary() {
           >
             <InjuryCategoryBarChart />
           </div>,
+          <div
+            key="lessons-learnt-chart"
+            className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+          >
+            <LessonsLearntChart darkMode={darkMode} />
+          </div>,
         ],
       },
       {
@@ -339,18 +356,20 @@ function WeeklyProjectSummary() {
             <div className="weekly-project-summary-card financial-small financial-chart">
               <ExpenseBarChart />
             </div>
-            <div className="weekly-project-summary-card financial-small">📊 Card</div>
-            <div className="weekly-project-summary-card financial-small">📊 Card</div>
-            <div className="weekly-project-summary-card financial-big">📊 Big Card</div>
+            <div className="weekly-project-summary-card financial-big">
+              <CostBreakDown />
+            </div>
           </div>
         ),
       },
       {
         title: 'Loss Tracking',
         key: 'Loss Tracking',
-        className: 'small',
+        className: 'large',
         content: (
-          <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>📊 Card</div>
+          <div className="weekly-project-summary-card financial-big">
+            <LossTrackingLineChart />
+          </div>
         ),
       },
       {
@@ -403,7 +422,7 @@ function WeeklyProjectSummary() {
         }),
       },
     ],
-    [quantityOfMaterialsUsedData, darkMode],
+    [quantityOfMaterialsUsedData],
   );
 
   const handleSaveAsPDF = async () => {
@@ -549,6 +568,10 @@ function WeeklyProjectSummary() {
         autoClose: 3000,
       });
     } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('PDF generation failed:', err);
+      // eslint-disable-next-line no-alert
+      alert('Failed to generate PDF. Please try again.');
       // Dismiss loading toast
       toast.dismiss(loadingToastId);
 

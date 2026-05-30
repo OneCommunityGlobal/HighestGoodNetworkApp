@@ -1,11 +1,60 @@
+/* stylelint-disable  */
 .dashboardWrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px;
+  background-color: var(--bg-color, #fff);
+  color: var(--text-color, #000);
+  min-height: 100vh;
+}
+
+.dashboardTitle {
+  font-size: 1.875rem;
+  font-weight: bold;
+  margin-bottom: 24px;
+  color: var(--title-color, #000);
+}
+
+.gridContainer {
+  display: grid;
+  gap: 24px;
+}
+
+@media (width >= 1024px) {
+  .gridContainer {
+    grid-template-columns: 1fr 3fr;
+  }
+}
+
+.filterPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.filterCard {
+  background: var(--card-bg, white);
+  border-radius: 8px;
+  box-shadow: var(--shadow, 0 4px 6px -1px rgb(0 0 0 / 10%));
+  padding: 16px;
+}
+
+.filterCardTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: var(--title-color, #000);
+}
+
+.filterCardDesc {
+  color: var(--text-secondary, #6b7280);
+  font-size: 0.875rem;
   width: 100%;
   padding: 0;
   margin: 0;
   background-color: var(--bg-color, #f3f4f6);
   min-height: calc(100vh - 70px);
   transition: background-color 0.3s ease, color 0.3s ease;
-
   --bg-color: #f3f4f6;
   --text-color: #000;
   --card-bg: #fff;
@@ -16,11 +65,8 @@
   --input-text: #000;
   --input-border: #d1d5db;
   --accent-card: #f9fafb;
-
   display: block;
   visibility: visible;
-}
-
 .dashboardWrapper.darkMode {
   --bg-color: #1b2a41;
   --text-color: #f1f1f1;
@@ -32,9 +78,6 @@
   --input-text: #f1f1f1;
   --input-border: #4a5f7f;
   --accent-card: #1f3a52;
-}
-
-.dashboardTitle {
   font-size: 2rem;
   font-weight: 700;
   margin: 0;
@@ -61,6 +104,7 @@
   display: block;
   font-size: 0.875rem;
   font-weight: 500;
+  color: var(--label-color, #000);
   color: var(--text-color);
 }
 
@@ -70,6 +114,8 @@
   border: 1px solid var(--input-border);
   border-radius: 6px;
   outline: none;
+  background-color: var(--input-bg, #fff);
+  color: var(--text-color, #000);
   background-color: var(--input-bg);
   color: var(--input-text);
 }
@@ -93,12 +139,14 @@
 .checkboxLabel {
   font-size: 0.875rem;
   cursor: pointer;
+  color: var(--text-color, #000);
   color: var(--text-color);
 }
 
 .increaseCard {
   background: var(--card-bg);
   border-radius: 8px;
+  box-shadow: var(--shadow, 0 4px 6px -1px rgb(0 0 0 / 10%));
   box-shadow: var(--card-shadow);
   padding: 16px;
   color: var(--text-color);
@@ -108,6 +156,7 @@
   font-size: 1.25rem;
   font-weight: 600;
   margin-bottom: 8px;
+  color: var(--title-color, #000);
   color: var(--text-color);
 }
 
@@ -138,12 +187,15 @@
 .increaseText {
   margin-left: 8px;
   font-size: 0.875rem;
+  color: var(--text-color, #000);
   color: var(--text-color);
 }
 
 .chartPanel {
   background: var(--card-bg);
   border-radius: 8px;
+  box-shadow: var(--shadow, 0 4px 6px -1px rgb(0 0 0 / 10%));
+  padding: 16px;
   box-shadow: var(--card-shadow);
   padding: 20px;
   color: var(--text-color);
@@ -155,6 +207,7 @@
 .chartPanelTitle {
   font-size: 1.25rem;
   font-weight: 600;
+  color: var(--title-color, #000);
   color: var(--text-color);
 }
 
@@ -188,6 +241,7 @@
 }
 
 .loadingText {
+  color: var(--text-color, #000);
   color: var(--text-color);
   margin: 0;
 }
@@ -217,6 +271,7 @@
   font-size: 1.125rem;
   font-weight: 500;
   margin-bottom: 12px;
+  color: var(--title-color, #000);
   color: var(--text-color);
 }
 
@@ -248,6 +303,8 @@
 }
 
 .materialBreakdownName {
+  font-weight: 500;
+  color: var(--text-color, #000);
   font-weight: 600;
   color: var(--text-color);
   font-size: 0.95rem;
@@ -256,6 +313,7 @@
 .materialBreakdownValue {
   font-size: 1.75rem;
   font-weight: bold;
+  color: var(--text-color, #000);
   color: var(--text-color);
   margin-top: 4px;
 }
@@ -266,6 +324,19 @@
   font-weight: normal;
 }
 
+/* ============ DARK MODE ============ */
+.dashboardWrapper.darkMode {
+  --bg-color: #1b2a41;
+  --text-color: #fff;
+  --title-color: #fff;
+  --text-secondary: #e0e0e0;
+  --card-bg: #2b3e59;
+  --input-bg: #3a506b;
+  --border-color: #4a5a77;
+  --focus-border-color: #e8a71c;
+  --label-color: #e0e0e0;
+  --shadow: 0 4px 6px -1px rgb(255 255 255 / 10%);
+  --breakdown-item-bg: #3a506b;
 .gridContainer {
   display: grid;
   gap: 32px;
@@ -321,3 +392,4 @@
 .chartPanelHeader {
   margin-bottom: 16px;
 }
+}}
