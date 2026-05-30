@@ -6,7 +6,7 @@ import styles from './BlueSquaresTable.module.css';
 const BlueSquaresTable = ({ userProfile ,canEdit, isPrivate , handleUserProfile , handleBlueSquare, darkMode}) => {
   return (
     <div className={styles['user-profile-blue-square-section']}>
-      <div className={`${styles['user-profile-blue-square-div-header']} ${darkMode ? 'bg-space-cadet' : ''}`}>
+      <div data-testid="blue-square-div-header" className={`${styles['user-profile-blue-square-div-header']} ${darkMode ? 'bg-space-cadet' : ''}`}>
         <div className={styles['user-profile-blue-square-div-header-title']}>
           <div className='blue-squares' data-testid='blue-squares'>BLUE SQUARES</div>
           <div>

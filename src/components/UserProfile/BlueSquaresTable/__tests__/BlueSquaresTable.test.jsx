@@ -1,13 +1,12 @@
-import React from "react";
+import '@testing-library/jest-dom';
+import { fireEvent, render, screen } from "@testing-library/react";
+import mockAdminState from '__tests__/mockAdminState';
+import axios from "axios";
 import { Provider } from "react-redux";
 import { configureStore } from 'redux-mock-store';
-import { render, screen, fireEvent } from "@testing-library/react";
-import '@testing-library/jest-dom';
-import BlueSquaresTable from "../BlueSquaresTable";
 import thunk from "redux-thunk";
-import mockAdminState from '__tests__/mockAdminState';
 import EditableInfoModal from "~/components/UserProfile/EditableModal/EditableInfoModal";
-import axios from "axios";
+import BlueSquaresTable from "../BlueSquaresTable";
 
 vi.mock('axios');
 
@@ -75,7 +74,7 @@ describe("BlueSquaresTable component unit tests", () => {
   it('applies darkmode styling when darkmode is true', () => {
     const { container } = renderComponent(true, false, true, true);
     // eslint-disable-next-line testing-library/no-node-access, testing-library/no-container
-    expect(container.querySelector('.user-profile-blue-square-div-header')).toHaveClass('bg-space-cadet');
+    expect(screen.getByTestId('blue-square-div-header')).toHaveClass('bg-space-cadet');
   });
 
   it('calls handleUserProfile when toggleClass is clicked', () => {
