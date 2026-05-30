@@ -178,7 +178,7 @@
   box-sizing: border-box;
 }
 
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
   .analyticsSection {
     flex-direction: column;
     gap: 30px;
@@ -190,7 +190,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .trackingContainer,
   .insights {
     width: 100%;
@@ -214,7 +214,7 @@
 }
 
 
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
   .trackingHeader {
     flex-direction: column;
     align-items: center;
@@ -400,17 +400,14 @@
   margin-bottom: 15px;
   display: flex;
   justify-content: space-between;
-}
+} 
 
-.insightsHeaderDark {
+.trackingTableDark td,
+.trackingTableDark th  {
   color: #fff;
-  font-weight: bold;
-  margin-bottom: 15px;
-  display: flex;
-  justify-content: space-between;
 }
 
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
   .insightsHeader {
     flex-direction: column;
     align-items: center;
@@ -952,7 +949,7 @@
   .participationLandingPageDark .attendeesCountDark,
   .participationLandingPageDark .insightsLabelDark,
   .participationLandingPageDark .insightsPercentageDark {
-    color: #ffffff !important;
+    color: #fff !important;
   }
 
 .filterDropdown {
@@ -964,7 +961,7 @@
 
 .participationLandingPageDark .filterDropdown {
   background-color: #3A506B;
-  color: #ffffff;
+  color: #fff;
   border: 1px solid #555;
   color-scheme: dark;
 }
@@ -1100,4 +1097,81 @@
   background-color: #3A506B;
   color: #fff;
   border: 1px solid #3A506B;
+}
+
+/* ----- Actionable Insights ----- */
+.actionableSection {
+  margin-top: 30px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
+}
+
+.actionableSectionDark {
+  background: #1c2541;
+  border: 1px solid #333;
+  color: #fff;
+}
+
+.actionableHeader {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 18px;
+  color: #333;
+}
+
+.actionableSectionDark .actionableHeader {
+  color: #fff;
+}
+
+.actionableGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 15px;
+}
+
+.actionCard {
+  background: #f8f9fa;
+  border-radius: 10px;
+  padding: 15px;
+  border: 1px solid #ddd;
+}
+
+.actionCard:hover {
+  background: #f1f1f1;
+}
+
+.actionableSectionDark .actionCard {
+  background: #3a506b;
+  border: 1px solid #555;
+  color: #fff;
+}
+
+.actionTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.actionDescription {
+  font-size: 0.85rem;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.actionableSectionDark .actionDescription {
+  color: #e0e0e0;
+}
+
+.actionTrendUp {
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: #28a745;
+}
+
+.actionTrendDown {
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: #e74c3c;
 }
