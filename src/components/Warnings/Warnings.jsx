@@ -70,7 +70,10 @@ export default function Warning({
     if (showTrackers) {
       setToggle(true);
       if (usersWarnings.length === 0) {
-        fetchUsersWarningsById();
+        const timer = setTimeout(() => {
+          fetchUsersWarningsById();
+        }, 100);
+        return () => clearTimeout(timer);
       }
     } else {
       setToggle(false);
@@ -165,9 +168,7 @@ export default function Warning({
           toast.success(toastMessage);
         }
       })
-      .catch(err => {
-        console.log(err);
-      });
+      .catch(() => {});
   };
 
   const warnings = toggle

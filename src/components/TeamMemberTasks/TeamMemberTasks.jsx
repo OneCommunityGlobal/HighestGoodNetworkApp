@@ -736,8 +736,8 @@ const TeamMemberTasks = React.memo(props => {
                               fontSize: '12px',
                               borderRadius: '4px',
                               border: '1px solid #17a2b8',
-                              backgroundColor: !showTasks ? '#17a2b8' : 'white',
-                              color: !showTasks ? 'white' : '#17a2b8',
+                              backgroundColor: showTasks ? 'white' : '#17a2b8',
+                              color: showTasks ? '#17a2b8' : 'white',
                               cursor: 'pointer',
                               whiteSpace: 'nowrap',
                             }}
@@ -853,6 +853,7 @@ const TeamMemberTasks = React.memo(props => {
                         userId={displayUser._id}
                         showWhoHasTimeOff={showWhoHasTimeOff}
                         showTrackers={showTrackers}
+                        showTasks={showTasks}
                         onTimeOff={userOnTimeOff[user.personId]}
                         goingOnTimeOff={userGoingOnTimeOff[user.personId]}
                         userStateCatalog={userStateCatalog}
