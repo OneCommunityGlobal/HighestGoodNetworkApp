@@ -21,7 +21,7 @@ import BadgeTableFilter from './BadgeTableFilter';
 import EditBadgePopup from './EditBadgePopup';
 import DeleteBadgePopup from './DeleteBadgePopup';
 import hasPermission from '../../utils/permissions';
-import './Badge.module.css';
+import './Badge.css';
 
 function BadgeDevelopmentTable(props) {
   const { darkMode } = props;

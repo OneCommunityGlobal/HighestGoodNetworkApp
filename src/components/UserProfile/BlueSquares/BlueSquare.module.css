@@ -8,7 +8,7 @@
   visibility: hidden;
   font-weight: normal;
   border: 2px solid black;
-  background-color: #4a6070;
+  background-color: slategray;
 }
 
 #wrapper:hover .report {

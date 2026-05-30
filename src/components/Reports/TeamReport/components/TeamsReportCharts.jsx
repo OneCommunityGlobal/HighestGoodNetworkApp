@@ -1,7 +1,7 @@
 /* eslint-disable testing-library/no-node-access */
 // eslint-disable-next-line no-unused-vars
 import { React, useEffect, useState } from 'react';
-import './ReportCharts.module.css';
+import './ReportCharts.css';
 import * as d3 from 'd3';
 
 import { CHART_RADIUS, CHART_SIZE } from '../../../common/PieChart/constants';

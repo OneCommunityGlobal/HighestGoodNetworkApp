@@ -93,7 +93,7 @@ function WarningModal({
           <p>
             The {numberOfWarnings >= 3 ? 'blue square' : 'warning'} will be because they didn&apos;t
             meet the criteria for the following area:{' '}
-            <span className={styles['warning__body--bold']}>
+            <span className="warning__body--bold">
               {times}x {warningText}
             </span>
           </p>
@@ -321,7 +321,7 @@ function WarningModal({
                   setToggleModal(false);
                 }}
                 color="warning"
-                className={styles.warning__modal__footer__btn}
+                className="warning__modal__footer__btn"
               >
                 Issue Warning
               </Button>
@@ -333,7 +333,7 @@ function WarningModal({
                   setToggleModal(false);
                 }}
                 color="primary"
-                className={styles.warning__modal__footer__btn}
+                className="warning__modal__footer__btn"
               >
                 Issue Blue Square
               </Button>

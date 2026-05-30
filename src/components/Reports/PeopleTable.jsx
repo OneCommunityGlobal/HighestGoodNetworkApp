@@ -1,6 +1,6 @@
 import '../Teams/Team.module.css';
 import { Link } from 'react-router-dom';
-import './reports.module.css';
+import './reports.css';
 import moment from 'moment';
 import { boxStyle, boxStyleDark } from '~/styles';
 

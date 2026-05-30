@@ -25,7 +25,7 @@ import {
   DropdownItem,
   DropdownToggle,
 } from 'reactstrap';
-import './WeeklySummary.module.css';
+import './WeeklySummary.css';
 import { connect } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';

@@ -1,4 +1,4 @@
-import './TriStateToggleSwitch.module.css';
+import './TriStateToggleSwitch.css';
 import React, { useState, useEffect } from 'react';
 
 function TriStateToggleSwitch({ pos, onChange }) {

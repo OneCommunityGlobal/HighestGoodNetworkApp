@@ -11,7 +11,7 @@ import {
 import BadgeImage from '~/components/Badge/BadgeImage';
 import { boxStyle, boxStyleDark } from '../../styles';
 import '../Badge/BadgeReport.module.css';
-import './BadgeSummaryPreview.module.css';
+import './BadgeSummaryPreview.css';
 
 function BadgeSummaryPreview({ badges, darkMode, personalBestMaxHrs }) {
   const [isOpen, setIsOpen] = useState(false);

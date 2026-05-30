@@ -1,8 +1,7 @@
-import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
+import { isEmpty } from 'lodash';
 import { toast } from 'react-toastify';
-import styles from './WeeklySummary.module.css';
 
 export default function CountdownTimer({ date, darkMode }) {
   const [timeLeft, setTimeLeft] = useState({});
@@ -54,11 +53,11 @@ export default function CountdownTimer({ date, darkMode }) {
   };
 
   return (
-    <div className={`${styles.countdown} ${darkMode ? 'text-white' : 'text-black'}`}>
+    <div className={`countdown ${darkMode ? 'text-white' : 'text-black'}`}>
       {!isEmpty(timeLeft) ? (
         Object.entries(timeLeft).map(([interval, value]) => (
-          <span key={interval} className={styles['countdown__col']}>
-            <span className={styles['countdown__col__element']}>
+          <span key={interval} className="countdown__col">
+            <span className="countdown__col__element">
               <strong className={darkMode ? 'text-white' : 'text-black'}>
                 {addLeadingZeros(value)}
               </strong>
@@ -67,7 +66,7 @@ export default function CountdownTimer({ date, darkMode }) {
           </span>
         ))
       ) : (
-        <span className={styles['countdown__times-up']}>Time&apos;s up!</span>
+        <span className="countdown__times-up">Time&apos;s up!</span>
       )}
     </div>
   );

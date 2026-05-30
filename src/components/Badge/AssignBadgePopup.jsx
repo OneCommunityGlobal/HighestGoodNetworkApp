@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Table, Button, UncontrolledTooltip } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import AssignTableRow from './AssignTableRow';
-import './AssignBadgePopup.module.css';
+import './AssignBadgePopup.css';
 import { clearSelected } from '../../actions/badgeManagement';
 
 function AssignBadgePopup(props) {

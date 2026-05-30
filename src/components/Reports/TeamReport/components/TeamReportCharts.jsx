@@ -1,6 +1,6 @@
 /* eslint-disable testing-library/no-node-access */
 import { React, useEffect } from 'react';
-import './ReportCharts.module.css';
+import './ReportCharts.css';
 import * as d3 from 'd3';
 
 import { CHART_RADIUS, CHART_SIZE } from '../../../common/PieChart/constants';

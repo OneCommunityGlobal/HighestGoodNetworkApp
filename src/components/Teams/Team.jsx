@@ -147,10 +147,7 @@ export function Team({
         </button>
       </td>
 
-      <td
-        className={styles['centered-cell']}
-        style={{ textAlign: 'center', verticalAlign: 'middle' }}
-      >
+      <td className="centered-cell" style={{ textAlign: 'center', verticalAlign: 'middle' }}>
         <button
           style={darkMode ? {} : boxStyle}
           type="button"

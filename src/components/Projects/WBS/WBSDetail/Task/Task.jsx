@@ -8,9 +8,9 @@ import {
   deleteTask,
   deleteChildrenTasks,
 } from '../../../../../actions/task.js';
-import './tagcolor.module.css';
+import './tagcolor.css';
 import styles from './task.module.css';
-import '../../../../Header/index.module.css'
+import '../../../../Header/index.css'
 import { Editor } from '@tinymce/tinymce-react';
 import { getPopupById } from './../../../../../actions/popupEditorAction';
 import { boxStyle, boxStyleDark } from '~/styles';
