@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import './TeamLocations.module.css';
+import './TeamLocations.css';
 
 function TeamLocationsTable({ visible, filteredMapMarkers, setCurrentUser, darkMode }) {
   const [sortOrder, setSortOrder] = useState({ field: null, direction: 'dsc' });

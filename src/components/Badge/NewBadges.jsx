@@ -1,7 +1,7 @@
 import { Card, CardTitle, CardBody, UncontrolledTooltip } from 'reactstrap';
 import BadgeImage from './BadgeImage';
 import { WEEK_DIFF } from '../../constants/badge';
-import './Badge.module.css';
+import './Badge.css';
 
 function NewBadges(props) {
   const filterBadges = allBadges => {

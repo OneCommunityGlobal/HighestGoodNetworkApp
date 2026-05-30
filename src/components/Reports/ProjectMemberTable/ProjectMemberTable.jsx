@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import CopyToClipboard from '~/components/common/Clipboard/CopyToClipboard';
 import { Stub } from '../../common/Stub';
-import './ProjectMemberTable.module.css';
+import './ProjectMemberTable.css';
 
 export function ProjectMemberTable({ projectMembers, skip, take, handleMemberCount, darkMode, counts }) {
   const [allMemberList, setAllMemberList] = useState([]);

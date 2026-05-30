@@ -1,4 +1,4 @@
-import './WbsTable.module.css';
+import './WbsTable.css';
 import Stub from '../../common/Stub/Stub';
 import CopyToClipboard from '../../common/Clipboard/CopyToClipboard';
 

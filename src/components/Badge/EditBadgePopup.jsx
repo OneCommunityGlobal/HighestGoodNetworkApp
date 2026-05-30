@@ -14,11 +14,11 @@ import {
   UncontrolledTooltip,
 } from 'reactstrap';
 import { connect } from 'react-redux';
-import './Badge.module.css';
+import './Badge.css';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { updateBadge, closeAlert } from '../../actions/badgeManagement';
 import badgeTypes from './BadgeTypes';
-import '../Header/index.module.css';
+import '../Header/index.css';
 
 function EditBadgePopup(props) {
   // eslint-disable-next-line

@@ -4,7 +4,7 @@ import { ENDPOINTS } from '~/utils/URL';
 import httpService from '~/services/httpService';
 import SetupProfileInvalidToken from './SetupProfileInvalidToken';
 import SetupProfileUserEntry from './SetupProfileUserEntry';
-import './SetupProfile.module.css';
+import './SetupProfile.css';
 
 function SetupProfile({ match }) {
   const [loading, setLoading] = useState(true);

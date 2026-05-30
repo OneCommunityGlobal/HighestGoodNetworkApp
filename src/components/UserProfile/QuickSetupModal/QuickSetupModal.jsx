@@ -10,8 +10,8 @@ import AddNewTitleModal from './AddNewTitleModal';
 import EditTitlesModal from './EditTitlesModal';
 import { getAllTitle } from '../../../actions/title';
 import { setTeamCodes } from '../../../actions/teamCodes';
-import './QuickSetupModal.module.css';
-import '../../Header/index.module.css';
+import './QuickSetupModal.css';
+import '../../Header/index.css';
 import styles from '../../SummaryBar/SummaryBar.module.css'
 
 function QuickSetupModal(props) {

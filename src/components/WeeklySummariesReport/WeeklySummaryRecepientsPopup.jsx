@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { boxStyle, boxStyleDark } from '~/styles';
-import '../Header/index.module.css';
+import '../Header/index.css';
 import {
   Button,
   Modal,

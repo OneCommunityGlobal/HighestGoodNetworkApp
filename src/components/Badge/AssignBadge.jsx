@@ -26,7 +26,7 @@ import {
   getUserId,
 } from '../../actions/badgeManagement';
 import { getAllUserProfile } from '../../actions/userManagement';
-import '../Header/index.module.css';
+import '../Header/index.css';
 
 function AssignBadge(props) {
   const darkMode = useSelector(state => state.theme.darkMode);

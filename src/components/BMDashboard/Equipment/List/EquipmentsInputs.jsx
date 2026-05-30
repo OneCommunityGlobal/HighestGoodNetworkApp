@@ -112,7 +112,7 @@ function EquipmentsInputs({ equipment, setEquipment, project, setProject }) {
   };
 
   return (
-    <div className={styles.container}>
+    <div className="container">
       <Form>
         <Row className={`align-items-center ${styles.InputsMargin}`}>
           <Col className={`${styles.InputsMargin}`}>

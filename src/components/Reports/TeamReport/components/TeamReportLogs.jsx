@@ -1,6 +1,6 @@
 import { ReportPage } from '~/components/Reports/sharedComponents/ReportPage';
 import React from 'react';
-import './ReportLogs.module.css';
+import './ReportLogs.css';
 import { Spinner } from 'reactstrap';
 
 function TeamReportLogs({

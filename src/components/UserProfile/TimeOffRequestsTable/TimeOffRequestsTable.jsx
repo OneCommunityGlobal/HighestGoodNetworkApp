@@ -1,4 +1,4 @@
-import './TimeOffRequestsTable.module.css';
+import './TimeOffRequestsTable.css';
 import moment from 'moment';
 
 const TimeOffRequestsTable = ({requests, openModal, darkMode}) => {

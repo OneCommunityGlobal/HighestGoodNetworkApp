@@ -10,7 +10,7 @@ import {
   UncontrolledTooltip,
 } from 'reactstrap';
 import { connect } from 'react-redux';
-import './Badge.module.css';
+import './Badge.css';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { createNewBadge, closeAlert } from '../../actions/badgeManagement';
 import badgeTypes from './BadgeTypes';

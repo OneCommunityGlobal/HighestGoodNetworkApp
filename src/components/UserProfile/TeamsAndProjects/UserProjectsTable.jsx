@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import PropTypes from "prop-types";
 import { Button, Col, UncontrolledTooltip } from 'reactstrap';
-import './TeamsAndProjects.module.css';
+import './TeamsAndProjects.css';
 import hasPermission from '../../../utils/permissions';
 // import styles from './UserProjectsTable.css';
 import { boxStyle, boxStyleDark } from '~/styles';

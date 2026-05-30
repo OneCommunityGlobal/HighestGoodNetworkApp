@@ -22,7 +22,7 @@ import {
   DropdownItem,
 } from 'reactstrap';
 import { connect } from 'react-redux';
-import './Badge.module.css';
+import './Badge.css';
 import FeaturedBadges from './FeaturedBadges';
 import BadgeReport from '../Badge/BadgeReport';
 import AssignBadgePopup from './AssignBadgePopup';

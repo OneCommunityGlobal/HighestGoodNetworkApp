@@ -28,7 +28,10 @@ import hasPermission from '~/utils/permissions';
 import { getTaskAndProjectStats, getTotalOrgSummary } from '~/actions/totalOrgSummary';
 
 import { clsx } from 'clsx';
-import '../Header/index.module.css';
+import VolunteerHoursDistribution, {
+  mergeHoursBuckets,
+} from './VolunteerHoursDistribution/VolunteerHoursDistribution';
+import '../Header/index.css';
 import AccordianWrapper from './AccordianWrapper/AccordianWrapper';
 import AnniversaryCelebrated from './AnniversaryCelebrated/AnniversaryCelebrated';
 import BlueSquareStats from './BlueSquareStats/BlueSquareStats';
@@ -39,9 +42,6 @@ import TaskCompletedBarChart from './TaskCompleted/TaskCompletedBarChart';
 import TeamStats from './TeamStats/TeamStats';
 import styles from './TotalOrgSummary.module.css';
 import VolunteerActivities from './VolunteerActivities/VolunteerActivities';
-import VolunteerHoursDistribution, {
-  mergeHoursBuckets,
-} from './VolunteerHoursDistribution/VolunteerHoursDistribution';
 import RoleDistributionPieChart from './VolunteerRolesTeamDynamics/RoleDistributionPieChart';
 import WorkDistributionBarChart from './VolunteerRolesTeamDynamics/WorkDistributionBarChart';
 import VolunteerStatus from './VolunteerStatus/VolunteerStatus';

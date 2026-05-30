@@ -613,17 +613,17 @@ class PeopleReport extends Component {
                       toDate={toDate}
                       timeEntries={timeEntries}
                     />
-                    <div className={styles.visualizationDiv}>
+                    <div className="visualizationDiv">
                       <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} />
                     </div>
-                    <div className={styles.visualizationDiv}>
+                    <div className="visualizationDiv">
                       <InfringementsViz
                         infringements={infringements}
                         fromDate={fromDate}
                         toDate={toDate}
                       />
                     </div>
-                    <div className={styles.visualizationDivRow}>
+                    <div className="visualizationDivRow">
                       <div className="BadgeSummaryDiv">
                         <BadgeSummaryViz
                           authId={auth.user.userid}

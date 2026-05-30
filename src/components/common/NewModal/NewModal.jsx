@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { Popup } from 'reactjs-popup';
-import './NewModal.module.css';
+import './NewModal.css';
 
 // eslint-disable-next-line react/function-component-definition
 const NewModal = ({ header, children, trigger, darkMode }) => {

@@ -1,6 +1,6 @@
 // eslint-disable-next-line no-unused-vars
 import React from 'react';
-import './LoginPrivileges.module.css';
+import './LoginPrivileges.css';
 
 function LoginPrivileges({ selectedInput, handleInputChange }) {
   return (

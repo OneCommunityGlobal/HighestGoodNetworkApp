@@ -16,7 +16,7 @@ import { addTitle, editTitle } from '../../../actions/title';
 import AssignProjectField from './AssignProjectField';
 import AssignTeamField from './AssignTeamField';
 import AssignTeamCodeField from './AssignTeamCodeField';
-import '../../Header/index.module.css';
+import '../../Header/index.css';
 
 // ---- helpers ---------------------------------------------------------------
 
