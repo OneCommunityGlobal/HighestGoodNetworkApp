@@ -1,10 +1,9 @@
 /* eslint-disable import/prefer-default-export */
 
-import { useState, useId, useEffect, useRef } from 'react';
+import { useEffect, useId, useRef, useState } from "react";
 import PropTypes from 'prop-types';
-import { PieChart, Pie, Sector, ResponsiveContainer, LabelList} from 'recharts';
+import { LabelList, Pie, PieChart, ResponsiveContainer, Sector } from 'recharts';
 import TwoWayToggleSwitch from '../../../common/TwoWayToggleSwitch/TwoWayToggleSwitch';
-import './ProjectPieChart.css';
 
 const RAD = Math.PI / 180;
 
@@ -164,6 +163,7 @@ export function ProjectPieChart({ userData, windowSize, darkMode }) {
   // Aggregate data to handle small values - recalculate when userData changes
   const aggregatedResult = aggregateSmallValues(userData, windowSize <= 640 ? 0.05 : 0.03);
   const aggregatedData = aggregatedResult.aggregatedData;
+  const hasOthers = aggregatedResult.hasOthers;
   
   useEffect(() => { 
     layoutRef.current = null;

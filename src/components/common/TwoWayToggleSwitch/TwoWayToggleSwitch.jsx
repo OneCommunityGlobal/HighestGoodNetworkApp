@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import './TwoWayToggleSwitch.css';
+import './TwoWayToggleSwitch.module.css';
 
 function TwoWayToggleSwitch({ isOn, handleToggle, id }) {
   const toggleId = id || 'toggle-switch-new';
