@@ -342,3 +342,5 @@ const UserTeamsTable = props => {
 };
 
 export default connect(null, { hasPermission })(UserTeamsTable);
+
+
