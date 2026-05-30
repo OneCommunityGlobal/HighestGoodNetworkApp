@@ -245,7 +245,7 @@ const AddTeamPopup = React.memo((props) => {
     } catch (error) {
       clearTimeout(timeout);
       setIsLoading(false);
-      toast.error('Error occurred while creating team');
+      toast.error(error?.message || 'Error occurred while creating team');
     }
   };
 
@@ -335,7 +335,7 @@ const AddTeamPopup = React.memo((props) => {
       applyEditResult(result);
     } catch (error) {
       setIsLoading(false);
-      toast.error('An unexpected error occurred while updating the team');
+      toast.error(error?.message || 'An unexpected error occurred while updating the team');
     }
   };
 

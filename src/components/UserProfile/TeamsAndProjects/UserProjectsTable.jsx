@@ -522,6 +522,7 @@ UserProjectsTable.propTypes = {
   role: PropTypes.string,
   edit: PropTypes.bool,
   hasPermission: PropTypes.func,
+  onButtonClick: PropTypes.func,
   onDeleteClick: PropTypes.func,
   updateTask: PropTypes.func,
   darkMode: PropTypes.bool,
