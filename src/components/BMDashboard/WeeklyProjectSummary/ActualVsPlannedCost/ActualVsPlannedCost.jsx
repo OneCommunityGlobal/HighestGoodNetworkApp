@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
+import PropTypes from 'prop-types';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -57,6 +58,117 @@ function VarianceCard({ item, cardStyles }) {
         </div>
       )}
       <div className={cardStyles.varianceCardStatus}>{item.budgetStatus}</div>
+    </div>
+  );
+}
+
+VarianceCard.propTypes = {
+  item: PropTypes.shape({
+    category: PropTypes.string.isRequired,
+    plannedCost: PropTypes.number.isRequired,
+    actualCost: PropTypes.number.isRequired,
+    variance: PropTypes.number.isRequired,
+    variancePct: PropTypes.number,
+    budgetStatus: PropTypes.string.isRequired,
+  }).isRequired,
+  cardStyles: PropTypes.shape({
+    varianceCard: PropTypes.string,
+    varianceOverrun: PropTypes.string,
+    varianceUnder: PropTypes.string,
+    varianceNeutral: PropTypes.string,
+    varianceCardCategory: PropTypes.string,
+    varianceCardRow: PropTypes.string,
+    varianceCardPct: PropTypes.string,
+    varianceCardStatus: PropTypes.string,
+  }).isRequired,
+};
+
+function buildChartContent({ loading, isFiltering, hasData, chartDataWithVariance, darkMode }) {
+  if (loading || isFiltering) {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          height: 200,
+          justifyContent: 'center',
+          alignItems: 'center',
+          color: 'var(--text-color)',
+        }}
+      >
+        <Spinner color="primary" size="sm" />
+        <span style={{ marginLeft: '10px' }}>Updating chart...</span>
+      </div>
+    );
+  }
+  if (hasData) {
+    return (
+      <div style={{ width: '100%', height: 200 }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart
+            data={chartDataWithVariance}
+            margin={{ top: 20, right: 5, left: 5, bottom: 0 }}
+            barGap={20}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis
+              dataKey="category"
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: 'var(--text-color)' }}
+            />
+            <YAxis tick={{ fill: 'var(--text-color)', fontSize: '12px' }} />
+            <Tooltip
+              cursor={{ fill: 'transparent' }}
+              allowEscapeViewBox={{ x: true, y: true }}
+              contentStyle={{
+                backgroundColor: darkMode ? '#1f242b' : 'var(--card-bg)',
+                borderColor: darkMode ? '#45505e' : 'var(--button-hover)',
+                borderRadius: '6px',
+                color: 'var(--text-color)',
+              }}
+              labelStyle={{ color: 'var(--text-color)', fontSize: '12px' }}
+              itemStyle={{ color: 'var(--text-color)', fontSize: '12px' }}
+              wrapperStyle={{ pointerEvents: 'none', zIndex: 12 }}
+            />
+            <Legend
+              verticalAlign="top"
+              height={36}
+              iconSize={8}
+              wrapperStyle={{ color: 'var(--text-color)' }}
+            />
+            <Bar
+              dataKey="actualCost"
+              name="Actual"
+              fill={darkMode ? '#c0392b' : '#e74a3b'}
+              barSize={40}
+            >
+              <LabelList dataKey="actualCost" position="top" fill="var(--text-color)" />
+            </Bar>
+            <Bar
+              dataKey="plannedCost"
+              name="Planned"
+              fill={!darkMode ? '#17a272' : '#1cc88a'}
+              barSize={40}
+            >
+              <LabelList dataKey="plannedCost" position="top" fill="var(--text-color)" />
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    );
+  }
+  return (
+    <div
+      style={{
+        display: 'flex',
+        height: 200,
+        justifyContent: 'center',
+        alignItems: 'center',
+        color: 'var(--text-color)',
+        fontStyle: 'italic',
+      }}
+    >
+      No data available for the selected filters.
     </div>
   );
 }
@@ -171,94 +283,13 @@ function ActualVsPlannedCost() {
   const totalVariancePct = totals.planned > 0 ? (totalVariance / totals.planned) * 100 : null;
   const isTotalOverrun = totalVariance > 0;
 
-  let chartContent;
-  if (loading || isFiltering) {
-    chartContent = (
-      <div
-        style={{
-          display: 'flex',
-          height: 200,
-          justifyContent: 'center',
-          alignItems: 'center',
-          color: 'var(--text-color)',
-        }}
-      >
-        <Spinner color="primary" size="sm" />
-        <span style={{ marginLeft: '10px' }}>Updating chart...</span>
-      </div>
-    );
-  } else if (hasData) {
-    chartContent = (
-      <div style={{ width: '100%', height: 200 }}>
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart
-            data={chartDataWithVariance}
-            margin={{ top: 20, right: 5, left: 5, bottom: 0 }}
-            barGap={20}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="category"
-              axisLine={false}
-              tickLine={false}
-              tick={{ fill: 'var(--text-color)' }}
-            />
-            <YAxis tick={{ fill: 'var(--text-color)', fontSize: '12px' }} />
-            <Tooltip
-              cursor={{ fill: 'transparent' }}
-              allowEscapeViewBox={{ x: true, y: true }}
-              contentStyle={{
-                backgroundColor: darkMode ? '#1f242b' : 'var(--card-bg)',
-                borderColor: darkMode ? '#45505e' : 'var(--button-hover)',
-                borderRadius: '6px',
-                color: 'var(--text-color)',
-              }}
-              labelStyle={{ color: 'var(--text-color)', fontSize: '12px' }}
-              itemStyle={{ color: 'var(--text-color)', fontSize: '12px' }}
-              wrapperStyle={{ pointerEvents: 'none', zIndex: 12 }}
-            />
-            <Legend
-              verticalAlign="top"
-              height={36}
-              iconSize={8}
-              wrapperStyle={{ color: 'var(--text-color)' }}
-            />
-            <Bar
-              dataKey="actualCost"
-              name="Actual"
-              fill={darkMode ? '#c0392b' : '#e74a3b'}
-              barSize={40}
-            >
-              <LabelList dataKey="actualCost" position="top" fill="var(--text-color)" />
-            </Bar>
-            <Bar
-              dataKey="plannedCost"
-              name="Planned"
-              fill={!darkMode ? '#17a272' : '#1cc88a'}
-              barSize={40}
-            >
-              <LabelList dataKey="plannedCost" position="top" fill="var(--text-color)" />
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-    );
-  } else {
-    chartContent = (
-      <div
-        style={{
-          display: 'flex',
-          height: 200,
-          justifyContent: 'center',
-          alignItems: 'center',
-          color: 'var(--text-color)',
-          fontStyle: 'italic',
-        }}
-      >
-        No data available for the selected filters.
-      </div>
-    );
-  }
+  const chartContent = buildChartContent({
+    loading,
+    isFiltering,
+    hasData,
+    chartDataWithVariance,
+    darkMode,
+  });
 
   return (
     <div style={{ padding: 10 }} className={darkMode ? styles.darkMode : ''}>
