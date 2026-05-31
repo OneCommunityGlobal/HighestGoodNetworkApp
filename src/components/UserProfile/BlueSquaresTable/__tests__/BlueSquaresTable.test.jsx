@@ -72,7 +72,7 @@ describe("BlueSquaresTable component unit tests", () => {
   });
 
   it('applies darkmode styling when darkmode is true', () => {
-    const { container } = renderComponent(true, false, true, true);
+    renderComponent(true, false, true, true);
     // eslint-disable-next-line testing-library/no-node-access, testing-library/no-container
     expect(screen.getByTestId('blue-square-div-header')).toHaveClass('bg-space-cadet');
   });
