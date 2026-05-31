@@ -1,6 +1,5 @@
 // src/pages/Collaboration/Collaboration.jsx
 import { useEffect, useState, useMemo, useRef } from 'react';
-import { useHistory } from 'react-router-dom';
 import styles from './Collaboration.module.css';
 import { toast } from 'react-toastify';
 import { ApiEndpoint } from '~/utils/URL';
@@ -27,7 +26,6 @@ function Collaboration() {
   const categoryRef = useRef(null);
   const positionRef = useRef(null);
 
-  const history = useHistory();
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const slugify = s =>
@@ -150,22 +148,6 @@ function Collaboration() {
     } catch {
       toast.error('Error fetching summaries');
     }
-  };
-
-  const handleJobClick = ad => {
-    const title = ad.title || '';
-    const search = title ? `?jobTitle=${encodeURIComponent(title)}` : '';
-    history.push({
-      pathname: '/job-application',
-      search,
-      state: {
-        jobId: ad._id,
-        jobTitle: title,
-        jobDescription: ad.description || '',
-        requirements: ad.requirements || [],
-        category: ad.category || 'General',
-      },
-    });
   };
 
   /* ================= SUMMARIES VIEW ================= */
@@ -333,23 +315,33 @@ function Collaboration() {
 
         {/* JOB GRID */}
         <div className={styles.jobList}>
-          {jobAds.map(ad => (
-            <button
-              key={ad._id}
-              type="button"
-              className={styles.jobAd}
-              onClick={() => handleJobClick(ad)}
-            >
-              <img
-                src={
-                  ad.imageUrl ||
-                  `/api/placeholder/640/480?text=${encodeURIComponent(ad.category || 'Job')}`
-                }
-                alt={ad.title}
-              />
-              <h3>{ad.title}</h3>
-            </button>
-          ))}
+          {jobAds.length > 0 ? (
+            jobAds.map(ad => (
+              <button
+                key={ad._id}
+                type="button"
+                className={styles.jobAd}
+                onClick={() => setSelectedJob(ad)}
+              >
+                <img
+                  src={
+                    ad.imageUrl ||
+                    `/api/placeholder/640/480?text=${encodeURIComponent(ad.category || 'Job')}`
+                  }
+                  alt={ad.title}
+                />
+                <h3>{ad.title}</h3>
+              </button>
+            ))
+          ) : (
+            <div className={styles.emptyState}>
+              <p>No job listings found matching your criteria.</p>
+              <p>Try clearing filters or adjusting your search terms.</p>
+              <button className="btn btn-secondary" onClick={handleClearAllFilters}>
+                Clear All Filters
+              </button>
+            </div>
+          )}
         </div>
 
         {/* PAGINATION */}

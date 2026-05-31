@@ -1,9 +1,8 @@
 /* eslint-disable import/prefer-default-export */
 
-import { useState, useId, useEffect, useRef } from "react";
-import { PieChart, Pie, Sector, ResponsiveContainer, LabelList} from 'recharts';
+import { useEffect, useId, useRef, useState } from "react";
+import { LabelList, Pie, PieChart, ResponsiveContainer, Sector } from 'recharts';
 import TwoWayToggleSwitch from '../../../common/TwoWayToggleSwitch/TwoWayToggleSwitch';
-import './ProjectPieChart.css';
 
 const RAD = Math.PI / 180;
 

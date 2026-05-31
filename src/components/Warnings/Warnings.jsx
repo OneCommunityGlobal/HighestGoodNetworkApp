@@ -1,27 +1,34 @@
-import { useState } from 'react';
+import axios from 'axios';
+import moment from 'moment';
+import PropTypes from 'prop-types';
+import { useEffect, useState } from 'react';
+import { Alert, Button } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
-import { Button, Alert } from 'react-bootstrap';
+import { toast } from 'react-toastify';
 import hasPermission from '~/utils/permissions';
+import { ENDPOINTS } from '~/utils/URL';
 import {
+  deleteWarningsById,
   getWarningsByUserId,
   postWarningByUserId,
-  deleteWarningsById,
 } from '../../actions/warnings';
+import WarningModal from './modals/WarningModal';
 import WarningTrackerModal from './modals/WarningTrackerModal';
 import WarningIcons from './WarningIcons';
 import styles from './Warnings.module.css';
-import WarningModal from './modals/WarningModal';
-import moment from 'moment';
-import axios from 'axios';
-import { toast } from 'react-toastify';
-import { ENDPOINTS } from '~/utils/URL';
 // Better Descriptions (“i” = ,ltd = Please be more specific in your time log descriptions.)
 // Log Time to Tasks (“i” = ,lttt = Please log all time working on specific tasks to those tasks rather than the general category. )
 // Log Time as You Go (“i” = ,ltayg = Reminder to please log your time as you go. At a minimum, please log daily any time you work.)
 // Log Time to Action Items (“i” = ,ltayg = Reminder to please log your time as you go. At a minimum, please log daily any time you work.)
 // Intangible Time Log w/o Reason (“i” = ,itlr = The timer should be used for all time logged, so any time logged as intangible must also include in the time log description an explanation for why you didn’t use the timer.
 
-export default function Warning({ personId, username, userRole, displayUser }) {
+export default function Warning({
+  personId,
+  username,
+  userRole,
+  displayUser,
+  showTrackers = false,
+}) {
   const dispatch = useDispatch();
   const [usersWarnings, setUsersWarnings] = useState([]);
 
@@ -41,24 +48,42 @@ export default function Warning({ personId, username, userRole, displayUser }) {
     dispatch(hasPermission('deleteWarningTracker'));
 
   const fetchUsersWarningsById = async () => {
-    dispatch(getWarningsByUserId(personId)).then(res => {
-      if (res.error) {
-        setError(res);
+    dispatch(getWarningsByUserId(personId))
+      .then(res => {
+        if (!res || res.error) {
+          setUsersWarnings([]);
+          return;
+        }
+        setUsersWarnings(res);
+      })
+      .catch(() => {
         setUsersWarnings([]);
-        return;
-      }
-      setUsersWarnings(res);
-    });
+      });
   };
 
   const handleToggle = () => {
+    if (!toggle) fetchUsersWarningsById();
     setToggle(prev => !prev);
-    fetchUsersWarningsById();
   };
+
+  useEffect(() => {
+    if (showTrackers) {
+      setToggle(true);
+      if (usersWarnings.length === 0) {
+        const timer = setTimeout(() => {
+          fetchUsersWarningsById();
+        }, 100);
+        return () => clearTimeout(timer);
+      }
+    } else {
+      setToggle(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showTrackers]);
 
   const handleDeleteWarning = async warningId => {
     dispatch(deleteWarningsById(warningId, personId)).then(res => {
-      if (res.error) {
+      if (!res || res.error) {
         setError(res);
         setUsersWarnings([]);
         return;
@@ -82,7 +107,7 @@ export default function Warning({ personId, username, userRole, displayUser }) {
     todaysDate: dateAssigned,
     warningText,
   }) => {
-    const { firstName, lastName, email } = displayUser;
+    const { firstName, lastName, email } = displayUser || {};
     const monitorData = {
       firstName,
       lastName,
@@ -143,14 +168,11 @@ export default function Warning({ personId, username, userRole, displayUser }) {
           toast.success(toastMessage);
         }
       })
-      .catch(err => {
-        console.log(err);
-      });
+      .catch(() => {});
   };
 
-  const warnings = !toggle
-    ? null
-    : usersWarnings.map(warning => (
+  const warnings = toggle
+    ? usersWarnings.map(warning => (
         <div className={`${styles['warning-item-container']}`} key={warning.title}>
           <div className={`${styles['warning-wrapper']}`}>
             <p className={`${styles['warning-text']}`}> {warning.title}</p>
@@ -163,7 +185,8 @@ export default function Warning({ personId, username, userRole, displayUser }) {
             />
           </div>
         </div>
-      ));
+      ))
+    : null;
 
   return (
     <div className={`${styles['warnings-container']}`}>
@@ -221,3 +244,11 @@ export default function Warning({ personId, username, userRole, displayUser }) {
     </div>
   );
 }
+
+Warning.propTypes = {
+  personId: PropTypes.string.isRequired,
+  username: PropTypes.string,
+  userRole: PropTypes.string,
+  displayUser: PropTypes.object,
+  showTrackers: PropTypes.bool,
+};
