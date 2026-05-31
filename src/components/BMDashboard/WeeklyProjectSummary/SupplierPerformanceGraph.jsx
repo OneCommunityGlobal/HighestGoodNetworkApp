@@ -162,7 +162,7 @@ const SupplierPerformanceDashboard = function({ height = 420, onDataLoaded }) {
             onChange={opt => setSelectedDateRange(opt.value)}
             styles={selectStyles}
             isSearchable={false}
-            menuPortalTarget={typeof document !== 'undefined' ? document.body : null}
+            menuPortalTarget={typeof document === 'undefined' ? null : document.body}
             menuPosition="fixed"
           />
         </div>
@@ -179,7 +179,7 @@ const SupplierPerformanceDashboard = function({ height = 420, onDataLoaded }) {
             onChange={opt => setSelectedProject(opt.value)}
             styles={selectStyles}
             isSearchable={false}
-            menuPortalTarget={typeof document !== 'undefined' ? document.body : null}
+            menuPortalTarget={typeof document === 'undefined' ? null : document.body}
             menuPosition="fixed"
           />
         </div>
