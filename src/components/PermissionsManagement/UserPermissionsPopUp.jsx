@@ -13,6 +13,7 @@ import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
 import { getAllUserProfile } from '~/actions/userManagement';
 import styles from './PermissionsManagement.module.css';
+import appStyles from '~/App.module.css';
 import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL';
 // eslint-disable-next-line no-unused-vars
@@ -198,6 +199,10 @@ function UserPermissionsPopUp({
       }
     });
 
+  const classTheme = (condition, darkTheme, lightTheme = '') => {
+    return condition ? darkTheme : lightTheme;
+  };
+
   return (
     <>
       {modalStatus && (
@@ -217,7 +222,7 @@ function UserPermissionsPopUp({
         autoComplete="off"
       >
         <div
-          className={darkMode ? styles['text-space-cadet'] : ''}
+          className={classTheme(darkMode, appStyles['text-space-cadet'])}
           style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '5px' }}
         >
           <h4 className={styles['user-permissions-pop-up__title']}>
@@ -285,9 +290,10 @@ function UserPermissionsPopUp({
               tabIndex="-1"
               role="menu"
               aria-hidden="false"
-              className={`dropdown-menu${isOpen ? ` show ${styles['dropdown__user-perms']}` : ''} ${
-                darkMode ? styles['bg-darkmode-liblack text-light'] : ''
-              }`}
+              className={`dropdown-menu${classTheme(
+                isOpen,
+                ` show ${styles['dropdown__user-perms']}`,
+              )}`}
               style={{ marginTop: '0px', width: '100%' }}
             >
               {filteredUsers.length === 0 && searchText !== '' ? (
@@ -326,9 +332,10 @@ function UserPermissionsPopUp({
         </Dropdown>
         <div>
           <h4
-            className={`${styles['user-permissions-pop-up__title']} ${
-              darkMode ? styles['text-space-cadet'] : ''
-            }`}
+            className={`${styles['user-permissions-pop-up__title']} ${classTheme(
+              darkMode,
+              appStyles['text-space-cadet'],
+            )}`}
           >
             Permissions:
           </h4>
@@ -358,15 +365,18 @@ function UserPermissionsPopUp({
         isOpen={infoRoleModal}
         toggle={toggleInfoRoleModal}
         id="#modal2-body_new-role--padding"
-        className={darkMode ? 'text-light dark-mode' : ''}
+        className={classTheme(darkMode, 'text-light dark-mode')}
       >
-        <ModalHeader toggle={toggleInfoRoleModal} className={darkMode ? 'bg-space-cadet' : ''}>
+        <ModalHeader
+          toggle={toggleInfoRoleModal}
+          className={classTheme(darkMode, appStyles['bg-space-cadet'])}
+        >
           Reset to Default Info
         </ModalHeader>
-        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <ModalBody className={classTheme(darkMode, appStyles['bg-yinmn-blue'])}>
           <p style={{ whiteSpace: 'pre-line' }}>{modalContent}</p>
         </ModalBody>
-        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <ModalFooter className={classTheme(darkMode, appStyles['bg-yinmn-blue'])}>
           <Button onClick={toggleInfoRoleModal} color="secondary" className="float-left">
             {' '}
             Ok{' '}

@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useRef, useId, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import {
   Row,
   Input,
-  Col,
   Container,
   TabContent,
   TabPane,
@@ -71,12 +70,11 @@ import {
 } from '~/utils/constants';
 
 import {
-  getTimeEndDateEntriesByPeriod,
   getTimeStartDateEntriesByPeriod,
   getTimeEntriesForWeek,
 } from '../../actions/timeEntries.js';
 import ConfirmRemoveModal from './UserProfileModal/confirmRemoveModal';
-import { formatDateYYYYMMDD, CREATED_DATE_CRITERIA } from '~/utils/formatDate.js';
+import { formatDateYYYYMMDD } from '~/utils/formatDate.js';
 import AccessManagementModal from './UserProfileModal/AccessManagementModal';
 import { postWarningByUserId, getSpecialWarnings } from '../../actions/warnings';
 import SetUpFinalDayPopUp from '../UserManagement/SetUpFinalDayPopUp';
@@ -817,7 +815,7 @@ setUpdatedTasks(prev => {
           });
       }
     } else if (operation === 'update') {
-      const currentBlueSquares = [...userProfile?.infringements] || [];
+      const currentBlueSquares = [...(userProfile?.infringements ?? [])];
       if (dateStamp != null && currentBlueSquares.length !== 0) {
         currentBlueSquares.find(blueSquare => blueSquare._id === id).date = dateStamp;
       }
@@ -837,7 +835,7 @@ setUpdatedTasks(prev => {
       setUserProfile({ ...userProfile, infringements: currentBlueSquares });
       setOriginalUserProfile({ ...userProfile, infringements: currentBlueSquares });
     } else if (operation === 'delete') {
-      let newInfringements = [...userProfile?.infringements] || [];
+      let newInfringements = [...(userProfile?.infringements ?? [])];
       if (newInfringements.length !== 0) {
         newInfringements = newInfringements.filter(infringement => infringement._id !== id);
         await axios.delete(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id)).catch(error => {
@@ -2459,7 +2457,6 @@ setUpdatedTasks(prev => {
 }
 
 UserProfile.propTypes = {
-  // auth: PropTypes.object,
   auth: PropTypes.shape({
     user: PropTypes.shape({
       permissions: PropTypes.object,

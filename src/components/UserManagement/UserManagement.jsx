@@ -798,7 +798,6 @@ class UserManagement extends React.PureComponent {
 }
 
 UserManagement.propTypes = {
-  // state: PropTypes.object, probably outdated given another state with more expansion was added
   dispatch: PropTypes.func,
   getAllTimeOffRequests: PropTypes.func,
   getAllUserProfile: PropTypes.func,
