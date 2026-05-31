@@ -17,13 +17,23 @@
   cursor: pointer;
 }
 
-.toolbar button:hover:not(:disabled) {
-  background: #ddd;
+.darkToolbar button {
+  background: #2a3441;
+  border-color: #444;
+  color: #e8e8e8;
 }
 
 .toolbar button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.toolbar button:hover:not(:disabled) {
+  background: #ddd;
+}
+
+.darkToolbar button:hover:not(:disabled) {
+  background: #3d4d63;
 }
 
 .positionField {
@@ -38,7 +48,7 @@
   margin-bottom: 20px;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .fixedGrid {
     grid-template-columns: 1fr;
   }
@@ -170,7 +180,7 @@
   height: 56px;
   border-radius: 50%;
   border: none;
-  background: #4caf50;
+  background: #2e7d32;
   color: #fff;
   font-size: 32px;
   line-height: 1;
@@ -178,19 +188,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 20%);
   transition: background 0.2s, transform 0.15s;
-}
-
-.addPlusButton:hover:not(:disabled) {
-  background: #45a049;
-  transform: scale(1.05);
 }
 
 .addPlusButton:disabled {
   opacity: 0.45;
   cursor: not-allowed;
   transform: none;
+}
+
+.addPlusButton:hover:not(:disabled) {
+  background: #1b5e20;
+  transform: scale(1.05);
 }
 
 .optionDraftRow {
@@ -235,7 +245,7 @@
 }
 
 .proceedButton {
-  background: #4caf50;
+  background: #2e7d32;
   color: #fff;
   border: none;
   padding: 14px 28px;
@@ -243,17 +253,17 @@
   border-radius: 6px;
   cursor: pointer;
   font-weight: 600;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 15%);
   transition: background 0.2s;
-}
-
-.proceedButton:hover:not(:disabled) {
-  background: #45a049;
 }
 
 .proceedButton:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.proceedButton:hover:not(:disabled) {
+  background: #1b5e20;
 }
 
 .responsePlaceholder {
@@ -262,7 +272,7 @@
   border: 1px solid #ccc;
   border-radius: 5px;
   background: #fff;
-  color: #888;
+  color: #595959;
 }
 
 /* Avoid forcing white behind dark-themed inputs from parent .darkMode */
@@ -281,7 +291,7 @@
   padding: 11px 16px;
   margin: 8px 10px;
   border: none;
-  background-color: #cccccc;
+  background-color: #ccc;
   color: #333;
   font-size: 15px;
   border-radius: 5px;
@@ -309,16 +319,6 @@
 }
 
 /* Dark mode (applied with jb.darkMode on page wrapper) */
-.darkToolbar button {
-  background: #2a3441;
-  border-color: #444;
-  color: #e8e8e8;
-}
-
-.darkToolbar button:hover:not(:disabled) {
-  background: #3d4d63;
-}
-
 .darkText {
   color: #e8e8e8;
 }
