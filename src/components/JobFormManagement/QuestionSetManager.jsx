@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import {
@@ -7,7 +8,6 @@ import {
   ModalBody,
   ModalFooter,
   Button,
-  Form,
   FormGroup,
   Label,
   Input,
@@ -23,6 +23,16 @@ import {
 import { toast } from 'react-toastify';
 import { ENDPOINTS } from '~/utils/URL';
 import { hasPermissionSimple } from '~/utils/permissions';
+
+function reportQuestionSetError(message, error) {
+  console.error(message, error);
+  toast.error(message);
+}
+
+function getSampleQuestionKey(question) {
+  if (question?._id) return String(question._id);
+  return `${question?.questionText || 'question'}-${question?.questionType || 'textbox'}`;
+}
 
 const QuestionSetManager = ({
   isOpen,
@@ -71,8 +81,7 @@ const QuestionSetManager = ({
       const response = await axios.get(ENDPOINTS.QUESTION_SETS);
       setQuestionSets(response.data.questionSets || []);
     } catch (error) {
-      // Error fetching question sets - could be logged to error reporting service
-      toast.error('Failed to fetch question sets');
+      reportQuestionSetError('Failed to fetch question sets', error);
     } finally {
       setLoading(false);
     }
@@ -138,8 +147,7 @@ const QuestionSetManager = ({
 
       toggle();
     } catch (error) {
-      // Error importing questions - could be logged to error reporting service
-      toast.error('Failed to import questions');
+      reportQuestionSetError('Failed to import questions', error);
     }
   };
 
@@ -162,8 +170,7 @@ const QuestionSetManager = ({
       toast.success('Question set cloned successfully');
       fetchQuestionSets();
     } catch (error) {
-      // Error cloning question set - could be logged to error reporting service
-      toast.error('Failed to clone question set');
+      reportQuestionSetError('Failed to clone question set', error);
     }
   };
 
@@ -191,7 +198,7 @@ const QuestionSetManager = ({
         toast.success('Question set deleted successfully');
         fetchQuestionSets();
       } catch (error) {
-        // Error deleting question set - could be logged to error reporting service
+        console.error('Failed to delete question set', error);
         toast.error(error.response?.data?.message || 'Failed to delete question set');
       }
     }
@@ -223,8 +230,8 @@ const QuestionSetManager = ({
         <div className="mb-3">
           <small className="text-muted">Sample Questions:</small>
           <ul className="list-unstyled mt-1">
-            {questionSet.questions.slice(0, 3).map((question, index) => (
-              <li key={index} className="text-sm">
+            {questionSet.questions.slice(0, 3).map(question => (
+              <li key={getSampleQuestionKey(question)} className="text-sm">
                 • {question.questionText}
               </li>
             ))}
@@ -367,6 +374,22 @@ const QuestionSetManager = ({
       {/* Question Set Creation/Edit Modal will be added in next component */}
     </>
   );
+};
+
+QuestionSetManager.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  toggle: PropTypes.func.isRequired,
+  onQuestionSetSelect: PropTypes.func,
+  onCreateQuestionSet: PropTypes.func,
+  onEditQuestionSet: PropTypes.func,
+  currentFormId: PropTypes.string,
+};
+
+QuestionSetManager.defaultProps = {
+  onQuestionSetSelect: undefined,
+  onCreateQuestionSet: undefined,
+  onEditQuestionSet: undefined,
+  currentFormId: null,
 };
 
 export default QuestionSetManager;
