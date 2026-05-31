@@ -338,9 +338,8 @@ export default function RentalChart() {
           grid: { color: gridYColor },
         },
       },
-    }),
-    [darkMode, chartType, dateRange, selectedProject, selectedTool],
-  );
+    };
+  }, [darkMode, chartType, dateRange, selectedProject, selectedTool]);
 
   const handleTypeChange = e => {
     setChartType(e.target.value);
