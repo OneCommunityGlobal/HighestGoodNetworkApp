@@ -1,9 +1,9 @@
 /* eslint-disable import/prefer-default-export */
 import { useEffect, useState } from 'react';
-import {ProjectPieChart} from '../ProjectPieChart/ProjectPieChart';
-import styles from './PieChartByProject.module.css';
-import TriMembersStateToggleSwitch from '../TriMembersStateToggleSwitch/TriMembersStateToggleSwitch'
 import toggleStyles from '../../../UserProfile/UserProfileEdit/ToggleSwitch/ToggleSwitch.module.scss';
+import { ProjectPieChart } from '../ProjectPieChart/ProjectPieChart';
+import TriMembersStateToggleSwitch from '../TriMembersStateToggleSwitch/TriMembersStateToggleSwitch';
+import styles from './PieChartByProject.module.css';
 
 export function PieChartByProject({
   mergedProjectUsersArray,
