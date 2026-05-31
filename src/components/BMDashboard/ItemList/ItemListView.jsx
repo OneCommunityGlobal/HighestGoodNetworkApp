@@ -15,7 +15,7 @@ import styles from './ItemListView.module.css';
 const allCategories = [
   { label: 'Materials', route: '/bmdashboard/materials', icon: <FaCubes /> },
   { label: 'Consumables', route: '/bmdashboard/consumables', icon: <FaShoppingCart /> },
-  { label: 'Equipments', route: '/bmdashboard/equipment', icon: <FaTools /> },
+  { label: 'Equipment', route: '/bmdashboard/equipment', icon: <FaTools /> },
   { label: 'Reusables', route: '/bmdashboard/reusables', icon: <FaRecycle /> },
   { label: 'Tools', route: '/bmdashboard/tools', icon: <FaWrench /> },
 ];

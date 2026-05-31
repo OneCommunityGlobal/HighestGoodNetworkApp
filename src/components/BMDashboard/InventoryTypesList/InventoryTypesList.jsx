@@ -23,7 +23,7 @@ import styles from './TypesList.module.css';
 const categoryIcons = {
   Materials: <FaCubes />,
   Consumables: <FaShoppingCart />,
-  Equipments: <FaTools />,
+  Equipment: <FaTools />,
   Reusables: <FaRecycle />,
   Tools: <FaWrench />,
 };
@@ -34,7 +34,7 @@ export function InventoryTypesList(props) {
   const categories = [
     { label: 'Materials', route: '/bmdashboard/materials' },
     { label: 'Consumables', route: '/bmdashboard/consumables' },
-    { label: 'Equipments', route: '/bmdashboard/equipment' },
+    { label: 'Equipment', route: '/bmdashboard/equipment' },
     { label: 'Reusables', route: '/bmdashboard/reusables' },
     { label: 'Tools', route: '/bmdashboard/tools' },
   ];
