@@ -34,6 +34,20 @@ function getSampleQuestionKey(question) {
   return `${question?.questionText || 'question'}-${question?.questionType || 'textbox'}`;
 }
 
+const sampleQuestionShape = PropTypes.shape({
+  _id: PropTypes.string,
+  questionText: PropTypes.string,
+  questionType: PropTypes.string,
+});
+
+function SampleQuestionListItem({ question }) {
+  return <li className="text-sm">• {question.questionText}</li>;
+}
+
+SampleQuestionListItem.propTypes = {
+  question: sampleQuestionShape.isRequired,
+};
+
 function QuestionSetCard({
   questionSet,
   currentFormId,
@@ -81,9 +95,7 @@ function QuestionSetCard({
           <small className="text-muted">Sample Questions:</small>
           <ul className="list-unstyled mt-1">
             {questionList.slice(0, 3).map(question => (
-              <li key={getSampleQuestionKey(question)} className="text-sm">
-                • {question.questionText}
-              </li>
+              <SampleQuestionListItem key={getSampleQuestionKey(question)} question={question} />
             ))}
             {questionList.length > 3 && (
               <li className="text-muted text-sm">...and {questionList.length - 3} more</li>
@@ -140,13 +152,7 @@ QuestionSetCard.propTypes = {
     name: PropTypes.string,
     description: PropTypes.string,
     category: PropTypes.string,
-    questions: PropTypes.arrayOf(
-      PropTypes.shape({
-        _id: PropTypes.string,
-        questionText: PropTypes.string,
-        questionType: PropTypes.string,
-      }),
-    ),
+    questions: PropTypes.arrayOf(sampleQuestionShape).isRequired,
     isDefault: PropTypes.bool,
     usageCount: PropTypes.number,
   }).isRequired,
@@ -250,15 +256,17 @@ const QuestionSetManager = ({
     return hasPermissionSimple(userPermissions, 'deleteFormQuestions') || userRole === 'Owner';
   };
 
-  const handleImportQuestions = async (questionSet, selectedQuestions = null) => {
+  const handleImportQuestions = async (selectedSet, selectedQuestions = null) => {
     if (!currentFormId) {
       toast.error('No form selected for import');
       return;
     }
 
+    const questionCount = selectedSet.questions?.length ?? 0;
+
     try {
       const importData = {
-        questionSetId: questionSet._id,
+        questionSetId: selectedSet._id,
         includeAll: selectedQuestions === null,
         selectedQuestions: selectedQuestions || [],
         requestor: {
@@ -270,12 +278,12 @@ const QuestionSetManager = ({
       await axios.post(ENDPOINTS.IMPORT_QUESTIONS(currentFormId), importData);
       toast.success(
         `Imported ${
-          selectedQuestions ? selectedQuestions.length : questionSet.questions.length
+          selectedQuestions ? selectedQuestions.length : questionCount
         } questions successfully`,
       );
 
       if (onQuestionSetSelect) {
-        onQuestionSetSelect(questionSet);
+        onQuestionSetSelect(selectedSet);
       }
 
       toggle();
@@ -284,7 +292,7 @@ const QuestionSetManager = ({
     }
   };
 
-  const handleCloneQuestionSet = async questionSet => {
+  const handleCloneQuestionSet = async selectedSet => {
     if (!canCreateQuestionSets()) {
       toast.error('You do not have permission to clone question sets');
       return;
@@ -292,14 +300,14 @@ const QuestionSetManager = ({
 
     try {
       const cloneData = {
-        newName: `${questionSet.name} (Copy)`,
+        newName: `${selectedSet.name} (Copy)`,
         requestor: {
           requestorId: auth.user.userid,
           role: userRole,
         },
       };
 
-      await axios.post(ENDPOINTS.CLONE_QUESTION_SET(questionSet._id), cloneData);
+      await axios.post(ENDPOINTS.CLONE_QUESTION_SET(selectedSet._id), cloneData);
       toast.success('Question set cloned successfully');
       fetchQuestionSets();
     } catch (error) {
@@ -307,7 +315,7 @@ const QuestionSetManager = ({
     }
   };
 
-  const handleDeleteQuestionSet = async questionSet => {
+  const handleDeleteQuestionSet = async selectedSet => {
     if (!canDeleteQuestionSets()) {
       toast.error('You do not have permission to delete question sets');
       return;
@@ -326,7 +334,7 @@ const QuestionSetManager = ({
           },
         };
 
-        await axios.delete(ENDPOINTS.QUESTION_SET_BY_ID(questionSet._id), { data: deleteData });
+        await axios.delete(ENDPOINTS.QUESTION_SET_BY_ID(selectedSet._id), { data: deleteData });
         toast.success('Question set deleted successfully');
         fetchQuestionSets();
       } catch (error) {
@@ -336,9 +344,9 @@ const QuestionSetManager = ({
     }
   };
 
-  const handleEditQuestionSet = questionSet => {
+  const handleEditQuestionSet = selectedSet => {
     if (onEditQuestionSet) {
-      onEditQuestionSet(questionSet);
+      onEditQuestionSet(selectedSet);
     }
     toggle();
   };
@@ -399,10 +407,10 @@ const QuestionSetManager = ({
                   {canCreateQuestionSets() && 'Create your first question set to get started!'}
                 </Alert>
               ) : (
-                filteredQuestionSets.map(questionSet => (
+                filteredQuestionSets.map(qs => (
                   <QuestionSetCard
-                    key={questionSet._id}
-                    questionSet={questionSet}
+                    key={qs._id}
+                    questionSet={qs}
                     currentFormId={currentFormId}
                     canCreate={canCreateQuestionSets()}
                     canEdit={canEditQuestionSets()}
