@@ -34,22 +34,6 @@ function getSampleQuestionKey(question) {
   return `${question?.questionText || 'question'}-${question?.questionType || 'textbox'}`;
 }
 
-const questionSetCardShape = PropTypes.shape({
-  _id: PropTypes.string.isRequired,
-  name: PropTypes.string,
-  description: PropTypes.string,
-  category: PropTypes.string,
-  questions: PropTypes.arrayOf(
-    PropTypes.shape({
-      _id: PropTypes.string,
-      questionText: PropTypes.string,
-      questionType: PropTypes.string,
-    }),
-  ),
-  isDefault: PropTypes.bool,
-  usageCount: PropTypes.number,
-});
-
 function QuestionSetCard({
   questionSet,
   currentFormId,
@@ -61,17 +45,24 @@ function QuestionSetCard({
   onEdit,
   onDelete,
 }) {
-  const questions = questionSet.questions || [];
+  const {
+    name,
+    description,
+    category,
+    questions: questionList = [],
+    isDefault,
+    usageCount = 0,
+  } = questionSet;
 
   return (
     <Card className="mb-3">
       <CardHeader>
         <Row className="align-items-center">
           <Col>
-            <h6 className="mb-0">{questionSet.name}</h6>
+            <h6 className="mb-0">{name}</h6>
             <small className="text-muted">
-              {questions.length} questions • {questionSet.category}
-              {questionSet.isDefault && (
+              {questionList.length} questions • {category}
+              {isDefault && (
                 <Badge color="primary" className="ml-2">
                   Default
                 </Badge>
@@ -79,23 +70,23 @@ function QuestionSetCard({
             </small>
           </Col>
           <Col xs="auto">
-            <Badge color="info">{questionSet.usageCount} uses</Badge>
+            <Badge color="info">{usageCount} uses</Badge>
           </Col>
         </Row>
       </CardHeader>
       <CardBody>
-        {questionSet.description && <p className="text-muted mb-2">{questionSet.description}</p>}
+        {description && <p className="text-muted mb-2">{description}</p>}
 
         <div className="mb-3">
           <small className="text-muted">Sample Questions:</small>
           <ul className="list-unstyled mt-1">
-            {questions.slice(0, 3).map(question => (
+            {questionList.slice(0, 3).map(question => (
               <li key={getSampleQuestionKey(question)} className="text-sm">
                 • {question.questionText}
               </li>
             ))}
-            {questions.length > 3 && (
-              <li className="text-muted text-sm">...and {questions.length - 3} more</li>
+            {questionList.length > 3 && (
+              <li className="text-muted text-sm">...and {questionList.length - 3} more</li>
             )}
           </ul>
         </div>
@@ -144,7 +135,21 @@ function QuestionSetCard({
 }
 
 QuestionSetCard.propTypes = {
-  questionSet: questionSetCardShape.isRequired,
+  questionSet: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
+    name: PropTypes.string,
+    description: PropTypes.string,
+    category: PropTypes.string,
+    questions: PropTypes.arrayOf(
+      PropTypes.shape({
+        _id: PropTypes.string,
+        questionText: PropTypes.string,
+        questionType: PropTypes.string,
+      }),
+    ),
+    isDefault: PropTypes.bool,
+    usageCount: PropTypes.number,
+  }).isRequired,
   currentFormId: PropTypes.string,
   canCreate: PropTypes.bool,
   canEdit: PropTypes.bool,
