@@ -75,18 +75,22 @@ describe('Collaboration Component', () => {
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledWith(
         expect.stringContaining(`${ApiEndpoint}/jobs?page=1&limit=`),
-        { method: 'GET' },
+        expect.objectContaining({ method: 'GET' }),
       );
     });
 
     await waitFor(() => {
-      expect(fetch).toHaveBeenCalledWith(`${ApiEndpoint}/jobs/categories`, { method: 'GET' });
+      expect(fetch).toHaveBeenCalledWith(
+        `${ApiEndpoint}/jobs/categories`,
+        expect.objectContaining({ method: 'GET' }),
+      );
     });
 
     // Component calls fetchJobAds() and fetchCategories() on mount
-    expect(fetch).toHaveBeenCalledWith(expect.stringContaining(`${ApiEndpoint}/jobs/categories`), {
-      method: 'GET',
-    });
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringContaining(`${ApiEndpoint}/jobs/categories`),
+      expect.objectContaining({ method: 'GET' }),
+    );
   });
 
   test('search input updates state and triggers tooltip if no categories selected', async () => {
@@ -110,7 +114,7 @@ describe('Collaboration Component', () => {
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledWith(
         expect.stringContaining(`${ApiEndpoint}/jobs?page=1&limit=`),
-        { method: 'GET' },
+        expect.objectContaining({ method: 'GET' }),
       );
     });
   });
@@ -159,7 +163,10 @@ describe('Collaboration Component', () => {
 
     // Wait for the category to be selected and jobs to be filtered
     await waitFor(() => {
-      expect(fetch).toHaveBeenCalledWith(expect.stringContaining('category='), { method: 'GET' });
+      expect(fetch).toHaveBeenCalledWith(
+        expect.stringContaining('category=Engineering'),
+        expect.objectContaining({ method: 'GET' }),
+      );
     });
   });
 
@@ -170,9 +177,10 @@ describe('Collaboration Component', () => {
     fireEvent.click(screen.getByText('Show Summaries'));
 
     await waitFor(() => {
-      expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/jobs/summaries'), {
-        method: 'GET',
-      });
+      expect(fetch).toHaveBeenCalledWith(
+        expect.stringContaining('/jobs/summaries'),
+        expect.objectContaining({ method: 'GET' }),
+      );
     });
   });
 });
