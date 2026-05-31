@@ -34,6 +34,134 @@ function getSampleQuestionKey(question) {
   return `${question?.questionText || 'question'}-${question?.questionType || 'textbox'}`;
 }
 
+const questionSetCardShape = PropTypes.shape({
+  _id: PropTypes.string.isRequired,
+  name: PropTypes.string,
+  description: PropTypes.string,
+  category: PropTypes.string,
+  questions: PropTypes.arrayOf(
+    PropTypes.shape({
+      _id: PropTypes.string,
+      questionText: PropTypes.string,
+      questionType: PropTypes.string,
+    }),
+  ),
+  isDefault: PropTypes.bool,
+  usageCount: PropTypes.number,
+});
+
+function QuestionSetCard({
+  questionSet,
+  currentFormId,
+  canCreate,
+  canEdit,
+  canDelete,
+  onImport,
+  onClone,
+  onEdit,
+  onDelete,
+}) {
+  const questions = questionSet.questions || [];
+
+  return (
+    <Card className="mb-3">
+      <CardHeader>
+        <Row className="align-items-center">
+          <Col>
+            <h6 className="mb-0">{questionSet.name}</h6>
+            <small className="text-muted">
+              {questions.length} questions • {questionSet.category}
+              {questionSet.isDefault && (
+                <Badge color="primary" className="ml-2">
+                  Default
+                </Badge>
+              )}
+            </small>
+          </Col>
+          <Col xs="auto">
+            <Badge color="info">{questionSet.usageCount} uses</Badge>
+          </Col>
+        </Row>
+      </CardHeader>
+      <CardBody>
+        {questionSet.description && <p className="text-muted mb-2">{questionSet.description}</p>}
+
+        <div className="mb-3">
+          <small className="text-muted">Sample Questions:</small>
+          <ul className="list-unstyled mt-1">
+            {questions.slice(0, 3).map(question => (
+              <li key={getSampleQuestionKey(question)} className="text-sm">
+                • {question.questionText}
+              </li>
+            ))}
+            {questions.length > 3 && (
+              <li className="text-muted text-sm">...and {questions.length - 3} more</li>
+            )}
+          </ul>
+        </div>
+
+        <Row>
+          <Col>
+            <Button
+              color="primary"
+              size="sm"
+              onClick={() => onImport(questionSet)}
+              disabled={!currentFormId}
+            >
+              Import All Questions
+            </Button>
+          </Col>
+          <Col xs="auto">
+            <Button
+              color="secondary"
+              size="sm"
+              className="mr-2"
+              onClick={() => onClone(questionSet)}
+              disabled={!canCreate}
+            >
+              Clone
+            </Button>
+            {canEdit && (
+              <Button
+                color="warning"
+                size="sm"
+                className="mr-2"
+                onClick={() => onEdit(questionSet)}
+              >
+                Edit
+              </Button>
+            )}
+            {canDelete && (
+              <Button color="danger" size="sm" onClick={() => onDelete(questionSet)}>
+                Delete
+              </Button>
+            )}
+          </Col>
+        </Row>
+      </CardBody>
+    </Card>
+  );
+}
+
+QuestionSetCard.propTypes = {
+  questionSet: questionSetCardShape.isRequired,
+  currentFormId: PropTypes.string,
+  canCreate: PropTypes.bool,
+  canEdit: PropTypes.bool,
+  canDelete: PropTypes.bool,
+  onImport: PropTypes.func.isRequired,
+  onClone: PropTypes.func.isRequired,
+  onEdit: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
+};
+
+QuestionSetCard.defaultProps = {
+  currentFormId: null,
+  canCreate: false,
+  canEdit: false,
+  canDelete: false,
+};
+
 const QuestionSetManager = ({
   isOpen,
   toggle,
@@ -181,8 +309,7 @@ const QuestionSetManager = ({
     }
 
     if (
-      // eslint-disable-next-line no-alert
-      window.confirm(
+      globalThis.confirm(
         'Are you sure you want to delete this question set? This action cannot be undone.',
       )
     ) {
@@ -204,89 +331,12 @@ const QuestionSetManager = ({
     }
   };
 
-  const QuestionSetCard = ({ questionSet }) => (
-    <Card className="mb-3">
-      <CardHeader>
-        <Row className="align-items-center">
-          <Col>
-            <h6 className="mb-0">{questionSet.name}</h6>
-            <small className="text-muted">
-              {questionSet.questions.length} questions • {questionSet.category}
-              {questionSet.isDefault && (
-                <Badge color="primary" className="ml-2">
-                  Default
-                </Badge>
-              )}
-            </small>
-          </Col>
-          <Col xs="auto">
-            <Badge color="info">{questionSet.usageCount} uses</Badge>
-          </Col>
-        </Row>
-      </CardHeader>
-      <CardBody>
-        {questionSet.description && <p className="text-muted mb-2">{questionSet.description}</p>}
-
-        <div className="mb-3">
-          <small className="text-muted">Sample Questions:</small>
-          <ul className="list-unstyled mt-1">
-            {questionSet.questions.slice(0, 3).map(question => (
-              <li key={getSampleQuestionKey(question)} className="text-sm">
-                • {question.questionText}
-              </li>
-            ))}
-            {questionSet.questions.length > 3 && (
-              <li className="text-muted text-sm">...and {questionSet.questions.length - 3} more</li>
-            )}
-          </ul>
-        </div>
-
-        <Row>
-          <Col>
-            <Button
-              color="primary"
-              size="sm"
-              onClick={() => handleImportQuestions(questionSet)}
-              disabled={!currentFormId}
-            >
-              Import All Questions
-            </Button>
-          </Col>
-          <Col xs="auto">
-            <Button
-              color="secondary"
-              size="sm"
-              className="mr-2"
-              onClick={() => handleCloneQuestionSet(questionSet)}
-              disabled={!canCreateQuestionSets()}
-            >
-              Clone
-            </Button>
-            {canEditQuestionSets() && (
-              <Button
-                color="warning"
-                size="sm"
-                className="mr-2"
-                onClick={() => {
-                  if (onEditQuestionSet) {
-                    onEditQuestionSet(questionSet);
-                  }
-                  toggle();
-                }}
-              >
-                Edit
-              </Button>
-            )}
-            {canDeleteQuestionSets() && (
-              <Button color="danger" size="sm" onClick={() => handleDeleteQuestionSet(questionSet)}>
-                Delete
-              </Button>
-            )}
-          </Col>
-        </Row>
-      </CardBody>
-    </Card>
-  );
+  const handleEditQuestionSet = questionSet => {
+    if (onEditQuestionSet) {
+      onEditQuestionSet(questionSet);
+    }
+    toggle();
+  };
 
   return (
     <>
@@ -345,7 +395,18 @@ const QuestionSetManager = ({
                 </Alert>
               ) : (
                 filteredQuestionSets.map(questionSet => (
-                  <QuestionSetCard key={questionSet._id} questionSet={questionSet} />
+                  <QuestionSetCard
+                    key={questionSet._id}
+                    questionSet={questionSet}
+                    currentFormId={currentFormId}
+                    canCreate={canCreateQuestionSets()}
+                    canEdit={canEditQuestionSets()}
+                    canDelete={canDeleteQuestionSets()}
+                    onImport={handleImportQuestions}
+                    onClone={handleCloneQuestionSet}
+                    onEdit={handleEditQuestionSet}
+                    onDelete={handleDeleteQuestionSet}
+                  />
                 ))
               )}
             </div>
