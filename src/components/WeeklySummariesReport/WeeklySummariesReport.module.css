@@ -696,3 +696,8 @@
 .report-multi-select-filter :global(.dropdown-heading) {
   height: 35px !important;
 }
+
+:global(.bg-yinmn-blue .list-group-item) {
+  background-color: #3a506b !important;
+  color: #ffffff !important;
+}

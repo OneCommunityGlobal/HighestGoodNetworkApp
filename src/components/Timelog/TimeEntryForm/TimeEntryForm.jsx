@@ -35,7 +35,7 @@ import TangibleInfoModal from './TangibleInfoModal';
 import ReminderModal from './ReminderModal';
 import TimeLogConfirmationModal from './TimeLogConfirmationModal';
 import { ENDPOINTS } from '../../../utils/URL';
-import '../../Header/index.css';
+import '../../Header/index.module.css';
 import styles from '../Timelog.module.css';
 
 import { updateIndividualTaskTime } from '../../TeamMemberTasks/actions';
