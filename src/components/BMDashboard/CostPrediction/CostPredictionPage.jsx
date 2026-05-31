@@ -605,11 +605,11 @@ function CostPredictionPage({ projectId }) {
                   <span>
                     {alertStyle.icon} <strong>{alert.category}</strong> cost forecast exceeds budget
                     by <strong>{alert.pct.toFixed(1)}%</strong>
-                    {alert.level === 'critical'
-                      ? ' — Immediate review recommended'
-                      : alert.level === 'warning'
-                      ? ' — Monitor closely'
-                      : ''}
+                    {(() => {
+                      if (alert.level === 'critical') return ' — Immediate review recommended';
+                      if (alert.level === 'warning') return ' — Monitor closely';
+                      return '';
+                    })()}
                   </span>
                 </div>
               );

@@ -390,9 +390,9 @@ export default function ProjectRiskProfileOverview() {
               barSize={35}
               radius={[3, 3, 0, 0]}
             >
-              {filteredData.map((entry, index) => (
+              {filteredData.map(entry => (
                 <Cell
-                  key={`overrun-cell-${index}`}
+                  key={`overrun-cell-${entry.projectName}`}
                   fill={getOverrunColor(entry.predictedCostOverrun)}
                 />
               ))}

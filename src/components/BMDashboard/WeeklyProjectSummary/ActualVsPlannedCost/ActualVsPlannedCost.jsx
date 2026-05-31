@@ -190,8 +190,8 @@ function ActualVsPlannedCost() {
                 fill={darkMode ? '#c0392b' : '#e74a3b'}
                 barSize={40}
               >
-                {chartData.map((entry, index) => (
-                  <Cell key={`actual-cell-${index}`} fill={getActualBarColor(entry)} />
+                {chartData.map(entry => (
+                  <Cell key={`actual-cell-${entry.category}`} fill={getActualBarColor(entry)} />
                 ))}
                 <LabelList dataKey="actualCost" position="top" fill="var(--text-color)" />
               </Bar>
