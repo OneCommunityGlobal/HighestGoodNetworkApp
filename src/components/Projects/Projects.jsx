@@ -261,6 +261,8 @@ const Projects = function(props) {
         onClickArchiveBtn={onClickArchiveBtn}
         onClickProjectStatusBtn={onClickProjectStatusBtn}
         darkMode={darkMode}
+        taskSelectionMode={taskSelectionMode}
+        taskSelectionReturnPath={taskSelectionReturnPath}
       />
     ));
 
@@ -334,6 +336,8 @@ const Projects = function(props) {
           onClickArchiveBtn={onClickArchiveBtn}
           onClickProjectStatusBtn={onClickProjectStatusBtn}
           darkMode={darkMode}
+          taskSelectionMode={taskSelectionMode}
+          taskSelectionReturnPath={taskSelectionReturnPath}
         />
       ));
 

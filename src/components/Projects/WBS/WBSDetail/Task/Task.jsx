@@ -202,19 +202,18 @@ function Task(props) {
                 <span className="action-edit-btn">EDIT</span>
                 {controllerRow ? <BsFillCaretUpFill /> : <BsFillCaretDownFill />}
               </Button>
-            </td>
-            {props.taskSelectionMode && (
-              <td className={styles.centerAction}>
+              {props.taskSelectionMode && (
                 <Button
                   color="success"
                   size="sm"
+                  className="mt-1"
                   onClick={() => props.onSelectTask({ _id: props.taskId, taskName: props.name })}
                   style={darkMode ? boxStyleDark : boxStyle}
                 >
                   Select
                 </Button>
-              </td>
-            )}
+              )}
+            </td>
             <td
               id={`r_${props.num}_${props.taskId}`}
               // eslint-disable-next-line jsx-a11y/scope

@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Form, FormGroup, Label, Input, Button, Badge, Tooltip } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
+import axios from 'axios';
 import Joi from 'joi';
 import { toast } from 'react-toastify';
 import { boxStyle } from '../../../../styles';
 import styles from './CreateNewTeam.module.css';
 import { getUserProfileBasicInfo } from '../../../../actions/userManagement';
 import { postNewTeam, addTeamMember } from '../../../../actions/allTeamsAction';
+import { ENDPOINTS } from '../../../../utils/URL';
 
 const initialFormState = {
   teamName: '',
@@ -170,8 +172,50 @@ export default function CreateNewTeam() {
       // Assign each selected member to the newly created team
       await Promise.all(assignedMembers.map(userId => dispatch(addTeamMember(newTeamId, userId))));
 
+      // Add assigned members as resources on each assigned task
+      if (assignedTasks.length > 0 && assignedMembers.length > 0) {
+        const memberResources = assignedMembers.map(userId => {
+          const user = members.find(u => u._id === userId);
+          return {
+            userID: userId,
+            name: user ? `${user.firstName} ${user.lastName}` : userId,
+            profilePic: user?.profilePic || '',
+          };
+        });
+        await Promise.all(
+          assignedTasks.map(async task => {
+            const taskRes = await axios.get(ENDPOINTS.GET_TASK(task.id));
+            const existingResources = taskRes.data?.resources || [];
+            const existingIds = new Set(existingResources.map(r => r.userID));
+            const newResources = [
+              ...existingResources,
+              ...memberResources.filter(r => !existingIds.has(r.userID)),
+            ];
+            await axios.put(ENDPOINTS.TASK_UPDATE(task.id), {
+              ...taskRes.data,
+              resources: newResources,
+              isAssigned: newResources.length > 0,
+            });
+          }),
+        );
+      }
+
       toast.success(`Team "${formData.teamName}" created successfully!`);
-      history.push('/bmdashboard');
+      // Reset form after successful submission, stay on same page
+      setFormData(initialFormState);
+      setAssignedMembers([]);
+      setAssignedTasks([]);
+      setErrors({});
+      setSelectedMember('');
+      setSelectedMembersForBulk([]);
+      setSelectedTasksForBulk([]);
+      setTaskErrorMessage('');
+      setErrorMessage('');
+      setTouchedFields({
+        teamName: false,
+        assignedMembers: false,
+        additionalInformation: false,
+      });
     } catch (err) {
       const errMsg =
         err?.response?.data?.error ||
@@ -335,7 +379,7 @@ export default function CreateNewTeam() {
                 <option value="">Select a Member</option>
                 {Array.isArray(members) &&
                   members.map(user => (
-                    <option key={user.id} value={user.id}>
+                    <option key={user._id} value={user._id}>
                       {user.firstName} {user.lastName}
                     </option>
                   ))}
@@ -370,6 +414,10 @@ export default function CreateNewTeam() {
               <div className={styles.badgeContainer}>
                 {assignedMembers.map(member => {
                   const isSelected = selectedMembersForBulk.includes(member);
+                  const memberInfo = members.find(u => u._id === member);
+                  const memberName = memberInfo
+                    ? `${memberInfo.firstName} ${memberInfo.lastName}`
+                    : member;
                   return (
                     <Badge
                       key={member}
@@ -383,7 +431,7 @@ export default function CreateNewTeam() {
                       }
                       style={{ cursor: assignedMembers.length > 1 ? 'pointer' : 'default' }}
                     >
-                      {member}
+                      {memberName}
                       <span
                         role="button"
                         tabIndex={0}

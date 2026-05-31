@@ -214,11 +214,6 @@ function WBSTasks(props) {
         <th scope="col" className={`${styles['tasks-detail-header']} tasks-detail-actions`} data-tip="Action" colSpan="2">
           Action
         </th>
-        {taskSelectionMode && (
-          <th scope="col" className={styles['tasks-detail-header']} data-tip="Select Task">
-            Select
-          </th>
-        )}
         <th scope="col" data-tip="WBS ID" colSpan="1" className={styles['tasks-detail-header']}>
           #
         </th>
