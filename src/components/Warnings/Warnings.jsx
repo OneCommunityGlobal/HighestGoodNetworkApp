@@ -72,7 +72,7 @@ export default function Warning({
       if (usersWarnings.length === 0) {
         const timer = setTimeout(() => {
           fetchUsersWarningsById();
-        }, 100);
+        }, Math.floor(Math.random() * 5000));
         return () => clearTimeout(timer);
       }
     } else {
