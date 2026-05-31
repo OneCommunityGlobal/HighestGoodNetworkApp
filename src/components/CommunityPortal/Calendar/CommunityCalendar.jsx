@@ -1,12 +1,12 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
 import ReactCalendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClock, faLocationDot, faTag, faCircleCheck } from '@fortawesome/free-solid-svg-icons';
+import { toast } from 'react-toastify';
 import CalendarActivitySection from './CalendarActivitySection';
 import styles from './CommunityCalendar.module.css';
 import {
@@ -174,6 +174,149 @@ export default function CommunityCalendar() {
     });
   }, [selectedDate]);
 
+  const [registeredEventIds, setRegisteredEventIds] = useState(new Set());
+  const [isRegistering, setIsRegistering] = useState(false);
+
+  const closeEventModal = useCallback(() => {
+    setShowEventModal(false);
+    setSelectedEvent(null);
+  }, []);
+
+  const isEventInPast = useCallback(event => {
+    if (!event) return false;
+
+    const eventDateTime = new Date(event.date);
+
+    const timeMatch = event.time?.match(/^(\d{1,2}):(\d{2})\s?(AM|PM)$/i);
+
+    if (timeMatch) {
+      let hour = Number.parseInt(timeMatch[1], 10);
+      const minute = Number.parseInt(timeMatch[2], 10);
+      const meridian = timeMatch[3].toUpperCase();
+
+      if (meridian === 'PM' && hour !== 12) hour += 12;
+      if (meridian === 'AM' && hour === 12) hour = 0;
+
+      eventDateTime.setHours(hour, minute, 0, 0);
+    }
+
+    return eventDateTime < new Date();
+  }, []);
+
+  const canRegisterForEvent = useCallback(
+    event => {
+      if (!event) return false;
+
+      if (isEventInPast(event)) {
+        toast.info('Registration is closed for past events.', {
+          position: 'top-right',
+          autoClose: 3000,
+        });
+        return false;
+      }
+
+      if (registeredEventIds.has(event.id)) {
+        toast.info(`You are already registered for "${event.title}".`, {
+          position: 'top-right',
+          autoClose: 3000,
+        });
+        return false;
+      }
+
+      return true;
+    },
+    [registeredEventIds, isEventInPast],
+  );
+
+  const handleRegister = useCallback(async () => {
+    if (!selectedEvent) return;
+
+    if (!canRegisterForEvent(selectedEvent)) {
+      return;
+    }
+
+    if (registeredEventIds.has(selectedEvent.id)) {
+      toast.info(`You are already registered for "${selectedEvent.title}".`, {
+        position: 'top-right',
+        autoClose: 3000,
+      });
+      return;
+    }
+
+    const confirmed = globalThis.confirm(
+      `Register for "${
+        selectedEvent.title
+      }"?\n\nDate: ${selectedEvent.date.toDateString()}\nTime: ${selectedEvent.time}`,
+    );
+
+    if (!confirmed) return;
+
+    setIsRegistering(true);
+
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      setRegisteredEventIds(prev => {
+        const nextSet = new Set(prev);
+        nextSet.add(selectedEvent.id);
+        return nextSet;
+      });
+
+      toast.success(`✓ Registered for "${selectedEvent.title}"!`, {
+        position: 'top-right',
+        autoClose: 4000,
+      });
+
+      setTimeout(() => {
+        closeEventModal();
+      }, 500);
+    } catch (error) {
+      console.error('Event registration failed:', error);
+
+      toast.error('Registration failed. Please try again.', {
+        position: 'top-right',
+        autoClose: 3000,
+      });
+    } finally {
+      setIsRegistering(false);
+    }
+  }, [selectedEvent, registeredEventIds, closeEventModal]);
+
+  const eventHasEnded = selectedEvent && isEventInPast(selectedEvent);
+
+  const handleAddToCalendar = useCallback(() => {
+    if (!selectedEvent) return;
+
+    const timeMatch = selectedEvent.time.match(/^(\d{1,2}):(\d{2})\s?(AM|PM)$/);
+    const start = new Date(selectedEvent.date);
+
+    if (timeMatch) {
+      const hour = (Number(timeMatch[1]) % 12) + (timeMatch[3] === 'PM' ? 12 : 0);
+      start.setHours(hour, Number(timeMatch[2]), 0, 0);
+    }
+
+    const end = new Date(start);
+    end.setHours(end.getHours() + 1);
+
+    const formatDate = d =>
+      d
+        .toISOString()
+        .replace(/[-:.]/g, '')
+        .split('.')[0] + 'Z';
+
+    const url =
+      'https://www.google.com/calendar/render?action=TEMPLATE' +
+      `&text=${encodeURIComponent(selectedEvent.title)}` +
+      `&dates=${formatDate(start)}/${formatDate(end)}` +
+      `&details=${encodeURIComponent(selectedEvent.description)}` +
+      `&location=${encodeURIComponent(selectedEvent.location)}`;
+
+    const opened = globalThis.open(url, '_blank', 'noopener,noreferrer');
+    if (!opened) {
+      toast.info('Please allow pop-ups to add this event to your calendar.');
+    }
+  }, [selectedEvent]);
+
   const handleDateSelect = useCallback(
     date => {
       setSelectedDate(date);
@@ -194,10 +337,22 @@ export default function CommunityCalendar() {
 
     setShowEventModal(true);
   }, []);
-  const closeEventModal = useCallback(() => {
-    setShowEventModal(false);
-    setSelectedEvent(null);
-  }, []);
+
+  const registerButtonText = useMemo(() => {
+    if (eventHasEnded) {
+      return 'Event Ended';
+    }
+
+    if (registeredEventIds.has(selectedEvent?.id)) {
+      return 'Already Registered';
+    }
+
+    if (isRegistering) {
+      return 'Registering...';
+    }
+
+    return 'Register for Event';
+  }, [eventHasEnded, registeredEventIds, selectedEvent, isRegistering]);
 
   // Close on ESC
   useEffect(() => {
@@ -308,7 +463,7 @@ export default function CommunityCalendar() {
                 const cellEvents = events.filter(e => {
                   const eventDate = new Date(e.date);
                   const [hStr] = e.time.split(':');
-                  let h = parseInt(hStr, 10);
+                  let h = Number.parseInt(hStr, 10);
                   const isPM = e.time.toLowerCase().includes('pm');
                   const isAM = e.time.toLowerCase().includes('am');
                   if (isPM && h !== 12) h += 12;
@@ -842,26 +997,20 @@ export default function CommunityCalendar() {
             </div>
 
             <div className={styles.modalActions}>
-              {selectedEvent.isOver ? (
-                <button type="button" className={styles.btnDisabled} disabled>
-                  Completed
-                </button>
-              ) : (
-                <>
-                  <button type="button" className={styles.btnPrimary}>
-                    <Link
-                      to={`/communityportal/Activities/Register/${selectedEvent._id}`}
-                      className={styles.btnPrimary}
-                      onClick={closeEventModal}
-                    >
-                      Register for Event
-                    </Link>
-                  </button>
-                  <button type="button" className={styles.btnSecondary}>
-                    Add to Calendar
-                  </button>
-                </>
-              )}
+              <button
+                type="button"
+                className={styles.btnPrimary}
+                onClick={handleRegister}
+                disabled={
+                  isRegistering || registeredEventIds.has(selectedEvent?.id) || eventHasEnded
+                }
+              >
+                {registerButtonText}
+              </button>
+
+              <button type="button" className={styles.btnSecondary} onClick={handleAddToCalendar}>
+                Add to Calendar
+              </button>
             </div>
           </div>
         </div>

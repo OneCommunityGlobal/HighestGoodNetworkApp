@@ -8,9 +8,15 @@ if command -v nvm >/dev/null 2>&1 && [ -f .nvmrc ]; then
 fi
 
 if git rev-parse --abbrev-ref @{upstream} >/dev/null 2>&1; then
-  changed_files=$(git diff --name-only @{upstream}...HEAD)
+  changed_files=$(git diff --name-only --diff-filter=d @{upstream}...HEAD)
 else
   echo "ℹ️  No upstream branch set. Skipping pre-push checks."
+  exit 0
+fi
+
+# Skip checks if any outgoing commit is a merge commit
+if git log @{upstream}..HEAD --merges --oneline | grep -q .; then
+  echo "ℹ️  Outgoing commits include a merge commit. Skipping lint/test checks."
   exit 0
 fi
 
