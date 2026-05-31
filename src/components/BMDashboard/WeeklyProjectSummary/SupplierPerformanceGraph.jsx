@@ -191,13 +191,13 @@ const SupplierPerformanceDashboard = function({ height = 420, onDataLoaded }) {
 
         {error && <div className={styles['supplier-performance-error']}>{error}</div>}
 
-        {!loading && !error && supplierData.length === 0 && (
+        {loading === false && error === null && supplierData.length === 0 && (
           <div className={styles['supplier-performance-empty']}>
             No supplier performance data available.
           </div>
         )}
 
-        {!loading && !error && supplierData.length > 0 && (
+        {loading === false && error === null && supplierData.length > 0 && (
           <ResponsiveContainer width="100%" height={height}>
             <BarChart data={supplierData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
               <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.gridColor} opacity={0.5} />
