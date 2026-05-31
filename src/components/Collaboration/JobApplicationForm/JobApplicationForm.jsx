@@ -306,6 +306,42 @@ function isAnswerEmpty(answer, q) {
   return !String(answer ?? '').trim();
 }
 
+function missingRequiredQuestionLabel(q, idx, answers, questionFiles) {
+  if (!isQuestionRequired(q)) return null;
+  if (isFileUploadQuestion(q)) {
+    return questionFiles[idx] ? null : getQuestionLabel(q, idx);
+  }
+  return isAnswerEmpty(answers[idx], q) ? getQuestionLabel(q, idx) : null;
+}
+
+function collectMissingRequiredFields({
+  applicantName,
+  applicantEmail,
+  visibleQuestions,
+  answers,
+  questionFiles,
+}) {
+  const missing = [];
+  if (!applicantName.trim()) missing.push('Name');
+  if (!applicantEmail.trim()) missing.push('Email');
+  for (const [idx, q] of visibleQuestions.entries()) {
+    const label = missingRequiredQuestionLabel(q, idx, answers, questionFiles);
+    if (label) missing.push(label);
+  }
+  return missing;
+}
+
+function serializeAnswerForSubmit(q, idx, answers, questionFiles) {
+  if (!isFileUploadQuestion(q)) return answers[idx];
+  const file = questionFiles[idx];
+  if (!file) return '';
+  return {
+    fileName: file.name,
+    size: file.size,
+    mimeType: file.type,
+  };
+}
+
 /** Shown for every role when API text is missing or only a placeholder (e.g. "desc …"). */
 const GENERIC_ROLE_DESCRIPTION = `One Community is a nonprofit focused on sustainability and open collaboration. Volunteers work remotely with teammates in different time zones, contribute to shared goals, and stay aligned using tools like Slack and Zoom.
 
@@ -784,24 +820,14 @@ function JobApplicationForm() {
     [fullTimeYears, monthsVolunteer, hoursPerWeek, roleSkills, locationTimezone],
   );
 
-  const validateBeforeSubmit = () => {
-    const missing = [];
-    if (!applicantName.trim()) missing.push('Name');
-    if (!applicantEmail.trim()) missing.push('Email');
-
-    if (visibleQuestions.length) {
-      for (const [idx, q] of visibleQuestions.entries()) {
-        if (!isQuestionRequired(q)) continue;
-        if (isFileUploadQuestion(q)) {
-          if (!questionFiles[idx]) missing.push(getQuestionLabel(q, idx));
-        } else if (isAnswerEmpty(answers[idx], q)) {
-          missing.push(getQuestionLabel(q, idx));
-        }
-      }
-    }
-
-    return missing;
-  };
+  const validateBeforeSubmit = () =>
+    collectMissingRequiredFields({
+      applicantName,
+      applicantEmail,
+      visibleQuestions,
+      answers,
+      questionFiles,
+    });
 
   const resetFormAfterSubmit = () => {
     setApplicantName('');
@@ -857,15 +883,7 @@ function JobApplicationForm() {
           },
           answers: visibleQuestions.map((q, idx) => ({
             questionId: q._id,
-            answer: isFileUploadQuestion(q)
-              ? questionFiles[idx]
-                ? {
-                    fileName: questionFiles[idx].name,
-                    size: questionFiles[idx].size,
-                    mimeType: questionFiles[idx].type,
-                  }
-                : ''
-              : answers[idx],
+            answer: serializeAnswerForSubmit(q, idx, answers, questionFiles),
           })),
         }),
       );
