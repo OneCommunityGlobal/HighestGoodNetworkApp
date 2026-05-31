@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import PropTypes from 'prop-types';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -157,11 +158,48 @@ function PermissionDeniedAlert() {
   );
 }
 
+const generalLinkShape = PropTypes.shape({
+  title: PropTypes.string,
+  url: PropTypes.string,
+});
+
+function GeneralLinkRow({ link, onRemove }) {
+  const { title, url } = link;
+
+  return (
+    <div className="d-flex align-items-center gap-2 mb-1">
+      <span className="small">
+        {title} — {url}
+      </span>
+      <button
+        type="button"
+        className="btn btn-sm btn-outline-danger"
+        onClick={() => onRemove(link)}
+      >
+        Remove
+      </button>
+    </div>
+  );
+}
+
+GeneralLinkRow.propTypes = {
+  link: generalLinkShape.isRequired,
+  onRemove: PropTypes.func.isRequired,
+};
+
 function AdvancedFormSettings({
-  formData,
+  description,
+  category,
+  specificJobLink,
+  generalLinks,
+  allowDuplicateSubmissions,
+  requireLogin,
+  autoSaveProgress,
+  showProgressBar,
   darkMode,
   categories,
-  newGeneralLink,
+  newLinkTitle,
+  newLinkUrl,
   setNewGeneralLink,
   onFormChange,
   onNestedFormChange,
@@ -174,14 +212,14 @@ function AdvancedFormSettings({
       <textarea
         className={jb.jobformTextarea}
         rows={2}
-        value={formData.description}
+        value={description}
         onChange={e => onFormChange('description', e.target.value)}
         placeholder="Optional description"
       />
       <h6>Category</h6>
       <select
         className={jb.jobformSelect}
-        value={formData.category}
+        value={category}
         onChange={e => onFormChange('category', e.target.value)}
       >
         {categories.map(c => (
@@ -194,32 +232,21 @@ function AdvancedFormSettings({
       <input
         type="url"
         className={jb.jobformInput}
-        value={formData.jobLinks.specificJobLink}
+        value={specificJobLink}
         onChange={e => onNestedFormChange('jobLinks', 'specificJobLink', e.target.value)}
         placeholder="https://..."
       />
       <h6 className="mt-3">General links (up to 5)</h6>
-      {formData.jobLinks.generalLinks.map(link => (
-        <div key={generalLinkKey(link)} className="d-flex align-items-center gap-2 mb-1">
-          <span className="small">
-            {link.title} — {link.url}
-          </span>
-          <button
-            type="button"
-            className="btn btn-sm btn-outline-danger"
-            onClick={() => onRemoveGeneralLink(link)}
-          >
-            Remove
-          </button>
-        </div>
+      {generalLinks.map(link => (
+        <GeneralLinkRow key={generalLinkKey(link)} link={link} onRemove={onRemoveGeneralLink} />
       ))}
-      {formData.jobLinks.generalLinks.length < 5 && (
+      {generalLinks.length < 5 && (
         <div className="row g-2 mt-1">
           <div className="col-md-4">
             <input
               className={jb.jobformInput}
               placeholder="Title"
-              value={newGeneralLink.title}
+              value={newLinkTitle}
               onChange={e => setNewGeneralLink(p => ({ ...p, title: e.target.value }))}
             />
           </div>
@@ -227,7 +254,7 @@ function AdvancedFormSettings({
             <input
               className={jb.jobformInput}
               placeholder="URL"
-              value={newGeneralLink.url}
+              value={newLinkUrl}
               onChange={e => setNewGeneralLink(p => ({ ...p, url: e.target.value }))}
             />
           </div>
@@ -242,7 +269,7 @@ function AdvancedFormSettings({
       <label className="d-block">
         <input
           type="checkbox"
-          checked={formData.settings.allowDuplicateSubmissions}
+          checked={allowDuplicateSubmissions}
           onChange={e =>
             onNestedFormChange('settings', 'allowDuplicateSubmissions', e.target.checked)
           }
@@ -252,7 +279,7 @@ function AdvancedFormSettings({
       <label className="d-block">
         <input
           type="checkbox"
-          checked={formData.settings.requireLogin}
+          checked={requireLogin}
           onChange={e => onNestedFormChange('settings', 'requireLogin', e.target.checked)}
         />{' '}
         Require login
@@ -260,7 +287,7 @@ function AdvancedFormSettings({
       <label className="d-block">
         <input
           type="checkbox"
-          checked={formData.settings.autoSaveProgress}
+          checked={autoSaveProgress}
           onChange={e => onNestedFormChange('settings', 'autoSaveProgress', e.target.checked)}
         />{' '}
         Auto-save progress
@@ -268,7 +295,7 @@ function AdvancedFormSettings({
       <label className="d-block">
         <input
           type="checkbox"
-          checked={formData.settings.showProgressBar}
+          checked={showProgressBar}
           onChange={e => onNestedFormChange('settings', 'showProgressBar', e.target.checked)}
         />{' '}
         Show progress bar
@@ -276,6 +303,40 @@ function AdvancedFormSettings({
     </div>
   );
 }
+
+AdvancedFormSettings.propTypes = {
+  description: PropTypes.string,
+  category: PropTypes.string,
+  specificJobLink: PropTypes.string,
+  generalLinks: PropTypes.arrayOf(generalLinkShape),
+  allowDuplicateSubmissions: PropTypes.bool,
+  requireLogin: PropTypes.bool,
+  autoSaveProgress: PropTypes.bool,
+  showProgressBar: PropTypes.bool,
+  darkMode: PropTypes.bool,
+  categories: PropTypes.arrayOf(PropTypes.string).isRequired,
+  newLinkTitle: PropTypes.string,
+  newLinkUrl: PropTypes.string,
+  setNewGeneralLink: PropTypes.func.isRequired,
+  onFormChange: PropTypes.func.isRequired,
+  onNestedFormChange: PropTypes.func.isRequired,
+  onAddGeneralLink: PropTypes.func.isRequired,
+  onRemoveGeneralLink: PropTypes.func.isRequired,
+};
+
+AdvancedFormSettings.defaultProps = {
+  description: '',
+  category: 'General',
+  specificJobLink: '',
+  generalLinks: [],
+  allowDuplicateSubmissions: false,
+  requireLogin: false,
+  autoSaveProgress: true,
+  showProgressBar: true,
+  darkMode: false,
+  newLinkTitle: '',
+  newLinkUrl: '',
+};
 
 const EnhancedJobFormBuilder = () => {
   const proceedRef = useRef(null);
@@ -852,10 +913,18 @@ const EnhancedJobFormBuilder = () => {
 
             {showAdvanced && (
               <AdvancedFormSettings
-                formData={formData}
+                description={formData.description}
+                category={formData.category}
+                specificJobLink={formData.jobLinks.specificJobLink}
+                generalLinks={formData.jobLinks.generalLinks}
+                allowDuplicateSubmissions={formData.settings.allowDuplicateSubmissions}
+                requireLogin={formData.settings.requireLogin}
+                autoSaveProgress={formData.settings.autoSaveProgress}
+                showProgressBar={formData.settings.showProgressBar}
                 darkMode={darkMode}
                 categories={CATEGORIES}
-                newGeneralLink={newGeneralLink}
+                newLinkTitle={newGeneralLink.title}
+                newLinkUrl={newGeneralLink.url}
                 setNewGeneralLink={setNewGeneralLink}
                 onFormChange={handleFormChange}
                 onNestedFormChange={handleNestedFormChange}
