@@ -89,8 +89,6 @@ const CustomTooltip = ({
 
   const data = payload[0];
   const percentage = total > 0 ? ((data.value / total) * 100).toFixed(1) : '0.0';
-  const textColor = darkMode ? '#e0e0e0' : '#333';
-  const subTextColor = darkMode ? '#c5d0dd' : '#666';
 
   return (
     <div style={getTooltipContainerStyle(darkMode)}>

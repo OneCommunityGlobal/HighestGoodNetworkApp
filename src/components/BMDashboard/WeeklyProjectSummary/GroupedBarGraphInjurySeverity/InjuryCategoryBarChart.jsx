@@ -48,8 +48,7 @@ function InjuryCategoryBarChart() {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
 
-  // ✅ NEW: key to force Recharts remount when needed (fixes "renders only on hover")
-  const [chartKey, setChartKey] = useState(0);
+  const [chartKey] = useState(0);
 
   useEffect(() => {
     dispatch(fetchSeverities());
