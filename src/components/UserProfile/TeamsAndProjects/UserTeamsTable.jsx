@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+import { React, useState, useEffect, useRef } from 'react';
 import { Button, Col, Input } from 'reactstrap';
-import hasPermission from '../../../utils/permissions';
 import './TeamsAndProjects.module.css';
+import hasPermission from '../../../utils/permissions';
 // import styles from './UserTeamsTable.css';
+import { boxStyle, boxStyleDark } from '~/styles';
 import { connect } from 'react-redux';
-import { boxStyle } from '~/styles';
+import Switch from './Switch';
 
 import './UserTeamsTable.module.css';
 
@@ -12,14 +13,14 @@ import { AutoCompleteTeamCode } from './AutoCompleteTeamCode';
 
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 
+import './../../Teams/Team.module.css';
+import { TeamMember } from './TeamMember';
 import axios from 'axios';
+import { ENDPOINTS } from '~/utils/URL.js';
 import { toast } from 'react-toastify';
 import {
   useUpdateFiltersWithIndividualCodesChangeMutation
 } from '~/actions/weeklySummariesFilterAction';
-import { ENDPOINTS } from '~/utils/URL.js';
-import './../../Teams/Team.module.css';
-import { TeamMember } from './TeamMember';
 
 const UserTeamsTable = props => {
   const { darkMode } = props;
@@ -163,7 +164,7 @@ const UserTeamsTable = props => {
       />
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         {props.canEditVisibility && (
-          <div className="row" style={{ alignItems: 'center' }}>
+          <div className="row">
             <Col
               md="7"
               xs="12"
@@ -171,13 +172,9 @@ const UserTeamsTable = props => {
                 backgroundColor: darkMode ? '#1C2541' : '#e9ecef',
                 border: '1px solid #ced4da',
                 marginBottom: '10px',
-                display: 'flex',
-                alignItems: 'center',
-                padding: '10px 15px',
-                minHeight: '45px',
               }}
             >
-              <span className="teams-span" style={{fontWeight: 'bold'}}>Visibility</span>
+              <span className="teams-span">Visibility</span>
             </Col>
             <Col
               md="5"
@@ -199,28 +196,25 @@ const UserTeamsTable = props => {
             </Col>
           </div>
         )}
-        <div className="row" style={{ alignItems: 'center' }}>
+        <div className="row">
           <Col
             md="9"
             xs="12"
             style={{
-                backgroundColor: darkMode ? '#1C2541' : '#e9ecef',
-                border: '1px solid #ced4da',
-                marginBottom: '10px',
-                display: 'flex',
-                alignItems: 'center',
-                padding: '10px 15px',
-                minHeight: '45px',
+              backgroundColor: darkMode ? '#1C2541' : '#e9ecef',
+              border: '1px solid #ced4da',
+              marginBottom: '10px',
+              height: '10%',
             }}
           >
-            <span className="teams-span" style={{fontWeight: 'bold'}}>Teams</span>
+            <span className="teams-span">Teams</span>
           </Col>
-          <Col md="3" xs="12" style={{ padding: '0', marginBottom: '10px', border: '1px solid #ced4da', minHeight: '45px', display: 'flex', alignItems: 'center' }}>
+          <Col md="3" xs="12" style={{ padding: '0', marginBottom: '10px' }}>
             <Input
               id="teamCode"
               value={teamCode}
               onChange={handleCodeChange}
-              style={darkMode ? {...colordark, border: 'none', height: '100%'} : {...styleDefault, border: 'none', height: '100%'}}
+              style={darkMode ? colordark : styleDefault}
               placeholder="X-XXX"
               onFocus={() => !showDropdown && setShowDropdown(true)}
               disabled={!props.canEditTeamCode}

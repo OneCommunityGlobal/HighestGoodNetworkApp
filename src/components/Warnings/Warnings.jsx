@@ -70,14 +70,9 @@ export default function Warning({
     if (showTrackers) {
       setToggle(true);
       if (usersWarnings.length === 0) {
-        const index = Array.from(personId ?? '').reduce(
-          (acc, c) => acc + (c.codePointAt(0) ?? 0),
-          0,
-        );
-        const delay = index % 5000;
         const timer = setTimeout(() => {
           fetchUsersWarningsById();
-        }, delay);
+        }, 100);
         return () => clearTimeout(timer);
       }
     } else {
