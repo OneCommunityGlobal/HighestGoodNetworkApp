@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import {
@@ -15,13 +16,26 @@ import {
   Col,
   Card,
   CardBody,
-  Alert,
   Badge,
 } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { ENDPOINTS } from '~/utils/URL';
 
-const QuestionSetEditor = ({ isOpen, toggle, questionSet = null, onSave }) => {
+function createQuestionClientId(question = {}, fallbackIndex = 0) {
+  if (question.clientId) return question.clientId;
+  if (question._id) return String(question._id);
+  const label = String(question.questionText || 'question').slice(0, 40);
+  return `q-${fallbackIndex}-${label}`;
+}
+
+function withQuestionClientIds(questions = []) {
+  return questions.map((question, index) => ({
+    ...question,
+    clientId: createQuestionClientId(question, index),
+  }));
+}
+
+const QuestionSetEditor = ({ isOpen, toggle, questionSet, onSave }) => {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -77,7 +91,7 @@ const QuestionSetEditor = ({ isOpen, toggle, questionSet = null, onSave }) => {
           description: questionSet.description || '',
           category: questionSet.category || 'General',
           targetRole: questionSet.targetRole || 'General',
-          questions: questionSet.questions || [],
+          questions: withQuestionClientIds(questionSet.questions || []),
           isDefault: questionSet.isDefault || false,
         });
       } else {
@@ -136,11 +150,13 @@ const QuestionSetEditor = ({ isOpen, toggle, questionSet = null, onSave }) => {
     }
   };
 
-  const removeOption = index => {
-    setCurrentQuestion(prev => ({
-      ...prev,
-      options: prev.options.filter((_, i) => i !== index),
-    }));
+  const removeOption = optionValue => {
+    setCurrentQuestion(prev => {
+      const next = [...prev.options];
+      const idx = next.indexOf(optionValue);
+      if (idx >= 0) next.splice(idx, 1);
+      return { ...prev, options: next };
+    });
   };
 
   const addQuestion = () => {
@@ -159,6 +175,11 @@ const QuestionSetEditor = ({ isOpen, toggle, questionSet = null, onSave }) => {
       ...currentQuestion,
       questionText: currentQuestion.questionText.trim(),
       placeholder: currentQuestion.placeholder.trim(),
+      clientId:
+        editingQuestionIndex >= 0
+          ? formData.questions[editingQuestionIndex]?.clientId ||
+            createQuestionClientId(currentQuestion, editingQuestionIndex)
+          : createQuestionClientId(currentQuestion, formData.questions.length),
     };
 
     if (editingQuestionIndex >= 0) {
@@ -413,14 +434,14 @@ const QuestionSetEditor = ({ isOpen, toggle, questionSet = null, onSave }) => {
                     </Button>
                   </div>
                   <div>
-                    {currentQuestion.options.map((option, index) => (
-                      <Badge key={index} color="secondary" className="mr-2 mb-2 p-2">
+                    {currentQuestion.options.map(option => (
+                      <Badge key={option} color="secondary" className="mr-2 mb-2 p-2">
                         {option}
                         <Button
                           close
                           size="sm"
                           className="ml-2"
-                          onClick={() => removeOption(index)}
+                          onClick={() => removeOption(option)}
                         />
                       </Badge>
                     ))}
@@ -448,7 +469,7 @@ const QuestionSetEditor = ({ isOpen, toggle, questionSet = null, onSave }) => {
             <div>
               <h6>Current Questions</h6>
               {formData.questions.map((question, index) => (
-                <Card key={index} className="mb-2">
+                <Card key={question.clientId} className="mb-2">
                   <CardBody className="py-2">
                     <Row className="align-items-center">
                       <Col>
@@ -511,6 +532,29 @@ const QuestionSetEditor = ({ isOpen, toggle, questionSet = null, onSave }) => {
       </ModalFooter>
     </Modal>
   );
+};
+
+const questionShape = PropTypes.shape({
+  _id: PropTypes.string,
+  clientId: PropTypes.string,
+  name: PropTypes.string,
+  description: PropTypes.string,
+  category: PropTypes.string,
+  targetRole: PropTypes.string,
+  questions: PropTypes.arrayOf(PropTypes.object),
+  isDefault: PropTypes.bool,
+});
+
+QuestionSetEditor.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  toggle: PropTypes.func.isRequired,
+  questionSet: questionShape,
+  onSave: PropTypes.func,
+};
+
+QuestionSetEditor.defaultProps = {
+  questionSet: null,
+  onSave: undefined,
 };
 
 export default QuestionSetEditor;
