@@ -29,6 +29,38 @@ function getVarianceCardClass(variance, cardStyles) {
   return cardStyles.varianceNeutral;
 }
 
+function VarianceCard({ item, cardStyles }) {
+  const isOverrun = item.variance > 0;
+  const cardClass = getVarianceCardClass(item.variance, cardStyles);
+  return (
+    <div className={`${cardStyles.varianceCard} ${cardClass}`}>
+      <div className={cardStyles.varianceCardCategory}>{item.category}</div>
+      <div className={cardStyles.varianceCardRow}>
+        <span>Planned:</span>
+        <span>{item.plannedCost.toLocaleString()}</span>
+      </div>
+      <div className={cardStyles.varianceCardRow}>
+        <span>Actual:</span>
+        <span>{item.actualCost.toLocaleString()}</span>
+      </div>
+      <div className={cardStyles.varianceCardRow}>
+        <span>Variance:</span>
+        <span>
+          {isOverrun ? '+' : ''}
+          {item.variance.toLocaleString()}
+        </span>
+      </div>
+      {item.variancePct !== null && (
+        <div className={cardStyles.varianceCardPct}>
+          {isOverrun ? '+' : ''}
+          {item.variancePct.toFixed(1)}%
+        </div>
+      )}
+      <div className={cardStyles.varianceCardStatus}>{item.budgetStatus}</div>
+    </div>
+  );
+}
+
 function ActualVsPlannedCost() {
   const dispatch = useDispatch();
   const projects = useSelector(state => state.bmProjects) || [];
@@ -289,39 +321,9 @@ function ActualVsPlannedCost() {
           </div>
 
           <div className={styles.varianceCardsRow}>
-            {chartDataWithVariance.map(item => {
-              const isOverrun = item.variance > 0;
-              const isUnderBudget = item.variance < 0;
-              const cardClass = getVarianceCardClass(item.variance, styles);
-
-              return (
-                <div key={item.category} className={`${styles.varianceCard} ${cardClass}`}>
-                  <div className={styles.varianceCardCategory}>{item.category}</div>
-                  <div className={styles.varianceCardRow}>
-                    <span>Planned:</span>
-                    <span>{item.plannedCost.toLocaleString()}</span>
-                  </div>
-                  <div className={styles.varianceCardRow}>
-                    <span>Actual:</span>
-                    <span>{item.actualCost.toLocaleString()}</span>
-                  </div>
-                  <div className={styles.varianceCardRow}>
-                    <span>Variance:</span>
-                    <span>
-                      {isOverrun ? '+' : ''}
-                      {item.variance.toLocaleString()}
-                    </span>
-                  </div>
-                  {item.variancePct !== null && (
-                    <div className={styles.varianceCardPct}>
-                      {isOverrun ? '+' : ''}
-                      {item.variancePct.toFixed(1)}%
-                    </div>
-                  )}
-                  <div className={styles.varianceCardStatus}>{item.budgetStatus}</div>
-                </div>
-              );
-            })}
+            {chartDataWithVariance.map(item => (
+              <VarianceCard key={item.category} item={item} cardStyles={styles} />
+            ))}
           </div>
         </div>
       )}
