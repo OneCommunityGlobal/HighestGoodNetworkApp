@@ -9,7 +9,7 @@ const ViewRecipe = ({ recipe, onClose, onRecipeUpdate }) => {
   const [ingredients, setIngredients] = useState([]);
 
   useEffect(() => {
-    if (recipe && recipe.ingredients) {
+    if (recipe?.ingredients) {
       setIngredients(recipe.ingredients);
     }
   }, [recipe]);

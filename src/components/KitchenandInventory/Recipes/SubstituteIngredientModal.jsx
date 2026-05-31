@@ -19,7 +19,7 @@ const mockInventoryItems = [
 
 const ENDPOINTS = {
   substituteIngredient: recipeId =>
-    `${window.location.protocol}//${window.location.hostname}:4500/api/kitchenandinventory/recipes/${recipeId}/substitute`,
+    `${globalThis.location.protocol}//${globalThis.location.hostname}:4500/api/kitchenandinventory/recipes/${recipeId}/substitute`,
 };
 
 const SubstituteIngredientModal = ({ ingredient, recipeId, onConfirm, onClose }) => {

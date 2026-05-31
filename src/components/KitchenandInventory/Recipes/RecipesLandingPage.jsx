@@ -5,8 +5,7 @@ import ViewRecipe from './ViewRecipe';
 import { mockRecipes } from './mockRecipes';
 import styles from './RecipesLandingPage.module.css';
 
-const API_URL = `${window.location.protocol}//${window.location.hostname}:4500/api/kitchenandinventory/recipes`;
-
+const API_URL = `${globalThis.location.protocol}//${globalThis.location.hostname}:4500/api/kitchenandinventory/recipes`;
 const RecipesLandingPage = () => {
   const [recipes, setRecipes] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -30,6 +29,8 @@ const RecipesLandingPage = () => {
         }
       } catch (err) {
         // Fallback to mock data if API is unavailable
+        // eslint-disable-next-line no-console
+        console.warn('Failed to fetch recipes from API, falling back to mock data:', err);
         setRecipes(mockRecipes);
         setFilteredRecipes(mockRecipes);
       } finally {
