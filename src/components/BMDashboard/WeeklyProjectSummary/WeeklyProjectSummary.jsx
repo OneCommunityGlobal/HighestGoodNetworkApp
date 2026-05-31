@@ -28,6 +28,8 @@ import LossTrackingLineChart from './Financials/LossTrackingLineCharts/LossTrack
 import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
+import FinancialsTrackingCard from './ExpenditureChart/FinancialsTrackingCard';
+import FinancialStatButtons from './Financials/FinancialStatButtons';
 
 const projectStatusButtons = [
   {
@@ -397,9 +399,11 @@ function WeeklyProjectSummary() {
               className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
             >
               {(() => {
+                if (index === 0) return <FinancialsTrackingCard />;
+                if (index === 1) return <FinancialStatButtons darkMode={darkMode} />;
                 if (index === 2) return <CostPredictionChart projectId={1} />;
                 if (index === 3) return <ActualVsPlannedCost />;
-                return '📊 Card';
+                return null;
               })()}
             </div>
           );

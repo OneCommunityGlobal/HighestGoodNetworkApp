@@ -17,6 +17,18 @@ import { fetchBMProjects } from '../../../../actions/bmdashboard/projectActions'
 import { ENDPOINTS } from '../../../../utils/URL';
 import styles from './ActualVsPlannedCost.module.css';
 
+function getBudgetStatus(variance) {
+  if (variance > 0) return 'Over Budget';
+  if (variance < 0) return 'Under Budget';
+  return 'On Budget';
+}
+
+function getVarianceCardClass(variance, cardStyles) {
+  if (variance > 0) return cardStyles.varianceOverrun;
+  if (variance < 0) return cardStyles.varianceUnder;
+  return cardStyles.varianceNeutral;
+}
+
 function ActualVsPlannedCost() {
   const dispatch = useDispatch();
   const projects = useSelector(state => state.bmProjects) || [];
@@ -111,7 +123,7 @@ function ActualVsPlannedCost() {
       ...item,
       variance,
       variancePct: item.plannedCost > 0 ? (variance / item.plannedCost) * 100 : null,
-      budgetStatus: variance > 0 ? 'Over Budget' : variance < 0 ? 'Under Budget' : 'On Budget',
+      budgetStatus: getBudgetStatus(variance),
     };
   });
 
@@ -143,22 +155,7 @@ function ActualVsPlannedCost() {
         <span style={{ marginLeft: '10px' }}>Updating chart...</span>
       </div>
     );
-  } else if (!hasData) {
-    chartContent = (
-      <div
-        style={{
-          display: 'flex',
-          height: 200,
-          justifyContent: 'center',
-          alignItems: 'center',
-          color: 'var(--text-color)',
-          fontStyle: 'italic',
-        }}
-      >
-        No data available for the selected filters.
-      </div>
-    );
-  } else {
+  } else if (hasData) {
     chartContent = (
       <div style={{ width: '100%', height: 200 }}>
         <ResponsiveContainer width="100%" height="100%">
@@ -212,6 +209,21 @@ function ActualVsPlannedCost() {
             </Bar>
           </BarChart>
         </ResponsiveContainer>
+      </div>
+    );
+  } else {
+    chartContent = (
+      <div
+        style={{
+          display: 'flex',
+          height: 200,
+          justifyContent: 'center',
+          alignItems: 'center',
+          color: 'var(--text-color)',
+          fontStyle: 'italic',
+        }}
+      >
+        No data available for the selected filters.
       </div>
     );
   }
@@ -280,11 +292,7 @@ function ActualVsPlannedCost() {
             {chartDataWithVariance.map(item => {
               const isOverrun = item.variance > 0;
               const isUnderBudget = item.variance < 0;
-              const cardClass = isOverrun
-                ? styles.varianceOverrun
-                : isUnderBudget
-                ? styles.varianceUnder
-                : styles.varianceNeutral;
+              const cardClass = getVarianceCardClass(item.variance, styles);
 
               return (
                 <div key={item.category} className={`${styles.varianceCard} ${cardClass}`}>
