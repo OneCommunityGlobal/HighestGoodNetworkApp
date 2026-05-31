@@ -151,7 +151,7 @@ const ViewRecipe = ({ recipe, onClose, onRecipeUpdate }) => {
         <div className={styles.section}>
           <h3 className={styles.sectionTitle}>Tags</h3>
           <div className={styles.tagsContainer}>
-            {recipe.tags.map(tag => (
+            {(Array.isArray(recipe.tags) ? recipe.tags : []).map(tag => (
               <span key={tag} className={styles.tag}>
                 {tag}
               </span>
@@ -208,7 +208,7 @@ const ViewRecipe = ({ recipe, onClose, onRecipeUpdate }) => {
         {/* Instructions */}
         <div className={styles.section}>
           <h3 className={styles.sectionTitle}>Instructions</h3>
-          {recipe.instructions && recipe.instructions.length > 0 ? (
+          {Array.isArray(recipe.instructions) && recipe.instructions.length > 0 ? (
             <ol className={styles.instructionsList}>
               {recipe.instructions.map((step, index) => (
                 <li key={step} className={styles.instructionStep}>
