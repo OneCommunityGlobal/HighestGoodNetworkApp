@@ -2,11 +2,11 @@
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
-  padding-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
   box-sizing: border-box;
   background-color: #d9d9d9;
   width: 100%;
-  min-height: 100vh;
+  min-height: auto;
 }
 
 .logo {
@@ -228,14 +228,12 @@
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+  width: 100%;
 }
 
-.formProfileDetailGroup input {
-  flex: 1;
+.formProfileDetailGroup .profileField {
+  flex: 1 1 200px;
   min-width: 200px;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
 }
 
 .formGroup h2 {
@@ -300,6 +298,11 @@
   cursor: pointer;
   align-self: center;
   margin-top: 0.5rem;
+}
+
+.submitButton:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
 }
 
 .popupOverlay {
@@ -456,6 +459,90 @@
   line-height: 1;
   user-select: none;
   transition: background 150ms ease, box-shadow 150ms ease, transform 120ms ease;
+}
+
+.fileUploadField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  flex: 1 1 100%;
+  width: 100%;
+}
+
+.fileUploadRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.hiddenFileInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.uploadButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: #006b32;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  line-height: 1.2;
+  transition: background 150ms ease, box-shadow 150ms ease;
+}
+
+.uploadButton:hover {
+  background: #005528;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 12%);
+}
+
+.fileStatus {
+  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid #e6eef6;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fileStatusEmpty {
+  color: #666;
+  background: #f2f6f9;
+}
+
+.fileStatusSelected {
+  color: #0b3b2e;
+  background: #e8f5e9;
+  border-color: #b7dfc2;
+}
+
+.clearFileBtn {
+  padding: 4px 10px;
+  font-size: 13px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: #fff;
+  color: #444;
+  cursor: pointer;
+}
+
+.clearFileBtn:hover {
+  background: #f5f5f5;
 }
 
 .resumeLabel:hover {
@@ -653,6 +740,37 @@
   box-shadow: none;
 }
 
+.darkMode .uploadButton {
+  background: #225163;
+  color: #f1f1f1;
+}
+
+.darkMode .uploadButton:hover {
+  background: #2a6478;
+}
+
+.darkMode .fileStatusEmpty {
+  background: #22364e;
+  color: #cbd5e1;
+  border-color: rgb(255 255 255 / 15%);
+}
+
+.darkMode .fileStatusSelected {
+  background: #1e3a2f;
+  color: #bbf7d0;
+  border-color: #2d6a4f;
+}
+
+.darkMode .clearFileBtn {
+  background: #1c2541;
+  border-color: #444;
+  color: #e0e0e0;
+}
+
+.darkMode .clearFileBtn:hover {
+  background: #22364e;
+}
+
 .darkMode .resumeLabel:hover {
   background: #22364e;
   box-shadow: 0 6px 18px rgb(0 0 0 / 35%);
@@ -831,6 +949,9 @@
 :global(html.job-application-route:not(.dark-mode) #root),
 :global(body.job-application-route:not(.dark-mode) #root) {
   background-color: #d9d9d9 !important;
+  height: auto !important;
+  min-height: 0 !important;
+  overflow: visible !important;
 }
 
 :global(html.dark-mode.job-application-route),
@@ -838,4 +959,7 @@
 :global(html.dark-mode.job-application-route #root),
 :global(body.dark-mode.job-application-route #root) {
   background-color: #1b2a41 !important;
+  height: auto !important;
+  min-height: 0 !important;
+  overflow: visible !important;
 }

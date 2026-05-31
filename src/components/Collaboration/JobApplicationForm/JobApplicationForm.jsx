@@ -185,6 +185,20 @@ function getQuestionType(q) {
   return String(q.questionType || q.type || '').toLowerCase();
 }
 
+function isFileUploadQuestion(q) {
+  const qt = getQuestionType(q);
+  if (['file', 'upload', 'document', 'attachment'].includes(qt)) return true;
+  const label = (q.label || q.questionText || '').toLowerCase();
+  return /\b(upload|attach|resume|cv|document|file)\b/.test(label);
+}
+
+function formatFileSize(bytes) {
+  if (bytes == null || bytes === 0) return '';
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
 /**
  * Strip numbering often baked into saved template text (e.g. "1.) …") so the UI can show a single
  * running index from `{idx + 1}. …`.
@@ -331,6 +345,87 @@ const REQUIREMENT_ITEMS = [
   { id: 'tenHoursPerWeek', label: 'Minimum of 10 hours of work a week' },
 ];
 
+function FileUploadField({
+  id,
+  label,
+  accept,
+  file,
+  onChange,
+  onClear,
+  inputRef,
+  optional = false,
+  required = false,
+}) {
+  const statusText = file ? `${file.name} (${formatFileSize(file.size)})` : 'No file selected';
+  const statusClass = file ? styles.fileStatusSelected : styles.fileStatusEmpty;
+
+  return (
+    <div className={styles.fileUploadField}>
+      {label && (
+        <span className={styles.fieldLabel}>
+          {label}
+          {!optional && required && (
+            <>
+              <span className={styles.requiredMark} aria-hidden="true">
+                {' '}
+                *
+              </span>
+              <span className={styles.visuallyHidden}> (required)</span>
+            </>
+          )}
+        </span>
+      )}
+      <div className={styles.fileUploadRow}>
+        <label htmlFor={id} className={styles.uploadButton}>
+          Choose file
+          <input
+            id={id}
+            ref={inputRef}
+            type="file"
+            accept={accept}
+            onChange={onChange}
+            className={styles.hiddenFileInput}
+            required={required && !file}
+          />
+        </label>
+        <span className={`${styles.fileStatus} ${statusClass}`} aria-live="polite">
+          {statusText}
+        </span>
+        {file && (
+          <button type="button" className={styles.clearFileBtn} onClick={onClear}>
+            Remove
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+FileUploadField.propTypes = {
+  id: PropTypes.string.isRequired,
+  label: PropTypes.string,
+  accept: PropTypes.string,
+  file: PropTypes.shape({
+    name: PropTypes.string,
+    size: PropTypes.number,
+  }),
+  onChange: PropTypes.func.isRequired,
+  onClear: PropTypes.func,
+  inputRef: PropTypes.oneOfType([PropTypes.func, PropTypes.shape({ current: PropTypes.any })]),
+  optional: PropTypes.bool,
+  required: PropTypes.bool,
+};
+
+FileUploadField.defaultProps = {
+  label: '',
+  accept: '.pdf,.doc,.docx,.png,.jpg,.jpeg',
+  file: null,
+  onClear: undefined,
+  inputRef: undefined,
+  optional: false,
+  required: false,
+};
+
 function JobApplicationForm() {
   const location = useLocation();
   const [forms, setForms] = useState([]);
@@ -346,7 +441,10 @@ function JobApplicationForm() {
   const [companyPosition, setCompanyPosition] = useState('');
   const [websiteSocial, setWebsiteSocial] = useState('');
   const [resumeFile, setResumeFile] = useState(null);
+  const [questionFiles, setQuestionFiles] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const resumeInputRef = useRef(null);
+  const questionFileInputRefs = useRef({});
   /** Shown in the page title — the role the user clicked, not only the matched DB form name. */
   const [bannerJobTitle, setBannerJobTitle] = useState('');
   const [jobDataFromRedirect, setJobDataFromRedirect] = useState(null);
@@ -387,11 +485,14 @@ function JobApplicationForm() {
    */
   useEffect(() => {
     const c = 'job-application-route';
+    const root = document.getElementById('root');
     document.documentElement.classList.add(c);
     document.body.classList.add(c);
+    root?.classList.add(c);
     return () => {
       document.documentElement.classList.remove(c);
       document.body.classList.remove(c);
+      root?.classList.remove(c);
     };
   }, []);
 
@@ -507,6 +608,8 @@ function JobApplicationForm() {
     setFilteredForm(form);
     const qs = getVisibleQuestionsForForm(form);
     setAnswers(initialAnswersForQuestions(qs));
+    setQuestionFiles({});
+    questionFileInputRefs.current = {};
   }, [selectedJob, forms]);
 
   const handleJobChange = e => {
@@ -597,6 +700,26 @@ function JobApplicationForm() {
     setResumeFile(f);
   };
 
+  const clearResumeFile = () => {
+    setResumeFile(null);
+    if (resumeInputRef.current) resumeInputRef.current.value = '';
+  };
+
+  const handleQuestionFileChange = (idx, e) => {
+    const f = e.target.files?.[0] || null;
+    setQuestionFiles(prev => ({ ...prev, [idx]: f }));
+  };
+
+  const clearQuestionFile = idx => {
+    setQuestionFiles(prev => {
+      const next = { ...prev };
+      delete next[idx];
+      return next;
+    });
+    const ref = questionFileInputRefs.current[idx];
+    if (ref) ref.value = '';
+  };
+
   const evaluateRequirements = (data = {}) => {
     const {
       fullTimeYears: years = '',
@@ -668,7 +791,10 @@ function JobApplicationForm() {
 
     if (visibleQuestions.length) {
       for (const [idx, q] of visibleQuestions.entries()) {
-        if (isQuestionRequired(q) && isAnswerEmpty(answers[idx], q)) {
+        if (!isQuestionRequired(q)) continue;
+        if (isFileUploadQuestion(q)) {
+          if (!questionFiles[idx]) missing.push(getQuestionLabel(q, idx));
+        } else if (isAnswerEmpty(answers[idx], q)) {
           missing.push(getQuestionLabel(q, idx));
         }
       }
@@ -677,17 +803,7 @@ function JobApplicationForm() {
     return missing;
   };
 
-  const handleSubmit = async e => {
-    e.preventDefault();
-
-    const missing = validateBeforeSubmit();
-    if (missing.length > 0) {
-      toast.error(`Please complete required fields: ${missing.join(', ')}`, { autoClose: 7000 });
-      return;
-    }
-
-    toast.success('Application submitted. A copy will be sent to your email.');
-
+  const resetFormAfterSubmit = () => {
     setApplicantName('');
     setApplicantEmail('');
     setLocationTimezone('');
@@ -696,12 +812,86 @@ function JobApplicationForm() {
     setWebsiteSocial('');
     setResumeFile(null);
     if (resumeInputRef.current) resumeInputRef.current.value = '';
+    setQuestionFiles({});
+    questionFileInputRefs.current = {};
     setFullTimeYears('');
     setMonthsVolunteer('');
     setHoursPerWeek('');
     setRoleSkills('');
     setAnswers(initialAnswersForQuestions(visibleQuestions));
     setRequirementPreviewOverrides({});
+  };
+
+  const handleSubmit = async e => {
+    e.preventDefault();
+
+    if (!filteredForm?._id) {
+      toast.error('No application form selected. Choose a role from the dropdown.');
+      return;
+    }
+
+    const missing = validateBeforeSubmit();
+    if (missing.length > 0) {
+      toast.error(`Please complete required fields: ${missing.join(', ')}`, { autoClose: 7000 });
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const formData = new FormData();
+      formData.append(
+        'payload',
+        JSON.stringify({
+          applicantName: applicantName.trim(),
+          applicantEmail: applicantEmail.trim(),
+          profile: {
+            locationTimezone,
+            phone,
+            companyPosition,
+            websiteSocial,
+            jobTitle: (bannerJobTitle || selectedJob || '').trim(),
+            fullTimeYears,
+            monthsVolunteer,
+            hoursPerWeek,
+            roleSkills,
+          },
+          answers: visibleQuestions.map((q, idx) => ({
+            questionId: q._id,
+            answer: isFileUploadQuestion(q)
+              ? questionFiles[idx]
+                ? {
+                    fileName: questionFiles[idx].name,
+                    size: questionFiles[idx].size,
+                    mimeType: questionFiles[idx].type,
+                  }
+                : ''
+              : answers[idx],
+          })),
+        }),
+      );
+
+      if (resumeFile) {
+        formData.append('resume', resumeFile);
+      }
+
+      visibleQuestions.forEach((q, idx) => {
+        if (isFileUploadQuestion(q) && questionFiles[idx] && q._id) {
+          formData.append(`questionFile_${q._id}`, questionFiles[idx]);
+        }
+      });
+
+      await axios.post(ENDPOINTS.SUBMIT_JOB_APPLICATION(filteredForm._id), formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
+      toast.success('Application submitted successfully.');
+      resetFormAfterSubmit();
+    } catch (err) {
+      const message = err.response?.data?.message || err.message || 'Failed to submit application.';
+      toast.error(message, { autoClose: 7000 });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -909,15 +1099,16 @@ function JobApplicationForm() {
                     autoComplete="url"
                   />
                 </div>
-                <label className={styles.resumeLabel}>
-                  Upload Resume (optional)
-                  <input
-                    ref={resumeInputRef}
-                    type="file"
-                    accept=".pdf,.doc,.docx"
-                    onChange={handleResumeChange}
-                  />
-                </label>
+                <FileUploadField
+                  id="jaf-resume-upload"
+                  label="Upload Resume (optional)"
+                  accept=".pdf,.doc,.docx"
+                  file={resumeFile}
+                  onChange={handleResumeChange}
+                  onClear={clearResumeFile}
+                  inputRef={resumeInputRef}
+                  optional
+                />
               </div>
               {visibleQuestions.map((q, idx) => {
                 const qt = getQuestionType(q);
@@ -941,7 +1132,7 @@ function JobApplicationForm() {
                         </>
                       )}
                     </h2>
-                    {['textbox', 'text'].includes(qt) && (
+                    {['textbox', 'text'].includes(qt) && !isFileUploadQuestion(q) && (
                       <input
                         type="text"
                         placeholder={q.placeholder || 'Type your response here'}
@@ -1031,6 +1222,19 @@ function JobApplicationForm() {
                         ))}
                       </select>
                     )}
+                    {isFileUploadQuestion(q) && (
+                      <FileUploadField
+                        id={`${formKey}-file`}
+                        accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
+                        file={questionFiles[idx] || null}
+                        onChange={e => handleQuestionFileChange(idx, e)}
+                        onClear={() => clearQuestionFile(idx)}
+                        inputRef={el => {
+                          questionFileInputRefs.current[idx] = el;
+                        }}
+                        required={req}
+                      />
+                    )}
                     {![
                       'textbox',
                       'text',
@@ -1039,23 +1243,24 @@ function JobApplicationForm() {
                       'checkbox',
                       'radio',
                       'dropdown',
-                    ].includes(qt) && (
-                      <input
-                        type="text"
-                        placeholder="Type your response here"
-                        value={Array.isArray(answers[idx]) ? '' : answers[idx] || ''}
-                        onChange={e => handleAnswerChange(idx, e.target.value)}
-                        required={req}
-                        aria-required={req}
-                        aria-labelledby={`${formKey}-heading`}
-                        className={styles.inputField}
-                      />
-                    )}
+                    ].includes(qt) &&
+                      !isFileUploadQuestion(q) && (
+                        <input
+                          type="text"
+                          placeholder="Type your response here"
+                          value={Array.isArray(answers[idx]) ? '' : answers[idx] || ''}
+                          onChange={e => handleAnswerChange(idx, e.target.value)}
+                          required={req}
+                          aria-required={req}
+                          aria-labelledby={`${formKey}-heading`}
+                          className={styles.inputField}
+                        />
+                      )}
                   </div>
                 );
               })}
-              <button type="submit" className={styles.submitButton}>
-                Submit your application
+              <button type="submit" className={styles.submitButton} disabled={isSubmitting}>
+                {isSubmitting ? 'Submitting…' : 'Submit your application'}
               </button>
             </div>
           </form>

@@ -31,6 +31,25 @@ function debounce(fn, ms = 150) {
   };
 }
 
+/** Keep first listing per title+category (API may return duplicate job records). */
+function dedupeJobsByTitle(jobs) {
+  const seen = new Set();
+  return jobs.filter(job => {
+    if (!job) return false;
+    const title = String(job.title || '')
+      .trim()
+      .toLowerCase();
+    const category = String(job.category || 'General')
+      .trim()
+      .toLowerCase();
+    if (!title) return false;
+    const key = `${title}|${category}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
 function Collaboration() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -44,6 +63,8 @@ function Collaboration() {
   const [summariesPageSize] = useState(6);
   const [summariesTotalPages, setSummariesTotalPages] = useState(0);
   const [columns, setColumns] = useState(() => getColumnsFromMQ());
+  const [loadingJobs, setLoadingJobs] = useState(true);
+  const [jobsFetchError, setJobsFetchError] = useState(null);
 
   const darkMode = useSelector(state => state.theme?.darkMode);
   const history = useHistory();
@@ -135,26 +156,42 @@ function Collaboration() {
     return Array.from(categoryMap.values());
   };
 
-  const fetchJobAds = async () => {
+  const fetchJobAds = async (overrides = {}) => {
     const adsPerPage = calculateAdsPerPage();
+    const page = overrides.page ?? currentPage;
+    const search = overrides.search ?? searchTerm;
+    const category = overrides.category ?? selectedCategory;
+
+    setLoadingJobs(true);
+    setJobsFetchError(null);
 
     try {
       const response = await fetch(
-        `${ApiEndpoint}/jobs?page=${currentPage}&limit=${adsPerPage}` +
-          `&search=${encodeURIComponent(searchTerm)}` +
-          `&category=${encodeURIComponent(selectedCategory)}`,
-        { method: 'GET' },
+        `${ApiEndpoint}/jobs?page=${page}&limit=${adsPerPage}` +
+          `&search=${encodeURIComponent(search)}` +
+          `&category=${encodeURIComponent(category)}`,
+        { method: 'GET', signal: AbortSignal.timeout(15000) },
       );
 
       if (!response.ok) throw new Error(`Failed to fetch jobs: ${response.statusText}`);
 
       const data = await response.json();
-      const jobs = Array.isArray(data?.jobs) ? data.jobs : [];
+      const jobs = dedupeJobsByTitle(Array.isArray(data?.jobs) ? data.jobs : []);
       setJobAds(jobs);
       setTotalPages(data?.pagination?.totalPages || 0);
     } catch (error) {
       console.error('Error fetching jobs:', error);
+      setJobAds([]);
+      setTotalPages(0);
+      const isTimeout = error?.name === 'TimeoutError' || error?.name === 'AbortError';
+      setJobsFetchError(
+        isTimeout
+          ? 'Jobs API timed out. Ensure HGNRest is running on port 4500 and MongoDB is connected.'
+          : 'Could not load jobs. Ensure the backend is running (npm start in HGNRest).',
+      );
       toast.error('Error fetching jobs');
+    } finally {
+      setLoadingJobs(false);
     }
   };
 
@@ -188,7 +225,7 @@ function Collaboration() {
     setSelectedCategory(selectedValue || '');
     setCurrentPage(1);
     setSummaries(null);
-    fetchJobAds();
+    fetchJobAds({ category: selectedValue || '', page: 1 });
   };
 
   const handleResetFilters = async () => {
@@ -204,7 +241,7 @@ function Collaboration() {
       setSearchTerm('');
       setSelectedCategory('');
       setCurrentPage(1);
-      setJobAds(Array.isArray(data?.jobs) ? data.jobs : []);
+      setJobAds(dedupeJobsByTitle(Array.isArray(data?.jobs) ? data.jobs : []));
       setTotalPages(data?.pagination?.totalPages || 0);
       setSummaries(null);
       setSummariesAll([]);
@@ -234,7 +271,7 @@ function Collaboration() {
       if (!response.ok) throw new Error(`Failed to fetch summaries: ${response.statusText}`);
 
       const data = await response.json();
-      const summariesData = Array.isArray(data?.jobs) ? data.jobs : [];
+      const summariesData = dedupeJobsByTitle(Array.isArray(data?.jobs) ? data.jobs : []);
 
       setSummaries({ jobs: summariesData });
       setSummariesAll(summariesData);
@@ -462,6 +499,14 @@ function Collaboration() {
 
         <div className={styles.jobList}>
           {(() => {
+            if (loadingJobs) {
+              return <p className={styles.noJobads}>Loading jobs...</p>;
+            }
+
+            if (jobsFetchError) {
+              return <p className={styles.noJobads}>{jobsFetchError}</p>;
+            }
+
             // Show categories if no search term and no category filter
             const shouldShowCategories = !searchTerm && !selectedCategory && jobAds.length > 0;
 
@@ -480,6 +525,7 @@ function Collaboration() {
                       onClick={() => {
                         setSelectedCategory(categoryName);
                         setCurrentPage(1);
+                        fetchJobAds({ category: categoryName, page: 1 });
                       }}
                     >
                       <img
