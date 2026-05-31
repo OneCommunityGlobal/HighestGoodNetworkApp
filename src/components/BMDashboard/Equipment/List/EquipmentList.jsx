@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { FaCubes, FaShoppingCart, FaRecycle, FaWrench, FaTools } from 'react-icons/fa';
 import useTheme from '../../../../hooks/useTheme';
@@ -16,14 +17,16 @@ const siblingCategories = [
 function EquipmentList() {
   const [equipment, setEquipment] = useState({ label: 'All Equipments', value: '0' });
   const [project, setProject] = useState({ label: 'All Projects', value: '0' });
+  const darkMode = useSelector(state => state.theme.darkMode);
   useTheme();
 
   return (
     <div className={`${styles.PageViewContainer}`}>
       <div className={`${styles.Page}`}>
         <div className={`${styles.Box}`}>
-          <div className={`${styles.BuildingTitle}`}>
-            <FaTools className={styles.pageTitleIcon} /> EQUIPMENT
+          <div className={`${styles.BuildingTitle} ${darkMode ? styles.darkTitle : ''}`}>
+            <FaTools style={{ marginRight: '10px', verticalAlign: 'middle' }} />
+            EQUIPMENT
           </div>
 
           {/* Inventory Navigation Bar */}

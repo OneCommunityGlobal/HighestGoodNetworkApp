@@ -426,14 +426,11 @@ body.bm-dashboard-dark .Box {
 }
 
 body.dark-mode .BuildingTitle,
-body.bm-dashboard-dark .BuildingTitle {
+body.dark-mode .BuildingTitle svg,
+body.bm-dashboard-dark .BuildingTitle,
+body.bm-dashboard-dark .BuildingTitle svg {
   color: #fff !important;
   border-bottom-color: #4dabf7;
-}
-
-body.dark-mode .PageViewContainer,
-body.bm-dashboard-dark .PageViewContainer {
-  background-color: #0a0a0a;
 }
 
 /* Responsive Design */
@@ -549,17 +546,11 @@ body.bm-dashboard-dark .categoryIconLink:hover {
   border-color: #4dabf7;
 }
 
-/* ── Page Title with Icon ── */
-.pageTitleIcon {
-  display: inline-flex;
-  align-items: center;
-  font-size: 1.5rem;
-  color: #1a1a1a;
-  margin-right: 10px;
-  vertical-align: middle;
+body.dark-mode .PageViewContainer,
+body.bm-dashboard-dark .PageViewContainer {
+  background-color: #0a0a0a;
 }
 
-body.dark-mode .pageTitleIcon,
-body.bm-dashboard-dark .pageTitleIcon {
-  color: #4dabf7;
+.darkTitle {
+  color: #fff !important;
 }
