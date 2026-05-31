@@ -1,13 +1,12 @@
-import React, { useState, useEffect, useMemo } from 'react';
 import PropTypes from "prop-types";
+import React, { useEffect, useMemo, useState } from 'react';
 import { Button, Col, UncontrolledTooltip } from 'reactstrap';
-import './TeamsAndProjects.module.css';
 import hasPermission from '../../../utils/permissions';
 // import styles from './UserProjectsTable.css';
-import { boxStyle, boxStyleDark } from '~/styles';
-import { useLocation , Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { Link, useLocation } from 'react-router-dom';
 import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
+import { boxStyle, boxStyleDark } from '~/styles';
 
 
 // eslint-disable-next-line react/display-name
@@ -131,32 +130,25 @@ const removeOrAddTaskFromUser = (task, method) => {
                 md='12'
                 className={`projects-and-tasks-header d-flex ${darkMode  ? 'bg-space-cadet' : ''}`}
               >
-                <span className="projects-span mr-auto pt-2">Projects</span>
+                <span className="projects-span mr-auto pt-2" style={{fontSize: 'x-large', fontWeight: 700}}>Projects</span>
                 {props.edit && props.role && canAssignProjectToUsers && (
-                <Col md="4" className='p-0'>
-                  {props.disabled ? (
-                    <>
-                      {/* <Tooltip placement="bottom" isOpen={tooltipOpen} target="btn-assignproject" toggle={toggleTooltip}>
-                        Please save changes before assign project
-                      </Tooltip> */}
-                      <Button className="btn-addproject mt-2" id="btn-assignproject" color="primary" style={darkMode ? boxStyleDark : boxStyle} disabled>
+                  <div className="py-2">
+                    {props.disabled ? (
+                      <Button className="btn-addproject" id="btn-assignproject" color="primary" style={darkMode ? boxStyleDark : boxStyle} disabled>
                         Assign Project
                       </Button>
-                    </>
-                  ) : (
-                    <Button
-                    className="btn-addproject mt-2"
-                    color="primary"
-                    onClick={() => {
-                      props.onButtonClick();
-                    }}
-                    style={darkMode ? boxStyleDark : boxStyle}
-                   >
-                    Assign Project
-                  </Button>
-                  )}
-                </Col>
-              )}
+                    ) : (
+                      <Button
+                        className="btn-addproject"
+                        color="primary"
+                        onClick={() => props.onButtonClick()}
+                        style={darkMode ? boxStyleDark : boxStyle}
+                      >
+                        Assign Project
+                      </Button>
+                    )}
+                  </div>
+                )}
               </Col>
             </div>
           </div>
@@ -245,7 +237,7 @@ const removeOrAddTaskFromUser = (task, method) => {
                 md={'12'}
                 className={`projects-and-tasks-header d-flex flex-row ${darkMode  ? 'bg-space-cadet' : ''}`}
               >
-                <span className="projects-span py-2 mr-auto">Tasks</span>
+                <span className="projects-span py-2 mr-auto" style={{fontSize: 'x-large', fontWeight: 700}}>Tasks</span>
                 <div
                 className="justify-content-end d-flex py-2"
                 style={{ gap: '4px'}}
@@ -349,7 +341,7 @@ const removeOrAddTaskFromUser = (task, method) => {
               md="12"
               className={`d-flex projects-and-tasks-header ${darkMode  ? 'bg-space-cadet text-light' : ''}`}
             >
-              <span className="projects-span mr-auto pt-2">Projects</span>
+              <span className="projects-span mr-auto pt-2" style={{fontSize: 'x-large', fontWeight: 700}}>Projects</span>
               {props.edit && props.role && (
               <div
                 className="pt-2"
@@ -425,7 +417,7 @@ const removeOrAddTaskFromUser = (task, method) => {
                   md={'12'}
                   className={`projects-and-tasks-header d-flex ${darkMode ? 'bg-space-cadet text-light' : ''}`}
                 >
-                  <span className="projects-span mr-auto pt-2">Tasks</span>
+                  <span className="projects-span mr-auto pt-2" style={{fontSize: 'x-large', fontWeight: 700}}>Tasks</span>
                   <div className="justify-content-end d-flex py-2" style={{ gap: '4px' }}>
                     <button
                       type="button"
@@ -530,7 +522,10 @@ UserProjectsTable.propTypes = {
   role: PropTypes.string,
   edit: PropTypes.bool,
   hasPermission: PropTypes.func,
+  onButtonClick: PropTypes.func,
   onDeleteClick: PropTypes.func,
   updateTask: PropTypes.func,
   darkMode: PropTypes.bool,
 };
+
+
