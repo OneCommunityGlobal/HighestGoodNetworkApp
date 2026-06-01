@@ -9,12 +9,6 @@
 }
 
 .container-hgnform-wrapper:global(.bg-oxford-blue) {
-<<<<<<< HEAD
-  background-color: #1a2332;
-  color: #ffffff;
-}
-=======
   color: #fff;
   background-color: #1b2a41 !important;
 }
->>>>>>> origin/development
