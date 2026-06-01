@@ -1,100 +1,161 @@
-import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useState, useMemo } from 'react';
 import styles from './ResourceManagement.module.css';
-import { formatDateTimeLocal } from '../../utils/formatDate';
+import { useSelector } from 'react-redux';
+import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react'; // Added Calendar icon
+import { MOCK_RESOURCES } from './MockData';
+import { toast } from 'react-toastify';
+import PropTypes from 'prop-types';
 
-function SearchBar({ searchTerm, onSearchChange, onClear }) {
+function SearchBar({ onSortToggle, darkMode, searchTerm, onSearchTermChange }) {
   return (
-    <div className={styles.searchBarContainer}>
+    <div
+      className={`${styles.searchBarContainer} ${
+        darkMode ? styles.darkModeSearchBarContainer : ''
+      }`}
+    >
       <div className={styles.searchBarContainerLeft}>
         <span className={styles.iconAdd}>+</span>
         <span className={styles.iconLines}>=</span>
-        <span className={styles.iconToggle}>⇅</span>
+        <button
+          type="button"
+          className={styles.iconToggle}
+          onClick={onSortToggle}
+          aria-label="Toggle Global Sort Direction"
+        >
+          ⇅
+        </button>
       </div>
       <div className={styles.searchBarContainerRight}>
         <input
           type="text"
           className={styles.searchInput}
-          placeholder="Search by User"
+          placeholder="Search ..."
           value={searchTerm}
-          onChange={onSearchChange}
+          onChange={onSearchTermChange}
         />
-        {searchTerm && (
-          <button type="button" className={styles.clearButton} onClick={onClear}>
-            ✕
-          </button>
-        )}
       </div>
     </div>
   );
 }
 
-function ResourceManagement() {
-  const darkMode = useSelector(state => state.theme.darkMode);
+const Pagination = ({ totalPages, currentPage, setCurrentPage, darkMode }) => {
+  const getPaginationGroup = () => {
+    let pages = [];
+    const threshold = 5;
+    // Flattened logic to avoid unnecessary nesting
+    if (totalPages <= threshold) {
+      pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+    } else if (currentPage <= 3) {
+      // This was previously nested inside an 'else' block
+      pages = [1, 2, 3, 4, 5, '...', totalPages];
+    } else if (currentPage > totalPages - 3) {
+      pages = [
+        1,
+        '...',
+        totalPages - 4,
+        totalPages - 3,
+        totalPages - 2,
+        totalPages - 1,
+        totalPages,
+      ];
+    } else {
+      pages = [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
+    }
 
-  // Standard Date Format: '2026-01-30T18:00:00.000Z'
-
-  const [resources] = useState([
-    {
-      id: 1,
-      user: 'First Last',
-      timeDuration: '02:30:00',
-      facilities: 'Landing Page',
-      materials: 'Meadow Lane Oakland',
-      date: '2026-01-30T18:00:00.000Z',
-    },
-    {
-      id: 2,
-      user: 'Test Last',
-      timeDuration: '02:20:00',
-      facilities: 'CRM Admin pages',
-      materials: 'Larry San Francisco',
-      date: '2026-01-30T17:59:00.000Z',
-    },
-    {
-      id: 3,
-      user: 'Lorem ipsum',
-      timeDuration: '03:00:00',
-      facilities: 'Client Project',
-      materials: 'Bagwell Avenue Ocala',
-      date: '2026-01-30T17:00:00.000Z',
-    },
-    {
-      id: 4,
-      user: 'Dolor Sit',
-      timeDuration: '02:45:00',
-      facilities: 'Admin Dashboard',
-      materials: 'Washburn Baton Rouge',
-      date: '2026-01-29T17:00:00.000Z',
-    },
-    {
-      id: 5,
-      user: 'Elit Quisque',
-      timeDuration: '03:30:00',
-      facilities: 'App Landing page',
-      materials: 'Nest Lane Olivette',
-      date: '2025-02-02T17:00:00.000Z',
-    },
-  ]);
-
-  const [searchTerm, setSearchTerm] = useState(() => localStorage.getItem('resourceSearch') || '');
-
-  useEffect(() => {
-    localStorage.setItem('resourceSearch', searchTerm);
-  }, [searchTerm]);
-
-  const handleSearchChange = e => {
-    setSearchTerm(e.target.value);
+    return pages;
   };
-
-  const filteredResources = resources.filter(resource =>
-    resource.user.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
 
   return (
     <div
-      className={`${styles.resourceManagementPage} ${
-        darkMode ? styles.resourceManagementDarkMode : ''
+      className={`${styles.paginationContainer} ${
+        darkMode ? styles.darkModePaginationContainer : ''
+      }`}
+    >
+      <button
+        disabled={currentPage === 1}
+        onClick={() => setCurrentPage(prev => prev - 1)}
+        className={styles.paginationLeft}
+      >
+        <ChevronLeft size={20} />
+      </button>
+
+      {getPaginationGroup().map((value, index) => (
+        <button
+          key={`page-${value}-${index}`}
+          type="button"
+          className={value === currentPage ? styles.activePage : styles.paginationButtonIndexes}
+          onClick={() => {
+            if (typeof value === 'number') setCurrentPage(value);
+            else toast.info('Navigate using numbers or arrows.');
+          }}
+        >
+          {value}
+        </button>
+      ))}
+
+      <button
+        disabled={currentPage === totalPages}
+        onClick={() => setCurrentPage(prev => prev + 1)}
+        className={styles.paginationRight}
+      >
+        <ChevronRight size={20} />
+      </button>
+    </div>
+  );
+};
+
+function ResourceManagement() {
+  const [resources] = useState(MOCK_RESOURCES);
+  const [sortConfig, setSortConfig] = useState({ key: 'date', direction: 'desc' });
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
+  const onSearchTermChange = e => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1); // Reset to page 1 on search
+  };
+
+  const filteredResources = useMemo(() => {
+    const term = searchTerm.toLowerCase().trim();
+    if (!term) return resources;
+    return resources.filter(
+      r =>
+        r.user.toLowerCase().includes(term) ||
+        r.facilities.toLowerCase().includes(term) ||
+        r.materials.toLowerCase().includes(term),
+    );
+  }, [resources, searchTerm]);
+
+  const sortedResources = useMemo(() => {
+    let sortableItems = [...filteredResources];
+    sortableItems.sort((a, b) => {
+      let valA = sortConfig.key === 'date' ? a.timestamp : a[sortConfig.key]?.toLowerCase();
+      let valB = sortConfig.key === 'date' ? b.timestamp : b[sortConfig.key]?.toLowerCase();
+      if (valA < valB) return sortConfig.direction === 'asc' ? -1 : 1;
+      if (valA > valB) return sortConfig.direction === 'asc' ? 1 : -1;
+      return 0;
+    });
+    return sortableItems;
+  }, [filteredResources, sortConfig]);
+
+  const totalPages = Math.ceil(sortedResources.length / itemsPerPage);
+
+  const requestSort = key => {
+    let direction = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') direction = 'desc';
+    setSortConfig({ key, direction });
+  };
+
+  const toggleGlobalDirection = () => {
+    setSortConfig(prev => ({ ...prev, direction: prev.direction === 'asc' ? 'desc' : 'asc' }));
+  };
+
+  return (
+    <div
+      className={`${styles.resourceManagementDashboard} ${
+        darkMode ? styles.darkModeResourceManagementDashboard : ''
       }`}
     >
       <div className={styles.dashboardTitle}>
@@ -105,63 +166,102 @@ function ResourceManagement() {
       </div>
 
       <SearchBar
+        onSortToggle={toggleGlobalDirection}
+        darkMode={darkMode}
         searchTerm={searchTerm}
-        onSearchChange={handleSearchChange}
-        onClear={() => setSearchTerm('')}
+        onSearchTermChange={onSearchTermChange}
       />
 
       <div className={styles.resourceList}>
-        <div className={styles.resourceHeading}>
-          <div className={styles.checkboxContainer}>
-            <input type="checkbox" />
+        <div className={styles.resourceTable}>
+          {/* THE HEADER ROW - SHARED COLUMN CLASSES */}
+          <div className={styles.resourceHeaderRow}>
+            <div className={styles.colCheck}>
+              <input type="checkbox" aria-label="Select all" />
+            </div>
+            <div className={styles.colUser}>
+              <button
+                type="button"
+                className={styles.headerSortButton}
+                onClick={() => requestSort('user')}
+              >
+                User {sortConfig.key === 'user' && (sortConfig.direction === 'asc' ? '🔼' : '🔽')}
+              </button>
+            </div>
+            <div className={styles.colDuration}>
+              <button
+                type="button"
+                className={styles.headerSortButton}
+                onClick={() => requestSort('timeDuration')}
+              >
+                Time/Duration{' '}
+                {sortConfig.key === 'timeDuration' &&
+                  (sortConfig.direction === 'asc' ? '🔼' : '🔽')}
+              </button>
+            </div>
+            <div className={styles.colFacilities}>Facilities</div>
+            <div className={styles.colMaterials}>Materials</div>
+            <div className={styles.colDate}>
+              <button
+                type="button"
+                className={styles.headerSortButton}
+                onClick={() => requestSort('date')}
+              >
+                Date {sortConfig.key === 'date' && (sortConfig.direction === 'asc' ? '🔼' : '🔽')}
+              </button>
+            </div>
           </div>
-          <div className={styles.resourceHeadingItem}>User</div>
-          <div className={styles.resourceHeadingItem}>Time/Duration</div>
-          <div className={styles.resourceHeadingItem}>Facilities</div>
-          <div className={styles.resourceHeadingItem}>Materials</div>
-          <div className={styles.resourceHeadingItem}>Date</div>
-        </div>
-        <hr className={styles.lineSperator} />
 
-        {filteredResources.length === 0 ? (
-          <div className={styles.noResultsMessage}>No user found</div>
-        ) : (
-          filteredResources.map(resource => (
-            <div key={resource.id}>
-              <div className={styles.resourceItem}>
-                <div className={styles.checkboxContainer}>
-                  <input type="checkbox" />
+          {/* THE DATA ROWS */}
+          {sortedResources
+            .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+            .map(resource => (
+              <div key={resource.id} className={styles.resourceItem}>
+                <div className={styles.colCheck}>
+                  <input type="checkbox" aria-label={`Select ${resource.user}`} />
                 </div>
-                <div className={styles.resourceItemDetail}>{resource.user}</div>
-                <div className={styles.resourceItemDetail}>{resource.timeDuration}</div>
-                <div className={styles.resourceItemDetail}>{resource.facilities}</div>
-                <div className={styles.resourceItemDetail}>{resource.materials}</div>
-                <div className={styles.resourceItemDetail}>
-                  <span className={styles.calendarIcon}>📅</span>{' '}
-                  {formatDateTimeLocal(resource.date)}
+                <div className={`${styles.resourceItemDetail} ${styles.colUser}`}>
+                  {resource.user}
+                </div>
+                <div className={`${styles.resourceItemDetail} ${styles.colDuration}`}>
+                  {resource.timeDuration}
+                </div>
+                <div className={`${styles.resourceItemDetail} ${styles.colFacilities}`}>
+                  {resource.facilities}
+                </div>
+                <div className={`${styles.resourceItemDetail} ${styles.colMaterials}`}>
+                  {resource.materials}
+                </div>
+                <div className={`${styles.resourceItemDetail} ${styles.colDate}`}>
+                  <Calendar size={14} className={styles.calendarIcon} /> {resource.date}
                 </div>
               </div>
-              <hr className={styles.lineSperator} />
-            </div>
-          ))
-        )}
+            ))}
+        </div>
       </div>
 
-      <div className={styles.pagination}>
-        <button type="button" className={styles.arrowButton}>
-          ←
-        </button>
-        <button type="button">1</button>
-        <button type="button">2</button>
-        <button type="button">3</button>
-        <button type="button">4</button>
-        <button type="button">5</button>
-        <button type="button" className={styles.arrowButton}>
-          →
-        </button>
-      </div>
+      <Pagination
+        totalPages={totalPages}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        darkMode={darkMode}
+      />
     </div>
   );
 }
+
+SearchBar.propTypes = {
+  onSortToggle: PropTypes.func.isRequired,
+  darkMode: PropTypes.bool,
+  searchTerm: PropTypes.string.isRequired,
+  onSearchTermChange: PropTypes.func.isRequired,
+};
+
+Pagination.propTypes = {
+  totalPages: PropTypes.number.isRequired,
+  currentPage: PropTypes.number.isRequired,
+  setCurrentPage: PropTypes.func.isRequired,
+  darkMode: PropTypes.bool,
+};
 
 export default ResourceManagement;

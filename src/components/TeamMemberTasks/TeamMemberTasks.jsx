@@ -1,34 +1,34 @@
 // TeamMemberTasks.jsx
-import React, { Fragment, useEffect, useState, useCallback } from 'react';
 import { faClock } from '@fortawesome/free-solid-svg-icons';
-import { Table, Row, Col } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { fetchTeamMembersTask, deleteTaskNotification } from '~/actions/task';
-import { useDispatch, useSelector, connect } from 'react-redux';
-import { MultiSelect } from 'react-multi-select-component';
-import SkeletonLoading from '../common/SkeletonLoading';
-import { TaskDifferenceModal } from './components/TaskDifferenceModal';
-import styles from './style.module.css';
-import TaskCompletedModal from './components/TaskCompletedModal';
-import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
 import axios from 'axios';
 import moment from 'moment';
-import TeamMemberTask from './TeamMemberTask';
-import TimeEntry from '../Timelog/TimeEntry';
-import { hrsFilterBtnColorMap } from '~/constants/colors';
+import PropTypes from 'prop-types';
+import React, { Fragment, useCallback, useEffect, useState } from 'react';
+import { MultiSelect } from 'react-multi-select-component';
+import { connect, useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
+import { Col, Row, Table } from 'reactstrap';
+import { deleteTaskNotification, fetchTeamMembersTask } from '~/actions/task';
+import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
+import { hrsFilterBtnColorMap } from '~/constants/colors';
 import { fetchAllFollowUps } from '../../actions/followUpActions';
+import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
+import SkeletonLoading from '../common/SkeletonLoading';
+import TimeEntry from '../Timelog/TimeEntry';
 import { fetchTeamMembersTaskSuccess } from './actions';
+import TaskCompletedModal from './components/TaskCompletedModal';
+import { TaskDifferenceModal } from './components/TaskDifferenceModal';
+import styles from './style.module.css';
+import TeamMemberTask from './TeamMemberTask';
 
-import { ENDPOINTS } from '~/utils/URL';
 import { FaCalendarAlt, FaClock } from 'react-icons/fa';
+import { ENDPOINTS } from '~/utils/URL';
 
 const TeamMemberTasks = React.memo(props => {
   const {
     authUser,
     displayUser,
-    isLoading,
     usersWithTasks,
     usersWithTimeEntries,
     darkMode,
@@ -50,6 +50,8 @@ const TeamMemberTasks = React.memo(props => {
   const [isTimeFilterActive, setIsTimeFilterActive] = useState(false);
   const [taskModalOption, setTaskModalOption] = useState('');
   const [showWhoHasTimeOff, setShowWhoHasTimeOff] = useState(true);
+  const [showTrackers, setShowTrackers] = useState(false);
+  const [showTasks, setShowTasks] = useState(true);
 
   const userOnTimeOff = useSelector(state => state.timeOffRequests.onTimeOff);
   const userGoingOnTimeOff = useSelector(state => state.timeOffRequests.goingOnTimeOff);
@@ -65,6 +67,37 @@ const TeamMemberTasks = React.memo(props => {
   const [usersSelectedTeam] = useState([]);
   const [, setInnerWidth] = useState();
   const [controlUseEfffect] = useState(false);
+
+  const [userStateCatalog, setUserStateCatalog] = useState([]);
+  const [userStateSelections, setUserStateSelections] = useState({});
+  const [selectionsLoaded, setSelectionsLoaded] = useState(false);
+  const [expandAll, setExpandAll] = useState(false);
+
+  useEffect(() => {
+    axios
+      .get(ENDPOINTS.USER_STATE_CATALOG)
+      .then(res => setUserStateCatalog(res.data.items || []))
+      .catch(() => setUserStateCatalog([]));
+  }, []);
+
+  // Fetch all selections in ONE call once teamList is ready
+  useEffect(() => {
+    if (usersWithTasks.length === 0) {
+      setSelectionsLoaded(true);
+      return;
+    }
+    const userIds = usersWithTasks.map(u => u.personId);
+    axios
+      .post(ENDPOINTS.USER_STATE_SELECTIONS_BATCH, { userIds })
+      .then(res => {
+        setUserStateSelections(res.data.selections || {});
+        setSelectionsLoaded(true);
+      })
+      .catch(() => {
+        setUserStateSelections({});
+        setSelectionsLoaded(true);
+      });
+  }, [usersWithTasks]);
 
   // Keep width reactive without putting window.innerWidth in deps (which never triggers)
   useEffect(() => {
@@ -189,60 +222,19 @@ const TeamMemberTasks = React.memo(props => {
     handleOpenTaskNotificationModal();
   };
 
-  const getTimeEntriesForPeriod = async selectedPeriodFunc => {
-    const base = moment().tz('America/Los_Angeles');
+  const getTimeEntriesForPeriod = async selectedPeriod => {
+    if (Number.isNaN(Number.parseInt(selectedPeriod))) {
+      setTimeEntriesList([]);
+    } else {
+      const xDaysAgo = moment()
+        .tz('America/Los_Angeles')
+        .subtract(Number.parseInt(selectedPeriod), 'days')
+        .format('YYYY-MM-DD');
 
-    const oneDayAgo = base
-      .clone()
-      .subtract(1, 'days')
-      .format('YYYY-MM-DD');
-    const twoDaysAgo = base
-      .clone()
-      .subtract(2, 'days')
-      .format('YYYY-MM-DD');
-    const threeDaysAgo = base
-      .clone()
-      .subtract(3, 'days')
-      .format('YYYY-MM-DD');
-    const fourDaysAgo = base
-      .clone()
-      .subtract(4, 'days')
-      .format('YYYY-MM-DD');
-
-    switch (selectedPeriodFunc) {
-      case '1': {
-        const oneDaysList = usersWithTimeEntries.filter(entry =>
-          moment(entry.dateOfWork).isAfter(oneDayAgo),
-        );
-        setTimeEntriesList(oneDaysList);
-        break;
-      }
-      case '2': {
-        const twoDaysList = usersWithTimeEntries.filter(entry =>
-          moment(entry.dateOfWork).isAfter(twoDaysAgo),
-        );
-        setTimeEntriesList(twoDaysList);
-        break;
-      }
-      case '3': {
-        const threeDaysList = usersWithTimeEntries.filter(entry =>
-          moment(entry.dateOfWork).isAfter(threeDaysAgo),
-        );
-        setTimeEntriesList(threeDaysList);
-        break;
-      }
-      case '4': {
-        const fourDaysList = usersWithTimeEntries.filter(entry =>
-          moment(entry.dateOfWork).isAfter(fourDaysAgo),
-        );
-        setTimeEntriesList(fourDaysList);
-        break;
-      }
-      case '7':
-        setTimeEntriesList(usersWithTimeEntries);
-        break;
-      default:
-        setTimeEntriesList([]);
+      const xDaysList = usersWithTimeEntries.filter(entry =>
+        moment(entry.dateOfWork).isAfter(xDaysAgo),
+      );
+      setTimeEntriesList(xDaysList);
     }
 
     setFinishLoading(true);
@@ -399,6 +391,14 @@ const TeamMemberTasks = React.memo(props => {
     setShowWhoHasTimeOff(prev => !prev);
   };
 
+  function handleShowTrackers() {
+    setShowTrackers(prev => !prev);
+  }
+
+  function handleHideTasks() {
+    setShowTasks(prev => !prev);
+  }
+
   const handleSelectTeamNames = event => {
     filteredUserTeamIds?.length > 0 && setTeamList(usersWithTasks);
     setSelectedTeamNames(event);
@@ -463,6 +463,13 @@ const TeamMemberTasks = React.memo(props => {
       <header className={styles['header-box']}>
         <section className={[styles.dFlex, styles.flexColumn].join(' ')}>
           <h1 className={darkMode ? styles.textLight : ''}>Team Member Tasks</h1>
+          <button
+            type="button"
+            className={`btn btn-sm ${darkMode ? 'btn-outline-light' : 'btn-outline-secondary'}`}
+            onClick={() => setExpandAll(prev => !prev)}
+          >
+            {expandAll ? 'Truncate All' : 'Expand All'}
+          </button>
         </section>
 
         {finishLoading ? (
@@ -661,12 +668,18 @@ const TeamMemberTasks = React.memo(props => {
                 >
                   <thead className={darkMode ? styles.darkStickyHeader : ''}>
                     <tr>
-                      <th className={darkMode ? styles.darkStickyHeader : ''}>User Status</th>
+                      <th
+                        className={darkMode ? styles.darkStickyHeader : ''}
+                        style={{ background: 'transparent' }}
+                      >
+                        User Status
+                      </th>
                       <th
                         className={[
                           styles['team-member-tasks-headers'],
                           styles['team-member-tasks-user-name'],
                           darkMode ? styles.darkStickyHeader : '',
+                          darkMode ? styles.transparentHeader : '',
                         ].join(' ')}
                       >
                         Team Member
@@ -696,6 +709,50 @@ const TeamMemberTasks = React.memo(props => {
                           icon={faClock}
                           title="Total Remaining Hours"
                         />
+                        <div style={{ background: 'transparent', display: 'flex', gap: '4px' }}>
+                          <button
+                            type="button"
+                            onClick={handleShowTrackers}
+                            className={[
+                              styles.m1,
+                              darkMode ? styles.boxShadowDark : styles.boxShadowLight,
+                            ].join(' ')}
+                            style={{
+                              marginTop: '6px',
+                              padding: '2px 8px',
+                              fontSize: '12px',
+                              borderRadius: '4px',
+                              border: '1px solid #17a2b8',
+                              backgroundColor: showTrackers ? '#17a2b8' : 'white',
+                              color: showTrackers ? 'white' : '#17a2b8',
+                              cursor: 'pointer',
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
+                            {showTrackers ? 'Hide Trackers' : 'Show Trackers'}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={handleHideTasks}
+                            className={[
+                              styles.m1,
+                              darkMode ? styles.boxShadowDark : styles.boxShadowLight,
+                            ].join(' ')}
+                            style={{
+                              marginTop: '6px',
+                              padding: '2px 8px',
+                              fontSize: '12px',
+                              borderRadius: '4px',
+                              border: '1px solid #17a2b8',
+                              backgroundColor: showTasks ? 'white' : '#17a2b8',
+                              color: showTasks ? '#17a2b8' : 'white',
+                              cursor: 'pointer',
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
+                            {showTasks ? 'Hide Tasks' : 'Show Tasks'}
+                          </button>
+                        </div>
                       </th>
                     </tr>
                   </thead>
@@ -738,7 +795,7 @@ const TeamMemberTasks = React.memo(props => {
           </thead>
 
           <tbody className={darkMode ? styles.darkTbody : ''}>
-            {teamList.length === 0 ? (
+            {teamList.length === 0 || !selectionsLoaded ? (
               <SkeletonLoading
                 template="TeamMemberTasks"
                 data-testid="skeleton-loading-team-member-tasks-row"
@@ -768,13 +825,21 @@ const TeamMemberTasks = React.memo(props => {
                         updateTaskStatus={updateTaskStatus}
                         userId={displayUser._id}
                         showWhoHasTimeOff={showWhoHasTimeOff}
+                        showTrackers={showTrackers}
+                        showTasks={showTasks}
                         onTimeOff={userOnTimeOff[user.personId]}
                         goingOnTimeOff={userGoingOnTimeOff[user.personId]}
                         displayUser={displayUser}
+                        userStateCatalog={userStateCatalog}
+                        onCatalogChange={setUserStateCatalog}
+                        userStateSelection={userStateSelections[user.personId] || []}
+                        onSelectionChange={(uid, updated) =>
+                          setUserStateSelections(prev => ({ ...prev, [uid]: updated }))
+                        }
+                        expandAll={expandAll}
                       />
                     );
                   }
-
                   return (
                     <Fragment key={user.personId}>
                       <TeamMemberTask
@@ -795,8 +860,17 @@ const TeamMemberTasks = React.memo(props => {
                         updateTaskStatus={updateTaskStatus}
                         userId={displayUser._id}
                         showWhoHasTimeOff={showWhoHasTimeOff}
+                        showTrackers={showTrackers}
+                        showTasks={showTasks}
                         onTimeOff={userOnTimeOff[user.personId]}
                         goingOnTimeOff={userGoingOnTimeOff[user.personId]}
+                        userStateCatalog={userStateCatalog}
+                        onCatalogChange={setUserStateCatalog}
+                        userStateSelection={userStateSelections[user.personId] || []}
+                        onSelectionChange={(uid, updated) =>
+                          setUserStateSelections(prev => ({ ...prev, [uid]: updated }))
+                        }
+                        expandAll={expandAll}
                       />
 
                       {timeEntriesList.length > 0 &&
@@ -829,6 +903,22 @@ const TeamMemberTasks = React.memo(props => {
     </div>
   );
 });
+
+TeamMemberTasks.propTypes = {
+  authUser: PropTypes.shape({
+    userid: PropTypes.string,
+    role: PropTypes.string,
+  }),
+  displayUser: PropTypes.shape({
+    _id: PropTypes.string,
+    role: PropTypes.string,
+    email: PropTypes.string,
+  }),
+  usersWithTasks: PropTypes.arrayOf(PropTypes.object),
+  usersWithTimeEntries: PropTypes.arrayOf(PropTypes.object),
+  darkMode: PropTypes.bool,
+  filteredUserTeamIds: PropTypes.arrayOf(PropTypes.string),
+};
 
 const mapStateToProps = state => ({
   authUser: state.auth.user,
