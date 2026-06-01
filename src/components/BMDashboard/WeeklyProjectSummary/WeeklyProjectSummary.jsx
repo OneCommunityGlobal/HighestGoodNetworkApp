@@ -17,6 +17,7 @@ import IssuesBreakdownChart from './IssuesBreakdownChart';
 import InjuryCategoryBarChart from './GroupedBarGraphInjurySeverity/InjuryCategoryBarChart';
 import ToolsHorizontalBarChart from './Tools/ToolsHorizontalBarChart';
 import ExpenseBarChart from './Financials/ExpenseBarChart';
+import CostVarianceTrendGraph from './Financials/CostVarianceTrendGraph';
 import CostBreakDown from './Financials/CostBreakDown/CostBreakDown';
 import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
@@ -354,7 +355,10 @@ function WeeklyProjectSummary() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
             <div className="weekly-project-summary-card financial-small">📊 Card</div>
             <div className="weekly-project-summary-card financial-small financial-chart">
-              <ExpenseBarChart />
+              <ExpenseBarChart darkMode={darkMode} />
+            </div>
+            <div className="weekly-project-summary-card financial-small financial-chart">
+              <CostVarianceTrendGraph darkMode={darkMode} />
             </div>
             <div className="weekly-project-summary-card financial-big">
               <CostBreakDown />
