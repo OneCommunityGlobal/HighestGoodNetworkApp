@@ -41,10 +41,7 @@ import SetUpFinalDayPopUp from './SetUpFinalDayPopUp';
 import LogTimeOffPopUp from './logTimeOffPopUp';
 import SetupNewUserPopup from './setupNewUserPopup';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
-import {
-  scheduleDeactivationAction,
-  deactivateImmediatelyAction,
-} from '../../actions/userLifecycleActions';
+import { scheduleDeactivationAction, activateUserAction, deactivateImmediatelyAction } from '../../actions/userLifecycleActions';
 
 class UserManagement extends React.PureComponent {
   filteredUserDataCount = 0;
@@ -420,9 +417,12 @@ class UserManagement extends React.PureComponent {
   };
 
   reactivateUser = async (user = this.state.selectedUser) => {
-    await this.props.dispatch(updateUserPauseStatus(user, UserStatus.Active, Date.now()));
-    await this.props.getAllUserProfile();
-  };
+  await activateUserAction(
+    this.props.dispatch,
+    user,
+    this.props.getAllUserProfile,
+  );
+};
 
   onUserUpdate = (updatedUser) => {
     const { userProfiles } = this.props.state.allUserProfiles;
