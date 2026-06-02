@@ -10,6 +10,7 @@ import Lessons from './Lessons';
 import ConfirmationModal from './ConfirmationModal';
 import ExportConfirmationModal from './ExportConfirmationModal';
 import styles from './LessonListForm.module.css';
+import LessonListRemovableTag from './LessonListRemovableTag';
 
 function LessonList(props) {
   const { lessons, darkMode, dispatch } = props;
@@ -247,6 +248,10 @@ function LessonList(props) {
 
   const handleDeleteButtonClick = () => {
     setConfirmModal(true);
+  };
+
+  const removeDeleteTag = tagToRemove => {
+    setTagsToDelete(prev => prev.filter(t => t !== tagToRemove));
   };
 
   const removeTag = tagToRemove => {
@@ -727,46 +732,15 @@ function LessonList(props) {
                 <div
                   className={`${styles.tagContainer} ${darkMode ? styles.tagContainerDark : ''}`}
                 >
-                  {tags.map((tag, index) => {
-                    const handleRemoveClick = e => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      removeTag(tag);
-                    };
-
-                    return (
-                      <div
-                        key={`filter-tag-${tag}-${index}`}
-                        className={`${styles.tag} ${darkMode ? styles.tagDark : ''}`}
-                      >
-                        <span className={darkMode ? styles.tagTextDark : ''}>{tag}</span>
-                        <span
-                          role="button"
-                          tabIndex={0}
-                          className={`${styles.buttonClose} ${
-                            darkMode ? styles.buttonCloseDark : ''
-                          }`}
-                          onClick={handleRemoveClick}
-                          onKeyDown={e => {
-                            if (e.key === 'Enter' || e.key === ' ') {
-                              handleRemoveClick(e);
-                            }
-                          }}
-                          aria-label={`Remove ${tag} tag`}
-                          style={{
-                            pointerEvents: 'auto',
-                            zIndex: 100,
-                            cursor: 'pointer',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
-                        >
-                          ×
-                        </span>
-                      </div>
-                    );
-                  })}
+                  {tags.map((tag, index) => (
+                    <LessonListRemovableTag
+                      key={`filter-tag-${tag}-${index}`}
+                      tag={tag}
+                      darkMode={darkMode}
+                      onRemove={removeTag}
+                      variant="filter"
+                    />
+                  ))}
                 </div>
               )}
             </div>
@@ -804,41 +778,14 @@ function LessonList(props) {
                   </div>
                 )}
                 <div className={`${styles.tagContainer}`}>
-                  {tagsToDelete.map((tag, index) => {
-                    const handleRemoveDeleteTag = e => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setTagsToDelete(prev => prev.filter(t => t !== tag));
-                    };
-
-                    return (
-                      <div key={`delete-tag-${tag}-${index}`} className={`${styles.tag}`}>
-                        <span>{tag}</span>
-                        <span
-                          role="button"
-                          tabIndex={0}
-                          className={`${styles.buttonClose}`}
-                          onClick={handleRemoveDeleteTag}
-                          onKeyDown={e => {
-                            if (e.key === 'Enter' || e.key === ' ') {
-                              handleRemoveDeleteTag(e);
-                            }
-                          }}
-                          aria-label={`Remove ${tag} from delete list`}
-                          style={{
-                            pointerEvents: 'auto',
-                            zIndex: 100,
-                            cursor: 'pointer',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
-                        >
-                          ×
-                        </span>
-                      </div>
-                    );
-                  })}
+                  {tagsToDelete.map((tag, index) => (
+                    <LessonListRemovableTag
+                      key={`delete-tag-${tag}-${index}`}
+                      tag={tag}
+                      onRemove={removeDeleteTag}
+                      variant="delete"
+                    />
+                  ))}
                 </div>
               </div>
               {tagsToDelete.length > 0 && (
