@@ -15,7 +15,10 @@ import { useHistory, useLocation } from 'react-router-dom';
 import ReactTooltip from 'react-tooltip';
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import styles from './Announcements.module.css';
-import { EmailPanel, SocialMediaComposer } from './platforms';
+import EmailPanel from './platforms/email';
+import RedditAutoPoster from './platforms/reddit';
+import SlashdotAutoPoster from './platforms/slashdot';
+import SocialMediaComposer from './SocialMediaComposer';
 
 function Announcements({ title, email: initialEmail }) {
   const [activeTab, setActiveTab] = useState('email');
@@ -230,12 +233,24 @@ function Announcements({ title, email: initialEmail }) {
             'livejournal',
             'slashdot',
             'blogger',
-            'truthsocial',
-          ].map(platform => (
-            <TabPane tabId={platform} key={platform}>
-              <SocialMediaComposer platform={platform} />
-            </TabPane>
-          ))}
+          ].map(platform => {
+            let PlatformComposer;
+            switch (platform) {
+              case 'slashdot':
+                PlatformComposer = SlashdotAutoPoster;
+                break;
+              case 'reddit':
+                PlatformComposer = RedditAutoPoster;
+                break;
+              default:
+                PlatformComposer = SocialMediaComposer;
+            }
+            return (
+              <TabPane tabId={platform} key={platform}>
+                <PlatformComposer platform={platform} darkMode={darkMode} />
+              </TabPane>
+            );
+          })}
         </TabContent>
       </div>
     </div>
