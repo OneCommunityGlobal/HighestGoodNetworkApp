@@ -138,7 +138,7 @@ function PermissionChangeLogTable({ changeLogs, darkMode, roleNamesToHighlight =
   };
   const getHighlightValue = highlight => {
     if (!highlight) {
-      return '';
+      return darkMode ? styles.permissionRowDarkMode : '';
     }
     return darkMode ? styles.highlightRowDarkMode : styles.highlightRow;
   };

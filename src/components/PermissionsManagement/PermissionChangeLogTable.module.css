@@ -19,6 +19,10 @@
   background-color: #b2ebf2;
 }
 
+.highlightRowDarkMode:hover, .permissionRowDarkMode:hover {
+  background-color: #213369;
+}
+
 .permissionChangeLogTable {
   border-collapse: collapse;
   width: 100%;
