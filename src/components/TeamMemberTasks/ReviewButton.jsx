@@ -25,7 +25,7 @@ import httpService from '../../services/httpService';
 import { ApiEndpoint } from '~/utils/URL';
 import hasPermission from '~/utils/permissions';
 
-function ReviewButton({ user, task, updateTask }) {
+function ReviewButton({ user, task, updateTask, onTimeOff }) {
   const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme.darkMode);
   const myUserId = useSelector(state => state.auth.user.userid);
@@ -456,7 +456,12 @@ function ReviewButton({ user, task, updateTask }) {
           onClick={toggleModal}
           type="button"
           style={darkMode ? boxStyleDark : boxStyle}
-          disabled={isSubmitting}
+          disabled={isSubmitting || Boolean(onTimeOff)}
+          title={
+            onTimeOff
+              ? "You can't submit a task for review while you're on time off this week."
+              : undefined
+          }
         >
           Submit for Review
         </button>
