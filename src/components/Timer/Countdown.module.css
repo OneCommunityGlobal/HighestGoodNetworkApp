@@ -340,6 +340,15 @@ input[type='number']::-webkit-inner-spin-button {
   color: #ed688a;
 }
 
-.countdownCircle path {
+.countdownCircle svg,
+.countdownCircle svg * {
+  pointer-events: none;
+}
+
+.countdownCircle button {
+  pointer-events: auto;
+}
+
+.countdownCircle button * {
   pointer-events: none;
 }
