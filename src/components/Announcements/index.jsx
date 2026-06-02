@@ -18,7 +18,7 @@ import styles from './Announcements.module.css';
 import EmailPanel from './platforms/email';
 import RedditAutoPoster from './platforms/reddit';
 import SlashdotAutoPoster from './platforms/slashdot';
-import SocialMediaComposer from './SocialMediaComposer';
+import SocialMediaComposer from './platforms/social/SocialMediaComposer';
 
 function Announcements({ title, email: initialEmail }) {
   const [activeTab, setActiveTab] = useState('email');
