@@ -885,8 +885,8 @@ const BasicInformationTab = props => {
         </Label>
       </Col>
       <Col md={desktopDisplay ? '6' : ''} className={darkMode ? 'bg-yinmn-blue' : ''}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
-          <p className={`text-right ${darkMode ? 'text-light' : ''}`} style={{ margin: '0' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <p className={`${darkMode ? 'text-light' : ''}`} style={{ margin: '0', flex: 1 }}>
             {(() => {
               if (userProfile.isActive) return 'Active';
               if (userProfile.reactivationDate) return 'Paused until ' + formatDateCompany(userProfile.reactivationDate);
@@ -915,8 +915,8 @@ const BasicInformationTab = props => {
         </Label>
       </Col>
       <Col md={desktopDisplay ? '6' : ''} className={darkMode ? 'bg-yinmn-blue' : ''}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
-          <p className={`text-right ${darkMode ? 'text-light' : ''}`} style={{ margin: '0' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <p className={`${darkMode ? 'text-light' : ''}`} style={{ margin: '0', flex: 1 }}>
             {userProfile.endDate ? formatDateLocal(userProfile.endDate) : 'N/A'}
           </p>
           {canEdit && canEditEndDate && (

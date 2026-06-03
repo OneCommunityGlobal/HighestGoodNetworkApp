@@ -46,7 +46,7 @@ const TeamMemberTask = React.memo(
     userId,
     updateTaskStatus,
     showWhoHasTimeOff,
-    showTrackers,
+    showTasks,
     onTimeOff,
     goingOnTimeOff,
     displayUser,
@@ -552,7 +552,7 @@ const TeamMemberTask = React.memo(
                   </td>
                   <td colSpan={3} className={`${darkMode ? 'bg-yinmn-blue' : ''}`}>
                     <div className={styles['grid-container']}>
-                      {showTrackers && (
+                      {showTasks !== false && (
                         <Table borderless className={styles['team-member-tasks-subtable']}>
                           <tbody>
                             {user.tasks &&
@@ -853,7 +853,7 @@ TeamMemberTask.propTypes = {
     timeOffTill: PropTypes.string,
   }).isRequired,
   userRole: PropTypes.string.isRequired,
-  showTrackers: PropTypes.bool,
+  showTasks: PropTypes.bool,
   userId: PropTypes.string.isRequired,
   displayUser: PropTypes.object,
   userStateCatalog: PropTypes.array,
