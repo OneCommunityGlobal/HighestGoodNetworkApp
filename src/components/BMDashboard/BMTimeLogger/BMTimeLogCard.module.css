@@ -213,3 +213,38 @@
   font-weight: 500 !important;
   border-radius: 10px !important;
 }
+
+:global(body.dark-mode:not(.no-global-theme)) .stopwatchContainer,
+:global(body.bm-dashboard-dark:not(.no-global-theme)) .stopwatchContainer {
+  background: none;
+}
+
+:global(.dark-mode) .stopwatchContainer :global(.btn.btn-secondary).memberStart {
+  background-color: #01987a !important;
+  border-color: #01987a !important;
+}
+
+
+:global(.dark-mode) .stopwatchContainer :global(.btn.btn-secondary).memberStop,
+:global(.dark-mode) .stopwatchContainer :global(.btn.btn-secondary).memberStop:hover {
+  background-color: #980101 !important;
+  border-color: #980101 !important;
+}
+
+:global(.dark-mode) .stopwatchContainer :global(.btn.btn-secondary).memberStopwatch,
+:global(.dark-mode) .stopwatchContainer :global(.btn.btn-secondary).memberStopwatch:hover {
+  background: none !important
+}
+
+:global(.dark-mode) .fontColorGray {
+  color: #fff;
+}
+
+:global(.dark-mode) .stopwatchContainer :global(.btn.btn-secondary).memberClear,
+:global(.dark-mode) .stopwatchContainer :global(.btn.btn-secondary).memberClear:hover {
+  background-color: #a9b7be !important;
+}
+
+:global(.btn:disabled) {
+  cursor: not-allowed;
+}
