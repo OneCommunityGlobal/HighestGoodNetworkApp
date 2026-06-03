@@ -37,7 +37,7 @@ export const filterButtons = [
  */
 export function FilterBar({ currentFilter, onChange, isLoading }) {
   return (
-    <ButtonGroup aria-label="Task Filters">
+    <div aria-label="Task Filters">
       {filterButtons.map(({ value, label, variant }) => (
         <Button
           size="sm"
@@ -50,6 +50,6 @@ export function FilterBar({ currentFilter, onChange, isLoading }) {
           {label}
         </Button>
       ))}
-    </ButtonGroup>
+    </div>
   );
 }
