@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import PropTypes from 'prop-types';
 import {
   Button,
   Modal,
@@ -797,4 +798,14 @@ function ReviewButton({ user, task, updateTask, onTimeOff }) {
     </>
   );
 }
+ReviewButton.propTypes = {
+  user: PropTypes.shape({
+    personId: PropTypes.string,
+    name: PropTypes.string,
+  }).isRequired,
+  task: PropTypes.object.isRequired,
+  updateTask: PropTypes.func.isRequired,
+  onTimeOff: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
+};
+
 export default ReviewButton;
