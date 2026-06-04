@@ -50,6 +50,7 @@ const TeamMemberTasks = React.memo(props => {
   const [isTimeFilterActive, setIsTimeFilterActive] = useState(false);
   const [taskModalOption, setTaskModalOption] = useState('');
   const [showWhoHasTimeOff, setShowWhoHasTimeOff] = useState(true);
+  const [showTrackers, setShowTrackers] = useState(false);
   const [showTasks, setShowTasks] = useState(true);
 
   const userOnTimeOff = useSelector(state => state.timeOffRequests.onTimeOff);
@@ -390,6 +391,10 @@ const TeamMemberTasks = React.memo(props => {
     setShowWhoHasTimeOff(prev => !prev);
   };
 
+  function handleShowTrackers() {
+    setShowTrackers(prev => !prev);
+  }
+
   function handleHideTasks() {
     setShowTasks(prev => !prev);
   }
@@ -707,6 +712,27 @@ const TeamMemberTasks = React.memo(props => {
                         <div style={{ background: 'transparent', display: 'flex', gap: '4px' }}>
                           <button
                             type="button"
+                            onClick={handleShowTrackers}
+                            className={[
+                              styles.m1,
+                              darkMode ? styles.boxShadowDark : styles.boxShadowLight,
+                            ].join(' ')}
+                            style={{
+                              marginTop: '6px',
+                              padding: '2px 8px',
+                              fontSize: '12px',
+                              borderRadius: '4px',
+                              border: '1px solid #17a2b8',
+                              backgroundColor: showTrackers ? '#17a2b8' : 'white',
+                              color: showTrackers ? 'white' : '#17a2b8',
+                              cursor: 'pointer',
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
+                            {showTrackers ? 'Hide Trackers' : 'Show Trackers'}
+                          </button>
+                          <button
+                            type="button"
                             onClick={handleHideTasks}
                             className={[
                               styles.m1,
@@ -799,6 +825,7 @@ const TeamMemberTasks = React.memo(props => {
                         updateTaskStatus={updateTaskStatus}
                         userId={displayUser._id}
                         showWhoHasTimeOff={showWhoHasTimeOff}
+                        showTrackers={showTrackers}
                         showTasks={showTasks}
                         onTimeOff={userOnTimeOff[user.personId]}
                         goingOnTimeOff={userGoingOnTimeOff[user.personId]}
@@ -833,6 +860,7 @@ const TeamMemberTasks = React.memo(props => {
                         updateTaskStatus={updateTaskStatus}
                         userId={displayUser._id}
                         showWhoHasTimeOff={showWhoHasTimeOff}
+                        showTrackers={showTrackers}
                         showTasks={showTasks}
                         onTimeOff={userOnTimeOff[user.personId]}
                         goingOnTimeOff={userGoingOnTimeOff[user.personId]}
