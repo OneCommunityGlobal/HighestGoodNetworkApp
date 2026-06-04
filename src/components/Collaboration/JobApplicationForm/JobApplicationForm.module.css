@@ -62,7 +62,7 @@
 }
 
 .jobSelect {
-  padding: 5px;
+  padding: 6px 36px 6px 8px;
   border: 1px solid #ccc;
   border-radius: 5px;
   min-width: 150px;
@@ -70,6 +70,13 @@
   width: auto;
   overflow: hidden;
   text-overflow: ellipsis;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%23666' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
 }
 
 .goButton {
@@ -287,6 +294,16 @@
   box-sizing: border-box;
   font-size: 1rem;
   width: 100%;
+}
+
+.inputFieldError {
+  border-color: #c62828;
+}
+
+.fieldError {
+  margin: 4px 0 0;
+  color: #c62828;
+  font-size: 0.85rem;
 }
 
 .submitButton {
@@ -605,6 +622,35 @@
 .darkMode .jobSelect:focus,
 .darkMode .jobSelect:active {
   background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 15l5-5 5 5z'/></svg>");
+}
+
+.darkMode input[type='date'],
+.darkMode .dateInput {
+  color-scheme: dark;
+}
+
+.darkMode input[type='date']::-webkit-calendar-picker-indicator,
+.darkMode .dateInput::-webkit-calendar-picker-indicator {
+  filter: brightness(0) invert(1);
+  opacity: 1;
+  cursor: pointer;
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.darkMode input[type='date']::-moz-calendar-picker-indicator,
+.darkMode .dateInput::-moz-calendar-picker-indicator {
+  filter: brightness(0) invert(1);
+  opacity: 1;
+  cursor: pointer;
+}
+
+.darkMode .fieldError {
+  color: #ff8a80;
+}
+
+.darkMode .inputFieldError {
+  border-color: #ef5350;
 }
 
 .darkMode .submitButton,

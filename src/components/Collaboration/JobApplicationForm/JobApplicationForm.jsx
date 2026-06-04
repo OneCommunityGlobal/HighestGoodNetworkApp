@@ -314,6 +314,25 @@ function missingRequiredQuestionLabel(q, idx, answers, questionFiles) {
   return isAnswerEmpty(answers[idx], q) ? getQuestionLabel(q, idx) : null;
 }
 
+function isHoursPerWeekQuestion(label) {
+  const labelLower = String(label || '').toLowerCase();
+  return labelLower.includes('hour') && (labelLower.includes('week') || labelLower.includes('weekly'));
+}
+
+function isIndividualOrgQuestionLabel(label) {
+  const labelLower = String(label || '').toLowerCase();
+  return labelLower.includes('individual') && labelLower.includes('organization');
+}
+
+function validateHoursPerWeekAnswer(label, answer) {
+  const trimmed = String(answer ?? '').trim();
+  if (!trimmed) return null;
+  if (!/^\d+$/.test(trimmed)) return `${label} (must be a number)`;
+  const num = Number(trimmed);
+  if (num <= 0 || num > 168) return `${label} (must be between 1 and 168)`;
+  return null;
+}
+
 function collectMissingRequiredFields({
   applicantName,
   applicantEmail,
@@ -325,8 +344,11 @@ function collectMissingRequiredFields({
   if (!applicantName.trim()) missing.push('Name');
   if (!applicantEmail.trim()) missing.push('Email');
   for (const [idx, q] of visibleQuestions.entries()) {
-    const label = missingRequiredQuestionLabel(q, idx, answers, questionFiles);
-    if (label) missing.push(label);
+    const label = getQuestionLabel(q, idx);
+    const requiredLabel = missingRequiredQuestionLabel(q, idx, answers, questionFiles);
+    if (requiredLabel) missing.push(requiredLabel);
+    const hoursError = validateHoursPerWeekAnswer(label, answers[idx]);
+    if (hoursError) missing.push(hoursError);
   }
   return missing;
 }
@@ -490,6 +512,7 @@ function JobApplicationForm() {
   const [roleSkills, setRoleSkills] = useState('');
   /** Owner/Admin: optional manual toggles on top of auto-calculated requirement flags. */
   const [requirementPreviewOverrides, setRequirementPreviewOverrides] = useState({});
+  const [fieldErrors, setFieldErrors] = useState({});
 
   const darkMode = useSelector(state => state.theme?.darkMode);
   const isAdmin = useSelector(state => {
@@ -646,6 +669,7 @@ function JobApplicationForm() {
     setAnswers(initialAnswersForQuestions(qs));
     setQuestionFiles({});
     questionFileInputRefs.current = {};
+    setFieldErrors({});
   }, [selectedJob, forms]);
 
   const handleJobChange = e => {
@@ -674,10 +698,23 @@ function JobApplicationForm() {
     }
   };
 
-  const handleAnswerChange = (idx, value) => {
+  const handleAnswerChange = (idx, value, label) => {
     const newAnswers = [...answers];
     newAnswers[idx] = value;
     setAnswers(newAnswers);
+
+    if (isHoursPerWeekQuestion(label)) {
+      const str = Array.isArray(value) ? '' : String(value ?? '');
+      if (str && !/^\d*$/.test(str)) {
+        setFieldErrors(prev => ({ ...prev, [idx]: 'Only numbers are allowed' }));
+      } else {
+        setFieldErrors(prev => {
+          const next = { ...prev };
+          delete next[idx];
+          return next;
+        });
+      }
+    }
   };
 
   /** Checkbox question with multiple options: toggle selection in an array stored at answers[idx]. */
@@ -846,6 +883,7 @@ function JobApplicationForm() {
     setRoleSkills('');
     setAnswers(initialAnswersForQuestions(visibleQuestions));
     setRequirementPreviewOverrides({});
+    setFieldErrors({});
   };
 
   const handleSubmit = async e => {
@@ -1131,7 +1169,10 @@ function JobApplicationForm() {
               {visibleQuestions.map((q, idx) => {
                 const qt = getQuestionType(q);
                 const label = getQuestionLabel(q, idx);
+                const labelLower = label.toLowerCase();
+                const isIndividualOrgQuestion = isIndividualOrgQuestionLabel(label);
                 const req = isQuestionRequired(q);
+                const hasFieldError = Boolean(fieldErrors[idx]);
                 const formKey = filteredForm?._id
                   ? `${filteredForm._id}-q-${idx}`
                   : `q-${idx}-${label.slice(0, 24)}`;
@@ -1150,36 +1191,53 @@ function JobApplicationForm() {
                         </>
                       )}
                     </h2>
-                    {['textbox', 'text'].includes(qt) && !isFileUploadQuestion(q) && (
-                      <input
-                        type="text"
-                        placeholder={q.placeholder || 'Type your response here'}
-                        value={Array.isArray(answers[idx]) ? '' : answers[idx] || ''}
-                        onChange={e => handleAnswerChange(idx, e.target.value)}
-                        required={req}
-                        aria-required={req}
-                        aria-labelledby={`${formKey}-heading`}
-                        className={styles.inputField}
-                      />
+                    {['textbox', 'text'].includes(qt) &&
+                      !isFileUploadQuestion(q) &&
+                      !isIndividualOrgQuestion && (
+                        <>
+                          <input
+                            type="text"
+                            placeholder={q.placeholder || 'Type your response here'}
+                            value={Array.isArray(answers[idx]) ? '' : answers[idx] || ''}
+                            onChange={e => handleAnswerChange(idx, e.target.value, label)}
+                            required={req}
+                            aria-required={req}
+                            aria-labelledby={`${formKey}-heading`}
+                            className={`${styles.inputField} ${hasFieldError ? styles.inputFieldError : ''}`}
+                          />
+                          {hasFieldError && (
+                            <p className={styles.fieldError} role="alert">
+                              {fieldErrors[idx]}
+                            </p>
+                          )}
+                        </>
+                      )}
+                    {qt === 'textarea' && !isIndividualOrgQuestion && (
+                      <>
+                        <textarea
+                          placeholder={q.placeholder || 'Type your response here'}
+                          value={Array.isArray(answers[idx]) ? '' : answers[idx] || ''}
+                          onChange={e => handleAnswerChange(idx, e.target.value, label)}
+                          rows={5}
+                          required={req}
+                          aria-required={req}
+                          aria-labelledby={`${formKey}-heading`}
+                          className={`${styles.inputField} ${hasFieldError ? styles.inputFieldError : ''}`}
+                        />
+                        {hasFieldError && (
+                          <p className={styles.fieldError} role="alert">
+                            {fieldErrors[idx]}
+                          </p>
+                        )}
+                      </>
                     )}
-                    {qt === 'textarea' && (
-                      <textarea
-                        placeholder={q.placeholder || 'Type your response here'}
-                        value={Array.isArray(answers[idx]) ? '' : answers[idx] || ''}
-                        onChange={e => handleAnswerChange(idx, e.target.value)}
-                        rows={5}
-                        required={req}
-                        aria-required={req}
-                        aria-labelledby={`${formKey}-heading`}
-                        className={styles.inputField}
-                      />
-                    )}
-                    {qt === 'date' && (
+                    {(qt === 'date' ||
+                      (labelLower.includes('start') && labelLower.includes('date'))) && (
                       <input
                         type="date"
                         className={styles.dateInput}
                         value={Array.isArray(answers[idx]) ? '' : answers[idx] || ''}
-                        onChange={e => handleAnswerChange(idx, e.target.value)}
+                        onChange={e => handleAnswerChange(idx, e.target.value, label)}
                         required={req}
                         aria-required={req}
                         aria-labelledby={`${formKey}-heading`}
@@ -1223,22 +1281,37 @@ function JobApplicationForm() {
                         ))}
                       </fieldset>
                     )}
-                    {qt === 'dropdown' && (
+                    {isIndividualOrgQuestion ? (
                       <select
                         className={styles.selectField}
                         value={Array.isArray(answers[idx]) ? '' : answers[idx] || ''}
-                        onChange={e => handleAnswerChange(idx, e.target.value)}
+                        onChange={e => handleAnswerChange(idx, e.target.value, label)}
                         required={req}
                         aria-required={req}
                         aria-labelledby={`${formKey}-heading`}
                       >
                         <option value="">Select an option</option>
-                        {(q.options || []).map(opt => (
-                          <option key={opt} value={opt}>
-                            {opt}
-                          </option>
-                        ))}
+                        <option value="Individual">Individual</option>
+                        <option value="Organization">Organization</option>
                       </select>
+                    ) : (
+                      qt === 'dropdown' && (
+                        <select
+                          className={styles.selectField}
+                          value={Array.isArray(answers[idx]) ? '' : answers[idx] || ''}
+                          onChange={e => handleAnswerChange(idx, e.target.value, label)}
+                          required={req}
+                          aria-required={req}
+                          aria-labelledby={`${formKey}-heading`}
+                        >
+                          <option value="">Select an option</option>
+                          {(q.options || []).map(opt => (
+                            <option key={opt} value={opt}>
+                              {opt}
+                            </option>
+                          ))}
+                        </select>
+                      )
                     )}
                     {isFileUploadQuestion(q) && (
                       <FileUploadField
@@ -1267,7 +1340,7 @@ function JobApplicationForm() {
                           type="text"
                           placeholder="Type your response here"
                           value={Array.isArray(answers[idx]) ? '' : answers[idx] || ''}
-                          onChange={e => handleAnswerChange(idx, e.target.value)}
+                          onChange={e => handleAnswerChange(idx, e.target.value, label)}
                           required={req}
                           aria-required={req}
                           aria-labelledby={`${formKey}-heading`}

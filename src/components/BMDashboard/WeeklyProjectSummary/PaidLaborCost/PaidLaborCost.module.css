@@ -28,6 +28,7 @@
 }
 
 /* Each filter group (Tasks, Project, Date Range) */
+
 /* Stack label above select for narrow cards */
 .paidLaborCostFilterGroup {
   display: flex;
@@ -39,10 +40,9 @@
 }
 
 /* On very large screens where cards are wide enough, allow horizontal filters */
-@media (min-width: 1920px) {
+@media (width >= 1920px) {
   .paidLaborCostFilters {
-    flex-direction: row;
-    flex-wrap: wrap;
+    flex-flow: row wrap;
     justify-content: space-between;
     gap: 5px;
   }
@@ -63,6 +63,7 @@
 }
 
 /* Native select styles removed - now using react-select for all select-type filters */
+
 /* Date picker styles remain below */
 
 
@@ -314,6 +315,7 @@
 }
 
 /* Light mode reset for react-datepicker - overrides global dark styles from RentalChart.css */
+
 /* 'paid-labor-cost-calendar' is always applied via calendarClassName prop */
 :global(.paid-labor-cost-calendar.react-datepicker) {
   background-color: #fff !important;
@@ -362,12 +364,14 @@
 }
 
 /* Dark mode styles for react-datepicker - applied via calendarClassName prop */
+
 /* The 'paid-labor-cost-dark-calendar' class is placed directly on the calendar element */
+
 /* so these selectors are exact and only activate when darkMode is true in React state */
 :global(.paid-labor-cost-dark-calendar.react-datepicker) {
   background-color: #253342 !important;
   border-color: #2d4059 !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 :global(.paid-labor-cost-dark-calendar .react-datepicker__header) {
@@ -381,42 +385,42 @@
 
 :global(.paid-labor-cost-dark-calendar .react-datepicker__current-month),
 :global(.paid-labor-cost-dark-calendar .react-datepicker__day-name) {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 /* Target ALL day cells */
 :global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__week .react-datepicker__day),
 :global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day) {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 /* Current month days */
 :global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--current-month) {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 /* Today's date */
 :global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--today) {
-  color: #ffffff !important;
+  color: #fff !important;
   font-weight: 600;
 }
 
 /* Weekend days */
 :global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--weekend) {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 /* Hover state */
 :global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day:hover) {
   background-color: #3a506b !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 /* Selected date */
 :global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--selected),
 :global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--keyboard-selected) {
   background-color: #e8a71c !important;
-  color: #000000 !important;
+  color: #000 !important;
   font-weight: 600;
 }
 
@@ -425,49 +429,49 @@
 }
 
 :global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--in-selecting-range) {
-  background-color: rgba(232, 167, 28, 0.3) !important;
-  color: #ffffff !important;
+  background-color: rgb(232 167 28 / 55%) !important;
+  color: #1a1a1a !important;
 }
 
 :global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--range-start),
 :global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--range-end) {
   background-color: #e8a71c !important;
-  color: #000000 !important;
+  color: #000 !important;
   font-weight: 600;
 }
 
 /* Disabled dates within current month */
 :global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--disabled:not(.react-datepicker__day--outside-month)) {
-  color: #ffffff !important;
+  color: #fff !important;
   cursor: not-allowed;
   opacity: 0.6;
 }
 
 /* Disabled dates outside current month */
 :global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--disabled.react-datepicker__day--outside-month) {
-  color: #888888 !important;
+  color: #888 !important;
   cursor: not-allowed;
   opacity: 0.4;
 }
 
 /* Outside month dates (not disabled) */
 :global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--outside-month:not(.react-datepicker__day--disabled)) {
-  color: #aaaaaa !important;
+  color: #aaa !important;
   opacity: 0.6;
 }
 
 /* Catch-all for any day cell not covered above */
-:global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__week .react-datepicker__day:not(.react-datepicker__day--disabled):not(.react-datepicker__day--outside-month)) {
-  color: #ffffff !important;
+:global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__week .react-datepicker__day:not(.react-datepicker__day--disabled, .react-datepicker__day--outside-month)) {
+  color: #fff !important;
 }
 
 :global(.paid-labor-cost-dark-calendar .react-datepicker__navigation-icon::before) {
-  border-color: #ffffff !important;
+  border-color: #fff !important;
 }
 
 :global(.paid-labor-cost-dark-calendar .react-datepicker__year-read-view--down-arrow),
 :global(.paid-labor-cost-dark-calendar .react-datepicker__month-read-view--down-arrow) {
-  border-top-color: #ffffff !important;
+  border-top-color: #fff !important;
 }
 
 /* Month and Year dropdowns */
@@ -475,31 +479,31 @@
 :global(.paid-labor-cost-dark-calendar .react-datepicker__year-dropdown) {
   background-color: #253342 !important;
   border: 1px solid #2d4059 !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 :global(.paid-labor-cost-dark-calendar .react-datepicker__month-option),
 :global(.paid-labor-cost-dark-calendar .react-datepicker__year-option) {
   background-color: #253342 !important;
-  color: #ffffff !important;
+  color: #fff !important;
   padding: 8px 12px;
 }
 
 :global(.paid-labor-cost-dark-calendar .react-datepicker__month-option:hover),
 :global(.paid-labor-cost-dark-calendar .react-datepicker__year-option:hover) {
   background-color: #3a506b !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 :global(.paid-labor-cost-dark-calendar .react-datepicker__month-option--selected),
 :global(.paid-labor-cost-dark-calendar .react-datepicker__year-option--selected) {
   background-color: #e8a71c !important;
-  color: #000000 !important;
+  color: #000 !important;
 }
 
 :global(.paid-labor-cost-dark-calendar .react-datepicker__year-read-view),
 :global(.paid-labor-cost-dark-calendar .react-datepicker__month-read-view) {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 /* Containers for native select elements */
@@ -514,7 +518,7 @@
 :global(.paid-labor-cost-dark-calendar .react-datepicker__year-select) {
   background-color: #253342 !important;
   border: 1px solid #2d4059 !important;
-  color: #ffffff !important;
+  color: #fff !important;
   padding: 4px 8px;
   border-radius: 4px;
   font-size: 14px;
@@ -530,14 +534,14 @@
 :global(.paid-labor-cost-dark-calendar .react-datepicker__year-select:focus) {
   outline: none;
   border-color: #e8a71c !important;
-  box-shadow: 0 0 0 2px rgba(232, 167, 28, 0.2);
+  box-shadow: 0 0 0 2px rgb(232 167 28 / 20%);
 }
 
 /* Option elements inside the select dropdowns */
 :global(.paid-labor-cost-dark-calendar .react-datepicker__month-select option),
 :global(.paid-labor-cost-dark-calendar .react-datepicker__year-select option) {
   background-color: #253342 !important;
-  color: #ffffff !important;
+  color: #fff !important;
   padding: 8px;
 }
 
@@ -551,7 +555,7 @@
 }
 
 :global(.paid-labor-cost-dark-calendar .react-datepicker__time-list-item) {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 :global(.paid-labor-cost-dark-calendar .react-datepicker__time-list-item:hover) {
@@ -695,13 +699,13 @@
 }
 
 /* Responsive label sizing */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .paidLaborCostFilterLabel {
     font-size: 14px;
   }
 }
 
-@media (max-width: 600px) {
+@media (width <= 600px) {
   /* Make date range picker fully vertical on small screens */
   .paidLaborCostDateRangePicker {
     flex-direction: column;
@@ -718,7 +722,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .paidLaborCostFilterLabel {
     font-size: 13px;
   }
@@ -756,13 +760,13 @@
 }
 
 /* Responsive chart heights */
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
   .paidLaborCostChartContainer {
     height: 350px;
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .paidLaborCostChartContainer {
     height: 300px;
   }
@@ -773,7 +777,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .paidLaborCostChartContainer {
     height: 250px;
   }
