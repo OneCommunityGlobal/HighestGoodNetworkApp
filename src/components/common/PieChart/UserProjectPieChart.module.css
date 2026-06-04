@@ -220,10 +220,6 @@
   color: inherit;
 }
 
-.strong-text {
-  font-weight: bold;
-}
-
 .strong-text.text-light,
 .text-light strong,
 .text-light .strong-text { color:#f5f5f5 !important; }
