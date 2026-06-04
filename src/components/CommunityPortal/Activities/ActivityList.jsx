@@ -118,19 +118,19 @@ function ActivityList() {
     return d;
   }, []);
 
-  const activityTypes = useMemo(() => {
-    const typeOrder = new Map();
+  // const activityTypes = useMemo(() => {
+  //   const typeOrder = new Map();
 
-    activities.forEach(activity => {
-      if (activity.type && !typeOrder.has(activity.type)) {
-        typeOrder.set(activity.type, typeOrder.size);
-      }
-    });
+  //   activities.forEach(activity => {
+  //     if (activity.type && !typeOrder.has(activity.type)) {
+  //       typeOrder.set(activity.type, typeOrder.size);
+  //     }
+  //   });
 
-    return [...typeOrder.keys()].sort(
-      (typeA, typeB) => typeOrder.get(typeA) - typeOrder.get(typeB),
-    );
-  }, [activities]);
+  //   return [...typeOrder.keys()].sort(
+  //     (typeA, typeB) => typeOrder.get(typeA) - typeOrder.get(typeB),
+  //   );
+  // }, [activities]);
 
   const filteredActivities = activities
     .filter(activity => showPastEvents || activity._dateObj >= startOfToday)
@@ -206,33 +206,19 @@ function ActivityList() {
               />
 
               {showSuggestions && locationSuggestions.length > 0 && (
-                <div
+                <select
+                  size={Math.min(locationSuggestions.length, 5)} /* Controls visible rows */
                   className={`${styles.suggestions} ${darkMode ? styles.darkSuggestions : ''}`}
-                  role="listbox"
                   aria-label="Location suggestions"
+                  onChange={e => handleSuggestionClick(e.target.value)}
+                  style={{ position: 'absolute', width: '100%', zIndex: 10 }}
                 >
-                  {locationSuggestions.map((location, index) => (
-                    <div
-                      key={index}
-                      className={styles.suggestionItem}
-                      role="option"
-                      tabIndex={0}
-                      aria-selected="false"
-                      onMouseDown={e => {
-                        e.preventDefault();
-                        handleSuggestionClick(location);
-                      }}
-                      onKeyDown={e => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          e.preventDefault();
-                          handleSuggestionClick(location);
-                        }
-                      }}
-                    >
+                  {locationSuggestions.map(location => (
+                    <option key={location} value={location}>
                       {location}
-                    </div>
+                    </option>
                   ))}
-                </div>
+                </select>
               )}
             </div>
           </label>

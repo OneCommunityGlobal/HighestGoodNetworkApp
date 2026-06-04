@@ -43,12 +43,11 @@
 
 .filterInputsRow {
   display: flex;
-  flex-direction: row;
+  flex-flow: row wrap;
   justify-content: center;
   align-items: flex-end;
   gap: 30px;
   width: 100%;
-  flex-wrap: wrap;
 }
 
 .darkModeFilters {
@@ -128,7 +127,7 @@
 /* Clear All button */
 .clearButton {
   padding: 10px 20px;
-  background-color: #ef4444;
+  background-color: #b91c1c;
   color: #fff;
   border: none;
   border-radius: 6px;
@@ -158,12 +157,16 @@
 }
 
 .errorMessage {
-  color: #d32f2f;
+  color: #dc2626;
   font-size: 0.9rem;
   margin: 0;
   text-align: center;
   animation: fade-in 0.3s ease-in-out;
   width:100%;
+}
+
+:global(.activity-list-dark-body) .errorMessage {
+  color: #ff4d4f !important;
 }
 
 .darkModeFilters .errorRow {
@@ -179,6 +182,10 @@
   padding: 30px;
   border-radius: 12px;
   box-shadow: 0 6px 12px rgb(0 0 0 / 10%);
+}
+
+.activityListContainerDark .errorMessage {
+  color: #ff4d4f !important; /* brighter red for dark mode */
 }
 
 .darkModeList {
