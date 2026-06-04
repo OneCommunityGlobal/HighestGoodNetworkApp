@@ -3,12 +3,27 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styles from './QuestionEditModal.module.css';
+
+const createOptionId = () =>
+  typeof crypto !== 'undefined' && crypto.randomUUID
+    ? crypto.randomUUID()
+    : `opt-${Date.now()}-${Math.random()
+        .toString(36)
+        .slice(2, 9)}`;
+
+const toOptionRows = options =>
+  (options || []).map(value => ({
+    id: createOptionId(),
+    value: value ?? '',
+  }));
+
 function QuestionEditModal({ question, onSave, onCancel, darkMode = false }) {
   const [editedQuestion, setEditedQuestion] = useState({
     ...question,
 
     options: question.options || [],
   });
+  const [optionRows, setOptionRows] = useState(() => toOptionRows(question.options));
 
   useEffect(() => {
     console.log('Current editedQuestion state:', editedQuestion);
@@ -21,6 +36,7 @@ function QuestionEditModal({ question, onSave, onCancel, darkMode = false }) {
 
       options: question.options || [],
     });
+    setOptionRows(toOptionRows(question.options));
   }, [question]);
 
   const handleInputChange = e => {
@@ -38,6 +54,9 @@ function QuestionEditModal({ question, onSave, onCancel, darkMode = false }) {
           editedQuestion.options && editedQuestion.options.length > 0
             ? editedQuestion.options
             : [''];
+        setOptionRows(toOptionRows(newOptions));
+      } else {
+        setOptionRows([]);
       }
 
       setEditedQuestion({
@@ -53,34 +72,25 @@ function QuestionEditModal({ question, onSave, onCancel, darkMode = false }) {
     }
   };
 
-  const handleOptionsChange = (index, value) => {
-    // Always work with a copy of the options array
-    const newOptions = [...(editedQuestion.options || [])];
-    newOptions[index] = value;
+  const applyOptionRows = rows => {
+    setOptionRows(rows);
+    setEditedQuestion(prev => ({
+      ...prev,
+      options: rows.map(row => row.value),
+    }));
+  };
 
-    setEditedQuestion({
-      ...editedQuestion,
-      options: newOptions,
-    });
+  const handleOptionsChange = (optionId, value) => {
+    const next = optionRows.map(row => (row.id === optionId ? { ...row, value } : row));
+    applyOptionRows(next);
   };
 
   const addOption = () => {
-    // Always work with a copy of the options array
-    setEditedQuestion({
-      ...editedQuestion,
-      options: [...(editedQuestion.options || []), ''],
-    });
+    applyOptionRows([...optionRows, { id: createOptionId(), value: '' }]);
   };
 
-  const removeOption = index => {
-    // Always work with a copy of the options array
-    const newOptions = [...(editedQuestion.options || [])];
-    newOptions.splice(index, 1);
-
-    setEditedQuestion({
-      ...editedQuestion,
-      options: newOptions,
-    });
+  const removeOption = optionId => {
+    applyOptionRows(optionRows.filter(row => row.id !== optionId));
   };
 
   const handleSave = () => {
@@ -98,7 +108,10 @@ function QuestionEditModal({ question, onSave, onCancel, darkMode = false }) {
       return;
     }
 
-    onSave(editedQuestion);
+    onSave({
+      ...editedQuestion,
+      options: optionRows.map(row => row.value),
+    });
   };
 
   return (
@@ -168,17 +181,17 @@ function QuestionEditModal({ question, onSave, onCancel, darkMode = false }) {
           {['dropdown', 'radio', 'checkbox'].includes(editedQuestion.type) && (
             <div className={styles.optionsGroup}>
               <p className={styles.optionsLabel}>Options:</p>
-              {(editedQuestion.options || []).map((option, index) => (
-                <div key={`option-${index}`} className={styles.optionRow}>
+              {optionRows.map((row, index) => (
+                <div key={row.id} className={styles.optionRow}>
                   <input
                     type="text"
-                    value={option}
-                    onChange={e => handleOptionsChange(index, e.target.value)}
+                    value={row.value}
+                    onChange={e => handleOptionsChange(row.id, e.target.value)}
                     placeholder={`Option ${index + 1}`}
                   />
                   <button
                     type="button"
-                    onClick={() => removeOption(index)}
+                    onClick={() => removeOption(row.id)}
                     className={`${styles.removeOptionButton}`}
                   >
                     ×
