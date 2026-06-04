@@ -11,7 +11,7 @@ import FilePreview from '~/components/common/FilePreview/FilePreview'; // Import
 import styles from './UpdateEquipment.module.css';
 import styles1 from '../../BMDashboard.module.css';
 
-const ALLOWED_MIME_TYPES = ['image/png', 'image/jpeg'];
+const ALLOWED_MIME_TYPES = new Set(['image/png', 'image/jpeg']);
 const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024;
 const INVALID_IMAGE_MSG = 'Invalid image. Use PNG, JPG, or JPEG under 5MB.';
 
@@ -140,7 +140,7 @@ export default function UpdateEquipment() {
       const validFiles = files.filter(file => {
         const fileType = file.type || '';
         const fileName = file.name || '';
-        const isValidType = ALLOWED_MIME_TYPES.includes(fileType);
+        const isValidType = ALLOWED_MIME_TYPES.has(fileType);
         const isValidExtension = /\.(jpg|jpeg|png)$/i.test(fileName);
         const isValidSize = file.size <= MAX_IMAGE_SIZE_BYTES;
         return (isValidType || isValidExtension) && isValidSize;
@@ -167,6 +167,19 @@ export default function UpdateEquipment() {
     [uploadedFilesPreview, cleanupFilePreviews],
   );
 
+  const buildErrorMessage = (error, hasUploadedFiles) => {
+    const baseError =
+      error.response?.data?.error ||
+      error.response?.data?.message ||
+      (error.request ? 'No response from server. Please check your connection.' : null) ||
+      error.message ||
+      'Failed to update equipment. Please try again.';
+
+    return hasUploadedFiles
+      ? `${baseError} Note: Images were selected and previewed but not saved to database.`
+      : baseError;
+  };
+
   const handleSubmit = useCallback(
     async e => {
       e.preventDefault();
@@ -180,7 +193,7 @@ export default function UpdateEquipment() {
       const imageFile = uploadedFiles.length > 0 ? uploadedFiles[0] : null;
 
       if (imageFile) {
-        const isValidType = ALLOWED_MIME_TYPES.includes(imageFile.type);
+        const isValidType = ALLOWED_MIME_TYPES.has(imageFile.type);
         const isValidSize = imageFile.size <= MAX_IMAGE_SIZE_BYTES;
         if (!isValidType || !isValidSize) {
           setSubmitError(INVALID_IMAGE_MSG);
