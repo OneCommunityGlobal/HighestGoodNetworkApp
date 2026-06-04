@@ -1,5 +1,5 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+
 import styles from './TaskListItem.module.css';
 import { useTaskLogic } from './useTaskLogic';
 import MarkAsDoneButton from './MarkAsDoneButton';

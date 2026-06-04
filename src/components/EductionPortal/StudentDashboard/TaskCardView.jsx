@@ -1,5 +1,5 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+
 import styles from './TaskCardView.module.css';
 import TaskCard from './TaskCard';
 import { taskViewPropTypes, taskViewDefaultProps } from './taskPropTypes';

@@ -307,7 +307,7 @@ function CommunityCalendar() {
       setTimeout(() => {
         closeEventModal();
       }, 500);
-    } catch (error) {
+    } catch {
       toast.error('Registration failed. Please try again.', {
         position: 'top-right',
         autoClose: 3000,
