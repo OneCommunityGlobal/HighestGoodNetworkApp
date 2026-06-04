@@ -15,11 +15,8 @@ function PermissionChangeLogTable({ changeLogs, darkMode, roleNamesToHighlight =
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = changeLogs.slice(indexOfFirstItem, indexOfLastItem);
   const fontColor = darkMode ? 'text-light' : '';
-  // const bgYinmnBlue = darkMode ? 'bg-yinmn-blue' : '';
   const bgYinmnBlue = darkMode ? appStyles['bg-yinmn-blue'] : '';
   const headerClass = darkMode
-    // ? styles['permission-change-log-table--header-dark']
-    // : styles['permission-change-log-table--header'];
     ? styles.permissionChangeLogTableHeaderDark
     : styles.permissionChangeLogTableHeader;
   const paginate = pageNumber => {

@@ -9,8 +9,8 @@
   transition: background 0.2s ease;
 }
 
-.highlightRowDarkMode {
-  background-color: #00bcd4;
+.highlightRowDarkMode > td {
+  background-color: #00bcd4 !important;
   border-left: 4px solid #e0f7fa;
   transition: background 0.2s ease;
 }
@@ -19,8 +19,8 @@
   background-color: #b2ebf2;
 }
 
-.highlightRowDarkMode:hover, .permissionRowDarkMode:hover {
-  background-color: #213369;
+.highlightRowDarkMode:hover > td, .permissionRowDarkMode:hover > td {
+  background-color: #213369 !important;
 }
 
 .permissionChangeLogTable {
@@ -59,7 +59,6 @@
 
 .permissionChangeLogTableHeaderDark {
   background-color: #1c2541;
-  border: 1px solid red;
 }
 
 .permissionChangeLogTableHeader,
