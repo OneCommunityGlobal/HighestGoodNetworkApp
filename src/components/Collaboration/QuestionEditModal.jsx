@@ -4,12 +4,15 @@ import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styles from './QuestionEditModal.module.css';
 
-const createOptionId = () =>
-  typeof crypto !== 'undefined' && crypto.randomUUID
-    ? crypto.randomUUID()
-    : `opt-${Date.now()}-${Math.random()
-        .toString(36)
-        .slice(2, 9)}`;
+let optionRowIdCounter = 0;
+
+const createOptionId = () => {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+  optionRowIdCounter += 1;
+  return `opt-${optionRowIdCounter}-${Date.now()}`;
+};
 
 const toOptionRows = options =>
   (options || []).map(value => ({
