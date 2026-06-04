@@ -9,13 +9,88 @@ import {
   Cell,
 } from 'recharts';
 import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 
 const categories = ['Plumbing', 'Electrical', 'Structural', 'Mechanical'];
 const projects = ['Project A', 'Project B', 'Project C'];
 
+const rawData = [
+  {
+    projectId: 'Project A',
+    category: 'Plumbing',
+    plannedCost: 1000,
+    actualCost: 1200,
+    date: '2025-04-01',
+  },
+  {
+    projectId: 'Project A',
+    category: 'Electrical',
+    plannedCost: 1500,
+    actualCost: 1300,
+    date: '2025-04-01',
+  },
+  {
+    projectId: 'Project B',
+    category: 'Plumbing',
+    plannedCost: 1100,
+    actualCost: 1050,
+    date: '2025-04-02',
+  },
+  {
+    projectId: 'Project B',
+    category: 'Structural',
+    plannedCost: 2200,
+    actualCost: 2150,
+    date: '2025-04-02',
+  },
+  {
+    projectId: 'Project C',
+    category: 'Mechanical',
+    plannedCost: 1300,
+    actualCost: 1350,
+    date: '2025-04-03',
+  },
+  {
+    projectId: 'Project C',
+    category: 'Electrical',
+    plannedCost: 1400,
+    actualCost: 1600,
+    date: '2025-04-03',
+  },
+];
+
+const getFilteredAndAggregatedData = (startDate, endDate, projectId, categoryFilter) => {
+  const filtered = rawData.filter(entry => {
+    const dateMatch =
+      (!startDate || entry.date >= startDate) && (!endDate || entry.date <= endDate);
+    const projectMatch = projectId === '' || entry.projectId === projectId;
+    const categoryMatch = categoryFilter === 'ALL' || entry.category === categoryFilter;
+    return dateMatch && projectMatch && categoryMatch;
+  });
+
+  const aggregated = {};
+  filtered.forEach(entry => {
+    const key = entry.projectId;
+    if (!aggregated[key]) {
+      aggregated[key] = { project: key, planned: 0, actual: 0 };
+    }
+    aggregated[key].planned += entry.plannedCost;
+    aggregated[key].actual += entry.actualCost;
+  });
+
+  return Object.values(aggregated).map(item => {
+    item.variance = item.actual - item.planned;
+    const percent = item.planned === 0 ? 0 : ((item.variance / item.planned) * 100).toFixed(1);
+    item.variancePercent = percent > 0 ? `+${percent}%` : `${percent}%`;
+    item.varianceLabel = item.variance > 0 ? `+$${item.variance}` : `-$${Math.abs(item.variance)}`;
+    return item;
+  });
+};
+
 const renderVarianceLabel = props => {
   const { x, y, width, value } = props;
-  const isOver = value && value.toString().startsWith('+');
+  const isOver = value?.toString().startsWith('+');
+
   return (
     <text
       x={x + width / 2}
@@ -30,54 +105,76 @@ const renderVarianceLabel = props => {
   );
 };
 
-const CustomTooltip = ({ active, payload, label, darkMode }) => {
-  if (active && payload && payload.length) {
-    const chartData = payload[0].payload;
-    const isOverBudget = chartData.variance > 0;
+renderVarianceLabel.propTypes = {
+  x: PropTypes.number,
+  y: PropTypes.number,
+  width: PropTypes.number,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+};
 
-    return (
-      <div
+const CustomTooltip = ({ active, payload, label, darkMode }) => {
+  if (!active || !payload?.length) return null;
+
+  const chartData = payload[0].payload;
+  const isOverBudget = chartData.variance > 0;
+
+  return (
+    <div
+      style={{
+        backgroundColor: darkMode ? '#222' : '#fff',
+        border: darkMode ? '1px solid #555' : '1px solid #ccc',
+        color: darkMode ? '#eee' : '#333',
+        padding: '12px',
+        fontSize: '12px',
+        borderRadius: '6px',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+      }}
+    >
+      <p
         style={{
-          backgroundColor: darkMode ? '#222' : '#fff',
-          border: darkMode ? '1px solid #555' : '1px solid #ccc',
-          color: darkMode ? '#eee' : '#333',
-          padding: '12px',
-          fontSize: '12px',
-          borderRadius: '6px',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          fontWeight: 'bold',
+          margin: '0 0 8px 0',
+          borderBottom: darkMode ? '1px solid #444' : '1px solid #eee',
+          paddingBottom: '6px',
+          color: darkMode ? '#adb5bd' : '#666',
         }}
       >
-        <p
-          style={{
-            fontWeight: 'bold',
-            margin: '0 0 8px 0',
-            borderBottom: darkMode ? '1px solid #444' : '1px solid #eee',
-            paddingBottom: '6px',
-            color: darkMode ? '#adb5bd' : '#666',
-          }}
-        >
-          {label}
-        </p>
-        <p style={{ margin: '0 0 4px 0' }}>
-          Planned: <strong>${chartData.planned}</strong>
-        </p>
-        <p style={{ margin: '0 0 4px 0' }}>
-          Actual: <strong>${chartData.actual}</strong>
-        </p>
-        <p
-          style={{
-            margin: '8px 0 0 0',
-            color: isOverBudget ? '#EA4335' : '#34A853',
-            fontWeight: 'bold',
-          }}
-        >
-          Variance: {chartData.variance > 0 ? '+' : ''}${chartData.variance} (
-          {chartData.variancePercent})
-        </p>
-      </div>
-    );
-  }
-  return null;
+        {label}
+      </p>
+      <p style={{ margin: '0 0 4px 0' }}>
+        Planned: <strong>${chartData.planned}</strong>
+      </p>
+      <p style={{ margin: '0 0 4px 0' }}>
+        Actual: <strong>${chartData.actual}</strong>
+      </p>
+      <p
+        style={{
+          margin: '8px 0 0 0',
+          color: isOverBudget ? '#EA4335' : '#34A853',
+          fontWeight: 'bold',
+        }}
+      >
+        Variance: {chartData.variance > 0 ? '+' : ''}${chartData.variance} (
+        {chartData.variancePercent})
+      </p>
+    </div>
+  );
+};
+
+CustomTooltip.propTypes = {
+  active: PropTypes.bool,
+  payload: PropTypes.arrayOf(
+    PropTypes.shape({
+      payload: PropTypes.shape({
+        planned: PropTypes.number,
+        actual: PropTypes.number,
+        variance: PropTypes.number,
+        variancePercent: PropTypes.string,
+      }),
+    }),
+  ),
+  label: PropTypes.string,
+  darkMode: PropTypes.bool,
 };
 
 export default function ExpenseBarChart({ darkMode }) {
@@ -105,86 +202,17 @@ export default function ExpenseBarChart({ darkMode }) {
   };
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const rawData = [
-          {
-            projectId: 'Project A',
-            category: 'Plumbing',
-            plannedCost: 1000,
-            actualCost: 1200,
-            date: '2025-04-01',
-          },
-          {
-            projectId: 'Project A',
-            category: 'Electrical',
-            plannedCost: 1500,
-            actualCost: 1300,
-            date: '2025-04-01',
-          },
-          {
-            projectId: 'Project B',
-            category: 'Plumbing',
-            plannedCost: 1100,
-            actualCost: 1050,
-            date: '2025-04-02',
-          },
-          {
-            projectId: 'Project B',
-            category: 'Structural',
-            plannedCost: 2200,
-            actualCost: 2150,
-            date: '2025-04-02',
-          },
-          {
-            projectId: 'Project C',
-            category: 'Mechanical',
-            plannedCost: 1300,
-            actualCost: 1350,
-            date: '2025-04-03',
-          },
-          {
-            projectId: 'Project C',
-            category: 'Electrical',
-            plannedCost: 1400,
-            actualCost: 1600,
-            date: '2025-04-03',
-          },
-        ];
-
-        const filtered = rawData.filter(entry => {
-          const dateMatch =
-            (!startDate || entry.date >= startDate) && (!endDate || entry.date <= endDate);
-          const projectMatch = projectId === '' || entry.projectId === projectId;
-          const categoryMatch = categoryFilter === 'ALL' || entry.category === categoryFilter;
-          return dateMatch && projectMatch && categoryMatch;
-        });
-
-        const aggregated = {};
-        filtered.forEach(entry => {
-          const key = entry.projectId;
-          if (!aggregated[key]) {
-            aggregated[key] = { project: key, planned: 0, actual: 0 };
-          }
-          aggregated[key].planned += entry.plannedCost;
-          aggregated[key].actual += entry.actualCost;
-        });
-
-        Object.values(aggregated).forEach(item => {
-          item.variance = item.actual - item.planned;
-          const percent =
-            item.planned === 0 ? 0 : ((item.variance / item.planned) * 100).toFixed(1);
-          item.variancePercent = percent > 0 ? `+${percent}%` : `${percent}%`;
-          item.varianceLabel =
-            item.variance > 0 ? `+$${item.variance}` : `-$${Math.abs(item.variance)}`;
-        });
-
-        setData(Object.values(aggregated));
-      } catch (error) {
-        setErrorMessage('Something went wrong while loading chart data.');
-      }
+    try {
+      const processedData = getFilteredAndAggregatedData(
+        startDate,
+        endDate,
+        projectId,
+        categoryFilter,
+      );
+      setData(processedData);
+    } catch (error) {
+      setErrorMessage('Something went wrong while loading chart data.');
     }
-    fetchData();
   }, [projectId, categoryFilter, startDate, endDate]);
 
   return (
@@ -353,8 +381,11 @@ export default function ExpenseBarChart({ darkMode }) {
               </Bar>
               <Bar dataKey="actual" name="Actual" radius={[2, 2, 0, 0]}>
                 <LabelList dataKey="varianceLabel" content={renderVarianceLabel} />
-                {data.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.variance > 0 ? '#EA4335' : '#34A853'} />
+                {data.map(entry => (
+                  <Cell
+                    key={`cell-${entry.project}`}
+                    fill={entry.variance > 0 ? '#EA4335' : '#34A853'}
+                  />
                 ))}
               </Bar>
             </BarChart>
@@ -364,3 +395,7 @@ export default function ExpenseBarChart({ darkMode }) {
     </div>
   );
 }
+
+ExpenseBarChart.propTypes = {
+  darkMode: PropTypes.bool,
+};
