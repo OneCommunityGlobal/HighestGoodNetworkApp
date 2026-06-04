@@ -152,6 +152,10 @@
   vertical-align: middle;
 }
 
+.darkMode .weeklySummaryShareBtn {
+  background-color: var(--button-bg) !important;
+}
+
 .weeklySummaryShareBtn:focus {
   outline: none;
   box-shadow: 0 0 0 2px rgb(59 130 246 / 50%);
@@ -160,10 +164,6 @@
 .weeklySummaryShareBtn:disabled {
   opacity: 0.7;
   cursor: not-allowed;
-}
-
-.darkMode .weeklySummaryShareBtn {
-  background-color: var(--button-bg) !important;
 }
 
 .darkMode .weeklySummaryShareBtn:hover {
