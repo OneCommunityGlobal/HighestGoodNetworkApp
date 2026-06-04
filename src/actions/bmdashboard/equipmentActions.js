@@ -81,14 +81,13 @@ export const purchaseEquipment = async body => {
 };
 
 export const updateMultipleEquipmentLogs = (projectId, bulkArr) => dispatch => {
-  axios
+  return axios
     .put(
       `${ENDPOINTS.BM_EQUIPMENT_LOGS}?project=${projectId}`,
       bulkArr
     )
     .then(res => {
       dispatch(setEquipments(res.data));
-      toast.success('Equipment logs updated successfully!');
       return res.data;
     })
     .catch(err => {

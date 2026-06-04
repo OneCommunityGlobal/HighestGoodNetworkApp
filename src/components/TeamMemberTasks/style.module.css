@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 :global(.dark-mode) .modal-body p {
   color: #fff;
   background-color: transparent;
@@ -11,6 +12,7 @@
 .team-member-tasks {
   background-color: white;
   overflow: hidden;
+  max-width: 100%;
 }
 
 .truncateTasksBtn {
@@ -67,7 +69,9 @@
 }
 
 .task_table-container {
+  width: 100%;
   overflow: hidden auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .task_table-container table {
@@ -112,7 +116,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 10px;
 }
 
 .team-member-tasks .team-member-tasks-headers {
@@ -244,9 +248,12 @@
 }
 
 .team-clocks {
-  display: flex;
-  justify-content: space-around;
+  display: table-cell;
+  text-align: center;
+  vertical-align: top;
+  padding-left: 10px !important;
 }
+
 
 .team-member-tasks-number {
   display: inline-block;
@@ -983,4 +990,34 @@
   .multiSelectFilter {
     width: 50%;
   }
+}
+.task-age-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 5px;
+  background-color: #6c757d;
+  color: #fff;
+  border-radius: 50px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.task-age-badge-new {
+  background-color: #28a745;
+}
+
+.task-age-badge-recent {
+  background-color: #17a2b8;
+}
+
+.task-age-badge-old {
+  background-color: #ffc107;
+  color: #212529;
+}
+
+.task-age-badge-very-old {
+  background-color: #dc3545;
 }

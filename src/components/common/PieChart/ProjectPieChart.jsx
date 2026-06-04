@@ -1,12 +1,12 @@
 /* eslint-disable import/prefer-default-export */
 import { useMemo, useState } from 'react';
 import {
-  ResponsiveContainer,
-  PieChart as RechartsPieChart,
-  Pie,
   Cell,
-  Tooltip,
   Label,
+  Pie,
+  PieChart as RechartsPieChart,
+  ResponsiveContainer,
+  Tooltip,
 } from 'recharts';
 import { CHART_RADIUS, CHART_SIZE } from './constants'; // use same numbers as the D3 chart
 import styles from './UserProjectPieChart.module.css';
@@ -68,7 +68,7 @@ function CenterLabel({ viewBox, total, darkMode, showPct, onToggle }) {
         >
           <label className={styles['switch']}>
             {/* Accessible text for the label */}
-            <span className={styles['sr-only']}>Show percentage</span>
+            {/* <span className={styles['sr-only']}>Show percentage</span> */}
 
             {/* The control associated with the label */}
             <input
@@ -137,6 +137,12 @@ export default function UserProjectD3PieChart({ projectsData, darkMode }) {
             </Pie>
 
             <Tooltip
+              contentStyle={
+                darkMode
+                  ? { backgroundColor: '#1b2a41', color: '#f9fafb', border: '1px solid #374151' }
+                  : {}
+              }
+              itemStyle={darkMode ? { color: '#f9fafb' } : {}}
               formatter={(value, _name, entry) =>
                 showPct
                   ? [`${((Number(value) * 100) / total).toFixed(2)}%`, entry?.payload?.name]
@@ -179,7 +185,10 @@ export default function UserProjectD3PieChart({ projectsData, darkMode }) {
           </tbody>
         </table>
 
-        <div className={styles['data-total-value']} style={{ marginTop: 8 }}>
+        <div
+          className={`${styles['data-total-value']} ${darkMode ? styles['text-light'] : ''}`}
+          style={{ marginTop: 8, color: darkMode ? '#f5f5f5' : 'inherit' }}
+        >
           <strong className={`strong-text ${darkMode ? styles['text-light'] : ''}`}>
             Total Hours:
           </strong>{' '}

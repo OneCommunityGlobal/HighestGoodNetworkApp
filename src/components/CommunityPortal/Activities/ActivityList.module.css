@@ -1,13 +1,10 @@
-/* Enhanced Aesthetic CSS for Activity List */
-
-/* Activity List Container */
+/* stylelint-disable no-descending-specificity */
 .activityListContainer {
   padding: 20px;
   min-height: calc(100vh - 140px);
 }
 
-/* Dark mode follows Dashboard pattern using bg-oxford-blue */
-.activityListContainer:global(.bg-oxford-blue) {
+.activityListContainerDark {
   color: #fff;
   padding-bottom: 40px;
 }
@@ -20,8 +17,7 @@
   font-weight: 600;
 }
 
-/* Dark mode heading - uses global text-light class */
-.activityListContainer:global(.bg-oxford-blue) .heading {
+.activityListContainerDark .heading {
   color: #fff !important;
 }
 
@@ -52,17 +48,23 @@
   align-items: flex-end;
   gap: 30px;
   width: 100%;
+  flex-wrap: wrap;
 }
 
-/* Dark mode filters - navy-blue theme matching Dashboard */
 .darkModeFilters {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  margin: 30px 0;
+  padding: 20px;
   background: #1e2a3a;
   box-shadow: none;
   border: 1px solid #3a4a5c;
-  border-radius: 0;
 }
 
-.filters label {
+.filters label,
+.darkModeFilters label {
   display: flex;
   flex-direction: column;
   font-weight: 500;
@@ -71,7 +73,10 @@
   max-width: 250px;
 }
 
-.filters input {
+.filters input,
+.filters select,
+.darkModeFilters input,
+.darkModeFilters select {
   padding: 10px;
   border: 1px solid #d1d5db;
   border-radius: 6px;
@@ -82,12 +87,21 @@
   color: #333;
 }
 
-/* Dark mode inputs - navy-blue theme (#1e2a3a bg, #3a4a5c borders) */
 .darkModeInput {
   background-color: #1e2a3a !important;
   color: #fff !important;
   border: 1px solid #3a4a5c !important;
   color-scheme: dark;
+}
+
+.filters select {
+  padding: 10px;
+  height: 48px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  margin-top: 5px;
+  font-size: 1rem;
+  background: #fff;
 }
 
 /* Dark mode date input - style the calendar icon */
@@ -102,13 +116,11 @@
   box-shadow: 0 0 8px rgb(59 130 246 / 30%);
 }
 
-/* Dark mode input focus */
 .darkModeInput:focus {
   border-color: #5c9ce6 !important;
   box-shadow: 0 0 8px rgb(92 156 230 / 50%) !important;
 }
 
-/* Dark mode input placeholder */
 .darkModeInput::placeholder {
   color: #a0a0a0;
 }
@@ -138,9 +150,10 @@
 }
 
 .errorRow {
-  width: 100%;
+  flex-basis: 100%;
   display: flex;
   justify-content: center;
+  align-items: center;
   margin-top: 10px;
 }
 
@@ -150,6 +163,13 @@
   margin: 0;
   text-align: center;
   animation: fade-in 0.3s ease-in-out;
+  width:100%;
+}
+
+.darkModeFilters .errorRow {
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
 .activityList {
@@ -161,7 +181,6 @@
   box-shadow: 0 6px 12px rgb(0 0 0 / 10%);
 }
 
-/* Dark mode activity list */
 .darkModeList {
   background: #1e2a3a;
   box-shadow: none;
@@ -174,7 +193,7 @@
   padding: 0;
 }
 
-.activityList li {
+.activityItem {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -183,7 +202,6 @@
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   background-color: #f9fafb;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .activityList li:hover {
@@ -204,21 +222,26 @@
   box-shadow: none !important;
 }
 
-.darkModeItem strong {
-  color: #5c9ce6 !important;
-}
-
-.activityList li strong {
+.activityItem strong {
   color: #1e3a8a;
   font-size: 1.2rem;
 }
 
-.darkModeItem span {
-  color: #d1d5db !important;
+.darkModeItem strong {
+  color: #5c9ce6 !important;
 }
 
-.activityList li span {
+.activityList.darkActivityList li strong {
+  color: #00f3ff;
+  font-size: 1.2rem;
+}
+
+.activityItem span {
   color: #4b5563;
+}
+
+.darkModeItem span {
+  color: #d1d5db !important;
 }
 
 .activityList p {
@@ -228,7 +251,51 @@
   margin: 20px 0;
 }
 
-/* Autocomplete Suggestions Dropdown */
+.clearButtonWrapper{
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.clearFiltersButton {
+  padding: 10px 14px;
+  border: 1px solid #000;
+  border-radius: 6px;
+  background: #f9fafb;
+  color: #1f2937;
+  font-family: Poppins, sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.clearFiltersButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.clearFiltersButton:hover:not(:disabled) {
+  transform: scale(1.05);
+  background-color: #f9fafb;
+}
+
+
+.clearFiltersButtonDark {
+  border: 1px solid #fff;
+  background: #0f172a;
+  color: #f1f5f9;
+}
+
+.clearFiltersButtonDark:hover:not(:disabled) {
+  background: #111c33;
+}
+
+
+/* Suggestions */
 .suggestions {
   position: absolute;
   top: 100%;
@@ -278,13 +345,41 @@
   background-color: #334155;
 }
 
-.darkSuggestions .suggestionItem:focus {
-  outline-color: #60a5fa;
-  background-color: #334155;
+.showPastToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  color: #1f2937;
+  border-radius: 6px;
+  margin-top: 5px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
 }
 
 .darkSuggestions .suggestionItem:not(:last-child) {
   border-bottom-color: #475569;
+}
+
+.showPastToggle input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  cursor: pointer;
+  accent-color: #3b82f6;
+}
+
+.darkShowPastToggle {
+  color: #f1f5f9;
+}
+
+.darkShowPastToggle input[type="checkbox"] {
+  accent-color: #60a5fa;
+}
+
+.showPastToggle input[type="checkbox"]:focus-visible {
+  outline: none;
+  border-radius: 4px;
 }
 
 @keyframes fade-in {
