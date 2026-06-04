@@ -308,8 +308,6 @@ function CommunityCalendar() {
         closeEventModal();
       }, 500);
     } catch (error) {
-      console.error('Event registration failed:', error);
-
       toast.error('Registration failed. Please try again.', {
         position: 'top-right',
         autoClose: 3000,
