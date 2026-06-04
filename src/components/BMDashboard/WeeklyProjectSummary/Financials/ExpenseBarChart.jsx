@@ -1,53 +1,73 @@
-import { BarChart, Bar, XAxis, YAxis, LabelList, ResponsiveContainer } from 'recharts';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  LabelList,
+  ResponsiveContainer,
+  Tooltip,
+  Cell,
+} from 'recharts';
 import { useState, useEffect } from 'react';
 
 const categories = ['Plumbing', 'Electrical', 'Structural', 'Mechanical'];
 const projects = ['Project A', 'Project B', 'Project C'];
 
-const CustomTooltip = ({ active, payload, label }) => {
+const renderVarianceLabel = props => {
+  const { x, y, width, value } = props;
+  const isOver = value && value.toString().startsWith('+');
+  return (
+    <text
+      x={x + width / 2}
+      y={y - 8}
+      fill={isOver ? '#EA4335' : '#34A853'}
+      fontSize="11"
+      fontWeight="bold"
+      textAnchor="middle"
+    >
+      {value}
+    </text>
+  );
+};
+
+const CustomTooltip = ({ active, payload, label, darkMode }) => {
   if (active && payload && payload.length) {
     const chartData = payload[0].payload;
-
     const isOverBudget = chartData.variance > 0;
 
     return (
       <div
         style={{
-          backgroundColor: 'rgba(25, 25, 25, 0.95)',
-          border: '1px solid #444',
-          color: '#f8f9fa',
+          backgroundColor: darkMode ? '#222' : '#fff',
+          border: darkMode ? '1px solid #555' : '1px solid #ccc',
+          color: darkMode ? '#eee' : '#333',
           padding: '12px',
           fontSize: '12px',
           borderRadius: '6px',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
         }}
       >
         <p
           style={{
             fontWeight: 'bold',
             margin: '0 0 8px 0',
-            borderBottom: '1px solid #444',
+            borderBottom: darkMode ? '1px solid #444' : '1px solid #eee',
             paddingBottom: '6px',
-            color: '#adb5bd',
+            color: darkMode ? '#adb5bd' : '#666',
           }}
         >
           {label}
         </p>
-
         <p style={{ margin: '0 0 4px 0' }}>
           Planned: <strong>${chartData.planned}</strong>
         </p>
-
         <p style={{ margin: '0 0 4px 0' }}>
           Actual: <strong>${chartData.actual}</strong>
         </p>
-
         <p
           style={{
             margin: '8px 0 0 0',
-
-            color: isOverBudget ? '#ff6b6b' : '#51cf66',
-
+            color: isOverBudget ? '#EA4335' : '#34A853',
             fontWeight: 'bold',
           }}
         >
@@ -57,7 +77,6 @@ const CustomTooltip = ({ active, payload, label }) => {
       </div>
     );
   }
-
   return null;
 };
 
@@ -69,7 +88,6 @@ export default function ExpenseBarChart({ darkMode }) {
   const [data, setData] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
 
-  // Dark Mode Styles for Inputs/Selects
   const inputStyle = {
     marginLeft: '0.3rem',
     width: '100%',
@@ -135,10 +153,8 @@ export default function ExpenseBarChart({ darkMode }) {
         ];
 
         const filtered = rawData.filter(entry => {
-          const entryDate = new Date(entry.date);
-          const start = startDate ? new Date(startDate) : null;
-          const end = endDate ? new Date(endDate) : null;
-          const dateMatch = (!start || entryDate >= start) && (!end || entryDate <= end);
+          const dateMatch =
+            (!startDate || entry.date >= startDate) && (!endDate || entry.date <= endDate);
           const projectMatch = projectId === '' || entry.projectId === projectId;
           const categoryMatch = categoryFilter === 'ALL' || entry.category === categoryFilter;
           return dateMatch && projectMatch && categoryMatch;
@@ -154,6 +170,15 @@ export default function ExpenseBarChart({ darkMode }) {
           aggregated[key].actual += entry.actualCost;
         });
 
+        Object.values(aggregated).forEach(item => {
+          item.variance = item.actual - item.planned;
+          const percent =
+            item.planned === 0 ? 0 : ((item.variance / item.planned) * 100).toFixed(1);
+          item.variancePercent = percent > 0 ? `+${percent}%` : `${percent}%`;
+          item.varianceLabel =
+            item.variance > 0 ? `+$${item.variance}` : `-$${Math.abs(item.variance)}`;
+        });
+
         setData(Object.values(aggregated));
       } catch (error) {
         setErrorMessage('Something went wrong while loading chart data.');
@@ -163,9 +188,7 @@ export default function ExpenseBarChart({ darkMode }) {
   }, [projectId, categoryFilter, startDate, endDate]);
 
   return (
-    <div
-      style={{ width: '100%', padding: '0.5rem', backgroundColor: darkMode ? '' : 'transparent' }}
-    >
+    <div style={{ width: '100%', padding: '0.5rem' }}>
       <div style={{ textAlign: 'center', marginBottom: '0.75rem' }}>
         <h4 style={{ margin: 0, color: darkMode ? '#ddd' : '#555', fontSize: '1.2rem' }}>
           Planned vs Actual Cost
@@ -199,7 +222,6 @@ export default function ExpenseBarChart({ darkMode }) {
             ))}
           </select>
         </label>
-
         <label style={labelStyle}>
           Category:
           <select
@@ -215,7 +237,6 @@ export default function ExpenseBarChart({ darkMode }) {
             ))}
           </select>
         </label>
-
         <label style={labelStyle}>
           Start Date:
           <input
@@ -225,7 +246,6 @@ export default function ExpenseBarChart({ darkMode }) {
             style={inputStyle}
           />
         </label>
-
         <label style={labelStyle}>
           End Date:
           <input
@@ -237,59 +257,109 @@ export default function ExpenseBarChart({ darkMode }) {
         </label>
       </div>
 
-      {/* Legend */}
       <div
         style={{
           display: 'flex',
           justifyContent: 'center',
-          gap: '1rem',
+          gap: '1.5rem',
           fontSize: '0.75rem',
-          marginBottom: '0.75rem',
+          marginBottom: '1rem',
           color: darkMode ? '#ccc' : '#333',
+          flexWrap: 'wrap',
         }}
       >
         <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
           <span
-            style={{ width: 10, height: 10, backgroundColor: '#4285F4', display: 'inline-block' }}
+            style={{
+              width: 12,
+              height: 12,
+              backgroundColor: '#4285F4',
+              display: 'inline-block',
+              borderRadius: '2px',
+            }}
           />{' '}
           Planned
         </span>
         <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
           <span
-            style={{ width: 10, height: 10, backgroundColor: '#EA4335', display: 'inline-block' }}
+            style={{
+              width: 12,
+              height: 12,
+              backgroundColor: '#EA4335',
+              display: 'inline-block',
+              borderRadius: '2px',
+            }}
           />{' '}
-          Actual
+          Actual (Over Budget)
+        </span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+          <span
+            style={{
+              width: 12,
+              height: 12,
+              backgroundColor: '#34A853',
+              display: 'inline-block',
+              borderRadius: '2px',
+            }}
+          />{' '}
+          Actual (Under Budget)
         </span>
       </div>
 
-      <div style={{ width: '100%', height: '240px' }}>
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} margin={{ top: 10, right: 10, left: 35, bottom: 35 }}>
-            <XAxis
-              dataKey="project"
-              stroke={darkMode ? '#888' : '#333'}
-              tick={{ fontSize: 10, fill: darkMode ? '#aaa' : '#333' }}
-              interval={0}
-              angle={-15}
-              textAnchor="end"
-            />
-            <YAxis tick={{ fontSize: 10, fill: darkMode ? '#aaa' : '#333' }} axisLine tickLine />
-            <Bar dataKey="planned" fill="#4285F4" name="Planned">
-              <LabelList
-                dataKey="planned"
-                position="top"
-                style={{ fontSize: 8, fill: darkMode ? '#eee' : '#000' }}
+      <div style={{ width: '100%', height: '280px' }}>
+        {data.length === 0 && !errorMessage ? (
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: '100%',
+              color: darkMode ? '#bbb' : '#555',
+              fontStyle: 'italic',
+            }}
+          >
+            No data available for the selected filters.
+          </div>
+        ) : (
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={data} margin={{ top: 25, right: 10, left: 35, bottom: 40 }}>
+              <XAxis
+                dataKey="project"
+                stroke={darkMode ? '#888' : '#333'}
+                tick={{ fontSize: 11, fill: darkMode ? '#aaa' : '#333' }}
+                interval={0}
+                angle={-20}
+                textAnchor="end"
               />
-            </Bar>
-            <Bar dataKey="actual" fill="#EA4335" name="Actual">
-              <LabelList
-                dataKey="actual"
-                position="top"
-                style={{ fontSize: 8, fill: darkMode ? '#eee' : '#000' }}
+              <YAxis
+                tick={{ fontSize: 11, fill: darkMode ? '#aaa' : '#333' }}
+                axisLine
+                tickLine
+                tickFormatter={value => `$${value}`}
               />
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
+              <Tooltip
+                content={<CustomTooltip darkMode={darkMode} />}
+                cursor={{ fill: darkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)' }}
+                wrapperStyle={{ backgroundColor: 'transparent', outline: 'none' }}
+                contentStyle={{ backgroundColor: 'transparent', border: 'none' }}
+              />
+              <Bar dataKey="planned" fill="#4285F4" name="Planned" radius={[2, 2, 0, 0]}>
+                <LabelList
+                  dataKey="planned"
+                  position="top"
+                  style={{ fontSize: 10, fill: '#8ab4f8' }}
+                  formatter={val => `$${val}`}
+                />
+              </Bar>
+              <Bar dataKey="actual" name="Actual" radius={[2, 2, 0, 0]}>
+                <LabelList dataKey="varianceLabel" content={renderVarianceLabel} />
+                {data.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.variance > 0 ? '#EA4335' : '#34A853'} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        )}
       </div>
     </div>
   );
