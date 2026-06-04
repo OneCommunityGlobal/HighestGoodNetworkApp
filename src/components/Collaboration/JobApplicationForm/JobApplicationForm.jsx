@@ -185,11 +185,34 @@ function getQuestionType(q) {
   return String(q.questionType || q.type || '').toLowerCase();
 }
 
+function isResumeQuestion(q) {
+  const label = (q.label || q.questionText || '').toLowerCase();
+  return /\b(resume|résumé|curriculum\s*vitae|cv)\b/.test(label);
+}
+
+/** Resume/CV prompts are collected in the profile section — skip duplicates in the numbered list. */
+function shouldHideQuestionFromApplicantList(q) {
+  if (isResumeQuestion(q)) return true;
+  const raw = (q.label || q.questionText || '').trim();
+  return /^(19|20)[.)\s]/.test(raw) || /^[Qq]uestion\s*(19|20)\b/i.test(raw);
+}
+
+function formRequiresResumeUpload(form) {
+  if (!form?.questions) return false;
+  return form.questions.some(
+    q => q.visible !== false && isResumeQuestion(q) && isQuestionRequired(q),
+  );
+}
+
 function isFileUploadQuestion(q) {
+  if (isResumeQuestion(q)) return false;
   const qt = getQuestionType(q);
   if (['file', 'upload', 'document', 'attachment'].includes(qt)) return true;
   const label = (q.label || q.questionText || '').toLowerCase();
-  return /\b(upload|attach|resume|cv|document|file)\b/.test(label);
+  return (
+    /\b(upload|attach|file)\b/.test(label) &&
+    !/\b(work\s*sample|portfolio|writing\s*sample)\b/.test(label)
+  );
 }
 
 function formatFileSize(bytes) {
@@ -273,7 +296,9 @@ function dedupeVisibleQuestions(questions) {
 
 function getVisibleQuestionsForForm(form) {
   if (!form?.questions) return [];
-  const filtered = form.questions.filter(q => q.visible !== false);
+  const filtered = form.questions.filter(
+    q => q.visible !== false && !shouldHideQuestionFromApplicantList(q),
+  );
   return dedupeVisibleQuestions(filtered);
 }
 
@@ -316,7 +341,9 @@ function missingRequiredQuestionLabel(q, idx, answers, questionFiles) {
 
 function isHoursPerWeekQuestion(label) {
   const labelLower = String(label || '').toLowerCase();
-  return labelLower.includes('hour') && (labelLower.includes('week') || labelLower.includes('weekly'));
+  return (
+    labelLower.includes('hour') && (labelLower.includes('week') || labelLower.includes('weekly'))
+  );
 }
 
 function isIndividualOrgQuestionLabel(label) {
@@ -339,10 +366,13 @@ function collectMissingRequiredFields({
   visibleQuestions,
   answers,
   questionFiles,
+  resumeFile,
+  resumeRequired,
 }) {
   const missing = [];
   if (!applicantName.trim()) missing.push('Name');
   if (!applicantEmail.trim()) missing.push('Email');
+  if (resumeRequired && !resumeFile) missing.push('Resume');
   for (const [idx, q] of visibleQuestions.entries()) {
     const label = getQuestionLabel(q, idx);
     const requiredLabel = missingRequiredQuestionLabel(q, idx, answers, questionFiles);
@@ -556,6 +586,7 @@ function JobApplicationForm() {
   }, []);
 
   const visibleQuestions = useMemo(() => getVisibleQuestionsForForm(filteredForm), [filteredForm]);
+  const resumeRequired = useMemo(() => formRequiresResumeUpload(filteredForm), [filteredForm]);
 
   const applyQuestionnairePreFill = data => {
     if (!data) return;
@@ -864,6 +895,8 @@ function JobApplicationForm() {
       visibleQuestions,
       answers,
       questionFiles,
+      resumeFile,
+      resumeRequired,
     });
 
   const resetFormAfterSubmit = () => {
@@ -1157,13 +1190,14 @@ function JobApplicationForm() {
                 </div>
                 <FileUploadField
                   id="jaf-resume-upload"
-                  label="Upload Resume (optional)"
+                  label={resumeRequired ? 'Upload Resume' : 'Upload Resume (optional)'}
                   accept=".pdf,.doc,.docx"
                   file={resumeFile}
                   onChange={handleResumeChange}
                   onClear={clearResumeFile}
                   inputRef={resumeInputRef}
-                  optional
+                  optional={!resumeRequired}
+                  required={resumeRequired}
                 />
               </div>
               {visibleQuestions.map((q, idx) => {
@@ -1203,7 +1237,9 @@ function JobApplicationForm() {
                             required={req}
                             aria-required={req}
                             aria-labelledby={`${formKey}-heading`}
-                            className={`${styles.inputField} ${hasFieldError ? styles.inputFieldError : ''}`}
+                            className={`${styles.inputField} ${
+                              hasFieldError ? styles.inputFieldError : ''
+                            }`}
                           />
                           {hasFieldError && (
                             <p className={styles.fieldError} role="alert">
@@ -1222,7 +1258,9 @@ function JobApplicationForm() {
                           required={req}
                           aria-required={req}
                           aria-labelledby={`${formKey}-heading`}
-                          className={`${styles.inputField} ${hasFieldError ? styles.inputFieldError : ''}`}
+                          className={`${styles.inputField} ${
+                            hasFieldError ? styles.inputFieldError : ''
+                          }`}
                         />
                         {hasFieldError && (
                           <p className={styles.fieldError} role="alert">
