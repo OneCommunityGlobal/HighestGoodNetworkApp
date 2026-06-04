@@ -101,8 +101,18 @@
   background-color: #1c2541 !important;
 }
 
-.oxideDark .filterSelect .ant-select-item-option-content {
+.oxideDark :global(.ant-select-item-option-content) {
   color: #f5f5f5 !important;
+}
+
+/* hover effect */
+.oxideDark :global(.ant-select-item-option-active:not(.ant-select-item-option-disabled)) {
+  background-color: #2c3e50 !important;
+}
+
+.oxideDark :global(.ant-select-item-option-selected:not(.ant-select-item-option-disabled)) {
+  background-color: #3b5068 !important;
+  color: #ffffff !important;
 }
 
 .oxideDark .filterSelect.ant-picker {
@@ -113,88 +123,90 @@
     background-color: #1c2541 !important;
     border-color: rgb(255 255 255 / 20%) !important;
   }
+}
 
-  .oxideDark .filterSelect.ant-picker .ant-picker-input>input,
-  .oxideDark .filterSelect.ant-picker .ant-picker-input>input::placeholder {
+.oxideDark .filterSelect.ant-picker .ant-picker-input>input,
+.oxideDark .filterSelect.ant-picker .ant-picker-input>input::placeholder {
+  color: #f5f5f5 !important;
+}
+
+.oxideDark .filterSelect .ant-picker-suffix {
+  color: #f5f5f5 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.oxideDark .filterSelect .ant-picker-clear {
+  color: #f5f5f5 !important;
+}
+
+.oxideDark .filterSelect .ant-picker-dropdown {
+  background-color: #1c2541 !important;
+
+  .oxideDark :global(.ant-picker-cell-inner) {
     color: #f5f5f5 !important;
   }
+}
 
-  .oxideDark .filterSelect .ant-picker-suffix {
-    color: #f5f5f5 !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+
+.oxideDark :global(.ant-picker-cell:hover:not(.ant-picker-cell-selected):not(.ant-picker-cell-in-view) .ant-picker-cell-inner) {
+  background-color: #2c3e50 !important;
+}
+
+
+.oxideDark :global(.ant-picker-cell-in-range::before) {
+  background-color: #3b5068 !important;
+}
+
+.oxideDark .filterSelect:global(.ant-picker) {
+  background-color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+
+.oxideDark .filterSelect :global(.ant-picker-input > input) {
+  color: #000000 !important;
+}
+
+.oxideDark .filterSelect :global(.ant-picker-range-separator) * {
+  color: #000000 !important;
+  padding-right: 5px;
+}
+
+.oxideDark .filterSelect :global(.ant-picker-suffix) *,
+.oxideDark .filterSelect :global(.ant-picker-clear) * {
+  color: #000000 !important;
+}
+
+.oxideDark .filterSelect :global(.ant-picker-clear) {
+  background-color: transparent !important;
+
+}
+
+/* Recharts dark mode */
+.oxideDark .recharts-text,
+.oxideDark .recharts-cartesian-axis-tick-value,
+.oxideDark .recharts-legend-item-text {
+  fill: #f5f5f5 !important;
+  color: #f5f5f5 !important;
+}
+
+
+.oxideDark .recharts-cartesian-grid-horizontal line,
+.oxideDark .recharts-cartesian-grid-vertical line {
+  stroke: rgb(255 255 255 / 20%) !important;
+}
+
+/* Animation */
+@keyframes placeholderPulse {
+  0% {
+    opacity: 0.35;
   }
 
-  .oxideDark .filterSelect .ant-picker-clear {
-    color: #f5f5f5 !important;
+  50% {
+    opacity: 0.55;
   }
 
-  .oxideDark .filterSelect .ant-picker-dropdown {
-    background-color: #1c2541 !important;
-
-    .oxideDark :global(.ant-picker-cell-inner) {
-      color: #f5f5f5 !important;
-    }
-
-
-    .oxideDark :global(.ant-picker-cell:hover:not(.ant-picker-cell-selected):not(.ant-picker-cell-in-view) .ant-picker-cell-inner) {
-      background-color: #2c3e50 !important;
-    }
-
-
-    .oxideDark :global(.ant-picker-cell-in-range::before) {
-      background-color: #3b5068 !important;
-    }
-
-    .oxideDark .filterSelect:global(.ant-picker) {
-      background-color: #ffffff !important;
-      border: 1px solid rgba(255, 255, 255, 0.2) !important;
-    }
-
-
-    .oxideDark .filterSelect :global(.ant-picker-input > input) {
-      color: #000000 !important;
-    }
-
-    .oxideDark .filterSelect :global(.ant-picker-range-separator) * {
-      color: #000000 !important;
-      padding-right: 5px;
-    }
-
-    .oxideDark .filterSelect :global(.ant-picker-suffix) *,
-    .oxideDark .filterSelect :global(.ant-picker-clear) * {
-      color: #000000 !important;
-    }
-
-    .oxideDark .filterSelect :global(.ant-picker-clear) {
-      background-color: transparent !important;
-
-    }
-
-    /* Recharts dark mode */
-    .oxideDark .recharts-text,
-    .oxideDark .recharts-cartesian-axis-tick-value,
-    .oxideDark .recharts-legend-item-text {
-      fill: #f5f5f5 !important;
-      color: #f5f5f5 !important;
-    }
-
-
-    .oxideDark .recharts-cartesian-grid-horizontal line,
-    .oxideDark .recharts-cartesian-grid-vertical line {
-      stroke: rgb(255 255 255 / 20%) !important;
-    }
-
-    /* Animation */
-    @keyframes placeholderPulse {
-      0% {
-        opacity: 0.35;
-      }
-
-      50% {
-        opacity: 0.55;
-      }
-
-      100% {
-        opacity: 0.35;
-      }
-    }
+  100% {
+    opacity: 0.35;
+  }
+}
