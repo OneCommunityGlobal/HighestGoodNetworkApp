@@ -1,35 +1,36 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
 import {
-  Card,
-  CardHeader,
-  CardFooter,
-  CardBody,
   Button,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  UncontrolledTooltip,
-  Table,
-  ModalFooter,
-  Button as ReactStrapButton,
-  UncontrolledPopover,
-  UncontrolledDropdown,
-  CardTitle,
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
   CardImg,
   CardText,
-  DropdownToggle,
-  DropdownMenu,
+  CardTitle,
   DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  Button as ReactStrapButton,
+  Table,
+  UncontrolledDropdown,
+  UncontrolledPopover,
+  UncontrolledTooltip,
 } from 'reactstrap';
-import { connect } from 'react-redux';
-import './Badge.css';
-import FeaturedBadges from './FeaturedBadges';
-import BadgeReport from '../Badge/BadgeReport/BadgeReport';
-import AssignBadgePopup from './AssignBadgePopup';
 import { clearSelected } from '~/actions/badgeManagement';
-import hasPermission from '../../utils/permissions';
 import { boxStyle, boxStyleDark } from '~/styles';
+import hasPermission from '../../utils/permissions';
+import BadgeReport from '../Badge/BadgeReport/BadgeReport';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
+import AssignBadgePopup from './AssignBadgePopup';
+import '../Badge/Badge.css';
+import styles from './Badge.module.css';
+import FeaturedBadges from './FeaturedBadges';
 
 export const Badges = props => {
   const { auth, darkMode, displayUserId, authUser } = props;
@@ -115,9 +116,18 @@ export const Badges = props => {
     <>
       <Card id="badgeCard" className={`badgeCard ${darkMode ? 'bg-space-cadet' : ''}`}>
         <CardHeader>
-          <div className="badge-header">
+          <div
+            className={styles['badge-header']}
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '5px',
+            }}
+          >
             <span>Featured Badges</span>
-            <span className="badge-header-title">
+            <span className={styles['badge-header-title']}>
               <EditableInfoModal
                 areaName="FeaturedBadgesInfoPoint"
                 areaTitle="Featured Badges"
@@ -135,7 +145,7 @@ export const Badges = props => {
                 canModifyBadgeAmount) && (
                 <>
                   <Button
-                    className="btn--dark-sea-green"
+                    className={styles['btn--dark-sea-green']}
                     onClick={toggle}
                     style={darkMode ? boxStyleDark : boxStyle}
                   >
@@ -173,7 +183,7 @@ export const Badges = props => {
               {canAssignBadges && (
                 <>
                   <Button
-                    className="btn--dark-sea-green mr-2"
+                    className={`${styles['btn--dark-sea-green']} mr-2`}
                     onClick={assignToggle}
                     style={darkMode ? boxStyleDark : boxStyle}
                   >
@@ -448,7 +458,7 @@ export const Badges = props => {
         <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
           <div className="badge_summary_viz_footer">
             <ReactStrapButton
-              className="btn--dark-sea-green badge_summary_viz_button"
+              className={`${styles['btn--dark-sea-green']} ${styles['badge_summary_viz_button']}`}
               onClick={toggleBadge}
             >
               Close

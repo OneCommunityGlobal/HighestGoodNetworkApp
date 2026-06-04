@@ -1,4 +1,3 @@
-// ...existing code...
 import CustomTooltip from '../../CustomTooltip';
 import {
   BarChart,
@@ -15,10 +14,8 @@ import styles from './TeamStatsBarChart.module.css';
 import { useSelector } from 'react-redux';
 import TeamStatsBarLabel from './TeamStatsBarLabel';
 
-function TeamStatsBarChart({ data, yAxisLabel }) {
-  const darkMode = useSelector(state => state.theme.darkMode);
-  const totalValue = data.reduce((acc, item) => acc + item.value, 0);
-  const renderCustomLabel = props => {
+function renderTeamStatsBarLabel(data, totalValue) {
+  function TeamStatsBarLabelContent(props) {
     const { x, y, width, height, index } = props;
     const entry = data[index];
     const percentage = ((entry.value / totalValue) * 100).toFixed(2);
@@ -34,7 +31,25 @@ function TeamStatsBarChart({ data, yAxisLabel }) {
         percentage={percentage}
       />
     );
-  };
+  }
+  TeamStatsBarLabelContent.displayName = 'TeamStatsBarLabelContent';
+  return TeamStatsBarLabelContent;
+}
+
+function createTeamStatsTooltipContent(yAxisLabel, darkMode) {
+  function TeamStatsTooltipContent(props) {
+    return <CustomTooltip {...props} yAxisLabel={yAxisLabel} darkMode={darkMode} />;
+  }
+  TeamStatsTooltipContent.displayName = 'TeamStatsTooltipContent';
+  return TeamStatsTooltipContent;
+}
+
+function TeamStatsBarChart({ data, yAxisLabel }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const totalValue = data.reduce((acc, item) => acc + item.value, 0);
+  // eslint-disable-next-line testing-library/render-result-naming-convention -- recharts LabelList content renderer
+  const barLabelRenderer = renderTeamStatsBarLabel(data, totalValue);
+  const tooltipContent = createTeamStatsTooltipContent(yAxisLabel, darkMode);
 
   return (
     <div className={styles.teamStatsBarChart}>
@@ -62,16 +77,12 @@ function TeamStatsBarChart({ data, yAxisLabel }) {
             className={styles.teamStatsYAxis}
             tick={{ fill: darkMode ? 'white' : '#666' }}
           />
-          <Tooltip
-            content={props => (
-              <CustomTooltip {...props} yAxisLabel={yAxisLabel} darkMode={darkMode} />
-            )}
-          />
+          <Tooltip content={tooltipContent} />
           <Bar dataKey="value" fill="#1B6DDF">
             {data.map((_, index) => (
               <Cell key={`cell-${data[index].value}`} fill={data[index].color} />
             ))}
-            <LabelList dataKey="value" position="right" content={renderCustomLabel} />
+            <LabelList dataKey="value" position="right" content={barLabelRenderer} />
           </Bar>
         </BarChart>
       </ResponsiveContainer>

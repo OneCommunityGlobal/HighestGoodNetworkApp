@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import styles from '../Badge.module.css';
 import BadgeImage from '../BadgeImage';
 
 const FeaturedBadges = props => {
@@ -29,7 +30,7 @@ const filterBadges = allBadges => {
   }, [props.badges]);
 
   return (
-    <div data-testid="badge_featured_container" className="badge_featured_container">
+    <div data-testid="badge_featured_container" className={styles.badge_featured_container}>
       {filteredBadges.map((value, index) => (
         <BadgeImage 
           personalBestMaxHrs={props.personalBestMaxHrs} 

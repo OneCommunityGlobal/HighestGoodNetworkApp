@@ -46,7 +46,7 @@ const TeamMemberTask = React.memo(
     userId,
     updateTaskStatus,
     showWhoHasTimeOff,
-    showTrackers,
+    showTasks,
     onTimeOff,
     goingOnTimeOff,
     displayUser,
@@ -552,7 +552,7 @@ const TeamMemberTask = React.memo(
                   </td>
                   <td colSpan={3} className={`${darkMode ? 'bg-yinmn-blue' : ''}`}>
                     <div className={styles['grid-container']}>
-                      {showTrackers && (
+                      {showTasks !== false && (
                         <Table borderless className={styles['team-member-tasks-subtable']}>
                           <tbody>
                             {user.tasks &&
@@ -737,6 +737,25 @@ const TeamMemberTask = React.memo(
                                             )}
                                             className={styles['team-task-progress-bar']}
                                           />
+                                          {task.createdDatetime &&
+                                            (() => {
+                                              const days = Math.floor(
+                                                (Date.now() - new Date(task.createdDatetime)) /
+                                                  (1000 * 60 * 60 * 24),
+                                              );
+                                              let ageClass = styles['task-age-badge'];
+                                              if (days <= 7)
+                                                ageClass += ` ${styles['task-age-badge-new']}`;
+                                              else if (days <= 30)
+                                                ageClass += ` ${styles['task-age-badge-recent']}`;
+                                              else if (days <= 90)
+                                                ageClass += ` ${styles['task-age-badge-old']}`;
+                                              else
+                                                ageClass += ` ${styles['task-age-badge-very-old']}`;
+                                              return (
+                                                <div className={ageClass}>{days} Days Old</div>
+                                              );
+                                            })()}
                                         </div>
                                       </td>
                                     )}
@@ -834,7 +853,7 @@ TeamMemberTask.propTypes = {
     timeOffTill: PropTypes.string,
   }).isRequired,
   userRole: PropTypes.string.isRequired,
-  showTrackers: PropTypes.bool,
+  showTasks: PropTypes.bool,
   userId: PropTypes.string.isRequired,
   displayUser: PropTypes.object,
   userStateCatalog: PropTypes.array,
