@@ -3,41 +3,93 @@
 
 .questionSetManager {
   background: var(--jfb-gray-bg);
-  padding: 15px;
-  border-radius: 5px;
+  padding: 20px 22px;
+  border-radius: 8px;
   margin-bottom: 20px;
-  box-shadow: 0 2px 4px rgb(0 0 0 / 8%);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 10%);
+  border: 1px solid rgb(0 0 0 / 6%);
 }
 
 .questionSetManager h3 {
-  margin-top: 0;
-  margin-bottom: 15px;
+  margin: 0 0 18px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--jfb-blue-light);
   color: var(--jfb-blue);
   font-weight: 700;
+  font-size: 1.15rem;
 }
 
 .templateActions {
   display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  align-items: center;
+  flex-direction: column;
+  gap: 20px;
 }
 
-.saveTemplate,
+.templateRow {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.templateRowLabel {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--jfb-text);
+}
+
+.saveTemplate {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: stretch;
+}
+
 .loadTemplate {
   display: flex;
-  gap: 10px;
-  align-items: center;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.loadTemplateButtons {
+  display: flex;
   flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
 }
 
 .saveTemplate input,
 .loadTemplate select {
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  min-width: 180px;
+  height: 40px;
+  padding: 0 14px;
+  border: 1px solid #b0b0b0;
+  border-radius: 6px;
   background-color: var(--jfb-white);
+  box-sizing: border-box;
+  font-size: 0.95rem;
+  color: var(--jfb-text);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.saveTemplate input:focus,
+.loadTemplate select:focus {
+  outline: none;
+  border-color: var(--jfb-blue);
+  box-shadow: 0 0 0 3px rgb(74 144 226 / 25%);
+}
+
+.saveTemplate input {
+  flex: 1 1 220px;
+  max-width: 320px;
+  min-width: 180px;
+}
+
+.loadTemplate select {
+  width: 100%;
+  max-width: 420px;
+  min-width: 220px;
 }
 
 .saveTemplateButton,
@@ -45,14 +97,37 @@
 .appendTemplateButton,
 .deleteTemplateButton,
 .clearTemplateButton {
-  padding: 8px 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 10px 18px;
   border: none;
-  border-radius: 5px;
+  border-radius: 6px;
   cursor: pointer;
   font-weight: 600;
   font-size: 0.9rem;
+  line-height: 1.2;
+  white-space: nowrap;
   color: var(--jfb-white);
-  transition: background-color 0.2s;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 12%);
+  transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+.saveTemplateButton:hover:not(:disabled),
+.loadTemplateButton:hover:not(:disabled),
+.appendTemplateButton:hover:not(:disabled),
+.deleteTemplateButton:hover:not(:disabled),
+.clearTemplateButton:hover:not(:disabled) {
+  box-shadow: 0 2px 4px rgb(0 0 0 / 18%);
+}
+
+.saveTemplateButton:active:not(:disabled),
+.loadTemplateButton:active:not(:disabled),
+.appendTemplateButton:active:not(:disabled),
+.deleteTemplateButton:active:not(:disabled),
+.clearTemplateButton:active:not(:disabled) {
+  transform: translateY(1px);
 }
 
 .saveTemplateButton {
@@ -75,16 +150,12 @@
 
 .clearTemplateButton {
   background-color: var(--jfb-gray-btn);
+  color: var(--jfb-text);
 }
 
 .clearTemplateButton:hover:not(:disabled) {
   background-color: var(--jfb-gray-btn-hover);
-}
-
-.clearTemplateButton:disabled {
-  background-color: #e0e0e0;
-  color: #aaa;
-  cursor: not-allowed;
+  color: var(--jfb-text);
 }
 
 .deleteTemplateButton {
@@ -95,36 +166,71 @@
   background-color: var(--jfb-gray-muted-hover);
 }
 
-@media (width <= 768px) {
-  .templateActions {
-    flex-direction: column;
-    align-items: stretch;
-  }
+.saveTemplateButton:disabled,
+.loadTemplateButton:disabled,
+.appendTemplateButton:disabled,
+.deleteTemplateButton:disabled,
+.clearTemplateButton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
 
-  .saveTemplate,
-  .loadTemplate {
-    flex-direction: column;
-  }
+.clearTemplateButton:disabled {
+  background-color: #e0e0e0;
+  color: #888;
 }
 
 .errorMessage {
   color: #c62828;
   background-color: #ffebee;
-  padding: 8px 12px;
-  border-radius: 4px;
-  margin-bottom: 12px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  margin-bottom: 14px;
   font-size: 0.9rem;
+}
+
+@media (width <= 768px) {
+  .questionSetManager {
+    padding: 16px;
+  }
+
+  .saveTemplate,
+  .loadTemplateButtons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .saveTemplate input,
+  .loadTemplate select {
+    max-width: none;
+    width: 100%;
+  }
+
+  .saveTemplateButton,
+  .loadTemplateButton,
+  .appendTemplateButton,
+  .deleteTemplateButton,
+  .clearTemplateButton {
+    width: 100%;
+  }
 }
 
 /* Dark mode */
 .darkMode {
   background-color: #243044;
-  border: 1px solid #3d4f6a;
+  border-color: #3d4f6a;
   box-shadow: none;
 }
 
 .darkMode h3 {
   color: #6ba3e8;
+  border-bottom-color: #3d5a80;
+}
+
+.darkMode .templateRowLabel {
+  color: #b0bec5;
 }
 
 .darkMode .saveTemplate input,
@@ -136,6 +242,12 @@
 
 .darkMode .saveTemplate input::placeholder {
   color: #90a4ae;
+}
+
+.darkMode .saveTemplate input:focus,
+.darkMode .loadTemplate select:focus {
+  border-color: #6ba3e8;
+  box-shadow: 0 0 0 3px rgb(107 163 232 / 30%);
 }
 
 .darkMode .clearTemplateButton {

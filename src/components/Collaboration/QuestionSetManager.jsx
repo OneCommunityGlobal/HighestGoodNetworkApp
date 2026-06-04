@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
 import QuestionEditModal from './QuestionEditModal';
-import styles from './QuestionEditModal.module.css';
+import styles from './QuestionSetManager.module.css';
 
 function QuestionSetManager({ formFields, setFormFields, onImportQuestions, darkMode = false }) {
   const [templates, setTemplates] = useState([]);
@@ -343,79 +343,89 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
     <div className={`${styles.questionSetManager} ${darkMode ? styles.darkMode : ''}`}>
       <h3>Question Set Templates</h3>
       {error && <div className={`${styles.errorMessage}`}>{error}</div>}
-      <div className={`${styles.templateActions}`}>
-        <div className={`${styles.saveTemplate}`}>
-          <input
-            type="text"
-            placeholder="Template Name"
-            value={templateName}
-            onChange={e => setTemplateName(e.target.value)}
-            disabled={isLoading}
-          />
-          <button
-            type="button"
-            onClick={saveTemplate}
-            className={`${styles.saveTemplateButton}`}
-            disabled={isLoading}
-          >
-            {isLoading ? 'Saving...' : 'Save Current set'}
-          </button>
+      <div className={styles.templateActions}>
+        <div className={styles.templateRow}>
+          <p className={styles.templateRowLabel}>Save a template</p>
+          <div className={styles.saveTemplate}>
+            <input
+              type="text"
+              placeholder="Template Name"
+              value={templateName}
+              onChange={e => setTemplateName(e.target.value)}
+              disabled={isLoading}
+              aria-label="Template name"
+            />
+            <button
+              type="button"
+              onClick={saveTemplate}
+              className={styles.saveTemplateButton}
+              disabled={isLoading}
+            >
+              {isLoading ? 'Saving...' : 'Save Current Set'}
+            </button>
+          </div>
         </div>
-        <div className={`${styles.loadTemplate}`}>
-          <select
-            value={selectedTemplate}
-            onChange={e => setSelectedTemplate(e.target.value)}
-            disabled={isLoading || templates.length === 0}
-          >
-            <option value="">Select a template</option>
-            {templates.map((template, i) => (
-              <option key={template._id || i} value={template.name}>
-                {template.name}
-              </option>
-            ))}
-          </select>
-          <button
-            type="button"
-            onClick={loadTemplate}
-            className={`${styles.loadTemplateButton}`}
-            disabled={isLoading || !selectedTemplate}
-          >
-            {isLoading ? 'Loading...' : 'Clone with Template'}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              if (formFields.length > 0) {
-                const confirmClear = window.confirm(
-                  'Are you sure you want to clear all the fields in this template? This action cannot be undone.',
-                );
-                if (confirmClear) {
-                  handleClearTemplate();
-                }
-              }
-            }}
-            className={styles.clearTemplateButton}
-            disabled={formFields.length === 0}
-            title="Remove all fields and reset the template to a clean state"
-          >
-            Clear Template
-          </button>
-          <button
-            type="button"
-            onClick={appendTemplate}
-            className={`${styles.appendTemplateButton}`}
-            disabled={isLoading || !selectedTemplate}
-          >
-            {isLoading ? 'Appending...' : 'Append Template'}
-          </button>
-          <button
-            type="button"
-            onClick={deleteTemplate}
-            className={`${styles.deleteTemplateButton}`}
-            disabled={isLoading || !selectedTemplate}
-          >
-            {isLoading ? 'Deleting...' : 'Delete Template'}
-          </button>
+        <div className={styles.templateRow}>
+          <p className={styles.templateRowLabel}>Load or manage templates</p>
+          <div className={styles.loadTemplate}>
+            <select
+              value={selectedTemplate}
+              onChange={e => setSelectedTemplate(e.target.value)}
+              disabled={isLoading || templates.length === 0}
+              aria-label="Select a template"
+            >
+              <option value="">Select a template</option>
+              {templates.map((template, i) => (
+                <option key={template._id || i} value={template.name}>
+                  {template.name}
+                </option>
+              ))}
+            </select>
+            <div className={styles.loadTemplateButtons}>
+              <button
+                type="button"
+                onClick={loadTemplate}
+                className={`${styles.loadTemplateButton}`}
+                disabled={isLoading || !selectedTemplate}
+              >
+                {isLoading ? 'Loading...' : 'Clone with Template'}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (formFields.length > 0) {
+                    const confirmClear = window.confirm(
+                      'Are you sure you want to clear all the fields in this template? This action cannot be undone.',
+                    );
+                    if (confirmClear) {
+                      handleClearTemplate();
+                    }
+                  }
+                }}
+                className={styles.clearTemplateButton}
+                disabled={formFields.length === 0}
+                title="Remove all fields and reset the template to a clean state"
+              >
+                Clear Template
+              </button>
+              <button
+                type="button"
+                onClick={appendTemplate}
+                className={`${styles.appendTemplateButton}`}
+                disabled={isLoading || !selectedTemplate}
+              >
+                {isLoading ? 'Appending...' : 'Append Template'}
+              </button>
+              <button
+                type="button"
+                onClick={deleteTemplate}
+                className={`${styles.deleteTemplateButton}`}
+                disabled={isLoading || !selectedTemplate}
+              >
+                {isLoading ? 'Deleting...' : 'Delete Template'}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
       {editModalOpen && editingQuestion && (
