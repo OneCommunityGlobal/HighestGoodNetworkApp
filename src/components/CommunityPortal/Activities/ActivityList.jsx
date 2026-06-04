@@ -4,7 +4,7 @@ import { useSelector, useStore } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import styles from './ActivityList.module.css';
 // import { useHistory } from 'react-router-dom';
-// import { fuzzySearch } from '../../../utils/fuzzySearch';
+import { fuzzySearch } from '../../../utils/fuzzySearch';
 import { mockActivities } from './mockActivities';
 
 function ActivityList() {
