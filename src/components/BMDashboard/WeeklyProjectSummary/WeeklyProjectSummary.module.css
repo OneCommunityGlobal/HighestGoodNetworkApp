@@ -3,6 +3,7 @@
   min-height: 100vh;
   background-color: var(--bg-color);
   color: var(--text-color);
+  padding-top: 10px;
 }
 
 .weeklyProjectSummaryContainer html,
@@ -284,9 +285,12 @@
 
 /* First, set a max-height and make it scrollable */
 .quantityOfMaterialsUsedChartTooltip {
-  max-height: 80vh !important; /* Limit to 80% of viewport height */
-  overflow-y: auto !important; /* Enable vertical scrolling */
-  padding-right: 15px !important; /* Add some padding for the scrollbar */
+  max-height: 80vh !important;
+  /* Limit to 80% of viewport height */
+  overflow-y: auto !important;
+  /* Enable vertical scrolling */
+  padding-right: 15px !important;
+  /* Add some padding for the scrollbar */
   /* Support for Firefox */
   scrollbar-width: thin;
   scrollbar-color: rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.1);
@@ -319,6 +323,7 @@
 .darkMode .quantityOfMaterialsUsedChartTooltip {
   scrollbar-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.1);
 }
+
 /* ---------------- RESPONSIVE DESIGN ---------------- */
 
 /* Medium Screens - Wrap Items */
@@ -406,6 +411,7 @@
   max-width: 1600px;
   margin: auto;
 }
+
 /* .projectStatusGrid {
   display: grid;
   grid-template-columns: repeat(6, 1fr);

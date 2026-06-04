@@ -203,7 +203,7 @@ function InjurySeverityDashboard(props) {
     minWidth: 180,
     overflow: 'hidden',
     textOverflow: 'ellipsis',
-    color: '#333333',
+    color: darkMode ? '#f5f5f5' : '#333333',
     borderColor: '#d9d9d9',
   };
 
@@ -229,10 +229,18 @@ function InjurySeverityDashboard(props) {
 
       {/* Filters */}
       <div
-        style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 20, paddingLeft: 20 }}
+        style={{
+          display: 'flex',
+          gap: 12,
+          flexWrap: 'wrap',
+          marginBottom: 20,
+          paddingLeft: 20,
+          color: '#f80a0a',
+        }}
       >
         <Select
           className={styles.filterSelect}
+          popupClassName={darkMode ? styles.oxideDark : ''}
           mode="multiple"
           allowClear
           placeholder="Projects"
@@ -251,6 +259,7 @@ function InjurySeverityDashboard(props) {
 
         <RangePicker
           className={styles.filterSelect}
+          popupClassName={darkMode ? styles.oxideDark : ''}
           value={dateRange}
           onChange={dates => setDateRange(dates || [null, null])}
           style={filterStyle}
@@ -258,6 +267,7 @@ function InjurySeverityDashboard(props) {
 
         <Select
           className={styles.filterSelect}
+          popupClassName={darkMode ? styles.oxideDark : ''}
           mode="multiple"
           allowClear
           placeholder="Injury Types"
@@ -276,6 +286,7 @@ function InjurySeverityDashboard(props) {
 
         <Select
           className={styles.filterSelect}
+          popupClassName={darkMode ? styles.oxideDark : ''}
           mode="multiple"
           allowClear
           placeholder="Departments"
