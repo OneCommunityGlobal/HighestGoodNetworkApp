@@ -1,0 +1,16 @@
+/* HGN Form Builder — colors from FORM CREATION screen */
+:global(:root) {
+  --jfb-lime: #97ca02;
+  --jfb-lime-hover: #7ab000;
+  --jfb-lime-light: #c5e1a5;
+  --jfb-blue: #4a90e2;
+  --jfb-blue-hover: #357abd;
+  --jfb-blue-light: #d6e8f9;
+  --jfb-gray-bg: #d9d9d9;
+  --jfb-gray-btn: #ccc;
+  --jfb-gray-btn-hover: #b3b3b3;
+  --jfb-gray-muted: #999;
+  --jfb-gray-muted-hover: #888;
+  --jfb-text: #333;
+  --jfb-white: #fff;
+}

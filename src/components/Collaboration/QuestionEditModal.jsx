@@ -2,9 +2,8 @@
 /* eslint-disable no-console */
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { v4 as uuidv4 } from 'uuid';
 import styles from './QuestionEditModal.module.css';
-function QuestionEditModal({ question, onSave, onCancel }) {
+function QuestionEditModal({ question, onSave, onCancel, darkMode = false }) {
   const [editedQuestion, setEditedQuestion] = useState({
     ...question,
 
@@ -103,8 +102,8 @@ function QuestionEditModal({ question, onSave, onCancel }) {
   };
 
   return (
-    <div className={`${styles.questionEditModalOverlay}`}>
-      <div className={`${styles.questionEditModal}`}>
+    <div className={styles.questionEditModalOverlay}>
+      <div className={`${styles.questionEditModal} ${darkMode ? styles.darkMode : ''}`}>
         <h3>Edit Question</h3>
         <div className={`${styles.editForm}`}>
           <div className={`${styles.formGroup}`}>
@@ -128,6 +127,7 @@ function QuestionEditModal({ question, onSave, onCancel }) {
               onChange={handleInputChange}
             >
               <option value="textbox">Text</option>
+              <option value="email">Email</option>
               <option value="textarea">Text Area</option>
               <option value="date">Date</option>
               <option value="dropdown">Dropdown</option>
@@ -166,10 +166,10 @@ function QuestionEditModal({ question, onSave, onCancel }) {
 
           {/* Options for dropdown, radio, and checkbox types */}
           {['dropdown', 'radio', 'checkbox'].includes(editedQuestion.type) && (
-            <div className={`${styles.formGroupOptionsGroup}`}>
-              <p className={`${styles.optionsLabel}`}>Options:</p>
+            <div className={styles.optionsGroup}>
+              <p className={styles.optionsLabel}>Options:</p>
               {(editedQuestion.options || []).map((option, index) => (
-                <div key={uuidv4()} className={`${styles.optionsRow}`}>
+                <div key={`option-${index}`} className={styles.optionRow}>
                   <input
                     type="text"
                     value={option}
@@ -191,11 +191,11 @@ function QuestionEditModal({ question, onSave, onCancel }) {
             </div>
           )}
 
-          <div className={`${styles.removeOptionButton}`}>
-            <button type="button" onClick={handleSave} className={`${styles.saveButton}`}>
+          <div className={styles.modalButtons}>
+            <button type="button" onClick={handleSave} className={styles.saveButton}>
               Save Changes
             </button>
-            <button type="button" onClick={onCancel} className={`${styles.cancelButton}`}>
+            <button type="button" onClick={onCancel} className={styles.cancelButton}>
               Cancel
             </button>
           </div>
@@ -215,6 +215,7 @@ QuestionEditModal.propTypes = {
   }).isRequired,
   onSave: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired,
+  darkMode: PropTypes.bool,
 };
 
 export default QuestionEditModal;
