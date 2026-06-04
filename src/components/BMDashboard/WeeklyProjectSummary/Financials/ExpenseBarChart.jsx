@@ -59,14 +59,24 @@ const rawData = [
   },
 ];
 
+// Extracted Filter Helpers (Reduces Cognitive Complexity)
+const isDateMatch = (entryDate, startDate, endDate) => {
+  if (startDate && entryDate < startDate) return false;
+  if (endDate && entryDate > endDate) return false;
+  return true;
+};
+
+const isProjectMatch = (entryProject, projectId) => projectId === '' || entryProject === projectId;
+const isCategoryMatch = (entryCategory, categoryFilter) =>
+  categoryFilter === 'ALL' || entryCategory === categoryFilter;
+
 const getFilteredAndAggregatedData = (startDate, endDate, projectId, categoryFilter) => {
-  const filtered = rawData.filter(entry => {
-    const dateMatch =
-      (!startDate || entry.date >= startDate) && (!endDate || entry.date <= endDate);
-    const projectMatch = projectId === '' || entry.projectId === projectId;
-    const categoryMatch = categoryFilter === 'ALL' || entry.category === categoryFilter;
-    return dateMatch && projectMatch && categoryMatch;
-  });
+  const filtered = rawData.filter(
+    entry =>
+      isDateMatch(entry.date, startDate, endDate) &&
+      isProjectMatch(entry.projectId, projectId) &&
+      isCategoryMatch(entry.category, categoryFilter),
+  );
 
   const aggregated = {};
   filtered.forEach(entry => {
@@ -85,6 +95,28 @@ const getFilteredAndAggregatedData = (startDate, endDate, projectId, categoryFil
     item.varianceLabel = item.variance > 0 ? `+$${item.variance}` : `-$${Math.abs(item.variance)}`;
     return item;
   });
+};
+
+// Theme Helper (Removes Inline Ternaries from the Component)
+const getTheme = darkMode => {
+  const mode = darkMode ? 'dark' : 'light';
+  return {
+    inputBg: { dark: '#333', light: '#fff' }[mode],
+    inputText: { dark: '#eee', light: '#000' }[mode],
+    inputBorder: { dark: '1px solid #555', light: '1px solid #ccc' }[mode],
+    labelColor: { dark: '#bbb', light: '#555' }[mode],
+    titleColor: { dark: '#ddd', light: '#555' }[mode],
+    legendColor: { dark: '#ccc', light: '#333' }[mode],
+    emptyTextColor: { dark: '#bbb', light: '#555' }[mode],
+    axisStroke: { dark: '#888', light: '#333' }[mode],
+    axisTick: { dark: '#aaa', light: '#333' }[mode],
+    cursorFill: { dark: 'rgba(255, 255, 255, 0.05)', light: 'rgba(0, 0, 0, 0.05)' }[mode],
+    tooltipBg: { dark: '#222', light: '#fff' }[mode],
+    tooltipBorder: { dark: '1px solid #555', light: '1px solid #ccc' }[mode],
+    tooltipText: { dark: '#eee', light: '#333' }[mode],
+    tooltipHeaderBorder: { dark: '1px solid #444', light: '1px solid #eee' }[mode],
+    tooltipHeaderColor: { dark: '#adb5bd', light: '#666' }[mode],
+  };
 };
 
 const renderVarianceLabel = props => {
@@ -117,13 +149,14 @@ const CustomTooltip = ({ active, payload, label, darkMode }) => {
 
   const chartData = payload[0].payload;
   const isOverBudget = chartData.variance > 0;
+  const theme = getTheme(darkMode);
 
   return (
     <div
       style={{
-        backgroundColor: darkMode ? '#222' : '#fff',
-        border: darkMode ? '1px solid #555' : '1px solid #ccc',
-        color: darkMode ? '#eee' : '#333',
+        backgroundColor: theme.tooltipBg,
+        border: theme.tooltipBorder,
+        color: theme.tooltipText,
         padding: '12px',
         fontSize: '12px',
         borderRadius: '6px',
@@ -134,9 +167,9 @@ const CustomTooltip = ({ active, payload, label, darkMode }) => {
         style={{
           fontWeight: 'bold',
           margin: '0 0 8px 0',
-          borderBottom: darkMode ? '1px solid #444' : '1px solid #eee',
+          borderBottom: theme.tooltipHeaderBorder,
           paddingBottom: '6px',
-          color: darkMode ? '#adb5bd' : '#666',
+          color: theme.tooltipHeaderColor,
         }}
       >
         {label}
@@ -185,20 +218,22 @@ export default function ExpenseBarChart({ darkMode }) {
   const [data, setData] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
 
+  const theme = getTheme(darkMode);
+
   const inputStyle = {
     marginLeft: '0.3rem',
     width: '100%',
     padding: '4px',
     borderRadius: '4px',
-    backgroundColor: darkMode ? '#333' : '#fff',
-    color: darkMode ? '#eee' : '#000',
-    border: darkMode ? '1px solid #555' : '1px solid #ccc',
+    backgroundColor: theme.inputBg,
+    color: theme.inputText,
+    border: theme.inputBorder,
     outline: 'none',
   };
 
   const labelStyle = {
     minWidth: '150px',
-    color: darkMode ? '#bbb' : '#555',
+    color: theme.labelColor,
   };
 
   useEffect(() => {
@@ -218,7 +253,7 @@ export default function ExpenseBarChart({ darkMode }) {
   return (
     <div style={{ width: '100%', padding: '0.5rem' }}>
       <div style={{ textAlign: 'center', marginBottom: '0.75rem' }}>
-        <h4 style={{ margin: 0, color: darkMode ? '#ddd' : '#555', fontSize: '1.2rem' }}>
+        <h4 style={{ margin: 0, color: theme.titleColor, fontSize: '1.2rem' }}>
           Planned vs Actual Cost
         </h4>
         {errorMessage && (
@@ -292,7 +327,7 @@ export default function ExpenseBarChart({ darkMode }) {
           gap: '1.5rem',
           fontSize: '0.75rem',
           marginBottom: '1rem',
-          color: darkMode ? '#ccc' : '#333',
+          color: theme.legendColor,
           flexWrap: 'wrap',
         }}
       >
@@ -342,7 +377,7 @@ export default function ExpenseBarChart({ darkMode }) {
               justifyContent: 'center',
               alignItems: 'center',
               height: '100%',
-              color: darkMode ? '#bbb' : '#555',
+              color: theme.emptyTextColor,
               fontStyle: 'italic',
             }}
           >
@@ -353,21 +388,21 @@ export default function ExpenseBarChart({ darkMode }) {
             <BarChart data={data} margin={{ top: 25, right: 10, left: 35, bottom: 40 }}>
               <XAxis
                 dataKey="project"
-                stroke={darkMode ? '#888' : '#333'}
-                tick={{ fontSize: 11, fill: darkMode ? '#aaa' : '#333' }}
+                stroke={theme.axisStroke}
+                tick={{ fontSize: 11, fill: theme.axisTick }}
                 interval={0}
                 angle={-20}
                 textAnchor="end"
               />
               <YAxis
-                tick={{ fontSize: 11, fill: darkMode ? '#aaa' : '#333' }}
+                tick={{ fontSize: 11, fill: theme.axisTick }}
                 axisLine
                 tickLine
                 tickFormatter={value => `$${value}`}
               />
               <Tooltip
                 content={<CustomTooltip darkMode={darkMode} />}
-                cursor={{ fill: darkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)' }}
+                cursor={{ fill: theme.cursorFill }}
                 wrapperStyle={{ backgroundColor: 'transparent', outline: 'none' }}
                 contentStyle={{ backgroundColor: 'transparent', border: 'none' }}
               />
