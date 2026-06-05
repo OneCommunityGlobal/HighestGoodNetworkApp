@@ -340,14 +340,7 @@ function UserPermissionsPopUp({
           )}
         </Dropdown>
         <div>
-          <h4
-            className={`${styles['user-permissions-pop-up__title']} ${classTheme(
-              darkMode,
-              appStyles['text-space-cadet'],
-            )}`}
-          >
-            Permissions:
-          </h4>
+          <h4 className={styles['user-permissions-pop-up__title']}>Permissions:</h4>
           <ul className={styles['user-role-tab__permission-list']}>
             <PermissionList
               rolePermissions={userPermissions}
@@ -376,16 +369,11 @@ function UserPermissionsPopUp({
         id="#modal2-body_new-role--padding"
         className={classTheme(darkMode, 'text-light dark-mode')}
       >
-        <ModalHeader
-          toggle={toggleInfoRoleModal}
-          className={classTheme(darkMode, appStyles['bg-space-cadet'])}
-        >
-          Reset to Default Info
-        </ModalHeader>
-        <ModalBody className={classTheme(darkMode, appStyles['bg-yinmn-blue'])}>
+        <ModalHeader toggle={toggleInfoRoleModal}>Reset to Default Info</ModalHeader>
+        <ModalBody>
           <p style={{ whiteSpace: 'pre-line' }}>{modalContent}</p>
         </ModalBody>
-        <ModalFooter className={classTheme(darkMode, appStyles['bg-yinmn-blue'])}>
+        <ModalFooter>
           <Button onClick={toggleInfoRoleModal} color="secondary" className="float-left">
             {' '}
             Ok{' '}
