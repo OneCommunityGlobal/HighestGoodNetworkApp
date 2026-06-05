@@ -24,7 +24,6 @@ function JobApplicationForm() {
   const [resumeFile, setResumeFile] = useState(null);
   const [resumeStatus, setResumeStatus] = useState('idle');
   // idle | uploading | success | error
-  const [resumeError, setResumeError] = useState('');
   const resumeInputRef = useRef(null);
 
   const darkMode = useSelector(state => state.theme?.darkMode);
@@ -113,7 +112,6 @@ function JobApplicationForm() {
 
     if (!allowedTypes.includes(f.type)) {
       setResumeStatus('error');
-      setResumeError('Only PDF or Word documents are allowed.');
       setResumeFile(null);
       toast.error('Invalid file type. Please upload PDF or DOC/DOCX.');
       return;
@@ -121,7 +119,6 @@ function JobApplicationForm() {
 
     setResumeFile(f);
     setResumeStatus('success');
-    setResumeError('');
 
     toast.success(`Resume selected: ${f.name}`);
   };
@@ -129,7 +126,6 @@ function JobApplicationForm() {
   const handleRemoveResume = () => {
     setResumeFile(null);
     setResumeStatus('idle');
-    setResumeError('');
     if (resumeInputRef.current) resumeInputRef.current.value = '';
   };
 
@@ -169,10 +165,17 @@ function JobApplicationForm() {
     setWebsiteSocial('');
     setResumeFile(null);
     setResumeStatus('idle');
-    setResumeError('');
     if (resumeInputRef.current) resumeInputRef.current.value = '';
     setAnswers(new Array((filteredForm?.questions ?? []).length).fill(''));
   };
+
+  let resumeStatusClass = '';
+
+  if (resumeStatus === 'success') {
+    resumeStatusClass = styles.success;
+  } else if (resumeStatus === 'error') {
+    resumeStatusClass = styles.error;
+  }
 
   return (
     <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
@@ -283,15 +286,7 @@ function JobApplicationForm() {
                   onChange={e => setWebsiteSocial(e.target.value)}
                 />
                 <div className={styles.resumeWrapper}>
-                  <label
-                    className={`${styles.resumeLabel} ${
-                      resumeStatus === 'success'
-                        ? styles.success
-                        : resumeStatus === 'error'
-                        ? styles.error
-                        : ''
-                    }`}
-                  >
+                  <label className={`${styles.resumeLabel} ${resumeStatusClass}`}>
                     {resumeFile ? (
                       <span className={styles.fileName}>📄 {resumeFile.name}</span>
                     ) : (
@@ -411,12 +406,11 @@ function JobApplicationForm() {
                         onChange={e => handleAnswerChange(idx, e.target.value)}
                       >
                         <option value="">Select an option</option>
-                        {q.options &&
-                          q.options.map(opt => (
-                            <option key={opt} value={opt}>
-                              {opt}
-                            </option>
-                          ))}
+                        {q.options?.map(opt => (
+                          <option key={opt} value={opt}>
+                            {opt}
+                          </option>
+                        ))}
                       </select>
                     ) : null}
                   </div>

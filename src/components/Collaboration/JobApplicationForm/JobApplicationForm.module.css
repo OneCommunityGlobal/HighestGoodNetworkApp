@@ -53,7 +53,7 @@
 }
 
 .goButton {
-  background-color: #4caf50;
+  background-color: #2e7d32;
   color: #fff;
   border: none;
   padding: 10px 14px;
@@ -140,7 +140,7 @@
 }
 
 .submitButton {
-  background-color: #4caf50;
+  background-color: #2e7d32;
   color: #fff;
   border: none;
   padding: 10px;
@@ -326,6 +326,6 @@
 }
 
 .darkMode .removeResumeBtn:hover {
-  color: #ff6b6b !important;
-  background: rgb(255 107 107 / 10%);
+  color: #fff;
+  background: #c62828;
 }

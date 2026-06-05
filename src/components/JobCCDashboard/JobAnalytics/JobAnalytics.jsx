@@ -131,7 +131,7 @@ class AnalyticsService {
 
   static async fetchData(dateRange, comparisonPeriod) {
     try {
-      // TODO: Replace with real API when ready
+      // Replace with real API when ready
       // const response = await fetch(`${CONFIG.API.ENDPOINTS.ANALYTICS}`, { ... });
       // if (!response.ok) throw new Error('Failed to fetch analytics data');
       // return await response.json();
@@ -448,16 +448,14 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
 
     if (darkMode) {
       // 1. Set the attribute for your JobAnalytics.module.css
-      root.setAttribute('data-theme', 'dark');
+      root.dataset.theme = 'dark';
 
       // 2. Add the classes required by the global CSS you found
-      body.classList.add('dark-mode');
-      body.classList.add('bm-dashboard-dark');
+      body.classList.add('dark-mode', 'bm-dashboard-dark');
     } else {
       // 3. Clean up when switching back to light mode
-      root.setAttribute('data-theme', 'light');
-      body.classList.remove('dark-mode');
-      body.classList.remove('bm-dashboard-dark');
+      root.dataset.theme = 'light';
+      body.classList.remove('dark-mode', 'bm-dashboard-dark');
     }
   }, [darkMode]);
 
