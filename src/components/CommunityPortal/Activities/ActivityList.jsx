@@ -139,7 +139,7 @@ function ActivityList() {
   const startIndex = (safePage - 1) * itemsPerPage;
 
   const paginatedActivities = filteredActivities.slice(startIndex, startIndex + itemsPerPage);
-
+  const hasActivities = paginatedActivities.length > 0;
   return (
     <div
       className={`${styles.activityListContainer} ${
@@ -151,7 +151,7 @@ function ActivityList() {
       {/* Filters */}
       <div className={`${darkMode ? styles.darkModeFilters : styles.filters}`}>
         <label className={darkMode ? 'text-light' : ''}>
-          Type:
+          <span>Type:</span>
           <select
             name="type"
             value={filter.type}
@@ -228,9 +228,9 @@ function ActivityList() {
 
       {/* Activity List */}
       <div className={`${styles.activityList} ${darkMode ? styles.darkModeList : ''}`}>
-        {loading ? (
-          <p className={darkMode ? 'text-light' : ''}>Loading activities...</p>
-        ) : paginatedActivities.length > 0 ? (
+        {loading && <p className={darkMode ? 'text-light' : ''}>Loading activities...</p>}
+
+        {!loading && hasActivities && (
           <ul>
             {paginatedActivities.map(activity => (
               <div
@@ -255,7 +255,9 @@ function ActivityList() {
               </div>
             ))}
           </ul>
-        ) : (
+        )}
+
+        {!loading && !hasActivities && (
           <p className={darkMode ? 'text-light' : ''}>No activities found</p>
         )}
       </div>
