@@ -78,7 +78,7 @@ const CustomTooltip = ({ active, payload, label }) => {
 
       {payload.map(item => (
         <div key={item.dataKey} className={styles.tooltipRow}>
-          <span>{item.name}</span>
+          <span>{item.name}: </span>
           <strong>{item.value} users</strong>
         </div>
       ))}
