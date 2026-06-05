@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
@@ -239,5 +240,26 @@ const mapDispatchToProps = dispatch => ({
   resendBlueSquareEmails: () => dispatch(resendBlueSquareEmails()),
   resendWeeklySummaryEmails: () => dispatch(resendWeeklySummaryEmails()),
 });
+
+BlueSquareEmailManagement.propTypes = {
+  auth: PropTypes.shape({
+    user: PropTypes.shape({
+      permissions: PropTypes.shape({
+        frontPermissions: PropTypes.arrayOf(PropTypes.string),
+        removedDefaultPermissions: PropTypes.arrayOf(PropTypes.string),
+      }),
+      role: PropTypes.string,
+    }),
+  }),
+  darkMode: PropTypes.bool,
+  roles: PropTypes.arrayOf(
+    PropTypes.shape({
+      roleName: PropTypes.string,
+      permissions: PropTypes.arrayOf(PropTypes.string),
+    }),
+  ),
+  resendBlueSquareEmails: PropTypes.func.isRequired,
+  resendWeeklySummaryEmails: PropTypes.func.isRequired,
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(BlueSquareEmailManagement);
