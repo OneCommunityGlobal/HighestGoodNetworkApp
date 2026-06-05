@@ -37,7 +37,7 @@ describe('ModalExample Component', () => {
       </Provider>,
     );
 
-    fireEvent.click(screen.getByText('Close'));
+    fireEvent.click(screen.getByText('Nope, changed my mind'));
     expect(closeModalMock).toHaveBeenCalledTimes(1);
   });
 
@@ -110,7 +110,7 @@ describe('ModalExample Component', () => {
       />,
     );
 
-    fireEvent.click(screen.getByText(/yes, hide it all/i));
+    fireEvent.click(screen.getAllByText(/yes, hide it all/i)[0]);
     expect(setInactiveModalMock).toHaveBeenCalled();
   });
 

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import GET_MATERIAL_TYPES, {
   POST_BUILDING_MATERIAL_INVENTORY_TYPE,
   POST_ERROR_BUILDING_MATERIAL_INVENTORY_TYPE,
@@ -20,6 +21,9 @@ import GET_MATERIAL_TYPES, {
   UPDATE_INVENTORY_TYPE_ERROR,
   DELETE_INVENTORY_TYPE_SUCCESS,
   DELETE_INVENTORY_TYPE_ERROR,
+  POST_UPDATE_NAME_AND_UNIT_SUCCESS,
+  POST_UPDATE_NAME_AND_UNIT_FAILURE,
+  GET_ITEM_UPDATE_HISTORY
 } from '../../constants/bmdashboard/inventoryTypeConstants';
 import {
   POST_TOOLS_LOG,
@@ -138,6 +142,7 @@ export const setPostErrorBuildingInventoryTypeResult = payload => {
   };
 };
 
+
 export const fetchMaterialTypes = () => {
   return async dispatch => {
     axios
@@ -182,11 +187,9 @@ export const fetchToolTypes = () => {
     axios
       .get(ENDPOINTS.BM_TOOL_TYPES)
       .then(res => {
-        // console.log("tool types: ", res)
         dispatch(setToolTypes(res.data));
       })
       .catch(err => {
-        // console.log("fetchToolTypes err: ", err)
         dispatch(setErrors(err));
       });
   };
@@ -201,7 +204,7 @@ export const fetchInvTypeByType = type => {
         dispatch(setInvTypesByType({ type, data: res.data }));
       })
       .catch(err => {
-        dispatch(setErrors(err));
+        console.error('Failed to refresh data:', err);
       });
   };
 };
@@ -275,14 +278,10 @@ export const postToolsLog = payload => {
     axios
       .post(ENDPOINTS.BM_LOG_TOOLS, payload)
       .then(res => {
-        // eslint-disable-next-line no-console
-        // eslint-disable-next-line no-use-before-define
         dispatch(setToolsLogResult(res.data));
       })
       .catch(err => {
         dispatch(
-          // setPostErrorToolsLog(JSON.stringify(err.response.data) || 'Sorry! Some error occurred!'),
-          // eslint-disable-next-line no-use-before-define
           setPostErrorToolsLog(err.response.data || 'Sorry! Some error occurred!'),
         );
       });
@@ -309,68 +308,139 @@ export const resetPostToolsLog = () => {
   };
 };
 
-// ============ Generic Inventory Type CRUD Actions ============
-
-/**
- * Add a new inventory type
- * @param {Object} payload - { name, description, category }
- * @param {string} category - The category (Materials, Consumables, Equipments, Reusables, Tools)
- */
-export const addInventoryType = (payload, category) => {
+export const deleteInvType = (type, invtypeId) => {
   return async dispatch => {
+    const toastId = `delete-${type}-${Date.now()}`;
     try {
-      const res = await axios.post(ENDPOINTS.BM_INVTYPE_ROOT, { ...payload, category });
-      dispatch({ type: ADD_INVENTORY_TYPE_SUCCESS, payload: res.data });
-      // Refresh the list for this category
-      dispatch(fetchInvTypeByType(category));
-      return { success: true, data: res.data };
+      await axios.delete(`${ENDPOINTS.BM_INVTYPE_TYPE(type)}/${invtypeId}`);
+      // Refresh the data after successful deletion
+      dispatch(fetchInvTypeByType(type));
+      toast.success(`${type.slice(0, -1)} deleted successfully!`, { toastId });
     } catch (err) {
-      const errorMsg = err.response?.data?.message || err.response?.data || 'Failed to add inventory type';
-      dispatch({ type: ADD_INVENTORY_TYPE_ERROR, payload: errorMsg });
-      return { success: false, error: errorMsg };
+      const errorMessage = err.response?.data?.error || err.response?.data?.message || 'Failed to delete item. Please try again.';
+      toast.error(errorMessage, { toastId: `delete-error-${type}-${Date.now()}` });
+    }
+  };
+};
+
+export const updateInvType = (type, invtypeId, payload) => {
+  return async dispatch => {
+    const toastId = `update-${type}-${Date.now()}`;
+    try {
+      await axios.put(`${ENDPOINTS.BM_INVTYPE_TYPE(type)}/${invtypeId}`, payload);
+      // Refresh the data after successful update
+      dispatch(fetchInvTypeByType(type));
+      toast.success(`${type.slice(0, -1)} updated successfully!`, { toastId });
+    } catch (err) {
+      const errorMessage = err.response?.data?.error || err.response?.data?.message || 'Failed to update item. Please try again.';
+      toast.error(errorMessage, { toastId: `update-error-${type}-${Date.now()}` });
+    }
+  };
+};
+
+export const addInvType = (type, payload) => {
+  let endpoint;
+  switch (type) {
+    case 'Materials':
+      endpoint = ENDPOINTS.BM_MATERIAL_TYPE;
+      break;
+    case 'Consumables':
+      endpoint = ENDPOINTS.BM_CONSUMABLES;
+      break;
+    case 'Tools':
+      endpoint = ENDPOINTS.BM_TOOLS;
+      break;
+    case 'Equipments':
+      endpoint = ENDPOINTS.BM_EQUIPMENT_INVTYPE;
+      break;
+    case 'Reusables':
+      endpoint = ENDPOINTS.BM_REUSABLES_INVTYPE;
+      break;
+    default:
+      endpoint = ENDPOINTS.BM_MATERIAL_TYPE;
+  }
+
+  return async (dispatch, getState) => {
+    const toastId = `add-${type}-${Date.now()}`;
+    const { auth } = getState();
+    const requestorId = auth.user?.userid;
+
+    const body = { ...payload, requestor: { requestorId } };
+
+    if (type === 'Equipments') {
+      body.desc = body.description;
+      body.fuel = body.fuel || 'Diesel';
+    }
+
+    try {
+      await axios.post(endpoint, body);
+      dispatch(fetchInvTypeByType(type));
+      toast.success(`${type.slice(0, -1)} added successfully!`, { toastId });
+    } catch (err) {
+      const errorMessage = err.response?.data?.error || err.response?.data?.message || 'Failed to add item. Please try again.';
+      toast.error(errorMessage, { toastId: `add-error-${type}-${Date.now()}` });
     }
   };
 };
 
 /**
- * Update an existing inventory type
- * @param {string} typeId - The ID of the inventory type
- * @param {Object} payload - { name, description }
- * @param {string} category - The category to refresh after update
+ * Delete an inventory type by ID and category.
+ * Used by DeleteInvTypeModal (param order: typeId, category).
  */
-export const updateInventoryType = (typeId, payload, category) => {
+export const deleteInventoryType = (invtypeId, category) => {
   return async dispatch => {
     try {
-      const res = await axios.put(ENDPOINTS.BM_INVTYPE_BY_ID(typeId), payload);
-      dispatch({ type: UPDATE_INVENTORY_TYPE_SUCCESS, payload: res.data });
-      // Refresh the list for this category
-      dispatch(fetchInvTypeByType(category));
-      return { success: true, data: res.data };
-    } catch (err) {
-      const errorMsg = err.response?.data?.message || err.response?.data || 'Failed to update inventory type';
-      dispatch({ type: UPDATE_INVENTORY_TYPE_ERROR, payload: errorMsg });
-      return { success: false, error: errorMsg };
-    }
-  };
-};
-
-/**
- * Delete an inventory type
- * @param {string} typeId - The ID of the inventory type
- * @param {string} category - The category to refresh after delete
- */
-export const deleteInventoryType = (typeId, category) => {
-  return async dispatch => {
-    try {
-      await axios.delete(ENDPOINTS.BM_INVTYPE_BY_ID(typeId));
-      dispatch({ type: DELETE_INVENTORY_TYPE_SUCCESS, payload: typeId });
-      // Refresh the list for this category
+      await axios.delete(`${ENDPOINTS.BM_INVTYPE_TYPE(category)}/${invtypeId}`);
       dispatch(fetchInvTypeByType(category));
       return { success: true };
     } catch (err) {
-      const errorMsg = err.response?.data?.message || err.response?.data || 'Failed to delete inventory type';
-      dispatch({ type: DELETE_INVENTORY_TYPE_ERROR, payload: errorMsg });
-      return { success: false, error: errorMsg };
+      const errorMessage = err.response?.data?.error || err.response?.data?.message || 'Failed to delete item.';
+      return { success: false, error: errorMessage };
     }
+  };
+};
+export const updateNameAndUnitResult = payload =>{
+  return{
+    type : POST_UPDATE_NAME_AND_UNIT_SUCCESS,
+    payload
+  }
+};
+export const setUpdateNamwAndUnitError = payload => {
+  return {
+    type: POST_UPDATE_NAME_AND_UNIT_FAILURE,
+    payload
+  }
+}
+export const updateNameAndUnit = (id,payload) => {
+  return async dispatch => {
+    axios
+      .put(ENDPOINTS.BM_UPDATE_NAME_AND_UNIT(id), payload)
+      .then(res => {
+        dispatch(updateNameAndUnitResult(res.data));
+      })
+      .catch(err => {
+        dispatch(
+         setUpdateNamwAndUnitError(JSON.stringify(err.response.data) || 'Sorry! Some error occurred!',
+          ),
+        );
+      });
+     };
+};
+export const setItemUpdateHistory = payload =>{
+  return{
+    type: GET_ITEM_UPDATE_HISTORY,
+    payload
+  }
+}
+export const fetchItemUpdateHistory = (id) => {
+  return async dispatch => {
+    axios
+      .get(ENDPOINTS.BM_ITEM_UPDATE_HISTORY(id))
+      .then(res => {
+        dispatch(setItemUpdateHistory(res.data));
+      })
+      .catch(err => {
+        dispatch(setErrors(err));
+      });
   };
 };
