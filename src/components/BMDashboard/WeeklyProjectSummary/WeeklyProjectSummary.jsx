@@ -388,7 +388,7 @@ function WeeklyProjectSummary() {
       {
         title: 'Labor and Time Tracking',
         key: 'Labor and Time Tracking',
-        className: 'half',
+        // className: 'half',
         content: [1, 2].map((_, index) => {
           const uniqueId = uuidv4();
           return (

@@ -46,6 +46,16 @@
   color: #fff;
 }
 
+.filters input,
+.filters select {
+  height: auto !important;
+  padding: 10px 12px;
+  border-radius: 6px;     
+  box-sizing: border-box; 
+  font-size: 0.95rem;
+  line-height: 1.2;
+}
+
 /* Dark mode: style inputs/selects (including date picker) */
 :global(.dark) .filters input,
 :global(.dark-mode) .filters input,
@@ -117,6 +127,13 @@
 :global(.dark-mode) .tooltip *,
 :global([data-theme='dark']) .tooltip * {
   color: #fff !important;
+}
+
+.buttonContainer {
+  width: 100%;           
+  display: flex;
+  justify-content: center;
+  margin-top: 5px;
 }
 
 /* Submit button – light & dark mode safe */

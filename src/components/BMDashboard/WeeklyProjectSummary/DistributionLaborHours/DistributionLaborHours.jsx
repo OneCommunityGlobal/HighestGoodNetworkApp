@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Select from 'react-select';
 import { useSelector } from 'react-redux';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import styles from './DistributionLaborHours.module.css';
@@ -64,6 +65,18 @@ export default function DistributionLaborHours() {
 
   const totalHours = filteredData.reduce((sum, item) => sum + item.value, 0);
 
+  const projectOptions = [
+    { value: '', label: 'All' },
+    { value: 'Project A', label: 'Project A' },
+    { value: 'Project B', label: 'Project B' },
+  ];
+
+  const memberOptions = [
+    { value: '', label: 'All' },
+    { value: 'Member 1', label: 'Member 1' },
+    { value: 'Member 2', label: 'Member 2' },
+  ];
+
   return (
     <div className={styles.container}>
       <h3 className={styles.title}>Distribution of Labor Hours</h3>
@@ -86,25 +99,28 @@ export default function DistributionLaborHours() {
             onChange={e => setDateRange({ ...dateRange, to: e.target.value })}
           />
         </label>
-        <label>
+        <label htmlFor="project-filter">
           Project:
-          <select onChange={e => setProjectFilter(e.target.value)} value={projectFilter}>
-            <option value="">All</option>
-            <option value="Project A">Project A</option>
-            <option value="Project B">Project B</option>
-          </select>
+          <Select
+            options={projectOptions}
+            onChange={opt => setProjectFilter(opt.value)}
+            className="react-select-container"
+          />
         </label>
-        <label>
+        <label htmlFor="member-filter">
           Member:
-          <select onChange={e => setMemberFilter(e.target.value)} value={memberFilter}>
-            <option value="">All</option>
-            <option value="Member 1">Member 1</option>
-            <option value="Member 2">Member 2</option>
-          </select>
+          <Select
+            options={memberOptions}
+            onChange={opt => setMemberFilter(opt.value)}
+            className="react-select-container"
+          />
         </label>
-        <button className={styles.button} type="button">
-          Submit
-        </button>
+
+        <div className={styles.buttonContainer}>
+          <button className={styles.button} type="button">
+            Submit
+          </button>
+        </div>
       </div>
 
       {/* Chart + Legend */}
