@@ -232,19 +232,10 @@ export default function UpdateEquipment() {
         if (lastUsedBy === 'other') setLastUsedByOther('');
         if (lastUsedFor === 'other') setLastUsedForOther('');
       } catch (error) {
-        const baseError =
-          error.response?.data?.error ||
-          error.response?.data?.message ||
-          (error.request ? 'No response from server. Please check your connection.' : null) ||
-          error.message ||
-          'Failed to update equipment. Please try again.';
+        const hasUploadedFiles = uploadedFiles.length > 0;
+        const errorMessage = buildErrorMessage(error, hasUploadedFiles);
 
-        const errorMessage =
-          uploadedFiles.length > 0
-            ? `${baseError} Note: Images were selected and previewed but not saved to database.`
-            : baseError;
-
-        if (uploadedFiles.length > 0) {
+        if (hasUploadedFiles) {
           setUploadedFilesPreview(prev =>
             prev.map(file => ({
               ...file,
