@@ -12,6 +12,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
+import PropTypes from 'prop-types';
 import styles from './EventPopularity.module.css';
 
 const eventTypeData = [
@@ -86,20 +87,40 @@ const CustomTooltip = ({ active, payload, label }) => {
   );
 };
 
+CustomTooltip.propTypes = {
+  active: PropTypes.bool,
+  payload: PropTypes.arrayOf(
+    PropTypes.shape({
+      dataKey: PropTypes.string,
+      name: PropTypes.string,
+      value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    }),
+  ),
+  label: PropTypes.string,
+};
+
 const InfoTooltip = ({ text, children }) => {
   const [showTooltip, setShowTooltip] = useState(false);
 
   return (
-    <div
+    <button
+      type="button"
       className={styles.infotooltipHover}
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
+      onFocus={() => setShowTooltip(true)}
+      onBlur={() => setShowTooltip(false)}
     >
       {children}
 
       {showTooltip && <div className={styles.infotooltipheading}>{text}</div>}
-    </div>
+    </button>
   );
+};
+
+InfoTooltip.propTypes = {
+  text: PropTypes.string.isRequired,
+  children: PropTypes.node.isRequired,
 };
 
 export default function EventDashboard() {
