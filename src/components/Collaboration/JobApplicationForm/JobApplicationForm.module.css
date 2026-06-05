@@ -322,9 +322,10 @@
 
 .darkMode .removeResumeBtn {
   border: 1px solid #444;
-  color: #ff6b6b;
+  color: #ff6b6b !important;
 }
 
 .darkMode .removeResumeBtn:hover {
+  color: #ff6b6b !important;
   background: rgb(255 107 107 / 10%);
 }
