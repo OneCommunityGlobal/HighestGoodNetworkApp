@@ -66,13 +66,13 @@ export default function DistributionLaborHours() {
   const totalHours = filteredData.reduce((sum, item) => sum + item.value, 0);
 
   const projectOptions = [
-    { value: '', label: 'All' },
+    { value: '', label: 'ALL' },
     { value: 'Project A', label: 'Project A' },
     { value: 'Project B', label: 'Project B' },
   ];
 
   const memberOptions = [
-    { value: '', label: 'All' },
+    { value: '', label: 'ALL' },
     { value: 'Member 1', label: 'Member 1' },
     { value: 'Member 2', label: 'Member 2' },
   ];
@@ -103,16 +103,20 @@ export default function DistributionLaborHours() {
           Project:
           <Select
             options={projectOptions}
+            value={projectOptions.find(opt => opt.value === projectFilter)}
             onChange={opt => setProjectFilter(opt.value)}
             className="react-select-container"
+            classNamePrefix="react-select"
           />
         </label>
         <label htmlFor="member-filter">
           Member:
           <Select
             options={memberOptions}
+            value={memberOptions.find(opt => opt.value === memberFilter)}
             onChange={opt => setMemberFilter(opt.value)}
             className="react-select-container"
+            classNamePrefix="react-select"
           />
         </label>
 
