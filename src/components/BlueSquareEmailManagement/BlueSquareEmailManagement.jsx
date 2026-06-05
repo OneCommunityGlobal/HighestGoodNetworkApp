@@ -11,6 +11,7 @@ import styles from './BlueSquareEmailManagement.module.css';
 const BlueSquareEmailManagement = ({
   auth,
   darkMode,
+  roles,
   resendBlueSquareEmails,
   resendWeeklySummaryEmails,
 }) => {
@@ -20,7 +21,15 @@ const BlueSquareEmailManagement = ({
 
   // Check if user has the required permission
   const userPermissions = auth.user?.permissions?.frontPermissions || [];
-  const hasEmailPermission = userPermissions.includes('resendBlueSquareAndSummaryEmails');
+  const removedPermissions = auth.user?.permissions?.removedDefaultPermissions || [];
+  const userRole = auth.user?.role;
+
+  const userRoleData = roles?.find(r => r.roleName === userRole);
+  const roleDefaultPermissions = userRoleData?.permissions || [];
+  const hasEmailPermission =
+    (roleDefaultPermissions.includes('resendBlueSquareAndSummaryEmails') &&
+      !removedPermissions.includes('resendBlueSquareAndSummaryEmails')) ||
+    userPermissions.includes('resendBlueSquareAndSummaryEmails');
 
   const handleBlueSquareResend = async () => {
     setIsLoading(true);
@@ -223,6 +232,7 @@ const BlueSquareEmailManagement = ({
 const mapStateToProps = state => ({
   auth: state.auth,
   darkMode: state.theme.darkMode,
+  roles: state.role.roles,
 });
 
 const mapDispatchToProps = dispatch => ({
