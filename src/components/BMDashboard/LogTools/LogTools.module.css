@@ -220,6 +220,7 @@ tbody tr.toolTypeRow.dark-mode:hover {
 .toolTypeHead.dark-mode {
   color: #fff !important;
   border-bottom-color: #6c757d !important;
+  background-color: #343a40 !important;
 }
 
 .toolTypeRow.dark-mode {

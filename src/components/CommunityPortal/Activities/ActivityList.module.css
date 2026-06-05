@@ -69,7 +69,6 @@
   color: #333;
 }
 
-/* Select specific sizing */
 .filters select {
   height: 48px;
 }
@@ -82,7 +81,6 @@
   color-scheme: dark;
 }
 
-/* Date picker icon fix */
 .darkModeInput[type="date"]::-webkit-calendar-picker-indicator {
   filter: invert(1);
   cursor: pointer;
@@ -166,6 +164,11 @@
 
 .darkModeItem strong {
   color: #5c9ce6 !important;
+}
+
+.activityList.darkActivityList li strong {
+  color: #00f3ff;
+  font-size: 1.2rem;
 }
 
 .activityItem span {
@@ -287,17 +290,18 @@
   accent-color: #3b82f6;
 }
 
-.showPastToggle input[type="checkbox"]:focus-visible {
-  outline: none;
-  border-radius: 4px;
-}
-
 .darkShowPastToggle {
   color: #f1f5f9;
 }
 
 .darkShowPastToggle input[type="checkbox"] {
   accent-color: #60a5fa;
+}
+
+/* Focus-visible accessibility */
+.showPastToggle input[type="checkbox"]:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
 }
 
 /* Pagination */

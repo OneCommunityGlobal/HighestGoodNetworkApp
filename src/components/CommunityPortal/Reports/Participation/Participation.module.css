@@ -11,6 +11,7 @@
 .participationLandingPage {
   max-width: 90%;
   margin: 0 auto;
+  background: white;
 }
 
 .participationLandingPageDark {
@@ -177,11 +178,19 @@
   box-sizing: border-box;
 }
 
-@media (width <= 768px) {
+@media (width <= 1024px) {
   .analyticsSection {
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 30px;
   }
 
+  .trackingContainer,
+  .insights {
+    min-width: 100%;
+  }
+}
+
+@media (width <= 768px) {
   .trackingContainer,
   .insights {
     width: 100%;
@@ -202,6 +211,21 @@
   align-items: center;
   margin-bottom: 20px;
   color: #fff;
+}
+
+
+@media (width <= 1024px) {
+  .trackingHeader {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .trackingHeaderDark {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
 }
 
 .trackingHeader h3 {
@@ -330,6 +354,26 @@
   background: #f4f4f4;
 }
 
+.sortableHeader {
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.sortableHeaderContent {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sortableHeader:hover {
+  background: #e8e8e8;
+}
+
+.trackingTableDark .sortableHeader:hover {
+  background: #253055;
+}
+
 .trackingTableDark thead th {
   background: #1c2541;
   color: #fff;
@@ -364,6 +408,20 @@
   margin-bottom: 15px;
   display: flex;
   justify-content: space-between;
+}
+
+@media (width <= 1024px) {
+  .insightsHeader {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .insightsHeaderDark {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
 }
 
 .insightsHeader h3 {
@@ -406,13 +464,9 @@
 .insightsTabs {
   flex: 1;
   display: flex;
-  background-color: #f0f0f0;
-  border-radius: 8px;
-  padding: 4px;
-  gap: 2px;
-  max-width: 60%;
-  border: none;
-  overflow: visible;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
 .insightsTabsContainer{
@@ -473,6 +527,12 @@
   background-color: transparent;
   color: #94a3b8 !important;
   border-right: none;
+}
+
+.insightsDark .insightsTab {
+  background-color: #3A506B;
+  color: #fff;
+  border-right: 1px solid #555;
 }
 
 .insightsTab:hover:not(.activeTab) {
@@ -548,8 +608,8 @@
 }
 
 .insightsPercentageDark {
-  color: #fff;
-}
+    color: #fff;
+  }
 
 .insightsDark .insightsPercentageDark {
   color: red !important;
@@ -580,69 +640,6 @@
 
 .tooltipWrapper:hover .tooltip {
   opacity: 1;
-}
-
-/* ---------- Export PDF modal ---------- */
-.modalOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgb(0 0 0 / 45%);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 999;
-}
-
-.modal {
-  width: 420px;
-  max-width: calc(100vw - 32px);
-  background: #fff;
-  border-radius: 12px;
-  padding: 16px;
-}
-
-.modalDark {
-  background: #1C2541;
-}
-
-.modalHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.modalTitle {
-  margin: 0;
-}
-
-.modalClose {
-  border: none;
-  background: transparent;
-  font-size: 22px;
-  cursor: pointer;
-}
-
-.modalBody {
-  margin-top: 12px;
-}
-
-.modalMeta {
-  font-size: 16px;
-  opacity: 0.85;
-  display: grid;
-  gap: 6px;
-  margin-bottom: 12px;
-}
-
-.modalError {
-  margin-bottom: 12px;
-  font-size: 13px;
-  color: #b00020;
-}
-
-.modalActions {
-  display: flex;
-  gap: 10px;
 }
 
 .exportOptionsButtons,
@@ -679,24 +676,10 @@
   cursor: not-allowed;
 }
 
-
-
 /* ---------- PDF/Print helpers ---------- */
-.pageBreakBefore { break-before: page; break-before: always; }
-.pageBreakAfter  { break-after: page;  break-after: always; }
+.pageBreakBefore { break-before: always; }
+.pageBreakAfter  { break-after: always; }
 .avoidBreak       { break-inside: avoid; }
-
-.pageBreakBefore {
-  break-before: page;
-}
-
-.pageBreakAfter {
-  break-after: page;
-}
-
-.avoidBreak {
-  break-inside: avoid;
-}
 
 :global(html[data-exporting="true"]) .caseCards:global(.expanded),
 :global(html[data-exporting="true"]) .caseList:global(.expanded),
@@ -727,7 +710,6 @@
   display: none;
 }
 
-/* Print styles using global selectors */
 @media print {
   /* Hide everything except the participation component */
   :global(body > *:not(#root)) {
@@ -796,7 +778,6 @@
   }
 
   :global(.case-card-global) {
-    break-inside: avoid-page !important;
     break-inside: avoid !important;
     height: auto !important;
   }
@@ -806,7 +787,6 @@
   }
 
   :global(.case-list-item-global) {
-    break-inside: avoid-page !important;
     break-inside: avoid !important;
   }
 
@@ -850,7 +830,7 @@
   .printOnly {
     display: block !important;
   }
-
+  
   :global(#root) .case-card-global {
     background: white !important;
     color: #333 !important;
@@ -964,6 +944,38 @@
   box-shadow: 0 1px 6px rgb(0 0 0 / 50%);
 }
 
+  /* Text colors for dark mode */
+  .participationLandingPageDark .landingPageHeaderDark,
+  .participationLandingPageDark .sectionTitleDark,
+  .participationLandingPageDark .eventNameDark,
+  .participationLandingPageDark .eventTimeDark,
+  .participationLandingPageDark .attendeesCountDark,
+  .participationLandingPageDark .insightsLabelDark,
+  .participationLandingPageDark .insightsPercentageDark {
+    color: #fff !important;
+  }
+
+.filterDropdown {
+  padding: 8px;
+  font-size: 14px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.participationLandingPageDark .filterDropdown {
+  background-color: #3A506B;
+  color: #fff;
+  border: 1px solid #555;
+  color-scheme: dark;
+}
+
+.participationLandingPageDark .filterDropdown:hover,
+.participationLandingPageDark .filterDropdown:focus {
+  border-color: #007bff;
+  background-color: #4A627D;
+}
+
+
 /* Hover effect dark mode */
 .insightsTabDarkMode:hover {
   background-color: #374151;
@@ -978,15 +990,6 @@
 }
 
 /* ---------- Modal ---------- */
-.modalOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgb(0 0 0 / 45%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
 
 .modalContent {
   background: #fff;
@@ -1001,12 +1004,6 @@
 .modalContentDark {
   background: #1C2541;
   color: #fff;
-}
-
-.modalHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
 .closeBtn {
@@ -1103,36 +1100,4 @@
   background-color: #3A506B;
   color: #fff;
   border: 1px solid #3A506B;
-}
-
-.insightsDark .insightsTab {
-  background-color: #3A506B;
-  color: #fff;
-  border-right: 1px solid #555;
-}
-
-.insightsDark .insightsTab.activeTab {
-  background-color: #007bff;
-  color: #ffffff;
-}
-
-/* ---------- Info Tooltip Icons ---------- */
-.infoIcon {
-  margin-left: 6px;
-  font-size: 0.85rem;
-  cursor: pointer;
-  color: #666;
-  vertical-align: middle;
-}
-
-.infoIcon:hover {
-  color: #000;
-}
-
-.trackingTableDark .infoIcon {
-  color: #cccccc;
-}
-
-.trackingTableDark .infoIcon:hover {
-  color: #ffffff;
 }
