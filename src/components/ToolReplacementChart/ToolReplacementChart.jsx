@@ -43,7 +43,6 @@ export const ToolReplacementChart = () => {
   }, [loading, error, data]);
 
   const CustomYAxisNames = ({ x, y, payload }) => {
-    console.log('CustomYAxisNames payload:', payload);
     const text = payload.value;
     const truncated = text.split(' ').slice(0, 2);
 
@@ -125,6 +124,7 @@ export const ToolReplacementChart = () => {
                 endDate={endDate}
                 placeholderText="Start Date"
                 className={`${styles.datePicker} ${darkMode ? styles.bgYinmnBlue : ''}`}
+                wrapperClassName={darkMode ? styles.darkInput : ''}
               />
             </div>
             <div className={styles.endDate}>
@@ -142,7 +142,8 @@ export const ToolReplacementChart = () => {
                 startDate={startDate}
                 endDate={endDate}
                 placeholderText="End Date"
-                className={styles.datePicker}
+                className={`${styles.datePicker} ${darkMode ? styles.bgYinmnBlue : ''}`}
+                wrapperClassName={darkMode ? styles.darkInput : ''}
               />
             </div>
           </div>
@@ -159,6 +160,46 @@ export const ToolReplacementChart = () => {
                 onChange={setSelectedTools}
                 placeholder="Select Tools"
                 className={styles.toolSelector}
+                styles={
+                  darkMode
+                    ? {
+                        control: base => ({
+                          ...base,
+                          backgroundColor: '#3a506b',
+                          borderColor: '#5a7a9b',
+                        }),
+                        menu: base => ({
+                          ...base,
+                          backgroundColor: '#3a506b',
+                        }),
+                        option: (base, state) => ({
+                          ...base,
+                          backgroundColor: state.isFocused ? '#2e4057' : '#3a506b',
+                          color: 'white',
+                        }),
+                        singleValue: base => ({
+                          ...base,
+                          color: 'white',
+                        }),
+                        multiValue: base => ({
+                          ...base,
+                          backgroundColor: '#2e4057',
+                        }),
+                        multiValueLabel: base => ({
+                          ...base,
+                          color: 'white',
+                        }),
+                        input: base => ({
+                          ...base,
+                          color: 'white',
+                        }),
+                        placeholder: base => ({
+                          ...base,
+                          color: '#a0b4c8',
+                        }),
+                      }
+                    : {}
+                }
               />
             </div>
           </div>

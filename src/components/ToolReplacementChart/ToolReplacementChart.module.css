@@ -104,9 +104,22 @@
 
 .resetBtnDark {
   color: white;
+  background-color: #3a506b;
 }
 
-@media (max-width: 1200px) {
+.bgYinmnBlue {
+  background-color: #3a506b;
+}
+
+.darkInput input {
+  color: white !important;
+}
+
+.darkInput input::placeholder {
+  color: rgb(255 255 255 / 70%) !important;
+}
+
+@media (width <= 1200px) {
   .filters {
     width: 100%;
     max-width: 1000px;
@@ -118,15 +131,15 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 0px 8px;
-    padding: 0px 8px;
+    margin: 0 8px;
+    padding: 0 8px;
   }
 
   .toolFilter {
     width: 100%;
     float: none;
-    margin: 0px 8px;
-    padding: 0px 8px;
+    margin: 0 8px;
+    padding: 0 8px;
   }
 
   .toolSelector {
@@ -151,14 +164,13 @@
   .dateName {
     margin-top: 4px;  
   }
-
+  
   .datePicker {
-    margin: 0px 8px;
+    margin: 0 8px;
   }
 }
 
-@media (max-width: 570px) {
-
+@media (width <= 570px) {
   .datePicker {
     width: 95%;
     margin: 8px;
