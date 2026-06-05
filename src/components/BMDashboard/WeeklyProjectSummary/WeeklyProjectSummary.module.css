@@ -146,12 +146,6 @@
   transition: background 0.2s ease-in-out;
 }
 
-/* Bootstrap .btn can add vertical offset; align with selects */
-.weeklySummaryHeaderControls :global(button.btn) {
-  margin: 0 !important;
-  vertical-align: middle;
-}
-
 .darkMode .weeklySummaryShareBtn {
   background-color: var(--button-bg) !important;
 }
@@ -164,6 +158,12 @@
 .weeklySummaryShareBtn:disabled {
   opacity: 0.7;
   cursor: not-allowed;
+}
+
+/* Bootstrap .btn can add vertical offset; align with selects */
+.weeklySummaryHeaderControls :global(button.btn) {
+  margin: 0 !important;
+  vertical-align: middle;
 }
 
 .weeklySummaryShareBtn:hover:not(:disabled) {

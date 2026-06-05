@@ -66,6 +66,8 @@
 
 /* Date picker styles remain below */
 
+/* Date picker styles remain below */
+
 /* Chart container */
 .paid-labor-cost-chart-container {
   width: 100%;
@@ -429,8 +431,8 @@
 }
 
 :global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--in-selecting-range) {
-  background-color: rgb(232 167 28 / 30%) !important;
-  color: #fff !important;
+  background-color: rgb(232 167 28 / 55%) !important;
+  color: #1a1a1a !important;
 }
 
 :global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--range-start),

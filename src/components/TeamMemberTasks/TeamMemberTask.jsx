@@ -46,7 +46,6 @@ const TeamMemberTask = React.memo(
     userId,
     updateTaskStatus,
     showWhoHasTimeOff,
-    showTrackers,
     showTasks,
     onTimeOff,
     goingOnTimeOff,
@@ -519,7 +518,6 @@ const TeamMemberTask = React.memo(
                               userRole={userRole}
                               personId={user.personId}
                               displayUser={displayUser}
-                              showTrackers={showTrackers}
                             />
                             <div
                               style={{ textAlign: 'center', marginTop: '8px' }}
@@ -855,7 +853,6 @@ TeamMemberTask.propTypes = {
     timeOffTill: PropTypes.string,
   }).isRequired,
   userRole: PropTypes.string.isRequired,
-  showTrackers: PropTypes.bool,
   showTasks: PropTypes.bool,
   userId: PropTypes.string.isRequired,
   displayUser: PropTypes.object,
