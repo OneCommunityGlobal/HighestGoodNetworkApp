@@ -9708,10 +9708,10 @@ levn@^0.4.1:
     prelude-ls "^1.2.1"
     type-check "~0.4.0"
 
-libphonenumber-js@^1.12.40:
-  version "1.12.42"
-  resolved "https://registry.npmjs.org/libphonenumber-js/-/libphonenumber-js-1.12.42.tgz"
-  integrity sha512-oKQFPTibqQwZZkChCDVMFVJXMZdyJNqDWZWYNn8BgyAaK/6yFJEowxCY0RVFirRyWP63hMRuKlkSEd9qlvbWXg==
+libphonenumber-js@^1.12.41:
+  version "1.13.2"
+  resolved "https://registry.yarnpkg.com/libphonenumber-js/-/libphonenumber-js-1.13.2.tgz#526b275182b77ebfb786869650430c82f9176286"
+  integrity sha512-S3kmBrptp3yRTm83NUcHy9g1vbwiWMzI8WvY22+koBJ6zkRteLnedBL2VX0MIAGwx2yiyxX4J85pceZyQ6ffgg==
 
 lines-and-columns@^1.1.6:
   version "1.2.4"
