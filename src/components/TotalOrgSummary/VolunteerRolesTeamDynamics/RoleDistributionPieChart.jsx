@@ -2,25 +2,44 @@ import { ResponsiveContainer, PieChart, Pie, Cell, Legend, Tooltip } from 'recha
 import Loading from '~/components/common/Loading';
 
 const COLORS = [
-  '#F285BB',
-  '#77A9EE',
-  '#F2AB53',
-  '#1B6DDF',
-  '#C92929',
-  '#1BC590',
-  '#7ff0f0',
-  '#6e33cc',
-  '#cc2fa7',
-  '#EE9322',
-  '#86ebcc',
-  '#bafc03',
-  '#cf583a',
-  '#46d130',
+  '#2F80ED', // blue
+  '#56CCF2', // light blue
+  '#27AE60', // green
+  '#6FCF97', // light green
+  '#F2994A', // orange
+  '#F2C94C', // yellow
+  '#E14848', // red
+  '#9B51E0', // purple
+  '#F765A3', // pink
+  '#4F4F4F', // dark
+  '#828282', // grey
 ];
+
+// Explicit role-to-color mapping to keep key roles visually distinct and stable.
+const ROLE_COLOR_MAP = {
+  Volunteer: '#8ebfff',
+  Manager: '#27AE60',
+  Administrator: '#fb0505',
+  'Core Team': '#8100fa',
+  Owner: '#f68d42',
+  Mentor: '#f2ff00',
+};
 
 import CustomTooltip from '../../CustomTooltip';
 
 const RoleDistributionPieChart = ({ roleDistributionStats = [], isLoading, darkMode }) => {
+  // Reusable function to sort data and assign colors.
+  const sortDataAndAssignColors = statsData => {
+    statsData?.sort((a, b) => b.count - a.count);
+    const mappedData = statsData?.map((item, index) => ({
+      name: item._id,
+      value: item.count,
+      // Use a stable role mapping first, otherwise fallback by index.
+      color: ROLE_COLOR_MAP[item._id] || COLORS[index % COLORS.length],
+    }));
+    return mappedData;
+  };
+
   if (isLoading) {
     return (
       <div className="d-flex justify-content-center align-items-center">
@@ -31,12 +50,16 @@ const RoleDistributionPieChart = ({ roleDistributionStats = [], isLoading, darkM
     );
   }
 
-  roleDistributionStats.sort((a, b) => b.count - a.count);
-  const data = roleDistributionStats.map((item, index) => ({
-    name: item._id,
-    value: item.count,
-    color: COLORS[index],
-  }));
+  let data = [];
+  // This is to handle the case when we are comparing the data with other time periods. In that case, the data structure is different and we need to access the comparison data.
+  if (roleDistributionStats?.comparison) {
+    data = sortDataAndAssignColors(roleDistributionStats?.comparison);
+  }
+  // Fallback to the original data structure when we are not comparing the data with other time periods.
+  else {
+    data = sortDataAndAssignColors(roleDistributionStats);
+  }
+
   const totalValue = data.reduce((sum, entry) => sum + entry.value, 0);
 
   const RADIAN = Math.PI / 180;

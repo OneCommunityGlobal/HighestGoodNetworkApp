@@ -1,10 +1,12 @@
+/* stylelint-disable no-descending-specificity */
+
 /* Tools Horizontal Bar Chart Card Component */
 .tools-horizontal-bar-chart-card {
-  background-color: var(--card-bg, #ffffff);
+  background-color: var(--card-bg, #fff);
   border-radius: 8px;
   padding: 16px;
   height: 100%;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
   display: flex;
   flex-direction: column;
   transition: transform 0.2s ease;
@@ -13,20 +15,26 @@
 
 .tools-horizontal-bar-chart-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 8px rgb(0 0 0 / 15%);
+}
+
+.tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode {
+  background-color: var(--card-bg, #2b3e59);
+  color: var(--text-color, #ffffff);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 .tools-horizontal-bar-chart-title {
   font-size: 16px;
   font-weight: 600;
-  margin: 0 0 16px 0;
+  margin: 0 0 16px;
   color: var(--text-color, #333);
   text-align: center;
   flex-shrink: 0;
 }
 
 .tools-horizontal-bar-chart-dark-mode .tools-horizontal-bar-chart-title {
-  color: #ffffff;
+  color: #fff;
 }
 
 .tools-horizontal-bar-chart-content {
@@ -53,7 +61,7 @@
   height: 200px;
   font-size: 14px;
   color: #f44336;
-  background-color: rgba(244, 67, 54, 0.05);
+  background-color: rgb(244 67 54 / 5%);
   border-radius: 4px;
   padding: 12px;
   text-align: center;
@@ -71,31 +79,31 @@
 }
 
 .tools-horizontal-bar-chart-tooltip {
-  background-color: rgba(255, 255, 255, 0.95);
+  background-color: rgb(255 255 255 / 95%);
   border: 1px solid #ccc;
   border-radius: 4px;
   padding: 8px 12px;
   font-size: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
   max-width: 200px;
 }
 
 .tools-horizontal-bar-chart-tooltip-label {
   font-weight: 600;
-  margin: 0 0 4px 0;
+  margin: 0 0 4px;
   color: #333;
 }
 
 .tools-horizontal-bar-chart-tooltip-total {
   font-weight: 600;
-  margin: 4px 0 0 0;
+  margin: 4px 0 0;
   padding-top: 4px;
   border-top: 1px solid #eee;
   color: #333;
 }
 
 .tools-horizontal-bar-chart-dark-mode .tools-horizontal-bar-chart-tooltip {
-  background-color: rgba(45, 45, 45, 0.95);
+  background-color: rgb(45 45 45 / 95%);
   border-color: #555;
 }
 
@@ -107,13 +115,13 @@
 /* Filters Styling */
 .tools-horizontal-bar-chart-filters {
   padding: 12px 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgb(0 0 0 / 10%);
   margin-bottom: 12px;
 }
 
 .tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode
   .tools-horizontal-bar-chart-filters {
-  border-bottom-color: rgba(255, 255, 255, 0.2);
+  border-bottom-color: rgb(255 255 255 / 20%);
 }
 
 .tools-horizontal-bar-chart-filter-group {
@@ -129,7 +137,7 @@
   font-size: 12px;
   font-weight: 500;
   margin-bottom: 4px;
-  color: var(--label-color);
+  color: #555;
 }
 
 .tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode
@@ -139,6 +147,10 @@
 }
 
 .tools-horizontal-bar-chart-project-select {
+  max-width: 100%;
+}
+
+.tools-horizontal-bar-chart-tool-select {
   max-width: 100%;
 }
 
@@ -161,15 +173,15 @@
 
 .tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode
   .tools-horizontal-bar-chart-date-picker {
-  background-color: #2c3344;
-  border-color: #364156;
+  background-color: #253342;
+  border-color: #3a506b;
   color: #e0e0e0;
 }
 
 .tools-horizontal-bar-chart-date-picker:focus {
   outline: none;
   border-color: #2196f3;
-  box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+  box-shadow: 0 0 0 2px rgb(33 150 243 / 20%);
 }
 
 .tools-horizontal-bar-chart-date-picker-group span {
@@ -202,19 +214,19 @@
 
 .tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode
   .tools-horizontal-bar-chart-clear-dates-btn {
-  background: #364156;
-  border-color: #4a5568;
+  background: #253342;
+  border-color: #3a506b;
   color: #e0e0e0;
 }
 
 .tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode
   .tools-horizontal-bar-chart-clear-dates-btn:hover {
-  background: #4a5568;
-  border-color: #5a6578;
+  background: #3a506b;
+  border-color: #4a6a8a;
 }
 
 /* Responsive adjustments */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .tools-horizontal-bar-chart-card {
     padding: 12px;
     min-height: 250px;
