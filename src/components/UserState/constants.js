@@ -27,6 +27,7 @@ export const EMOJI_OPTIONS = [
   '⚙️',
   '📦',
   '🖥️',
+  '⚠️',
   '‼️',
   '❌',
 ];

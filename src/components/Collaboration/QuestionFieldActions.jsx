@@ -5,6 +5,7 @@ function QuestionFieldActions({
   field,
   index,
   totalFields,
+  onClone,
   onMove,
   onDelete,
   onEdit,
@@ -12,27 +13,36 @@ function QuestionFieldActions({
   onVisibilityChange,
 }) {
   return (
-    <div className={styles.fieldControls}>
+    <div className={`${styles.fieldControls}`}>
       <input
         type="checkbox"
         id={`form-div-checkbox-${index}`}
         checked={visible}
         onChange={onVisibilityChange}
-        className={styles.visibilityCheckbox}
+        className={`${styles.visibilityCheckbox}`}
       />
-      <div className={styles.fieldActions}>
+      <div className={`${styles.fieldActions}`}>
         <button
           type="button"
           onClick={() => onEdit(field, index)}
-          className={styles.editButton}
+          className={`${styles.editButton}`}
           title="Edit this question"
         >
           Edit
         </button>
+
+        <button
+          type="button"
+          onClick={() => onClone(field, index)}
+          className={`${styles.cloneButton}`}
+          title="Clone this question"
+        >
+          Clone
+        </button>
         <button
           type="button"
           onClick={() => onMove(index, 'up')}
-          className={styles.moveButton}
+          className={`${styles.moveButton}`}
           disabled={index === 0}
           title="Move up"
         >
@@ -41,7 +51,7 @@ function QuestionFieldActions({
         <button
           type="button"
           onClick={() => onMove(index, 'down')}
-          className={styles.moveButton}
+          className={`${styles.moveButton}`}
           disabled={index === totalFields - 1}
           title="Move down"
         >
@@ -50,7 +60,7 @@ function QuestionFieldActions({
         <button
           type="button"
           onClick={() => onDelete(index)}
-          className={styles.deleteButton}
+          className={`${styles.deleteButton}`}
           title="Delete question"
         >
           ×
@@ -74,6 +84,7 @@ QuestionFieldActions.propTypes = {
   }).isRequired,
   index: PropTypes.number.isRequired,
   totalFields: PropTypes.number.isRequired,
+  onClone: PropTypes.func.isRequired,
   onMove: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
   onEdit: PropTypes.func.isRequired,

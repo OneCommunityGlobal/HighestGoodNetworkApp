@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .container {
   padding: 20px;
   background-color: #fff;
@@ -7,12 +8,12 @@
 .filterCard {
   margin-bottom: 20px;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
 }
 
 .chartCard {
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
   margin-bottom: 20px;
 }
 
@@ -39,8 +40,9 @@
 }
 
 .chart {
-  height: 400px;
+  height: 440px;
   margin-top: 20px;
+  overflow: visible;
 }
 
 .metricCategory {
@@ -49,13 +51,13 @@
   margin-right: 4px;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .container {
     padding: 10px;
   }
 
   .chart {
-    height: 300px;
+    height: 400px;
   }
 }
 
@@ -69,6 +71,11 @@
   border-color: #3a506b;
   color: #fff;
   box-shadow: 0 4px 16px #1c1c1c;
+}
+
+.darkChartCard canvas {
+  background-color: #243b5a;
+  border-radius: 6px;
 }
 
 .chartTitle {

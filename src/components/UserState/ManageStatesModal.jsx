@@ -53,6 +53,17 @@ function ManageStatesModal({ isOpen, onClose, catalog, onCatalogChange, darkMode
   const fontColor = darkMode ? 'text-light' : '';
   const themeClass = darkMode ? styles.dark : styles.light;
 
+  const usedColors = catalog.map(c => c.color).filter(Boolean);
+  const usedEmojis = catalog.map(c => c.emoji).filter(Boolean);
+  const usedColorsForEdit = catalog
+    .filter(c => c.key !== editingKey)
+    .map(c => c.color)
+    .filter(Boolean);
+  const usedEmojisForEdit = catalog
+    .filter(c => c.key !== editingKey)
+    .map(c => c.emoji)
+    .filter(Boolean);
+
   const handleEmojiSelect = emoji => {
     setNewEmoji(emoji);
     setShowEmojiPicker(false);
@@ -300,7 +311,12 @@ function ManageStatesModal({ isOpen, onClose, catalog, onCatalogChange, darkMode
                         </Button>
                         {showEditEmojiPicker && (
                           <div className={styles.emojiPickerDropdown}>
-                            <EmojiPicker darkMode={darkMode} onSelect={handleEditEmojiSelect} />
+                            <EmojiPicker
+                              darkMode={darkMode}
+                              onSelect={handleEditEmojiSelect}
+                              usedEmojis={usedEmojisForEdit}
+                              selectedEmoji={editEmoji}
+                            />
                           </div>
                         )}
                         <Input
@@ -315,7 +331,11 @@ function ManageStatesModal({ isOpen, onClose, catalog, onCatalogChange, darkMode
                     </FormGroup>
                     <FormGroup>
                       <Label className={fontColor}>Color</Label>
-                      <ColorPicker selectedColor={editColor} onSelect={setEditColor} />
+                      <ColorPicker
+                        selectedColor={editColor}
+                        onSelect={setEditColor}
+                        usedColors={usedColorsForEdit}
+                      />
                     </FormGroup>
                     {editLabel.trim() && (
                       <FormGroup>
@@ -378,7 +398,12 @@ function ManageStatesModal({ isOpen, onClose, catalog, onCatalogChange, darkMode
                 </Button>
                 {showEmojiPicker && (
                   <div className={styles.emojiPickerDropdown}>
-                    <EmojiPicker darkMode={darkMode} onSelect={handleEmojiSelect} />
+                    <EmojiPicker
+                      darkMode={darkMode}
+                      onSelect={handleEmojiSelect}
+                      usedEmojis={usedEmojis}
+                      selectedEmoji={newEmoji}
+                    />
                   </div>
                 )}
                 <Input
@@ -394,7 +419,11 @@ function ManageStatesModal({ isOpen, onClose, catalog, onCatalogChange, darkMode
             </FormGroup>
             <FormGroup>
               <Label className={fontColor}>Color</Label>
-              <ColorPicker selectedColor={selectedColor} onSelect={setSelectedColor} />
+              <ColorPicker
+                selectedColor={selectedColor}
+                onSelect={setSelectedColor}
+                usedColors={usedColors}
+              />
             </FormGroup>
             {newLabel.trim() && (
               <FormGroup>

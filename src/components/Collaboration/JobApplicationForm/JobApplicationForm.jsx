@@ -1,5 +1,5 @@
-// ...existing code...
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 import styles from './JobApplicationForm.module.css';
 import OneCommunityImage from '../../../assets/images/logo2.png';
 import axios from 'axios';
@@ -8,14 +8,137 @@ import { useSelector } from 'react-redux';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+function normalizeTitleKey(s) {
+  return String(s || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/** Heuristic: job board title vs saved form title (spacing, punctuation, singular/plural). */
+function titlesLikelyMatch(jobTitle, formTitle) {
+  const a = normalizeTitleKey(jobTitle);
+  const b = normalizeTitleKey(formTitle);
+  if (!a || !b) return false;
+  if (a === b) return true;
+  if (a.includes(b) || b.includes(a)) return true;
+  const stripTrailingS = x =>
+    x.length > 3 && x.endsWith('s') && !x.endsWith('ss') ? x.slice(0, -1) : x;
+  const sa = stripTrailingS(a);
+  const sb = stripTrailingS(b);
+  if (sa === sb) return true;
+  if (sa.includes(sb) || sb.includes(sa)) return true;
+  return false;
+}
+
+/** Match a job listing title to a saved application form (titles may differ slightly). */
+function findFormForJobTitle(formsArr, jobTitle) {
+  if (!jobTitle || !formsArr?.length) return null;
+  const t = String(jobTitle)
+    .trim()
+    .toLowerCase();
+  let m = formsArr.find(f => (f.title || '').trim().toLowerCase() === t);
+  if (m) return m;
+  m = formsArr.find(f => {
+    const ft = (f.title || '').trim().toLowerCase();
+    return ft && (t.includes(ft) || ft.includes(t));
+  });
+  if (m) return m;
+  m = formsArr.find(f => titlesLikelyMatch(jobTitle, f.title));
+  return m || null;
+}
+
+/** Role clicked on the job board: React Router state and/or ?jobTitle= query (reliable across redirects). */
+function getJobTitleFromNavigation(location) {
+  const fromState = location.state?.jobTitle;
+  if (fromState != null && String(fromState).trim()) return String(fromState).trim();
+  const q = new URLSearchParams(location.search || '');
+  const fromQuery = q.get('jobTitle') || q.get('role');
+  if (fromQuery != null && String(fromQuery).trim()) return String(fromQuery).trim();
+  return '';
+}
+
+function pickInitialForm(formsArr, navState) {
+  if (!formsArr?.length) return null;
+  if (navState?.jobTitle) {
+    const matched = findFormForJobTitle(formsArr, navState.jobTitle);
+    if (matched) return matched;
+  }
+  return formsArr.find(f => f.questions?.length) || formsArr[0];
+}
+
+function getQuestionType(q) {
+  return String(q.questionType || q.type || '').toLowerCase();
+}
+
+/**
+ * Strip numbering often baked into saved template text (e.g. "1.) …") so the UI can show a single
+ * running index from `{idx + 1}. …`.
+ */
+function stripLeadingQuestionEnumeration(raw) {
+  let s = String(raw || '').trim();
+  if (!s) return s;
+  let prev;
+  do {
+    prev = s;
+    s = s
+      .replace(/^[Qq]uestion\s*\d+\s*[.:]\s*/, '')
+      .replace(/^\d+\.\)\s*/, '')
+      .replace(/^\d+\)\s*/, '')
+      .trim();
+  } while (s !== prev);
+  return s;
+}
+
+function getQuestionLabel(q, idx) {
+  const raw = (q.label || q.questionText || '').trim();
+  if (!raw) return `Question ${idx + 1}`;
+  const cleaned = stripLeadingQuestionEnumeration(raw);
+  return cleaned || raw;
+}
+
+function isQuestionRequired(q) {
+  return q.isRequired === true || q.required === true;
+}
+
+/** Shown for every role when API text is missing or only a placeholder (e.g. "desc …"). */
+const GENERIC_ROLE_DESCRIPTION = `One Community is a nonprofit focused on sustainability and open collaboration. Volunteers work remotely with teammates in different time zones, contribute to shared goals, and stay aligned using tools like Slack and Zoom.
+
+We look for reliable, self-motivated people who want to grow their skills while supporting a mission-driven project. Every open role follows that same volunteer structure: specific tasks depend on the position title, but clear communication, quality of work, and teamwork apply to everyone on the team.`;
+
+function normalizeApiJobDescription(raw, title) {
+  if (raw == null) return '';
+  let s = String(raw).trim();
+  if (!s) return '';
+  s = s.replace(/^desc\s*:?\s*/i, '').trim();
+  if (!s) return '';
+  const t = String(title || '')
+    .trim()
+    .toLowerCase();
+  const sl = s.toLowerCase();
+  if (t && (sl === t || sl === `desc ${t}`)) return '';
+  if (t && sl.replace(/\s+/g, ' ') === t.replace(/\s+/g, ' ')) return '';
+  return s;
+}
+
+function getJobDescriptionForModal(form) {
+  const extra = normalizeApiJobDescription(form?.description, form?.title);
+  if (!extra) return GENERIC_ROLE_DESCRIPTION;
+  return `${GENERIC_ROLE_DESCRIPTION}\n\nAdditional details:\n${extra}`;
+}
+
 function JobApplicationForm() {
+  const location = useLocation();
   const [forms, setForms] = useState([]);
   const [selectedJob, setSelectedJob] = useState('');
   const [answers, setAnswers] = useState([]);
   const [jobTitleInput, setJobTitleInput] = useState('');
   const [filteredForm, setFilteredForm] = useState(null);
   const [showDescription, setShowDescription] = useState(false);
-  const [applicantName, setApplicantName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
   const [applicantEmail, setApplicantEmail] = useState('');
   const [locationTimezone, setLocationTimezone] = useState('');
   const [phone, setPhone] = useState('');
@@ -25,45 +148,91 @@ function JobApplicationForm() {
   const [resumeStatus, setResumeStatus] = useState('idle');
   // idle | uploading | success | error
   const resumeInputRef = useRef(null);
+  /** Shown in the page title — the role the user clicked, not only the matched DB form name. */
+  const [bannerJobTitle, setBannerJobTitle] = useState('');
 
   const darkMode = useSelector(state => state.theme?.darkMode);
 
+  const visibleQuestions = useMemo(() => {
+    const seen = new Set();
+
+    return (filteredForm?.questions ?? [])
+      .filter(q => q.visible !== false)
+      .filter(q => {
+        const key = normalizeTitleKey(q.label || q.questionText);
+
+        if (seen.has(key)) return false;
+
+        seen.add(key);
+        return true;
+      });
+  }, [filteredForm]);
+
   useEffect(() => {
+    let cancelled = false;
+
     async function fetchForms() {
       try {
         const res = await axios.get(ENDPOINTS.GET_ALL_JOB_FORMS);
+        if (cancelled) return;
         const formsArr = Array.isArray(res.data.forms) ? res.data.forms : [];
         setForms(formsArr);
-        const firstWithQuestions = formsArr.find(f => f.questions && f.questions.length > 0);
-        if (firstWithQuestions) {
-          setSelectedJob(firstWithQuestions.title);
-          setFilteredForm(firstWithQuestions);
-          setAnswers(new Array((firstWithQuestions.questions ?? []).length).fill(''));
-        } else if (formsArr.length > 0) {
-          setSelectedJob(formsArr[0].title);
-          setFilteredForm(formsArr[0]);
-          setAnswers(new Array((formsArr[0].questions ?? []).length).fill(''));
+
+        const navTitle = getJobTitleFromNavigation(location);
+        const navState = { ...location.state, jobTitle: navTitle || location.state?.jobTitle };
+        const chosen = pickInitialForm(formsArr, navState);
+        if (navTitle && !findFormForJobTitle(formsArr, navTitle)) {
+          toast.warn(
+            `No application form matched "${navTitle}". Pick the correct role from the dropdown or enter the exact form title.`,
+            { autoClose: 8000 },
+          );
+        }
+        if (chosen) {
+          setSelectedJob(chosen.title);
+          setFilteredForm(chosen);
+          if (navTitle) {
+            setJobTitleInput(navTitle);
+            setBannerJobTitle(navTitle);
+          } else {
+            setBannerJobTitle(chosen.title);
+          }
+          const n = (chosen.questions ?? []).filter(q => q.visible !== false).length;
+          setAnswers(new Array(n).fill(''));
+        } else {
+          setSelectedJob('');
+          setFilteredForm(null);
+          setAnswers([]);
+          setBannerJobTitle('');
         }
       } catch (err) {
-        setForms([]);
-        setSelectedJob('');
-        setFilteredForm(null);
-        setAnswers([]);
-        toast.error('Failed to load job forms.');
+        if (!cancelled) {
+          setForms([]);
+          setSelectedJob('');
+          setFilteredForm(null);
+          setAnswers([]);
+          toast.error('Failed to load job forms.');
+        }
       }
     }
+
     fetchForms();
-  }, []);
+    return () => {
+      cancelled = true;
+    };
+  }, [location.key]);
 
   useEffect(() => {
     if (!selectedJob) return;
     const form = forms.find(f => f.title === selectedJob);
     setFilteredForm(form);
-    setAnswers(new Array((form?.questions ?? []).length).fill(''));
+    const n = (form?.questions ?? []).filter(q => q.visible !== false).length;
+    setAnswers(new Array(n).fill(''));
   }, [selectedJob, forms]);
 
   const handleJobChange = e => {
-    setSelectedJob(e.target.value);
+    const next = e.target.value;
+    setSelectedJob(next);
+    setBannerJobTitle(next);
   };
 
   const handleJobTitleInputChange = e => {
@@ -71,18 +240,45 @@ function JobApplicationForm() {
   };
 
   const handleGoClick = () => {
-    const form = forms.find(f => f.title?.toLowerCase() === jobTitleInput.trim().toLowerCase());
+    const raw = jobTitleInput.trim();
+    if (!raw) {
+      toast.info('Enter a job title.');
+      return;
+    }
+    let form = forms.find(f => f.title?.toLowerCase() === raw.toLowerCase());
+    if (!form) form = findFormForJobTitle(forms, raw);
     if (form) {
       setSelectedJob(form.title);
+      setBannerJobTitle(form.title);
     } else {
       toast.info('No form matches that job title.');
     }
   };
 
-  const handleAnswerChange = (idx, value) => {
+  const handleAnswerChange = (idx, value, label) => {
     const newAnswers = [...answers];
     newAnswers[idx] = value;
     setAnswers(newAnswers);
+
+    const labelLower = String(label || '').toLowerCase();
+
+    const isHoursQuestion =
+      labelLower.includes('hour') && (labelLower.includes('week') || labelLower.includes('weekly'));
+
+    if (isHoursQuestion) {
+      if (value && !/^\d*$/.test(value)) {
+        setFieldErrors(prev => ({
+          ...prev,
+          [idx]: 'Only numbers are allowed',
+        }));
+      } else {
+        setFieldErrors(prev => {
+          const copy = { ...prev };
+          delete copy[idx];
+          return copy;
+        });
+      }
+    }
   };
 
   const handleShowDescription = e => {
@@ -92,6 +288,16 @@ function JobApplicationForm() {
 
   const handleCloseDescription = () => {
     setShowDescription(false);
+  };
+
+  const getCategoryFromRole = roleTitle => {
+    const t = String(roleTitle || '').toLowerCase();
+    if (/(engineer|developer|software|frontend|back ?end|full ?stack|devops|qa|test)/.test(t))
+      return 'Engineering';
+    if (/(design|ux|ui|graphic|visual)/.test(t)) return 'Design';
+    if (/(marketing|social|seo|content|copywriter|communications)/.test(t)) return 'Marketing';
+    if (/(finance|account|bookkeep|budget)/.test(t)) return 'Finance';
+    return 'General';
   };
 
   const handleResumeChange = e => {
@@ -131,14 +337,36 @@ function JobApplicationForm() {
 
   const validateBeforeSubmit = () => {
     const missing = [];
-    if (!applicantName.trim()) missing.push('Name');
+
+    if (!firstName.trim()) missing.push('First Name');
+    if (!lastName.trim()) missing.push('Last Name');
     if (!applicantEmail.trim()) missing.push('Email');
 
-    if (filteredForm?.questions?.length) {
-      for (const [idx, q] of filteredForm.questions.entries()) {
-        const required = q.required ?? false;
-        if (required && !String(answers[idx] ?? '').trim()) {
-          missing.push(q.label || q.questionText || `Question ${idx + 1}`);
+    if (visibleQuestions.length) {
+      for (const [idx, q] of visibleQuestions.entries()) {
+        const answer = String(answers[idx] ?? '').trim();
+        const label = getQuestionLabel(q, idx);
+        const labelLower = label.toLowerCase();
+
+        // Required validation
+        if (isQuestionRequired(q) && !answer) {
+          missing.push(label);
+        }
+
+        // HOURS/WEEK VALIDATION
+        const isHoursQuestion =
+          labelLower.includes('hour') &&
+          (labelLower.includes('week') || labelLower.includes('weekly'));
+
+        if (isHoursQuestion && answer) {
+          if (!/^\d+$/.test(answer)) {
+            missing.push(`${label} (must be a number)`);
+          } else {
+            const num = Number(answer);
+            if (num <= 0 || num > 168) {
+              missing.push(`${label} (must be between 1 and 168)`);
+            }
+          }
         }
       }
     }
@@ -157,7 +385,8 @@ function JobApplicationForm() {
 
     toast.success('Application submitted. A copy will be sent to your email.');
 
-    setApplicantName('');
+    setFirstName('');
+    setLastName('');
     setApplicantEmail('');
     setLocationTimezone('');
     setPhone('');
@@ -166,7 +395,7 @@ function JobApplicationForm() {
     setResumeFile(null);
     setResumeStatus('idle');
     if (resumeInputRef.current) resumeInputRef.current.value = '';
-    setAnswers(new Array((filteredForm?.questions ?? []).length).fill(''));
+    setAnswers(new Array(visibleQuestions.length).fill(''));
   };
 
   let resumeStatusClass = '';
@@ -214,7 +443,9 @@ function JobApplicationForm() {
           </div>
         </section>
         <section className={styles.formContainer}>
-          <h1 className={styles.formTitle}>FORM FOR {selectedJob?.toUpperCase()} POSITION</h1>
+          <h1 className={styles.formTitle}>
+            FORM FOR {(bannerJobTitle || selectedJob || '').toUpperCase()} POSITION
+          </h1>
           <p className={styles.formSubtitle}>
             <a href="#learnMore" onClick={handleShowDescription}>
               Click to know more about this position
@@ -231,8 +462,31 @@ function JobApplicationForm() {
                 >
                   &times;
                 </button>
-                <h2>{filteredForm.title}</h2>
-                <p>{filteredForm.description || 'No description available.'}</p>
+                <div className={styles.jobDescHeader}>
+                  <div className={styles.jobDescTitle}>{bannerJobTitle || filteredForm.title}</div>
+                  <div className={styles.jobDescTags}>
+                    <span className={`${styles.tagPill} ${styles.tagPillStrong}`}>
+                      {getCategoryFromRole(bannerJobTitle || filteredForm.title)}
+                    </span>
+                    <span className={styles.tagPill}>Remote</span>
+                  </div>
+                </div>
+
+                <div className={styles.jobDescBody}>
+                  <div className={styles.jobDescSectionTitle}>About the role</div>
+                  <div className={styles.jobDescText}>
+                    {getJobDescriptionForModal(filteredForm)}
+                  </div>
+                  <div className={styles.jobDescFooter}>
+                    <button
+                      type="button"
+                      className={styles.gotItBtn}
+                      onClick={handleCloseDescription}
+                    >
+                      Got it
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           )}
@@ -245,10 +499,18 @@ function JobApplicationForm() {
               <div className={styles.formProfileDetailGroup}>
                 <input
                   type="text"
-                  placeholder="Name"
+                  placeholder="First Name *"
                   className={styles.inputField}
-                  value={applicantName}
-                  onChange={e => setApplicantName(e.target.value)}
+                  value={firstName}
+                  onChange={e => setFirstName(e.target.value)}
+                />
+
+                <input
+                  type="text"
+                  placeholder="Last Name *"
+                  className={styles.inputField}
+                  value={lastName}
+                  onChange={e => setLastName(e.target.value)}
                 />
                 <input
                   type="email"
@@ -312,85 +574,74 @@ function JobApplicationForm() {
                   )}
                 </div>
               </div>
-              <div className={styles.formGroup}>
-                <h2>1. How did you hear about One Community?</h2>
-                <input type="text" placeholder="Type your response here" />
-              </div>
-              <div className={styles.formGroup}>
-                <h2>2. Are you applying as an individual or organization?</h2>
-                <input type="text" placeholder="Type your response here" />
-              </div>
-              <div className={styles.formGroup}>
-                <h2>3. Why are you wanting to volunteer/work/collaborate with us?</h2>
-                <input type="text" placeholder="Type your response here" />
-              </div>
-              <div className={styles.formGroup}>
-                <h2>4. What skills/experience do you possess?</h2>
-                <input type="text" placeholder="Type your response here" />
-              </div>
-              <div className={styles.formGroup}>
-                <h2>5. How many volunteer hours per week are you willing to commit to?</h2>
-                <input type="text" placeholder="Type your response here" />
-              </div>
-              <div className={styles.formGroup}>
-                <h2>6. For how long do you wish to volunteer with us?</h2>
-                <input type="text" placeholder="Type your response here" />
-              </div>
-              <div className={styles.formGroup}>
-                <h2>7. What is your desired start date?</h2>
-                <input type="date" className={styles.dateInput} />
-              </div>
-              <div className={styles.formGroup}>
-                <h2>8. Will your volunteer time require documentation of your hours?</h2>
-                <select className={styles.selectField}>
-                  <option value="">Select an appropriate option</option>
-                  <option value="Yes, I'm volunteering just because I want to">
-                    Yes, I&apos;m volunteering just because I want to
-                  </option>
-                  <option value="Yes, I'm on OPT and don't yet have my EAD Card">
-                    Yes, I&apos;m on OPT and don&apos;t yet have my EAD Card
-                  </option>
-                  <option value="Yes, I'm on OPT and this time is for CPT, Co-op, or similar">
-                    Yes, I&apos;m on OPT and this time is for CPT, Co-op, or similar
-                  </option>
-                  <option value="STEM OPT: Sorry, we are 100% volunteer and don't qualify">
-                    STEM OPT: Sorry, we are 100% volunteer and don&apos;t qualify
-                  </option>
-                </select>
-              </div>
-              {filteredForm &&
-                (filteredForm.questions || []).map((q, idx) => (
-                  <div className={styles.formGroup} key={q._id?.$oid || q._id || idx}>
-                    <h2>{q.label || q.questionText}</h2>
-                    {q.type === 'text' || q.questionType === 'textbox' ? (
-                      <input
-                        type="text"
-                        placeholder="Type your response here"
-                        value={answers[idx] || ''}
-                        onChange={e => handleAnswerChange(idx, e.target.value)}
-                      />
-                    ) : null}
-                    {q.type === 'textarea' || q.questionType === 'textarea' ? (
-                      <textarea
-                        placeholder="Type your response here"
-                        value={answers[idx] || ''}
-                        onChange={e => handleAnswerChange(idx, e.target.value)}
-                      />
-                    ) : null}
-                    {q.type === 'date' || q.questionType === 'date' ? (
+              {visibleQuestions.map((q, idx) => {
+                const qt = getQuestionType(q);
+                const label = getQuestionLabel(q, idx);
+                const labelLower = label.toLowerCase();
+                const isIndividualOrgQuestion =
+                  labelLower.includes('individual') && labelLower.includes('organization');
+                const formKey = filteredForm?._id
+                  ? `${filteredForm._id}-q-${idx}`
+                  : `q-${idx}-${label.slice(0, 24)}`;
+
+                return (
+                  <div className={styles.formGroup} key={formKey}>
+                    <h2>
+                      {idx + 1}. {label}
+                    </h2>
+                    {['textbox', 'text'].includes(qt) && !isIndividualOrgQuestion && (
+                      <>
+                        <input
+                          type="text"
+                          placeholder={q.placeholder || 'Type your response here'}
+                          value={answers[idx] || ''}
+                          onChange={e => handleAnswerChange(idx, e.target.value, label)}
+                          style={{
+                            border: fieldErrors[idx] ? '1px solid red' : undefined,
+                          }}
+                        />
+                        {fieldErrors[idx] && (
+                          <div style={{ color: 'red', fontSize: '12px', marginTop: '4px' }}>
+                            {fieldErrors[idx]}
+                          </div>
+                        )}
+                      </>
+                    )}
+
+                    {qt === 'textarea' && !isIndividualOrgQuestion && (
+                      <>
+                        <textarea
+                          placeholder={q.placeholder || 'Type your response here'}
+                          value={answers[idx] || ''}
+                          onChange={e => handleAnswerChange(idx, e.target.value, label)}
+                          rows={5}
+                          style={{
+                            border: fieldErrors[idx] ? '1px solid red' : undefined,
+                          }}
+                        />
+                        {fieldErrors[idx] && (
+                          <div style={{ color: 'red', fontSize: '12px', marginTop: '4px' }}>
+                            {fieldErrors[idx]}
+                          </div>
+                        )}
+                      </>
+                    )}
+                    {(qt === 'date' ||
+                      (labelLower.includes('start') && labelLower.includes('date'))) && (
                       <input
                         type="date"
+                        className={styles.dateInput}
                         value={answers[idx] || ''}
-                        onChange={e => handleAnswerChange(idx, e.target.value)}
+                        onChange={e => handleAnswerChange(idx, e.target.value, label)}
                       />
-                    ) : null}
-                    {['checkbox', 'radio'].includes(q.type || q.questionType) && q.options && (
+                    )}
+                    {['checkbox', 'radio'].includes(qt) && q.options && q.options.length > 0 && (
                       <div>
                         {q.options.map(opt => (
                           <label key={opt}>
                             <input
-                              type={q.type || q.questionType}
-                              name={`question-${idx}`}
+                              type={qt === 'checkbox' ? 'checkbox' : 'radio'}
+                              name={`question-${formKey}`}
                               value={opt}
                               checked={answers[idx] === opt}
                               onChange={() => handleAnswerChange(idx, opt)}
@@ -400,21 +651,49 @@ function JobApplicationForm() {
                         ))}
                       </div>
                     )}
-                    {q.type === 'dropdown' || q.questionType === 'dropdown' ? (
+                    {isIndividualOrgQuestion ? (
                       <select
+                        className={styles.selectField}
                         value={answers[idx] || ''}
-                        onChange={e => handleAnswerChange(idx, e.target.value)}
+                        onChange={e => handleAnswerChange(idx, e.target.value, label)}
                       >
                         <option value="">Select an option</option>
-                        {q.options?.map(opt => (
+                        <option value="Individual">Individual</option>
+                        <option value="Organization">Organization</option>
+                      </select>
+                    ) : qt === 'dropdown' ? (
+                      <select
+                        className={styles.selectField}
+                        value={answers[idx] || ''}
+                        onChange={e => handleAnswerChange(idx, e.target.value, label)}
+                      >
+                        <option value="">Select an option</option>
+                        {(q.options || []).map(opt => (
                           <option key={opt} value={opt}>
                             {opt}
                           </option>
                         ))}
                       </select>
                     ) : null}
+                    {![
+                      'textbox',
+                      'text',
+                      'textarea',
+                      'date',
+                      'checkbox',
+                      'radio',
+                      'dropdown',
+                    ].includes(qt) && (
+                      <input
+                        type="text"
+                        placeholder="Type your response here"
+                        value={answers[idx] || ''}
+                        onChange={e => handleAnswerChange(idx, e.target.value, label)}
+                      />
+                    )}
                   </div>
-                ))}
+                );
+              })}
               <button type="submit" className={styles.submitButton}>
                 Proceed to submit with details
               </button>

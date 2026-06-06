@@ -51,8 +51,7 @@ function OwnerMessage({
   const [modalWrongPictureFormatWarning, setModalWrongPictureFormatWarning] = useState(false);
 
   const canEditHeaderMessage = dispatch(hasPermission('editHeaderMessage'));
-
-  const isImage = /;base64/g;
+  const isImageMessage = value => typeof value === 'string' && value.includes(';base64');
 
   function toggle() {
     setModal(!modal);
@@ -116,14 +115,14 @@ function OwnerMessage({
   }
 
   function getContent(messages) {
-    if (isImage.test(messages)) {
+    if (isImageMessage(messages)) {
       return <img src={messages} alt="" className={styles.ownerMessageImg} />;
     }
     return <span className={styles.message}>{messages}</span>;
   }
 
   function getHistoryContent(messages) {
-    if (isImage.test(messages)) {
+    if (isImageMessage(messages)) {
       return <img src={messages} alt="" className={styles.ownerMessageImg} />;
     }
     return <span>{messages}</span>;
@@ -165,6 +164,7 @@ function OwnerMessage({
   const headerBg = darkMode ? 'bg-space-cadet' : '';
   const bodyBg = darkMode ? 'bg-yinmn-blue' : '';
   const boxStyling = darkMode ? boxStyleDark : boxStyle;
+  const hasSelectedImage = isImageMessage(message);
 
   return (
     <div className={styles.messageContainer}>
@@ -250,20 +250,25 @@ function OwnerMessage({
             disabled={disableTextInput}
             className={styles.inputs}
           />
-          <p className="paragraph" style={{ marginTop: '1rem' }}>
-            Or upload a picture:
-          </p>
-          <span style={{ marginTop: '-1.25rem', marginBottom: '1rem', fontSize: '.8rem' }}>
-            (max size 1000 x 400 pixels and 100 KB)
-          </span>
-          <Input
-            id="image"
-            name="file"
-            type="file"
-            label="Choose Image"
-            onChange={event => handleImageUpload(event)}
-            className={styles.inputs}
-          />
+          {!hasSelectedImage && (
+            <>
+              <p className="paragraph" style={{ marginTop: '1rem' }}>
+                Or upload a picture:
+              </p>
+              <span style={{ marginTop: '-1.25rem', marginBottom: '1rem', fontSize: '.8rem' }}>
+                (max size 1000 x 400 pixels and 100 KB)
+              </span>
+              <Input
+                id="image"
+                name="file"
+                type="file"
+                label="Choose Image"
+                aria-label="Choose owner message image"
+                onChange={event => handleImageUpload(event)}
+                className={styles.inputs}
+              />
+            </>
+          )}
         </ModalBody>
 
         <ModalFooter
