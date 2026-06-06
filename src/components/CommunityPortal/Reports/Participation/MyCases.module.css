@@ -15,11 +15,8 @@
 }
 
 .myCasesPageDark {
-  padding: 16px;
   background-color: #1C2541;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  color: #ffffff;
 }
 
 /* ---------- Header ---------- */
@@ -334,6 +331,12 @@
 .moreBtn {
   font-size: 12px;
   margin-top: 8px;
+}
+
+.moreBtnDark {
+  font-size: 12px;
+  margin-top: 8px;
+  color: white;
 }
 
 /* ---------- Expanded scroll area ---------- */

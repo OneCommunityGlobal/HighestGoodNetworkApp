@@ -228,11 +228,7 @@ function MyCases() {
 
   return (
     <Fragment>
-      <div
-        className={`my-cases-global ${styles.myCasesPage} ${
-          darkMode ? styles.myCasesPageDark : ''
-        }`}
-      >
+      <div className={`${styles.myCasesPage} ${darkMode ? styles.myCasesPageDark : ''}`}>
         <header className={styles.header}>
           <div className={styles.eventsTitle}>
             <h2 className={`${styles.sectionTitle} ${darkMode ? styles.sectionTitleDark : ''}`}>
@@ -240,11 +236,17 @@ function MyCases() {
             </h2>
             {view === 'card' &&
               (more ? (
-                <button className={styles.moreBtn} onClick={() => setMore(false)}>
+                <button
+                  className={darkMode ? styles.moreBtnDark : styles.moreBtn}
+                  onClick={() => setMore(false)}
+                >
                   Less ˄
                 </button>
               ) : (
-                <button className={styles.moreBtn} onClick={() => setMore(true)}>
+                <button
+                  className={darkMode ? styles.moreBtnDark : styles.moreBtn}
+                  onClick={() => setMore(true)}
+                >
                   More ˅
                 </button>
               ))}
