@@ -573,27 +573,6 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
 
   // Recharts injects inline styles into its tooltip, so CSS classes have no effect.
   // Pass these props to every <Tooltip> so it respects dark mode.
-  const tooltipStyle = darkMode
-    ? {
-        contentStyle: {
-          background: '#1f2937',
-          border: '1px solid #374151',
-          borderRadius: 8,
-          color: '#f9fafb',
-        },
-        labelStyle: { color: '#9ca3af' },
-        itemStyle: { color: '#f9fafb' },
-      }
-    : {
-        contentStyle: {
-          background: '#fff',
-          border: '1px solid #e5e7eb',
-          borderRadius: 8,
-          color: '#111827',
-        },
-        labelStyle: { color: '#6b7280' },
-        itemStyle: { color: '#111827' },
-      };
 
   return (
     // FIX: darkMode applied as a CSS class on the root div (same pattern as HoursPledgedChart).
