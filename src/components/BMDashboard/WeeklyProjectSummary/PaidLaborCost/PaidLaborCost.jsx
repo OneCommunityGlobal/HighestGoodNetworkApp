@@ -172,7 +172,7 @@ const isDevelopmentEnvironment = () => {
   if (typeof window === 'undefined') {
     return process.env.NODE_ENV === 'development';
   }
-  const hostname = window.location.hostname;
+  const hostname = globalThis.window.location.hostname;
   return (
     hostname.includes('dev') ||
     hostname === 'localhost' ||
