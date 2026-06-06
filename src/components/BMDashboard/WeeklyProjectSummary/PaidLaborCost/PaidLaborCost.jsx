@@ -169,7 +169,7 @@ const isValidISODate = dateString => {
 };
 
 const isDevelopmentEnvironment = () => {
-  if (globalThis.window === 'undefined') {
+  if (globalThis.window === undefined) {
     return process.env.NODE_ENV === 'development';
   }
   const hostname = globalThis.window.location.hostname;
