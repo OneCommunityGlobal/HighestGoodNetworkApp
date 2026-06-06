@@ -1,6 +1,7 @@
 import { useState, Fragment, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './MyCases.module.css';
+import mockEvents from './mockData';
 import { AddEventDetailsPopup } from './AddEventDetailsPopup';
 import {
   createEvent,
@@ -13,6 +14,8 @@ import {
   transformEvents,
 } from './HelperFunctions';
 import { EventsCalendar } from './EventsCalendar';
+import CreateEventModal from './CreateEventModal';
+import { filterEventsByDate } from './FilterByDate';
 
 function MyCases() {
   const [view, setView] = useState('card');
@@ -256,21 +259,21 @@ function MyCases() {
               <div>
                 <button
                   type="button"
-                  className={view === 'calendar' ? styles.active : ''}
+                  className={`${view === 'calendar' ? styles.active : ''} ${darkMode ? styles.colorBlack : ''}`}
                   onClick={() => setView('calendar')}
                 >
                   Calendar
                 </button>
                 <button
                   type="button"
-                  className={`${styles.cardBtn} ${view === 'card' ? styles.active : ''}`}
+                  className={`${styles.cardBtn} ${view === 'card' ? styles.active : ''} ${darkMode ? styles.colorBlack : ''}`}
                   onClick={() => setView('card')}
                 >
                   Card
                 </button>
                 <button
                   type="button"
-                  className={view === 'list' ? styles.active : ''}
+                  className={`${view === 'list' ? styles.active : ''} ${darkMode ? styles.colorBlack : ''}`}
                   onClick={() => setView('list')}
                 >
                   List
@@ -280,7 +283,7 @@ function MyCases() {
             {view !== 'calendar' && (
               <div className={`filter-wrapper-global ${styles.filterWrapper}`}>
                 <select
-                  className={styles.filterDropdown}
+                  className={`${styles.filterDropdown} ${darkMode ? styles.filterDropdownDark : ''}`}
                   value={filter}
                   onChange={e => setFilter(e.target.value)}
                 >

@@ -1,13 +1,23 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
+import { ArrowUpDown, ArrowUp, ArrowDown, SquareArrowOutUpRight } from 'lucide-react';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 import mockEvents from './mockData';
 import styles from './Participation.module.css';
+import { filterEventsByDate } from './FilterByDate';
 
 function NoShowInsights() {
   const [dateFilter, setDateFilter] = useState('All');
   const [activeTab, setActiveTab] = useState('Event type');
+  const [sortOrder, setSortOrder] = useState('none');
   const darkMode = useSelector(state => state.theme.darkMode);
   const [demographicType, setDemographicType] = useState('Age');
+  const insightsRef = useRef(null);
+  const [isExportOpen, setIsExportOpen] = useState(false);
+  const [exportError, setExportError] = useState('');
+  const [isExporting, setIsExporting] = useState(false);
+
 
   const filterByDate = events => {
     const today = new Date();
@@ -33,6 +43,7 @@ function NoShowInsights() {
       }
     });
   };
+  const SortIcon = sortOrder === 'none' ? ArrowUpDown : sortOrder === 'asc' ? ArrowUp : ArrowDown;
 
   const calculateStats = filteredEvents => {
     const statsMap = new Map();
@@ -87,21 +98,28 @@ function NoShowInsights() {
   };
 
   const renderStats = () => {
-    const filteredEvents = filterByDate(mockEvents);
+    const filteredEvents = filterEventsByDate(mockEvents, dateFilter);
     const stats = calculateStats(filteredEvents);
+    const finalStats =
+      sortOrder === 'none'
+        ? stats
+        : [...stats].sort((a, b) =>
+            sortOrder === 'asc' ? a.percentage - b.percentage : b.percentage - a.percentage,
+          );
 
-    return stats.map(item => (
+    return finalStats.map(item => (
       <div key={item.label} className={styles.insightItem}>
-        <div className={`${styles.insightsLabel} ${darkMode ? styles.insightsLabelDark : ''}`}>
+        <div className={`${styles.insightLabel} ${darkMode ? styles.insightLabelDark : ''}`}>
           {item.label}
         </div>
-        <div className={styles.insightBar}>
-          <div className={styles.insightFill} style={{ width: `${item.percentage}%` }} />
+        <div className={`${styles.insightBar}`}>
+          <div className={`${styles.insightFill}`} style={{ width: `${item.percentage}%` }} />
         </div>
         <div
           className={`${styles.insightsPercentage} ${
             darkMode ? styles.insightsPercentageDark : ''
           }`}
+          style={{ color: 'red' }}
         >
           {item.percentage}%
         </div>
@@ -109,19 +127,184 @@ function NoShowInsights() {
     ));
   };
 
+  const buildPdfFromView = async () => {
+    try {
+      if (typeof jsPDF === 'undefined' || typeof html2canvas === 'undefined') {
+        return;
+      }
+      if (!insightsRef.current) return;
+
+      const canvas = await html2canvas(insightsRef.current, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: darkMode ? '#1C2541' : null,
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'pt', 'a4');
+
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+
+      const imgWidth = pageWidth;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      let y = 0;
+
+      let remainingHeight = imgHeight;
+      while (remainingHeight > 0) {
+        pdf.addImage(imgData, 'PNG', 0, y, imgWidth, imgHeight);
+        remainingHeight -= pageHeight;
+
+        if (remainingHeight > 0) {
+          pdf.addPage();
+          y -= pageHeight;
+        }
+      }
+      return pdf;
+    } catch (pdfError) {
+      setExportError(pdfError?.message || 'Failed to share PDF.');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const getPdfFilename = () => {
+    const now = new Date();
+    const localDate = now.toLocaleDateString('en-CA');
+    const filename = `no-show-insights_${dateFilter}_${activeTab}_${localDate}.pdf`;
+    return filename.replace(/\s+/g, '_').toLowerCase();
+  };
+
+  const handleDownloadPdf = async () => {
+    try {
+      setIsExporting(true);
+      setExportError('');
+      const pdf = await buildPdfFromView();
+      pdf.save(getPdfFilename());
+      setIsExportOpen(false);
+    } catch (e) {
+      setExportError(e?.message || 'Failed to download PDF.');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleSharePdf = async () => {
+    try {
+      setIsExporting(true);
+      setExportError('');
+
+      const pdf = await buildPdfFromView();
+      const blob = pdf.output('blob');
+      const file = new File([blob], getPdfFilename(), { type: 'application/pdf' });
+
+      if (!navigator.share || !navigator.canShare?.({ files: [file] })) {
+        setExportError(
+          'Sharing is not supported in this browser. Please download the PDF instead.',
+        );
+        return;
+      }
+
+      await navigator.share({
+        title: 'No-show rate insights',
+        text: `Insights (${dateFilter}, ${activeTab})`,
+        files: [file],
+      });
+
+      setIsExportOpen(false);
+    } catch (e) {
+      setExportError(e?.message || 'Failed to share PDF.');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   return (
-    <div className={`${styles.insights} ${darkMode ? styles.insightsDark : ''}`}>
-      <div className={`${styles.insightsHeader} ${darkMode ? styles.insightsHeaderDark : ''}`}>
-        <h3>No-show rate insights</h3>
-        <div className={styles.insightsFilters}>
-          <select value={dateFilter} onChange={e => setDateFilter(e.target.value)}>
-            <option value="All">All Time</option>
-            <option value="Today">Today</option>
-            <option value="This Week">This Week</option>
-            <option value="This Month">This Month</option>
-          </select>
+    <>
+      {isExportOpen && (
+        <div
+          className={styles.modalOverlay}
+          onClick={() => !isExporting && setIsExportOpen(false)}
+          onKeyDown={() => !isExporting && setIsExportOpen(false)}
+          role="button"
+          tabIndex={0}
+        >
+          <div
+            className={`${styles.modal} ${darkMode ? styles.modalDark : ''}`}
+            onClick={e => e.stopPropagation()}
+            onKeyDown={e => e.stopPropagation()}
+            role="button"
+            tabIndex={0}
+          >
+            <div className={styles.modalHeader}>
+              <h4 className={styles.modalTitle}>Export No-show Insights</h4>
+              <button
+                type="button"
+                className={styles.modalClose}
+                onClick={() => !isExporting && setIsExportOpen(false)}
+                aria-label="Close export modal"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className={styles.modalBody}>
+              <div className={styles.modalMeta}>
+                <div>
+                  <strong>Filter:</strong> {dateFilter}
+                </div>
+                <div>
+                  <strong>View:</strong> {activeTab}
+                </div>
+              </div>
+
+              {exportError && <div className={styles.modalError}>{exportError}</div>}
+
+              <div className={styles.modalActions}>
+                <button
+                  type="button"
+                  className={`${
+                    darkMode ? styles.exportOptionsButtonsDark : styles.exportOptionsButtons
+                  }`}
+                  onClick={handleDownloadPdf}
+                  disabled={isExporting}
+                >
+                  {isExporting ? 'Working…' : 'Download PDF'}
+                </button>
+
+                <button
+                  type="button"
+                  className={`${
+                    darkMode ? styles.exportOptionsButtonsDark : styles.exportOptionsButtons
+                  }`}
+                  onClick={handleSharePdf}
+                  disabled={isExporting}
+                >
+                  {isExporting ? 'Working…' : 'Share PDF'}
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
+      <div
+        ref={insightsRef}
+        className={`${styles.insights} ${darkMode ? styles.insightsDark : ''}`}
+      >
+        <div className={`${styles.insightsHeader} ${darkMode ? styles.insightsHeaderDark : ''}`}>
+          <h3>No-show rate insights</h3>
+          <div
+            className={`${styles.insightsFilters} ${darkMode ? styles.insightsFiltersDark : ''}`}
+          >
+            <select value={dateFilter} onChange={e => setDateFilter(e.target.value)}>
+              <option value="All Time">All Time</option>
+              <option value="Today">Today</option>
+              <option value="This Week">This Week</option>
+              <option value="This Month">This Month</option>
+            </select>
+          </div>
+        </div>
 
       <div className={styles.insightsTabs}>
         {['Demographics', 'Event type', 'Time', 'Location'].map(tab => (
@@ -151,8 +334,9 @@ function NoShowInsights() {
         </select>
       )}
 
-      <div className={styles.insightsContent}>{renderStats()}</div>
-    </div>
+        <div className={styles.insightsContent}>{renderStats()}</div>
+      </div>
+    </>
   );
 }
 

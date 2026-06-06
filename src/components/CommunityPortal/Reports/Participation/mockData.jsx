@@ -103,7 +103,7 @@ const userSegments = ['New', 'Returning'];
 for (let month = 0; month < 12; month++) {
   for (let week = 0; week < 4; week++) {
     for (let t = 0; t < eventTypes.length; t++) {
-      const eventDate = new Date(2025, month, 1 + week * 7 + t);
+      const eventDate = new Date(2026, month, 1 + week * 7 + t);
       const hours = Math.floor(Math.random() * 24);
       const minutes = Math.floor(Math.random() * 60);
       const seconds = Math.floor(Math.random() * 60);
@@ -133,8 +133,9 @@ for (let month = 0; month < 12; month++) {
   }
 }
 
+// Mock data generation for today
 const today = new Date();
-for (let t = 0; t < 3; t++) {
+for (let t = 0; t < 6; t++) {
   const eventDate = new Date(today);
   eventDate.setHours(10 + t * 2, 0, 0, 0);
   const duration = random1to5();
@@ -146,7 +147,7 @@ for (let t = 0; t < 3; t++) {
     eventTime: formatEventDisplay({ eventStartTime: startTime, eventEndTime: endTime }),
     eventStartTime: startTime,
     eventEndTime: endTime,
-    eventName: `Today’s Event ${id}`,
+    eventName: `Event ${id}`,
     attendees: secureRandInt(20, 99),
     noShowRate: `${secureRandInt(5, 94)}%`,
     dropOffRate: `${secureRandInt(10, 79)}%`,
