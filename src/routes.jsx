@@ -77,12 +77,10 @@ import TSAFormPage6 from './components/TSAForm/pages/TSAFormPage6';
 import TSAFormPage7 from './components/TSAForm/pages/TSAFormPage7';
 import TSAFormPage8 from './components/TSAForm/pages/TSAFormPage8';
 
-import DisplayTeamMemberDetails from './components/HGNForm/TopCommunityMembers/TopCommunityMembers';
 import TopCommunityMembers from './components/HGNForm/TopCommunityMembers';
 import HelpPage from './components/LandingPage/HelpPage';
 import CommunityMembersPage from './components/HGNHelpSkillsDashboard/CommunityMembersPage';
 import FeedbackModal from './components/HGNHelpSkillsDashboard/FeedbackModal';
-import LandingPage from './components/HGNHelpSkillsDashboard/LandingPage';
 import SkillsOverviewPage from './components/HGNHelpSkillsDashboard/SkillsOverviewPage';
 import TeamCard from './components/HGNHelpSkillsDashboard/TeamCard/TeamCard';
 import UserProfilePage from './components/HGNHelpSkillsDashboard/UserProfilePage';
@@ -130,7 +128,6 @@ import AttendanceNoShow from './components/AttendanceSystem/AttendanceNoShowChar
 import LessonsLearntChart from './components/BMDashboard/LessonsLearnt/LessonsLearntChart';
 import UtilizationChart from './components/BMDashboard/UtilizationChart/UtilizationChart';
 import InjuriesDonutChart from './components/InjuriesAnalytics/InjuriesDonutChart';
-import CostPredictionPage from './components/BMDashboard/CostPrediction/CostPredictionPage';
 import ProjectRiskProfileOverview from './components/BMDashboard/WeeklyProjectSummary/ProjectRiskProfileOverview';
 import JobsHitsApplicationsChart from './components/JobAnalytics/JobsHitsApplicationsChart/JobsHitsApplicationsChart';
 import BMDashboard from './components/BMDashboard';
@@ -183,7 +180,6 @@ import BookingPage from './components/Booking/BookingPage';
 import StudentDashboard from './components/EductionPortal/StudentTasks/StudentDashboard';
 import StudentTasks from './components/EductionPortal/StudentTasks/StudentTasks';
 import TaskDetails from './components/EductionPortal/StudentTasks/TaskDetails';
-import PromotionEligibility from './components/HGNPRDashboard/PromotionEligibility';
 import PRReviewTeamAnalytics from './components/HGNPRDashboard/PRReviewTeamAnalytics';
 import PRPromotionsPage from './components/PRPromotions/PRPromotionsPage';
 import SimpleToolChart from './components/BMDashboard/Tools/SimpleToolChart';
@@ -1027,7 +1023,6 @@ export default (
           fallback
           routePermissions={RoutePermissions.resourceManagement}
         />
-
         <CPProtectedRoute
           path="/communityportal/reports/EventNoShowChart"
           component={EventNoShowChart}
