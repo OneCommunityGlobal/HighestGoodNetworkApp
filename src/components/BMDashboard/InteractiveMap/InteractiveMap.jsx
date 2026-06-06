@@ -20,14 +20,17 @@ import styles from './InteractiveMap.module.css';
 ----------------------------------------------------- */
 function MapThemeUpdater({ darkMode }) {
   const map = useMap();
+
   useEffect(() => {
     const container = map.getContainer();
+
     if (darkMode) container.classList.add(styles.darkMap);
     else container.classList.remove(styles.darkMap);
 
     container.setAttribute('tabindex', '-1');
     map.invalidateSize();
   }, [darkMode, map]);
+
   return null;
 }
 
@@ -55,7 +58,9 @@ function FloatingLegend({ darkMode, mapAreaRef }) {
 
     const onMouseMove = e => {
       if (!draggingRef.current) return;
+
       const mapRect = mapAreaRef.current.getBoundingClientRect();
+
       let newLeft = origRef.current.x + (e.clientX - startRef.current.x);
       let newTop = origRef.current.y + (e.clientY - startRef.current.y);
 
@@ -124,9 +129,12 @@ function FloatingLegend({ darkMode, mapAreaRef }) {
 const parseDateSafe = dateString => {
   if (!dateString) return null;
 
+  if (dateString instanceof Date) {
+    return isNaN(dateString.getTime()) ? null : dateString;
+  }
+
   // Handle YYYY-MM-DD format specifically
   if (typeof dateString === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
-    // Split and create date in local timezone
     const [year, month, day] = dateString.split('-').map(Number);
     return new Date(year, month - 1, day);
   }
@@ -135,22 +143,20 @@ const parseDateSafe = dateString => {
   return isNaN(date.getTime()) ? null : date;
 };
 
-// Helper to normalize dates for comparison (strip time component)
+// Helper to normalize dates for comparison
 const normalizeDate = date => {
   if (!date) return null;
-  // Create a new date with just year, month, day (no time)
   return new Date(date.getFullYear(), date.getMonth(), date.getDate());
 };
 
 // Function to reverse geocode coordinates to get country name
 const reverseGeocode = async (latitude, longitude) => {
   try {
-    // Using OpenStreetMap Nominatim API for reverse geocoding
     const response = await fetch(
       `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=3&addressdetails=1`,
       {
         headers: {
-          'User-Agent': 'ProjectMapApp/1.0', // Required by Nominatim usage policy
+          'User-Agent': 'ProjectMapApp/1.0',
         },
       },
     );
@@ -161,7 +167,6 @@ const reverseGeocode = async (latitude, longitude) => {
 
     const data = await response.json();
 
-    // Extract country name from response
     if (data.address) {
       return data.address.country || data.address.country_code || 'Unknown Country';
     }
@@ -180,7 +185,6 @@ const useCountryNames = orgs => {
 
   useEffect(() => {
     const fetchCountryForOrgs = async () => {
-      // Filter out orgs that already have country in data or are in cache
       const orgsToGeocode = orgs.filter(org => {
         const cacheKey = `${org.latitude},${org.longitude}`;
         return !org.country && !countryCache[cacheKey] && !loadingCountries[cacheKey];
@@ -188,32 +192,34 @@ const useCountryNames = orgs => {
 
       if (orgsToGeocode.length === 0) return;
 
-      // Mark as loading
       const newLoading = { ...loadingCountries };
+
       orgsToGeocode.forEach(org => {
         const cacheKey = `${org.latitude},${org.longitude}`;
         newLoading[cacheKey] = true;
       });
+
       setLoadingCountries(newLoading);
 
-      // Fetch country for each org
       for (const org of orgsToGeocode) {
         const cacheKey = `${org.latitude},${org.longitude}`;
+
         try {
           const country = await reverseGeocode(org.latitude, org.longitude);
+
           setCountryCache(prev => ({
             ...prev,
             [cacheKey]: country,
           }));
         } catch (error) {
           console.error(`Failed to geocode ${cacheKey}:`, error);
+
           setCountryCache(prev => ({
             ...prev,
             [cacheKey]: 'Unknown',
           }));
         }
 
-        // Remove from loading
         setLoadingCountries(prev => {
           const updated = { ...prev };
           delete updated[cacheKey];
@@ -225,19 +231,14 @@ const useCountryNames = orgs => {
     fetchCountryForOrgs();
   }, [orgs, countryCache, loadingCountries]);
 
-  // Function to get country name for an org
   const getCountryName = org => {
-    // First check if country is already in the org data
     if (org.country) return org.country;
 
-    // Check cache
     const cacheKey = `${org.latitude},${org.longitude}`;
-    if (countryCache[cacheKey]) return countryCache[cacheKey];
 
-    // Still loading
+    if (countryCache[cacheKey]) return countryCache[cacheKey];
     if (loadingCountries[cacheKey]) return 'Loading country...';
 
-    // Not yet fetched
     return 'Location details';
   };
 
@@ -255,6 +256,7 @@ export default function InteractiveMap() {
   const [orgs, setOrgs] = useState([]);
   const [filteredOrgs, setFilteredOrgs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filtering, setFiltering] = useState(false);
 
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -262,21 +264,7 @@ export default function InteractiveMap() {
   const [errMsg, setErrMsg] = useState('');
   const [mapKey, setMapKey] = useState(0);
 
-  // Use the country names hook
   const { getCountryName } = useCountryNames(filteredOrgs);
-
-  const getStatusColor = status => {
-    switch (status?.toLowerCase()) {
-      case 'active':
-        return '#DE6A6A';
-      case 'delayed':
-        return '#E3D270';
-      case 'completed':
-        return '#6ACFDE';
-      default:
-        return '#AAAAAA';
-    }
-  };
 
   const pseudoOrgs = [
     {
@@ -311,19 +299,50 @@ export default function InteractiveMap() {
     },
   ];
 
+  const getStatusColor = status => {
+    switch (status?.toLowerCase()) {
+      case 'active':
+        return '#DE6A6A';
+      case 'delayed':
+        return '#E3D270';
+      case 'completed':
+        return '#6ACFDE';
+      default:
+        return '#AAAAAA';
+    }
+  };
+
+  const getProjectStartDate = org =>
+    parseDateSafe(
+      org.startDate ||
+        org.start_date ||
+        org.projectStartDate ||
+        org.project_start_date ||
+        org.createdAt,
+    );
+
+  const getProjectEndDate = org =>
+    parseDateSafe(
+      org.endDate || org.end_date || org.projectEndDate || org.project_end_date || org.updatedAt,
+    );
+
   const fetchOrgs = async () => {
     try {
       let res;
+
       try {
         res = await axios.get(ENDPOINTS.BM_PROJECTS_WITH_LOCATION);
       } catch {
         res = await axios.get(ENDPOINTS.BM_ORGS_WITH_LOCATION);
       }
+
       const data = res.data.data && res.data.data.length ? res.data.data : pseudoOrgs;
+
       setOrgs(data);
       setFilteredOrgs(data);
     } catch (e) {
       console.error(e);
+
       setOrgs(pseudoOrgs);
       setFilteredOrgs(pseudoOrgs);
     } finally {
@@ -331,48 +350,39 @@ export default function InteractiveMap() {
     }
   };
 
-  useEffect(() => {
-    // Reset error message
+  const handleApplyFilters = () => {
+    setFiltering(true);
     setErrMsg('');
 
-    // Validate date range
     if (startDate && endDate && endDate < startDate) {
       setErrMsg('End date cannot be earlier than start date');
       setFilteredOrgs([]);
+      setMapKey(k => k + 1);
+      setFiltering(false);
       return;
     }
 
-    // Filter organizations based on date range and status
     const filtered = orgs.filter(org => {
-      // Parse dates safely
-      const orgStartDate = parseDateSafe(org.startDate);
-      const orgEndDate = parseDateSafe(org.endDate) || orgStartDate;
+      const orgStartDate = getProjectStartDate(org);
+      const orgEndDate = getProjectEndDate(org) || orgStartDate;
 
-      // Skip if we can't parse the start date
       if (!orgStartDate) return false;
 
-      // Normalize dates to compare only the date part (ignore time)
       const normOrgStart = normalizeDate(orgStartDate);
       const normOrgEnd = normalizeDate(orgEndDate);
       const normFilterStart = normalizeDate(startDate);
       const normFilterEnd = normalizeDate(endDate);
 
-      // Apply date filters - check for date range overlap
       if (normFilterStart && normFilterEnd) {
-        // Both dates selected: check if date ranges overlap
-        // Project is included if it overlaps with the filter range
         const overlaps = normOrgStart <= normFilterEnd && normOrgEnd >= normFilterStart;
         if (!overlaps) return false;
       } else if (normFilterStart) {
-        // Only start date selected: project must end on or after filter start
         if (normOrgEnd < normFilterStart) return false;
       } else if (normFilterEnd) {
-        // Only end date selected: project must start on or before filter end
         if (normOrgStart > normFilterEnd) return false;
       }
 
-      // Apply status filter
-      if (statusFilter && org.status.toLowerCase() !== statusFilter.toLowerCase()) {
+      if (statusFilter && org.status?.toLowerCase() !== statusFilter.toLowerCase()) {
         return false;
       }
 
@@ -380,7 +390,18 @@ export default function InteractiveMap() {
     });
 
     setFilteredOrgs(filtered);
-  }, [startDate, endDate, statusFilter, orgs]);
+    setMapKey(k => k + 1);
+    setFiltering(false);
+  };
+
+  const handleResetFilters = () => {
+    setStartDate(null);
+    setEndDate(null);
+    setStatusFilter('');
+    setErrMsg('');
+    setFilteredOrgs(orgs);
+    setMapKey(k => k + 1);
+  };
 
   const handleProjectClick = org => history.push(`/bmdashboard/projects/${org.orgId}`);
 
@@ -392,10 +413,13 @@ export default function InteractiveMap() {
     setMapKey(k => k + 1);
   }, [darkMode]);
 
-  const formatDateForDisplay = dateString => {
-    if (!dateString) return 'N/A';
-    const date = parseDateSafe(dateString);
+  const formatDateForDisplay = dateValue => {
+    if (!dateValue) return 'N/A';
+
+    const date = dateValue instanceof Date ? dateValue : parseDateSafe(dateValue);
+
     if (!date) return 'Invalid Date';
+
     return date.toLocaleDateString('en-US', {
       month: '2-digit',
       day: '2-digit',
@@ -428,6 +452,7 @@ export default function InteractiveMap() {
               startDate={startDate}
               endDate={endDate}
             />
+
             <DatePicker
               selected={endDate}
               onChange={date => setEndDate(date)}
@@ -441,6 +466,7 @@ export default function InteractiveMap() {
               endDate={endDate}
               minDate={startDate}
             />
+
             <select
               value={statusFilter}
               onChange={e => setStatusFilter(e.target.value)}
@@ -451,10 +477,30 @@ export default function InteractiveMap() {
               <option value="delayed">Delayed</option>
               <option value="completed">Completed</option>
             </select>
+
+            <button
+              type="button"
+              onClick={handleApplyFilters}
+              className={`${styles.filterButton} ${darkMode ? styles.filterButtonDark : ''}`}
+              disabled={filtering}
+            >
+              {filtering ? 'Applying...' : 'Apply'}
+            </button>
+
+            <button
+              type="button"
+              onClick={handleResetFilters}
+              className={`${styles.filterButton} ${darkMode ? styles.filterButtonDark : ''}`}
+              disabled={filtering}
+            >
+              Reset
+            </button>
+
             {errMsg && <span className={styles.errorMsg}>{errMsg}</span>}
           </div>
+
           <div className={styles.totalProjects}>
-            Total Projects: {orgs.length} | Showing: {filteredOrgs.length}
+            Showing {filteredOrgs.length} of {orgs.length} projects
           </div>
         </div>
 
@@ -475,6 +521,7 @@ export default function InteractiveMap() {
               keyboard={false}
             >
               <MapThemeUpdater darkMode={darkMode} />
+
               <TileLayer
                 url={
                   darkMode
@@ -482,6 +529,7 @@ export default function InteractiveMap() {
                     : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
                 }
               />
+
               <MarkerClusterGroup maxClusterRadius={70} chunkedLoading>
                 {filteredOrgs.map(org => (
                   <CircleMarker
@@ -504,12 +552,15 @@ export default function InteractiveMap() {
                         Country: {getCountryName(org)}
                       </div>
                     </Tooltip>
+
                     <Popup>
                       <div style={{ minWidth: '200px' }}>
                         <h3 style={{ margin: '0 0 10px 0' }}>{org.name}</h3>
+
                         <div style={{ marginBottom: '10px' }}>
                           <strong>Project ID:</strong> #{org.orgId}
                         </div>
+
                         <div style={{ marginBottom: '8px' }}>
                           <strong>Status:</strong>{' '}
                           <span
@@ -528,17 +579,23 @@ export default function InteractiveMap() {
                             {org.status}
                           </span>
                         </div>
+
                         <div style={{ marginBottom: '8px' }}>
                           <strong>Location:</strong> {getCountryName(org)}
                         </div>
+
                         <div style={{ marginBottom: '8px' }}>
-                          <strong>Start Date:</strong> {formatDateForDisplay(org.startDate)}
+                          <strong>Start Date:</strong>{' '}
+                          {formatDateForDisplay(getProjectStartDate(org))}
                         </div>
-                        {org.endDate && (
+
+                        {getProjectEndDate(org) && (
                           <div style={{ marginBottom: '15px' }}>
-                            <strong>End Date:</strong> {formatDateForDisplay(org.endDate)}
+                            <strong>End Date:</strong>{' '}
+                            {formatDateForDisplay(getProjectEndDate(org))}
                           </div>
                         )}
+
                         <button
                           onClick={() => handleProjectClick(org)}
                           className={styles.detailsButton}

@@ -348,3 +348,32 @@
   font-weight: 500;
   margin-left: auto;
 }
+
+.filterButton {
+  padding: 8px 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #ffffff;
+  color: #222222;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.filterButton:hover {
+  background-color: #f2f2f2;
+}
+
+.filterButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.filterButtonDark {
+  background-color: #2d3748;
+  color: #ffffff;
+  border-color: #4a5568;
+}
+
+.filterButtonDark:hover {
+  background-color: #4a5568;
+}
