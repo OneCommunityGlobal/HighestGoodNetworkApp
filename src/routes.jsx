@@ -219,6 +219,7 @@ import SupportDashboard from './components/SupportPortal/SupportDashboard';
 import SupportLogin from './components/SupportPortal/SupportLogin';
 import SupportLogViewer from './components/SupportPortal/SupportLogViewer';
 import { UserRole } from './utils/enums';
+import FollowUpEmailTemplate from './components/CommunityPortal/Activities/FollowUpEmailTemplate';
 
 import JobApplicationForm from './components/Collaboration/JobApplicationForm/JobApplicationForm';
 
@@ -1040,9 +1041,8 @@ export default (
           component={Feedbackform}
         />
         <CPProtectedRoute
-          path="/communityportal/activities/:activityid"
-          exact
-          component={Activity}
+          path="/communityportal/activities/FollowUpEmailTemplate"
+          component={FollowUpEmailTemplate}
         />
         <CPProtectedRoute
           path="/communityportal/activities/TestEventReg"
@@ -1063,6 +1063,11 @@ export default (
           path="/communityportal/reports/event/personalization"
           exact
           component={EventStats}
+        />
+        <CPProtectedRoute
+          path="/communityportal/activities/:activityid"
+          exact
+          component={Activity}
         />
         <CPProtectedRoute path="/communityportal/ActivitiesPage" exact component={ActivitiesPage} />
         <CPProtectedRoute

@@ -5,17 +5,22 @@ import companyLogo from '../../../assets/images/logo2.png';
 import styles from './FollowUpEmailTemplate.module.css';
 
 function FollowUpEmailTemplate() {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const { eventId = 1234, email = '' } = useParams(); // || { email: '' };
   const eventName = '[Event Name]';
   const eventDate = '[Event Date]';
 
   const subject =
     eventName !== '[Event Name]' ? `Help us improve: ${eventName}` : 'Help Us Improve Our Events';
-  const previewText = 'Tell us what you thought — takes less than 2 minutes.';
+  const previewText = 'Tell us what you thought, takes less than 2 minutes.';
   return (
-    <div className={styles.emailTemplateContainer}>
+    <div
+      className={`${styles.emailTemplateContainer} ${
+        darkMode ? styles.emailTemplateContainerDark : ''
+      }`}
+    >
       {/* Subject (for template clarity / preview) */}
-      <p className={styles.subjectLine}>
+      <p className={styles.previewLine}>
         <strong>Subject:</strong> {subject}
       </p>
       <p className={styles.previewLine}>
@@ -27,7 +32,7 @@ function FollowUpEmailTemplate() {
       {/* Company Logo */}
       <img src={companyLogo} alt="One Community Logo" className={styles.emailLogo} />
 
-      <h2>Hi {email || '[Name]'},</h2>
+      <h2 className={styles.h2}>Hi {email || '[Name]'},</h2>
       <p>
         Thanks for attending <strong>{eventName}</strong> on <strong>{eventDate}</strong>. Your
         feedback helps us improve future events and make them more valuable for you.
@@ -74,9 +79,9 @@ function FollowUpEmailTemplate() {
       <p className={styles.p}>Google Email: onecommunityglobal@gmail.com</p>
       <p className={styles.p}>Timezone: Los Angeles, CA - Pacific Time</p>
 
-      <hr className={styles.emailDivider} />
+      <hr className={`${styles.emailDivider} ${darkMode ? styles.emailDividerDark : ''}`} />
 
-      <div className={styles.socialIcons}>
+      <div className={`${styles.socialIcons} ${darkMode ? styles.socialIconsDark : ''}`}>
         <a
           href="https://www.linkedin.com/company/one-community-global/"
           target="_blank"
@@ -105,7 +110,7 @@ function FollowUpEmailTemplate() {
         </a>
       </div>
 
-      <hr className={styles.emailDivider} />
+      <hr className={`${styles.emailDivider} ${darkMode ? styles.emailDividerDark : ''}`} />
 
       <p style={{ fontWeight: 'bold', textAlign: 'center' }} className={styles.p}>
         Jae M.Sabol <br /> Executive Director - One Community <br />
