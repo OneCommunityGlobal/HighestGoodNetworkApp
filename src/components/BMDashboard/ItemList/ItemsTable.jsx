@@ -55,7 +55,7 @@ export default function ItemsTable({
   };
 
   const getNestedValue = (obj, path) =>
-    path.split('.').reduce((acc, part) => (acc ? acc[part] : null), obj);
+    path ? path.split('.').reduce((acc, part) => (acc ? acc[part] : null), obj) : null;
 
   const getIconFor = key => {
     if (!sortConfig?.key || sortConfig.key !== key) return faSort;
@@ -74,7 +74,7 @@ export default function ItemsTable({
 
   const getColumnStyle = (key, isAction = false) => {
     const base = { verticalAlign: 'middle' };
-    if (numericKeys.has(key)) base.textAlign = 'right';
+    if (key && numericKeys.has(key)) base.textAlign = 'right';
     if (isAction) {
       base.borderLeft = '2px solid #dee2e6';
       base.textAlign = 'center';
@@ -92,7 +92,9 @@ export default function ItemsTable({
         recordType={recordType}
         itemType={itemType}
       />
-      <UpdateItemModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
+      {UpdateItemModal && (
+        <UpdateItemModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
+      )}
 
       <div className={`${styles.itemsTableContainer} ${darkMode ? styles.darkTableWrapper : ''}`}>
         <Table className={darkMode ? styles.darkTable : ''}>
@@ -112,12 +114,12 @@ export default function ItemsTable({
               >
                 Name <FontAwesomeIcon icon={getIconFor('name')} size="lg" />
               </th>
-              {dynamicColumns.map(({ label, key }) => {
+              {(dynamicColumns || []).map(({ label, key }) => {
                 const sortKey = dynamicSortKeyByLabel[label];
                 const clickable = Boolean(sortKey);
                 return (
                   <th
-                    key={label}
+                    key={label || key}
                     onClick={clickable ? () => onSort?.(sortKey) : undefined}
                     className={clickable ? styles.sortableTh : undefined}
                     style={getColumnStyle(key)}
@@ -149,11 +151,16 @@ export default function ItemsTable({
                 <tr key={el._id}>
                   <td style={{ verticalAlign: 'middle' }}>{el.project?.name}</td>
                   <td style={{ verticalAlign: 'middle' }}>{el.itemType?.name}</td>
-                  {dynamicColumns.map(({ label, key }) => {
+                  {(dynamicColumns || []).map(({ label, key }) => {
                     const value = getNestedValue(el, key);
-                    if (key === 'stockAvailable' && Number(value) < 10) {
+                    if (
+                      key === 'stockAvailable' &&
+                      value !== null &&
+                      value !== undefined &&
+                      Number(value) < 10
+                    ) {
                       return (
-                        <td key={label} style={getColumnStyle(key)}>
+                        <td key={label || key} style={getColumnStyle(key)}>
                           <Badge
                             color="danger"
                             pill
@@ -167,7 +174,7 @@ export default function ItemsTable({
                       );
                     }
                     return (
-                      <td key={label} style={getColumnStyle(key)}>
+                      <td key={label || key} style={getColumnStyle(key)}>
                         {value}
                       </td>
                     );
@@ -223,7 +230,7 @@ export default function ItemsTable({
               ))
             ) : (
               <tr>
-                <td colSpan={dynamicColumns.length + 5} style={{ textAlign: 'center' }}>
+                <td colSpan={(dynamicColumns?.length || 0) + 5} style={{ textAlign: 'center' }}>
                   No items data
                 </td>
               </tr>

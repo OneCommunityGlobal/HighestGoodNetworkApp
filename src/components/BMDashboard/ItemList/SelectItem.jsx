@@ -52,7 +52,7 @@ export default function SelectItem({
 }) {
   let itemSet = [];
 
-  if (items?.length) {
+  if (items && items.length > 0) {
     if (label === 'Consumables') {
       itemSet = getConsumablesSet(items, selectedProject);
     } else if (label === 'Tool Status') {
@@ -99,7 +99,7 @@ export default function SelectItem({
           disabled={!itemSet.length}
           style={darkStyle}
         >
-          {itemSet.length ? (
+          {itemSet.length > 0 ? (
             <>
               <option value="all">All</option>
               {itemSet.map(name => (
