@@ -496,3 +496,21 @@ button.btn.btn-outline-primary {
   }
 }
 }
+
+.desktop {
+  display: block;
+}
+
+.tablet {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .desktop {
+    display: none;
+  }
+
+  .tablet {
+    display: block;
+  }
+}
