@@ -1,75 +1,23 @@
-.container {
-  min-height: 100vh;
-  padding: 20px 20px 48px;
-  background: #faf9fb;
-}
-
-.darkContainer {
-  background: #1b2a41;
-  color: #fff;
-}
-
-/* --- Page Header --- */
-.pageHeader {
-  padding: 0 15px;
-  margin-bottom: 20px;
-}
-
-.pageTitle {
-  font-size: 26px;
-  font-weight: 700;
-  margin: 0 0 4px;
-  color: #000;
-}
-
-.darkText {
-  color: #fff;
-}
-
-.pageSubtitle {
-  font-size: 14px;
-  margin: 0;
-  color: #666;
-}
-
-.darkSubtitle {
-  color: #aaa;
-}
-
-/* --- Table Card --- */
-.tableCard {
-  margin: 0 15px;
-  border: 1px solid #ece7f4;
-  border-radius: 14px;
-  overflow: hidden;
-}
-
-.darkCard {
-  background: #1c2541;
-  border-color: #225163;
-}
-
-/* --- Table Wrapper (enables horizontal scroll on small screens) --- */
 .tableWrapper {
   overflow-x: auto;
   width: 100%;
 }
 
-/* --- Table --- */
 .table {
   width: 100%;
   margin: 0;
   font-size: 14px;
   border-collapse: collapse;
+  transition: color 0.2s ease;
 }
 
 .darkTable {
-  color: #fff;
+  color: #e1e1e1;
 }
 
-/* --- Table Head --- */
 .tableHead {
   background: #f4f1fb;
+  transition: background 0.2s ease;
 }
 
 .tableHead th {
@@ -81,6 +29,7 @@
   color: #555;
   border-bottom: 1px solid #ece7f4;
   white-space: nowrap;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
 }
 
 .darkTableHead {
@@ -92,7 +41,14 @@
   border-bottom-color: #225163;
 }
 
-/* --- Table Body Rows --- */
+.table tbody tr {
+  transition: background 0.2s ease;
+}
+
+.table tbody tr:hover {
+  background: #f8f5ff;
+}
+
 .darkRow {
   background: #1c2541;
 }
@@ -101,15 +57,12 @@
   background: #223050;
 }
 
-.table tbody tr:hover {
-  background: #f8f5ff;
-}
-
 .table tbody td {
   padding: 12px 16px;
   border-bottom: 1px solid #ece7f4;
   vertical-align: middle;
   color: #333;
+  transition: color 0.2s ease, border-color 0.2s ease;
 }
 
 .darkCell {
@@ -117,21 +70,14 @@
   border-bottom-color: #225163 !important;
 }
 
-/* --- Empty State --- */
 .emptyState {
   text-align: center;
   padding: 60px 20px;
   font-size: 15px;
   color: #888;
+  transition: color 0.2s ease;
 }
 
-/* --- Responsive --- */
-@media (width <= 768px) {
-  .pageTitle {
-    font-size: 20px;
-  }
-
-  .tableCard {
-    margin: 0 4px;
-  }
+.darkText {
+  color: #aab4c8;
 }

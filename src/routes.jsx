@@ -134,7 +134,6 @@ import LBMessaging from './components/LBDashboard/Messaging/LBMessaging';
 import LBRegister from './components/LBDashboard/Register/LBRegister';
 import WishListItem from './components/LBDashboard/WishList/ItemOverview';
 import WishList from './components/LBDashboard/WishList/WishList';
-import LBUserManagement from './components/LBDashboard/UserManagement/UserManagement';
 import WeeklyProgressDashboard from './components/WeeklyProgress/WeeklyProgressDashboard';
 
 //mostwatedmaterials
@@ -333,7 +332,6 @@ export default (
     <LBProtectedRoute path="/lbdashboard/bidoverview" exact component={LBBidOverview} />
     <LBProtectedRoute path="/lbdashboard/bidding" exact component={BiddingHomepage} />
     <LBProtectedRoute path="/lbdashboard/messaging" component={LBMessaging} />
-    <LBProtectedRoute path="/lbdashboard/usermanagement" exact component={LBUserManagement} />
     <LBProtectedRoute path="/lbdashboard/masterplan" exact component={MasterPlan} />
     <LBProtectedRoute
       exact

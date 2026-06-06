@@ -1,7 +1,4 @@
-import { useSelector } from 'react-redux';
-import { Container, Card, CardBody, Table } from 'reactstrap';
 import PropTypes from 'prop-types';
-import Header from '../Header';
 import styles from './UserManagement.module.css';
 
 const mockUsers = [
@@ -55,75 +52,45 @@ const mockUsers = [
   },
 ];
 
-function UserRow({ user, darkMode }) {
+function UserManagement({ darkMode }) {
+  if (mockUsers.length === 0) {
+    return (
+      <div className={`${styles.emptyState} ${darkMode ? styles.darkText : ''}`}>
+        No registered users found.
+      </div>
+    );
+  }
+
   return (
-    <tr className={darkMode ? styles.darkRow : ''}>
-      <td className={darkMode ? styles.darkCell : ''}>{user.firstName}</td>
-      <td className={darkMode ? styles.darkCell : ''}>{user.lastName}</td>
-      <td className={darkMode ? styles.darkCell : ''}>{user.email}</td>
-      <td className={darkMode ? styles.darkCell : ''}>{user.phone}</td>
-      <td className={darkMode ? styles.darkCell : ''}>{user.registrationDate}</td>
-    </tr>
+    <div className={styles.tableWrapper}>
+      <table className={`${styles.table} ${darkMode ? styles.darkTable : ''}`}>
+        <thead>
+          <tr className={`${styles.tableHead} ${darkMode ? styles.darkTableHead : ''}`}>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+            <th>Phone Number</th>
+            <th>Registration Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {mockUsers.map(user => (
+            <tr key={user.id} className={darkMode ? styles.darkRow : ''}>
+              <td className={darkMode ? styles.darkCell : ''}>{user.firstName}</td>
+              <td className={darkMode ? styles.darkCell : ''}>{user.lastName}</td>
+              <td className={darkMode ? styles.darkCell : ''}>{user.email}</td>
+              <td className={darkMode ? styles.darkCell : ''}>{user.phone}</td>
+              <td className={darkMode ? styles.darkCell : ''}>{user.registrationDate}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
 
-UserRow.propTypes = {
-  user: PropTypes.shape({
-    id: PropTypes.number.isRequired,
-    firstName: PropTypes.string.isRequired,
-    lastName: PropTypes.string.isRequired,
-    email: PropTypes.string.isRequired,
-    phone: PropTypes.string.isRequired,
-    registrationDate: PropTypes.string.isRequired,
-  }).isRequired,
+UserManagement.propTypes = {
   darkMode: PropTypes.bool,
 };
-
-function UserManagement() {
-  const darkMode = useSelector(state => state.theme.darkMode);
-
-  return (
-    <Container fluid className={`${styles.container} ${darkMode ? styles.darkContainer : ''}`}>
-      <Header />
-      <header className={styles.pageHeader}>
-        <h1 className={`${styles.pageTitle} ${darkMode ? styles.darkText : ''}`}>
-          User Management
-        </h1>
-        <p className={`${styles.pageSubtitle} ${darkMode ? styles.darkSubtitle : ''}`}>
-          Registered users on the Listing and Bidding Platform
-        </p>
-      </header>
-
-      <Card className={`${styles.tableCard} ${darkMode ? styles.darkCard : ''}`}>
-        <CardBody>
-          {mockUsers.length === 0 ? (
-            <div className={`${styles.emptyState} ${darkMode ? styles.darkText : ''}`}>
-              No registered users found.
-            </div>
-          ) : (
-            <div className={styles.tableWrapper}>
-              <Table responsive className={`${styles.table} ${darkMode ? styles.darkTable : ''}`}>
-                <thead>
-                  <tr className={`${styles.tableHead} ${darkMode ? styles.darkTableHead : ''}`}>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Email</th>
-                    <th>Phone Number</th>
-                    <th>Registration Date</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {mockUsers.map(user => (
-                    <UserRow key={user.id} user={user} darkMode={darkMode} />
-                  ))}
-                </tbody>
-              </Table>
-            </div>
-          )}
-        </CardBody>
-      </Card>
-    </Container>
-  );
-}
 
 export default UserManagement;
