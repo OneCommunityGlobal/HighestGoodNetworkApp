@@ -91,12 +91,6 @@
   color: #111827;
 }
 
-/* DARK OVERRIDE */
-.popupTableDark thead th {
-  background-color: #374151;
-  color: #f9fafb;
-}
-
 /* ======================================================
    BUTTONS
    ====================================================== */
@@ -141,7 +135,7 @@
 .popupDark .button:disabled {
   border: 1px solid #4b5563;
   background-color: #2d3748;
-  color: #6b7280;
+  color: #9ca3af;
 }
 
 .popupDark .button:hover:not(:disabled) {
@@ -307,7 +301,7 @@
 :global(body.dark-mode) .popup-table-dark .pr-count-badge.color-5,
 :global(body.bm-dashboard-dark) .popup-table-dark .pr-count-badge.color-5 {
   color: #fff !important;
-  background-color: #c45c00 !important;
+  background-color: #a94f00 !important;
 }
 
 :global(body.dark-mode) .popup-table-dark .pr-count-badge.color-6,
