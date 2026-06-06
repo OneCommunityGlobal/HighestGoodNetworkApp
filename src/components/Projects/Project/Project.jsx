@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { ARCHIVE } from './../../../languages/en/ui';
-// old CSS removed
-// import './../projects.css';
+import { UNARCHIVE, ARCHIVE } from './../../../languages/en/ui';
 import styles from './../projects.module.css';
 import { Link } from 'react-router-dom';
 import { NavItem } from 'reactstrap';
@@ -11,7 +9,7 @@ import hasPermission from '~/utils/permissions';
 import { boxStyle } from '~/styles';
 import { toast } from 'react-toastify';
 import { modifyProject } from '../../../actions/projects';
-// import { CONFIRM_ARCHIVE } from './../../../languages/en/messages'; // unused, removed
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 const Project = props => {
   const { darkMode, index } = props;
@@ -96,11 +94,10 @@ const Project = props => {
   }, [props.projectData, props.category]);
 
   return (
-    <>
-      <tr
-        className={styles['projects__tr']}
-        id={`tr_${props.projectId}`}
-      >
+    <tr
+      className={styles['projects__tr']}
+      id={`tr_${props.projectId}`}
+    >
         <th className={styles['projects__order--input']} scope="row">
           <div className={darkMode ? 'text-light' : ''}>{index + 1}</div>
         </th>
@@ -178,15 +175,25 @@ const Project = props => {
         </td>
 
         <td>
-          <NavItem tag={Link} to={`/project/members/${projectId}`}>
-            <button
-              type="button"
-              className="btn btn-outline-info"
-              style={darkMode ? {} : boxStyle}
+          <div style={{ position: 'relative', display: 'inline-block' }}>
+            <NavItem tag={Link} to={`/project/members/${projectId}`} className="d-flex align-items-center">
+              <button
+                type="button"
+                className="btn btn-outline-info d-flex align-items-center project-member-btn"
+                style={darkMode ? {} : boxStyle}
+              >
+                <i className="fa fa-users" aria-hidden="true" />
+              </button>
+            </NavItem>
+            <OverlayTrigger
+              placement="top"
+              overlay={<Tooltip>Active members</Tooltip>}
             >
-              <i className="fa fa-users" aria-hidden="true" />
-            </button>
-          </NavItem>
+              <span className={styles['project-member-badge']}>
+                {props.activeMemberCounts}
+              </span>
+            </OverlayTrigger>
+          </div>
         </td>
 
         <td>
@@ -204,18 +211,17 @@ const Project = props => {
         {canDeleteProject ? (
           <td>
             <button
-              data-testid="delete-button"
-              type="button"
-              className="btn btn-outline-danger"
-              style={darkMode ? { borderColor: '#D2042D' } : boxStyle}
-              onClick={onArchiveProject}
-            >
-              {ARCHIVE}
-            </button>
+            data-testid="delete-button"
+            type="button"
+            className="btn btn-outline-danger"
+            style={darkMode ? { borderColor: '#D2042D' } : boxStyle}
+            onClick={onArchiveProject}
+          >
+            {projectData?.isArchived ? UNARCHIVE : ARCHIVE}
+          </button>
           </td>
         ) : null}
-      </tr>
-    </>
+    </tr>
   );
 };
 
@@ -237,6 +243,7 @@ Project.propTypes = {
   onClickProjectStatusBtn: PropTypes.func,
   onClickArchiveBtn: PropTypes.func,
   projectId: PropTypes.string,
+  activeMemberCounts: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };
 
 // Default props
@@ -249,6 +256,7 @@ Project.defaultProps = {
   onClickProjectStatusBtn: () => {},
   onClickArchiveBtn: () => {},
   projectId: '',
+  activeMemberCounts: '',
 };
 
 const mapStateToProps = state => state;

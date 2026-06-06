@@ -16,8 +16,8 @@ import {
 import { useSelector } from 'react-redux';
 import BadgeImage from '~/components/Badge/BadgeImage';
 import { boxStyle, boxStyleDark } from '../../styles';
-import '../Badge/BadgeReport.css';
-import './BadgeSummaryViz.css';
+import '../Badge/BadgeReport.module.css';
+import './BadgeSummaryViz.module.css';
 
 function BadgeSummaryViz({ authId, userId, badges, dashboard, personalBestMaxHrs }) {
   const darkMode = useSelector(state => state.theme.darkMode);
