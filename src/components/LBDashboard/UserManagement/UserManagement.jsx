@@ -1,6 +1,7 @@
 import { useSelector } from 'react-redux';
 import { Container, Card, CardBody, Table } from 'reactstrap';
 import PropTypes from 'prop-types';
+import Header from '../Header';
 import styles from './UserManagement.module.css';
 
 const mockUsers = [
@@ -83,6 +84,7 @@ function UserManagement() {
 
   return (
     <Container fluid className={`${styles.container} ${darkMode ? styles.darkContainer : ''}`}>
+      <Header />
       <header className={styles.pageHeader}>
         <h1 className={`${styles.pageTitle} ${darkMode ? styles.darkText : ''}`}>
           User Management
