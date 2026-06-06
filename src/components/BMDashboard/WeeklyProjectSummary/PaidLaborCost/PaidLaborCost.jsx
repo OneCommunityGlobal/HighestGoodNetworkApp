@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -169,6 +169,9 @@ const isValidISODate = dateString => {
 };
 
 const isDevelopmentEnvironment = () => {
+  if (typeof window === 'undefined') {
+    return process.env.NODE_ENV === 'development';
+  }
   const hostname = window.location.hostname;
   return (
     hostname.includes('dev') ||
@@ -207,7 +210,7 @@ function aggregateData(data, taskFilter, projectFilter) {
   const validData = data.filter(item => {
     if (!item || typeof item !== 'object') return false;
     if (typeof item.project !== 'string' || typeof item.task !== 'string') return false;
-    if (typeof item.cost !== 'number' || isNaN(item.cost)) return false;
+    if (typeof item.cost !== 'number' || Number.isNaN(item.cost)) return false;
     if (!item.date) return false;
     return true;
   });
@@ -284,7 +287,8 @@ export default function PaidLaborCost() {
   const [data, setData] = useState([]);
   const [totalCost, setTotalCost] = useState(0);
   const [totalBudget, setTotalBudget] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
+
   const darkMode = useSelector(state => state.theme.darkMode);
   const textColor = darkMode ? '#ffffff' : '#666';
 
@@ -293,7 +297,6 @@ export default function PaidLaborCost() {
   const [dateRange, setDateRange] = useState({ startDate: null, endDate: null });
   const [allAvailableTasks, setAllAvailableTasks] = useState([]);
   const [allAvailableProjects, setAllAvailableProjects] = useState([]);
-  const isFetchingRef = useRef(false);
 
   const buildLaborCostEndpoint = useCallback(() => {
     const params = new URLSearchParams();
@@ -342,7 +345,7 @@ export default function PaidLaborCost() {
   const isValidDataItem = useCallback(item => {
     if (!item || typeof item !== 'object') return false;
     if (typeof item.project !== 'string' || typeof item.task !== 'string') return false;
-    if (typeof item.cost !== 'number' || isNaN(item.cost)) return false;
+    if (typeof item.cost !== 'number' || Number.isNaN(item.cost)) return false;
     if (!item.date || !isValidISODate(item.date)) return false;
     return true;
   }, []);
@@ -370,12 +373,9 @@ export default function PaidLaborCost() {
   );
 
   useEffect(() => {
-    if (isFetchingRef.current) return;
+    const abortController = new AbortController();
 
     const fetchData = async () => {
-      isFetchingRef.current = true;
-      setLoading(true);
-
       try {
         const endpointPath = buildLaborCostEndpoint();
         const token = localStorage.getItem(config.tokenKey);
@@ -384,13 +384,20 @@ export default function PaidLaborCost() {
           ...(token && { Authorization: token }),
         };
 
-        const response = await fetch(endpointPath, { method: 'GET', headers, cache: 'no-store' });
+        const response = await fetch(endpointPath, {
+          method: 'GET',
+          headers,
+          cache: 'no-store',
+          signal: abortController.signal,
+        });
 
         if (!response.ok) throw new Error(`Status ${response.status}`);
 
         const apiData = await response.json();
         processApiResponse(apiData);
       } catch (error) {
+        if (error.name === 'AbortError') return;
+
         if (isDevelopmentEnvironment()) {
           const filteredMock = getFilteredMockData(projectFilter, taskFilter, dateRange, MOCK_DB);
           const mockTotal = filteredMock.reduce((sum, item) => sum + item.cost, 0);
@@ -401,12 +408,15 @@ export default function PaidLaborCost() {
           setData([]);
         }
       } finally {
-        setLoading(false);
-        isFetchingRef.current = false;
+        setInitialLoading(false);
       }
     };
 
     fetchData();
+
+    return () => {
+      abortController.abort();
+    };
   }, [
     projectFilter,
     taskFilter,
@@ -666,150 +676,153 @@ export default function PaidLaborCost() {
   const absoluteVariance = Math.abs(totalCost - totalBudget);
   const variancePercentage = totalBudget > 0 ? ((totalCost - totalBudget) / totalBudget) * 100 : 0;
 
+  if (initialLoading) {
+    return (
+      <div className={styles.paidLaborCostContainer}>
+        <h4 className={styles.paidLaborCostTitle}>Paid Labor Cost</h4>
+        <div className={styles.paidLaborCostLoading}>Loading data...</div>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.paidLaborCostContainer}>
       <h4 className={styles.paidLaborCostTitle}>Paid Labor Cost</h4>
 
-      {loading ? (
-        <div className={styles.paidLaborCostLoading}>Loading data...</div>
-      ) : (
-        <>
-          <div className={styles.paidLaborCostFilters}>
-            <div className={styles.paidLaborCostFilterGroup}>
-              <label className={styles.paidLaborCostFilterLabel} htmlFor="task-filter">
-                Tasks
-              </label>
-              <Select
-                id="task-filter"
-                isMulti
-                options={taskOptions}
-                value={taskOptions.filter(option => taskFilter.includes(option.value))}
-                onChange={selected =>
-                  setTaskFilter(selected ? selected.map(option => option.value) : [])
-                }
-                isClearable
-                placeholder="Select tasks (leave empty for all)"
-                classNamePrefix="select"
-                styles={selectStyles}
-              />
-            </div>
-            <div className={styles.paidLaborCostFilterGroup}>
-              <label className={styles.paidLaborCostFilterLabel} htmlFor="project-filter">
-                Project
-              </label>
-              <Select
-                id="project-filter"
-                options={projectOptions}
-                value={projectOptions.find(option => option.value === projectFilter)}
-                onChange={selected => setProjectFilter(selected ? selected.value : 'All Projects')}
-                isClearable={false}
-                placeholder="Select project"
-                classNamePrefix="select"
-                styles={selectStyles}
-              />
-            </div>
-            <div className={styles.paidLaborCostFilterGroup}>
-              <label className={styles.paidLaborCostFilterLabel} htmlFor="date-range">
-                Date Range
-              </label>
-              <div className={styles.paidLaborCostDateRangePicker}>
-                <DatePicker
-                  id="start-date"
-                  selected={dateRange.startDate}
-                  onChange={handleStartDateChange}
-                  selectsStart
-                  startDate={dateRange.startDate}
-                  endDate={dateRange.endDate}
-                  maxDate={dateRange.endDate || new Date()}
-                  placeholderText="Start Date"
-                  isClearable
-                  dateFormat="MM/dd/yyyy"
-                  showYearDropdown
-                  showMonthDropdown
-                  dropdownMode="select"
-                  className={styles.paidLaborCostDatePicker}
-                  calendarClassName={`paid-labor-cost-calendar${
-                    darkMode ? ' paid-labor-cost-dark-calendar' : ''
-                  }`}
-                />
-                <span className={styles.paidLaborCostDateSeparator}>to</span>
-                <DatePicker
-                  id="end-date"
-                  selected={dateRange.endDate}
-                  onChange={handleEndDateChange}
-                  selectsEnd
-                  startDate={dateRange.startDate}
-                  endDate={dateRange.endDate}
-                  minDate={dateRange.startDate}
-                  maxDate={new Date()}
-                  placeholderText="End Date"
-                  isClearable
-                  dateFormat="MM/dd/yyyy"
-                  showYearDropdown
-                  showMonthDropdown
-                  dropdownMode="select"
-                  className={styles.paidLaborCostDatePicker}
-                  calendarClassName={`paid-labor-cost-calendar${
-                    darkMode ? ' paid-labor-cost-dark-calendar' : ''
-                  }`}
-                />
-              </div>
-            </div>
+      <div className={styles.paidLaborCostFilters}>
+        <div className={styles.paidLaborCostFilterGroup}>
+          <label className={styles.paidLaborCostFilterLabel} htmlFor="task-filter">
+            Tasks
+          </label>
+          <Select
+            id="task-filter"
+            isMulti
+            options={taskOptions}
+            value={taskOptions.filter(option => taskFilter.includes(option.value))}
+            onChange={selected =>
+              setTaskFilter(selected ? selected.map(option => option.value) : [])
+            }
+            isClearable
+            placeholder="Select tasks (leave empty for all)"
+            classNamePrefix="select"
+            styles={selectStyles}
+          />
+        </div>
+        <div className={styles.paidLaborCostFilterGroup}>
+          <label className={styles.paidLaborCostFilterLabel} htmlFor="project-filter">
+            Project
+          </label>
+          <Select
+            id="project-filter"
+            options={projectOptions}
+            value={projectOptions.find(option => option.value === projectFilter)}
+            onChange={selected => setProjectFilter(selected ? selected.value : 'All Projects')}
+            isClearable={false}
+            placeholder="Select project"
+            classNamePrefix="select"
+            styles={selectStyles}
+          />
+        </div>
+        <div className={styles.paidLaborCostFilterGroup}>
+          <label className={styles.paidLaborCostFilterLabel} htmlFor="date-range">
+            Date Range
+          </label>
+          <div className={styles.paidLaborCostDateRangePicker}>
+            <DatePicker
+              id="start-date"
+              selected={dateRange.startDate}
+              onChange={handleStartDateChange}
+              selectsStart
+              startDate={dateRange.startDate}
+              endDate={dateRange.endDate}
+              maxDate={dateRange.endDate || new Date()}
+              placeholderText="Start Date"
+              isClearable
+              dateFormat="MM/dd/yyyy"
+              showYearDropdown
+              showMonthDropdown
+              dropdownMode="select"
+              className={styles.paidLaborCostDatePicker}
+              calendarClassName={`paid-labor-cost-calendar${
+                darkMode ? ' paid-labor-cost-dark-calendar' : ''
+              }`}
+            />
+            <span className={styles.paidLaborCostDateSeparator}>to</span>
+            <DatePicker
+              id="end-date"
+              selected={dateRange.endDate}
+              onChange={handleEndDateChange}
+              selectsEnd
+              startDate={dateRange.startDate}
+              endDate={dateRange.endDate}
+              minDate={dateRange.startDate}
+              maxDate={new Date()}
+              placeholderText="End Date"
+              isClearable
+              dateFormat="MM/dd/yyyy"
+              showYearDropdown
+              showMonthDropdown
+              dropdownMode="select"
+              className={styles.paidLaborCostDatePicker}
+              calendarClassName={`paid-labor-cost-calendar${
+                darkMode ? ' paid-labor-cost-dark-calendar' : ''
+              }`}
+            />
           </div>
+        </div>
+      </div>
 
-          <div className={styles.paidLaborCostChartWrapper}>
-            <div className={styles.paidLaborCostChartContainer}>
-              <Bar data={chartData} options={options} />
-            </div>
-          </div>
+      <div className={styles.paidLaborCostChartWrapper}>
+        <div className={styles.paidLaborCostChartContainer}>
+          <Bar data={chartData} options={options} />
+        </div>
+      </div>
 
-          <div
-            className={styles.paidLaborCostSummary}
-            style={{
-              display: 'flex',
-              justifyContent: 'space-around',
-              flexWrap: 'wrap',
-              marginTop: '20px',
-            }}
-          >
-            <div style={{ textAlign: 'center' }}>
-              <span className={styles.paidLaborCostSummaryLabel}>Total Budget</span>
-              <br />
-              <span className={styles.paidLaborCostSummaryValue}>
-                $
-                {totalBudget.toLocaleString('en-US', {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}
-              </span>
-            </div>
-            <div style={{ textAlign: 'center' }}>
-              <span className={styles.paidLaborCostSummaryLabel}>Total Actual</span>
-              <br />
-              <span className={styles.paidLaborCostSummaryValue}>
-                $
-                {totalCost.toLocaleString('en-US', {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}
-              </span>
-            </div>
-            <div style={{ textAlign: 'center' }}>
-              <span className={styles.paidLaborCostSummaryLabel}>Variance</span>
-              <br />
-              <span style={{ fontSize: '20px', fontWeight: '700', color: varianceColor }}>
-                $
-                {absoluteVariance.toLocaleString('en-US', {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}{' '}
-                ({variancePercentage > 0 ? '+' : ''}
-                {variancePercentage.toFixed(1)}%)
-              </span>
-            </div>
-          </div>
-        </>
-      )}
+      <div
+        className={styles.paidLaborCostSummary}
+        style={{
+          display: 'flex',
+          justifyContent: 'space-around',
+          flexWrap: 'wrap',
+          marginTop: '20px',
+        }}
+      >
+        <div style={{ textAlign: 'center' }}>
+          <span className={styles.paidLaborCostSummaryLabel}>Total Budget</span>
+          <br />
+          <span className={styles.paidLaborCostSummaryValue}>
+            $
+            {totalBudget.toLocaleString('en-US', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
+          </span>
+        </div>
+        <div style={{ textAlign: 'center' }}>
+          <span className={styles.paidLaborCostSummaryLabel}>Total Actual</span>
+          <br />
+          <span className={styles.paidLaborCostSummaryValue}>
+            $
+            {totalCost.toLocaleString('en-US', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
+          </span>
+        </div>
+        <div style={{ textAlign: 'center' }}>
+          <span className={styles.paidLaborCostSummaryLabel}>Variance</span>
+          <br />
+          <span style={{ fontSize: '20px', fontWeight: '700', color: varianceColor }}>
+            $
+            {absoluteVariance.toLocaleString('en-US', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}{' '}
+            ({variancePercentage > 0 ? '+' : ''}
+            {variancePercentage.toFixed(1)}%)
+          </span>
+        </div>
+      </div>
     </div>
   );
 }
