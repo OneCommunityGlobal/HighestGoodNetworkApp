@@ -1,13 +1,18 @@
+/* stylelint-disable  */
 .radarChart {
   flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 10px 0;
-  margin: 0 auto;
-  max-width: 720px;
-  width: 100%;
+  padding: 18px;
+  background: linear-gradient(145deg, #fff 0%, #f8f9fa 100%);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgb(0 0 0 / 8%);
+  border: 1px solid rgb(62 160 203 / 10%);
+  min-height: 420px;
+  max-height: 500px;
+  position: relative;
 }
 
 .radarChart.compact {
@@ -43,7 +48,7 @@
 
 .chartContainer {
   width: 100%;
-  max-width: clamp(300px, 42vw, 520px); /* reduced overall footprint */
+  max-width: clamp(280px, 38vw, 460px);
   aspect-ratio: 1 / 1;
   height: auto;
   position: relative;
@@ -132,8 +137,50 @@
 }
 
 @media (width <= 480px) {
-  .radarChart canvas {
-    max-height: 380px;
+  .radarChart {
+    padding: 8px;
+    min-height: 320px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .chartTitle h4 {
+    font-size: 16px;
+  }
+
+  .chartTitle p {
+    font-size: 11px;
+  }
+
+  .chartContainer {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .chartLegend {
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .legendItem {
+    font-size: 11px;
+  }
+
+  .legendColor {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+@media (width <= 360px) {
+  .radarChart {
+    padding: 5px;
+    min-height: 280px;
+  }
+
+  .chartTitle h4 {
+    font-size: 14px;
   }
 }
 
@@ -144,7 +191,7 @@
   }
 }
 
-/* Dark theme support (optional) */
+/* Dark theme support */
 .dark {
   background: #1f1f1f;
   border-color: #2a2a2a;
@@ -167,4 +214,29 @@
   background: linear-gradient(145deg, #2a2f3e 0%, #1e2330 100%);
   border-color: rgb(62 160 203 / 30%);
   box-shadow: 0 4px 20px rgb(0 0 0 / 30%);
+}
+
+:global(.dark-mode) .chartTitle h4 {
+  color: #63b3ed;
+}
+
+:global(.dark-mode) .chartTitle p {
+  color: #a0aec0;
+}
+
+:global(.dark-mode) .legendItem {
+  color: #e2e8f0;
+}
+
+:global(.dark-mode) .loadingSpinner {
+  border-color: rgb(62 160 203 / 30%);
+  border-left-color: #63b3ed;
+}
+
+:global(.dark-mode) .errorState h4 {
+  color: #ff6b6b;
+}
+
+:global(.dark-mode) .errorState p {
+  color: #a0aec0;
 }

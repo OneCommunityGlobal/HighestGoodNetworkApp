@@ -21,6 +21,9 @@ import GET_MATERIAL_TYPES, {
   UPDATE_INVENTORY_TYPE_ERROR,
   DELETE_INVENTORY_TYPE_SUCCESS,
   DELETE_INVENTORY_TYPE_ERROR,
+  POST_UPDATE_NAME_AND_UNIT_SUCCESS,
+  POST_UPDATE_NAME_AND_UNIT_FAILURE,
+  GET_ITEM_UPDATE_HISTORY
 } from '../../constants/bmdashboard/inventoryTypeConstants';
 import {
   POST_TOOLS_LOG,
@@ -138,6 +141,7 @@ export const setPostErrorBuildingInventoryTypeResult = payload => {
     payload,
   };
 };
+
 
 export const fetchMaterialTypes = () => {
   return async dispatch => {
@@ -393,5 +397,50 @@ export const deleteInventoryType = (invtypeId, category) => {
       const errorMessage = err.response?.data?.error || err.response?.data?.message || 'Failed to delete item.';
       return { success: false, error: errorMessage };
     }
+  };
+};
+export const updateNameAndUnitResult = payload =>{
+  return{
+    type : POST_UPDATE_NAME_AND_UNIT_SUCCESS,
+    payload
+  }
+};
+export const setUpdateNamwAndUnitError = payload => {
+  return {
+    type: POST_UPDATE_NAME_AND_UNIT_FAILURE,
+    payload
+  }
+}
+export const updateNameAndUnit = (id,payload) => {
+  return async dispatch => {
+    axios
+      .put(ENDPOINTS.BM_UPDATE_NAME_AND_UNIT(id), payload)
+      .then(res => {
+        dispatch(updateNameAndUnitResult(res.data));
+      })
+      .catch(err => {
+        dispatch(
+         setUpdateNamwAndUnitError(JSON.stringify(err.response.data) || 'Sorry! Some error occurred!',
+          ),
+        );
+      });
+     };
+};
+export const setItemUpdateHistory = payload =>{
+  return{
+    type: GET_ITEM_UPDATE_HISTORY,
+    payload
+  }
+}
+export const fetchItemUpdateHistory = (id) => {
+  return async dispatch => {
+    axios
+      .get(ENDPOINTS.BM_ITEM_UPDATE_HISTORY(id))
+      .then(res => {
+        dispatch(setItemUpdateHistory(res.data));
+      })
+      .catch(err => {
+        dispatch(setErrors(err));
+      });
   };
 };
