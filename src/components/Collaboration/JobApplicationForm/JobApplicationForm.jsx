@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { useLocation } from 'react-router-dom';
 import styles from './JobApplicationForm.module.css';
 import OneCommunityImage from '../../../assets/images/logo2.png';
 import axios from 'axios';
@@ -137,13 +136,13 @@ function JobApplicationForm() {
   const [jobTitleInput, setJobTitleInput] = useState('');
   const [filteredForm, setFilteredForm] = useState(null);
   const [showDescription, setShowDescription] = useState(false);
+  const [, setErrors] = useState({});
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
   const [applicantEmail, setApplicantEmail] = useState('');
   const [location, setLocation] = useState('');
   const [timeZone, setTimeZone] = useState('');
-  const [errors, setErrors] = useState({});
   const [phone, setPhone] = useState('');
   const [companyPosition, setCompanyPosition] = useState('');
   const [websiteSocial, setWebsiteSocial] = useState('');
@@ -170,7 +169,7 @@ function JobApplicationForm() {
     if (!phone.trim()) return 'Phone number is required.';
     try {
       const phoneNumber = parsePhoneNumberFromString(phone);
-      if (!phoneNumber || !phoneNumber.isPossible()) {
+      if (!phoneNumber?.isPossible()) {
         return 'Please enter a valid phone number format (e.g., +1 213-456-7890).';
       }
     } catch {
@@ -217,8 +216,6 @@ function JobApplicationForm() {
 
     return newErrors;
   };
-
-  const isFormValid = () => Object.keys(validateAllFields()).length === 0;
 
   const visibleQuestions = useMemo(() => {
     const seen = new Set();
@@ -468,8 +465,8 @@ function JobApplicationForm() {
       toast.error(
         <div>
           <div>Please complete required fields:</div>
-          {missing.map((field, index) => (
-            <div key={index}>• {field}</div>
+          {missing.map(field => (
+            <div key={field}>• {field}</div>
           ))}
         </div>,
         { autoClose: 7000 },
