@@ -312,6 +312,19 @@
   margin: 0;
 }
 
+.error-message {
+  margin: 1.25rem auto 0;
+  padding: 0.9rem 1rem;
+  max-width: 680px;
+  width: 100%;
+  color: #dc2626;
+  background: #fef3f2;
+  border: 1px solid #fca5a5;
+  border-radius: 10px;
+  font-weight: 700;
+  text-align: center;
+}
+
 /* ===================== Print & prefers-color-scheme ===================== */
 @media print {
   .experience-donut-chart-dark-mode .experience-chart-container {
