@@ -57,7 +57,7 @@ export default function LBMessaging() {
   const sidebarContacts = useMemo(() => {
     const chats = [...existingChats];
     const sid = selectedUser?.userId;
-    if (!sid) return chats;
+    if (!sid || !selectedUser?.firstName) return chats;
     const exists = chats.some(c => String(c.userId ?? c._id) === String(sid));
     if (!exists) {
       chats.unshift({
@@ -313,6 +313,24 @@ export default function LBMessaging() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  const renderContactButton = (key, user, onClick) => (
+    <button key={key} type="button" className={styles.lbMessagingContact} onClick={onClick}>
+      <img
+        src={user.profilePic || '/pfp-default-header.png'}
+        alt="User Profile"
+        onError={e => {
+          e.target.onerror = null;
+          e.target.src = '/pfp-default-header.png';
+        }}
+      />
+      <div className={styles.lbMessagingContactInfo}>
+        <div className={`${styles.lbMessagingContactName} ${mobileView ? styles.black : ''}`}>
+          {user.firstName} {user.lastName}
+        </div>
+      </div>
+    </button>
+  );
+
   const renderContacts = () => {
     if (sidebarContacts.length === 0) {
       return (
@@ -320,31 +338,12 @@ export default function LBMessaging() {
       );
     }
 
-    return sidebarContacts.map(user => (
-      <button
-        key={user.userId || user._id}
-        type="button"
-        className={styles.lbMessagingContact}
-        onClick={() => {
-          updateSelection(user);
-          setMobileHamMenu(false);
-        }}
-      >
-        <img
-          src={user.profilePic || '/pfp-default-header.png'}
-          alt="User Profile"
-          onError={e => {
-            e.target.onerror = null;
-            e.target.src = '/pfp-default-header.png';
-          }}
-        />
-        <div className={styles.lbMessagingContactInfo}>
-          <div className={`${styles.lbMessagingContactName} ${mobileView ? styles.black : ''}`}>
-            {user.firstName} {user.lastName}
-          </div>
-        </div>
-      </button>
-    ));
+    return sidebarContacts.map(user =>
+      renderContactButton(user.userId || user._id, user, () => {
+        updateSelection(user);
+        setMobileHamMenu(false);
+      }),
+    );
   };
 
   const renderChatMessages = () => {
@@ -461,35 +460,12 @@ export default function LBMessaging() {
                             className={`${styles.lbMessagingContactsBody} ${styles.activeInlbMessagingContactsBody}`}
                           >
                             {showContacts
-                              ? safeSearchResults.map(user => (
-                                  <button
-                                    key={user.userId}
-                                    type="button"
-                                    className={styles.lbMessagingContact}
-                                    onClick={() => {
-                                      updateSelection(user);
-                                      setMobileHamMenu(false);
-                                    }}
-                                  >
-                                    <img
-                                      src={user.profilePic || '/pfp-default-header.png'}
-                                      alt="User Profile"
-                                      onError={e => {
-                                        e.target.onerror = null;
-                                        e.target.src = '/pfp-default-header.png';
-                                      }}
-                                    />
-                                    <div className={styles.lbMessagingContactInfo}>
-                                      <div
-                                        className={`${styles.lbMessagingContactName} ${
-                                          mobileView ? styles.black : ''
-                                        }`}
-                                      >
-                                        {user.firstName} {user.lastName}
-                                      </div>
-                                    </div>
-                                  </button>
-                                ))
+                              ? safeSearchResults.map(user =>
+                                  renderContactButton(user.userId, user, () => {
+                                    updateSelection(user);
+                                    setMobileHamMenu(false);
+                                  }),
+                                )
                               : renderContacts()}
                           </div>
                         </div>
@@ -548,28 +524,9 @@ export default function LBMessaging() {
                     className={`${styles.lbMessagingContactsBody} ${styles.activeInlbMessagingContactsBody}`}
                   >
                     {showContacts
-                      ? safeSearchResults.map(user => (
-                          <button
-                            key={user._id}
-                            type="button"
-                            className={styles.lbMessagingContact}
-                            onClick={() => updateSelection(user)}
-                          >
-                            <img
-                              src={user.profilePic || '/pfp-default-header.png'}
-                              alt="User Profile"
-                              onError={e => {
-                                e.target.onerror = null;
-                                e.target.src = '/pfp-default-header.png';
-                              }}
-                            />
-                            <div className={styles.lbMessagingContactInfo}>
-                              <div className={styles.lbMessagingContactName}>
-                                {user.firstName} {user.lastName}
-                              </div>
-                            </div>
-                          </button>
-                        ))
+                      ? safeSearchResults.map(user =>
+                          renderContactButton(user._id, user, () => updateSelection(user)),
+                        )
                       : renderContacts()}
                   </div>
                 </div>
