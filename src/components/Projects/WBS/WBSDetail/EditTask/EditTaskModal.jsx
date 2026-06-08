@@ -19,7 +19,7 @@ import { toast } from 'react-toastify';
 import UserSearch from './UserSearch';
 import UserTag from './UserTag';
 import ReadOnlySectionWrapper from './ReadOnlySectionWrapper';
-import '../../../../Header/DarkMode.css';
+import '../../../../Header/index.module.css';
 import styles from '../wbs.module.css';
 import TagsSearch from '../components/TagsSearch';
 
@@ -170,6 +170,8 @@ function EditTaskModal(props) {
     autoresize_bottom_margin: 1,
     skin: darkMode ? 'oxide-dark' : 'oxide',
     content_css: darkMode ? 'dark' : 'default',
+    fixed_toolbar_container: '.modal-body',
+    ui_container: '.modal-content',
   };
   /*
    * -------------------------------- functions --------------------------------
@@ -762,7 +764,7 @@ function EditTaskModal(props) {
                       { componentOnly: true },
                     )}
                   </div>
-                    <div className="warning">
+                    <div className={styles.warning}>
                       {hoursWarning ? 'The number of hours must be less than other cases' : ''}
                     </div>
                   
@@ -791,7 +793,7 @@ function EditTaskModal(props) {
                       { componentOnly: true },
                     )}
                   </div>
-                    <div className="warning">
+                    <div className={styles.warning}>
                       {hoursWarning ? 'The number of hours must be higher than other cases' : ''}
                     </div>
                   
@@ -820,7 +822,7 @@ function EditTaskModal(props) {
                       { componentOnly: true },
                     )}
                   </div>
-                    <div className="warning">
+                    <div className={styles.warning}>
                       {hoursWarning
                         ? 'The number of hours must range between best and worst cases'
                         : ''}
@@ -852,7 +854,7 @@ function EditTaskModal(props) {
                   </div>
                 </td>
               </tr>
-              <tr className='text-break'>
+              <tr className={styles['text-break']}>
                 {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td id="edit-modal-td" scope="col">
                   Links
@@ -874,7 +876,7 @@ function EditTaskModal(props) {
                         disabled={!editable}
                       />
                       <button
-                        className="task-resouces-btn"
+                        className={styles['task-resouces-btn']}
                         type="button"
                         data-tip="Add Link"
                         onClick={addLink}
@@ -1083,39 +1085,43 @@ function EditTaskModal(props) {
         ) : null}
       </Modal>
       <div className="task-action-buttons d-flex" />
-      {canUpdateTask && (
-        <Button
-          className="mx-2 controlBtn"
-          color="primary"
-          size="sm"
-          onClick={e => handleModalShow('Edit')}
-          style={darkMode ? boxStyleDark : boxStyle}
-        >
-          Edit
-        </Button>
-      )}
-      {canSuggestTask && (
-        <Button
-          className="mr-2 controlBtn"
-          color="primary"
-          size="sm"
-          onClick={e => handleModalShow('Suggest')}
-          style={darkMode ? boxStyleDark : boxStyle}
-        >
-          Suggest
-        </Button>
-      )}
-      {!canUpdateTask && !canSuggestTask && (
-        <Button
-          className="mr-2 controlBtn"
-          color="primary"
-          size="sm"
-          onClick={e => handleModalShow('View')}
-          style={darkMode ? boxStyleDark : boxStyle}
-        >
-          View
-        </Button>
-      )}
+        <div className={styles.taskTopActionButtons}>
+          {canUpdateTask && (
+            <Button
+              className={styles.taskActionButton}
+              color="primary"
+              size="sm"
+              onClick={() => handleModalShow('Edit')}
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              Edit
+            </Button>
+          )}
+
+          {canSuggestTask && (
+            <Button
+              className={styles.taskActionButton}
+              color="primary"
+              size="sm"
+              onClick={() => handleModalShow('Suggest')}
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              Suggest
+            </Button>
+          )}
+
+          {!canUpdateTask && !canSuggestTask && (
+            <Button
+              className={styles.taskActionButton}
+              color="primary"
+              size="sm"
+              onClick={() => handleModalShow('View')}
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              View
+            </Button>
+          )}
+        </div>
     </div>
   );
 }

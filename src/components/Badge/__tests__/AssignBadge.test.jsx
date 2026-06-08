@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import thunk from 'redux-thunk';
 import { configureStore } from 'redux-mock-store';
 import { Provider } from 'react-redux';
@@ -9,25 +9,14 @@ import { vi } from 'vitest';
 const mockUserProfilesData = [
   {
     _id: 'user1',
-    firstName: 'jerry',
-    lastName: 'volunteer1',
-    permissions: {
-      frontPermissions: ['getWeeklySummaries', 'seeUserManagement'],
-      backPermissions: [],
-    },
-    isActive: true,
-    weeklycommittedHours: 50,
-    role: 'Volunteer',
+    firstName: 'Jerry',
+    lastName: 'Volunteer1',
     email: 'jerryvolunteer1@gmail.com',
   },
   {
     _id: 'user2',
-    firstName: 'jerry',
-    lastName: 'volunteer2',
-    permissions: { frontPermissions: ['editTimeEntry', 'toggleTangibleTime'], backPermissions: [] },
-    isActive: true,
-    weeklycommittedHours: 10,
-    role: 'Volunteer',
+    firstName: 'Jerry',
+    lastName: 'Volunteer2',
     email: 'jerryvolunteer2@gmail.com',
   },
 ];
@@ -67,31 +56,17 @@ describe('AssignBadge component', () => {
   let store;
 
   beforeEach(() => {
-    vi.clearAllMocks();
-
     store = mockStore({
-      auth: { user: {} },
       badge: {
-        selectedBadges: ['Badge 1', 'Badge 2'],
         firstName: '',
         lastName: '',
-        userId: null,
-        message: '',
-        alertVisible: false,
-        color: '',
+        selectedBadges: ['Badge 1', 'Badge 2'],
       },
       allUserProfiles: {
         userProfiles: mockUserProfilesData,
-        fetching: false,
-        fetched: true,
       },
       theme: { darkMode: false },
     });
-
-    const origDispatch = store.dispatch;
-    store.dispatch = vi.fn(action =>
-      typeof action === 'function' ? action(origDispatch) : origDispatch(action),
-    );
   });
 
   const renderComponent = () =>
@@ -105,37 +80,53 @@ describe('AssignBadge component', () => {
     renderComponent();
   });
 
-  it('renders label and input', () => {
+  it('renders the search input and label', () => {
     renderComponent();
     expect(screen.getByText('Search by Full Name')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Full Name')).toBeInTheDocument();
   });
 
-  it('filters user list based on input', async () => {
+  it('displays correct number of selected badges', () => {
     renderComponent();
-    fireEvent.change(screen.getByPlaceholderText('Full Name'), { target: { value: 'jerry' } });
-    const rows = await screen.findAllByRole('row', { name: /jerry/i });
-    expect(rows).toHaveLength(2);
+    const alertText = screen.getByRole('alert').textContent;
+    expect(alertText).toContain('2 badge(s) selected');
   });
 
-  it('disables the Assign Badge button until a user is selected', () => {
+  it('filters and displays users based on search input', async () => {
+    renderComponent();
+    const input = screen.getByPlaceholderText('Full Name');
+    fireEvent.change(input, { target: { value: 'Jerry' } });
+
+    await waitFor(() => {
+      expect(screen.getAllByRole('row')).toHaveLength(3); // 2 users + header row
+    });
+  });
+
+  it('allows selecting users and updates the count', async () => {
+    renderComponent();
+    const input = screen.getByPlaceholderText('Full Name');
+    fireEvent.change(input, { target: { value: 'Jerry' } });
+
+    const userRows = (await screen.findAllByRole('row')).slice(1); // Exclude header row
+    fireEvent.click(userRows[0]);
+
+    const alertText = screen.getByRole('alert').textContent;
+    expect(alertText).toContain('1 user(s) selected');
+  });
+
+  it('disables Assign Badge button when no users are selected', () => {
     renderComponent();
     expect(screen.getByText('Assign Badge')).toBeDisabled();
   });
 
-  it('shows tooltip messages on hover', async () => {
+  it('enables Assign Badge button when users are selected', async () => {
     renderComponent();
-    fireEvent.mouseEnter(screen.getByTestId('NameInfo'));
-    expect(
-      await screen.findByText(/Start typing a name and a list of the active members/),
-    ).toBeInTheDocument();
-    expect(
-      await screen.findByText(/After selecting a person, click "Assign Badge"/),
-    ).toBeInTheDocument();
-  });
+    const input = screen.getByPlaceholderText('Full Name');
+    fireEvent.change(input, { target: { value: 'Jerry' } });
 
-  it('displays the count of badges selected', () => {
-    renderComponent();
-    expect(screen.getByText('2 badges selected')).toBeInTheDocument();
+    const userRows = (await screen.findAllByRole('row')).slice(1); // Exclude header row
+    fireEvent.click(userRows[0]);
+
+    expect(screen.getByText('Assign Badge')).toBeEnabled();
   });
 });

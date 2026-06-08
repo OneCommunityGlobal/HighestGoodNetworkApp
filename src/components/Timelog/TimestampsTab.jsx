@@ -27,6 +27,7 @@ const TimestampsTab = ({ userId, getTimelogTracking, addTimelogEvent }) => {
           addTimelogEvent(newEvent);
         }
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error('Error parsing WebSocket message:', error);
       }
     },
