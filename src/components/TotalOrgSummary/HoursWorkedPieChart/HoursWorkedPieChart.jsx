@@ -209,8 +209,7 @@ export default function HoursWorkedPieChart({
   colors,
   totalHours = 0,
   darkMode = false,
-}) 
-{
+}) {
   let innerRadius = 80;
   let outerRadius = 160;
   if (windowSize.width <= 650) {

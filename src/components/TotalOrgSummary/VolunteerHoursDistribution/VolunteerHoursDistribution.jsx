@@ -101,20 +101,19 @@ function HoursWorkList({ data, darkMode }) {
   if (!data) return <div />;
 
   const ranges = data.map((elem, index) => {
-    
     // Force _id to a string so .split() never fails
-    const rangeStr = String(elem._id); 
-    
+    const rangeStr = String(elem._id);
+
     const entry = {
       name: rangeStr,
       count: elem.count,
     };
 
     const displayName = formatRangeLabel(rangeStr);
-    
+
     entry.displayName = displayName;
     // Safely fallback if COLORS[index] is undefined
-    entry.color = COLORS ? COLORS[index] : '#ccc'; 
+    entry.color = COLORS ? COLORS[index] : '#ccc';
 
     // Parse the min and max bounds safely
     if (rangeStr.includes('-')) {
@@ -132,7 +131,6 @@ function HoursWorkList({ data, darkMode }) {
     }
     return entry;
   });
-
 
   return (
     <div>
