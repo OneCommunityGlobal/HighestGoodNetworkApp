@@ -290,7 +290,7 @@
 }
 
 .add_new_task_form-input_area{
-  width: 70%;
+  width: 100%;
   padding: 0;
   margin: .25em;
   border-left: 1px solid #bbb;

@@ -1,4 +1,4 @@
-/* stylelint-disable  */
+
 .hours-label {
   font-weight: normal;
   width: 75px;
@@ -118,4 +118,5 @@
 .replicateInline .replicate-btn.square {
   width: calc(1.5em + 0.75rem + 2px);
   padding: 0;
-}
+} 
+
