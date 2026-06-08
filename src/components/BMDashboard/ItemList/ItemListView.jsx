@@ -10,47 +10,49 @@ import ItemsTable from './ItemsTable';
 import styles from './ItemListView.module.css';
 
 export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamicColumns }) {
-  const [filteredItems, setFilteredItems] = useState(items);
-  const [selectedProject, setSelectedProject] = useState('all');
-  const [selectedItem, setSelectedItem] = useState('all');
+  const [filteredItems, setFilteredItems] = useState([]);
+  const [selectedProject, setSelectedProject] = useState([]); // Array of strings
+  const [selectedItem, setSelectedItem] = useState([]);       // Array of strings
   const [isError, setIsError] = useState(false);
   const [selectedTime, setSelectedTime] = useState(new Date());
   const darkMode = useSelector(state => state.theme.darkMode);
 
+  // Sync initial items load
   useEffect(() => {
     if (items) setFilteredItems([...items]);
   }, [items]);
 
+  // Unified Filtering Logic (Treats empty arrays as 'unfiltered/show all')
   useEffect(() => {
-    let filterItems;
     if (!items) return;
-    if (selectedProject === 'all' && selectedItem === 'all') {
-      setFilteredItems([...items]);
-    } else if (selectedProject !== 'all' && selectedItem === 'all') {
-      filterItems = items.filter(item => item.project?.name === selectedProject);
-      setFilteredItems([...filterItems]);
-    } else if (selectedProject === 'all' && selectedItem !== 'all') {
-      filterItems = items.filter(item => item.itemType?.name === selectedItem);
-      setFilteredItems([...filterItems]);
-    } else {
-      filterItems = items.filter(
-        item => item.project?.name === selectedProject && item.itemType?.name === selectedItem,
+
+    const hasProjectFilter = selectedProject.length > 0;
+    const hasItemFilter = selectedItem.length > 0;
+
+    let matchedItems = items;
+
+    if (hasProjectFilter && !hasItemFilter) {
+      matchedItems = items.filter(item => selectedProject.includes(item.project?.name));
+    } else if (!hasProjectFilter && hasItemFilter) {
+      matchedItems = items.filter(item => selectedItem.includes(item.itemType?.name));
+    } else if (hasProjectFilter && hasItemFilter) {
+      matchedItems = items.filter(
+        item => selectedProject.includes(item.project?.name) && 
+                selectedItem.includes(item.itemType?.name)
       );
-      setFilteredItems([...filterItems]);
     }
+
+    setFilteredItems(matchedItems);
   }, [selectedProject, selectedItem, items]);
 
   useEffect(() => {
-    setIsError(Object.entries(errors).length > 0);
+    setIsError(Object.entries(errors || {}).length > 0);
   }, [errors]);
 
   if (isError) {
     return (
       <main className={`${styles.itemsListContainer} ${darkMode ? styles.darkMode : ''}`}>
-        <h2>
-          {itemType}
-          {' List'}
-        </h2>
+        <h2>{itemType} List</h2>
         <BMError errors={errors} />
       </main>
     );
@@ -72,12 +74,10 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
                 timeIntervals={15}
                 dateFormat="yyyy-MM-dd HH:mm:ss"
                 placeholderText="Select date and time"
-                inputId="itemListTime" // This is the key line
+                inputId="itemListTime"
                 className={darkMode ? styles.darkDatePickerInput : styles.lightDatePickerInput}
                 calendarClassName={darkMode ? styles.darkDatePicker : styles.lightDatePicker}
-                popperClassName={
-                  darkMode ? styles.darkDatePickerPopper : styles.lightDatePickerPopper
-                }
+                popperClassName={darkMode ? styles.darkDatePickerPopper : styles.lightDatePickerPopper}
               />
               <SelectForm
                 items={items}
@@ -89,19 +89,14 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
                 selectedProject={selectedProject}
                 selectedItem={selectedItem}
                 setSelectedItem={setSelectedItem}
+                label={itemType}
               />
             </div>
           )}
           <div className={`${styles.buttonsRow}`}>
-            <button type="button" className={`${styles.btnPrimary}`}>
-              Add Material
-            </button>
-            <button type="button" className={`${styles.btnPrimary}`}>
-              Edit Name/Measurement
-            </button>
-            <button type="button" className={`${styles.btnPrimary}`}>
-              View Update History
-            </button>
+            <button type="button" className={`${styles.btnPrimary}`}>Add Material</button>
+            <button type="button" className={`${styles.btnPrimary}`}>Edit Name/Measurement</button>
+            <button type="button" className={`${styles.btnPrimary}`}>View Update History</button>
           </div>
         </span>
         {filteredItems && (
