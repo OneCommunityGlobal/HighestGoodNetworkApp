@@ -316,9 +316,7 @@ export default function LBMessaging() {
   const renderContacts = () => {
     if (sidebarContacts.length === 0) {
       return (
-        <p className={`${styles.sidebarHint} ${darkMode ? 'text-light' : ''}`}>
-          No contacts yet. Use the search icon to find someone.
-        </p>
+        <p className={styles.sidebarHint}>No contacts yet. Use the search icon to find someone.</p>
       );
     }
 
@@ -326,9 +324,7 @@ export default function LBMessaging() {
       <button
         key={user.userId || user._id}
         type="button"
-        className={`${styles.lbMessagingContact} ${
-          darkMode ? `bg-yinmn-blue ${styles.contactYinmBlue} ${styles.darkModeBorder}` : ''
-        }`}
+        className={styles.lbMessagingContact}
         onClick={() => {
           updateSelection(user);
           setMobileHamMenu(false);
@@ -343,11 +339,7 @@ export default function LBMessaging() {
           }}
         />
         <div className={styles.lbMessagingContactInfo}>
-          <div
-            className={`${styles.lbMessagingContactName} ${mobileView ? styles.black : ''} ${
-              darkMode ? 'text-light' : ''
-            }`}
-          >
+          <div className={`${styles.lbMessagingContactName} ${mobileView ? styles.black : ''}`}>
             {user.firstName} {user.lastName}
           </div>
         </div>
@@ -357,19 +349,11 @@ export default function LBMessaging() {
 
   const renderChatMessages = () => {
     if (messagesLoading) {
-      return (
-        <p className={`${styles.lbNoMsgText} ${darkMode ? 'text-light' : ''}`}>
-          Loading messages...
-        </p>
-      );
+      return <p className={styles.lbNoMsgText}>Loading messages...</p>;
     }
 
     if (messages.length === 0) {
-      return (
-        <p className={`${styles.lbNoMsgText} ${darkMode ? 'text-light' : ''}`}>
-          No messages to display.
-        </p>
-      );
+      return <p className={styles.lbNoMsgText}>No messages to display.</p>;
     }
 
     const filteredMessages = messages.filter(
@@ -379,11 +363,7 @@ export default function LBMessaging() {
     );
 
     if (filteredMessages.length === 0) {
-      return (
-        <p className={`${styles.lbNoMsgText} ${darkMode ? 'text-light' : ''}`}>
-          No messages to display.
-        </p>
-      );
+      return <p className={styles.lbNoMsgText}>No messages to display.</p>;
     }
 
     return (
@@ -396,7 +376,7 @@ export default function LBMessaging() {
               message.sender === currentUserId ? styles.sent : styles.received
             }`}
           >
-            <p className={`${styles.messageText} ${darkMode ? 'bg-azure text-light' : ''}`}>
+            <p className={styles.messageText}>
               {String(message.content ?? '')
                 .split('\n')
                 .map((line, lineIdx) => (
@@ -417,17 +397,13 @@ export default function LBMessaging() {
     (users?.userProfilesBasicInfo?.length ?? 0) !== 0 && (
       <div className={`${darkMode ? styles.darkMode : ''}`}>
         <Header />
-        <div className={`${styles.mainContainer} ${darkMode ? 'bg-oxford-blue' : ''}`}>
-          <div className={`${styles.logoContainer} ${darkMode ? 'bg-oxford-blue' : ''}`}>
+        <div className={styles.mainContainer}>
+          <div className={styles.logoContainer}>
             <img src={logo} alt="One Community Logo" />
           </div>
-          <div
-            className={`${styles.contentContainer} ${
-              darkMode ? `bg-yinmn-blue ${styles.darkModeBorder}` : ''
-            }`}
-          >
+          <div className={styles.contentContainer}>
             {mobileView ? (
-              <div className={`${styles.containerTop} ${styles.msg} ${darkMode ? 'bg-azure' : ''}`}>
+              <div className={`${styles.containerTop} ${styles.msg}`}>
                 <div className={styles.lbMobileMessagingMenu}>
                   <div className={styles.lbMobileHeader}>
                     <button
@@ -441,17 +417,11 @@ export default function LBMessaging() {
                       <div className={styles.lbMobileHamMenu} ref={menuRef}>
                         <div className={styles.lbMobileHamMenuHeader}>
                           {showContacts ? (
-                            <div
-                              className={`${styles.lbMessagingContactsHeaderMobile} ${
-                                darkMode ? 'bg-space-cadet' : ''
-                              }`}
-                            >
+                            <div className={styles.lbMessagingContactsHeaderMobile}>
                               <input
                                 type="text"
                                 placeholder={placeholder}
-                                className={`${styles.lbSearchInput} ${
-                                  darkMode ? 'bg-yinmn-blue text-light' : ''
-                                }`}
+                                className={styles.lbSearchInput}
                                 value={searchQuery}
                                 onChange={e => {
                                   const query = e.target.value;
@@ -469,55 +439,33 @@ export default function LBMessaging() {
                                 className={styles.lbMsgIconBtn}
                               >
                                 <img
-                                  src={
-                                    darkMode
-                                      ? 'https://img.icons8.com/?size=26&id=1510&format=png&color=ffffff'
-                                      : 'https://img.icons8.com/metro/26/multiply.png'
-                                  }
+                                  src="https://img.icons8.com/metro/26/multiply.png"
                                   alt="Close"
                                   className={styles.lbMsgIcon}
                                 />
                               </button>
                             </div>
                           ) : (
-                            <div
-                              className={`${styles.lbMessagingContactsHeaderMobile} ${
-                                darkMode ? 'bg-space-cadet' : ''
-                              }`}
-                            >
-                              <h3
-                                className={`${styles.lbContactMsgs} ${
-                                  darkMode ? 'text-light' : ''
-                                }`}
-                              >
-                                Messages
-                              </h3>
+                            <div className={styles.lbMessagingContactsHeaderMobile}>
+                              <h3 className={styles.lbContactMsgs}>Messages</h3>
                               <div className={styles.lbMessagingSearchIconsMobile}>
                                 <FontAwesomeIcon
                                   icon={faSearch}
-                                  className={`${styles.lbMsgIconMobile} ${
-                                    darkMode ? styles.darkModeIcon : ''
-                                  }`}
+                                  className={styles.lbMsgIconMobile}
                                   onClick={() => setShowContacts(prev => !prev)}
                                 />
                               </div>
                             </div>
                           )}
                           <div
-                            className={`${styles.lbMessagingContactsBody} ${
-                              styles.activeInlbMessagingContactsBody
-                            } ${darkMode ? 'bg-oxford-blue' : ''}`}
+                            className={`${styles.lbMessagingContactsBody} ${styles.activeInlbMessagingContactsBody}`}
                           >
                             {showContacts
                               ? safeSearchResults.map(user => (
                                   <button
                                     key={user.userId}
                                     type="button"
-                                    className={`${styles.lbMessagingContact} ${
-                                      darkMode
-                                        ? `bg-yinmn-blue ${styles.contactYinmBlue} ${styles.darkModeBorder}`
-                                        : ''
-                                    }`}
+                                    className={styles.lbMessagingContact}
                                     onClick={() => {
                                       updateSelection(user);
                                       setMobileHamMenu(false);
@@ -535,7 +483,7 @@ export default function LBMessaging() {
                                       <div
                                         className={`${styles.lbMessagingContactName} ${
                                           mobileView ? styles.black : ''
-                                        } ${darkMode ? 'text-light' : ''}`}
+                                        }`}
                                       >
                                         {user.firstName} {user.lastName}
                                       </div>
@@ -551,22 +499,16 @@ export default function LBMessaging() {
                 </div>
               </div>
             ) : null}
-            <div className={`${styles.containerMainMsg} ${darkMode ? 'bg-oxford-blue' : ''}`}>
+            <div className={styles.containerMainMsg}>
               {/* Contacts Section */}
               {!mobileView && (
                 <div className={styles.lbMessagingContacts}>
                   {showContacts ? (
-                    <div
-                      className={`${styles.lbMessagingContactsHeader} ${
-                        darkMode ? 'bg-space-cadet' : ''
-                      }`}
-                    >
+                    <div className={styles.lbMessagingContactsHeader}>
                       <input
                         type="text"
                         placeholder={placeholder}
-                        className={`${styles.lbSearchInput} ${
-                          darkMode ? 'bg-yinmn-blue text-light' : ''
-                        }`}
+                        className={styles.lbSearchInput}
                         value={searchQuery}
                         onChange={e => {
                           const query = e.target.value;
@@ -581,52 +523,36 @@ export default function LBMessaging() {
                       <button
                         type="button"
                         onClick={() => setShowContacts(prev => !prev)}
-                        className={`${styles.lbMsgIconBtn} ${darkMode ? styles.darkModeIcon : ''}`}
+                        className={styles.lbMsgIconBtn}
                       >
                         <img
-                          src={
-                            darkMode
-                              ? 'https://img.icons8.com/?size=26&id=1510&format=png&color=ffffff'
-                              : 'https://img.icons8.com/metro/26/multiply.png'
-                          }
+                          src="https://img.icons8.com/metro/26/multiply.png"
                           alt="Close"
                           className={styles.lbMsgIcon}
                         />
                       </button>
                     </div>
                   ) : (
-                    <div
-                      className={`${styles.lbMessagingContactsHeader} ${
-                        darkMode ? 'bg-space-cadet' : ''
-                      }`}
-                    >
-                      <h3 className={`${styles.lbContactMsgs} ${darkMode ? 'text-light' : ''}`}>
-                        Messages
-                      </h3>
+                    <div className={styles.lbMessagingContactsHeader}>
+                      <h3 className={styles.lbContactMsgs}>Messages</h3>
                       <div className={styles.lbMessagingSearchIcons}>
                         <FontAwesomeIcon
                           icon={faSearch}
-                          className={`${styles.lbMsgIcon} ${darkMode ? styles.darkModeIcon : ''}`}
+                          className={styles.lbMsgIcon}
                           onClick={() => setShowContacts(prev => !prev)}
                         />
                       </div>
                     </div>
                   )}
                   <div
-                    className={`${styles.lbMessagingContactsBody} ${
-                      styles.activeInlbMessagingContactsBody
-                    } ${darkMode ? 'bg-oxford-blue' : ''}`}
+                    className={`${styles.lbMessagingContactsBody} ${styles.activeInlbMessagingContactsBody}`}
                   >
                     {showContacts
                       ? safeSearchResults.map(user => (
                           <button
                             key={user._id}
                             type="button"
-                            className={`${styles.lbMessagingContact} ${
-                              darkMode
-                                ? `bg-yinmn-blue ${styles.contactYinmBlue} ${styles.darkModeBorder}`
-                                : ''
-                            }`}
+                            className={styles.lbMessagingContact}
                             onClick={() => updateSelection(user)}
                           >
                             <img
@@ -638,11 +564,7 @@ export default function LBMessaging() {
                               }}
                             />
                             <div className={styles.lbMessagingContactInfo}>
-                              <div
-                                className={`${styles.lbMessagingContactName} ${
-                                  darkMode ? 'text-light' : ''
-                                }`}
-                              >
+                              <div className={styles.lbMessagingContactName}>
                                 {user.firstName} {user.lastName}
                               </div>
                             </div>
@@ -655,16 +577,8 @@ export default function LBMessaging() {
 
               {/* Chat Window Section */}
               <div className={styles.lbMessagingMessageWindow}>
-                <div
-                  className={`${styles.lbMessagingMessageWindowHeader} ${
-                    darkMode ? 'bg-oxford-blue' : ''
-                  }`}
-                >
-                  <div
-                    className={`${styles.lbMessagingHeaderIdentity} ${
-                      darkMode ? 'text-light' : ''
-                    }`}
-                  >
+                <div className={styles.lbMessagingMessageWindowHeader}>
+                  <div className={styles.lbMessagingHeaderIdentity}>
                     <img
                       src={selectedUser.profilePic || '/pfp-default-header.png'}
                       onError={e => {
@@ -686,17 +600,15 @@ export default function LBMessaging() {
                         onClick={() => {
                           setBellDropdownActive(prev => !prev);
                         }}
-                        className={`${styles.lgMessagingNotificationBell} ${
-                          darkMode ? styles.darkModeIcon : ''
-                        }`}
+                        className={styles.lgMessagingNotificationBell}
                       />
                       {bellDropdownActive && (
                         <div
                           className={`${styles.lgMessagingBellSelectDropdown} ${
                             bellDropdownActive ? styles.activeInlgMessagingBellSelectDropdown : ''
-                          } ${darkMode ? 'bg-yinmn-blue' : ''}`}
+                          }`}
                         >
-                          <label className={darkMode ? 'text-light' : ''}>
+                          <label>
                             <input
                               type="checkbox"
                               checked={selectedOption.notifyInApp || false}
@@ -710,7 +622,7 @@ export default function LBMessaging() {
                             />
                             In App
                           </label>
-                          <label className={darkMode ? 'text-light' : ''}>
+                          <label>
                             <input
                               type="checkbox"
                               checked={selectedOption.notifyEmail || false}
@@ -736,24 +648,14 @@ export default function LBMessaging() {
                     </div>
                   )}
                 </div>
-                <div
-                  className={`${styles.lbMessagingMessageWindowBody} ${
-                    darkMode ? 'bg-yinmn-blue' : ''
-                  }`}
-                >
+                <div className={styles.lbMessagingMessageWindowBody}>
                   {selectedUser.userId ? (
                     renderChatMessages()
                   ) : (
-                    <p className={`${styles.startMsg} ${darkMode ? 'text-light' : ''}`}>
-                      Select a user to start chatting
-                    </p>
+                    <p className={styles.startMsg}>Select a user to start chatting</p>
                   )}
                 </div>
-                <div
-                  className={`${styles.lbMessaingMessageWindowFooter} ${
-                    darkMode ? 'bg-oxford-blue' : ''
-                  }`}
-                >
+                <div className={styles.lbMessaingMessageWindowFooter}>
                   <textarea
                     type="text"
                     placeholder="Type a message..."
@@ -765,9 +667,7 @@ export default function LBMessaging() {
                         handleSendMessage();
                       }
                     }}
-                    className={`${styles.lbMessagingTextarea} ${
-                      darkMode ? 'bg-yinmn-blue text-light' : ''
-                    }`}
+                    className={styles.lbMessagingTextarea}
                     disabled={!selectedUser.userId}
                   />
                   <FontAwesomeIcon

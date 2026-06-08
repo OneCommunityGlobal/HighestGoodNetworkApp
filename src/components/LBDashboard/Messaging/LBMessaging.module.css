@@ -56,16 +56,17 @@
   height: 100%;
   flex-direction: column;
   width: 30%;
+  border-right: 1px solid #ccc;
 }
 
-
 .containerTop {
-  display: flex;
+  display: none;
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  height: 60px;
+  height: 0;
   background-color: #9dd425;
+  overflow: hidden;
 }
 
 .msg {
@@ -199,23 +200,23 @@
   flex-direction: column;
 }
 
-.lbMessagingMessageWindowFooter {
+.lbMessaingMessageWindowFooter {
   display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
   background-color: #e0e0e0;
   color: black;
-  height: 12%;
   padding: 10px 16px;
-  max-height: 50px;
   align-items: center;
   width: 100%;
-  justify-content: space-between;
-  gap: 12px;
+  gap: 10px;
+  box-sizing: border-box;
 }
 
 .lbMessagingTextarea {
   height: 38px;
-  flex: 1;
-  width: auto;
+  flex: 1 1 0;
+  width: 0;
   padding: 0 14px;
   border: 1px solid #b8b8b8;
   border-radius: 18px;
@@ -261,7 +262,6 @@
   justify-content: flex-end;
   margin-right: 10px;
 }
-
 
 .received {
   justify-content: flex-start !important;
@@ -352,7 +352,7 @@
   box-sizing: border-box;
 }
 
-.activeInlgMessagingBellSelectDropdown{
+.activeInlgMessagingBellSelectDropdown {
   display: flex;
 }
 
@@ -512,6 +512,7 @@
   background-color: #4db7ab;
   color: #fff;
   transition: background-color 0.2s ease, transform 0.2s ease;
+  flex-shrink: 0;
 }
 
 .sendButton:hover {
@@ -595,6 +596,18 @@
   font-weight: 500;
 }
 
+/* Mobile: show containerTop */
+@media (max-width: 720px) {
+  .containerTop {
+    display: flex;
+    height: 60px;
+  }
+}
+
+:global(.dark-mode) .lbMessagingContacts {
+  border-right-color: #2a2a2a;
+}
+
 :global(.dark-mode) .mainContainer,
 :global(.dark-mode) .containerMainMsg {
   background-color: #141414;
@@ -656,7 +669,7 @@
   background-color: #1f1f1f;
 }
 
-:global(.dark-mode) .lbMessagingMessageWindowFooter {
+:global(.dark-mode) .lbMessaingMessageWindowFooter {
   background-color: #2a2a2a;
   color: #f1f1f1;
 }
