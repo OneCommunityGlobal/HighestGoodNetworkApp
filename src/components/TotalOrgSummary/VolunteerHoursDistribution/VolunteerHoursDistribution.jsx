@@ -101,33 +101,27 @@ function HoursWorkList({ data, darkMode }) {
   if (!data) return <div />;
 
   const ranges = data.map((elem, index) => {
-    // Force _id to a string so .split() never fails
-    const rangeStr = String(elem._id);
-
+    const rangeStr = elem._id;
     const entry = {
       name: rangeStr,
       count: elem.count,
     };
 
+    // derive human-readable label for the bucket
     const displayName = formatRangeLabel(rangeStr);
 
     entry.displayName = displayName;
-    // Safely fallback if COLORS[index] is undefined
-    entry.color = COLORS ? COLORS[index] : '#ccc';
+    entry.color = COLORS[index];
 
-    // Parse the min and max bounds safely
-    if (rangeStr.includes('-')) {
-      const [min, max] = rangeStr.split('-');
+    const rangeArr = rangeStr.split('-');
+    if (rangeArr.length > 1) {
+      const [min, max] = rangeArr;
       entry.min = Number(min);
       entry.max = Number(max);
-    } else if (rangeStr.includes('+')) {
-      const parts = rangeStr.split('+');
-      entry.min = Number(parts[0]); // Take the first element '40'
-      entry.max = Infinity;
     } else {
-      // Handles single numbers like 10, 20, 30
-      entry.min = Number(rangeStr);
-      entry.max = Number(rangeStr);
+      const min = rangeStr.split('+');
+      entry.min = Number(min);
+      entry.max = Infinity;
     }
     return entry;
   });
@@ -162,8 +156,7 @@ export { HoursWorkList };
 
 // shared helper: derives normalizedHoursData, userData, and totals from raw API data
 function buildChartData(hoursData, totalHoursData) {
-  //const normalizedHoursData = mergeHoursBuckets(hoursData);
-  const normalizedHoursData = Array.isArray(hoursData) ? hoursData : [];
+  const normalizedHoursData = mergeHoursBuckets(hoursData);
   const totalVolunteers = normalizedHoursData.reduce((total, cur) => total + (cur.count || 0), 0);
   const totalHoursWorked = Number(totalHoursData?.current ?? totalHoursData?.count ?? 0);
   const hoursByBucket = allocateRoundedHoursByCount(normalizedHoursData, totalHoursWorked);
@@ -222,7 +215,6 @@ export default function VolunteerHoursDistribution({
     totalHoursData,
   );
 
-  console.log(normalizedHoursData, userData, totalHoursWorked);
   return (
     <div
       className="d-flex flex-row flex-wrap align-items-center justify-content-center"

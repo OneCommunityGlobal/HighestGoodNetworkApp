@@ -2,7 +2,6 @@
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import 'moment-timezone';
-import moment from 'moment-timezone';
 import { useEffect, useRef, useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -301,8 +300,6 @@ function getPreviousWeekDates(fromDate, toDate) {
   const prevWeekEnd = new Date(toDate);
   prevWeekStart.setDate(prevWeekStart.getDate() - 7);
   prevWeekEnd.setDate(prevWeekEnd.getDate() - 7);
-  console.log('Previous week start:', prevWeekStart.toISOString().split('T')[0]);
-  console.log('Previous week end:', prevWeekEnd.toISOString().split('T')[0]);
   return {
     start: prevWeekStart.toISOString().split('T')[0],
     end: prevWeekEnd.toISOString().split('T')[0],
@@ -462,162 +459,122 @@ const fromDate = calculateStartDate();
 const toDate = calculateEndDate();
 
 function TotalOrgSummary(props) {
-const { darkMode, error} = props; // Extracted fromDate/toDate safely from props
-const [isVolunteerFetchingError, setIsVolunteerFetchingError] = useState(false);
-const [volunteerStats, setVolunteerStats] = useState(null);
-const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
-const [isLoading, setIsLoading] = useState(true);
-const [dateRangeDropdownOpen, setDateRangeDropdownOpen] = useState(false);
-const [comparisonDropdownOpen, setComparisonDropdownOpen] = useState(false);
-const [selectedDateRange, setSelectedDateRange] = useState('Previous Week');
-const [selectedComparison, setSelectedComparison] = useState('No Comparison');
-const [showDatePicker, setShowDatePicker] = useState(false);
-const [startDate, setStartDate] = useState(null);
-const [endDate, setEndDate] = useState(null);
-// Fall back safely to moment anchors if initial props are missing
-const nowInPDT = moment().tz('America/Los_Angeles');
-const [currentFromDate, setCurrentFromDate] = useState(fromDate);
-const [currentToDate, setCurrentToDate] = useState(toDate);
+  const { darkMode, error } = props;
+  const [isVolunteerFetchingError, setIsVolunteerFetchingError] = useState(false);
+  const [volunteerStats, setVolunteerStats] = useState(null);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [dateRangeDropdownOpen, setDateRangeDropdownOpen] = useState(false);
+  const [comparisonDropdownOpen, setComparisonDropdownOpen] = useState(false);
+  const [selectedDateRange, setSelectedDateRange] = useState('Previous Week');
+  const [selectedComparison, setSelectedComparison] = useState('No Comparison');
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [currentFromDate, setCurrentFromDate] = useState(fromDate);
+  const [currentToDate, setCurrentToDate] = useState(toDate);
+  const rootRef = useRef(null);
+  const cacheRef = useRef({});
 
-console.log(currentFromDate,currentToDate)
-//|| nowInPDT.clone().day(6).format('YYYY-MM-DD')
+  useEffect(() => {
+    let cancelled = false;
 
-const rootRef = useRef(null);
-const cacheRef = useRef({});
+    const fetchVolunteerStats = async () => {
+      try {
+        setIsLoading(true);
 
-// --- 1. DATA FETCHING EFFECT (STABLE) ---
-useEffect(() => {
-  let cancelled = false;
-
-  const fetchVolunteerStats = async () => {
-    try {
-      setIsLoading(true);
-
-      // Helper calculation safely executing within the pipeline context
-      const { comparisonStartDate, comparisonEndDate } = calculateComparisonDates(
-        selectedComparison,
-        currentFromDate,
-        currentToDate,
-      );
-
-      const cacheKey = `${currentFromDate}_${currentToDate}_${selectedComparison}`;
-
-      if (cacheRef.current[cacheKey]) {
-        if (!cancelled) {
-          setVolunteerStats(cacheRef.current[cacheKey]);
-          setIsLoading(false);
-        }
-        return;
-      }
-
-      const [volunteerStatsResponse, taskAndProjectStatsResponse] = await Promise.all([
-        props.getTotalOrgSummary(
+        const { comparisonStartDate, comparisonEndDate } = calculateComparisonDates(
+          selectedComparison,
           currentFromDate,
           currentToDate,
-          comparisonStartDate,
-          comparisonEndDate,
-        ),
-        props.getTaskAndProjectStats(currentFromDate, currentToDate),
-      ]);
+        );
 
-      if (!cancelled) {
-        const merged = {
-          ...volunteerStatsResponse.data,
-          taskAndProjectStats: taskAndProjectStatsResponse,
-        };
-        cacheRef.current[cacheKey] = merged;
-        setVolunteerStats(merged);
-        setIsLoading(false);
+        const cacheKey = `${currentFromDate}_${currentToDate}_${selectedComparison}`;
+
+        if (cacheRef.current[cacheKey]) {
+          if (!cancelled) {
+            setVolunteerStats(cacheRef.current[cacheKey]);
+            setIsLoading(false);
+          }
+          return;
+        }
+
+        const [volunteerStatsResponse, taskAndProjectStatsResponse] = await Promise.all([
+          props.getTotalOrgSummary(
+            currentFromDate,
+            currentToDate,
+            comparisonStartDate,
+            comparisonEndDate,
+          ),
+          props.getTaskAndProjectStats(currentFromDate, currentToDate),
+        ]);
+
+        if (!cancelled) {
+          const merged = {
+            ...volunteerStatsResponse.data,
+            taskAndProjectStats: taskAndProjectStatsResponse,
+          };
+          cacheRef.current[cacheKey] = merged;
+          setVolunteerStats(merged);
+          setIsLoading(false);
+        }
+      } catch (catchFetchError) {
+        if (!cancelled) setIsVolunteerFetchingError(true);
       }
-    } catch (catchFetchError) {
-      if (!cancelled) setIsVolunteerFetchingError(true);
-    }
-  };
+    };
 
-  const debounceTimer = setTimeout(fetchVolunteerStats, 300);
+    const debounceTimer = setTimeout(fetchVolunteerStats, 300);
 
-  return () => {
-    cancelled = true;
-    clearTimeout(debounceTimer);
-  };
-}, [currentFromDate, currentToDate, selectedComparison]);
+    return () => {
+      cancelled = true;
+      clearTimeout(debounceTimer);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentFromDate, currentToDate, selectedComparison]);
 
-
-// --- 2. FIXED DROPDOWN SELECTION HANDLER ---
-const handleDateRangeSelect = (option) => {
-  if (option === 'Select Date Range') {
-    setShowDatePicker(true);
-    return;
-  }
-
-  setSelectedDateRange(option);
-  setShowDatePicker(false);
-
-  const targetTime = moment().tz('America/Los_Angeles');
-  let start = '';
-  let end = '';
-
-  if (option === 'Current Week') {
-    start = targetTime.clone().day(0).format('YYYY-MM-DD'); // Sunday
-    end = targetTime.clone().day(6).format('YYYY-MM-DD');   // Saturday
-    
-    // Set a matching logical comparison instead of clearing it out entirely
-    setSelectedComparison('Previous Week');
-  } 
-  else if (option === 'Previous Week') {
-    start = targetTime.clone().day(0).subtract(7, 'days').format('YYYY-MM-DD');
-    end = targetTime.clone().day(6).subtract(7, 'days').format('YYYY-MM-DD');
-    
-    setSelectedComparison('Two Weeks Ago');
-  }
-
-  setCurrentFromDate(start);
-  setCurrentToDate(end);
-};
-
-const handleSaveAsPDF = async () => {
-
+  const handleSaveAsPDF = async () => {
     if (isGeneratingPDF) return;
-
     setIsGeneratingPDF(true);
-
     try {
-
       await generateTotalOrgPdf({ rootRef, darkMode, volunteerStats, isLoading });
-
     } catch (pdfError) {
-
       // eslint-disable-next-line no-console
-
       console.error('PDF generation failed:', pdfError);
-
       // eslint-disable-next-line no-alert
-
       alert(`Error generating PDF: ${pdfError.message}`);
-
     } finally {
-
       setIsGeneratingPDF(false);
-
     }
-
   };
 
-// --- 3. FIXED CUSTOM DATE PICKER HANDLER ---
-const handleDatePickerSubmit = () => {
-  if (startDate && endDate) {
-    // Standardize your custom ranges to matching YYYY-MM-DD strings
-    const startStr = moment(startDate).format('YYYY-MM-DD');
-    const endStr = moment(endDate).format('YYYY-MM-DD');
-
-    setSelectedDateRange(`${startStr} - ${endStr}`);
+  const handleDateRangeSelect = option => {
+    if (option === 'Select Date Range') {
+      setShowDatePicker(true);
+      return;
+    }
+    setSelectedDateRange(option);
     setShowDatePicker(false);
-    setSelectedComparison('No Comparison'); // Safe to do here for custom ranges
-    
-    setCurrentFromDate(startStr);
-    setCurrentToDate(endStr);
-  }
-};
+    setSelectedComparison('No Comparison');
+    if (option === 'Current Week') {
+      setCurrentFromDate(fromDate);
+      setCurrentToDate(toDate);
+    } else if (option === 'Previous Week') {
+      const { start, end } = getPreviousWeekDates(fromDate, toDate);
+      setCurrentFromDate(start);
+      setCurrentToDate(end);
+    }
+  };
+
+  const handleDatePickerSubmit = () => {
+    if (startDate && endDate) {
+      setSelectedDateRange(`${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`);
+      setShowDatePicker(false);
+      setSelectedComparison('No Comparison');
+      setCurrentFromDate(startDate.toISOString().split('T')[0]);
+      setCurrentToDate(endDate.toISOString().split('T')[0]);
+    }
+  };
+
   if (error || isVolunteerFetchingError) {
     return (
       <Container className={clsx(styles.containerTotalOrgWrapper, darkMode && 'bg-oxford-blue')}>
