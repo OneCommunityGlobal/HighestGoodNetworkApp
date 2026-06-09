@@ -313,6 +313,16 @@ export default function LBMessaging() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  const handleSearchChange = e => {
+    const query = e.target.value;
+    setSearchQuery(query);
+    if (query.trim() === '') {
+      setSearchResults([]);
+    } else {
+      searchUserProfiles(query);
+    }
+  };
+
   const renderContactButton = (key, user, onClick) => (
     <button key={key} type="button" className={styles.lbMessagingContact} onClick={onClick}>
       <img
@@ -422,15 +432,7 @@ export default function LBMessaging() {
                                 placeholder={placeholder}
                                 className={styles.lbSearchInput}
                                 value={searchQuery}
-                                onChange={e => {
-                                  const query = e.target.value;
-                                  setSearchQuery(query);
-                                  if (query.trim() === '') {
-                                    setSearchResults([]);
-                                  } else {
-                                    searchUserProfiles(query);
-                                  }
-                                }}
+                                onChange={handleSearchChange}
                               />
                               <button
                                 type="button"
@@ -486,15 +488,7 @@ export default function LBMessaging() {
                         placeholder={placeholder}
                         className={styles.lbSearchInput}
                         value={searchQuery}
-                        onChange={e => {
-                          const query = e.target.value;
-                          setSearchQuery(query);
-                          if (query.trim() === '') {
-                            setSearchResults([]);
-                          } else {
-                            searchUserProfiles(query);
-                          }
-                        }}
+                        onChange={handleSearchChange}
                       />
                       <button
                         type="button"
