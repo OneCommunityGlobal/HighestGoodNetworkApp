@@ -21,6 +21,7 @@ import BlueskyPostDetails from './BlueskyPostDetails';
 import EmailPanel from './platforms/email';
 import LinkedInAutoPoster from './platforms/linkedin';
 import SlashdotAutoPoster from './platforms/slashdot';
+import RedditAutoPoster from './platforms/reddit';
 
 function Announcements({ title, email: initialEmail }) {
   const [activeTab, setActiveTab] = useState('email');
@@ -181,13 +182,17 @@ function Announcements({ title, email: initialEmail }) {
             'slashdot',
             'blogger',
           ].map(platform => {
-            let PlatformComposer = SocialMediaComposer;
-            if (platform === 'slashdot') {
-              PlatformComposer = SlashdotAutoPoster;
-            } else if (platform === 'bluesky') {
-              PlatformComposer = BlueskyPostDetails;
+            let PlatformComposer;
+            switch (platform) {
+              case 'slashdot':
+                PlatformComposer = SlashdotAutoPoster;
+                break;
+              case 'reddit':
+                PlatformComposer = RedditAutoPoster;
+                break;
+              default:
+                PlatformComposer = SocialMediaComposer;
             }
-
             return (
               <TabPane tabId={platform} key={platform}>
                 <PlatformComposer platform={platform} darkMode={darkMode} />
