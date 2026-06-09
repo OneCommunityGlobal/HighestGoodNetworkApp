@@ -350,5 +350,36 @@
 }
 
 .tableHeader {
-  background-color: rgb(158, 156, 156);
+  background-color: rgb(220, 216, 216);
+}
+
+
+
+/* target table rows and cells specifically within dark mode */
+.darkModeTable table {
+  color: #e5e7eb !important; /* light gray text */
+  background-color: #1e293b !important; /* dark slate background */
+}
+
+.darkModeTable thead th {
+  background-color: #0f172a !important; /* deeper dark background for header */
+  color: #f8fafc !important;
+  border-bottom: 2px solid #334155 !important;
+}
+
+.darkModeTable tbody tr {
+  background-color: #1e293b !important;
+  border-bottom: 1px solid #334155 !important;
+}
+
+/* Optional: styling the row hover effect if using Reactstrap's hover prop */
+.darkModeTable tbody tr:hover {
+  background-color: #334155 !important;
+}
+
+/* Fix background on edit buttons within dark cells */
+.darkModeTable .itemsCell button {
+  background: transparent;
+  color: #6af1ea; /* standard bright accent */
+  border: none;
 }

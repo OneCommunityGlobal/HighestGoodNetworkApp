@@ -1,6 +1,6 @@
 // ToolItemListView.jsx
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import BMError from '../shared/BMError';
 import SelectForm from '../ItemList/SelectForm';
@@ -67,7 +67,7 @@ export function ToolItemListView({
     setIsError(Object.entries(errors).length > 0);
   }, [errors]);
 
-  // 1. The Reset Handler
+  // The Reset Handler
   const handleReset = () => {
     setLocalValues([]); // Clear React-Select UI
     setSelectedProject([]); // Clear parent project state
@@ -140,7 +140,7 @@ export function ToolItemListView({
   );
 }
 
-ToolItemListViewInner.propTypes = {
+ToolItemListView.propTypes = {
   itemType: PropTypes.string,
   items: PropTypes.arrayOf(
     PropTypes.shape({
@@ -155,19 +155,11 @@ ToolItemListViewInner.propTypes = {
   dynamicColumns: PropTypes.array,
 };
 
-ToolItemListViewInner.defaultProps = {
+ToolItemListView.defaultProps = {
   itemType: 'Tools',
   errors: {},
   UpdateItemModal: null,
   dynamicColumns: [],
 };
-
-export function ToolItemListView(props) {
-  return (
-    <ToolFiltersProvider>
-      <ToolItemListViewInner {...props} />
-    </ToolFiltersProvider>
-  );
-}
 
 export default ToolItemListView;
