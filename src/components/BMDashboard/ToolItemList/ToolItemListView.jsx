@@ -1,4 +1,6 @@
-import { useState, useEffect } from 'react';
+// ToolItemListView.jsx
+
+import { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import BMError from '../shared/BMError';
 import SelectForm from '../ItemList/SelectForm';
@@ -138,7 +140,8 @@ export function ToolItemListView({
   );
 }
 
-ToolItemListView.propTypes = {
+ToolItemListViewInner.propTypes = {
+  itemType: PropTypes.string,
   items: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.number,
@@ -148,10 +151,23 @@ ToolItemListView.propTypes = {
   errors: PropTypes.shape({
     message: PropTypes.string,
   }),
+  UpdateItemModal: PropTypes.oneOfType([PropTypes.func, PropTypes.elementType]),
+  dynamicColumns: PropTypes.array,
 };
 
-ToolItemListView.defaultProps = {
+ToolItemListViewInner.defaultProps = {
+  itemType: 'Tools',
   errors: {},
+  UpdateItemModal: null,
+  dynamicColumns: [],
 };
+
+export function ToolItemListView(props) {
+  return (
+    <ToolFiltersProvider>
+      <ToolItemListViewInner {...props} />
+    </ToolFiltersProvider>
+  );
+}
 
 export default ToolItemListView;

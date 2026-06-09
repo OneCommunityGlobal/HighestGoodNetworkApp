@@ -4,11 +4,13 @@ import { useDispatch, Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import { configureStore } from 'redux-mock-store';
 import { BrowserRouter as Router } from 'react-router-dom';
-import axios from 'axios';
 import BMLogin from '../BMLogin';
 import { act } from 'react-dom/test-utils';
+const mockLoginBMUser = vi.fn();
 
-vi.mock('axios');
+vi.mock('~/actions/authActions', () => ({
+  loginBMUser: (...args) => mockLoginBMUser(...args),
+}));
 
 vi.mock('jwt-decode', () => ({
   default: vi.fn(() => ({ decodedPayload: 'mocked_decoded_payload' })),
@@ -17,11 +19,17 @@ vi.mock('jwt-decode', () => ({
 const mockStore = configureStore([thunk]);
 let store;
 
+const TEST_PASSWORD = 'test-password'; // NOSONAR - test-only credential
+const SHORT_PASSWORD = '12'; // NOSONAR - test-only invalid password
+
 beforeEach(() => {
   store = mockStore({
     auth: {
       isAuthenticated: true,
       user: {
+        access: {
+          canAccessBMPortal: true,
+        },
         permissions: {
           frontPermissions: [],
           backPermissions: [],
@@ -55,6 +63,12 @@ const renderComponent = testStore => {
       </Router>
     </Provider>,
   );
+};
+
+const fillAndSubmit = ({ email = 'test@gmail.com', password = TEST_PASSWORD } = {}) => {
+  fireEvent.change(screen.getByLabelText(/email/i), { target: { value: email } });
+  fireEvent.change(screen.getByLabelText(/password/i), { target: { value: password } });
+  fireEvent.click(screen.getByText('Submit'));
 };
 
 describe('BMLogin component', () => {
@@ -114,9 +128,7 @@ describe('BMLogin component', () => {
 
   it('shows validation error for invalid email', () => {
     renderComponent(store);
-    fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'test' } });
-    fireEvent.change(screen.getByLabelText(/password/i), { target: { value: '12' } });
-    fireEvent.click(screen.getByText('Submit'));
+    fillAndSubmit({ email: 'test', password: SHORT_PASSWORD });
 
     expect(screen.getByLabelText(/email/i)).toBeInvalid();
     expect(screen.getByText('"email" must be a valid email')).toBeInTheDocument();
@@ -124,9 +136,7 @@ describe('BMLogin component', () => {
 
   it('shows validation error for short password', () => {
     renderComponent(store);
-    fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'test@gmail.com' } });
-    fireEvent.change(screen.getByLabelText(/password/i), { target: { value: '12' } });
-    fireEvent.click(screen.getByText('Submit'));
+    fillAndSubmit({ password: SHORT_PASSWORD });
 
     expect(screen.getByLabelText(/password/i)).toBeInvalid();
     expect(
@@ -135,34 +145,28 @@ describe('BMLogin component', () => {
   });
 
   it('logs in successfully with correct credentials', async () => {
-    axios.post.mockResolvedValue({
+    mockLoginBMUser.mockImplementationOnce(() => async () => ({
       statusText: 'OK',
       data: { token: '1234' },
-    });
+    }));
 
     renderComponent(store);
-    fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'test@gmail.com' } });
-    fireEvent.change(screen.getByLabelText(/password/i), { target: { value: 'Test12345' } });
-    fireEvent.click(screen.getByText('Submit'));
+    fillAndSubmit();
 
-    // eslint-disable-next-line testing-library/no-unnecessary-act
-    await act(async () => {
-      fireEvent.click(screen.getByText('Submit'));
+    await waitFor(() => {
+      expect(history.push).toHaveBeenCalledWith('/bmdashboard');
     });
-    expect(history.push).toHaveBeenCalledWith('/bmdashboard'); // if you're using `useNavigate` from React Router v6+
   });
 
   it('displays specific validation error for status 422', async () => {
-    axios.post.mockResolvedValue({
+    mockLoginBMUser.mockImplementationOnce(() => async () => ({
       statusText: 'ERROR',
       status: 422,
-      data: { token: '1234', label: 'email', message: 'User not found' },
-    });
+      data: { label: 'email', message: 'User not found' },
+    }));
 
     renderComponent(store);
-    fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'test@gmail.com' } });
-    fireEvent.change(screen.getByLabelText(/password/i), { target: { value: 'Test12345' } });
-    fireEvent.click(screen.getByText('Submit'));
+    fillAndSubmit();
 
     await waitFor(() => {
       expect(screen.getByText('User not found')).toBeInTheDocument();
@@ -170,16 +174,14 @@ describe('BMLogin component', () => {
   });
 
   it('does not show error if status is not 422', async () => {
-    axios.post.mockResolvedValue({
+    mockLoginBMUser.mockImplementationOnce(() => async () => ({
       statusText: 'ERROR',
       status: 500,
-      data: { token: '1234' },
-    });
+      data: {},
+    }));
 
     renderComponent(store);
-    fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'test@gmail.com' } });
-    fireEvent.change(screen.getByLabelText(/password/i), { target: { value: 'Test12345' } });
-    fireEvent.click(screen.getByText('Submit'));
+    fillAndSubmit();
 
     await waitFor(() => {
       expect(screen.queryByText(/invalid/i)).not.toBeInTheDocument();
@@ -187,12 +189,14 @@ describe('BMLogin component', () => {
   });
 
   it('handles post rejection without validation error', async () => {
-    axios.post.mockRejectedValue({ response: 'server error' });
+    mockLoginBMUser.mockImplementationOnce(() => async () => ({
+      statusText: 'ERROR',
+      status: 500,
+      data: {},
+    }));
 
     renderComponent(store);
-    fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'test@gmail.com' } });
-    fireEvent.change(screen.getByLabelText(/password/i), { target: { value: 'Test12345' } });
-    fireEvent.click(screen.getByText('Submit'));
+    fillAndSubmit();
 
     await waitFor(() => {
       expect(screen.queryByText(/invalid/i)).not.toBeInTheDocument();
