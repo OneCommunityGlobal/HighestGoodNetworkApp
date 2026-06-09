@@ -10,28 +10,33 @@ import { BsChat } from 'react-icons/bs';
 import { Link } from 'react-router-dom';
 import { IoNotificationsOutline } from 'react-icons/io5';
 
-function LBDashboardHeader(props) {
+function LBDashboardHeader({ authUser, villages = [], onVillageChange }) {
   const [selectedVillage, setSelectedVillage] = useState('');
-  const { authUser } = props;
+
+  const handleGo = () => {
+    onVillageChange?.(selectedVillage);
+  };
 
   return (
     <Navbar expand="lg" className="item__navbar">
       <Container fluid>
-        {/* Left Section - Village Selector */}
         <div className="item__navbar-left">
           <div className="item__selector">
             <select value={selectedVillage} onChange={e => setSelectedVillage(e.target.value)}>
-              <option value="Village 1">Village 1</option>
-              <option value="Village 2">Village 2</option>
-              <option value="Village 3">Village 3</option>
+              <option value="">All Villages</option>
+              {villages.map(village => (
+                <option key={village} value={village}>
+                  {village}
+                </option>
+              ))}
             </select>
           </div>
-          <div className="item__button">
-            <p>Go</p>
-          </div>
+
+          <button type="button" className="item__button" onClick={handleGo}>
+            Go
+          </button>
         </div>
 
-        {/* Right Section - User Info and Icons */}
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <div className="item__navbar-right">

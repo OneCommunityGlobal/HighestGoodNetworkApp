@@ -35,9 +35,15 @@ function WishListItem(props) {
   // We don't need the back to top button on this page
   useEffect(() => {
     const backToTopButton = document.querySelector('.top');
-    backToTopButton.style.display = 'none';
+
+    if (backToTopButton) {
+      backToTopButton.style.display = 'none';
+    }
+
     return () => {
-      backToTopButton.style.display = 'block';
+      if (backToTopButton) {
+        backToTopButton.style.display = 'block';
+      }
     };
   }, []);
 
