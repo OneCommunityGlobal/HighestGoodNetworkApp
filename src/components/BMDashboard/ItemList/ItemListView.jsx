@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -306,12 +305,10 @@ ItemListView.propTypes = {
       key: PropTypes.string.isRequired,
     }),
   ).isRequired,
-  children: PropTypes.node,
 };
 
 ItemListView.defaultProps = {
   errors: {},
-  children: null,
 };
 
 export default ItemListView;

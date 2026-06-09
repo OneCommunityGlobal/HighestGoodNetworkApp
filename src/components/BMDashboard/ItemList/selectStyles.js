@@ -1,6 +1,6 @@
 // src/components/BMDashboard/ItemList/selectStyles.js
 
-export const getReactSelectStyles = (darkMode) => {
+export const getReactSelectStyles = darkMode => {
   // 1. Centralize the colors into unified layout configurations to destroy duplication
   const theme = {
     bgControl: darkMode ? '#2a3f5f' : undefined,
@@ -21,11 +21,12 @@ export const getReactSelectStyles = (darkMode) => {
       color: theme.text ?? base.color,
       boxShadow: state.isFocused && darkMode ? '0 0 0 1px #6af1ea' : base.boxShadow,
       '&:hover': {
-        borderColor: theme.borderHover ?? (base['&:hover'] ? base['&:hover'].borderColor : base.borderColor),
+        borderColor:
+          theme.borderHover ?? (base['&:hover'] ? base['&:hover'].borderColor : base.borderColor),
       },
     }),
 
-    menu: (base) => ({
+    menu: base => ({
       ...base,
       backgroundColor: theme.bgMenu ?? base.backgroundColor,
       border: darkMode ? `1px solid ${theme.border}` : base.border,
@@ -44,22 +45,24 @@ export const getReactSelectStyles = (darkMode) => {
         backgroundColor,
         color: theme.text ?? base.color,
         '&:hover': {
-          backgroundColor: theme.bgHover ?? (base['&:hover'] ? base['&:hover'].backgroundColor : base.backgroundColor),
+          backgroundColor:
+            theme.bgHover ??
+            (base['&:hover'] ? base['&:hover'].backgroundColor : base.backgroundColor),
         },
       };
     },
 
-    multiValue: (base) => ({
+    multiValue: base => ({
       ...base,
       backgroundColor: theme.bgHover ?? base.backgroundColor,
     }),
 
-    multiValueLabel: (base) => ({
+    multiValueLabel: base => ({
       ...base,
       color: theme.textLight ?? base.color,
     }),
 
-    multiValueRemove: (base) => ({
+    multiValueRemove: base => ({
       ...base,
       color: theme.textLight ?? base.color,
       '&:hover': {
@@ -68,17 +71,17 @@ export const getReactSelectStyles = (darkMode) => {
       },
     }),
 
-    placeholder: (base) => ({
+    placeholder: base => ({
       ...base,
       color: darkMode ? '#b5bac5' : base.color,
     }),
 
-    singleValue: (base) => ({
+    singleValue: base => ({
       ...base,
       color: theme.text ?? base.color,
     }),
 
-    input: (base) => ({
+    input: base => ({
       ...base,
       color: theme.text ?? base.color,
     }),

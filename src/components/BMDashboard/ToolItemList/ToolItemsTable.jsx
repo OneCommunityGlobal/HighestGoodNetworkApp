@@ -144,7 +144,7 @@ export default function ToolItemsTable({
         recordType={recordType}
       />
       <UpdateItemModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
-      
+
       {/* 3. Conditionally append the dark mode container class */}
       <div className={`${styles.itemsTableContainer} ${darkMode ? styles.darkModeTable : ''}`}>
         <Table>
