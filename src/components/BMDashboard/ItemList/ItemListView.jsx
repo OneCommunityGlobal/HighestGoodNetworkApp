@@ -12,7 +12,7 @@ import styles from './ItemListView.module.css';
 export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamicColumns }) {
   const [filteredItems, setFilteredItems] = useState([]);
   const [selectedProject, setSelectedProject] = useState([]); // Array of strings
-  const [selectedItem, setSelectedItem] = useState([]);       // Array of strings
+  const [selectedItem, setSelectedItem] = useState([]); // Array of strings
   const [isError, setIsError] = useState(false);
   const [selectedTime, setSelectedTime] = useState(new Date());
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -37,8 +37,9 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
       matchedItems = items.filter(item => selectedItem.includes(item.itemType?.name));
     } else if (hasProjectFilter && hasItemFilter) {
       matchedItems = items.filter(
-        item => selectedProject.includes(item.project?.name) && 
-                selectedItem.includes(item.itemType?.name)
+        item =>
+          selectedProject.includes(item.project?.name) &&
+          selectedItem.includes(item.itemType?.name),
       );
     }
 
@@ -77,7 +78,9 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
                 inputId="itemListTime"
                 className={darkMode ? styles.darkDatePickerInput : styles.lightDatePickerInput}
                 calendarClassName={darkMode ? styles.darkDatePicker : styles.lightDatePicker}
-                popperClassName={darkMode ? styles.darkDatePickerPopper : styles.lightDatePickerPopper}
+                popperClassName={
+                  darkMode ? styles.darkDatePickerPopper : styles.lightDatePickerPopper
+                }
               />
               <SelectForm
                 items={items}
@@ -94,9 +97,15 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
             </div>
           )}
           <div className={`${styles.buttonsRow}`}>
-            <button type="button" className={`${styles.btnPrimary}`}>Add Material</button>
-            <button type="button" className={`${styles.btnPrimary}`}>Edit Name/Measurement</button>
-            <button type="button" className={`${styles.btnPrimary}`}>View Update History</button>
+            <button type="button" className={`${styles.btnPrimary}`}>
+              Add Material
+            </button>
+            <button type="button" className={`${styles.btnPrimary}`}>
+              Edit Name/Measurement
+            </button>
+            <button type="button" className={`${styles.btnPrimary}`}>
+              View Update History
+            </button>
           </div>
         </span>
         {filteredItems && (

@@ -45,7 +45,7 @@
   align-items: center;
   gap: 15px;
   width: 100%;
-  min-width: 400px;    
+  min-width: 400px;
   max-width: 1200px;
   margin: 0 auto 10px auto;
   overflow: visible;
@@ -253,7 +253,10 @@
 .darkDatePicker :global(.react-datepicker__time-container),
 .darkDatePicker :global(.react-datepicker__time-container .react-datepicker__time),
 .darkDatePicker :global(.react-datepicker__time-container .react-datepicker__time-box),
-.darkDatePicker :global(.react-datepicker__time-container .react-datepicker__time-box ul.react-datepicker__time-list) {
+.darkDatePicker
+  :global(.react-datepicker__time-container
+    .react-datepicker__time-box
+    ul.react-datepicker__time-list) {
   background-color: #2a3f5f !important;
   border-color: #3f5269 !important;
   color: #e8edf4 !important;
@@ -340,7 +343,10 @@
 .lightDatePicker :global(.react-datepicker__time-container),
 .lightDatePicker :global(.react-datepicker__time-container .react-datepicker__time),
 .lightDatePicker :global(.react-datepicker__time-container .react-datepicker__time-box),
-.lightDatePicker :global(.react-datepicker__time-container .react-datepicker__time-box ul.react-datepicker__time-list) {
+.lightDatePicker
+  :global(.react-datepicker__time-container
+    .react-datepicker__time-box
+    ul.react-datepicker__time-list) {
   background-color: #ffffff !important;
   border-color: #d1d5db !important;
   color: #1f2937 !important;
@@ -364,4 +370,18 @@
 
 .lightDatePickerPopper .react-datepicker__triangle {
   display: none;
+}
+
+.filterForm {
+  display: flex;
+  justify-content: flex-start;
+  justify-content: flex-start;
+  margin-bottom: 20px;
+}
+
+.filterItem {
+  display: flex;
+  justify-content: flex-start;
+  justify-content: flex-start;
+  margin-bottom: 20px;
 }

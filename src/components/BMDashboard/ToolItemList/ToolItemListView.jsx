@@ -5,6 +5,10 @@ import SelectForm from '../ItemList/SelectForm';
 import SelectItem from '../ItemList/SelectItem';
 import ToolItemsTable from './ToolItemsTable';
 import styles from './ToolItemListView.module.css';
+import { Button } from 'reactstrap';
+
+const PROJECT_KEY = 'tool_selected_projects';
+const ITEM_KEY = 'tool_selected_items';
 
 export function ToolItemListView({
   itemType,
@@ -17,6 +21,8 @@ export function ToolItemListView({
   const [selectedProject, setSelectedProject] = useState('all');
   const [selectedItem, setSelectedItem] = useState('all');
   const [isError, setIsError] = useState(false);
+
+  const [localValues, setLocalValues] = useState([]);
 
   // Load initial items
   useEffect(() => {
@@ -59,6 +65,15 @@ export function ToolItemListView({
     setIsError(Object.entries(errors).length > 0);
   }, [errors]);
 
+  // 1. The Reset Handler
+  const handleReset = () => {
+    setLocalValues([]); // Clear React-Select UI
+    setSelectedProject([]); // Clear parent project state
+    setSelectedItem([]); // Clear parent item state
+    localStorage.removeItem(PROJECT_KEY); // Clear localStorage cache
+    localStorage.removeItem(ITEM_KEY); // Clear item filter cache as well
+  };
+
   if (isError) {
     return (
       <main className={styles.itemsListContainer}>
@@ -72,14 +87,15 @@ export function ToolItemListView({
     <main className={styles.itemsListContainer}>
       <h3>{itemType}</h3>
 
-      <section>
-        <span style={{ display: 'flex', margin: '5px' }}>
+      <section className={styles.selectContainers}>
+        <div className={styles.containers}>
           {items && (
             <>
               <SelectForm
                 items={items}
                 setSelectedProject={setSelectedProject}
-                setSelectedItem={setSelectedItem}
+                localValues={localValues}
+                setLocalValues={setLocalValues}
               />
 
               <SelectItem
@@ -89,9 +105,23 @@ export function ToolItemListView({
                 setSelectedItem={setSelectedItem}
                 label="Tool"
               />
+              <div className={styles.resetContainer}>
+                <Button
+                  type="button"
+                  color="danger"
+                  onClick={handleReset}
+                  disabled={
+                    localStorage.getItem(PROJECT_KEY) === null &&
+                    localStorage.getItem(ITEM_KEY) === null
+                  }
+                  className={styles.resetButton}
+                >
+                  Reset
+                </Button>
+              </div>
             </>
           )}
-        </span>
+        </div>
 
         {filteredItems && (
           <ToolItemsTable
@@ -100,6 +130,7 @@ export function ToolItemListView({
             filteredItems={filteredItems}
             UpdateItemModal={UpdateItemModal}
             dynamicColumns={dynamicColumns}
+            className={styles.filteredTable}
           />
         )}
       </section>

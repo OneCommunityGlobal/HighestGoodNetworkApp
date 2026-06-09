@@ -94,7 +94,7 @@ export default function ToolItemsTable({
       <UpdateItemModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
       <div className={`${styles.itemsTableContainer}`}>
         <Table>
-          <thead>
+          <thead className={styles.tableHeader}>
             <tr>
               {selectedProject === 'all' ? (
                 <th onClick={() => sortData('ProjectName')}>

@@ -52,3 +52,30 @@
   gap: 20px;
   justify-content: flex-start;
 }
+
+.selectContainers {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.containers {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  margin-left: 2rem;
+}
+
+.resetContainer {
+  display: flex;
+  justify-content: center;
+  padding-right: 20px;
+  margin-left: 3rem;
+}
+
+.tableHeader {
+  background-color: rgb(158, 156, 156);
+}
