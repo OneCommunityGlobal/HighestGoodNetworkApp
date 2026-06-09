@@ -351,8 +351,7 @@ function WeeklyProjectSummary() {
         key: 'Financials',
         className: 'large',
         content: (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
-            <div className="weekly-project-summary-card financial-small">📊 Card</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '15px' }}>
             <div className="weekly-project-summary-card financial-small financial-chart">
               <ExpenseBarChart darkMode={darkMode} />
             </div>

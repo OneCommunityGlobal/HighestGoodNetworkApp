@@ -59,7 +59,6 @@ const rawData = [
   },
 ];
 
-// Extracted Filter Helpers (Reduces Cognitive Complexity)
 const isDateMatch = (entryDate, startDate, endDate) => {
   if (startDate && entryDate < startDate) return false;
   if (endDate && entryDate > endDate) return false;
@@ -97,37 +96,39 @@ const getFilteredAndAggregatedData = (startDate, endDate, projectId, categoryFil
   });
 };
 
-// Theme Helper (Removes Inline Ternaries from the Component)
 const getTheme = darkMode => {
   const mode = darkMode ? 'dark' : 'light';
   return {
-    inputBg: { dark: '#333', light: '#fff' }[mode],
-    inputText: { dark: '#eee', light: '#000' }[mode],
-    inputBorder: { dark: '1px solid #555', light: '1px solid #ccc' }[mode],
-    labelColor: { dark: '#bbb', light: '#555' }[mode],
-    titleColor: { dark: '#ddd', light: '#555' }[mode],
-    legendColor: { dark: '#ccc', light: '#333' }[mode],
-    emptyTextColor: { dark: '#bbb', light: '#555' }[mode],
-    axisStroke: { dark: '#888', light: '#333' }[mode],
-    axisTick: { dark: '#aaa', light: '#333' }[mode],
+    inputBg: { dark: '#2d3748', light: '#fff' }[mode],
+    inputText: { dark: '#f8fafc', light: '#0f172a' }[mode],
+    inputBorder: { dark: '1px solid #475569', light: '1px solid #cbd5e1' }[mode],
+    labelColor: { dark: '#e2e8f0', light: '#334155' }[mode],
+    titleColor: { dark: '#f8fafc', light: '#1e293b' }[mode],
+    legendColor: { dark: '#cbd5e1', light: '#334155' }[mode],
+    emptyTextColor: { dark: '#94a3b8', light: '#64748b' }[mode],
+    axisStroke: { dark: '#64748b', light: '#94a3b8' }[mode],
+    axisTick: { dark: '#cbd5e1', light: '#475569' }[mode],
     cursorFill: { dark: 'rgba(255, 255, 255, 0.05)', light: 'rgba(0, 0, 0, 0.05)' }[mode],
-    tooltipBg: { dark: '#222', light: '#fff' }[mode],
-    tooltipBorder: { dark: '1px solid #555', light: '1px solid #ccc' }[mode],
-    tooltipText: { dark: '#eee', light: '#333' }[mode],
-    tooltipHeaderBorder: { dark: '1px solid #444', light: '1px solid #eee' }[mode],
-    tooltipHeaderColor: { dark: '#adb5bd', light: '#666' }[mode],
+    tooltipBg: { dark: '#1e293b', light: '#ffffff' }[mode],
+    tooltipBorder: { dark: '1px solid #334155', light: '1px solid #e2e8f0' }[mode],
+    tooltipText: { dark: '#f8fafc', light: '#0f172a' }[mode],
+    tooltipHeaderBorder: { dark: '1px solid #475569', light: '1px solid #f1f5f9' }[mode],
+    tooltipHeaderColor: { dark: '#94a3b8', light: '#64748b' }[mode],
+    overBudget: { dark: '#ff5252', light: '#EA4335' }[mode],
+    underBudget: { dark: '#4ade80', light: '#34A853' }[mode],
   };
 };
 
-const renderVarianceLabel = props => {
-  const { x, y, width, value } = props;
+const VarianceLabel = props => {
+  const { x, y, width, value, darkMode } = props;
   const isOver = value?.toString().startsWith('+');
+  const theme = getTheme(darkMode);
 
   return (
     <text
       x={x + width / 2}
       y={y - 8}
-      fill={isOver ? '#EA4335' : '#34A853'}
+      fill={isOver ? theme.overBudget : theme.underBudget}
       fontSize="11"
       fontWeight="bold"
       textAnchor="middle"
@@ -137,11 +138,12 @@ const renderVarianceLabel = props => {
   );
 };
 
-renderVarianceLabel.propTypes = {
+VarianceLabel.propTypes = {
   x: PropTypes.number,
   y: PropTypes.number,
   width: PropTypes.number,
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  darkMode: PropTypes.bool,
 };
 
 const CustomTooltip = ({ active, payload, label, darkMode }) => {
@@ -175,19 +177,19 @@ const CustomTooltip = ({ active, payload, label, darkMode }) => {
         {label}
       </p>
       <p style={{ margin: '0 0 4px 0' }}>
-        Planned: <strong>${chartData.planned}</strong>
+        Planned: <strong>${chartData.planned.toLocaleString()}</strong>
       </p>
       <p style={{ margin: '0 0 4px 0' }}>
-        Actual: <strong>${chartData.actual}</strong>
+        Actual: <strong>${chartData.actual.toLocaleString()}</strong>
       </p>
       <p
         style={{
           margin: '8px 0 0 0',
-          color: isOverBudget ? '#EA4335' : '#34A853',
+          color: isOverBudget ? theme.overBudget : theme.underBudget,
           fontWeight: 'bold',
         }}
       >
-        Variance: {chartData.variance > 0 ? '+' : ''}${chartData.variance} (
+        Variance: {chartData.variance > 0 ? '+' : ''}${chartData.variance.toLocaleString()} (
         {chartData.variancePercent})
       </p>
     </div>
@@ -220,20 +222,33 @@ export default function ExpenseBarChart({ darkMode }) {
 
   const theme = getTheme(darkMode);
 
-  const inputStyle = {
-    marginLeft: '0.3rem',
+  const today = new Date();
+  const localTodayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(
+    2,
+    '0',
+  )}-${String(today.getDate()).padStart(2, '0')}`;
+
+  const labelGroupStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    gap: '0.4rem',
+    color: theme.labelColor,
+    fontWeight: '600',
+    fontSize: '0.85rem',
     width: '100%',
-    padding: '4px',
+  };
+
+  const inputStyle = {
+    width: '100%',
+    padding: '8px 10px',
     borderRadius: '4px',
     backgroundColor: theme.inputBg,
     color: theme.inputText,
     border: theme.inputBorder,
     outline: 'none',
-  };
-
-  const labelStyle = {
-    minWidth: '150px',
-    color: theme.labelColor,
+    boxSizing: 'border-box',
+    colorScheme: darkMode ? 'dark' : 'light',
   };
 
   useEffect(() => {
@@ -252,12 +267,12 @@ export default function ExpenseBarChart({ darkMode }) {
 
   return (
     <div style={{ width: '100%', padding: '0.5rem' }}>
-      <div style={{ textAlign: 'center', marginBottom: '0.75rem' }}>
-        <h4 style={{ margin: 0, color: theme.titleColor, fontSize: '1.2rem' }}>
+      <div style={{ textAlign: 'center', marginBottom: '1.25rem' }}>
+        <h4 style={{ margin: 0, color: theme.titleColor, fontSize: '1.3rem', fontWeight: 'bold' }}>
           Planned vs Actual Cost
         </h4>
         {errorMessage && (
-          <div style={{ color: '#ff4444', fontSize: '0.9rem', marginTop: '0.5rem' }}>
+          <div style={{ color: '#ff5252', fontSize: '0.9rem', marginTop: '0.5rem' }}>
             {errorMessage}
           </div>
         )}
@@ -265,16 +280,14 @@ export default function ExpenseBarChart({ darkMode }) {
 
       <div
         style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          justifyContent: 'center',
-          alignItems: 'center',
-          gap: '1rem',
-          fontSize: '0.75rem',
-          marginBottom: '0.5rem',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(2, 1fr)',
+          columnGap: '1.5rem',
+          rowGap: '1rem',
+          marginBottom: '1.5rem',
         }}
       >
-        <label style={labelStyle}>
+        <label style={labelGroupStyle}>
           Project:
           <select value={projectId} onChange={e => setProjectId(e.target.value)} style={inputStyle}>
             <option value="">All</option>
@@ -285,7 +298,7 @@ export default function ExpenseBarChart({ darkMode }) {
             ))}
           </select>
         </label>
-        <label style={labelStyle}>
+        <label style={labelGroupStyle}>
           Category:
           <select
             value={categoryFilter}
@@ -300,20 +313,23 @@ export default function ExpenseBarChart({ darkMode }) {
             ))}
           </select>
         </label>
-        <label style={labelStyle}>
+        <label style={labelGroupStyle}>
           Start Date:
           <input
             type="date"
             value={startDate}
+            max={endDate || localTodayString}
             onChange={e => setStartDate(e.target.value)}
             style={inputStyle}
           />
         </label>
-        <label style={labelStyle}>
+        <label style={labelGroupStyle}>
           End Date:
           <input
             type="date"
             value={endDate}
+            min={startDate || undefined}
+            max={localTodayString}
             onChange={e => setEndDate(e.target.value)}
             style={inputStyle}
           />
@@ -325,17 +341,18 @@ export default function ExpenseBarChart({ darkMode }) {
           display: 'flex',
           justifyContent: 'center',
           gap: '1.5rem',
-          fontSize: '0.75rem',
-          marginBottom: '1rem',
+          fontSize: '0.85rem',
+          fontWeight: '500',
+          marginBottom: '1.5rem',
           color: theme.legendColor,
           flexWrap: 'wrap',
         }}
       >
-        <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
           <span
             style={{
-              width: 12,
-              height: 12,
+              width: 14,
+              height: 14,
               backgroundColor: '#4285F4',
               display: 'inline-block',
               borderRadius: '2px',
@@ -343,24 +360,24 @@ export default function ExpenseBarChart({ darkMode }) {
           />{' '}
           Planned
         </span>
-        <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
           <span
             style={{
-              width: 12,
-              height: 12,
-              backgroundColor: '#EA4335',
+              width: 14,
+              height: 14,
+              backgroundColor: theme.overBudget,
               display: 'inline-block',
               borderRadius: '2px',
             }}
           />{' '}
           Actual (Over Budget)
         </span>
-        <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
           <span
             style={{
-              width: 12,
-              height: 12,
-              backgroundColor: '#34A853',
+              width: 14,
+              height: 14,
+              backgroundColor: theme.underBudget,
               display: 'inline-block',
               borderRadius: '2px',
             }}
@@ -369,7 +386,7 @@ export default function ExpenseBarChart({ darkMode }) {
         </span>
       </div>
 
-      <div style={{ width: '100%', height: '280px' }}>
+      <div style={{ width: '100%', height: '300px' }}>
         {data.length === 0 && !errorMessage ? (
           <div
             style={{
@@ -385,20 +402,20 @@ export default function ExpenseBarChart({ darkMode }) {
           </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data} margin={{ top: 25, right: 10, left: 35, bottom: 40 }}>
+            <BarChart data={data} margin={{ top: 25, right: 10, left: 20, bottom: 0 }}>
               <XAxis
                 dataKey="project"
                 stroke={theme.axisStroke}
-                tick={{ fontSize: 11, fill: theme.axisTick }}
+                tick={{ fontSize: 12, fill: theme.axisTick, fontWeight: 500 }}
                 interval={0}
-                angle={-20}
-                textAnchor="end"
+                tickMargin={8}
               />
               <YAxis
-                tick={{ fontSize: 11, fill: theme.axisTick }}
+                stroke={theme.axisStroke}
+                tick={{ fontSize: 12, fill: theme.axisTick }}
                 axisLine
                 tickLine
-                tickFormatter={value => `$${value}`}
+                tickFormatter={value => `$${value.toLocaleString()}`}
               />
               <Tooltip
                 content={<CustomTooltip darkMode={darkMode} />}
@@ -406,20 +423,23 @@ export default function ExpenseBarChart({ darkMode }) {
                 wrapperStyle={{ backgroundColor: 'transparent', outline: 'none' }}
                 contentStyle={{ backgroundColor: 'transparent', border: 'none' }}
               />
-              <Bar dataKey="planned" fill="#4285F4" name="Planned" radius={[2, 2, 0, 0]}>
+              <Bar dataKey="planned" fill="#4285F4" name="Planned" radius={[3, 3, 0, 0]}>
                 <LabelList
                   dataKey="planned"
                   position="top"
-                  style={{ fontSize: 10, fill: '#8ab4f8' }}
-                  formatter={val => `$${val}`}
+                  style={{ fontSize: 11, fill: '#8ab4f8', fontWeight: 'bold' }}
+                  formatter={val => `$${val.toLocaleString()}`}
                 />
               </Bar>
-              <Bar dataKey="actual" name="Actual" radius={[2, 2, 0, 0]}>
-                <LabelList dataKey="varianceLabel" content={renderVarianceLabel} />
+              <Bar dataKey="actual" name="Actual" radius={[3, 3, 0, 0]}>
+                <LabelList
+                  dataKey="varianceLabel"
+                  content={<VarianceLabel darkMode={darkMode} />}
+                />
                 {data.map(entry => (
                   <Cell
                     key={`cell-${entry.project}`}
-                    fill={entry.variance > 0 ? '#EA4335' : '#34A853'}
+                    fill={entry.variance > 0 ? theme.overBudget : theme.underBudget}
                   />
                 ))}
               </Bar>
