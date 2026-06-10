@@ -13,9 +13,9 @@ import moment from 'moment';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Select from 'react-select';
-import styles from './PaidLaborCost.module.css';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
+import styles from './PaidLaborCost.module.css';
 import logger from '../../../../services/logService';
 import config from '../../../../config.json';
 import { ENDPOINTS } from '../../../../utils/URL';
@@ -158,18 +158,13 @@ const MOCK_DB = [
   },
 ];
 
-const dateToISOString = date => {
-  if (!date) return null;
-  return moment(date).toISOString();
-};
-
 const isValidISODate = dateString => {
   if (!dateString) return false;
   return moment(dateString).isValid();
 };
 
 const isDevelopmentEnvironment = () => {
-  if (globalThis.window === undefined) {
+  if (typeof globalThis.window === 'undefined') {
     return process.env.NODE_ENV === 'development';
   }
   const hostname = globalThis.window.location.hostname;
@@ -181,112 +176,55 @@ const isDevelopmentEnvironment = () => {
   );
 };
 
-const getFilteredMockData = (projectFilter, taskFilter, dateRange, mockDb) => {
-  let filteredMock = mockDb;
-
-  if (projectFilter !== 'All Projects') {
-    filteredMock = filteredMock.filter(d => d.project === projectFilter);
-  }
-  if (taskFilter.length > 0) {
-    filteredMock = filteredMock.filter(d => taskFilter.includes(d.task));
-  }
-  if (dateRange.startDate) {
-    const start = moment(dateRange.startDate).startOf('day');
-    filteredMock = filteredMock.filter(d => moment(d.date).isSameOrAfter(start));
-  }
-  if (dateRange.endDate) {
-    const end = moment(dateRange.endDate).endOf('day');
-    filteredMock = filteredMock.filter(d => moment(d.date).isSameOrBefore(end));
-  }
-
-  return filteredMock;
-};
-
-function aggregateData(data, taskFilter, projectFilter) {
+function aggregateData(data, taskFilter, projectFilter, dateRange) {
   if (!Array.isArray(data)) {
     return { labels: [], aggregation: {}, tasksToInclude: [] };
   }
 
   const validData = data.filter(item => {
-    if (!item || typeof item !== 'object') return false;
-    if (typeof item.project !== 'string' || typeof item.task !== 'string') return false;
-    if (typeof item.cost !== 'number' || Number.isNaN(item.cost)) return false;
-    if (!item.date) return false;
+    if (
+      dateRange.startDate &&
+      moment(item.date).isBefore(moment(dateRange.startDate).startOf('day'))
+    )
+      return false;
+    if (dateRange.endDate && moment(item.date).isAfter(moment(dateRange.endDate).endOf('day')))
+      return false;
+    if (projectFilter !== 'All Projects' && item.project !== projectFilter) return false;
+    if (taskFilter.length > 0 && !taskFilter.includes(item.task)) return false;
     return true;
   });
 
-  if (projectFilter === 'All Projects') {
-    const label = 'All Projects';
-    const aggregation = { [label]: { totalCost: 0, totalBudget: 0 } };
-    const tasks = [...new Set(validData.map(d => d.task))];
-
-    tasks.forEach(task => {
-      aggregation[label][task] = { cost: 0, budget: 0 };
-    });
-
-    validData.forEach(item => {
-      aggregation[label].totalCost += item.cost;
-      aggregation[label].totalBudget += item.budget || 0;
-
-      if (aggregation[label][item.task] !== undefined) {
-        aggregation[label][item.task].cost += item.cost;
-        aggregation[label][item.task].budget += item.budget || 0;
-      }
-    });
-
-    let tasksToInclude;
-    if (taskFilter === 'ALL' || (Array.isArray(taskFilter) && taskFilter.length === 0)) {
-      tasksToInclude = tasks
-        .sort((a, b) => aggregation[label][b].cost - aggregation[label][a].cost)
-        .slice(0, 2);
-    } else if (Array.isArray(taskFilter)) {
-      tasksToInclude = taskFilter.filter(task => tasks.includes(task));
-    } else {
-      tasksToInclude = [taskFilter];
-    }
-    return { labels: [label], aggregation, tasksToInclude };
+  if (validData.length === 0) {
+    return { labels: [], aggregation: {}, tasksToInclude: [] };
   }
 
-  const projectsToInclude = [projectFilter];
-  const distinctTasks = [
-    ...new Set(validData.filter(d => d.project === projectFilter).map(d => d.task)),
-  ];
+  const label = projectFilter === 'All Projects' ? 'All Projects' : projectFilter;
+  const aggregation = { [label]: { totalCost: 0, totalBudget: 0 } };
 
-  let tasksToInclude;
-  if (taskFilter === 'ALL' || (Array.isArray(taskFilter) && taskFilter.length === 0)) {
-    tasksToInclude = distinctTasks;
-  } else if (Array.isArray(taskFilter)) {
-    tasksToInclude = taskFilter.filter(task => distinctTasks.includes(task));
-  } else {
-    tasksToInclude = [taskFilter];
-  }
+  const distinctTasks = [...new Set(validData.map(d => d.task))];
 
-  const aggregation = {};
-  projectsToInclude.forEach(proj => {
-    aggregation[proj] = { totalCost: 0, totalBudget: 0 };
-    tasksToInclude.forEach(t => {
-      aggregation[proj][t] = { cost: 0, budget: 0 };
-    });
+  // Show all tasks if no task filter is applied, regardless of project
+  const tasksToInclude = taskFilter.length > 0 ? taskFilter : distinctTasks;
+
+  tasksToInclude.forEach(t => {
+    aggregation[label][t] = { cost: 0, budget: 0 };
   });
 
   validData.forEach(item => {
-    if (item.project === projectFilter) {
-      aggregation[projectFilter].totalCost += item.cost;
-      aggregation[projectFilter].totalBudget += item.budget || 0;
-      if (tasksToInclude.includes(item.task)) {
-        aggregation[projectFilter][item.task].cost += item.cost;
-        aggregation[projectFilter][item.task].budget += item.budget || 0;
-      }
+    aggregation[label].totalCost += item.cost;
+    aggregation[label].totalBudget += item.budget;
+
+    if (tasksToInclude.includes(item.task)) {
+      aggregation[label][item.task].cost += item.cost;
+      aggregation[label][item.task].budget += item.budget;
     }
   });
 
-  return { labels: projectsToInclude, aggregation, tasksToInclude };
+  return { labels: [label], aggregation, tasksToInclude };
 }
 
 export default function PaidLaborCost() {
   const [data, setData] = useState([]);
-  const [totalCost, setTotalCost] = useState(0);
-  const [totalBudget, setTotalBudget] = useState(0);
   const [initialLoading, setInitialLoading] = useState(true);
 
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -295,96 +233,44 @@ export default function PaidLaborCost() {
   const [taskFilter, setTaskFilter] = useState([]);
   const [projectFilter, setProjectFilter] = useState('All Projects');
   const [dateRange, setDateRange] = useState({ startDate: null, endDate: null });
-  const [allAvailableTasks, setAllAvailableTasks] = useState([]);
-  const [allAvailableProjects, setAllAvailableProjects] = useState([]);
 
-  const buildLaborCostEndpoint = useCallback(() => {
-    const params = new URLSearchParams();
-    if (projectFilter !== 'All Projects') {
-      params.append('projects', JSON.stringify([projectFilter]));
-    }
-    if (taskFilter.length > 0) {
-      params.append('tasks', JSON.stringify(taskFilter));
-    }
-    if (dateRange.startDate || dateRange.endDate) {
-      params.append(
-        'date_range',
-        JSON.stringify({
-          start_date: dateToISOString(dateRange.startDate),
-          end_date: dateToISOString(dateRange.endDate),
-        }),
-      );
-    }
-    const queryString = params.toString();
-    const apiBaseUrl = ENDPOINTS.APIEndpoint();
-    return queryString ? `${apiBaseUrl}/labor-cost?${queryString}` : `${apiBaseUrl}/labor-cost`;
-  }, [projectFilter, taskFilter, dateRange.startDate, dateRange.endDate]);
+  const processApiResponse = useCallback(apiData => {
+    const dataToProcess = apiData.data || apiData || [];
 
-  const fetchLaborCostData = useCallback(
-    async (includeProjectFilter = true, includeTaskFilter = true) => {
-      if (isDevelopmentEnvironment()) {
-        return { data: MOCK_DB, totalCost: MOCK_DB.reduce((sum, item) => sum + item.cost, 0) };
-      }
+    const validatedData = dataToProcess
+      .map(item => {
+        const projName = typeof item.project === 'object' ? item.project?.name : item.project;
+        const taskName =
+          typeof item.task === 'object' ? item.task?.name || item.task?.taskName : item.task;
+        const itemCost = Number(item.cost) || 0;
+        const itemBudget = item.budget || itemCost * 0.9;
 
-      const endpointPath = buildLaborCostEndpoint();
-      const token = localStorage.getItem(config.tokenKey);
-      const headers = {
-        'Content-Type': 'application/json',
-        'Cache-Control': 'no-cache',
-        Pragma: 'no-cache',
-        ...(token && { Authorization: token }),
-      };
+        return {
+          ...item,
+          project: projName || 'Unknown Project',
+          task: taskName || 'Unknown Task',
+          cost: itemCost,
+          budget: itemBudget,
+          date: item.date,
+        };
+      })
+      .filter(item => item.date && isValidISODate(item.date));
 
-      const response = await fetch(endpointPath, { method: 'GET', headers, cache: 'no-store' });
-      if (!response.ok) throw new Error(`API request failed with status ${response.status}`);
-      return response.json();
-    },
-    [buildLaborCostEndpoint],
-  );
-
-  const isValidDataItem = useCallback(item => {
-    if (!item || typeof item !== 'object') return false;
-    if (typeof item.project !== 'string' || typeof item.task !== 'string') return false;
-    if (typeof item.cost !== 'number' || Number.isNaN(item.cost)) return false;
-    if (!item.date || !isValidISODate(item.date)) return false;
-    return true;
+    setData(validatedData);
   }, []);
-
-  const processApiResponse = useCallback(
-    apiData => {
-      let dataToProcess = apiData.data || [];
-      let calculatedTotalBudget = 0;
-
-      const validatedData = dataToProcess.filter(isValidDataItem).map(item => {
-        const itemBudget = item.budget || item.cost * 0.9;
-        calculatedTotalBudget += itemBudget;
-        return { ...item, budget: itemBudget };
-      });
-
-      setData(validatedData);
-      setTotalCost(
-        typeof apiData.totalCost === 'number'
-          ? apiData.totalCost
-          : dataToProcess.reduce((s, i) => s + i.cost, 0),
-      );
-      setTotalBudget(calculatedTotalBudget);
-    },
-    [isValidDataItem],
-  );
 
   useEffect(() => {
     const abortController = new AbortController();
 
     const fetchData = async () => {
       try {
-        const endpointPath = buildLaborCostEndpoint();
         const token = localStorage.getItem(config.tokenKey);
         const headers = {
           'Content-Type': 'application/json',
           ...(token && { Authorization: token }),
         };
 
-        const response = await fetch(endpointPath, {
+        const response = await fetch(`${ENDPOINTS.APIEndpoint()}/labor-cost`, {
           method: 'GET',
           headers,
           cache: 'no-store',
@@ -399,9 +285,7 @@ export default function PaidLaborCost() {
         if (error.name === 'AbortError') return;
 
         if (isDevelopmentEnvironment()) {
-          const filteredMock = getFilteredMockData(projectFilter, taskFilter, dateRange, MOCK_DB);
-          const mockTotal = filteredMock.reduce((sum, item) => sum + item.cost, 0);
-          processApiResponse({ data: filteredMock, totalCost: mockTotal });
+          processApiResponse({ data: MOCK_DB });
         } else {
           logger.logError(error);
           toast.error('Error fetching data.');
@@ -417,46 +301,18 @@ export default function PaidLaborCost() {
     return () => {
       abortController.abort();
     };
-  }, [
-    projectFilter,
-    taskFilter,
-    dateRange.startDate,
-    dateRange.endDate,
-    processApiResponse,
-    buildLaborCostEndpoint,
-  ]);
+  }, [processApiResponse]);
 
-  useEffect(() => {
-    const fetchAllTasks = async () => {
-      try {
-        const apiData = await fetchLaborCostData(true, false);
-        if (Array.isArray(apiData.data)) {
-          const uniqueTasks = [...new Set(apiData.data.map(item => item.task))];
-          setAllAvailableTasks(uniqueTasks);
-        }
-      } catch (error) {
-        logger.logError(error);
-      }
-    };
-    fetchAllTasks();
-  }, [fetchLaborCostData]);
+  const allAvailableProjects = useMemo(() => [...new Set(data.map(d => d.project))], [data]);
+  const allAvailableTasks = useMemo(() => [...new Set(data.map(d => d.task))], [data]);
 
-  useEffect(() => {
-    const fetchAllProjects = async () => {
-      try {
-        const apiData = await fetchLaborCostData(false, true);
-        if (Array.isArray(apiData.data)) {
-          const uniqueProjects = [...new Set(apiData.data.map(item => item.project))];
-          setAllAvailableProjects(uniqueProjects);
-        }
-      } catch (error) {
-        logger.logError(error);
-      }
-    };
-    fetchAllProjects();
-  }, [fetchLaborCostData]);
+  const { labels, aggregation, tasksToInclude } = useMemo(
+    () => aggregateData(data, taskFilter, projectFilter, dateRange),
+    [data, taskFilter, projectFilter, dateRange],
+  );
 
-  const { labels, aggregation, tasksToInclude } = aggregateData(data, taskFilter, projectFilter);
+  const displayTotalCost = labels.length > 0 ? aggregation[labels[0]]?.totalCost || 0 : 0;
+  const displayTotalBudget = labels.length > 0 ? aggregation[labels[0]]?.totalBudget || 0 : 0;
 
   const getOptionBackgroundColor = useCallback(
     (isSelected, isFocused) => {
@@ -491,12 +347,14 @@ export default function PaidLaborCost() {
   const handleEndDateChange = date => setDateRange(prev => ({ ...prev, endDate: date }));
 
   const taskDatasets = tasksToInclude.flatMap((task, idx) => {
-    const hue = Math.round((idx * 360) / tasksToInclude.length);
+    const hue = Math.round((idx * 360) / Math.max(1, tasksToInclude.length));
     const saturation = 65;
-    const lightness = darkMode ? 70 : 50;
+    const lightness = darkMode ? 65 : 50;
 
     const actualColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
-    const budgetColor = `hsla(${hue}, ${saturation}%, ${lightness}%, 0.4)`;
+    const budgetColor = darkMode
+      ? `hsla(${hue}, ${saturation}%, ${lightness + 20}%, 0.8)`
+      : `hsla(${hue}, ${saturation}%, ${lightness}%, 0.4)`;
 
     return [
       {
@@ -504,7 +362,7 @@ export default function PaidLaborCost() {
         backgroundColor: actualColor,
         borderRadius: 4,
         data: labels.map(label => Math.round((aggregation[label][task]?.cost || 0) / 1000)),
-        maxBarThickness: 50,
+        maxBarThickness: 40,
         categoryPercentage: 0.8,
         barPercentage: 0.9,
       },
@@ -513,10 +371,10 @@ export default function PaidLaborCost() {
         backgroundColor: budgetColor,
         borderColor: actualColor,
         borderWidth: { top: 2, right: 2, bottom: 0, left: 2 },
-        borderDash: [5, 5],
+        borderDash: [4, 4],
         borderRadius: 4,
         data: labels.map(label => Math.round((aggregation[label][task]?.budget || 0) / 1000)),
-        maxBarThickness: 50,
+        maxBarThickness: 40,
         categoryPercentage: 0.8,
         barPercentage: 0.9,
       },
@@ -528,10 +386,27 @@ export default function PaidLaborCost() {
   const options = {
     responsive: true,
     maintainAspectRatio: false,
-    layout: { padding: 10 },
+    layout: { padding: { top: 30, left: 10, right: 10, bottom: 10 } },
     plugins: {
-      legend: { position: 'top', labels: { font: { size: 12 }, color: textColor } },
+      legend: {
+        position: 'top',
+        labels: {
+          font: { size: 12 },
+          color: textColor,
+          padding: 20,
+          usePointStyle: true,
+        },
+      },
+      datalabels: {
+        color: darkMode ? '#ffffff' : '#333333',
+        font: { weight: '600', size: 11 },
+      },
       tooltip: {
+        backgroundColor: darkMode ? '#1e293b' : '#ffffff',
+        titleColor: darkMode ? '#f8fafc' : '#0f172a',
+        bodyColor: darkMode ? '#f8fafc' : '#0f172a',
+        borderColor: darkMode ? '#334155' : '#e2e8f0',
+        borderWidth: 1,
         callbacks: {
           label(context) {
             const project = context.chart.data.labels[context.dataIndex];
@@ -549,7 +424,7 @@ export default function PaidLaborCost() {
         offset: true,
       },
       y: {
-        grid: { color: '#ccc' },
+        grid: { color: darkMode ? '#334155' : '#e2e8f0' },
         beginAtZero: true,
         title: { display: true, text: 'Cost (000s)', font: { size: 12 }, color: textColor },
         ticks: { font: { size: 12 }, color: textColor },
@@ -562,9 +437,8 @@ export default function PaidLaborCost() {
       control: base => ({
         ...base,
         minHeight: '38px',
-        minWidth: '150px',
         width: '100%',
-        fontSize: '14px',
+        fontSize: '13px',
         backgroundColor: darkMode ? '#253342' : '#fff',
         borderColor: darkMode ? '#2d4059' : '#ccc',
         color: darkMode ? '#ffffff' : '#000',
@@ -588,19 +462,17 @@ export default function PaidLaborCost() {
         ...base,
         backgroundColor: darkMode ? '#2d4059' : '#e0e0e0',
         borderRadius: '4px',
-        fontSize: '13px',
+        fontSize: '12px',
         margin: '2px',
       }),
       multiValueLabel: base => ({
         ...base,
         color: darkMode ? '#ffffff' : '#333',
         padding: '3px 8px',
-        fontSize: '13px',
       }),
       multiValueRemove: base => ({
         ...base,
         color: darkMode ? '#ffffff' : '#333',
-        padding: '0 4px',
         cursor: 'pointer',
         ':hover': {
           backgroundColor: darkMode ? '#3a506b' : '#d0d0d0',
@@ -609,25 +481,21 @@ export default function PaidLaborCost() {
       }),
       placeholder: base => ({
         ...base,
-        color: darkMode ? '#ffffff' : '#999',
-        opacity: darkMode ? 0.6 : 1,
-        fontSize: '14px',
+        color: darkMode ? '#94a3b8' : '#999',
+        fontSize: '13px',
       }),
       singleValue: base => ({
         ...base,
         color: darkMode ? '#ffffff' : '#000',
-        fontSize: '14px',
+        fontSize: '13px',
       }),
       menu: base => ({
         ...base,
-        width: '100%',
-        minWidth: '150px',
         backgroundColor: darkMode ? '#253342' : '#fff',
-        borderColor: darkMode ? '#2d4059' : '#ccc',
         border: `1px solid ${darkMode ? '#2d4059' : '#ccc'}`,
         borderRadius: '6px',
         boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-        fontSize: '14px',
+        fontSize: '13px',
         zIndex: 9999,
         marginTop: '4px',
       }),
@@ -642,8 +510,8 @@ export default function PaidLaborCost() {
         backgroundColor: getOptionBackgroundColor(state.isSelected, state.isFocused),
         color: getOptionColor(state.isSelected),
         cursor: 'pointer',
-        padding: '10px 12px',
-        fontSize: '14px',
+        padding: '8px 12px',
+        fontSize: '13px',
         ':active': {
           backgroundColor: darkMode ? '#3a506b' : '#e0e0e0',
         },
@@ -654,7 +522,7 @@ export default function PaidLaborCost() {
       }),
       dropdownIndicator: base => ({
         ...base,
-        color: darkMode ? '#ffffff' : '#999',
+        color: darkMode ? '#94a3b8' : '#999',
         padding: '4px',
         ':hover': {
           color: darkMode ? '#ffffff' : '#666',
@@ -662,7 +530,7 @@ export default function PaidLaborCost() {
       }),
       clearIndicator: base => ({
         ...base,
-        color: darkMode ? '#ffffff' : '#999',
+        color: darkMode ? '#94a3b8' : '#999',
         padding: '4px',
         ':hover': {
           color: darkMode ? '#ffffff' : '#666',
@@ -672,9 +540,20 @@ export default function PaidLaborCost() {
     [darkMode, getOptionBackgroundColor, getOptionColor],
   );
 
-  const varianceColor = totalCost > totalBudget ? '#e74c3c' : '#2ecc71';
-  const absoluteVariance = Math.abs(totalCost - totalBudget);
-  const variancePercentage = totalBudget > 0 ? ((totalCost - totalBudget) / totalBudget) * 100 : 0;
+  const absoluteVariance = Math.abs(displayTotalCost - displayTotalBudget);
+  const variancePercentage =
+    displayTotalBudget > 0
+      ? ((displayTotalCost - displayTotalBudget) / displayTotalBudget) * 100
+      : 0;
+
+  let varianceClass = styles.varianceNeutral;
+  if (absoluteVariance > 0.01) {
+    if (displayTotalCost > displayTotalBudget) {
+      varianceClass = styles.varianceOver;
+    } else {
+      varianceClass = styles.varianceUnder;
+    }
+  }
 
   if (initialLoading) {
     return (
@@ -686,16 +565,16 @@ export default function PaidLaborCost() {
   }
 
   return (
-    <div className={styles.paidLaborCostContainer}>
+    <div className={`${styles.paidLaborCostContainer} ${darkMode ? styles.darkMode : ''}`}>
       <h4 className={styles.paidLaborCostTitle}>Paid Labor Cost</h4>
 
-      <div className={styles.paidLaborCostFilters}>
-        <div className={styles.paidLaborCostFilterGroup}>
-          <label className={styles.paidLaborCostFilterLabel} htmlFor="task-filter">
+      <div className={styles.filtersGrid}>
+        <div className={styles.filterGroup}>
+          <label className={styles.filterLabel} htmlFor="task-filter">
             Tasks
           </label>
           <Select
-            id="task-filter"
+            inputId="task-filter"
             isMulti
             options={taskOptions}
             value={taskOptions.filter(option => taskFilter.includes(option.value))}
@@ -703,17 +582,17 @@ export default function PaidLaborCost() {
               setTaskFilter(selected ? selected.map(option => option.value) : [])
             }
             isClearable
-            placeholder="Select tasks (leave empty for all)"
+            placeholder="All tasks"
             classNamePrefix="select"
             styles={selectStyles}
           />
         </div>
-        <div className={styles.paidLaborCostFilterGroup}>
-          <label className={styles.paidLaborCostFilterLabel} htmlFor="project-filter">
+        <div className={styles.filterGroup}>
+          <label className={styles.filterLabel} htmlFor="project-filter">
             Project
           </label>
           <Select
-            id="project-filter"
+            inputId="project-filter"
             options={projectOptions}
             value={projectOptions.find(option => option.value === projectFilter)}
             onChange={selected => setProjectFilter(selected ? selected.value : 'All Projects')}
@@ -723,96 +602,85 @@ export default function PaidLaborCost() {
             styles={selectStyles}
           />
         </div>
-        <div className={styles.paidLaborCostFilterGroup}>
-          <label className={styles.paidLaborCostFilterLabel} htmlFor="date-range">
+        <div className={styles.filterGroup}>
+          <div className={styles.filterLabel} id="date-range-label">
             Date Range
-          </label>
-          <div className={styles.paidLaborCostDateRangePicker}>
-            <DatePicker
-              id="start-date"
-              selected={dateRange.startDate}
-              onChange={handleStartDateChange}
-              selectsStart
-              startDate={dateRange.startDate}
-              endDate={dateRange.endDate}
-              maxDate={dateRange.endDate || new Date()}
-              placeholderText="Start Date"
-              isClearable
-              dateFormat="MM/dd/yyyy"
-              showYearDropdown
-              showMonthDropdown
-              dropdownMode="select"
-              className={styles.paidLaborCostDatePicker}
-              calendarClassName={`paid-labor-cost-calendar${
-                darkMode ? ' paid-labor-cost-dark-calendar' : ''
-              }`}
-            />
-            <span className={styles.paidLaborCostDateSeparator}>to</span>
-            <DatePicker
-              id="end-date"
-              selected={dateRange.endDate}
-              onChange={handleEndDateChange}
-              selectsEnd
-              startDate={dateRange.startDate}
-              endDate={dateRange.endDate}
-              minDate={dateRange.startDate}
-              maxDate={new Date()}
-              placeholderText="End Date"
-              isClearable
-              dateFormat="MM/dd/yyyy"
-              showYearDropdown
-              showMonthDropdown
-              dropdownMode="select"
-              className={styles.paidLaborCostDatePicker}
-              calendarClassName={`paid-labor-cost-calendar${
-                darkMode ? ' paid-labor-cost-dark-calendar' : ''
-              }`}
-            />
+          </div>
+          <div className={styles.dateRangeFlex} role="group" aria-labelledby="date-range-label">
+            <div className={styles.datePickerWrapper}>
+              <DatePicker
+                id="start-date"
+                selected={dateRange.startDate}
+                onChange={handleStartDateChange}
+                selectsStart
+                startDate={dateRange.startDate}
+                endDate={dateRange.endDate}
+                maxDate={dateRange.endDate || new Date()}
+                placeholderText="Start Date"
+                isClearable
+                dateFormat="MM/dd/yyyy"
+                aria-label="Start Date"
+                className={`${styles.dateInput} ${darkMode ? styles.darkDateInput : ''}`}
+                calendarClassName={darkMode ? 'paid-labor-cost-dark-calendar' : ''}
+              />
+            </div>
+            <span className={styles.dateSeparator}>to</span>
+            <div className={styles.datePickerWrapper}>
+              <DatePicker
+                id="end-date"
+                selected={dateRange.endDate}
+                onChange={handleEndDateChange}
+                selectsEnd
+                startDate={dateRange.startDate}
+                endDate={dateRange.endDate}
+                minDate={dateRange.startDate}
+                maxDate={new Date()}
+                placeholderText="End Date"
+                isClearable
+                dateFormat="MM/dd/yyyy"
+                aria-label="End Date"
+                className={`${styles.dateInput} ${darkMode ? styles.darkDateInput : ''}`}
+                calendarClassName={darkMode ? 'paid-labor-cost-dark-calendar' : ''}
+              />
+            </div>
           </div>
         </div>
       </div>
 
       <div className={styles.paidLaborCostChartWrapper}>
         <div className={styles.paidLaborCostChartContainer}>
-          <Bar data={chartData} options={options} />
+          {labels.length === 0 ? (
+            <div className={styles.emptyState}>No data available for the selected filters.</div>
+          ) : (
+            <Bar data={chartData} options={options} />
+          )}
         </div>
       </div>
 
-      <div
-        className={styles.paidLaborCostSummary}
-        style={{
-          display: 'flex',
-          justifyContent: 'space-around',
-          flexWrap: 'wrap',
-          marginTop: '20px',
-        }}
-      >
-        <div style={{ textAlign: 'center' }}>
-          <span className={styles.paidLaborCostSummaryLabel}>Total Budget</span>
-          <br />
-          <span className={styles.paidLaborCostSummaryValue}>
+      <div className={`${styles.summaryContainer} ${darkMode ? styles.darkSummaryContainer : ''}`}>
+        <div className={styles.summaryItem}>
+          <span className={styles.summaryLabel}>Total Budget</span>
+          <span className={styles.summaryValue} style={{ color: textColor }}>
             $
-            {totalBudget.toLocaleString('en-US', {
+            {displayTotalBudget.toLocaleString('en-US', {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             })}
           </span>
         </div>
-        <div style={{ textAlign: 'center' }}>
-          <span className={styles.paidLaborCostSummaryLabel}>Total Actual</span>
-          <br />
-          <span className={styles.paidLaborCostSummaryValue}>
+        <div className={styles.summaryItem}>
+          <span className={styles.summaryLabel}>Total Actual</span>
+          <span className={styles.summaryValue} style={{ color: textColor }}>
             $
-            {totalCost.toLocaleString('en-US', {
+            {displayTotalCost.toLocaleString('en-US', {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             })}
           </span>
         </div>
-        <div style={{ textAlign: 'center' }}>
-          <span className={styles.paidLaborCostSummaryLabel}>Variance</span>
-          <br />
-          <span style={{ fontSize: '20px', fontWeight: '700', color: varianceColor }}>
+        <div className={styles.summaryItem}>
+          <span className={styles.summaryLabel}>Variance</span>
+          <span className={`${styles.summaryValue} ${varianceClass}`}>
             $
             {absoluteVariance.toLocaleString('en-US', {
               minimumFractionDigits: 2,

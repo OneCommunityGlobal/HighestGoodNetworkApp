@@ -388,18 +388,35 @@ function WeeklyProjectSummary() {
       {
         title: 'Labor and Time Tracking',
         key: 'Labor and Time Tracking',
-        className: 'half',
-        content: [1, 2].map((_, index) => {
-          const uniqueId = uuidv4();
-          return (
+        className: 'full',
+        content: (
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
+              gap: '15px',
+              width: '100%',
+            }}
+          >
             <div
-              key={uniqueId}
               className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+              style={{ width: '100%', minHeight: '650px' }}
             >
-              {index === 1 ? <PaidLaborCost /> : <DistributionLaborHours />}
+              <DistributionLaborHours />
             </div>
-          );
-        }),
+            <div
+              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+              style={{
+                width: '100%',
+                minHeight: '650px',
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <PaidLaborCost />
+            </div>
+          </div>
+        ),
       },
       {
         title: 'Financials Tracking',
