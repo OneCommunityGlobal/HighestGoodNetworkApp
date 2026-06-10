@@ -77,13 +77,24 @@ const aggregateTrendData = (data, projectFilter, categoryFilter, dateRange) => {
     .sort((a, b) => new Date(a.date) - new Date(b.date));
 };
 
+const getOptionBackgroundColor = (darkMode, isSelected, isFocused) => {
+  if (isSelected && darkMode) return '#e8a71c';
+  if (isSelected && !darkMode) return '#0d55b3';
+  if (isFocused && darkMode) return '#3a506b';
+  if (isFocused && !darkMode) return '#f0f0f0';
+  return darkMode ? '#253342' : '#fff';
+};
+
+const getOptionColor = (darkMode, isSelected) => {
+  if (isSelected) return darkMode ? '#000' : '#fff';
+  return darkMode ? '#ffffff' : '#000';
+};
+
 const generateSelectStyles = darkMode => {
   const bgMain = darkMode ? '#253342' : '#fff';
   const borderMain = darkMode ? '#2d4059' : '#ccc';
   const textMain = darkMode ? '#ffffff' : '#000';
   const textMuted = darkMode ? '#94a3b8' : '#999';
-  const bgHover = darkMode ? '#3a506b' : '#f0f0f0';
-  const bgSelected = darkMode ? '#e8a71c' : '#0d55b3';
 
   return {
     control: base => ({
@@ -119,8 +130,8 @@ const generateSelectStyles = darkMode => {
     menuList: base => ({ ...base, backgroundColor: bgMain, borderRadius: '6px' }),
     option: (base, state) => ({
       ...base,
-      backgroundColor: state.isSelected ? bgSelected : state.isFocused ? bgHover : bgMain,
-      color: state.isSelected ? (darkMode ? '#000' : '#fff') : textMain,
+      backgroundColor: getOptionBackgroundColor(darkMode, state.isSelected, state.isFocused),
+      color: getOptionColor(darkMode, state.isSelected),
       cursor: 'pointer',
       padding: '8px 12px',
       fontSize: '13px',
@@ -130,54 +141,52 @@ const generateSelectStyles = darkMode => {
 };
 
 const CustomTooltip = ({ active, payload, label, darkMode }) => {
-  if (active && payload && payload.length) {
-    const chartData = payload[0].payload;
-    const isOverBudget = chartData.variance > 0;
+  if (!active || !payload?.length) return null;
 
-    const varianceClass = isOverBudget
-      ? darkMode
-        ? styles.varianceOverDark
-        : styles.varianceOverLight
-      : darkMode
-      ? styles.varianceUnderDark
-      : styles.varianceUnderLight;
+  const chartData = payload[0].payload;
+  const isOverBudget = chartData.variance > 0;
 
-    return (
+  let varianceClass = '';
+  if (isOverBudget) {
+    varianceClass = darkMode ? styles.varianceOverDark : styles.varianceOverLight;
+  } else {
+    varianceClass = darkMode ? styles.varianceUnderDark : styles.varianceUnderLight;
+  }
+
+  return (
+    <div
+      style={{
+        backgroundColor: darkMode ? '#1e293b' : '#ffffff',
+        border: darkMode ? '1px solid #334155' : '1px solid #e2e8f0',
+        color: darkMode ? '#f8fafc' : '#0f172a',
+        padding: '12px',
+        fontSize: '12px',
+        borderRadius: '6px',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+      }}
+    >
       <div
         style={{
-          backgroundColor: darkMode ? '#1e293b' : '#ffffff',
-          border: darkMode ? '1px solid #334155' : '1px solid #e2e8f0',
-          color: darkMode ? '#f8fafc' : '#0f172a',
-          padding: '12px',
-          fontSize: '12px',
-          borderRadius: '6px',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          fontWeight: 'bold',
+          margin: '0 0 8px 0',
+          paddingBottom: '6px',
+          borderBottom: darkMode ? '1px solid #334155' : '1px solid #e2e8f0',
+          color: darkMode ? '#94a3b8' : '#64748b',
         }}
       >
-        <div
-          style={{
-            fontWeight: 'bold',
-            margin: '0 0 8px 0',
-            paddingBottom: '6px',
-            borderBottom: darkMode ? '1px solid #334155' : '1px solid #e2e8f0',
-            color: darkMode ? '#94a3b8' : '#64748b',
-          }}
-        >
-          Date: {moment(label).format('MMM DD, YYYY')}
-        </div>
-        <div style={{ margin: '0 0 4px 0' }}>
-          Planned: <strong>${chartData.planned.toLocaleString()}</strong>
-        </div>
-        <div style={{ margin: '0 0 4px 0' }}>
-          Actual: <strong>${chartData.actual.toLocaleString()}</strong>
-        </div>
-        <div className={varianceClass} style={{ margin: '8px 0 0 0', fontWeight: 'bold' }}>
-          Variance: {chartData.variance > 0 ? '+' : ''}${chartData.variance.toLocaleString()}
-        </div>
+        Date: {moment(label).format('MMM DD, YYYY')}
       </div>
-    );
-  }
-  return null;
+      <div style={{ margin: '0 0 4px 0' }}>
+        Planned: <strong>${chartData.planned.toLocaleString()}</strong>
+      </div>
+      <div style={{ margin: '0 0 4px 0' }}>
+        Actual: <strong>${chartData.actual.toLocaleString()}</strong>
+      </div>
+      <div className={varianceClass} style={{ margin: '8px 0 0 0', fontWeight: 'bold' }}>
+        Variance: {chartData.variance > 0 ? '+' : ''}${chartData.variance.toLocaleString()}
+      </div>
+    </div>
+  );
 };
 
 CustomTooltip.propTypes = {
@@ -186,6 +195,9 @@ CustomTooltip.propTypes = {
   label: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   darkMode: PropTypes.bool,
 };
+
+const formatTickDate = val => moment(val).format('MMM DD');
+const formatTickValue = value => `$${value}`;
 
 export default function CostVarianceTrendGraph() {
   const [initialLoading, setInitialLoading] = useState(true);
@@ -236,6 +248,13 @@ export default function CostVarianceTrendGraph() {
 
   const handleStartDateChange = date => setDateRange(prev => ({ ...prev, startDate: date }));
   const handleEndDateChange = date => setDateRange(prev => ({ ...prev, endDate: date }));
+
+  const getCellColor = variance => {
+    if (variance > 0) {
+      return darkMode ? '#ff4444' : '#e74c3c';
+    }
+    return darkMode ? '#4ade80' : '#2ecc71';
+  };
 
   if (initialLoading) {
     return (
@@ -294,7 +313,7 @@ export default function CostVarianceTrendGraph() {
                 calendarClassName={darkMode ? 'paid-labor-cost-dark-calendar' : ''}
               />
             </div>
-            <span className={styles.dateSeparator}>to</span>
+            <span className={styles.dateSeparator}> to </span>
             <div className={styles.datePickerWrapper}>
               <DatePicker
                 selected={dateRange.endDate}
@@ -322,14 +341,14 @@ export default function CostVarianceTrendGraph() {
             className={styles.legendDot}
             style={{ backgroundColor: darkMode ? '#ff4444' : '#e74c3c' }}
           />
-          Over Budget Risk (+ Variance)
+          <span>Over Budget Risk (+ Variance)</span>
         </span>
         <span className={styles.legendItem}>
           <span
             className={styles.legendDot}
             style={{ backgroundColor: darkMode ? '#4ade80' : '#2ecc71' }}
           />
-          Budget Savings (- Variance)
+          <span>Budget Savings (- Variance)</span>
         </span>
       </div>
 
@@ -344,12 +363,12 @@ export default function CostVarianceTrendGraph() {
                   dataKey="date"
                   stroke={darkMode ? '#475569' : '#94a3b8'}
                   tick={{ fontSize: 11, fill: textColor }}
-                  tickFormatter={val => moment(val).format('MMM DD')}
+                  tickFormatter={formatTickDate}
                 />
                 <YAxis
                   stroke={darkMode ? '#475569' : '#94a3b8'}
                   tick={{ fontSize: 11, fill: textColor }}
-                  tickFormatter={value => `$${value}`}
+                  tickFormatter={formatTickValue}
                 />
                 <Tooltip
                   content={<CustomTooltip darkMode={darkMode} />}
@@ -357,19 +376,8 @@ export default function CostVarianceTrendGraph() {
                 />
                 <ReferenceLine y={0} stroke={darkMode ? '#64748b' : '#94a3b8'} />
                 <Bar dataKey="variance" radius={[4, 4, 4, 4]}>
-                  {chartData.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={
-                        entry.variance > 0
-                          ? darkMode
-                            ? '#ff4444'
-                            : '#e74c3c'
-                          : darkMode
-                          ? '#4ade80'
-                          : '#2ecc71'
-                      }
-                    />
+                  {chartData.map(entry => (
+                    <Cell key={`cell-${entry.date}`} fill={getCellColor(entry.variance)} />
                   ))}
                 </Bar>
               </BarChart>
