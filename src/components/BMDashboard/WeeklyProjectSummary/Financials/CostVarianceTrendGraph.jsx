@@ -17,148 +17,36 @@ import Select from 'react-select';
 import { useSelector } from 'react-redux';
 import styles from './CostVarianceTrendGraph.module.css';
 
-const MOCK_DB = [
-  {
-    projectId: 'Project A',
-    category: 'Plumbing',
-    plannedCost: 1000,
-    actualCost: 1200,
-    date: '2026-05-01',
-  },
-  {
-    projectId: 'Project A',
-    category: 'Electrical',
-    plannedCost: 1500,
-    actualCost: 1300,
-    date: '2026-05-02',
-  },
-  {
-    projectId: 'Project B',
-    category: 'Plumbing',
-    plannedCost: 1100,
-    actualCost: 1050,
-    date: '2026-05-03',
-  },
-  {
-    projectId: 'Project B',
-    category: 'Structural',
-    plannedCost: 2200,
-    actualCost: 2150,
-    date: '2026-05-04',
-  },
-  {
-    projectId: 'Project C',
-    category: 'Mechanical',
-    plannedCost: 1300,
-    actualCost: 1800,
-    date: '2026-05-05',
-  },
-  {
-    projectId: 'Project A',
-    category: 'Structural',
-    plannedCost: 900,
-    actualCost: 1400,
-    date: '2026-05-08',
-  },
-  {
-    projectId: 'Project B',
-    category: 'Electrical',
-    plannedCost: 2000,
-    actualCost: 1600,
-    date: '2026-05-09',
-  },
-  {
-    projectId: 'Project C',
-    category: 'Plumbing',
-    plannedCost: 800,
-    actualCost: 750,
-    date: '2026-05-10',
-  },
-  {
-    projectId: 'Project A',
-    category: 'Mechanical',
-    plannedCost: 2500,
-    actualCost: 2400,
-    date: '2026-05-11',
-  },
-  {
-    projectId: 'Project C',
-    category: 'Electrical',
-    plannedCost: 1800,
-    actualCost: 2100,
-    date: '2026-05-12',
-  },
-  {
-    projectId: 'Project B',
-    category: 'Structural',
-    plannedCost: 3000,
-    actualCost: 3500,
-    date: '2026-05-15',
-  },
-  {
-    projectId: 'Project B',
-    category: 'Mechanical',
-    plannedCost: 1500,
-    actualCost: 1400,
-    date: '2026-05-16',
-  },
-  {
-    projectId: 'Project A',
-    category: 'Plumbing',
-    plannedCost: 1200,
-    actualCost: 1100,
-    date: '2026-05-17',
-  },
-  {
-    projectId: 'Project C',
-    category: 'Structural',
-    plannedCost: 4000,
-    actualCost: 4200,
-    date: '2026-05-18',
-  },
-  {
-    projectId: 'Project A',
-    category: 'Electrical',
-    plannedCost: 1700,
-    actualCost: 1650,
-    date: '2026-05-19',
-  },
-  {
-    projectId: 'Project B',
-    category: 'Plumbing',
-    plannedCost: 1300,
-    actualCost: 1100,
-    date: '2026-05-22',
-  },
-  {
-    projectId: 'Project C',
-    category: 'Mechanical',
-    plannedCost: 2100,
-    actualCost: 2500,
-    date: '2026-05-23',
-  },
-  {
-    projectId: 'Project A',
-    category: 'Structural',
-    plannedCost: 2800,
-    actualCost: 2800,
-    date: '2026-05-24',
-  },
-  {
-    projectId: 'Project B',
-    category: 'Electrical',
-    plannedCost: 1900,
-    actualCost: 1750,
-    date: '2026-05-25',
-  },
-  {
-    projectId: 'Project C',
-    category: 'Plumbing',
-    plannedCost: 1500,
-    actualCost: 1600,
-    date: '2026-05-26',
-  },
+const MOCK_RAW_DATA = [
+  ['Project A', 'Plumbing', 1000, 1200, '2026-05-01'],
+  ['Project A', 'Electrical', 1500, 1300, '2026-05-02'],
+  ['Project B', 'Plumbing', 1100, 1050, '2026-05-03'],
+  ['Project B', 'Structural', 2200, 2150, '2026-05-04'],
+  ['Project C', 'Mechanical', 1300, 1800, '2026-05-05'],
+  ['Project A', 'Structural', 900, 1400, '2026-05-08'],
+  ['Project B', 'Electrical', 2000, 1600, '2026-05-09'],
+  ['Project C', 'Plumbing', 800, 750, '2026-05-10'],
+  ['Project A', 'Mechanical', 2500, 2400, '2026-05-11'],
+  ['Project C', 'Electrical', 1800, 2100, '2026-05-12'],
+  ['Project B', 'Structural', 3000, 3500, '2026-05-15'],
+  ['Project B', 'Mechanical', 1500, 1400, '2026-05-16'],
+  ['Project A', 'Plumbing', 1200, 1100, '2026-05-17'],
+  ['Project C', 'Structural', 4000, 4200, '2026-05-18'],
+  ['Project A', 'Electrical', 1700, 1650, '2026-05-19'],
+  ['Project B', 'Plumbing', 1300, 1100, '2026-05-22'],
+  ['Project C', 'Mechanical', 2100, 2500, '2026-05-23'],
+  ['Project A', 'Structural', 2800, 2800, '2026-05-24'],
+  ['Project B', 'Electrical', 1900, 1750, '2026-05-25'],
+  ['Project C', 'Plumbing', 1500, 1600, '2026-05-26'],
 ];
+
+const MOCK_DB = MOCK_RAW_DATA.map(([projectId, category, plannedCost, actualCost, date]) => ({
+  projectId,
+  category,
+  plannedCost,
+  actualCost,
+  date,
+}));
 
 const aggregateTrendData = (data, projectFilter, categoryFilter, dateRange) => {
   if (!Array.isArray(data)) return [];
@@ -189,63 +77,57 @@ const aggregateTrendData = (data, projectFilter, categoryFilter, dateRange) => {
     .sort((a, b) => new Date(a.date) - new Date(b.date));
 };
 
-const getOptionBackgroundColor = (darkMode, isSelected, isFocused) => {
-  if (isSelected) return darkMode ? '#e8a71c' : '#0d55b3';
-  if (isFocused) return darkMode ? '#3a506b' : '#f0f0f0';
-  return darkMode ? '#253342' : '#fff';
-};
+const generateSelectStyles = darkMode => {
+  const bgMain = darkMode ? '#253342' : '#fff';
+  const borderMain = darkMode ? '#2d4059' : '#ccc';
+  const textMain = darkMode ? '#ffffff' : '#000';
+  const textMuted = darkMode ? '#94a3b8' : '#999';
+  const bgHover = darkMode ? '#3a506b' : '#f0f0f0';
+  const bgSelected = darkMode ? '#e8a71c' : '#0d55b3';
 
-const getOptionColor = (darkMode, isSelected) => {
-  if (isSelected) return darkMode ? '#000' : '#fff';
-  return darkMode ? '#ffffff' : '#000';
+  return {
+    control: base => ({
+      ...base,
+      minHeight: '38px',
+      width: '100%',
+      fontSize: '13px',
+      backgroundColor: bgMain,
+      borderColor: borderMain,
+      color: textMain,
+      boxShadow: 'none',
+      borderRadius: '6px',
+      '&:hover': { borderColor: borderMain },
+    }),
+    valueContainer: base => ({ ...base, padding: '2px 8px', color: textMain }),
+    input: base => ({ ...base, margin: '0px', padding: '0px', color: textMain }),
+    indicatorSeparator: base => ({ ...base, backgroundColor: borderMain }),
+    dropdownIndicator: base => ({
+      ...base,
+      color: textMuted,
+      padding: '4px',
+      ':hover': { color: textMain },
+    }),
+    singleValue: base => ({ ...base, color: textMain, fontSize: '13px' }),
+    menu: base => ({
+      ...base,
+      backgroundColor: bgMain,
+      border: `1px solid ${borderMain}`,
+      borderRadius: '6px',
+      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+      zIndex: 9999,
+    }),
+    menuList: base => ({ ...base, backgroundColor: bgMain, borderRadius: '6px' }),
+    option: (base, state) => ({
+      ...base,
+      backgroundColor: state.isSelected ? bgSelected : state.isFocused ? bgHover : bgMain,
+      color: state.isSelected ? (darkMode ? '#000' : '#fff') : textMain,
+      cursor: 'pointer',
+      padding: '8px 12px',
+      fontSize: '13px',
+      ':active': { backgroundColor: darkMode ? '#3a506b' : '#e0e0e0' },
+    }),
+  };
 };
-
-const generateSelectStyles = darkMode => ({
-  control: base => ({
-    ...base,
-    minHeight: '38px',
-    width: '100%',
-    fontSize: '13px',
-    backgroundColor: darkMode ? '#253342' : '#fff',
-    borderColor: darkMode ? '#2d4059' : '#ccc',
-    color: darkMode ? '#ffffff' : '#000',
-    boxShadow: 'none',
-    borderRadius: '6px',
-    '&:hover': { borderColor: darkMode ? '#2d4059' : '#999' },
-  }),
-  valueContainer: base => ({ ...base, padding: '2px 8px', color: darkMode ? '#ffffff' : '#000' }),
-  input: base => ({ ...base, margin: '0px', padding: '0px', color: darkMode ? '#ffffff' : '#000' }),
-  indicatorSeparator: base => ({ ...base, backgroundColor: darkMode ? '#2d4059' : '#ccc' }),
-  dropdownIndicator: base => ({
-    ...base,
-    color: darkMode ? '#94a3b8' : '#999',
-    padding: '4px',
-    ':hover': { color: darkMode ? '#ffffff' : '#666' },
-  }),
-  singleValue: base => ({ ...base, color: darkMode ? '#ffffff' : '#000', fontSize: '13px' }),
-  menu: base => ({
-    ...base,
-    backgroundColor: darkMode ? '#253342' : '#fff',
-    border: `1px solid ${darkMode ? '#2d4059' : '#ccc'}`,
-    borderRadius: '6px',
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-    zIndex: 9999,
-  }),
-  menuList: base => ({
-    ...base,
-    backgroundColor: darkMode ? '#253342' : '#fff',
-    borderRadius: '6px',
-  }),
-  option: (base, state) => ({
-    ...base,
-    backgroundColor: getOptionBackgroundColor(darkMode, state.isSelected, state.isFocused),
-    color: getOptionColor(darkMode, state.isSelected),
-    cursor: 'pointer',
-    padding: '8px 12px',
-    fontSize: '13px',
-    ':active': { backgroundColor: darkMode ? '#3a506b' : '#e0e0e0' },
-  }),
-});
 
 const CustomTooltip = ({ active, payload, label, darkMode }) => {
   if (active && payload && payload.length) {
