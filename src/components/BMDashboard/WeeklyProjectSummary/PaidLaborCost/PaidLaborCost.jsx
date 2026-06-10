@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -164,7 +164,6 @@ const isValidISODate = dateString => {
 };
 
 const isDevelopmentEnvironment = () => {
-  // SonarQube Fix: Check directly against undefined instead of using typeof
   if (globalThis.window === undefined) {
     return process.env.NODE_ENV === 'development';
   }
@@ -177,7 +176,26 @@ const isDevelopmentEnvironment = () => {
   );
 };
 
-// SonarQube Fix: Extracted from main component to reduce Cognitive Complexity
+// SonarQube Fix: Extracted API fetching logic
+const fetchLaborDataFromAPI = async signal => {
+  const token = localStorage.getItem(config.tokenKey);
+  const headers = {
+    'Content-Type': 'application/json',
+    ...(token && { Authorization: token }),
+  };
+
+  const response = await fetch(`${ENDPOINTS.APIEndpoint()}/labor-cost`, {
+    method: 'GET',
+    headers,
+    cache: 'no-store',
+    signal,
+  });
+
+  if (!response.ok) throw new Error(`Status ${response.status}`);
+  return response.json();
+};
+
+// SonarQube Fix: Extracted formatting logic
 const formatApiData = apiData => {
   const dataToProcess = apiData.data || apiData || [];
   return dataToProcess
@@ -243,7 +261,26 @@ function aggregateData(data, taskFilter, projectFilter, dateRange) {
   return { labels: [label], aggregation, tasksToInclude };
 }
 
-// SonarQube Fix: Extracted select styling functions to reduce Cognitive Complexity
+// SonarQube Fix: Extracted Variance Math logic
+const calculateVarianceMetrics = (displayTotalCost, displayTotalBudget, componentStyles) => {
+  const absoluteVariance = Math.abs(displayTotalCost - displayTotalBudget);
+  const variancePercentage =
+    displayTotalBudget > 0
+      ? ((displayTotalCost - displayTotalBudget) / displayTotalBudget) * 100
+      : 0;
+
+  let varianceClass = componentStyles.varianceNeutral;
+  if (absoluteVariance > 0.01) {
+    varianceClass =
+      displayTotalCost > displayTotalBudget
+        ? componentStyles.varianceOver
+        : componentStyles.varianceUnder;
+  }
+
+  return { absoluteVariance, variancePercentage, varianceClass };
+};
+
+// Extracted styling helpers
 const getOptionBackgroundColor = (darkMode, isSelected, isFocused) => {
   if (isSelected) return darkMode ? '#e8a71c' : '#0d55b3';
   if (isFocused) return darkMode ? '#3a506b' : '#f0f0f0';
@@ -351,7 +388,7 @@ const generateSelectStyles = darkMode => ({
   }),
 });
 
-// SonarQube Fix: Extracted Dataset Builder to reduce Cognitive Complexity
+// Extracted Dataset Builder
 const buildChartDatasets = (tasksToInclude, labels, aggregation, darkMode) => {
   return tasksToInclude.flatMap((task, idx) => {
     const hue = Math.round((idx * 360) / Math.max(1, tasksToInclude.length));
@@ -389,7 +426,7 @@ const buildChartDatasets = (tasksToInclude, labels, aggregation, darkMode) => {
   });
 };
 
-// SonarQube Fix: Extracted Chart Options to reduce Cognitive Complexity
+// Extracted Chart Options
 const buildChartOptions = (textColor, darkMode) => ({
   responsive: true,
   maintainAspectRatio: false,
@@ -434,6 +471,7 @@ const buildChartOptions = (textColor, darkMode) => ({
   },
 });
 
+// Main Component
 export default function PaidLaborCost() {
   const [data, setData] = useState([]);
   const [initialLoading, setInitialLoading] = useState(true);
@@ -445,37 +483,17 @@ export default function PaidLaborCost() {
   const [projectFilter, setProjectFilter] = useState('All Projects');
   const [dateRange, setDateRange] = useState({ startDate: null, endDate: null });
 
-  const processApiResponse = useCallback(apiData => {
-    setData(formatApiData(apiData));
-  }, []);
-
   useEffect(() => {
     const abortController = new AbortController();
 
-    const fetchData = async () => {
+    const loadData = async () => {
       try {
-        const token = localStorage.getItem(config.tokenKey);
-        const headers = {
-          'Content-Type': 'application/json',
-          ...(token && { Authorization: token }),
-        };
-
-        const response = await fetch(`${ENDPOINTS.APIEndpoint()}/labor-cost`, {
-          method: 'GET',
-          headers,
-          cache: 'no-store',
-          signal: abortController.signal,
-        });
-
-        if (!response.ok) throw new Error(`Status ${response.status}`);
-
-        const apiData = await response.json();
-        processApiResponse(apiData);
+        const apiData = await fetchLaborDataFromAPI(abortController.signal);
+        setData(formatApiData(apiData));
       } catch (error) {
         if (error.name === 'AbortError') return;
-
         if (isDevelopmentEnvironment()) {
-          processApiResponse({ data: MOCK_DB });
+          setData(formatApiData({ data: MOCK_DB }));
         } else {
           logger.logError(error);
           toast.error('Error fetching data.');
@@ -486,12 +504,12 @@ export default function PaidLaborCost() {
       }
     };
 
-    fetchData();
+    loadData();
 
     return () => {
       abortController.abort();
     };
-  }, [processApiResponse]);
+  }, []);
 
   const allAvailableProjects = useMemo(() => [...new Set(data.map(d => d.project))], [data]);
   const allAvailableTasks = useMemo(() => [...new Set(data.map(d => d.task))], [data]);
@@ -503,6 +521,11 @@ export default function PaidLaborCost() {
 
   const displayTotalCost = labels.length > 0 ? aggregation[labels[0]]?.totalCost || 0 : 0;
   const displayTotalBudget = labels.length > 0 ? aggregation[labels[0]]?.totalBudget || 0 : 0;
+
+  const { absoluteVariance, variancePercentage, varianceClass } = useMemo(
+    () => calculateVarianceMetrics(displayTotalCost, displayTotalBudget, styles),
+    [displayTotalCost, displayTotalBudget],
+  );
 
   const taskOptions = useMemo(() => allAvailableTasks.map(task => ({ label: task, value: task })), [
     allAvailableTasks,
@@ -528,21 +551,6 @@ export default function PaidLaborCost() {
 
   const chartData = { labels, datasets: taskDatasets };
   const options = useMemo(() => buildChartOptions(textColor, darkMode), [textColor, darkMode]);
-
-  const absoluteVariance = Math.abs(displayTotalCost - displayTotalBudget);
-  const variancePercentage =
-    displayTotalBudget > 0
-      ? ((displayTotalCost - displayTotalBudget) / displayTotalBudget) * 100
-      : 0;
-
-  let varianceClass = styles.varianceNeutral;
-  if (absoluteVariance > 0.01) {
-    if (displayTotalCost > displayTotalBudget) {
-      varianceClass = styles.varianceOver;
-    } else {
-      varianceClass = styles.varianceUnder;
-    }
-  }
 
   if (initialLoading) {
     return (
@@ -593,7 +601,6 @@ export default function PaidLaborCost() {
         </div>
         <div className={styles.filterGroup}>
           <div className={styles.filterLabel}>Date Range</div>
-          {/* SonarQube Fix: Removed "role=group" and aria-labelledby. Screen readers still rely on the individual aria-labels on the DatePickers */}
           <div className={styles.dateRangeFlex}>
             <div className={styles.datePickerWrapper}>
               <DatePicker
