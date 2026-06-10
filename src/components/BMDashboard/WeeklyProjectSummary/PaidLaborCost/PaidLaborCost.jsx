@@ -164,7 +164,8 @@ const isValidISODate = dateString => {
 };
 
 const isDevelopmentEnvironment = () => {
-  if (typeof globalThis.window === 'undefined') {
+  // SonarQube Fix: Check directly against undefined instead of using typeof
+  if (globalThis.window === undefined) {
     return process.env.NODE_ENV === 'development';
   }
   const hostname = globalThis.window.location.hostname;
@@ -174,6 +175,28 @@ const isDevelopmentEnvironment = () => {
     hostname === '127.0.0.1' ||
     process.env.NODE_ENV === 'development'
   );
+};
+
+// SonarQube Fix: Extracted from main component to reduce Cognitive Complexity
+const formatApiData = apiData => {
+  const dataToProcess = apiData.data || apiData || [];
+  return dataToProcess
+    .map(item => {
+      const projName = typeof item.project === 'object' ? item.project?.name : item.project;
+      const taskName =
+        typeof item.task === 'object' ? item.task?.name || item.task?.taskName : item.task;
+      const itemCost = Number(item.cost) || 0;
+      const itemBudget = item.budget || itemCost * 0.9;
+      return {
+        ...item,
+        project: projName || 'Unknown Project',
+        task: taskName || 'Unknown Task',
+        cost: itemCost,
+        budget: itemBudget,
+        date: item.date,
+      };
+    })
+    .filter(item => item.date && isValidISODate(item.date));
 };
 
 function aggregateData(data, taskFilter, projectFilter, dateRange) {
@@ -200,10 +223,8 @@ function aggregateData(data, taskFilter, projectFilter, dateRange) {
 
   const label = projectFilter === 'All Projects' ? 'All Projects' : projectFilter;
   const aggregation = { [label]: { totalCost: 0, totalBudget: 0 } };
-
   const distinctTasks = [...new Set(validData.map(d => d.task))];
 
-  // Show all tasks if no task filter is applied, regardless of project
   const tasksToInclude = taskFilter.length > 0 ? taskFilter : distinctTasks;
 
   tasksToInclude.forEach(t => {
@@ -213,7 +234,6 @@ function aggregateData(data, taskFilter, projectFilter, dateRange) {
   validData.forEach(item => {
     aggregation[label].totalCost += item.cost;
     aggregation[label].totalBudget += item.budget;
-
     if (tasksToInclude.includes(item.task)) {
       aggregation[label][item.task].cost += item.cost;
       aggregation[label][item.task].budget += item.budget;
@@ -222,6 +242,197 @@ function aggregateData(data, taskFilter, projectFilter, dateRange) {
 
   return { labels: [label], aggregation, tasksToInclude };
 }
+
+// SonarQube Fix: Extracted select styling functions to reduce Cognitive Complexity
+const getOptionBackgroundColor = (darkMode, isSelected, isFocused) => {
+  if (isSelected) return darkMode ? '#e8a71c' : '#0d55b3';
+  if (isFocused) return darkMode ? '#3a506b' : '#f0f0f0';
+  return darkMode ? '#253342' : '#fff';
+};
+
+const getOptionColor = (darkMode, isSelected) => {
+  if (isSelected) return darkMode ? '#000' : '#fff';
+  return darkMode ? '#ffffff' : '#000';
+};
+
+const generateSelectStyles = darkMode => ({
+  control: base => ({
+    ...base,
+    minHeight: '38px',
+    width: '100%',
+    fontSize: '13px',
+    backgroundColor: darkMode ? '#253342' : '#fff',
+    borderColor: darkMode ? '#2d4059' : '#ccc',
+    color: darkMode ? '#ffffff' : '#000',
+    boxShadow: 'none',
+    borderRadius: '6px',
+    '&:hover': { borderColor: darkMode ? '#2d4059' : '#999' },
+  }),
+  valueContainer: base => ({
+    ...base,
+    padding: '2px 8px',
+    color: darkMode ? '#ffffff' : '#000',
+  }),
+  input: base => ({
+    ...base,
+    margin: '0px',
+    padding: '0px',
+    color: darkMode ? '#ffffff' : '#000',
+  }),
+  indicatorsContainer: base => ({ ...base, padding: '0 4px' }),
+  multiValue: base => ({
+    ...base,
+    backgroundColor: darkMode ? '#2d4059' : '#e0e0e0',
+    borderRadius: '4px',
+    fontSize: '12px',
+    margin: '2px',
+  }),
+  multiValueLabel: base => ({
+    ...base,
+    color: darkMode ? '#ffffff' : '#333',
+    padding: '3px 8px',
+  }),
+  multiValueRemove: base => ({
+    ...base,
+    color: darkMode ? '#ffffff' : '#333',
+    cursor: 'pointer',
+    ':hover': {
+      backgroundColor: darkMode ? '#3a506b' : '#d0d0d0',
+      color: darkMode ? '#ffffff' : '#333',
+    },
+  }),
+  placeholder: base => ({
+    ...base,
+    color: darkMode ? '#94a3b8' : '#999',
+    fontSize: '13px',
+  }),
+  singleValue: base => ({
+    ...base,
+    color: darkMode ? '#ffffff' : '#000',
+    fontSize: '13px',
+  }),
+  menu: base => ({
+    ...base,
+    backgroundColor: darkMode ? '#253342' : '#fff',
+    border: `1px solid ${darkMode ? '#2d4059' : '#ccc'}`,
+    borderRadius: '6px',
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+    fontSize: '13px',
+    zIndex: 9999,
+    marginTop: '4px',
+  }),
+  menuList: base => ({
+    ...base,
+    backgroundColor: darkMode ? '#253342' : '#fff',
+    padding: '4px 0',
+    borderRadius: '6px',
+  }),
+  option: (base, state) => ({
+    ...base,
+    backgroundColor: getOptionBackgroundColor(darkMode, state.isSelected, state.isFocused),
+    color: getOptionColor(darkMode, state.isSelected),
+    cursor: 'pointer',
+    padding: '8px 12px',
+    fontSize: '13px',
+    ':active': { backgroundColor: darkMode ? '#3a506b' : '#e0e0e0' },
+  }),
+  indicatorSeparator: base => ({ ...base, backgroundColor: darkMode ? '#2d4059' : '#ccc' }),
+  dropdownIndicator: base => ({
+    ...base,
+    color: darkMode ? '#94a3b8' : '#999',
+    padding: '4px',
+    ':hover': { color: darkMode ? '#ffffff' : '#666' },
+  }),
+  clearIndicator: base => ({
+    ...base,
+    color: darkMode ? '#94a3b8' : '#999',
+    padding: '4px',
+    ':hover': { color: darkMode ? '#ffffff' : '#666' },
+  }),
+});
+
+// SonarQube Fix: Extracted Dataset Builder to reduce Cognitive Complexity
+const buildChartDatasets = (tasksToInclude, labels, aggregation, darkMode) => {
+  return tasksToInclude.flatMap((task, idx) => {
+    const hue = Math.round((idx * 360) / Math.max(1, tasksToInclude.length));
+    const saturation = 65;
+    const lightness = darkMode ? 65 : 50;
+
+    const actualColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+    const budgetColor = darkMode
+      ? `hsla(${hue}, ${saturation}%, ${lightness + 20}%, 0.8)`
+      : `hsla(${hue}, ${saturation}%, ${lightness}%, 0.4)`;
+
+    return [
+      {
+        label: `${task} (Actual)`,
+        backgroundColor: actualColor,
+        borderRadius: 4,
+        data: labels.map(label => Math.round((aggregation[label][task]?.cost || 0) / 1000)),
+        maxBarThickness: 40,
+        categoryPercentage: 0.8,
+        barPercentage: 0.9,
+      },
+      {
+        label: `${task} (Budget)`,
+        backgroundColor: budgetColor,
+        borderColor: actualColor,
+        borderWidth: { top: 2, right: 2, bottom: 0, left: 2 },
+        borderDash: [4, 4],
+        borderRadius: 4,
+        data: labels.map(label => Math.round((aggregation[label][task]?.budget || 0) / 1000)),
+        maxBarThickness: 40,
+        categoryPercentage: 0.8,
+        barPercentage: 0.9,
+      },
+    ];
+  });
+};
+
+// SonarQube Fix: Extracted Chart Options to reduce Cognitive Complexity
+const buildChartOptions = (textColor, darkMode) => ({
+  responsive: true,
+  maintainAspectRatio: false,
+  layout: { padding: { top: 30, left: 10, right: 10, bottom: 10 } },
+  plugins: {
+    legend: {
+      position: 'top',
+      labels: { font: { size: 12 }, color: textColor, padding: 20, usePointStyle: true },
+    },
+    datalabels: {
+      color: darkMode ? '#ffffff' : '#333333',
+      font: { weight: '600', size: 11 },
+    },
+    tooltip: {
+      backgroundColor: darkMode ? '#1e293b' : '#ffffff',
+      titleColor: darkMode ? '#f8fafc' : '#0f172a',
+      bodyColor: darkMode ? '#f8fafc' : '#0f172a',
+      borderColor: darkMode ? '#334155' : '#e2e8f0',
+      borderWidth: 1,
+      callbacks: {
+        label(context) {
+          const project = context.chart.data.labels[context.dataIndex];
+          const costThousands = context.parsed.y || 0;
+          const costDollars = costThousands * 1000;
+          return `${project}, ${context.dataset.label}: $${costDollars.toLocaleString()}`;
+        },
+      },
+    },
+  },
+  scales: {
+    x: {
+      grid: { display: false },
+      ticks: { font: { size: 12 }, color: textColor },
+      offset: true,
+    },
+    y: {
+      grid: { color: darkMode ? '#334155' : '#e2e8f0' },
+      beginAtZero: true,
+      title: { display: true, text: 'Cost (000s)', font: { size: 12 }, color: textColor },
+      ticks: { font: { size: 12 }, color: textColor },
+    },
+  },
+});
 
 export default function PaidLaborCost() {
   const [data, setData] = useState([]);
@@ -235,28 +446,7 @@ export default function PaidLaborCost() {
   const [dateRange, setDateRange] = useState({ startDate: null, endDate: null });
 
   const processApiResponse = useCallback(apiData => {
-    const dataToProcess = apiData.data || apiData || [];
-
-    const validatedData = dataToProcess
-      .map(item => {
-        const projName = typeof item.project === 'object' ? item.project?.name : item.project;
-        const taskName =
-          typeof item.task === 'object' ? item.task?.name || item.task?.taskName : item.task;
-        const itemCost = Number(item.cost) || 0;
-        const itemBudget = item.budget || itemCost * 0.9;
-
-        return {
-          ...item,
-          project: projName || 'Unknown Project',
-          task: taskName || 'Unknown Task',
-          cost: itemCost,
-          budget: itemBudget,
-          date: item.date,
-        };
-      })
-      .filter(item => item.date && isValidISODate(item.date));
-
-    setData(validatedData);
+    setData(formatApiData(apiData));
   }, []);
 
   useEffect(() => {
@@ -314,23 +504,6 @@ export default function PaidLaborCost() {
   const displayTotalCost = labels.length > 0 ? aggregation[labels[0]]?.totalCost || 0 : 0;
   const displayTotalBudget = labels.length > 0 ? aggregation[labels[0]]?.totalBudget || 0 : 0;
 
-  const getOptionBackgroundColor = useCallback(
-    (isSelected, isFocused) => {
-      if (isSelected) return darkMode ? '#e8a71c' : '#0d55b3';
-      if (isFocused) return darkMode ? '#3a506b' : '#f0f0f0';
-      return darkMode ? '#253342' : '#fff';
-    },
-    [darkMode],
-  );
-
-  const getOptionColor = useCallback(
-    isSelected => {
-      if (isSelected) return darkMode ? '#000' : '#fff';
-      return darkMode ? '#ffffff' : '#000';
-    },
-    [darkMode],
-  );
-
   const taskOptions = useMemo(() => allAvailableTasks.map(task => ({ label: task, value: task })), [
     allAvailableTasks,
   ]);
@@ -346,199 +519,15 @@ export default function PaidLaborCost() {
   const handleStartDateChange = date => setDateRange(prev => ({ ...prev, startDate: date }));
   const handleEndDateChange = date => setDateRange(prev => ({ ...prev, endDate: date }));
 
-  const taskDatasets = tasksToInclude.flatMap((task, idx) => {
-    const hue = Math.round((idx * 360) / Math.max(1, tasksToInclude.length));
-    const saturation = 65;
-    const lightness = darkMode ? 65 : 50;
+  const selectStyles = useMemo(() => generateSelectStyles(darkMode), [darkMode]);
 
-    const actualColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
-    const budgetColor = darkMode
-      ? `hsla(${hue}, ${saturation}%, ${lightness + 20}%, 0.8)`
-      : `hsla(${hue}, ${saturation}%, ${lightness}%, 0.4)`;
-
-    return [
-      {
-        label: `${task} (Actual)`,
-        backgroundColor: actualColor,
-        borderRadius: 4,
-        data: labels.map(label => Math.round((aggregation[label][task]?.cost || 0) / 1000)),
-        maxBarThickness: 40,
-        categoryPercentage: 0.8,
-        barPercentage: 0.9,
-      },
-      {
-        label: `${task} (Budget)`,
-        backgroundColor: budgetColor,
-        borderColor: actualColor,
-        borderWidth: { top: 2, right: 2, bottom: 0, left: 2 },
-        borderDash: [4, 4],
-        borderRadius: 4,
-        data: labels.map(label => Math.round((aggregation[label][task]?.budget || 0) / 1000)),
-        maxBarThickness: 40,
-        categoryPercentage: 0.8,
-        barPercentage: 0.9,
-      },
-    ];
-  });
+  const taskDatasets = useMemo(
+    () => buildChartDatasets(tasksToInclude, labels, aggregation, darkMode),
+    [tasksToInclude, labels, aggregation, darkMode],
+  );
 
   const chartData = { labels, datasets: taskDatasets };
-
-  const options = {
-    responsive: true,
-    maintainAspectRatio: false,
-    layout: { padding: { top: 30, left: 10, right: 10, bottom: 10 } },
-    plugins: {
-      legend: {
-        position: 'top',
-        labels: {
-          font: { size: 12 },
-          color: textColor,
-          padding: 20,
-          usePointStyle: true,
-        },
-      },
-      datalabels: {
-        color: darkMode ? '#ffffff' : '#333333',
-        font: { weight: '600', size: 11 },
-      },
-      tooltip: {
-        backgroundColor: darkMode ? '#1e293b' : '#ffffff',
-        titleColor: darkMode ? '#f8fafc' : '#0f172a',
-        bodyColor: darkMode ? '#f8fafc' : '#0f172a',
-        borderColor: darkMode ? '#334155' : '#e2e8f0',
-        borderWidth: 1,
-        callbacks: {
-          label(context) {
-            const project = context.chart.data.labels[context.dataIndex];
-            const costThousands = context.parsed.y || 0;
-            const costDollars = costThousands * 1000;
-            return `${project}, ${context.dataset.label}: $${costDollars.toLocaleString()}`;
-          },
-        },
-      },
-    },
-    scales: {
-      x: {
-        grid: { display: false },
-        ticks: { font: { size: 12 }, color: textColor },
-        offset: true,
-      },
-      y: {
-        grid: { color: darkMode ? '#334155' : '#e2e8f0' },
-        beginAtZero: true,
-        title: { display: true, text: 'Cost (000s)', font: { size: 12 }, color: textColor },
-        ticks: { font: { size: 12 }, color: textColor },
-      },
-    },
-  };
-
-  const selectStyles = useMemo(
-    () => ({
-      control: base => ({
-        ...base,
-        minHeight: '38px',
-        width: '100%',
-        fontSize: '13px',
-        backgroundColor: darkMode ? '#253342' : '#fff',
-        borderColor: darkMode ? '#2d4059' : '#ccc',
-        color: darkMode ? '#ffffff' : '#000',
-        boxShadow: 'none',
-        borderRadius: '6px',
-        '&:hover': { borderColor: darkMode ? '#2d4059' : '#999' },
-      }),
-      valueContainer: base => ({
-        ...base,
-        padding: '2px 8px',
-        color: darkMode ? '#ffffff' : '#000',
-      }),
-      input: base => ({
-        ...base,
-        margin: '0px',
-        padding: '0px',
-        color: darkMode ? '#ffffff' : '#000',
-      }),
-      indicatorsContainer: base => ({ ...base, padding: '0 4px' }),
-      multiValue: base => ({
-        ...base,
-        backgroundColor: darkMode ? '#2d4059' : '#e0e0e0',
-        borderRadius: '4px',
-        fontSize: '12px',
-        margin: '2px',
-      }),
-      multiValueLabel: base => ({
-        ...base,
-        color: darkMode ? '#ffffff' : '#333',
-        padding: '3px 8px',
-      }),
-      multiValueRemove: base => ({
-        ...base,
-        color: darkMode ? '#ffffff' : '#333',
-        cursor: 'pointer',
-        ':hover': {
-          backgroundColor: darkMode ? '#3a506b' : '#d0d0d0',
-          color: darkMode ? '#ffffff' : '#333',
-        },
-      }),
-      placeholder: base => ({
-        ...base,
-        color: darkMode ? '#94a3b8' : '#999',
-        fontSize: '13px',
-      }),
-      singleValue: base => ({
-        ...base,
-        color: darkMode ? '#ffffff' : '#000',
-        fontSize: '13px',
-      }),
-      menu: base => ({
-        ...base,
-        backgroundColor: darkMode ? '#253342' : '#fff',
-        border: `1px solid ${darkMode ? '#2d4059' : '#ccc'}`,
-        borderRadius: '6px',
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-        fontSize: '13px',
-        zIndex: 9999,
-        marginTop: '4px',
-      }),
-      menuList: base => ({
-        ...base,
-        backgroundColor: darkMode ? '#253342' : '#fff',
-        padding: '4px 0',
-        borderRadius: '6px',
-      }),
-      option: (base, state) => ({
-        ...base,
-        backgroundColor: getOptionBackgroundColor(state.isSelected, state.isFocused),
-        color: getOptionColor(state.isSelected),
-        cursor: 'pointer',
-        padding: '8px 12px',
-        fontSize: '13px',
-        ':active': {
-          backgroundColor: darkMode ? '#3a506b' : '#e0e0e0',
-        },
-      }),
-      indicatorSeparator: base => ({
-        ...base,
-        backgroundColor: darkMode ? '#2d4059' : '#ccc',
-      }),
-      dropdownIndicator: base => ({
-        ...base,
-        color: darkMode ? '#94a3b8' : '#999',
-        padding: '4px',
-        ':hover': {
-          color: darkMode ? '#ffffff' : '#666',
-        },
-      }),
-      clearIndicator: base => ({
-        ...base,
-        color: darkMode ? '#94a3b8' : '#999',
-        padding: '4px',
-        ':hover': {
-          color: darkMode ? '#ffffff' : '#666',
-        },
-      }),
-    }),
-    [darkMode, getOptionBackgroundColor, getOptionColor],
-  );
+  const options = useMemo(() => buildChartOptions(textColor, darkMode), [textColor, darkMode]);
 
   const absoluteVariance = Math.abs(displayTotalCost - displayTotalBudget);
   const variancePercentage =
@@ -603,10 +592,9 @@ export default function PaidLaborCost() {
           />
         </div>
         <div className={styles.filterGroup}>
-          <div className={styles.filterLabel} id="date-range-label">
-            Date Range
-          </div>
-          <div className={styles.dateRangeFlex} role="group" aria-labelledby="date-range-label">
+          <div className={styles.filterLabel}>Date Range</div>
+          {/* SonarQube Fix: Removed "role=group" and aria-labelledby. Screen readers still rely on the individual aria-labels on the DatePickers */}
+          <div className={styles.dateRangeFlex}>
             <div className={styles.datePickerWrapper}>
               <DatePicker
                 id="start-date"
