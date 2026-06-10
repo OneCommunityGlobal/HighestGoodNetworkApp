@@ -456,3 +456,16 @@
   background-color: #dc3545 !important;
   color: #fff !important;
 }
+
+/* Fix browser autofill overriding dark mode background */
+:global(body.dark-mode) .addTeamForm input:-webkit-autofill,
+:global(body.dark-mode) .addTeamForm input:-webkit-autofill:hover,
+:global(body.dark-mode) .addTeamForm input:-webkit-autofill:focus,
+:global(body.bm-dashboard-dark) .addTeamForm input:-webkit-autofill,
+:global(body.bm-dashboard-dark) .addTeamForm input:-webkit-autofill:hover,
+:global(body.bm-dashboard-dark) .addTeamForm input:-webkit-autofill:focus {
+  /* stylelint-disable-next-line property-no-vendor-prefix */
+  -webkit-box-shadow: 0 0 0 1000px #2e5061 inset !important;
+  -webkit-text-fill-color: #fff !important;
+  caret-color: #fff;
+}

@@ -44,6 +44,7 @@ export default function CreateNewTeam() {
     teamName: false,
     assignedMembers: false,
     additionalInformation: false,
+    assignedTasks: false,
   });
 
   useEffect(() => {
@@ -65,10 +66,12 @@ export default function CreateNewTeam() {
       }
       sessionStorage.removeItem('createTeamDraft');
     }
-    // Add task selected from WBS page
+    // Add task selected from WBS page, then clear the location state so it
+    // doesn't re-apply on subsequent visits / refreshes
     if (location.state?.selectedTask) {
       const task = location.state.selectedTask;
       setAssignedTasks(prev => (prev.some(t => t.id === task.id) ? prev : [...prev, task]));
+      history.replace(location.pathname, {});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -114,13 +117,19 @@ export default function CreateNewTeam() {
     } else {
       delete errorMessages.assignedMembers;
     }
+    if (assignedTasks.length === 0) {
+      errorMessages.assignedTasks = 'You must assign at least one task.';
+    } else {
+      delete errorMessages.assignedTasks;
+    }
     return Object.keys(errorMessages).length > 0 ? errorMessages : null;
   };
 
   const isFormValid =
     formData.teamName.trim().length > 0 &&
     formData.teamName.length <= 35 &&
-    assignedMembers.length > 0;
+    assignedMembers.length > 0 &&
+    assignedTasks.length > 0;
 
   useEffect(() => {
     // Only trigger validation if the form is touched (fields are interacted with)
@@ -128,7 +137,8 @@ export default function CreateNewTeam() {
       const validationErrors = validate({ ...formData, teamMembers: assignedMembers });
       setErrors(validationErrors || {});
     }
-  }, [assignedMembers, touchedFields]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [assignedMembers, assignedTasks, touchedFields]);
 
   const handleInputChange = (name, value) => {
     setFormData(prevData => ({
@@ -152,6 +162,7 @@ export default function CreateNewTeam() {
       teamName: true,
       assignedMembers: true,
       additionalInformation: true,
+      assignedTasks: true,
     });
     const validationErrors = validate(formData);
     setErrors(validationErrors || {});
@@ -215,6 +226,7 @@ export default function CreateNewTeam() {
         teamName: false,
         assignedMembers: false,
         additionalInformation: false,
+        assignedTasks: false,
       });
     } catch (err) {
       const errMsg =
@@ -239,6 +251,7 @@ export default function CreateNewTeam() {
       teamName: false,
       assignedMembers: false,
       additionalInformation: false,
+      assignedTasks: false,
     });
   };
 
@@ -463,7 +476,7 @@ export default function CreateNewTeam() {
           <h5 className={styles.sectionTitle}>Tasks</h5>
           <FormGroup>
             <Label for="tasks-select">
-              Add Main Tasks{' '}
+              Add Main Tasks<span className={styles.fieldRequired}>*</span>{' '}
               <span id="tasksTooltip" className={styles.tooltipIcon}>
                 ?
               </span>
@@ -473,7 +486,8 @@ export default function CreateNewTeam() {
               target="tasksTooltip"
               toggle={() => setTasksTooltipOpen(!tasksTooltipOpen)}
             >
-              Optionally assign tasks to define the team&#39;s responsibilities.
+              At least one task is required. Click &#34;Select Task&#34; to assign tasks to the
+              team.
             </Tooltip>
             <div className={styles.selectContainer}>
               <Input
@@ -487,6 +501,9 @@ export default function CreateNewTeam() {
                 Select Task
               </Button>
             </div>
+            {touchedFields.assignedTasks && errors.assignedTasks && (
+              <div className={styles.teamFormError}>{errors.assignedTasks}</div>
+            )}
             {taskErrorMessage && <div className={styles.teamFormError}>{taskErrorMessage}</div>}
           </FormGroup>
           {assignedTasks.length > 0 && (
