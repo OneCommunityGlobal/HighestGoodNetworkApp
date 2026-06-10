@@ -168,6 +168,22 @@
   background-color: #2f4157 !important;
 }
 
+.darkDropdownItem:active,
+.darkDropdownItem:focus {
+  color: white !important;
+  background-color: #2f4157 !important;
+}
+
+/* ── Desktop dropdown text styles ── */
+.mobileDropdownText {
+  color: #212529 !important;
+}
+
+.mobileDropdownItem:hover {
+  background-color: #f8f9fa !important;
+  color: #16181b !important;
+}
+
 .noMaxHeight {
   max-height: none !important;
   overflow: visible !important;
@@ -414,6 +430,12 @@
   justify-content: space-between !important;
   align-items: center !important;
   cursor: pointer !important;
+}
+
+.accordionToggle:focus,
+.accordionToggle:active {
+  color: white !important;
+  outline: none !important;
 }
 
 .accordionArrow {
