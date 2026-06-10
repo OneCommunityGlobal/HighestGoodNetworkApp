@@ -199,6 +199,18 @@ CustomTooltip.propTypes = {
 const formatTickDate = val => moment(val).format('MMM DD');
 const formatTickValue = value => `$${value}`;
 
+const buildDropdownOptions = (data, key) => {
+  const uniqueValues = [...new Set(data.map(item => item[key]))];
+  return [{ label: 'ALL', value: 'ALL' }, ...uniqueValues.map(val => ({ label: val, value: val }))];
+};
+
+const getSelectedOption = (options, value) => options.find(option => option.value === value);
+
+const getCellColor = (variance, darkMode) => {
+  if (variance > 0) return darkMode ? '#ff4444' : '#e74c3c';
+  return darkMode ? '#4ade80' : '#2ecc71';
+};
+
 export default function CostVarianceTrendGraph() {
   const [initialLoading, setInitialLoading] = useState(true);
   const [data, setData] = useState([]);
@@ -218,9 +230,6 @@ export default function CostVarianceTrendGraph() {
     return () => clearTimeout(timer);
   }, []);
 
-  const allAvailableProjects = useMemo(() => [...new Set(data.map(d => d.projectId))], [data]);
-  const allAvailableCategories = useMemo(() => [...new Set(data.map(d => d.category))], [data]);
-
   const chartData = useMemo(() => aggregateTrendData(data, projectId, categoryFilter, dateRange), [
     data,
     projectId,
@@ -228,33 +237,24 @@ export default function CostVarianceTrendGraph() {
     dateRange,
   ]);
 
-  const projectOptions = useMemo(
-    () => [
-      { label: 'ALL', value: 'ALL' },
-      ...allAvailableProjects.map(proj => ({ label: proj, value: proj })),
-    ],
-    [allAvailableProjects],
-  );
-
-  const categoryOptions = useMemo(
-    () => [
-      { label: 'ALL', value: 'ALL' },
-      ...allAvailableCategories.map(cat => ({ label: cat, value: cat })),
-    ],
-    [allAvailableCategories],
-  );
+  const projectOptions = useMemo(() => buildDropdownOptions(data, 'projectId'), [data]);
+  const categoryOptions = useMemo(() => buildDropdownOptions(data, 'category'), [data]);
 
   const selectStyles = useMemo(() => generateSelectStyles(darkMode), [darkMode]);
 
   const handleStartDateChange = date => setDateRange(prev => ({ ...prev, startDate: date }));
   const handleEndDateChange = date => setDateRange(prev => ({ ...prev, endDate: date }));
 
-  const getCellColor = variance => {
-    if (variance > 0) {
-      return darkMode ? '#ff4444' : '#e74c3c';
-    }
-    return darkMode ? '#4ade80' : '#2ecc71';
-  };
+  const handleProjectChange = selected => setProjectId(selected ? selected.value : 'ALL');
+  const handleCategoryChange = selected => setCategoryFilter(selected ? selected.value : 'ALL');
+
+  const selectedProject = getSelectedOption(projectOptions, projectId);
+  const selectedCategory = getSelectedOption(categoryOptions, categoryFilter);
+
+  const containerClass = `${styles.varianceContainer} ${darkMode ? styles.darkMode : ''}`;
+  const dateInputClass = `${styles.dateInput} ${darkMode ? styles.darkDateInput : ''}`;
+  const calendarClass = darkMode ? 'paid-labor-cost-dark-calendar' : '';
+  const tooltipCursorFill = darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
 
   if (initialLoading) {
     return (
@@ -266,7 +266,7 @@ export default function CostVarianceTrendGraph() {
   }
 
   return (
-    <div className={`${styles.varianceContainer} ${darkMode ? styles.darkMode : ''}`}>
+    <div className={containerClass}>
       <h4 className={styles.varianceTitle}>Cost Variance Trend</h4>
 
       <div className={styles.filtersGrid}>
@@ -275,8 +275,8 @@ export default function CostVarianceTrendGraph() {
           <Select
             inputId="trend-project-filter"
             options={projectOptions}
-            value={projectOptions.find(option => option.value === projectId)}
-            onChange={selected => setProjectId(selected ? selected.value : 'ALL')}
+            value={selectedProject}
+            onChange={handleProjectChange}
             isClearable={false}
             classNamePrefix="select"
             styles={selectStyles}
@@ -287,8 +287,8 @@ export default function CostVarianceTrendGraph() {
           <Select
             inputId="trend-category-filter"
             options={categoryOptions}
-            value={categoryOptions.find(option => option.value === categoryFilter)}
-            onChange={selected => setCategoryFilter(selected ? selected.value : 'ALL')}
+            value={selectedCategory}
+            onChange={handleCategoryChange}
             isClearable={false}
             classNamePrefix="select"
             styles={selectStyles}
@@ -309,8 +309,8 @@ export default function CostVarianceTrendGraph() {
                 isClearable
                 dateFormat="MM/dd/yyyy"
                 aria-label="Start Date"
-                className={`${styles.dateInput} ${darkMode ? styles.darkDateInput : ''}`}
-                calendarClassName={darkMode ? 'paid-labor-cost-dark-calendar' : ''}
+                className={dateInputClass}
+                calendarClassName={calendarClass}
               />
             </div>
             <span className={styles.dateSeparator}> to </span>
@@ -327,8 +327,8 @@ export default function CostVarianceTrendGraph() {
                 isClearable
                 dateFormat="MM/dd/yyyy"
                 aria-label="End Date"
-                className={`${styles.dateInput} ${darkMode ? styles.darkDateInput : ''}`}
-                calendarClassName={darkMode ? 'paid-labor-cost-dark-calendar' : ''}
+                className={dateInputClass}
+                calendarClassName={calendarClass}
               />
             </div>
           </div>
@@ -372,12 +372,15 @@ export default function CostVarianceTrendGraph() {
                 />
                 <Tooltip
                   content={<CustomTooltip darkMode={darkMode} />}
-                  cursor={{ fill: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }}
+                  cursor={{ fill: tooltipCursorFill }}
                 />
                 <ReferenceLine y={0} stroke={darkMode ? '#64748b' : '#94a3b8'} />
                 <Bar dataKey="variance" radius={[4, 4, 4, 4]}>
                   {chartData.map(entry => (
-                    <Cell key={`cell-${entry.date}`} fill={getCellColor(entry.variance)} />
+                    <Cell
+                      key={`cell-${entry.date}`}
+                      fill={getCellColor(entry.variance, darkMode)}
+                    />
                   ))}
                 </Bar>
               </BarChart>
