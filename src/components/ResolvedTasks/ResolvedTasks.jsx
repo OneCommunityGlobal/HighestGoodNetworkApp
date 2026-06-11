@@ -5,6 +5,7 @@ import axios from 'axios';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
 import { ENDPOINTS } from '~/utils/URL';
+import PropTypes from 'prop-types';
 
 const ResolvedTasks = props => {
   const [tasks, setTasks] = useState([]);
@@ -113,5 +114,11 @@ const ResolvedTasks = props => {
 const mapStateToProps = state => ({
   auth: state.auth,
 });
+
+ResolvedTasks.propTypes = {
+  auth: PropTypes.shape({
+    darkMode: PropTypes.bool,
+  }),
+};
 
 export default connect(mapStateToProps)(ResolvedTasks);

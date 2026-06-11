@@ -44,7 +44,6 @@ import { boxStyle, boxStyleDark } from '../../styles';
 import {
   ACTUAL_COST_BREAKDOWN,
   BADGE_MANAGEMENT,
-  BLUE_SQUARE_EMAIL_MANAGEMENT,
   DASHBOARD,
   JOB_ANALYTICS_REPORT,
   LOGOUT,
