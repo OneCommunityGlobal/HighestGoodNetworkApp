@@ -1,16 +1,38 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import styles from './ApplicationChart.module.css';
 
-function TimeFilter({ onFilterChange }) {
+function TimeFilter({ onFilterChange, darkMode }) {
   const [selectedOption, setSelectedOption] = useState('weekly');
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [error, setError] = useState('');
+  const prevOptionRef = useRef(selectedOption); // To track previous selected filter option
 
   useEffect(() => {
-    onFilterChange({ selectedOption, startDate, endDate });
+    if (selectedOption === 'custom' && prevOptionRef.current !== 'custom') {
+      // Reset custom dates when switching to custom
+      setStartDate(null);
+      setEndDate(null);
+    }
+
+    if (selectedOption === 'custom' && startDate && endDate) {
+      if (startDate > endDate) {
+        setError('Start date cannot be after end date.');
+      } else {
+        setError('');
+      }
+    } else {
+      setError('');
+    }
+
+    // Updated parent with current filter state
+    onFilterChange({ selectedOption, startDate, endDate, error: '' });
+
+    prevOptionRef.current = selectedOption; // Updatse previous option
   }, [selectedOption, startDate, endDate]);
+  // Removed onFilterChange from dependencies
 
   return (
     <div className={`${styles.TimeFilter}`}>
@@ -43,6 +65,8 @@ function TimeFilter({ onFilterChange }) {
           />
         </>
       )}
+
+      {error && <p className={styles.error}>{error}</p>}
     </div>
   );
 }

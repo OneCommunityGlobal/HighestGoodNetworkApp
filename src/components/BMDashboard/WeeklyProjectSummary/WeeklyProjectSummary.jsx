@@ -1,14 +1,10 @@
 // --- WeeklyProjectSummary.jsx ---
 /* eslint-disable import/no-unresolved */
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
-import html2canvas from 'html2canvas';
-import { jsPDF } from 'jspdf';
-
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
 import CostPredictionChart from './CostPredictionChart';
-import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
@@ -17,15 +13,19 @@ import IssuesBreakdownChart from './IssuesBreakdownChart';
 import InjuryCategoryBarChart from './GroupedBarGraphInjurySeverity/InjuryCategoryBarChart';
 import ToolsHorizontalBarChart from './Tools/ToolsHorizontalBarChart';
 import ExpenseBarChart from './Financials/ExpenseBarChart';
+import CostBreakDown from './Financials/CostBreakDown/CostBreakDown';
 import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
-import EmbedInteractiveMap from '../InteractiveMap/EmbedInteractiveMap';
 import IssueCharts from '../Issues/openIssueCharts';
+import InteractiveMap from '../InteractiveMap/InteractiveMap';
+import LossTrackingLineChart from './Financials/LossTrackingLineCharts/LossTrackingLineChart';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
+import LessonsLearntChart from '../LessonsLearnt/LessonsLearntChart';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
 import InjurySeverityChart from '../Injuries/InjurySeverityChart';
 
 import styles from './WeeklyProjectSummary.module.css';
+import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
 
 const projectStatusButtons = [
   {
@@ -252,9 +252,24 @@ function WeeklyProjectSummary() {
         key: 'Lessons Learned',
         className: 'half',
         content: [
-          <MostFrequentKeywords key="keywords" />,
-          <div key="injury" className="weekly-project-summary-card normal-card">
+          <div
+            key="frequent-tags-card"
+            className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+            style={{ minHeight: '520px', height: 'auto', overflow: 'visible' }}
+          >
+            <MostFrequentKeywords darkMode={darkMode} />
+          </div>,
+          <div
+            key="injury-chart"
+            className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+          >
             <InjuryCategoryBarChart />
+          </div>,
+          <div
+            key="lessons-learnt-chart"
+            className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+          >
+            <LessonsLearntChart darkMode={darkMode} />
           </div>,
         ],
       },
@@ -274,18 +289,20 @@ function WeeklyProjectSummary() {
             <div className="weekly-project-summary-card financial-small financial-chart">
               <ExpenseBarChart />
             </div>
-            <div className="weekly-project-summary-card financial-small">📊 Card</div>
-            <div className="weekly-project-summary-card financial-small">📊 Card</div>
-            <div className="weekly-project-summary-card financial-big">📊 Big Card</div>
+            <div className="weekly-project-summary-card financial-big">
+              <CostBreakDown />
+            </div>
           </div>
         ),
       },
       {
         title: 'Loss Tracking',
         key: 'Loss Tracking',
-        className: 'small',
+        className: 'large',
         content: (
-          <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>📊 Card</div>
+          <div className="weekly-project-summary-card financial-big">
+            <LossTrackingLineChart />
+          </div>
         ),
       },
       {
@@ -297,7 +314,7 @@ function WeeklyProjectSummary() {
             className={`${styles.weeklyProjectSummaryCard} ${styles.mapCard}`}
             style={{ height: '500px', padding: '0' }}
           >
-            <EmbedInteractiveMap />
+            <InteractiveMap />
           </div>
         ),
       },
@@ -328,7 +345,7 @@ function WeeklyProjectSummary() {
         )),
       },
     ],
-    [quantityOfMaterialsUsedData, darkMode],
+    [quantityOfMaterialsUsedData],
   );
 
   return (
