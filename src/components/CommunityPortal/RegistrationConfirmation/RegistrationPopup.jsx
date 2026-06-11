@@ -6,19 +6,19 @@ function Popup({ onClose }) {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const handleMoreDetails = () => {
-    window.alert('Event details coming soon!');
+    globalThis.alert('Event details coming soon!');
   };
 
   const handleAddToCalendar = () => {
-    window.alert('Add to calendar coming soon!');
+    globalThis.alert('Add to calendar coming soon!');
   };
 
   const handleViewEmailDetails = () => {
-    window.alert('Email details coming soon!');
+    globalThis.alert('Email details coming soon!');
   };
 
   const handleDownloadTicket = () => {
-    window.alert('Download ticket coming soon!');
+    globalThis.alert('Download ticket coming soon!');
   };
 
   return (
