@@ -34,7 +34,6 @@ export default function ItemsTable({
   endRow,
   onPageChange,
   onRowsPerPageChange,
-  itemType,
 }) {
   const [modal, setModal] = useState(false);
   const [record, setRecord] = useState(null);
