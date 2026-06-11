@@ -197,9 +197,11 @@ function InjurySeverityDashboard(props) {
     minWidth: 180,
     overflow: 'hidden',
     textOverflow: 'ellipsis',
-    color: '#333333',
-    borderColor: '#d9d9d9',
+    color: darkMode ? '#f5f5f5' : '#333333',
+    borderColor: darkMode ? 'rgb(255 255 255 / 20%)' : '#d9d9d9',
   };
+
+  const dropdownClassName = darkMode ? 'oxideDark-dropdown' : '';
 
   return (
     <div
@@ -231,6 +233,7 @@ function InjurySeverityDashboard(props) {
           allowClear
           placeholder="Projects"
           style={filterStyle}
+          popupClassName={dropdownClassName}
           value={selProjects}
           onChange={setSelProjects}
           maxTagCount="responsive"
@@ -245,6 +248,7 @@ function InjurySeverityDashboard(props) {
 
         <RangePicker
           className={styles.filterSelect}
+          popupClassName={dropdownClassName}
           value={dateRange}
           onChange={dates => setDateRange(dates || [null, null])}
           style={filterStyle}
@@ -256,6 +260,7 @@ function InjurySeverityDashboard(props) {
           allowClear
           placeholder="Injury Types"
           style={filterStyle}
+          popupClassName={dropdownClassName}
           value={selTypes}
           onChange={setSelTypes}
           maxTagCount="responsive"
@@ -274,6 +279,7 @@ function InjurySeverityDashboard(props) {
           allowClear
           placeholder="Departments"
           style={filterStyle}
+          popupClassName={dropdownClassName}
           value={selDepts}
           onChange={setSelDepts}
           maxTagCount="responsive"
@@ -313,6 +319,7 @@ function InjurySeverityDashboard(props) {
               }}
             />
             <Tooltip
+              cursor={{ fill: darkMode ? 'rgb(255 255 255 / 8%)' : 'rgb(204 204 204 / 30%)' }}
               content={
                 <CustomTooltip
                   visibleProjects={visibleProjects}

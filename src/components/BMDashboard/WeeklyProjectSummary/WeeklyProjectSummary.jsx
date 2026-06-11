@@ -349,7 +349,7 @@ function WeeklyProjectSummary() {
   );
 
   return (
-    <div className={`weeklyProjectSummaryContainer ${darkMode ? 'dark-mode' : ''}`}>
+    <div className={`weeklyProjectSummaryContainer ${darkMode ? styles.darkMode : ''}`}>
       <WeeklyProjectSummaryHeader darkMode={darkMode} />
 
       <div className={styles.weeklyProjectSummaryDashboardContainer}>
