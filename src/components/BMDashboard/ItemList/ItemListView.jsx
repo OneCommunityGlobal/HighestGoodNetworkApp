@@ -37,7 +37,7 @@ export function ItemListView({
   children,
 }) {
   const darkMode = useSelector(state => state.theme.darkMode);
-  const [filteredItems, setFilteredItems] = useState(items);
+  const [filteredItems, setFilteredItems] = useState(items || []);
   const [selectedProject, setSelectedProject] = useState('all');
   const [selectedItem, setSelectedItem] = useState('all');
   const [isError, setIsError] = useState(false);
@@ -73,7 +73,7 @@ export function ItemListView({
   }, [selectedProject, selectedItem, items]);
 
   useEffect(() => {
-    setIsError(Object.entries(errors).length > 0);
+    setIsError(errors ? Object.keys(errors).length > 0 : false);
   }, [errors]);
 
   useEffect(() => {
@@ -246,13 +246,25 @@ export function ItemListView({
           )}
 
           <div className={`${styles.buttonsRow}`}>
-            <button type="button" className={`${styles.btnPrimary}`}>
+            <button
+              type="button"
+              className={`${styles.btnPrimary}`}
+              onClick={() => console.log('Add Material clicked')}
+            >
               Add Material
             </button>
-            <button type="button" className={`${styles.btnPrimary}`}>
+            <button
+              type="button"
+              className={`${styles.btnPrimary}`}
+              onClick={() => console.log('Edit Name/Measurement clicked')}
+            >
               Edit Name/Measurement
             </button>
-            <button type="button" className={`${styles.btnPrimary}`}>
+            <button
+              type="button"
+              className={`${styles.btnPrimary}`}
+              onClick={() => console.log('View Update History clicked')}
+            >
               View Update History
             </button>
           </div>
@@ -295,6 +307,7 @@ export function ItemListView({
             UpdateItemModal={UpdateItemModal}
             dynamicColumns={dynamicColumns}
             darkMode={darkMode}
+            itemType={itemType}
             sortConfig={sortConfig}
             onSort={handleSort}
             totalItems={totalItems}
@@ -305,7 +318,6 @@ export function ItemListView({
             endRow={endRow}
             onPageChange={setCurrentPage}
             onRowsPerPageChange={setRowsPerPage}
-            itemType={itemType}
           />
         )}
       </section>
@@ -336,7 +348,7 @@ ItemListView.propTypes = {
   errors: PropTypes.shape({
     message: PropTypes.string,
   }),
-  UpdateItemModal: PropTypes.elementType.isRequired,
+  UpdateItemModal: PropTypes.elementType,
   dynamicColumns: PropTypes.arrayOf(
     PropTypes.shape({
       label: PropTypes.string.isRequired,

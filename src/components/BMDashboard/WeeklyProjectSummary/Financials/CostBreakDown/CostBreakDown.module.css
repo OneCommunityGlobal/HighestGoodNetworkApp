@@ -6,6 +6,7 @@
   --cb-tooltip-bg: #fff;
   --cb-tooltip-border: #e5e7eb;
   --cb-detail-bg: #f9fafb;
+
   width: 100%;
   height: 100%;
   padding: 20px;
@@ -21,6 +22,7 @@
   --cb-tooltip-bg: #253342;
   --cb-tooltip-border: #4a5a77;
   --cb-detail-bg: #253342;
+
   background: #2b3e59;
 }
 
@@ -73,7 +75,7 @@
 .filterInput:focus {
   outline: none;
   border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 15%);
 }
 
 .filterSelect:hover,
@@ -96,12 +98,12 @@
 }
 
 .clearFiltersButton:hover {
-  background: rgba(0, 0, 0, 0.05);
+  background: rgb(0 0 0 / 5%);
   border-color: #9ca3af;
 }
 
 .wrapperDark .clearFiltersButton:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgb(255 255 255 / 10%);
 }
 
 /* ===================== Chart Container ===================== */
@@ -119,7 +121,7 @@
   border: 1px solid var(--cb-tooltip-border);
   border-radius: 8px;
   padding: 10px 14px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 12%);
   min-width: 140px;
 }
 
@@ -201,11 +203,11 @@
 }
 
 .detailClose:hover {
-  background: rgba(0, 0, 0, 0.05);
+  background: rgb(0 0 0 / 5%);
 }
 
 .wrapperDark .detailClose:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgb(255 255 255 / 10%);
 }
 
 .projectList {
@@ -221,12 +223,12 @@
   align-items: center;
   padding: 8px 10px;
   border-radius: 6px;
-  background: rgba(0, 0, 0, 0.03);
+  background: rgb(0 0 0 / 3%);
   color: var(--cb-text-color);
 }
 
 .wrapperDark .projectRow {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgb(255 255 255 / 5%);
 }
 
 .projectName {
@@ -312,11 +314,11 @@
 }
 
 .retryButton:hover {
-  background: rgba(0, 0, 0, 0.05);
+  background: rgb(0 0 0 / 5%);
 }
 
 .wrapperDark .retryButton:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgb(255 255 255 / 10%);
 }
 
 .detailLoading,
@@ -349,7 +351,7 @@
 }
 
 /* ===================== Responsive ===================== */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .filters {
     flex-direction: column;
     align-items: stretch;
@@ -376,7 +378,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .title {
     font-size: 0.95rem;
   }
@@ -408,7 +410,7 @@
   }
 }
 
-@media (prefers-contrast: high) {
+@media (prefers-contrast: more) {
   .wrapper {
     border: 2px solid #000;
   }
