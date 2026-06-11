@@ -45,7 +45,7 @@ export default function CreateNewTeam() {
   const [loadingMembers, setLoadingMembers] = useState(false);
   useEffect(() => {
     setLoadingMembers(true);
-    const result = dispatch(getUserProfileBasicInfo());
+    const result = dispatch(getUserProfileBasicInfo({ source: 'CreateNewTeam' }));
     // If the action returns a promise (thunk), handle it
     if (result && typeof result.then === 'function') {
       result.finally(() => setLoadingMembers(false));
@@ -204,24 +204,15 @@ export default function CreateNewTeam() {
   // const isMemberAssigned = assignedMembers.includes(selectedMember);
 
   const handleTaskChange = e => {
-    setSelectedTask(e.target.value);
-    setTaskErrorMessage('');
-  };
-
-  const handleAddTask = () => {
-    // if (!selectedTask) {
-    //   setTaskErrorMessage('Please select a Task!');
-    //   return;
-    // }
-    if (assignedTasks.includes(selectedTask)) {
-      setTaskErrorMessage('This task is already assigned!'); // Error for duplicate addition
+    const task = e.target.value;
+    if (!task) return;
+    if (assignedTasks.includes(task)) {
+      setTaskErrorMessage('This task is already assigned!');
       return;
     }
-    if (selectedTask && !assignedTasks.includes(selectedTask)) {
-      setAssignedTasks([...assignedTasks, selectedTask]);
-      setSelectedTask('');
-      setTaskErrorMessage('');
-    }
+    setAssignedTasks([...assignedTasks, task]);
+    setSelectedTask('');
+    setTaskErrorMessage('');
   };
 
   const handleRemoveTask = task => {
@@ -287,6 +278,7 @@ export default function CreateNewTeam() {
               </Input>
             )}
             <Button
+              type="button"
               onClick={handleAddMember}
               // disabled={!selectedMember || isMemberAssigned}
               className="add-member-button"
@@ -355,13 +347,6 @@ export default function CreateNewTeam() {
                 <option value="">No tasks available</option>
               )}
             </Input>
-            <Button
-              onClick={handleAddTask}
-              // disabled={!selectedTask || isTaskAssigned}
-              style={{ marginTop: '10px' }}
-            >
-              Add
-            </Button>
           </div>
           {taskErrorMessage && (
             <Label className={`${styles.teamFormError}`} style={{ color: 'red' }}>
@@ -414,10 +399,16 @@ export default function CreateNewTeam() {
           )}
         </FormGroup>
         <div className={`${styles.addTeamButtons}`}>
-          <Button id="cancel-button" style={boxStyle} onClick={handleCancelClick}>
+          <Button
+            id="cancel-button"
+            type="button"
+            outline
+            style={boxStyle}
+            onClick={handleCancelClick}
+          >
             Cancel
           </Button>
-          <Button id="submit-button" style={boxStyle} onClick={handleSubmit}>
+          <Button id="submit-button" type="submit" style={boxStyle}>
             Submit
           </Button>
         </div>
