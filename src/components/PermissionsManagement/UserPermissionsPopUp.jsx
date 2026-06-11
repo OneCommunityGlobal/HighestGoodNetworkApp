@@ -16,7 +16,7 @@ import {
 import { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import PermissionList from './PermissionList';
 import { addNewRole, getAllRoles } from '../../actions/role';
-
+import CircularProgress from '@mui/material/CircularProgress';
 import ReminderModal from './ReminderModal';
 
 function UserPermissionsPopUp({
@@ -41,6 +41,7 @@ function UserPermissionsPopUp({
   const [actualUserRolePermission, setActualUserRolePermission] = useState();
   const [selectedAccount, setSelectedAccount] = useState('');
   const [toastShown, setToastShown] = useState(false);
+  const [isLoading, setisLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const setToDefault = () => {
@@ -74,6 +75,7 @@ function UserPermissionsPopUp({
 
   const updateProfileOnSubmit = async e => {
     e.preventDefault();
+    setisLoading(true);
     const shouldPreventEdit = cantUpdateDevAdminDetails(actualUserProfile?.email, authUser.email);
     if (shouldPreventEdit) {
       setIsSubmitting(false);
@@ -116,6 +118,7 @@ function UserPermissionsPopUp({
         toggle();
         getAllUsers();
         getChangeLogs();
+        setisLoading(false);
       })
       .catch(err => {
         const ERROR_MESSAGE = `
@@ -292,7 +295,7 @@ function UserPermissionsPopUp({
           block
           style={{ ...boxStyle, marginTop: '1rem' }}
         >
-          Submit
+          {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Submit'}
         </Button>
       </Form>
     </>

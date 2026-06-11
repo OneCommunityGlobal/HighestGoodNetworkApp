@@ -1,88 +1,86 @@
-import React, { useState, useEffect, useRef, useId, useCallback } from 'react';
+import axios from 'axios';
+import classnames from 'classnames';
+import moment from 'moment';
 import PropTypes from 'prop-types';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import Image from 'react-bootstrap/Image';
+import { Link, useHistory } from 'react-router-dom';
+import Select from 'react-select';
 import {
-  Row,
-  Input,
-  Col,
+  Button,
   Container,
-  TabContent,
-  TabPane,
+  Input,
   List,
   Modal,
-  ModalHeader,
   ModalBody,
   ModalFooter,
+  ModalHeader,
   Nav,
   NavItem,
   NavLink,
-  Button,
+  Row,
+  TabContent,
+  TabPane
 } from 'reactstrap';
-import Select from 'react-select';
-import Image from 'react-bootstrap/Image';
-import { Link, useHistory } from 'react-router-dom';
-import classnames from 'classnames';
-import moment from 'moment';
 import Alert from 'reactstrap/lib/Alert';
-import axios from 'axios';
-import { boxStyle, boxStyleDark } from '~/styles';
 import { v4 as uuidv4 } from 'uuid';
+import { boxStyle, boxStyleDark } from '~/styles';
+import { ENDPOINTS } from '~/utils/URL';
+import { getAllTeamCode, getAllUserTeams } from '../../actions/allTeamsAction';
 import hasPermission, {
   cantDeactivateOwner,
   cantUpdateDevAdminDetails,
 } from '../../utils/permissions';
-import ActiveCell from '../UserManagement/ActiveCell';
-import { ENDPOINTS } from '~/utils/URL';
 import SkeletonLoading from '../common/SkeletonLoading';
-import UserProfileModal from './UserProfileModal';
-import './UserProfile.scss';
 import teamStyles from '../TeamMemberTasks/style.module.css';
-import TeamsTab from './TeamsAndProjects/TeamsTab';
-import ProjectsTab from './TeamsAndProjects/ProjectsTab';
-import BasicInformationTab from './BasicInformationTab/BasicInformationTab';
-import VolunteeringTimeTab from './VolunteeringTimeTab/VolunteeringTimeTab';
-import SaveButton from './UserProfileEdit/SaveButton';
-import UserLinkLayout from './UserLinkLayout';
-import TabToolTips from './ToolTips/TabToolTips';
-import BasicToolTips from './ToolTips/BasicTabTips';
-import TeamsTabTips from './ToolTips/TeamsTabTips';
+import ActiveCell from '../UserManagement/ActiveCell';
+import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
 import ResetPasswordButton from '../UserManagement/ResetPasswordButton';
 import Badges from './Badges';
-import { getAllTeamCode , getAllUserTeams } from '../../actions/allTeamsAction';
+import BasicInformationTab from './BasicInformationTab/BasicInformationTab';
+import ProjectsTab from './TeamsAndProjects/ProjectsTab';
+import TeamsTab from './TeamsAndProjects/TeamsTab';
 import TimeEntryEditHistory from './TimeEntryEditHistory';
-import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
+import BasicToolTips from './ToolTips/BasicTabTips';
+import TabToolTips from './ToolTips/TabToolTips';
+import TeamsTabTips from './ToolTips/TeamsTabTips';
+import UserLinkLayout from './UserLinkLayout';
+import './UserProfile.scss';
+import SaveButton from './UserProfileEdit/SaveButton';
+import UserProfileModal from './UserProfileModal';
+import VolunteeringTimeTab from './VolunteeringTimeTab/VolunteeringTimeTab';
 
-import { updateRehireableStatus, toggleVisibility } from '../../actions/userManagement';
-import { updateUserProfile } from "../../actions/userProfile";
-import BlueSquareLayout from './BlueSquareLayout';
-import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
 import { connect, useDispatch, useSelector } from 'react-redux';
 import { formatDateCompany } from '~/utils/formatDate';
-import EditableInfoModal from './EditableModal/EditableInfoModal';
 import { fetchAllProjects } from '../../actions/projects';
+import { toggleVisibility, updateRehireableStatus } from '../../actions/userManagement';
+import { updateUserProfile } from "../../actions/userProfile";
+import BlueSquareLayout from './BlueSquareLayout';
+import EditableInfoModal from './EditableModal/EditableInfoModal';
+import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
 
 import { toast } from 'react-toastify';
+import {
+  DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
+  DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
+  PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
+} from '~/utils/constants';
 import { setCurrentUser } from '../../actions/authActions';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 import QuickSetupModal from './QuickSetupModal/QuickSetupModal';
-import {
-  DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
-  DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
-  PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
-} from '~/utils/constants';
 
+import { formatDateYYYYMMDD } from '~/utils/formatDate.js';
 import {
-  getTimeEndDateEntriesByPeriod,
-  getTimeStartDateEntriesByPeriod,
   getTimeEntriesForWeek,
+  getTimeStartDateEntriesByPeriod
 } from '../../actions/timeEntries.js';
-import ConfirmRemoveModal from './UserProfileModal/confirmRemoveModal';
-import { formatDateYYYYMMDD, CREATED_DATE_CRITERIA } from '~/utils/formatDate.js';
-import AccessManagementModal from './UserProfileModal/AccessManagementModal';
-import { postWarningByUserId, getSpecialWarnings } from '../../actions/warnings';
-import SetUpFinalDayPopUp from '../UserManagement/SetUpFinalDayPopUp';
-import { InactiveReason } from '../../utils/enums';
 import { activateUserAction, deactivateImmediatelyAction, scheduleDeactivationAction } from '../../actions/userLifecycleActions';
+import { getSpecialWarnings, postWarningByUserId } from '../../actions/warnings';
+import { InactiveReason } from '../../utils/enums';
 import { clearCachedTeamMembers } from '../Teams/teamMembersCache';
+import SetUpFinalDayPopUp from '../UserManagement/SetUpFinalDayPopUp';
+import AccessManagementModal from './UserProfileModal/AccessManagementModal';
+import ConfirmRemoveModal from './UserProfileModal/confirmRemoveModal';
 
 function UserProfile(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -122,14 +120,10 @@ function UserProfile(props) {
       setInputAutoStatus(response.status);
   
       return uniqueTeamCodes;
-    } catch (error) {
+      } catch (error) {
       // eslint-disable-next-line no-console
-      console.log(error);
-      toast.error(`It was not possible to retrieve the team codes.
-      Please try again by clicking the icon inside the input auto complete.`);
+      console.log('Team codes fetch failed:', error);
       return [];
-    } finally {
-      setIsLoading(false);
     }
   }, []);
 
@@ -758,97 +752,67 @@ setUpdatedTasks(prev => {
   const modifyBlueSquares = async (id, dateStamp, summary, operation) => {
     setShowModal(false);
     if (operation === 'add') {
-      /* peizhou: check that the date of the blue square is not future or empty. */
       if (moment(dateStamp).isAfter(moment().format('YYYY-MM-DD')) || dateStamp === '') {
         if (moment(dateStamp).isAfter(moment().format('YYYY-MM-DD'))) {
-          // eslint-disable-next-line no-console
           console.log('WARNING: Future Blue Square');
-          // eslint-disable-next-line no-alert
           alert('WARNING: Cannot Assign Blue Square with a Future Date');
         }
         if (dateStamp === '') {
-          // eslint-disable-next-line no-console
           console.log('WARNING: Empty Date');
-          // eslint-disable-next-line no-alert
           alert('WARNING: Cannot Assign Blue Square with an Empty Date');
         }
       } else {
         const newBlueSquare = {
           date: dateStamp,
           description: summary,
-          // createdDate: moment
-          //   .tz('America/Los_Angeles')
-          //   .toISOString()
-          //   .split('T')[0],
           createdDate: moment().format('YYYY-MM-DD'),
-          // Track manual assignment - note: backend uses 'manullyAssigned' (typo in field name)
-          manullyAssigned: true,
-          manullyAssignedBy: requestorId,
+          manuallyAssigned: true,
+          manuallyAssignedBy: requestorId,
         };
         setModalTitle('Blue Square');
         axios
-          .post(ENDPOINTS.ADD_BLUE_SQUARE(userProfile._id), {
-            blueSquare: newBlueSquare,
-          })
+          .post(ENDPOINTS.ADD_BLUE_SQUARE(userProfile._id), { blueSquare: newBlueSquare })
           .then(res => {
-
-            const updatedInfringements = [
-              ...userProfile.infringements,
-              {
-                _id: res.data._id,
-                ...newBlueSquare,
-              }
-            ];
-
-            setOriginalUserProfile(prev => ({
-              ...prev,
-              infringements: updatedInfringements,
-            }));
-
-            setUserProfile(prev => ({
-              ...prev,
-              infringements: updatedInfringements,
-            }));
+            // Use API response as source of truth
+            setUserProfile(prev => ({ ...prev, infringements: res.data.infringements }));
+            setOriginalUserProfile(prev => ({ ...prev, infringements: res.data.infringements }));
           })
           .catch(error => {
-            // eslint-disable-next-line no-console
             console.log('error in modifying bluesquare', error);
             toast.error('Failed to add Blue Square!');
           });
       }
     } else if (operation === 'update') {
-      const currentBlueSquares = [...userProfile?.infringements] || [];
-      if (dateStamp != null && currentBlueSquares.length !== 0) {
-        currentBlueSquares.find(blueSquare => blueSquare._id === id).date = dateStamp;
-      }
-      if (summary != null && currentBlueSquares.length !== 0) {
-        currentBlueSquares.find(blueSquare => blueSquare._id === id).description = summary;
-      }
-      await axios
-        .put(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id), {
+      try {
+        const res = await axios.put(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id), {
           dateStamp,
           summary,
           editedBy: requestorId,
-        })
-        .catch(error => {
-          toast.error('Failed to update Blue Square!');
         });
-      toast.success('Blue Square Updated!');
-      setUserProfile({ ...userProfile, infringements: currentBlueSquares });
-      setOriginalUserProfile({ ...userProfile, infringements: currentBlueSquares });
+        toast.success('Blue Square Updated!');
+        // Use API response as source of truth
+        setUserProfile(prev => ({ ...prev, infringements: res.data.infringements }));
+        setOriginalUserProfile(prev => ({ ...prev, infringements: res.data.infringements }));
+      } catch (error) {
+        console.error('Failed to update Blue Square:', error);
+        toast.error('Failed to update Blue Square!');
+      }
     } else if (operation === 'delete') {
-      let newInfringements = [...userProfile?.infringements] || [];
-      if (newInfringements.length !== 0) {
-        newInfringements = newInfringements.filter(infringement => infringement._id !== id);
-        await axios.delete(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id)).catch(error => {
+      if (userProfile?.infringements?.length !== 0) {
+        try {
+          const res = await axios.delete(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id));
+          toast.success('Blue Square Deleted!');
+          // Use API response as source of truth
+          setUserProfile(prev => ({ ...prev, infringements: res.data.infringements }));
+          setOriginalUserProfile(prev => ({ ...prev, infringements: res.data.infringements }));
+        } catch (error) {
+          console.error('Failed to delete Blue Square:', error);
           toast.error('Failed to delete Blue Square!');
-        });
-        toast.success('Blue Square Deleted!');
-        setUserProfile({ ...userProfile, infringements: newInfringements });
-        setOriginalUserProfile({ ...userProfile, infringements: newInfringements });
+        }
       }
     }
   };
+
   const fetchSpecialWarnings = async () => {
     const userId = props?.match?.params?.userId;
     try {
