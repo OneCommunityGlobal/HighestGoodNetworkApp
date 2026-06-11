@@ -441,62 +441,57 @@ function EDailyActivityLog(props) {
             </small>
           </div>
         </div>
-
+        {!selectedProject && (
+          <div className={styles.backgroundBlue}>Select a project to load equipments.</div>
+        )}
+        {selectedProject && rows.length === 0 && (
+          <div className={styles.backgroundBlue}>
+            <div>No equipment is currently assigned to this project</div>
+            <div>Select different project from the above section</div>
+            <div> OR </div>
+            <div>
+              <button className={styles.assignmentBtn}> Go To Equipment Assignment </button>
+            </div>
+          </div>
+        )}
         {/* Table */}
-        <Table bordered responsive>
-          <thead className={`${darkMode ? styles.tableDark : 'table-light'} align-middle`}>
-            <tr>
-              <th>Name</th>
-              <th>
-                Working
-                <i className={`fa fa-info-circle ${styles.infoIcon}`} id="tooltip-working"></i>
-                <UncontrolledTooltip placement="top" target="tooltip-working">
-                  Total number of units operational today
-                </UncontrolledTooltip>
-              </th>
-              <th>
-                Available
-                <i className={`fa fa-info-circle ${styles.infoIcon}`} id="tooltip-available"></i>
-                <UncontrolledTooltip placement="top" target="tooltip-available">
-                  Number of units currently not in use
-                </UncontrolledTooltip>
-              </th>
-              <th>
-                Using
-                <i className={`fa fa-info-circle ${styles.infoIcon}`} id="tooltip-using"></i>
-                <UncontrolledTooltip placement="top" target="tooltip-using">
-                  Quantity being checked in/out
-                </UncontrolledTooltip>
-              </th>
-              <th>
-                Tool / Equipment #
-                <i className={`fa fa-info-circle ${styles.infoIcon}`} id="tooltip-toolnum"></i>
-                <UncontrolledTooltip placement="top" target="tooltip-toolnum">
-                  Select the specific tool identifier
-                </UncontrolledTooltip>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {!selectedProject && (
-              <tr className={darkMode ? `select-project-row dark-mode ${styles.darkMode}` : ''}>
-                <td colSpan={5} className={`text-center py-3 ${darkMode ? 'text-light' : ''}`}>
-                  Select a project to load equipments.
-                </td>
+        {selectedProject && rows.length > 0 && (
+          <Table bordered responsive>
+            <thead className={`${darkMode ? styles.tableDark : 'table-light'} align-middle`}>
+              <tr>
+                <th>Name</th>
+                <th>
+                  Working
+                  <i className={`fa fa-info-circle ${styles.infoIcon}`} id="tooltip-working"></i>
+                  <UncontrolledTooltip placement="top" target="tooltip-working">
+                    Total number of units operational today
+                  </UncontrolledTooltip>
+                </th>
+                <th>
+                  Available
+                  <i className={`fa fa-info-circle ${styles.infoIcon}`} id="tooltip-available"></i>
+                  <UncontrolledTooltip placement="top" target="tooltip-available">
+                    Number of units currently not in use
+                  </UncontrolledTooltip>
+                </th>
+                <th>
+                  Using
+                  <i className={`fa fa-info-circle ${styles.infoIcon}`} id="tooltip-using"></i>
+                  <UncontrolledTooltip placement="top" target="tooltip-using">
+                    Quantity being checked in/out
+                  </UncontrolledTooltip>
+                </th>
+                <th>
+                  Tool / Equipment #
+                  <i className={`fa fa-info-circle ${styles.infoIcon}`} id="tooltip-toolnum"></i>
+                  <UncontrolledTooltip placement="top" target="tooltip-toolnum">
+                    Select the specific tool identifier
+                  </UncontrolledTooltip>
+                </th>
               </tr>
-            )}
-
-            {selectedProject && rows.length === 0 && (
-              <tr className={`${darkMode ? styles.darkMode : ''}`}>
-                <td colSpan={5} className="text-center py-3">
-                  No equipments found for this project.
-                </td>
-              </tr>
-            )}
-
-            {selectedProject &&
-              rows.length > 0 &&
-              rows.map((r, idx) => {
+            </thead>
+            <tbody>
+              {rows.map((r, idx) => {
                 const validList = logType === 'check-in' ? r.inUseNumbers : r.availableNumbers;
                 const limit = logType === 'check-in' ? r.usingQty : r.availableQty;
 
@@ -524,8 +519,9 @@ function EDailyActivityLog(props) {
                   </tr>
                 );
               })}
-          </tbody>
-        </Table>
+            </tbody>
+          </Table>
+        )}
 
         <div className={styles.actionContainer}>
           <Button color="secondary" onClick={handleCancel} disabled={isSubmitting}>

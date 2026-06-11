@@ -48,3 +48,21 @@
   line-height: 1.4;
   font-size: 0.85rem;
 }
+
+.backgroundBlue {
+  background-color: #c9d6c6;
+  line-height: 2;
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 0.75rem;
+  border-radius: 0.25rem;
+}
+
+.assignmentBtn {
+  padding: 0.35rem;
+  border-radius: 0.25rem;
+  background-color: cadetblue;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #e2e8f0;
+}
