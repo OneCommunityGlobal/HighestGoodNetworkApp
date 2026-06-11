@@ -4,13 +4,13 @@
 
 project-details {
   text-align: center;
-  padding: 40px 3% 0 3%; 
+  padding: 40px 3% 0; 
   font-weight: bold;
 }
 
 .project-details-dark {
   text-align: center;
-  padding: 40px 3% 0 3%;
+  padding: 40px 3% 0;
   font-weight: bold;
   background-color: #1c1e1c;
 }
@@ -23,7 +23,7 @@ project-details {
 
 .project-details-title-dark {
   font-size: 1.5rem;
-  color: #ffffff;
+  color: #fff;
 }
 
 /* =========================================
@@ -40,13 +40,13 @@ project-details {
 }
 
 .log-bar {
-  background-color: #ffffff;
-  color: #333333;
+  background-color: #fff;
+  color: #333;
 }
 
 .log-bar-dark {
   background-color: #1b2a41;
-  color: #ffffff;
+  color: #fff;
 }
 
 .logBarSection {
@@ -67,8 +67,8 @@ project-details {
 .log-bar-dark .log-bar__section h2,
 .log-bar-dark .card.cards-container h2,
 .log-bar-dark .project-log h2 {
-  color: #ffffff !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  color: #fff !important;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 50%);
 }
 
 /* Buttons list */
@@ -83,7 +83,7 @@ project-details {
   border-radius: 10px;
   margin: 0.1em;
   width: 100%;
-  color: #ffffff !important;
+  color: #fff !important;
   font-weight: 500;
   transition: filter 0.2s ease;
 }
@@ -115,7 +115,7 @@ project-details {
    RESPONSIVE LOG BAR
 ========================================= */
 
-@media (min-width: 550px) {
+@media (width >= 550px) {
   .log-bar {
     flex-direction: column;
   }
@@ -135,10 +135,9 @@ project-details {
   }
 }
 
-@media (min-width: 880px) {
+@media (width >= 880px) {
   .log-bar {
-    flex-direction: row;
-    flex-wrap: wrap;
+    flex-flow: row wrap;
     justify-content: center;
   }
 
@@ -183,7 +182,7 @@ project-details {
 }
 
 .single-card:hover {
-  box-shadow: 0 20px 20px rgba(0, 0, 0, 0.2), 0 6px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 20px 20px rgb(0 0 0 / 20%), 0 6px 20px rgb(0 0 0 / 20%);
   transform: translate3d(0.5px, 0.5px, 0.5px);
 }
 
@@ -194,12 +193,12 @@ project-details {
 }
 
 .singleCard:hover {
-  box-shadow: 0 20px 20px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2);
+  box-shadow: 0 20px 20px 0 rgb(0 0 0 / 20%), 0 6px 20px 0 rgb(0 0 0 / 20%);
   transform: translate3d(0.5px, 0.5px, 0.5px);
 }
 
 .darkMode .singleCard:hover {
-  box-shadow: 0 20px 20px 0 rgba(0, 0, 0, 0.4), 0 6px 20px 0 rgba(0, 0, 0, 0.4);
+  box-shadow: 0 20px 20px 0 rgb(0 0 0 / 40%), 0 6px 20px 0 rgb(0 0 0 / 40%);
 }
 
 .singleCardImg {
@@ -207,7 +206,7 @@ project-details {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 5px 5px 0 0;
 }
 
@@ -240,17 +239,18 @@ project-details {
 ========================================= */
 
 .sectionCardWrapper {
-  background-color: var(--card-bg, #ffffff);
+  background-color: var(--card-bg, #fff);
   padding: 18px 12px;
   border-radius: 10px;
   min-height: 100%;
   text-align: center;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 10px rgb(0 0 0 / 8%);
 }
 
 .project-details-dark .sectionCardWrapper {
   --card-bg: #243447;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+
+  box-shadow: 0 4px 10px rgb(0 0 0 / 40%);
 }
 
 .sectionCardWrapper h2 {
@@ -262,11 +262,11 @@ project-details {
 ========================================= */
 
 .memberLogWrapper {
-  margin: 25px 0 40px 0;
+  margin: 25px 0 40px;
   padding: 20px 15px;
-  background-color: var(--member-bg, #ffffff);
+  background-color: var(--member-bg, #fff);
   border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 10px rgb(0 0 0 / 8%);
 }
 
 /* Dark Mode Variables */
@@ -274,8 +274,9 @@ project-details {
   --member-bg: #243447;
   --member-header-bg: #31445c;
   --member-row-bg: #2f3d4f;
-  --member-header-text: #ffffff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+  --member-header-text: #fff;
+
+  box-shadow: 0 4px 12px rgb(0 0 0 / 45%);
 }
 
 /* Section Title */
@@ -294,6 +295,7 @@ project-details {
   white-space: nowrap;
   border-collapse: separate;
   border-spacing: 0 6px;
+
   /* space between rows */
 }
 
@@ -308,8 +310,7 @@ project-details {
 
   /* Default + variable fallback */
   background-color: var(--member-header-bg, #f0f6ff);
-  color: var(--member-header-text, #333333);
-
+  color: var(--member-header-text, #333);
   border-bottom: 2px solid #dbe6f9;
 }
 
@@ -326,9 +327,8 @@ project-details {
 .memberLogWrapper table tbody tr td {
   padding: 10px 12px;
   font-size: 0.9rem;
-
-  background-color: var(--member-row-bg, #ffffff);
-  color: var(--member-row-text, #333333);
+  background-color: var(--member-row-bg, #fff);
+  color: var(--member-row-text, #333);
   border-radius: 6px;
 }
 
@@ -341,14 +341,14 @@ project-details {
    RESPONSIVE CARD GRID
 ========================================= */
 
-@media (min-width: 992px) {
+@media (width >= 992px) {
   .singleCard {
     width: calc(33.333% - 20px);
     max-width: 180px;
   }
 }
 
-@media (min-width: 576px) and (max-width: 991px) {
+@media (width >= 576px) and (width <= 991px) {
   .singleCard {
     width: calc(50% - 15px);
     max-width: 180px;
@@ -356,7 +356,7 @@ project-details {
 }
 
 
-@media (max-width: 575px) {
+@media (width <= 575px) {
   .singleCard {
     width: 90%;
     max-width: 180px;
@@ -388,7 +388,7 @@ project-details {
 }
 
 /* Two columns stack */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .toolsMaterialRow {
     flex-direction: column;
   }
@@ -421,8 +421,7 @@ project-details {
   text-align: center;
 }
 
-@media (max-width: 768px) {
-
+@media (width <= 768px) {
   .project-log td,
   .project-log th {
     font-size: 0.6em;
