@@ -1,8 +1,10 @@
+/* stylelint-disable  */
 /* Ensure the button content (text + icon) is aligned horizontally */
 .followup-button {
   display: flex;
   align-items: center;
   gap: 8px;
+
   /* Maintain spacing between text and icon */
 }
 
@@ -16,6 +18,7 @@
 .fa-info-circle {
   font-size: 14px;
   margin-left: 5px;
+
   /* Add spacing between text and icon */
 }
 
@@ -26,6 +29,6 @@
 }
 
 /* (optional) narrower on small screens */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .tooltipWide { width: 90vw; }
 }

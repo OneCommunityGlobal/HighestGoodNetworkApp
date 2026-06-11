@@ -18,7 +18,7 @@ import dompurify from 'dompurify';
 import styles from './style.module.css';
 import style from './reviewButton.module.css';
 import { boxStyle, boxStyleDark } from '~/styles';
-import '../Header/index.css';
+import '../Header/index.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faPencilAlt, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 import httpService from '../../services/httpService';
@@ -451,15 +451,6 @@ function ReviewButton({ user, task, updateTask }) {
   const buttonFormat = () => {
     if (user.personId === myUserId && reviewStatus === 'Unsubmitted') {
       return (
-        // <Button
-        //   className={style['reviewBtn']}
-        //   color="primary"
-        //   onClick={toggleModal}
-        //   style={darkMode ? boxStyleDark : boxStyle}
-        //   disabled={isSubmitting}
-        // >
-        //   Submit for Review
-        // </Button>
         <button
           className={`${style.reviewBtn} btn btn-primary`}
           onClick={toggleModal}
