@@ -2,12 +2,9 @@
    PROJECT DETAILS MAIN LAYOUT
 ========================================= */
 
-.project-details {
+project-details {
   text-align: center;
-  padding-top: 20px;
-  padding-left: 3%;
-  padding-right: 3%;
-  padding: 40px 3% 0 3%;
+  padding: 40px 3% 0 3%; 
   font-weight: bold;
 }
 
