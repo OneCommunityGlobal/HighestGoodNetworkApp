@@ -11,7 +11,7 @@ import {
 } from 'recharts';
 import Select from 'react-select';
 import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+
 import styles from './InjuryCategoryBarChart.module.css';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -20,7 +20,7 @@ import {
   fetchInjuryTypes,
   fetchInjuryProjects,
 } from '../../../../actions/bmdashboard/injuryActions';
-
+import 'react-datepicker/dist/react-datepicker.css';
 // YYYY-MM-DD (no tz shift)
 const toYMD = d =>
   d instanceof Date && !isNaN(d)
@@ -130,6 +130,10 @@ function InjuryCategoryBarChart() {
     const set = new Set(data.map(d => String(d?.projectId ?? 'unknown')));
     return Array.from(set);
   }, [data]);
+  const allSeriesProjectIds = useMemo(() => {
+    const set = new Set(projects.map(p => String(p._id)));
+    return Array.from(set);
+  }, [projects]);
 
   const showLabels = seriesProjectIds.length <= 4;
 
@@ -340,7 +344,7 @@ function InjuryCategoryBarChart() {
                 overflowY: 'auto',
                 color: darkMode ? '#fff' : '#000',
               }}
-              payload={seriesProjectIds.map((pid, index) => ({
+              payload={allSeriesProjectIds.map((pid, index) => ({
                 id: pid,
                 type: 'square',
                 color: COLOR_PALETTE[index % COLOR_PALETTE.length],
