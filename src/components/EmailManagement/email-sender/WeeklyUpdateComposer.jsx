@@ -275,6 +275,17 @@ const WeeklyUpdateComposer = ({ onClose }) => {
     [extractYouTubeId],
   );
 
+  const getYouTubeValidationError = useCallback(
+    url => {
+      if (!url.trim()) {
+        return 'YouTube link is required';
+      }
+
+      return extractYouTubeId(url) ? '' : 'Please enter a valid YouTube URL';
+    },
+    [extractYouTubeId],
+  );
+
   const getRecipientValidationResult = useCallback(
     recipientText => {
       if (!recipientText.trim()) {
@@ -313,10 +324,9 @@ const WeeklyUpdateComposer = ({ onClose }) => {
       errors.introParagraph = 'Intro paragraph is required';
     }
 
-    if (!youtubeLink.trim()) {
-      errors.youtubeLink = 'YouTube link is required';
-    } else if (!extractYouTubeId(youtubeLink)) {
-      errors.youtubeLink = 'Please enter a valid YouTube URL';
+    const youtubeError = getYouTubeValidationError(youtubeLink);
+    if (youtubeError) {
+      errors.youtubeLink = youtubeError;
     }
 
     if (!closingParagraph.trim()) {
@@ -344,7 +354,7 @@ const WeeklyUpdateComposer = ({ onClose }) => {
     emailDistribution,
     recipients,
     getRecipientValidationResult,
-    extractYouTubeId,
+    getYouTubeValidationError,
   ]);
 
   // Generate HTML email content - using CSS classes
