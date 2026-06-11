@@ -38,6 +38,7 @@ export function InventoryTypesList(props) {
     { label: 'Reusables', route: '/bmdashboard/reusables' },
     { label: 'Tools', route: '/bmdashboard/tools' },
   ];
+
   const [isError, setIsError] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
 
@@ -74,6 +75,8 @@ export function InventoryTypesList(props) {
           dateFormat="MM-dd-yyyy hh:mm:ss"
           id="timestamp"
           showTimeInput
+          portalId="root"
+          popperPlacement="bottom-start"
         />
       </div>
       <Accordion>

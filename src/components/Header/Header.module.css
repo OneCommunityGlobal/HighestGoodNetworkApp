@@ -434,7 +434,6 @@
 
 .accordionToggle:focus,
 .accordionToggle:active {
-  color: white !important;
   outline: none !important;
 }
 
