@@ -65,20 +65,12 @@ export default function DistributionLaborHours() {
   const totalHours = filteredData.reduce((sum, item) => sum + item.value, 0);
 
   return (
-    <div
-      className={styles.container}
-      style={{
-        backgroundColor: darkMode ? '#2E3E5A' : '#fff',
-        color: darkMode ? '#f5f5f5' : '#000',
-      }}
-    >
-      <h3 className={styles.title} style={{ color: darkMode ? '#ffffff' : '#000000' }}>
-        Distribution of Labor Hours
-      </h3>
+    <div className={styles.container}>
+      <h3 className={styles.title}>Distribution of Labor Hours</h3>
 
       {/* Filters */}
       <div className={styles.filters}>
-        <label style={{ color: darkMode ? '#ffffff' : '#000000' }}>
+        <label>
           From:
           <input
             type="date"
@@ -86,7 +78,7 @@ export default function DistributionLaborHours() {
             onChange={e => setDateRange({ ...dateRange, from: e.target.value })}
           />
         </label>
-        <label style={{ color: darkMode ? '#ffffff' : '#000000' }}>
+        <label>
           To:
           <input
             type="date"
@@ -94,7 +86,7 @@ export default function DistributionLaborHours() {
             onChange={e => setDateRange({ ...dateRange, to: e.target.value })}
           />
         </label>
-        <label style={{ color: darkMode ? '#ffffff' : '#000000' }}>
+        <label>
           Project:
           <select onChange={e => setProjectFilter(e.target.value)} value={projectFilter}>
             <option value="">All</option>
@@ -102,7 +94,7 @@ export default function DistributionLaborHours() {
             <option value="Project B">Project B</option>
           </select>
         </label>
-        <label style={{ color: darkMode ? '#ffffff' : '#000000' }}>
+        <label>
           Member:
           <select onChange={e => setMemberFilter(e.target.value)} value={memberFilter}>
             <option value="">All</option>
@@ -110,7 +102,9 @@ export default function DistributionLaborHours() {
             <option value="Member 2">Member 2</option>
           </select>
         </label>
-        <button className={styles.button}>Submit</button>
+        <button className={styles.button} type="button">
+          Submit
+        </button>
       </div>
 
       {/* Chart + Legend */}
@@ -140,7 +134,19 @@ export default function DistributionLaborHours() {
                 cy="50%"
                 outerRadius={100}
                 labelLine={false}
-                label={({ value }) => `${((value / totalHours) * 100).toFixed(1)}%`}
+                label={({ x, y, value }) => (
+                  <text
+                    x={x}
+                    y={y}
+                    fill={darkMode ? '#ffffff' : '#1f2937'}
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                    fontSize={12}
+                    fontWeight="600"
+                  >
+                    {`${((value / totalHours) * 100).toFixed(1)}%`}
+                  </text>
+                )}
               >
                 {filteredData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
