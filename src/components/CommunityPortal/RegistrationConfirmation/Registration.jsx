@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import RegistrationPopup from './RegistrationPopup'; // Ensure correct path
+import { useSelector } from 'react-redux';
+import RegistrationPopup from './RegistrationPopup';
 
 function RegistrationPage() {
   const [showPopup, setShowPopup] = useState(false);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const handleRegisterClick = () => {
     setShowPopup(true);
@@ -13,7 +15,18 @@ function RegistrationPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-50">
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '100vh',
+        padding: '16px',
+        backgroundColor: darkMode ? '#1a1d23' : '#f9fafb',
+        color: darkMode ? '#ffffff' : '#000000',
+      }}
+    >
       <button
         type="button"
         style={{
@@ -24,9 +37,10 @@ function RegistrationPage() {
           padding: '10px 20px',
           borderRadius: '5px',
           fontSize: '16px',
+          cursor: 'pointer',
+          border: 'none',
         }}
         onClick={handleRegisterClick}
-        className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded-lg text-lg shadow-md"
       >
         Register
       </button>

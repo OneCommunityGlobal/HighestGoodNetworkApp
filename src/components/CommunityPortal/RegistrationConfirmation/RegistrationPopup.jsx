@@ -4,6 +4,23 @@ import styles from './RegistrationPopup.module.css';
 
 function Popup({ onClose }) {
   const darkMode = useSelector(state => state.theme.darkMode);
+
+  const handleMoreDetails = () => {
+    window.alert('Event details coming soon!');
+  };
+
+  const handleAddToCalendar = () => {
+    window.alert('Add to calendar coming soon!');
+  };
+
+  const handleViewEmailDetails = () => {
+    window.alert('Email details coming soon!');
+  };
+
+  const handleDownloadTicket = () => {
+    window.alert('Download ticket coming soon!');
+  };
+
   return (
     <div className={styles.popupOverlay}>
       <div className={`${styles.popup} ${darkMode ? styles.popupDark : ''}`}>
@@ -20,24 +37,23 @@ function Popup({ onClose }) {
         </p>
         <div className={styles.popupContent}>
           <strong>Event Name</strong>
-          <p className={styles.eventDetails}>(Click for more details)</p>
+          <button type="button" className={styles.eventDetails} onClick={handleMoreDetails}>
+            (Click for more details)
+          </button>
           <p className={styles.userFullName}>User&apos;s Full Name</p>
-
           <div className={styles.eventInfo}>
             <span>📅 Tuesday, January 7th, 2025</span>
             <span>⏰ 7:00 PM CST</span>
             <span>📍 Location</span>
           </div>
-
-          <button type="button" className={styles.calendarBtn}>
+          <button type="button" className={styles.calendarBtn} onClick={handleAddToCalendar}>
             Add to my calendar
           </button>
-
           <div className={styles.popupFooter}>
-            <button type="button" className={styles.emailBtn}>
+            <button type="button" className={styles.emailBtn} onClick={handleViewEmailDetails}>
               View details in Email
             </button>
-            <button type="button" className={styles.downloadBtn}>
+            <button type="button" className={styles.downloadBtn} onClick={handleDownloadTicket}>
               Download Ticket
             </button>
           </div>
@@ -46,7 +62,9 @@ function Popup({ onClose }) {
     </div>
   );
 }
+
 Popup.propTypes = {
   onClose: PropTypes.func.isRequired,
 };
+
 export default Popup;

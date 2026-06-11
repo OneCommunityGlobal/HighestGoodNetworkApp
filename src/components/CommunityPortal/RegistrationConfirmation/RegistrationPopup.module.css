@@ -55,6 +55,7 @@
   color: blue;
   cursor: pointer;
   margin-bottom: 10px;
+  text-decoration: underline;
 }
 
 /* Event info */
@@ -103,9 +104,8 @@
   justify-content: space-between;
 }
 
-.popupDark .eventDetails {
-  color: #fff;
-  text-shadow: 0 1px 2px rgb(0 0 0 / 80%);
+:global(.darkMode) .eventDetails {
+  color: #90cdf4;
 }
 
 .userFullName {
