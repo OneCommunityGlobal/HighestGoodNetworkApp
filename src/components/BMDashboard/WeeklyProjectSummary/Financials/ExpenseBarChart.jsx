@@ -20,42 +20,140 @@ const rawData = [
     category: 'Plumbing',
     plannedCost: 1000,
     actualCost: 1200,
-    date: '2025-04-01',
+    date: '2026-05-01',
   },
   {
     projectId: 'Project A',
     category: 'Electrical',
     plannedCost: 1500,
     actualCost: 1300,
-    date: '2025-04-01',
+    date: '2026-05-02',
   },
   {
     projectId: 'Project B',
     category: 'Plumbing',
     plannedCost: 1100,
     actualCost: 1050,
-    date: '2025-04-02',
+    date: '2026-05-03',
   },
   {
     projectId: 'Project B',
     category: 'Structural',
     plannedCost: 2200,
     actualCost: 2150,
-    date: '2025-04-02',
+    date: '2026-05-04',
   },
   {
     projectId: 'Project C',
     category: 'Mechanical',
     plannedCost: 1300,
-    actualCost: 1350,
-    date: '2025-04-03',
+    actualCost: 1800,
+    date: '2026-05-05',
+  },
+  {
+    projectId: 'Project A',
+    category: 'Structural',
+    plannedCost: 900,
+    actualCost: 1400,
+    date: '2026-05-08',
+  },
+  {
+    projectId: 'Project B',
+    category: 'Electrical',
+    plannedCost: 2000,
+    actualCost: 1600,
+    date: '2026-05-09',
+  },
+  {
+    projectId: 'Project C',
+    category: 'Plumbing',
+    plannedCost: 800,
+    actualCost: 750,
+    date: '2026-05-10',
+  },
+  {
+    projectId: 'Project A',
+    category: 'Mechanical',
+    plannedCost: 2500,
+    actualCost: 2400,
+    date: '2026-05-11',
   },
   {
     projectId: 'Project C',
     category: 'Electrical',
-    plannedCost: 1400,
+    plannedCost: 1800,
+    actualCost: 2100,
+    date: '2026-05-12',
+  },
+  {
+    projectId: 'Project B',
+    category: 'Structural',
+    plannedCost: 3000,
+    actualCost: 3500,
+    date: '2026-05-15',
+  },
+  {
+    projectId: 'Project B',
+    category: 'Mechanical',
+    plannedCost: 1500,
+    actualCost: 1400,
+    date: '2026-05-16',
+  },
+  {
+    projectId: 'Project A',
+    category: 'Plumbing',
+    plannedCost: 1200,
+    actualCost: 1100,
+    date: '2026-05-17',
+  },
+  {
+    projectId: 'Project C',
+    category: 'Structural',
+    plannedCost: 4000,
+    actualCost: 4200,
+    date: '2026-05-18',
+  },
+  {
+    projectId: 'Project A',
+    category: 'Electrical',
+    plannedCost: 1700,
+    actualCost: 1650,
+    date: '2026-05-19',
+  },
+  {
+    projectId: 'Project B',
+    category: 'Plumbing',
+    plannedCost: 1300,
+    actualCost: 1100,
+    date: '2026-05-22',
+  },
+  {
+    projectId: 'Project C',
+    category: 'Mechanical',
+    plannedCost: 2100,
+    actualCost: 2500,
+    date: '2026-05-23',
+  },
+  {
+    projectId: 'Project A',
+    category: 'Structural',
+    plannedCost: 2800,
+    actualCost: 2800,
+    date: '2026-05-24',
+  },
+  {
+    projectId: 'Project B',
+    category: 'Electrical',
+    plannedCost: 1900,
+    actualCost: 1750,
+    date: '2026-05-25',
+  },
+  {
+    projectId: 'Project C',
+    category: 'Plumbing',
+    plannedCost: 1500,
     actualCost: 1600,
-    date: '2025-04-03',
+    date: '2026-05-26',
   },
 ];
 
@@ -114,8 +212,8 @@ const getTheme = darkMode => {
     tooltipText: { dark: '#f8fafc', light: '#0f172a' }[mode],
     tooltipHeaderBorder: { dark: '1px solid #475569', light: '1px solid #f1f5f9' }[mode],
     tooltipHeaderColor: { dark: '#94a3b8', light: '#64748b' }[mode],
-    overBudget: { dark: '#ff5252', light: '#EA4335' }[mode],
-    underBudget: { dark: '#4ade80', light: '#34A853' }[mode],
+    overBudget: { dark: '#ff4444', light: '#e74c3c' }[mode],
+    underBudget: { dark: '#4ade80', light: '#2ecc71' }[mode],
   };
 };
 
@@ -153,6 +251,8 @@ const CustomTooltip = ({ active, payload, label, darkMode }) => {
   const isOverBudget = chartData.variance > 0;
   const theme = getTheme(darkMode);
 
+  const varianceColor = isOverBudget ? theme.overBudget : theme.underBudget;
+
   return (
     <div
       style={{
@@ -165,7 +265,14 @@ const CustomTooltip = ({ active, payload, label, darkMode }) => {
         boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
       }}
     >
-      <p
+      <style>{`
+        .recharts-tooltip-variance-expense {
+          color: ${varianceColor} !important;
+          margin: 8px 0 0 0 !important;
+          font-weight: bold !important;
+        }
+      `}</style>
+      <div
         style={{
           fontWeight: 'bold',
           margin: '0 0 8px 0',
@@ -175,23 +282,17 @@ const CustomTooltip = ({ active, payload, label, darkMode }) => {
         }}
       >
         {label}
-      </p>
-      <p style={{ margin: '0 0 4px 0' }}>
+      </div>
+      <div style={{ margin: '0 0 4px 0' }}>
         Planned: <strong>${chartData.planned.toLocaleString()}</strong>
-      </p>
-      <p style={{ margin: '0 0 4px 0' }}>
+      </div>
+      <div style={{ margin: '0 0 4px 0' }}>
         Actual: <strong>${chartData.actual.toLocaleString()}</strong>
-      </p>
-      <p
-        style={{
-          margin: '8px 0 0 0',
-          color: isOverBudget ? theme.overBudget : theme.underBudget,
-          fontWeight: 'bold',
-        }}
-      >
+      </div>
+      <div className="recharts-tooltip-variance-expense">
         Variance: {chartData.variance > 0 ? '+' : ''}${chartData.variance.toLocaleString()} (
         {chartData.variancePercent})
-      </p>
+      </div>
     </div>
   );
 };
@@ -287,7 +388,7 @@ export default function ExpenseBarChart({ darkMode }) {
           marginBottom: '1.5rem',
         }}
       >
-        <label style={labelGroupStyle}>
+        <div style={labelGroupStyle}>
           Project:
           <select value={projectId} onChange={e => setProjectId(e.target.value)} style={inputStyle}>
             <option value="">All</option>
@@ -297,8 +398,8 @@ export default function ExpenseBarChart({ darkMode }) {
               </option>
             ))}
           </select>
-        </label>
-        <label style={labelGroupStyle}>
+        </div>
+        <div style={labelGroupStyle}>
           Category:
           <select
             value={categoryFilter}
@@ -312,8 +413,8 @@ export default function ExpenseBarChart({ darkMode }) {
               </option>
             ))}
           </select>
-        </label>
-        <label style={labelGroupStyle}>
+        </div>
+        <div style={labelGroupStyle}>
           Start Date:
           <input
             type="date"
@@ -322,8 +423,8 @@ export default function ExpenseBarChart({ darkMode }) {
             onChange={e => setStartDate(e.target.value)}
             style={inputStyle}
           />
-        </label>
-        <label style={labelGroupStyle}>
+        </div>
+        <div style={labelGroupStyle}>
           End Date:
           <input
             type="date"
@@ -333,7 +434,7 @@ export default function ExpenseBarChart({ darkMode }) {
             onChange={e => setEndDate(e.target.value)}
             style={inputStyle}
           />
-        </label>
+        </div>
       </div>
 
       <div
