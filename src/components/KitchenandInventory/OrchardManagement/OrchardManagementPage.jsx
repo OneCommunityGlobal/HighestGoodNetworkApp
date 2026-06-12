@@ -81,7 +81,7 @@ export default function OrchardManagementPage() {
   const [newPlant, setNewPlant] = useState({ qty: '', location: '', notes: '', date: '' });
 
   useEffect(() => {
-    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const mq = globalThis.matchMedia('(prefers-color-scheme: dark)');
     setDark(mq.matches);
     const handler = e => setDark(e.matches);
     mq.addEventListener('change', handler);
@@ -177,8 +177,9 @@ export default function OrchardManagementPage() {
     setOrders(prev =>
       prev.map(o => {
         if (o.id !== id) return o;
-        const next =
-          o.status === 'ordered' ? 'shipped' : o.status === 'shipped' ? 'delivered' : o.status;
+        let next = o.status;
+        if (o.status === 'ordered') next = 'shipped';
+        else if (o.status === 'shipped') next = 'delivered';
         return { ...o, status: next };
       }),
     );
@@ -345,20 +346,8 @@ export default function OrchardManagementPage() {
 
       {/* Order Detail Modal */}
       {showDetail && (
-        <div
-          className={styles.modal}
-          role="button"
-          tabIndex={0}
-          onClick={() => setShowDetail(null)}
-          onKeyDown={e => e.key === 'Enter' && setShowDetail(null)}
-        >
-          <div
-            className={`${styles.modalBox} ${d}`}
-            role="button"
-            tabIndex={0}
-            onClick={e => e.stopPropagation()}
-            onKeyDown={e => e.stopPropagation()}
-          >
+        <div className={styles.modal}>
+          <div className={`${styles.modalBox} ${d}`}>
             <div className={styles.modalTitle}>Order Details — {showDetail.id}</div>
             <div className={styles.detailRow}>
               <b>Supplier:</b> {showDetail.supplier}
@@ -387,20 +376,8 @@ export default function OrchardManagementPage() {
 
       {/* New Order Modal */}
       {showOrderForm && (
-        <div
-          className={styles.modal}
-          role="button"
-          tabIndex={0}
-          onClick={() => setShowOrderForm(false)}
-          onKeyDown={e => e.key === 'Enter' && setShowOrderForm(false)}
-        >
-          <div
-            className={`${styles.modalBox} ${d}`}
-            role="button"
-            tabIndex={0}
-            onClick={e => e.stopPropagation()}
-            onKeyDown={e => e.stopPropagation()}
-          >
+        <div className={styles.modal}>
+          <div className={`${styles.modalBox} ${d}`}>
             <div className={styles.modalTitle}>+ New Order</div>
             <label htmlFor="supplier-input" className={styles.label}>
               Supplier Name
@@ -459,20 +436,8 @@ export default function OrchardManagementPage() {
 
       {/* New Planting Task Modal */}
       {showPlantForm && (
-        <div
-          className={styles.modal}
-          role="button"
-          tabIndex={0}
-          onClick={() => setShowPlantForm(false)}
-          onKeyDown={e => e.key === 'Enter' && setShowPlantForm(false)}
-        >
-          <div
-            className={`${styles.modalBox} ${d}`}
-            role="button"
-            tabIndex={0}
-            onClick={e => e.stopPropagation()}
-            onKeyDown={e => e.stopPropagation()}
-          >
+        <div className={styles.modal}>
+          <div className={`${styles.modalBox} ${d}`}>
             <div className={styles.modalTitle}>+ Add Planting Task</div>
             <label htmlFor="qty-input" className={styles.label}>
               Quantity & Plant Type

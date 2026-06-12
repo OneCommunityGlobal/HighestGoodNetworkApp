@@ -1,4 +1,5 @@
 import { useMemo, useState, useEffect, useRef } from 'react';
+import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import {
@@ -88,6 +89,12 @@ function LogAttendance() {
           setUseMockData(true);
         }
 
+        const getStatusLabel = s => {
+          if (s === 'checked_in') return 'Checked In';
+          if (s === 'no_show') return 'No Show';
+          return 'Pending';
+        };
+
         // Transform attendance records
         const records = (attendanceResponse.data || []).map(record => ({
           id: record.attendanceCode || record._id,
@@ -96,12 +103,7 @@ function LogAttendance() {
             record.participantId?._id || record.participantId || record.participantExternalId,
           email: record.participantEmail || record.participantId?.email || '',
           checkInTime: record.checkInTime ? moment(record.checkInTime).format('h:mm A') : '—',
-          status:
-            record.status === 'checked_in'
-              ? 'Checked In'
-              : record.status === 'no_show'
-              ? 'No Show'
-              : 'Pending',
+          status: getStatusLabel(record.status),
           rawStatus: record.status,
         }));
         setAttendanceRecords(records);
@@ -289,7 +291,7 @@ function LogAttendance() {
       <div className={containerClass}>
         <div className={styles.errorContainer}>
           <p>Error: {error}</p>
-          <button type="button" onClick={() => window.location.reload()}>
+          <button type="button" onClick={() => globalThis.location.reload()}>
             Retry
           </button>
         </div>
@@ -371,13 +373,7 @@ function LogAttendance() {
         ))}
       </section>
 
-      {activeTab !== 'Analysis' ? (
-        <section className={styles.placeholder}>
-          <p>
-            The <strong>{activeTab}</strong> section is coming soon. Stay tuned!
-          </p>
-        </section>
-      ) : (
+      {activeTab === 'Analysis' ? (
         <>
           <section className={styles.analyticsCards}>
             {insightConfig.map(card => (
@@ -423,26 +419,26 @@ function LogAttendance() {
                 <p>Track arrivals, no-shows, and pending participants in real time.</p>
               </div>
               <div className={styles.controls}>
-                <label htmlFor="status-filter">
-                  Status Filter
-                  <select
-                    id="status-filter"
-                    value={statusFilter}
-                    onChange={event => setStatusFilter(event.target.value)}
-                  >
-                    {statusFilters.map(filter => (
+                <label htmlFor="status-filter">Status Filter</label>
+                <select
+                  id="status-filter"
+                  value={statusFilter}
+                  onChange={event => setStatusFilter(event.target.value)}
+                >
+                  {statusFilters.map(filter => {
+                    const filterLabels = {
+                      all: 'All Statuses',
+                      checked_in: 'Checked In',
+                      no_show: 'No Shows',
+                      pending: 'Pending',
+                    };
+                    return (
                       <option key={filter} value={filter}>
-                        {filter === 'all'
-                          ? 'All Statuses'
-                          : filter === 'checked_in'
-                          ? 'Checked In'
-                          : filter === 'no_show'
-                          ? 'No Shows'
-                          : 'Pending'}
+                        {filterLabels[filter] ?? filter}
                       </option>
-                    ))}
-                  </select>
-                </label>
+                    );
+                  })}
+                </select>
               </div>
             </header>
             <div className={styles.tableWrapper}>
@@ -478,33 +474,36 @@ function LogAttendance() {
                   </tr>
                 </thead>
                 <tbody>
-                  {sortedRecords.map(record => (
-                    <tr key={record.id}>
-                      <td>{record.id}</td>
-                      <td>{record.participantName}</td>
-                      <td>{record.participantId}</td>
-                      <td>{record.email}</td>
-                      <td>{record.checkInTime}</td>
-                      <td>
-                        <span
-                          className={`${styles.statusBadge} ${
-                            record.status === 'Checked In'
-                              ? styles.statusSuccess
-                              : record.status === 'Pending'
-                              ? styles.statusPending
-                              : styles.statusDanger
-                          }`}
-                        >
-                          {record.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
+                  {sortedRecords.map(record => {
+                    let statusClass = styles.statusDanger;
+                    if (record.status === 'Checked In') statusClass = styles.statusSuccess;
+                    else if (record.status === 'Pending') statusClass = styles.statusPending;
+                    return (
+                      <tr key={record.id}>
+                        <td>{record.id}</td>
+                        <td>{record.participantName}</td>
+                        <td>{record.participantId}</td>
+                        <td>{record.email}</td>
+                        <td>{record.checkInTime}</td>
+                        <td>
+                          <span className={`${styles.statusBadge} ${statusClass}`}>
+                            {record.status}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
           </section>
         </>
+      ) : (
+        <section className={styles.placeholder}>
+          <p>
+            The <strong>{activeTab}</strong> section is coming soon. Stay tuned!
+          </p>
+        </section>
       )}
     </div>
   );
@@ -521,6 +520,12 @@ function MetaRow({ icon, label, value }) {
     </div>
   );
 }
+
+MetaRow.propTypes = {
+  icon: PropTypes.node,
+  label: PropTypes.string,
+  value: PropTypes.string,
+};
 
 function MiniCalendar() {
   const weeks = [
@@ -565,6 +570,11 @@ function MiniCalendar() {
   );
 }
 
+const ringDetailShape = PropTypes.shape({
+  label: PropTypes.string,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+});
+
 function RingCard({ config }) {
   const { title, value, details = [], colors } = config;
   return (
@@ -597,6 +607,15 @@ function RingCard({ config }) {
   );
 }
 
+RingCard.propTypes = {
+  config: PropTypes.shape({
+    title: PropTypes.string,
+    value: PropTypes.number,
+    details: PropTypes.arrayOf(ringDetailShape),
+    colors: PropTypes.arrayOf(PropTypes.string),
+  }),
+};
+
 function SortableHeader({ label, sortKey, sortConfig, onSort }) {
   return (
     <th>
@@ -611,5 +630,15 @@ function SortableHeader({ label, sortKey, sortConfig, onSort }) {
     </th>
   );
 }
+
+SortableHeader.propTypes = {
+  label: PropTypes.string,
+  sortKey: PropTypes.string,
+  sortConfig: PropTypes.shape({
+    key: PropTypes.string,
+    direction: PropTypes.string,
+  }),
+  onSort: PropTypes.func,
+};
 
 export default LogAttendance;

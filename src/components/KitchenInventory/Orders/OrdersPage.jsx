@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 import styles from './OrdersPage.module.css';
 
 const ordersData = [
@@ -13,7 +14,7 @@ const ordersData = [
     items: [
       { name: 'Organic Spinach', quantity: '5 lbs', unitPrice: 3.99, total: 19.95 },
       { name: 'Bell Peppers (Mixed)', quantity: '8 lbs', unitPrice: 2.99, total: 23.92 },
-      { name: 'Fresh Rosemary', quantity: '2 bunches', unitPrice: 2.5, total: 5.0 },
+      { name: 'Fresh Rosemary', quantity: '2 bunches', unitPrice: 2.5, total: 5 },
     ],
   },
   {
@@ -25,7 +26,7 @@ const ordersData = [
     itemCount: 3,
     total: 217.2,
     items: [
-      { name: 'Quinoa (Organic)', quantity: '20 lbs', unitPrice: 4.5, total: 90.0 },
+      { name: 'Quinoa (Organic)', quantity: '20 lbs', unitPrice: 4.5, total: 90 },
       { name: 'Brown Rice', quantity: '25 lbs', unitPrice: 2.99, total: 74.75 },
       { name: 'Whole Wheat Flour', quantity: '30 lbs', unitPrice: 1.89, total: 56.7 },
     ],
@@ -55,21 +56,22 @@ const ordersData = [
     total: 129.85,
     items: [
       { name: 'Whole Milk', quantity: '10 gallons', unitPrice: 4.99, total: 49.9 },
-      { name: 'Free-Range Eggs', quantity: '8 dozen', unitPrice: 5.5, total: 44.0 },
+      { name: 'Free-Range Eggs', quantity: '8 dozen', unitPrice: 5.5, total: 44 },
       { name: 'Butter (Unsalted)', quantity: '5 lbs', unitPrice: 6.99, total: 34.95 },
     ],
   },
 ];
 
 const StatusBadge = ({ status }) => {
-  const badgeClass = `${styles.badge} ${
-    status === 'ordered'
-      ? styles.badgeOrdered
-      : status === 'received'
-      ? styles.badgeReceived
-      : styles.badgeStocked
-  }`;
+  let variantClass = styles.badgeStocked;
+  if (status === 'ordered') variantClass = styles.badgeOrdered;
+  else if (status === 'received') variantClass = styles.badgeReceived;
+  const badgeClass = `${styles.badge} ${variantClass}`;
   return <span className={badgeClass}>{status.charAt(0).toUpperCase() + status.slice(1)}</span>;
+};
+
+StatusBadge.propTypes = {
+  status: PropTypes.string.isRequired,
 };
 
 const StatCard = ({ label, value, bgColor, icon }) => (
@@ -83,6 +85,13 @@ const StatCard = ({ label, value, bgColor, icon }) => (
     </div>
   </div>
 );
+
+StatCard.propTypes = {
+  label: PropTypes.string,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  bgColor: PropTypes.string,
+  icon: PropTypes.node,
+};
 
 const OrderCard = ({ order, onStatusChange }) => {
   const getActionButton = () => {
@@ -134,8 +143,8 @@ const OrderCard = ({ order, onStatusChange }) => {
 
       <div className={styles.itemsSection}>
         <p className={styles.itemsSectionTitle}>Order Items:</p>
-        {order.items.map((item, idx) => (
-          <div key={idx} className={styles.itemRow}>
+        {order.items.map(item => (
+          <div key={item.name} className={styles.itemRow}>
             <div className={styles.itemInfo}>
               <div className={styles.itemIcon}>✓</div>
               <div>
@@ -162,6 +171,30 @@ const OrderCard = ({ order, onStatusChange }) => {
       </div>
     </div>
   );
+};
+
+const orderItemShape = PropTypes.shape({
+  name: PropTypes.string,
+  quantity: PropTypes.string,
+  unitPrice: PropTypes.number,
+  total: PropTypes.number,
+});
+
+const orderShape = PropTypes.shape({
+  id: PropTypes.string,
+  status: PropTypes.string,
+  supplier: PropTypes.string,
+  orderDate: PropTypes.string,
+  expectedDelivery: PropTypes.string,
+  itemCount: PropTypes.number,
+  total: PropTypes.number,
+  urgent: PropTypes.string,
+  items: PropTypes.arrayOf(orderItemShape),
+});
+
+OrderCard.propTypes = {
+  order: orderShape,
+  onStatusChange: PropTypes.func,
 };
 
 function OrdersPage() {

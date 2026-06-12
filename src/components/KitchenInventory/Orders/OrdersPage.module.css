@@ -380,7 +380,7 @@
 
 .badgeOrdered {
   background-color: #fff3e0;
-  color: #e65100;
+  color: #7a2900;
   border: 1px solid #ffcc80;
 }
 
@@ -536,7 +536,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #f57c00;
+  color: #7a3d00;
   font-size: 13px;
 }
 

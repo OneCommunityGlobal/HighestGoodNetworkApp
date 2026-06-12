@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import styles from './GardenManagement.module.css';
 
@@ -118,9 +118,32 @@ const calendarSections = [
 
 // --- Main Component ---
 
+const emptyEvent = { crop: '', dateRange: '', location: '', yield: '', status: 'upcoming' };
+
 function GardenManagement() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [activeSection, setActiveSection] = useState('Calendars');
+  const [sections, setSections] = useState(calendarSections);
+  const [addModal, setAddModal] = useState(null);
+  const [newEvent, setNewEvent] = useState(emptyEvent);
+
+  const openModal = sectionId => {
+    setAddModal(sectionId);
+    setNewEvent(emptyEvent);
+  };
+
+  const closeModal = () => setAddModal(null);
+
+  const handleAddEvent = () => {
+    if (!newEvent.crop || !newEvent.dateRange || !newEvent.location) return;
+    setSections(prev =>
+      prev.map(s => {
+        if (s.id !== addModal) return s;
+        return { ...s, events: [...s.events, { ...newEvent, id: Date.now() }] };
+      }),
+    );
+    closeModal();
+  };
 
   return (
     <div className={`${styles.pageWrapper} ${darkMode ? styles.dark : ''}`}>
@@ -137,20 +160,21 @@ function GardenManagement() {
 
         {/* Dashboard Cards */}
         <section className={styles.dashboardGrid} aria-label="Dashboard summary">
-          {dashboardStats.map(stat => (
-            <div
-              key={stat.id}
-              className={`${styles.dashboardCard} ${styles[`card_${stat.color}`]} ${
-                darkMode ? styles.dark : ''
-              }`}
-            >
-              <div className={styles.cardIcon}>{stat.icon}</div>
-              <div className={styles.cardContent}>
-                <span className={styles.cardValue}>{stat.value}</span>
-                <span className={styles.cardLabel}>{stat.label}</span>
+          {dashboardStats.map(stat => {
+            const colorClass = styles[`card_${stat.color}`];
+            return (
+              <div
+                key={stat.id}
+                className={`${styles.dashboardCard} ${colorClass} ${darkMode ? styles.dark : ''}`}
+              >
+                <div className={styles.cardIcon}>{stat.icon}</div>
+                <div className={styles.cardContent}>
+                  <span className={styles.cardValue}>{stat.value}</span>
+                  <span className={styles.cardLabel}>{stat.label}</span>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </section>
 
         {/* Section Navbar */}
@@ -176,7 +200,7 @@ function GardenManagement() {
         {activeSection === 'Calendars' && (
           <section aria-label="Garden Calendars">
             <div className={styles.calendarsGrid}>
-              {calendarSections.map(section => (
+              {sections.map(section => (
                 <div
                   key={section.id}
                   className={`${styles.calendarSection} ${darkMode ? styles.dark : ''}`}
@@ -188,34 +212,38 @@ function GardenManagement() {
                     <button
                       type="button"
                       className={`${styles.addBtn} ${darkMode ? styles.dark : ''}`}
+                      onClick={() => openModal(section.id)}
                     >
                       + {section.addLabel}
                     </button>
                   </div>
 
                   <div className={styles.eventList}>
-                    {section.events.map(event => (
-                      <div
-                        key={event.id}
-                        className={`${styles.eventCard} ${darkMode ? styles.dark : ''}`}
-                      >
-                        <div className={styles.eventTop}>
-                          <span className={styles.eventCrop}>{event.crop}</span>
-                          <span
-                            className={`${styles.statusTag} ${styles[`status_${event.status}`]} ${
-                              darkMode ? styles.dark : ''
-                            }`}
-                          >
-                            {event.status}
-                          </span>
+                    {section.events.map(event => {
+                      const statusClass = styles[`status_${event.status}`];
+                      return (
+                        <div
+                          key={event.id}
+                          className={`${styles.eventCard} ${darkMode ? styles.dark : ''}`}
+                        >
+                          <div className={styles.eventTop}>
+                            <span className={styles.eventCrop}>{event.crop}</span>
+                            <span
+                              className={`${styles.statusTag} ${statusClass} ${
+                                darkMode ? styles.dark : ''
+                              }`}
+                            >
+                              {event.status}
+                            </span>
+                          </div>
+                          <div className={styles.eventMeta}>
+                            <span>📅 {event.dateRange}</span>
+                            <span>📍 {event.location}</span>
+                            <span>⚖️ {event.yield}</span>
+                          </div>
                         </div>
-                        <div className={styles.eventMeta}>
-                          <span>📅 {event.dateRange}</span>
-                          <span>📍 {event.location}</span>
-                          <span>⚖️ {event.yield}</span>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               ))}
@@ -230,6 +258,102 @@ function GardenManagement() {
           </div>
         )}
       </div>
+
+      {/* Add Event Modal */}
+      {addModal && (
+        <div className={styles.modalOverlay}>
+          <div className={`${styles.modalBox} ${darkMode ? styles.dark : ''}`}>
+            <h3 className={`${styles.modalTitle} ${darkMode ? styles.dark : ''}`}>
+              {sections.find(s => s.id === addModal)?.addLabel}
+            </h3>
+
+            <label
+              htmlFor="gm-crop"
+              className={`${styles.modalLabel} ${darkMode ? styles.dark : ''}`}
+            >
+              Crop *
+            </label>
+            <input
+              id="gm-crop"
+              className={`${styles.modalInput} ${darkMode ? styles.dark : ''}`}
+              value={newEvent.crop}
+              onChange={e => setNewEvent({ ...newEvent, crop: e.target.value })}
+              placeholder="e.g. Tomatoes"
+            />
+
+            <label
+              htmlFor="gm-dateRange"
+              className={`${styles.modalLabel} ${darkMode ? styles.dark : ''}`}
+            >
+              Date Range *
+            </label>
+            <input
+              id="gm-dateRange"
+              className={`${styles.modalInput} ${darkMode ? styles.dark : ''}`}
+              value={newEvent.dateRange}
+              onChange={e => setNewEvent({ ...newEvent, dateRange: e.target.value })}
+              placeholder="e.g. Jun 1 - Jun 15"
+            />
+
+            <label
+              htmlFor="gm-location"
+              className={`${styles.modalLabel} ${darkMode ? styles.dark : ''}`}
+            >
+              Location *
+            </label>
+            <input
+              id="gm-location"
+              className={`${styles.modalInput} ${darkMode ? styles.dark : ''}`}
+              value={newEvent.location}
+              onChange={e => setNewEvent({ ...newEvent, location: e.target.value })}
+              placeholder="e.g. Greenhouse A"
+            />
+
+            <label
+              htmlFor="gm-yield"
+              className={`${styles.modalLabel} ${darkMode ? styles.dark : ''}`}
+            >
+              Est. Yield
+            </label>
+            <input
+              id="gm-yield"
+              className={`${styles.modalInput} ${darkMode ? styles.dark : ''}`}
+              value={newEvent.yield}
+              onChange={e => setNewEvent({ ...newEvent, yield: e.target.value })}
+              placeholder="e.g. Est. 40 kg"
+            />
+
+            <label
+              htmlFor="gm-status"
+              className={`${styles.modalLabel} ${darkMode ? styles.dark : ''}`}
+            >
+              Status
+            </label>
+            <select
+              id="gm-status"
+              className={`${styles.modalInput} ${darkMode ? styles.dark : ''}`}
+              value={newEvent.status}
+              onChange={e => setNewEvent({ ...newEvent, status: e.target.value })}
+            >
+              <option value="upcoming">Upcoming</option>
+              <option value="growing">Growing</option>
+            </select>
+
+            <div className={styles.modalBtns}>
+              <button
+                type="button"
+                className={`${styles.modalCancelBtn} ${darkMode ? styles.dark : ''}`}
+                onClick={closeModal}
+              >
+                Cancel
+              </button>
+              <button type="button" className={styles.modalAddBtn} onClick={handleAddEvent}>
+                Add
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -186,7 +186,7 @@
 }
 
 .sectionTab.activeTab.dark {
-  background-color: #5d8a52;
+  background-color: #3a5e2d;
   color: #fff;
 }
 
@@ -262,7 +262,7 @@
 }
 
 .addBtn.dark:hover {
-  background-color: #5d8a52;
+  background-color: #3a5e2d;
   color: #fff;
 }
 
@@ -336,8 +336,8 @@
 }
 
 .status_upcoming.dark {
-  background-color: rgb(74 103 65 / 25%);
-  color: #8fbf85;
+  background-color: rgb(74 103 65 / 40%);
+  color: #c8f0c0;
 }
 
 .status_growing {
@@ -346,8 +346,8 @@
 }
 
 .status_growing.dark {
-  background-color: rgb(184 134 11 / 20%);
-  color: #e2b94e;
+  background-color: rgb(184 134 11 / 35%);
+  color: #f5d78a;
 }
 
 /* --- Placeholder Section --- */
@@ -355,7 +355,7 @@
   text-align: center;
   padding: 60px 20px;
   font-size: 1rem;
-  color: #7a7570;
+  color: #524e4a;
   background-color: #f5f1eb;
   border-radius: 12px;
   border: 1px dashed #d6d0c8;
@@ -365,4 +365,128 @@
   color: #a09a94;
   background-color: #252320;
   border-color: #3e3b37;
+}
+
+/* --- Add Event Modal --- */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgb(0 0 0 / 40%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modalBox {
+  background: #faf8f5;
+  border: 1px solid #e6e0d8;
+  border-radius: 14px;
+  padding: 28px 24px;
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.modalBox.dark {
+  background: #2a2825;
+  border-color: #3e3b37;
+}
+
+.modalTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 0 4px;
+  color: #3e3a36;
+}
+
+.modalTitle.dark {
+  color: #e0ddd8;
+}
+
+.modalLabel {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #6b6560;
+  margin-bottom: 2px;
+}
+
+.modalLabel.dark {
+  color: #a09a94;
+}
+
+.modalInput {
+  width: 100%;
+  padding: 8px 11px;
+  border: 1px solid #d6d0c8;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  background: #fff;
+  color: #3e3a36;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.modalInput:focus {
+  border-color: #4a6741;
+}
+
+.modalInput.dark {
+  background: #332f2c;
+  border-color: #47433f;
+  color: #e0ddd8;
+}
+
+.modalInput.dark:focus {
+  border-color: #5d8a52;
+}
+
+.modalBtns {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.modalCancelBtn {
+  padding: 8px 18px;
+  border: 1.5px solid #c8c2ba;
+  border-radius: 8px;
+  background: transparent;
+  color: #6b6560;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.modalCancelBtn:hover {
+  background-color: #f0ece6;
+}
+
+.modalCancelBtn.dark {
+  border-color: #47433f;
+  color: #a09a94;
+}
+
+.modalCancelBtn.dark:hover {
+  background-color: #3e3b37;
+}
+
+.modalAddBtn {
+  padding: 8px 18px;
+  border: none;
+  border-radius: 8px;
+  background: #4a6741;
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.modalAddBtn:hover {
+  background-color: #3a5e2d;
 }
