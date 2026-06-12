@@ -194,7 +194,7 @@ function isResumeQuestion(q) {
 function shouldHideQuestionFromApplicantList(q) {
   if (isResumeQuestion(q)) return true;
   const raw = (q.label || q.questionText || '').trim();
-  return /^(19|20)[.)\s]/.test(raw) || /^[Qq]uestion\s*(19|20)\b/i.test(raw);
+  return /^(19|20)[.)\s]/.test(raw) || /^question\s*(19|20)\b/i.test(raw);
 }
 
 function formRequiresResumeUpload(form) {
@@ -465,7 +465,7 @@ function FileUploadField({
       )}
       <div className={styles.fileUploadRow}>
         <label htmlFor={id} className={styles.uploadButton}>
-          Choose file
+          <span>Choose file</span>
           <input
             id={id}
             ref={inputRef}
