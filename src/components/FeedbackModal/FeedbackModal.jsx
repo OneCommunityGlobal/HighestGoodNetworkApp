@@ -1,25 +1,26 @@
-import { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
+import { useEffect, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import {
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
   Button,
   FormGroup,
-  Label,
   Input,
+  Label,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
 } from 'reactstrap';
-import { useSelector } from 'react-redux';
-import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
 import styles from './FeedbackModal.module.css';
-import StarRating from './StarRating';
 import MemberSearchBar from './MemberSearchBar';
+import StarRating from './StarRating';
 
 function FeedbackModal() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const userProfile = useSelector(state => state.userProfile);
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false); // ← start as false, let API decide
   const [receivedHelp, setReceivedHelp] = useState('');
   const [ratedMembers, setRatedMembers] = useState([{ id: 'active-1', name: '', rating: 0 }]);
   const [inactiveRatedMembers, setInactiveRatedMembers] = useState([
@@ -30,24 +31,40 @@ function FeedbackModal() {
   const [activeUsers, setActiveUsers] = useState([]);
   const [inactiveUsers, setInactiveUsers] = useState([]);
 
-  // Use refs to maintain counters for unique IDs
   const nextActiveIdRef = useRef(2);
   const nextInactiveIdRef = useRef(2);
 
-  // Fetch user names from API
+  // Check backend if modal should show
+  useEffect(() => {
+    const checkHelpRequest = async () => {
+      try {
+        const response = await axios.get(ENDPOINTS.QUESTIONNAIRE_CHECK_MODAL(userProfile._id));
+        if (response.data.showModal) {
+          setIsOpen(true);
+        } else {
+          setIsOpen(false);
+        }
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('Error checking help request:', error);
+        setIsOpen(false);
+      }
+    };
+
+    if (userProfile?._id) {
+      checkHelpRequest();
+    }
+  }, [userProfile]);
+
+  // Fetch active and inactive user names
   useEffect(() => {
     const fetchUserNames = async () => {
       try {
         const response = await axios.get(ENDPOINTS.QUESTIONNAIRE_USER_NAMES_LIST());
         if (response.data && response.data.users) {
           const { users } = response.data;
-
-          // Separate active and inactive users
-          const active = users.filter(user => user.isActive);
-          const inactive = users.filter(user => !user.isActive);
-
-          setActiveUsers(active);
-          setInactiveUsers(inactive);
+          setActiveUsers(users.filter(user => user.isActive));
+          setInactiveUsers(users.filter(user => !user.isActive));
         }
       } catch (error) {
         // eslint-disable-next-line no-console
@@ -58,30 +75,6 @@ function FeedbackModal() {
     fetchUserNames();
   }, []);
 
-  // Placeholder for getting help request status
-  useEffect(() => {
-    // In a real implementation, this would check if a help request was made a week ago
-    // For now, we're just showing the modal when navigating to the dashboard
-    const checkHelpRequest = () => {
-      // This would be replaced with actual API call to check if user made a help request a week ago
-      const hasUncompletedFeedback = localStorage.getItem('feedbackNeeded') === 'true';
-      const feedbackCompleted = localStorage.getItem('feedbackCompleted') === 'true';
-
-      if (hasUncompletedFeedback && !feedbackCompleted) {
-        setIsOpen(true);
-      } else {
-        setIsOpen(false);
-      }
-    };
-
-    // Set feedback needed to true for demo purposes
-    if (localStorage.getItem('feedbackNeeded') === null) {
-      localStorage.setItem('feedbackNeeded', 'true');
-    }
-
-    checkHelpRequest();
-  }, []);
-
   const handleSubmit = async () => {
     if (!userProfile || !userProfile._id) {
       // eslint-disable-next-line no-console
@@ -89,10 +82,37 @@ function FeedbackModal() {
       return;
     }
 
+    // Validate that all filled member names are valid users from the list
+    const allUsers = [...activeUsers, ...inactiveUsers];
+
+    const invalidActive = ratedMembers.find(
+      m =>
+        m.name.trim() !== '' &&
+        !allUsers.some(
+          u => `${u.firstName} ${u.lastName}`.toLowerCase() === m.name.trim().toLowerCase(),
+        ),
+    );
+
+    const invalidInactive = inactiveRatedMembers.find(
+      m =>
+        m.name.trim() !== '' &&
+        !allUsers.some(
+          u => `${u.firstName} ${u.lastName}`.toLowerCase() === m.name.trim().toLowerCase(),
+        ),
+    );
+
+    if (invalidActive || invalidInactive) {
+      toast.warn('Please select valid members from the dropdown only.');
+      return;
+    }
+    console.log('allUsers:', allUsers);
+    console.log('ratedMembers:', ratedMembers);
+    console.log('invalidActive:', invalidActive);
+    console.log('invalidInactive:', invalidInactive);
+
     setIsSubmitting(true);
 
     try {
-      // Format the rated members data for the API
       const peopleYouContacted = [...ratedMembers, ...inactiveRatedMembers]
         .filter(member => member.name.trim() !== '')
         .map(member => ({
@@ -101,7 +121,6 @@ function FeedbackModal() {
           isActive: !member.id.includes('inactive'),
         }));
 
-      // Prepare the request payload
       const payload = {
         userId: userProfile._id,
         haveYouRecievedHelpLastWeek: receivedHelp,
@@ -111,11 +130,7 @@ function FeedbackModal() {
         daterequestedFeedback: new Date().toISOString(),
       };
 
-      // Make the API call
       await axios.post(ENDPOINTS.QUESTIONNAIRE_FEEDBACK_REQUEST(), payload);
-
-      // Mark feedback as completed
-      localStorage.setItem('feedbackCompleted', 'true');
       setIsOpen(false);
     } catch (error) {
       // eslint-disable-next-line no-console
@@ -135,17 +150,12 @@ function FeedbackModal() {
     setIsSubmitting(true);
 
     try {
-      // Prepare the request payload
       const payload = {
         userId: userProfile._id,
         foundHelpSomeWhereClosePermanently: true,
       };
 
-      // Make the API call
       await axios.post(ENDPOINTS.QUESTIONNAIRE_CLOSE_PERMANENTLY(), payload);
-
-      // Mark feedback as completed and prevent it from showing again
-      localStorage.setItem('feedbackCompleted', 'true');
       setIsOpen(false);
     } catch (error) {
       // eslint-disable-next-line no-console
@@ -169,14 +179,10 @@ function FeedbackModal() {
 
   const removeMember = (id, isInactive = false) => {
     if (isInactive) {
-      // Ensure we don't remove the last entry
       if (inactiveRatedMembers.length <= 1) return;
-
       setInactiveRatedMembers(inactiveRatedMembers.filter(member => member.id !== id));
     } else {
-      // Ensure we don't remove the last entry
       if (ratedMembers.length <= 1) return;
-
       setRatedMembers(ratedMembers.filter(member => member.id !== id));
     }
   };
@@ -208,19 +214,12 @@ function FeedbackModal() {
   };
 
   const openFeedbackSuggestions = () => {
-    // Set a flag in localStorage with a timestamp to ensure it's recognized as a new request
-    // This ensures repeated clicks will work and helps prevent unexpected popups
     localStorage.setItem('openSuggestionsModal', Date.now().toString());
-
-    // Close the current feedback modal
     setIsOpen(false);
 
-    // If we're not on the dashboard, redirect there
     if (!window.location.hash.includes('/dashboard')) {
       window.location.href = '/#/dashboard';
     } else {
-      // If we're already on the dashboard, force a refresh of the SummaryBar
-      // by dispatching a custom event that it can listen for
       window.dispatchEvent(new CustomEvent('openSuggestionModal'));
     }
   };
@@ -366,7 +365,9 @@ function FeedbackModal() {
               placeholder="Want to send a special shout out to someone who helped you? Let us know here!"
               value={comments}
               onChange={e => setComments(e.target.value)}
+              maxLength={1000}
             />
+            <small className="text-muted">{comments.length}/1000 characters</small>
           </div>
 
           <div className={`${styles.suggestionsLink} mt-3 ${styles.textCenter}`}>

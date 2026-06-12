@@ -14,6 +14,8 @@ function ApplicantsDashboard() {
   const [compareLabel, setCompareLabel] = useState('last week');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
   // dark mode from Redux
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -216,8 +218,20 @@ function ApplicantsDashboard() {
         <span style={{ color: darkMode ? '#e5e7eb' : '#000' }}>to</span>
         <DatePicker
           selected={endDate}
-          onChange={handleEndDateChange}
+          onChange={date => {
+            if (!date) return;
+
+            const selected = new Date(date);
+            selected.setHours(0, 0, 0, 0);
+
+            if (selected > today) return; //  block future dates
+
+            handleEndDateChange(selected);
+          }}
           placeholderText="End Date"
+          maxDate={today}
+          filterDate={date => date <= today}
+          dayClassName={date => (date > today ? styles.disabledDay : undefined)}
           {...getDatePickerProps()}
         />
       </>
