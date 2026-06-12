@@ -1,13 +1,13 @@
-import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
-import BlueSquare from '../BlueSquares/BlueSquare';
 import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
-import './BlueSquaresTable.module.css';
+import BlueSquare from '../BlueSquares/BlueSquare';
+import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
+import styles from './BlueSquaresTable.module.css';
 
 const BlueSquaresTable = ({ userProfile ,canEdit, isPrivate , handleUserProfile , handleBlueSquare, darkMode}) => {
   return (
-    <div className="user-profile-blue-square-section">
-      <div className={`user-profile-blue-square-div-header ${darkMode ? 'bg-space-cadet' : ''}`}>
-        <div className="user-profile-blue-square-div-header-title">
+    <div className={styles['user-profile-blue-square-section']}>
+      <div data-testid="blue-square-div-header" className={`${styles['user-profile-blue-square-div-header']} ${darkMode ? 'bg-space-cadet' : ''}`}>
+        <div className={styles['user-profile-blue-square-div-header-title']}>
           <div className='blue-squares' data-testid='blue-squares'>BLUE SQUARES</div>
           <div>
             <EditableInfoModal
@@ -22,7 +22,7 @@ const BlueSquaresTable = ({ userProfile ,canEdit, isPrivate , handleUserProfile 
         </div>
         {canEdit && (
           <ToggleSwitch
-            toggleClass="user-profile-blue-square-header-toggle"
+            toggleClass={styles['user-profile-blue-square-header-toggle']}
             switchType="bluesquares"
             state={isPrivate}
             handleUserProfile={handleUserProfile}
