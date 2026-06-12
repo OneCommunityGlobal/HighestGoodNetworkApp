@@ -165,7 +165,6 @@ import RecipesLandingPage from './components/KitchenandInventory/Recipes';
 
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPDashboard from './components/EductionPortal';
-import AssignAtoms from './components/EductionPortal/AssignAtoms/AssignAtoms';
 import InsightWidget from './components/EductionPortal/AnalyticsDashboard/InsightsWidget';
 import ReportDownloadButton from './components/EductionPortal/AnalyticsDashboard/ReportDownloadButton';
 import AnnouncementsPage from './components/EductionPortal/Announcements/AnnouncementsPage';

@@ -81,7 +81,7 @@ const StudentDashboard = () => {
           const subTasks = await dispatch(fetchIntermediateTasks(task.id));
           intermediateTasksData[task.id] = subTasks || [];
           changed = true;
-        } catch (err) {
+        } catch (_err) {
           intermediateTasksData[task.id] = [];
           changed = true;
         }
