@@ -20,6 +20,7 @@ import logger from '../../../../services/logService';
 import config from '../../../../config.json';
 import { ENDPOINTS } from '../../../../utils/URL';
 import { MOCK_DB } from './mockLaborCostData';
+import PropTypes from 'prop-types';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -232,16 +233,29 @@ const MultiValue = () => null;
 
 const ValueContainer = ({ children, ...props }) => {
   const length = props.getValue().length;
+  const color = props.selectProps?.styles?.singleValue?.color || 'inherit';
   return (
     <components.ValueContainer {...props}>
       {length > 0 && (
-        <div style={{ color: props.selectProps.styles.singleValue?.color || 'inherit' }}>
-          {length} item{length !== 1 ? 's' : ''} selected
+        <div style={{ color }}>
+          {length} item{length === 1 ? '' : 's'} selected
         </div>
       )}
       {children}
     </components.ValueContainer>
   );
+};
+
+ValueContainer.propTypes = {
+  children: PropTypes.node,
+  getValue: PropTypes.func.isRequired,
+  selectProps: PropTypes.shape({
+    styles: PropTypes.shape({
+      singleValue: PropTypes.shape({
+        color: PropTypes.string,
+      }),
+    }),
+  }),
 };
 
 const Option = props => {
@@ -258,6 +272,11 @@ const Option = props => {
       </div>
     </components.Option>
   );
+};
+
+Option.propTypes = {
+  isSelected: PropTypes.bool.isRequired,
+  label: PropTypes.string.isRequired,
 };
 
 const buildChartDatasets = (tasksToInclude, labels, aggregation, darkMode) => {
