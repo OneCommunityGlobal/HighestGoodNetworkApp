@@ -211,6 +211,75 @@ PieChartPanel.propTypes = {
  *   viewMode   ('stacked'|'comparison')       — ignored when pieType is set
  *   pieType    ('actual'|'planned'|undefined) — when set, renders one pie only
  */
+function ComparisonView({ actual, planned, darkMode, activeTab, setActiveTab }) {
+  return (
+    <div className={styles['expenditure-chart-comparison']}>
+      <div
+        className={styles['expenditure-chart-tab-bar']}
+        role="tablist"
+        aria-label="Select expenditure chart"
+      >
+        <button
+          type="button"
+          role="tab"
+          id="expenditure-tab-actual"
+          aria-selected={activeTab === 'actual'}
+          aria-controls="expenditure-panel-actual"
+          className={`${styles['expenditure-chart-tab']} ${
+            activeTab === 'actual' ? styles['expenditure-chart-tab--active'] : ''
+          }`}
+          onClick={() => setActiveTab('actual')}
+        >
+          Actual
+        </button>
+        <button
+          type="button"
+          role="tab"
+          id="expenditure-tab-planned"
+          aria-selected={activeTab === 'planned'}
+          aria-controls="expenditure-panel-planned"
+          className={`${styles['expenditure-chart-tab']} ${
+            activeTab === 'planned' ? styles['expenditure-chart-tab--active'] : ''
+          }`}
+          onClick={() => setActiveTab('planned')}
+        >
+          Planned
+        </button>
+      </div>
+      <div className={styles['expenditure-chart-panes']}>
+        <div
+          id="expenditure-panel-actual"
+          role="tabpanel"
+          aria-labelledby="expenditure-tab-actual"
+          className={`${styles['expenditure-chart-panel']} ${
+            activeTab === 'actual' ? '' : styles['expenditure-chart-panel--hidden-mobile']
+          }`}
+        >
+          <PieChartPanel data={actual} title="Actual Expenditure" darkMode={darkMode} compact />
+        </div>
+        <div
+          id="expenditure-panel-planned"
+          role="tabpanel"
+          aria-labelledby="expenditure-tab-planned"
+          className={`${styles['expenditure-chart-panel']} ${
+            activeTab === 'planned' ? '' : styles['expenditure-chart-panel--hidden-mobile']
+          }`}
+        >
+          <PieChartPanel data={planned} title="Planned Expenditure" darkMode={darkMode} compact />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ComparisonView.propTypes = {
+  actual: PropTypes.array,
+  planned: PropTypes.array,
+  darkMode: PropTypes.bool,
+  activeTab: PropTypes.string,
+  setActiveTab: PropTypes.func,
+};
+
 function ExpenditureChart({ projectId, viewMode, pieType }) {
   const darkMode = useSelector(state => state.theme.darkMode);
 
@@ -286,69 +355,13 @@ function ExpenditureChart({ projectId, viewMode, pieType }) {
   // ── Comparison mode ──────────────────────────────────────────
   if (viewMode === 'comparison') {
     return (
-      <div className={styles['expenditure-chart-comparison']}>
-        {/*
-          Tab bar — hidden via CSS on desktop (>640 px),
-          visible on mobile to switch between the two panels.
-        */}
-        <div
-          className={styles['expenditure-chart-tab-bar']}
-          role="tablist"
-          aria-label="Select expenditure chart"
-        >
-          <button
-            type="button"
-            role="tab"
-            id="expenditure-tab-actual"
-            aria-selected={activeTab === 'actual'}
-            aria-controls="expenditure-panel-actual"
-            className={`${styles['expenditure-chart-tab']} ${
-              activeTab === 'actual' ? styles['expenditure-chart-tab--active'] : ''
-            }`}
-            onClick={() => setActiveTab('actual')}
-          >
-            Actual
-          </button>
-          <button
-            type="button"
-            role="tab"
-            id="expenditure-tab-planned"
-            aria-selected={activeTab === 'planned'}
-            aria-controls="expenditure-panel-planned"
-            className={`${styles['expenditure-chart-tab']} ${
-              activeTab === 'planned' ? styles['expenditure-chart-tab--active'] : ''
-            }`}
-            onClick={() => setActiveTab('planned')}
-          >
-            Planned
-          </button>
-        </div>
-
-        {/* Side-by-side row (desktop) / single visible panel (mobile) */}
-        <div className={styles['expenditure-chart-panes']}>
-          <div
-            id="expenditure-panel-actual"
-            role="tabpanel"
-            aria-labelledby="expenditure-tab-actual"
-            className={`${styles['expenditure-chart-panel']} ${
-              activeTab === 'actual' ? '' : styles['expenditure-chart-panel--hidden-mobile']
-            }`}
-          >
-            <PieChartPanel data={actual} title="Actual Expenditure" darkMode={darkMode} compact />
-          </div>
-
-          <div
-            id="expenditure-panel-planned"
-            role="tabpanel"
-            aria-labelledby="expenditure-tab-planned"
-            className={`${styles['expenditure-chart-panel']} ${
-              activeTab === 'planned' ? '' : styles['expenditure-chart-panel--hidden-mobile']
-            }`}
-          >
-            <PieChartPanel data={planned} title="Planned Expenditure" darkMode={darkMode} compact />
-          </div>
-        </div>
-      </div>
+      <ComparisonView
+        actual={actual}
+        planned={planned}
+        darkMode={darkMode}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+      />
     );
   }
 
