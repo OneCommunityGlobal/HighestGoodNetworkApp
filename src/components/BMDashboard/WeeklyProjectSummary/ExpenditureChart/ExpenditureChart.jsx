@@ -5,6 +5,7 @@ import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recha
 import { ENDPOINTS } from '../../../../utils/URL';
 import styles from './ExpenditureChart.module.css';
 import { getTooltipStyles } from '../../../../utils/bmChartStyles';
+import PropTypes from 'prop-types';
 
 // Category → colour mapping (Labour=blue, Equipment=green, Materials=yellow)
 const COLORS = ['#6777EF', '#A0CD61', '#F5CD4B'];
