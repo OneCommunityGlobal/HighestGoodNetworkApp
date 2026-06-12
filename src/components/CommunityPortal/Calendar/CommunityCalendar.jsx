@@ -63,67 +63,67 @@ export default function CommunityCalendar() {
     fetchEvents();
   }, []);
 
-const mappedEvents = useMemo(() => {
-  const holidayEvents = GOVERNMENT_HOLIDAYS.map(holiday => ({
-    id: holiday.id,
-    title: holiday.title,
-    date: new Date(holiday.date),
-    type: 'Government Holiday',
-    status: 'Holiday',
-    time: 'All Day',
-    endTime: 'All Day',
-    description: `${holiday.title} holiday`,
-    location: 'National',
-    isHoliday: true,
-    isOver: new Date(holiday.date) < new Date(),
-  }));
+  const mappedEvents = useMemo(() => {
+    const holidayEvents = GOVERNMENT_HOLIDAYS.map(holiday => ({
+      id: holiday.id,
+      title: holiday.title,
+      date: new Date(holiday.date),
+      type: 'Government Holiday',
+      status: 'Holiday',
+      time: 'All Day',
+      endTime: 'All Day',
+      description: `${holiday.title} holiday`,
+      location: 'National',
+      isHoliday: true,
+      isOver: new Date(holiday.date) < new Date(),
+    }));
 
-  const communityEvents = events.map(event => {
-    const eventDateTime = new Date(event.startTime || event.date);
+    const communityEvents = events.map(event => {
+      const eventDateTime = new Date(event.startTime || event.date);
 
-    const timeString = new Intl.DateTimeFormat('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true,
-      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    }).format(eventDateTime);
-
-    const eventEndTime = event.endTime ? new Date(event.endTime) : null;
-
-    const endTimeString = eventEndTime
-      ? new Intl.DateTimeFormat('en-US', {
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: true,
-          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        }).format(eventEndTime)
-      : event.endTime;
-
-    const eventDate = new Date(
-      new Intl.DateTimeFormat('en-US', {
+      const timeString = new Intl.DateTimeFormat('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
         timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-      }).format(eventDateTime),
-    );
+      }).format(eventDateTime);
 
-    return {
-      ...event,
-      id: event.id || `${event.title}-${eventDate.getTime()}`,
-      date: eventDate,
-      type: event.type || 'General',
-      status: normalizeStatus(event.status),
-      time: event.time || timeString,
-      endTime: endTimeString || event.endTime,
-      description: event.description || `Join us for ${event.title}`,
-      location: event.location || 'Online',
-      isOver: eventDate < new Date(),
-    };
-  });
+      const eventEndTime = event.endTime ? new Date(event.endTime) : null;
 
-  return [...communityEvents, ...holidayEvents];
-}, [events]);
+      const endTimeString = eventEndTime
+        ? new Intl.DateTimeFormat('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true,
+            timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          }).format(eventEndTime)
+        : event.endTime;
+
+      const eventDate = new Date(
+        new Intl.DateTimeFormat('en-US', {
+          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+        }).format(eventDateTime),
+      );
+
+      return {
+        ...event,
+        id: event.id || `${event.title}-${eventDate.getTime()}`,
+        date: eventDate,
+        type: event.type || 'General',
+        status: normalizeStatus(event.status),
+        time: event.time || timeString,
+        endTime: endTimeString || event.endTime,
+        description: event.description || `Join us for ${event.title}`,
+        location: event.location || 'Online',
+        isOver: eventDate < new Date(),
+      };
+    });
+
+    return [...communityEvents, ...holidayEvents];
+  }, [events]);
 
   const filteredEvents = useMemo(
     () =>
