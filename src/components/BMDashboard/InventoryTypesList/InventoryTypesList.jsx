@@ -72,9 +72,12 @@ export function InventoryTypesList(props) {
         <DatePicker
           selected={currentTime}
           onChange={date => setCurrentTime(date)}
-          dateFormat="MM-dd-yyyy hh:mm:ss"
+          dateFormat="MM-dd-yyyy HH:mm:ss"
           id="timestamp"
-          showTimeInput
+          showTimeSelect
+          showTimeSelectOnly={false}
+          timeFormat="HH:mm"
+          timeIntervals={60}
           portalId="root"
           popperPlacement="bottom-start"
         />
@@ -106,7 +109,13 @@ export function InventoryTypesList(props) {
             <span className={styles.categoryIcon}>
               <FaRulerCombined />
             </span>
-            Unit of Measurement
+            <Link
+              to="/bmdashboard/units"
+              className={styles.categoryLink}
+              onClick={e => e.stopPropagation()}
+            >
+              Unit of Measurement
+            </Link>
           </AccordionToggle>
           <Accordion.Collapse eventKey={categories.length + 1}>
             <Card.Body className={`${styles.accordionCollapse}`}>
