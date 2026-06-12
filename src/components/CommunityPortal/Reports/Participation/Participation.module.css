@@ -528,7 +528,6 @@
 
 .insightsDark .insightsTab {
   background-color: #3A506B;
-
   color: #fff;
   border-right: 1px solid #555;
 }
@@ -644,7 +643,6 @@
 
 .exportOptionsButtons,
 .exportOptionsButtonsDark {
-
   flex: 1;
   padding: 10px 12px;
   border-radius: 10px;
@@ -795,7 +793,6 @@
 
   :global(.case-card-global) {
     break-inside: avoid !important;
-
     height: auto !important;
   }
 
@@ -842,7 +839,6 @@
 
   :global(.tracking-table-global-dark) thead th {
     background: #1C2541 !important;
-
     color: #fff !important;
   }
 
@@ -872,46 +868,39 @@
   /* Dark mode styles for print */
   .participationLandingPageDark {
     background: #1B2A41 !important;
-
     color: #fff !important;
   }
 
   .participationLandingPageDark :global(.case-card-global) {
     background: #3A506B !important;
-
     color: #fff !important;
     border: 1px solid #555 !important;
   }
 
   .participationLandingPageDark .trackingContainerDark {
     background: #1C2541 !important;
-
     color: #fff !important;
     border: 1px solid #555 !important;
   }
 
   .participationLandingPageDark .insightsDark {
     background: #1C2541 !important;
-
     color: #fff !important;
     border: 1px solid #555 !important;
   }
 
   .participationLandingPageDark .trackingListContainerDark {
     background: #3A506B !important;
-
     color: #fff !important;
   }
 
   .participationLandingPageDark :global(.tracking-table-global-dark) thead th {
     background: #1C2541 !important;
-
     color: #fff !important;
   }
 
   .participationLandingPageDark .trackingRateDark {
     background: #3A506B !important;
-
     color: #fff !important;
   }
 
@@ -1205,3 +1194,111 @@
   font-weight: bold;
   color: #e74c3c;
 }
+
+/* ---------- Demographics Page ---------- */
+.demographicsPage {
+  padding: 20px;
+  background: #fff;
+  border-radius: 10px;
+  margin-top: 20px;
+}
+
+.demographicsPageDark {
+  background: #1c2541;
+  color: #fff;
+}
+
+.demographicsHeader {
+  font-size: 22px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.demographicsHeaderDark {
+  color: #fff;
+}
+
+.demographicsContent {
+  display: flex;
+  justify-content: center;
+}
+
+.placeholderBox {
+  width: 100%;
+  padding: 20px;
+  border: 2px dashed #ccc;
+  border-radius: 10px;
+  text-align: center;
+  color: #555;
+}
+
+.demographicsPageDark .placeholderBox {
+  border-color: #888;
+  color: #ddd;
+}
+
+.subPageNav {
+  margin: 15px 0;
+  display: flex;
+  gap: 10px;
+}
+
+.subPageBtn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: #f1f1f1;
+  cursor: pointer;
+  font-weight: 500;
+  color: #333;
+}
+
+.subPageBtn:hover {
+  background: #e1e1e1;
+}
+
+.subPageBtnDark {
+  background: #2b3a55;
+  border-color: #666;
+  color: #fff;
+}
+
+.subPageBtnDark:hover {
+  background: #3a4b66;
+}
+
+/* ---------- Personalization Page ---------- */
+.personalizationPage {
+  padding: 20px;
+  background: #fff;
+  border-radius: 10px;
+  margin-top: 20px;
+}
+
+.personalizationPageDark {
+  background: #1c2541;
+  color: #fff;
+}
+
+.personalizationHeader {
+  font-size: 22px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.personalizationHeaderDark {
+  color: #fff;
+}
+
+.personalizationContent {
+  display: flex;
+  justify-content: center;
+}
+
+.personalizationPageDark .placeholderBox {
+  border-color: #888;
+  color: #ddd;
+}
+

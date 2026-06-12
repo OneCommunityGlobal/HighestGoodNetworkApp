@@ -550,18 +550,93 @@
   width: 100%;
 }
 
-.myCasesPageDark :global(.react-calendar__tile abbr) {
-  color: #333 !important;
-}
-
 /* Fix text inside tiles (events & numbers) for light mode */
 .reactCalendar :global(.react-calendar__tile) {
   color: #333 !important;
 }
 
-/* Fix text inside tiles (events & numbers) for DARK mode */
-.myCasesPageDark .reactCalendar :global(.react-calendar__tile) {
-  color: #333 !important;
+/* ============================================================
+   DARK MODE — react-calendar overrides
+   react-calendar ships its own stylesheet (background: white,
+   dark tile text). Without these overrides the whole widget
+   renders identically to light mode.
+   ============================================================ */
+
+/* Calendar surface */
+.myCasesPageDark .reactCalendar,
+.myCasesPageDark .reactCalendar :global(.react-calendar__viewContainer),
+.myCasesPageDark .reactCalendar :global(.react-calendar__month-view) {
+  background-color: transparent !important;
+  color: #fff !important;
+}
+
+/* Tiles (day cells) */
+.myCasesPageDark .reactCalendar :global(.react-calendar__tile),
+.myCasesPageDark .reactCalendar :global(.react-calendar__tile abbr) {
+  color: #fff !important;
+  background-color: transparent !important;
+}
+
+/* Neighbouring-month days — dimmed */
+.myCasesPageDark .reactCalendar :global(.react-calendar__month-view__days__day--neighboringMonth),
+.myCasesPageDark
+  .reactCalendar
+  :global(.react-calendar__month-view__days__day--neighboringMonth abbr) {
+  color: #9aa7b8 !important;
+}
+
+/* Tile hover / focus */
+.myCasesPageDark .reactCalendar :global(.react-calendar__tile:enabled:hover),
+.myCasesPageDark .reactCalendar :global(.react-calendar__tile:enabled:focus) {
+  background-color: #2c3e50 !important;
+}
+
+/* Today's tile */
+.myCasesPageDark .reactCalendar :global(.react-calendar__tile--now) {
+  background-color: #5a6f8c !important;
+}
+
+.myCasesPageDark .reactCalendar :global(.react-calendar__tile--now:enabled:hover),
+.myCasesPageDark .reactCalendar :global(.react-calendar__tile--now:enabled:focus) {
+  background-color: #6b80a0 !important;
+}
+
+/* Selected / active tile */
+.myCasesPageDark .reactCalendar :global(.react-calendar__tile--active),
+.myCasesPageDark .reactCalendar :global(.react-calendar__tile--active:enabled:hover),
+.myCasesPageDark .reactCalendar :global(.react-calendar__tile--active:enabled:focus) {
+  background-color: #1d6fa5 !important;
+}
+
+/* Navigation bar (month/year + arrows) */
+.myCasesPageDark .reactCalendar :global(.react-calendar__navigation) {
+  background-color: transparent !important;
+}
+
+.myCasesPageDark .reactCalendar :global(.react-calendar__navigation button) {
+  color: #fff !important;
+  background-color: transparent !important;
+}
+
+.myCasesPageDark .reactCalendar :global(.react-calendar__navigation button:enabled:hover),
+.myCasesPageDark .reactCalendar :global(.react-calendar__navigation button:enabled:focus) {
+  background-color: #2c3e50 !important;
+}
+
+.myCasesPageDark .reactCalendar :global(.react-calendar__navigation button:disabled) {
+  background-color: transparent !important;
+  color: #b0b8c4 !important;
+}
+
+/* Weekdays bar (Sun, Mon, ...) */
+.myCasesPageDark .reactCalendar :global(.react-calendar__month-view__weekdays),
+.myCasesPageDark .reactCalendar :global(.react-calendar__month-view__weekdays__weekday) {
+  background-color: transparent !important;
+}
+
+.myCasesPageDark .reactCalendar :global(.react-calendar__month-view__weekdays__weekday abbr) {
+  color: #fff !important;
+  text-decoration: none;
 }
 
 
