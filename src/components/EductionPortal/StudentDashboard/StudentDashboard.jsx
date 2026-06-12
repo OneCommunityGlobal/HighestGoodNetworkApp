@@ -10,9 +10,9 @@ import { fetchStudentTasks, markStudentTaskAsDone } from '~/actions/studentTasks
 import { fetchIntermediateTasks, markIntermediateTaskAsDone } from '~/actions/intermediateTasks';
 import HoursLogPanel from '../StudentTasks/HoursLogPanel';
 
-const ACTIVE_STATUSES = ['assigned', 'in_progress'];
-const PENDING_STATUSES = ['pending_review', 'submitted'];
-const COMPLETED_STATUSES = ['completed', 'graded'];
+const ACTIVE_STATUSES = new Set(['assigned', 'in_progress']);
+const PENDING_STATUSES = new Set(['pending_review', 'submitted']);
+const COMPLETED_STATUSES = new Set(['completed', 'graded']);
 
 const FILTER_TABS = [
   { key: 'active', label: 'Active' },
@@ -42,11 +42,11 @@ const StudentDashboard = () => {
     if (!tasks) return [];
     switch (activeFilter) {
       case 'active':
-        return tasks.filter(t => ACTIVE_STATUSES.includes(t.status));
+        return tasks.filter(t => ACTIVE_STATUSES.has(t.status));
       case 'pending':
-        return tasks.filter(t => PENDING_STATUSES.includes(t.status));
+        return tasks.filter(t => PENDING_STATUSES.has(t.status));
       case 'completed':
-        return tasks.filter(t => COMPLETED_STATUSES.includes(t.status));
+        return tasks.filter(t => COMPLETED_STATUSES.has(t.status));
       default:
         return tasks;
     }
@@ -56,9 +56,9 @@ const StudentDashboard = () => {
   const tabCounts = useMemo(() => {
     if (!tasks) return { active: 0, pending: 0, completed: 0 };
     return {
-      active: tasks.filter(t => ACTIVE_STATUSES.includes(t.status)).length,
-      pending: tasks.filter(t => PENDING_STATUSES.includes(t.status)).length,
-      completed: tasks.filter(t => COMPLETED_STATUSES.includes(t.status)).length,
+      active: tasks.filter(t => ACTIVE_STATUSES.has(t.status)).length,
+      pending: tasks.filter(t => PENDING_STATUSES.has(t.status)).length,
+      completed: tasks.filter(t => COMPLETED_STATUSES.has(t.status)).length,
     };
   }, [tasks]);
 
@@ -81,7 +81,7 @@ const StudentDashboard = () => {
           const subTasks = await dispatch(fetchIntermediateTasks(task.id));
           intermediateTasksData[task.id] = subTasks || [];
           changed = true;
-        } catch (_err) {
+        } catch {
           intermediateTasksData[task.id] = [];
           changed = true;
         }
@@ -148,7 +148,7 @@ const StudentDashboard = () => {
         await dispatch(markIntermediateTaskAsDone(intermediateTaskId));
         const subTasks = await dispatch(fetchIntermediateTasks(parentTaskId));
         setIntermediateTasks(prev => ({ ...prev, [parentTaskId]: subTasks || [] }));
-      } catch (_err) {
+      } catch {
         // Error is handled in the action
       }
     },
@@ -185,6 +185,30 @@ const StudentDashboard = () => {
     pending: 'No tasks pending review.',
     completed: 'No completed tasks yet.',
   };
+
+  const sharedTaskProps = {
+    tasks: filteredTasks,
+    onMarkAsDone: handleMarkAsDone,
+    onLogTime: handleLogTime,
+    intermediateTasks,
+    expandedTasks,
+    onToggleIntermediateTasks: toggleIntermediateTasks,
+    onMarkIntermediateAsDone: handleMarkIntermediateAsDone,
+    darkMode,
+  };
+
+  let taskContent;
+  if (filteredTasks.length === 0) {
+    taskContent = (
+      <div className={styles.emptyState}>
+        <p>{emptyMessages[activeFilter]}</p>
+      </div>
+    );
+  } else if (viewMode === 'card') {
+    taskContent = <TaskCardView {...sharedTaskProps} />;
+  } else {
+    taskContent = <TaskListView {...sharedTaskProps} />;
+  }
 
   return (
     <div className={styles.dashboard}>
@@ -272,33 +296,7 @@ const StudentDashboard = () => {
           </div>
 
           {/* Task Views */}
-          {filteredTasks.length === 0 ? (
-            <div className={styles.emptyState}>
-              <p>{emptyMessages[activeFilter]}</p>
-            </div>
-          ) : viewMode === 'card' ? (
-            <TaskCardView
-              tasks={filteredTasks}
-              onMarkAsDone={handleMarkAsDone}
-              onLogTime={handleLogTime}
-              intermediateTasks={intermediateTasks}
-              expandedTasks={expandedTasks}
-              onToggleIntermediateTasks={toggleIntermediateTasks}
-              onMarkIntermediateAsDone={handleMarkIntermediateAsDone}
-              darkMode={darkMode}
-            />
-          ) : (
-            <TaskListView
-              tasks={filteredTasks}
-              onMarkAsDone={handleMarkAsDone}
-              onLogTime={handleLogTime}
-              intermediateTasks={intermediateTasks}
-              expandedTasks={expandedTasks}
-              onToggleIntermediateTasks={toggleIntermediateTasks}
-              onMarkIntermediateAsDone={handleMarkIntermediateAsDone}
-              darkMode={darkMode}
-            />
-          )}
+          {taskContent}
         </div>
       </Container>
 
