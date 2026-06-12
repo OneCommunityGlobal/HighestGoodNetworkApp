@@ -8,7 +8,6 @@ import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { toast } from 'react-toastify';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
-import CostPredictionChart from './CostPredictionChart';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
@@ -18,11 +17,8 @@ import InjuryCategoryBarChart from './GroupedBarGraphInjurySeverity/InjuryCatego
 import ToolsHorizontalBarChart from './Tools/ToolsHorizontalBarChart';
 import ExpenseBarChart from './Financials/ExpenseBarChart';
 import CostBreakDown from './Financials/CostBreakDown/CostBreakDown';
-import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
-import FinancialStatButtons from './Financials/FinancialStatButtons';
 import FinancialsTrackingSection from './ExpenditureChart/FinancialsTrackingSection';
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
-import EmbedInteractiveMap from '../InteractiveMap/EmbedInteractiveMap';
 import InteractiveMap from '../InteractiveMap/InteractiveMap';
 import styles from './WeeklyProjectSummary.module.css';
 import LossTrackingLineChart from './Financials/LossTrackingLineCharts/LossTrackingLineChart';
@@ -477,7 +473,7 @@ function WeeklyProjectSummary() {
           'button, .weekly-project-summary-dropdown-icon, .no-print, .weekly-summary-header-controls',
         )
         .forEach(el => {
-          el.parentNode?.removeChild(el);
+          el.remove();
         });
 
       // Add styles for PDF

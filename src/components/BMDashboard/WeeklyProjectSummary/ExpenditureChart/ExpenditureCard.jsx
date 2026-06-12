@@ -3,6 +3,7 @@ import axios from 'axios';
 import { ENDPOINTS } from '../../../../utils/URL';
 import ExpenditureChart from './ExpenditureChart';
 import styles from './ExpenditureCard.module.css';
+import PropTypes from 'prop-types';
 
 function useProjectList() {
   const [projectList, setProjectList] = useState([]);
@@ -109,5 +110,10 @@ function ExpenditureCard({ mode = 'stacked', pieType }) {
     </div>
   );
 }
+
+ExpenditureCard.propTypes = {
+  mode: PropTypes.string,
+  pieType: PropTypes.string,
+};
 
 export default ExpenditureCard;

@@ -4,7 +4,6 @@ import { useSelector } from 'react-redux';
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 import { ENDPOINTS } from '../../../../utils/URL';
 import styles from './ExpenditureChart.module.css';
-import { getTooltipStyles } from '../../../../utils/bmChartStyles';
 import PropTypes from 'prop-types';
 
 // Category → colour mapping (Labour=blue, Equipment=green, Materials=yellow)
@@ -188,6 +187,18 @@ function PieChartPanel({ data, title, darkMode, compact }) {
   );
 }
 
+PieChartPanel.propTypes = {
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      category: PropTypes.string,
+      amount: PropTypes.number,
+    }),
+  ),
+  title: PropTypes.string.isRequired,
+  darkMode: PropTypes.bool,
+  compact: PropTypes.bool,
+};
+
 /**
  * ExpenditureChart — fetches /bm/expenditure/:projectId/pie once,
  * then renders:
@@ -251,8 +262,8 @@ function ExpenditureChart({ projectId, viewMode, pieType }) {
     // <output> is the semantic element for role="status" (aria-live="polite" is implicit)
     return (
       <output className={styles['expenditure-chart-loading']}>
-        <span className={styles['expenditure-chart-spinner']} aria-hidden="true" />
-        Loading expenditure data…
+        <span className={styles['expenditure-chart-spinner']} aria-hidden="true" /> Loading
+        expenditure data…
       </output>
     );
   }
@@ -320,7 +331,7 @@ function ExpenditureChart({ projectId, viewMode, pieType }) {
             role="tabpanel"
             aria-labelledby="expenditure-tab-actual"
             className={`${styles['expenditure-chart-panel']} ${
-              activeTab !== 'actual' ? styles['expenditure-chart-panel--hidden-mobile'] : ''
+              activeTab === 'actual' ? '' : styles['expenditure-chart-panel--hidden-mobile']
             }`}
           >
             <PieChartPanel data={actual} title="Actual Expenditure" darkMode={darkMode} compact />
@@ -331,7 +342,7 @@ function ExpenditureChart({ projectId, viewMode, pieType }) {
             role="tabpanel"
             aria-labelledby="expenditure-tab-planned"
             className={`${styles['expenditure-chart-panel']} ${
-              activeTab !== 'planned' ? styles['expenditure-chart-panel--hidden-mobile'] : ''
+              activeTab === 'planned' ? '' : styles['expenditure-chart-panel--hidden-mobile']
             }`}
           >
             <PieChartPanel data={planned} title="Planned Expenditure" darkMode={darkMode} compact />
@@ -356,6 +367,8 @@ function ExpenditureChart({ projectId, viewMode, pieType }) {
 
 ExpenditureChart.propTypes = {
   projectId: PropTypes.string.isRequired,
+  viewMode: PropTypes.string,
+  pieType: PropTypes.string,
 };
 
 export default ExpenditureChart;
