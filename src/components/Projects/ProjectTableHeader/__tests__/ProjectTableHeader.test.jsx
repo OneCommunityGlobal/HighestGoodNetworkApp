@@ -53,6 +53,16 @@ const renderProjectTableHeader = (projectTableHeaderProps) => {
 describe('ProjectTableHeader Component', () => {
   const sampleProps = {
     role: 'Owner',
+    sorted: {
+      column: "PROJECTS",
+      direction: "DEFAULT"
+    },
+    selectedValue: '',
+    showStatus: '',
+    onChange: vi.fn(),
+    selectStatus: vi.fn(),
+    handleSort: vi.fn(),
+    darkMode: false
   };
   const hasPermission = vi.fn((a) => true)
   sampleProps.hasPermission = hasPermission;
