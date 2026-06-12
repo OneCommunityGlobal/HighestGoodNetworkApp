@@ -1101,21 +1101,6 @@ export default (
         <Redirect exact from="/student/tasks" to="/educationportal/student/tasks" />
         <Redirect exact from="/student/tasks/:id" to="/educationportal/student/tasks/:id" />
         <CPProtectedRoute
-          path="/communityportal/reports/resourceusage"
-          exact
-          component={ResourceUsage}
-        />
-        <CPProtectedRoute
-          path="/communityportal/activity/:activityid"
-          exact
-          component={ActivityAgenda}
-        />
-        <CPProtectedRoute
-          path="/communityportal/database/design"
-          exact
-          component={DatabaseDesign}
-        />
-        <CPProtectedRoute
           path="/communityportal/activity/:activityid/comments"
           exact
           render={() => <Activity initialTab="FAQs" />}
@@ -1141,27 +1126,6 @@ export default (
           exact
           component={TestEventRegistration}
         />
-        {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
-        {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
-        {/* <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} /> */}
-        {/* ----- END BM Dashboard Routing ----- */}
-        {/* ----- Kitchen and Inventory Portal Routes ----- */}
-        <ProtectedRoute path="/kitchenandinventory" exact component={KIDashboard} />
-        <ProtectedRoute path="/kitchenandinventory/inventory" exact component={KIINVENTORY} />
-        <ProtectedRoute path="/kitchenandinventory/calendar" exact component={KICalendar} />
-        <ProtectedRoute
-          path="/kitchenandinventory/animalmanagement"
-          exact
-          component={AnimalManagement}
-        />
-        <ProtectedRoute
-          path="/kitchenandinventory/orchardmanagement"
-          exact
-          component={OrchardManagement}
-        />
-        <Route path="/kitchenandinventory/login" exact component={KitchenandInventoryLogin} />
-        <ProtectedRoute path="/kitchenandinventory/recipes" exact component={RecipesLandingPage} />
-        {/* ----- End of Kitchen and Inventory Portal Routes ----- */}
         <Route path="/login" component={Login} />
         <Route path="/forgotpassword" component={ForgotPassword} />
         <Route path="/subscribe" component={SubscribePage} />

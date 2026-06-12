@@ -1,11 +1,11 @@
 import { useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+import Calendar from 'react-calendar';
 import styles from './MyCases.module.css';
 import mockEvents from './mockData';
 import CreateEventModal from './CreateEventModal';
 import { filterEventsByDate } from './FilterByDate';
-import Calendar from 'react-calendar';
 
 function MyCases() {
   const [view, setView] = useState('card');
@@ -125,11 +125,11 @@ function MyCases() {
     return map;
   }, [filteredEvents]);
 
-  const renderCalendarTileContent = ({ date, view }) => {
-    if (view !== 'month') return null;
+  const renderCalendarTileContent = ({ date, view: tileView }) => {
+    if (tileView !== 'month') return null;
 
-    const key = date.toISOString().slice(0, 10);
-    const dayEvents = eventsByDate[key];
+    const tileKey = date.toISOString().slice(0, 10);
+    const dayEvents = eventsByDate[tileKey];
 
     if (!dayEvents || dayEvents.length === 0) return null;
 

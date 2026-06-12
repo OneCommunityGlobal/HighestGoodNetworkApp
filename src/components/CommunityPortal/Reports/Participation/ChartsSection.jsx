@@ -36,13 +36,13 @@ function ChartsSection() {
     groups[key].dropSum += parseInt(evt.dropOffRate, 10);
   });
 
-  for (const key in groups) {
+  Object.entries(groups).forEach(([key, stats]) => {
     eventTypeStats.push({
       eventType: key,
-      avgNoShow: Math.round(groups[key].noShowSum / groups[key].count),
-      avgDrop: Math.round(groups[key].dropSum / groups[key].count),
+      avgNoShow: Math.round(stats.noShowSum / stats.count),
+      avgDrop: Math.round(stats.dropSum / stats.count),
     });
-  }
+  });
 
   // Monthly trend
   const monthlyTrend = {};
@@ -132,7 +132,7 @@ function ChartsSection() {
           <PieChart>
             <Pie data={locationData} dataKey="value" nameKey="name" outerRadius={110} label>
               {locationData.map((entry, index) => (
-                <Cell key={index} fill={pieColors[index % pieColors.length]} />
+                <Cell key={entry.name} fill={pieColors[index % pieColors.length]} />
               ))}
             </Pie>
             <Legend />

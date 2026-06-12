@@ -17,7 +17,7 @@ function EventParticipation() {
   const [exporting, setExporting] = useState(false);
 
   const handleSaveAsPDF = useCallback(() => {
-    if (!window === undefined || !document === undefined) return;
+    if (typeof window === 'undefined' || typeof document === 'undefined') return;
     if (exporting) return;
     setExporting(true);
 
