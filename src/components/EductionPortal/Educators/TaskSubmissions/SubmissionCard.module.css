@@ -1,3 +1,4 @@
+/* stylelint-disable */
 .card {
   background: white;
   border: 2px solid #E5E7EB;
@@ -340,4 +341,73 @@
   .tooltip {
     display: none;
   }
+}
+
+/* Dark Mode */
+:global(.dark-mode) .card {
+  background: #1e1e2e;
+  border-color: #3d3d3d;
+}
+
+:global(.dark-mode) .card:hover {
+  border-color: #555;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+:global(.dark-mode) .lateCard {
+  background: linear-gradient(to bottom, #1e1e2e 0%, #2d1515 100%);
+  border-color: #EF4444;
+}
+
+:global(.dark-mode) .lateCard:hover {
+  border-color: #DC2626;
+}
+
+:global(.dark-mode) .gradedCard {
+  background: linear-gradient(to bottom, #1e1e2e 0%, #0f2d1a 100%);
+  border-color: #166534;
+}
+
+:global(.dark-mode) .studentName {
+  color: #e0e0e0;
+}
+
+:global(.dark-mode) .taskType {
+  color: #9ca3af;
+}
+
+:global(.dark-mode) .tooltipContent {
+  background: #2d2d2d;
+  color: #e0e0e0;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+
+:global(.dark-mode) .tooltipText {
+  color: #d1d5db;
+}
+
+:global(.dark-mode) .tooltipArrow {
+  border-bottom-color: #2d2d2d;
+}
+
+:global(.dark-mode) .gradeSection {
+  background: linear-gradient(135deg, #0f2d1a 0%, #14532d 100%);
+  border-color: #166534;
+}
+
+:global(.dark-mode) .gradeLabel {
+  color: #6ee7b7;
+}
+
+:global(.dark-mode) .gradeValue {
+  color: #34d399;
+}
+
+:global(.dark-mode) .lateSection {
+  background: linear-gradient(135deg, #2d1515 0%, #3d1a1a 100%);
+  border-color: #7f1d1d;
+}
+
+:global(.dark-mode) .lateDate {
+  color: #fca5a5;
 }
