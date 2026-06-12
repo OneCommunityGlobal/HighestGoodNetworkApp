@@ -37,8 +37,8 @@ import axios from 'axios';
 import { getUserProfile } from '~/actions/userProfile';
 import { useDispatch, useSelector } from 'react-redux';
 import { boxStyleDark } from '../../styles';
-import '../Header/index.css';
-import '../UserProfile/TeamsAndProjects/autoComplete.css';
+import '../Header/index.module.css';
+import '../UserProfile/TeamsAndProjects/autoComplete.module.css';
 import { ENDPOINTS } from '~/utils/URL';
 
 function useDeepEffect(effectFunc, deps) {
@@ -153,7 +153,7 @@ function LeaderBoard({
         setTeams(response.data.teams);
         setUserRole(response.data.role);
       } catch (error) {
-        toast.error(error);
+        toast.error(error?.message || String(error));
       }
     };
 
@@ -176,14 +176,22 @@ function LeaderBoard({
 
   useEffect(() => {
     const checkAbbreviatedView = () => {
-      const isAbbrev = window.innerWidth < window.screen.width * 0.75;
+      const isAbbrev = window.innerWidth < 1500;
       setIsAbbreviatedView(isAbbrev);
     };
 
-    checkAbbreviatedView(); // run on mount
-    window.addEventListener('resize', checkAbbreviatedView);
+    let timer;
+    const debouncedCheck = () => {
+      clearTimeout(timer);
+      timer = setTimeout(checkAbbreviatedView, 200); // increase to 200ms
+    };
 
-    return () => window.removeEventListener('resize', checkAbbreviatedView);
+    checkAbbreviatedView();
+    window.addEventListener('resize', debouncedCheck);
+    return () => {
+      window.removeEventListener('resize', debouncedCheck);
+      clearTimeout(timer);
+    };
   }, []);
 
   const updateOrganizationData = (usersTaks, contUsers) => {
@@ -691,25 +699,33 @@ function LeaderBoard({
               className={`leaderboard table-fixed ${
                 darkMode ? 'text-light dark-mode bg-yinmn-blue' : ''
               } ${isAbbreviatedView ? 'abbreviated-mode' : ''}`}
-              style={{ minWidth: '500px' }}
+              style={{ width: '100%', tableLayout: isAbbreviatedView ? 'fixed' : 'auto' }}
             >
-              <thead className="responsive-font-size">
+              <thead className={styles['responsive-font-size']}>
                 <tr className={darkMode ? 'bg-space-cadet' : ''} style={darkModeStyle}>
                   <th style={darkModeStyle}>
                     <span>{isAbbreviatedView ? 'Stat.' : 'Status'}</span>
                   </th>
                   <th style={darkModeStyle}>
                     <div className="d-flex align-items-center">
-                      <span>{isAbbreviatedView ? 'Name' : 'Name'}</span>
-                      <EditableInfoModal
-                        areaName="Leaderboard"
-                        areaTitle="Team Members Navigation"
-                        role={loggedInUser.role}
-                        fontSize={18}
-                        isPermissionPage
-                        darkMode={darkMode}
-                        className="p-2"
-                      />
+                      <span className="mr-2">{isAbbreviatedView ? 'Name' : 'Name'}</span>
+                      <span
+                        style={{
+                          position: 'relative',
+                          top: isAbbreviatedView ? '-13px' : '2px',
+                          left: isAbbreviatedView ? '10px' : '0px',
+                        }}
+                      >
+                        <EditableInfoModal
+                          areaName="Leaderboard"
+                          areaTitle="Team Members Navigation"
+                          role={loggedInUser.role}
+                          fontSize={isAbbreviatedView ? 13 : 18}
+                          isPermissionPage
+                          darkMode={darkMode}
+                          className="p-2"
+                        />
+                      </span>
                     </div>
                   </th>
                   <th style={darkModeStyle}>
@@ -762,7 +778,7 @@ function LeaderBoard({
                   ) : (
                     <>
                       <td aria-label="Placeholder" />
-                      <td className="leaderboard-totals-container">
+                      <td className={styles['leaderboard-totals-container']}>
                         <span>{stateOrganizationData.name}</span>
                         <br />
                         {viewZeroHouraMembers(loggedInUser.role) && (

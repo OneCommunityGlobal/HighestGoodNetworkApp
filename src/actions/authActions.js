@@ -115,7 +115,7 @@ export const getHeaderData = userId => {
   };
 };
 
-export const logoutUser = () => dispatch => {
+export const logoutUser = () => (dispatch) => {
   // Clear any active force-logout timer before logging out
   dispatch(stopForceLogout());
   localStorage.removeItem(tokenKey);
@@ -135,10 +135,10 @@ export const startForceLogout = (delayMs = 20000) => (dispatch, getState) => {
   const timerId = setTimeout(async () => {
     try {
       const { userProfile } = getState();
-      
+
       if (userProfile && userProfile._id) {
         const { firstName: name, lastName, personalLinks, adminLinks, _id } = userProfile;
-        
+
         await axios.put(ENDPOINTS.USER_PROFILE(_id), {
           firstName: name,
           lastName,
@@ -146,7 +146,7 @@ export const startForceLogout = (delayMs = 20000) => (dispatch, getState) => {
           adminLinks,
           isAcknowledged: true,
         });
-        
+
         // eslint-disable-next-line no-console
         console.log('Permission changes acknowledged during force logout');
       }

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { connect } from 'react-redux';
 import { Form, FormControl, InputGroup, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -10,13 +10,15 @@ import Lessons from './Lessons';
 import ConfirmationModal from './ConfirmationModal';
 import ExportConfirmationModal from './ExportConfirmationModal';
 import styles from './LessonListForm.module.css';
+import LessonListRemovableTag from './LessonListRemovableTag';
 
 function LessonList(props) {
   const { lessons, darkMode, dispatch } = props;
   const [tags, setTags] = useState([]);
+  const [tagFilterLogic, setTagFilterLogic] = useState('AND');
   const [inputValue, setInputValue] = useState('');
   const [deleteValue, setDeleteInputValue] = useState('');
-  const [filteredLessons, setFilteredLessons] = useState(lessons);
+  const [filteredLessons, setFilteredLessons] = useState(lessons || []);
   const [filterOption, setFilterOption] = useState('1');
   const [sortOption, setSortOption] = useState('1');
   const [availableTags, setAvailableTags] = useState([]);
@@ -24,26 +26,69 @@ function LessonList(props) {
   const [showDeleteDropdown, setShowDeleteDropdown] = useState(false);
   const [tagsToDelete, setTagsToDelete] = useState([]);
   const [confirmModal, setConfirmModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [showExportModal, setShowExportModal] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
 
+  // Load saved tags from localStorage on mount
+  useEffect(() => {
+    const savedTags = localStorage.getItem('lessonListSelectedTags');
+    if (savedTags) {
+      try {
+        const parsedTags = JSON.parse(savedTags);
+        if (Array.isArray(parsedTags) && parsedTags.length > 0) {
+          const uniqueTags = [...new Set(parsedTags)];
+          setTags(uniqueTags);
+        }
+      } catch (e) {
+        console.error('Failed to parse saved tags:', e);
+      }
+    }
+  }, []);
+
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       try {
         await dispatch(fetchBMLessons());
         const tagsResponse = await axios.get(`${ENDPOINTS.BM_TAGS}`);
         setAvailableTags(tagsResponse.data);
-      } catch (error) {
+      } catch (e) {
         toast.error('Failed to load data');
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchData();
   }, [dispatch]);
 
+  // Save tags to localStorage whenever they change
+  useEffect(() => {
+    if (tags.length > 0) {
+      localStorage.setItem('lessonListSelectedTags', JSON.stringify(tags));
+    } else {
+      localStorage.removeItem('lessonListSelectedTags');
+    }
+  }, [tags]);
+
   useEffect(() => {
     if (lessons) {
       setFilteredLessons(lessons);
     }
+  }, [lessons]);
+
+  const tagCounts = useMemo(() => {
+    const counts = {};
+    if (lessons && Array.isArray(lessons)) {
+      lessons.forEach(lesson => {
+        if (lesson.tags && Array.isArray(lesson.tags)) {
+          lesson.tags.forEach(tag => {
+            counts[tag] = (counts[tag] || 0) + 1;
+          });
+        }
+      });
+    }
+    return counts;
   }, [lessons]);
 
   const handleDeleteTags = async () => {
@@ -84,9 +129,9 @@ function LessonList(props) {
   };
 
   const getFilteredTags = () => {
-    return availableTags.filter(
-      tag => tag.toLowerCase().includes(inputValue.toLowerCase()) && !tags.includes(tag),
-    );
+    return availableTags
+      .filter(tag => tag.toLowerCase().includes(inputValue.toLowerCase()) && !tags.includes(tag))
+      .sort((a, b) => (tagCounts[b] || 0) - (tagCounts[a] || 0));
   };
 
   const getFilteredTagsToDelete = () => {
@@ -153,6 +198,14 @@ function LessonList(props) {
 
   useEffect(() => {
     const handleClickOutside = event => {
+      // Don't close dropdown if clicking on tag close button or tag container
+      const buttonClose = event.target.closest('button[aria-label*="Remove"]');
+      const tagContainer = event.target.closest(`.${styles.tagContainer}`);
+
+      if (buttonClose || tagContainer) {
+        return;
+      }
+
       if (!event.target.closest('.tags-input-container')) {
         setShowDropdown(false);
         setShowDeleteDropdown(false);
@@ -165,9 +218,16 @@ function LessonList(props) {
   }, []);
 
   const addTag = tag => {
-    // Check if the tag already exists
-    if (tags.indexOf(tag) === -1) {
-      setTags(prevTags => [...prevTags, tag]);
+    // Check if the tag already exists (case-insensitive check)
+    const tagLower = tag.toLowerCase();
+    const tagExists = tags.some(existingTag => existingTag.toLowerCase() === tagLower);
+
+    if (!tagExists) {
+      setTags(prevTags => {
+        // Ensure no duplicates when adding
+        const newTags = [...prevTags, tag];
+        return [...new Set(newTags)];
+      });
     }
     setInputValue('');
   };
@@ -190,21 +250,31 @@ function LessonList(props) {
     setConfirmModal(true);
   };
 
-  const removeTag = index => {
-    const newTags = [...tags];
-    newTags.splice(index, 1);
-    setTags(newTags);
+  const removeDeleteTag = tagToRemove => {
+    setTagsToDelete(prev => prev.filter(t => t !== tagToRemove));
+  };
+
+  const removeTag = tagToRemove => {
+    if (!tagToRemove) return;
+    setTags(prevTags => prevTags.filter(tag => tag !== tagToRemove));
   };
 
   useEffect(() => {
     const applyFiltersAndSort = () => {
+      if (!lessons || !Array.isArray(lessons) || lessons.length === 0) {
+        setFilteredLessons([]);
+        return;
+      }
       let filtered = [...lessons];
 
-      // 1. Apply tag filtering
+      // 1) tags
       if (tags.length > 0) {
         filtered = filtered.filter(lesson => {
-          const hasAllTags = lesson.tags && tags.every(tag => lesson.tags.includes(tag));
-          return hasAllTags;
+          if (!lesson.tags) return false;
+          if (tagFilterLogic === 'OR') {
+            return tags.some(tag => lesson.tags.includes(tag));
+          }
+          return tags.every(tag => lesson.tags.includes(tag));
         });
       }
 
@@ -236,6 +306,13 @@ function LessonList(props) {
         case '3': // Likes
           filtered = filtered.sort((a, b) => b.totalLikes - a.totalLikes);
           break;
+        case '4': // Tag Frequency
+          filtered = filtered.sort((a, b) => {
+            const sumA = a.tags ? a.tags.reduce((sum, t) => sum + (tagCounts[t] || 0), 0) : 0;
+            const sumB = b.tags ? b.tags.reduce((sum, t) => sum + (tagCounts[t] || 0), 0) : 0;
+            return sumB - sumA;
+          });
+          break;
         default:
           break;
       }
@@ -243,12 +320,8 @@ function LessonList(props) {
     };
 
     applyFiltersAndSort();
-  }, [lessons, tags, filterOption, sortOption]); // All dependencies that should trigger filtering
+  }, [lessons, tags, filterOption, sortOption, tagFilterLogic, tagCounts]);
 
-  /**
-   * Safely removes HTML tags from a string using DOMParser.
-   * This approach is ReDoS-safe and handles all HTML content consistently.
-   */
   const stripHtmlTags = htmlString => {
     if (!htmlString || typeof htmlString !== 'string') {
       return String(htmlString || '');
@@ -532,7 +605,7 @@ function LessonList(props) {
   };
 
   return (
-    <div className={`${styles.mainContainer}`}>
+    <div className={`${styles.mainContainer} ${darkMode ? styles.darkMode : styles.lightMode}`}>
       <div className={`${styles.formContainer}`}>
         <Form>
           <div>
@@ -550,6 +623,7 @@ function LessonList(props) {
                   aria-label="Default select example"
                   value={filterOption}
                   onChange={event => setFilterOption(event.target.value)}
+                  disabled={isLoading}
                 >
                   <option value="1">Select a Filter</option>
                   <option value="2">This Year</option>
@@ -567,10 +641,12 @@ function LessonList(props) {
                   aria-label="Default select example"
                   value={sortOption}
                   onChange={event => setSortOption(event.target.value)}
+                  disabled={isLoading}
                 >
                   <option value="1">Newest</option>
                   <option value="2">Date</option>
                   <option value="3">Likes</option>
+                  <option value="4">Tag Frequency</option>
                 </FormControl>
               </Form.Group>
             </div>
@@ -589,9 +665,31 @@ function LessonList(props) {
               </Form.Group>
             </div>
           </div>
+
+          {/* Tags input */}
           <Form.Group controlId="tagInput">
             <Form.Label>Tags:</Form.Label>
-            <div className={`${styles.tagsInputContainer}`}>
+            {tags.length > 1 && (
+              <div className="mb-2" style={{ fontSize: '0.85rem' }}>
+                <Form.Check
+                  inline
+                  type="radio"
+                  id="tagLogicAnd"
+                  label="Match ALL tags (AND)"
+                  checked={tagFilterLogic === 'AND'}
+                  onChange={() => setTagFilterLogic('AND')}
+                />
+                <Form.Check
+                  inline
+                  type="radio"
+                  id="tagLogicOr"
+                  label="Match ANY tag (OR)"
+                  checked={tagFilterLogic === 'OR'}
+                  onChange={() => setTagFilterLogic('OR')}
+                />
+              </div>
+            )}
+            <div className={`tags-input-container ${styles.tagsInputContainer}`}>
               <InputGroup className={`${styles.tagsWrapper}`}>
                 <input
                   type="text"
@@ -601,8 +699,15 @@ function LessonList(props) {
                     setInputValue(e.target.value);
                     setShowDropdown(true);
                   }}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' && getFilteredTags().length > 0) {
+                      addTag(getFilteredTags()[0]);
+                      setShowDropdown(false);
+                    }
+                  }}
                   onFocus={() => setShowDropdown(true)}
-                  className={`${styles.formControl}`}
+                  className={`form-control ${styles.formControl}`}
+                  disabled={isLoading}
                 />
                 {showDropdown && inputValue && (
                   <div className={`${styles.tagDropdown}`}>
@@ -615,39 +720,47 @@ function LessonList(props) {
                           addTag(tag);
                           setShowDropdown(false);
                         }}
+                        disabled={isLoading}
                       >
-                        {tag}
+                        {tag} ({tagCounts[tag] || 0})
                       </button>
                     ))}
                   </div>
                 )}
               </InputGroup>
-              <div className={`${styles.tagContainer}`}>
-                {tags.map(tag => (
-                  <div key={tag} className={`${styles.tag}`}>
-                    <span>{tag}</span>
-                    <Button className={`${styles.buttonClose}`} onClick={() => removeTag(tag)}>
-                      x
-                    </Button>
-                  </div>
-                ))}
-              </div>
+              {tags.length > 0 && (
+                <div
+                  className={`${styles.tagContainer} ${darkMode ? styles.tagContainerDark : ''}`}
+                >
+                  {tags.map((tag, index) => (
+                    <LessonListRemovableTag
+                      key={`filter-tag-${tag}-${index}`}
+                      tag={tag}
+                      darkMode={darkMode}
+                      onRemove={removeTag}
+                      variant="filter"
+                    />
+                  ))}
+                </div>
+              )}
             </div>
 
+            {/* Delete tags */}
             <Form.Label>Delete Tags (Press enter to add a tag to delete): </Form.Label>
-            <div className={`${styles.tagsInputContainer}`}>
+            <div className={`tags-input-container ${styles.tagsInputContainer}`}>
               <div className={`${styles.deleteInputWrapper}`}>
                 <input
                   type="text"
                   placeholder="Search tag to delete"
                   value={deleteValue}
-                  className={`${styles.formControlDelete}`}
+                  className={`form-control ${styles.formControlDelete}`}
                   onChange={e => {
                     setDeleteInputValue(e.target.value);
                     setShowDeleteDropdown(true);
                   }}
                   onFocus={() => setShowDeleteDropdown(true)}
                   onKeyDown={handleDeleteKeyDown}
+                  disabled={isLoading}
                 />
                 {showDeleteDropdown && deleteValue && (
                   <div className={`${styles.tagDropdown}`}>
@@ -657,6 +770,7 @@ function LessonList(props) {
                         type="button"
                         className={styles.tagDropdownItem}
                         onClick={() => addDeleteTag(tag)}
+                        disabled={isLoading}
                       >
                         {tag}
                       </button>
@@ -664,19 +778,13 @@ function LessonList(props) {
                   </div>
                 )}
                 <div className={`${styles.tagContainer}`}>
-                  {tagsToDelete.map(tag => (
-                    <div key={tag} className={`${styles.tag}`}>
-                      <span>{tag}</span>
-                      <Button
-                        className={`${styles.buttonClose}`}
-                        onClick={() => {
-                          const newTags = tagsToDelete.filter((_, i) => i !== tag);
-                          setTagsToDelete(newTags);
-                        }}
-                      >
-                        x
-                      </Button>
-                    </div>
+                  {tagsToDelete.map((tag, index) => (
+                    <LessonListRemovableTag
+                      key={`delete-tag-${tag}-${index}`}
+                      tag={tag}
+                      onRemove={removeDeleteTag}
+                      variant="delete"
+                    />
                   ))}
                 </div>
               </div>
@@ -684,6 +792,7 @@ function LessonList(props) {
                 <Button
                   style={{ backgroundColor: 'red', marginLeft: '10px' }}
                   onClick={handleDeleteButtonClick}
+                  disabled={isLoading}
                 >
                   Delete
                 </Button>
@@ -697,6 +806,10 @@ function LessonList(props) {
             </div>
           </Form.Group>
         </Form>
+        {isLoading && <div className={styles.loading}>Loading lessons…</div>}
+        {!isLoading && filteredLessons.length === 0 && (
+          <div className={styles.emptyState}>No lessons match this filter.</div>
+        )}
         <ExportConfirmationModal
           showExportModal={showExportModal}
           setShowExportModal={setShowExportModal}
@@ -720,7 +833,7 @@ function LessonList(props) {
 const mapStateToProps = state => {
   return {
     lessons: state.lessons.lessons,
-    darkMode: state.theme.darkMode,
+    darkMode: state.theme?.darkMode || false,
   };
 };
 

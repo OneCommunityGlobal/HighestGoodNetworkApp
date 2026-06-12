@@ -19,6 +19,7 @@ import {
   fetchLongestOpenIssues,
   setProjectFilter,
 } from '../../../actions/bmdashboard/issueChartActions';
+import { CustomDateComponent } from './CustomDateComponent';
 import styles from './issueCharts.module.css';
 
 /* ---------- helpers ---------- */
@@ -275,6 +276,9 @@ function IssueCharts() {
           <div className={styles.dateRangePicker}>
             <div className={styles.dateRangePickerStart}>
               <DatePicker
+                renderCustomHeader={props => (
+                  <CustomDateComponent {...props} darkMode={darkMode} isStartDate={true} />
+                )}
                 id="start-date"
                 selected={startDate}
                 onChange={date => setStartDate(date)}
@@ -291,6 +295,9 @@ function IssueCharts() {
             <span className={styles.dateRangeSeparator}>to</span>
             <div className={styles.dateRangePickerEnd}>
               <DatePicker
+                renderCustomHeader={props => (
+                  <CustomDateComponent {...props} darkMode={darkMode} isStartDate={false} />
+                )}
                 selected={endDate}
                 onChange={date => setEndDate(date)}
                 selectsEnd
@@ -317,13 +324,12 @@ function IssueCharts() {
             options={projectOptions}
             onChange={handleProjectChange}
             value={projectOptions.filter(option => (selectedProjects ?? []).includes(option.value))}
-            // className={filterSelectClass}
             classNamePrefix="select"
             styles={{
               control: base => ({
                 ...base,
-                backgroundColor: darkMode ? '#22272e' : '#ffffff',
-                borderColor: darkMode ? '#3d444d' : '#ccc',
+                backgroundColor: darkMode ? '#2D3748' : '#ffffff',
+                borderColor: darkMode ? '#4a5568' : '#ccc',
                 color: darkMode ? '#cfd7e3' : '#333',
                 boxShadow: 'none',
                 '&:hover': {
@@ -332,21 +338,21 @@ function IssueCharts() {
               }),
               menu: base => ({
                 ...base,
-                backgroundColor: darkMode ? '#22272e' : '#ffffff',
-                color: darkMode ? '#cfd7e3' : '#333',
+                backgroundColor: darkMode ? '#2D3748' : '#ffffff',
+                color: darkMode ? '#4a5568' : '#333',
               }),
               option: (base, state) => ({
                 ...base,
                 backgroundColor: state.isFocused
                   ? darkMode
-                    ? '#2f3540'
+                    ? '#334155'
                     : '#e5e5e5'
                   : 'transparent',
                 color: darkMode ? '#fff' : '#333',
               }),
               multiValue: base => ({
                 ...base,
-                backgroundColor: darkMode ? '#3d444d' : '#e2e8f0',
+                backgroundColor: darkMode ? '#334155' : '#e2e8f0',
                 color: darkMode ? '#fff' : '#333',
               }),
               multiValueLabel: base => ({
@@ -368,7 +374,16 @@ function IssueCharts() {
 
       <div className={chartContainerClass} ref={chartContainerRef}>
         {/* Step 6: Project Legend above the chart */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', marginBottom: '12px' }}>
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            alignItems: 'center',
+            gap: '12px',
+            marginBottom: '12px',
+            justifyContent: 'center',
+          }}
+        >
           {projectLegend.map(p => (
             <div key={p.projectId} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span
@@ -398,7 +413,7 @@ function IssueCharts() {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis
                 type="number"
-                label={{ value: 'Duration in Months', position: 'insideBottom', offset: -5 }}
+                label={{ value: 'Duration in Months', position: 'insideBottom', offset: -12 }}
               />
               <YAxis
                 dataKey="issueName"
@@ -423,7 +438,6 @@ function IssueCharts() {
                 formatter={value => `${value} months`}
                 labelFormatter={label => `Issue: ${label}`}
               />
-              {/* Step 5: Bar uses per-project colors */}
               <Bar dataKey="durationOpen" barSize={22} isAnimationActive={false}>
                 {chartData.map((entry, index) => (
                   <Cell key={index} fill={projectColorMap[entry.projectId] || '#94a3b8'} />

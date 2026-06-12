@@ -1,3 +1,4 @@
+/* stylelint-disable no-descending-specificity, no-duplicate-selectors, selector-type-no-unknown */
 .profileDetails {
   width: 100%;
   margin-bottom: 20px;
@@ -27,7 +28,7 @@
   flex-wrap: wrap;
   gap: 15px;
   font-size: 16px;
-  color: #333;
+  color: #1f2933;
   margin-bottom: 10px;
 }
 
@@ -36,20 +37,28 @@
   white-space: nowrap;
 }
 
-.teamInfo strong,
-.contactsInfo strong {
-  color: #869aa3;
+.value {
+  color: #111827;
+  display: inline-block;
+  font-family: Arial, sans-serif;
 }
 
-.teamInfo .value,
-.contactsInfo .value {
-  font-weight: bold;
+strong {
+  /* color: #fffdfd; */
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.teamInfo strong,
+.contactsInfo strong {
+  color: #0f2f4a;
 }
 
 .value {
-  color: #666;
+  color: #111827;
   display: inline-block;
-  font-family: 'Arial', sans-serif;
+  font-family: Arial, sans-serif;
+  font-weight: bold;
 }
 
 strong {
@@ -63,7 +72,7 @@ strong {
   text-decoration: none;
   font-weight: 500;
   font-size: 1rem;
-  padding: 2px 2px;
+  padding: 2px;
   border-radius: 10px;
   transition: background-color 0.2s ease, color 0.2s ease; /* Smooth hover effect */
 }
@@ -75,16 +84,17 @@ strong {
 }
 
 /* Responsive adjustments */
-@media (max-width: 600px) {
+@media (width <= 600px) {
   .githubLink {
     padding: 1px 4px;
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .profileDetails {
     width: 100%;
   }
+
   .teamInfo,
   .contactsInfo {
     flex-direction: column;
