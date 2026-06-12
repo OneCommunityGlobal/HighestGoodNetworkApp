@@ -75,6 +75,30 @@ const CONFIG = {
   },
 };
 
+// ======================== SHARED CONSTANTS ========================
+const AXIS_TICK = { fontSize: 12 };
+
+const CHART_MARGIN = { top: 10, right: 10, left: 0, bottom: 10 };
+
+const GRID_PROPS = {
+  strokeDasharray: '3 3',
+};
+
+const getTooltipStyles = darkMode => ({
+  contentStyle: {
+    backgroundColor: darkMode ? '#1f2937' : '#ffffff',
+    borderColor: darkMode ? '#374151' : '#e5e7eb',
+    color: darkMode ? '#f9fafb' : '#111827',
+  },
+  itemStyle: {
+    color: darkMode ? '#f9fafb' : '#111827',
+  },
+});
+
+const getCursorStyle = darkMode => ({
+  fill: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
+});
+
 // ======================== UTILITIES ========================
 const calculatePercentageChange = (current, previous) => {
   if (previous === 0) return { value: 100, isPositive: true, formatted: '+100%' };
@@ -115,6 +139,11 @@ class AnalyticsService {
 
   static async fetchData(dateRange, comparisonPeriod, role) {
     try {
+      // Replace with real API when ready
+      // const response = await fetch(`${CONFIG.API.ENDPOINTS.ANALYTICS}`, { ... });
+      // if (!response.ok) throw new Error('Failed to fetch analytics data');
+      // return await response.json();
+
       await this.simulateApiDelay();
       return this.generateMockAnalyticsData(dateRange, comparisonPeriod, role);
     } catch (err) {
@@ -441,9 +470,28 @@ function DateRangeSelector({ dateRange, setDateRange, comparisonPeriod, setCompa
 
 // ======================== MAIN ========================
 function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
-  // Permission check (uncomment when backend is ready)
-  // const canViewAnalytics = hasPerm('getJobReports');
-  // if (!canViewAnalytics) return <AccessDenied />;
+  useEffect(() => {
+    const root = document.documentElement;
+    const body = document.body;
+
+    root.dataset.theme = darkMode ? 'dark' : 'light';
+
+    if (darkMode) {
+      body.classList.add('dark-mode', 'bm-dashboard-dark');
+    } else {
+      body.classList.remove('dark-mode', 'bm-dashboard-dark');
+    }
+
+    return () => {
+      body.classList.remove('dark-mode', 'bm-dashboard-dark');
+    };
+  }, [darkMode]);
+
+  const canViewAnalytics = hasPerm('getJobReports');
+
+  if (!canViewAnalytics) {
+    return <AccessDenied />;
+  }
 
   const isMobile = useMediaQuery('(max-width: 640px)');
 
@@ -525,27 +573,6 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
 
   // Recharts injects inline styles into its tooltip, so CSS classes have no effect.
   // Pass these props to every <Tooltip> so it respects dark mode.
-  const tooltipStyle = darkMode
-    ? {
-        contentStyle: {
-          background: '#1f2937',
-          border: '1px solid #374151',
-          borderRadius: 8,
-          color: '#f9fafb',
-        },
-        labelStyle: { color: '#9ca3af' },
-        itemStyle: { color: '#f9fafb' },
-      }
-    : {
-        contentStyle: {
-          background: '#fff',
-          border: '1px solid #e5e7eb',
-          borderRadius: 8,
-          color: '#111827',
-        },
-        labelStyle: { color: '#6b7280' },
-        itemStyle: { color: '#111827' },
-      };
 
   return (
     // FIX: darkMode applied as a CSS class on the root div (same pattern as HoursPledgedChart).
@@ -624,11 +651,11 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
           <section className={styles.chartsGrid} data-mobile={isMobile ? '1' : '0'}>
             <ChartCard title="User Trend Comparison" icon={TrendingUp}>
               <ResponsiveContainer width="100%" height={320}>
-                <LineChart data={mergedData} margin={{ top: 10, right: 10, left: 0, bottom: 10 }}>
-                  <CartesianGrid strokeDasharray="3 3" className={styles.gridStroke} />
-                  <XAxis dataKey="displayDate" tick={{ fontSize: 12 }} />
-                  <YAxis tick={{ fontSize: 12 }} domain={['dataMin - 100', 'dataMax + 100']} />
-                  <Tooltip {...tooltipStyle} />
+                <LineChart data={mergedData} margin={CHART_MARGIN}>
+                  <CartesianGrid {...GRID_PROPS} className={styles.gridStroke} />
+                  <XAxis dataKey="displayDate" tick={AXIS_TICK} />
+                  <YAxis tick={AXIS_TICK} domain={['dataMin - 100', 'dataMax + 100']} />
+                  <Tooltip {...getTooltipStyles(darkMode)} />
                   <Legend />
                   <Line
                     type="monotone"
@@ -667,7 +694,7 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
                   <CartesianGrid strokeDasharray="3 3" className={styles.gridStroke} />
                   <XAxis dataKey="displayDate" tick={{ fontSize: 12 }} />
                   <YAxis tick={{ fontSize: 12 }} domain={['dataMin - 500', 'dataMax + 500']} />
-                  <Tooltip {...tooltipStyle} />
+                  <Tooltip {...getTooltipStyles(darkMode)} />
                   <Legend />
                   <Area
                     type="monotone"
@@ -696,7 +723,7 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
                     height={60}
                   />
                   <YAxis tick={{ fontSize: 12 }} domain={[0, 'dataMax + 500']} />
-                  <Tooltip {...tooltipStyle} />
+                  <Tooltip cursor={getCursorStyle(darkMode)} {...getTooltipStyles(darkMode)} />
                   <Legend />
                   <Bar
                     dataKey="current"
@@ -736,7 +763,7 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
                       />
                     ))}
                   </Pie>
-                  <Tooltip {...tooltipStyle} />
+                  <Tooltip {...getTooltipStyles(darkMode)} />
                 </PieChart>
               </ResponsiveContainer>
             </ChartCard>
@@ -764,7 +791,7 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
                     tick={{ fontSize: 12 }}
                     domain={[0, 100]}
                   />
-                  <Tooltip {...tooltipStyle} />
+                  <Tooltip {...getTooltipStyles(darkMode)} />
                   <Legend />
                   <Line
                     yAxisId="left"

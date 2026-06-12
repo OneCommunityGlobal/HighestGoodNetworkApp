@@ -179,6 +179,7 @@
 }
 
 @media (width <= 1024px) {
+
   .analyticsSection {
     flex-direction: column;
     gap: 30px;
@@ -226,6 +227,7 @@
     align-items: center;
     gap: 10px;
   }
+
 }
 
 .trackingHeader h3 {
@@ -243,7 +245,7 @@
 .trackingFilters {
   display: flex;
   flex-wrap: nowrap;
-  gap: 12px; /* spacing between dropdowns */
+  gap: 12px;
 }
 
 .trackingFilters select {
@@ -271,14 +273,12 @@
   color: #fff;
 }
 
-/* Summary boxes */
 .trackingSummary {
   display: flex;
   justify-content: space-between;
   margin-bottom: 20px;
 }
 
-/* Light mode */
 .trackingRate {
   background: #f8f9fa;
   border-radius: 10px;
@@ -292,7 +292,6 @@
   color: #333;
 }
 
-/* Dark mode */
 .trackingRateDark {
   background: #3a506b;
   border-radius: 10px;
@@ -304,6 +303,7 @@
 .trackingRateDark .trackingRateSubheading span,
 .trackingRateDark .trackingRateValue span {
   color: #fff;
+
 }
 
 .trackingRateValue {
@@ -322,6 +322,7 @@
 }
 
 /* Tables */
+
 .trackingListContainer {
   max-height: 600px;
   overflow-y: auto;
@@ -469,13 +470,13 @@
   border-radius: 5px;
 }
 
-.insightsTabsContainer{
+.insightsTabsContainer {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.icons{
+.icons {
   cursor: pointer;
   display: flex;
   gap: 8px;
@@ -494,18 +495,18 @@
   transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
 }
 
-.insightsTabLight{
+.insightsTabLight {
   color: #555;
   background-color: #f8f9fa;
 }
 
-.insightsTabDark{
+.insightsTabDark {
   color: #f8f9fa;
-  background-color: #1C2541;
+  background-color: #1c2541;
 }
 
 .insightsTabDark:hover {
-  background-color: #3A506B;
+  background-color: #3a506b;
 }
 
 .insightsTabLight:hover {
@@ -531,6 +532,7 @@
 
 .insightsDark .insightsTab {
   background-color: #3A506B;
+
   color: #fff;
   border-right: 1px solid #555;
 }
@@ -541,6 +543,7 @@
 
 .insightsDark .insightsTab:hover:not(.activeTabDarkMode) {
   background-color: rgb(255 255 255 / 8%);
+
 }
 
 .insightsDark .insightsTab.activeTab {
@@ -567,7 +570,7 @@
 .insightItem {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 10px;
 }
 
 .insightLabel {
@@ -575,6 +578,7 @@
   font-size: 0.9rem;
   color: #555;
   margin-right: 10px;
+  min-width: 0;
 }
 
 .insightLabelDark {
@@ -585,7 +589,7 @@
 }
 
 .insightBar {
-  flex: 2;
+  flex: 3;
   height: 8px;
   background: #e9ecef;
   border-radius: 4px;
@@ -604,15 +608,15 @@
 
 .insightsPercentage {
   font-size: 0.9rem;
-  color: red;
+  font-weight: bold;
+  color: #333;
+  flex: 0 0 auto;
+  min-width: 35px;
+  text-align: right;
 }
 
 .insightsPercentageDark {
-    color: #fff;
-  }
-
-.insightsDark .insightsPercentageDark {
-  color: red !important;
+  color: #fff;
 }
 
 .tooltipWrapper {
@@ -644,30 +648,32 @@
 
 .exportOptionsButtons,
 .exportOptionsButtonsDark {
+
   flex: 1;
   padding: 10px 12px;
   border-radius: 10px;
   cursor: pointer;
-}
-
-.exportOptionsButtons{
   background: transparent;
   border: 1px solid #ccc;
   color: #555;
 }
 
-.exportOptionsButtons:hover{
-  color: #555;
-  background-color: #e0e0e0;
-}
-
-.exportOptionsButtonsDark{
+.exportOptionsButtonsDark {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
   border: 1px solid #ccc;
   color: #111;
 }
 
+.exportOptionsButtons:hover {
+  color: #555;
+  background-color: #e0e0e0;
+}
+
 .exportOptionsButtonsDark:hover {
-  background: #3A506B;
+  background: #3a506b;
 }
 
 .exportOptionsButtons:disabled,
@@ -681,6 +687,7 @@
 .pageBreakAfter  { break-after: always; }
 .avoidBreak       { break-inside: avoid; }
 
+
 :global(html[data-exporting="true"]) .caseCards:global(.expanded),
 :global(html[data-exporting="true"]) .caseList:global(.expanded),
 :global(html[data-exporting="true"]) .trackingListContainer {
@@ -693,6 +700,7 @@
 .insightsTabsDarkMode {
   border: none;
   background-color: #334155;
+
 }
 
 /* Dark mode tab */
@@ -709,6 +717,7 @@
 .printOnly {
   display: none;
 }
+
 
 @media print {
   /* Hide everything except the participation component */
@@ -734,18 +743,28 @@
   }
 
   /* Sonar fix: avoid duplicate selector by scoping the print version */
+
   :global(#root) .participationLandingPage {
     max-width: 100% !important;
     margin: 0 !important;
     background: white !important;
     height: auto !important;
     overflow: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Force background colors on all print children */
+  :global(#root) .participationLandingPage * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   @page {
     size: auto;
 
     /* Use auto instead of Letter to allow multiple pages */
+
     margin: 0.5in;
   }
 
@@ -775,10 +794,12 @@
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 12px !important;
     break-inside: auto !important;
+
   }
 
   :global(.case-card-global) {
     break-inside: avoid !important;
+
     height: auto !important;
   }
 
@@ -788,6 +809,7 @@
 
   :global(.case-list-item-global) {
     break-inside: avoid !important;
+
   }
 
   .trackingListContainer,
@@ -824,6 +846,7 @@
 
   :global(.tracking-table-global-dark) thead th {
     background: #1C2541 !important;
+
     color: #fff !important;
   }
 
@@ -831,6 +854,7 @@
     display: block !important;
   }
   
+
   :global(#root) .case-card-global {
     background: white !important;
     color: #333 !important;
@@ -852,39 +876,46 @@
   /* Dark mode styles for print */
   .participationLandingPageDark {
     background: #1B2A41 !important;
+
     color: #fff !important;
   }
 
   .participationLandingPageDark :global(.case-card-global) {
     background: #3A506B !important;
+
     color: #fff !important;
     border: 1px solid #555 !important;
   }
 
   .participationLandingPageDark .trackingContainerDark {
     background: #1C2541 !important;
+
     color: #fff !important;
     border: 1px solid #555 !important;
   }
 
   .participationLandingPageDark .insightsDark {
     background: #1C2541 !important;
+
     color: #fff !important;
     border: 1px solid #555 !important;
   }
 
   .participationLandingPageDark .trackingListContainerDark {
     background: #3A506B !important;
+
     color: #fff !important;
   }
 
   .participationLandingPageDark :global(.tracking-table-global-dark) thead th {
     background: #1C2541 !important;
+
     color: #fff !important;
   }
 
   .participationLandingPageDark .trackingRateDark {
     background: #3A506B !important;
+
     color: #fff !important;
   }
 
@@ -1101,3 +1132,4 @@
   color: #fff;
   border: 1px solid #3A506B;
 }
+

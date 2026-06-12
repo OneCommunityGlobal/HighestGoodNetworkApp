@@ -801,7 +801,27 @@ function JobApplicationForm() {
 
   const handleResumeChange = e => {
     const f = e.target.files?.[0] || null;
+
+    if (!f) {
+      setResumeFile(null);
+      return;
+    }
+
+    const allowedTypes = [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    ];
+
+    if (!allowedTypes.includes(f.type)) {
+      setResumeFile(null);
+      if (resumeInputRef.current) resumeInputRef.current.value = '';
+      toast.error('Invalid file type. Please upload PDF or DOC/DOCX.');
+      return;
+    }
+
     setResumeFile(f);
+    toast.success(`Resume selected: ${f.name}`);
   };
 
   const clearResumeFile = () => {
