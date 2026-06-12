@@ -1,52 +1,39 @@
-import './TriStateToggleSwitch.module.css';
+import styles from './TriStateToggleSwitch.module.css';
 import React, { useState, useEffect } from 'react';
 
 function TriStateToggleSwitch({ pos, onChange }) {
-  const [position, setPosition] = useState(pos);
+  const [position, setPosition] = useState(pos || 'default');
   const [bgColor, setBgColor] = useState('');
 
-  const handleClick = pos => {
-    setPosition(pos);
-
-    if (onChange) {
-      onChange(pos);
-    }
-
-    if (pos === 'posted') {
-      setBgColor('blue');
-    } else if (pos === 'default') {
-      setBgColor('darkgray');
-    } else {
-      setBgColor('green');
-    }
+  const handleClick = newPos => {
+    setPosition(newPos);
+    if (onChange) onChange(newPos);
+    if (newPos === 'posted') setBgColor('blue');
+    else if (newPos === 'default') setBgColor('darkgray');
+    else setBgColor('green');
   };
 
   useEffect(() => {
-    if (pos) {
-      setPosition(pos);
-    }
-
-    if (pos === 'posted') {
-      setBgColor('blue');
-    } else if (pos === 'default') {
-      setBgColor('darkgray');
-    } else {
-      setBgColor('green');
-    }
+    if (pos) setPosition(pos);
+    if (pos === 'posted') setBgColor('blue');
+    else if (pos === 'default') setBgColor('darkgray');
+    else setBgColor('green');
   }, [pos]);
 
-  return (
-    <div className={`toggle-switch bg-${bgColor}`}>
-      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
-      <div className="knob-area">
-        {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
-        <div onClick={() => handleClick('posted')}></div>
-        {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
-        <div onClick={() => handleClick('default')}></div>
-        {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
-        <div onClick={() => handleClick('requested')}></div>  
+    return (
+    <div className={`${styles['toggle-switch']} ${styles[`bg-${bgColor}`]}`}>
+      <div className={styles['knob-area']} style={{ position: 'relative', zIndex: 1 }}>
+        {['posted', 'default', 'requested'].map(p => (
+          <div
+            key={p}
+            role="button"
+            tabIndex={0}
+            onClick={() => handleClick(p)}
+            onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && handleClick(p)}
+          />
+        ))}
       </div>
-      <div className={`knob ${position}`}></div>
+      <div className={`${styles.knob} ${styles[position]}`} />
     </div>
   );
 }
