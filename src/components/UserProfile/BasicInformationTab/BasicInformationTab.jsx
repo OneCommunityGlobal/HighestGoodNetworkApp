@@ -20,6 +20,7 @@ import hasPermission from '~/utils/permissions';
 import { ENDPOINTS } from '~/utils/URL';
 import TimeZoneDropDown from '../TimeZoneDropDown';
 import styles from './BasicInformationTab.module.css';
+import RoleChangePermissionsModal from '~/components/UserProfile/RoleChangePermissionsModal';
 
 
 export const Name = props => {
@@ -490,10 +491,12 @@ const BasicInformationTab = props => {
     loadUserProfile,
     darkMode,
     hasFinalDay,
+    authUser
   } = props;
   const [timeZoneFilter, setTimeZoneFilter] = useState('');
   const [desktopDisplay, setDesktopDisplay] = useState(window.innerWidth > 1024);
   const [errorOccurred, setErrorOccurred] = useState(false);
+  const [showRolePermsModal, setShowRolePermsModal] = useState(false);
   const dispatch = useDispatch();
   const rolesAllowedToEditStatusFinalDay = ['Administrator', 'Owner'];
   const canEditStatus = dispatch(hasPermission('interactWithPauseUserButton'));
@@ -723,43 +726,16 @@ const BasicInformationTab = props => {
       </Col>
       <Col md={desktopDisplay ? '6' : ''} className={darkMode ? 'bg-yinmn-blue' : ''}>
         {canEditRole ? (
-          <FormGroup>
-            <select
-              id="role"
-              name="role"
-              className={`form-control ${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
-              value={userProfile.role || ''}   // make sure this is a string
-              onChange={e => {
-                const newRole = e.target.value;
-                setUserProfile({
-                  ...userProfile,
-                  role: newRole,
-                  permissions: { ...userProfile.permissions, frontPermissions: [] },
-                });
-              }}
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <Button
+              color="primary"
+              style={darkMode ? boxStyleDark : boxStyle}
+              onClick={() => setShowRolePermsModal(true)}
             >
-              {/* Optional placeholder when no role selected */}
-              {!userProfile.role && <option value="">Select role</option>}
-  
-              {(roles || [])
-                .map(r => (typeof r === 'string' ? r : r.roleName)) // normalize
-                .filter(Boolean)
-                .map(roleName => {
-                  if (roleName === 'Owner') return null; // skip Owner in this list
-                  return (
-                    <option key={roleName} value={roleName}>
-                      {roleName}
-                    </option>
-                  );
-                })}
-  
-              {canAddDeleteEditOwners && (
-                <option value="Owner" style={desktopDisplay ? { marginLeft: '5px' } : {}}>
-                  Owner
-                </option>
-              )}
-            </select>
-          </FormGroup>
+              Manage Role & Permissions
+            </Button>
+          </div>
+          
         ) : (
           <p className={`text-right ${darkMode ? 'text-light' : ''}`}>{userProfile.role}</p>
         )}
@@ -1047,6 +1023,15 @@ const BasicInformationTab = props => {
           </>
         )}
       </div>
+      <RoleChangePermissionsModal
+        isOpen={showRolePermsModal}
+        onClose={() => setShowRolePermsModal(false)}
+        roles={roles}
+        userProfile={userProfile}
+        setUserProfile={setUserProfile}
+        loadUserProfile={loadUserProfile}
+        authUser={authUser}
+      />
     </div>
   );
 };
@@ -1105,6 +1090,10 @@ BasicInformationTab.propTypes = {
   loadUserProfile: PropTypes.func.isRequired,
   darkMode: PropTypes.bool,
   hasPermission: PropTypes.func.isRequired,
+  authUser: PropTypes.shape({
+    requestId: PropTypes.number,
+    requestorRole: PropTypes.string
+  })
 };
 Name.propTypes = {
   userProfile: PropTypes.object.isRequired,

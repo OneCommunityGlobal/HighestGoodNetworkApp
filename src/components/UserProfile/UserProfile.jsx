@@ -203,6 +203,7 @@ function UserProfile(props) {
   const [isLoading, setIsLoading] = useState(false);
 
   const { userid: requestorId, role: requestorRole } = props.auth.user;
+  const authUser = { requestorId, requestorRole };
 
   const canEditTeamCode = props.hasPermission('editTeamCode');
   const [titleOnSet, setTitleOnSet] = useState(false); // added by development
@@ -1731,6 +1732,7 @@ setUpdatedTasks(prev => {
                   roles={roles}
                   darkMode={darkMode}
                   hasFinalDay={hasScheduledFinalDay}
+                  authUser={authUser}
                 />
               </TabPane>
               <TabPane tabId="2">
@@ -1941,6 +1943,7 @@ setUpdatedTasks(prev => {
                     canEditRole={canEditUserProfile}
                     roles={roles}
                     darkMode={darkMode}
+                    authUser={authUser}
                   />
                 </ModalBody>
                 <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
