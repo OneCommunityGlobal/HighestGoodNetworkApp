@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
+import PropTypes from 'prop-types';
 import styles from './GardenManagement.module.css';
 
 // --- Mock Data ---
@@ -115,6 +116,102 @@ const calendarSections = [
     ],
   },
 ];
+
+// --- Add Event Modal ---
+
+const eventShape = PropTypes.shape({
+  crop: PropTypes.string,
+  dateRange: PropTypes.string,
+  location: PropTypes.string,
+  yield: PropTypes.string,
+  status: PropTypes.string,
+});
+
+function AddEventModal({ sectionTitle, newEvent, setNewEvent, darkMode, onClose, onAdd }) {
+  const dm = darkMode ? styles.dark : '';
+  return (
+    <div className={styles.modalOverlay}>
+      <div className={`${styles.modalBox} ${dm}`}>
+        <h3 className={`${styles.modalTitle} ${dm}`}>{sectionTitle}</h3>
+
+        <label htmlFor="gm-crop" className={`${styles.modalLabel} ${dm}`}>
+          Crop *
+        </label>
+        <input
+          id="gm-crop"
+          className={`${styles.modalInput} ${dm}`}
+          value={newEvent.crop}
+          onChange={e => setNewEvent({ ...newEvent, crop: e.target.value })}
+          placeholder="e.g. Tomatoes"
+        />
+
+        <label htmlFor="gm-dateRange" className={`${styles.modalLabel} ${dm}`}>
+          Date Range *
+        </label>
+        <input
+          id="gm-dateRange"
+          className={`${styles.modalInput} ${dm}`}
+          value={newEvent.dateRange}
+          onChange={e => setNewEvent({ ...newEvent, dateRange: e.target.value })}
+          placeholder="e.g. Jun 1 - Jun 15"
+        />
+
+        <label htmlFor="gm-location" className={`${styles.modalLabel} ${dm}`}>
+          Location *
+        </label>
+        <input
+          id="gm-location"
+          className={`${styles.modalInput} ${dm}`}
+          value={newEvent.location}
+          onChange={e => setNewEvent({ ...newEvent, location: e.target.value })}
+          placeholder="e.g. Greenhouse A"
+        />
+
+        <label htmlFor="gm-yield" className={`${styles.modalLabel} ${dm}`}>
+          Est. Yield
+        </label>
+        <input
+          id="gm-yield"
+          className={`${styles.modalInput} ${dm}`}
+          value={newEvent.yield}
+          onChange={e => setNewEvent({ ...newEvent, yield: e.target.value })}
+          placeholder="e.g. Est. 40 kg"
+        />
+
+        <label htmlFor="gm-status" className={`${styles.modalLabel} ${dm}`}>
+          Status
+        </label>
+        <select
+          id="gm-status"
+          className={`${styles.modalInput} ${dm}`}
+          value={newEvent.status}
+          onChange={e => setNewEvent({ ...newEvent, status: e.target.value })}
+        >
+          <option value="upcoming">Upcoming</option>
+          <option value="growing">Growing</option>
+        </select>
+
+        <div className={styles.modalBtns}>
+          <button type="button" className={`${styles.modalCancelBtn} ${dm}`} onClick={onClose}>
+            Cancel
+          </button>
+          <button type="button" className={styles.modalAddBtn} onClick={onAdd}>
+            Add
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+AddEventModal.propTypes = {
+  sectionTitle: PropTypes.string,
+  newEvent: eventShape.isRequired,
+  setNewEvent: PropTypes.func.isRequired,
+  darkMode: PropTypes.bool,
+  onClose: PropTypes.func.isRequired,
+  onAdd: PropTypes.func.isRequired,
+};
 
 // --- Main Component ---
 
@@ -261,98 +358,14 @@ function GardenManagement() {
 
       {/* Add Event Modal */}
       {addModal && (
-        <div className={styles.modalOverlay}>
-          <div className={`${styles.modalBox} ${darkMode ? styles.dark : ''}`}>
-            <h3 className={`${styles.modalTitle} ${darkMode ? styles.dark : ''}`}>
-              {sections.find(s => s.id === addModal)?.addLabel}
-            </h3>
-
-            <label
-              htmlFor="gm-crop"
-              className={`${styles.modalLabel} ${darkMode ? styles.dark : ''}`}
-            >
-              Crop *
-            </label>
-            <input
-              id="gm-crop"
-              className={`${styles.modalInput} ${darkMode ? styles.dark : ''}`}
-              value={newEvent.crop}
-              onChange={e => setNewEvent({ ...newEvent, crop: e.target.value })}
-              placeholder="e.g. Tomatoes"
-            />
-
-            <label
-              htmlFor="gm-dateRange"
-              className={`${styles.modalLabel} ${darkMode ? styles.dark : ''}`}
-            >
-              Date Range *
-            </label>
-            <input
-              id="gm-dateRange"
-              className={`${styles.modalInput} ${darkMode ? styles.dark : ''}`}
-              value={newEvent.dateRange}
-              onChange={e => setNewEvent({ ...newEvent, dateRange: e.target.value })}
-              placeholder="e.g. Jun 1 - Jun 15"
-            />
-
-            <label
-              htmlFor="gm-location"
-              className={`${styles.modalLabel} ${darkMode ? styles.dark : ''}`}
-            >
-              Location *
-            </label>
-            <input
-              id="gm-location"
-              className={`${styles.modalInput} ${darkMode ? styles.dark : ''}`}
-              value={newEvent.location}
-              onChange={e => setNewEvent({ ...newEvent, location: e.target.value })}
-              placeholder="e.g. Greenhouse A"
-            />
-
-            <label
-              htmlFor="gm-yield"
-              className={`${styles.modalLabel} ${darkMode ? styles.dark : ''}`}
-            >
-              Est. Yield
-            </label>
-            <input
-              id="gm-yield"
-              className={`${styles.modalInput} ${darkMode ? styles.dark : ''}`}
-              value={newEvent.yield}
-              onChange={e => setNewEvent({ ...newEvent, yield: e.target.value })}
-              placeholder="e.g. Est. 40 kg"
-            />
-
-            <label
-              htmlFor="gm-status"
-              className={`${styles.modalLabel} ${darkMode ? styles.dark : ''}`}
-            >
-              Status
-            </label>
-            <select
-              id="gm-status"
-              className={`${styles.modalInput} ${darkMode ? styles.dark : ''}`}
-              value={newEvent.status}
-              onChange={e => setNewEvent({ ...newEvent, status: e.target.value })}
-            >
-              <option value="upcoming">Upcoming</option>
-              <option value="growing">Growing</option>
-            </select>
-
-            <div className={styles.modalBtns}>
-              <button
-                type="button"
-                className={`${styles.modalCancelBtn} ${darkMode ? styles.dark : ''}`}
-                onClick={closeModal}
-              >
-                Cancel
-              </button>
-              <button type="button" className={styles.modalAddBtn} onClick={handleAddEvent}>
-                Add
-              </button>
-            </div>
-          </div>
-        </div>
+        <AddEventModal
+          sectionTitle={sections.find(s => s.id === addModal)?.addLabel}
+          newEvent={newEvent}
+          setNewEvent={setNewEvent}
+          darkMode={darkMode}
+          onClose={closeModal}
+          onAdd={handleAddEvent}
+        />
       )}
     </div>
   );
