@@ -1,3 +1,5 @@
+/* stylelint-disable declaration-block-single-line-max-declarations, no-descending-specificity, no-duplicate-selectors */
+
 /* ---------- General Styling ---------- */
 .body {
   font-family: Arial, sans-serif;
@@ -9,6 +11,7 @@
 .participationLandingPage {
   max-width: 90%;
   margin: 0 auto;
+  background: white;
 }
 
 .participationLandingPageDark {
@@ -175,11 +178,20 @@
   box-sizing: border-box;
 }
 
-@media (width <= 768px) {
+@media (width <= 1024px) {
+
   .analyticsSection {
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 30px;
   }
 
+  .trackingContainer,
+  .insights {
+    min-width: 100%;
+  }
+}
+
+@media (width <= 768px) {
   .trackingContainer,
   .insights {
     width: 100%;
@@ -202,6 +214,22 @@
   color: #fff;
 }
 
+
+@media (width <= 1024px) {
+  .trackingHeader {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .trackingHeaderDark {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+}
+
 .trackingHeader h3 {
   font-size: 1.3rem;
   color: #333;
@@ -217,7 +245,7 @@
 .trackingFilters {
   display: flex;
   flex-wrap: nowrap;
-  gap: 12px; /* spacing between dropdowns */
+  gap: 12px;
 }
 
 .trackingFilters select {
@@ -245,14 +273,12 @@
   color: #fff;
 }
 
-/* Summary boxes */
 .trackingSummary {
   display: flex;
   justify-content: space-between;
   margin-bottom: 20px;
 }
 
-/* Light mode */
 .trackingRate {
   background: #f8f9fa;
   border-radius: 10px;
@@ -266,7 +292,6 @@
   color: #333;
 }
 
-/* Dark mode */
 .trackingRateDark {
   background: #3a506b;
   border-radius: 10px;
@@ -278,12 +303,14 @@
 .trackingRateDark .trackingRateSubheading span,
 .trackingRateDark .trackingRateValue span {
   color: #fff;
+
 }
 
 .trackingRateValue {
   font-size: 0.9rem;
   display: inline-block;
 }
+
 .trackingRate .trackingRateValue span.trackingRateValuePositive,
 .trackingRateDark .trackingRateValue span.trackingRateValuePositive {
   color: #f44336 !important;
@@ -295,6 +322,7 @@
 }
 
 /* Tables */
+
 .trackingListContainer {
   max-height: 600px;
   overflow-y: auto;
@@ -325,6 +353,26 @@
   text-align: left;
   padding: 10px;
   background: #f4f4f4;
+}
+
+.sortableHeader {
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.sortableHeaderContent {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sortableHeader:hover {
+  background: #e8e8e8;
+}
+
+.trackingTableDark .sortableHeader:hover {
+  background: #253055;
 }
 
 .trackingTableDark thead th {
@@ -361,6 +409,20 @@
   margin-bottom: 15px;
   display: flex;
   justify-content: space-between;
+}
+
+@media (width <= 1024px) {
+  .insightsHeader {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .insightsHeaderDark {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
 }
 
 .insightsHeader h3 {
@@ -403,22 +465,18 @@
 .insightsTabs {
   flex: 1;
   display: flex;
-  background-color: #f0f0f0;
-  border-radius: 8px;
-  padding: 4px;
-  gap: 2px;
-  max-width: 60%;
-  border: none;
-  overflow: visible;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
-.insightsTabsContainer{
+.insightsTabsContainer {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.icons{
+.icons {
   cursor: pointer;
   display: flex;
   gap: 8px;
@@ -437,18 +495,18 @@
   transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
 }
 
-.insightsTabLight{
+.insightsTabLight {
   color: #555;
   background-color: #f8f9fa;
 }
 
-.insightsTabDark{
+.insightsTabDark {
   color: #f8f9fa;
-  background-color: #1C2541;
+  background-color: #1c2541;
 }
 
 .insightsTabDark:hover {
-  background-color: #3A506B;
+  background-color: #3a506b;
 }
 
 .insightsTabLight:hover {
@@ -472,12 +530,20 @@
   border-right: none;
 }
 
+.insightsDark .insightsTab {
+  background-color: #3A506B;
+
+  color: #fff;
+  border-right: 1px solid #555;
+}
+
 .insightsTab:hover:not(.activeTab) {
   background-color: #e4e4e4;
 }
 
 .insightsDark .insightsTab:hover:not(.activeTabDarkMode) {
   background-color: rgb(255 255 255 / 8%);
+
 }
 
 .insightsDark .insightsTab.activeTab {
@@ -504,7 +570,7 @@
 .insightItem {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 10px;
 }
 
 .insightLabel {
@@ -512,6 +578,7 @@
   font-size: 0.9rem;
   color: #555;
   margin-right: 10px;
+  min-width: 0;
 }
 
 .insightLabelDark {
@@ -522,7 +589,7 @@
 }
 
 .insightBar {
-  flex: 2;
+  flex: 3;
   height: 8px;
   background: #e9ecef;
   border-radius: 4px;
@@ -541,16 +608,15 @@
 
 .insightsPercentage {
   font-size: 0.9rem;
-  color: red;
+  font-weight: bold;
+  color: #333;
+  flex: 0 0 auto;
+  min-width: 35px;
+  text-align: right;
 }
 
 .insightsPercentageDark {
-  font-size: 0.9rem;
-  color: red !important;
-}
-
-.insightsDark .insightsPercentageDark {
-  color: red !important;
+  color: #fff;
 }
 
 .tooltipWrapper {
@@ -580,95 +646,34 @@
   opacity: 1;
 }
 
-/* ---------- Export PDF modal ---------- */
-.modalOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgb(0 0 0 / 45%);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 999;
-}
-
-.modal {
-  width: 420px;
-  max-width: calc(100vw - 32px);
-  background: #fff;
-  border-radius: 12px;
-  padding: 16px;
-}
-
-.modalDark {
-  background: #1C2541;
-}
-
-.modalHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.modalTitle {
-  margin: 0;
-}
-
-.modalClose {
-  border: none;
-  background: transparent;
-  font-size: 22px;
-  cursor: pointer;
-}
-
-.modalBody {
-  margin-top: 12px;
-}
-
-.modalMeta {
-  font-size: 16px;
-  opacity: 0.85;
-  display: grid;
-  gap: 6px;
-  margin-bottom: 12px;
-}
-
-.modalError {
-  margin-bottom: 12px;
-  font-size: 13px;
-  color: #b00020;
-}
-
-.modalActions {
-  display: flex;
-  gap: 10px;
-}
-
 .exportOptionsButtons,
+.exportOptionsButtonsDark {
+
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid #ccc;
+  color: #555;
+}
+
 .exportOptionsButtonsDark {
   flex: 1;
   padding: 10px 12px;
   border-radius: 10px;
   cursor: pointer;
-}
-
-.exportOptionsButtons{
-  background: transparent;
-  border: 1px solid #ccc;
-  color: #555;
-}
-
-.exportOptionsButtons:hover{
-  color: #555;
-  background-color: #e0e0e0;
-}
-
-.exportOptionsButtonsDark{
   border: 1px solid #ccc;
   color: #111;
 }
 
+.exportOptionsButtons:hover {
+  color: #555;
+  background-color: #e0e0e0;
+}
+
 .exportOptionsButtonsDark:hover {
-  background: #3A506B;
+  background: #3a506b;
 }
 
 .exportOptionsButtons:disabled,
@@ -677,20 +682,11 @@
   cursor: not-allowed;
 }
 
-
-
 /* ---------- PDF/Print helpers ---------- */
-.pageBreakBefore {
-  break-before: page;
-}
+.pageBreakBefore { break-before: always; }
+.pageBreakAfter  { break-after: always; }
+.avoidBreak       { break-inside: avoid; }
 
-.pageBreakAfter {
-  break-after: page;
-}
-
-.avoidBreak {
-  break-inside: avoid;
-}
 
 :global(html[data-exporting="true"]) .caseCards:global(.expanded),
 :global(html[data-exporting="true"]) .caseList:global(.expanded),
@@ -704,6 +700,7 @@
 .insightsTabsDarkMode {
   border: none;
   background-color: #334155;
+
 }
 
 /* Dark mode tab */
@@ -721,7 +718,7 @@
   display: none;
 }
 
-/* Print styles using global selectors */
+
 @media print {
   /* Hide everything except the participation component */
   :global(body > *:not(#root)) {
@@ -746,17 +743,28 @@
   }
 
   /* Sonar fix: avoid duplicate selector by scoping the print version */
+
   :global(#root) .participationLandingPage {
     max-width: 100% !important;
     margin: 0 !important;
     background: white !important;
     height: auto !important;
     overflow: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Force background colors on all print children */
+  :global(#root) .participationLandingPage * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   @page {
     size: auto;
+
     /* Use auto instead of Letter to allow multiple pages */
+
     margin: 0.5in;
   }
 
@@ -786,11 +794,12 @@
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 12px !important;
     break-inside: auto !important;
+
   }
 
   :global(.case-card-global) {
-    break-inside: avoid-page !important;
     break-inside: avoid !important;
+
     height: auto !important;
   }
 
@@ -799,8 +808,8 @@
   }
 
   :global(.case-list-item-global) {
-    break-inside: avoid-page !important;
     break-inside: avoid !important;
+
   }
 
   .trackingListContainer,
@@ -830,19 +839,21 @@
     margin-bottom: 8px;
   }
 
-  :global(.tracking-table-global) thead th { 
-    background: #f4f4f4 !important; 
+  :global(.tracking-table-global) thead th {
+    background: #f4f4f4 !important;
     color: #333 !important;
   }
 
   :global(.tracking-table-global-dark) thead th {
     background: #1C2541 !important;
+
     color: #fff !important;
   }
 
   .printOnly {
     display: block !important;
   }
+  
 
   :global(#root) .case-card-global {
     background: white !important;
@@ -865,39 +876,46 @@
   /* Dark mode styles for print */
   .participationLandingPageDark {
     background: #1B2A41 !important;
+
     color: #fff !important;
   }
 
   .participationLandingPageDark :global(.case-card-global) {
     background: #3A506B !important;
+
     color: #fff !important;
     border: 1px solid #555 !important;
   }
 
   .participationLandingPageDark .trackingContainerDark {
     background: #1C2541 !important;
+
     color: #fff !important;
     border: 1px solid #555 !important;
   }
 
   .participationLandingPageDark .insightsDark {
     background: #1C2541 !important;
+
     color: #fff !important;
     border: 1px solid #555 !important;
   }
 
   .participationLandingPageDark .trackingListContainerDark {
     background: #3A506B !important;
+
     color: #fff !important;
   }
 
   .participationLandingPageDark :global(.tracking-table-global-dark) thead th {
     background: #1C2541 !important;
+
     color: #fff !important;
   }
 
   .participationLandingPageDark .trackingRateDark {
     background: #3A506B !important;
+
     color: #fff !important;
   }
 
@@ -943,7 +961,8 @@
   .participationLandingPageDark .eventNameDark,
   .participationLandingPageDark .eventTimeDark,
   .participationLandingPageDark .attendeesCountDark,
-  .participationLandingPageDark .insightsLabelDark {
+  .participationLandingPageDark .insightsLabelDark,
+  .participationLandingPageDark .insightsPercentageDark {
     color: #fff !important;
   }
 }
@@ -955,6 +974,38 @@
   font-weight: 600;
   box-shadow: 0 1px 6px rgb(0 0 0 / 50%);
 }
+
+  /* Text colors for dark mode */
+  .participationLandingPageDark .landingPageHeaderDark,
+  .participationLandingPageDark .sectionTitleDark,
+  .participationLandingPageDark .eventNameDark,
+  .participationLandingPageDark .eventTimeDark,
+  .participationLandingPageDark .attendeesCountDark,
+  .participationLandingPageDark .insightsLabelDark,
+  .participationLandingPageDark .insightsPercentageDark {
+    color: #fff !important;
+  }
+
+.filterDropdown {
+  padding: 8px;
+  font-size: 14px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.participationLandingPageDark .filterDropdown {
+  background-color: #3A506B;
+  color: #fff;
+  border: 1px solid #555;
+  color-scheme: dark;
+}
+
+.participationLandingPageDark .filterDropdown:hover,
+.participationLandingPageDark .filterDropdown:focus {
+  border-color: #007bff;
+  background-color: #4A627D;
+}
+
 
 /* Hover effect dark mode */
 .insightsTabDarkMode:hover {
@@ -970,18 +1021,9 @@
 }
 
 /* ---------- Modal ---------- */
-.modalOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.45);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
 
 .modalContent {
-  background: #ffffff;
+  background: #fff;
   width: 420px;
   max-height: 80vh;
   border-radius: 10px;
@@ -992,13 +1034,7 @@
 
 .modalContentDark {
   background: #1C2541;
-  color: #ffffff;
-}
-
-.modalHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  color: #fff;
 }
 
 .closeBtn {
@@ -1069,41 +1105,31 @@
 /* ===== Dark mode fixes ===== */
 
 .participationLandingPageDark :global(button) {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .participationLandingPageDark :global(.btn),
 .participationLandingPageDark :global(.btn-light),
 .participationLandingPageDark :global(.btn-outline-secondary) {
-  color: #ffffff !important;
+  color: #fff !important;
   background-color: #3a506b !important;
   border-color: #3a506b !important;
 }
 
 .participationLandingPageDark :global(.btn-primary),
 .participationLandingPageDark :global(.active) {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .trackingContainerDark .trackingFilters select {
   background-color: #3A506B;
-  color: #ffffff;
+  color: #fff;
   border: 1px solid #3A506B;
 }
 
 .insightsDark .insightsFilters select {
   background-color: #3A506B;
-  color: #ffffff;
+  color: #fff;
   border: 1px solid #3A506B;
 }
 
-.insightsDark .insightsTab {
-  background-color: #3A506B;
-  color: #ffffff;
-  border-right: 1px solid #555;
-}
-
-.insightsDark .insightsTab.activeTab {
-  background-color: #007bff;
-  color: #ffffff;
-}

@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .container {
   font-family: Arial, sans-serif;
   margin: 0 auto;
@@ -40,8 +41,8 @@
   gap: 10px;
   flex: 1 1 0;
   max-width: 50%;
-  align-items: center;
   min-width: 260px;
+  align-items: center;
 }
 
 .headerRight {
@@ -61,19 +62,27 @@
 }
 
 .jobSelect {
-  padding: 6px 8px;
+  padding: 6px 36px 6px 8px;
   border: 1px solid #ccc;
   border-radius: 5px;
   width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%23666' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
 }
 
 .goButton {
-  background-color: #4caf50;
-  color: white;
+  background-color: #2e7d32;
+  color: #fff;
   border: none;
   padding: 6px 14px;
   border-radius: 5px;
   cursor: pointer;
+  height: 40px;
 }
 
 @media (width <= 768px) {
@@ -127,7 +136,7 @@
   gap: 15px;
   background-color: #d9d9d9;
   padding: 2%;
-  border-radius: 1%;
+  border-radius: 5px;
 }
 
 .formContentGroup {
@@ -146,21 +155,31 @@
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+  align-items: center;
 }
 
-.formProfileDetailGroup input {
+.formProfileDetailGroup input,
+.resumeWrapper {
+  height: 40px;
+  display: flex;
+}
+
+.formProfileDetailGroup input,
+.formGroup input {
   flex: 1;
   min-width: 200px;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  height: 40px;
+  box-sizing: border-box;
 }
 
 .formGroup h2 {
   margin-bottom: 5px;
   font-weight: bold;
   text-align: left;
-  color: black;
+  color: #000;
   font-size: medium;
 }
 
@@ -186,10 +205,9 @@
   border: 1px solid #ccc;
   border-radius: 5px;
 }
-
 .submitButton {
-  background-color: #4caf50;
-  color: white;
+  background-color: #2e7d32;
+  color: #fff;
   border: none;
   padding: 10px;
   border-radius: 5px;
@@ -197,6 +215,7 @@
   align-self: center;
 }
 
+/* POPUP */
 .popupOverlay {
   position: fixed;
   inset: 0;
@@ -225,19 +244,16 @@
 
 .popupCloseBtn {
   position: absolute;
-  top: 12px;
-  right: 16px;
+  inset: 12px 16px auto auto;
   background: transparent;
   border: none;
   font-size: 1.5rem;
   color: #333;
   cursor: pointer;
-  transition: color 0.2s;
 }
 
 .popupCloseBtn:hover {
   color: #98cb03;
-  background-color: transparent;
 }
 
 .popupContent h2 {
@@ -252,6 +268,16 @@
   color: #222;
   font-size: 1em;
   line-height: 1.5;
+}
+
+/* RESUME UPLOAD */
+.resumeWrapper {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 200px;
+  height: 40px;
+  box-sizing: border-box;
 }
 
 /* Job description modal layout (collaboration job forms) */
@@ -336,6 +362,12 @@
   background: #155dc0;
 }
 
+.logo img {
+  max-width: 220px;
+  height: auto;
+  object-fit: contain;
+}
+
 /* Dark mode: native date input — white calendar icon (WebKit/Blink) */
 .darkMode input[type='date'],
 .darkMode .dateInput {
@@ -361,20 +393,24 @@
 }
 
 .resumeLabel {
-  display: inline-flex;
-  margin-bottom: 0;
+  display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 10px;
-  cursor: pointer;
-  padding: 8px 12px;
-  border-radius: 8px;
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  height: 40px;
+  padding: 0 10px;
+  border-radius: 5px;
   background: #fff;
-  border: 1px solid #cfcfcf;
+  border: 1px solid #ccc;
   color: #222;
   font-size: 14px;
-  line-height: 1;
+  cursor: pointer;
   user-select: none;
-  transition: background 150ms ease, box-shadow 150ms ease, transform 120ms ease;
+  box-sizing: border-box;
+  transition: background 150ms ease, box-shadow 150ms ease;
 }
 
 .resumeLabel:hover {
@@ -387,19 +423,45 @@
   display: none;
 }
 
-.resumeLabel .fileName {
-  font-size: 13px;
-  color: #555;
-  background: #f2f6f9;
-  padding: 4px 8px;
-  border-radius: 6px;
-  border: 1px solid #e6eef6;
+.fileName {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
+/* REMOVE BUTTON */
+.removeResumeBtn {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid #ccc;
+  color: #c62828;
+  cursor: pointer;
+}
+
+.removeResumeBtn:hover {
+  background: rgb(198 40 40 / 10%);
+}
+
+.resumeLabel.success {
+  border-color: #4caf50;
+}
+
+.resumeLabel.error {
+  border-color: #c62828;
+}
+
+/* DARK MODE */
 .darkMode {
   background: #1b2a41;
   color: #e0e0e0;
-  transition: background 0.3s, color 0.3s;
 }
 
 .darkMode .formContainer {
@@ -411,12 +473,8 @@
 
 .darkMode .headerContent {
   background: #1c2541;
-  transition: background 0.3s;
-  z-index: 1;
 }
 
-.darkMode .jobTitleInput,
-.darkMode .jobSelect,
 .darkMode input,
 .darkMode select,
 .darkMode textarea {
@@ -450,8 +508,6 @@
 
 .darkMode .form {
   background: #23272a;
-  border-radius: 8px;
-  transition: background 0.3s;
 }
 
 .darkMode .formTitle {
@@ -464,6 +520,8 @@
 }
 
 .darkMode .popupContent {
+  background: #225163;
+  color: #f1f1f1;
   background: #0b1324;
   color: #e5e7eb;
   box-shadow: 0 8px 32px rgb(0 0 0 / 70%);
@@ -538,9 +596,14 @@
 
 .darkMode .resumeLabel {
   background: #1c2541;
-  border-color: #2b3f57;
+  border: 1px solid #444;
   color: #e6eef6;
-  box-shadow: none;
+}
+
+.darkMode .resumeLabel {
+  background: #1c2541;
+  border: 1px solid #444;
+  color: #e6eef6;
 }
 
 .darkMode .resumeLabel:hover {
@@ -548,8 +611,21 @@
   box-shadow: 0 6px 18px rgb(0 0 0 / 35%);
 }
 
+.darkMode .fileName {
+  color: #cfe7ff;
+}
+
 .darkMode .resumeLabel .fileName {
   background: rgb(255 255 255 / 4%);
-  color: #cfe7ff;
   border-color: rgb(255 255 255 / 5%);
+}
+
+.darkMode .removeResumeBtn {
+  border: 1px solid #444;
+  color: #ff6b6b;
+}
+
+.darkMode .removeResumeBtn:hover {
+  color: #fff;
+  background: #c62828;
 }

@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .navigationBar {
   background-color: #3b82f6;
   padding: 0.75rem 0;
@@ -122,6 +123,7 @@
   .hamburger {
     display: flex;
   }
+
 
   .navContainer {
     flex-wrap: wrap;

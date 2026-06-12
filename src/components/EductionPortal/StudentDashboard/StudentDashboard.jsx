@@ -8,6 +8,7 @@ import NavigationBar from './NavigationBar';
 import SummaryCards from './SummaryCards';
 import { fetchStudentTasks, markStudentTaskAsDone } from '~/actions/studentTasks';
 import { fetchIntermediateTasks, markIntermediateTaskAsDone } from '~/actions/intermediateTasks';
+import HoursLogPanel from '../StudentTasks/HoursLogPanel';
 
 const ACTIVE_STATUSES = ['assigned', 'in_progress'];
 const PENDING_STATUSES = ['pending_review', 'submitted'];
@@ -30,6 +31,7 @@ const StudentDashboard = () => {
   });
   const [intermediateTasks, setIntermediateTasks] = useState({});
   const [expandedTasks, setExpandedTasks] = useState({});
+  const [activeLogTask, setActiveLogTask] = useState(null);
 
   const dispatch = useDispatch();
   const { taskItems: tasks, fetching: loading, error } = useSelector(state => state.studentTasks);
@@ -125,6 +127,12 @@ const StudentDashboard = () => {
       logEntries,
     });
   };
+
+  // Handle log time
+  const handleLogTime = task => {
+    setActiveLogTask(task);
+  };
+
 
   // Handle mark as done
   const handleMarkAsDone = useCallback(
@@ -273,6 +281,7 @@ const StudentDashboard = () => {
             <TaskCardView
               tasks={filteredTasks}
               onMarkAsDone={handleMarkAsDone}
+              onLogTime={handleLogTime}
               intermediateTasks={intermediateTasks}
               expandedTasks={expandedTasks}
               onToggleIntermediateTasks={toggleIntermediateTasks}
@@ -283,6 +292,7 @@ const StudentDashboard = () => {
             <TaskListView
               tasks={filteredTasks}
               onMarkAsDone={handleMarkAsDone}
+              onLogTime={handleLogTime}
               intermediateTasks={intermediateTasks}
               expandedTasks={expandedTasks}
               onToggleIntermediateTasks={toggleIntermediateTasks}
@@ -292,6 +302,15 @@ const StudentDashboard = () => {
           )}
         </div>
       </Container>
+
+      {/* Hours Log Panel */}
+      {activeLogTask && (
+        <HoursLogPanel
+          task={activeLogTask}
+          darkMode={darkMode}
+          onClose={() => setActiveLogTask(null)}
+        />
+      )}
     </div>
   );
 };
