@@ -133,7 +133,6 @@ const StudentDashboard = () => {
     setActiveLogTask(task);
   };
 
-
   // Handle mark as done
   const handleMarkAsDone = useCallback(
     taskId => {
