@@ -59,6 +59,7 @@ describe('TriStateToggleSwitch Component', () => {
 
   it('renders exactly three clickable areas for each state option', () => {
     render(<TriStateToggleSwitch pos="requested" />);
+    // eslint-disable-next-line
     expect(screen.getByTestId('knob-area').children.length).toBe(3);
   });
 
