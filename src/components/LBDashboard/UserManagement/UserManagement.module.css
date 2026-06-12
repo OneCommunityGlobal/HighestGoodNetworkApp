@@ -53,8 +53,8 @@
   background: #1c2541;
 }
 
-.darkRow:hover {
-  background: #223050;
+.table tbody .darkRow:hover {
+  background: #2a3a5e;
 }
 
 .table tbody td {
