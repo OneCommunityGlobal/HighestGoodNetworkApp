@@ -21,11 +21,12 @@ function TriStateToggleSwitch({ pos, onChange }) {
   }, [pos]);
 
     return (
-    <div className={`${styles['toggle-switch']} ${styles[`bg-${bgColor}`]}`}>
-      <div className={styles['knob-area']} style={{ position: 'relative', zIndex: 1 }}>
+    <div data-testid="toggle-switch" className={`${styles['toggle-switch']} ${styles[`bg-${bgColor}`]}`}>
+      <div data-testid="knob-area" className={styles['knob-area']} style={{ position: 'relative', zIndex: 1 }}>
         {['posted', 'default', 'requested'].map(p => (
           <div
             key={p}
+            data-testid={`option-${p}`}
             role="button"
             tabIndex={0}
             onClick={() => handleClick(p)}
@@ -33,7 +34,7 @@ function TriStateToggleSwitch({ pos, onChange }) {
           />
         ))}
       </div>
-      <div className={`${styles.knob} ${styles[position]}`} />
+      <div data-testid="knob" className={`${styles.knob} ${styles[position]}`} />
     </div>
   );
 }
