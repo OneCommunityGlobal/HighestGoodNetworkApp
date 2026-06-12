@@ -11,8 +11,6 @@ import { FiUser } from 'react-icons/fi';
 import { BsChat } from 'react-icons/bs';
 import { IoNotificationsOutline } from 'react-icons/io5';
 
-import styles from './Header.module.css';
-
 import { FIXED_VILLAGES } from './Home/data.jsx';
 import { formatVillageLabel } from './Home/homeFormatUtils';
 import itemStyles from './WishList/ItemOverview.module.css';

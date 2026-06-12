@@ -18,8 +18,8 @@
 }
 
 .item__button {
-  background-color: #ffffff;
-  color: #11b24c;
+  background-color: #fff;
+  color: #0b6e30;
   padding: 6px 14px;
   border-radius: 4px;
   cursor: pointer;
@@ -35,7 +35,7 @@
   align-items: center;
   gap: 20px;
   margin-left: auto;
-  color: #ffffff;
+  color: #fff;
 }
 
 .item__navbar-right h2 {
