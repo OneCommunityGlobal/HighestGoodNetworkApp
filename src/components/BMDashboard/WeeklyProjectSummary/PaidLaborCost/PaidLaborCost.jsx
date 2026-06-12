@@ -12,151 +12,16 @@ import {
 import moment from 'moment';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import Select from 'react-select';
+import Select, { components } from 'react-select';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
 import styles from './PaidLaborCost.module.css';
 import logger from '../../../../services/logService';
 import config from '../../../../config.json';
 import { ENDPOINTS } from '../../../../utils/URL';
+import { MOCK_DB } from './mockLaborCostData';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
-
-const MOCK_DB = [
-  {
-    project: 'Project Alpha',
-    task: 'Deployment',
-    cost: 25000,
-    budget: 22000,
-    date: moment()
-      .subtract(1, 'days')
-      .toISOString(),
-  },
-  {
-    project: 'Project Alpha',
-    task: 'Research',
-    cost: 15000,
-    budget: 18000,
-    date: moment()
-      .subtract(3, 'days')
-      .toISOString(),
-  },
-  {
-    project: 'Project Alpha',
-    task: 'Design',
-    cost: 12000,
-    budget: 12000,
-    date: moment()
-      .subtract(5, 'days')
-      .toISOString(),
-  },
-  {
-    project: 'Project Alpha',
-    task: 'Deployment',
-    cost: 10000,
-    budget: 12000,
-    date: moment()
-      .subtract(12, 'days')
-      .toISOString(),
-  },
-  {
-    project: 'Project Alpha',
-    task: 'Testing',
-    cost: 8500,
-    budget: 8000,
-    date: moment()
-      .subtract(18, 'days')
-      .toISOString(),
-  },
-  {
-    project: 'Project Alpha',
-    task: 'Research',
-    cost: 14000,
-    budget: 15000,
-    date: moment()
-      .subtract(25, 'days')
-      .toISOString(),
-  },
-  {
-    project: 'Project Beta',
-    task: 'Deployment',
-    cost: 31000,
-    budget: 30000,
-    date: moment().toISOString(),
-  },
-  {
-    project: 'Project Beta',
-    task: 'Research',
-    cost: 36000,
-    budget: 32000,
-    date: moment()
-      .subtract(7, 'days')
-      .toISOString(),
-  },
-  {
-    project: 'Project Beta',
-    task: 'Testing',
-    cost: 8000,
-    budget: 10000,
-    date: moment()
-      .subtract(10, 'days')
-      .toISOString(),
-  },
-  {
-    project: 'Project Beta',
-    task: 'Design',
-    cost: 22000,
-    budget: 20000,
-    date: moment()
-      .subtract(15, 'days')
-      .toISOString(),
-  },
-  {
-    project: 'Project Beta',
-    task: 'Deployment',
-    cost: 18000,
-    budget: 20000,
-    date: moment()
-      .subtract(20, 'days')
-      .toISOString(),
-  },
-  {
-    project: 'Project Beta',
-    task: 'Testing',
-    cost: 9000,
-    budget: 7500,
-    date: moment()
-      .subtract(28, 'days')
-      .toISOString(),
-  },
-  {
-    project: 'Project Gamma',
-    task: 'Design',
-    cost: 45000,
-    budget: 40000,
-    date: moment()
-      .subtract(2, 'days')
-      .toISOString(),
-  },
-  {
-    project: 'Project Gamma',
-    task: 'Research',
-    cost: 12000,
-    budget: 15000,
-    date: moment()
-      .subtract(14, 'days')
-      .toISOString(),
-  },
-  {
-    project: 'Project Gamma',
-    task: 'Deployment',
-    cost: 28000,
-    budget: 30000,
-    date: moment()
-      .subtract(22, 'days')
-      .toISOString(),
-  },
-];
 
 const isValidISODate = dateString => {
   if (!dateString) return false;
@@ -176,7 +41,6 @@ const isDevelopmentEnvironment = () => {
   );
 };
 
-// SonarQube Fix: Extracted API fetching logic
 const fetchLaborDataFromAPI = async signal => {
   const token = localStorage.getItem(config.tokenKey);
   const headers = {
@@ -195,7 +59,6 @@ const fetchLaborDataFromAPI = async signal => {
   return response.json();
 };
 
-// SonarQube Fix: Extracted formatting logic
 const formatApiData = apiData => {
   const dataToProcess = apiData.data || apiData || [];
   return dataToProcess
@@ -261,7 +124,6 @@ function aggregateData(data, taskFilter, projectFilter, dateRange) {
   return { labels: [label], aggregation, tasksToInclude };
 }
 
-// SonarQube Fix: Extracted Variance Math logic
 const calculateVarianceMetrics = (displayTotalCost, displayTotalBudget, componentStyles) => {
   const absoluteVariance = Math.abs(displayTotalCost - displayTotalBudget);
   const variancePercentage =
@@ -280,7 +142,6 @@ const calculateVarianceMetrics = (displayTotalCost, displayTotalBudget, componen
   return { absoluteVariance, variancePercentage, varianceClass };
 };
 
-// Extracted styling helpers
 const getOptionBackgroundColor = (darkMode, isSelected, isFocused) => {
   if (isSelected) return darkMode ? '#e8a71c' : '#0d55b3';
   if (isFocused) return darkMode ? '#3a506b' : '#f0f0f0';
@@ -317,27 +178,6 @@ const generateSelectStyles = darkMode => ({
     color: darkMode ? '#ffffff' : '#000',
   }),
   indicatorsContainer: base => ({ ...base, padding: '0 4px' }),
-  multiValue: base => ({
-    ...base,
-    backgroundColor: darkMode ? '#2d4059' : '#e0e0e0',
-    borderRadius: '4px',
-    fontSize: '12px',
-    margin: '2px',
-  }),
-  multiValueLabel: base => ({
-    ...base,
-    color: darkMode ? '#ffffff' : '#333',
-    padding: '3px 8px',
-  }),
-  multiValueRemove: base => ({
-    ...base,
-    color: darkMode ? '#ffffff' : '#333',
-    cursor: 'pointer',
-    ':hover': {
-      backgroundColor: darkMode ? '#3a506b' : '#d0d0d0',
-      color: darkMode ? '#ffffff' : '#333',
-    },
-  }),
   placeholder: base => ({
     ...base,
     color: darkMode ? '#94a3b8' : '#999',
@@ -388,7 +228,38 @@ const generateSelectStyles = darkMode => ({
   }),
 });
 
-// Extracted Dataset Builder
+const MultiValue = () => null;
+
+const ValueContainer = ({ children, ...props }) => {
+  const length = props.getValue().length;
+  return (
+    <components.ValueContainer {...props}>
+      {length > 0 && (
+        <div style={{ color: props.selectProps.styles.singleValue?.color || 'inherit' }}>
+          {length} item{length !== 1 ? 's' : ''} selected
+        </div>
+      )}
+      {children}
+    </components.ValueContainer>
+  );
+};
+
+const Option = props => {
+  return (
+    <components.Option {...props}>
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <input
+          type="checkbox"
+          checked={props.isSelected}
+          onChange={() => null}
+          style={{ marginRight: '8px', cursor: 'pointer' }}
+        />
+        <span>{props.label}</span>
+      </div>
+    </components.Option>
+  );
+};
+
 const buildChartDatasets = (tasksToInclude, labels, aggregation, darkMode) => {
   return tasksToInclude.flatMap((task, idx) => {
     const hue = Math.round((idx * 360) / Math.max(1, tasksToInclude.length));
@@ -405,7 +276,7 @@ const buildChartDatasets = (tasksToInclude, labels, aggregation, darkMode) => {
         label: `${task} (Actual)`,
         backgroundColor: actualColor,
         borderRadius: 4,
-        data: labels.map(label => Math.round((aggregation[label][task]?.cost || 0) / 1000)),
+        data: labels.map(label => aggregation[label][task]?.cost || 0),
         maxBarThickness: 40,
         categoryPercentage: 0.8,
         barPercentage: 0.9,
@@ -417,7 +288,7 @@ const buildChartDatasets = (tasksToInclude, labels, aggregation, darkMode) => {
         borderWidth: { top: 2, right: 2, bottom: 0, left: 2 },
         borderDash: [4, 4],
         borderRadius: 4,
-        data: labels.map(label => Math.round((aggregation[label][task]?.budget || 0) / 1000)),
+        data: labels.map(label => aggregation[label][task]?.budget || 0),
         maxBarThickness: 40,
         categoryPercentage: 0.8,
         barPercentage: 0.9,
@@ -426,19 +297,27 @@ const buildChartDatasets = (tasksToInclude, labels, aggregation, darkMode) => {
   });
 };
 
-// Extracted Chart Options
 const buildChartOptions = (textColor, darkMode) => ({
   responsive: true,
   maintainAspectRatio: false,
-  layout: { padding: { top: 30, left: 10, right: 10, bottom: 10 } },
+  layout: { padding: { top: 35, left: 15, right: 15, bottom: 10 } },
   plugins: {
     legend: {
       position: 'top',
       labels: { font: { size: 12 }, color: textColor, padding: 20, usePointStyle: true },
     },
     datalabels: {
+      anchor: 'end',
+      align: 'top',
+      offset: 2,
       color: darkMode ? '#ffffff' : '#333333',
       font: { weight: '600', size: 11 },
+      textStrokeColor: darkMode ? '#1e293b' : '#ffffff',
+      textStrokeWidth: 3,
+      formatter: value => {
+        if (!value) return '';
+        return value >= 1000 ? `$${(value / 1000).toFixed(1).replace('.0', '')}k` : `$${value}`;
+      },
     },
     tooltip: {
       backgroundColor: darkMode ? '#1e293b' : '#ffffff',
@@ -449,8 +328,7 @@ const buildChartOptions = (textColor, darkMode) => ({
       callbacks: {
         label(context) {
           const project = context.chart.data.labels[context.dataIndex];
-          const costThousands = context.parsed.y || 0;
-          const costDollars = costThousands * 1000;
+          const costDollars = context.parsed.y || 0;
           return `${project}, ${context.dataset.label}: $${costDollars.toLocaleString()}`;
         },
       },
@@ -463,15 +341,19 @@ const buildChartOptions = (textColor, darkMode) => ({
       offset: true,
     },
     y: {
+      grace: '15%',
       grid: { color: darkMode ? '#334155' : '#e2e8f0' },
       beginAtZero: true,
-      title: { display: true, text: 'Cost (000s)', font: { size: 12 }, color: textColor },
-      ticks: { font: { size: 12 }, color: textColor },
+      title: { display: true, text: 'Cost ($)', font: { size: 12 }, color: textColor },
+      ticks: {
+        font: { size: 12 },
+        color: textColor,
+        callback: value => (value >= 1000 ? `$${value / 1000}k` : `$${value}`),
+      },
     },
   },
 });
 
-// Main Component
 export default function PaidLaborCost() {
   const [data, setData] = useState([]);
   const [initialLoading, setInitialLoading] = useState(true);
@@ -573,6 +455,9 @@ export default function PaidLaborCost() {
           <Select
             inputId="task-filter"
             isMulti
+            closeMenuOnSelect={false}
+            hideSelectedOptions={false}
+            components={{ MultiValue, ValueContainer, Option }}
             options={taskOptions}
             value={taskOptions.filter(option => taskFilter.includes(option.value))}
             onChange={selected =>
@@ -610,16 +495,22 @@ export default function PaidLaborCost() {
                 selectsStart
                 startDate={dateRange.startDate}
                 endDate={dateRange.endDate}
-                maxDate={dateRange.endDate || new Date()}
+                maxDate={
+                  dateRange.endDate ? new Date(Math.min(dateRange.endDate, new Date())) : new Date()
+                }
                 placeholderText="Start Date"
                 isClearable
                 dateFormat="MM/dd/yyyy"
                 aria-label="Start Date"
                 className={`${styles.dateInput} ${darkMode ? styles.darkDateInput : ''}`}
-                calendarClassName={darkMode ? 'paid-labor-cost-dark-calendar' : ''}
+                calendarClassName={
+                  darkMode ? 'paid-labor-cost-dark-calendar' : 'paid-labor-cost-calendar'
+                }
               />
             </div>
+
             <span className={styles.dateSeparator}>to</span>
+
             <div className={styles.datePickerWrapper}>
               <DatePicker
                 id="end-date"
@@ -633,9 +524,10 @@ export default function PaidLaborCost() {
                 placeholderText="End Date"
                 isClearable
                 dateFormat="MM/dd/yyyy"
-                aria-label="End Date"
                 className={`${styles.dateInput} ${darkMode ? styles.darkDateInput : ''}`}
-                calendarClassName={darkMode ? 'paid-labor-cost-dark-calendar' : ''}
+                calendarClassName={
+                  darkMode ? 'paid-labor-cost-dark-calendar' : 'paid-labor-cost-calendar'
+                }
               />
             </div>
           </div>
