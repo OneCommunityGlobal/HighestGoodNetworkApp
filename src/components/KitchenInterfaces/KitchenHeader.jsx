@@ -2,11 +2,9 @@ import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { useSelector } from 'react-redux';
 import styles from './KitchenHeader.module.css';
 
 const KitchenHeader = () => {
-  const darkMode = useSelector(state => state.theme.darkMode);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const NAV_ITEMS = [

@@ -136,7 +136,9 @@ function JobApplicationForm() {
   const [jobTitleInput, setJobTitleInput] = useState('');
   const [filteredForm, setFilteredForm] = useState(null);
   const [showDescription, setShowDescription] = useState(false);
-  const [applicantName, setApplicantName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
   const [applicantEmail, setApplicantEmail] = useState('');
   const [locationTimezone, setLocationTimezone] = useState('');
   const [phone, setPhone] = useState('');
@@ -149,10 +151,20 @@ function JobApplicationForm() {
 
   const darkMode = useSelector(state => state.theme?.darkMode);
 
-  const visibleQuestions = useMemo(
-    () => (filteredForm?.questions ?? []).filter(q => q.visible !== false),
-    [filteredForm],
-  );
+  const visibleQuestions = useMemo(() => {
+    const seen = new Set();
+
+    return (filteredForm?.questions ?? [])
+      .filter(q => q.visible !== false)
+      .filter(q => {
+        const key = normalizeTitleKey(q.label || q.questionText);
+
+        if (seen.has(key)) return false;
+
+        seen.add(key);
+        return true;
+      });
+  }, [filteredForm]);
 
   useEffect(() => {
     let cancelled = false;
@@ -241,10 +253,30 @@ function JobApplicationForm() {
     }
   };
 
-  const handleAnswerChange = (idx, value) => {
+  const handleAnswerChange = (idx, value, label) => {
     const newAnswers = [...answers];
     newAnswers[idx] = value;
     setAnswers(newAnswers);
+
+    const labelLower = String(label || '').toLowerCase();
+
+    const isHoursQuestion =
+      labelLower.includes('hour') && (labelLower.includes('week') || labelLower.includes('weekly'));
+
+    if (isHoursQuestion) {
+      if (value && !/^\d*$/.test(value)) {
+        setFieldErrors(prev => ({
+          ...prev,
+          [idx]: 'Only numbers are allowed',
+        }));
+      } else {
+        setFieldErrors(prev => {
+          const copy = { ...prev };
+          delete copy[idx];
+          return copy;
+        });
+      }
+    }
   };
 
   const handleShowDescription = e => {
@@ -273,13 +305,36 @@ function JobApplicationForm() {
 
   const validateBeforeSubmit = () => {
     const missing = [];
-    if (!applicantName.trim()) missing.push('Name');
+
+    if (!firstName.trim()) missing.push('First Name');
+    if (!lastName.trim()) missing.push('Last Name');
     if (!applicantEmail.trim()) missing.push('Email');
 
     if (visibleQuestions.length) {
       for (const [idx, q] of visibleQuestions.entries()) {
-        if (isQuestionRequired(q) && !String(answers[idx] ?? '').trim()) {
-          missing.push(getQuestionLabel(q, idx));
+        const answer = String(answers[idx] ?? '').trim();
+        const label = getQuestionLabel(q, idx);
+        const labelLower = label.toLowerCase();
+
+        // Required validation
+        if (isQuestionRequired(q) && !answer) {
+          missing.push(label);
+        }
+
+        // HOURS/WEEK VALIDATION
+        const isHoursQuestion =
+          labelLower.includes('hour') &&
+          (labelLower.includes('week') || labelLower.includes('weekly'));
+
+        if (isHoursQuestion && answer) {
+          if (!/^\d+$/.test(answer)) {
+            missing.push(`${label} (must be a number)`);
+          } else {
+            const num = Number(answer);
+            if (num <= 0 || num > 168) {
+              missing.push(`${label} (must be between 1 and 168)`);
+            }
+          }
         }
       }
     }
@@ -298,7 +353,8 @@ function JobApplicationForm() {
 
     toast.success('Application submitted. A copy will be sent to your email.');
 
-    setApplicantName('');
+    setFirstName('');
+    setLastName('');
     setApplicantEmail('');
     setLocationTimezone('');
     setPhone('');
@@ -402,10 +458,18 @@ function JobApplicationForm() {
               <div className={styles.formProfileDetailGroup}>
                 <input
                   type="text"
-                  placeholder="Name"
+                  placeholder="First Name *"
                   className={styles.inputField}
-                  value={applicantName}
-                  onChange={e => setApplicantName(e.target.value)}
+                  value={firstName}
+                  onChange={e => setFirstName(e.target.value)}
+                />
+
+                <input
+                  type="text"
+                  placeholder="Last Name *"
+                  className={styles.inputField}
+                  value={lastName}
+                  onChange={e => setLastName(e.target.value)}
                 />
                 <input
                   type="email"
@@ -455,6 +519,9 @@ function JobApplicationForm() {
               {visibleQuestions.map((q, idx) => {
                 const qt = getQuestionType(q);
                 const label = getQuestionLabel(q, idx);
+                const labelLower = label.toLowerCase();
+                const isIndividualOrgQuestion =
+                  labelLower.includes('individual') && labelLower.includes('organization');
                 const formKey = filteredForm?._id
                   ? `${filteredForm._id}-q-${idx}`
                   : `q-${idx}-${label.slice(0, 24)}`;
@@ -464,28 +531,50 @@ function JobApplicationForm() {
                     <h2>
                       {idx + 1}. {label}
                     </h2>
-                    {['textbox', 'text'].includes(qt) && (
-                      <input
-                        type="text"
-                        placeholder={q.placeholder || 'Type your response here'}
-                        value={answers[idx] || ''}
-                        onChange={e => handleAnswerChange(idx, e.target.value)}
-                      />
+                    {['textbox', 'text'].includes(qt) && !isIndividualOrgQuestion && (
+                      <>
+                        <input
+                          type="text"
+                          placeholder={q.placeholder || 'Type your response here'}
+                          value={answers[idx] || ''}
+                          onChange={e => handleAnswerChange(idx, e.target.value, label)}
+                          style={{
+                            border: fieldErrors[idx] ? '1px solid red' : undefined,
+                          }}
+                        />
+                        {fieldErrors[idx] && (
+                          <div style={{ color: 'red', fontSize: '12px', marginTop: '4px' }}>
+                            {fieldErrors[idx]}
+                          </div>
+                        )}
+                      </>
                     )}
-                    {qt === 'textarea' && (
-                      <textarea
-                        placeholder={q.placeholder || 'Type your response here'}
-                        value={answers[idx] || ''}
-                        onChange={e => handleAnswerChange(idx, e.target.value)}
-                        rows={5}
-                      />
+
+                    {qt === 'textarea' && !isIndividualOrgQuestion && (
+                      <>
+                        <textarea
+                          placeholder={q.placeholder || 'Type your response here'}
+                          value={answers[idx] || ''}
+                          onChange={e => handleAnswerChange(idx, e.target.value, label)}
+                          rows={5}
+                          style={{
+                            border: fieldErrors[idx] ? '1px solid red' : undefined,
+                          }}
+                        />
+                        {fieldErrors[idx] && (
+                          <div style={{ color: 'red', fontSize: '12px', marginTop: '4px' }}>
+                            {fieldErrors[idx]}
+                          </div>
+                        )}
+                      </>
                     )}
-                    {qt === 'date' && (
+                    {(qt === 'date' ||
+                      (labelLower.includes('start') && labelLower.includes('date'))) && (
                       <input
                         type="date"
                         className={styles.dateInput}
                         value={answers[idx] || ''}
-                        onChange={e => handleAnswerChange(idx, e.target.value)}
+                        onChange={e => handleAnswerChange(idx, e.target.value, label)}
                       />
                     )}
                     {['checkbox', 'radio'].includes(qt) && q.options && q.options.length > 0 && (
@@ -504,11 +593,21 @@ function JobApplicationForm() {
                         ))}
                       </div>
                     )}
-                    {qt === 'dropdown' && (
+                    {isIndividualOrgQuestion ? (
                       <select
                         className={styles.selectField}
                         value={answers[idx] || ''}
-                        onChange={e => handleAnswerChange(idx, e.target.value)}
+                        onChange={e => handleAnswerChange(idx, e.target.value, label)}
+                      >
+                        <option value="">Select an option</option>
+                        <option value="Individual">Individual</option>
+                        <option value="Organization">Organization</option>
+                      </select>
+                    ) : qt === 'dropdown' ? (
+                      <select
+                        className={styles.selectField}
+                        value={answers[idx] || ''}
+                        onChange={e => handleAnswerChange(idx, e.target.value, label)}
                       >
                         <option value="">Select an option</option>
                         {(q.options || []).map(opt => (
@@ -517,7 +616,7 @@ function JobApplicationForm() {
                           </option>
                         ))}
                       </select>
-                    )}
+                    ) : null}
                     {![
                       'textbox',
                       'text',
@@ -531,7 +630,7 @@ function JobApplicationForm() {
                         type="text"
                         placeholder="Type your response here"
                         value={answers[idx] || ''}
-                        onChange={e => handleAnswerChange(idx, e.target.value)}
+                        onChange={e => handleAnswerChange(idx, e.target.value, label)}
                       />
                     )}
                   </div>

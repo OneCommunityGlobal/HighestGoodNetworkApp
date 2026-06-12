@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { getVillageDropdownFilterData } from '~/actions/lbdashboard/villageDetailsAction';
@@ -18,8 +18,8 @@ export default function VillageDropdownFilter() {
     const value = e.target.value;
     setSelected(value);
     if (value !== 'all') {
-      const [id, name] = value.split('|');
-      const slug = name.replace(/\s+/g, '-');
+      const [id, villageName] = value.split('|');
+      const slug = villageName.replace(/\s+/g, '-');
       history.push(`/lbdashboard/village/${slug}?id=${id}`);
     }
   };
