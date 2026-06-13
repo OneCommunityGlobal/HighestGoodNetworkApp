@@ -140,7 +140,7 @@ const GraphHeader = ({ title, metricLabel, showMetricPill, headerChips, darkMode
 
     <div style={{ display: 'flex', gap: 16 }}>
       {headerChips.map((chip, index) => (
-        <div key={index} style={{ textAlign: 'center', lineHeight: 1.1 }}>
+        <div key={`${chip.label}-${chip.value}`} style={{ textAlign: 'center', lineHeight: 1.1 }}>
           <div style={{ fontSize: 12, fontWeight: 600, color: darkMode ? '#e1e1e1' : undefined }}>
             {chip.label}
           </div>
