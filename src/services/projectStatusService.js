@@ -9,7 +9,8 @@ export const fetchProjectStatusSummary = async ({ startDate, endDate } = {}) => 
   if (startDate) params.set('startDate', dayjs(startDate).format('YYYY-MM-DD'));
   if (endDate) params.set('endDate', dayjs(endDate).format('YYYY-MM-DD'));
 
-  const url = `${ApiUri}/summary${params.toString() ? `?${params}` : ''}`;
+  const query = params.toString() ? `?${params}` : '';
+  const url = `${ApiUri}/summary${query}`;
 
   try {
     const res = await httpService.get(url);

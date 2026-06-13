@@ -190,15 +190,15 @@ export default function ProjectStatus() {
             <div className={styles.legend}>
               <span className={styles.legendItem}>
                 <span className={styles.swatch} style={{ background: COLORS.active }} />
-                Active
+                <span>Active</span>
               </span>
               <span className={styles.legendItem}>
                 <span className={styles.swatch} style={{ background: COLORS.completed }} />
-                Completed
+                <span>Completed</span>
               </span>
               <span className={styles.legendItem}>
                 <span className={styles.swatch} style={{ background: COLORS.delayed }} />
-                Delayed
+                <span>Delayed</span>
               </span>
             </div>
             <div className={styles.total}>{dayjs().format('dddd, MMMM D, YYYY')}</div>

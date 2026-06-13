@@ -71,7 +71,7 @@
   text-align: center;
   margin-top: 10px;
   font-weight: 600;
-  color: #444;
+  color: #111;
 }
 
 /* Panel styling */
@@ -84,7 +84,7 @@
   padding: 1.2rem;
   background: #f9fafb;
   border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 5px rgb(0 0 0 / 5%);
 }
 
 .stat {
@@ -168,20 +168,20 @@
 }
 
 .darkMode .title {
-  color: #ffffff;
+  color: #fff;
 }
 
 .darkMode .panel {
   background: #334155;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 30%);
 }
 
 .darkMode .statLabel {
-  color: #cbd5e1;
+  color: #f1f5f9;
 }
 
 .darkMode .statValue {
-  color: #ffffff;
+  color: #fff;
 }
 
 .darkMode .total {
@@ -227,7 +227,7 @@
 
 .darkMode .btnPrimary {
   background: #3b82f6;
-  color: #ffffff;
+  color: #fff;
 }
 
 .darkMode .btnPrimary:hover {
@@ -236,7 +236,7 @@
 
 .darkMode .btnSecondary {
   background: #475569;
-  color: #ffffff;
+  color: #fff;
 }
 
 .darkMode .btnSecondary:hover {

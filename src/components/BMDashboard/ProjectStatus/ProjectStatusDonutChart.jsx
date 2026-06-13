@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer, Label } from 'recharts';
 import { fetchProjectStatusSummary } from '../../../services/projectStatusService';
 import styles from './ProjectStatusDonutChart.module.css';
+import PropTypes from 'prop-types';
 
 const COLORS = ['#B39DDB', '#80DEEA', '#FFABAB'];
 
@@ -31,6 +32,25 @@ function CustomTooltip({ active, payload, darkMode }) {
     </div>
   );
 }
+CustomTooltip.propTypes = {
+  active: PropTypes.bool,
+  payload: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string,
+      value: PropTypes.number,
+      payload: PropTypes.shape({
+        total: PropTypes.number,
+      }),
+    }),
+  ),
+  darkMode: PropTypes.bool,
+};
+
+CustomTooltip.defaultProps = {
+  active: false,
+  payload: [],
+  darkMode: false,
+};
 
 export default function ProjectStatusDonutChart() {
   const darkMode = useSelector(state => state.theme?.darkMode || false);
