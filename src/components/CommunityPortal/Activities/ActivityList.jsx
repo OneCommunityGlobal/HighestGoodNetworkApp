@@ -20,6 +20,10 @@ function ActivityList() {
     location: '',
     pastEvents: false,
   });
+  const [locationSuggestions, setLocationSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [dateError, setDateError] = useState('');
+  const todayDate = new Date().toISOString().split('T')[0];
   const [sortOrder, setSortOrder] = useState('earliest');
   const [showPastEvents, setShowPastEvents] = useState(false);
 
@@ -58,6 +62,27 @@ function ActivityList() {
 
   const handleFilterChange = e => {
     const { name, value } = e.target;
+    if (name === 'date') {
+      if (value) {
+        // Split Date
+        const [year, month, day] = value.split('-').map(Number);
+        const selectedDate = new Date(year, month - 1, day);
+
+        //today's date without timezone
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        if (selectedDate < today) {
+          setDateError(
+            'Past Activity Date Lookup is not supported. Please select today or a future date',
+          );
+        } else {
+          setDateError('');
+        }
+      } else {
+        setDateError('');
+      }
+    }
     setFilter({ ...filter, [name]: value });
   };
 
@@ -72,6 +97,9 @@ function ActivityList() {
       location: '',
       showPastEvents: false,
     });
+    setLocationSuggestions([]);
+    setShowSuggestions(false);
+    setDateError('');
     setShowPastEvents(false);
   };
 
@@ -89,20 +117,6 @@ function ActivityList() {
     d.setHours(0, 0, 0, 0);
     return d;
   }, []);
-
-  const activityTypes = useMemo(() => {
-    const typeOrder = new Map();
-
-    activities.forEach(activity => {
-      if (activity.type && !typeOrder.has(activity.type)) {
-        typeOrder.set(activity.type, typeOrder.size);
-      }
-    });
-
-    return [...typeOrder.keys()].sort(
-      (typeA, typeB) => typeOrder.get(typeA) - typeOrder.get(typeB),
-    );
-  }, [activities]);
 
   const filteredActivities = activities
     .filter(activity => showPastEvents || activity._dateObj >= startOfToday)
@@ -128,80 +142,114 @@ function ActivityList() {
     >
       <h1 className={`${styles.heading} ${darkMode ? 'text-light' : ''}`}>Activity List</h1>
 
-      <div className={`${darkMode ? styles.darkModeFilters : styles.filters}`}>
-        <label className={darkMode ? 'text-light' : ''}>
-          Type:{' '}
-          <select
-            name="type"
-            value={filter.type}
-            onChange={handleFilterChange}
-            className={darkMode ? styles.darkModeInput : ''}
+      <div className={`${styles.filters} ${darkMode ? styles.darkModeFilters : ''}`}>
+        <div className={styles.filterInputsRow}>
+          <label className={darkMode ? 'text-light' : ''}>
+            Type:
+            <input
+              type="text"
+              name="type"
+              value={filter.type}
+              onChange={handleFilterChange}
+              placeholder="Enter type"
+              className={darkMode ? styles.darkModeInput : ''}
+            />
+          </label>
+
+          <label className={darkMode ? 'text-light' : ''}>
+            Date:
+            <input
+              type="date"
+              name="date"
+              value={filter.date}
+              onChange={handleFilterChange}
+              min={todayDate}
+              className={darkMode ? styles.darkModeInput : ''}
+            />
+          </label>
+
+          <label className={darkMode ? 'text-light' : ''}>
+            Location:
+            <div style={{ position: 'relative' }}>
+              <input
+                type="text"
+                name="location"
+                value={filter.location}
+                onChange={handleFilterChange}
+                onFocus={() => {
+                  if (filter.location) {
+                    const suggestions = getLocationSuggestions(filter.location);
+                    setLocationSuggestions(suggestions);
+                    setShowSuggestions(true);
+                  }
+                }}
+                onBlur={() => {
+                  setTimeout(() => setShowSuggestions(false), 200);
+                }}
+                placeholder="Enter location"
+                autoComplete="off"
+                className={darkMode ? styles.darkModeInput : ''}
+              />
+
+              {showSuggestions && locationSuggestions.length > 0 && (
+                <select
+                  size={Math.min(locationSuggestions.length, 5)} /* Controls visible rows */
+                  className={`${styles.suggestions} ${darkMode ? styles.darkSuggestions : ''}`}
+                  aria-label="Location suggestions"
+                  onChange={e => handleSuggestionClick(e.target.value)}
+                  style={{ position: 'absolute', width: '100%', zIndex: 10 }}
+                >
+                  {locationSuggestions.map(location => (
+                    <option key={location} value={location}>
+                      {location}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
+          </label>
+
+          <label className={darkMode ? 'text-light' : ''}>
+            Sort By:
+            <select
+              value={sortOrder}
+              onChange={handleSortChange}
+              className={darkMode ? styles.darkModeInput : ''}
+            >
+              <option value="earliest">Start Time: Earliest to Latest</option>
+              <option value="latest">Start Time: Latest to Earliest</option>
+            </select>
+          </label>
+
+          <label
+            className={`${styles.showPastToggle} ${darkMode ? styles.darkShowPastToggle : ''}`}
           >
-            <option value="">All Types</option>
-            {activityTypes.map(type => (
-              <option key={type} value={type}>
-                {type}
-              </option>
-            ))}
-          </select>
-        </label>
+            Show Past Events:
+            <input
+              type="checkbox"
+              checked={showPastEvents}
+              onChange={e => setShowPastEvents(e.target.checked)}
+            />
+          </label>
 
-        <label className={darkMode ? 'text-light' : ''}>
-          Date:
-          <input
-            type="date"
-            name="date"
-            value={filter.date}
-            onChange={handleFilterChange}
-            className={darkMode ? styles.darkModeInput : ''}
-            min={new Date().toISOString().split('T')[0]}
-          />
-        </label>
+          <div className={styles.clearButtonWrapper}>
+            <button
+              type="button"
+              onClick={handleClearFilters}
+              disabled={!filter.type && !filter.date && !filter.location && !showPastEvents}
+              className={styles.clearButton}
+            >
+              Clear All
+            </button>
+          </div>
+        </div>
 
-        <label className={darkMode ? 'text-light' : ''}>
-          Sort By:
-          <select
-            value={sortOrder}
-            onChange={handleSortChange}
-            className={darkMode ? styles.darkModeInput : ''}
-          >
-            <option value="earliest">Start Time: Earliest to Latest</option>
-            <option value="latest">Start Time: Latest to Earliest</option>
-          </select>
-        </label>
-
-        <label className={darkMode ? 'text-light' : ''}>
-          Location:
-          <input
-            type="text"
-            name="location"
-            value={filter.location}
-            onChange={handleFilterChange}
-            placeholder="Enter location"
-            className={darkMode ? styles.darkModeInput : ''}
-          />
-        </label>
-        <label className={`${styles.showPastToggle} ${darkMode ? styles.darkShowPastToggle : ''}`}>
-          Show Past Events:
-          <input
-            type="checkbox"
-            name="showPastEvents"
-            checked={showPastEvents}
-            onChange={e => setShowPastEvents(e.target.checked)}
-          />
-        </label>
-
-        <div className={styles.clearButtonWrapper}>
-          <button
-            type="button"
-            onClick={handleClearFilters}
-            disabled={!filter.type && !filter.date && !filter.location && !showPastEvents}
-            className={`${styles.clearFiltersButton} ${
-              darkMode ? styles.clearFiltersButtonDark : ''
-            }`}
-          >
-            Clear All
-          </button>
+        <div className={styles.errorContainer}>
+          {dateError && (
+            <div className={styles.errorRow}>
+              <p className={styles.errorMessage}>{dateError}</p>
+            </div>
+          )}
         </div>
       </div>
 
