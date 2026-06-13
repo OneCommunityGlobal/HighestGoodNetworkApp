@@ -326,7 +326,7 @@ export default function ItemsTable({
       {isMaterialsTable && (
         <div className={`${styles.bulkActionsContainer} ${darkMode ? styles.darkBulkActions : ''}`}>
           <span className={styles.selectedCount}>
-            {selectedItems.size} item{selectedItems.size !== 1 ? 's' : ''} selected
+            {selectedItems.size} item{selectedItems.size === 1 ? '' : 's'} selected
           </span>
           <Dropdown
             disabled={selectedItems.size === 0 || isBulkActionLoading}
