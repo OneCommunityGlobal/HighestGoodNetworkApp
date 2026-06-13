@@ -1,9 +1,10 @@
 .cost-breakdown-chart {
-  background: #ffffff;
+  background: #fff;
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 20px rgb(0 0 0 / 8%);
   border: 1px solid #e8e8e8;
   margin-bottom: 24px;
+  animation: fade-in 0.5s ease-out;
 }
 
 .cost-breakdown-chart .card-title {
@@ -29,7 +30,7 @@
 .cost-breakdown-chart .form-control:focus,
 .cost-breakdown-chart .form-select:focus {
   border-color: #3b82f6;
-  box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+  box-shadow: 0 0 0 0.2rem rgb(59 130 246 / 25%);
   outline: 0;
 }
 
@@ -102,24 +103,24 @@
 }
 
 /* Responsive design */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .cost-breakdown-chart .card-title {
     font-size: 1.25rem;
   }
-  
+
   .cost-breakdown-chart .form-group {
     margin-bottom: 1.5rem;
   }
-  
+
   .cost-breakdown-chart .btn {
     width: 100%;
     margin-bottom: 0.5rem;
   }
-  
+
   .cost-breakdown-chart .summary-stats {
     padding: 1rem;
   }
-  
+
   .cost-breakdown-chart .summary-stats strong {
     font-size: 1rem;
   }
@@ -131,58 +132,55 @@
     background: #1f2937;
     border-color: #374151;
   }
-  
+
   .cost-breakdown-chart .card-title {
     color: #f9fafb;
   }
-  
+
   .cost-breakdown-chart .label {
     color: #d1d5db;
   }
-  
+
   .cost-breakdown-chart .form-control,
   .cost-breakdown-chart .form-select {
     background-color: #374151;
     border-color: #4b5563;
     color: #f9fafb;
   }
-  
+
   .cost-breakdown-chart .summary-stats {
     background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
   }
-  
+
   .cost-breakdown-chart .summary-stats h6 {
     color: #9ca3af;
   }
-  
+
   .cost-breakdown-chart .summary-stats strong {
     color: #f9fafb;
   }
 }
 
 /* Animation for chart loading */
-@keyframes fadeIn {
+@keyframes fade-in {
   from {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-.cost-breakdown-chart {
-  animation: fadeIn 0.5s ease-out;
-}
-
 /* Custom tooltip styling */
 .custom-tooltip {
-  background-color: #ffffff !important;
+  background-color: #fff !important;
   border: 1px solid #e5e7eb !important;
   border-radius: 8px !important;
   padding: 12px !important;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+  box-shadow: 0 10px 25px rgb(0 0 0 / 15%) !important;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
 }
 

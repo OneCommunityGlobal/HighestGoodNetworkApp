@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { useState, useEffect } from 'react';
 import {
   LineChart,
@@ -25,6 +26,51 @@ import { useDispatch, useSelector } from 'react-redux';
 import costBreakdownService from '../../../../services/costBreakdownService';
 import { fetchBMProjects } from '../../../../actions/bmdashboard/projectActions';
 import './CostBreakdownChart.module.css';
+
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active && payload?.length) {
+    return (
+      <div
+        className="custom-tooltip"
+        style={{
+          backgroundColor: '#fff',
+          border: '1px solid #ccc',
+          borderRadius: '4px',
+          padding: '10px',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+        }}
+      >
+        <p className="label" style={{ margin: '0 0 5px 0', fontWeight: 'bold' }}>
+          {label}
+        </p>
+        {payload.map(entry => (
+          <p key={entry.name} style={{ margin: '2px 0', color: entry.color, fontSize: '12px' }}>
+            {entry.name}: ${entry.value?.toLocaleString()}
+          </p>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
+
+CustomTooltip.propTypes = {
+  active: PropTypes.bool,
+  payload: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string,
+      value: PropTypes.number,
+      color: PropTypes.string,
+    }),
+  ),
+  label: PropTypes.string,
+};
+
+CustomTooltip.defaultProps = {
+  active: false,
+  payload: [],
+  label: '',
+};
 
 const CostBreakdownChart = () => {
   const dispatch = useDispatch();
@@ -122,40 +168,6 @@ const CostBreakdownChart = () => {
       setSelectedProject(projects[0]._id || projects[0].id);
     }
     setChartData(sampleData);
-  };
-
-  const CustomTooltip = ({ active, payload, label }) => {
-    if (active && payload && payload.length) {
-      return (
-        <div
-          className="custom-tooltip"
-          style={{
-            backgroundColor: '#fff',
-            border: '1px solid #ccc',
-            borderRadius: '4px',
-            padding: '10px',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-          }}
-        >
-          <p className="label" style={{ margin: '0 0 5px 0', fontWeight: 'bold' }}>
-            {label}
-          </p>
-          {payload.map((entry, index) => (
-            <p
-              key={index}
-              style={{
-                margin: '2px 0',
-                color: entry.color,
-                fontSize: '12px',
-              }}
-            >
-              {entry.name}: ${entry.value?.toLocaleString()}
-            </p>
-          ))}
-        </div>
-      );
-    }
-    return null;
   };
 
   if (loading || projects.length === 0) {

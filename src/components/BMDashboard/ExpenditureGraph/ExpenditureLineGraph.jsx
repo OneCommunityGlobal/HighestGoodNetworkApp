@@ -261,9 +261,9 @@ export default function ExpenditureLineGraph() {
     }
 
     let filteredData =
-      selectedProject !== 'all'
-        ? expenditureData.filter(item => item.projectId === selectedProject)
-        : expenditureData;
+      selectedProject === 'all'
+        ? expenditureData
+        : expenditureData.filter(item => item.projectId === selectedProject);
 
     if (dateRange.start && dateRange.end) {
       filteredData = filteredData.filter(item => {
