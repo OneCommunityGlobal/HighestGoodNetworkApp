@@ -7,7 +7,7 @@
 
 .darkModeResourceManagementDashboard {
   background-color: #1b2a41;
-  color: #ffffff;
+  color: #fff;
 }
 
 /* --- Header Section --- */
@@ -136,7 +136,7 @@
 }
 
 .resourceItem:hover {
-  background-color: rgba(236, 236, 141, 0.264);
+  background-color: rgb(236 236 141 / 26.4%);
 }
 
 .darkModeResourceManagementDashboard .resourceItem:hover {
@@ -234,6 +234,19 @@
   padding: 6px 12px;
 }
 
+.paginationLeft:disabled,
+.paginationRight:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.darkModePaginationContainer .paginationButtonIndexes,
+.darkModePaginationContainer .paginationLeft,
+.darkModePaginationContainer .paginationRight {
+  background-color: #172f53;
+  border-color: #2d4a77;
+  color: #fff;
+}
 
 .paginationButtonIndexes:hover:not(:disabled),
 .paginationLeft:hover:not(:disabled),
@@ -248,23 +261,9 @@
   border-radius: 4px;
 }
 
-.darkModePaginationContainer .paginationButtonIndexes,
-.darkModePaginationContainer .paginationLeft,
-.darkModePaginationContainer .paginationRight {
-  background-color: #172f53;
-  border-color: #2d4a77;
-  color: #ffffff;
-}
-
 .darkModePaginationContainer .activePage {
   background-color: #2196f3 !important;
   border-color: #2196f3 !important;
-}
-
-.paginationLeft:disabled,
-.paginationRight:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
 }
 
 /* Utilities */
@@ -390,7 +389,7 @@
 
 .darkMode .submitButton {
   background-color: #4caf50;
-  color: white;
+  color: #1a1a1a;
 }
 
 .darkMode .submitButton:hover {
