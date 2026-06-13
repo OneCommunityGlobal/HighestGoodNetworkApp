@@ -1,100 +1,119 @@
-/* eslint-disable prettier/prettier */
-import React, { useEffect, useState } from "react";
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import {
-  BarChart,
   Bar,
+  BarChart,
+  LabelList,
+  Legend,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
-  LabelList,
-} from "recharts";
+} from 'recharts';
+import { ENDPOINTS } from '../../utils/URL';
+
+const getCount = (counts, key) => counts?.[key] || 0;
+
+const normalizeReviewCounts = item => {
+  const counts = item.counts || {};
+  const exceptional = getCount(counts, 'Exceptional');
+  const sufficient = getCount(counts, 'Sufficient');
+  const needsChanges = getCount(counts, 'Needs Changes');
+  const didNotReview = getCount(counts, 'Did Not Review');
+
+  return {
+    reviewer: item.reviewer,
+    exceptional,
+    sufficient,
+    needsChanges,
+    didNotReview,
+    total: exceptional + sufficient + needsChanges + didNotReview,
+  };
+};
 
 const ReviewersRequirementChart = ({ duration }) => {
   const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     const fetchAPIData = async () => {
+      setIsLoading(true);
+      setErrorMessage('');
+
       try {
-        const token = localStorage.getItem("token");
+        const token = window.localStorage.getItem('token');
+        const response = await axios.get(ENDPOINTS.GITHUB_REVIEW_SUMMARY(duration), {
+          headers: {
+            Authorization: token,
+            'Content-Type': 'application/json',
+          },
+        });
 
-        const res = await fetch(
-          `http://localhost:4500/api/analytics/github-reviews?duration=${duration}&sort=asc`,
-          {
-            headers: {
-              Authorization: `${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (!res.ok) {
-          const error = await res.json();
-          throw new Error(error.message);
-        }
-
-        const result = await res.json();
-
-        const processed = result.map((item) => ({
-          ...item,
-          total:
-            (item.Exceptional || 0) +
-            (item.Sufficient || 0) +
-            (item.NeedsChanges || 0) +
-            (item.DidNotReview || 0),
-        }));
-
-        setData(processed);
+        setData(Array.isArray(response.data) ? response.data : []);
       } catch (err) {
-        // If your lint blocks console, keep it silent or wire to your logger/toast
+        setData([]);
+        setErrorMessage('Unable to load GitHub review data for the selected duration.');
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchAPIData();
   }, [duration]);
 
-  const sortedData = [...data]
-    .map((item) => ({
-      ...item,
-      ...item.counts,
-      total: Object.values(item.counts || {}).reduce(
-        (acc, val) => acc + val,
-        0
-      ),
-    }))
+  const sortedData = data
+    .map(normalizeReviewCounts)
+    .filter(item => item.reviewer)
     .sort((a, b) => b.total - a.total);
 
-  const barHeight = 15;
-  const chartHeight = sortedData.length * barHeight;
+  if (isLoading) {
+    return <p>Loading review data...</p>;
+  }
+
+  if (errorMessage) {
+    return <p>{errorMessage}</p>;
+  }
+
+  if (!sortedData.length) {
+    return <p>No review data found for this duration.</p>;
+  }
+
+  const rowHeight = 34;
+  const chartHeight = Math.max(sortedData.length * rowHeight, 360);
 
   return (
-    <div style={{ width: "100%", height: chartHeight + 100 }}>
-      <div style={{ height: "400px", overflowY: "auto" }}>
-        <ResponsiveContainer width="100%" height={chartHeight}>
-          <BarChart
-            layout="vertical"
-            data={sortedData}
-            margin={{ top: 20, right: 30, left: 100, bottom: 40 }}
-          >
-            <XAxis type="number" />
-            <YAxis dataKey="reviewer" type="category" />
-            <Tooltip />
-            <Legend />
+    <div style={{ width: '100%', height: chartHeight + 80 }}>
+      <ResponsiveContainer width="100%" height={chartHeight}>
+        <BarChart
+          layout="vertical"
+          data={sortedData}
+          margin={{ top: 20, right: 48, left: 20, bottom: 40 }}
+          barSize={22}
+        >
+          <XAxis type="number" allowDecimals={false} />
+          <YAxis
+            dataKey="reviewer"
+            type="category"
+            interval={0}
+            width={190}
+            tick={{ fontSize: 12 }}
+          />
+          <Tooltip />
+          <Legend />
 
-            <Bar dataKey="Exceptional" stackId="a" fill="#052C65" />
-            <Bar dataKey="Sufficient" stackId="a" fill="#4682B4" />
-            <Bar dataKey="NeedsChanges" stackId="a" fill="#FF8C00" />
-            <Bar dataKey="DidNotReview" stackId="a" fill="#A9A9A9">
-              <LabelList
-                dataKey="total"
-                position="right"
-                style={{ fill: "black", fontSize: 12, fontWeight: "bold" }}
-              />
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+          <Bar dataKey="exceptional" name="Exceptional" stackId="reviews" fill="#052C65" />
+          <Bar dataKey="sufficient" name="Sufficient" stackId="reviews" fill="#4682B4" />
+          <Bar dataKey="needsChanges" name="Needs Changes" stackId="reviews" fill="#FF8C00" />
+          <Bar dataKey="didNotReview" name="Did Not Review" stackId="reviews" fill="#A9A9A9">
+            <LabelList
+              dataKey="total"
+              position="right"
+              style={{ fill: 'black', fontSize: 12, fontWeight: 'bold' }}
+            />
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
     </div>
   );
 };
