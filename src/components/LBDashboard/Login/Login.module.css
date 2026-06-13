@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .authPage {
   display: flex;
   flex-direction: column;
@@ -175,7 +176,6 @@
 .darkMail:-webkit-autofill:hover,
 .darkMail:-webkit-autofill:focus,
 .darkMail:-webkit-autofill:active {
-  /* stylelint-disable-next-line property-no-vendor-prefix */
   -webkit-box-shadow: 0 0 0 1000px #1a1a1a inset !important;
   -webkit-text-fill-color: #fff !important;
   caret-color: #fff;

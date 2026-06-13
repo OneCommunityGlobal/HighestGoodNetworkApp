@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import PropTypes from 'prop-types';
 import {
   Table,
   Button,
+  Badge,
   Dropdown,
   DropdownToggle,
   DropdownMenu,
@@ -29,6 +31,15 @@ import { fetchAllMaterials, postMaterialsBulkAction } from '~/actions/bmdashboar
 import RecordsModal from './RecordsModal';
 import styles from './ItemListView.module.css';
 
+const rowsPerPageOptions = [25, 50, 100];
+
+function generatePageNumbers(current, total) {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  if (current <= 3) return [1, 2, 3, 4, 5, '...', total];
+  if (current >= total - 2) return [1, '...', total - 4, total - 3, total - 2, total - 1, total];
+  return [1, '...', current - 1, current, current + 1, '...', total];
+}
+
 export default function ItemsTable({
   selectedProject,
   selectedItem,
@@ -36,23 +47,24 @@ export default function ItemsTable({
   UpdateItemModal,
   dynamicColumns,
   darkMode = false,
-  itemType = 'Items',
+  itemType,
+  sortConfig,
+  onSort,
+  totalItems,
+  currentPage,
+  totalPages,
+  rowsPerPage,
+  startRow,
+  endRow,
+  onPageChange,
+  onRowsPerPageChange,
 }) {
   const dispatch = useDispatch();
-  const [sortedData, setData] = useState(filteredItems);
   const [modal, setModal] = useState(false);
   const [record, setRecord] = useState(null);
   const [recordType, setRecordType] = useState('');
   const [updateModal, setUpdateModal] = useState(false);
   const [updateRecord, setUpdateRecord] = useState(null);
-  const [projectNameCol, setProjectNameCol] = useState({
-    iconsToDisplay: faSort,
-    sortOrder: 'default',
-  });
-  const [inventoryItemTypeCol, setInventoryItemTypeCol] = useState({
-    iconsToDisplay: faSort,
-    sortOrder: 'default',
-  });
   const [selectedItems, setSelectedItems] = useState(new Set());
   const [selectAll, setSelectAll] = useState(false);
   const [bulkActionsDropdownOpen, setBulkActionsDropdownOpen] = useState(false);
@@ -60,24 +72,17 @@ export default function ItemsTable({
   const [bulkNotesValue, setBulkNotesValue] = useState('');
   const [isBulkActionLoading, setIsBulkActionLoading] = useState(false);
   const isMaterialsTable = itemType?.toLowerCase() === 'materials';
+  const pageItems = filteredItems || [];
 
-  useEffect(() => {
-    setData(filteredItems);
-  }, [filteredItems]);
-
-  useEffect(() => {
-    setInventoryItemTypeCol({ iconsToDisplay: faSort, sortOrder: 'default' });
-    setProjectNameCol({ iconsToDisplay: faSort, sortOrder: 'default' });
-  }, [selectedProject, selectedItem]);
-
+  // Reset selection whenever the visible rows change (filter, sort, or page change).
   useEffect(() => {
     setSelectedItems(new Set());
     setSelectAll(false);
   }, [filteredItems]);
 
   useEffect(() => {
-    setSelectAll(sortedData.length > 0 && selectedItems.size === sortedData.length);
-  }, [selectedItems, sortedData]);
+    setSelectAll(pageItems.length > 0 && selectedItems.size === pageItems.length);
+  }, [selectedItems, pageItems]);
 
   const handleEditRecordsClick = (selectedEl, type) => {
     if (type === 'Update') {
@@ -93,7 +98,7 @@ export default function ItemsTable({
   };
 
   const handleSelectAll = () => {
-    if (!sortedData.length) {
+    if (!pageItems.length) {
       setSelectedItems(new Set());
       setSelectAll(false);
       return;
@@ -103,8 +108,7 @@ export default function ItemsTable({
       setSelectedItems(new Set());
       setSelectAll(false);
     } else {
-      const allIds = new Set(sortedData.map(item => item._id));
-      setSelectedItems(allIds);
+      setSelectedItems(new Set(pageItems.map(item => item._id)));
       setSelectAll(true);
     }
   };
@@ -119,66 +123,6 @@ export default function ItemsTable({
     setSelectedItems(newSelected);
   };
 
-  const applyServerBulkAction = async (action, payload = {}) => {
-    if (selectedItems.size === 0 || isBulkActionLoading) return;
-
-    setIsBulkActionLoading(true);
-    const response = await postMaterialsBulkAction({
-      materialIds: Array.from(selectedItems),
-      action,
-      ...payload,
-    });
-
-    if (response?.status >= 200 && response?.status < 300) {
-      toast.success(response.data?.result || 'Bulk action applied successfully.');
-      dispatch(fetchAllMaterials());
-      setSelectedItems(new Set());
-      setSelectAll(false);
-      setBulkActionsDropdownOpen(false);
-    } else {
-      const message = response?.data || 'Failed to apply bulk action.';
-      toast.error(typeof message === 'string' ? message : 'Failed to apply bulk action.');
-    }
-
-    setIsBulkActionLoading(false);
-  };
-
-  const handleBulkAction = async action => {
-    const selectedData = sortedData.filter(item => selectedItems.has(item._id));
-
-    switch (action) {
-      case 'exportCsv':
-        exportToCsv(selectedData);
-        break;
-      case 'exportPdf':
-        exportToPdf(selectedData);
-        break;
-      case 'markAsHold':
-        await applyServerBulkAction('hold');
-        break;
-      case 'markAsReviewed':
-        await applyServerBulkAction('review');
-        break;
-      case 'addUpdateNotes':
-        setBulkNotesValue('');
-        setNotesModalOpen(true);
-        break;
-      default:
-        break;
-    }
-  };
-
-  const submitBulkNotes = () => {
-    const trimmedNotes = bulkNotesValue.trim();
-    if (!trimmedNotes) {
-      setNotesModalOpen(false);
-      return;
-    }
-
-    applyServerBulkAction('notes', { notes: trimmedNotes });
-    setNotesModalOpen(false);
-  };
-
   const formatValue = value => {
     if (typeof value === 'boolean') return value ? 'Yes' : 'No';
     if (value === undefined || value === null || value === '') return '-';
@@ -188,6 +132,9 @@ export default function ItemsTable({
   // Round floats to 2 decimals to avoid noise like 1.806000000000001; pass other values through.
   const roundIfNumber = value =>
     typeof value === 'number' && !Number.isInteger(value) ? Number(value.toFixed(2)) : value;
+
+  const getNestedValue = (obj, path) =>
+    path ? path.split('.').reduce((acc, part) => (acc ? acc[part] : null), obj) : null;
 
   const escapeCsv = value => {
     const str = String(value ?? '');
@@ -256,41 +203,90 @@ export default function ItemsTable({
     doc.save(`${itemType}_selected_items.pdf`);
   };
 
-  const sortData = columnName => {
-    const newSortedData = [...sortedData];
+  const applyServerBulkAction = async (action, payload = {}) => {
+    if (selectedItems.size === 0 || isBulkActionLoading) return;
 
-    if (columnName === 'ProjectName') {
-      if (projectNameCol.sortOrder === 'default' || projectNameCol.sortOrder === 'desc') {
-        newSortedData.sort((a, b) => (a.project?.name || '').localeCompare(b.project?.name || ''));
-        setProjectNameCol({ iconsToDisplay: faSortUp, sortOrder: 'asc' });
-      } else if (projectNameCol.sortOrder === 'asc') {
-        newSortedData.sort((a, b) => (b.project?.name || '').localeCompare(a.project?.name || ''));
-        setProjectNameCol({ iconsToDisplay: faSortDown, sortOrder: 'desc' });
-      }
-      setInventoryItemTypeCol({ iconsToDisplay: faSort, sortOrder: 'default' });
-    } else if (columnName === 'InventoryItemType') {
-      if (
-        inventoryItemTypeCol.sortOrder === 'default' ||
-        inventoryItemTypeCol.sortOrder === 'desc'
-      ) {
-        newSortedData.sort((a, b) =>
-          (a.itemType?.name || '').localeCompare(b.itemType?.name || ''),
-        );
-        setInventoryItemTypeCol({ iconsToDisplay: faSortUp, sortOrder: 'asc' });
-      } else if (inventoryItemTypeCol.sortOrder === 'asc') {
-        newSortedData.sort((a, b) =>
-          (b.itemType?.name || '').localeCompare(a.itemType?.name || ''),
-        );
-        setInventoryItemTypeCol({ iconsToDisplay: faSortDown, sortOrder: 'desc' });
-      }
-      setProjectNameCol({ iconsToDisplay: faSort, sortOrder: 'default' });
+    setIsBulkActionLoading(true);
+    const response = await postMaterialsBulkAction({
+      materialIds: Array.from(selectedItems),
+      action,
+      ...payload,
+    });
+
+    if (response?.status >= 200 && response?.status < 300) {
+      toast.success(response.data?.result || 'Bulk action applied successfully.');
+      dispatch(fetchAllMaterials());
+      setSelectedItems(new Set());
+      setSelectAll(false);
+      setBulkActionsDropdownOpen(false);
+    } else {
+      const message = response?.data || 'Failed to apply bulk action.';
+      toast.error(typeof message === 'string' ? message : 'Failed to apply bulk action.');
     }
 
-    setData(newSortedData);
+    setIsBulkActionLoading(false);
   };
 
-  const getNestedValue = (obj, path) =>
-    path.split('.').reduce((acc, part) => (acc ? acc[part] : null), obj);
+  const handleBulkAction = async action => {
+    const selectedData = pageItems.filter(item => selectedItems.has(item._id));
+
+    switch (action) {
+      case 'exportCsv':
+        exportToCsv(selectedData);
+        break;
+      case 'exportPdf':
+        exportToPdf(selectedData);
+        break;
+      case 'markAsHold':
+        await applyServerBulkAction('hold');
+        break;
+      case 'markAsReviewed':
+        await applyServerBulkAction('review');
+        break;
+      case 'addUpdateNotes':
+        setBulkNotesValue('');
+        setNotesModalOpen(true);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const submitBulkNotes = () => {
+    const trimmedNotes = bulkNotesValue.trim();
+    if (!trimmedNotes) {
+      setNotesModalOpen(false);
+      return;
+    }
+
+    applyServerBulkAction('notes', { notes: trimmedNotes });
+    setNotesModalOpen(false);
+  };
+
+  const getIconFor = key => {
+    if (!sortConfig?.key || sortConfig.key !== key) return faSort;
+    return sortConfig.direction === 'asc' ? faSortUp : faSortDown;
+  };
+
+  const dynamicSortKeyByLabel = {
+    Bought: 'bought',
+    Used: 'used',
+    Available: 'available',
+    Wasted: 'wasted',
+    Hold: 'hold',
+  };
+
+  const numericKeys = new Set(['stockBought', 'stockUsed', 'stockAvailable', 'stockWasted']);
+
+  const getColumnStyle = (key, isAction = false) => {
+    const base = { verticalAlign: 'middle' };
+    if (key && numericKeys.has(key)) base.textAlign = 'right';
+    if (isAction) {
+      base.borderLeft = '2px solid #dee2e6';
+      base.textAlign = 'center';
+    }
+    return base;
+  };
 
   return (
     <>
@@ -302,7 +298,9 @@ export default function ItemsTable({
         recordType={recordType}
         itemType={itemType}
       />
-      <UpdateItemModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
+      {UpdateItemModal && (
+        <UpdateItemModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
+      )}
 
       <Modal isOpen={notesModalOpen} toggle={() => setNotesModalOpen(false)}>
         <ModalHeader toggle={() => setNotesModalOpen(false)}>Add / Update Notes</ModalHeader>
@@ -371,10 +369,10 @@ export default function ItemsTable({
 
       <div className={`${styles.itemsTableContainer} ${darkMode ? styles.darkTableWrapper : ''}`}>
         <Table className={darkMode ? styles.darkTable : ''}>
-          <thead>
+          <thead className={styles.stickyThead}>
             <tr>
               {isMaterialsTable && (
-                <th>
+                <th style={{ verticalAlign: 'middle' }}>
                   <input
                     type="checkbox"
                     checked={selectAll}
@@ -383,33 +381,55 @@ export default function ItemsTable({
                   />
                 </th>
               )}
-              {selectedProject === 'all' ? (
-                <th onClick={() => sortData('ProjectName')}>
-                  Project <FontAwesomeIcon icon={projectNameCol.iconsToDisplay} size="lg" />
-                </th>
-              ) : (
-                <th>Project</th>
-              )}
-              {selectedItem === 'all' ? (
-                <th onClick={() => sortData('InventoryItemType')}>
-                  Name <FontAwesomeIcon icon={inventoryItemTypeCol.iconsToDisplay} size="lg" />
-                </th>
-              ) : (
-                <th>Name</th>
-              )}
-              {dynamicColumns.map(({ label }) => (
-                <th key={label}>{label}</th>
-              ))}
-              {isMaterialsTable && <th>Bulk Status</th>}
-              <th>Usage Record</th>
-              <th>Updates</th>
-              <th>Purchases</th>
+              <th
+                onClick={() => onSort?.('project')}
+                className={styles.sortableTh}
+                style={{ verticalAlign: 'middle' }}
+              >
+                Project <FontAwesomeIcon icon={getIconFor('project')} size="lg" />
+              </th>
+              <th
+                onClick={() => onSort?.('name')}
+                className={styles.sortableTh}
+                style={{ verticalAlign: 'middle' }}
+              >
+                Name <FontAwesomeIcon icon={getIconFor('name')} size="lg" />
+              </th>
+              {(dynamicColumns || []).map(({ label, key }) => {
+                const sortKey = dynamicSortKeyByLabel[label];
+                const clickable = Boolean(sortKey);
+                return (
+                  <th
+                    key={label || key}
+                    onClick={clickable ? () => onSort?.(sortKey) : undefined}
+                    className={clickable ? styles.sortableTh : undefined}
+                    style={getColumnStyle(key)}
+                  >
+                    {label} {clickable && <FontAwesomeIcon icon={getIconFor(sortKey)} size="lg" />}
+                  </th>
+                );
+              })}
+              {isMaterialsTable && <th style={{ verticalAlign: 'middle' }}>Bulk Status</th>}
+              <th style={getColumnStyle(null, true)} title="View usage history and charts">
+                Usage Record
+              </th>
+              <th
+                style={{ verticalAlign: 'middle', textAlign: 'center' }}
+                title="View history of manual updates"
+              >
+                Updates
+              </th>
+              <th
+                style={{ verticalAlign: 'middle', textAlign: 'center' }}
+                title="View procurement history"
+              >
+                Purchases
+              </th>
             </tr>
           </thead>
-
           <tbody>
-            {sortedData && sortedData.length > 0 ? (
-              sortedData.map(el => {
+            {pageItems.length > 0 ? (
+              pageItems.map(el => {
                 const isSelected = selectedItems.has(el._id);
                 const hasHold = Boolean(el.stockHold);
                 const hasReview = Boolean(el.isReviewed);
@@ -418,7 +438,7 @@ export default function ItemsTable({
                 return (
                   <tr key={el._id} className={isSelected ? styles.selectedRow : ''}>
                     {isMaterialsTable && (
-                      <td>
+                      <td style={{ verticalAlign: 'middle' }}>
                         <input
                           type="checkbox"
                           checked={isSelected}
@@ -427,13 +447,38 @@ export default function ItemsTable({
                         />
                       </td>
                     )}
-                    <td>{el.project?.name}</td>
-                    <td>{el.itemType?.name}</td>
-                    {dynamicColumns.map(({ label, key }) => (
-                      <td key={label}>{formatValue(getNestedValue(el, key))}</td>
-                    ))}
+                    <td style={{ verticalAlign: 'middle' }}>{el.project?.name}</td>
+                    <td style={{ verticalAlign: 'middle' }}>{el.itemType?.name}</td>
+                    {(dynamicColumns || []).map(({ label, key }) => {
+                      const value = getNestedValue(el, key);
+                      if (
+                        key === 'stockAvailable' &&
+                        value !== null &&
+                        value !== undefined &&
+                        Number(value) < 10
+                      ) {
+                        return (
+                          <td key={label || key} style={getColumnStyle(key)}>
+                            <Badge
+                              color="danger"
+                              pill
+                              className="me-2"
+                              style={{ marginRight: '8px' }}
+                            >
+                              Low
+                            </Badge>
+                            {value}
+                          </td>
+                        );
+                      }
+                      return (
+                        <td key={label || key} style={getColumnStyle(key)}>
+                          {value}
+                        </td>
+                      );
+                    })}
                     {isMaterialsTable && (
-                      <td>
+                      <td style={{ verticalAlign: 'middle' }}>
                         <div className={styles.bulkStatusCell}>
                           {hasHold && <span className={styles.bulkTagHold}>On Hold</span>}
                           {hasReview && <span className={styles.bulkTagReviewed}>Reviewed</span>}
@@ -444,7 +489,27 @@ export default function ItemsTable({
                         </div>
                       </td>
                     )}
-                    <td className={styles.itemsCell}>
+                    <td className={styles.itemsCell} style={getColumnStyle(null, true)}>
+                      <button
+                        type="button"
+                        onClick={() => handleEditRecordsClick(el, 'UsageRecord')}
+                        aria-label="Edit Record"
+                      >
+                        <BiPencil />
+                      </button>
+                      <Button
+                        color="primary"
+                        outline
+                        size="sm"
+                        onClick={() => handleViewRecordsClick(el, 'UsageRecord')}
+                      >
+                        View
+                      </Button>
+                    </td>
+                    <td
+                      className={styles.itemsCell}
+                      style={{ verticalAlign: 'middle', textAlign: 'center' }}
+                    >
                       <button
                         type="button"
                         onClick={() => handleEditRecordsClick(el, 'Update')}
@@ -461,24 +526,7 @@ export default function ItemsTable({
                         View
                       </Button>
                     </td>
-                    <td className={styles.itemsCell}>
-                      <button
-                        type="button"
-                        onClick={() => handleEditRecordsClick(el, 'Update')}
-                        aria-label="Edit Record"
-                      >
-                        <BiPencil />
-                      </button>
-                      <Button
-                        color="primary"
-                        outline
-                        size="sm"
-                        onClick={() => handleViewRecordsClick(el, 'Update')}
-                      >
-                        View
-                      </Button>
-                    </td>
-                    <td>
+                    <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>
                       <Button
                         color="primary"
                         outline
@@ -493,7 +541,10 @@ export default function ItemsTable({
               })
             ) : (
               <tr>
-                <td colSpan={isMaterialsTable ? 13 : 12} style={{ textAlign: 'center' }}>
+                <td
+                  colSpan={(dynamicColumns?.length || 0) + (isMaterialsTable ? 7 : 5)}
+                  style={{ textAlign: 'center' }}
+                >
                   No items data
                 </td>
               </tr>
@@ -501,6 +552,96 @@ export default function ItemsTable({
           </tbody>
         </Table>
       </div>
+
+      <div className={styles.paginationBar}>
+        <div className={styles.rowsPerPage}>
+          <span>Rows per page:</span>
+          <select
+            value={String(rowsPerPage)}
+            onChange={e => onRowsPerPageChange?.(Number(e.target.value))}
+          >
+            {rowsPerPageOptions.map(opt => (
+              <option key={opt} value={String(opt)}>
+                {opt}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className={styles.rangeInfo}>
+          {startRow}-{endRow} of {totalItems}
+        </div>
+        <div className={styles.pageButtons}>
+          <button type="button" onClick={() => onPageChange?.(1)} disabled={currentPage === 1}>
+            {'<<'}
+          </button>
+          <button
+            type="button"
+            onClick={() => onPageChange?.(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            {'<'}
+          </button>
+          {generatePageNumbers(currentPage, totalPages).map((p, idx) =>
+            typeof p === 'number' ? (
+              <button
+                key={idx}
+                type="button"
+                className={p === currentPage ? styles.activePage : ''}
+                onClick={() => onPageChange?.(p)}
+                disabled={p === currentPage}
+              >
+                {p}
+              </button>
+            ) : (
+              <span key={idx} className={styles.ellipsis}>
+                ...
+              </span>
+            ),
+          )}
+          <button
+            type="button"
+            onClick={() => onPageChange?.(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            {'>'}
+          </button>
+          <button
+            type="button"
+            onClick={() => onPageChange?.(totalPages)}
+            disabled={currentPage === totalPages}
+          >
+            {'>>'}
+          </button>
+        </div>
+      </div>
     </>
   );
 }
+
+ItemsTable.propTypes = {
+  selectedProject: PropTypes.string,
+  selectedItem: PropTypes.string,
+  filteredItems: PropTypes.arrayOf(PropTypes.object),
+  UpdateItemModal: PropTypes.elementType,
+  dynamicColumns: PropTypes.arrayOf(
+    PropTypes.shape({
+      label: PropTypes.string,
+      key: PropTypes.string,
+    }),
+  ).isRequired,
+  darkMode: PropTypes.bool,
+  itemType: PropTypes.string,
+  sortConfig: PropTypes.shape({
+    key: PropTypes.string,
+    direction: PropTypes.string,
+  }),
+  onSort: PropTypes.func,
+  totalItems: PropTypes.number,
+  currentPage: PropTypes.number,
+  totalPages: PropTypes.number,
+  rowsPerPage: PropTypes.number,
+  startRow: PropTypes.number,
+  endRow: PropTypes.number,
+  onPageChange: PropTypes.func,
+  onRowsPerPageChange: PropTypes.func,
+};

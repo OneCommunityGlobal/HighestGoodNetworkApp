@@ -1,7 +1,6 @@
 // eslint-disable-next-line no-unused-vars
-import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { fireEvent, render, screen } from '@testing-library/react';
 import Countdown from '../Countdown';
 
 describe('Countdown Component', () => {
@@ -46,7 +45,7 @@ describe('Countdown Component', () => {
   it('calls toggleTimer when the close button is clicked', () => {
     // eslint-disable-next-line react/jsx-props-no-spreading
     render(<Countdown {...defaultProps} />);
-    const closeButton = screen.getByTitle('close timer dropdown');
+    const closeButton = screen.getByLabelText('Close timer dropdown');
     fireEvent.click(closeButton);
     expect(defaultProps.toggleTimer).toHaveBeenCalled();
   });
