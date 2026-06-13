@@ -5,22 +5,30 @@
   padding: 0;
 }
 
+/* =========================
+   CONTAINERS
+========================= */
+
 .dashboardContainer {
-  padding: 40px 10px;
+  width: 100%;
   margin: 0 auto;
+  padding: 40px 10px;
   background: #fff;
   border-radius: 16px;
   box-shadow: 0 6px 20px rgb(0 0 0 / 10%);
   font-size: 16px;
   line-height: 1.6;
   letter-spacing: 0.2px;
-  width: 100%;
 }
 
 .darkContainer {
-  background: #2b3e59 !important;
+  background: #2b3e59;
   color: #fff;
 }
+
+/* =========================
+   HEADER
+========================= */
 
 .dashboardHeader {
   display: flex;
@@ -32,7 +40,6 @@
   background: linear-gradient(120deg, #fff, #f8f9fa);
   border-radius: 12px;
   box-shadow: 0 3px 10px rgb(0 0 0 / 10%);
-  flex-wrap: nowrap;
 }
 
 .dashboardHeader h1 {
@@ -49,183 +56,103 @@
   color: #fff;
 }
 
-.dashboardControls {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.dashboardSearchInput {
-  width: 100%;
-  border-radius: 999px;
-  border: none;
-  background: transparent;
-  box-sizing: border-box;
-}
-
-.dashboardClearBtn {
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  font-size: 0.9rem;
-  color: #1b3c55;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-}
-
-.dashboardSearchIconBtn {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  cursor: pointer;
-  background: transparent;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #1b3c55;
-  font-size: 0.9rem;
-  padding: 0;
-}
-
-.cp_dashboard_header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  padding: 16px 24px;
-  margin-bottom: 30px;
-  flex-wrap: nowrap;
-}
-
-.cp_dashboard_header h1 {
-  margin: 0;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.cp_dashboard_search_container {
-  position: relative;
-  width: 400px;
-  border-radius: 999px;
-  overflow: hidden;
-  border: 2px solid #1b3c55;
-  background: #fff;
-  outline: none;
-}
+/* =========================
+   SEARCH
+========================= */
 
 .dashboardSearchContainer {
   position: relative;
-  border-radius: 8px;
-  border: 1.5px solid #c8d4e0;
+  width: 100%;
+  max-width: 400px;
+  border-radius: 24px;
+  border: 2px solid #1b3c55;
   background: #fff;
-  overflow: hidden;
-}
-
-.sidebarSearchWrapper {
-  position: relative;
-  margin-top: 8px;
-}
-
-.dashboardSearchContainer input,
-.dashboardSearchContainer textarea {
-  outline: none;
-}
-
-.dashboardSearchContainer input:focus,
-.dashboardSearchContainer input:focus-visible,
-.dashboardSearchContainer textarea:focus,
-.dashboardSearchContainer textarea:focus-visible {
-  outline: none;
-  box-shadow: none;
-}
-
-.dashboardSearchContainer:focus,
-.dashboardSearchContainer:focus-visible {
-  outline: none;
-}
-
-.darkHeader .dashboardSearchContainer {
-  border-color: #fff;
-  background: #1b2a41;
+  overflow: visible;
 }
 
 .dashboardSearchContainer:focus-within {
   border-color: #4da3ff;
-  box-shadow: none;
-}
-
-.dashboardSearchContainer:focus-within:not(:focus-visible) {
-  outline: none;
 }
 
 .dashboardSearchTextarea {
   width: 100%;
-  resize: none;
+  min-height: 36px;
+  max-height: 120px;
+  padding: 10px 96px 10px 18px;
   border: none;
   outline: none;
   background: transparent;
+  resize: none;
   font-size: 1rem;
   line-height: 1.5;
-  padding: 10px 96px 10px 18px;
-  min-height: 36px;
-  max-height: 120px;
-  box-sizing: border-box;
-  overflow: hidden auto;
-  white-space: pre-wrap;
+  overflow-y: auto;
   overflow-wrap: break-word;
-  word-break: normal;
+  white-space: pre-wrap;
 }
 
-.darkHeader .dashboardSearchTextarea {
-  color: #fff;
-}
-
-.darkHeader .dashboardSearchTextarea::placeholder {
-  color: #cbd5e1;
-}
-
-@media (width <= 850px) {
-  .dashboardSearchContainer {
-    width: 250px;
-  }
-}
-
-.charCountWarning {
-  position: absolute;
-  top: 100%;
-  transform: translateY(4px);
-  background-color: #e4b348 !important;
-  color: #333 !important;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 0.85rem;
-  white-space: nowrap;
-}
-
+/* buttons */
 .dashboardSearchButtons {
   position: absolute;
-  right: 14px;
+  right: 12px;
   top: 50%;
   transform: translateY(-50%);
   display: flex;
-  align-items: center;
   gap: 6px;
 }
 
+.dashboardClearBtn,
+.dashboardSearchIconBtn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #1b3c55;
+}
+
+/* =========================
+   SIDEBAR
+========================= */
+
+.dashboardSidebar {
+  display: flex;
+  padding: 20px;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
+}
+
+.darkSidebar {
+  background: #2b3e59;
+}
+
+/* Labels */
+.dashboardSidebar label,
+.filterItem label,
+.radioLabel {
+  color: #34495e;
+}
+
+.darkSidebar label,
+.darkSidebar .filterItem label,
+.darkSidebar .radioLabel {
+  color: #ecf0f1;
+}
+
 .darkSearchContainer {
-  background: #1b2a41;
+  background: #34495e;
+  border-color: #4a6572;
+}
+
+.darkSearchContainer:focus-within {
   border-color: #4da3ff;
 }
 
 .darkSearchTextarea {
+  background: transparent;
   color: #fff;
 }
 
 .darkSearchTextarea::placeholder {
-  color: rgb(255 255 255 / 70%);
+  color: #cbd5e1;
 }
 
 .darkSearchContainer .dashboardClearBtn,
@@ -233,72 +160,17 @@
   color: #fff;
 }
 
-.centeredRow {
-  padding: 30px;
-}
-
-.dashboardSidebar {
-  padding: 20px;
-  display: flex;
-  justify-content: flex-start;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
-}
-
-.darkSidebar {
-  background: #2b3e59;
-  border-right: 1px solid #1b2a41;
-}
-
-.filterSection {
-  width: 100%;
-}
-
-.filterSection h4 {
-  font-size: 1.8rem;
-  color: #2c3e50;
-  font-weight: 600;
-}
-
-.filterSectionHeader {
-  margin-bottom: 40px;
-}
-
-.filterSectionDivider {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.filterItem {
-  margin-bottom: 0;
-}
-
-.filterItem label {
-  display: block;
-  font-weight: 600;
-  color: #34495e;
-  margin-bottom: 8px;
-}
-
-.filterOptionsVertical {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
-  margin-top: 10px;
-}
+/* =========================
+   INPUTS
+========================= */
 
 .filterItem input:not([type='checkbox'], [type='radio'], [type='date']),
 .filterItem select {
+  width: 100%;
   padding: 12px 15px;
   margin-top: 10px;
   border: 1px solid #ddd;
   border-radius: 8px;
-  width: 100%;
-  height: auto;
-  font-size: 1rem;
   background: #fff;
   transition: all 0.3s ease;
 }
@@ -310,216 +182,58 @@
   outline: none;
 }
 
-.radioRow {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-top: 10px;
-  padding: 0;
-}
-
-.radioColumn {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.radioGroup {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 0;
-}
-
-.radioLabel,
-.checkboxLabel {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-  font-weight: 400;
-  margin-bottom: 0;
-  color: #34495e;
-}
-
-.filterItem input[type='radio'],
-.filterItem input[type='checkbox'],
-.radioInput,
-.checkboxInput {
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-  margin: 0;
-  padding: 0;
-  accent-color: #1b3c55;
-  flex-shrink: 0;
-  vertical-align: middle;
-}
-
-.darkSidebar .filterItem label,
-.darkSidebar .radioLabel,
-.darkSidebar .checkboxLabel {
-  color: #ecf0f1;
-}
-
-.darkSidebar .radioInput,
-.darkSidebar .filterItem input[type='checkbox'] {
-  accent-color: #4da3ff;
-}
-
-.darkSidebar .inputGroup input {
-  color: #fff;
-}
-
-.darkSidebar .filterItem input:not([type='checkbox'], [type='radio'], [type='date']),
-.darkSidebar .filterItem select {
-  background-color: #34495e;
-  color: #fff;
-  border: 1px solid #4a6572;
-}
-
-.darkSidebar input[type='date'] {
-  color-scheme: dark;
-}
+/* =========================
+   DATE PICKER FIX (IMPORTANT)
+========================= */
 
 .dateFilter {
-  margin-top: 10px;
-  padding: 12px 15px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
   width: 100%;
-  height: auto;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-  margin-bottom: 20px;
 }
 
 .filterItem input[type='date'] {
-  display: block;
-  box-sizing: border-box;
+  width: 100%;
   padding: 12px 15px;
-  margin-top: 10px;
   border: 1px solid #ddd;
   border-radius: 8px;
-  width: 100%;
-  height: auto;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-  margin-bottom: 20px;
-}
-
-.searchFilter {
-  margin-bottom: 1.5rem;
-}
-
-.inputGroup {
-  display: flex;
-  align-items: center;
-  border-radius: 999px;
-  overflow: hidden;
-  background-color: #fff;
-  padding: 0 10px;
-}
-
-.inputGroupText {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 10px;
-  border: none;
-  color: #555;
-  font-size: 1.1rem;
-}
-
-.darkSidebar .inputGroup {
-  background-color: #34495e;
-  border-color: #4da3ff;
-}
-
-.darkSidebar .inputGroup input::placeholder {
-  color: #cbd5e1;
-}
-
-.darkSidebar .inputGroupText {
-  color: #cbd5e1;
-}
-
-.dashboardMain {
-  width: 65%;
-  padding: 30px;
-  border-radius: 12px;
-}
-
-.darkMain {
-  background: #2b3e59;
-}
-
-.eventsHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 30px;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
-.sectionTitle {
-  font-size: 2.2rem;
-  color: #2c3e50;
-  margin-bottom: 0;
-  font-weight: bold;
-}
-
-.showPastEventsBtn {
-  flex-shrink: 0;
-  background-color: #2c3e50 !important;
-  border-color: #2c3e50 !important;
-  color: #fff !important;
-  font-weight: 600;
-  border-radius: 8px;
-  padding: 8px 18px;
-  transition: background-color 0.2s ease;
-}
-
-.showPastEventsBtn:hover {
-  background-color: #34495e !important;
-  border-color: #34495e !important;
-}
-
-.sidebarTitle {
-  color: #2c3e50;
-  margin-bottom: 30px;
-}
-
-.clearDateFilterBtn {
   margin-top: 10px;
+  font-size: 1rem;
+  background: #fff;
 }
 
-.eventCardCol {
-  display: flex;
-  margin-bottom: 1.5rem;
+/* Dark mode date picker fix */
+.darkDateFilter {
+  background-color: #34495e !important;
+  border-color: #4a6572 !important;
+  color: #fff !important;
+  color-scheme: dark;
 }
 
-.eventCardLink {
-  width: 100%;
-  display: flex;
-  text-decoration: none;
-  color: inherit;
+/* Fix calendar icon */
+.darkDateFilter::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
 }
+
+/* Fix text rendering inside input */
+.darkDateFilter::-webkit-datetime-edit,
+.darkDateFilter::-webkit-datetime-edit-text,
+.darkDateFilter::-webkit-datetime-edit-month-field,
+.darkDateFilter::-webkit-datetime-edit-day-field,
+.darkDateFilter::-webkit-datetime-edit-year-field {
+  color: #fff !important;
+}
+
+/* =========================
+   EVENTS
+========================= */
 
 .eventCard {
-  width: 100%;
-  height: 100%;
-  min-height: 100%;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
   display: flex;
   flex-direction: column;
   border-radius: 12px;
-  overflow: hidden;
-  border: none;
   background: #fff;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  position: relative;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
+  transition: 0.3s ease;
 }
 
 .eventCard:hover {
@@ -527,261 +241,67 @@
   box-shadow: 0 8px 20px rgb(0 0 0 / 20%);
 }
 
-.eventTitle::after {
-  content: attr(data-event-title);
-  position: absolute;
-  bottom: calc(100% + 8px);
-  left: 50%;
-  z-index: 2;
-  max-width: min(280px, calc(100vw - 48px));
-  padding: 6px 10px;
-  color: #fff;
-  font-size: 0.9rem;
-  line-height: 1.3;
-  text-align: center;
-  white-space: normal;
-  overflow-wrap: break-word;
-  background-color: #000;
-  border-radius: 4px;
-  opacity: 0;
-  pointer-events: none;
-  transform: translate(-50%, -4px);
-  transition: opacity 0.2s ease, transform 0.2s ease;
-}
-
-.eventTitle:hover::after {
-  opacity: 1;
-  transform: translate(-50%, 0);
-}
-
-.darkEventCard {
-  background: #1b2a41;
-}
-
-.eventCardImgContainer {
-  width: 100%;
-  overflow: hidden;
-  background-color: #f0f0f0;
-  position: relative;
-  flex-shrink: 0;
-}
-
-.eventCardImgContainer img {
-  width: 100%;
-  height: auto;
-}
-
-.eventCardImg {
-  width: 100%;
-  height: auto;
-}
-
-.eventCardBody {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  padding: 20px;
-  min-height: 180px;
-}
-
 .eventTitle {
-  position: relative;
+  color: #2c3e50;
   text-align: center;
-  color: #2c3e50;
-  margin: 0 0 15px;
-  font-weight: bold;
   font-size: 1.3rem;
-  line-height: 1.4;
-  overflow: visible;
-  cursor: default;
+  font-weight: bold;
 }
 
-.eventTitleText {
-  display: block;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.eventDate,
-.eventLocation,
-.eventOrganizer {
-  font-size: 1rem;
-  color: #555;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 8px 0;
-}
-
-.eventIcon {
-  color: #2c3e50;
-  margin-top: 2px;
-  flex-shrink: 0;
-  font-size: 1rem;
-}
-
-.eventIconDark {
-  color: #fff;
-  margin-top: 2px;
-  flex-shrink: 0;
-  font-size: 1rem;
-}
-
-.darkMain .eventTime {
-  color: #b0b3b8;
-}
+/* =========================
+   DARK MODE TEXT FIX
+========================= */
 
 .darkMain .eventDate,
-.darkMain .eventDate .eventTime,
 .darkMain .eventLocation,
-.darkMain .eventOrganizer {
-  color: #e4e6eb;
-}
-
+.darkMain .eventOrganizer,
 .darkMain .eventIcon {
   color: #e4e6eb;
-}
-
-.noEvents {
-  text-align: center;
-  padding: 40px;
-  color: #888;
-  font-size: 1.2rem;
-  width: 100%;
 }
 
 .darkMain .noEvents {
   color: #9ca3af;
 }
 
-.dashboardActions {
-  text-align: center;
-  margin-top: 20px;
-  margin-bottom: 20px;
-}
-
-.dashboardActions button {
-  background-color: #2c3e50;
-  color: #fff;
-  border: none;
-  padding: 12px 25px;
-  font-size: 1rem;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-weight: bold;
-}
-
-.dashboardActions button:hover {
-  background-color: #34495e;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 20%);
-}
-
-.paginationContainer {
-  margin-top: 20px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.paginationInfo {
-  font-weight: 500;
-}
-
-.paginationBtn {
-  background-color: #6c757d !important;
-  border-color: #6c757d !important;
-  color: #fff !important;
-}
-
-.paginationBtn:disabled {
-  opacity: 0.65;
-}
-
-.paginationBtn:hover:not(:disabled) {
-  background-color: #5a6268 !important;
-  border-color: #545b62 !important;
-}
-
-.filterActions {
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-  margin-top: 20px;
-  padding-top: 15px;
-  width: 100%;
-}
-
-.applyBtn {
-  flex: 1;
-  background-color: #27ae60 !important;
-  border: none;
-  color: white;
-  padding: 10px 5px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.applyBtn:hover {
-  background-color: #229954 !important;
-  box-shadow: 0 4px 8px rgb(39 174 96 / 30%);
-}
+/* =========================
+   BUTTONS
+========================= */
 
 .clearBtn {
-  flex: 1;
-  background-color: #95a5a6 !important;
-  border: none;
-  color: white;
-  padding: 10px 5px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  background: #6c757d; /* darker gray */
+  color: #fff;
 }
 
 .clearBtn:hover {
-  background-color: #7f8c8d !important;
-  box-shadow: 0 4px 8px rgb(149 165 166 / 30%);
+  background: #7f8c8d;
 }
 
-.darkSidebar .filterActions {
-  border-top-color: #3a4e6a;
+.applyBtn {
+  background-color: #198754 !important;
+  color: #fff !important;
+  border: none;
 }
 
-@media (width <= 768px) {
-  .dashboardHeader {
-    flex-wrap: wrap;
-  }
+.applyBtn:hover {
+  background-color: #146c43 !important;
+}
 
-  .cp_dashboard_search_container {
-    width: 100%;
-  }
+/* =========================
+   FILTER ACTIONS
+========================= */
 
-  .centeredRow {
-    padding: 15px;
-  }
+.filterActions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
 
-  .dashboardMain {
-    width: 100%;
-    padding: 20px 10px;
-  }
+/* =========================
+   RESPONSIVE
+========================= */
 
-  .dashboardSidebar {
-    margin-bottom: 20px;
-  }
-
-  .eventsHeader {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .filterActions {
-    flex-direction: column;
+@media (width <= 850px) {
+  .dashboardSearchContainer {
+    width: 250px;
   }
 }

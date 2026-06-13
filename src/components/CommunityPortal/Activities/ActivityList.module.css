@@ -17,29 +17,49 @@
   font-weight: 600;
 }
 
+.activityListContainerDark .heading {
+  color: #fff !important;
+}
+
+/* Body background helper when Activity List is in dark mode */
+:global(.activity-list-dark-body),
+:global(.activity-list-dark-body #root),
+:global(.activity-list-dark-body .App) {
+  background-color: #1b2a41 !important;
+  color: #fff !important;
+}
+
 .filters {
   display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  gap: 30px;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
   margin: 30px 0;
-  padding: 10px;
+  padding: 20px;
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgb(0 0 0 / 10%);
 }
 
-.darkModeFilters {
+.filterInputsRow {
   display: flex;
+  flex-flow: row wrap;
   justify-content: center;
   align-items: flex-end;
   gap: 30px;
+  width: 100%;
+}
+
+.darkModeFilters {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
   margin: 30px 0;
-  padding: 10px;
+  padding: 20px;
   background: #1e2a3a;
   box-shadow: none;
   border: 1px solid #3a4a5c;
-  border-radius: 0;
 }
 
 .filters label,
@@ -48,6 +68,8 @@
   flex-direction: column;
   font-weight: 500;
   color: #1f2937;
+  flex: 1;
+  max-width: 250px;
 }
 
 .filters input,
@@ -102,8 +124,55 @@
   color: #a0a0a0;
 }
 
-.darkFilters input[type="date"]::-webkit-calendar-picker-indicator {
-  filter: invert(1);
+/* Clear All button */
+.clearButton {
+  padding: 10px 20px;
+  background-color: #b91c1c;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.clearButton:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.clearButton:hover:not(:disabled) {
+  background-color: #dc2626;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgb(239 68 68 / 30%);
+}
+
+.errorRow {
+  flex-basis: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.errorMessage {
+  color: #dc2626;
+  font-size: 0.9rem;
+  margin: 0;
+  text-align: center;
+  animation: fade-in 0.3s ease-in-out;
+  width:100%;
+}
+
+:global(.activity-list-dark-body) .errorMessage {
+  color: #ff4d4f !important;
+}
+
+.darkModeFilters .errorRow {
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
 .activityList {
@@ -115,12 +184,15 @@
   box-shadow: 0 6px 12px rgb(0 0 0 / 10%);
 }
 
+.activityListContainerDark .errorMessage {
+  color: #ff4d4f !important; /* brighter red for dark mode */
+}
+
 .darkModeList {
   background: #1e2a3a;
   box-shadow: none;
   border: 1px solid #3a4a5c;
   border-radius: 0;
-  margin: 0 auto;
 }
 
 .activityList ul {
@@ -139,16 +211,17 @@
   background-color: #f9fafb;
 }
 
+.activityList li:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
+}
+
+/* Dark mode list items */
 .darkModeItem {
   background-color: #1e2a3a !important;
   border: 1px solid #3a4a5c !important;
   color: #fff !important;
   border-radius: 0;
-}
-
-.activityList li:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
 }
 
 .darkModeItem:hover {
@@ -257,12 +330,22 @@
   color: #1f2937;
 }
 
-.darkSuggestions .suggestionItem {
-  color: #e2e8f0;
-}
-
 .suggestionItem:hover {
   background-color: #f3f4f6;
+}
+
+.suggestionItem:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: -2px;
+  background-color: #f3f4f6;
+}
+
+.suggestionItem:not(:last-child) {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.darkSuggestions .suggestionItem {
+  color: #e2e8f0;
 }
 
 .darkSuggestions .suggestionItem:hover {
@@ -279,6 +362,10 @@
   margin-top: 5px;
   font-size: 1rem;
   transition: all 0.3s ease;
+}
+
+.darkSuggestions .suggestionItem:not(:last-child) {
+  border-bottom-color: #475569;
 }
 
 .showPastToggle input[type="checkbox"] {
@@ -302,9 +389,20 @@
   border-radius: 4px;
 }
 
-/* Responsive */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @media (width <= 768px) {
-  .filters {
+  .filterInputsRow {
     flex-direction: column;
     align-items: center;
     gap: 20px;
@@ -316,5 +414,10 @@
 
   .activityList {
     padding: 20px;
+  }
+
+  .activityList li {
+    flex-direction: column;
+    padding: 10px;
   }
 }
