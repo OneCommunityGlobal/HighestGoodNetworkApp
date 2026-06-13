@@ -3,7 +3,7 @@ import { connect, useDispatch, useSelector } from 'react-redux';
 import { Button, Table, Spinner, UncontrolledTooltip } from 'reactstrap';
 import Select from 'react-select';
 import { toast } from 'react-toastify';
-
+import { useHistory } from 'react-router-dom';
 import { fetchBMProjects } from '~/actions/bmdashboard/projectActions';
 import {
   fetchAllEquipments,
@@ -148,6 +148,7 @@ function EDailyActivityLog(props) {
   const hasNoEquipments = isMissingProject || rows.length === 0;
   const noEquipmentSelected = rows.length === 0 || rows.every(r => r.selectedNumbers.length === 0);
   const isSubmitDisabled = isMissingProject || isInvalidDate || noEquipmentSelected;
+  const history = useHistory();
 
   useEffect(() => {
     dispatch(fetchBMProjects());
@@ -239,6 +240,10 @@ function EDailyActivityLog(props) {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const goToPurchaseEquipment = () => {
+    history.push('/bmdashboard/equipment/purchase');
   };
 
   const projectSelectStyles = getSelectStyles(darkMode, false);
@@ -450,7 +455,10 @@ function EDailyActivityLog(props) {
             <div>Select different project from the above section</div>
             <div> OR </div>
             <div>
-              <button className={styles.assignmentBtn}> Go To Equipment Assignment </button>
+              <button className={styles.assignmentBtn} onClick={goToPurchaseEquipment}>
+                {' '}
+                Go To Equipment Assignment{' '}
+              </button>
             </div>
           </div>
         )}
