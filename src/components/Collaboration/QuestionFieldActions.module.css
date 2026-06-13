@@ -59,20 +59,25 @@
 }
 
 .moveButton {
-  background-color: var(--jfb-gray-btn);
+  background-color: var(--jfb-white);
+  color: var(--jfb-text);
+  border: 1px solid #d0d0d0;
 }
 
 .moveButton:hover:not(:disabled) {
-  background-color: var(--jfb-gray-btn-hover);
+  background-color: #f5f5f5;
+  border-color: #b8b8b8;
 }
 
 .deleteButton {
   grid-column: 1 / -1;
-  background-color: var(--jfb-gray-muted);
+  background-color: var(--jfb-white);
+  color: #b71c1c;
+  border: 1px solid #ef9a9a;
 }
 
 .deleteButton:hover:not(:disabled) {
-  background-color: var(--jfb-gray-muted-hover);
+  background-color: #ffebee;
 }
 
 button:disabled {

@@ -7,7 +7,7 @@
 }
 
 .formBuilderContainer {
-  background-color: var(--jfb-gray-bg);
+  background-color: var(--jfb-white);
   max-width: 80%;
   margin: 1% 10% 0;
   display: flex;
@@ -15,12 +15,13 @@
   align-items: center;
   border-radius: 10px;
   padding: 5px;
-  box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
+  border: 1px solid #e8e8e8;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 6%);
 }
 
 .pageWrapper {
   min-height: 100vh;
-  background-color: #f5f5f5;
+  background-color: var(--jfb-white);
   width: 100%;
   padding: 0;
   margin: 0;
@@ -32,11 +33,11 @@
 }
 
 .customForm {
-  background-color: var(--jfb-gray-bg);
+  background-color: var(--jfb-white);
   padding: 10px;
   margin-top: 0;
   border-radius: 5px;
-  border: 1px solid var(--jfb-gray-bg);
+  border: 1px solid #ebebeb;
 }
 
 .jobformNavbar {
@@ -67,16 +68,18 @@
   padding: 11px 13px;
   margin: 8px 10px;
   border: none;
-  background-color: var(--jfb-gray-btn);
-  color: var(--jfb-white);
+  background-color: var(--jfb-white);
+  color: var(--jfb-text);
   font-size: 16px;
+  font-weight: 600;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.2s;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 10%);
 }
 
 .jobformNavbar button:hover {
-  background-color: var(--jfb-gray-btn-hover);
+  background-color: #f5f5f5;
 }
 
 .jobformDesc {
@@ -117,8 +120,10 @@
 }
 
 .newFieldSection {
-  background-color: var(--jfb-gray-bg);
+  background-color: var(--jfb-white);
   padding: 20px;
+  border-top: 1px solid #ebebeb;
+  margin-top: 8px;
 }
 
 /* General Container for Each Question */
@@ -130,9 +135,9 @@
   padding: 12px;
   margin: 0 0 12px;
   width: 100%;
-  border: 1px solid #e0e0e0;
+  border: 1px solid #e8e8e8;
   border-radius: 8px;
-  background-color: #fafafa;
+  background-color: var(--jfb-white);
 }
 
 .fieldLabel {
@@ -193,9 +198,9 @@
 .standardApplicantSection {
   margin-bottom: 20px;
   padding: 16px;
-  border: 1px solid #ccc;
+  border: 1px solid #e8e8e8;
   border-radius: 8px;
-  background-color: #f5f5f5;
+  background-color: var(--jfb-white);
 }
 
 .standardApplicantNote {
