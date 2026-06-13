@@ -322,7 +322,10 @@ function InjurySeverityDashboard(props) {
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="severity" />
             <YAxis />
-            <Tooltip content={<CustomTooltip darkMode={darkMode} />} />
+            <Tooltip
+              content={<CustomTooltip darkMode={darkMode} />}
+              cursor={{ fill: darkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.04)' }}
+            />
             <Legend />
 
             {chartBars.map(bar => (
@@ -338,6 +341,8 @@ function InjurySeverityDashboard(props) {
                   dataKey={bar.dataKey}
                   position="center"
                   formatter={value => (value > 0 ? value : '')}
+                  fill="#ffffff"
+                  fontWeight="bold"
                 />
               </Bar>
             ))}
