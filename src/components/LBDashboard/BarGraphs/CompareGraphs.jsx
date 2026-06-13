@@ -124,6 +124,31 @@ export function CompareBarGraph({
   const tickColor = darkMode ? '#e1e1e1' : '#444';
   const gridColor = darkMode ? '#3a506b' : '#e0e0e0';
 
+  const horizontalAxes = getHorizontalAxes({
+    xDomain,
+    xTicks,
+    valueFormatter,
+    tickColor,
+    xLabel,
+    nameKey,
+    yCategoryWidth,
+    yTickFormatter,
+    showYAxisTitle,
+    yLabel,
+  });
+
+  const verticalAxes = getVerticalAxes(
+    nameKey,
+    tickColor,
+    xLabel,
+    yDomain,
+    yTicks,
+    valueFormatter,
+    yLabel,
+  );
+
+  const renderedAxes = isHorizontal ? horizontalAxes : verticalAxes;
+
   return (
     <Card
       className={`${styles.graphCard} ${darkMode ? styles.darkCard : ''}`}
@@ -171,19 +196,7 @@ export function CompareBarGraph({
             minHeight: `${height}px`,
           }}
         >
-          {!data?.length ? (
-            <div
-              style={{
-                height,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: darkMode ? '#e1e1e1' : '#666',
-              }}
-            >
-              No data available
-            </div>
-          ) : (
+          {data?.length ? (
             <ResponsiveContainer width="100%" height={height}>
               <BarChart
                 data={data}
@@ -191,44 +204,8 @@ export function CompareBarGraph({
                 margin={margins}
               >
                 <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-                {isHorizontal
-                  ? (() => {
-                      const axes = getHorizontalAxes({
-                        xDomain,
-                        xTicks,
-                        valueFormatter,
-                        tickColor,
-                        xLabel,
-                        nameKey,
-                        yCategoryWidth,
-                        yTickFormatter,
-                        showYAxisTitle,
-                        yLabel,
-                      });
-                      return (
-                        <>
-                          {axes.xAxis}
-                          {axes.yAxis}
-                        </>
-                      );
-                    })()
-                  : (() => {
-                      const axes = getVerticalAxes(
-                        nameKey,
-                        tickColor,
-                        xLabel,
-                        yDomain,
-                        yTicks,
-                        valueFormatter,
-                        yLabel,
-                      );
-                      return (
-                        <>
-                          {axes.xAxis}
-                          {axes.yAxis}
-                        </>
-                      );
-                    })()}
+                {renderedAxes.xAxis}
+                {renderedAxes.yAxis}
 
                 <Tooltip
                   formatter={v => [valueFormatter(v), tooltipLabel || metricLabel || title]}
@@ -252,6 +229,18 @@ export function CompareBarGraph({
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
+          ) : (
+            <div
+              style={{
+                height,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: darkMode ? '#e1e1e1' : '#666',
+              }}
+            >
+              No data available
+            </div>
           )}
         </div>
       </CardBody>
