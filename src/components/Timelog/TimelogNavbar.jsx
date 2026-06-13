@@ -12,6 +12,7 @@ import {
 } from 'reactstrap';
 import { useSelector } from 'react-redux';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
+import styles from './Timelog.module.css';
 
 function TimelogNavbar({ userId }) {
   const { firstName, lastName } = useSelector(state => state.userProfile);
@@ -27,7 +28,7 @@ function TimelogNavbar({ userId }) {
 
   return (
     <div>
-      <Navbar className="navbar navbar-expand-sm navbar-light navbar-border bg-light mb-2 col-md-12 nav-fill">
+      <Navbar className={`navbar navbar-expand-sm navbar-light ${styles.navbarBorder} bg-light mb-2 col-md-12 nav-fill`}>
         <NavbarBrand className="navbar-brand pb-3">
           {firstName} {lastName}
           &apos;s Timelog
@@ -71,7 +72,7 @@ function TimelogNavbar({ userId }) {
               </i>
             </li>
             <li className="nav-item navbar-text ml-4">
-              <a className="nav-link" href={`/userprofile/${userId}`}>
+              <a className={`${styles.navLink}`} href={`/userprofile/${userId}`}>
                 View Profile
               </a>
             </li>

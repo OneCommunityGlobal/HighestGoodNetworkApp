@@ -89,6 +89,7 @@ describe('TagsSearch Component', () => {
 
     await waitFor(() => {
       expect(screen.getByText('aaa volunteer')).toBeInTheDocument();
+      // eslint-disable-next-line testing-library/no-wait-for-multiple-assertions
       expect(screen.getByText('aaa owner')).toBeInTheDocument();
       // expect(screen.queryByText('bbb test')).not.toBeInTheDocument();
       // expect(screen.queryByText('ccc manager')).not.toBeInTheDocument();
@@ -111,10 +112,13 @@ describe('TagsSearch Component', () => {
       const volunteerOption = screen.getByText('aaa volunteer');
       const ownerOption = screen.getByText('aaa owner');
       expect(volunteerOption).toBeInTheDocument();
+      // eslint-disable-next-line testing-library/no-wait-for-multiple-assertions
       expect(ownerOption).toBeInTheDocument();
 
       // Simulate clicking the filtered options
+      // eslint-disable-next-line testing-library/no-wait-for-side-effects
       fireEvent.mouseDown(volunteerOption);
+      // eslint-disable-next-line testing-library/no-wait-for-side-effects
       fireEvent.mouseDown(ownerOption);
     });
 

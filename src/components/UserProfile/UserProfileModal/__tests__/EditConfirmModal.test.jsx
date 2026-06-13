@@ -18,8 +18,10 @@ describe('UserProfileModal', () => {
     modalMessage: '',
     userProfile: userProfileMock,
     isOpen: true,
+    disabled: false,
   };
   beforeEach(() => {
+    // eslint-disable-next-line testing-library/no-render-in-lifecycle
     render(
       <Provider store={store}>
         <EditConfirmModal {...props} closeModal={closeModalMock} />
