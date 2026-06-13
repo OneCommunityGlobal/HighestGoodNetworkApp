@@ -76,8 +76,8 @@ const userTaskMock = [
 
 const mockUserProfile = {
   userProjects: [
-  { _id: '1', category: 'Society', projectName: 'Project1' },
-  { _id: '2', category: 'Test', projectName: 'Project2' }
+  { _id: '1', category: 'Society', projectName: 'Project1', projectId: '1'},
+  { _id: '2', category: 'Test', projectName: 'Project2', projectId: '2' }
 ],
 userProfile: userProfileMock,
 userTasks: []

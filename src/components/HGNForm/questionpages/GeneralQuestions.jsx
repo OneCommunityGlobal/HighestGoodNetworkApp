@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
-import { FaEdit, FaRegSave } from 'react-icons/fa';
 import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { FaEdit, FaRegSave } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
+import { useHistory, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { setformData } from '~/actions/hgnFormAction';
 import { Spinner } from 'reactstrap';
+import { setformData } from '~/actions/hgnFormAction';
 import { ENDPOINTS } from '~/utils/URL';
 import styles from '../styles/GeneralQuestions.module.css';
 
@@ -15,9 +15,10 @@ function GeneralQuestions() {
   const location = useLocation();
   const [questions, setQuestions] = useState([]);
   const formData = useSelector(state => state.hgnForm);
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [newVolunteer, setNewVolunteer] = useState(formData);
 
-  const { isOwner } = location.state; // Set to `true` if the user is the owner
+  const { isOwner } = location.state || {}; // Set to `true` if the user is the owner
 
   const [preferenceWarning, setPreferenceWarning] = useState('');
   const [availabilityWarning, setAvailabilityWarning] = useState('');
@@ -267,8 +268,10 @@ function GeneralQuestions() {
   }
 
   return (
-    <div className={`${styles.generalQuestions}`}>
-      <h3 className={`${styles.blueStrip}`}>General Questions</h3>
+    <div className={`${styles.generalQuestions} ${darkMode ? styles.darkContainer : ''}`}>
+      <h3 className={`${styles.blueStrip} ${darkMode ? styles.darkStrip : ''}`}>
+        General Questions
+      </h3>
       <form onSubmit={handleNext}>
         <div className={`${styles.hours}`}>
           {renderEditableQuestion(0)}

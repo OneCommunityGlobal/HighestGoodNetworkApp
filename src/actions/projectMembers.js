@@ -54,6 +54,7 @@ export const findUserProfiles = (keyword, activeOnly = true) => {
       const { data } = await axios.get(url);
 
       // DEBUG: Log the API response for troubleshooting
+      // eslint-disable-next-line no-console
       console.log('findUserProfiles API response:', data);
 
       // FIX: Support both array and object with 'users' property
@@ -99,6 +100,23 @@ export const fetchAllMembers = projectId => {
   };
 };
 
+/**
+ * Call API to get members summary (lightweight, no profile pics)
+ * Used by Members component for better performance
+ */
+export const fetchMembersSummary = projectId => {
+  return async dispatch => {
+    dispatch(setMemberStart());
+    dispatch(foundUsers([])); // Clear found users
+    try {
+      const response = await axios.get(ENDPOINTS.PROJECT_MEMBER_SUMMARY(projectId));
+      dispatch(setMembers(response.data));
+    } catch (err) {
+      dispatch(setMembersError(err));
+    }
+  };
+};
+
 /*
  * Call API to find active members out of
  * the members of one project
@@ -136,7 +154,7 @@ export const fetchProjectsWithActiveUsers = () => {
 /**
  * Call API to assign/ unassign project
  */
-export const assignProject = (projectId, userId, operation, firstName, lastName) => {
+export const assignProject = (projectId, userId, operation, firstName, lastName, isActive) => {
   const request = axios.post(ENDPOINTS.PROJECT_MEMBER(projectId), {
     projectId,
     users: [
@@ -157,9 +175,10 @@ export const assignProject = (projectId, userId, operation, firstName, lastName)
               _id: userId,
               firstName,
               lastName,
+              isActive
             }),
           );
-          dispatch(removeFoundUser(userId));
+          // dispatch(removeFoundUser(userId));
         } else {
           dispatch(deleteMember(userId));
         }
@@ -191,8 +210,8 @@ export const findProjectMembers = (_projectId, query) => {
       );
 
       const list = Array.isArray(data) ? data
-                 : Array.isArray(data?.users) ? data.users
-                 : [];
+        : Array.isArray(data?.users) ? data.users
+          : [];
 
       const assigned = new Set(getState().projectMembers.members.map(m => m._id));
       const users = list.map(u => ({ ...u, assigned: assigned.has(u._id) }));

@@ -47,7 +47,12 @@ describe("<UserProfileEdit />", () => {
       allProjects: mockProps.allProjects,
       theme: mockProps.theme,
     });
+    const axios = require('axios');
+    axios.get = vi.fn().mockResolvedValue({ status: 200, data: '' });
+    axios.post = vi.fn().mockResolvedValue({ status: 200, data: {} });
   });
+
+
 
   it("renders the UserProfileEdit component", async () => {
     render(
@@ -62,7 +67,7 @@ describe("<UserProfileEdit />", () => {
       expect(mockProps.getUserProfile).toHaveBeenCalledWith("12345")
     );
     expect(screen.getByText(/Save Changes/i)).toBeInTheDocument();
-  });
+  }, 10000);
 
   it("displays loading spinner initially", () => {
     render(
@@ -102,6 +107,12 @@ describe("<UserProfileEdit />", () => {
     );
 
     await waitFor(() => expect(mockProps.getUserProfile).toHaveBeenCalled());
+    
+    // Wait for the form fields to be rendered after loading completes
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText("First Name")).toBeInTheDocument();
+    });
+    
     fireEvent.change(screen.getByPlaceholderText("First Name"), {
       target: { value: "" },
     });

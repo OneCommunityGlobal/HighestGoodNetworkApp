@@ -25,14 +25,14 @@ import {
   DropdownItem,
   DropdownToggle,
 } from 'reactstrap';
-import './WeeklySummary.css';
+import styles from './WeeklySummary.module.css';
 import { connect } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 import { Editor } from '@tinymce/tinymce-react';
 import moment from 'moment';
 import 'moment-timezone';
-import Joi from 'joi-browser';
+import Joi from 'joi';
 import { toast } from 'react-toastify';
 import classnames from 'classnames';
 import { getUserProfile } from '~/actions/userProfile';
@@ -218,6 +218,7 @@ export class WeeklySummary extends Component {
       summaries,
       fetchError,
       loading,
+      initialActiveTab,
     } = this.props;
     await getWeeklySummaries(displayUserId || currentUser.userid);
 
@@ -308,7 +309,7 @@ export class WeeklySummary extends Component {
       dueDateBeforeLast,
       dueDateThreeWeeksAgo,
       submittedCountInFourWeeks,
-      activeTab: '1',
+      activeTab: initialActiveTab || '1',
       fetchError,
       loading,
       editPopup: false,
@@ -630,6 +631,7 @@ export class WeeklySummary extends Component {
       autoClose: 3000,
     });
     this.updateUserData(displayUserId || currentUser.userid);
+    window.location.reload();
   };
 
   // Handler for error scenario after save
@@ -765,10 +767,11 @@ export class WeeklySummary extends Component {
       toolbar:
         'bold italic underline link removeformat | bullist numlist outdent indent | styleselect fontsizeselect | table| strikethrough forecolor backcolor | subscript superscript charmap | help',
       branding: false,
-      min_height: 180,
+      min_height: 250,
       max_height: 500,
       autoresize_bottom_margin: 1,
-      content_style: 'body { font-size: 14px; }',
+      content_style:
+        'body { font-size: 14px; } .mce-content-body[data-mce-placeholder]:focus::before {content: "";}',
       images_upload_handler: customImageUploadHandler,
       skin: darkMode ? 'oxide-dark' : 'oxide',
       content_css: darkMode ? 'dark' : 'default',
@@ -850,7 +853,9 @@ export class WeeklySummary extends Component {
           </Nav>
           <TabContent
             activeTab={activeTab}
-            className={`p-2 weeklysummarypane ${darkMode ? ' bg-yinmn-blue border-light' : ''}`}
+            className={`p-2 ${styles.weeklysummarypane} ${
+              darkMode ? ' bg-yinmn-blue border-light' : ''
+            }`}
           >
             {Object.keys(summariesLabels).map((summaryName, i) => {
               const tId = String(i + 1);
@@ -859,7 +864,7 @@ export class WeeklySummary extends Component {
                   <Row className="w-100 ml-1">
                     <Col>
                       <FormGroup>
-                        <Label for={summaryName} className="summary-instructions-row">
+                        <Label for={summaryName} className={styles['summary-instructions-row']}>
                           <div className={`${fontColor} responsive-font-size`}>
                             Enter your weekly summary below. (required)
                             <WeeklySummaryContentTooltip tabId={tId} />
@@ -871,7 +876,7 @@ export class WeeklySummary extends Component {
                               darkMode={darkMode}
                             />
                             {isNotAllowedToEdit && isNotAllowedToEdit === true ? null : (
-                              <UncontrolledDropdown className="summary-dropdown">
+                              <UncontrolledDropdown className={styles['summary-dropdown']}>
                                 <DropdownToggle
                                   className="btn--dark-sea-green w-100 responsive-font-size"
                                   caret
@@ -951,7 +956,7 @@ export class WeeklySummary extends Component {
             <Row className="w-100 ml-1">
               <Col>
                 {formElements.mediaUrl && !mediaFirstChange ? (
-                  <FormGroup className="media-url">
+                  <FormGroup className={styles['media-url']}>
                     <FontAwesomeIcon icon={faExternalLinkAlt} className=" text--silver" />
                     <Label for="mediaUrl" className="mt-1 ml-2 responsive-font-size">
                       <a href={formElements.mediaUrl} target="_blank" rel="noopener noreferrer">
@@ -985,7 +990,7 @@ export class WeeklySummary extends Component {
                       </FormGroup>
                       {formElements.mediaUrl && !errors.mediaUrl && (
                         <Col md={4}>
-                          <FormGroup className="media-url">
+                          <FormGroup className={styles['media-url']}>
                             <FontAwesomeIcon
                               icon={faExternalLinkAlt}
                               className="mx-1 text--silver responsive-font-size"
@@ -1103,7 +1108,7 @@ export class WeeklySummary extends Component {
                         style={{ marginLeft: '10px', lineHeight: '1.5', cursor: 'pointer' }}
                         className={darkMode ? 'text-light' : 'text-dark'}
                       >
-                        I used GPT (or other AI editor) with the most current prompt.
+                        I used ChatGPT (or other AI editor) with the most current prompt.
                       </label>
                     </FormGroup>
                     {errors.editorConfirm && (
@@ -1177,6 +1182,7 @@ WeeklySummary.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   summaries: PropTypes.object.isRequired,
   updateWeeklySummaries: PropTypes.func.isRequired,
+  initialActiveTab: PropTypes.string,
 };
 
 const mapStateToProps = ({ auth, weeklySummaries }) => ({
