@@ -53,7 +53,7 @@ export function normalizeQuestionForApi(question) {
 
 /** Clone payload for add-question API (no Mongo _id). */
 export function prepareQuestionClone(field) {
-  const clone = JSON.parse(JSON.stringify(field));
+  const clone = structuredClone(field);
   delete clone._id;
   return normalizeQuestionForApi(clone);
 }

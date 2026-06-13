@@ -229,6 +229,7 @@ QuestionEditModal.propTypes = {
     type: PropTypes.string,
     options: PropTypes.arrayOf(PropTypes.string),
     required: PropTypes.bool,
+    isRequired: PropTypes.bool,
     placeholder: PropTypes.string,
   }).isRequired,
   onSave: PropTypes.func.isRequired,

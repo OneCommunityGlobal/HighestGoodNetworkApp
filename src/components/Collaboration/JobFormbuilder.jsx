@@ -628,7 +628,7 @@ function JobFormBuilder() {
                         required: e.target.checked,
                       }))
                     }
-                  />
+                  />{' '}
                   Required field
                 </label>
               </div>
