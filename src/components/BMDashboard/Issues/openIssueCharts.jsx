@@ -181,7 +181,7 @@ function IssueCharts() {
 
       if (!baseIssueName) {
         // If no name, generate Issue #X based on project numbering
-        if (item.issueId && projectNumberMap && projectNumberMap.has(item.issueId)) {
+        if (item.issueId && projectNumberMap?.has(item.issueId)) {
           baseIssueName = `Issue #${projectNumberMap.get(item.issueId)}`;
           isGeneratedName = true;
         } else {
