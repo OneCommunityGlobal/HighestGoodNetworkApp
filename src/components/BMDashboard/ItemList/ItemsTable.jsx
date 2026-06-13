@@ -23,6 +23,8 @@ import {
   faFilePdf,
 } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import { fetchAllMaterials, postMaterialsBulkAction } from '~/actions/bmdashboard/materialsActions';
 import RecordsModal from './RecordsModal';
 import styles from './ItemListView.module.css';
@@ -183,19 +185,35 @@ export default function ItemsTable({
     return value;
   };
 
+  // Round floats to 2 decimals to avoid noise like 1.806000000000001; pass other values through.
+  const roundIfNumber = value =>
+    typeof value === 'number' && !Number.isInteger(value) ? Number(value.toFixed(2)) : value;
+
+  const escapeCsv = value => {
+    const str = String(value ?? '');
+    // Prefix values that could be interpreted as spreadsheet formulas to prevent CSV
+    // injection, but leave plain numbers (incl. negatives) and the empty placeholder intact.
+    const isNumeric = str !== '' && !Number.isNaN(Number(str));
+    const isFormulaRisk = !isNumeric && str !== '-' && /^[=+\-@]/.test(str);
+    const sanitized = isFormulaRisk ? `'${str}` : str;
+    return `"${sanitized.replace(/"/g, '""')}"`;
+  };
+
   const exportToCsv = data => {
     if (data.length === 0) return;
 
     const headers = ['Project', 'Name', ...dynamicColumns.map(col => col.label), 'Stock Available'];
     const csvContent = [
-      headers.join(','),
+      headers.map(escapeCsv).join(','),
       ...data.map(item =>
         [
           item.project?.name || '',
           item.itemType?.name || '',
           ...dynamicColumns.map(col => formatValue(getNestedValue(item, col.key))),
           item.stockAvailable || '',
-        ].join(','),
+        ]
+          .map(escapeCsv)
+          .join(','),
       ),
     ].join('\n');
 
@@ -213,27 +231,26 @@ export default function ItemsTable({
   const exportToPdf = data => {
     if (data.length === 0) return;
 
-    const { jsPDF } = require('jspdf');
     const doc = new jsPDF();
 
     doc.setFontSize(16);
-    doc.text(`${itemType} Selected Items`, 20, 20);
+    doc.text(`${itemType} Selected Items`, 14, 16);
 
-    let yPosition = 40;
-    data.forEach((item, index) => {
-      if (yPosition > 270) {
-        doc.addPage();
-        yPosition = 20;
-      }
+    const headers = ['Project', 'Name', ...dynamicColumns.map(col => col.label), 'Stock Available'];
+    const body = data.map(item => [
+      item.project?.name || '',
+      item.itemType?.name || '',
+      ...dynamicColumns.map(col => formatValue(roundIfNumber(getNestedValue(item, col.key)))),
+      roundIfNumber(item.stockAvailable ?? 0),
+    ]);
 
-      doc.setFontSize(12);
-      const itemLabel = item.itemType?.name || 'Unknown';
-      const projectLabel = item.project?.name || 'Unknown Project';
-      doc.text(`${index + 1}. ${itemLabel} (${projectLabel})`, 20, yPosition);
-      yPosition += 10;
-      doc.setFontSize(10);
-      doc.text(`Available: ${item.stockAvailable || 0}`, 30, yPosition);
-      yPosition += 15;
+    autoTable(doc, {
+      startY: 24,
+      head: [headers],
+      body,
+      headStyles: { fillColor: [0, 123, 255] },
+      alternateRowStyles: { fillColor: [245, 245, 245] },
+      styles: { fontSize: 9 },
     });
 
     doc.save(`${itemType}_selected_items.pdf`);
