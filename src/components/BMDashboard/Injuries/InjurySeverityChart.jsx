@@ -27,6 +27,25 @@ const generateColors = n =>
 
 const SEVERITY_ORDER = ['Minor', 'Major', 'Critical'];
 
+const buildSingleDeptEntry = (sev, projects, dataMap) => {
+  const entry = { severity: sev };
+  projects.forEach(project => {
+    entry[project.name] = dataMap[`${sev}_${project._id}`] || 0;
+  });
+  return entry;
+};
+
+const buildMultiDeptEntry = (sev, projects, depts, dataMap) => {
+  const entry = { severity: sev };
+  projects.forEach(project => {
+    depts.forEach(dept => {
+      const key = `${project.name}_${dept}`;
+      entry[key] = dataMap[`${sev}_${project._id}_${dept}`] || 0;
+    });
+  });
+  return entry;
+};
+
 function CustomTooltip({ active, payload, label, darkMode }) {
   if (!active || !payload || payload.length === 0) return null;
 
@@ -137,30 +156,21 @@ function InjurySeverityDashboard(props) {
     return depts;
   }, [rawData]);
 
+  //Refactored
   const chartData = useMemo(() => {
-    return SEVERITY_ORDER.map(sev => {
-      const entry = { severity: sev };
-
-      if (visibleDepartments.length <= 1) {
-        // Single department - show total injuries per project
-        visibleProjects.forEach(project => {
-          const rec = rawData.find(r => r.severity === sev && r.projectId === project._id);
-          entry[project.name] = rec ? rec.totalInjuries : 0;
-        });
-      } else {
-        // Multiple departments - show department breakdown per project
-        visibleProjects.forEach(project => {
-          visibleDepartments.forEach(dept => {
-            const key = `${project.name}_${dept}`;
-            const rec = rawData.find(
-              r => r.severity === sev && r.projectId === project._id && r.department === dept,
-            );
-            entry[key] = rec ? rec.totalInjuries : 0;
-          });
-        });
+    const dataMap = rawData.reduce((acc, r) => {
+      if (r.projectId) {
+        acc[`${r.severity}_${r.projectId}`] = r.totalInjuries;
+        acc[`${r.severity}_${r.projectId}_${r.department}`] = r.totalInjuries;
       }
+      return acc;
+    }, {});
 
-      return entry;
+    return SEVERITY_ORDER.map(sev => {
+      if (visibleDepartments.length <= 1) {
+        return buildSingleDeptEntry(sev, visibleProjects, dataMap);
+      }
+      return buildMultiDeptEntry(sev, visibleProjects, visibleDepartments, dataMap);
     });
   }, [rawData, visibleProjects, visibleDepartments]);
 
