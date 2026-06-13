@@ -4,6 +4,7 @@ import styles from './Collaboration.module.css';
 import { toast } from 'react-toastify';
 import { ApiEndpoint } from '~/utils/URL';
 import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import OneCommunityImage from '../../assets/images/logo2.png';
 
 const ADS_PER_PAGE = 18;
@@ -12,6 +13,7 @@ function Collaboration() {
   const [query, setQuery] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [categoriesSelected, setCategoriesSelected] = useState([]);
+  const history = useHistory();
   const [currentPage, setCurrentPage] = useState(1);
   const [jobAds, setJobAds] = useState([]);
   const [allJobs, setAllJobs] = useState([]);
@@ -341,7 +343,7 @@ function Collaboration() {
                 key={ad._id}
                 type="button"
                 className={styles.jobAd}
-                onClick={() => setSelectedJob(ad)}
+                onClick={() => handleJobClick(ad)}
               >
                 <img
                   src={
