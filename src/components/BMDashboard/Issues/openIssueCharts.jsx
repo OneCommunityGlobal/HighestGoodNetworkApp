@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   BarChart,
   Bar,
-  Cell,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -89,34 +88,6 @@ const createSelectStyles = (isDark, textColor) => ({
     color: isDark ? '#a0aec0' : '#718096',
   }),
 });
-
-// Deterministic, collision-resistant color per projectId
-const getStableProjectColor = projectId => {
-  if (!projectId) return '#94a3b8';
-
-  let hash = 0;
-  for (let i = 0; i < projectId.length; i++) {
-    hash = projectId.charCodeAt(i) + ((hash << 5) - hash);
-  }
-
-  const hue = Math.abs(hash) % 360;
-  const saturation = 65;
-  const lightness = 50;
-
-  return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
-};
-
-const getProjectColorMap = issues => {
-  const map = {};
-  (issues || []).forEach(issue => {
-    (issue.projects || []).forEach(p => {
-      if (p?.projectId && !map[p.projectId]) {
-        map[p.projectId] = getStableProjectColor(p.projectId);
-      }
-    });
-  });
-  return map;
-};
 
 /* --------------------------- component --------------------------- */
 
@@ -255,40 +226,6 @@ function IssueCharts() {
 
     dispatch(fetchLongestOpenIssues(dateRange, selectedProjects));
   }, [dispatch, startDate, endDate, selectedProjects]);
-
-  // Step 1: Normalize missing issue names
-  const safeIssues = normalizedIssues.map(issue => {
-    const name = issue.issueName;
-    return {
-      ...issue,
-      issueName:
-        typeof name === 'string' && name.trim() && name !== 'undefined'
-          ? name.trim()
-          : 'Unknown Issue',
-    };
-  });
-
-  // Step 2: Use safeIssues for chartData
-  const chartData = safeIssues.flatMap(issue =>
-    (issue.projects || []).map(project => ({
-      issueName: issue.issueName,
-      projectId: project.projectId,
-      durationOpen: project.durationOpen,
-    })),
-  );
-
-  // Step 3: Stable project color map and legend
-  const projectColorMap = getProjectColorMap(safeIssues);
-
-  const projectLegend = Object.entries(projectColorMap).map(([projectId, color]) => {
-    const project = safeIssues.flatMap(i => i.projects || []).find(p => p.projectId === projectId);
-
-    return {
-      projectId,
-      projectName: project?.projectName || 'Unknown Project',
-      color,
-    };
-  });
 
   useEffect(() => {
     function handleResize() {
@@ -495,79 +432,7 @@ function IssueCharts() {
       </div>
 
       <div className={chartContainerClass} ref={chartContainerRef}>
-        {/* Step 6: Project Legend above the chart */}
-        <div
-          style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            alignItems: 'center',
-            gap: '12px',
-            marginBottom: '12px',
-            justifyContent: 'center',
-          }}
-        >
-          {projectLegend.map(p => (
-            <div key={p.projectId} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span
-                style={{
-                  width: 12,
-                  height: 12,
-                  backgroundColor: p.color,
-                  borderRadius: 2,
-                  display: 'inline-block',
-                }}
-              />
-              <span style={{ fontSize: 13, color: textColor }}>{p.projectName}</span>
-            </div>
-          ))}
-        </div>
-        {!issues || issues.length === 0 ? (
-          <div className={noDataMessageClass}>
-            <div className={noDataContentClass}>
-              <h3>No Open Issues Found</h3>
-              <p>There are currently no open issues matching your selected criteria.</p>
-              <p>Try adjusting your date range or project filters to see more results.</p>
-            </div>
-          </div>
-        ) : (
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData} layout="vertical" margin={margin}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis
-                type="number"
-                label={{ value: 'Duration in Months', position: 'insideBottom', offset: -12 }}
-              />
-              <YAxis
-                dataKey="issueName"
-                type="category"
-                tick={{ fontSize: 14, fontWeight: 500 }}
-                width={yAxisWidth}
-              />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: darkMode ? '#1e1e1e' : '#ffffff',
-                  border: `1px solid ${darkMode ? '#4a5568' : '#e2e8f0'}`,
-                  color: darkMode ? '#f3f4f6' : '#1a202c',
-                  borderRadius: '6px',
-                }}
-                labelStyle={{
-                  color: darkMode ? '#d1d5db' : '#111827',
-                  fontWeight: 600,
-                }}
-                itemStyle={{
-                  color: darkMode ? '#e5e7eb' : '#1a202c',
-                }}
-                formatter={value => `${value} months`}
-                labelFormatter={label => `Issue: ${label}`}
-              />
-              <Bar dataKey="durationOpen" barSize={22} isAnimationActive={false}>
-                {chartData.map((entry, index) => (
-                  <Cell key={index} fill={projectColorMap[entry.projectId] || '#94a3b8'} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        )}
+        {chartContent}
       </div>
     </div>
   );
