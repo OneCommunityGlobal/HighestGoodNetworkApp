@@ -14,7 +14,7 @@ import {
   MARK_MESSAGES_AS_READ_REQUEST,
   MARK_MESSAGES_AS_READ_SUCCESS,
   MARK_MESSAGES_AS_READ_FAILURE,
-} from "../../constants/lbdashboard/messagingConstants";
+} from "../../constants/lbDashboard/messagingConstants";
 
 export const fetchMessages = (userId, selectedUserId) => async (dispatch) => {
   try {

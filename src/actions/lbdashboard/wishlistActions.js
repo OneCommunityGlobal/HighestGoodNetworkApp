@@ -9,7 +9,7 @@ import {
   REMOVE_FROM_WISHLIST_REQUEST,
   REMOVE_FROM_WISHLIST_SUCCESS,
   REMOVE_FROM_WISHLIST_FAIL,
-} from '../../constants/lbdashboard/wishlistConstants';
+} from '../../constants/lbDashboard/wishlistConstants';
 import { ENDPOINTS } from '../../utils/URL';
 
 export const fetchWishlist = userId => async dispatch => {

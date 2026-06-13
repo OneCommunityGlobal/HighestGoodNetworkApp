@@ -8,7 +8,7 @@ import {
   REMOVE_FROM_WISHLIST_REQUEST,
   REMOVE_FROM_WISHLIST_SUCCESS,
   REMOVE_FROM_WISHLIST_FAIL,
-} from '../../constants/lbdashboard/wishlistConstants';
+} from '../../constants/lbDashboard/wishlistConstants';
 
 const initialState = {
   loading: false,
