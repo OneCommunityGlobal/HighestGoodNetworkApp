@@ -147,6 +147,10 @@
   margin-top: 15px;
 }
 
+.questionEditModalOverlay.darkMode {
+  background-color: rgb(0 0 0 / 70%);
+}
+
 .questionEditModal.darkMode {
   background-color: #2a2a2a;
   color: #f1f1f1;
@@ -164,10 +168,15 @@
 
 .questionEditModal.darkMode .formGroup input[type='text'],
 .questionEditModal.darkMode .formGroup select,
-.questionEditModal.darkMode .formGroup textarea {
+.questionEditModal.darkMode .formGroup textarea,
+.questionEditModal.darkMode .optionRow input {
   background-color: #1c1c1c;
   color: #f1f1f1;
   border-color: #555;
+}
+
+.questionEditModal.darkMode .formGroup input[type='checkbox'] {
+  accent-color: var(--jfb-lime);
 }
 
 .questionEditModal.darkMode .optionsGroup {

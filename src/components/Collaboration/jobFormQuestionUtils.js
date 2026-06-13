@@ -26,3 +26,45 @@ export const STANDARD_APPLICANT_FIELDS = [
   { label: 'Company & Position', required: false, inputType: 'text' },
   { label: 'Primary Website/Social', required: false, inputType: 'text' },
 ];
+
+/** Build requestor payload expected by HGNRest permission checks. */
+export function buildJobFormRequestor(authUser) {
+  if (!authUser?.userid) return null;
+  return {
+    requestorId: authUser.userid,
+    role: authUser.role,
+  };
+}
+
+export function isFieldRequired(field) {
+  return Boolean(field?.isRequired || field?.required);
+}
+
+/** Normalize required flags and strip server-only fields before API writes. */
+export function normalizeQuestionForApi(question) {
+  const { _id, __v, ...rest } = question || {};
+  const isRequired = isFieldRequired(question);
+  return {
+    ...rest,
+    isRequired,
+    required: isRequired,
+  };
+}
+
+/** Clone payload for add-question API (no Mongo _id). */
+export function prepareQuestionClone(field) {
+  const clone = JSON.parse(JSON.stringify(field));
+  delete clone._id;
+  return normalizeQuestionForApi(clone);
+}
+
+export function normalizeLoadedQuestions(questions = []) {
+  return questions.map(question => {
+    const isRequired = isFieldRequired(question);
+    return {
+      ...question,
+      isRequired,
+      required: isRequired,
+    };
+  });
+}

@@ -3,11 +3,24 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
+import { useSelector } from 'react-redux';
 import { ENDPOINTS } from '../../utils/URL';
 import QuestionEditModal from './QuestionEditModal';
 import styles from './QuestionSetManager.module.css';
+import { buildJobFormRequestor, isFieldRequired } from './jobFormQuestionUtils';
 
 function QuestionSetManager({ formFields, setFormFields, onImportQuestions, darkMode = false }) {
+  const { auth } = useSelector(state => state);
+  const getRequestor = () => buildJobFormRequestor(auth?.user);
+
+  const mapFieldForTemplate = field => ({
+    questionText: field.questionText || field.label,
+    questionType: field.questionType || field.type,
+    visible: field.visible !== undefined ? field.visible : true,
+    isRequired: isFieldRequired(field),
+    options: field.options || [],
+    placeholder: field.placeholder || '',
+  });
   const [templates, setTemplates] = useState([]);
   const [templateName, setTemplateName] = useState('');
   const [selectedTemplate, setSelectedTemplate] = useState('');
@@ -38,8 +51,10 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
     },
 
     // Delete a template
-    deleteTemplate: async id => {
-      const response = await axios.delete(ENDPOINTS.DELETE_TEMPLATE(id));
+    deleteTemplate: async (id, requestor) => {
+      const response = await axios.delete(ENDPOINTS.DELETE_TEMPLATE(id), {
+        data: { requestor },
+      });
       return response.data;
     },
 
@@ -112,14 +127,8 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
         // Update the template
         const updatedTemplate = await api.updateTemplate(existingTemplate._id, {
           name: templateName,
-          fields: formFields.map(field => ({
-            questionText: field.questionText,
-            questionType: field.questionType,
-            visible: field.visible !== undefined ? field.visible : true,
-            isRequired: field.required || false,
-            options: field.options || [],
-            placeholder: field.placeholder || '',
-          })),
+          fields: formFields.map(mapFieldForTemplate),
+          requestor: getRequestor(),
         });
 
         // Update local state
@@ -129,14 +138,8 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
       } else {
         const newTemplate = await api.createTemplate({
           name: templateName,
-          fields: formFields.map(field => ({
-            questionText: field.questionText || field.label,
-            questionType: field.questionType || field.type,
-            visible: field.visible !== undefined ? field.visible : true,
-            isRequired: field.required || field.isRequired || false,
-            options: field.options || [],
-            placeholder: field.placeholder || '',
-          })),
+          fields: formFields.map(mapFieldForTemplate),
+          requestor: getRequestor(),
         });
 
         // Update local state
@@ -286,7 +289,7 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
         // Check if template has _id (server template) or not (local template)
         if (template._id) {
           // Delete from server
-          await api.deleteTemplate(template._id);
+          await api.deleteTemplate(template._id, getRequestor());
         }
 
         // Always remove from local state
@@ -312,14 +315,20 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
     }
   };
 
+  const handleClearTemplate = () => {
+    setFormFields([]);
+  };
+
   const handleSaveEditedQuestion = editedQuestion => {
     if (editingIndex !== null) {
+      const isRequired = Boolean(editedQuestion.required || editedQuestion.isRequired);
       const updatedQuestion = {
         ...formFields[editingIndex],
         questionText: editedQuestion.label,
         questionType: editedQuestion.type,
         options: editedQuestion.options || [],
-        required: editedQuestion.required,
+        isRequired,
+        required: isRequired,
         placeholder: editedQuestion.placeholder,
       };
 

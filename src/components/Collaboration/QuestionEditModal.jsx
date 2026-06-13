@@ -23,7 +23,7 @@ const toOptionRows = options =>
 function QuestionEditModal({ question, onSave, onCancel, darkMode = false }) {
   const [editedQuestion, setEditedQuestion] = useState({
     ...question,
-
+    required: question.required || question.isRequired || false,
     options: question.options || [],
   });
   const [optionRows, setOptionRows] = useState(() => toOptionRows(question.options));
@@ -36,7 +36,7 @@ function QuestionEditModal({ question, onSave, onCancel, darkMode = false }) {
     // Update state when the question prop changes
     setEditedQuestion({
       ...question,
-
+      required: question.required || question.isRequired || false,
       options: question.options || [],
     });
     setOptionRows(toOptionRows(question.options));
@@ -113,12 +113,14 @@ function QuestionEditModal({ question, onSave, onCancel, darkMode = false }) {
 
     onSave({
       ...editedQuestion,
+      required: Boolean(editedQuestion.required),
+      isRequired: Boolean(editedQuestion.required),
       options: optionRows.map(row => row.value),
     });
   };
 
   return (
-    <div className={styles.questionEditModalOverlay}>
+    <div className={`${styles.questionEditModalOverlay} ${darkMode ? styles.darkMode : ''}`}>
       <div className={`${styles.questionEditModal} ${darkMode ? styles.darkMode : ''}`}>
         <h3>Edit Question</h3>
         <div className={`${styles.editForm}`}>

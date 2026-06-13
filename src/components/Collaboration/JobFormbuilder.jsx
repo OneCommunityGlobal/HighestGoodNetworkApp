@@ -17,6 +17,11 @@ import {
   normalizeQuestionType,
   resolveInputType,
   STANDARD_APPLICANT_FIELDS,
+  buildJobFormRequestor,
+  isFieldRequired,
+  normalizeQuestionForApi,
+  prepareQuestionClone,
+  normalizeLoadedQuestions,
 } from './jobFormQuestionUtils';
 
 function JobFormBuilder() {
@@ -27,6 +32,8 @@ function JobFormBuilder() {
 
   const canManageJobForms = () =>
     hasPermissionSimple(userPermissions, 'manageJobForms') || userRole === 'Owner';
+
+  const getRequestor = () => buildJobFormRequestor(auth?.user);
   const [formFields, setFormFields] = useState([]);
   const [initialFormFields, setInitialFormFields] = useState([]);
   const [templateName, setTemplateName] = useState('');
@@ -38,6 +45,8 @@ function JobFormBuilder() {
     questionType: 'textbox',
     options: [],
     visible: true,
+    isRequired: false,
+    required: false,
   });
 
   const initialNewField = {
@@ -45,6 +54,8 @@ function JobFormBuilder() {
     questionType: 'textbox',
     options: [],
     visible: true,
+    isRequired: false,
+    required: false,
   };
 
   const [jobTitle, setJobTitle] = useState('Please Choose an option');
@@ -69,6 +80,8 @@ function JobFormBuilder() {
       questionType: 'textbox',
       options: [],
       visible: true,
+      isRequired: false,
+      required: false,
     });
     setNewOption('');
   };
@@ -85,9 +98,9 @@ function JobFormBuilder() {
           const formId = firstForm._id || firstForm.id;
 
           setCurrentFormId(formId);
-          setFormFields(firstForm.questions || []);
+          setFormFields(normalizeLoadedQuestions(firstForm.questions || []));
           setJobTitle(firstForm.title || 'Please Choose an option');
-          markAsSaved(firstForm.questions || []);
+          markAsSaved(normalizeLoadedQuestions(firstForm.questions || []));
           setNewField(initialNewField);
 
           console.log('Auto-loaded form:', formId);
@@ -111,9 +124,23 @@ function JobFormBuilder() {
     setHasUnsavedChanges(changed);
   }, [formFields, newField, templateName, selectedTemplate, initialFormFields]);
 
+  const syncFieldAction = async (actionLabel, apiCall, rollback) => {
+    try {
+      await apiCall();
+    } catch (error) {
+      console.error(`Error ${actionLabel}:`, error);
+      rollback?.();
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.error?.message ||
+        `Failed to ${actionLabel}. Changes were reverted locally.`;
+      alert(message);
+    }
+  };
+
   // CRUD Functions with Dynamic Form ID
   const cloneField = async (field, index) => {
-    const clonedField = JSON.parse(JSON.stringify(field));
+    const clonedField = prepareQuestionClone(field);
     const previousFields = formFields;
 
     const newFields = [
@@ -130,6 +157,7 @@ function JobFormBuilder() {
           await axios.post(ENDPOINTS.ADD_QUESTION(currentFormId), {
             question: clonedField,
             position: index + 1,
+            requestor: getRequestor(),
           });
           markAsSaved(newFields);
         },
@@ -156,6 +184,7 @@ function JobFormBuilder() {
           await axios.put(ENDPOINTS.REORDER_QUESTIONS(currentFormId), {
             fromIndex: index,
             toIndex: newIndex,
+            requestor: getRequestor(),
           });
           markAsSaved(newFields);
         } catch (error) {
@@ -174,7 +203,9 @@ function JobFormBuilder() {
     // Sync with backend if form exists
     if (currentFormId) {
       try {
-        await axios.delete(ENDPOINTS.DELETE_QUESTION(currentFormId, index));
+        await axios.delete(ENDPOINTS.DELETE_QUESTION(currentFormId, index), {
+          data: { requestor: getRequestor() },
+        });
         markAsSaved(newFields);
         console.log('Question deleted successfully');
       } catch (error) {
@@ -189,7 +220,7 @@ function JobFormBuilder() {
       label: field.questionText,
       type: field.questionType,
       options: field.options,
-      required: field.required || false,
+      required: isFieldRequired(field),
       placeholder: field.placeholder || '',
     };
 
@@ -199,14 +230,16 @@ function JobFormBuilder() {
   };
 
   const handleSaveEditedQuestion = async editedQuestion => {
-    const updatedField = {
+    const isRequired = Boolean(editedQuestion.required || editedQuestion.isRequired);
+    const updatedField = normalizeQuestionForApi({
       ...formFields[editingIndex],
       questionText: editedQuestion.label,
       questionType: editedQuestion.type,
       options: editedQuestion.options || [],
-      required: editedQuestion.required,
+      isRequired,
+      required: isRequired,
       placeholder: editedQuestion.placeholder,
-    };
+    });
 
     // Update local state immediately
     const updatedFields = [...formFields];
@@ -216,7 +249,10 @@ function JobFormBuilder() {
     // Sync with backend if form exists
     if (currentFormId) {
       try {
-        await axios.put(ENDPOINTS.UPDATE_QUESTION(currentFormId, editingIndex), updatedField);
+        await axios.put(ENDPOINTS.UPDATE_QUESTION(currentFormId, editingIndex), {
+          ...updatedField,
+          requestor: getRequestor(),
+        });
         markAsSaved(updatedFields);
         console.log('Question updated successfully');
       } catch (error) {
@@ -238,7 +274,7 @@ function JobFormBuilder() {
 
   // Import questions from template
   const importQuestions = questions => {
-    setFormFields(questions);
+    setFormFields(normalizeLoadedQuestions(questions));
   };
 
   const handleAddOption = () => {
@@ -267,16 +303,17 @@ function JobFormBuilder() {
       return;
     }
 
-    // Update local state immediately
-    const updatedFields = [...formFields, newField];
+    const fieldToAdd = normalizeQuestionForApi(newField);
+    const updatedFields = [...formFields, fieldToAdd];
     setFormFields(updatedFields);
 
     // Sync with backend if form exists
     if (currentFormId) {
       try {
         await axios.post(ENDPOINTS.ADD_QUESTION(currentFormId), {
-          question: newField,
+          question: fieldToAdd,
           position: formFields.length,
+          requestor: getRequestor(),
         });
         markAsSaved(updatedFields);
       } catch (error) {
@@ -284,7 +321,14 @@ function JobFormBuilder() {
       }
     }
 
-    setNewField({ questionText: '', questionType: 'textbox', options: [], visible: true });
+    setNewField({
+      questionText: '',
+      questionType: 'textbox',
+      options: [],
+      visible: true,
+      isRequired: false,
+      required: false,
+    });
   };
 
   const changeVisiblity = (event, field) => {
@@ -308,8 +352,9 @@ function JobFormBuilder() {
       await axios.put(ENDPOINTS.UPDATE_JOB_FORM, {
         formId: currentFormId,
         title: jobTitle,
-        questions: formFields,
+        questions: formFields.map(normalizeQuestionForApi),
         description: '',
+        requestor: getRequestor(),
       });
 
       markAsSaved(formFields);
@@ -321,20 +366,6 @@ function JobFormBuilder() {
         error.response?.data?.message ||
         error.response?.data?.error?.message ||
         'Failed to save form. Please try again.';
-      alert(message);
-    }
-  };
-
-  const syncFieldAction = async (actionLabel, apiCall, rollback) => {
-    try {
-      await apiCall();
-    } catch (error) {
-      console.error(`Error ${actionLabel}:`, error);
-      rollback?.();
-      const message =
-        error.response?.data?.message ||
-        error.response?.data?.error?.message ||
-        `Failed to ${actionLabel}. Changes were reverted locally.`;
       alert(message);
     }
   };
@@ -449,7 +480,7 @@ function JobFormBuilder() {
                     <div className={styles.formField}>
                       <label className={`${styles.fieldLabel} ${styles.jbformLabel}`}>
                         {field.questionText}
-                        {(field.isRequired || field.required) && (
+                        {isFieldRequired(field) && (
                           <span className={styles.requiredMark} aria-hidden="true">
                             {' '}
                             *
@@ -584,6 +615,23 @@ function JobFormBuilder() {
                   </div>
                 </div>
               )}
+
+              <div>
+                <label className={styles.jbformLabel}>
+                  <input
+                    type="checkbox"
+                    checked={Boolean(newField.isRequired || newField.required)}
+                    onChange={e =>
+                      setNewField(prev => ({
+                        ...prev,
+                        isRequired: e.target.checked,
+                        required: e.target.checked,
+                      }))
+                    }
+                  />
+                  Required field
+                </label>
+              </div>
 
               <button type="button" onClick={handleAddField} className={styles.addFieldButton}>
                 Add Field

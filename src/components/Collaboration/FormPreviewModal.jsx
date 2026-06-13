@@ -4,6 +4,7 @@ import {
   normalizeQuestionType,
   resolveInputType,
   STANDARD_APPLICANT_FIELDS,
+  isFieldRequired,
 } from './jobFormQuestionUtils';
 
 /**
@@ -27,12 +28,21 @@ function FormPreviewModal({ isOpen, onClose, formFields, jobTitle, darkMode }) {
     const { questionText, options } = field;
     const questionType = normalizeQuestionType(field);
     const fieldKey = `preview-field-${index}-${questionText}`;
+    const requiredMark = isFieldRequired(field) ? (
+      <span className={styles.previewRequiredMark} aria-hidden="true">
+        {' '}
+        *
+      </span>
+    ) : null;
 
     switch (questionType) {
       case 'textbox':
         return (
           <div key={fieldKey} className={styles.previewField}>
-            <label className={styles.previewLabel}>{questionText}</label>
+            <label className={styles.previewLabel}>
+              {questionText}
+              {requiredMark}
+            </label>
             <input
               type={resolveInputType(field)}
               placeholder={
@@ -47,7 +57,10 @@ function FormPreviewModal({ isOpen, onClose, formFields, jobTitle, darkMode }) {
       case 'textarea':
         return (
           <div key={fieldKey} className={styles.previewField}>
-            <label className={styles.previewLabel}>{questionText}</label>
+            <label className={styles.previewLabel}>
+              {questionText}
+              {requiredMark}
+            </label>
             <textarea placeholder="Enter text here" disabled className={styles.previewTextarea} />
           </div>
         );
@@ -55,7 +68,10 @@ function FormPreviewModal({ isOpen, onClose, formFields, jobTitle, darkMode }) {
       case 'date':
         return (
           <div key={fieldKey} className={styles.previewField}>
-            <label className={styles.previewLabel}>{questionText}</label>
+            <label className={styles.previewLabel}>
+              {questionText}
+              {requiredMark}
+            </label>
             <input type="date" disabled className={styles.previewInput} />
           </div>
         );
@@ -63,7 +79,10 @@ function FormPreviewModal({ isOpen, onClose, formFields, jobTitle, darkMode }) {
       case 'file':
         return (
           <div key={fieldKey} className={styles.previewField}>
-            <label className={styles.previewLabel}>{questionText}</label>
+            <label className={styles.previewLabel}>
+              {questionText}
+              {requiredMark}
+            </label>
             <input type="file" disabled className={styles.previewInput} />
           </div>
         );
@@ -71,7 +90,10 @@ function FormPreviewModal({ isOpen, onClose, formFields, jobTitle, darkMode }) {
       case 'checkbox':
         return (
           <div key={fieldKey} className={styles.previewField}>
-            <label className={styles.previewLabel}>{questionText}</label>
+            <label className={styles.previewLabel}>
+              {questionText}
+              {requiredMark}
+            </label>
             <div className={styles.previewOptions}>
               {options &&
                 options.map((option, optIdx) => (
@@ -97,7 +119,10 @@ function FormPreviewModal({ isOpen, onClose, formFields, jobTitle, darkMode }) {
       case 'radio':
         return (
           <div key={fieldKey} className={styles.previewField}>
-            <label className={styles.previewLabel}>{questionText}</label>
+            <label className={styles.previewLabel}>
+              {questionText}
+              {requiredMark}
+            </label>
             <div className={styles.previewOptions}>
               {options &&
                 options.map((option, optIdx) => (
@@ -124,7 +149,10 @@ function FormPreviewModal({ isOpen, onClose, formFields, jobTitle, darkMode }) {
       case 'dropdown':
         return (
           <div key={fieldKey} className={styles.previewField}>
-            <label className={styles.previewLabel}>{questionText}</label>
+            <label className={styles.previewLabel}>
+              {questionText}
+              {requiredMark}
+            </label>
             <select disabled className={styles.previewSelect}>
               <option>Select an option</option>
               {options &&
@@ -140,7 +168,10 @@ function FormPreviewModal({ isOpen, onClose, formFields, jobTitle, darkMode }) {
       default:
         return (
           <div key={fieldKey} className={styles.previewField}>
-            <label className={styles.previewLabel}>{questionText}</label>
+            <label className={styles.previewLabel}>
+              {questionText}
+              {requiredMark}
+            </label>
             <input
               type="text"
               placeholder="Enter text here"
