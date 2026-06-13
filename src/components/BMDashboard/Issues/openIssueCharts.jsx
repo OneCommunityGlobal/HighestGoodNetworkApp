@@ -256,23 +256,6 @@ function IssueCharts() {
     dispatch(fetchLongestOpenIssues(dateRange, selectedProjects));
   }, [dispatch, startDate, endDate, selectedProjects]);
 
-  const normalizedIssues = (issues || []).map(issue => {
-    if (Array.isArray(issue.projects) && issue.projects.length > 0) {
-      return issue;
-    }
-    // fallback when backend does not send projects
-    return {
-      ...issue,
-      projects: [
-        {
-          projectId: 'unknown',
-          projectName: 'Unknown Project',
-          durationOpen: issue.durationOpen,
-        },
-      ],
-    };
-  });
-
   // Step 1: Normalize missing issue names
   const safeIssues = normalizedIssues.map(issue => {
     const name = issue.issueName;
@@ -340,7 +323,66 @@ function IssueCharts() {
 
   /* ------------ decide what to show inside chart container ------------ */
 
-  // (chartContent block removed; chart rendering is below in render)
+  let chartContent;
+
+  if (error) {
+    chartContent = <div style={errorMessageStyle}>Error: {error}</div>;
+  } else if (loading) {
+    chartContent = <div style={loadingMessageStyle}>Loading chart data...</div>;
+  } else if (!normalizedIssues || normalizedIssues.length === 0) {
+    chartContent = (
+      <div className={noDataMessageClass}>
+        <div className={noDataContentClass}>
+          <h3>No Open Issues Found</h3>
+          <p>There are currently no open issues matching your selected criteria.</p>
+          <p>Try adjusting your date range or project filters to see more results.</p>
+        </div>
+      </div>
+    );
+  } else {
+    chartContent = (
+      <ResponsiveContainer width="100%" height={400}>
+        <BarChart data={normalizedIssues} layout="vertical" margin={margin}>
+          <CartesianGrid stroke={gridColor} />
+          <XAxis
+            type="number"
+            tick={{ fill: textColor }}
+            label={{
+              value: 'Duration in Months',
+              position: 'insideBottom',
+              offset: -5,
+              fill: textColor,
+            }}
+          />
+          <YAxis
+            dataKey="issueName"
+            type="category"
+            tick={{ fontSize: 14, fill: textColor }}
+            width={yAxisWidth}
+          />
+          <Tooltip
+            contentStyle={{
+              backgroundColor: tooltipBg,
+              borderColor: tooltipBorder,
+            }}
+            itemStyle={{ color: textColor }}
+            labelStyle={{ color: textColor }}
+            formatter={value => `${value} months`}
+            labelFormatter={label => `Issue : ${label}`}
+            cursor={{ fill: hoverBg, opacity: 0.8 }}
+          />
+          <Bar name="Duration Open" dataKey="durationOpen" fill="#6495ED" barSize={30}>
+            <LabelList
+              dataKey="durationOpen"
+              position="right"
+              formatter={v => `${v} months`}
+              style={{ fill: textColor }}
+            />
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
+    );
+  }
 
   /* --------------------------- render --------------------------- */
 
