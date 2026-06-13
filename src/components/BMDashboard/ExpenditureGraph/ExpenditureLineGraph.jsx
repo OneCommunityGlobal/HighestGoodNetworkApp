@@ -4,6 +4,80 @@ import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL';
 import { useSelector } from 'react-redux';
 
+const MONTH_NAMES = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
+const CHART_COLORS = ['#6293CC', '#C55151', '#E8D06B', '#94B66F'];
+
+function formatDateForInput(date) {
+  return date.toISOString().split('T')[0];
+}
+
+function getDateRangeFromData(data) {
+  const dates = data.map(item => new Date(item.date));
+  return { minDate: new Date(Math.min(...dates)), maxDate: new Date(Math.max(...dates)) };
+}
+
+function compareMonthYear(a, b) {
+  const [monthA, yearA] = a.split(' ');
+  const [monthB, yearB] = b.split(' ');
+  if (yearA !== yearB) return Number.parseInt(yearA, 10) - Number.parseInt(yearB, 10);
+  return MONTH_NAMES.indexOf(monthA) - MONTH_NAMES.indexOf(monthB);
+}
+
+function buildGroupedData(expenditureDataArr) {
+  const groupedByMonth = {};
+  const categories = new Set();
+  expenditureDataArr.forEach(item => {
+    const date = new Date(item.date);
+    const month = date.toLocaleString('default', { month: 'short' });
+    const monthYear = `${month} ${date.getFullYear()}`;
+    if (!groupedByMonth[monthYear]) groupedByMonth[monthYear] = {};
+    if (!groupedByMonth[monthYear][item.category]) groupedByMonth[monthYear][item.category] = 0;
+    groupedByMonth[monthYear][item.category] += item.cost;
+    categories.add(item.category);
+  });
+  return { groupedByMonth, categories };
+}
+
+function buildLabels(groupedByMonth) {
+  const labels = Object.keys(groupedByMonth).sort(compareMonthYear);
+  if (labels.length === 1) {
+    const [month, year] = labels[0].split(' ');
+    const monthIndex = MONTH_NAMES.indexOf(month);
+    const nextMonthIndex = (monthIndex + 1) % 12;
+    const nextYear =
+      nextMonthIndex === 0 ? Number.parseInt(year, 10) + 1 : Number.parseInt(year, 10);
+    labels.push(`${MONTH_NAMES[nextMonthIndex]} ${nextYear}`);
+  }
+  return labels;
+}
+
+function buildDatasets(categories, labels, groupedByMonth, darkMode) {
+  return Array.from(categories).map((category, index) => {
+    const color = CHART_COLORS[index % CHART_COLORS.length];
+    return {
+      label: category,
+      data: labels.map(month => groupedByMonth[month]?.[category] || 0),
+      borderColor: color,
+      backgroundColor: darkMode ? `${color}33` : `${color}1A`,
+      tension: 0.1,
+      fill: false,
+    };
+  });
+}
+
 export default function ExpenditureLineGraph() {
   const chartRef = useRef(null);
   const [chartInstance, setChartInstance] = useState(null);
@@ -20,7 +94,6 @@ export default function ExpenditureLineGraph() {
 
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  // Set body styles when dark mode changes
   useEffect(() => {
     if (darkMode) {
       document.body.style.backgroundColor = '#1b2a41';
@@ -30,18 +103,12 @@ export default function ExpenditureLineGraph() {
       document.body.style.backgroundColor = '#f9f9f9';
       document.body.style.color = 'inherit';
     }
-
-    // Cleanup on unmount
     return () => {
       document.body.style.backgroundColor = '';
       document.body.style.color = '';
       document.body.style.transition = '';
     };
   }, [darkMode]);
-
-  const formatDateForInput = date => {
-    return date.toISOString().split('T')[0];
-  };
 
   useEffect(() => {
     const fetchExpenditureData = async () => {
@@ -51,18 +118,12 @@ export default function ExpenditureLineGraph() {
         if (response?.data?.success) {
           const { data } = response.data;
           setExpenditureData(data);
-          const uniqueProjects = [...new Set(data.map(item => item.projectId))];
-          setProjects(uniqueProjects);
+          setProjects([...new Set(data.map(item => item.projectId))]);
           if (data.length > 0) {
-            const dates = data.map(item => new Date(item.date));
-            const minDate = new Date(Math.min(...dates));
-            const maxDate = new Date(Math.max(...dates));
+            const { minDate, maxDate } = getDateRangeFromData(data);
             setStartDate(formatDateForInput(minDate));
             setEndDate(formatDateForInput(maxDate));
-            setDateRange({
-              start: minDate,
-              end: maxDate,
-            });
+            setDateRange({ start: minDate, end: maxDate });
           }
         } else {
           setError('Failed to fetch the data');
@@ -90,6 +151,13 @@ export default function ExpenditureLineGraph() {
       setChartInstance(null);
     }
   }, [darkMode]);
+
+  const processDataForChart = expenditureDataArr => {
+    const { groupedByMonth, categories } = buildGroupedData(expenditureDataArr);
+    const labels = buildLabels(groupedByMonth);
+    const datasets = buildDatasets(categories, labels, groupedByMonth, darkMode);
+    return { labels, datasets };
+  };
 
   const createChart = chartData => {
     if (!chartRef.current) return;
@@ -119,22 +187,11 @@ export default function ExpenditureLineGraph() {
             display: true,
             text: chartTitle,
             color: textColor,
-            font: {
-              size: 14,
-              weight: 'bold',
-            },
-            padding: {
-              top: 10,
-              bottom: 15,
-            },
+            font: { size: 14, weight: 'bold' },
+            padding: { top: 10, bottom: 15 },
           },
           legend: {
-            labels: {
-              color: textColor,
-              font: {
-                size: 12,
-              },
-            },
+            labels: { color: textColor, font: { size: 12 } },
           },
           tooltip: {
             backgroundColor: darkMode ? '#3a506b' : 'rgba(0, 0, 0, 0.7)',
@@ -150,57 +207,34 @@ export default function ExpenditureLineGraph() {
               display: true,
               text: 'Cost($)',
               color: textColor,
-              font: {
-                size: 12,
-                weight: 'bold',
-              },
+              font: { size: 12, weight: 'bold' },
             },
             ticks: {
               color: textColor,
-              font: {
-                size: 11,
-              },
+              font: { size: 11 },
               callback(value) {
-                if (value >= 1000) {
-                  return `$${value / 1000}k`;
-                }
-                return `$${value}`;
+                return value >= 1000 ? `$${value / 1000}k` : `$${value}`;
               },
             },
-            grid: {
-              color: gridColor,
-              borderColor: gridColor,
-            },
+            grid: { color: gridColor, borderColor: gridColor },
           },
           x: {
             title: {
               display: true,
               text: 'Month',
               color: textColor,
-              font: {
-                size: 12,
-                weight: 'bold',
-              },
+              font: { size: 12, weight: 'bold' },
             },
-            ticks: {
-              color: textColor,
-              font: {
-                size: 11,
-              },
-            },
-            grid: {
-              color: gridColor,
-              borderColor: gridColor,
-            },
+            ticks: { color: textColor, font: { size: 11 } },
+            grid: { color: gridColor, borderColor: gridColor },
           },
         },
         animation: {
           onComplete() {
-            const chart = this;
             ctx.save();
             ctx.globalCompositeOperation = 'destination-over';
             ctx.fillStyle = chartBackgroundColor;
-            ctx.fillRect(0, 0, chart.width, chart.height);
+            ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
             ctx.restore();
           },
         },
@@ -211,152 +245,55 @@ export default function ExpenditureLineGraph() {
     setChartInstance(newChartInstance);
   };
 
-  const processDataForChart = expenditureDataArr => {
-    const groupedByMonth = {};
-    const categories = new Set();
-
-    expenditureDataArr.forEach(item => {
-      const date = new Date(item.date);
-      const month = date.toLocaleString('default', { month: 'short' });
-      const year = date.getFullYear();
-      const monthYear = `${month} ${year}`;
-
-      if (!groupedByMonth[monthYear]) {
-        groupedByMonth[monthYear] = {};
-      }
-
-      if (!groupedByMonth[monthYear][item.category]) {
-        groupedByMonth[monthYear][item.category] = 0;
-      }
-
-      groupedByMonth[monthYear][item.category] += item.cost;
-      categories.add(item.category);
-    });
-
-    const labels = Object.keys(groupedByMonth).sort((a, b) => {
-      const [monthA, yearA] = a.split(' ');
-      const [monthB, yearB] = b.split(' ');
-      const months = [
-        'Jan',
-        'Feb',
-        'Mar',
-        'Apr',
-        'May',
-        'Jun',
-        'Jul',
-        'Aug',
-        'Sep',
-        'Oct',
-        'Nov',
-        'Dec',
-      ];
-
-      if (yearA !== yearB) {
-        return parseInt(yearA, 10) - parseInt(yearB, 10);
-      }
-      return months.indexOf(monthA) - months.indexOf(monthB);
-    });
-
-    if (labels.length === 1) {
-      const [month, year] = labels[0].split(' ');
-      const months = [
-        'Jan',
-        'Feb',
-        'Mar',
-        'Apr',
-        'May',
-        'Jun',
-        'Jul',
-        'Aug',
-        'Sep',
-        'Oct',
-        'Nov',
-        'Dec',
-      ];
-      const monthIndex = months.indexOf(month);
-      const nextMonthIndex = (monthIndex + 1) % 12;
-      const nextYear = nextMonthIndex === 0 ? parseInt(year, 10) + 1 : parseInt(year, 10);
-      labels.push(`${months[nextMonthIndex]} ${nextYear}`);
-    }
-    const datasets = Array.from(categories).map((category, index) => {
-      const colors = ['#6293CC', '#C55151', '#E8D06B', '#94B66F'];
-      const data = labels.map(month => groupedByMonth[month]?.[category] || 0);
-
-      return {
-        label: category,
-        data,
-        borderColor: colors[index % colors.length],
-        backgroundColor: darkMode
-          ? `${colors[index % colors.length]}33`
-          : `${colors[index % colors.length]}1A`,
-        tension: 0.1,
-        fill: false,
-      };
-    });
-
-    return { labels, datasets };
-  };
-
   useEffect(() => {
-    if (expenditureData.length > 0 && chartRef.current) {
-      setDateError(null);
-      setNoDataError(null);
+    if (expenditureData.length === 0 || !chartRef.current) return;
 
-      if (dateRange.start && dateRange.end && dateRange.start > dateRange.end) {
-        setDateError('Start date cannot be greater than end date');
-        if (chartInstance) {
-          chartInstance.destroy();
-          setChartInstance(null);
-        }
-        return;
+    setDateError(null);
+    setNoDataError(null);
+
+    if (dateRange.start && dateRange.end && dateRange.start > dateRange.end) {
+      setDateError('Start date cannot be greater than end date');
+      if (chartInstance) {
+        chartInstance.destroy();
+        setChartInstance(null);
       }
-
-      let filteredData = expenditureData;
-
-      if (selectedProject !== 'all') {
-        filteredData = expenditureData.filter(item => item.projectId === selectedProject);
-      }
-
-      if (dateRange.start && dateRange.end) {
-        filteredData = filteredData.filter(item => {
-          const itemDate = new Date(item.date);
-          return itemDate >= dateRange.start && itemDate <= dateRange.end;
-        });
-      }
-
-      if (filteredData.length === 0) {
-        setNoDataError('No data available for the selected date range and project');
-        if (chartInstance) {
-          chartInstance.destroy();
-          setChartInstance(null);
-        }
-        return;
-      }
-
-      const processedData = processDataForChart(filteredData);
-      createChart(processedData);
+      return;
     }
+
+    let filteredData =
+      selectedProject !== 'all'
+        ? expenditureData.filter(item => item.projectId === selectedProject)
+        : expenditureData;
+
+    if (dateRange.start && dateRange.end) {
+      filteredData = filteredData.filter(item => {
+        const itemDate = new Date(item.date);
+        return itemDate >= dateRange.start && itemDate <= dateRange.end;
+      });
+    }
+
+    if (filteredData.length === 0) {
+      setNoDataError('No data available for the selected date range and project');
+      if (chartInstance) {
+        chartInstance.destroy();
+        setChartInstance(null);
+      }
+      return;
+    }
+
+    createChart(processDataForChart(filteredData));
   }, [selectedProject, dateRange, expenditureData, darkMode]);
 
-  const handleProjectChange = e => {
-    setSelectedProject(e.target.value);
-  };
+  const handleProjectChange = e => setSelectedProject(e.target.value);
 
   const handleStartDateChange = e => {
     const newStartDate = e.target.value;
     setStartDate(newStartDate);
     if (newStartDate) {
-      const newStartDateTime = new Date(newStartDate);
-      setDateRange(prev => ({
-        ...prev,
-        start: newStartDateTime,
-      }));
+      setDateRange(prev => ({ ...prev, start: new Date(newStartDate) }));
     } else {
-      const dates = expenditureData.map(item => new Date(item.date));
-      setDateRange(prev => ({
-        ...prev,
-        start: new Date(Math.min(...dates)),
-      }));
+      const { minDate } = getDateRangeFromData(expenditureData);
+      setDateRange(prev => ({ ...prev, start: minDate }));
     }
   };
 
@@ -364,18 +301,32 @@ export default function ExpenditureLineGraph() {
     const newEndDate = e.target.value;
     setEndDate(newEndDate);
     if (newEndDate) {
-      const newEndDateTime = new Date(newEndDate);
-      setDateRange(prev => ({
-        ...prev,
-        end: newEndDateTime,
-      }));
+      setDateRange(prev => ({ ...prev, end: new Date(newEndDate) }));
     } else {
-      const dates = expenditureData.map(item => new Date(item.date));
-      setDateRange(prev => ({
-        ...prev,
-        end: new Date(Math.max(...dates)),
-      }));
+      const { maxDate } = getDateRangeFromData(expenditureData);
+      setDateRange(prev => ({ ...prev, end: maxDate }));
     }
+  };
+
+  const inputStyle = {
+    padding: '6px 10px',
+    borderRadius: '4px',
+    border: darkMode ? '1px solid rgba(255, 255, 255, 0.2)' : '1px solid #ddd',
+    backgroundColor: darkMode ? '#253342' : '#fff',
+    color: darkMode ? '#ffffff' : 'inherit',
+  };
+
+  const labelStyle = { color: darkMode ? '#ffffff' : 'inherit' };
+
+  const errorStyle = {
+    color: darkMode ? '#ff6b6b' : '#d32f2f',
+    backgroundColor: darkMode ? '#2a3a5a' : 'rgba(211, 47, 47, 0.05)',
+    padding: '10px',
+    borderRadius: '4px',
+    border: darkMode ? '1px solid #ff6b6b' : '1px solid #d32f2f',
+    textAlign: 'center',
+    maxWidth: '800px',
+    margin: '0 auto 20px auto',
   };
 
   return (
@@ -420,18 +371,9 @@ export default function ExpenditureLineGraph() {
             >
               <div
                 className="project-filter"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '10px',
-                }}
+                style={{ display: 'flex', alignItems: 'center', gap: '10px' }}
               >
-                <label
-                  htmlFor="project-select"
-                  style={{
-                    color: darkMode ? '#ffffff' : 'inherit',
-                  }}
-                >
+                <label htmlFor="project-select" style={labelStyle}>
                   Filter by project:
                 </label>
                 <select
@@ -439,13 +381,7 @@ export default function ExpenditureLineGraph() {
                   value={selectedProject}
                   onChange={handleProjectChange}
                   disabled={loading || projects.length === 0}
-                  style={{
-                    padding: '6px 10px',
-                    borderRadius: '4px',
-                    border: darkMode ? '1px solid rgba(255, 255, 255, 0.2)' : '1px solid #ddd',
-                    backgroundColor: darkMode ? '#253342' : '#fff',
-                    color: darkMode ? '#ffffff' : 'inherit',
-                  }}
+                  style={inputStyle}
                 >
                   <option value="all">All Projects</option>
                   {projects.map(project => (
@@ -457,13 +393,9 @@ export default function ExpenditureLineGraph() {
               </div>
               <div
                 className="date-filters"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '10px',
-                }}
+                style={{ display: 'flex', alignItems: 'center', gap: '10px' }}
               >
-                <label htmlFor="start-date" style={{ color: darkMode ? '#ffffff' : 'inherit' }}>
+                <label htmlFor="start-date" style={labelStyle}>
                   From:
                 </label>
                 <input
@@ -472,15 +404,9 @@ export default function ExpenditureLineGraph() {
                   value={startDate}
                   onChange={handleStartDateChange}
                   disabled={loading}
-                  style={{
-                    padding: '6px 10px',
-                    borderRadius: '4px',
-                    border: darkMode ? '1px solid rgba(255, 255, 255, 0.2)' : '1px solid #ddd',
-                    backgroundColor: darkMode ? '#253342' : '#fff',
-                    color: darkMode ? '#ffffff' : 'inherit',
-                  }}
+                  style={inputStyle}
                 />
-                <label htmlFor="end-date" style={{ color: darkMode ? '#ffffff' : 'inherit' }}>
+                <label htmlFor="end-date" style={labelStyle}>
                   To:
                 </label>
                 <input
@@ -490,13 +416,7 @@ export default function ExpenditureLineGraph() {
                   onChange={handleEndDateChange}
                   disabled={loading}
                   min={startDate}
-                  style={{
-                    padding: '6px 10px',
-                    borderRadius: '4px',
-                    border: darkMode ? '1px solid rgba(255, 255, 255, 0.2)' : '1px solid #ddd',
-                    backgroundColor: darkMode ? '#253342' : '#fff',
-                    color: darkMode ? '#ffffff' : 'inherit',
-                  }}
+                  style={inputStyle}
                 />
               </div>
             </div>
@@ -504,73 +424,16 @@ export default function ExpenditureLineGraph() {
         </div>
 
         {loading && (
-          <p
-            style={{
-              color: darkMode ? '#ffffff' : 'inherit',
-              textAlign: 'center',
-            }}
-          >
+          <p style={{ color: darkMode ? '#ffffff' : 'inherit', textAlign: 'center' }}>
             Loading data...
           </p>
         )}
-
-        {error && (
-          <p
-            style={{
-              color: darkMode ? '#ff6b6b' : '#d32f2f',
-              backgroundColor: darkMode ? '#2a3a5a' : 'rgba(211, 47, 47, 0.05)',
-              padding: '10px',
-              borderRadius: '4px',
-              border: darkMode ? '1px solid #ff6b6b' : '1px solid #d32f2f',
-              textAlign: 'center',
-              maxWidth: '800px',
-              margin: '0 auto 20px auto',
-            }}
-          >
-            Error: {error}
-          </p>
-        )}
-        {dateError && (
-          <p
-            style={{
-              color: darkMode ? '#ff6b6b' : '#d32f2f',
-              backgroundColor: darkMode ? '#2a3a5a' : 'rgba(211, 47, 47, 0.05)',
-              padding: '10px',
-              borderRadius: '4px',
-              border: darkMode ? '1px solid #ff6b6b' : '1px solid #d32f2f',
-              textAlign: 'center',
-              maxWidth: '800px',
-              margin: '0 auto 20px auto',
-            }}
-          >
-            {dateError}
-          </p>
-        )}
-
-        {noDataError && (
-          <p
-            style={{
-              color: darkMode ? '#ff6b6b' : '#d32f2f',
-              backgroundColor: darkMode ? '#2a3a5a' : 'rgba(211, 47, 47, 0.05)',
-              padding: '10px',
-              borderRadius: '4px',
-              border: darkMode ? '1px solid #ff6b6b' : '1px solid #d32f2f',
-              textAlign: 'center',
-              maxWidth: '800px',
-              margin: '0 auto 20px auto',
-            }}
-          >
-            {noDataError}
-          </p>
-        )}
+        {error && <p style={errorStyle}>Error: {error}</p>}
+        {dateError && <p style={errorStyle}>{dateError}</p>}
+        {noDataError && <p style={errorStyle}>{noDataError}</p>}
 
         <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            width: '100%',
-            padding: '0 20px',
-          }}
+          style={{ display: 'flex', justifyContent: 'center', width: '100%', padding: '0 20px' }}
         >
           <div
             style={{
