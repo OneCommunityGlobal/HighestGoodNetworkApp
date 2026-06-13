@@ -1,12 +1,13 @@
+/* stylelint-disable  */
 .container {
   width: 100%;
   margin-top: 20px;
-  background: #ffffff;
+  background: #fff;
   color: #111827;
   padding: 20px;
   border-radius: 12px;
   position: relative;
-  border: 1px solid rgba(0, 0, 0, 0.12);
+  border: 1px solid rgb(0 0 0 / 12%);
 }
 
 .title {
@@ -57,7 +58,7 @@
   margin-bottom: 10px;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .chartWrapper {
     flex-direction: column;
     gap: 28px;
@@ -78,16 +79,17 @@
     text-align: center;
   }
 }
+
 .centerLabel {
   font-size: 16px;
   font-weight: 600;
-  fill: currentColor;
+  fill: currentcolor;
 }
 
 .centerValue {
   font-size: 18px;
   font-weight: 700;
-  fill: currentColor;
+  fill: currentcolor;
 }
 
 .noDataMessage {
@@ -99,7 +101,7 @@
 .tooltip {
   padding: 10px 14px;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
   font-size: 13px;
   line-height: 1.5;
   z-index: 10;
@@ -114,4 +116,30 @@
 
 .tooltipValue {
   margin: 0;
+}
+/* DARK MODE */
+.dark {
+  background: #1b2a41;
+  color: #f1f5f9;
+  border-color: #4b5563;
+}
+
+.dark .title {
+  color: #f1f5f9;
+}
+
+.dark .label {
+  color: #94a3b8;
+}
+
+.dark .summaryBox h3 {
+  color: #f1f5f9;
+}
+
+.dark .filterRow input {
+  background: #2e3f55;
+  color: #f1f5f9;
+  border: 1px solid #4b5563;
+  border-radius: 4px;
+  padding: 4px 8px;
 }

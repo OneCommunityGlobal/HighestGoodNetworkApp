@@ -2,17 +2,38 @@ import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import ReactCalendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-import CalendarActivitySection from './CalendarActivitySection';
-import styles from './CommunityCalendar.module.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClock, faLocationDot, faTag, faCircleCheck } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faClock, faLocationDot, faTag, faCircleCheck } from '@fortawesome/free-solid-svg-icons';
+import { toast } from 'react-toastify';
+import CalendarActivitySection from './CalendarActivitySection';
+import GOVERNMENT_HOLIDAYS from './governmentHolidays';
+import styles from './CommunityCalendar.module.css';
+import {
+  FaCalendarAlt,
+  FaClock,
+  FaMapMarkerAlt,
+  FaTag,
+  FaAlignLeft,
+  FaVideo,
+  FaUsers,
+  FaGlassCheers,
+} from 'react-icons/fa';
+import { GrWorkshop } from 'react-icons/gr';
 
-const STATUSES = ['New', 'Needs Attendees', 'Filling Fast', 'Full Event'];
-const EVENT_TYPES = ['Workshop', 'Meetup', 'Lecture', 'Social'];
-const LOCATIONS = ['Community Hall', 'Online', 'Park', 'Library'];
-const TIMES = ['10:00 AM', '2:00 PM', '6:00 PM', '8:00 PM'];
+const normalizeStatus = status => {
+  if (!status) return 'New';
+
+  const s = status.toLowerCase();
+
+  if (s.includes('need')) return 'Needs Attendees';
+  if (s.includes('fill')) return 'Filling Fast';
+  if (s.includes('full')) return 'Full Event';
+  if (s.includes('new')) return 'New';
+
+  return 'New';
+};
 
 export default function CommunityCalendar() {
   const [events, setEvents] = useState([]);
@@ -22,59 +43,105 @@ export default function CommunityCalendar() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showEventModal, setShowEventModal] = useState(false);
-  const [overflowDate, setOverflowDate] = useState(null);
-  const popupRef = useRef(null);
-  const [calendarView, setCalendarView] = useState('month');
-
-  const currentDate = new Date();
-  const currentMonth = currentDate.getMonth();
-  const currentYear = currentDate.getFullYear();
+  const [tooltip, setTooltip] = useState(null);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
     const fetchEvents = async () => {
       setIsLoading(true);
       try {
         const response = await axios.get(ENDPOINTS.EVENTS);
-        setEvents(response.data.events || []);
+        const apiEvents = response.data?.events || response.data || [];
+        setEvents(apiEvents);
       } catch (err) {
-        setError('Failed to load events');
-        console.error('Error fetching calendar events:', err);
+        setError('Error fetching Events. Please try again later.');
       } finally {
         setIsLoading(false);
       }
     };
+
     fetchEvents();
   }, []);
 
   const mappedEvents = useMemo(() => {
-    return events.map(event => {
-      const eventDate = new Date(event.date);
-      const timeString = eventDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const holidayEvents = GOVERNMENT_HOLIDAYS.map(holiday => ({
+      id: holiday.id,
+      title: holiday.title,
+      date: new Date(holiday.date),
+      type: 'Government Holiday',
+      status: 'Holiday',
+      time: 'All Day',
+      endTime: 'All Day',
+      description: `${holiday.title} holiday`,
+      location: 'National',
+      isHoliday: true,
+      isOver: new Date(holiday.date) < new Date(),
+    }));
+
+    const communityEvents = events.map(event => {
+      const eventDateTime = new Date(event.startTime || event.date);
+
+      const timeString = new Intl.DateTimeFormat('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      }).format(eventDateTime);
+
+      const eventEndTime = event.endTime ? new Date(event.endTime) : null;
+
+      const endTimeString = eventEndTime
+        ? new Intl.DateTimeFormat('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true,
+            timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          }).format(eventEndTime)
+        : event.endTime;
+
+      const eventDate = new Date(
+        new Intl.DateTimeFormat('en-US', {
+          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+        }).format(eventDateTime),
+      );
 
       return {
         ...event,
+        id: event.id || `${event.title}-${eventDate.getTime()}`,
         date: eventDate,
         type: event.type || 'General',
-        status: event.status || 'New',
+        status: normalizeStatus(event.status),
         time: event.time || timeString,
+        endTime: endTimeString || event.endTime,
         description: event.description || `Join us for ${event.title}`,
-        // Ensure location is present or default
         location: event.location || 'Online',
+        isOver: eventDate < new Date(),
       };
     });
+
+    return [...communityEvents, ...holidayEvents];
   }, [events]);
 
   const filteredEvents = useMemo(
     () =>
-      mappedEvents.filter(
-        e =>
+      mappedEvents.filter(e => {
+        if (e.isHoliday) {
+          return true;
+        }
+
+        return (
           (filter.type === 'all' || e.type === filter.type) &&
           (filter.location === 'all' || e.location === filter.location) &&
-          (filter.status === 'all' || e.status === filter.status),
-      ),
+          (filter.status === 'all' || e.status === filter.status)
+        );
+      }),
     [mappedEvents, filter],
   );
 
+  // Enhanced event caching by date - memoized for performance
   const eventCache = useMemo(() => {
     const map = new Map();
     filteredEvents.forEach(e => {
@@ -94,9 +161,24 @@ export default function CommunityCalendar() {
     return map;
   }, [filteredEvents]);
 
-  const getEventsForDate = useCallback(date => eventCache.get(date.toDateString()) || [], [
-    eventCache,
-  ]);
+  const handleFilterChange = useCallback(
+    filterType => e => {
+      setFilter(prev => ({
+        ...prev,
+        [filterType]: e.target.value,
+      }));
+    },
+    [],
+  );
+
+  const [overflowDate, setOverflowDate] = useState(null);
+  const getEventsForDate = useCallback(
+    date => {
+      if (!date) return [];
+      return eventCache.get(new Date(date).toDateString()) || [];
+    },
+    [eventCache],
+  );
 
   const selectedDateEvents = useMemo(() => {
     const dateKey = selectedDate?.toDateString();
@@ -118,6 +200,149 @@ export default function CommunityCalendar() {
     });
   }, [selectedDate]);
 
+  const [registeredEventIds, setRegisteredEventIds] = useState(new Set());
+  const [isRegistering, setIsRegistering] = useState(false);
+
+  const closeEventModal = useCallback(() => {
+    setShowEventModal(false);
+    setSelectedEvent(null);
+  }, []);
+
+  const isEventInPast = useCallback(event => {
+    if (!event) return false;
+
+    const eventDateTime = new Date(event.date);
+
+    const timeMatch = event.time?.match(/^(\d{1,2}):(\d{2})\s?(AM|PM)$/i);
+
+    if (timeMatch) {
+      let hour = Number.parseInt(timeMatch[1], 10);
+      const minute = Number.parseInt(timeMatch[2], 10);
+      const meridian = timeMatch[3].toUpperCase();
+
+      if (meridian === 'PM' && hour !== 12) hour += 12;
+      if (meridian === 'AM' && hour === 12) hour = 0;
+
+      eventDateTime.setHours(hour, minute, 0, 0);
+    }
+
+    return eventDateTime < new Date();
+  }, []);
+
+  const canRegisterForEvent = useCallback(
+    event => {
+      if (!event) return false;
+
+      if (isEventInPast(event)) {
+        toast.info('Registration is closed for past events.', {
+          position: 'top-right',
+          autoClose: 3000,
+        });
+        return false;
+      }
+
+      if (registeredEventIds.has(event.id)) {
+        toast.info(`You are already registered for "${event.title}".`, {
+          position: 'top-right',
+          autoClose: 3000,
+        });
+        return false;
+      }
+
+      return true;
+    },
+    [registeredEventIds, isEventInPast],
+  );
+
+  const handleRegister = useCallback(async () => {
+    if (!selectedEvent) return;
+
+    if (!canRegisterForEvent(selectedEvent)) {
+      return;
+    }
+
+    if (registeredEventIds.has(selectedEvent.id)) {
+      toast.info(`You are already registered for "${selectedEvent.title}".`, {
+        position: 'top-right',
+        autoClose: 3000,
+      });
+      return;
+    }
+
+    const confirmed = globalThis.confirm(
+      `Register for "${
+        selectedEvent.title
+      }"?\n\nDate: ${selectedEvent.date.toDateString()}\nTime: ${selectedEvent.time}`,
+    );
+
+    if (!confirmed) return;
+
+    setIsRegistering(true);
+
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      setRegisteredEventIds(prev => {
+        const nextSet = new Set(prev);
+        nextSet.add(selectedEvent.id);
+        return nextSet;
+      });
+
+      toast.success(`✓ Registered for "${selectedEvent.title}"!`, {
+        position: 'top-right',
+        autoClose: 4000,
+      });
+
+      setTimeout(() => {
+        closeEventModal();
+      }, 500);
+    } catch (error) {
+      console.error('Event registration failed:', error);
+
+      toast.error('Registration failed. Please try again.', {
+        position: 'top-right',
+        autoClose: 3000,
+      });
+    } finally {
+      setIsRegistering(false);
+    }
+  }, [selectedEvent, registeredEventIds, closeEventModal]);
+
+  const eventHasEnded = selectedEvent && isEventInPast(selectedEvent);
+
+  const handleAddToCalendar = useCallback(() => {
+    if (!selectedEvent) return;
+
+    const timeMatch = selectedEvent.time.match(/^(\d{1,2}):(\d{2})\s?(AM|PM)$/);
+    const start = new Date(selectedEvent.date);
+
+    if (timeMatch) {
+      const hour = (Number(timeMatch[1]) % 12) + (timeMatch[3] === 'PM' ? 12 : 0);
+      start.setHours(hour, Number(timeMatch[2]), 0, 0);
+    }
+
+    const end = new Date(start);
+    end.setHours(end.getHours() + 1);
+
+    const formatDate = d =>
+      d
+        .toISOString()
+        .replace(/[-:.]/g, '')
+        .split('.')[0] + 'Z';
+
+    const url =
+      'https://www.google.com/calendar/render?action=TEMPLATE' +
+      `&text=${encodeURIComponent(selectedEvent.title)}` +
+      `&dates=${formatDate(start)}/${formatDate(end)}` +
+      `&details=${encodeURIComponent(selectedEvent.description)}` +
+      `&location=${encodeURIComponent(selectedEvent.location)}`;
+
+    const opened = globalThis.open(url, '_blank', 'noopener,noreferrer');
+    if (!opened) {
+      toast.info('Please allow pop-ups to add this event to your calendar.');
+    }
+  }, [selectedEvent]);
+
   const handleDateSelect = useCallback(
     date => {
       setSelectedDate(date);
@@ -131,18 +356,29 @@ export default function CommunityCalendar() {
     },
     [getEventsForDate],
   );
-
   const handleEventClick = useCallback(event => {
+    setSelectedDate(new Date(event.date));
+
     setSelectedEvent(event);
+
     setShowEventModal(true);
-    // Also select the date of the event so the sidebar shows events for that date
-    setSelectedDate(event.date);
   }, []);
 
-  const closeEventModal = useCallback(() => {
-    setShowEventModal(false);
-    setSelectedEvent(null);
-  }, []);
+  const registerButtonText = useMemo(() => {
+    if (eventHasEnded) {
+      return 'Event Ended';
+    }
+
+    if (registeredEventIds.has(selectedEvent?.id)) {
+      return 'Already Registered';
+    }
+
+    if (isRegistering) {
+      return 'Registering...';
+    }
+
+    return 'Register for Event';
+  }, [eventHasEnded, registeredEventIds, selectedEvent, isRegistering]);
 
   // Close on ESC
   useEffect(() => {
@@ -157,6 +393,8 @@ export default function CommunityCalendar() {
   }, [closeEventModal]);
 
   // Close overflow popup on outside click
+
+  const popupRef = useRef(null);
   useEffect(() => {
     const handleClickOutside = e => {
       if (popupRef.current && !popupRef.current.contains(e.target)) {
@@ -169,30 +407,36 @@ export default function CommunityCalendar() {
 
   useEffect(() => {
     const eventsForDate = getEventsForDate(selectedDate);
+
     if (eventsForDate.length === 0) {
       if (selectedEvent !== null) {
         setSelectedEvent(null);
-      }
-      if (showEventModal) {
-        setShowEventModal(false);
       }
       return;
     }
 
     const hasSelectedEvent = eventsForDate.some(event => event.id === selectedEvent?.id);
+
     if (!hasSelectedEvent) {
       setSelectedEvent(eventsForDate[0]);
-      if (showEventModal) {
-        setShowEventModal(false);
-      }
     }
-  }, [getEventsForDate, selectedDate, selectedEvent, showEventModal]);
+  }, [getEventsForDate, selectedDate]);
 
   const statusMap = {
     New: 'statusNew',
     'Needs Attendees': 'statusNeedsAttendees',
     'Filling Fast': 'statusFillingFast',
     'Full Event': 'statusFull',
+    Holiday: 'statusHoliday',
+  };
+
+  const statusIconMap = {
+    New: '⭐',
+    'Needs Attendees': '🙋',
+    'Filling Fast': '⚡',
+    'Full Event': '⛔',
+    Holiday: '🎉',
+    Full: '⛔',
   };
 
   function WeeklyTimeGrid({ events, selectedDate, onEventClick, darkMode }) {
@@ -247,7 +491,7 @@ export default function CommunityCalendar() {
                 const cellEvents = events.filter(e => {
                   const eventDate = new Date(e.date);
                   const [hStr] = e.time.split(':');
-                  let h = parseInt(hStr, 10);
+                  let h = Number.parseInt(hStr, 10);
                   const isPM = e.time.toLowerCase().includes('pm');
                   const isAM = e.time.toLowerCase().includes('am');
                   if (isPM && h !== 12) h += 12;
@@ -308,7 +552,8 @@ export default function CommunityCalendar() {
       return (
         <div className={styles.tileEvents}>
           {visible.map(e => {
-            const statusKey = statusMap[e.status];
+            const statusKey = statusMap[e.status] || 'statusNew';
+
             return (
               <button
                 key={e.id}
@@ -318,9 +563,19 @@ export default function CommunityCalendar() {
                   e_obj.stopPropagation();
                   handleEventClick(e);
                 }}
-                title={e.title}
+                onMouseEnter={ev => {
+                  const r = ev.currentTarget.getBoundingClientRect();
+                  setTooltip({ event: e, x: r.right + 8, y: r.top });
+                }}
+                onMouseLeave={() => setTooltip(null)}
+                aria-label={`Click to view details for ${e.title}`}
               >
-                {e.title}
+                <span className={styles.eventContent}>
+                  <span className={styles.eventIcon} aria-label={e.status} title={e.status}>
+                    {statusIconMap[e.status] || '⭐'}
+                  </span>
+                  <span className={styles.eventTitleText}>{e.title}</span>
+                </span>
               </button>
             );
           })}
@@ -328,10 +583,13 @@ export default function CommunityCalendar() {
             <button
               type="button"
               className={styles.moreEvents}
-              onClick={e_obj => {
-                e_obj.stopPropagation();
-                setOverflowDate(date);
+              onClick={ev => {
+                ev.stopPropagation();
+                const r = ev.currentTarget.getBoundingClientRect();
+                setOverflowDate({ date, x: r.right + 8, y: r.top });
+                handleDateSelect(date);
               }}
+              title="View all events for this day"
             >
               +{hiddenCount} more
             </button>
@@ -339,9 +597,10 @@ export default function CommunityCalendar() {
         </div>
       );
     },
-    [getEventsForDate, handleEventClick],
+    [getEventsForDate, handleEventClick, darkMode],
   );
 
+  // Memoized tile class name function
   const tileClassName = useCallback(
     ({ date, view }) => {
       const classNames = [];
@@ -356,14 +615,10 @@ export default function CommunityCalendar() {
     [eventCountByDate, selectedDate],
   );
 
-  // Get events for the selected date
-  const eventsForSelectedDate = useMemo(() => {
-    if (!selectedDate) return [];
-    return getEventsForDate(selectedDate);
-  }, [selectedDate, getEventsForDate]);
-
-  const handleFilterChange = field => e =>
-    setFilter(prev => ({ ...prev, [field]: e.target.value }));
+  // Memoized filter change handlers
+  /*   const handleTypeFilterChange = useCallback(e => {
+    setFilter(prev => ({ ...prev, type: e.target.value }));
+  }, []); */
 
   const uniqueFilterValues = useMemo(
     () => ({
@@ -374,13 +629,13 @@ export default function CommunityCalendar() {
     [mappedEvents],
   );
 
-  const darkMode = useSelector(s => s.theme.darkMode);
-
+  // Memoized CSS classes
   const calendarClasses = useMemo(
     () => ({
       container: `${styles.communityCalendar} ${darkMode ? styles.communityCalendarDarkMode : ''}`,
       header: `${styles.calendarHeader} ${darkMode ? styles.calendarHeaderDarkMode : ''}`,
       filters: `${styles.calendarFilters} ${darkMode ? styles.calendarFiltersDarkMode : ''}`,
+      select: `${styles.filterSelect} ${darkMode ? styles.filterSelectDarkMode : ''}`,
       main: styles.calendarMain,
       calendarContainer: `${styles.calendarContainer} ${
         darkMode ? styles.calendarContainerDarkMode : ''
@@ -395,6 +650,21 @@ export default function CommunityCalendar() {
     }),
     [darkMode],
   );
+
+  const getTypeIcon = type => {
+    switch (type) {
+      case 'Workshop':
+        return <GrWorkshop />;
+      case 'Webinar':
+        return <FaVideo />;
+      case 'Meeting':
+        return <FaUsers />;
+      case 'Social Gathering':
+        return <FaGlassCheers />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className={calendarClasses.container}>
@@ -417,7 +687,9 @@ export default function CommunityCalendar() {
               background: #1a2332 !important;
               color: #ffffff !important;
             }
+
             /* Force white text on dark background */
+
             .react-calendar__tile.selectedDate abbr,
             .react-calendar__tile.selectedDate abbr[title],
             .react-calendar__tile.selectedDate > abbr,
@@ -446,6 +718,16 @@ export default function CommunityCalendar() {
             .react-calendar__tile.selectedDate .eventItem {
               color: inherit !important;
             }
+              /* Navigation button hover/focus — dark mode */
+            .react-calendar__navigation button:enabled:hover,
+            .react-calendar__navigation button:enabled:hover *,
+            .react-calendar__navigation button:enabled:focus,
+            .react-calendar__navigation button:enabled:focus * {
+              background-color: #2d3748 !important;
+              color: #ffffff !important;
+              text-shadow: none !important;
+              -webkit-text-stroke: 0px transparent !important;
+            }
           `}
         </style>
       )}
@@ -453,30 +735,32 @@ export default function CommunityCalendar() {
         <h1>Community Calendar</h1>
         <div className={calendarClasses.filters}>
           <select
-            value={calendarView}
-            onChange={e => setCalendarView(e.target.value)}
-            className={styles.viewSelector}
+            className={calendarClasses.select}
+            value={filter.type}
+            onChange={handleFilterChange('type')}
           >
-            <option value="month">Day View (Month)</option>
-            <option value="week">Week View (Time Grid)</option>
-            <option value="year">Month View (Year)</option>
-            <option value="decade">Year View (Decade)</option>
-          </select>
-          <select value={filter.type} onChange={handleFilterChange('type')}>
             <option value="all">All Types</option>
             {uniqueFilterValues.types.map(t => (
               <option key={t}>{t}</option>
             ))}
           </select>
 
-          <select value={filter.location} onChange={handleFilterChange('location')}>
+          <select
+            className={calendarClasses.select}
+            value={filter.location}
+            onChange={handleFilterChange('location')}
+          >
             <option value="all">All Locations</option>
             {uniqueFilterValues.locations.map(l => (
               <option key={l}>{l}</option>
             ))}
           </select>
 
-          <select value={filter.status} onChange={handleFilterChange('status')}>
+          <select
+            className={calendarClasses.select}
+            value={filter.status}
+            onChange={handleFilterChange('status')}
+          >
             <option value="all">All Statuses</option>
             {uniqueFilterValues.statuses.map(s => (
               <option key={s}>{s}</option>
@@ -490,30 +774,18 @@ export default function CommunityCalendar() {
           <div className={calendarClasses.activitySection}>
             <CalendarActivitySection
               selectedDate={selectedDate}
-              events={eventsForSelectedDate}
+              events={selectedDateEvents}
               onEventClick={handleEventClick}
             />
           </div>
           <div className={calendarClasses.calendarSection}>
-            {calendarView === 'week' ? (
-              <WeeklyTimeGrid
-                events={filteredEvents}
-                selectedDate={selectedDate}
-                onEventClick={handleEventClick}
-                darkMode={darkMode}
-              />
-            ) : (
-              <ReactCalendar
-                className={calendarClasses.reactCalendar}
-                tileContent={tileContent}
-                tileClassName={tileClassName}
-                onClickDay={handleDateSelect}
-                value={selectedDate}
-                view={calendarView}
-                onViewChange={({ view }) => setCalendarView(view)}
-              />
-            )}
-
+            <ReactCalendar
+              className={calendarClasses.reactCalendar}
+              tileContent={tileContent}
+              tileClassName={tileClassName}
+              onClickDay={handleDateSelect}
+              value={selectedDate}
+            />
             <section
               className={`${styles.selectedDatePanel} ${
                 darkMode ? styles.selectedDatePanelDarkMode : ''
@@ -553,7 +825,9 @@ export default function CommunityCalendar() {
                                 <ul className={styles.selectedEventMeta}>
                                   <li className={styles.metaItem}>
                                     <FontAwesomeIcon icon={faClock} className={styles.metaIcon} />
-                                    <span>{event.time}</span>
+                                    <span>
+                                      {event.time} - {event.endTime}
+                                    </span>
                                   </li>
 
                                   <li className={styles.metaItem}>
@@ -574,7 +848,9 @@ export default function CommunityCalendar() {
                                       icon={faCircleCheck}
                                       className={styles.metaIcon}
                                     />
-                                    <span>{event.status}</span>
+                                    <span className={styles.statusInline}>
+                                      {statusIconMap[event.status] || ''} {event.status}
+                                    </span>
                                   </li>
                                 </ul>
                               </div>
@@ -584,10 +860,14 @@ export default function CommunityCalendar() {
                               className={styles.eventDetailButton}
                               onClick={() => handleEventClick(event)}
                             >
-                              View full details
+                              View details
                             </button>
                           </header>
-                          <p className={styles.selectedEventDescription}>{event.description}</p>
+
+                          {/* Row 3: description */}
+                          {event.description && (
+                            <p className={styles.selectedEventDescription}>{event.description}</p>
+                          )}
                         </article>
                       </li>
                     );
@@ -603,26 +883,80 @@ export default function CommunityCalendar() {
         </div>
       </main>
 
-      {/* Overflow popup */}
+      {/* Overflow day-summary popup */}
       {overflowDate && (
         <div
           ref={popupRef}
           className={`${styles.overflowPopup} ${darkMode ? styles.overflowPopupDark : ''}`}
+          style={{ left: overflowDate.x, top: overflowDate.y }}
         >
-          <div className={styles.overflowPopupInner}>
-            <h4>{overflowDate.toDateString()}</h4>
-            {getEventsForDate(overflowDate).map(e => (
+          <div
+            className={`${styles.overflowPopupHeader} ${
+              darkMode ? styles.overflowPopupHeaderDark : ''
+            }`}
+          >
+            <span>
+              {overflowDate.date.toLocaleDateString('en-US', {
+                weekday: 'long',
+                month: 'long',
+                day: 'numeric',
+              })}
+            </span>
+            <button
+              type="button"
+              className={`${styles.overflowPopupClose} ${
+                darkMode ? styles.overflowPopupCloseDark : ''
+              }`}
+              onClick={() => setOverflowDate(null)}
+              aria-label="Close popup"
+            >
+              ×
+            </button>
+          </div>
+          <div className={styles.overflowPopupList}>
+            {getEventsForDate(overflowDate.date).map(e => (
               <button
                 key={e.id}
                 type="button"
-                className={`${styles.eventItem} ${styles[statusMap[e.status]]}`}
-                onClick={() => handleEventClick(e)}
-                title={e.title}
+                className={`${styles.overflowEventRow} ${
+                  darkMode ? styles.overflowEventRowDark : ''
+                }`}
+                onClick={() => {
+                  handleEventClick(e);
+                  setOverflowDate(null);
+                }}
               >
-                {e.title}
+                <span className={styles.overflowEventTime}>{e.time}</span>
+                <span className={styles.overflowEventTitle}>{e.title}</span>
+                <span
+                  className={`${styles.overflowEventBadge} ${styles[statusMap[e.status]] ||
+                    styles.statusNew}`}
+                >
+                  {statusIconMap[e.status] || '⭐'}
+                </span>
               </button>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* Hover tooltip — fixed so it escapes overflow: hidden on tiles */}
+      {tooltip && (
+        <div
+          className={`${styles.eventTooltip} ${darkMode ? styles.eventTooltipDark : ''}`}
+          style={{ left: tooltip.x, top: tooltip.y }}
+        >
+          <strong>{tooltip.event.title}</strong>
+          <span className={styles.tooltipDetail}>
+            <strong>Time:</strong> {tooltip.event.time}
+          </span>
+          <span className={styles.tooltipDetail}>
+            <strong>Location:</strong> {tooltip.event.location}
+          </span>
+          <span className={styles.tooltipDetail}>
+            <strong>Status:</strong> {tooltip.event.status}
+          </span>
+          <small>Click for more details</small>
         </div>
       )}
 
@@ -653,38 +987,56 @@ export default function CommunityCalendar() {
             <div className={styles.modalContent}>
               <div className={styles.eventStatus}>
                 <span
-                  className={`${styles.statusBadge} ${styles[statusMap[selectedEvent.status]] ||
-                    ''}`}
+                  className={`${darkMode ? styles.darkModeStatusBadge : styles.statusBadge} ${
+                    darkMode ? '' : styles[statusMap[selectedEvent.status]] || ''
+                  }`}
                 >
-                  {selectedEvent.status}
+                  {statusIconMap[selectedEvent.status] || ''} {selectedEvent.status}
                 </span>
               </div>
-
               <div className={styles.eventDetailsGrid}>
                 {[
-                  ['Type', selectedEvent.type],
-                  ['Location', selectedEvent.location],
-                  ['Date', selectedEvent.date.toLocaleDateString()],
-                  ['Time', selectedEvent.time],
-                ].map(([label, value]) => (
+                  [FaTag, 'Type', selectedEvent.type],
+                  [FaMapMarkerAlt, 'Location', selectedEvent.location],
+                  [FaCalendarAlt, 'Date', selectedEvent.date.toLocaleDateString()],
+                  [FaClock, 'Time', selectedEvent.time],
+                ].map(([Icon, label, value]) => (
                   <div key={label} className={styles.detailItem}>
-                    <span className={styles.detailLabel}>{label}:</span>
-                    <span>{value}</span>
+                    <span className={styles.detailLabel}>
+                      <Icon className={styles.detailIcon} />
+                      {label}:
+                    </span>
+
+                    <span>
+                      {label === 'Type' ? getTypeIcon(selectedEvent.type) : null} {value}
+                    </span>
                   </div>
                 ))}
               </div>
 
               <div className={styles.eventDescription}>
-                <span className={styles.detailLabel}>Description:</span>
+                <span className={styles.detailLabel}>
+                  <FaAlignLeft className={styles.detailIcon} />
+                  Description:
+                </span>
+
                 <p>{selectedEvent.description}</p>
               </div>
             </div>
 
             <div className={styles.modalActions}>
-              <button type="button" className={styles.btnPrimary}>
-                Register for Event
+              <button
+                type="button"
+                className={styles.btnPrimary}
+                onClick={handleRegister}
+                disabled={
+                  isRegistering || registeredEventIds.has(selectedEvent?.id) || eventHasEnded
+                }
+              >
+                {registerButtonText}
               </button>
-              <button type="button" className={styles.btnSecondary}>
+
+              <button type="button" className={styles.btnSecondary} onClick={handleAddToCalendar}>
                 Add to Calendar
               </button>
             </div>

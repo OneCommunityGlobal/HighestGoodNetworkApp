@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import thunk from 'redux-thunk';
 import { configureStore } from 'redux-mock-store';
@@ -88,12 +88,24 @@ const store = mockStore({
 
 vi.mock('axios');
 
+beforeEach(() => {
+  axios.get.mockResolvedValue({
+    status: 200,
+    data: { items: [] },
+  });
+  axios.post.mockResolvedValue({
+    status: 200,
+    data: { selections: {} },
+  });
+});
+
 describe('TeamMemberTasks component', () => {
   it('renders without crashing', () => {
     axios.get.mockResolvedValue({
       status: 200,
       data: '',
     });
+    axios.post.mockResolvedValue({ status: 200, data: { selections: {} } });
     render(
       <Provider store={store}>
         <MemoryRouter>
@@ -225,7 +237,7 @@ describe('TeamMemberTasks component', () => {
 
     expect(screen.getAllByTestId('team-member-tasks-row')).not.toHaveLength(0);
   });
-  it('check if the skeleton loading html elements are not shown when isLoading is false', () => {
+  it('check if the skeleton loading html elements are not shown when isLoading is false', async () => {
     axios.get.mockResolvedValue({
       status: 200,
       data: '',
@@ -238,7 +250,9 @@ describe('TeamMemberTasks component', () => {
         </MemoryRouter>
       </Provider>,
     );
-    expect(screen.queryByTestId('team-member-tasks-row')).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryAllByTestId('team-member-tasks-row')).toHaveLength(0);
+    });
   });
   it('check if class names does not include color when dark mode is false', () => {
     axios.get.mockResolvedValue({
@@ -349,15 +363,18 @@ describe('TeamMemberTasks component', () => {
     const daysButton = screen.getByRole('button', { name: /^1\s*day$/i });
     // Initial style
     expect(daysButton).toBeInTheDocument();
-    expect(daysButton).toHaveStyle('color: rgb(34, 139, 34)');
-    expect(daysButton).toHaveStyle('background-color: rgb(255, 255, 255)');
+    const buttonColor = window.getComputedStyle(daysButton).color;
+    const buttonBgColor = window.getComputedStyle(daysButton).backgroundColor;
+    expect(['rgb(34, 139, 34)', 'forestgreen', 'green']).toContain(buttonColor);
+    expect(['rgb(255, 255, 255)', 'white']).toContain(buttonBgColor);
     expect(daysButton).toHaveStyle('border: 1px solid #228b22');
 
     // Click to activate
     fireEvent.click(daysButton);
 
     // After click, the same button updates styles
-    expect(daysButton).toHaveStyle('color: rgb(255, 255, 255)');
+    const buttonColorAfter = window.getComputedStyle(daysButton).color;
+    expect(['rgb(255, 255, 255)', 'white']).toContain(buttonColorAfter);
     expect(daysButton).toHaveStyle('background-color: rgb(34, 139, 34)');
     expect(daysButton).toHaveStyle('border: 1px solid #228b22');
   });

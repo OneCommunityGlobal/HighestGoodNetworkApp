@@ -33,13 +33,13 @@ function CustomTooltip({ active, payload, darkMode }) {
 }
 
 export default function ProjectStatusDonutChart() {
+  const darkMode = useSelector(state => state.theme?.darkMode || false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [statusData, setStatusData] = useState(null);
 
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const darkMode = useSelector(state => state.theme?.darkMode || false);
 
   const fetchStatus = async () => {
     try {
@@ -76,7 +76,7 @@ export default function ProjectStatusDonutChart() {
   // SHOW MESSAGE WHEN THERE IS NO DATA
   if (pieData.every(item => item.value === 0)) {
     return (
-      <div className={styles.container}>
+      <div className={`${styles.container} ${darkMode ? styles.dark : ''}`}>
         <h2 className={styles.title}>PROJECT STATUS</h2>
         <p className={styles.noDataMessage}>No project status data available.</p>
       </div>
@@ -94,7 +94,7 @@ export default function ProjectStatusDonutChart() {
     !statusData.activeProjects && !statusData.completedProjects && !statusData.delayedProjects;
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} ${darkMode ? styles.dark : ''}`}>
       <h2 className={styles.title}>PROJECT STATUS</h2>
 
       <div className={styles.filterRow}>

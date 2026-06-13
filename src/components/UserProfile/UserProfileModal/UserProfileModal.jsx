@@ -24,6 +24,72 @@ import BlueSquareEmailCCPopup from '../BlueSquareEmailCCPopup';
 import CcUserList from './CCUserList';
 import PropTypes from 'prop-types';
 
+// Helper component to render blue square metadata (manual assignment and edit history)
+const BlueSquareMetadata = ({ blueSquareData, fontColor, darkMode }) => {
+  const hasEditHistory = blueSquareData?.editedBy && blueSquareData.editedBy.length > 0;
+
+  // Determine who assigned the blue square
+  const getAssignedBy = () => {
+    if (blueSquareData?.manuallyAssigned && blueSquareData?.manuallyAssignedBy?.firstName) {
+      return `${blueSquareData.manuallyAssignedBy.firstName} ${blueSquareData.manuallyAssignedBy.lastName}`;
+    }
+    if (!blueSquareData?.manuallyAssigned) {
+      return 'HGN System';
+    }
+    return 'Admin User';
+  };
+
+  return (
+    <>
+      <FormGroup>
+        <Label className={fontColor}>
+          <strong>Assigned by:</strong>
+        </Label>
+        <div className={fontColor}>{getAssignedBy()}</div>
+      </FormGroup>
+
+      {hasEditHistory && (
+        <FormGroup>
+          <div style={{ textAlign: 'right', fontSize: '0.9em', color: darkMode ? '#ccc' : '#666' }}>
+            <strong>Edited By</strong>{' '}
+            {blueSquareData.editedBy[blueSquareData.editedBy.length - 1].firstName}{' '}
+            {blueSquareData.editedBy[blueSquareData.editedBy.length - 1].lastName}
+            {blueSquareData.editedBy[blueSquareData.editedBy.length - 1].date && (
+              <span>
+                {' '}
+                {new Date(blueSquareData.editedBy[blueSquareData.editedBy.length - 1].date).toLocaleDateString()}
+              </span>
+            )}
+          </div>
+        </FormGroup>
+      )}
+    </>
+  );
+};
+
+BlueSquareMetadata.propTypes = {
+  blueSquareData: PropTypes.shape({
+    manuallyAssigned: PropTypes.bool,
+    manuallyAssignedBy: PropTypes.shape({
+      firstName: PropTypes.string,
+      lastName: PropTypes.string,
+    }),
+    editedBy: PropTypes.arrayOf(
+      PropTypes.shape({
+        firstName: PropTypes.string,
+        lastName: PropTypes.string,
+        date: PropTypes.string,
+      })
+    ),
+  }),
+  fontColor: PropTypes.string.isRequired,
+  darkMode: PropTypes.bool.isRequired,
+};
+
+BlueSquareMetadata.defaultProps = {
+  blueSquareData: null,
+};
+
 const UserProfileModal = props => {
   const {
     isOpen,
@@ -537,6 +603,9 @@ const UserProfileModal = props => {
                 </Label>
               </FormGroup>
 
+              {/* Display Manual Assignment and Edit History */}
+              <BlueSquareMetadata blueSquareData={blueSquare[0]} fontColor={fontColor} darkMode={darkMode} />
+
               <FormGroup>
                 <Label className={fontColor} for="report">
                   Summary
@@ -573,6 +642,9 @@ const UserProfileModal = props => {
                   <span>{blueSquare[0]?.createdDate}</span>
                 </Label>
               </FormGroup>
+
+              {/* Display Manual Assignment and Edit History */}
+              <BlueSquareMetadata blueSquareData={blueSquare[0]} fontColor={fontColor} darkMode={darkMode} />
 
               <FormGroup>
                 <Label className={fontColor} for="description">
