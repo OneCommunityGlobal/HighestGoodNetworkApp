@@ -7,52 +7,12 @@ import { filterEventsByDate } from './FilterByDate';
 
 function MyCases() {
   const [view, setView] = useState('card');
-  const [filter, setFilter] = useState('all');
+  const [filter, setFilter] = useState('All Time');
   const [expanded, setExpanded] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const isExporting =
     typeof document !== 'undefined' && document.documentElement?.dataset?.exporting === 'true';
-
-  const filterEvents = events => {
-    const now = new Date();
-
-    const nowTime = now.getTime();
-
-    const upcomingEvents = events.filter(event => {
-      const eventTime = new Date(event.eventDate).getTime();
-      return eventTime >= nowTime;
-    });
-
-    if (filter === 'today') {
-      return upcomingEvents.filter(event => {
-        const eventDate = new Date(event.eventDate);
-        return (
-          eventDate.getDate() === now.getDate() &&
-          eventDate.getMonth() === now.getMonth() &&
-          eventDate.getFullYear() === now.getFullYear()
-        );
-      });
-    }
-    if (filter === 'thisWeek') {
-      const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
-      const endOfWeek = new Date(startOfWeek);
-      endOfWeek.setDate(endOfWeek.getDate() + 6);
-      return upcomingEvents.filter(event => {
-        const eventDate = new Date(event.eventTime);
-        return eventDate >= startOfWeek && eventDate <= endOfWeek;
-      });
-    }
-    if (filter === 'thisMonth') {
-      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-      const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-      return upcomingEvents.filter(event => {
-        const eventDate = new Date(event.eventTime);
-        return eventDate >= startOfMonth && eventDate <= endOfMonth;
-      });
-    }
-    return upcomingEvents;
-  };
 
   const darkMode = useSelector(state => state.theme.darkMode);
 
@@ -60,19 +20,15 @@ function MyCases() {
 
   const filteredEventsByEventType = filteredEvents.filter(event => {
     if (event.eventType === 'all') {
-      return true; // Simplified: just return true to keep the item
-    } else {
-      return event.eventType === filter;
+      return true;
     }
+    return event.eventType === filter;
   });
 
-  // Sonar: extract nested ternary into independent statement
   let visibleEvents = filteredEventsByEventType;
+
   if (!isExporting) {
-    // Limt to 10 events by default, but show all if when user clicks "More" or when exporting
-    visibleEvents = expanded
-      ? filteredEvents.slice(0, filteredEvents.length)
-      : filteredEvents.slice(0, 10);
+    visibleEvents = expanded ? filteredEventsByEventType : filteredEventsByEventType.slice(0, 10);
   }
 
   const placeholderAvatar = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
@@ -211,7 +167,7 @@ function MyCases() {
           >
             + Create New
           </button>
-          {filteredEvents.length > 10 && !isExporting && (
+          {filteredEventsByEventType.length > 10 && !isExporting && (
             <button
               type="button"
               className={`more-btn-global ${styles.moreBtn}`}
