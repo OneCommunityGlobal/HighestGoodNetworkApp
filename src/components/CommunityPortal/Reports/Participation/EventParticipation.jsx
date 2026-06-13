@@ -17,7 +17,7 @@ function EventParticipation() {
   const [exporting, setExporting] = useState(false);
 
   const handleSaveAsPDF = useCallback(() => {
-    if (typeof window === 'undefined' || typeof document === 'undefined') return;
+    if (typeof globalThis.window === 'undefined' || typeof document === 'undefined') return;
     if (exporting) return;
     setExporting(true);
 
@@ -32,7 +32,7 @@ function EventParticipation() {
     document.title = 'event_participation';
 
     setTimeout(() => {
-      window.print();
+      globalThis.window.print();
 
       setTimeout(() => {
         if (shouldExpand) moreBtn.click();

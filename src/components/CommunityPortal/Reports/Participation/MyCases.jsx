@@ -1,6 +1,5 @@
 import { useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 import Calendar from 'react-calendar';
 import styles from './MyCases.module.css';
 import mockEvents from './mockData';
@@ -13,7 +12,6 @@ function MyCases() {
   const [expanded, setExpanded] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [calendarDate, setCalendarDate] = useState(new Date());
-  const history = useHistory();
 
   const isExporting =
     typeof document !== 'undefined' && document.documentElement?.dataset?.exporting === 'true';

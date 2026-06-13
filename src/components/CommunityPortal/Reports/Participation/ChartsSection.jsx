@@ -32,8 +32,8 @@ function ChartsSection() {
     }
 
     groups[key].count++;
-    groups[key].noShowSum += parseInt(evt.noShowRate, 10);
-    groups[key].dropSum += parseInt(evt.dropOffRate, 10);
+    groups[key].noShowSum += Number.parseInt(evt.noShowRate, 10);
+    groups[key].dropSum += Number.parseInt(evt.dropOffRate, 10);
   });
 
   Object.entries(groups).forEach(([key, stats]) => {
@@ -55,7 +55,7 @@ function ChartsSection() {
     }
 
     monthlyTrend[m].count++;
-    monthlyTrend[m].noShowSum += parseInt(evt.noShowRate, 10);
+    monthlyTrend[m].noShowSum += Number.parseInt(evt.noShowRate, 10);
   });
 
   const trendData = Object.keys(monthlyTrend).map(m => ({
