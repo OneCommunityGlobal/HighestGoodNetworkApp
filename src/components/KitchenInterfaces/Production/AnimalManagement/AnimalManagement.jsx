@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaw, faShoppingCart, faBoxOpen, faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import { useSelector } from 'react-redux';
@@ -10,6 +10,40 @@ import styles from './AnimalManagement.module.css';
 const AnimalManagement = () => {
   const darkMode = useSelector(state => state.theme?.darkMode || false);
   const [activeTab, setActiveTab] = useState('orders');
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const btn = document.querySelector('.back-to-top');
+      if (!btn) return;
+      if (window.scrollY > 300) {
+        btn.style.setProperty('display', 'flex', 'important');
+      } else {
+        btn.style.setProperty('display', 'none', 'important');
+      }
+    };
+
+    const handleBackToTopClick = e => {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const btn = document.querySelector('.back-to-top');
+    if (btn) {
+      btn.addEventListener('click', handleBackToTopClick);
+    }
+    window.addEventListener('scroll', handleScroll);
+
+    // Initial check
+    handleScroll();
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (btn) {
+        btn.removeEventListener('click', handleBackToTopClick);
+        btn.style.display = '';
+      }
+    };
+  }, []);
 
   const [orders, setOrders] = useState([
     {

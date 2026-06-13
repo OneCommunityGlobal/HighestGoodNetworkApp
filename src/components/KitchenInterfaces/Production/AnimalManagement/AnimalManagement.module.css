@@ -93,6 +93,7 @@
   border-radius: 20px;
   transition: all 0.2s;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .tab-button:hover {

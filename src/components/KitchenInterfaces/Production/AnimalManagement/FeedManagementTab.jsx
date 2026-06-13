@@ -15,6 +15,27 @@ const FeedManagementTab = ({ feedOrders, setFeedOrders, feedInventory, setFeedIn
     reorderThreshold: '',
   });
 
+  const handleUnitChange = e => {
+    const value = e.target.value;
+    const lettersOnly = value.replace(/[^a-zA-Z\s]/g, '');
+    setNewItem({ ...newItem, unit: lettersOnly });
+  };
+
+  const handleNumericChange = (field, val) => {
+    let cleaned = val.replace(/[^0-9.]/g, '');
+    const parts = cleaned.split('.');
+    if (parts.length > 2) {
+      cleaned = parts[0] + '.' + parts.slice(1).join('');
+    }
+    setNewItem({ ...newItem, [field]: cleaned });
+  };
+
+  const handleNumericKeyDown = e => {
+    if (['e', 'E', '+', '-'].includes(e.key)) {
+      e.preventDefault();
+    }
+  };
+
   const handleStatusChange = (id, currentStatus) => {
     let nextStatus = currentStatus;
     if (currentStatus === 'ordered') nextStatus = 'shipped';
@@ -287,7 +308,7 @@ const FeedManagementTab = ({ feedOrders, setFeedOrders, feedInventory, setFeedIn
                   required
                   type="text"
                   value={newItem.unit}
-                  onChange={e => setNewItem({ ...newItem, unit: e.target.value })}
+                  onChange={handleUnitChange}
                   placeholder="e.g. lbs, bags, bales"
                 />
               </div>
@@ -300,7 +321,8 @@ const FeedManagementTab = ({ feedOrders, setFeedOrders, feedInventory, setFeedIn
                   min="0"
                   step="0.1"
                   value={newItem.stockLeft}
-                  onChange={e => setNewItem({ ...newItem, stockLeft: e.target.value })}
+                  onKeyDown={handleNumericKeyDown}
+                  onChange={e => handleNumericChange('stockLeft', e.target.value)}
                 />
               </div>
               <div className={styles['form-group']}>
@@ -312,7 +334,8 @@ const FeedManagementTab = ({ feedOrders, setFeedOrders, feedInventory, setFeedIn
                   min="0"
                   step="0.1"
                   value={newItem.reorderThreshold}
-                  onChange={e => setNewItem({ ...newItem, reorderThreshold: e.target.value })}
+                  onKeyDown={handleNumericKeyDown}
+                  onChange={e => handleNumericChange('reorderThreshold', e.target.value)}
                 />
               </div>
               <div className={styles['modal-actions']}>
