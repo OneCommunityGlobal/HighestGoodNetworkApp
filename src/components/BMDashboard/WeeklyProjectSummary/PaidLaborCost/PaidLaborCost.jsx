@@ -504,7 +504,9 @@ export default function PaidLaborCost() {
           />
         </div>
         <div className={styles.filterGroup}>
-          <div className={styles.filterLabel}>Date Range</div>
+          <label className={styles.filterLabel} htmlFor="start-date">
+            Date Range
+          </label>
           <div className={styles.dateRangeFlex}>
             <div className={styles.datePickerWrapper}>
               <DatePicker

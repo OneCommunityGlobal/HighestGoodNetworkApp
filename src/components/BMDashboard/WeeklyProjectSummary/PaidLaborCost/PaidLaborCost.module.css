@@ -33,7 +33,7 @@
   gap: 16px;
   margin-bottom: 24px;
   width: 100%;
-  align-items: flex-end;
+  align-items: flex-start;
 }
 
 @media (max-width: 900px) {
@@ -45,7 +45,7 @@
 .filterGroup {
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: flex-start;
   height: 100%;
   gap: 6px;
 }
