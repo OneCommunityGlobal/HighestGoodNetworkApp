@@ -5,7 +5,7 @@ import {
   UPDATE_USER_PREFERENCES_REQUEST,
   UPDATE_USER_PREFERENCES_SUCCESS,
   UPDATE_USER_PREFERENCES_FAILURE,
-} from '../../constants/lbDashboard/userPreferenceConstants';
+} from '../../constants/lbdashboard/userPreferenceConstants';
 
 const initialState = {
   loading: false,

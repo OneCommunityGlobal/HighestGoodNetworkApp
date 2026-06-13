@@ -10,7 +10,7 @@ import {
   MARK_MESSAGES_AS_READ_REQUEST,
   MARK_MESSAGES_AS_READ_SUCCESS,
   MARK_MESSAGES_AS_READ_FAILURE,
-} from '../../constants/lbDashboard/messagingConstants';
+} from '../../constants/lbdashboard/messagingConstants';
 
 const toMessageList = payload => {
   if (Array.isArray(payload)) return payload;

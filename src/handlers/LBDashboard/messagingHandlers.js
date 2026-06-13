@@ -1,7 +1,7 @@
 import {
   MESSAGE_RECEIVED,
   MESSAGE_STATUS_UPDATED,
-} from '../../constants/lbDashboard/messagingConstants';
+} from '../../constants/lbdashboard/messagingConstants';
 
 export const handleMessageReceived = payload => ({
   type: MESSAGE_RECEIVED,
