@@ -582,7 +582,7 @@ table td {
 }
 
 .bulkActionsButton {
-  background-color: #468ef9;
+  background-color: #1565c0;
   color: white;
   border: none;
   padding: 8px 12px;
@@ -591,7 +591,7 @@ table td {
 }
 
 .bulkActionsButton:hover {
-  background-color: #3b82f6;
+  background-color: #0d4ea8;
 }
 
 .bulkActionsButton:disabled {
@@ -650,7 +650,7 @@ table td {
 
 .bulkTagNone {
   background: #f1f5f9;
-  color: #64748b;
+  color: #475569;
   border: 1px solid #d8e0e8;
 }
 

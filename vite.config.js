@@ -5,8 +5,8 @@ import react from '@vitejs/plugin-react';
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   const sanitizedEnvDefines = Object.keys(env).reduce((prev, key) => {
-    const normalizedKey = key.replace(/[^a-zA-Z0-9_]/g, '_');
-    const sanitizedKey = /^[0-9]/.test(normalizedKey) ? `_${normalizedKey}` : normalizedKey;
+    const normalizedKey = key.replaceAll(/\W/g, '_');
+    const sanitizedKey = /^\d/.test(normalizedKey) ? `_${normalizedKey}` : normalizedKey;
 
     // eslint-disable-next-line no-param-reassign
     prev[`process.env.${sanitizedKey}`] = JSON.stringify(env[key]);

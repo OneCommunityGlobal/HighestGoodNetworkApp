@@ -143,7 +143,7 @@ export default function ItemsTable({
     const isNumeric = str !== '' && !Number.isNaN(Number(str));
     const isFormulaRisk = !isNumeric && str !== '-' && /^[=+\-@]/.test(str);
     const sanitized = isFormulaRisk ? `'${str}` : str;
-    return `"${sanitized.replace(/"/g, '""')}"`;
+    return `"${sanitized.replaceAll('"', '""')}"`;
   };
 
   const exportToCsv = data => {
@@ -172,7 +172,7 @@ export default function ItemsTable({
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
-    document.body.removeChild(link);
+    link.remove();
   };
 
   const exportToPdf = data => {
