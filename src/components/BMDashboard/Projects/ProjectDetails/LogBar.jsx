@@ -1,87 +1,86 @@
-import PropTypes from 'prop-types';
-import { v4 as uuidv4 } from 'uuid';
 import { Button } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import styles from './ProjectDetails.module.css';
 
-// button styles for each section
-const buttonStyles = {
-  dailyLogging: 'green',
-  newItem: 'blue',
-  team: 'indigo',
-};
+/* --------------------------------------------
+    STYLED BUTTON WRAPPER
+--------------------------------------------- */
+const Btn = ({ to, color, children }) => (
+  <Link to={to}>
+    <Button
+      type="button"
+      className={`${styles.button} ${styles.btn} ${styles[`button--${color}`]}`}
+    >
+      {children}
+    </Button>
+  </Link>
+);
 
-function LogBar({ projectId }) {
-  const darkMode = useSelector(state => state.theme.darkMode);
-  const buttonLabels = {
-    dailyLogging: {
-      name: ['Time', 'Material', 'Tool/Equipment'],
-      url: [
-        `/bmdashboard/timelog/${projectId}`,
-        '/bmdashboard/materials/add',
-        '/bmdashboard/tools/log',
-      ],
-    },
-    newItem: {
-      name: ['Team', 'Material', 'Add Equipment', 'Add Tool', 'Lessons'],
-      url: [
-        '/teams',
-        '/bmdashboard/materials/add',
-        '/bmdashboard/equipment/add',
-        '/bmdashboard/tools/add',
-        `/bmdashboard/lessonform/${projectId}`,
-      ],
-    },
-    team: {
-      name: ['Create New Team', 'Edit Existing Team', 'Log Issue', 'View Issues'],
-      url: [
-        '/teams',
-        `/bmdashboard/projects/${projectId}/teams`,
-        `/bmdashboard/issues/add/${projectId}`,
-        '/bmdashboard/issues/',
-      ],
-    },
-  };
-  const getSectionTitle = section => {
-    if (section === 'dailyLogging') return 'Daily Logging:';
-    if (section === 'newItem') return 'Add a New Item:';
-    return 'Team';
-  };
-
+/* --------------------------------------------
+    1️⃣  DAILY LOGGING BUTTONS
+--------------------------------------------- */
+export const LoggingButtons = ({ darkMode }) => {
   return (
-    <div className={`${darkMode ? styles.darkMode : ''}`}>
-      <div className={`${styles.logBar}`}>
-        {Object.keys(buttonStyles).map(section => (
-          <div key={uuidv4()} className={`${styles.logBarSection}`}>
-            <h2>{getSectionTitle(section)}</h2>
-            <ul className={`${styles.logBarBtnGroup}`}>
-              {buttonLabels[section].name.map((label, index) => {
-                const colorClass = label === 'Log Issue' ? 'maroon' : buttonStyles[section];
-                return (
-                  <li key={uuidv4()}>
-                    <Link to={buttonLabels[section].url[index]}>
-                      <Button
-                        type="button"
-                        color="link"
-                        className={`${styles.buttonBtn} ${styles[colorClass]}`}
-                      >
-                        {label}
-                      </Button>
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        ))}
-      </div>
-    </div>
+    <>
+      <Btn to="/bmdashboard/timelog" color="green">
+        Time
+      </Btn>
+      <Btn to="/bmdashboard/materials/add" color="green">
+        Material
+      </Btn>
+      <Btn to="/bmdashboard/tools/log" color="green">
+        Tool/Equipment
+      </Btn>
+    </>
   );
-}
-
-LogBar.propTypes = {
-  projectId: PropTypes.string.isRequired,
 };
 
-export default LogBar;
+/* --------------------------------------------
+    2️⃣  ADD NEW ITEM BUTTONS
+--------------------------------------------- */
+export const AddItemButtons = ({ projectId }) => {
+  return (
+    <>
+      <Btn to="/teams" color="blue">
+        Team
+      </Btn>
+      <Btn to="/bmdashboard/materials/add" color="blue">
+        Material
+      </Btn>
+      <Btn to="/bmdashboard/tools/add" color="blue">
+        Tool/Equipment
+      </Btn>
+      <Btn to={`/bmdashboard/lessonform/${projectId}`} color="blue">
+        Lessons
+      </Btn>
+    </>
+  );
+};
+
+/* --------------------------------------------
+    3️⃣ TEAM BUTTONS
+--------------------------------------------- */
+export const TeamButtons = ({ projectId }) => {
+  return (
+    <>
+      <Btn to="/teams" color="indigo">
+        Create New Team
+      </Btn>
+      <Btn to="/teams" color="indigo">
+        Edit Existing Team
+      </Btn>
+      <Btn to={`/bmdashboard/issues/add/${projectId}`} color="maroon">
+        Log Issue
+      </Btn>
+      <Btn to="/bmdashboard/issues/" color="indigo">
+        View Issues
+      </Btn>
+    </>
+  );
+};
+
+export default function LogBar() {
+  // Only used for backward compatibility
+  return null;
+}
