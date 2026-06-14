@@ -603,8 +603,8 @@ export function LBDashboard() {
 
       {compareType === 'villages' && (
         <AnalysisSection title="By Village" darkMode={darkMode}>
-          <Row xs="1" md="3" className="g-3">
-            <Col>
+          <Row xs="1" lg="3" className="g-3">
+            <Col lg="4" md="12">
               <DemandOverTime
                 compareType="villages"
                 metric={mappedMetric}
@@ -614,7 +614,7 @@ export function LBDashboard() {
               />
             </Col>
 
-            <Col>
+            <Col lg="4" md="12">
               {loadingVillages && (
                 <div className={getClassNames('', styles.darkText, darkMode)}>
                   Loading villages…
@@ -636,10 +636,10 @@ export function LBDashboard() {
                   showYAxisTitle={true}
                   yTickFormatter={stripVillageWord}
                   yCategoryWidth={120}
-                  margins={{ top: 60, right: 110, bottom: 50, left: 20 }}
+                  margins={{ top: 40, right: 40, bottom: 50, left: 40 }}
                   barSize={24}
                   maxBars={6}
-                  height={480}
+                  height={420}
                   valueFormatter={valueFormatter}
                   darkMode={darkMode}
                   headerChips={[
