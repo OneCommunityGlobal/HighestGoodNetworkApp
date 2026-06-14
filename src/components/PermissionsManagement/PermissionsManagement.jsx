@@ -162,7 +162,7 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
                     >
                       {roleName}
                     </button>
-                    <div className="infos">
+                    <div className={styles.infos}>
                       <EditableInfoModal
                         role={role}
                         areaName={`${roleName} Info`}
