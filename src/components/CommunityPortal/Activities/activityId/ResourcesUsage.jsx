@@ -85,10 +85,9 @@ function ResourcesUsage() {
     const header = [...exportColumns.map(col => col.label), 'Due Status'].join(',');
     const body = rows
       .map(row =>
-        [
-          ...exportColumns.map(col => `"${row[col.key] ?? ''}"`),
-          `"${row.dueStatus ?? ''}"`,
-        ].join(','),
+        [...exportColumns.map(col => `"${row[col.key] ?? ''}"`), `"${row.dueStatus ?? ''}"`].join(
+          ',',
+        ),
       )
       .join('\n');
 
