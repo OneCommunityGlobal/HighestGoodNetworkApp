@@ -54,7 +54,7 @@ body.dark-mode {
 
 /* Error styling */
 .error {
-  color: #b71c1c;
+  color: #7f0000;
   background-color: rgb(211 47 47 / 5%);
   padding: 10px;
   border-radius: 4px;
@@ -66,8 +66,8 @@ body.dark-mode {
 
 .expenditure-chart-container.dark-mode .error {
   background-color: #2a3a5a;
-  color: #ff6b6b;
-  border: 1px solid #ff6b6b;
+  color: #ffb3b3;
+  border: 1px solid #ffb3b3;
 }
 
 /* Heading styles */

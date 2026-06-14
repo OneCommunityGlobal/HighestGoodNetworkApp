@@ -20,7 +20,6 @@ import ExpenseBarChart from './Financials/ExpenseBarChart';
 import CostBreakDown from './Financials/CostBreakDown/CostBreakDown';
 import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
-import EmbedInteractiveMap from '../InteractiveMap/EmbedInteractiveMap';
 import CostBreakdownChart from './CostBreakdownChart';
 import InteractiveMap from '../InteractiveMap/InteractiveMap';
 import styles from './WeeklyProjectSummary.module.css';
@@ -488,7 +487,7 @@ function WeeklyProjectSummary() {
         )
         .forEach(el => {
           if (el.parentNode) {
-            el.parentNode.removeChild(el);
+            el.remove();
           }
         });
 
