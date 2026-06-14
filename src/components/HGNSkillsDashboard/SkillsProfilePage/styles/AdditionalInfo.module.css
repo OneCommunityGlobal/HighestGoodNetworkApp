@@ -12,6 +12,8 @@
 .workExpInfoBox {
   display: flex;
   flex-direction: row;
+  align-items: center;
+  gap: 10px;
 }
 
 .question-and-response-box {
@@ -67,6 +69,20 @@
   margin-right: 0;
 }
 
+.editButton {
+  background-color: #007bff;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 16px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.editButton:hover {
+  background-color: #0056b3;
+}
+
 @media (width <= 768px) {
   .followup-questions {
     width: 80%;
@@ -100,4 +116,12 @@
   background-color: #2a3a5c;
   color: #ffffff;
   border-color: #3a506b;
+}
+
+.AdditionalInfoBox:global(.dark-mode) .editButton {
+  background-color: #2563eb;
+}
+
+.AdditionalInfoBox:global(.dark-mode) .editButton:hover {
+  background-color: #1d4ed8;
 }
