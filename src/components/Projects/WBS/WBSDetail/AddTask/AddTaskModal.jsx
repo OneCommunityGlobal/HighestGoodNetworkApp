@@ -17,10 +17,14 @@ import {
   END_DATE_ERROR_MESSAGE,
   START_DATE_ERROR_MESSAGE
 } from '../../../../../languages/en/messages';
+
 import '../../../../Header/index.module.css';
+
 import TagsSearch from '../components/TagsSearch';
 import styles from '../wbs.module.css';
-// import styles from './AddTaskModal.module.css';
+
+//import styles from './AddTaskModal.module.css';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { getProjectDetail } from '../../../../../actions/project';
 import { fetchAllMembers } from '../../../../../actions/projectMembers';

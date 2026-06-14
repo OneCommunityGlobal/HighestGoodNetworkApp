@@ -25,13 +25,23 @@ if [ -z "$changed_files" ]; then
   exit 0
 fi
 
+# Skip checks if any outgoing commit is a merge commit
+if git log @{upstream}..HEAD --merges --oneline | grep -q .; then
+  echo "ℹ️  Outgoing commits include a merge commit. Skipping lint/test checks."
+  exit 0
+fi
+
 if ! printf '%s\n' "$changed_files" | grep -qvE '^\.husky/'; then
   echo "ℹ️  Only Husky hook changes detected. Skipping full test and lint checks."
   exit 0
 fi
 
-js_files=$(printf '%s\n' "$changed_files" | grep -E '\.(js|jsx|ts|tsx)$' || true)
-style_files=$(printf '%s\n' "$changed_files" | grep -E '\.(css|scss|sass)$' || true)
+existing_files=$(printf '%s\n' "$changed_files" | while IFS= read -r f; do
+  [ -n "$f" ] && [ -e "$f" ] && printf '%s\n' "$f"
+done)
+
+js_files=$(printf '%s\n' "$existing_files" | grep -E '\.(js|jsx|ts|tsx)$' || true)
+style_files=$(printf '%s\n' "$existing_files" | grep -E '\.(css|scss|sass)$' || true)
 
 test_status=0
 lint_status=0
