@@ -155,7 +155,7 @@ import Register from './components/CommunityPortal/Activities/Register/Register'
 import EventStats from './components/CommunityPortal/EventPersonalization/EventStats';
 import CommunityCalendar from './components/CommunityPortal/Calendar/CommunityCalendar';
 import PRGradingDashboard from './components/PRGradingDashboard/PRGradingDashboard';
-
+import RegistrationPopup from './components/CommunityPortal/RegistrationConfirmation/Registration';
 import KICalendar from './components/KitchenandInventory/KICalendar/KICalendar';
 import KIDashboard from './components/KitchenandInventory/KIDashboard/KIDashboard';
 import KIINVENTORY from './components/KitchenandInventory/KIInventory/KIInventory';
@@ -974,6 +974,11 @@ export default (
           path="/communityportal/ActivityAttendance"
           exact
           component={ActivityAttendance}
+        />
+        <CPProtectedRoute
+          path="/communityportal/activities/registration"
+          exact
+          component={RegistrationPopup}
         />
         <CPProtectedRoute
           path="/communityportal/activities/Feedbackform/:eventId/:email"
