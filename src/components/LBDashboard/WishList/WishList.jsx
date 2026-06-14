@@ -12,10 +12,9 @@ function WishList({ wishlists }) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [selectedVillage, setSelectedVillage] = useState('');
 
-  const villages = useMemo(
-    () => [...new Set(wishlists.map(item => item.title).filter(Boolean))],
-    [wishlists],
-  );
+  const villages = useMemo(() => [...new Set(wishlists.map(item => item.title).filter(Boolean))], [
+    wishlists,
+  ]);
 
   const filteredWishlists = selectedVillage
     ? wishlists.filter(item => item.title === selectedVillage)
@@ -78,21 +77,23 @@ function WishList({ wishlists }) {
                     </div>
 
                     <div className={styles.listDetailsRight}>
-                      <div className={`${styles.itemTitleWrapper} ${styles.itemTitleWrapperDesktop}`}>
+                      <div
+                        className={`${styles.itemTitleWrapper} ${styles.itemTitleWrapperDesktop}`}
+                      >
                         <span className={`${styles.listItemTitle} ${styles.itemTitleRight}`}>
                           {item.title}
                         </span>
                       </div>
 
                       <div className={styles.itemDetails}>
-                        <span className={`${styles.listItemTitle} ${styles.itemTitleWrapperDesktop}`}>
+                        <span
+                          className={`${styles.listItemTitle} ${styles.itemTitleWrapperDesktop}`}
+                        >
                           {item.unit}
                         </span>
 
                         <div className={styles.listItemAmenities}>
-                          <span className={styles.font600}>
-                            Available amenities in this unit:
-                          </span>
+                          <span className={styles.font600}>Available amenities in this unit:</span>
                           <ol>
                             {item.unitAmenities?.map(amenity => (
                               <li key={amenity}>{amenity}</li>
@@ -134,9 +135,7 @@ function WishList({ wishlists }) {
                     <Link
                       to={`/lbdashboard/wishlist/${item.id}/chat`}
                       onClick={() => handleSelectWishlistItem(item)}
-                      className={`${styles.chatButton} ${
-                        darkMode ? styles.chatButtonDark : ''
-                      }`}
+                      className={`${styles.chatButton} ${darkMode ? styles.chatButtonDark : ''}`}
                     >
                       <img
                         width="24"
