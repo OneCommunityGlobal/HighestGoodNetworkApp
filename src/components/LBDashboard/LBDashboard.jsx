@@ -25,6 +25,7 @@ import { CompareBarGraph } from './BarGraphs/CompareGraphs';
 import { ComparePropertiesRatings } from './BarGraphs/ComparePropertiesRatings';
 
 import styles from './LBDashboard.module.css';
+import UserManagementSection from './UserManagement/UserManagement';
 import ConversionFunnel from './LbAnalytics/ConversionFunnel/ConversionFunnel';
 import { randomInt } from './lbUtils';
 
@@ -710,6 +711,9 @@ export function LBDashboard() {
             <ReviewWordCloud darkMode={darkMode} />
           </div>
         </div>
+      </AnalysisSection>
+      <AnalysisSection title="User Management" darkMode={darkMode}>
+        <UserManagementSection darkMode={darkMode} />
       </AnalysisSection>
     </Container>
   );
