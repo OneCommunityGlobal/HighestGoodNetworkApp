@@ -76,6 +76,7 @@ function RegistrationForm() {
             <input
               type="date"
               value={eventDate}
+              min={new Date().toISOString().split('T')[0]}
               onChange={e => setEventDate(e.target.value)}
               className={`${showValidation && !eventDate ? styles.inputError : ''}`}
               aria-invalid={showValidation && !eventDate}
