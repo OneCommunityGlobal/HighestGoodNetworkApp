@@ -306,11 +306,15 @@ function ResourceManagement() {
   };
 
   const toggleSelectAll = e => {
-    setSelectedIds(e.target.checked ? new Set(sortedResources.map(resource => resource.id)) : new Set());
+    setSelectedIds(
+      e.target.checked ? new Set(sortedResources.map(resource => resource.id)) : new Set(),
+    );
   };
 
   const getExportRows = () =>
-    selectedIds.size > 0 ? sortedResources.filter(resource => selectedIds.has(resource.id)) : sortedResources;
+    selectedIds.size > 0
+      ? sortedResources.filter(resource => selectedIds.has(resource.id))
+      : sortedResources;
 
   const exportCSV = rows => {
     const header = columns.map(col => col.label).join(',');
@@ -411,7 +415,11 @@ function ResourceManagement() {
             Export CSV
           </button>
 
-          <button type="button" className={styles.addLogButton} onClick={() => handleExport('xlsx')}>
+          <button
+            type="button"
+            className={styles.addLogButton}
+            onClick={() => handleExport('xlsx')}
+          >
             Export XLSX
           </button>
         </div>
@@ -438,7 +446,11 @@ function ResourceManagement() {
             </div>
 
             <div className={styles.colUser}>
-              <button type="button" className={styles.headerSortButton} onClick={() => requestSort('user')}>
+              <button
+                type="button"
+                className={styles.headerSortButton}
+                onClick={() => requestSort('user')}
+              >
                 User {sortConfig.key === 'user' && (sortConfig.direction === 'asc' ? '🔼' : '🔽')}
               </button>
             </div>
@@ -459,7 +471,11 @@ function ResourceManagement() {
             <div className={styles.colMaterials}>Materials</div>
 
             <div className={styles.colDate}>
-              <button type="button" className={styles.headerSortButton} onClick={() => requestSort('date')}>
+              <button
+                type="button"
+                className={styles.headerSortButton}
+                onClick={() => requestSort('date')}
+              >
                 Date {sortConfig.key === 'date' && (sortConfig.direction === 'asc' ? '🔼' : '🔽')}
               </button>
             </div>
@@ -478,7 +494,9 @@ function ResourceManagement() {
                   />
                 </div>
 
-                <div className={`${styles.resourceItemDetail} ${styles.colUser}`}>{resource.user}</div>
+                <div className={`${styles.resourceItemDetail} ${styles.colUser}`}>
+                  {resource.user}
+                </div>
                 <div className={`${styles.resourceItemDetail} ${styles.colDuration}`}>
                   {resource.timeDuration}
                 </div>

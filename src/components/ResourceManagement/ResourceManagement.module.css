@@ -293,16 +293,16 @@
 }
 
 .activePage {
-  border: 1px solid #007bff;
+  border: 1px solid #0056b3;
   padding: 6px 12px;
   border-radius: 4px;
-  background-color: #007bff;
+  background-color: #0056b3;
   color: #fff;
 }
 
 .darkModePaginationContainer .activePage {
-  background-color: #2196f3 !important;
-  border-color: #2196f3 !important;
+  background-color: #0056b3 !important;
+  border-color: #0056b3 !important;
   color: #fff;
 }
 
@@ -425,12 +425,17 @@
 }
 
 .submitButton {
-  background-color: #4caf50;
+  background-color: #2e7d32;
   color: #fff;
 }
 
 .submitButton:hover {
-  background-color: #45a049;
+  background-color: #1b5e20;
+}
+
+.modalContentDark .submitButton {
+  background-color: #2e7d32;
+  color: #fff;
 }
 
 .modalContentDark .cancelButton {
@@ -440,11 +445,6 @@
 
 .modalContentDark .cancelButton:hover {
   background-color: #3a5275;
-}
-
-.modalContentDark .submitButton {
-  background-color: #4caf50;
-  color: #fff;
 }
 
 /* --- Toast Notification --- */
