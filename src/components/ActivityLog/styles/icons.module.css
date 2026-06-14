@@ -7,6 +7,7 @@
 .tag {
   display: inline-flex;
   align-items: center;
+  gap: 4px;
   border-radius: 9999px;
   padding: 0.125rem 0.5rem;
   font-size: 0.75rem;
@@ -33,4 +34,9 @@
 .tagDefault {
   background-color: #f3f4f6;
   color: #374151;
+}
+
+/* Dark mode variants */
+.tagSupportDark {
+  background-color: #854d0e;
 }

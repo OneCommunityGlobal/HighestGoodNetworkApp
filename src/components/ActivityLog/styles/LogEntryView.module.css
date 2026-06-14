@@ -13,7 +13,7 @@
   padding: 24px;
   background-color: #fff;
   border-radius: 16px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 6px rgb(0 0 0 / 5%);
   border: 1px solid #f3f4f6;
 }
 
@@ -52,14 +52,11 @@
 .assistedTag {
   display: inline-flex;
   align-items: center;
-
   padding: 4px 8px;
-  gap: 6px;
-
-  background-color: #991b1b; /* dark red badge */
-  color: #ffe5e5; /* softer contrast text */
+  gap: 18px;
+  background-color: #991b1b;
+  color: #ffe5e5;
   border-radius: 6px;
-
   font-size: 0.75rem;
   font-weight: 500;
   line-height: 1;
@@ -97,7 +94,7 @@
   font-weight: 600;
   padding: 8px 16px;
   border-radius: 12px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
   transition: background-color 0.2s;
 }
 
@@ -111,26 +108,12 @@
   font-weight: 600;
   padding: 8px 16px;
   border-radius: 12px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
   transition: background-color 0.2s;
 }
 
 .removeAssistedBtn:hover {
   background-color: #b91c1c;
-}
-
-.printBtn {
-  background-color: #e5e7eb;
-  color: #1f2937;
-  font-weight: 600;
-  padding: 8px 16px;
-  border-radius: 12px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.2s;
-}
-
-.printBtn:hover {
-  background-color: #d1d5db;
 }
 
 /* Grid for Log Content & Notes */
@@ -140,7 +123,7 @@
   gap: 24px;
 }
 
-@media (min-width: 768px) {
+@media (width >= 768px) {
   .grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -150,7 +133,7 @@
   padding: 24px;
   background-color: #fff;
   border-radius: 16px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 6px rgb(0 0 0 / 5%);
   border: 1px solid #f3f4f6;
 }
 
@@ -176,7 +159,7 @@
 .darkMode .gridItem {
   background-color: #1f2937;
   border-color: #4b5563;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 6px rgb(0 0 0 / 50%);
 }
 
 .darkMode .studentName,
@@ -210,15 +193,6 @@
 
 .darkMode .removeAssistedBtn:hover {
   background-color: #b91c1c;
-}
-
-.darkMode .printBtn {
-  background-color: #374151;
-  color: #f3f4f6;
-}
-
-.darkMode .printBtn:hover {
-  background-color: #4b5563;
 }
 
 .darkMode .avatar {

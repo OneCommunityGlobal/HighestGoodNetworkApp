@@ -20,13 +20,21 @@ IconByRole.propTypes = {
   className: PropTypes.string,
 };
 
-const Tag = ({ children, color }) => (
-  <span className={`${icons.tag} ${icons[color]}`}>{children}</span>
-);
+const Tag = ({ children, color, darkMode }) => {
+  const darkColor = darkMode ? `${color}Dark` : undefined;
+  return (
+    <span
+      className={`${icons.tag} ${icons[color]} ${darkMode && darkColor ? icons[darkColor] : ''}`}
+    >
+      {children}
+    </span>
+  );
+};
 
 Tag.propTypes = {
   children: PropTypes.node.isRequired,
   color: PropTypes.string,
+  darkMode: PropTypes.bool,
 };
 
 export { IconByRole, Tag };

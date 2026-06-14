@@ -32,7 +32,7 @@ const LogEntryView = ({
               <h3 className={`${styles.studentName}`}>
                 <span>{log.studentName}</span>
                 {showAssistedTag && (
-                  <Tag color="tagSupport">
+                  <Tag color="tagSupport" darkMode={darkMode}>
                     <BookOpen className={`${styles.assistedIcon}`} />
                     Assisted by: {log.assistedBy.name}
                   </Tag>
@@ -55,7 +55,6 @@ const LogEntryView = ({
                 {log.assistedBy ? 'Remove Assisted Tag' : 'Mark as Assisted'}
               </button>
             )}
-            <button className={`${styles.printBtn}`}>Print View</button>
           </div>
         </div>
 
