@@ -8,7 +8,6 @@ import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { toast } from 'react-toastify';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
-import CostPredictionChart from './CostPredictionChart';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
@@ -18,9 +17,8 @@ import InjuryCategoryBarChart from './GroupedBarGraphInjurySeverity/InjuryCatego
 import ToolsHorizontalBarChart from './Tools/ToolsHorizontalBarChart';
 import ExpenseBarChart from './Financials/ExpenseBarChart';
 import CostBreakDown from './Financials/CostBreakDown/CostBreakDown';
-import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
+import FinancialsTrackingSection from './ExpenditureChart/FinancialsTrackingSection';
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
-import CostBreakdownChart from './CostBreakdownChart';
 import InteractiveMap from '../InteractiveMap/InteractiveMap';
 import styles from './WeeklyProjectSummary.module.css';
 import LossTrackingLineChart from './Financials/LossTrackingLineCharts/LossTrackingLineChart';
@@ -405,22 +403,11 @@ function WeeklyProjectSummary() {
         title: 'Financials Tracking',
         key: 'Financials Tracking',
         className: 'full',
-        content: [1, 2, 3, 4].map((_, index) => {
-          const uniqueId = uuidv4();
-          return (
-            <div
-              key={uniqueId}
-              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
-            >
-              {(() => {
-                if (index === 0) return <CostBreakdownChart />;
-                if (index === 2) return <CostPredictionChart projectId={1} />;
-                if (index === 3) return <ActualVsPlannedCost />;
-                return '📊 Card';
-              })()}
-            </div>
-          );
-        }),
+        content: (
+          <div style={{ gridColumn: '1 / -1', width: '100%' }}>
+            <FinancialsTrackingSection />
+          </div>
+        ),
       },
     ],
     [quantityOfMaterialsUsedData],
@@ -486,9 +473,7 @@ function WeeklyProjectSummary() {
           'button, .weekly-project-summary-dropdown-icon, .no-print, .weekly-summary-header-controls',
         )
         .forEach(el => {
-          if (el.parentNode) {
-            el.remove();
-          }
+          el.remove();
         });
 
       // Add styles for PDF
@@ -559,7 +544,7 @@ function WeeklyProjectSummary() {
 
       // Clean up
       if (document.body.contains(pdfContainer)) {
-        document.body.removeChild(pdfContainer);
+        pdfContainer.remove();
       }
 
       // Dismiss loading toast and show success
@@ -592,7 +577,7 @@ function WeeklyProjectSummary() {
       // Clean up PDF container if it exists
       const pdfContainer = document.getElementById('pdf-export-container');
       if (pdfContainer && document.body.contains(pdfContainer)) {
-        document.body.removeChild(pdfContainer);
+        pdfContainer.remove();
       }
     } finally {
       setOpenSections(currentOpenSections);
