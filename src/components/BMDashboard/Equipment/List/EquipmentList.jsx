@@ -1,7 +1,14 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { FaCubes, FaShoppingCart, FaRecycle, FaWrench, FaTools } from 'react-icons/fa';
+import {
+  FaCubes,
+  FaShoppingCart,
+  FaRecycle,
+  FaWrench,
+  FaTools,
+  FaRulerCombined,
+} from 'react-icons/fa';
 import useTheme from '../../../../hooks/useTheme';
 import EquipmentsTable from './EquipmentsTable';
 import EquipmentsInputs from './EquipmentsInputs';
@@ -12,6 +19,7 @@ const siblingCategories = [
   { label: 'Consumables', route: '/bmdashboard/consumables', icon: <FaShoppingCart /> },
   { label: 'Reusables', route: '/bmdashboard/reusables', icon: <FaRecycle /> },
   { label: 'Tools', route: '/bmdashboard/tools', icon: <FaWrench /> },
+  { label: 'Units', route: '/bmdashboard/units', icon: <FaRulerCombined /> },
 ];
 
 function EquipmentList() {

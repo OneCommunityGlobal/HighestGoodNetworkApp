@@ -4,7 +4,14 @@ import PropTypes from 'prop-types';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Link } from 'react-router-dom';
-import { FaCubes, FaShoppingCart, FaTools, FaRecycle, FaWrench } from 'react-icons/fa';
+import {
+  FaCubes,
+  FaShoppingCart,
+  FaTools,
+  FaRecycle,
+  FaWrench,
+  FaRulerCombined,
+} from 'react-icons/fa';
 
 import BMError from '../shared/BMError';
 import SelectForm from './SelectForm';
@@ -18,6 +25,7 @@ const allCategories = [
   { label: 'Equipment', route: '/bmdashboard/equipment', icon: <FaTools /> },
   { label: 'Reusables', route: '/bmdashboard/reusables', icon: <FaRecycle /> },
   { label: 'Tools', route: '/bmdashboard/tools', icon: <FaWrench /> },
+  { label: 'Units', route: '/bmdashboard/units', icon: <FaRulerCombined /> },
 ];
 
 const categoryIcons = {

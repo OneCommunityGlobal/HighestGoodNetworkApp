@@ -74,10 +74,8 @@ export function InventoryTypesList(props) {
           onChange={date => setCurrentTime(date)}
           dateFormat="MM-dd-yyyy HH:mm:ss"
           id="timestamp"
-          showTimeSelect
-          showTimeSelectOnly={false}
+          showTimeInput
           timeFormat="HH:mm"
-          timeIntervals={60}
           portalId="root"
           popperPlacement="bottom-start"
         />

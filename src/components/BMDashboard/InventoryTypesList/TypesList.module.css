@@ -420,9 +420,21 @@
   background-color: #2a2a2a !important;
 }
 
+/* ── Dark mode time input container ── */
 :global(.dark-mode) :global(.react-datepicker__input-time-container),
 :global(.bm-dashboard-dark) :global(.react-datepicker__input-time-container) {
   background-color: #3a3a3a !important;
+  color: #fff !important;
+}
+
+/* Native time input dark mode — color-scheme forces browser UI to dark */
+:global(.dark-mode) :global(.react-datepicker-time__input) input[type="time"],
+:global(.bm-dashboard-dark) :global(.react-datepicker-time__input) input[type="time"] {
+  background-color: #2a2a2a !important;
+  color: #fff !important;
+  border: 1px solid rgb(255 255 255 / 20%) !important;
+  border-radius: 4px;
+  color-scheme: dark;
 }
 
 :global(.dark-mode) :global(.react-datepicker__navigation-icon::before),
@@ -644,6 +656,7 @@
 }
 
 :global(.bm-dashboard-dark) .typesListContainer :global(.react-datepicker__input-time-container) {
+  background-color: #1c2541 !important;
   color: #fff !important;
 }
 
@@ -651,6 +664,7 @@
   background-color: #1c2541 !important;
   color: #fff !important;
   border-color: #3a506b !important;
+  color-scheme: dark;
 }
 
 /* Category icons */

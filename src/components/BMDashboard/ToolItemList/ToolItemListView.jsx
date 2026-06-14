@@ -4,7 +4,14 @@ import { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { FaCubes, FaShoppingCart, FaTools, FaRecycle, FaWrench } from 'react-icons/fa';
+import {
+  FaCubes,
+  FaShoppingCart,
+  FaTools,
+  FaRecycle,
+  FaWrench,
+  FaRulerCombined,
+} from 'react-icons/fa';
 import BMError from '../shared/BMError';
 import SelectForm from '../ItemList/SelectForm';
 import SelectItem from '../ItemList/SelectItem';
@@ -17,6 +24,7 @@ const siblingCategories = [
   { label: 'Consumables', route: '/bmdashboard/consumables', icon: <FaShoppingCart /> },
   { label: 'Equipment', route: '/bmdashboard/equipment', icon: <FaTools /> },
   { label: 'Reusables', route: '/bmdashboard/reusables', icon: <FaRecycle /> },
+  { label: 'Units', route: '/bmdashboard/units', icon: <FaRulerCombined /> },
 ];
 
 const isItemUsing = item =>

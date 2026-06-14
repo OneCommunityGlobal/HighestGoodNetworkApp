@@ -21,7 +21,7 @@ import {
   NavLink,
   UncontrolledDropdown
 } from 'reactstrap';
-import { FaCubes, FaShoppingCart, FaTools, FaRecycle, FaWrench } from 'react-icons/fa';
+import { FaCubes, FaShoppingCart, FaTools, FaRecycle, FaWrench, FaRulerCombined } from 'react-icons/fa';
 import { getWeeklySummaries } from '~/actions/weeklySummaries';
 import PopUpBar from '~/components/PopUpBar';
 import { fetchTaskEditSuggestions } from '~/components/TaskEditSuggestions/thunks';
@@ -522,6 +522,12 @@ export function Header(props) {
                                   <DropdownItem tag={Link} to="/bmdashboard/tools/purchase" className={`${fontColor} ${styles.bmSubSubItem}`}>Purchase Tools</DropdownItem>
                                 </>
                               )}
+
+                              {/* Unit of Measurement */}
+                              <DropdownItem tag={Link} to="/bmdashboard/units" className={`${fontColor} ${styles.bmSubItem}`}>
+                                <span className={styles.bmIconLabel}><FaRulerCombined className={styles.bmIcon} /> Unit of Measurement</span>
+                              </DropdownItem>
+
 
                               {/* Other BM pages */}
                               <DropdownItem tag={Link} to="/bmdashboard/Issue" className={`${fontColor} ${styles.bmSubItem}`}>Issues</DropdownItem>

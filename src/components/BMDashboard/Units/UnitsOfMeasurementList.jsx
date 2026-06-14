@@ -1,5 +1,6 @@
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   FaCubes,
   FaShoppingCart,
@@ -8,6 +9,7 @@ import {
   FaWrench,
   FaRulerCombined,
 } from 'react-icons/fa';
+import { fetchInvUnits } from '../../../actions/bmdashboard/invUnitActions';
 import UnitsTable from '../InventoryTypesList/invUnitsTable';
 import styles from '../InventoryTypesList/TypesList.module.css';
 
@@ -21,15 +23,20 @@ const siblingCategories = [
 
 function UnitsOfMeasurementList() {
   const darkMode = useSelector(state => state.theme.darkMode);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchInvUnits());
+  }, []);
 
   return (
     <div className={`${styles.typesListContainer} ${darkMode ? styles.darkMode : ''}`}>
-      <h1>
+      <h3>
         <span className={styles.categoryIcon}>
           <FaRulerCombined />
         </span>
         Unit of Measurement
-      </h1>
+      </h3>
 
       {/* Inventory Navigation Bar */}
       <div className={styles.inventoryNav}>
