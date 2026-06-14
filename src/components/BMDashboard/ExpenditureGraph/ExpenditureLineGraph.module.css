@@ -55,7 +55,7 @@ body.dark-mode {
 /* Error styling */
 .error {
   color: #7f0000;
-  background-color: rgb(211 47 47 / 5%);
+  background-color: #fff;
   padding: 10px;
   border-radius: 4px;
   border: 1px solid #d32f2f;

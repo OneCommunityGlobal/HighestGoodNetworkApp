@@ -121,7 +121,7 @@ const CostBreakdownChart = () => {
           fromDate,
           toDate,
         );
-        if (response.data && response.data.actual) {
+        if (response.data?.actual) {
           setChartData(response.data.actual);
           return;
         }
