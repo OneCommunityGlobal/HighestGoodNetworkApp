@@ -2,12 +2,16 @@ import axios, { isCancel } from 'axios';
 import { toast } from 'react-toastify';
 import logService from './logService';
 
+// Set base URL for API requests
+axios.defaults.baseURL = process.env.REACT_APP_API_URL || 'http://localhost:4500';
+
 if (axios.defaults && axios.defaults.headers && axios.defaults.headers.post) {
   axios.defaults.headers.post['Content-Type'] = 'application/json';
 }
 
 if (axios.interceptors && axios.interceptors.response && axios.interceptors.response.use) {
   axios.interceptors.response.use(null, error => {
+    const skipGlobalErrorToast = Boolean(error?.config?.skipGlobalErrorToast);
     if (!(error.response && error.response.status >= 400 && error.response.status <= 500)) {
       if (
         !isCancel(error) &&
@@ -15,7 +19,9 @@ if (axios.interceptors && axios.interceptors.response && axios.interceptors.resp
         error.code !== 'ERR_NETWORK'
       ) {
         logService.logError(error);
-        toast.error('An unexpected error occurred.');
+        if (!skipGlobalErrorToast) {
+          toast.error('An unexpected error occurred.');
+        }
       }
     }
     return Promise.reject(error);
