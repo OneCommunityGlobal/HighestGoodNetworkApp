@@ -52,7 +52,7 @@ export default function IssueList() {
         id: issue._id,
         name: issue.issueTitle?.[0] ?? 'Untitled',
         tag: issue.tag || '',
-        date: new Date(issue.createdDate.split('T')[0]) ?? null,
+        date: new Date(issue.createdDate.split('T')[0]),
         project: projectMap[issue.projectId] || 'Unknown Project',
         openSince: getDaysSinceCreated(issue.createdDate.split('T')[0]),
         cost: issue.cost,
