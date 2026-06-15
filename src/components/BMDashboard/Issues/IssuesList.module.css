@@ -6,9 +6,6 @@
     border-spacing: 0 12px; /* vertical spacing between rows */
     width: 100%;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  }
-
-  .issue-table{
     background-color: #fff;
   }
   
@@ -28,10 +25,9 @@
     font-size: 14px;
     color: #212529;
     padding: 12px 16px;
-    background-color: #ffffff;
+    background-color: #fff;
     vertical-align: middle;
-    white-space: normal;     /* Allows text wrapping */
-    word-wrap: break-word;   /* Breaks long words */
+    white-space: normal;     /* Allows text wrapping */   /* Breaks long words */
     overflow-wrap: break-word;
     max-width: 200px;
   }
@@ -39,7 +35,7 @@
   /* Row styling */
   .issue-table tbody tr {
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 4px rgb(0 0 0 / 5%);
   }
 
   
@@ -58,7 +54,7 @@
     gap: 4px;
     background-color: #fff;
     border-radius: 8px;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
     text-align: center !important;
     left: 0 !important;
   }
@@ -101,7 +97,7 @@
 
 .dark-theme .issue-table thead th {
   background-color: #1c2541;
-  color: #cccccc;
+  color: #ccc;
   border: 1px solid #eceaea;
 }
 
@@ -112,7 +108,7 @@
 }
 
 .dark-theme .issue-table tbody tr {
-  box-shadow: 0 2px 4px rgba(255, 255, 255, 0.05);
+  box-shadow: 0 2px 4px rgb(255 255 255 / 5%);
 }
 
 .dark-theme .btn-outline-primary {
@@ -123,7 +119,7 @@
 
 .dark-theme .dropdown-menu-custom {
   background-color: #1c2541;
-  box-shadow: 0px 4px 12px rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 12px rgb(255 255 255 / 10%);
 }
 
 .dark-theme .dropdown-menu-custom .dropdown-item-custom {

@@ -6,8 +6,7 @@ import { Table, Button, Dropdown, Form, Row, Col, Container } from 'react-bootst
 import './IssuesList.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchBMProjects } from 'actions/bmdashboard/projectActions';
-import { deleteIssue, fetchOpenIssues, updateIssue } from 'actions/bmdashboard/issueChartActions';
-
+import { fetchIssues } from 'actions/bmdashboard/issueChartActions';
 export default function IssueList() {
   const [tagFilter, setTagFilter] = useState(null);
   const [selectedProjects, setSelectedProjects] = useState([]);
@@ -35,7 +34,7 @@ export default function IssueList() {
   const projectMap = Object.fromEntries(projects.map(p => [p._id, p.name]));
 
   useEffect(() => {
-    dispatch(fetchOpenIssues());
+    dispatch(fetchIssues());
     dispatch(fetchBMProjects());
   }, [dispatch]);
 
@@ -51,7 +50,7 @@ export default function IssueList() {
     if (Array.isArray(rawIssues) && rawIssues.length > 0) {
       const processed = rawIssues.map(issue => ({
         id: issue._id,
-        name: issue.issueTitle?.[0] || 'Untitled',
+        name: issue.issueTitle?.[0] ?? 'Untitled',
         tag: issue.tag || '',
         date: new Date(issue.createdDate.split('T')[0]) || null,
         project: projectMap[issue.projectId] || 'Unknown Project',
@@ -79,12 +78,12 @@ export default function IssueList() {
   };
 
   const handleDelete = issueId => {
-    dispatch(deleteIssue(issueId));
+    // dispatch(deleteIssue(issueId)); // TODO: implement delete
     closeDropdown();
   };
 
   const handleCloseIssue = issueId => {
-    dispatch(updateIssue(issueId, { status: 'close' }));
+    // dispatch(updateIssue(issueId, { status: 'close' })); // TODO: implement close
     closeDropdown();
   };
 
@@ -99,7 +98,7 @@ export default function IssueList() {
   };
 
   const handleNameSubmit = issueId => {
-    dispatch(updateIssue(issueId, { 'issueTitle.0': editedName }));
+    // dispatch(updateIssue(issueId, { 'issueTitle.0': editedName })); // TODO: implement rename
     setEditingId(null);
     setEditedName('');
   };
@@ -230,12 +229,7 @@ export default function IssueList() {
               <td>
                 {editingId === issue.id ? (
                   <div style={{ display: 'flex', gap: '8px' }}>
-                    <Form.Control
-                      type="text"
-                      value={editedName}
-                      onChange={handleNameChange}
-                      autoFocus
-                    />
+                    <Form.Control type="text" value={editedName} onChange={handleNameChange} />
                     <Button size="sm" variant="success" onClick={() => handleNameSubmit(issue.id)}>
                       Submit
                     </Button>
