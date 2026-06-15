@@ -461,7 +461,7 @@ function WeeklyProjectSummary() {
         ),
       },
     ],
-    [quantityOfMaterialsUsedData],
+    [quantityOfMaterialsUsedData, darkMode],
   );
 
   const handleSaveAsPDF = async () => {
