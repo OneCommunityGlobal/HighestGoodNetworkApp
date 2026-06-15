@@ -6,7 +6,6 @@ import { configureStore } from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import Warning from '../Warnings';
 import * as warningActions from '../../../actions/warnings';
-// need to add handling for darkmode
 
 vi.mock('../../../actions/warnings', () => ({
   getWarningsByUserId: vi.fn(() => () => Promise.resolve([])),

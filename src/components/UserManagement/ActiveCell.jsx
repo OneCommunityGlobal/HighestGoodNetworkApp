@@ -15,22 +15,15 @@ function ActiveCell(props) {
   const now = moment();
 
   function deriveUserStatus({ isActive, reactivationDate, endDate }) {
-    if (reactivationDate && moment(reactivationDate).isAfter(now)) return UserStatus.Paused;
-  
-  
-    if (isActive && !!endDate && moment(endDate).isAfter(now)) {
-      return UserStatus.Scheduled;
-    }
 
-    // Past endDate should only mark inactive if user is not active
-    if (endDate && !isActive) {
-      return UserStatus.Inactive;
-    }
+  if (reactivationDate) return UserStatus.Paused;
 
-    if (isActive) return UserStatus.Active;
-  
-    return UserStatus.Inactive;
-  }
+  if (!isActive) return UserStatus.Inactive;
+
+  if (!!endDate && moment(endDate).isAfter(now)) return UserStatus.Scheduled;
+
+  return UserStatus.Active;
+}
 
   const userStatus = deriveUserStatus({
     isActive,

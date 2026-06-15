@@ -16,7 +16,7 @@ import {
  
 import Member from './Member';
 import FoundUser from './FoundUser';
-import './members.css';
+import './members.module.css';
 import hasPermission from '~/utils/permissions';
 import { boxStyle, boxStyleDark } from '~/styles';
 import ToggleSwitch from '~/components/UserProfile/UserProfileEdit/ToggleSwitch';
@@ -71,6 +71,8 @@ const Members = props => {
   const canUnassignUserInProject = props.hasPermission('unassignUserInProject');
 
   const projectName = useSelector(state => state.projectById?.projectName || '');
+
+  const [filterMode, setFilterMode] = useState("find");
 
   useEffect(() => {
     const fetchMembers = async () => {
@@ -147,6 +149,7 @@ const Members = props => {
     }
     props.findProjectMembers(projectId, q);
     setShowFindUserList(true);
+    setFilterMode("find");
   };
 
   return (
@@ -224,7 +227,7 @@ const Members = props => {
               />
               <div className="input-group-append">
                 <button
-                className="btn btn-primary"
+                className={`btn ${filterMode === "find"  ? "btn-primary" : "btn-outline-primary"}`}
                 type="button"
                 disabled={!searchText.trim()}   // enabled only when there’s something to find
                 onClick={handleFind}
@@ -232,12 +235,13 @@ const Members = props => {
                   Find 
                   </button>
                   <button
-                  className="btn btn-outline-primary"
+                  className={`btn ${filterMode === "all"  ? "btn-primary" : "btn-outline-primary"}`}
                   type="button"
                   onClick={() => {
                     // optional “All users” button
                     props.getAllUserProfiles();
                     setShowFindUserList(true);
+                    setFilterMode("all");
                   }}
                   >
                   All
