@@ -108,7 +108,6 @@
 
 .button.btn.button--maroon {
   background-color: #980101;
-  margin-top: 2em;
   color: #ffffff !important;
 }
 
@@ -122,6 +121,7 @@
     margin-top: -0.5em;
     display: flex;
     justify-content: center;
+    gap:5px;
   }
 
   .button.btn.btn-secondary {
@@ -280,5 +280,6 @@
 }
 
 ul.log-bar__btn-group {
+  gap:5px;
   padding: 0px;
 }
