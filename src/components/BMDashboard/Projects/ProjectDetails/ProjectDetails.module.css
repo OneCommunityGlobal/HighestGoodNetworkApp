@@ -2,28 +2,36 @@
    PROJECT DETAILS MAIN LAYOUT
 ========================================= */
 
-project-details {
+.project-details {
   text-align: center;
   padding: 40px 3% 0; 
   font-weight: bold;
+  background-color: #f8f9fa;
+  color: #1a1a1a;
 }
 
 .project-details-dark {
   text-align: center;
-  padding: 40px 3% 0;
+  padding: 40px 3% 0; 
   font-weight: bold;
   background-color: #1c1e1c;
+  color: #fff;
 }
 
 /* Titles */
 .project-details-title {
   font-size: 1.5rem;
-  overflow: hidden;
+  color: white;
+  text-align: center;
 }
 
 .project-details-title-dark {
   font-size: 1.5rem;
   color: #fff;
+}
+
+.project-details h1 {
+    color: black;
 }
 
 /* =========================================

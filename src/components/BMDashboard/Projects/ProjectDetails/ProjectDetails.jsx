@@ -1,13 +1,11 @@
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { useEffect } from 'react';
 import { Container, Row, Col } from 'reactstrap';
 import { LoggingButtons, AddItemButtons, TeamButtons } from './LogBar';
 import RentedToolsDisplay from './RentedTools/RentedToolsDisplay';
 import MaterialsDisplay from './Materials/MaterialsDisplay';
 import ProjectLog from './ProjectLog';
-import { fetchBMProjects } from '../../../../actions/bmdashboard/projectActions';
 import styles from './ProjectDetails.module.css';
 import { fetchBMProjects } from '../../../../actions/bmdashboard/projectActions';
 
