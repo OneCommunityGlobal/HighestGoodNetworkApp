@@ -59,16 +59,16 @@
   min-width: 120px;
 }
 
-/* Make data source dropdown wider */
+/* Data source dropdown spans its own row so the date fields can align together */
 .controlGroup:first-of-type {
-  flex: 2 1 200px;
+  flex: 1 1 100%;
   min-width: 180px;
 }
 
-/* Make date fields smaller and just big enough */
+/* Keep both date fields on the same line, sharing the row evenly */
 .controlGroup:nth-of-type(2),
 .controlGroup:nth-of-type(3) {
-  flex: 0 1 110px;
+  flex: 1 1 0;
   min-width: 100px;
 }
 
@@ -284,13 +284,13 @@
   }
 
   .controlGroup:first-of-type {
-    flex: 2 1 180px;
+    flex: 1 1 100%;
     min-width: 160px;
   }
 
   .controlGroup:nth-of-type(2),
   .controlGroup:nth-of-type(3) {
-    flex: 0 1 100px;
+    flex: 1 1 0;
     min-width: 90px;
   }
 

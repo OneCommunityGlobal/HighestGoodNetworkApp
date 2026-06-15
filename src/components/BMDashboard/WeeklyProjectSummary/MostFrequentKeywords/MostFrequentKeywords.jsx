@@ -19,6 +19,51 @@ const DropdownIndicator = props => (
   </selectComponents.DropdownIndicator>
 );
 
+// Pick the most recent unique-tag items, capped at maxItems.
+function getLatestData(data, isMobile) {
+  if (!data || data.length === 0) return [];
+
+  const sorted = [...data].sort((a, b) => new Date(b.date) - new Date(a.date));
+  const maxItems = isMobile ? 6 : 8;
+
+  if (sorted.length < maxItems) return sorted;
+
+  const latestItems = [];
+  const usedTags = new Set();
+
+  for (const item of sorted) {
+    if (!usedTags.has(item.tag)) {
+      latestItems.push(item);
+      usedTags.add(item.tag);
+      if (latestItems.length >= maxItems) break;
+    }
+  }
+
+  return latestItems;
+}
+
+// Items without a real date are always included; otherwise check the bounds.
+function isWithinDateRange(item, startDate, endDate) {
+  if (!item.date) return true;
+
+  const itemDate = new Date(item.date);
+  itemDate.setHours(0, 0, 0, 0);
+
+  if (startDate) {
+    const start = new Date(startDate);
+    start.setHours(0, 0, 0, 0);
+    if (itemDate < start) return false;
+  }
+
+  if (endDate) {
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+    if (itemDate > end) return false;
+  }
+
+  return true;
+}
+
 function MostFrequentKeywords() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const svgRef = useRef();
@@ -241,82 +286,25 @@ function MostFrequentKeywords() {
     };
   }, [dimensions, isMobile]);
 
-  const getLatestData = useCallback(
-    data => {
-      if (!data || data.length === 0) return [];
-
-      const sorted = [...data].sort((a, b) => new Date(b.date) - new Date(a.date));
-      const maxItems = isMobile ? 6 : 8;
-
-      if (sorted.length >= maxItems) {
-        const latestItems = [];
-        const usedTags = new Set();
-
-        for (const item of sorted) {
-          if (!usedTags.has(item.tag)) {
-            latestItems.push(item);
-            usedTags.add(item.tag);
-            if (latestItems.length >= maxItems) break;
-          }
-        }
-
-        return latestItems;
-      }
-
-      return sorted;
-    },
-    [isMobile],
-  );
-
   const filterTagsByDate = useCallback(
     tagsToFilter => {
       if (!tagsToFilter || tagsToFilter.length === 0) return [];
 
       if (!startDate && !endDate) {
-        return getLatestData(tagsToFilter);
+        return getLatestData(tagsToFilter, isMobile);
       }
 
-      const filtered = tagsToFilter.filter(item => {
-        // Items without a real date are always included regardless of filter
-        if (!item.date) return true;
-
-        const itemDate = new Date(item.date);
-        itemDate.setHours(0, 0, 0, 0);
-
-        if (startDate && endDate) {
-          const start = new Date(startDate);
-          start.setHours(0, 0, 0, 0);
-          const end = new Date(endDate);
-          end.setHours(23, 59, 59, 999);
-          return itemDate >= start && itemDate <= end;
-        }
-        if (startDate) {
-          const start = new Date(startDate);
-          start.setHours(0, 0, 0, 0);
-          return itemDate >= start;
-        }
-        if (endDate) {
-          const end = new Date(endDate);
-          end.setHours(23, 59, 59, 999);
-          return itemDate <= end;
-        }
-
-        return true;
-      });
+      const filtered = tagsToFilter.filter(item => isWithinDateRange(item, startDate, endDate));
 
       const sorted = [...filtered].sort((a, b) => b.count - a.count);
       const maxItems = isMobile ? 6 : 8;
       const result = sorted.slice(0, maxItems);
 
-      if (result.length === 0) {
-        setError('No keywords available for selected filters');
-      } else {
-        setError('');
-      }
+      setError(result.length === 0 ? 'No keywords available for selected filters' : '');
 
       return result;
     },
-    [startDate, endDate, getLatestData, isMobile],
+    [startDate, endDate, isMobile],
   );
 
   useEffect(() => {
