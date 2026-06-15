@@ -13,8 +13,9 @@ import {
 } from 'recharts';
 import moment from 'moment';
 import Select from 'react-select';
-import { getProjectCosts, getProjectIds } from '../../../services/projectCostTrackingService';
-import { useSelector } from 'react-redux';
+import { getProjectCosts } from '../../../services/projectCostTrackingService';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchBMProjects } from '../../../actions/bmdashboard/projectActions';
 import ReactTooltip from 'react-tooltip';
 import { Info, AlertTriangle, TrendingUp, ShieldCheck } from 'lucide-react';
 import styles from './CostPredictionPage.module.css';
@@ -104,7 +105,7 @@ const BUDGET_THRESHOLDS = {
 const computeConfidenceScore = (chartData, selectedCosts) => {
   if (!chartData || chartData.length === 0) return null;
 
-  const activeCosts = selectedCosts.length > 0 ? selectedCosts : ['Labor', 'Materials'];
+  const activeCosts = selectedCosts;
 
   let totalActual = 0;
   let totalPredicted = 0;
@@ -136,7 +137,7 @@ const getConfidenceLevel = score => {
 const detectOverBudgetAlerts = (chartData, lastPredictedValues, selectedCosts) => {
   if (!chartData || chartData.length === 0) return [];
 
-  const activeCosts = selectedCosts.length > 0 ? selectedCosts : ['Labor', 'Materials'];
+  const activeCosts = selectedCosts;
   const alerts = [];
 
   activeCosts.forEach(category => {
@@ -401,14 +402,26 @@ CustomTooltip.propTypes = {
 
 function CostPredictionPage({ projectId }) {
   const [data, setData] = useState([]);
-  const [selectedCosts, setSelectedCosts] = useState(['Labor', 'Materials']);
-  const [loading, setLoading] = useState(true);
+  const [selectedCosts, setSelectedCosts] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [currency] = useState('$');
-  const [availableProjects, setAvailableProjects] = useState([]);
-  const [selectedProject, setSelectedProject] = useState(null);
+  const [selectedProjectId, setSelectedProjectId] = useState(projectId || null);
   const [lastPredictedValues, setLastPredictedValues] = useState({});
   const darkMode = useSelector(state => state.theme.darkMode);
+  const dispatch = useDispatch();
+  const bmProjects = useSelector(state => state.bmProjects || []);
+
+  // Build dropdown options from building projects (id -> name)
+  const availableProjects = useMemo(
+    () => bmProjects.map(project => ({ value: project._id, label: project.name })),
+    [bmProjects],
+  );
+
+  const selectedProject = useMemo(
+    () => availableProjects.find(option => option.value === selectedProjectId) || null,
+    [availableProjects, selectedProjectId],
+  );
 
   // Compute confidence score and over-budget alerts from current data
   const confidenceScore = useMemo(() => computeConfidenceScore(data, selectedCosts), [
@@ -422,27 +435,15 @@ function CostPredictionPage({ projectId }) {
   );
 
   useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const projectIds = await getProjectIds();
-        setAvailableProjects(projectIds.map(id => ({ value: id, label: id })));
-        if (projectIds.length > 0) {
-          const initialProject = projectId || projectIds[0];
-          setSelectedProject({ value: initialProject, label: initialProject });
-        }
-      } catch {
-        setError('Failed to load projects');
-      }
-    };
-    fetchProjects();
-  }, [projectId]);
+    dispatch(fetchBMProjects());
+  }, [dispatch]);
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!selectedProject) return;
+      if (!selectedProjectId) return;
       setLoading(true);
       try {
-        const costData = await getProjectCosts(selectedProject.value);
+        const costData = await getProjectCosts(selectedProjectId);
         setData(processDataForChart(costData));
         setLastPredictedValues(getLastPredictedValues(costData));
         setLoading(false);
@@ -452,13 +453,13 @@ function CostPredictionPage({ projectId }) {
       }
     };
     fetchData();
-  }, [selectedProject]);
+  }, [selectedProjectId]);
 
   const handleCostChange = selected => {
     const selectedValues = selected ? selected.map(option => option.value) : [];
     setSelectedCosts(selectedValues);
   };
-  const handleProjectChange = selected => setSelectedProject(selected);
+  const handleProjectChange = selected => setSelectedProjectId(selected ? selected.value : null);
 
   // Pick the right dot component by name
   const getDotRenderer = category => {
@@ -687,10 +688,7 @@ function CostPredictionPage({ projectId }) {
                   />
 
                   {/* Reference Lines for Last Predicted Values */}
-                  {(selectedCosts.length > 0
-                    ? selectedCosts
-                    : ['Labor', 'Materials']
-                  ).map(category =>
+                  {selectedCosts.map(category =>
                     lastPredictedValues[category] ? (
                       <ReferenceLine
                         key={`ref-${category}`}
@@ -702,49 +700,47 @@ function CostPredictionPage({ projectId }) {
                   )}
 
                   {/* Dynamically render lines based on selected costs */}
-                  {(selectedCosts.length > 0 ? selectedCosts : ['Labor', 'Materials']).map(
-                    category => (
-                      <Fragment key={`${category}-container`}>
-                        {/* Actual cost line */}
-                        <Line
-                          key={category}
-                          type="linear"
-                          dataKey={category}
-                          name={`${category} Cost`}
-                          stroke={costColors[category]}
-                          strokeWidth={2}
-                          connectNulls={true}
-                          dot={{
-                            r: 3,
-                            fill: costColors[category],
-                            stroke: costColors[category],
-                            strokeWidth: 0,
-                          }}
-                          activeDot={{
-                            r: 4,
-                            fill: costColors[category],
-                            stroke: costColors[category],
-                            strokeWidth: 0,
-                          }}
-                          isAnimationActive={false}
-                        />
-                        {/* Predicted cost line */}
-                        <Line
-                          key={`${category}Predicted`}
-                          type="linear"
-                          dataKey={`${category}Predicted`}
-                          name={`${category} Cost (Predicted)`}
-                          stroke={costColors[category]}
-                          strokeWidth={2}
-                          strokeDasharray="8 4"
-                          connectNulls={true}
-                          dot={getDotRenderer(category)}
-                          activeDot={{ r: 4 }}
-                          isAnimationActive={false}
-                        />
-                      </Fragment>
-                    ),
-                  )}
+                  {selectedCosts.map(category => (
+                    <Fragment key={`${category}-container`}>
+                      {/* Actual cost line */}
+                      <Line
+                        key={category}
+                        type="linear"
+                        dataKey={category}
+                        name={`${category} Cost`}
+                        stroke={costColors[category]}
+                        strokeWidth={2}
+                        connectNulls={true}
+                        dot={{
+                          r: 3,
+                          fill: costColors[category],
+                          stroke: costColors[category],
+                          strokeWidth: 0,
+                        }}
+                        activeDot={{
+                          r: 4,
+                          fill: costColors[category],
+                          stroke: costColors[category],
+                          strokeWidth: 0,
+                        }}
+                        isAnimationActive={false}
+                      />
+                      {/* Predicted cost line */}
+                      <Line
+                        key={`${category}Predicted`}
+                        type="linear"
+                        dataKey={`${category}Predicted`}
+                        name={`${category} Cost (Predicted)`}
+                        stroke={costColors[category]}
+                        strokeWidth={2}
+                        strokeDasharray="8 4"
+                        connectNulls={true}
+                        dot={getDotRenderer(category)}
+                        activeDot={{ r: 4 }}
+                        isAnimationActive={false}
+                      />
+                    </Fragment>
+                  ))}
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -755,7 +751,7 @@ function CostPredictionPage({ projectId }) {
               className={styles.costChartEmpty}
               style={{ color: darkMode ? DARK.text : 'inherit' }}
             >
-              <p>No data available</p>
+              <p>{selectedProjectId ? 'No data available' : 'Please select a project'}</p>
             </div>
           )}
         </div>
