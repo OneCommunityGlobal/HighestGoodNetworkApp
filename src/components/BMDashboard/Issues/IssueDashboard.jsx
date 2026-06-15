@@ -309,9 +309,7 @@ export default function IssueDashboard() {
                   </td>
                   <td className={darkMode ? 'text-light' : 'text-dark'}>{openSince}</td>
                   <td>
-                    <span className={`${styles.badge} ${styles.bgInfo} text-dark`}>
-                      {category}
-                    </span>
+                    <span className={`${styles.badge} ${styles.bgInfo} text-dark`}>{category}</span>
                   </td>
                   <td className={darkMode ? 'text-light' : 'text-dark'}>{assignedTo}</td>
                   <td className={darkMode ? 'text-light' : 'text-dark'}>{cost}</td>
@@ -365,7 +363,9 @@ export default function IssueDashboard() {
                           <button
                             type="button"
                             className={`${styles.issueDashboardDropdownItem} ${
-                              darkMode ? `${styles.issueDashboardDropdownItemDark} text-danger` : 'text-danger'
+                              darkMode
+                                ? `${styles.issueDashboardDropdownItemDark} text-danger`
+                                : 'text-danger'
                             }`}
                             onClick={() => {
                               openDeleteModal(issue);
@@ -410,7 +410,9 @@ export default function IssueDashboard() {
             <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
               <button
                 type="button"
-                className={`page-link ${darkMode ? 'bg-dark text-light border-secondary' : 'bg-white text-dark'}`}
+                className={`page-link ${
+                  darkMode ? 'bg-dark text-light border-secondary' : 'bg-white text-dark'
+                }`}
                 onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
                 aria-label="Previous"
               >
@@ -421,7 +423,9 @@ export default function IssueDashboard() {
             <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
               <button
                 type="button"
-                className={`page-link ${darkMode ? 'bg-dark text-light border-secondary' : 'bg-white text-dark'}`}
+                className={`page-link ${
+                  darkMode ? 'bg-dark text-light border-secondary' : 'bg-white text-dark'
+                }`}
                 onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
                 aria-label="Next"
               >
@@ -436,11 +440,17 @@ export default function IssueDashboard() {
       {showRenameModal && (
         <div className={darkMode ? styles.issuesModalBackdropDark : styles.issuesModalBackdrop}>
           <div className="modal-dialog">
-            <div className={`modal-content p-3 ${darkMode ? 'bg-oxford-blue text-light' : 'bg-white text-dark'}`}>
+            <div
+              className={`modal-content p-3 ${
+                darkMode ? 'bg-oxford-blue text-light' : 'bg-white text-dark'
+              }`}
+            >
               <h5>Rename Issue</h5>
               <input
                 type="text"
-                className={`form-control my-2 ${darkMode ? 'bg-dark text-light border-secondary' : 'bg-white text-dark'}`}
+                className={`form-control my-2 ${
+                  darkMode ? 'bg-dark text-light border-secondary' : 'bg-white text-dark'
+                }`}
                 value={renameValue}
                 onChange={e => setRenameValue(e.target.value)}
               />
@@ -452,11 +462,7 @@ export default function IssueDashboard() {
                 >
                   Cancel
                 </button>
-                <button
-                  className="btn btn-primary"
-                  onClick={confirmRename}
-                  type="button"
-                >
+                <button className="btn btn-primary" onClick={confirmRename} type="button">
                   Rename
                 </button>
               </div>
@@ -469,7 +475,11 @@ export default function IssueDashboard() {
       {showDeleteModal && (
         <div className={darkMode ? styles.issuesModalBackdropDark : styles.issuesModalBackdrop}>
           <div className="modal-dialog">
-            <div className={`modal-content p-3 ${darkMode ? 'bg-oxford-blue text-light' : 'bg-white text-dark'}`}>
+            <div
+              className={`modal-content p-3 ${
+                darkMode ? 'bg-oxford-blue text-light' : 'bg-white text-dark'
+              }`}
+            >
               <h5>Confirm Delete</h5>
               <p>
                 Are you sure you want to delete <strong>{selectedIssue?.name}</strong>?
@@ -482,11 +492,7 @@ export default function IssueDashboard() {
                 >
                   Cancel
                 </button>
-                <button
-                  className="btn btn-danger"
-                  onClick={confirmDelete}
-                  type="button"
-                >
+                <button className="btn btn-danger" onClick={confirmDelete} type="button">
                   Delete
                 </button>
               </div>
@@ -499,7 +505,11 @@ export default function IssueDashboard() {
       {showCopyModal && (
         <div className={darkMode ? styles.issuesModalBackdropDark : styles.issuesModalBackdrop}>
           <div className="modal-dialog">
-            <div className={`modal-content p-3 ${darkMode ? 'bg-oxford-blue text-light' : 'bg-white text-dark'}`}>
+            <div
+              className={`modal-content p-3 ${
+                darkMode ? 'bg-oxford-blue text-light' : 'bg-white text-dark'
+              }`}
+            >
               <h5>Confirm Copy</h5>
               <p>
                 Are you sure you want to copy <strong>{selectedIssue?.name}</strong>?
@@ -512,11 +522,7 @@ export default function IssueDashboard() {
                 >
                   Cancel
                 </button>
-                <button
-                  className="btn btn-primary"
-                  onClick={confirmCopy}
-                  type="button"
-                >
+                <button className="btn btn-primary" onClick={confirmCopy} type="button">
                   Copy
                 </button>
               </div>
