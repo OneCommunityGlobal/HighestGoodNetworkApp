@@ -45,14 +45,15 @@
   background-color: #3A506B ;
   color: #fff;
 }
+
 /* Responsive design */
-@media screen and (max-width: 1100px) {
+@media screen and (width <= 1100px) {
   .collapse-column {
     display: none;
   }
 }
 
-@media screen and (max-width: 1100px) {
+@media screen and (width <= 1100px) {
   .tasks-detail-table {
     min-width: 600px;
   }
@@ -67,7 +68,7 @@
   }
 }
 
-@media screen and (max-width: 645px) {
+@media screen and (width <= 645px) {
   .tasks-detail-table {
     min-width: 400px;
   }
