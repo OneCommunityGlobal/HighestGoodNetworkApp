@@ -170,7 +170,6 @@ export default function IssueDashboard() {
       return;
     }
     const doc = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
-    const pageWidth = doc.internal.pageSize.getWidth();
     const startX = 40;
     const startY = 50;
     const rowHeight = 18;
@@ -244,7 +243,7 @@ export default function IssueDashboard() {
   return (
     <div
       className={`container-fluid issue-dashboard min-vh-100 p-4 ${
-        darkMode ? 'bg-oxford-blue text-light' : ''
+        darkMode ? 'bg-oxford-blue text-light' : 'bg-light text-dark'
       }`}
     >
       <div>
@@ -252,7 +251,9 @@ export default function IssueDashboard() {
       </div>
       <Row className="mb-3">
         <Col>
-          <h4 className={`fw-semibold ${darkMode ? 'text-light' : ''}`}>Issue Dashboard</h4>
+          <h4 className={`fw-semibold ${darkMode ? 'text-light' : 'text-dark'}`}>
+            Issue Dashboard
+          </h4>
         </Col>
         <Col className="d-flex justify-content-end">
           <UncontrolledDropdown>
@@ -282,7 +283,7 @@ export default function IssueDashboard() {
         <Table hover className={`mb-0 ${darkMode ? 'table-dark' : ''}`}>
           <thead className={darkMode ? 'table-dark' : 'table-light'}>
             <tr>
-              <th className={`${styles.textEnd}`}>Issue Name </th>
+              <th className={`${styles.textEnd}`}>Issue Name</th>
               <th className={`${styles.textEnd}`}>Open since</th>
               <th className={`${styles.textEnd}`}>Category</th>
               <th className={`${styles.textEnd}`}>Person dealing</th>
@@ -303,15 +304,19 @@ export default function IssueDashboard() {
 
               return (
                 <tr key={issue._id}>
-                  <td className={`fw-medium ${darkMode ? 'text-light' : ''}`}>{issue.name}</td>
-                  <td className={darkMode ? 'text-light' : ''}>{openSince}</td>
-                  <td>
-                    <span className={`${styles.badge} ${styles.bgInfo} text-dark`}>{category}</span>
+                  <td className={`fw-medium ${darkMode ? 'text-light' : 'text-dark'}`}>
+                    {issue.name}
                   </td>
-                  <td className={darkMode ? 'text-light' : ''}>{assignedTo}</td>
-                  <td className={darkMode ? 'text-light' : ''}>{cost}</td>
+                  <td className={darkMode ? 'text-light' : 'text-dark'}>{openSince}</td>
+                  <td>
+                    <span className={`${styles.badge} ${styles.bgInfo} text-dark`}>
+                      {category}
+                    </span>
+                  </td>
+                  <td className={darkMode ? 'text-light' : 'text-dark'}>{assignedTo}</td>
+                  <td className={darkMode ? 'text-light' : 'text-dark'}>{cost}</td>
                   <td className={`${styles.textEnd} position-relative`}>
-                    <div className={`issue-dashboard-dropdown  ${darkMode ? 'bg-oxide-blue' : ''}`}>
+                    <div className={`issue-dashboard-dropdown ${darkMode ? 'bg-oxide-blue' : ''}`}>
                       <button
                         type="button"
                         aria-label="Actions menu"
@@ -333,7 +338,9 @@ export default function IssueDashboard() {
                         >
                           <button
                             type="button"
-                            className={`${styles.issueDashboardDropdownItem}`}
+                            className={`${styles.issueDashboardDropdownItem} ${
+                              darkMode ? styles.issueDashboardDropdownItemDark : ''
+                            }`}
                             onClick={() => {
                               openRenameModal(issue);
                               setMenuOpen(null);
@@ -344,7 +351,9 @@ export default function IssueDashboard() {
                           </button>
                           <button
                             type="button"
-                            className={`${styles.issueDashboardDropdownItem}`}
+                            className={`${styles.issueDashboardDropdownItem} ${
+                              darkMode ? styles.issueDashboardDropdownItemDark : ''
+                            }`}
                             onClick={() => {
                               openCopyModal(issue);
                               setMenuOpen(null);
@@ -355,7 +364,9 @@ export default function IssueDashboard() {
                           </button>
                           <button
                             type="button"
-                            className={`${styles.issueDashboardDropdownItem} text-danger`}
+                            className={`${styles.issueDashboardDropdownItem} ${
+                              darkMode ? `${styles.issueDashboardDropdownItemDark} text-danger` : 'text-danger'
+                            }`}
                             onClick={() => {
                               openDeleteModal(issue);
                               setMenuOpen(null);
@@ -391,7 +402,7 @@ export default function IssueDashboard() {
           darkMode ? 'bg-space-cadet text-light' : 'bg-light text-muted'
         }`}
       >
-        <div className={`small ${darkMode ? 'text-light' : ''}`}>
+        <div className={`small ${darkMode ? 'text-light' : 'text-dark'}`}>
           Showing {currentItems.length} of {issues.length} issues
         </div>
         <nav aria-label="Issue pagination">
@@ -399,7 +410,7 @@ export default function IssueDashboard() {
             <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
               <button
                 type="button"
-                className={`page-link ${darkMode ? 'bg-dark text-light border-secondary' : ''}`}
+                className={`page-link ${darkMode ? 'bg-dark text-light border-secondary' : 'bg-white text-dark'}`}
                 onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
                 aria-label="Previous"
               >
@@ -410,7 +421,7 @@ export default function IssueDashboard() {
             <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
               <button
                 type="button"
-                className={`page-link ${darkMode ? 'bg-dark text-light border-secondary' : ''}`}
+                className={`page-link ${darkMode ? 'bg-dark text-light border-secondary' : 'bg-white text-dark'}`}
                 onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
                 aria-label="Next"
               >
@@ -423,13 +434,13 @@ export default function IssueDashboard() {
 
       {/* Rename Modal */}
       {showRenameModal && (
-        <div className={`${styles.issuesModalBackdrop}`}>
-          <div className={`modal-dialog `}>
-            <div className={`modal-content p-3 ${darkMode ? 'bg-oxford-blue text-light' : ''}`}>
+        <div className={darkMode ? styles.issuesModalBackdropDark : styles.issuesModalBackdrop}>
+          <div className="modal-dialog">
+            <div className={`modal-content p-3 ${darkMode ? 'bg-oxford-blue text-light' : 'bg-white text-dark'}`}>
               <h5>Rename Issue</h5>
               <input
                 type="text"
-                className="form-control my-2"
+                className={`form-control my-2 ${darkMode ? 'bg-dark text-light border-secondary' : 'bg-white text-dark'}`}
                 value={renameValue}
                 onChange={e => setRenameValue(e.target.value)}
               />
@@ -438,7 +449,6 @@ export default function IssueDashboard() {
                   className="btn btn-secondary mx-3"
                   onClick={() => setShowRenameModal(false)}
                   type="button"
-                  label="Cancel Button"
                 >
                   Cancel
                 </button>
@@ -446,7 +456,6 @@ export default function IssueDashboard() {
                   className="btn btn-primary"
                   onClick={confirmRename}
                   type="button"
-                  label="Rename Button"
                 >
                   Rename
                 </button>
@@ -458,19 +467,18 @@ export default function IssueDashboard() {
 
       {/* Delete Modal */}
       {showDeleteModal && (
-        <div className={`${styles.issuesModalBackdrop}`}>
-          <div className={`modal-dialog ${darkMode ? 'bg-dark text-light' : ''}`}>
-            <div className={`modal-content p-3 ${darkMode ? 'bg-oxford-blue text-light' : ''}`}>
+        <div className={darkMode ? styles.issuesModalBackdropDark : styles.issuesModalBackdrop}>
+          <div className="modal-dialog">
+            <div className={`modal-content p-3 ${darkMode ? 'bg-oxford-blue text-light' : 'bg-white text-dark'}`}>
               <h5>Confirm Delete</h5>
-              <p className={`${darkMode ? 'text-light' : ''}`}>
-                Are you sure you want to delete <strong>{selectedIssue.name}</strong>?
+              <p>
+                Are you sure you want to delete <strong>{selectedIssue?.name}</strong>?
               </p>
               <div className="d-flex justify-content-end gap-2 mt-2">
                 <button
                   className="btn btn-secondary mx-3"
                   onClick={() => setShowDeleteModal(false)}
                   type="button"
-                  label="Cancel Button"
                 >
                   Cancel
                 </button>
@@ -478,7 +486,6 @@ export default function IssueDashboard() {
                   className="btn btn-danger"
                   onClick={confirmDelete}
                   type="button"
-                  label="Delete Button"
                 >
                   Delete
                 </button>
@@ -490,19 +497,18 @@ export default function IssueDashboard() {
 
       {/* Copy Modal */}
       {showCopyModal && (
-        <div className={`${styles.issuesModalBackdrop}`}>
-          <div className={`modal-dialog ${darkMode ? 'bg-dark text-light' : ''}`}>
-            <div className={`modal-content p-3 ${darkMode ? 'bg-oxford-blue text-light' : ''}`}>
+        <div className={darkMode ? styles.issuesModalBackdropDark : styles.issuesModalBackdrop}>
+          <div className="modal-dialog">
+            <div className={`modal-content p-3 ${darkMode ? 'bg-oxford-blue text-light' : 'bg-white text-dark'}`}>
               <h5>Confirm Copy</h5>
-              <p className={`${darkMode ? 'text-light' : ''}`}>
-                Are you sure you want to copy <strong>{selectedIssue.name}</strong>?
+              <p>
+                Are you sure you want to copy <strong>{selectedIssue?.name}</strong>?
               </p>
               <div className="d-flex justify-content-end gap-2 mt-2">
                 <button
                   className="btn btn-secondary mx-3"
                   onClick={() => setShowCopyModal(false)}
                   type="button"
-                  label="Cancel Button"
                 >
                   Cancel
                 </button>
@@ -510,7 +516,6 @@ export default function IssueDashboard() {
                   className="btn btn-primary"
                   onClick={confirmCopy}
                   type="button"
-                  label="Copy Button"
                 >
                   Copy
                 </button>

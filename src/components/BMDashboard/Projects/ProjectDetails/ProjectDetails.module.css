@@ -114,10 +114,6 @@
   background-color: #203844 !important;
 }
 
-.button.btn.button--maroon {
-  background-color: #980101;
-  color: #ffffff !important;
-}
 
 /* =========================================
    RESPONSIVE LOG BAR
@@ -138,10 +134,6 @@
   .button.btn {
     width: auto;
   }
-
-  .button--maroon {
-    margin-top: auto;
-  }
 }
 
 @media (width >= 880px) {
@@ -155,9 +147,6 @@
     flex: auto;
   }
 
-  .button--maroon {
-    margin-left: 2em;
-  }
 }
 
 /* =========================================
