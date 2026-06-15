@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux'; // Added to tap into your application theme state
 import BMError from '../shared/BMError';
 import SelectForm from '../ItemList/SelectForm';
 import SelectItem from '../ItemList/SelectItem';
@@ -23,8 +24,11 @@ export function ToolItemListView({
   const [selectedProject, setSelectedProject] = useState('all');
   const [selectedItem, setSelectedItem] = useState('all');
   const [isError, setIsError] = useState(false);
-
   const [localValues, setLocalValues] = useState([]);
+
+  // Safely grab current theme state configuration
+  const darkMode = useSelector(state => state.theme?.darkMode);
+  const themeClass = darkMode ? styles.darkTheme : styles.lightTheme;
 
   // Load initial items
   useEffect(() => {
@@ -33,7 +37,7 @@ export function ToolItemListView({
     }
   }, [items]);
 
-  // ✅ FULL multi-select compatible filtering
+  // FULL multi-select compatible filtering
   useEffect(() => {
     if (!Array.isArray(items)) return;
 
@@ -45,14 +49,14 @@ export function ToolItemListView({
 
     let result = [...items];
 
-    // ✅ Project filter (single + multi)
+    // Project filter (single + multi)
     if (hasProjects) {
       result = result.filter(item => selectedProject.includes(item.project?.name));
     } else if (!projectIsMulti && selectedProject !== 'all') {
       result = result.filter(item => item.project?.name === selectedProject);
     }
 
-    // ✅ Item / Tool filter (single + multi)
+    // Item / Tool filter (single + multi)
     if (hasItems) {
       result = result.filter(item => selectedItem.includes(item.itemType?.name));
     } else if (!itemIsMulti && selectedItem !== 'all') {
@@ -78,7 +82,7 @@ export function ToolItemListView({
 
   if (isError) {
     return (
-      <main className={styles.itemsListContainer}>
+      <main className={`${styles.itemsListContainer} ${themeClass}`}>
         <h2>{itemType} List</h2>
         <BMError errors={errors} />
       </main>
@@ -86,27 +90,32 @@ export function ToolItemListView({
   }
 
   return (
-    <main className={styles.itemsListContainer}>
-      <h3>{itemType}</h3>
+    <main className={`${styles.itemsListContainer} ${themeClass}`}>
+      <h3 className={styles.viewTitle}>{itemType}</h3>
 
       <section className={styles.selectContainers}>
         <div className={styles.containers}>
           {items && (
-            <>
-              <SelectForm
-                items={items}
-                setSelectedProject={setSelectedProject}
-                localValues={localValues}
-                setLocalValues={setLocalValues}
-              />
+            <div className={styles.filtersWrapper}>
+              <div className={styles.filterGroup}>
+                <SelectForm
+                  items={items}
+                  setSelectedProject={setSelectedProject}
+                  localValues={localValues}
+                  setLocalValues={setLocalValues}
+                />
+              </div>
 
-              <SelectItem
-                items={items}
-                selectedProject={selectedProject}
-                selectedItem={selectedItem}
-                setSelectedItem={setSelectedItem}
-                label="Tool"
-              />
+              <div className={styles.filterGroup}>
+                <SelectItem
+                  items={items}
+                  selectedProject={selectedProject}
+                  selectedItem={selectedItem}
+                  setSelectedItem={setSelectedItem}
+                  label="Tool"
+                />
+              </div>
+
               <div className={styles.resetContainer}>
                 <Button
                   type="button"
@@ -121,19 +130,21 @@ export function ToolItemListView({
                   Reset
                 </Button>
               </div>
-            </>
+            </div>
           )}
         </div>
 
         {filteredItems && (
-          <ToolItemsTable
-            selectedProject={selectedProject}
-            selectedItem={selectedItem}
-            filteredItems={filteredItems}
-            UpdateItemModal={UpdateItemModal}
-            dynamicColumns={dynamicColumns}
-            className={styles.filteredTable}
-          />
+          <div className={darkMode ? styles.darkModeTable : ''}>
+            <ToolItemsTable
+              selectedProject={selectedProject}
+              selectedItem={selectedItem}
+              filteredItems={filteredItems}
+              UpdateItemModal={UpdateItemModal}
+              dynamicColumns={dynamicColumns}
+              className={styles.filteredTable}
+            />
+          </div>
         )}
       </section>
     </main>
