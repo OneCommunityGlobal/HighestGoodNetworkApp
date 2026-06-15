@@ -71,6 +71,7 @@ const renderComponent = mockProps => {
               userId={mockProps.personId}
               updateTaskStatus={updateTaskStatus}
               showTrackers
+              showTasks
             />
           </tbody>
         </table>
