@@ -52,7 +52,7 @@ export default function IssueList() {
         id: issue._id,
         name: issue.issueTitle?.[0] ?? 'Untitled',
         tag: issue.tag || '',
-        date: new Date(issue.createdDate.split('T')[0]) || null,
+        date: new Date(issue.createdDate.split('T')[0]) ?? null,
         project: projectMap[issue.projectId] || 'Unknown Project',
         openSince: getDaysSinceCreated(issue.createdDate.split('T')[0]),
         cost: issue.cost,
@@ -78,12 +78,10 @@ export default function IssueList() {
   };
 
   const handleDelete = issueId => {
-    // dispatch(deleteIssue(issueId)); // TODO: implement delete
     closeDropdown();
   };
 
   const handleCloseIssue = issueId => {
-    // dispatch(updateIssue(issueId, { status: 'close' })); // TODO: implement close
     closeDropdown();
   };
 
@@ -98,7 +96,6 @@ export default function IssueList() {
   };
 
   const handleNameSubmit = issueId => {
-    // dispatch(updateIssue(issueId, { 'issueTitle.0': editedName })); // TODO: implement rename
     setEditingId(null);
     setEditedName('');
   };
