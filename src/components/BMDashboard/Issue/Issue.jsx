@@ -43,7 +43,6 @@ function Issue() {
   const otherOption = ['Other'];
 
   const darkMode = useSelector(state => state.theme.darkMode);
-  
 
   const [formData, setFormData] = useState({
     issueDate: '',
@@ -226,7 +225,9 @@ function Issue() {
   }, []);
 
   return (
-    <div className={darkMode ?`${styles.darkModeIssueFormContainer}`:`${styles.issueFormContainer}`}>
+    <div
+      className={darkMode ? `${styles.darkModeIssueFormContainer}` : `${styles.issueFormContainer}`}
+    >
       <h4 className={`${styles.issueTitleText}`}>{ISSUE_FORM_HEADER}</h4>
       <Form>
         <FormGroup>

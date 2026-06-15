@@ -45,21 +45,21 @@ export function IssueHeader(props) {
             <h1 className={`${styles.section}`}>Issues</h1>
           </div>
 
-        <div className="action-section">
-          <button className="more-button" type="button" label="More Button">
-            <MoreHorizontal size={20} />
-          </button>
-          <Link to="/projects" style={{ textDecoration: 'none' }}>
-            <button className="back-button" type="button">
-              Back to Projects
+          <div className="action-section">
+            <button className="more-button" type="button" label="More Button">
+              <MoreHorizontal size={20} />
             </button>
-          </Link>  
+            <Link to="/projects" style={{ textDecoration: 'none' }}>
+              <button className="back-button" type="button">
+                Back to Projects
+              </button>
+            </Link>
             <Link to="/bmdashboard/projects" style={{ textDecoration: 'none' }}>
               <button className={`${styles.backButton}`} type="button">
                 Back to Projects
               </button>
             </Link>
-            
+
             <div className={`${styles.avatar}`}>
               {profilePic ? (
                 <img src={profilePic} alt={`${firstName}'s avatar`} />
@@ -68,7 +68,6 @@ export function IssueHeader(props) {
               )}
               <ChevronDown size={20} color="#828282" />
             </div>
-
           </div>
         </div>
 
@@ -125,11 +124,8 @@ export function IssueHeader(props) {
                 )}
               </div>
             )}
-
           </div>
-
         </div>
-        
       </div>
     </div>
   );
