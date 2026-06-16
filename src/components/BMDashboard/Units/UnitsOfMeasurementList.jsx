@@ -1,17 +1,18 @@
 import { useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import {
+  FaRulerCombined,
   FaCubes,
   FaShoppingCart,
   FaTools,
   FaRecycle,
   FaWrench,
-  FaRulerCombined,
 } from 'react-icons/fa';
 import { fetchInvUnits } from '../../../actions/bmdashboard/invUnitActions';
+import InventoryNavBar from '../InventoryTypesList/InventoryNavBar';
 import UnitsTable from '../InventoryTypesList/invUnitsTable';
-import styles from '../InventoryTypesList/TypesList.module.css';
+import styles from '../ItemList/ItemListView.module.css';
+import typesStyles from '../InventoryTypesList/TypesList.module.css';
 
 const siblingCategories = [
   { label: 'Materials', route: '/bmdashboard/materials', icon: <FaCubes /> },
@@ -30,35 +31,21 @@ function UnitsOfMeasurementList() {
   }, []);
 
   return (
-    <div className={`${styles.typesListContainer} ${darkMode ? styles.darkMode : ''}`}>
-      <h3>
-        <span className={styles.categoryIcon}>
+    <main className={`${styles.itemsListContainer} ${darkMode ? styles.darkMode : ''}`}>
+      <h3 className={styles.pageTitle}>
+        <span className={styles.pageTitleIcon}>
           <FaRulerCombined />
-        </span>{' '}
+        </span>
         Unit of Measurement
       </h3>
 
       {/* Inventory Navigation Bar */}
-      <div className={styles.inventoryNav}>
-        <Link to="/bmdashboard/inventorytypes" className={styles.returnBtn}>
-          ← All Inventory Types
-        </Link>
-        <div className={styles.categoryIcons}>
-          {siblingCategories.map(cat => (
-            <Link
-              key={cat.label}
-              to={cat.route}
-              className={styles.categoryIconLink}
-              title={cat.label}
-            >
-              <span className={styles.iconWrapper}>{cat.icon}</span>
-            </Link>
-          ))}
-        </div>
-      </div>
+      <InventoryNavBar categories={siblingCategories} styles={styles} />
 
-      <UnitsTable />
-    </div>
+      <div className={typesStyles.typesListContainer}>
+        <UnitsTable />
+      </div>
+    </main>
   );
 }
 

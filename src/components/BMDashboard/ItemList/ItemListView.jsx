@@ -3,7 +3,6 @@ import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { Link } from 'react-router-dom';
 import {
   FaCubes,
   FaShoppingCart,
@@ -17,6 +16,7 @@ import BMError from '../shared/BMError';
 import SelectForm from './SelectForm';
 import SelectItem from './SelectItem';
 import ItemsTable from './ItemsTable';
+import InventoryNavBar from '../InventoryTypesList/InventoryNavBar';
 import styles from './ItemListView.module.css';
 
 const allCategories = [
@@ -195,25 +195,10 @@ export function ItemListView({
       </h3>
 
       {/* Inventory Navigation Bar */}
-      <div className={styles.inventoryNav}>
-        <Link to="/bmdashboard/inventorytypes" className={styles.returnBtn}>
-          ← All Inventory Types
-        </Link>
-        <div className={styles.categoryIcons}>
-          {allCategories
-            .filter(cat => cat.label !== itemType)
-            .map(cat => (
-              <Link
-                key={cat.label}
-                to={cat.route}
-                className={styles.categoryIconLink}
-                title={cat.label}
-              >
-                <span className={styles.iconWrapper}>{cat.icon}</span>
-              </Link>
-            ))}
-        </div>
-      </div>
+      <InventoryNavBar
+        categories={allCategories.filter(cat => cat.label !== itemType)}
+        styles={styles}
+      />
 
       <section>
         <span>

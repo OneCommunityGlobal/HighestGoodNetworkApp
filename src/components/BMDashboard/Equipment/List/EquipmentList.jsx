@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
 import {
   FaCubes,
   FaShoppingCart,
@@ -12,6 +11,7 @@ import {
 import useTheme from '../../../../hooks/useTheme';
 import EquipmentsTable from './EquipmentsTable';
 import EquipmentsInputs from './EquipmentsInputs';
+import InventoryNavBar from '../../InventoryTypesList/InventoryNavBar';
 import styles from './Equipments.module.css';
 
 const siblingCategories = [
@@ -36,26 +36,8 @@ function EquipmentList() {
             <FaTools style={{ marginRight: '10px', verticalAlign: 'middle' }} />
             EQUIPMENT
           </div>
-
           {/* Inventory Navigation Bar */}
-          <div className={styles.inventoryNav}>
-            <Link to="/bmdashboard/inventorytypes" className={styles.returnBtn}>
-              ← All Inventory Types
-            </Link>
-            <div className={styles.categoryIcons}>
-              {siblingCategories.map(cat => (
-                <Link
-                  key={cat.label}
-                  to={cat.route}
-                  className={styles.categoryIconLink}
-                  title={cat.label}
-                >
-                  <span className={styles.iconWrapper}>{cat.icon}</span>
-                </Link>
-              ))}
-            </div>
-          </div>
-
+          <InventoryNavBar categories={siblingCategories} styles={styles} />
           <EquipmentsInputs
             equipment={equipment}
             setEquipment={setEquipment}

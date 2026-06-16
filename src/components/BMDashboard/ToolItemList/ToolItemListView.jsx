@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import {
   FaCubes,
@@ -16,6 +15,7 @@ import BMError from '../shared/BMError';
 import SelectForm from '../ItemList/SelectForm';
 import SelectItem from '../ItemList/SelectItem';
 import ToolItemsTable from './ToolItemsTable';
+import InventoryNavBar from '../InventoryTypesList/InventoryNavBar';
 import styles from './ToolItemListView.module.css';
 import { ToolFiltersProvider, useToolFilters } from '../Tools/ToolFiltersContext';
 
@@ -239,23 +239,7 @@ function ToolItemListViewInner({ itemType, items, errors = {}, UpdateItemModal, 
       </h3>
 
       {/* Inventory Navigation Bar */}
-      <div className={styles.inventoryNav}>
-        <Link to="/bmdashboard/inventorytypes" className={styles.returnBtn}>
-          ← All Inventory Types
-        </Link>
-        <div className={styles.categoryIcons}>
-          {siblingCategories.map(cat => (
-            <Link
-              key={cat.label}
-              to={cat.route}
-              className={styles.categoryIconLink}
-              title={cat.label}
-            >
-              <span className={styles.iconWrapper}>{cat.icon}</span>
-            </Link>
-          ))}
-        </div>
-      </div>
+      <InventoryNavBar categories={siblingCategories} styles={styles} />
 
       <section>
         {items && (
