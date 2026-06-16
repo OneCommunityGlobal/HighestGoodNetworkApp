@@ -66,11 +66,13 @@
 
 
 @media (width <= 1024px) {
+@media (width <= 1024px) {
   .headerActions {
     flex-direction: column;
     align-items: stretch;
     gap: 10px;
   }
+
 
   .myCasesPage .header {
     flex-direction: column;
@@ -146,6 +148,7 @@
 .myCasesPageDark .filterDropdown,
 .myCasesPageDark .createNew {
   color: #fff !important;
+  color: #fff !important;
   border: 1px solid #555 !important;
 }
 
@@ -191,6 +194,7 @@
 
 /* Insight bar dark mode */
 .myCasesPageDark .insight-bar-container {
+  background-color: rgb(255 255 255 / 10%);
   background-color: rgb(255 255 255 / 10%);
   border-radius: 4px;
 }
@@ -253,6 +257,7 @@
 
 .caseCard:hover {
   box-shadow: 0 4px 8px rgb(0 0 0 / 15%);
+  box-shadow: 0 4px 8px rgb(0 0 0 / 15%);
 }
 
 
@@ -269,6 +274,7 @@
 }
 
 .caseCardDark:hover {
+  box-shadow: 0 4px 8px rgb(255 255 255 / 15%);
   box-shadow: 0 4px 8px rgb(255 255 255 / 15%);
 }
 
@@ -306,26 +312,31 @@
 /* Dark Mode Badge Overrides - High Contrast for titles */
 .myCasesPageDark .eventBadge {
   border: 1px solid rgb(255 255 255 / 10%);
+  border: 1px solid rgb(255 255 255 / 10%);
   -webkit-print-color-adjust: exact;
 }
 
 .myCasesPageDark .eventBadge[data-type='Yoga Class'] {
   background-color: #1b4332 !important;
   color: #fff !important;
+  color: #fff !important;
 }
 
 .myCasesPageDark .eventBadge[data-type='Cooking Workshop'] {
   background-color: #641212 !important;
+  color: #fff !important;
   color: #fff !important;
 }
 
 .myCasesPageDark .eventBadge[data-type='Dance Class'] {
   background-color: #784a06 !important;
   color: #fff !important;
+  color: #fff !important;
 }
 
 .myCasesPageDark .eventBadge[data-type='Fitness Bootcamp'] {
   background-color: #4a1d5a !important;
+  color: #fff !important;
   color: #fff !important;
 }
 
@@ -413,6 +424,7 @@
 .myCasesPageDark .rateCard {
   background-color: #3A506B;
   color: #fff;
+  color: #fff;
   border: 1px solid #555;
 }
 
@@ -448,6 +460,7 @@
   background-color: #3a506b;
   box-shadow: 0 2px 10px rgb(0 0 0 / 10%);
 }
+
 
 .caseListItemDark:hover{
   background-color: #2c3e50;
