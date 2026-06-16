@@ -329,6 +329,10 @@
   color: #000;
 }
 
+.progressRowDark {
+  color: #e0e0e0;
+}
+
 .progressBar {
   position: relative;
   height: 16px;

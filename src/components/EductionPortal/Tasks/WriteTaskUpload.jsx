@@ -540,23 +540,25 @@ export default function WriteTaskUpload() {
 
   const renderProgressPane = () => (
     <aside className={styles.progressPane}>
-      <div className={styles.progressCard}>
-        <h3 className={styles.progressHeading}>Progress Bar</h3>
-        <div className={styles.progressBlock}>
-          <div className={styles.progressRow}>
+      <div className={`${styles.progressCard} ${darkMode ? styles.progressCardDark : ''}`}>
+        <h3 className={`${styles.progressHeading} ${darkMode ? styles.progressHeadingDark : ''}`}>
+          Progress Bar
+        </h3>
+        <div className={`${styles.progressBlock} ${darkMode ? styles.progressBlockDark : ''}`}>
+          <div className={`${styles.progressRow} ${darkMode ? styles.progressRowDark : ''}`}>
             <span>Overall Activity</span>
             <span>25%</span>
           </div>
-          <div className={styles.progressBar}>
+          <div className={`${styles.progressBar} ${darkMode ? styles.progressBarDark : ''}`}>
             <span style={{ width: '25%' }} />
           </div>
         </div>
-        <div className={styles.progressBlock}>
-          <div className={styles.progressRow}>
+        <div className={`${styles.progressBlock} ${darkMode ? styles.progressBlockDark : ''}`}>
+          <div className={`${styles.progressRow} ${darkMode ? styles.progressRowDark : ''}`}>
             <span>This Task</span>
             <span>50%</span>
           </div>
-          <div className={styles.progressBar}>
+          <div className={`${styles.progressBar} ${darkMode ? styles.progressBarDark : ''}`}>
             <span style={{ width: '50%' }} />
           </div>
         </div>
@@ -705,7 +707,7 @@ export default function WriteTaskUpload() {
         {renderHeader()}
 
         <section className={styles.chart}>
-          <div className={styles.chartCard}>
+          <div className={`${styles.chartCard} ${darkMode ? styles.chartCardDark : ''}`}>
             <img
               src="/upload_chart.png"
               alt="Activity chart"
