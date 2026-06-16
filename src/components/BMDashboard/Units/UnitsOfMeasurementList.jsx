@@ -34,7 +34,7 @@ function UnitsOfMeasurementList() {
       <h3>
         <span className={styles.categoryIcon}>
           <FaRulerCombined />
-        </span>
+        </span>{' '}
         Unit of Measurement
       </h3>
 

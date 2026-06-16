@@ -481,7 +481,7 @@ body.bm-dashboard-dark .BuildingTitle svg {
 }
 
 .returnBtn:hover {
-  background-color: #4dabf7;
+  background-color: #1a73c0;
   color: #fff;
 }
 
@@ -529,8 +529,8 @@ body.bm-dashboard-dark .returnBtn {
 
 body.dark-mode .returnBtn:hover,
 body.bm-dashboard-dark .returnBtn:hover {
-  background-color: #4dabf7;
-  color: #0f172a;
+  background-color: #1a73c0;
+  color: #fff;
 }
 
 body.dark-mode .categoryIconLink,

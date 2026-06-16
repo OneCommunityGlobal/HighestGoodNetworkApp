@@ -30,7 +30,6 @@ const categoryIcons = {
 
 export function InventoryTypesList(props) {
   const { invUnits, errors, dispatch } = props;
-  const history = useHistory();
   const categories = [
     { label: 'Materials', route: '/bmdashboard/materials' },
     { label: 'Consumables', route: '/bmdashboard/consumables' },
