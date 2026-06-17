@@ -851,7 +851,6 @@ class UserProfileEdit extends Component {
                               state={userProfile.privacySettings?.email}
                               handleUserProfile={this.handleUserProfile}
                             />
-
                             <Input
                               type="email"
                               name="email"
@@ -861,6 +860,7 @@ class UserProfileEdit extends Component {
                               placeholder="Email"
                               invalid={!this.state.formValid.email}
                             />
+                            
                             <FormFeedback>Email is not Valid</FormFeedback>
                           </FormGroup>
                         </Col>

@@ -219,6 +219,7 @@ export const Email = props => {
         <Col md={desktopDisplay ? '6' : ''} className={darkMode ? 'bg-yinmn-blue' : ''}>
           <FormGroup>
             <div style={{position: 'relative', width: '100%' }}>
+
             <Input
               type="email"
               name="email"
@@ -232,6 +233,7 @@ export const Email = props => {
               placeholder="Email"
               invalid={!formValid.email}
             />
+
             <FontAwesomeIcon
               icon={faCopy}
               title="Copy email"
@@ -249,6 +251,7 @@ export const Email = props => {
                 transform: 'translateY(-50%)',
               }}
             />
+
             </div>
             <ToggleSwitch
               switchType="email"
@@ -269,7 +272,8 @@ export const Email = props => {
               handleUserProfile={props.handleUserProfile}
               darkMode={darkMode}
             />
-
+          
+          {/*
             <Input
               type="email"
               name="email"
@@ -284,6 +288,7 @@ export const Email = props => {
               placeholder="Email"
               invalid={!formValid.email}
             />
+          */}
 
             <FormFeedback>Email is not Valid</FormFeedback>
           </FormGroup>
