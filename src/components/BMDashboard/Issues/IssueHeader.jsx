@@ -46,15 +46,8 @@ export function IssueHeader(props) {
           </div>
 
           <div className="action-section">
-            <button className="more-button" type="button" label="More Button">
-              <MoreHorizontal size={20} />
-            </button>
+            
             <Link to="/projects" style={{ textDecoration: 'none' }}>
-              <button className="back-button" type="button">
-                Back to Projects
-              </button>
-            </Link>
-            <Link to="/bmdashboard/projects" style={{ textDecoration: 'none' }}>
               <button className={`${styles.backButton}`} type="button">
                 Back to Projects
               </button>
