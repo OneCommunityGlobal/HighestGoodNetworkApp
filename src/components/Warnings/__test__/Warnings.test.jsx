@@ -1,8 +1,8 @@
 // eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { Provider } from 'react-redux';
-import configureStore from 'redux-mock-store';
+import { Provider, useSelector } from 'react-redux';
+import { configureStore } from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import Warning from '../Warnings';
 import * as warningActions from '../../../actions/warnings';
@@ -12,6 +12,15 @@ vi.mock('../../../actions/warnings', () => ({
   postWarningByUserId: vi.fn(() => () => Promise.resolve([])),
   deleteWarningsById: vi.fn(() => () => Promise.resolve([])),
 }));
+
+vi.mock('react-redux', async () => {
+  const actual = await vi.importActual('react-redux');
+  return {
+    __esModule: true,
+    ...actual,
+    useSelector: vi.fn(),
+  };
+});
 
 const mockStore = configureStore([thunk]);
 
@@ -58,6 +67,12 @@ describe('Warning Component', () => {
   test('toggles warnings display on button click', async () => {
     warningActions.getWarningsByUserId.mockImplementation(() => () =>
       Promise.resolve([{ title: 'Warning 1', warnings: [] }]),
+    );
+
+    useSelector.mockImplementation(selector =>
+      selector({
+        theme: { darkMode: false },
+      }),
     );
 
     render(
