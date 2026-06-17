@@ -1,7 +1,7 @@
 import { Provider } from 'react-redux';
 import UserProjectsTable from '../UserProjectsTable';
 import thunk from 'redux-thunk';
-import { configureStore } from 'redux-mock-store';
+import configureStore from 'redux-mock-store';
 import { render, screen, within } from '@testing-library/react';
 import { userProfileMock } from '../../../../__tests__/mockStates.js';
 
