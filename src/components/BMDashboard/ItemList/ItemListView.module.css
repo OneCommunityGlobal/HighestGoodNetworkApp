@@ -12,6 +12,7 @@ table td {
 }
 
 .itemsTableContainer {
+  position: relative;
   overflow: auto;
   max-height: 600px;
   border: 1px solid #e5e7eb;
@@ -667,4 +668,111 @@ table td {
 
 .darkMode .pageTitleIcon {
   color: #5eb3e4;
+}
+
+/* ── Mobile responsive improvements ── */
+@media (width <= 768px) {
+  .itemsListContainer {
+    padding: 0 0.5rem;
+  }
+
+  .itemsTableContainer {
+    max-height: 70vh;
+  }
+
+  .itemsTableContainer::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 24px;
+    background: linear-gradient(to right, transparent, rgb(0 0 0 / 8%));
+    pointer-events: none;
+  }
+
+  .darkMode .itemsTableContainer::after {
+    background: linear-gradient(to right, transparent, rgb(255 255 255 / 8%));
+  }
+
+  .inventoryNav {
+    gap: 10px;
+  }
+
+  .returnBtn {
+    flex: 1 1 100%;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .categoryIcons {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .pageTitle {
+    font-size: 1.4rem;
+  }
+
+  .searchRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .searchBox {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .searchBox input {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .foundCount {
+    text-align: left;
+  }
+
+  .buttonsRow {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .btnPrimary {
+    width: 100%;
+  }
+
+  .paginationBar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .pageButtons {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .rowsPerPage {
+    justify-content: space-between;
+  }
+}
+
+@media (width <= 480px) {
+  .pageButtons button {
+    min-width: 28px;
+    height: 28px;
+    font-size: 0.8rem;
+    padding: 0 5px;
+  }
+
+  .categoryIconLink {
+    padding: 5px 8px;
+    font-size: 0.7rem;
+  }
+
+  .iconWrapper {
+    font-size: 1rem;
+  }
 }

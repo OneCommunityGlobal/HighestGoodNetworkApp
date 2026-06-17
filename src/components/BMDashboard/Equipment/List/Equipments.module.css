@@ -449,12 +449,50 @@ body.bm-dashboard-dark .BuildingTitle svg {
 
   .tableWrapper {
     border-radius: 6px;
+    position: relative;
+  }
+
+  .tableWrapper::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 24px;
+    background: linear-gradient(to right, transparent, rgb(0 0 0 / 8%));
+    pointer-events: none;
   }
 
   .tableWrapper tbody td,
   .BuildingTableHeaderLine th {
     padding: 0.75rem 0.5rem;
     font-size: 0.85rem;
+  }
+
+  .inventoryNav {
+    gap: 10px;
+  }
+
+  .returnBtn {
+    flex: 1 1 100%;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .categoryIcons {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+@media (width <= 480px) {
+  .categoryIconLink {
+    padding: 5px 8px;
+    font-size: 0.7rem;
+  }
+
+  .iconWrapper {
+    font-size: 1rem;
   }
 }
 

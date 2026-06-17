@@ -22,7 +22,6 @@
 
 /* ---------- FILTERS LAYOUT ---------- */
 
-/* Whole filters block: stack 2 rows (top: Project+Tool, bottom: Available+Using+Search) */
 .filtersRow {
   display: flex;
   flex-direction: column;
@@ -31,7 +30,6 @@
   margin-bottom: 1.5rem;
 }
 
-/* Row 1: Project + Tool side by side */
 .projectToolColumn {
   display: flex;
   flex-wrap: wrap;
@@ -39,27 +37,31 @@
   align-items: flex-end;
 }
 
-/* Each filter in that row */
 .filterGroup {
   display: flex;
   flex-direction: column;
-  flex: 0 0 auto;
+  flex: 0 0 260px;
+  width: 260px;
 }
 
-/* Make inner Form not forced full-width */
 .filterGroup form {
   display: inline-block;
+  width: 100%;
 }
 
-/* Width for the reactstrap selects (Project / Tool) */
 .selectInput {
   display: flex;
   align-items: flex-end;
-  width: 260px;
+  width: 100%;
   column-gap: 1rem;
 }
 
-/* Row 2: Available, Using, Search side by side */
+.selectInput > div {
+  width: 100% !important;
+  min-width: 0 !important;
+  flex: 1 1 auto !important;
+}
+
 .availSearchColumn {
   display: flex;
   width: 100%;
@@ -73,21 +75,18 @@
   gap: 1rem;
 }
 
-/* Available + Using on the left */
 .availUsingGroup {
   display: flex;
   gap: 1rem;
   flex: 0 0 auto;
 }
 
-/* Search group on the right */
 .searchGroup {
   display: flex;
   flex-direction: column;
   margin-left: auto;
 }
 
-/* Force FontAwesome SVG internals (prevents dark theme overriding) */
 .statusIconOk,
 .statusIconOk svg,
 .statusIconOk path {
@@ -102,22 +101,17 @@
   fill: #dc2626 !important;
 }
 
-
-
-/* Smaller groups for Available / Using */
 .filterGroupSmall {
   display: flex;
   flex-direction: column;
   min-width: 140px;
 }
 
-/* Label text */
 .filterLabel {
   font-size: 0.85rem;
   margin-bottom: 0.25rem;
 }
 
-/* Base input styles */
 .filterSelect,
 .searchInput {
   height: 40px;
@@ -131,7 +125,6 @@
   width: 100%;
 }
 
-/* LIGHT theme inputs */
 .lightTheme .filterSelect,
 .lightTheme .searchInput {
   background-color: #fff;
@@ -146,7 +139,6 @@
   box-shadow: 0 0 0 1px rgb(37 99 235 / 25%);
 }
 
-/* DARK theme inputs */
 .darkTheme .filterSelect,
 .darkTheme .searchInput {
   background-color: #1e293b;
@@ -161,7 +153,6 @@
   box-shadow: 0 0 0 1px rgb(75 163 255 / 30%);
 }
 
-/* Responsive layout */
 @media (width <= 900px) {
   .filtersRow {
     align-items: flex-start;
@@ -192,7 +183,6 @@
   align-items: center;
 }
 
-/* Shared */
 .itemsTableContainer table {
   width: 100%;
   min-width: 1024px;
@@ -206,7 +196,6 @@
   text-align: center;
 }
 
-/* LIGHT theme table */
 .lightTheme .itemsTableContainer {
   border: 1px solid #e5e7eb;
 }
@@ -234,7 +223,6 @@
   background-color: #edf2ff;
 }
 
-/* DARK theme table */
 .darkTheme .itemsTableContainer {
   border: 1px solid #374151;
 }
@@ -261,8 +249,6 @@
 .darkTheme .itemsTableContainer tbody tr:hover {
   background-color: #1e3046;
 }
-
-/* Misc existing styles */
 
 .itemsListContainer section {
   margin-top: 2rem;
@@ -310,15 +296,6 @@
   padding-left: 0;
 }
 
-/* vertical-align: middle;
-  display: flex;
-  gap: 20px;
-  justify-content: center; */
-
-  /* Base select */
-
-
-/* Bootstrap override */
 .darkTheme .form-select,
 .darkTheme .filterSelect {
   background-color: #1e293b !important;
@@ -326,7 +303,6 @@
   border-color: #334155 !important;
 }
 
-/* Dropdown options */
 .darkTheme .form-select option,
 .darkTheme .filterSelect option {
   background-color: #1e293b;
@@ -338,9 +314,6 @@
   border-color: #3b82f6;
 }
 
-
-
-/* dropdown options */
 .forceDarkSelect select option,
 .forceDarkSelect .form-select option {
   background-color: #1e293b !important;
@@ -370,7 +343,7 @@
 }
 
 .returnBtn:hover {
-  background-color: #1a73c0;
+  background-color: #4dabf7;
   color: #fff;
 }
 
@@ -416,7 +389,7 @@
 }
 
 .darkTheme .returnBtn:hover {
-  background-color: #1a73c0;
+  background-color: #4dabf7;
   color: #0f172a;
 }
 
@@ -447,4 +420,84 @@
 
 .darkTheme .pageTitleIcon {
   color: #4dabf7;
+}
+
+/* ── Mobile responsive improvements ── */
+@media (width <= 768px) {
+  .itemsListContainer {
+    padding: 0 0.5rem;
+  }
+
+  .itemsTableContainer {
+    position: relative;
+    max-height: 70vh;
+  }
+
+  .itemsTableContainer::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 24px;
+    background: linear-gradient(to right, transparent, rgb(0 0 0 / 8%));
+    pointer-events: none;
+  }
+
+  .darkTheme .itemsTableContainer::after {
+    background: linear-gradient(to right, transparent, rgb(255 255 255 / 8%));
+  }
+
+  .inventoryNav {
+    gap: 10px;
+  }
+
+  .returnBtn {
+    flex: 1 1 100%;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .categoryIcons {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .pageTitle {
+    font-size: 1.4rem;
+  }
+
+  .filterGroupSmall {
+    min-width: 120px;
+    flex: 1 1 45%;
+  }
+
+  .availUsingGroup {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .searchGroup {
+    margin-left: 0;
+    width: 100%;
+  }
+}
+
+@media (width <= 480px) {
+  .categoryIconLink {
+    padding: 5px 8px;
+    font-size: 0.7rem;
+  }
+
+  .iconWrapper {
+    font-size: 1rem;
+  }
+
+  .filterGroupSmall {
+    flex: 1 1 100%;
+  }
+
+  .selectInput {
+    width: 100%;
+  }
 }

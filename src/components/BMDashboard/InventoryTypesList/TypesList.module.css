@@ -437,6 +437,11 @@
   color-scheme: dark;
 }
 
+/* Light mode navigation arrow visibility fix */
+:global(.react-datepicker__navigation-icon::before) {
+  border-color: #333 !important;
+}
+
 :global(.dark-mode) :global(.react-datepicker__navigation-icon::before),
 :global(.bm-dashboard-dark) :global(.react-datepicker__navigation-icon::before) {
   border-color: #fff !important;
