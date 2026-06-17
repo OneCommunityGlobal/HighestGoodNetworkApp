@@ -133,7 +133,7 @@ function WishList({ wishlists }) {
                     </div>
 
                     <Link
-                      to={`/lbdashboard/wishlist/${item.id}/chat`}
+                      to="/lbdashboard/messaging"
                       onClick={() => handleSelectWishlistItem(item)}
                       className={`${styles.chatButton} ${darkMode ? styles.chatButtonDark : ''}`}
                     >
