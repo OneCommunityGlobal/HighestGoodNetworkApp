@@ -22,15 +22,15 @@ function EventPopularityBreakdown() {
           getEventValue(),
         ]);
 
-        if (popularityResponse && popularityResponse.data) {
+        if (popularityResponse?.data) {
           setPopularityData(popularityResponse.data.metrics || []);
-        } else if (popularityResponse && popularityResponse.status >= 400) {
+        } else if (popularityResponse?.status >= 400) {
           throw new Error(popularityResponse.message || 'Failed to fetch popularity metrics');
         } else if (popularityResponse && !popularityResponse.data) {
           throw new Error(popularityResponse.message || 'Failed to fetch popularity metrics');
         }
 
-        if (valueResponse && valueResponse.data) {
+        if (valueResponse?.data) { {
           setEventValues(valueResponse.data.eventValues);
         }
       } catch (err) {

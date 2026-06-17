@@ -2,6 +2,18 @@ import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import styles from './Participation.module.css';
 
+const getAttendanceColor = ratio => {
+  if (ratio >= 0.8) return '#4CAF50';
+  if (ratio >= 0.6) return '#FF9800';
+  return '#F44336';
+};
+
+const getEngagementColor = engagement => {
+  if (engagement >= 85) return '#4CAF50';
+  if (engagement >= 70) return '#FF9800';
+  return '#F44336';
+};
+
 function EventPerformance() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [selectedFilter, setSelectedFilter] = useState('all');
@@ -28,7 +40,7 @@ function EventPerformance() {
         totalEvents: 20,
         activeEvents: 20,
         completedEvents: 0,
-        averageRating: 4.0,
+        averageRating: 4,
         totalParticipants: 680,
         averageAttendance: 34,
       },
@@ -277,12 +289,7 @@ function EventPerformance() {
                         className={styles.attendanceFill}
                         style={{
                           width: `${(event.attendance / event.capacity) * 100}%`,
-                          backgroundColor:
-                            event.attendance / event.capacity >= 0.8
-                              ? '#4CAF50'
-                              : event.attendance / event.capacity >= 0.6
-                              ? '#FF9800'
-                              : '#F44336',
+                          backgroundColor: getAttendanceColor(event.attendance / event.capacity),
                         }}
                       />
                     </div>
@@ -301,12 +308,7 @@ function EventPerformance() {
                         className={styles.engagementFill}
                         style={{
                           width: `${event.engagement}%`,
-                          backgroundColor:
-                            event.engagement >= 85
-                              ? '#4CAF50'
-                              : event.engagement >= 70
-                              ? '#FF9800'
-                              : '#F44336',
+                          backgroundColor: getEngagementColor(event.engagement),
                         }}
                       />
                     </div>

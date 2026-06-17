@@ -59,7 +59,6 @@ import FaqManagement from './components/Faq/FaqManagement';
 import FaqSearch from './components/Faq/FaqSearch';
 import UnansweredFaqs from './components/Faq/UnansweredFaqs';
 import ToolsAvailabilityPage from './components/BMDashboard/WeeklyProjectSummary/Tools/ToolsAvailabilityPage';
-import DatabaseDesign from './components/CommunityPortal/DatabaseDesign/DatabaseDesign';
 import ResourceUsage from './components/CommunityPortal/ResourceUsage/ResourceUsage';
 
 import Page1 from './components/HGNForm/pages/Page1';
@@ -159,12 +158,10 @@ import Register from './components/CommunityPortal/Activities/Register/Register'
 import CPLogin from './components/CommunityPortal/Login';
 import ActivitiesPage from './components/CommunityPortal/Activities/ActivitiesPage';
 import EventStats from './components/CommunityPortal/EventPersonalization/EventStats';
-import NoshowViz from './components/CommunityPortal/Attendence/NoshowViz';
 import VirtualVsInPerson from './components/CommunityPortal/Reports/Participation/VirtualVsInPerson';
 import EventValue from './components/CommunityPortal/Reports/Participation/EventValue';
 import ParticipationTrends from './components/CommunityPortal/Reports/Participation/ParticipationTrends';
 import EventPerformance from './components/CommunityPortal/Reports/Participation/EventPerformance';
-import FollowUpEmailTemplate from './components/CommunityPortal/Activities/FollowUpEmailTemplate';
 
 // Community Calendar
 import CommunityCalendar from './components/CommunityPortal/Calendar/CommunityCalendar';

@@ -37,7 +37,7 @@
 }
 
 .landingPageHeaderDark {
-  color: #ffffff;
+  color: #fff;
 }
 
 .header {
@@ -62,7 +62,7 @@
 
 .myCasesHeader button {
   padding: 8px 15px;
-  background-color: #007bff;
+  background-color: #0056b3;
   color: white;
   border: none;
   border-radius: 5px;
@@ -84,7 +84,7 @@
   background: white;
   border: 1px solid #ddd;
   border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
 }
 
 /* Analytics Section */
@@ -101,9 +101,9 @@
 .insights {
   flex: 1;
   min-width: 48%;
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
   padding: 20px;
   box-sizing: border-box;
 }
@@ -113,15 +113,15 @@
   flex: 1;
   min-width: 48%;
   background-color: #1c2541;
-  color: #ffffff;
+  color: #fff;
   border-radius: 10px;
   border: 1px solid #ddd;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
   padding: 20px;
   box-sizing: border-box;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .analyticsSection {
     flex-wrap: wrap;
   }
@@ -145,7 +145,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
-  color: #ffffff;
+  color: #fff;
 }
 
 .trackingHeader h3 {
@@ -156,7 +156,7 @@
 }
 
 .trackingHeaderDark h3 {
-  color: #ffffff;
+  color: #fff;
   font-size: 1.3rem;
   margin: 0;
   white-space: nowrap;
@@ -188,17 +188,17 @@
   border-radius: 10px;
   width: 48%;
   padding: 10px;
-  color: #ffffff;
+  color: #fff;
 }
 
 .trackingRateDark .spanDark {
-  color: #ffffff;
+  color: #fff;
   display: inline-block;
   padding-left: 5px;
 }
 
 .trackingRateLabelDark {
-  color: #ffffff !important;
+  color: #fff !important;
   margin-top: 5px;
 }
 
@@ -230,7 +230,7 @@
   border-radius: 10px;
   padding: 10px;
   background: #3a506b;
-  color: #ffffff;
+  color: #fff;
 }
 
 .trackingTable {
@@ -246,7 +246,7 @@
 
 .trackingTableDark thead th {
   background: #1c2541;
-  color: #ffffff;
+  color: #fff;
 }
 
 .trackingTable tbody td {
@@ -279,10 +279,11 @@
 
 .trackingTableDark tbody tr:hover {
   background: #304663;
-  color: #ffffff;
+  color: #fff;
 }
+
 .trackingTableDark tbody tr:hover td {
-  color: #ffffff;
+  color: #fff;
 }
 
 .trackingRateGreen {
@@ -304,7 +305,7 @@
 }
 
 .insightsHeaderDark {
-  color: #ffffff;
+  color: #fff;
   font-weight: bold;
   margin-bottom: 15px;
   display: flex;
@@ -318,7 +319,7 @@
 }
 
 .insightsHeaderDark h3 {
-  color: #ffffff;
+  color: #fff;
   font-size: 1.3rem;
   margin: 0;
 }
@@ -394,14 +395,17 @@
 /* Dark mode hover states */
 .insightsDark .insightsTab:hover {
   background-color: #3b5373;
-  color: #ffffff;
+  color: #fff;
 }
+
 .navigationCardDark:hover {
   background: #465d7b;
 }
+
 .case-list-item-dark:hover {
   background-color: #2b3f59;
 }
+
 .eventsTableDark .tableContainer tr:hover,
 .monthlyTrendsDark .trendsTable tr:hover,
 .eventTypeValuesDark .valueTable tr:hover,
@@ -430,7 +434,7 @@
 }
 
 .insightLabelDark {
-  color: #ffffff;
+  color: #fff;
   font-size: 0.9rem;
   flex: 1;
   margin-right: 10px;
@@ -467,12 +471,12 @@
   padding: 2rem;
   border-radius: 12px;
   margin-bottom: 2rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px rgb(0 0 0 / 10%);
 }
 
 .participationHeaderDark {
   background: linear-gradient(135deg, #1c2541 0%, #3a506b 100%);
-  color: #ffffff;
+  color: #fff;
 }
 
 .headerContent {
@@ -498,13 +502,13 @@
 .mainTitle {
   font-size: 2.5rem;
   font-weight: bold;
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.5rem;
   color: white;
   text-align: left;
 }
 
 .mainTitleDark {
-  color: #ffffff;
+  color: #fff;
 }
 
 .subtitle {
@@ -516,7 +520,7 @@
 }
 
 .subtitleDark {
-  color: #ffffff;
+  color: #fff;
 }
 
 .navLinks {
@@ -529,13 +533,13 @@
   text-decoration: none;
   padding: 0.5rem 1rem;
   border-radius: 6px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgb(255 255 255 / 10%);
   transition: background 0.3s ease;
   font-size: 0.9rem;
 }
 
 .navLink:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgb(255 255 255 / 20%);
   text-decoration: none;
   color: white;
 }
@@ -553,14 +557,14 @@
 }
 
 .analyticsPageDark .navLink {
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  background: rgb(255 255 255 / 10%);
   border: 1px solid #5a6b7d;
 }
 
 .analyticsPageDark .navLink:hover {
-  background: rgba(255, 255, 255, 0.2);
-  color: #ffffff;
+  background: rgb(255 255 255 / 20%);
+  color: #fff;
 }
 
 .metricsSummary {
@@ -570,13 +574,13 @@
 }
 
 .metricsSummaryDark {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgb(255 255 255 / 5%);
   padding: 1rem;
   border-radius: 8px;
 }
 
 .metricCard {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgb(255 255 255 / 10%);
   padding: 1rem;
   border-radius: 8px;
   text-align: center;
@@ -609,7 +613,7 @@
 }
 
 .sectionTitleDark {
-  color: #ffffff;
+  color: #fff;
 }
 
 .engagementSectionDark {
@@ -630,7 +634,7 @@
   background: white;
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -639,12 +643,12 @@
 
 .engagementCard:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 20px rgb(0 0 0 / 15%);
 }
 
 .engagementCardDark {
   background: #3a506b;
-  color: #ffffff;
+  color: #fff;
   border: 1px solid #5a6b7d;
 }
 
@@ -671,7 +675,7 @@
 }
 
 .engagementCardDark .cardValue {
-  color: #ffffff;
+  color: #fff;
 }
 
 .cardLabel {
@@ -682,7 +686,7 @@
 }
 
 .engagementCardDark .cardLabel {
-  color: #ffffff;
+  color: #fff;
 }
 
 .cardSubtext {
@@ -700,14 +704,14 @@
   background: white;
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
   margin-bottom: 1rem;
 }
 
 .pieChartSectionDark,
 .barChartSectionDark {
   background: #3a506b;
-  color: #ffffff;
+  color: #fff;
   border: 1px solid #5a6b7d;
 }
 
@@ -721,7 +725,7 @@
 }
 
 .chartTitleDark {
-  color: #ffffff;
+  color: #fff;
 }
 
 .pieChartContainer {
@@ -810,7 +814,7 @@
 }
 
 .pieChartSectionDark .summaryValue {
-  color: #ffffff;
+  color: #fff;
 }
 
 /* Bar Chart Styles */
@@ -975,7 +979,7 @@
 }
 
 .barChartSectionDark .insightValue {
-  color: #ffffff;
+  color: #fff;
 }
 
 /* Analytics Navigation Styles */
@@ -1010,7 +1014,7 @@
   background: white;
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
   text-decoration: none;
   color: inherit;
   display: flex;
@@ -1022,14 +1026,14 @@
 
 .navigationCard:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 20px rgb(0 0 0 / 15%);
   text-decoration: none;
   color: inherit;
 }
 
 .navigationCardDark {
   background: #3a506b;
-  color: #ffffff;
+  color: #fff;
   border-color: #5a6b7d;
 }
 
@@ -1061,7 +1065,7 @@
 }
 
 .navigationCardDark .cardTitle {
-  color: #ffffff;
+  color: #fff;
 }
 
 .navigationCard .cardDescription {
@@ -1106,7 +1110,7 @@
   gap: 1rem;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .chartsRow {
     grid-template-columns: 1fr;
   }
@@ -1146,7 +1150,7 @@
 
 .analyticsPageDark {
   background-color: #1b2a41;
-  color: #ffffff;
+  color: #fff;
   min-height: 100vh;
   max-width: none !important;
   width: 100vw !important;
@@ -1163,7 +1167,7 @@
 .analyticsPageDark .pageHeader {
   text-align: center;
   max-width: 1200px;
-  margin: 0 auto 2rem auto;
+  margin: 0 auto 2rem;
 }
 
 .analyticsPageDark .comparisonCards,
@@ -1171,7 +1175,7 @@
 .analyticsPageDark .trendsSummaryCards,
 .analyticsPageDark .performanceSummaryCards {
   max-width: 1200px;
-  margin: 0 auto 2rem auto;
+  margin: 0 auto 2rem;
 }
 
 .analyticsPageDark .comparisonTable,
@@ -1185,7 +1189,7 @@
 .analyticsPageDark .trendInsights,
 .analyticsPageDark .performanceInsights {
   max-width: 1200px;
-  margin: 0 auto 2rem auto;
+  margin: 0 auto 2rem;
 }
 
 .pageHeader {
@@ -1201,7 +1205,7 @@
 }
 
 .pageTitleDark {
-  color: #ffffff;
+  color: #fff;
 }
 
 .pageSubtitle {
@@ -1236,7 +1240,7 @@
 .analyticsPageDark .metricSelector label,
 .analyticsPageDark .periodSelector label,
 .analyticsPageDark .filterSelector label {
-  color: #ffffff;
+  color: #fff;
 }
 
 .timeframeSelect,
@@ -1256,7 +1260,7 @@
 .analyticsPageDark .filterSelect {
   background: #3a506b;
   border-color: #5a6b7d;
-  color: #ffffff;
+  color: #fff;
 }
 
 /* Comparison Cards */
@@ -1271,7 +1275,7 @@
   background: white;
   border-radius: 12px;
   padding: 2rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
   border: 2px solid transparent;
 }
 
@@ -1281,7 +1285,7 @@
 
 .virtualCardDark {
   background: #3a506b;
-  color: #ffffff;
+  color: #fff;
   border-color: #2196f3;
 }
 
@@ -1291,7 +1295,7 @@
 
 .inPersonCardDark {
   background: #3a506b;
-  color: #ffffff;
+  color: #fff;
   border-color: #4caf50;
 }
 
@@ -1327,7 +1331,7 @@
 
 .virtualCardDark .cardHeader h3,
 .inPersonCardDark .cardHeader h3 {
-  color: #ffffff;
+  color: #fff;
 }
 
 .cardStats {
@@ -1353,7 +1357,7 @@
 
 .virtualCardDark .statValue,
 .inPersonCardDark .statValue {
-  color: #ffffff;
+  color: #fff;
 }
 
 .statLabel {
@@ -1384,7 +1388,7 @@
 /* Ensure Top Event label is readable in dark mode */
 .virtualCardDark .topEvent strong,
 .inPersonCardDark .topEvent strong {
-  color: #ffffff;
+  color: #fff;
 }
 
 /* Comparison Table */
@@ -1392,13 +1396,13 @@
   background: white;
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
   margin-bottom: 2rem;
 }
 
 .comparisonTableDark {
   background: #3a506b;
-  color: #ffffff;
+  color: #fff;
   border: 1px solid #5a6b7d;
 }
 
@@ -1409,10 +1413,11 @@
 
 .comparisonTableDark table tbody tr:hover {
   background: #304663;
-  color: #ffffff;
+  color: #fff;
 }
+
 .comparisonTableDark table tbody tr:hover td {
-  color: #ffffff;
+  color: #fff;
 }
 
 .comparisonTable h3 {
@@ -1423,7 +1428,7 @@
 }
 
 .comparisonTableDark h3 {
-  color: #ffffff;
+  color: #fff;
 }
 
 .comparisonTable table {
@@ -1451,7 +1456,7 @@
 
 .comparisonTableDark th {
   background: #5a6b7d;
-  color: #ffffff;
+  color: #fff;
 }
 
 .metricName {
@@ -1460,7 +1465,7 @@
 }
 
 .comparisonTableDark .metricName {
-  color: #ffffff;
+  color: #fff;
 }
 
 .virtualValue {
@@ -1493,7 +1498,7 @@
   background: white;
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -1504,14 +1509,14 @@
 .trendCard:hover,
 .performanceCard:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 20px rgb(0 0 0 / 15%);
 }
 
 .valueCardDark,
 .trendCardDark,
 .performanceCardDark {
   background: #3a506b;
-  color: #ffffff;
+  color: #fff;
   border: 1px solid #5a6b7d;
 }
 
@@ -1525,7 +1530,7 @@
 .performanceCardDark .cardValue,
 .performanceCardDark .cardLabel,
 .performanceCardDark .cardSubtext {
-  color: #ffffff;
+  color: #fff;
 }
 
 /* Event Type Values Table */
@@ -1536,7 +1541,7 @@
   background: white;
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
   margin-bottom: 2rem;
 }
 
@@ -1545,7 +1550,7 @@
 .eventTypeTrendsDark,
 .eventsTableDark {
   background: #3a506b;
-  color: #ffffff;
+  color: #fff;
   border: 1px solid #5a6b7d;
 }
 
@@ -1575,7 +1580,7 @@
 .monthlyTrendsDark h3,
 .eventTypeTrendsDark h3,
 .eventsTableDark h3 {
-  color: #ffffff;
+  color: #fff;
 }
 
 .valueTable,
@@ -1627,7 +1632,7 @@
 .eventTypeTrendsDark .trendsTable th,
 .eventsTableDark .tableContainer th {
   background: #5a6b7d;
-  color: #ffffff;
+  color: #fff;
 }
 
 .eventType {
@@ -1639,7 +1644,7 @@
 .monthlyTrendsDark .eventType,
 .eventTypeTrendsDark .eventType,
 .eventsTableDark .eventType {
-  color: #ffffff;
+  color: #fff;
 }
 
 .value {
@@ -1691,13 +1696,13 @@
   background: white;
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
   margin-bottom: 2rem;
 }
 
 .valueTrendsDark {
   background: #3a506b;
-  color: #ffffff;
+  color: #fff;
   border: 1px solid #5a6b7d;
 }
 
@@ -1711,7 +1716,7 @@
 }
 
 .valueTrendsDark h3 {
-  color: #ffffff;
+  color: #fff;
 }
 
 .trendsChart {
@@ -1763,7 +1768,7 @@
 }
 
 .eventsTableDark .eventName {
-  color: #ffffff;
+  color: #fff;
 }
 
 .eventDate {
@@ -1809,7 +1814,7 @@
 }
 
 .eventsTableDark .ratingValue {
-  color: #ffffff;
+  color: #fff;
 }
 
 .ratingStars {
@@ -1849,12 +1854,12 @@
 }
 
 .statusCompleted {
-  background: #4caf50;
+  background: #2e7d32;
   color: white;
 }
 
 .statusUpcoming {
-  background: #2196f3;
+  background: #1565c0;
   color: white;
 }
 
@@ -1866,7 +1871,7 @@
   background: white;
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
   margin-bottom: 2rem;
 }
 
@@ -1875,7 +1880,7 @@
 .trendInsightsDark,
 .performanceInsightsDark {
   background: #3a506b;
-  color: #ffffff;
+  color: #fff;
   border: 1px solid #5a6b7d;
 }
 
@@ -1893,7 +1898,7 @@
 .valueInsightsDark h3,
 .trendInsightsDark h3,
 .performanceInsightsDark h3 {
-  color: #ffffff;
+  color: #fff;
 }
 
 .insightsList {
@@ -1925,6 +1930,7 @@
   border-left-color: #2196f3;
   color: #e5e7eb;
 }
+
 .insightsDark .insightItem *,
 .barChartSectionDark .insightItem * {
   color: #e5e7eb;
@@ -1957,7 +1963,7 @@
 .valueInsightsDark .insightContent h4,
 .trendInsightsDark .insightContent h4,
 .performanceInsightsDark .insightContent h4 {
-  color: #ffffff;
+  color: #fff;
 }
 
 .insightContent p {
@@ -1997,11 +2003,11 @@
 .participationLandingPageDark .cardValue,
 .participationLandingPageDark .cardLabel,
 .participationLandingPageDark .cardSubtext {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .analyticsPage {
     padding: 1rem;
   }

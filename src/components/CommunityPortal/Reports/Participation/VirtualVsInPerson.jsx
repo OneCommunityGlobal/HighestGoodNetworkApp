@@ -86,28 +86,24 @@ function VirtualVsInPerson() {
 
   const attendanceData = getAttendanceData(selectedTimeframe);
 
+  const getWinner = (virtualValue, inPersonValue) => {
+    if (virtualValue > inPersonValue) return 'virtual';
+    if (virtualValue < inPersonValue) return 'inPerson';
+    return 'tie';
+  };
+
   const comparisonData = [
     {
       metric: 'Total Events',
       virtual: attendanceData.virtual.totalEvents,
       inPerson: attendanceData.inPerson.totalEvents,
-      winner:
-        attendanceData.virtual.totalEvents > attendanceData.inPerson.totalEvents
-          ? 'virtual'
-          : attendanceData.virtual.totalEvents < attendanceData.inPerson.totalEvents
-          ? 'inPerson'
-          : 'tie',
+      winner: getWinner(attendanceData.virtual.totalEvents, attendanceData.inPerson.totalEvents),
     },
     {
       metric: 'Total Attendance',
       virtual: attendanceData.virtual.totalAttendance,
       inPerson: attendanceData.inPerson.totalAttendance,
-      winner:
-        attendanceData.virtual.totalAttendance > attendanceData.inPerson.totalAttendance
-          ? 'virtual'
-          : attendanceData.virtual.totalAttendance < attendanceData.inPerson.totalAttendance
-          ? 'inPerson'
-          : 'tie',
+      winner: getWinner(attendanceData.virtual.totalAttendance, attendanceData.inPerson.totalAttendance),
     },
     {
       metric: 'Avg Attendance',
@@ -119,23 +115,13 @@ function VirtualVsInPerson() {
       metric: 'Growth Rate',
       virtual: attendanceData.virtual.growth,
       inPerson: attendanceData.inPerson.growth,
-      winner:
-        attendanceData.virtual.growth > attendanceData.inPerson.growth
-          ? 'virtual'
-          : attendanceData.virtual.growth < attendanceData.inPerson.growth
-          ? 'inPerson'
-          : 'tie',
+      winner: getWinner(attendanceData.virtual.growth, attendanceData.inPerson.growth),
     },
     {
       metric: 'Engagement Rate',
       virtual: `${attendanceData.virtual.engagement}%`,
       inPerson: `${attendanceData.inPerson.engagement}%`,
-      winner:
-        attendanceData.virtual.engagement > attendanceData.inPerson.engagement
-          ? 'virtual'
-          : attendanceData.virtual.engagement < attendanceData.inPerson.engagement
-          ? 'inPerson'
-          : 'tie',
+      winner: getWinner(attendanceData.virtual.engagement, attendanceData.inPerson.engagement),
     },
   ];
 
@@ -258,8 +244,8 @@ function VirtualVsInPerson() {
             </tr>
           </thead>
           <tbody>
-            {comparisonData.map((item, index) => (
-              <tr key={index}>
+            {comparisonData.map(item => (
+              <tr key={item.metric}>
                 <td className={styles.metricName}>{item.metric}</td>
                 <td className={styles.virtualValue}>{item.virtual}</td>
                 <td className={styles.inPersonValue}>{item.inPerson}</td>

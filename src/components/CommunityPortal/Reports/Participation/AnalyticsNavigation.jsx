@@ -47,9 +47,9 @@ function AnalyticsNavigation() {
       </p>
 
       <div className={styles.navigationGrid}>
-        {navigationItems.map((item, index) => (
+        {navigationItems.map(item => (
           <a
-            key={index}
+            key={item.link}
             href={item.link}
             className={`${styles.navigationCard} ${darkMode ? styles.navigationCardDark : ''}`}
           >

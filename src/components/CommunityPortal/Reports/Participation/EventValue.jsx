@@ -145,8 +145,8 @@ function EventValue() {
               </tr>
             </thead>
             <tbody>
-              {eventTypeValues.map((event, index) => (
-                <tr key={index}>
+              {eventTypeValues.map(event => (
+                <tr key={event.type}>
                   <td className={styles.eventType}>{event.type}</td>
                   <td className={styles.value}>${event.value.toLocaleString()}</td>
                   <td className={styles.participants}>{event.participants}</td>
@@ -175,7 +175,7 @@ function EventValue() {
             </div>
 
             <div className={styles.barsContainer}>
-              {monthlyTrends.map((item, index) => (
+              {monthlyTrends.map(item => (
                 <div key={item.month} className={styles.trendBarGroup}>
                   <div
                     className={styles.trendBar}
