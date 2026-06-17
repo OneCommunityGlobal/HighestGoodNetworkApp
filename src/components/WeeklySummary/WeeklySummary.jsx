@@ -700,14 +700,9 @@ export class WeeklySummary extends Component {
     });
   };
 
-  // isGracePeriodWindow = () => {
-  //   const nowLA = moment().tz('America/Los_Angeles');
-  //   return nowLA.day() === 1 && nowLA.hour() < 17;
-  // };
-
-  // to test only - do not uncomment in production
   isGracePeriodWindow = () => {
-    return true;
+    const nowLA = moment().tz('America/Los_Angeles');
+    return nowLA.day() === 1 && nowLA.hour() < 17;
   };
 
   handleGracePeriodConfirm = async submitForLastWeek => {
