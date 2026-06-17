@@ -48,7 +48,8 @@ function EventParticipation() {
   }, [exporting]);
 
   return (
-    <div ref={exportRef}
+    <div
+      ref={exportRef}
       className={`participation-landing-page-global ${styles.participationLandingPage} ${
         darkMode ? styles.participationLandingPageDark : ''
       }`}
