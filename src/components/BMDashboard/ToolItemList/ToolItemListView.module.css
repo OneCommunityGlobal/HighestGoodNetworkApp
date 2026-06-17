@@ -1,15 +1,14 @@
 /* stylelint-disable no-descending-specificity */
-
-/* ==========================================================================
-   BASE CONTAINERS & THEME WRAPPERS
-   ========================================================================== */
+table thead th,
+table td {
+  vertical-align: middle !important;
+}
 
 .itemsListContainer {
   width: 100%;
   max-width: 1536px;
-  margin: 1rem auto;
+  margin: 0 auto;
   padding: 1.5rem;
-  border-radius: 8px;
   transition: background-color 0.25s ease, color 0.25s ease;
 }
 
@@ -20,6 +19,10 @@
   border-bottom: 1px solid var(--border-color, #e5e7eb);
 }
 
+/* ==========================================================================
+   THEME CONFIGURATION PANELS
+   ========================================================================== */
+
 /* Light Mode Context Base */
 .lightTheme {
   background-color: #ffffff;
@@ -27,7 +30,7 @@
   --border-color: #e5e7eb;
 }
 
-/* Dark Mode Context Base */
+/* Dark Mode Context Base (Fixed to prevent contrasting dark-slate blending issues) */
 .darkTheme {
   background-color: #0f1b2b;
   color: #f5f7fb;
@@ -55,7 +58,6 @@
   margin-bottom: 1rem;
 }
 
-/* Align filters cleanly side-by-side inside their layout line */
 .filtersWrapper {
   display: flex;
   flex-wrap: wrap;
@@ -75,7 +77,6 @@
   width: 100%;
 }
 
-/* Sync sizing hooks with reactstrap input selectors */
 .selectInput {
   display: flex;
   align-items: flex-end;
@@ -90,7 +91,6 @@
   margin-bottom: 0.5rem;
 }
 
-/* Reset button wrappers alignment spacing adjustments */
 .resetContainer {
   display: flex;
   align-items: flex-end;
@@ -100,7 +100,13 @@
 .resetButton {
   padding: 0.45rem 1.5rem;
   font-weight: 500;
-  height: 38px; /* Matches standard React-Select heights */
+  height: 38px;
+}
+
+.tableResponsiveWrapper {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 6px;
 }
 
 /* ==========================================================================
@@ -173,50 +179,45 @@
   background-color: #edf2ff !important;
 }
 
-/* Dark Theme Grid Boundaries via .darkModeTable or top level container context hooks */
-.darkTheme :global(.table),
-.darkModeTable :global(.table) {
+/* Dark Theme Grid Boundaries - Cleaned up to match your core theme background */
+.darkTheme :global(.table) {
   color: #e5e7eb !important;
-  background-color: #1e293b !important;
-  border: 1px solid #334155 !important;
+  background-color: #14253d !important;
+  border: 1px solid #1d3c52 !important;
 }
 
-.darkTheme :global(.table thead th),
-.darkModeTable :global(.table thead th) {
-  background-color: #0f172a !important;
+.darkTheme :global(.table thead th) {
+  background-color: #0b1420 !important;
   color: #f8fafc !important;
-  border-bottom: 2px solid #334155 !important;
+  border-bottom: 2px solid #1d3c52 !important;
 }
 
-.darkTheme :global(.table tbody tr),
-.darkModeTable :global(.table tbody tr) {
-  background-color: #1e293b !important;
-  border-bottom: 1px solid #334155 !important;
+.darkTheme :global(.table tbody tr) {
+  background-color: #14253d !important;
+  border-bottom: 1px solid #1d3c52 !important;
 }
 
-.darkTheme :global(.table tbody tr:nth-child(even)),
-.darkModeTable :global(.table tbody tr:nth-child(even)) {
-  background-color: #131f30 !important;
+.darkTheme :global(.table tbody tr:nth-child(even)) {
+  background-color: #0f1b2b !important;
 }
 
-.darkTheme :global(.table tbody tr:hover),
-.darkModeTable :global(.table tbody tr:hover) {
-  background-color: #2f4157 !important;
+.darkTheme :global(.table tbody tr:hover) {
+  background-color: #1c3354 !important;
 }
 
-/* Dark mode action elements */
-.darkModeTable .itemsCell button,
+/* Action controls elements safely inside dark mode tables */
 .darkTheme :global(.table) button {
   background: transparent;
   color: #6af1ea;
   border: none;
 }
 
-/* Native Bootstrap Select Overrides in Dark Mode */
-.darkTheme :global(.form-select) {
-  background-color: #1e293b !important;
+/* Native Form UI Fields in Dark Mode Context */
+.darkTheme :global(.form-select),
+.darkTheme :global(.form-control) {
+  background-color: #14253d !important;
   color: #e5e7eb !important;
-  border-color: #334155 !important;
+  border-color: #1d3c52 !important;
 }
 
 /* ==========================================================================

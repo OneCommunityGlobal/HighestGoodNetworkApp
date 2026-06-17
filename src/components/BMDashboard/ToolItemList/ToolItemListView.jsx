@@ -135,7 +135,8 @@ export function ToolItemListView({
         </div>
 
         {filteredItems && (
-          <div className={darkMode ? styles.darkModeTable : ''}>
+          /* Removed the manual inline ternary condition to keep styles unified */
+          <div className={styles.tableResponsiveWrapper}>
             <ToolItemsTable
               selectedProject={selectedProject}
               selectedItem={selectedItem}

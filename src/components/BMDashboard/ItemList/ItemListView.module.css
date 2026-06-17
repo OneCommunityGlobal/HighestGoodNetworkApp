@@ -11,6 +11,10 @@ table td {
   padding: 0 1rem;
 }
 
+.itemsListContainer section {
+  margin-top: 2rem;
+}
+
 .itemsTableContainer {
   overflow: auto;
   max-height: 600px;
@@ -18,20 +22,20 @@ table td {
   border-radius: 6px;
 }
 
-.items_list_container section {
-  margin-top: 2rem;
-}
-
-.items_list_container table {
+.itemsListContainer table {
   text-align: center;
   min-width: 1024px;
   overflow: scroll;
   font-size: small;
   margin-bottom: 0 !important;
+  background-color: #ffffff;
+  color: #111827;
 }
 
-.items_list_container th {
+.itemsListContainer th {
   height: 2rem;
+  background-color: #f9fafb;
+  color: #374151;
 }
 
 .itemsCell td {
@@ -53,7 +57,7 @@ table td {
   color: black;
 }
 
-
+/* --- Search Row --- */
 .searchRow {
   display: flex;
   align-items: center;
@@ -82,6 +86,8 @@ table td {
   padding: 5px 34px 5px 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
+  background-color: #ffffff;
+  color: #111827;
 }
 
 .clearSearch {
@@ -105,6 +111,7 @@ table td {
   opacity: 0.85;
 }
 
+/* --- Table Headers --- */
 .stickyThead th {
   position: sticky;
   top: 0;
@@ -122,6 +129,7 @@ table td {
   text-decoration: underline;
 }
 
+/* --- Input Selection Grid --- */
 .selectInput {
   display: grid;
   grid-template-columns: auto 1fr auto 1fr;
@@ -151,6 +159,8 @@ table td {
   border: 1px solid #ccc;
   border-radius: 4px;
   margin-bottom: 8px;
+  background-color: #ffffff;
+  color: #111827;
 }
 
 .selectInput :global(.react-select__control) {
@@ -164,6 +174,7 @@ table td {
   margin-bottom: 8px;
 }
 
+/* --- Buttons --- */
 .btnPrimary {
   background-color: #468ef9;
   color: white;
@@ -184,6 +195,7 @@ table td {
   background-color: #3b82f6;
 }
 
+/* --- Pagination --- */
 .paginationBar {
   display: flex;
   align-items: center;
@@ -194,6 +206,7 @@ table td {
   border-top: none;
   border-radius: 0 0 6px 6px;
   flex-wrap: wrap;
+  background-color: #ffffff;
 }
 
 .rowsPerPage {
@@ -209,6 +222,7 @@ table td {
   border-radius: 6px;
   border: 1px solid #d1d5db;
   background: #fff;
+  color: #111827;
 }
 
 .rangeInfo {
@@ -229,6 +243,7 @@ table td {
   border-radius: 6px;
   border: 1px solid #d1d5db;
   background: white;
+  color: #111827;
   cursor: pointer;
 }
 
@@ -248,88 +263,62 @@ table td {
   opacity: 0.75;
 }
 
+.filterForm,
+.filterItem {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 20px;
+}
+
+/* ==========================================================================
+   DARK MODE CONTROL PANEL
+   All dark mode styles are scoped safely under .darkMode or :global(.dark-mode)
+   ========================================================================== */
+
 .darkMode {
   color: #e8edf4;
   background-color: #0d1117 !important;
-
-/*   color: #fff !important; */
   min-height: 100vh;
   padding-bottom: 2rem;
 }
 
-.darkTable tbody td,
-.darkTable tbody th {
-  border-color: #2f4157 !important;
+/* Form element Dark Mode Fallbacks */
+.darkMode input,
+.darkMode select,
+.darkMode option {
+  background-color: #1e2632;
+  color: #ffffff;
+  border-color: #30363d;
 }
 
-.darkTable tbody tr:nth-child(odd) {
-  background-color: #1f2e45;
-}
-
-.darkTable tbody tr:nth-child(even) {
-  background-color: #23375b;
-}
-
-.darkTable .stickyThead th {
-  background-color: #2f4157;
-  border-bottom: 1px solid #3f5269;
-}
-
-:global(.dark-mode) .items_table_container {
-  background-color: transparent !important;
-}
-
-:global(.dark-mode) .items_list_container table {
+/* Deep component tree modifications under Dark Mode */
+.darkMode .itemsListContainer table {
   background-color: #161b22;
-  color: #fff;
+  color: #ffffff;
   border: 1px solid #30363d;
 }
 
-:global(.dark-mode) .items_list_container th {
+.darkMode .itemsListContainer th {
   background-color: #1f2937;
-  color: #fff;
+  color: #ffffff;
   border-bottom: 1px solid #30363d;
 }
 
-:global(.dark-mode) .items_list_container td {
+.darkMode .itemsListContainer td {
   border-bottom: 1px solid #30363d;
-  color: #fff;
+  color: #ffffff;
 }
 
-:global(.dark-mode) .items_list_container tr:hover {
+.darkMode .itemsListContainer tr:hover {
   background-color: #1f2a37;
 }
 
-:global(.dark-mode) .items_cell svg {
-  color: #fff;
+.darkMode .itemsCell svg {
+  color: #ffffff;
 }
 
-:global(.dark-mode) .items_cell svg:hover {
-  color: #fff;
-}
-
-:global(.dark-mode) .select_input {
-  background-color: #1e2632;
-  color: #fff;
-  border: 1px solid #30363d;
-}
-
-:global(.dark-mode) select,
-:global(.dark-mode) input {
-  background-color: #1e2632;
-  color: #fff;
-  border: 1px solid #30363d;
-}
-
-:global(.dark-mode) option {
-  background-color: #111827;
-  color: #fff;
-}
-
-:global(.dark-mode) body,
-:global(.dark-mode) html,
-:global(.dark-mode) #root {
-  background-color: #0d1117 !important;
+.darkMode .itemsCell svg:hover {
+  color: #468ef9;
 }
 
 .darkMode .searchBox input {
@@ -343,11 +332,12 @@ table td {
 }
 
 .darkMode .clearSearch:hover {
-  color: #fff;
+  color: #ffffff;
 }
 
 .darkMode .paginationBar {
   border-color: #2f4157;
+  background-color: #161b22;
 }
 
 .darkMode .rowsPerPage select {
@@ -362,6 +352,14 @@ table td {
   border: 1px solid #3f5269;
 }
 
+/* Global Dark Mode Overrides (Only used if the class is appended to body/html container) */
+:global(.dark-mode) body,
+:global(.dark-mode) html,
+:global(.dark-mode) #root {
+  background-color: #0d1117 !important;
+}
+
+/* --- Dark Mode DatePicker Sub-styles --- */
 .darkDatePickerInput {
   background-color: #2a3f5f !important;
   color: #e8edf4 !important;
@@ -411,10 +409,7 @@ table td {
 .darkDatePicker :global(.react-datepicker__time-container),
 .darkDatePicker :global(.react-datepicker__time-container .react-datepicker__time),
 .darkDatePicker :global(.react-datepicker__time-container .react-datepicker__time-box),
-.darkDatePicker
-  :global(.react-datepicker__time-container
-    .react-datepicker__time-box
-    ul.react-datepicker__time-list) {
+.darkDatePicker :global(.react-datepicker__time-container .react-datepicker__time-box ul.react-datepicker__time-list) {
   background-color: #2a3f5f !important;
   border-color: #3f5269 !important;
   color: #e8edf4 !important;
@@ -431,15 +426,11 @@ table td {
   color: #fff !important;
 }
 
-.darkDatePicker :global(.react-datepicker__time-list-item--selected) {
-  background-color: #468ef9 !important;
-  color: #fff !important;
-}
-
 .darkDatePickerPopper .react-datepicker__triangle {
   display: none;
 }
 
+/* --- Light Mode DatePicker Sub-styles --- */
 .lightDatePickerInput {
   background-color: #fff !important;
   color: #111827 !important;
@@ -476,34 +467,10 @@ table td {
   color: #fff !important;
 }
 
-.lightDatePicker .react-datepicker__time-container {
-  border-color: #d1d5db !important;
-  background-color: #fff !important;
-}
-
-.lightDatePicker .react-datepicker__time-container .react-datepicker__time {
-  background-color: #fff !important;
-  border-color: #d1d5db !important;
-}
-
-.lightDatePicker .react-datepicker__time-container .react-datepicker__time-box {
-  background-color: #fff !important;
-  border-color: #d1d5db !important;
-}
-
-.lightDatePicker .react-datepicker__time-container .react-datepicker__time-list {
-  background-color: #fff !important;
-  color: #1f2937 !important;
-  border-color: #d1d5db !important;
-}
-
 .lightDatePicker :global(.react-datepicker__time-container),
 .lightDatePicker :global(.react-datepicker__time-container .react-datepicker__time),
 .lightDatePicker :global(.react-datepicker__time-container .react-datepicker__time-box),
-.lightDatePicker
-  :global(.react-datepicker__time-container
-    .react-datepicker__time-box
-    ul.react-datepicker__time-list) {
+.lightDatePicker :global(.react-datepicker__time-container .react-datepicker__time-box ul.react-datepicker__time-list) {
   background-color: #ffffff !important;
   border-color: #d1d5db !important;
   color: #1f2937 !important;
@@ -520,35 +487,6 @@ table td {
   color: #111827 !important;
 }
 
-.lightDatePicker :global(.react-datepicker__time-list-item--selected) {
-  background-color: #468ef9 !important;
-  color: #fff !important;
-}
-
-.items_list_container.dark_mode {
-  background-color: #1b1f27 !important;
-  color: #fff !important;
-  border-color: #2a2f3a !important;
-}
-
-.dark-mode .items_table_container .table thead th {
-  background-color: #1c2541 !important;
-  color: #fff !important;
-  border-color: #555 !important;
-}
-
 .lightDatePickerPopper .react-datepicker__triangle {
   display: none;
-}
-
-.filterForm {
-  display: flex;
-  justify-content: flex-start;
-  margin-bottom: 20px;
-}
-
-.filterItem {
-  display: flex;
-  justify-content: flex-start;
-  margin-bottom: 20px;
 }
