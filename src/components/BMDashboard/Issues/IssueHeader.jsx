@@ -1,4 +1,4 @@
-import { Search, MoreHorizontal, ChevronDown } from 'lucide-react';
+import { Search,ChevronDown } from 'lucide-react';
 import styles from './IssueHeader.module.css';
 import { connect, useDispatch, useSelector } from 'react-redux';
 import { getHeaderData } from '~/actions/authActions';
@@ -44,15 +44,12 @@ export function IssueHeader(props) {
           <div className={`${styles.titleSection}`}>
             <h1 className={`${styles.section}`}>Issues</h1>
           </div>
-
           <div className="action-section">
-            
             <Link to="/projects" style={{ textDecoration: 'none' }}>
               <button className={`${styles.backButton}`} type="button">
                 Back to Projects
               </button>
             </Link>
-
             <div className={`${styles.avatar}`}>
               {profilePic ? (
                 <img src={profilePic} alt={`${firstName}'s avatar`} />

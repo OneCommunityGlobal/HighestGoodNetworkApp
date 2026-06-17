@@ -322,14 +322,14 @@ function WeeklyProjectSummary() {
       {
         title: 'Lessons Learned',
         key: 'Lessons Learned',
-        className: 'half',
+        className: 'full',
         content: [
           <div
             key="frequent-tags-card"
             className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
             style={{ minHeight: '520px', height: 'auto', overflow: 'visible' }}
           >
-            <MostFrequentKeywords darkMode={darkMode} />
+            <MostFrequentKeywords />
           </div>,
           <div
             key="injury-chart"
@@ -461,7 +461,7 @@ function WeeklyProjectSummary() {
         ),
       },
     ],
-    [quantityOfMaterialsUsedData],
+    [quantityOfMaterialsUsedData, darkMode],
   );
 
   const handleSaveAsPDF = async () => {
