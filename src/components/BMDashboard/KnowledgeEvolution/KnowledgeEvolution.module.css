@@ -1,12 +1,14 @@
 .pageContainer {
   padding: 10px;
-  font-family: 'Inter', sans-serif;
+  font-family: Inter, sans-serif;
   position: relative;
 }
+
 .pageContainerDarkMode {
   background-color: #1b2a41;
-  color: #ffffff;
+  color: #fff;
 }
+
 .headerContainer {
   margin-bottom: 20px;
   font-weight: 800;
@@ -59,17 +61,15 @@
   color: #555;
 }
 
+.pageContainerDarkMode .statBox p {
+  color: #aaa;
+}
+
 .searchFilterContainer {
   display: flex;
   align-items: center;
   gap: 12px;
   margin-bottom: 20px;
-}
-
-.pageContainerDarkMode .searchInput {
-  background-color: #3a4b65;
-  border-color: #555;
-  color: #eee;
 }
 
 .searchWrapper {
@@ -93,6 +93,12 @@
   font-size: 14px;
   padding-left: 35px;
   height: 38px;
+}
+
+.pageContainerDarkMode .searchInput {
+  background-color: #3a4b65;
+  border-color: #555;
+  color: #eee;
 }
 
 .filterButton {
@@ -123,7 +129,7 @@
   border: 1.5px solid #ccc;
   background: #fafafa;
   padding: 15px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 10%);
   position: relative;
   min-height: 420px;
   margin-bottom: 12px;
@@ -133,13 +139,19 @@
   background-color: #2a3b55;
   border-color: #444;
 }
+
 .subjectTabs {
   display: flex;
   justify-content: center;
+  flex-wrap: wrap;
   gap: 20px;
   border: 2px solid #ddd;
   padding-bottom: 5px;
   margin-bottom: 12px;
+}
+
+.pageContainerDarkMode .subjectTabs {
+  border-color: #444;
 }
 
 .tabButton {
@@ -151,10 +163,22 @@
   cursor: pointer;
   color: #555;
   position: relative;
+  overflow-wrap: break-word;
+  white-space: normal;
+  max-width: 160px;
+  text-align: center;
 }
 
 .tabButton:hover {
   color: #000;
+}
+
+.pageContainerDarkMode .tabButton {
+  color: #ccc;
+}
+
+.pageContainerDarkMode .tabButton:hover {
+  color: #fff;
 }
 
 .activeTab {
@@ -172,7 +196,6 @@
   background-color: orange;
 }
 
-
 .subjectTooltipTop {
   position: absolute;
   top: 64px;
@@ -181,11 +204,11 @@
   background: white;
   padding: 12px 18px;
   border-radius: 10px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+  box-shadow: 0 6px 20px rgb(0 0 0 / 12%);
   font-size: 13px;
   min-width: 320px;
   max-width: 720px;
-  visibility: hidden; 
+  visibility: hidden;
   z-index: 60;
   text-align: center;
   pointer-events: none;
@@ -194,10 +217,9 @@
 .pageContainerDarkMode .subjectTooltipTop {
   background-color: #3a4b65;
   color: #eee;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+  box-shadow: 0 6px 20px rgb(0 0 0 / 40%);
   border: 1.5px solid #555;
 }
-
 
 .tooltipTitle {
   font-weight: 600;
@@ -206,6 +228,9 @@
   color: #222;
 }
 
+.pageContainerDarkMode .tooltipTitle {
+  color: #eee;
+}
 
 .tooltipCounts {
   display: flex;
@@ -217,12 +242,11 @@
 .tooltipCount {
   display: flex;
   flex-direction: column;
-  align-items: center; 
+  align-items: center;
   justify-content: center;
-  text-align: center; 
-  gap: 2px; 
+  text-align: center;
+  gap: 2px;
 }
-
 
 .completedDot,
 .inProgressDot,
@@ -233,9 +257,17 @@
   display: inline-block;
 }
 
-.completedDot { background: #28a745; }
-.inProgressDot { background: #ffc107; }
-.notStartedDot { background: #6c757d; }
+.completedDot {
+  background: #28a745;
+}
+
+.inProgressDot {
+  background: #ffc107;
+}
+
+.notStartedDot {
+  background: #6c757d;
+}
 
 .subjectTooltipBottomLegend {
   display: flex;
@@ -247,7 +279,6 @@
   z-index: 40;
 }
 
-
 .legendItem {
   display: flex;
   gap: 8px;
@@ -256,23 +287,59 @@
   color: #444;
 }
 
-.completedDotSmall, .inProgressDotSmall, .notStartedDotSmall {
+.pageContainerDarkMode .legendItem {
+  color: #ccc;
+}
+
+.completedDotSmall,
+.inProgressDotSmall,
+.notStartedDotSmall {
   width: 10px;
   height: 10px;
   border-radius: 50%;
   display: inline-block;
 }
 
-.completedDotSmall { background: #28a745; }
-.inProgressDotSmall { background: #ffc107; }
-.notStartedDotSmall { background: #6c757d; }
+.completedDotSmall {
+  background: #28a745;
+}
 
-@media (max-width: 800px) {
-  .subjectTooltipTop { left: 50%; transform: translateX(-50%); min-width: 260px; top: 56px; }
-  .tooltipCounts { flex-direction: column; gap: 6px; align-items: center; }
-  .tooltipCount { justify-content: flex-start; width: 100%; padding-left: 12px; }
-  .chartWrapper { min-height: 360px; }
-  .subjectTooltipBottomLegend { gap: 12px; flex-wrap: wrap; }
+.inProgressDotSmall {
+  background: #ffc107;
+}
+
+.notStartedDotSmall {
+  background: #6c757d;
+}
+
+@media (width <= 800px) {
+  .subjectTooltipTop {
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 260px;
+    top: 56px;
+  }
+
+  .tooltipCounts {
+    flex-direction: column;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .tooltipCount {
+    justify-content: flex-start;
+    width: 100%;
+    padding-left: 12px;
+  }
+
+  .chartWrapper {
+    min-height: 360px;
+  }
+
+  .subjectTooltipBottomLegend {
+    gap: 12px;
+    flex-wrap: wrap;
+  }
 }
 
 .completedText {
@@ -281,7 +348,7 @@
 }
 
 .inProgressText {
-  color: #ffc107; 
+  color: #ffc107;
   font-weight: 600;
 }
 

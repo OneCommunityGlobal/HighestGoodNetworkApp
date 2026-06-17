@@ -1,4 +1,3 @@
-'use client';
 import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import { Funnel, Search } from 'lucide-react';
@@ -9,7 +8,7 @@ import { fetchKnowledgeEvolutionData } from '../../../actions/bmdashboard/knowle
 const KnowledgeEvolution = () => {
   const svgRef = useRef();
   const dispatch = useDispatch();
-  const { data, loading } = useSelector(state => state.knowledgeEvolution);
+  const { data, loading, error } = useSelector(state => state.knowledgeEvolution);
   const user = useSelector(state => state.auth.user);
   const darkMode = useSelector(state => state.theme.darkMode);
   const userId = user ? user.userid : null;
@@ -125,7 +124,7 @@ const KnowledgeEvolution = () => {
       .attr('cy', d => d.y)
       .attr('r', d => (d.type === 'subject' ? subjectRadius : courseRadius))
       .attr('fill', d => {
-        if (d.type === 'subject') return '#ffffff';
+        if (d.type === 'subject') return darkMode ? '#2a3b55' : '#ffffff';
         const c = d3.color(colorMap[d.status]);
         c.opacity = 0.3;
         return c;
@@ -143,7 +142,7 @@ const KnowledgeEvolution = () => {
       .attr('y', d => d.y)
       .attr('text-anchor', 'middle')
       .attr('font-size', d => (d.type === 'subject' ? 18 : 12))
-      .attr('fill', '#222')
+      .attr('fill', darkMode ? '#ffffff' : '#222')
       .each(function(d) {
         const node = d3.select(this);
         const words = (d.type === 'subject' ? d.id : d.name || '').split(' ');
@@ -157,9 +156,11 @@ const KnowledgeEvolution = () => {
           yOffset = 12;
         });
       });
-  }, [data, selectedSubject]);
+  }, [data, selectedSubject, darkMode]);
 
-  if (loading || !data) return <div>Loading Knowledge Evolution...</div>;
+  if (loading) return <div>Loading Knowledge Evolution...</div>;
+  if (error) return <div>Failed to load knowledge evolution data. Please try again later.</div>;
+  if (!data) return <div>No knowledge evolution data available.</div>;
   const handleChartMouseEnter = () => {
     const subjectData = data?.knowledgeEvolution?.find(s => s._id === selectedSubject);
     if (!subjectData) return;
