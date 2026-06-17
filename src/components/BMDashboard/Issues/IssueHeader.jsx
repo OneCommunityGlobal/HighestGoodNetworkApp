@@ -1,4 +1,4 @@
-import { Search,ChevronDown } from 'lucide-react';
+import { Search, ChevronDown } from 'lucide-react';
 import styles from './IssueHeader.module.css';
 import { connect, useDispatch, useSelector } from 'react-redux';
 import { getHeaderData } from '~/actions/authActions';
