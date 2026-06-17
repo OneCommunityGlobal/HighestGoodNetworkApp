@@ -32,6 +32,7 @@ const KnowledgeEvolution = () => {
   const savedInterest = 2;
   const tooltipRef = useRef(null);
   const [tooltipData, setTooltipData] = useState(null);
+  const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     if (!data || !selectedSubject) return;
@@ -183,6 +184,10 @@ const KnowledgeEvolution = () => {
     if (tooltipRef.current) tooltipRef.current.style.visibility = 'hidden';
   };
 
+  const handleChartMouseMove = e => {
+    setTooltipPos({ x: e.clientX, y: e.clientY });
+  };
+
   return (
     <div className={`${darkMode ? styles.pageContainerDarkMode : ''}`}>
       <div className={`${styles.pageContainer}`}>
@@ -247,7 +252,12 @@ const KnowledgeEvolution = () => {
             </button>
           ))}
         </div>
-        <div ref={tooltipRef} className={`${styles.subjectTooltipTop}`} aria-hidden={!tooltipData}>
+        <div
+          ref={tooltipRef}
+          className={`${styles.subjectTooltipTop}`}
+          style={tooltipData ? { top: tooltipPos.y - 130, left: tooltipPos.x } : {}}
+          aria-hidden={!tooltipData}
+        >
           {tooltipData ? (
             <>
               <div className={`${styles.tooltipTitle}`}>{tooltipData.subject} Progress</div>
@@ -276,6 +286,7 @@ const KnowledgeEvolution = () => {
           className={`${styles.chartWrapper}`}
           onMouseEnter={handleChartMouseEnter}
           onMouseLeave={handleChartMouseLeave}
+          onMouseMove={handleChartMouseMove}
         >
           <svg ref={svgRef} width={700} height={500} />
         </div>

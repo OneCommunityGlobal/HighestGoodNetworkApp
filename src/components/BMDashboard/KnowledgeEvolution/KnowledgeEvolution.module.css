@@ -197,9 +197,7 @@
 }
 
 .subjectTooltipTop {
-  position: absolute;
-  top: 64px;
-  left: 50%;
+  position: fixed;
   transform: translateX(-50%);
   background: white;
   padding: 12px 18px;
@@ -314,10 +312,7 @@
 
 @media (width <= 800px) {
   .subjectTooltipTop {
-    left: 50%;
-    transform: translateX(-50%);
     min-width: 260px;
-    top: 56px;
   }
 
   .tooltipCounts {
