@@ -68,22 +68,25 @@ function AddLogModal({ isOpen, onClose, onAdd }) {
   const validateForm = () => {
     const newErrors = {};
     const timeRegex = /^([0-1]\d|2[0-3]):([0-5]\d):([0-5]\d)$/;
+    const textRegex = /^[a-zA-Z\s]+$/;
 
     if (!formData.user.trim()) newErrors.user = 'User is required';
 
-    if (!timeRegex.test(formData.timeDuration)) {
+    if (!formData.timeDuration.trim()) {
+      newErrors.timeDuration = 'Time/Duration is required';
+    } else if (!timeRegex.test(formData.timeDuration)) {
       newErrors.timeDuration = 'Time must be in HH:MM:SS format';
     }
 
     if (!formData.facilities.trim()) {
       newErrors.facilities = 'Facilities is required';
-    } else if (!/^[a-zA-Z\s]+$/.test(formData.facilities)) {
+    } else if (!textRegex.test(formData.facilities)) {
       newErrors.facilities = 'Facilities should contain only letters';
     }
 
     if (!formData.materials.trim()) {
       newErrors.materials = 'Materials is required';
-    } else if (!/^[a-zA-Z\s]+$/.test(formData.materials)) {
+    } else if (!textRegex.test(formData.materials)) {
       newErrors.materials = 'Materials should contain only letters';
     }
 
@@ -94,13 +97,6 @@ function AddLogModal({ isOpen, onClose, onAdd }) {
 
   const handleSubmit = e => {
     e.preventDefault();
-
-    const error = validateForm();
-
-    if (error) {
-      setValidationError(error);
-      return;
-    }
 
     const validationErrors = validateForm();
 
@@ -119,6 +115,7 @@ function AddLogModal({ isOpen, onClose, onAdd }) {
       date: '',
     });
 
+    setErrors({});
     onClose();
   };
 
@@ -149,9 +146,9 @@ function AddLogModal({ isOpen, onClose, onAdd }) {
           ))}
 
           <div className={styles.formGroup}>
-            <label htmlFor="date">Date</label>
+            <label htmlFor="resource-date">Date</label>
             <input
-              id="date"
+              id="resource-date"
               name="date"
               type="date"
               value={formData.date}
@@ -159,17 +156,6 @@ function AddLogModal({ isOpen, onClose, onAdd }) {
               className={errors.date ? styles.inputError : ''}
             />
             {errors.date && <span className={styles.errorText}>{errors.date}</span>}
-          </div>
-
-          <div className={styles.formGroup}>
-            <label htmlFor="date">Date</label>
-            <input
-              id="date"
-              name="date"
-              type="date"
-              value={formData.date}
-              onChange={handleChange}
-            />
           </div>
 
           <div className={styles.modalActions}>

@@ -350,6 +350,8 @@
 
 .formGroup {
   margin-bottom: 1.25rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .formGroup label {
@@ -370,6 +372,10 @@
   color: #333;
 }
 
+.formGroup input[type='date'] {
+  color-scheme: light;
+}
+
 .formGroup input:focus {
   outline: none;
   border-color: #007bff;
@@ -382,6 +388,10 @@
   border: 1px solid #667b9c;
 }
 
+.modalContentDark .formGroup input[type='date'] {
+  color-scheme: dark;
+}
+
 .inputError {
   border: 1px solid #ff4d4f !important;
 }
@@ -391,10 +401,12 @@
   font-size: 12px;
   margin-top: 4px;
   display: block;
+  line-height: 1.3;
+  text-align: left;
 }
 
 .modalContentDark .errorText {
-  color: #ff7a7a;
+  color: #ff9a9a;
 }
 
 .modalActions {
