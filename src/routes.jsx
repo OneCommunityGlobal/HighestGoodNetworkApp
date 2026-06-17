@@ -969,7 +969,6 @@ export default (
           component={InjuriesOverTimeChart}
         />
 
-
         <Route path="/pull-request-analytics/reviews-insight" component={ReviewsInsight} />
 
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
