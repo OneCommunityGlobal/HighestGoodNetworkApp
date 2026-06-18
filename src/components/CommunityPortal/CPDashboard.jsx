@@ -1,17 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import {
-  Container,
-  Row,
-  Alert,
-  Col,
-  Card,
-  CardBody,
-  Button,
-  Input,
-  FormGroup,
-  Label,
-} from 'reactstrap';
+import { Container, Row, Alert, Col, Card, CardBody, Button, Input } from 'reactstrap';
 import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt, FaSearch, FaTimes } from 'react-icons/fa';
 import styles from './CPDashboard.module.css';
 import { ENDPOINTS } from '../../utils/URL';
@@ -61,12 +50,23 @@ export function CPDashboard() {
   const [onlineOnly, setOnlineOnly] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [showPastEvents, setShowPastEvents] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
+
+  // Hide the global back-to-top button — not needed on this page
+  useEffect(() => {
+    const scrollBtn = document.querySelector('.back-to-top');
+    if (!scrollBtn) return;
+    const prevDisplay = scrollBtn.style.display;
+    scrollBtn.style.display = 'none';
+    return () => {
+      scrollBtn.style.display = prevDisplay;
+    };
+  }, []);
 
   // Consolidated filter states
   const [pendingFilters, setPendingFilters] = useState(DEFAULT_FILTERS);
   const [appliedFilters, setAppliedFilters] = useState(DEFAULT_FILTERS);
-
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalPages: 5,
@@ -188,22 +188,44 @@ export function CPDashboard() {
   const handleClearFilters = () => {
     setPendingFilters(DEFAULT_FILTERS);
     setAppliedFilters(DEFAULT_FILTERS);
+    setSelectedDate('');
     setPagination(prev => ({ ...prev, currentPage: 1 }));
   };
 
+  const isPastEvent = event => {
+    const ref = event.startTime || event.date;
+    if (!ref) return false;
+
+    const eventDate = new Date(ref);
+    const today = new Date();
+
+    today.setHours(0, 0, 0, 0);
+    eventDate.setHours(0, 0, 0, 0);
+
+    return eventDate < today;
+  };
   // Filter events based on applied filters
   const filteredEvents = events.filter(event => {
+    if (!showPastEvents && isPastEvent(event)) return false;
     // Filter by online only
     if (appliedFilters.onlineOnly) {
       const isOnlineEvent = event.location?.toLowerCase() === 'virtual';
       if (!isOnlineEvent) return false;
     }
 
+    // Filter by specific date if one is selected
+    if (selectedDate) {
+      const eventDate = new Date(event.date);
+      const normalizedEventDate = eventDate.toISOString().split('T')[0];
+
+      if (normalizedEventDate !== selectedDate) return false;
+    }
+
     // Filter by date
     if (appliedFilters.dateFilter === 'tomorrow') {
-      return isTomorrow(event.date);
+      if (!isTomorrow(event.date)) return false;
     } else if (appliedFilters.dateFilter === 'weekend') {
-      return isComingWeekend(event.date);
+      if (!isComingWeekend(event.date)) return false;
     }
 
     // Filter by search query
@@ -220,7 +242,7 @@ export function CPDashboard() {
   // Reset pagination to page 1 when filters change
   useEffect(() => {
     setPagination(prev => ({ ...prev, currentPage: 1 }));
-  }, [searchQuery, selectedDate, onlineOnly, appliedFilters.dateFilter]);
+  }, [searchQuery, selectedDate, onlineOnly, appliedFilters.dateFilter, showPastEvents]);
 
   const totalPages = Math.ceil(filteredEvents.length / pagination.limit) || 1;
   const displayedEvents = filteredEvents.slice(
@@ -269,7 +291,9 @@ export function CPDashboard() {
               <FixedRatioImage src={event.coverImage} alt={event.title} fallback={FALLBACK_IMG} />
             </div>
             <CardBody className={`${styles.eventCardBody} ${darkMode ? styles.darkEventCard : ''}`}>
-              <h5 className={styles.eventTitle}>{event.title}</h5>
+              <h5 className={styles.eventTitle} data-event-title={event.title || 'Untitled event'}>
+                <span className={styles.eventTitleText}>{event.title}</span>
+              </h5>
               <p className={styles.eventDate}>
                 <FaCalendarAlt
                   className={`${darkMode ? styles.eventIconDark : styles.eventIcon}`}
@@ -299,84 +323,72 @@ export function CPDashboard() {
     <Container className={styles.dashboardContainer}>
       <header className={`${styles.dashboardHeader} ${darkMode ? styles.darkHeader : ''}`}>
         <h1>All Events</h1>
-        <div>
-          <div
-            className={`${styles.dashboardSearchContainer} ${
-              darkMode ? styles.darkSearchContainer : ''
-            }`}
-          >
-            <textarea
-              ref={searchRef}
-              rows={1}
-              maxLength={100}
-              placeholder="Search events..."
-              value={searchInput}
-              onChange={e => setSearchInput(e.target.value)}
-              onKeyDown={handleSearchKeyDown}
-              className={`${styles.dashboardSearchTextarea} ${
-                darkMode ? styles.darkSearchTextarea : ''
-              }`}
-            />
-
-            <div className={styles.dashboardSearchButtons}>
-              {searchInput && (
-                <button
-                  type="button"
-                  className={styles.dashboardClearBtn}
-                  onClick={() => {
-                    setSearchInput('');
-                    setSearchQuery('');
-                    setPagination(prev => ({ ...prev, currentPage: 1 }));
-                  }}
-                >
-                  <FaTimes />
-                </button>
-              )}
-
-              <button
-                type="button"
-                className={styles.dashboardSearchIconBtn}
-                onClick={handleSearchClick}
-                aria-label="Search events"
-              >
-                <FaSearch />
-              </button>
-            </div>
-          </div>
-          {searchInput.length >= 100 && (
-            <Alert className={styles.charCountWarning}>Max 100 characters</Alert>
-          )}
-        </div>
       </header>
 
       <Row className={styles.centeredRow}>
         <Col md={3} className={`${styles.dashboardSidebar} ${darkMode ? styles.darkSidebar : ''}`}>
           <div className={styles.filterSection}>
-            <h4>Search Filters</h4>
-
-            <div className={`${styles.filterItem} ${styles.searchFilter}`}>
-              <label htmlFor="search-events">Search Events</label>
-              <div className={styles.searchInputGroup}>
-                <span className={styles.inputGroupText}>
-                  <FaSearch />
-                </span>
-                <input
-                  type="text"
-                  id="search-events"
-                  placeholder="Search events..."
-                  value={searchInput}
-                  onChange={e => setSearchInput(e.target.value)}
-                />
-              </div>
-            </div>
+            <h4 className={styles.filterSectionHeader}>Filters</h4>
 
             <div className={styles.filterSectionDivider}>
+              {/* Search */}
+              <div className={styles.filterItem}>
+                <label htmlFor="sidebar-search">Search Events</label>
+                <div className={styles.sidebarSearchWrapper}>
+                  <div
+                    className={`${styles.dashboardSearchContainer} ${
+                      darkMode ? styles.darkSearchContainer : ''
+                    }`}
+                  >
+                    <textarea
+                      ref={searchRef}
+                      id="sidebar-search"
+                      rows={1}
+                      maxLength={100}
+                      placeholder="Search events..."
+                      value={searchInput}
+                      onChange={e => setSearchInput(e.target.value)}
+                      onKeyDown={handleSearchKeyDown}
+                      className={`${styles.dashboardSearchTextarea} ${
+                        darkMode ? styles.darkSearchTextarea : ''
+                      }`}
+                    />
+                    <div className={styles.dashboardSearchButtons}>
+                      {searchInput && (
+                        <button
+                          type="button"
+                          className={styles.dashboardClearBtn}
+                          onClick={() => {
+                            setSearchInput('');
+                            setSearchQuery('');
+                            setPagination(prev => ({ ...prev, currentPage: 1 }));
+                          }}
+                        >
+                          <FaTimes />
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        className={styles.dashboardSearchIconBtn}
+                        onClick={handleSearchClick}
+                        aria-label="Search events"
+                      >
+                        <FaSearch />
+                      </button>
+                    </div>
+                  </div>
+                  {searchInput.length >= 100 && (
+                    <Alert className={styles.charCountWarning}>Max 100 characters</Alert>
+                  )}
+                </div>
+              </div>
+
               {/* Date Filter */}
               <div className={styles.filterItem}>
                 <label htmlFor="date-tomorrow">Dates</label>
                 <div className={styles.radioRow}>
-                  <FormGroup check className={styles.radioGroup + ' d-flex align-items-center'}>
-                    <Input
+                  <div className={styles.radioGroup}>
+                    <input
                       id="date-tomorrow"
                       type="radio"
                       name="dates"
@@ -384,16 +396,12 @@ export function CPDashboard() {
                       onChange={() => handleFilterChange('dateFilter', 'tomorrow')}
                       className={styles.radioInput}
                     />
-                    <Label
-                      htmlFor="date-tomorrow"
-                      check
-                      className={styles.radioLabel + ' ms-2 mb-0'}
-                    >
+                    <label htmlFor="date-tomorrow" className={styles.radioLabel}>
                       Tomorrow
-                    </Label>
-                  </FormGroup>
-                  <FormGroup check className={styles.radioGroup + ' d-flex align-items-center'}>
-                    <Input
+                    </label>
+                  </div>
+                  <div className={styles.radioGroup}>
+                    <input
                       id="date-weekend"
                       type="radio"
                       name="dates"
@@ -401,37 +409,40 @@ export function CPDashboard() {
                       onChange={() => handleFilterChange('dateFilter', 'weekend')}
                       className={styles.radioInput}
                     />
-                    <Label
-                      htmlFor="date-weekend"
-                      check
-                      className={styles.radioLabel + ' ms-2 mb-0'}
-                    >
+                    <label htmlFor="date-weekend" className={styles.radioLabel}>
                       This Weekend
-                    </Label>
-                  </FormGroup>
+                    </label>
+                  </div>
                 </div>
 
                 <Input
                   type="date"
-                  placeholder="Select Date"
-                  className={styles.dateFilter}
+                  placeholder="Ending After"
+                  className={`${styles.dateFilter} ${darkMode ? styles.darkDateFilter : ''}`}
                   value={selectedDate}
-                  onChange={e => setSelectedDate(e.target.value)}
-                  style={{ marginTop: '10px' }}
+                  onChange={e => {
+                    setSelectedDate(e.target.value);
+                    setPagination(prev => ({ ...prev, currentPage: 1 }));
+                  }}
                 />
               </div>
 
               {/* Online Only Filter */}
               <div className={styles.filterItem}>
                 <label htmlFor="online-only">Online</label>
-                <div>
-                  <Input
-                    type="checkbox"
-                    id="online-only"
-                    checked={pendingFilters.onlineOnly}
-                    onChange={e => handleFilterChange('onlineOnly', e.target.checked)}
-                  />{' '}
-                  Online Only
+                <div className={styles.radioRow}>
+                  <div className={styles.radioGroup}>
+                    <input
+                      type="checkbox"
+                      id="online-only"
+                      checked={pendingFilters.onlineOnly}
+                      onChange={e => handleFilterChange('onlineOnly', e.target.checked)}
+                      className={styles.radioInput}
+                    />
+                    <label htmlFor="online-only" className={styles.radioLabel}>
+                      Online Only
+                    </label>
+                  </div>
                 </div>
               </div>
 
@@ -488,7 +499,15 @@ export function CPDashboard() {
         </Col>
 
         <Col md={9} className={`${styles.dashboardMain} ${darkMode ? styles.darkMain : ''}`}>
-          <h2 className={styles.sectionTitle}>Events</h2>
+          <div className={styles.eventsHeader}>
+            <h2 className={styles.sectionTitle}>Events</h2>
+            <Button
+              className={styles.showPastEventsBtn}
+              onClick={() => setShowPastEvents(prev => !prev)}
+            >
+              {showPastEvents ? 'Hide Past Events' : 'Show Past Events'}
+            </Button>
+          </div>
 
           <Row>{eventsContent}</Row>
 
@@ -514,10 +533,6 @@ export function CPDashboard() {
               </Button>
             </div>
           )}
-
-          <div className={styles.dashboardActions}>
-            <Button color="primary">Show Past Events</Button>
-          </div>
         </Col>
       </Row>
     </Container>
