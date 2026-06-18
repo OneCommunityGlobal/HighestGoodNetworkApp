@@ -30,7 +30,7 @@ function EventPopularityBreakdown() {
           throw new Error(popularityResponse.message || 'Failed to fetch popularity metrics');
         }
 
-        if (valueResponse?.data) { {
+        if (valueResponse?.data) {
           setEventValues(valueResponse.data.eventValues);
         }
       } catch (err) {
