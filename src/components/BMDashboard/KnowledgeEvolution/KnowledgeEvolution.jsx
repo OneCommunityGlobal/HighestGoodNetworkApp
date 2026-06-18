@@ -188,6 +188,14 @@ const KnowledgeEvolution = () => {
     setTooltipPos({ x: e.clientX, y: e.clientY });
   };
 
+  const handleChartKeyDown = e => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      handleChartMouseEnter();
+    } else if (e.key === 'Escape') {
+      handleChartMouseLeave();
+    }
+  };
+
   return (
     <div className={`${darkMode ? styles.pageContainerDarkMode : ''}`}>
       <div className={`${styles.pageContainer}`}>
@@ -283,10 +291,15 @@ const KnowledgeEvolution = () => {
 
         {/* D3 CHART with subject-level hover */}
         <div
+          role="button"
+          tabIndex={0}
           className={`${styles.chartWrapper}`}
           onMouseEnter={handleChartMouseEnter}
           onMouseLeave={handleChartMouseLeave}
           onMouseMove={handleChartMouseMove}
+          onFocus={handleChartMouseEnter}
+          onBlur={handleChartMouseLeave}
+          onKeyDown={handleChartKeyDown}
         >
           <svg ref={svgRef} width={700} height={500} />
         </div>
