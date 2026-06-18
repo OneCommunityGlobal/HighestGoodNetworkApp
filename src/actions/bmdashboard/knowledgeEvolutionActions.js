@@ -27,7 +27,6 @@ export const fetchKnowledgeEvolutionData = (userId) => {
       dispatch(fetchKnowledgeEvolutionDataSuccess(res.data));
       return res.data;
     } catch (err) {
-      console.error("Axios error:", err);
       const errorPayload = err.response?.data || { message: err.message };
       dispatch(fetchKnowledgeEvolutionDataFailure(errorPayload));
       toast.error(err.response?.data?.error || "Failed to fetch knowledge evolution data");
