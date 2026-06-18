@@ -297,10 +297,12 @@ body.dark-mode [style*="background"] {
   background-color: #1a1d23 !important;
 }
 
-.dark-leaderboard-row:hover td,
-.dark-leaderboard-row:hover th,
-.dark-leaderboard-row:hover .text-light,
-.dark-leaderboard-row:hover p {
-  color: #000 !important;
+tr.dark-leaderboard-row:hover,
+tr.dark-leaderboard-row:hover td,
+tr.dark-leaderboard-row:hover th,
+tr.dark-leaderboard-row:hover span,
+tr.dark-leaderboard-row:hover p,
+tr.dark-leaderboard-row:hover a {
   background-color: #fff !important;
+  color: #000 !important;
 }
