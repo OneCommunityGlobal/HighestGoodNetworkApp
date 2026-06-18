@@ -188,15 +188,21 @@ export function CPDashboard() {
   const handleClearFilters = () => {
     setPendingFilters(DEFAULT_FILTERS);
     setAppliedFilters(DEFAULT_FILTERS);
+    setSelectedDate('');
     setPagination(prev => ({ ...prev, currentPage: 1 }));
   };
-
-  const now = new Date();
 
   const isPastEvent = event => {
     const ref = event.startTime || event.date;
     if (!ref) return false;
-    return new Date(ref) < now;
+
+    const eventDate = new Date(ref);
+    const today = new Date();
+
+    today.setHours(0, 0, 0, 0);
+    eventDate.setHours(0, 0, 0, 0);
+
+    return eventDate < today;
   };
   // Filter events based on applied filters
   const filteredEvents = events.filter(event => {
@@ -207,11 +213,19 @@ export function CPDashboard() {
       if (!isOnlineEvent) return false;
     }
 
+    // Filter by specific date if one is selected
+    if (selectedDate) {
+      const eventDate = new Date(event.date);
+      const normalizedEventDate = eventDate.toISOString().split('T')[0];
+
+      if (normalizedEventDate !== selectedDate) return false;
+    }
+
     // Filter by date
     if (appliedFilters.dateFilter === 'tomorrow') {
-      return isTomorrow(event.date);
+      if (!isTomorrow(event.date)) return false;
     } else if (appliedFilters.dateFilter === 'weekend') {
-      return isComingWeekend(event.date);
+      if (!isComingWeekend(event.date)) return false;
     }
 
     // Filter by search query
@@ -403,11 +417,13 @@ export function CPDashboard() {
 
                 <Input
                   type="date"
-                  placeholder="Select Date"
-                  className={styles.dateFilter}
+                  placeholder="Ending After"
+                  className={`${styles.dateFilter} ${darkMode ? styles.darkDateFilter : ''}`}
                   value={selectedDate}
-                  onChange={e => setSelectedDate(e.target.value)}
-                  style={{ marginTop: '10px' }}
+                  onChange={e => {
+                    setSelectedDate(e.target.value);
+                    setPagination(prev => ({ ...prev, currentPage: 1 }));
+                  }}
                 />
               </div>
 
