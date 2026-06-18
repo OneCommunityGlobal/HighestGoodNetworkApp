@@ -6,7 +6,6 @@ table td {
 
 .itemsListContainer {
   width: 100%;
-  max-width: 1536px;
   margin: 0 auto;
   padding: 1.5rem;
   transition: background-color 0.25s ease, color 0.25s ease;
