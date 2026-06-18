@@ -1,9 +1,9 @@
 /* eslint-disable import/prefer-default-export */
 
-import { useState, useId, useEffect, useRef } from "react";
-import { PieChart, Pie, Sector, ResponsiveContainer, LabelList} from 'recharts';
+import { useEffect, useId, useRef, useState } from "react";
+import PropTypes from 'prop-types';
+import { LabelList, Pie, PieChart, ResponsiveContainer, Sector } from 'recharts';
 import TwoWayToggleSwitch from '../../../common/TwoWayToggleSwitch/TwoWayToggleSwitch';
-import './ProjectPieChart.css';
 
 const RAD = Math.PI / 180;
 
@@ -385,3 +385,13 @@ export function ProjectPieChart({ userData, windowSize, darkMode }) {
     </div>
   );
 }
+
+ProjectPieChart.propTypes = {
+  userData: PropTypes.arrayOf(PropTypes.object).isRequired,
+  windowSize: PropTypes.number.isRequired,
+  darkMode: PropTypes.bool,
+};
+
+ProjectPieChart.defaultProps = {
+  darkMode: false,
+};
