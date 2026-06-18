@@ -1,0 +1,421 @@
+.paidLaborCostContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.paidLaborCostTitle {
+  text-align: center;
+  margin-bottom: 24px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.darkMode .paidLaborCostTitle {
+  color: #f8fafc;
+}
+
+.paidLaborCostLoading {
+  text-align: center;
+  padding: 40px;
+  font-weight: 500;
+  color: #64748b;
+}
+
+.darkMode .paidLaborCostLoading {
+  color: #94a3b8;
+}
+
+.filtersGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 2fr; 
+  gap: 16px;
+  margin-bottom: 24px;
+  width: 100%;
+  align-items: flex-start;
+}
+
+@media (max-width: 900px) {
+  .filtersGrid {
+    grid-template-columns: 1fr; 
+  }
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  height: 100%;
+  gap: 6px;
+}
+
+.filterLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.darkMode .filterLabel {
+  color: #cbd5e1;
+}
+
+.dateRangeFlex {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.datePickerWrapper {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+}
+
+.datePickerWrapper > div {
+  width: 100%;
+}
+
+.dateInput {
+  width: 100%;
+  padding: 8px 30px 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 13px;
+  box-sizing: border-box;
+  height: 38px;
+  outline: none;
+}
+
+.dateInput:focus {
+  border-color: #4285F4;
+}
+
+.darkDateInput {
+  background-color: #253342;
+  color: #fff;
+  border-color: #2d4059;
+  color-scheme: dark;
+}
+
+.darkDateInput:focus {
+  border-color: #3a506b;
+}
+
+.dateSeparator {
+  flex: 0 0 auto;
+  font-size: 13px;
+  font-weight: 500;
+  color: #64748b;
+  text-align: center;
+}
+
+.darkMode .dateSeparator {
+  color: #94a3b8;
+}
+
+.paidLaborCostChartWrapper {
+  width: 100%;
+  min-height: 400px;
+  margin-bottom: 24px;
+  flex-grow: 1;
+}
+
+.paidLaborCostChartContainer {
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+
+.emptyState {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  color: #64748b;
+  font-style: italic;
+  font-size: 14px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px dashed #cbd5e1;
+}
+
+.darkMode .emptyState {
+  color: #94a3b8;
+  background-color: #1e293b;
+  border-color: #334155;
+}
+
+.summaryContainer {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: auto;
+  padding: 20px 16px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.darkSummaryContainer {
+  background-color: #1e293b;
+  border-color: #334155;
+}
+
+.summaryItem {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 150px;
+}
+
+.summaryLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.darkMode .summaryLabel {
+  color: #94a3b8;
+}
+
+.summaryValue {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.varianceOver { color: #e74c3c !important; }
+.darkSummaryContainer .varianceOver { color: #ff5252 !important; }
+
+.varianceUnder { color: #2ecc71 !important; }
+.darkSummaryContainer .varianceUnder { color: #4ade80 !important; }
+
+.varianceNeutral { color: #666666 !important; }
+.darkSummaryContainer .varianceNeutral { color: #ffffff !important; }
+
+:global(.paid-labor-cost-calendar.react-datepicker) {
+  background-color: #fff !important;
+  border-color: #aeaeae !important;
+  color: #000 !important;
+}
+
+:global(.paid-labor-cost-calendar .react-datepicker__header) {
+  background-color: #f0f0f0 !important;
+  border-bottom-color: #aeaeae !important;
+}
+
+:global(.paid-labor-cost-calendar .react-datepicker__current-month),
+:global(.paid-labor-cost-calendar .react-datepicker__day-name) {
+  color: #000 !important;
+}
+
+:global(.paid-labor-cost-calendar .react-datepicker__month .react-datepicker__day) {
+  color: #000 !important;
+}
+
+:global(.paid-labor-cost-calendar .react-datepicker__month .react-datepicker__day:hover) {
+  background-color: #f0f0f0 !important;
+  color: #000 !important;
+}
+
+:global(.paid-labor-cost-calendar .react-datepicker__month .react-datepicker__day--selected),
+:global(.paid-labor-cost-calendar .react-datepicker__month .react-datepicker__day--keyboard-selected) {
+  background-color: #216ba5 !important;
+  color: #fff !important;
+}
+
+:global(.paid-labor-cost-calendar .react-datepicker__month .react-datepicker__day--in-range),
+:global(.paid-labor-cost-calendar .react-datepicker__month .react-datepicker__day--in-selecting-range) {
+  background-color: #badcf6 !important;
+  color: #000 !important;
+}
+
+:global(.paid-labor-cost-calendar .react-datepicker__navigation-icon::before) {
+  border-color: #ccc !important;
+}
+
+:global(.paid-labor-cost-dark-calendar.react-datepicker) {
+  background-color: #253342 !important;
+  border-color: #2d4059 !important;
+  color: #fff !important;
+}
+
+:global(.paid-labor-cost-dark-calendar .react-datepicker__header) {
+  background-color: #2d4059 !important;
+  border-bottom-color: #3a506b !important;
+}
+
+:global(.paid-labor-cost-dark-calendar .react-datepicker__header__dropdown) {
+  background-color: #2d4059 !important;
+}
+
+:global(.paid-labor-cost-dark-calendar .react-datepicker__current-month),
+:global(.paid-labor-cost-dark-calendar .react-datepicker__day-name) {
+  color: #fff !important;
+}
+
+:global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__week .react-datepicker__day),
+:global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day) {
+  color: #fff !important;
+}
+
+:global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--current-month) {
+  color: #fff !important;
+}
+
+:global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--today) {
+  color: #fff !important;
+  font-weight: 600;
+}
+
+:global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--weekend) {
+  color: #fff !important;
+}
+
+:global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day:hover) {
+  background-color: #3a506b !important;
+  color: #fff !important;
+}
+
+:global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--selected),
+:global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--keyboard-selected) {
+  background-color: #e8a71c !important;
+  color: #000 !important;
+  font-weight: 600;
+}
+
+.dark-mode .paid-labor-cost-day.in-range {
+  background-color: rgb(232 167 28 / 20%);
+}
+
+:global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--in-selecting-range) {
+  background-color: rgb(232 167 28 / 55%) !important;
+  color: #1a1a1a !important;
+}
+
+:global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--range-start),
+:global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--range-end) {
+  background-color: #e8a71c !important;
+  color: #000 !important;
+  font-weight: 600;
+}
+
+:global(.paid-labor-cost-dark-calendar .react-datepicker__navigation-icon::before) {
+  border-color: #fff !important;
+}
+
+:global(.paid-labor-cost-dark-calendar .react-datepicker__year-read-view--down-arrow),
+:global(.paid-labor-cost-dark-calendar .react-datepicker__month-read-view--down-arrow) {
+  border-top-color: #fff !important;
+}
+
+:global(.paid-labor-cost-dark-calendar .react-datepicker__month-dropdown),
+:global(.paid-labor-cost-dark-calendar .react-datepicker__year-dropdown) {
+  background-color: #253342 !important;
+  border: 1px solid #2d4059 !important;
+  color: #fff !important;
+}
+
+:global(.paid-labor-cost-dark-calendar .react-datepicker__month-option),
+:global(.paid-labor-cost-dark-calendar .react-datepicker__year-option) {
+  background-color: #253342 !important;
+  color: #fff !important;
+  padding: 8px 12px;
+}
+
+:global(.paid-labor-cost-dark-calendar .react-datepicker__month-option:hover),
+:global(.paid-labor-cost-dark-calendar .react-datepicker__year-option:hover) {
+  background-color: #3a506b !important;
+  color: #fff !important;
+}
+
+:global(.paid-labor-cost-dark-calendar .react-datepicker__month-option--selected),
+:global(.paid-labor-cost-dark-calendar .react-datepicker__year-option--selected) {
+  background-color: #e8a71c !important;
+  color: #000 !important;
+}
+
+:global(.paid-labor-cost-dark-calendar .react-datepicker__year-read-view),
+:global(.paid-labor-cost-dark-calendar .react-datepicker__month-read-view) {
+  color: #fff !important;
+}
+
+:global(.paid-labor-cost-dark-calendar .react-datepicker__month-dropdown-container),
+:global(.paid-labor-cost-dark-calendar .react-datepicker__year-dropdown-container),
+:global(.paid-labor-cost-dark-calendar .react-datepicker__month-year-dropdown-container) {
+  background-color: transparent !important;
+}
+
+:global(.paid-labor-cost-dark-calendar .react-datepicker__month-select),
+:global(.paid-labor-cost-dark-calendar .react-datepicker__year-select) {
+  background-color: #253342 !important;
+  border: 1px solid #2d4059 !important;
+  color: #fff !important;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+:global(.paid-labor-cost-dark-calendar .react-datepicker__month-select:hover),
+:global(.paid-labor-cost-dark-calendar .react-datepicker__year-select:hover) {
+  border-color: #3a506b !important;
+}
+
+:global(.paid-labor-cost-dark-calendar .react-datepicker__month-select:focus),
+:global(.paid-labor-cost-dark-calendar .react-datepicker__year-select:focus) {
+  outline: none;
+  border-color: #e8a71c !important;
+  box-shadow: 0 0 0 2px rgb(232 167 28 / 20%);
+}
+
+:global(.paid-labor-cost-dark-calendar .react-datepicker__month-select option),
+:global(.paid-labor-cost-dark-calendar .react-datepicker__year-select option) {
+  background-color: #253342 !important;
+  color: #fff !important;
+  padding: 8px;
+}
+
+:global(.paid-labor-cost-dark-calendar .react-datepicker__time-container) {
+  border-left-color: #2d4059 !important;
+}
+
+:global(.paid-labor-cost-dark-calendar .react-datepicker__time) {
+  background-color: #253342 !important;
+}
+
+:global(.paid-labor-cost-dark-calendar .react-datepicker__time-list-item) {
+  color: #fff !important;
+}
+
+:global(.paid-labor-cost-dark-calendar .react-datepicker__time-list-item:hover) {
+  background-color: #3a506b !important;
+}
+
+:global(.paid-labor-cost-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--disabled) {
+  color: #ccc !important;
+  background-color: transparent !important;
+  cursor: not-allowed !important;
+}
+
+:global(.paid-labor-cost-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--disabled:hover) {
+  color: #ccc !important;
+  background-color: transparent !important;
+}
+
+:global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--disabled) {
+  color: #475569 !important;
+  background-color: transparent !important;
+  cursor: not-allowed !important;
+}
+
+:global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--disabled:hover) {
+  color: #475569 !important;
+  background-color: transparent !important;
+}
