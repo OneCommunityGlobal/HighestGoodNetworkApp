@@ -1,20 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import {
-  Container,
-  Row,
-  Alert,
-  Col,
-  Card,
-  CardBody,
-  Button,
-  Input,
-  FormGroup,
-  Label,
-} from 'reactstrap';
+import { Container, Row, Alert, Col, Card, CardBody, Button, Input } from 'reactstrap';
 import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt, FaSearch, FaTimes } from 'react-icons/fa';
 import styles from './CPDashboard.module.css';
 import { ENDPOINTS } from '../../utils/URL';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 const FixedRatioImage = ({ src, alt, fallback }) => (
@@ -43,32 +33,14 @@ const FixedRatioImage = ({ src, alt, fallback }) => (
   </div>
 );
 
-function isTomorrow(dateString) {
-  const input = new Date(dateString);
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const tomorrow = new Date(today);
-  tomorrow.setDate(today.getDate() + 1);
-
-  return input >= tomorrow && input < new Date(tomorrow.getTime() + 24 * 60 * 60 * 1000);
-}
-
-function isComingWeekend(dateString) {
-  const input = new Date(dateString);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const day = today.getDay();
-  const daysUntilSaturday = (6 - day + 7) % 7 || 7;
-  const saturday = new Date(today);
-  saturday.setDate(today.getDate() + daysUntilSaturday);
-  const sunday = new Date(saturday);
-  sunday.setDate(saturday.getDate() + 1);
-  sunday.setHours(23, 59, 59, 999);
-
-  return input >= saturday && input <= sunday;
-}
+// Default filter values
+const DEFAULT_FILTERS = {
+  dateFilter: '',
+  onlineOnly: false,
+  branches: '',
+  themes: '',
+  categories: '',
+};
 
 export function CPDashboard() {
   const [events, setEvents] = useState([]);
@@ -77,9 +49,24 @@ export function CPDashboard() {
   const [selectedDate, setSelectedDate] = useState('');
   const [onlineOnly, setOnlineOnly] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [dateFilter, setDateFilter] = useState('');
   const [error, setError] = useState(null);
+  const [showPastEvents, setShowPastEvents] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
+
+  // Hide the global back-to-top button — not needed on this page
+  useEffect(() => {
+    const scrollBtn = document.querySelector('.back-to-top');
+    if (!scrollBtn) return;
+    const prevDisplay = scrollBtn.style.display;
+    scrollBtn.style.display = 'none';
+    return () => {
+      scrollBtn.style.display = prevDisplay;
+    };
+  }, []);
+
+  // Consolidated filter states
+  const [pendingFilters, setPendingFilters] = useState(DEFAULT_FILTERS);
+  const [appliedFilters, setAppliedFilters] = useState(DEFAULT_FILTERS);
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalPages: 5,
@@ -93,7 +80,6 @@ export function CPDashboard() {
   useEffect(() => {
     const fetchEvents = async () => {
       setIsLoading(true);
-
       try {
         const response = await axios.get(ENDPOINTS.EVENTS);
         setEvents(response.data.events || []);
@@ -161,49 +147,91 @@ export function CPDashboard() {
     });
   };
 
-  // Helper function to extract date in YYYY-MM-DD format from event date
-  const parseEventDate = dateString => {
-    if (!dateString) return null;
-
-    try {
-      // Try to parse as ISO date string or standard date
-      const parsedDate = new Date(dateString);
-      if (!isNaN(parsedDate.getTime())) {
-        const year = parsedDate.getFullYear();
-        const month = String(parsedDate.getMonth() + 1).padStart(2, '0');
-        const day = String(parsedDate.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-      }
-    } catch (error) {
-      console.error('Error parsing date:', error);
-    }
-    return null;
+  const isTomorrow = dateString => {
+    const input = new Date(dateString);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+    return input >= tomorrow && input < new Date(tomorrow.getTime() + 24 * 60 * 60 * 1000);
   };
 
+  const isComingWeekend = dateString => {
+    const input = new Date(dateString);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const day = today.getDay();
+    const daysUntilSaturday = (6 - day + 7) % 7 || 7;
+    const saturday = new Date(today);
+    saturday.setDate(today.getDate() + daysUntilSaturday);
+    const sunday = new Date(saturday);
+    sunday.setDate(saturday.getDate() + 1);
+    sunday.setHours(23, 59, 59, 999);
+    return input >= saturday && input <= sunday;
+  };
+
+  // Handler to update pending filter values
+  const handleFilterChange = (filterName, value) => {
+    setPendingFilters(prev => ({
+      ...prev,
+      [filterName]: value,
+    }));
+  };
+
+  // Apply all pending filters
+  const handleApplyFilters = () => {
+    setAppliedFilters(pendingFilters);
+    setPagination(prev => ({ ...prev, currentPage: 1 }));
+  };
+
+  // Clear all filters
+  const handleClearFilters = () => {
+    setPendingFilters(DEFAULT_FILTERS);
+    setAppliedFilters(DEFAULT_FILTERS);
+    setSelectedDate('');
+    setPagination(prev => ({ ...prev, currentPage: 1 }));
+  };
+
+  const isPastEvent = event => {
+    const ref = event.startTime || event.date;
+    if (!ref) return false;
+
+    const eventDate = new Date(ref);
+    const today = new Date();
+
+    today.setHours(0, 0, 0, 0);
+    eventDate.setHours(0, 0, 0, 0);
+
+    return eventDate < today;
+  };
+  // Filter events based on applied filters
   const filteredEvents = events.filter(event => {
-    // Filter by online only if checkbox is checked
-    if (onlineOnly) {
+    if (!showPastEvents && isPastEvent(event)) return false;
+    // Filter by online only
+    if (appliedFilters.onlineOnly) {
       const isOnlineEvent = event.location?.toLowerCase() === 'virtual';
       if (!isOnlineEvent) return false;
     }
 
-    // Filter by date filter (Tomorrow / Weekend)
-    if (dateFilter === 'tomorrow') {
+    // Filter by specific date if one is selected
+    if (selectedDate) {
+      const eventDate = new Date(event.date);
+      const normalizedEventDate = eventDate.toISOString().split('T')[0];
+
+      if (normalizedEventDate !== selectedDate) return false;
+    }
+
+    // Filter by date
+    if (appliedFilters.dateFilter === 'tomorrow') {
       if (!isTomorrow(event.date)) return false;
-    } else if (dateFilter === 'weekend') {
+    } else if (appliedFilters.dateFilter === 'weekend') {
       if (!isComingWeekend(event.date)) return false;
     }
 
-    // Filter by specific date (if selected)
-    const eventDate = event.date ? parseEventDate(event.date) : null;
-    if (selectedDate && eventDate !== selectedDate) {
-      return false;
-    }
-
-    // Filter by search query if provided
+    // Filter by search query
     if (!searchQuery) return true;
-    const term = searchQuery.toLowerCase();
 
+    const term = searchQuery.toLowerCase();
     return (
       event.title?.toLowerCase().includes(term) ||
       event.location?.toLowerCase().includes(term) ||
@@ -214,10 +242,9 @@ export function CPDashboard() {
   // Reset pagination to page 1 when filters change
   useEffect(() => {
     setPagination(prev => ({ ...prev, currentPage: 1 }));
-  }, [searchQuery, selectedDate, onlineOnly, dateFilter]);
+  }, [searchQuery, selectedDate, onlineOnly, appliedFilters.dateFilter, showPastEvents]);
 
   const totalPages = Math.ceil(filteredEvents.length / pagination.limit) || 1;
-
   const displayedEvents = filteredEvents.slice(
     (pagination.currentPage - 1) * pagination.limit,
     pagination.currentPage * pagination.limit,
@@ -252,26 +279,40 @@ export function CPDashboard() {
     eventsContent = <div className={styles.noEvents}>{error}</div>;
   } else if (displayedEvents.length > 0) {
     eventsContent = displayedEvents.map(event => (
-      <Col md={4} key={event.id} className={styles.eventCardCol}>
-        <Card className={styles.eventCard}>
-          <div className={styles.eventCardImgContainer}>
-            <FixedRatioImage src={event.image} alt={event.title} fallback={FALLBACK_IMG} />
-          </div>
-          <CardBody className={styles.eventCardBody}>
-            <h5 className={styles.eventTitle} title={event.title}>
-              {event.title}
-            </h5>
-            <p className={styles.eventDate}>
-              <FaCalendarAlt className={styles.eventIcon} /> {formatDate(event.date)}
-            </p>
-            <p className={styles.eventLocation}>
-              <FaMapMarkerAlt className={styles.eventIcon} /> {event.location || 'Location TBD'}
-            </p>
-            <p className={styles.eventOrganizer}>
-              <FaUserAlt className={styles.eventIcon} /> {event.organizer || 'Organizer TBD'}
-            </p>
-          </CardBody>
-        </Card>
+      <Col md={4} key={event.id} className={`${styles.eventCardCol}`}>
+        <Link
+          className={styles.eventCardLink}
+          to={`/communityportal/Activities/Register/${event._id}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Card className={`${styles.eventCard} ${darkMode ? styles.darkEventCard : ''}`}>
+            <div className={styles.eventCardImgContainer}>
+              <FixedRatioImage src={event.coverImage} alt={event.title} fallback={FALLBACK_IMG} />
+            </div>
+            <CardBody className={`${styles.eventCardBody} ${darkMode ? styles.darkEventCard : ''}`}>
+              <h5 className={styles.eventTitle} data-event-title={event.title || 'Untitled event'}>
+                <span className={styles.eventTitleText}>{event.title}</span>
+              </h5>
+              <p className={styles.eventDate}>
+                <FaCalendarAlt
+                  className={`${darkMode ? styles.eventIconDark : styles.eventIcon}`}
+                />{' '}
+                {formatDate(event.date)}
+              </p>
+              <p className={styles.eventLocation}>
+                <FaMapMarkerAlt
+                  className={`${darkMode ? styles.eventIconDark : styles.eventIcon}`}
+                />{' '}
+                {event.location || 'Location TBD'}
+              </p>
+              <p className={styles.eventOrganizer}>
+                <FaUserAlt className={`${darkMode ? styles.eventIconDark : styles.eventIcon}`} />{' '}
+                {event.organizer || 'Organizer TBD'}
+              </p>
+            </CardBody>
+          </Card>
+        </Link>
       </Col>
     ));
   } else {
@@ -282,166 +323,195 @@ export function CPDashboard() {
     <Container className={styles.dashboardContainer}>
       <header className={`${styles.dashboardHeader} ${darkMode ? styles.darkHeader : ''}`}>
         <h1>All Events</h1>
-        <div>
-          <div
-            className={`${styles.dashboardSearchContainer} ${
-              darkMode ? styles.darkSearchContainer : ''
-            }`}
-          >
-            <textarea
-              ref={searchRef}
-              rows={1}
-              maxLength={100}
-              placeholder="Search events..."
-              value={searchInput}
-              onChange={e => setSearchInput(e.target.value)}
-              onKeyDown={handleSearchKeyDown}
-              className={`${styles.dashboardSearchTextarea} ${
-                darkMode ? styles.darkSearchTextarea : ''
-              }`}
-            />
-
-            <div className={styles.dashboardSearchButtons}>
-              {searchInput && (
-                <button
-                  type="button"
-                  className={styles.dashboardClearBtn}
-                  onClick={() => {
-                    setSearchInput('');
-                    setSearchQuery('');
-                    setPagination(prev => ({ ...prev, currentPage: 1 }));
-                  }}
-                >
-                  <FaTimes />
-                </button>
-              )}
-
-              <button
-                type="button"
-                className={styles.dashboardSearchIconBtn}
-                onClick={handleSearchClick}
-                aria-label="Search events"
-              >
-                <FaSearch />
-              </button>
-            </div>
-          </div>
-          {searchInput.length >= 100 && (
-            <Alert className={styles.charCountWarning}>Max 100 characters</Alert>
-          )}
-        </div>
       </header>
 
       <Row className={styles.centeredRow}>
         <Col md={3} className={`${styles.dashboardSidebar} ${darkMode ? styles.darkSidebar : ''}`}>
           <div className={styles.filterSection}>
-            <h4>Search Filters</h4>
+            <h4 className={styles.filterSectionHeader}>Filters</h4>
+
             <div className={styles.filterSectionDivider}>
+              {/* Search */}
               <div className={styles.filterItem}>
-                <label htmlFor="date-tomorrow"> Dates</label>
+                <label htmlFor="sidebar-search">Search Events</label>
+                <div className={styles.sidebarSearchWrapper}>
+                  <div
+                    className={`${styles.dashboardSearchContainer} ${
+                      darkMode ? styles.darkSearchContainer : ''
+                    }`}
+                  >
+                    <textarea
+                      ref={searchRef}
+                      id="sidebar-search"
+                      rows={1}
+                      maxLength={100}
+                      placeholder="Search events..."
+                      value={searchInput}
+                      onChange={e => setSearchInput(e.target.value)}
+                      onKeyDown={handleSearchKeyDown}
+                      className={`${styles.dashboardSearchTextarea} ${
+                        darkMode ? styles.darkSearchTextarea : ''
+                      }`}
+                    />
+                    <div className={styles.dashboardSearchButtons}>
+                      {searchInput && (
+                        <button
+                          type="button"
+                          className={styles.dashboardClearBtn}
+                          onClick={() => {
+                            setSearchInput('');
+                            setSearchQuery('');
+                            setPagination(prev => ({ ...prev, currentPage: 1 }));
+                          }}
+                        >
+                          <FaTimes />
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        className={styles.dashboardSearchIconBtn}
+                        onClick={handleSearchClick}
+                        aria-label="Search events"
+                      >
+                        <FaSearch />
+                      </button>
+                    </div>
+                  </div>
+                  {searchInput.length >= 100 && (
+                    <Alert className={styles.charCountWarning}>Max 100 characters</Alert>
+                  )}
+                </div>
+              </div>
+
+              {/* Date Filter */}
+              <div className={styles.filterItem}>
+                <label htmlFor="date-tomorrow">Dates</label>
                 <div className={styles.radioRow}>
-                  <FormGroup check className={styles.radioGroup + ' d-flex align-items-center'}>
-                    <Input
+                  <div className={styles.radioGroup}>
+                    <input
                       id="date-tomorrow"
                       type="radio"
                       name="dates"
-                      checked={dateFilter === 'tomorrow'}
-                      onChange={() => setDateFilter('tomorrow')}
+                      checked={pendingFilters.dateFilter === 'tomorrow'}
+                      onChange={() => handleFilterChange('dateFilter', 'tomorrow')}
                       className={styles.radioInput}
                     />
-                    <Label
-                      htmlFor="date-tomorrow"
-                      check
-                      className={styles.radioLabel + ' ms-2 mb-0'}
-                    >
+                    <label htmlFor="date-tomorrow" className={styles.radioLabel}>
                       Tomorrow
-                    </Label>
-                  </FormGroup>
-                  <FormGroup check className={styles.radioGroup + ' d-flex align-items-center'}>
-                    <Input
+                    </label>
+                  </div>
+                  <div className={styles.radioGroup}>
+                    <input
                       id="date-weekend"
                       type="radio"
                       name="dates"
-                      checked={dateFilter === 'weekend'}
-                      onChange={() => setDateFilter('weekend')}
+                      checked={pendingFilters.dateFilter === 'weekend'}
+                      onChange={() => handleFilterChange('dateFilter', 'weekend')}
                       className={styles.radioInput}
                     />
-                    <Label
-                      htmlFor="date-weekend"
-                      check
-                      className={styles.radioLabel + ' ms-2 mb-0'}
-                    >
+                    <label htmlFor="date-weekend" className={styles.radioLabel}>
                       This Weekend
-                    </Label>
-                  </FormGroup>
+                    </label>
+                  </div>
                 </div>
-                <div className={styles.dashboardActions}>
-                  <Button
-                    color="primary"
-                    onClick={() => {
-                      setDateFilter('');
-                      setSelectedDate('');
-                    }}
-                  >
-                    Clear date filter
-                  </Button>
-                </div>
+
                 <Input
                   type="date"
-                  placeholder="Select Date"
-                  className={styles.dateFilter}
+                  placeholder="Ending After"
+                  className={`${styles.dateFilter} ${darkMode ? styles.darkDateFilter : ''}`}
                   value={selectedDate}
-                  onChange={e => setSelectedDate(e.target.value)}
-                  style={{ marginTop: '10px' }}
+                  onChange={e => {
+                    setSelectedDate(e.target.value);
+                    setPagination(prev => ({ ...prev, currentPage: 1 }));
+                  }}
                 />
               </div>
 
+              {/* Online Only Filter */}
               <div className={styles.filterItem}>
                 <label htmlFor="online-only">Online</label>
-                <div>
-                  <Input
-                    type="checkbox"
-                    id="online-only"
-                    checked={onlineOnly}
-                    onChange={e => {
-                      setOnlineOnly(e.target.checked);
-                      setPagination(prev => ({ ...prev, currentPage: 1 }));
-                    }}
-                  />{' '}
-                  Online Only
+                <div className={styles.radioRow}>
+                  <div className={styles.radioGroup}>
+                    <input
+                      type="checkbox"
+                      id="online-only"
+                      checked={pendingFilters.onlineOnly}
+                      onChange={e => handleFilterChange('onlineOnly', e.target.checked)}
+                      className={styles.radioInput}
+                    />
+                    <label htmlFor="online-only" className={styles.radioLabel}>
+                      Online Only
+                    </label>
+                  </div>
                 </div>
               </div>
 
+              {/* Branches Filter */}
               <div className={styles.filterItem}>
                 <label htmlFor="branches">Branches</label>
-                <Input type="select">
-                  <option>Select branches</option>
+                <Input
+                  type="select"
+                  id="branches"
+                  value={pendingFilters.branches}
+                  onChange={e => handleFilterChange('branches', e.target.value)}
+                >
+                  <option value="">Select branches</option>
                 </Input>
               </div>
 
+              {/* Themes Filter */}
               <div className={styles.filterItem}>
                 <label htmlFor="themes">Themes</label>
-                <Input type="select">
-                  <option>Select themes</option>
+                <Input
+                  type="select"
+                  id="themes"
+                  value={pendingFilters.themes}
+                  onChange={e => handleFilterChange('themes', e.target.value)}
+                >
+                  <option value="">Select themes</option>
                 </Input>
               </div>
 
+              {/* Categories Filter */}
               <div className={styles.filterItem}>
                 <label htmlFor="categories">Categories</label>
-                <Input type="select">
-                  <option>Select categories</option>
+                <Input
+                  type="select"
+                  id="categories"
+                  value={pendingFilters.categories}
+                  onChange={e => handleFilterChange('categories', e.target.value)}
+                >
+                  <option value="">Select categories</option>
                 </Input>
+              </div>
+
+              {/* Apply and Clear Buttons */}
+              <div className={styles.filterActions}>
+                <Button color="success" onClick={handleApplyFilters} className={styles.applyBtn}>
+                  Apply Filters
+                </Button>
+                <Button color="secondary" onClick={handleClearFilters} className={styles.clearBtn}>
+                  Clear Filters
+                </Button>
               </div>
             </div>
           </div>
         </Col>
 
         <Col md={9} className={`${styles.dashboardMain} ${darkMode ? styles.darkMain : ''}`}>
-          <h2 className={styles.sectionTitle}>Events</h2>
+          <div className={styles.eventsHeader}>
+            <h2 className={styles.sectionTitle}>Events</h2>
+            <Button
+              className={styles.showPastEventsBtn}
+              onClick={() => setShowPastEvents(prev => !prev)}
+            >
+              {showPastEvents ? 'Hide Past Events' : 'Show Past Events'}
+            </Button>
+          </div>
 
           <Row>{eventsContent}</Row>
 
-          {/* Simple pagination controls if needed */}
+          {/* Pagination controls */}
           {totalPages > 1 && (
             <div className={styles.paginationContainer}>
               <Button
@@ -463,14 +533,9 @@ export function CPDashboard() {
               </Button>
             </div>
           )}
-
-          <div className={styles.dashboardActions}>
-            <Button color="primary">Show Past Events</Button>
-          </div>
         </Col>
       </Row>
     </Container>
   );
 }
-
 export default CPDashboard;

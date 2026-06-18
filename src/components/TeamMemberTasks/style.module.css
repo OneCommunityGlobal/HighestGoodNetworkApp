@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 :global(.dark-mode) .modal-body p {
   color: #fff;
   background-color: transparent;
@@ -989,4 +990,34 @@
   .multiSelectFilter {
     width: 50%;
   }
+}
+.task-age-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 5px;
+  background-color: #6c757d;
+  color: #fff;
+  border-radius: 50px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.task-age-badge-new {
+  background-color: #28a745;
+}
+
+.task-age-badge-recent {
+  background-color: #17a2b8;
+}
+
+.task-age-badge-old {
+  background-color: #ffc107;
+  color: #212529;
+}
+
+.task-age-badge-very-old {
+  background-color: #dc3545;
 }

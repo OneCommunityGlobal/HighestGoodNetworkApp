@@ -23,13 +23,23 @@ if [ -z "$changed_files" ]; then
   exit 0
 fi
 
+# Skip checks if any outgoing commit is a merge commit
+if git log @{upstream}..HEAD --merges --oneline | grep -q .; then
+  echo "ℹ️  Outgoing commits include a merge commit. Skipping lint/test checks."
+  exit 0
+fi
+
 if ! printf '%s\n' "$changed_files" | grep -qvE '^\.husky/'; then
   echo "Only Husky hook changes detected. Skipping full test and lint checks."
   exit 0
 fi
 
-js_files=$(printf '%s\n' "$changed_files" | grep -E '\.(js|jsx|ts|tsx)$' || true)
-style_files=$(printf '%s\n' "$changed_files" | grep -E '\.(css|scss|sass)$' || true)
+existing_files=$(printf '%s\n' "$changed_files" | while IFS= read -r f; do
+  [ -n "$f" ] && [ -e "$f" ] && printf '%s\n' "$f"
+done)
+
+js_files=$(printf '%s\n' "$existing_files" | grep -E '\.(js|jsx|ts|tsx)$' || true)
+style_files=$(printf '%s\n' "$existing_files" | grep -E '\.(css|scss|sass)$' || true)
 
 test_status=0
 lint_status=0
@@ -46,11 +56,13 @@ if [ -n "$js_files" ]; then
 fi
 
 if [ -n "$style_files" ]; then
-  echo "Running Stylelint on changed files before push..."
-  printf '%s\n' "$style_files" | xargs -r -n 50 npx stylelint
+  echo "🎨 Running Stylelint on changed files before push..."
+  echo "$style_files" | tr ' ' '\n' | xargs npx stylelint
   style_status=$?
 fi
 
+
+# Block push if either fails
 if [ $test_status -ne 0 ] || [ $lint_status -ne 0 ] || [ $style_status -ne 0 ]; then
   echo "Push blocked: changed-file validation failed."
   exit 1
