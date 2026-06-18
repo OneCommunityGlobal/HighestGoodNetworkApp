@@ -4,6 +4,7 @@ import styles from './Collaboration.module.css';
 import { toast } from 'react-toastify';
 import { ApiEndpoint } from '~/utils/URL';
 import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import OneCommunityImage from '../../assets/images/logo2.png';
 
 const ADS_PER_PAGE = 18;
@@ -12,6 +13,7 @@ function Collaboration() {
   const [query, setQuery] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [categoriesSelected, setCategoriesSelected] = useState([]);
+  const history = useHistory();
   const [currentPage, setCurrentPage] = useState(1);
   const [jobAds, setJobAds] = useState([]);
   const [allJobs, setAllJobs] = useState([]);
@@ -149,6 +151,34 @@ function Collaboration() {
       toast.error('Error fetching summaries');
     }
   };
+
+  const handleJobClick = ad => {
+    const title = ad.title || '';
+    const search = title ? `?jobTitle=${encodeURIComponent(title)}` : '';
+    history.push({
+      pathname: '/job-application',
+      search,
+      state: {
+        jobId: ad._id,
+        jobTitle: title,
+        jobDescription: ad.description || '',
+        requirements: ad.requirements || [],
+        category: ad.category || 'General',
+      },
+    });
+  };
+
+  const resultLabel = filteredJobs.length === 1 ? 'result' : 'results';
+
+  let listingText = `Listing all ${filteredJobs.length} job ads.`;
+
+  if (searchTerm.trim()) {
+    listingText = `Listing ${filteredJobs.length} ${resultLabel} for '${searchTerm}'`;
+  } else if (selectedPosition) {
+    listingText = `Listing ${filteredJobs.length} ${resultLabel} for '${selectedPosition}' in '${selectedCategory}'`;
+  } else if (selectedCategory) {
+    listingText = `Listing ${filteredJobs.length} ${resultLabel} for '${selectedCategory}'`;
+  }
 
   /* ================= SUMMARIES VIEW ================= */
   if (summaries) {
@@ -288,15 +318,7 @@ function Collaboration() {
 
         {/* QUERY TEXT */}
         <div className="job-queries">
-          <p>
-            {searchTerm
-              ? `Listing results for '${searchTerm}'`
-              : selectedPosition
-              ? `Listing results for '${selectedPosition}' in '${selectedCategory}'`
-              : selectedCategory
-              ? `Listing results for '${selectedCategory}'`
-              : 'Listing all job ads.'}
-          </p>
+          <p>{listingText}</p>
           <button className="btn btn-secondary" onClick={handleShowSummaries}>
             Show Summaries
           </button>
@@ -321,7 +343,7 @@ function Collaboration() {
                 key={ad._id}
                 type="button"
                 className={styles.jobAd}
-                onClick={() => setSelectedJob(ad)}
+                onClick={() => handleJobClick(ad)}
               >
                 <img
                   src={

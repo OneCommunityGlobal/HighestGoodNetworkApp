@@ -8,7 +8,8 @@ import styles from './Participation.module.css';
 import { filterEventsByDate } from './FilterByDate';
 
 function NoShowInsights() {
-  const [dateFilter, setDateFilter] = useState('All');
+  const [dateFilter, setDateFilter] = useState('This Week');
+  const [scopeFilter, setScopeFilter] = useState('My Event');
   const [activeTab, setActiveTab] = useState('Event type');
   const [sortOrder, setSortOrder] = useState('none');
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -55,7 +56,12 @@ function NoShowInsights() {
   };
 
   const renderStats = () => {
-    const filteredEvents = filterEventsByDate(mockEvents, dateFilter);
+    const dateFilteredEvents = filterEventsByDate(mockEvents, dateFilter);
+    // Placeholder until real ownership/user context is wired in: treat even-id events as "mine".
+    const filteredEvents =
+      scopeFilter === 'My Event'
+        ? dateFilteredEvents.filter(event => event.id % 2 === 0)
+        : dateFilteredEvents;
     const stats = calculateStats(filteredEvents);
     const finalStats =
       sortOrder === 'none'
@@ -129,7 +135,7 @@ function NoShowInsights() {
   const getPdfFilename = () => {
     const now = new Date();
     const localDate = now.toLocaleDateString('en-CA');
-    const filename = `no-show-insights_${dateFilter}_${activeTab}_${localDate}.pdf`;
+    const filename = `no-show-insights_${scopeFilter}_${dateFilter}_${activeTab}_${localDate}.pdf`;
     return filename.replace(/\s+/g, '_').toLowerCase();
   };
 
@@ -165,7 +171,7 @@ function NoShowInsights() {
 
       await navigator.share({
         title: 'No-show rate insights',
-        text: `Insights (${dateFilter}, ${activeTab})`,
+        text: `Insights (${scopeFilter}, ${dateFilter}, ${activeTab})`,
         files: [file],
       });
 
@@ -208,6 +214,9 @@ function NoShowInsights() {
 
             <div className={styles.modalBody}>
               <div className={styles.modalMeta}>
+                <div>
+                  <strong>Scope:</strong> {scopeFilter}
+                </div>
                 <div>
                   <strong>Filter:</strong> {dateFilter}
                 </div>
@@ -254,6 +263,10 @@ function NoShowInsights() {
           <div
             className={`${styles.insightsFilters} ${darkMode ? styles.insightsFiltersDark : ''}`}
           >
+            <select value={scopeFilter} onChange={e => setScopeFilter(e.target.value)}>
+              <option value="My Event">My Event</option>
+              <option value="All Events">All Events</option>
+            </select>
             <select value={dateFilter} onChange={e => setDateFilter(e.target.value)}>
               <option value="All Time">All Time</option>
               <option value="Today">Today</option>
