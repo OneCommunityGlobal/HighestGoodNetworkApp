@@ -636,7 +636,7 @@ export class WeeklySummary extends Component {
     });
     this.updateUserData(displayUserId || currentUser.userid);
     if (shouldReload) {
-      window.location.reload();
+      globalThis.location.reload();
     }
   };
 
@@ -768,7 +768,7 @@ export class WeeklySummary extends Component {
     }
 
     // Reload after everything is done
-    window.location.reload();
+    globalThis.location.reload();
   };
 
   handleSave = async event => {
@@ -1279,7 +1279,11 @@ export class WeeklySummary extends Component {
 WeeklySummary.propTypes = {
   currentUser: PropTypes.shape({
     userid: PropTypes.string.isRequired,
+    firstName: PropTypes.string,
+    lastName: PropTypes.string,
+    email: PropTypes.string,
   }).isRequired,
+  displayUserId: PropTypes.string,
   // eslint-disable-next-line react/forbid-prop-types, react/require-default-props
   fetchError: PropTypes.any,
   getWeeklySummaries: PropTypes.func.isRequired,
