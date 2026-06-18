@@ -103,7 +103,10 @@ function VirtualVsInPerson() {
       metric: 'Total Attendance',
       virtual: attendanceData.virtual.totalAttendance,
       inPerson: attendanceData.inPerson.totalAttendance,
-      winner: getWinner(attendanceData.virtual.totalAttendance, attendanceData.inPerson.totalAttendance),
+      winner: getWinner(
+        attendanceData.virtual.totalAttendance,
+        attendanceData.inPerson.totalAttendance,
+      ),
     },
     {
       metric: 'Avg Attendance',
