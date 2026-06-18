@@ -290,9 +290,8 @@ const KnowledgeEvolution = () => {
         </div>
 
         {/* D3 CHART with subject-level hover */}
-        <div
-          role="button"
-          tabIndex={0}
+        <button
+          type="button"
           className={`${styles.chartWrapper}`}
           onMouseEnter={handleChartMouseEnter}
           onMouseLeave={handleChartMouseLeave}
@@ -302,7 +301,7 @@ const KnowledgeEvolution = () => {
           onKeyDown={handleChartKeyDown}
         >
           <svg ref={svgRef} width={700} height={500} />
-        </div>
+        </button>
 
         {/* Legend placed below chart */}
         <div className={`${styles.subjectTooltipBottomLegend}`}>

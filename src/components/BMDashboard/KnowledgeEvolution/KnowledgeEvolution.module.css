@@ -133,6 +133,11 @@
   position: relative;
   min-height: 420px;
   margin-bottom: 12px;
+  width: 100%;
+  cursor: default;
+  font: inherit;
+  color: inherit;
+  text-align: left;
 }
 
 .pageContainerDarkMode .chartWrapper {
