@@ -24,13 +24,7 @@ button {
   background-color: #fff;
 }
 
-html {
-  background-color: #1a1d23 !important;
-}
 
-body {
-  background-color: #1a1d23 !important;
-}
 
 /* Dark mode override for #root */
 body.dark-mode #root,
@@ -301,4 +295,12 @@ body.dark-mode .text-light {
 /* Override ANY inline styles */
 body.dark-mode [style*="background"] {
   background-color: #1a1d23 !important;
+}
+
+.dark-leaderboard-row:hover td,
+.dark-leaderboard-row:hover th,
+.dark-leaderboard-row:hover .text-light,
+.dark-leaderboard-row:hover p {
+  color: #000 !important;
+  background-color: #fff !important;
 }
