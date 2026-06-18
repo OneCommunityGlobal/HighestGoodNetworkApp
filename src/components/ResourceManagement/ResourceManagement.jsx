@@ -1,11 +1,11 @@
 import { useState, useMemo } from 'react';
-import styles from './ResourceManagement.module.css';
 import { useSelector } from 'react-redux';
-import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
-import { MOCK_RESOURCES } from './MockData';
+import { ChevronLeft, ChevronRight, Calendar, X } from 'lucide-react';
 import { toast } from 'react-toastify';
 import PropTypes from 'prop-types';
 import * as XLSX from 'xlsx';
+import styles from './ResourceManagement.module.css';
+import { MOCK_RESOURCES } from './MockData';
 
 function SearchBar({ onSortToggle, darkMode, searchTerm, onSearchTermChange }) {
   return (
@@ -26,6 +26,7 @@ function SearchBar({ onSortToggle, darkMode, searchTerm, onSearchTermChange }) {
           ⇅
         </button>
       </div>
+
       <div className={styles.searchBarContainerRight}>
         <input
           type="text"
@@ -39,30 +40,147 @@ function SearchBar({ onSortToggle, darkMode, searchTerm, onSearchTermChange }) {
   );
 }
 
-const Pagination = ({ totalPages, currentPage, setCurrentPage, darkMode }) => {
-  const getPaginationGroup = () => {
-    let pages = [];
-    const threshold = 5;
+function AddLogModal({ isOpen, onClose, onAdd }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const [formData, setFormData] = useState({
+    user: '',
+    timeDuration: '',
+    facilities: '',
+    materials: '',
+    date: '',
+  });
+  const [errors, setErrors] = useState({});
 
-    if (totalPages <= threshold) {
-      pages = Array.from({ length: totalPages }, (_, i) => i + 1);
-    } else if (currentPage <= 3) {
-      pages = [1, 2, 3, 4, 5, '...', totalPages];
-    } else if (currentPage > totalPages - 3) {
-      pages = [
-        1,
-        '...',
-        totalPages - 4,
-        totalPages - 3,
-        totalPages - 2,
-        totalPages - 1,
-        totalPages,
-      ];
-    } else {
-      pages = [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
+  const handleChange = e => {
+    const { name, value } = e.target;
+
+    setFormData(prev => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    setErrors(prev => ({
+      ...prev,
+      [name]: '',
+    }));
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    const timeRegex = /^([0-1]\d|2[0-3]):([0-5]\d):([0-5]\d)$/;
+    const textRegex = /^[a-zA-Z\s]+$/;
+
+    if (!formData.user.trim()) newErrors.user = 'User is required';
+
+    if (!formData.timeDuration.trim()) {
+      newErrors.timeDuration = 'Time/Duration is required';
+    } else if (!timeRegex.test(formData.timeDuration)) {
+      newErrors.timeDuration = 'Time must be in HH:MM:SS format';
     }
 
-    return pages;
+    if (!formData.facilities.trim()) {
+      newErrors.facilities = 'Facilities is required';
+    } else if (!textRegex.test(formData.facilities)) {
+      newErrors.facilities = 'Facilities should contain only letters';
+    }
+
+    if (!formData.materials.trim()) {
+      newErrors.materials = 'Materials is required';
+    } else if (!textRegex.test(formData.materials)) {
+      newErrors.materials = 'Materials should contain only letters';
+    }
+
+    if (!formData.date) newErrors.date = 'Date is required';
+
+    return newErrors;
+  };
+
+  const handleSubmit = e => {
+    e.preventDefault();
+
+    const validationErrors = validateForm();
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    onAdd(formData);
+
+    setFormData({
+      user: '',
+      timeDuration: '',
+      facilities: '',
+      materials: '',
+      date: '',
+    });
+
+    setErrors({});
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className={styles.modalOverlay}>
+      <div className={`${styles.modalContent} ${darkMode ? styles.modalContentDark : ''}`}>
+        <h3>Add New Log</h3>
+
+        <form onSubmit={handleSubmit} className={styles.formContainer}>
+          {['user', 'timeDuration', 'facilities', 'materials'].map(field => (
+            <div className={styles.formGroup} key={field}>
+              <label htmlFor={field}>
+                {field === 'timeDuration'
+                  ? 'Time/Duration'
+                  : field.charAt(0).toUpperCase() + field.slice(1)}
+              </label>
+              <input
+                id={field}
+                name={field}
+                value={formData[field]}
+                onChange={handleChange}
+                className={errors[field] ? styles.inputError : ''}
+              />
+              {errors[field] && <span className={styles.errorText}>{errors[field]}</span>}
+            </div>
+          ))}
+
+          <div className={styles.formGroup}>
+            <label htmlFor="resource-date">Date</label>
+            <input
+              id="resource-date"
+              name="date"
+              type="date"
+              value={formData.date}
+              onChange={handleChange}
+              className={errors.date ? styles.inputError : ''}
+            />
+            {errors.date && <span className={styles.errorText}>{errors.date}</span>}
+          </div>
+
+          <div className={styles.modalActions}>
+            <button type="submit" className={styles.submitButton}>
+              Save Log
+            </button>
+            <button type="button" onClick={onClose} className={styles.cancelButton}>
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+const Pagination = ({ totalPages, currentPage, setCurrentPage, darkMode }) => {
+  const getPaginationGroup = () => {
+    if (totalPages <= 5) return Array.from({ length: totalPages }, (_, i) => i + 1);
+    if (currentPage <= 3) return [1, 2, 3, 4, 5, '...', totalPages];
+    if (currentPage > totalPages - 3) {
+      return [1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+    }
+
+    return [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
   };
 
   return (
@@ -107,13 +225,23 @@ const Pagination = ({ totalPages, currentPage, setCurrentPage, darkMode }) => {
 };
 
 function ResourceManagement() {
-  const [resources] = useState(MOCK_RESOURCES);
-  const [sortConfig, setSortConfig] = useState({ key: 'date', direction: 'desc' });
   const darkMode = useSelector(state => state.theme.darkMode);
+  const [resources, setResources] = useState(MOCK_RESOURCES);
+  const [sortConfig, setSortConfig] = useState({ key: 'date', direction: 'desc' });
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedIds, setSelectedIds] = useState(new Set());
+  const [showModal, setShowModal] = useState(false);
+  const [showToast, setShowToast] = useState(false);
   const itemsPerPage = 5;
+
+  const columns = [
+    { key: 'user', label: 'User' },
+    { key: 'timeDuration', label: 'Time/Duration' },
+    { key: 'facilities', label: 'Facilities' },
+    { key: 'materials', label: 'Materials' },
+    { key: 'date', label: 'Date' },
+  ];
 
   const onSearchTermChange = e => {
     setSearchTerm(e.target.value);
@@ -126,10 +254,11 @@ function ResourceManagement() {
     if (!term) return resources;
 
     return resources.filter(
-      r =>
-        r.user.toLowerCase().includes(term) ||
-        r.facilities.toLowerCase().includes(term) ||
-        r.materials.toLowerCase().includes(term),
+      resource =>
+        resource.user.toLowerCase().includes(term) ||
+        resource.facilities.toLowerCase().includes(term) ||
+        resource.materials.toLowerCase().includes(term) ||
+        resource.date.toLowerCase().includes(term),
     );
   }, [resources, searchTerm]);
 
@@ -137,8 +266,8 @@ function ResourceManagement() {
     const sortableItems = [...filteredResources];
 
     sortableItems.sort((a, b) => {
-      const valA = sortConfig.key === 'date' ? a.timestamp : a[sortConfig.key]?.toLowerCase();
-      const valB = sortConfig.key === 'date' ? b.timestamp : b[sortConfig.key]?.toLowerCase();
+      const valA = sortConfig.key === 'date' ? a.timestamp ?? 0 : a[sortConfig.key]?.toLowerCase();
+      const valB = sortConfig.key === 'date' ? b.timestamp ?? 0 : b[sortConfig.key]?.toLowerCase();
 
       if (valA < valB) return sortConfig.direction === 'asc' ? -1 : 1;
       if (valA > valB) return sortConfig.direction === 'asc' ? 1 : -1;
@@ -151,34 +280,27 @@ function ResourceManagement() {
 
   const totalPages = Math.ceil(sortedResources.length / itemsPerPage);
 
-  const columns = [
-    { key: 'user', label: 'User' },
-    { key: 'timeDuration', label: 'Time/Duration' },
-    { key: 'facilities', label: 'Facilities' },
-    { key: 'materials', label: 'Materials' },
-    { key: 'date', label: 'Date' },
-  ];
-
   const toggleSelect = id => {
     setSelectedIds(prev => {
       const updated = new Set(prev);
 
-      if (updated.has(id)) {
-        updated.delete(id);
-      } else {
-        updated.add(id);
-      }
+      if (updated.has(id)) updated.delete(id);
+      else updated.add(id);
 
       return updated;
     });
   };
 
   const toggleSelectAll = e => {
-    setSelectedIds(e.target.checked ? new Set(sortedResources.map(r => r.id)) : new Set());
+    setSelectedIds(
+      e.target.checked ? new Set(sortedResources.map(resource => resource.id)) : new Set(),
+    );
   };
 
   const getExportRows = () =>
-    selectedIds.size > 0 ? sortedResources.filter(r => selectedIds.has(r.id)) : sortedResources;
+    selectedIds.size > 0
+      ? sortedResources.filter(resource => selectedIds.has(resource.id))
+      : sortedResources;
 
   const exportCSV = rows => {
     const header = columns.map(col => col.label).join(',');
@@ -228,11 +350,8 @@ function ResourceManagement() {
       return;
     }
 
-    if (format === 'csv') {
-      exportCSV(rows);
-    } else {
-      exportXLSX(rows);
-    }
+    if (format === 'csv') exportCSV(rows);
+    else exportXLSX(rows);
   };
 
   const requestSort = key => {
@@ -252,6 +371,18 @@ function ResourceManagement() {
     }));
   };
 
+  const handleAddLog = newLog => {
+    const newResource = {
+      id: resources.length + 1,
+      ...newLog,
+      date: 'Just now',
+      timestamp: Date.now(),
+    };
+
+    setResources(prev => [newResource, ...prev]);
+    setShowToast(true);
+  };
+
   return (
     <div
       className={`${styles.resourceManagementDashboard} ${
@@ -262,7 +393,7 @@ function ResourceManagement() {
         <h2>Used Resources</h2>
 
         <div className={styles.actionButtons}>
-          <button type="button" className={styles.addLogButton}>
+          <button type="button" className={styles.addLogButton} onClick={() => setShowModal(true)}>
             Add New Log
           </button>
 
@@ -352,19 +483,15 @@ function ResourceManagement() {
                 <div className={`${styles.resourceItemDetail} ${styles.colUser}`}>
                   {resource.user}
                 </div>
-
                 <div className={`${styles.resourceItemDetail} ${styles.colDuration}`}>
                   {resource.timeDuration}
                 </div>
-
                 <div className={`${styles.resourceItemDetail} ${styles.colFacilities}`}>
                   {resource.facilities}
                 </div>
-
                 <div className={`${styles.resourceItemDetail} ${styles.colMaterials}`}>
                   {resource.materials}
                 </div>
-
                 <div className={`${styles.resourceItemDetail} ${styles.colDate}`}>
                   <Calendar size={14} className={styles.calendarIcon} /> {resource.date}
                 </div>
@@ -379,6 +506,22 @@ function ResourceManagement() {
         setCurrentPage={setCurrentPage}
         darkMode={darkMode}
       />
+
+      <AddLogModal isOpen={showModal} onClose={() => setShowModal(false)} onAdd={handleAddLog} />
+
+      {showToast && (
+        <div className={`${styles.toast} ${darkMode ? styles.toastDark : ''}`}>
+          <span>✅ Log saved successfully!</span>
+          <button
+            type="button"
+            className={styles.toastCloseButton}
+            onClick={() => setShowToast(false)}
+            aria-label="Close notification"
+          >
+            <X size={16} aria-hidden="true" />
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -392,6 +535,12 @@ SearchBar.propTypes = {
 
 SearchBar.defaultProps = {
   darkMode: false,
+};
+
+AddLogModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onAdd: PropTypes.func.isRequired,
 };
 
 Pagination.propTypes = {

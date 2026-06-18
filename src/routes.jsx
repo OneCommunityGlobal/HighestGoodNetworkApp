@@ -86,7 +86,7 @@ import TeamCard from './components/HGNHelpSkillsDashboard/TeamCard/TeamCard';
 import UserProfilePage from './components/HGNHelpSkillsDashboard/UserProfilePage';
 
 import ActivityAgenda from './components/CommunityPortal/Activities/ActivityAgenda';
-import ActivityAttendance from './components/CommunityPortal/Activities/ActivityAttendance';
+
 import ResourcesUsage from './components/CommunityPortal/Activities/activityId/ResourcesUsage';
 import EventNoShowChart from './components/CommunityPortal/Attendence/NoshowViz';
 import EventList from './components/CommunityPortal/Event/EventList/EventList';
@@ -108,7 +108,7 @@ import { JobAnalyticsCompetitiveRolesPage } from './components/Reports/JobAnalyt
 
 import InjurySeverityChart from './components/BMDashboard/Injuries/InjurySeverityChart';
 import LBProtectedRoute from './components/common/LBDashboard/LBProtectedRoute/LBProtectedRoute';
-import Activity from './components/CommunityPortal/Activities/activityId/Activity';
+
 import LBDashboard from './components/LBDashboard';
 import BiddingHomepage from './components/LBDashboard/BiddingHomepage/BiddingHomepage';
 import LBBidOverview from './components/LBDashboard/BiddingOverview/BiddingOverview';
@@ -146,12 +146,18 @@ import CreateNewTeam from './components/BMDashboard/Team/CreateNewTeam/CreateNew
 
 import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
 import CPDashboard from './components/CommunityPortal';
-import ActivityComments from './components/CommunityPortal/Activities/activityId/ActivityComments';
 import ActivityList from './components/CommunityPortal/Activities/ActivityList';
+import FaqSection from './components/CommunityPortal/Activities/FaqSection';
+import ActivityAttendance from './components/CommunityPortal/Activities/ActivityAttendance';
+import Activity from './components/CommunityPortal/Activities/activityId/Activity';
+import ActivityComments from './components/CommunityPortal/Activities/activityId/ActivityComments';
+
 import Feedbackform from './components/CommunityPortal/Activities/Feedbackform';
+
+import Register from './components/CommunityPortal/Activities/Register/Register';
+
 import CPLogin from './components/CommunityPortal/Login';
 import ActivitiesPage from './components/CommunityPortal/Activities/ActivitiesPage';
-import Register from './components/CommunityPortal/Activities/Register/Register';
 import EventStats from './components/CommunityPortal/EventPersonalization/EventStats';
 import CommunityCalendar from './components/CommunityPortal/Calendar/CommunityCalendar';
 import PRGradingDashboard from './components/PRGradingDashboard/PRGradingDashboard';
@@ -967,9 +973,17 @@ export default (
 
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
         <Route path="/communityportal/login" component={CPLogin} />
+        <CPProtectedRoute
+          path="/communityportal/activities/:activityid/faq"
+          exact
+          component={FaqSection}
+        />
+        <CPProtectedRoute path="/communityportal/activities" exact component={ActivityList} />
+        <CPProtectedRoute path="/communityportal/Activities" exact component={ActivityList} />
+        {/* ----- Community Calendar Routing ----- */}
         <CPProtectedRoute path="/communityportal/calendar" exact component={CommunityCalendar} />
         <CPProtectedRoute path="/communityportal/database/design" exact component={EventList} />
-        <CPProtectedRoute path="/communityportal/activities" exact component={ActivityList} />
+
         <CPProtectedRoute
           path="/communityportal/ActivityAttendance"
           exact
