@@ -6,7 +6,7 @@
 
 /* ---------- General Styles ---------- */
 .body {
-  font-family: 'Arial', sans-serif;
+  font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -14,10 +14,10 @@
 
 .myCasesPage {
   padding: 20px;
-  background-color: #ffffff;
+  background-color: #fff;
   border: 1px solid #ddd;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
 }
 
 .myCasesPageDark {
@@ -25,7 +25,7 @@
   background-color: #1C2541;
   border: 1px solid var(--color-border-dark);
   border-radius: 6px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
 }
 
 /* ---------- Header ---------- */
@@ -39,12 +39,20 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #1C2541;
-  color: #ffffff;
+  background-color: #1c2541;
+  color: #fff;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
 .myCasesPageDark .headerActions {
-  gap: 20px;     /* more room between dropdowns/buttons */
+  gap: 20px;
+
+  /* more room between dropdowns/buttons */
 }
 
 .sectionTitle {
@@ -57,32 +65,43 @@
 .sectionTitleDark {
   font-size: 24px;
   font-weight: bold;
-  background-color: #1C2541;
-  color: #ffffff !important;
+  background-color: #1c2541;
+  color: #fff !important;
   margin: 0;
 }
 
-.headerActions {
-  display: flex;
-  align-items: center;
-  gap: 15px;
+
+@media (width <= 1024px) {
+@media (width <= 1024px) {
+  .headerActions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }}
+
+
+  .myCasesPage .header {
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+  }
 }
 
-/* ---------- View Switcher ---------- */
+/* ---------- View Switcher & Segmented Controls ---------- */
 .viewSwitcher {
   display: flex;
-  gap: 12px; /* clean space between buttons */
+  gap: 12px;
 }
 
-.viewSwitcher button,
-.createNew {
+.viewSwitcher button {
   background-color: #fff;
   border-radius: 6px;
-  padding: 10px 20px;
+  padding: 8px 16px;
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
   color: #333;
+  border: none;
   border: 1px solid #ccc;
 }
 
@@ -96,7 +115,6 @@
 .viewSwitcher button.active {
   background-color: #007bff;
   color: #fff;
-  border-color: #007bff;
 }
 
 .myCasesPageDark .viewSwitcher button.active {
@@ -106,14 +124,15 @@
 }
 
 .filterWrapper {
-  margin: 10px 0;
+  display: flex;
 }
 
+/* ---------- Dropdown Styles ---------- */
 .filterDropdown {
-  padding: 8px;
+  padding: 8px 16px;
   font-size: 14px;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
   background-color: #ffffff;
   color: #333;
@@ -130,21 +149,88 @@
   color: var(--color-text-dark);
 }
 
-/* Hover and focus effects for the dropdown */
 .filterDropdown:hover,
 .filterDropdown:focus {
   border-color: #007bff;
   outline: none;
 }
 
+/* Dark mode dropdown (component-level) */
+.filterDropdownDarkMode {
+  padding: 8px 16px;
+  font-size: 14px;
+  border: 1px solid #555;
+  border-radius: 6px;
+  cursor: pointer;
+  background-color: #1e293b;
+  color: #fff;
+  min-width: 130px;
+  box-sizing: border-box;
+
+  /* Custom arrow */
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FFFFFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.7em center;
+  background-size: 0.65em auto;
+  appearance: none;
+  padding-right: 30px;
+}
+
+/* Hover and focus */
+.filterDropdownDarkMode:hover,
+.filterDropdownDarkMode:focus {
+  border-color: #3b82f6;
+  outline: none;
+}
+
+/* Dropdown options */
+.filterDropdownDarkMode option {
+  background-color: #1e293b;
+  color: #fff;
+}
+
+/* Insight bar dark mode */
+.myCasesPageDark .insight-bar-container {
+  background-color: rgb(255 255 255 / 10%);
+  border-radius: 4px;
+}
+
+/* Light Mode */
+/* stylelint-disable-next-line no-descending-specificity */
 .createNew {
   font-weight: bold;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 6px;
+  background-color: #fff;
+  color: #333;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* Dark mode */
+.createNewDarkMode {
+  font-weight: bold;
+  border: 1px solid #555;
+  border-radius: 6px;
+  background-color: #1e293b;
+  color: #f1f5f9;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.myCasesPageDark .createNew {
+  background-color: #3a506b;
+
+  /* Matches other dark elements */
+  color: #fff;
+  border: 1px solid #555;
 }
 
 .content {
   margin-top: 10px;
+  cursor: pointer;
 }
 
 /* ---------- Card View Styles ---------- */
@@ -159,11 +245,16 @@
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 15px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
+
+.caseCard:hover {
+  box-shadow: 0 4px 8px rgb(0 0 0 / 15%);
+}
+
 
 .caseCardDark {
   background-color: #3A506B;
@@ -171,10 +262,14 @@
   border: 1px solid var(--color-border-dark);
   border-radius: 8px;
   padding: 15px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+}
+
+.caseCardDark:hover {
+  box-shadow: 0 4px 8px rgb(255 255 255 / 15%);
 }
 
 .eventBadge {
@@ -269,7 +364,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: #ffffff;
+  color: #fff !important;
 }
 
 .avatars img {
@@ -277,7 +372,15 @@
   height: 24px;
   border-radius: 50%;
   margin-right: -8px;
-  border: 2px solid #fff;
+  border: 2px solid #1c2541; 
+}
+
+.attendeesInfoDark .avatars img {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  margin-right: -8px;
+  border: 2px solid #fff; 
 }
 
 .attendeesCount {
@@ -296,6 +399,16 @@
   color: #555;
 }
 
+.myCasesPageDark .rateCard {
+  background-color: #3A506B;
+  color: #fff;
+  border: 1px solid #555;
+}
+
+.myCasesPageDark .rateCard .percentage {
+  color: #4ade80;
+}
+
 /* ---------- List View Styles ---------- */
 .caseList {
   list-style-type: none;
@@ -309,7 +422,11 @@
   align-items: center;
   padding: 15px;
   background-color: #fff;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 10px rgb(0 0 0 / 10%);
+}
+
+.caseListItem:hover{
+  background-color: #d2cfcf;
 }
 
 .caseListItemDark {
@@ -317,8 +434,13 @@
   grid-template-columns: 2fr 3fr 1fr 1fr;
   align-items: center;
   padding: 15px;
-  background-color: #3A506B;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  background-color: #3a506b;
+  box-shadow: 0 2px 10px rgb(0 0 0 / 10%);
+}
+
+
+.caseListItemDark:hover{
+  background-color: #2c3e50;
 }
 
 .caseListItem span {
@@ -330,7 +452,7 @@
 .caseListItemDark span {
   margin-right: 15px;
   font-size: 14px;
-  color: #ffffff;
+  color: #fff;
 }
 
 .eventType {
@@ -347,18 +469,18 @@
   text-align: center;
   font-size: 16px;
   color: #555;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
 }
 
 .calendarViewDark {
   padding: 20px;
-  background-color: #3A506B;
+  background-color: #3a506b;
   border: 1px solid #ddd;
   border-radius: 8px;
   text-align: center;
   font-size: 16px;
-  color: #ffffff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  color: #fff;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
 }
 
 /* ---------- More button ---------- */
@@ -380,19 +502,18 @@
 /* ---------- Expanded scroll area ---------- */
 .caseCards.expanded,
 .caseList.expanded {
-  max-height: 500px; /* enough space to show ~30 events */
+  max-height: 500px;
   overflow-y: auto;
   padding-right: 8px;
 }
 
-/* Print styles for case cards */
-/* Print styles for case cards */
+/* ---------- Print styles ---------- */
 @media print {
   .myCasesPage {
     overflow: visible !important;
     height: auto !important;
     max-height: none !important;
-    page-break-inside: auto !important;
+    break-inside: auto !important;
   }
 
   .caseCards {
@@ -402,9 +523,9 @@
     max-height: none !important;
     height: auto !important;
     overflow: visible !important;
-    page-break-inside: auto !important;
+    break-inside: auto !important;
   }
-  
+
   .caseCard {
     background: white !important;
     color: #333 !important;
@@ -412,41 +533,41 @@
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
     break-inside: avoid-page !important;
-    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
-  
+
   .caseCardDark {
-    background: #3A506B !important;
-    color: #ffffff !important;
+    background: #3a506b !important;
+    color: #fff !important;
     border: 1px solid #555 !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
     break-inside: avoid-page !important;
-    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
-  
+
   .caseList {
     max-height: none !important;
     height: auto !important;
     overflow: visible !important;
-    page-break-inside: auto !important;
+    break-inside: auto !important;
   }
-  
+
   .caseListItem {
     break-inside: avoid-page !important;
-    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
-  
+
   .caseListItemDark {
     break-inside: avoid-page !important;
-    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
-  
+
   .eventBadge {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
-  
+
   .eventBadge[data-type='Yoga Class'] {
     background-color: #e9f7ef !important;
     color: #28a745 !important;

@@ -1,7 +1,7 @@
 import React from "react";
 import { fireEvent, within } from "@testing-library/react";
 import EditLinkModal from "~/components/UserProfile/UserProfileModal/EditLinkModal";
-import { configureStore } from 'redux-mock-store';
+import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { rolesMock, authMock, userProfileMock, userProjectMock, themeMock } from "__tests__/mockStates";
 import { renderWithProvider } from "__tests__/utils";

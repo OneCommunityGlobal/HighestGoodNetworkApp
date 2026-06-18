@@ -10,10 +10,10 @@ vi.mock('react-redux', async importOriginal => {
 });
 
 import * as reactRedux from 'react-redux';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import AssignTableRow from '~/components/Badge/AssignTableRow';
 import { Provider } from 'react-redux';
-import { configureStore } from 'redux-mock-store';
+import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 
 const mockStore = configureStore([thunk]);
@@ -65,7 +65,7 @@ describe('AssignTableRow', () => {
     );
   });
 
-  it('dispatches REMOVE_SELECT_BADGE when unchecking a checked box', () => {
+  it('dispatches REMOVE_SELECT_BADGE when unchecking a checked box', async () => {
     const dispatch = vi.fn();
     reactRedux.useDispatch.mockReturnValue(dispatch);
 
@@ -74,7 +74,7 @@ describe('AssignTableRow', () => {
 
     renderComponent({ badge: defaultBadge, index: 0 });
     const cb = screen.getByRole('checkbox');
-    expect(cb).toBeChecked();
+    await waitFor(() => expect(cb).toBeChecked());
 
     fireEvent.click(cb);
     expect(dispatch).toHaveBeenCalledWith(

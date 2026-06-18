@@ -9,410 +9,596 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
-import { v4 as uuidv4 } from 'uuid';
 import moment from 'moment';
-import styles from './PaidLaborCost.module.css';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import Select, { components } from 'react-select';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
-import PaidLaborCostDatePicker from './PaidLaborCostDatePicker';
+import styles from './PaidLaborCost.module.css';
+import logger from '../../../../services/logService';
+import config from '../../../../config.json';
+import { ENDPOINTS } from '../../../../utils/URL';
+import { MOCK_DB } from './mockLaborCostData';
+import PropTypes from 'prop-types';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-// Sample data (cost in dollars) - Used as fallback when API is unavailable
-const mockData = [
-  { project: 'Project A', task: 'Task 1', date: '2025-04-01', cost: 5000 },
-  { project: 'Project A', task: 'Task 2', date: '2025-04-02', cost: 3000 },
-  { project: 'Project A', task: 'Task 3', date: '2025-04-03', cost: 12000 },
-  { project: 'Project A', task: 'Task 4', date: '2025-04-04', cost: 48000 },
-  { project: 'Project A', task: 'Task 5', date: '2025-04-04', cost: 18000 },
-  { project: 'Project A', task: 'Task 6', date: '2025-04-04', cost: 82000 },
-  { project: 'Project A', task: 'Task 7', date: '2025-04-04', cost: 48000 },
-  { project: 'Project A', task: 'Task 8', date: '2025-04-04', cost: 28000 },
-  { project: 'Project A', task: 'Task 9', date: '2025-04-04', cost: 87000 },
-  { project: 'Project A', task: 'Task 10', date: '2025-04-04', cost: 88000 },
-  { project: 'Project A', task: 'Task 11', date: '2025-04-04', cost: 180900 },
-  { project: 'Project A', task: 'Task 12', date: '2025-04-04', cost: 280000 },
-  { project: 'Project A', task: 'Task 13', date: '2025-04-04', cost: 480050 },
-  { project: 'Project A', task: 'Task 14', date: '2025-04-04', cost: 68000 },
-  { project: 'Project A', task: 'Task 15', date: '2025-04-04', cost: 80500 },
-  { project: 'Project A', task: 'Task 16', date: '2025-04-04', cost: 80400 },
-  { project: 'Project A', task: 'Task 17', date: '2025-04-04', cost: 680360 },
-  { project: 'Project A', task: 'Task 18', date: '2025-04-04', cost: 80600 },
-  { project: 'Project A', task: 'Task 19', date: '2025-04-04', cost: 800230 },
-  { project: 'Project B', task: 'Task 20', date: '2025-04-02', cost: 100200 },
-  { project: 'Project B', task: 'Task 21', date: '2025-04-03', cost: 70200 },
-  { project: 'Project B', task: 'Task 22', date: '2025-04-04', cost: 215000 },
-  { project: 'Project B', task: 'Task 23', date: '2025-04-05', cost: 92000 },
+const isValidISODate = dateString => {
+  if (!dateString) return false;
+  return moment(dateString).isValid();
+};
 
-  { project: 'Project C', task: 'Task 1', date: '2025-04-03', cost: 25000 },
-  { project: 'Project C', task: 'Task 2', date: '2025-04-04', cost: 20000 },
-  { project: 'Project C', task: 'Task 3', date: '2025-04-05', cost: 18000 },
-  { project: 'Project C', task: 'Task 4', date: '2025-04-06', cost: 22000 },
-
-  { project: 'Project D', task: 'Task 1', date: '2025-04-04', cost: 4000 },
-  { project: 'Project D', task: 'Task 2', date: '2025-04-05', cost: 6000 },
-  { project: 'Project D', task: 'Task 3', date: '2025-04-06', cost: 14000 },
-  { project: 'Project D', task: 'Task 4', date: '2025-04-07', cost: 10000 },
-
-  { project: 'Project E', task: 'Task 1', date: '2025-04-05', cost: 8000 },
-  { project: 'Project E', task: 'Task 2', date: '2025-04-06', cost: 11000 },
-  { project: 'Project E', task: 'Task 3', date: '2025-04-07', cost: 9000 },
-  { project: 'Project E', task: 'Task 4', date: '2025-04-08', cost: 13000 },
-];
-
-/**
- * aggregateData:
- * - If the Project Filter is "All Projects", aggregate all projects into one group labeled "All Projects"
- *   and—if the Task Filter is 'ALL'—include only the two most expensive sub-tasks (plus Total Cost).
- * - Otherwise, aggregate only for the selected project.
- * - If a custom date range is active, only data within that range is included.
- */
-function aggregateData(data, taskFilter, projectFilter, dateMode, startDate, endDate) {
-  let filtered = data;
-  if (dateMode === 'CUSTOM' && startDate && endDate) {
-    filtered = data.filter(item => {
-      const itemDate = moment(item.date, 'YYYY-MM-DD');
-      return itemDate.isBetween(startDate, endDate, 'day', '[]');
-    });
+const isDevelopmentEnvironment = () => {
+  if (globalThis.window === undefined) {
+    return process.env.NODE_ENV === 'development';
   }
+  const hostname = globalThis.window.location.hostname;
+  return (
+    hostname.includes('dev') ||
+    hostname === 'localhost' ||
+    hostname === '127.0.0.1' ||
+    process.env.NODE_ENV === 'development'
+  );
+};
 
-  if (projectFilter === 'All Projects') {
-    const label = 'All Projects';
-    const aggregation = { [label]: { totalCost: 0 } };
-    // Get unique tasks from filtered data
-    const tasks = [...new Set(filtered.map(d => d.task))];
-    tasks.forEach(task => {
-      aggregation[label][task] = 0;
-    });
+const fetchLaborDataFromAPI = async signal => {
+  const token = localStorage.getItem(config.tokenKey);
+  const headers = {
+    'Content-Type': 'application/json',
+    ...(token && { Authorization: token }),
+  };
 
-    // Sum up totals
-    filtered.forEach(item => {
-      aggregation[label].totalCost += item.cost;
-      if (aggregation[label][item.task] !== undefined) {
-        aggregation[label][item.task] += item.cost;
-      }
-    });
-
-    let tasksToInclude;
-    if (taskFilter === 'ALL') {
-      // Pick the two most expensive tasks by cost
-      tasksToInclude = tasks
-        .sort((a, b) => aggregation[label][b] - aggregation[label][a])
-        .slice(0, 2);
-    } else {
-      tasksToInclude = [taskFilter];
-    }
-    return { labels: [label], aggregation, tasksToInclude };
-  }
-
-  // Specific project selected – display that project name along x-axis.
-  const projectsToInclude = [projectFilter];
-  const distinctTasks = [
-    ...new Set(filtered.filter(d => d.project === projectFilter).map(d => d.task)),
-  ];
-  const tasksToInclude = taskFilter === 'ALL' ? distinctTasks : [taskFilter];
-
-  const aggregation = {};
-  projectsToInclude.forEach(proj => {
-    aggregation[proj] = { totalCost: 0 };
-    tasksToInclude.forEach(t => {
-      aggregation[proj][t] = 0;
-    });
+  const response = await fetch(`${ENDPOINTS.APIEndpoint()}/labor-cost`, {
+    method: 'GET',
+    headers,
+    cache: 'no-store',
+    signal,
   });
 
-  filtered.forEach(item => {
-    if (item.project === projectFilter) {
-      aggregation[projectFilter].totalCost += item.cost;
-      if (tasksToInclude.includes(item.task)) {
-        aggregation[projectFilter][item.task] += item.cost;
-      }
+  if (!response.ok) throw new Error(`Status ${response.status}`);
+  return response.json();
+};
+
+const formatApiData = apiData => {
+  const dataToProcess = apiData.data || apiData || [];
+  return dataToProcess
+    .map(item => {
+      const projName = typeof item.project === 'object' ? item.project?.name : item.project;
+      const taskName =
+        typeof item.task === 'object' ? item.task?.name || item.task?.taskName : item.task;
+      const itemCost = Number(item.cost) || 0;
+      const itemBudget = item.budget || itemCost * 0.9;
+      return {
+        ...item,
+        project: projName || 'Unknown Project',
+        task: taskName || 'Unknown Task',
+        cost: itemCost,
+        budget: itemBudget,
+        date: item.date,
+      };
+    })
+    .filter(item => item.date && isValidISODate(item.date));
+};
+
+function aggregateData(data, taskFilter, projectFilter, dateRange) {
+  if (!Array.isArray(data)) {
+    return { labels: [], aggregation: {}, tasksToInclude: [] };
+  }
+
+  const validData = data.filter(item => {
+    if (
+      dateRange.startDate &&
+      moment(item.date).isBefore(moment(dateRange.startDate).startOf('day'))
+    )
+      return false;
+    if (dateRange.endDate && moment(item.date).isAfter(moment(dateRange.endDate).endOf('day')))
+      return false;
+    if (projectFilter !== 'All Projects' && item.project !== projectFilter) return false;
+    if (taskFilter.length > 0 && !taskFilter.includes(item.task)) return false;
+    return true;
+  });
+
+  if (validData.length === 0) {
+    return { labels: [], aggregation: {}, tasksToInclude: [] };
+  }
+
+  const label = projectFilter === 'All Projects' ? 'All Projects' : projectFilter;
+  const aggregation = { [label]: { totalCost: 0, totalBudget: 0 } };
+  const distinctTasks = [...new Set(validData.map(d => d.task))];
+
+  const tasksToInclude = taskFilter.length > 0 ? taskFilter : distinctTasks;
+
+  tasksToInclude.forEach(t => {
+    aggregation[label][t] = { cost: 0, budget: 0 };
+  });
+
+  validData.forEach(item => {
+    aggregation[label].totalCost += item.cost;
+    aggregation[label].totalBudget += item.budget;
+    if (tasksToInclude.includes(item.task)) {
+      aggregation[label][item.task].cost += item.cost;
+      aggregation[label][item.task].budget += item.budget;
     }
   });
 
-  return { labels: projectsToInclude, aggregation, tasksToInclude };
+  return { labels: [label], aggregation, tasksToInclude };
 }
 
-// Component for displaying the chart/dashboard
+const calculateVarianceMetrics = (displayTotalCost, displayTotalBudget, componentStyles) => {
+  const absoluteVariance = Math.abs(displayTotalCost - displayTotalBudget);
+  const variancePercentage =
+    displayTotalBudget > 0
+      ? ((displayTotalCost - displayTotalBudget) / displayTotalBudget) * 100
+      : 0;
+
+  let varianceClass = componentStyles.varianceNeutral;
+  if (absoluteVariance > 0.01) {
+    varianceClass =
+      displayTotalCost > displayTotalBudget
+        ? componentStyles.varianceOver
+        : componentStyles.varianceUnder;
+  }
+
+  return { absoluteVariance, variancePercentage, varianceClass };
+};
+
+const getOptionBackgroundColor = (darkMode, isSelected, isFocused) => {
+  if (isSelected) return darkMode ? '#e8a71c' : '#0d55b3';
+  if (isFocused) return darkMode ? '#3a506b' : '#f0f0f0';
+  return darkMode ? '#253342' : '#fff';
+};
+
+const getOptionColor = (darkMode, isSelected) => {
+  if (isSelected) return darkMode ? '#000' : '#fff';
+  return darkMode ? '#ffffff' : '#000';
+};
+
+const generateSelectStyles = darkMode => ({
+  control: base => ({
+    ...base,
+    minHeight: '38px',
+    width: '100%',
+    fontSize: '13px',
+    backgroundColor: darkMode ? '#253342' : '#fff',
+    borderColor: darkMode ? '#2d4059' : '#ccc',
+    color: darkMode ? '#ffffff' : '#000',
+    boxShadow: 'none',
+    borderRadius: '6px',
+    '&:hover': { borderColor: darkMode ? '#2d4059' : '#999' },
+  }),
+  valueContainer: base => ({
+    ...base,
+    padding: '2px 8px',
+    color: darkMode ? '#ffffff' : '#000',
+  }),
+  input: base => ({
+    ...base,
+    margin: '0px',
+    padding: '0px',
+    color: darkMode ? '#ffffff' : '#000',
+  }),
+  indicatorsContainer: base => ({ ...base, padding: '0 4px' }),
+  placeholder: base => ({
+    ...base,
+    color: darkMode ? '#94a3b8' : '#999',
+    fontSize: '13px',
+  }),
+  singleValue: base => ({
+    ...base,
+    color: darkMode ? '#ffffff' : '#000',
+    fontSize: '13px',
+  }),
+  menu: base => ({
+    ...base,
+    backgroundColor: darkMode ? '#253342' : '#fff',
+    border: `1px solid ${darkMode ? '#2d4059' : '#ccc'}`,
+    borderRadius: '6px',
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+    fontSize: '13px',
+    zIndex: 9999,
+    marginTop: '4px',
+  }),
+  menuList: base => ({
+    ...base,
+    backgroundColor: darkMode ? '#253342' : '#fff',
+    padding: '4px 0',
+    borderRadius: '6px',
+  }),
+  option: (base, state) => ({
+    ...base,
+    backgroundColor: getOptionBackgroundColor(darkMode, state.isSelected, state.isFocused),
+    color: getOptionColor(darkMode, state.isSelected),
+    cursor: 'pointer',
+    padding: '8px 12px',
+    fontSize: '13px',
+    ':active': { backgroundColor: darkMode ? '#3a506b' : '#e0e0e0' },
+  }),
+  indicatorSeparator: base => ({ ...base, backgroundColor: darkMode ? '#2d4059' : '#ccc' }),
+  dropdownIndicator: base => ({
+    ...base,
+    color: darkMode ? '#94a3b8' : '#999',
+    padding: '4px',
+    ':hover': { color: darkMode ? '#ffffff' : '#666' },
+  }),
+  clearIndicator: base => ({
+    ...base,
+    color: darkMode ? '#94a3b8' : '#999',
+    padding: '4px',
+    ':hover': { color: darkMode ? '#ffffff' : '#666' },
+  }),
+});
+
+const MultiValue = () => null;
+
+const ValueContainer = ({ children, ...props }) => {
+  const length = props.getValue().length;
+  const color = props.selectProps?.styles?.singleValue?.color || 'inherit';
+  return (
+    <components.ValueContainer {...props}>
+      {length > 0 && (
+        <div style={{ color }}>
+          {length} item{length === 1 ? '' : 's'} selected
+        </div>
+      )}
+      {children}
+    </components.ValueContainer>
+  );
+};
+
+ValueContainer.propTypes = {
+  children: PropTypes.node,
+  getValue: PropTypes.func.isRequired,
+  selectProps: PropTypes.shape({
+    styles: PropTypes.shape({
+      singleValue: PropTypes.shape({
+        color: PropTypes.string,
+      }),
+    }),
+  }),
+};
+
+const Option = props => {
+  return (
+    <components.Option {...props}>
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <input
+          type="checkbox"
+          checked={props.isSelected}
+          onChange={() => null}
+          style={{ marginRight: '8px', cursor: 'pointer' }}
+        />
+        <span>{props.label}</span>
+      </div>
+    </components.Option>
+  );
+};
+
+Option.propTypes = {
+  isSelected: PropTypes.bool.isRequired,
+  label: PropTypes.string.isRequired,
+};
+
+const buildChartDatasets = (tasksToInclude, labels, aggregation, darkMode) => {
+  return tasksToInclude.flatMap((task, idx) => {
+    const hue = Math.round((idx * 360) / Math.max(1, tasksToInclude.length));
+    const saturation = 65;
+    const lightness = darkMode ? 65 : 50;
+
+    const actualColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+    const budgetColor = darkMode
+      ? `hsla(${hue}, ${saturation}%, ${lightness + 20}%, 0.8)`
+      : `hsla(${hue}, ${saturation}%, ${lightness}%, 0.4)`;
+
+    return [
+      {
+        label: `${task} (Actual)`,
+        backgroundColor: actualColor,
+        borderRadius: 4,
+        data: labels.map(label => aggregation[label][task]?.cost || 0),
+        maxBarThickness: 40,
+        categoryPercentage: 0.8,
+        barPercentage: 0.9,
+      },
+      {
+        label: `${task} (Budget)`,
+        backgroundColor: budgetColor,
+        borderColor: actualColor,
+        borderWidth: { top: 2, right: 2, bottom: 0, left: 2 },
+        borderDash: [4, 4],
+        borderRadius: 4,
+        data: labels.map(label => aggregation[label][task]?.budget || 0),
+        maxBarThickness: 40,
+        categoryPercentage: 0.8,
+        barPercentage: 0.9,
+      },
+    ];
+  });
+};
+
+const buildChartOptions = (textColor, darkMode) => ({
+  responsive: true,
+  maintainAspectRatio: false,
+  layout: { padding: { top: 35, left: 15, right: 15, bottom: 10 } },
+  plugins: {
+    legend: {
+      position: 'top',
+      labels: { font: { size: 12 }, color: textColor, padding: 20, usePointStyle: true },
+    },
+    datalabels: {
+      anchor: 'end',
+      align: 'top',
+      offset: 2,
+      color: darkMode ? '#ffffff' : '#333333',
+      font: { weight: '600', size: 11 },
+      textStrokeColor: darkMode ? '#1e293b' : '#ffffff',
+      textStrokeWidth: 3,
+      formatter: value => {
+        if (!value) return '';
+        return value >= 1000 ? `$${(value / 1000).toFixed(1).replace('.0', '')}k` : `$${value}`;
+      },
+    },
+    tooltip: {
+      backgroundColor: darkMode ? '#1e293b' : '#ffffff',
+      titleColor: darkMode ? '#f8fafc' : '#0f172a',
+      bodyColor: darkMode ? '#f8fafc' : '#0f172a',
+      borderColor: darkMode ? '#334155' : '#e2e8f0',
+      borderWidth: 1,
+      callbacks: {
+        label(context) {
+          const project = context.chart.data.labels[context.dataIndex];
+          const costDollars = context.parsed.y || 0;
+          return `${project}, ${context.dataset.label}: $${costDollars.toLocaleString()}`;
+        },
+      },
+    },
+  },
+  scales: {
+    x: {
+      grid: { display: false },
+      ticks: { font: { size: 12 }, color: textColor },
+      offset: true,
+    },
+    y: {
+      grace: '15%',
+      grid: { color: darkMode ? '#334155' : '#e2e8f0' },
+      beginAtZero: true,
+      title: { display: true, text: 'Cost ($)', font: { size: 12 }, color: textColor },
+      ticks: {
+        font: { size: 12 },
+        color: textColor,
+        callback: value => (value >= 1000 ? `$${value / 1000}k` : `$${value}`),
+      },
+    },
+  },
+});
+
 export default function PaidLaborCost() {
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
+
   const darkMode = useSelector(state => state.theme.darkMode);
   const textColor = darkMode ? '#ffffff' : '#666';
-  // Filter States
-  const [taskFilter, setTaskFilter] = useState('ALL');
+
+  const [taskFilter, setTaskFilter] = useState([]);
   const [projectFilter, setProjectFilter] = useState('All Projects');
-  const [dateMode, setDateMode] = useState('ALL');
-  const [dateRange, setDateRange] = useState({
-    startDate: null,
-    endDate: null,
-  });
+  const [dateRange, setDateRange] = useState({ startDate: null, endDate: null });
 
-  // API data fetching with fallback to mock data
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
+    const abortController = new AbortController();
+
+    const loadData = async () => {
       try {
-        const response = await fetch('/api/labor-cost', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            projects: projectFilter !== 'All Projects' ? [projectFilter] : [],
-            tasks: taskFilter !== 'ALL' ? [taskFilter] : [],
-            date_range:
-              dateMode === 'CUSTOM'
-                ? {
-                    start_date: dateRange.startDate
-                      ? moment(dateRange.startDate).format('YYYY-MM-DD')
-                      : null,
-                    end_date: dateRange.endDate
-                      ? moment(dateRange.endDate).format('YYYY-MM-DD')
-                      : null,
-                  }
-                : null,
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error(`API request failed with status ${response.status}`);
-        }
-
-        const apiData = await response.json();
-        setData(apiData);
+        const apiData = await fetchLaborDataFromAPI(abortController.signal);
+        setData(formatApiData(apiData));
       } catch (error) {
-        toast.info('Error fetching data:', error);
-        // Fall back to mock data if API is unavailable
-        toast.info('Using mock data as fallback');
-        setData(mockData);
+        if (error.name === 'AbortError') return;
+        if (isDevelopmentEnvironment()) {
+          setData(formatApiData({ data: MOCK_DB }));
+        } else {
+          logger.logError(error);
+          toast.error('Error fetching data.');
+          setData([]);
+        }
       } finally {
-        setLoading(false);
+        setInitialLoading(false);
       }
     };
 
-    fetchData();
-  }, [projectFilter, taskFilter, dateMode, dateRange.startDate, dateRange.endDate]);
+    loadData();
 
-  // Use mock data initially until API data is loaded
-  const currentData = data.length > 0 ? data : mockData;
+    return () => {
+      abortController.abort();
+    };
+  }, []);
 
-  // Derive unique filter values from current data
-  const distinctProjects = useMemo(() => [...new Set(currentData.map(d => d.project))], [
-    currentData,
+  const allAvailableProjects = useMemo(() => [...new Set(data.map(d => d.project))], [data]);
+  const allAvailableTasks = useMemo(() => [...new Set(data.map(d => d.task))], [data]);
+
+  const { labels, aggregation, tasksToInclude } = useMemo(
+    () => aggregateData(data, taskFilter, projectFilter, dateRange),
+    [data, taskFilter, projectFilter, dateRange],
+  );
+
+  const displayTotalCost = labels.length > 0 ? aggregation[labels[0]]?.totalCost || 0 : 0;
+  const displayTotalBudget = labels.length > 0 ? aggregation[labels[0]]?.totalBudget || 0 : 0;
+
+  const { absoluteVariance, variancePercentage, varianceClass } = useMemo(
+    () => calculateVarianceMetrics(displayTotalCost, displayTotalBudget, styles),
+    [displayTotalCost, displayTotalBudget],
+  );
+
+  const taskOptions = useMemo(() => allAvailableTasks.map(task => ({ label: task, value: task })), [
+    allAvailableTasks,
   ]);
 
-  const distinctTasks = useMemo(() => [...new Set(currentData.map(d => d.task))], [currentData]);
-
-  // Aggregate data based on filters
-  const { labels, aggregation, tasksToInclude } = aggregateData(
-    currentData,
-    taskFilter,
-    projectFilter,
-    dateMode,
-    dateRange.startDate,
-    dateRange.endDate,
-  );
-
-  // Build stable option lists for selects
-  const taskOptions = useMemo(
-    () =>
-      distinctTasks.map(task => ({
-        id: uuidv4(),
-        value: task,
-      })),
-    [distinctTasks],
-  );
-
   const projectOptions = useMemo(
-    () =>
-      distinctProjects.map(proj => ({
-        id: uuidv4(),
-        value: proj,
-      })),
-    [distinctProjects],
-  );
-
-  const dateOptions = useMemo(
     () => [
-      { id: uuidv4(), value: 'ALL', label: 'ALL' },
-      { id: uuidv4(), value: 'CUSTOM', label: 'CUSTOM' },
+      { label: 'ALL', value: 'All Projects' },
+      ...allAvailableProjects.map(proj => ({ label: proj, value: proj })),
     ],
-    [],
+    [allAvailableProjects],
   );
 
-  // Handle date range changes
-  const handleDateRangeChange = ({ startDate, endDate }) => {
-    setDateRange({ startDate, endDate });
-  };
+  const handleStartDateChange = date => setDateRange(prev => ({ ...prev, startDate: date }));
+  const handleEndDateChange = date => setDateRange(prev => ({ ...prev, endDate: date }));
 
-  // Build Chart.js datasets
-  // Always include the Total Cost dataset
-  const totalCostDataset = {
-    label: 'Total Cost',
-    backgroundColor: '#00A3A1',
-    borderRadius: 4,
-    data: labels.map(label => Math.round(aggregation[label].totalCost / 1000)),
-  };
+  const selectStyles = useMemo(() => generateSelectStyles(darkMode), [darkMode]);
 
-  // Generate one distinct HSL color per task
-  const taskDatasets = tasksToInclude.map((task, idx) => {
-    // spread hues evenly around the 360° color wheel
-    const hue = Math.round((idx * 360) / tasksToInclude.length);
-    // keep saturation moderate, and lightness high so bars pop in dark mode
-    const saturation = 65;
-    const lightness = darkMode ? 70 : 50;
-    return {
-      label: task,
-      backgroundColor: `hsl(${hue}, ${saturation}%, ${lightness}%)`,
-      borderRadius: 4,
-      data: labels.map(label => Math.round(aggregation[label][task] / 1000)),
-    };
-  });
+  const taskDatasets = useMemo(
+    () => buildChartDatasets(tasksToInclude, labels, aggregation, darkMode),
+    [tasksToInclude, labels, aggregation, darkMode],
+  );
 
-  const chartData = {
-    labels,
-    datasets: [totalCostDataset, ...taskDatasets],
-  };
+  const chartData = { labels, datasets: taskDatasets };
+  const options = useMemo(() => buildChartOptions(textColor, darkMode), [textColor, darkMode]);
 
-  // Chart options: grid lines, responsive layout, and tooltip callback for interactivity.
-  const options = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: 'top',
-        labels: { font: { size: 12 }, color: textColor },
-      },
-      tooltip: {
-        callbacks: {
-          label(context) {
-            const project = context.chart.data.labels[context.dataIndex];
-            const costThousands = context.parsed.y || 0;
-            const costDollars = costThousands * 1000;
-            return `${project}, ${context.dataset.label}, Cost $${costDollars.toLocaleString()}`;
-          },
-        },
-      },
-    },
-    scales: {
-      x: {
-        grid: { display: false },
-        ticks: { font: { size: 12 }, color: textColor },
-      },
-      y: {
-        grid: { color: '#ccc' },
-        title: {
-          display: true,
-          text: 'Cost (000s)',
-          font: { size: 12 },
-          color: textColor,
-        },
-        ticks: { font: { size: 12 }, color: textColor },
-      },
-    },
-  };
+  if (initialLoading) {
+    return (
+      <div className={styles.paidLaborCostContainer}>
+        <h4 className={styles.paidLaborCostTitle}>Paid Labor Cost</h4>
+        <div className={styles.paidLaborCostLoading}>Loading data...</div>
+      </div>
+    );
+  }
 
   return (
-    <div className={styles.paidLaborCostContainer}>
+    <div className={`${styles.paidLaborCostContainer} ${darkMode ? styles.darkMode : ''}`}>
       <h4 className={styles.paidLaborCostTitle}>Paid Labor Cost</h4>
 
-      {/* Loading indicator */}
-      {loading ? (
-        <div className={styles.paidLaborCostLoading}>Loading data...</div>
-      ) : (
-        <>
-          {/* Filter Row */}
-          <div className={styles.paidLaborCostFilters}>
-            {/* Task Filter */}
-            <div className={styles.paidLaborCostFilterGroup}>
-              <label className={styles.paidLaborCostFilterLabel} htmlFor="task-filter">
-                Tasks
-              </label>
-              <select
-                id="task-filter"
-                value={taskFilter}
-                onChange={e => setTaskFilter(e.target.value)}
-                className={styles.paidLaborCostFilterSelect}
-              >
-                <option value="ALL">ALL</option>
-                {taskOptions.map(option => (
-                  <option key={option.id} value={option.value}>
-                    {option.value}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Project Filter */}
-            <div className={styles.paidLaborCostFilterGroup}>
-              <label className={styles.paidLaborCostFilterLabel} htmlFor="project-filter">
-                Project
-              </label>
-              <select
-                id="project-filter"
-                value={projectFilter}
-                onChange={e => setProjectFilter(e.target.value)}
-                className={styles.paidLaborCostFilterSelect}
-              >
-                <option value="All Projects">ALL</option>
-                {projectOptions.map(option => (
-                  <option key={option.id} value={option.value}>
-                    {option.value}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Date Filter */}
-            <div className={styles.paidLaborCostFilterGroup}>
-              <label className={styles.paidLaborCostFilterLabel} htmlFor="date-filter">
-                Dates
-              </label>
-              <select
-                id="date-filter"
-                value={dateMode}
-                onChange={e => {
-                  setDateMode(e.target.value);
-                  // Reset date range when the date filter changes
-                  setDateRange({ startDate: null, endDate: null });
-                }}
-                className={styles.paidLaborCostFilterSelect}
-              >
-                {dateOptions.map(option => (
-                  <option key={option.id} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Our Custom DateRangePicker shown in CUSTOM mode - replacing Airbnb DateRangePicker */}
-          {dateMode === 'CUSTOM' && (
-            <div className={styles.paidLaborCostDaterangeRow}>
-              <PaidLaborCostDatePicker
+      <div className={styles.filtersGrid}>
+        <div className={styles.filterGroup}>
+          <label className={styles.filterLabel} htmlFor="task-filter">
+            Tasks
+          </label>
+          <Select
+            inputId="task-filter"
+            isMulti
+            closeMenuOnSelect={false}
+            hideSelectedOptions={false}
+            components={{ MultiValue, ValueContainer, Option }}
+            options={taskOptions}
+            value={taskOptions.filter(option => taskFilter.includes(option.value))}
+            onChange={selected =>
+              setTaskFilter(selected ? selected.map(option => option.value) : [])
+            }
+            isClearable
+            placeholder="All tasks"
+            classNamePrefix="select"
+            styles={selectStyles}
+          />
+        </div>
+        <div className={styles.filterGroup}>
+          <label className={styles.filterLabel} htmlFor="project-filter">
+            Project
+          </label>
+          <Select
+            inputId="project-filter"
+            options={projectOptions}
+            value={projectOptions.find(option => option.value === projectFilter)}
+            onChange={selected => setProjectFilter(selected ? selected.value : 'All Projects')}
+            isClearable={false}
+            placeholder="Select project"
+            classNamePrefix="select"
+            styles={selectStyles}
+          />
+        </div>
+        <div className={styles.filterGroup}>
+          <label className={styles.filterLabel} htmlFor="start-date">
+            Date Range
+          </label>
+          <div className={styles.dateRangeFlex}>
+            <div className={styles.datePickerWrapper}>
+              <DatePicker
+                id="start-date"
+                selected={dateRange.startDate}
+                onChange={handleStartDateChange}
+                selectsStart
                 startDate={dateRange.startDate}
                 endDate={dateRange.endDate}
-                onDatesChange={handleDateRangeChange}
-                minDate={new Date(1980, 0, 1)}
-                placeholder="Select date range"
+                maxDate={
+                  dateRange.endDate ? new Date(Math.min(dateRange.endDate, new Date())) : new Date()
+                }
+                placeholderText="Start Date"
+                isClearable
+                dateFormat="MM/dd/yyyy"
+                aria-label="Start Date"
+                className={`${styles.dateInput} ${darkMode ? styles.darkDateInput : ''}`}
+                calendarClassName={
+                  darkMode ? 'paid-labor-cost-dark-calendar' : 'paid-labor-cost-calendar'
+                }
               />
             </div>
-          )}
 
-          {/* Chart Container */}
-          <div className={styles.paidLaborCostChartScrollWrapper}>
-            <div
-              style={{
-                width: tasksToInclude.length > 3 ? `${(tasksToInclude.length + 1) * 50}px` : '100%',
-                height: '300px',
-              }}
-            >
-              <Bar data={chartData} options={options} />
+            <span className={styles.dateSeparator}>to</span>
+
+            <div className={styles.datePickerWrapper}>
+              <DatePicker
+                id="end-date"
+                selected={dateRange.endDate}
+                onChange={handleEndDateChange}
+                selectsEnd
+                startDate={dateRange.startDate}
+                endDate={dateRange.endDate}
+                minDate={dateRange.startDate}
+                maxDate={new Date()}
+                placeholderText="End Date"
+                isClearable
+                dateFormat="MM/dd/yyyy"
+                className={`${styles.dateInput} ${darkMode ? styles.darkDateInput : ''}`}
+                calendarClassName={
+                  darkMode ? 'paid-labor-cost-dark-calendar' : 'paid-labor-cost-calendar'
+                }
+              />
             </div>
           </div>
-        </>
-      )}
+        </div>
+      </div>
+
+      <div className={styles.paidLaborCostChartWrapper}>
+        <div className={styles.paidLaborCostChartContainer}>
+          {labels.length === 0 ? (
+            <div className={styles.emptyState}>No data available for the selected filters.</div>
+          ) : (
+            <Bar data={chartData} options={options} />
+          )}
+        </div>
+      </div>
+
+      <div className={`${styles.summaryContainer} ${darkMode ? styles.darkSummaryContainer : ''}`}>
+        <div className={styles.summaryItem}>
+          <span className={styles.summaryLabel}>Total Budget</span>
+          <span className={styles.summaryValue} style={{ color: textColor }}>
+            $
+            {displayTotalBudget.toLocaleString('en-US', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
+          </span>
+        </div>
+        <div className={styles.summaryItem}>
+          <span className={styles.summaryLabel}>Total Actual</span>
+          <span className={styles.summaryValue} style={{ color: textColor }}>
+            $
+            {displayTotalCost.toLocaleString('en-US', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
+          </span>
+        </div>
+        <div className={styles.summaryItem}>
+          <span className={styles.summaryLabel}>Variance</span>
+          <span className={`${styles.summaryValue} ${varianceClass}`}>
+            $
+            {absoluteVariance.toLocaleString('en-US', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}{' '}
+            ({variancePercentage > 0 ? '+' : ''}
+            {variancePercentage.toFixed(1)}%)
+          </span>
+        </div>
+      </div>
     </div>
   );
 }
