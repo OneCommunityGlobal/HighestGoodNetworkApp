@@ -216,8 +216,8 @@ function ParticipationTrends() {
               </tr>
             </thead>
             <tbody>
-              {eventTypeTrends.map((event, index) => (
-                <tr key={index}>
+              {eventTypeTrends.map(event => (
+                <tr key={event.type}>
                   <td className={styles.eventType}>{event.type}</td>
                   <td className={styles.trend}>
                     {event.trend === 'up' && '📈 Growing'}

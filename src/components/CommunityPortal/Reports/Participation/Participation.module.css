@@ -383,7 +383,7 @@
 
 .insightsTabActive {
   border-radius: 4px;
-  background-color: #007bff;
+  background-color: #0056b3;
   color: #fff;
   font-weight: bold;
 }
@@ -533,13 +533,13 @@
   text-decoration: none;
   padding: 0.5rem 1rem;
   border-radius: 6px;
-  background: rgb(255 255 255 / 10%);
+  background: rgb(255 255 255 / 20%);
   transition: background 0.3s ease;
   font-size: 0.9rem;
 }
 
 .navLink:hover {
-  background: rgb(255 255 255 / 20%);
+  background: rgb(255 255 255 / 30%);
   text-decoration: none;
   color: white;
 }
@@ -558,12 +558,12 @@
 
 .analyticsPageDark .navLink {
   color: #fff;
-  background: rgb(255 255 255 / 10%);
+  background: rgb(255 255 255 / 20%);
   border: 1px solid #5a6b7d;
 }
 
 .analyticsPageDark .navLink:hover {
-  background: rgb(255 255 255 / 20%);
+  background: rgb(255 255 255 / 30%);
   color: #fff;
 }
 
