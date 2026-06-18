@@ -10,7 +10,6 @@ import ReactTooltip from 'react-tooltip'; // Importing react-tooltip for tooltip
 // eslint-disable-next-line import/named
 import { updateUserProfile, getUserProfile } from '../../actions/userProfile';
 import { boxStyle, boxStyleDark } from '../../styles';
-import '../Header/index.css';
 import { ENDPOINTS } from '~/utils/URL';
 import { ModalContext } from '~/context/ModalContext';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
@@ -163,7 +162,7 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
                     >
                       {roleName}
                     </button>
-                    <div className="infos">
+                    <div className={styles.infos}>
                       <EditableInfoModal
                         role={role}
                         areaName={`${roleName} Info`}
