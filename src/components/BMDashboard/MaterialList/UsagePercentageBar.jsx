@@ -32,7 +32,10 @@ export default function UsagePercentageBar({ material, darkMode = false }) {
   if (!bought || bought <= 0) {
     return (
       <>
-        <div id={tooltipId} className={`${styles.usageContainer}`}>
+        <div
+          id={tooltipId}
+          className={`${styles.usageContainer} ${darkMode ? styles.darkMode : ''}`}
+        >
           <span className={`${styles.usageLabel}`}>N/A</span>
         </div>
         <Tooltip
@@ -50,7 +53,7 @@ export default function UsagePercentageBar({ material, darkMode = false }) {
 
   return (
     <>
-      <div id={tooltipId} className={`${styles.usageContainer}`}>
+      <div id={tooltipId} className={`${styles.usageContainer} ${darkMode ? styles.darkMode : ''}`}>
         <div className={`${styles.barWrapper}`}>
           <div
             className={`${styles.progressBar} ${styles[usageColor]}`}

@@ -9,6 +9,9 @@ table td {
   max-width: 1536px;
   margin: 1rem auto;
   padding: 0 1rem;
+  min-height: 100vh;
+  background-color: #fff;
+  color: #1f2937;
 }
 
 .itemsTableContainer {
@@ -16,6 +19,17 @@ table td {
   max-height: 600px;
   border: 1px solid #e5e7eb;
   border-radius: 6px;
+  background-color: #fff;
+}
+
+.itemsTableContainer table {
+  background-color: #fff;
+  color: #1f2937;
+  margin-bottom: 0;
+}
+
+.itemsTableContainer table tbody tr {
+  background-color: #fff;
 }
 
 .items_list_container section {
@@ -243,9 +257,7 @@ table td {
 
 .darkMode {
   color: #e8edf4;
-  background-color: #0d1117 !important;
-
-/*   color: #fff !important; */
+  background-color: #1a1d23 !important;
   min-height: 100vh;
   padding-bottom: 2rem;
 }
@@ -266,6 +278,25 @@ table td {
 .darkTable .stickyThead th {
   background-color: #2f4157;
   border-bottom: 1px solid #3f5269;
+}
+
+/* Dark mode container/table base (overrides the light defaults above) */
+.darkTableWrapper {
+  background-color: #1f2e45;
+}
+
+.darkTableWrapper table,
+.itemsTableContainer .darkTable {
+  background-color: #1f2e45;
+  color: #e8edf4;
+}
+
+.itemsTableContainer .darkTable tbody tr:nth-child(odd) {
+  background-color: #1f2e45;
+}
+
+.itemsTableContainer .darkTable tbody tr:nth-child(even) {
+  background-color: #23375b;
 }
 
 :global(.dark-mode) .items_table_container {

@@ -25,10 +25,16 @@ button {
 }
 
 html {
-  background-color: #1a1d23 !important;
+  background-color: #fff;
 }
 
 body {
+  background-color: #fff;
+}
+
+/* Dark mode background for the page itself */
+body.dark-mode,
+body.bm-dashboard-dark {
   background-color: #1a1d23 !important;
 }
 
