@@ -533,13 +533,13 @@
   text-decoration: none;
   padding: 0.5rem 1rem;
   border-radius: 6px;
-  background: rgb(255 255 255 / 20%);
+  background: #5a4a8a;
   transition: background 0.3s ease;
   font-size: 0.9rem;
 }
 
 .navLink:hover {
-  background: rgb(255 255 255 / 30%);
+  background: #4a3a7a;
   text-decoration: none;
   color: white;
 }
@@ -558,12 +558,12 @@
 
 .analyticsPageDark .navLink {
   color: #fff;
-  background: rgb(255 255 255 / 20%);
+  background: #2d3e54;
   border: 1px solid #5a6b7d;
 }
 
 .analyticsPageDark .navLink:hover {
-  background: rgb(255 255 255 / 30%);
+  background: #3d4e64;
   color: #fff;
 }
 
