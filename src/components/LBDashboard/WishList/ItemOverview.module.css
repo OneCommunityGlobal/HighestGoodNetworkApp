@@ -42,7 +42,7 @@
 
 .item__selector{
   display: flex;
-  align-items: center;
+  align-items: stretch;
   box-sizing: border-box;
   position: relative;
   z-index: 20;
@@ -58,6 +58,17 @@
   overflow: visible;
 }
 
+.item__selector--dark {
+  background-color: #1c2541;
+  border: 1px solid #2f3b59;
+}
+
+.item__selector--dark select,
+.item__selector--dark option {
+  background-color: #1c2541;
+  color: #fff;
+}
+
 .item__selector:focus-within {
   z-index: 50;
 }
@@ -66,6 +77,8 @@
   width: 100%;
   height: 100%;
   border: none;
+  color: inherit;
+  appearance: none;
   outline: none;
   font-size: 14px;
   line-height: 1.25;

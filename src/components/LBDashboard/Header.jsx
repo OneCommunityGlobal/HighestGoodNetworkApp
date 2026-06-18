@@ -22,13 +22,6 @@ function LBDashboardHeader({ authUser, villages, onVillageChange }) {
   const [selectedVillage, setSelectedVillage] = useState('');
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const selectorWrapperStyle = darkMode
-    ? {
-        backgroundColor: '#1c2541',
-        border: '1px solid #2f3b59',
-      }
-    : undefined;
-
   const selectorStyle = darkMode
     ? {
         backgroundColor: 'transparent',
@@ -55,7 +48,11 @@ function LBDashboardHeader({ authUser, villages, onVillageChange }) {
       <Container fluid className={itemStyles.item__navbarContainer}>
         <div className={itemStyles.item__navbarToolbar}>
           <div className={itemStyles['item__navbar-left']}>
-            <div className={itemStyles.item__selector} style={selectorWrapperStyle}>
+            <div
+              className={`${itemStyles.item__selector} ${
+                darkMode ? itemStyles['item__selector--dark'] : ''
+              }`}
+            >
               <select
                 value={selectedVillage}
                 onChange={e => setSelectedVillage(e.target.value)}
