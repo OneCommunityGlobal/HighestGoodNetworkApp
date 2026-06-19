@@ -1,322 +1,204 @@
-/* stylelint-disable no-descending-specificity */
-
-/* Container for the Paid Labor Cost card */
 .paidLaborCostContainer {
-  font-family: inherit;
-  padding: 10px;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 5%);
-
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
-/* Title */
 .paidLaborCostTitle {
-  font-size: large;
-  font-weight: bold;
   text-align: center;
-  color: var(--text-color);
+  margin-bottom: 24px;
+  font-weight: 700;
+  color: #1e293b;
 }
 
-/* Filters container - vertical by default for narrow cards */
-.paidLaborCostFilters {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  align-items: stretch;
-  position: relative;
-  overflow: visible;
+.darkMode .paidLaborCostTitle {
+  color: #f8fafc;
 }
 
-/* Each filter group (Tasks, Project, Date Range) */
-
-/* Stack label above select for narrow cards */
-.paidLaborCostFilterGroup {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 6px;
-  width: 100%;
-  padding: 4px 0;
-}
-
-/* On very large screens where cards are wide enough, allow horizontal filters */
-@media (width >= 1920px) {
-  .paidLaborCostFilters {
-    flex-flow: row wrap;
-    justify-content: space-between;
-    gap: 5px;
-  }
-
-  .paidLaborCostFilterGroup {
-    flex-direction: row;
-    align-items: center;
-    width: fit-content;
-    padding: 4px 8px;
-  }
-}
-
-.paidLaborCostFilterLabel {
-  margin: 0; /* reset margin so it doesn't push things apart */
-  font-size: 15px;
-  color: var(--text-color);
-  white-space: nowrap; /* keep label text on one line */
-}
-
-/* Native select styles removed - now using react-select for all select-type filters */
-
-/* Date picker styles remain below */
-
-
-/* Chart container */
-.paid-labor-cost-chart-container {
-  width: 100%;
-  height: 300px;
-}
-
-/* Loading indicator */
 .paidLaborCostLoading {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 200px;
-  color: #666;
-  font-size: 12px;
-}
-
-/* Date range picker container */
-.paidLaborCostDateRangePicker {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-}
-
-/* Ensure date pickers are responsive */
-.paidLaborCostDateRangePicker > * {
-  flex-shrink: 1;
-}
-
-.paidLaborCostDatePicker {
-  padding: 6px 8px;
-  height: 38px;
-  box-sizing: border-box;
-  border: 1px solid var(--border-color, #ccc);
-  border-radius: 6px;
-  background-color: var(--section-bg);
-  color: var(--text-color);
-  font-size: 14px;
-  min-width: 130px;
-  max-width: 100%;
-  flex: 1 1 auto;
-}
-
-.paidLaborCostDateSeparator {
-  font-size: 14px;
-  color: var(--text-color);
-  white-space: nowrap;
-}
-
-/* Date Picker */
-
-.paid-labor-cost-custom-date-range-picker {
-  position: relative;
-  width: 100%;
-  overflow: visible;
-  max-width: 300px;
-  transition: all 0.3s ease-in-out;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-}
-
-.paid-labor-cost-date-range-input {
-  /* display: flex; */
-
-  /* justify-content: space-between; */
-  margin-top: 3px;
-
-  /* padding: 2px 4px; */
-
-  /* border: 1px solid #ddd; */
-  transition: border-color 0.2s;
-  flex: 1;
-  padding: 0.2rem 2.5rem 0.2rem 0.2rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background-color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 0.9rem;
-}
-
-.paid-labor-cost-date-range-input:hover {
-  border-color: #999;
-}
-
-.paid-labor-cost-date-range-text {
-  flex: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 12px;
-}
-
-.paid-labor-cost-date-range-icon {
-  margin-left: 8px;
-  opacity: 0.6;
-}
-
-.paid-labor-cost-date-range-calendar {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: auto;
-  width: max-content;
-  min-width: 250px;
-  max-width: 95vw;
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
-  z-index: 999;
-  overflow: hidden;
-  box-sizing: border-box;
-}
-
-.paid-labor-cost-calendar-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px;
-  background-color: #f8f8f8;
-  border-bottom: 1px solid #eee;
-}
-
-.paid-labor-cost-month-nav {
-  background: none;
-  border: none;
-  font-size: 16px;
-  cursor: pointer;
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-}
-
-.paid-labor-cost-month-nav:hover {
-  background-color: #eee;
-}
-
-.paid-labor-cost-current-month {
-  font-weight: 500;
-}
-
-.paid-labor-cost-calendar-weekdays {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
   text-align: center;
-  padding: 8px 0;
-  border-bottom: 1px solid #eee;
+  padding: 40px;
+  font-weight: 500;
+  color: #64748b;
 }
 
-.paid-labor-cost-weekday {
-  font-size: 12px;
-  color: #666;
-  padding: 4px 0;
+.darkMode .paidLaborCostLoading {
+  color: #94a3b8;
 }
 
-.paid-labor-cost-calendar-days {
+.filtersGrid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 2px;
-  padding: 4px;
+  grid-template-columns: 1fr 1fr 2fr; 
+  gap: 16px;
+  margin-bottom: 24px;
+  width: 100%;
+  align-items: flex-start;
 }
 
-.paid-labor-cost-day {
+@media (max-width: 900px) {
+  .filtersGrid {
+    grid-template-columns: 1fr; 
+  }
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  height: 100%;
+  gap: 6px;
+}
+
+.filterLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.darkMode .filterLabel {
+  color: #cbd5e1;
+}
+
+.dateRangeFlex {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 36px;
-  cursor: pointer;
-  border-radius: 50%;
+  gap: 12px;
+  width: 100%;
+}
+
+.datePickerWrapper {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+}
+
+.datePickerWrapper > div {
+  width: 100%;
+}
+
+.dateInput {
+  width: 100%;
+  padding: 8px 30px 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
   font-size: 13px;
-  transition: background-color 0.2s;
-  aspect-ratio: 1 / 1; /* Makes each day cell square */
-  min-height: 30px;
+  box-sizing: border-box;
+  height: 38px;
+  outline: none;
 }
 
-.paid-labor-cost-day.paid-labor-cost-current-month {
-  color: #333;
+.dateInput:focus {
+  border-color: #4285F4;
 }
 
-.paid-labor-cost-day.paid-labor-cost-other-month {
-  color: #ccc;
+.darkDateInput {
+  background-color: #253342;
+  color: #fff;
+  border-color: #2d4059;
+  color-scheme: dark;
 }
 
-.paid-labor-cost-day:hover:not(.disabled) {
-  background-color: #f0f0f0;
+.darkDateInput:focus {
+  border-color: #3a506b;
 }
 
-.paid-labor-cost-day.paid-labor-cost-start-date,
-.paid-labor-cost-day.paid-labor-cost-end-date {
-  background-color: #3498db;
-  color: var(--button-bg);
+.dateSeparator {
+  flex: 0 0 auto;
+  font-size: 13px;
+  font-weight: 500;
+  color: #64748b;
+  text-align: center;
 }
 
-.paid-labor-cost-day.in-range {
-  background-color: #e9f5ff;
+.darkMode .dateSeparator {
+  color: #94a3b8;
 }
 
-.paid-labor-cost-day.disabled {
-  color: #ddd;
-  cursor: not-allowed;
-  text-decoration: line-through;
+.paidLaborCostChartWrapper {
+  width: 100%;
+  min-height: 400px;
+  margin-bottom: 24px;
+  flex-grow: 1;
 }
 
-.paid-labor-cost-calendar-footer {
+.paidLaborCostChartContainer {
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+
+.emptyState {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  padding: 12px;
-  border-top: 1px solid #eee;
+  height: 100%;
+  color: #64748b;
+  font-style: italic;
+  font-size: 14px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px dashed #cbd5e1;
 }
 
-.paid-labor-cost-reset-button {
-  background: none;
-  border: none;
-  color: #3498db;
-  cursor: pointer;
+.darkMode .emptyState {
+  color: #94a3b8;
+  background-color: #1e293b;
+  border-color: #334155;
+}
+
+.summaryContainer {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: auto;
+  padding: 20px 16px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.darkSummaryContainer {
+  background-color: #1e293b;
+  border-color: #334155;
+}
+
+.summaryItem {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 150px;
+}
+
+.summaryLabel {
   font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.paid-labor-cost-reset-button:hover {
-  text-decoration: underline;
+.darkMode .summaryLabel {
+  color: #94a3b8;
 }
 
-.paid-labor-cost-selection-text {
-  font-size: 13px;
-  color: #666;
+.summaryValue {
+  font-size: 22px;
+  font-weight: 700;
 }
 
-@media screen and (width <= 1130px) {
-  .paid-labor-cost-custom-date-range-picker {
-    max-width: 100%;
-    min-width: auto;
-    flex: 1 1 100%;
-  }
+.varianceOver { color: #e74c3c !important; }
+.darkSummaryContainer .varianceOver { color: #ff5252 !important; }
 
-  .paid-labor-cost-date-range-calendar {
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
-    max-width: 95vw;
-  }
-}
+.varianceUnder { color: #2ecc71 !important; }
+.darkSummaryContainer .varianceUnder { color: #4ade80 !important; }
 
-/* Light mode reset for react-datepicker - overrides global dark styles from RentalChart.css */
+.varianceNeutral { color: #666666 !important; }
+.darkSummaryContainer .varianceNeutral { color: #ffffff !important; }
 
-/* 'paid-labor-cost-calendar' is always applied via calendarClassName prop */
 :global(.paid-labor-cost-calendar.react-datepicker) {
   background-color: #fff !important;
   border-color: #aeaeae !important;
@@ -358,16 +240,6 @@
   border-color: #ccc !important;
 }
 
-.dark-mode .paid-labor-cost-date-range-calendar {
-  background-color: var(--card-bg);
-  box-shadow: 0 4px 12px rgb(0 0 0 / 30%);
-}
-
-/* Dark mode styles for react-datepicker - applied via calendarClassName prop */
-
-/* The 'paid-labor-cost-dark-calendar' class is placed directly on the calendar element */
-
-/* so these selectors are exact and only activate when darkMode is true in React state */
 :global(.paid-labor-cost-dark-calendar.react-datepicker) {
   background-color: #253342 !important;
   border-color: #2d4059 !important;
@@ -388,35 +260,29 @@
   color: #fff !important;
 }
 
-/* Target ALL day cells */
 :global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__week .react-datepicker__day),
 :global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day) {
   color: #fff !important;
 }
 
-/* Current month days */
 :global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--current-month) {
   color: #fff !important;
 }
 
-/* Today's date */
 :global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--today) {
   color: #fff !important;
   font-weight: 600;
 }
 
-/* Weekend days */
 :global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--weekend) {
   color: #fff !important;
 }
 
-/* Hover state */
 :global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day:hover) {
   background-color: #3a506b !important;
   color: #fff !important;
 }
 
-/* Selected date */
 :global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--selected),
 :global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--keyboard-selected) {
   background-color: #e8a71c !important;
@@ -425,7 +291,7 @@
 }
 
 .dark-mode .paid-labor-cost-day.in-range {
-  background-color: rgb(232 167 28 / 20%); /* var(--button-bg) with opacity */
+  background-color: rgb(232 167 28 / 20%);
 }
 
 :global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--in-selecting-range) {
@@ -440,31 +306,6 @@
   font-weight: 600;
 }
 
-/* Disabled dates within current month */
-:global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--disabled:not(.react-datepicker__day--outside-month)) {
-  color: #fff !important;
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-/* Disabled dates outside current month */
-:global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--disabled.react-datepicker__day--outside-month) {
-  color: #888 !important;
-  cursor: not-allowed;
-  opacity: 0.4;
-}
-
-/* Outside month dates (not disabled) */
-:global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--outside-month:not(.react-datepicker__day--disabled)) {
-  color: #aaa !important;
-  opacity: 0.6;
-}
-
-/* Catch-all for any day cell not covered above */
-:global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__week .react-datepicker__day:not(.react-datepicker__day--disabled, .react-datepicker__day--outside-month)) {
-  color: #fff !important;
-}
-
 :global(.paid-labor-cost-dark-calendar .react-datepicker__navigation-icon::before) {
   border-color: #fff !important;
 }
@@ -474,7 +315,6 @@
   border-top-color: #fff !important;
 }
 
-/* Month and Year dropdowns */
 :global(.paid-labor-cost-dark-calendar .react-datepicker__month-dropdown),
 :global(.paid-labor-cost-dark-calendar .react-datepicker__year-dropdown) {
   background-color: #253342 !important;
@@ -506,14 +346,12 @@
   color: #fff !important;
 }
 
-/* Containers for native select elements */
 :global(.paid-labor-cost-dark-calendar .react-datepicker__month-dropdown-container),
 :global(.paid-labor-cost-dark-calendar .react-datepicker__year-dropdown-container),
 :global(.paid-labor-cost-dark-calendar .react-datepicker__month-year-dropdown-container) {
   background-color: transparent !important;
 }
 
-/* Native select elements for month and year in dropdown mode */
 :global(.paid-labor-cost-dark-calendar .react-datepicker__month-select),
 :global(.paid-labor-cost-dark-calendar .react-datepicker__year-select) {
   background-color: #253342 !important;
@@ -537,7 +375,6 @@
   box-shadow: 0 0 0 2px rgb(232 167 28 / 20%);
 }
 
-/* Option elements inside the select dropdowns */
 :global(.paid-labor-cost-dark-calendar .react-datepicker__month-select option),
 :global(.paid-labor-cost-dark-calendar .react-datepicker__year-select option) {
   background-color: #253342 !important;
@@ -545,7 +382,6 @@
   padding: 8px;
 }
 
-/* Time selector if used */
 :global(.paid-labor-cost-dark-calendar .react-datepicker__time-container) {
   border-left-color: #2d4059 !important;
 }
@@ -562,246 +398,24 @@
   background-color: #3a506b !important;
 }
 
-.paid-labor-cost-input-wrapper {
-  position: relative;
-  width: 100%;
-  margin-bottom: 0.25rem;
-  display: flex;
-  align-items: center;
+:global(.paid-labor-cost-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--disabled) {
+  color: #ccc !important;
+  background-color: transparent !important;
+  cursor: not-allowed !important;
 }
 
-/* .paid-labor-cost-date-range-input {
-  flex: 1;
-  padding: 0.2rem 2.5rem 0.2rem 0.2rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background-color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 0.9rem;
-} */
-
-.paid-labor-cost-info-wrapper {
-  position: absolute;
-  right: 6px;
-  top: 50%;
-  transform: translateY(-50%);
-  display: inline-flex;
-  align-items: center;
+:global(.paid-labor-cost-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--disabled:hover) {
+  color: #ccc !important;
+  background-color: transparent !important;
 }
 
-.paid-labor-cost-info-button {
-  width: 20px;
-  height: 20px;
-  border: none;
-  border-radius: 50%;
-  background-color: #007bff;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  padding: 0;
-  transition: background-color 0.2s;
+:global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--disabled) {
+  color: #475569 !important;
+  background-color: transparent !important;
+  cursor: not-allowed !important;
 }
 
-.paid-labor-cost-info-button:hover,
-.paid-labor-cost-info-button:focus {
-  background-color: #0056b3;
-}
-
-.paid-labor-cost-info-button:focus {
-  outline: 2px solid #fff;
-  outline-offset: 2px;
-}
-
-.paid-labor-cost-info-tooltip {
-  display: none;
-  position: absolute;
-  top: calc(100% + 2px);
-  right: 0;
-  width: 180px;
-  background: #fff;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 0.25rem;
-  box-shadow: 0 1px 4px rgb(0 0 0 / 10%);
-  font-size: 0.75rem;
-  color: #333;
-  z-index: 100;
-}
-
-.paid-labor-cost-info-wrapper:hover .paid-labor-cost-info-tooltip {
-  display: block;
-}
-
-.paid-labor-cost-info-tooltip::before {
-  content: '';
-  position: absolute;
-  top: -5px;
-  right: 10px;
-  border-width: 5px;
-  border-style: solid;
-  border-color: transparent transparent #fff;
-}
-
-@media (width <= 768px) {
-  /* Stack filters & inputs vertically when screen narrows */
-  .paid-labor-cost-input-wrapper {
-    flex-direction: column;
-    align-items: stretch;
-    margin-bottom: 0.75rem;
-  }
-
-  .paid-labor-cost-date-range-input {
-    padding: 0.5rem 2.5rem 0.5rem 0.75rem;
-    font-size: 0.9rem;
-  }
-
-  .paid-labor-cost-info-wrapper {
-    right: 6px;
-    top: 8px;
-    transform: none;
-  }
-}
-
-@media (width <= 480px) {
-  .paid-labor-cost-input-wrapper {
-    margin-bottom: 0.5rem;
-  }
-
-  /* Make the input fill full width */
-  .paid-labor-cost-date-range-input {
-    width: 100%;
-    padding: 0.4rem 2rem 0.4rem 0.75rem;
-    font-size: 0.85rem;
-  }
-
-  /* Shrink the info icon */
-  .paid-labor-cost-info-button {
-    width: 18px;
-    height: 18px;
-  }
-
-  /* Narrow the tooltip and adjust text */
-  .paid-labor-cost-info-tooltip {
-    width: 160px;
-    padding: 0.25rem 0.5rem;
-    font-size: 0.7rem;
-  }
-
-  .paid-labor-cost-info-tooltip::before {
-    right: 8px;
-    border-width: 4px;
-  }
-}
-
-/* Responsive label sizing */
-@media (width <= 768px) {
-  .paidLaborCostFilterLabel {
-    font-size: 14px;
-  }
-}
-
-@media (width <= 600px) {
-  /* Make date range picker fully vertical on small screens */
-  .paidLaborCostDateRangePicker {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .paidLaborCostDatePicker {
-    width: 100%;
-    min-width: 100%;
-  }
-
-  .paidLaborCostDateSeparator {
-    text-align: center;
-  }
-}
-
-@media (width <= 480px) {
-  .paidLaborCostFilterLabel {
-    font-size: 13px;
-  }
-
-  .paidLaborCostDatePicker {
-    font-size: 13px;
-    height: 36px;
-    padding: 4px 6px;
-  }
-
-  .paidLaborCostDateSeparator {
-    font-size: 13px;
-  }
-}
-
-/* This breakpoint is now merged below with other 768px rules */
-
-/* Chart wrapper - contains chart without horizontal scroll */
-.paidLaborCostChartWrapper {
-  width: 100%;
-  max-width: 100%;
-  overflow: visible;
-  background-color: var(--bg-color);
-  margin-bottom: 10px;
-  box-sizing: border-box;
-}
-
-/* Chart container - responsive sizing with fixed height */
-.paidLaborCostChartContainer {
-  width: 100%;
-  max-width: 100%;
-  height: 400px;
-  position: relative;
-  box-sizing: border-box;
-}
-
-/* Responsive chart heights */
-@media (width <= 1024px) {
-  .paidLaborCostChartContainer {
-    height: 350px;
-  }
-}
-
-@media (width <= 768px) {
-  .paidLaborCostChartContainer {
-    height: 300px;
-  }
-
-  .paidLaborCostSummary {
-    flex-direction: column;
-    gap: 8px;
-  }
-}
-
-@media (width <= 480px) {
-  .paidLaborCostChartContainer {
-    height: 250px;
-  }
-}
-
-/* Total Cost Summary Section */
-.paidLaborCostSummary {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-  margin-top: 20px;
-  padding: 16px;
-  text-align: center;
-}
-
-.paidLaborCostSummaryLabel {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--text-color);
-}
-
-.paidLaborCostSummaryValue {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--text-color);
+:global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--disabled:hover) {
+  color: #475569 !important;
+  background-color: transparent !important;
 }
