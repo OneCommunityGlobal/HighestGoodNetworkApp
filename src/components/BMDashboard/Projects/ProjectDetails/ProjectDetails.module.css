@@ -1,46 +1,60 @@
-.projectDetails {
+/* =========================================
+   PROJECT DETAILS MAIN LAYOUT
+========================================= */
+
+.project-details {
   text-align: center;
-  padding-top: 20px;
-  padding-left: 3%;
-  padding-right: 3%;
+  padding: 40px 3% 0; 
   font-weight: bold;
-  margin-bottom: 20px;
-  min-height: 100vh;
+  background-color: #f8f9fa;
+  color: #1a1a1a;
 }
 
-.darkMode .projectDetails {
-  background-color: #1b2a41;
-  color: white;
+.project-details-dark {
+  text-align: center;
+  padding: 40px 3% 0; 
+  font-weight: bold;
+  background-color: #1c1e1c;
+  color: #fff;
 }
-.projectDetailsTitle {
+
+/* Titles */
+.project-details-title {
   font-size: 1.5rem;
-  overflow: hidden;
-}
-
-.darkMode .projectDetailsTitle {
   color: white;
-  background-color: #1b2a41;
+  text-align: center;
 }
 
-/* styling for the logBar component */
-.logBar {
+.project-details-title-dark {
+  font-size: 1.5rem;
+  color: #fff;
+}
+
+.project-details h1 {
+    color: black;
+}
+
+/* =========================================
+   LOG BAR SECTION
+========================================= */
+
+.log-bar,
+.log-bar-dark {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   width: 100%;
-  background-color: #f9fafb;
-  border-radius: 8px;
-  border: 1px solid #eaeeef;
 }
 
-.darkMode .logBar {
-  background-color: #2e5061;
-  border: 1px solid #4b5563;
+.log-bar {
+  background-color: #fff;
+  color: #333;
 }
 
-.darkMode .logBarSection h2 {
-  color: #f1f5f9;
+.log-bar-dark {
+  background-color: #1b2a41;
+  color: #fff;
 }
 
 .logBarSection {
@@ -49,82 +63,64 @@
   background-color: transparent;
 }
 
-.logBarSection h2,
-.cardsContainer h2,
-.projectLog h2 {
-  margin-top: 0.5em;
+/* Section titles */
+.log-bar__section h2,
+.card.cards-container h2,
+.project-log h2 {
   font-size: 1em;
   margin-bottom: 1em;
   font-weight: bold;
 }
 
-.logBarSection ul {
+.log-bar-dark .log-bar__section h2,
+.log-bar-dark .card.cards-container h2,
+.log-bar-dark .project-log h2 {
+  color: #fff !important;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 50%);
+}
+
+/* Buttons list */
+.log-bar__section ul {
   list-style-type: none;
-}
-
-.logBarBtnGroup {
   padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5em;
-  justify-content: center;
-  align-items: center;
 }
 
-/* Base */
-.buttonBtn {
+/* Buttons */
+.button.btn {
   border: 0;
   border-radius: 10px;
-  padding: 0.5em 1em;
-  cursor: pointer;
-  transition: transform 0.2s ease, filter 0.2s ease;
-  min-width: 100px;
-  color: #fff;
+  margin: 0.1em;
+  width: 100%;
+  color: #fff !important;
+  font-weight: 500;
+  transition: filter 0.2s ease;
 }
 
-/* LIGHT MODE hover */
-.buttonBtn:hover {
-  color: #fff; /* prevent blue text */
-  text-decoration: none;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45); /* prevent underline */
+.button.btn:hover {
+  outline: auto;
+  filter: brightness(130%);
 }
 
-/* LIGHT MODE COLORS */
-.green {
-  background-color: #015d4a;
+/* Button colors */
+.button--green {
+  background-color: #015d4a !important;
 }
 
-.blue {
-  background-color: #0f6386;
+.button--blue {
+  background-color: #0f6386 !important;
 }
 
-.indigo {
-  background-color: #203844;
+.button--indigo {
+  background-color: #203844 !important;
 }
 
-.maroon {
-  background-color: #980101;
-}
 
-/* DARK MODE COLORS */
-.darkMode .green {
-  background-color: #014d3d;
-}
+/* =========================================
+   RESPONSIVE LOG BAR
+========================================= */
 
-.darkMode .blue {
-  background-color: #0b4c6a;
-}
-
-.darkMode .indigo {
-  background-color: #1b2f44;
-}
-
-.darkMode .maroon {
-  background-color: #7a0101;
-}
-
-@media (min-width: 550px) {
-  .logBar {
+@media (width >= 550px) {
+  .log-bar {
     flex-direction: column;
   }
 
@@ -132,21 +128,17 @@
     margin-top: -0.5em;
     display: flex;
     justify-content: center;
+    gap:5px;
   }
 
-  .buttonBtn.btnSecondary {
+  .button.btn {
     width: auto;
-  }
-
-  .buttonBtn.btnSecondary.maroon {
-    margin-top: auto;
   }
 }
 
-@media (min-width: 880px) {
-  .logBar {
-    flex-direction: row;
-    flex-wrap: wrap;
+@media (width >= 880px) {
+  .log-bar {
+    flex-flow: row wrap;
     justify-content: center;
   }
 
@@ -155,22 +147,19 @@
     flex: auto;
   }
 
-  .buttonBtn.btnSecondary {
-    width: auto;
-  }
-
-  .buttonBtn.btnSecondary.maroon {
-    margin-left: 2em;
-  }
 }
 
-.cardsContainer {
+/* =========================================
+   CARDS (TOOLS & MATERIALS)
+========================================= */
+
+.card.cards-container {
   align-items: center;
   margin: 1em 2em;
   padding: 1em;
   width: auto;
   max-width: 100%;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .darkMode .cardsContainer {
@@ -179,17 +168,20 @@
   border: 1px solid #4b5563;
 }
 
-.darkMode .cardsContainer h2 {
-  color: #60a5fa;
-}
-
-.singleCard {
+/* Individual cards */
+.single-card {
   border: 1px solid #eaeeef;
   border-radius: 5px;
   text-align: center;
   cursor: pointer;
   transition: box-shadow 0.3s, transform 0.3s;
-  overflow: hidden;
+  margin: 10px auto !important;
+  overflow: visible;
+}
+
+.single-card:hover {
+  box-shadow: 0 20px 20px rgb(0 0 0 / 20%), 0 6px 20px rgb(0 0 0 / 20%);
+  transform: translate3d(0.5px, 0.5px, 0.5px);
 }
 
 .darkMode .singleCard {
@@ -199,30 +191,29 @@
 }
 
 .singleCard:hover {
-  box-shadow: 0 20px 20px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2);
+  box-shadow: 0 20px 20px 0 rgb(0 0 0 / 20%), 0 6px 20px 0 rgb(0 0 0 / 20%);
   transform: translate3d(0.5px, 0.5px, 0.5px);
 }
 
 .darkMode .singleCard:hover {
-  box-shadow: 0 20px 20px 0 rgba(0, 0, 0, 0.4), 0 6px 20px 0 rgba(0, 0, 0, 0.4);
+  box-shadow: 0 20px 20px 0 rgb(0 0 0 / 40%), 0 6px 20px 0 rgb(0 0 0 / 40%);
 }
 
 .singleCardImg {
   width: 100%;
-  height: auto;
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
+  background-color: #fff;
+  border-radius: 5px 5px 0 0;
 }
 
-.singleCardImg img {
-  max-width: 100%;
-  height: auto;
-  object-fit: contain;
+.single-card__img img {
+  width: 100%;
+  object-fit: cover;
 }
 
-.singleCardBody {
+.single-card__body {
   margin-top: 0.5em;
   padding: 0.5em;
 }
@@ -232,7 +223,8 @@
   margin-bottom: -0.2em;
 }
 
-.singleCardInfo {
+/* Card badge */
+.single-card__info {
   font-size: 0.5rem;
   padding: 1em;
   margin: 0.5em;
@@ -240,113 +232,201 @@
   background-color: #f2c897;
 }
 
-.darkMode .singleCardInfo {
-  background-color: #92400e;
-  color: #fef3c7;
+/* =========================================
+   CARD WRAPPERS (TOOLS + MATERIALS)
+========================================= */
+
+.sectionCardWrapper {
+  background-color: var(--card-bg, #fff);
+  padding: 18px 12px;
+  border-radius: 10px;
+  min-height: 100%;
+  text-align: center;
+  box-shadow: 0 4px 10px rgb(0 0 0 / 8%);
 }
 
-/* cards container content */
-.cardsContainerContent {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  gap: 10px;
+.project-details-dark .sectionCardWrapper {
+  --card-bg: #243447;
+
+  box-shadow: 0 4px 10px rgb(0 0 0 / 40%);
 }
 
-/* project log table */
-.projectLog {
+.sectionCardWrapper h2 {
+  margin-bottom: 15px !important;
+}
+
+/* =========================================
+   MEMBERS TABLE WRAPPER
+========================================= */
+
+.memberLogWrapper {
+  margin: 25px 0 40px;
+  padding: 20px 15px;
+  background-color: var(--member-bg, #fff);
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgb(0 0 0 / 8%);
+}
+
+/* Dark Mode Variables */
+.project-details-dark .memberLogWrapper {
+  --member-bg: #243447;
+  --member-header-bg: #31445c;
+  --member-row-bg: #2f3d4f;
+  --member-header-text: #fff;
+
+  box-shadow: 0 4px 12px rgb(0 0 0 / 45%);
+}
+
+/* Section Title */
+.memberLogWrapper h2 {
+  margin-bottom: 18px !important;
+}
+
+/* =========================================
+   TABLE BASE
+========================================= */
+
+.memberLogWrapper table {
   width: 100%;
-  font-weight: lighter;
+  display: block;
+  overflow-x: auto;
   white-space: nowrap;
-  border-radius: 8px;
+  border-collapse: separate;
+  border-spacing: 0 6px;
+
+  /* space between rows */
 }
 
-.darkMode .projectLog {
-  background-color: #374151;
-  color: #e5e7eb;
+/* =========================================
+   TABLE HEADER
+========================================= */
+
+.memberLogWrapper table thead tr th {
+  padding: 12px;
+  font-size: 0.9rem;
+  text-align: left;
+
+  /* Default + variable fallback */
+  background-color: var(--member-header-bg, #f0f6ff);
+  color: var(--member-header-text, #333);
+  border-bottom: 2px solid #dbe6f9;
 }
 
-.darkMode .projectLog thead {
-  background-color: #4b5563;
-  color: #e5e7eb;
+/* Dark mode border override */
+.project-details-dark .memberLogWrapper table thead tr th {
+  background-color: var(--member-header-bg, #476078);
+  border-bottom: 2px solid #476078 !important;
 }
 
-.darkMode .projectLog td,
-.darkMode .projectLog th {
-  color: #e5e7eb;
+/* =========================================
+   TABLE BODY ROWS
+========================================= */
+
+.memberLogWrapper table tbody tr td {
+  padding: 10px 12px;
+  font-size: 0.9rem;
+  background-color: var(--member-row-bg, #fff);
+  color: var(--member-row-text, #333);
+  border-radius: 6px;
 }
 
-.darkMode .projectLog thead:hover {
-  background-color: #6b7280;
-  color: #f8fafc;
+/* Dark mode text for rows */
+.project-details-dark .memberLogWrapper table tbody tr td {
+  --member-row-text: #e8edf4;
 }
 
-@media (min-width: 992px) {
+/* =========================================
+   RESPONSIVE CARD GRID
+========================================= */
+
+@media (width >= 992px) {
   .singleCard {
     width: calc(33.333% - 20px);
     max-width: 180px;
-    margin-bottom: 15px;
   }
 }
 
-@media (min-width: 576px) and (max-width: 991px) {
+@media (width >= 576px) and (width <= 991px) {
   .singleCard {
     width: calc(50% - 15px);
     max-width: 180px;
-    margin-bottom: 15px;
   }
 }
 
-@media (max-width: 575px) {
+
+@media (width <= 575px) {
   .singleCard {
     width: 90%;
     max-width: 180px;
-    margin-bottom: 15px;
+  }
+
+  .sectionCardWrapper {
+    padding: 15px 8px;
+  }
+
+  .memberLogWrapper {
+    padding: 12px 8px;
+  }
+
+  .project-details h1 {
+    font-size: 1.4rem;
+  }
+
+  .dashboardHeader {
+    font-size: 1rem !important;
+    padding: 6px 14px !important;
+    min-width: 200px !important;
+  }
+
+  .button.btn {
+    width: 100% !important;
+    font-size: 0.85rem;
+    padding: 8px;
   }
 }
 
-@media (max-width: 768px) {
-  .projectLog td,
-  .projectLog th {
+/* Two columns stack */
+@media (width <= 768px) {
+  .toolsMaterialRow {
+    flex-direction: column;
+  }
+
+  .sectionCardWrapper {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+}
+
+/* =========================================
+   PROJECT LOG TABLE (LEGACY STYLES)
+========================================= */
+
+.project-log {
+  margin: 2em;
+  padding: 1em 2em;
+  width: 100%;
+  font-weight: lighter;
+  white-space: nowrap;
+}
+
+.project-log thead {
+  background-color: transparent;
+}
+
+.project-log-table td,
+.project-log-table th {
+  padding: 12px !important;
+  text-align: center;
+}
+
+@media (width <= 768px) {
+  .project-log td,
+  .project-log th {
     font-size: 0.6em;
   }
 }
 
-ul.logBarBtnGroup {
-  padding: 5;
-} /* Row containing the RentedTools and Materials columns */
-
-/* Each column within the cardsRow */
-.cardsRow {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between; /* spread out columns */
-  gap: 1.5em;
-  margin-top: 2em;
-}
-
-.cardsCol {
-  flex: 1 1 45%; /* occupy roughly half of the row */
-  min-width: 350px; /* don't shrink too small */
-}
-
-/* Optional wrapper for padding/background */
-.cardsCol > * {
-  padding: 1em;
-  border-radius: 8px;
-  background-color: #f9fafb;
-}
-
-.darkMode .cardsCol > * {
-  background-color: #4b5563;
-  color: #e5e7eb;
-}
-
-@media (max-width: 992px) {
-  .cardsCol {
-    flex: 1 1 100%; /* stack on smaller screens */
-    min-width: unset;
-  }
+ul.log-bar__btn-group {
+  gap:5px;
+  padding: 0px;
 }

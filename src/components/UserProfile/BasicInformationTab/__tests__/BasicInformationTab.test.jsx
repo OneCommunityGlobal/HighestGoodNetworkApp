@@ -6,7 +6,7 @@ import BasicInformationTab, { Name, Title, Email, formatPhoneNumber, Phone, Time
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { toast } from 'react-toastify';
 import thunk from 'redux-thunk';
-import { configureStore } from 'redux-mock-store';
+import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import mockAdminState from '__tests__/mockAdminState';
 
