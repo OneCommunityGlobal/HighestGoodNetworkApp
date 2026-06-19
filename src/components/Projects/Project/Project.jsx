@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { ARCHIVE } from './../../../languages/en/ui';
-// old CSS removed
-// import './../projects.css';
+import { UNARCHIVE, ARCHIVE } from './../../../languages/en/ui';
 import styles from './../projects.module.css';
 import { Link } from 'react-router-dom';
 import { NavItem } from 'reactstrap';
@@ -199,7 +197,12 @@ const Project = props => {
         </td>
 
         <td>
-          <NavItem tag={Link} to={`/project/wbs/${projectId}`}>
+          <NavItem tag={Link} to={{
+            pathname: `/project/wbs/${projectId}`,
+            state: props.taskSelectionMode
+              ? { taskSelectionMode: true, returnPath: props.taskSelectionReturnPath }
+              : undefined,
+          }}>
             <button
               type="button"
               className="btn btn-outline-info"
@@ -213,14 +216,14 @@ const Project = props => {
         {canDeleteProject ? (
           <td>
             <button
-              data-testid="delete-button"
-              type="button"
-              className="btn btn-outline-danger"
-              style={darkMode ? { borderColor: '#D2042D' } : boxStyle}
-              onClick={onArchiveProject}
-            >
-              {ARCHIVE}
-            </button>
+            data-testid="delete-button"
+            type="button"
+            className="btn btn-outline-danger"
+            style={darkMode ? { borderColor: '#D2042D' } : boxStyle}
+            onClick={onArchiveProject}
+          >
+            {projectData?.isArchived ? UNARCHIVE : ARCHIVE}
+          </button>
           </td>
         ) : null}
     </tr>
@@ -246,6 +249,8 @@ Project.propTypes = {
   onClickArchiveBtn: PropTypes.func,
   projectId: PropTypes.string,
   activeMemberCounts: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  taskSelectionMode: PropTypes.bool,
+  taskSelectionReturnPath: PropTypes.string,
 };
 
 // Default props
@@ -259,6 +264,8 @@ Project.defaultProps = {
   onClickArchiveBtn: () => {},
   projectId: '',
   activeMemberCounts: '',
+  taskSelectionMode: false,
+  taskSelectionReturnPath: '',
 };
 
 const mapStateToProps = state => state;

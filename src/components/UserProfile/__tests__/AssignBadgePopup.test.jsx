@@ -1,6 +1,6 @@
 import { render, fireEvent, waitFor, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { configureStore } from 'redux-mock-store'; // If using Redux
+import configureStore from 'redux-mock-store'; // If using Redux
 import MockAssignTableRow from '../MockData/MockAssignTableRow';
 import AssignBadgePopup from '../AssignBadgePopup';
 import { themeMock } from '__tests__/mockStates';
