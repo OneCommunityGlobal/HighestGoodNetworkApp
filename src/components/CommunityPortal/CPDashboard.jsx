@@ -51,8 +51,12 @@ const eventShape = PropTypes.shape({
 });
 
 // Helper: combine base and dark variant class names
-const cx = (base, darkMode) =>
-  darkMode ? `${styles[base]} ${styles[`${base}-dark`]}` : styles[base];
+const cx = (base, darkMode) => {
+  const baseClass = styles[base];
+  if (!darkMode) return baseClass;
+  const darkClass = styles[`${base}-dark`];
+  return `${baseClass} ${darkClass}`;
+};
 
 const formatDate = dateStr => {
   if (!dateStr) return 'Date TBD';
