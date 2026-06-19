@@ -4,9 +4,7 @@ import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { ENDPOINTS } from '~/utils/URL';
-// import PermissionList from '~/components/PermissionsManagement/PermissionList';
 import { boxStyle, boxStyleDark } from '~/styles';
-// import permissions from '../PermissionsManagement/Permissions.json';
 import { permissionLabelKeyMappingObj } from '../PermissionsManagement/PermissionsConst';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
 
@@ -51,28 +49,7 @@ export default function RoleChangePermissionsModal({
     }));
   }, [isOpen]);
 
-  // function buildPermissionMap(permissions, map = {}) {
-  //   for(const permission of permissions) {
-  //     if(permission.key) {
-  //       map[permission.key] = permission.label;
-  //     }
-
-  //     if(permission.subperms) {
-  //       buildPermissionMap(permission.subperms, map);
-  //     }
-  //   }
-
-  //   return map
-  // }
-
   const getRemovedDefaults = roleName => removedDefaultsByRole[roleName] || initialRemovedDefaults;
-  // const setRemovedDefaultsForRole = roleName => updater => {
-  //   setRemovedDefaultsByRole(current => {
-  //     const currentList = current[roleName] || initialRemovedDefaults;
-  //     const nextList = typeof updater === 'function' ? updater(currentList) : updater;
-  //     return { ...current, [roleName]: nextList };
-  //   });
-  // };
   const [keptFrontPermissions, setKeptFrontPermissions] = useState([]);
   const [keptRemovedPermissions, setKeptRemovedPermissions] = useState([]);
 
@@ -121,7 +98,7 @@ export default function RoleChangePermissionsModal({
       await axios.patch(permissionURL, permissionData)
 
       loadUserProfile();
-      toast.success('Role and permissions updated');
+      toast.success('Your changes have been saved, you can verify it in Permissions Management');
       onClose();
     } catch (err) {
       toast.error(`Failed to update role/permissions${err?.response?.data ? `: ${err.response.data}` : ''}`);
