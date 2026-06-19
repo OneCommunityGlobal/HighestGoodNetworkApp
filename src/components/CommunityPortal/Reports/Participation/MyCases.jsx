@@ -20,13 +20,10 @@ function MyCases() {
     event => new Date(event.eventDate).getTime() >= now.getTime(),
   );
 
-  // Sonar: extract nested ternary into independent statement
+  // Limit to 10 events by default, but show all when expanded.
   let visibleEvents = filteredEvents;
   if (!isExporting) {
-    // Limit to 10 events by default, but show all when expanded.
-    visibleEvents = expanded
-      ? filteredEvents.slice(0, filteredEvents.length)
-      : filteredEvents.slice(0, 10);
+    visibleEvents = expanded ? filteredEvents : filteredEvents.slice(0, 10);
   }
 
   const placeholderAvatar = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
