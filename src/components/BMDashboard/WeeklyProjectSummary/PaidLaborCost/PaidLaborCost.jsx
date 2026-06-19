@@ -179,7 +179,7 @@ export default function PaidLaborCost() {
   const [totalCost, setTotalCost] = useState(0);
   const [loading, setLoading] = useState(true);
   const darkMode = useSelector(state => state.theme.darkMode);
-  const textColor = darkMode ? '#ffffff' : '#666';
+  const textColor = darkMode ? '#ffffff' : '#333';
   // Filter States
   const [taskFilter, setTaskFilter] = useState([]); // Array of selected task names, empty = all tasks
   const [projectFilter, setProjectFilter] = useState('All Projects');
