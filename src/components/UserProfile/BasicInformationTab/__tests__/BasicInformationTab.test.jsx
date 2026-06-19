@@ -45,6 +45,10 @@ describe('Test Suite for Name component', () => {
     setFormValid: vi.fn(),
     canEdit: true,
     desktopDisplay: 3,
+    authUser: {
+      requestorId: '123',
+      requestorRole: 'Owner',
+    },
   };
   it('Test case 1 : Name component renders with editable fields when canEdit is true ', () => {
     render(<Name {...testProps} />);
@@ -99,6 +103,10 @@ describe('Test Suite for Title component', () => {
    setUserProfile: vi.fn(),
    canEdit: true,
    desktopDisplay: 3,
+   authUser: {
+      requestorId: '123',
+      requestorRole: 'Owner',
+    },
  };
  it('Test case 1 : Title component renders with editable fields when canEdit is true ', () => {
    render(<Title {...testProps} />);
@@ -136,6 +144,10 @@ describe('Test Suite for Email component', () => {
    canEdit: true,
    desktopDisplay: true,
    handleUserProfile:vi.fn(),
+   authUser: {
+      requestorId: '123',
+      requestorRole: 'Owner',
+    },
  };
 
  it('Test case 1 : Email component renders with editable fields when canEdit is true ', () => {
@@ -187,6 +199,10 @@ it('Test case 5 : Verify  if email is not displayed if privacy settings is false
     canEdit: true,
     desktopDisplay: true,
     handleUserProfile:vi.fn(),
+    authUser: {
+      requestorId: '123',
+      requestorRole: 'Owner',
+    },
   };  render(<Email {...testProps} />);
   
   expect(screen.queryByText(testProps.userProfile.email)).not.toBeInTheDocument();
@@ -222,6 +238,10 @@ describe('Test Suite for Phone component', () => {
    canEdit: true,
    desktopDisplay: true,
    handleUserProfile:vi.fn(),
+   authUser: {
+      requestorId: '123',
+      requestorRole: 'Owner',
+    },
  };
 
  it('Test case 1 : Phone component renders with editable fields when canEdit is true ', () => {
@@ -251,6 +271,10 @@ it('Test case 3 : Verify  if phone number  is not displayed if privacy settings 
     canEdit: true,
     desktopDisplay: true,
     handleUserProfile:vi.fn(),
+    authUser: {
+      requestorId: '123',
+      requestorRole: 'Owner',
+    },
   };  
   render(<Phone {...testProps} />);
   
@@ -287,6 +311,10 @@ describe('Test suite for TimeZoneDifference component ', () => {
     userProfile: {
       timeZone: 'America/New_York',
     },
+    authUser: {
+      requestorId: '123',
+      requestorRole: 'Owner',
+    },
   };
 
  
@@ -317,6 +345,10 @@ it('Test case 3 : Renders error message if the component has encountered error f
     userProfile: {
       timeZone: 'Invalid/Timezone', // Use an invalid timezone to trigger error
     },
+    authUser: {
+      requestorId: '123',
+      requestorRole: 'Owner',
+    },
   };
  
     render(<TimeZoneDifference {...testProps} />);
@@ -338,6 +370,10 @@ it('Test case 4: Does not render error message if errorOccurred is true', () => 
     desktopDisplay: true,
     userProfile: {
       timeZone: 'Invalid/Timezone',
+    },
+    authUser: {
+      requestorId: '123',
+      requestorRole: 'Owner',
     },
   };
 
@@ -368,7 +404,10 @@ let testProps= {
      handleUserProfile:vi.fn(),
      roles:['Admin','Owner','Volunteer','Manager'],
      canEditRole:true,
-   
+     authUser: {
+      requestorId: '123',
+      requestorRole: 'Owner',
+    },
    };
   
 
@@ -505,7 +544,7 @@ it('Test case 9: Renders the role  component with a combo box  when canEditRole 
     </Provider>,
   );
   expect(screen.getByText("Role")).toBeInTheDocument(); // Label
-  expect(screen.getByRole('combobox')).toBeInTheDocument(); // combo box
+  expect(screen.getByRole('button', { name: 'Manage Role & Permissions' })).toBeInTheDocument(); // Role Modal button
 });
 it('Test case 10 : Does not render a combo box for role component   when canEditRole is false', () => {
   testProps.canEditRole=false;
