@@ -7,12 +7,12 @@ import { filterEventsByDate } from './FilterByDate';
 
 function MyCases() {
   const [view, setView] = useState('card');
-  const [filter, setFilter] = useState('all');
+  const [filter, setFilter] = useState('All Time');
   const [expanded, setExpanded] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const isExporting =
-    typeof document !== 'undefined' && document.documentElement?.dataset?.exporting === 'true'; // Sonar: prefer .
+    typeof document !== 'undefined' && document.documentElement?.dataset?.exporting === 'true';
 
   const darkMode = useSelector(state => state.theme.darkMode);
 
@@ -20,19 +20,15 @@ function MyCases() {
 
   const filteredEventsByEventType = filteredEvents.filter(event => {
     if (event.eventType === 'all') {
-      return true; // Simplified: just return true to keep the item
-    } else {
-      return event.eventType === filter;
+      return true;
     }
+    return event.eventType === filter;
   });
 
-  // Sonar: extract nested ternary into independent statement
   let visibleEvents = filteredEventsByEventType;
+
   if (!isExporting) {
-    // Limt to 10 events by default, but show all if when user clicks "More" or when exporting
-    visibleEvents = expanded
-      ? filteredEvents.slice(0, filteredEvents.length)
-      : filteredEvents.slice(0, 10);
+    visibleEvents = expanded ? filteredEventsByEventType : filteredEventsByEventType.slice(0, 10);
   }
 
   const placeholderAvatar = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
@@ -180,7 +176,7 @@ function MyCases() {
           >
             + Create New
           </button>
-          {filteredEvents.length > 10 && !isExporting && (
+          {filteredEventsByEventType.length > 10 && !isExporting && (
             <button
               type="button"
               className={`more-btn-global ${styles.moreBtn}`}
