@@ -1031,6 +1031,8 @@ const BasicInformationTab = props => {
         setUserProfile={setUserProfile}
         loadUserProfile={loadUserProfile}
         authUser={authUser}
+        desktopDisplay={desktopDisplay}
+        canAddDeleteEditOwners={canAddDeleteEditOwners}
       />
     </div>
   );

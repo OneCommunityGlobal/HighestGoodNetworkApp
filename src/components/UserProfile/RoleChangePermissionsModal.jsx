@@ -1,26 +1,29 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader, Input } from 'reactstrap';
-import { useSelector } from 'react-redux';
+import { useSelector, connect } from 'react-redux';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { ENDPOINTS } from '~/utils/URL';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { permissionLabelKeyMappingObj } from '../PermissionsManagement/PermissionsConst';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
+import PropTypes from 'prop-types';
 
 /**
  * RoleChangePermissionsModal
  * - Allows admins to switch a user's role and adjust custom permission overrides in one flow
  */
-export default function RoleChangePermissionsModal({
-  isOpen,
-  onClose,
-  roles = [],
-  userProfile,
-  loadUserProfile,
-  authUser
-}) {
-
+function RoleChangePermissionsModal(props) {
+  const {
+    isOpen,
+    onClose,
+    roles = [],
+    userProfile,
+    loadUserProfile,
+    authUser,
+    desktopDisplay,
+    canAddDeleteEditOwners,
+  } = props;
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const roleNameToDefaults = useMemo(() => {
@@ -101,7 +104,8 @@ export default function RoleChangePermissionsModal({
       toast.success('Your changes have been saved, you can verify it in Permissions Management');
       onClose();
     } catch (err) {
-      toast.error(`Failed to update role/permissions${err?.response?.data ? `: ${err.response.data}` : ''}`);
+      const errorData = `: ${err.response.data}`
+      toast.error(`Failed to update role/permissions${err?.response?.data ? errorData : ''}`);
     } finally {
       setSaving(false);
     }
@@ -110,7 +114,7 @@ export default function RoleChangePermissionsModal({
   const boxStyling = darkMode ? boxStyleDark : boxStyle;
 
   const updateSelectedRole = (newRole) => {
-    const selectedRole2 = roles.filter(r => r.roleName === newRole)[0]
+    const selectedRole2 = roles.find(r => r.roleName === newRole)
     if(!selectedRole2) return
     const roleDefaults = roleNameToDefaults[newRole] || [];
 
@@ -120,7 +124,7 @@ export default function RoleChangePermissionsModal({
   }
 
   const selectedRoleToDisplay = () => {
-    const selectedRole2 = roles.filter(r => r.roleName === selectedRole)[0]
+    const selectedRole2 = roles.find(r => r.roleName === selectedRole)
     if(!selectedRole2) return
     const roleDefaults = roleNameToDefaults[selectedRole2.roleName] || [];
     const removedDefaults = getRemovedDefaults(selectedRole2.roleName)
@@ -136,7 +140,7 @@ export default function RoleChangePermissionsModal({
             </div>
           </div>
           {userCustomPermissions
-            .filter(perms => {
+            .some(perms => {
               return !roleDefaults.includes(perms)
             }).length > 0
             && <h4>Added Permissions:</h4>}
@@ -156,7 +160,7 @@ export default function RoleChangePermissionsModal({
               );
           })}
           {removedDefaults
-            .filter(perms => {
+            .some(perms => {
               return roleDefaults.includes(perms)
             }).length > 0 
             && <h4>Removed Permissions:</h4>}
@@ -181,55 +185,87 @@ export default function RoleChangePermissionsModal({
   }
 
   return (
-    <>
-      <Modal isOpen={isOpen} toggle={onClose} className={darkMode ? 'dark-mode text-light' : ''} size="lg">
-        <ModalHeader toggle={onClose} style={{}} className={darkMode ? 'bg-space-cadet' : ''}>
-          <div style={{display: 'flex', gap: '10px'}}>
-            Manage Role & Permissions
-            <EditableInfoModal
-              role={authUser.requestorRole}
-              areaName={'roleChangeInfo'}
-              areaTitle="Role Change"
-              fontSize={20}
-              darkMode={darkMode}
-            />
-          </div>
-        </ModalHeader>
-        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-          <div style={{ marginBottom: 12 }}>
-            <label htmlFor="roleSelect" className={darkMode ? 'text-light' : ''}>
-              Role
-            </label>
-            <Input
-              type="select"
-              id="roleSelect"
-              value={selectedRole}
-              onChange={e => updateSelectedRole(e.target.value)}
-              className={darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}
-            > 
-              {roles.map(r => (
-                <option key={r.roleName} value={r.roleName}>
-                  {r.roleName}
-                </option>
-              ))}
-            </Input>
-          </div>
+    <Modal isOpen={isOpen} toggle={onClose} className={darkMode ? 'dark-mode text-light' : ''} size="lg">
+      <ModalHeader toggle={onClose} style={{}} className={darkMode ? 'bg-space-cadet' : ''}>
+        <div style={{display: 'flex', gap: '10px'}}>
+          Manage Role & Permissions
+          <EditableInfoModal
+            role={authUser.requestorRole}
+            areaName={'roleChangeInfo'}
+            areaTitle="Role Change"
+            fontSize={20}
+            darkMode={darkMode}
+          />
+        </div>
+      </ModalHeader>
+      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <div style={{ marginBottom: 12 }}>
+          <label htmlFor="roleSelect" className={darkMode ? 'text-light' : ''}>
+            Role
+          </label>
+          <Input
+            type="select"
+            id="roleSelect"
+            value={selectedRole}
+            onChange={e => updateSelectedRole(e.target.value)}
+            className={darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}
+          > 
+            {canAddDeleteEditOwners && (
+              <option value="Owner" style={desktopDisplay ? { marginLeft: '5px' } : {}}>
+                Owner
+              </option>
+            )}
+            {(roles || [])
+              .map(r => (typeof r === 'string' ? r : r.roleName)) // normalize
+              .filter(Boolean)
+              .map(roleName => {
+                if (roleName === 'Owner') return null; // skip Owner in this list
+                return (
+                  <option key={roleName} value={roleName}>
+                    {roleName}
+                  </option>
+                );
+            })}
+          </Input>
+        </div>
 
-          <div>
-            {isOpen && selectedRoleToDisplay()}
-          </div>
-        </ModalBody>
-        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-          <Button onClick={onClose} style={boxStyling} disabled={saving}>
-            Cancel
-          </Button>
-          <Button color="success" onClick={handleConfirm} style={boxStyling} disabled={saving || userProfile?.role === selectedRole}>
-            {saving ? 'Saving...' : 'Confirm'}
-          </Button>
-        </ModalFooter>
-      </Modal>
-    </>
+        <div>
+          {isOpen && selectedRoleToDisplay()}
+        </div>
+      </ModalBody>
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <Button onClick={onClose} style={boxStyling} disabled={saving}>
+          Cancel
+        </Button>
+        <Button color="success" onClick={handleConfirm} style={boxStyling} disabled={saving || userProfile?.role === selectedRole}>
+          {saving ? 'Saving...' : 'Confirm'}
+        </Button>
+      </ModalFooter>
+    </Modal>
   );
 }
 
+RoleChangePermissionsModal.PropTypes = {
+  isOpen: PropTypes.bool,
+  onClose: PropTypes.func.isRequired,
+  roles: PropTypes.arrayOf(
+    PropTypes.shape({
+      roleName: PropTypes.string,
+    })
+  ),
+  userProfile: PropTypes.shape({
+    role: PropTypes.string,
+    permissions: PropTypes.shape({
+      frontPermissions: PropTypes.array,
+      removedDefaultPermissions: PropTypes.array,
+    }),
+    _id: PropTypes.number,
+  }).isRequired,
+  loadUserProfile: PropTypes.func.isRequired,
+  authUser: PropTypes.shape({
+    requestId: PropTypes.number,
+    requestorRole: PropTypes.string
+  })
+}
 
+export default RoleChangePermissionsModal;
