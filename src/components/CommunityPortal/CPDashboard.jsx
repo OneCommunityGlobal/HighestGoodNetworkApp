@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import { useState, useEffect, useMemo } from 'react';
+import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { Container, Row, Col, Card, CardBody, Button, Input, Label } from 'reactstrap';
 import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt, FaSearch, FaTimes } from 'react-icons/fa';
@@ -7,7 +8,7 @@ import styles from './CPDashboard.module.css';
 import { ENDPOINTS } from '../../utils/URL';
 import axios from 'axios';
 
-const FixedRatioImage = ({ src, alt, fallback }) => (
+const FixedRatioImage = ({ src = '', alt = '', fallback }) => (
   <div
     style={{
       width: '100%',
@@ -33,6 +34,22 @@ const FixedRatioImage = ({ src, alt, fallback }) => (
   </div>
 );
 
+FixedRatioImage.propTypes = {
+  src: PropTypes.string,
+  alt: PropTypes.string,
+  fallback: PropTypes.string.isRequired,
+};
+
+// Shared shape for a community event
+const eventShape = PropTypes.shape({
+  id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  image: PropTypes.string,
+  title: PropTypes.string,
+  date: PropTypes.string,
+  location: PropTypes.string,
+  organizer: PropTypes.string,
+});
+
 // Helper: combine base and dark variant class names
 const cx = (base, darkMode) =>
   darkMode ? `${styles[base]} ${styles[`${base}-dark`]}` : styles[base];
@@ -55,6 +72,10 @@ const LoadingView = ({ darkMode }) => (
   </Container>
 );
 
+LoadingView.propTypes = {
+  darkMode: PropTypes.bool.isRequired,
+};
+
 const ErrorView = ({ error, darkMode }) => (
   <Container className={cx('dashboard-container', darkMode)}>
     <p className={`${styles['error-text']} ${darkMode ? styles['error-text-dark'] : ''}`}>
@@ -62,6 +83,11 @@ const ErrorView = ({ error, darkMode }) => (
     </p>
   </Container>
 );
+
+ErrorView.propTypes = {
+  error: PropTypes.string.isRequired,
+  darkMode: PropTypes.bool.isRequired,
+};
 
 const SearchBar = ({ searchInput, setSearchInput, onSearch, onClear, onKeyDown, darkMode }) => (
   <div className={styles['dashboard-controls']}>
@@ -93,6 +119,15 @@ const SearchBar = ({ searchInput, setSearchInput, onSearch, onClear, onKeyDown, 
     </div>
   </div>
 );
+
+SearchBar.propTypes = {
+  searchInput: PropTypes.string.isRequired,
+  setSearchInput: PropTypes.func.isRequired,
+  onSearch: PropTypes.func.isRequired,
+  onClear: PropTypes.func.isRequired,
+  onKeyDown: PropTypes.func.isRequired,
+  darkMode: PropTypes.bool.isRequired,
+};
 
 const FiltersSidebar = ({ darkMode }) => (
   <div className={cx('filter-section', darkMode)}>
@@ -189,6 +224,10 @@ const FiltersSidebar = ({ darkMode }) => (
   </div>
 );
 
+FiltersSidebar.propTypes = {
+  darkMode: PropTypes.bool.isRequired,
+};
+
 const EventCard = ({ event, darkMode, fallback }) => (
   <Col md={4} key={event.id} className={styles['event-card-col']}>
     <Card
@@ -217,6 +256,12 @@ const EventCard = ({ event, darkMode, fallback }) => (
   </Col>
 );
 
+EventCard.propTypes = {
+  event: eventShape.isRequired,
+  darkMode: PropTypes.bool.isRequired,
+  fallback: PropTypes.string.isRequired,
+};
+
 const EventsGrid = ({ events, darkMode, fallback }) => (
   <Row>
     {events.length > 0 ? (
@@ -228,6 +273,12 @@ const EventsGrid = ({ events, darkMode, fallback }) => (
     )}
   </Row>
 );
+
+EventsGrid.propTypes = {
+  events: PropTypes.arrayOf(eventShape).isRequired,
+  darkMode: PropTypes.bool.isRequired,
+  fallback: PropTypes.string.isRequired,
+};
 
 const PaginationControls = ({ pagination, totalPages, goToPage }) =>
   totalPages > 1 ? (
@@ -251,6 +302,16 @@ const PaginationControls = ({ pagination, totalPages, goToPage }) =>
       </Button>
     </div>
   ) : null;
+
+PaginationControls.propTypes = {
+  pagination: PropTypes.shape({
+    currentPage: PropTypes.number,
+    limit: PropTypes.number,
+    total: PropTypes.number,
+  }).isRequired,
+  totalPages: PropTypes.number.isRequired,
+  goToPage: PropTypes.func.isRequired,
+};
 
 function CPDashboard() {
   const darkMode = useSelector(state => state.theme.darkMode);
