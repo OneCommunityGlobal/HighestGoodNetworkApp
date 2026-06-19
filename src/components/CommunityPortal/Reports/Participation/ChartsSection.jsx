@@ -79,6 +79,18 @@ function ChartsSection() {
 
   const pieColors = ['#007bff', '#00b894', '#e17055', '#6c5ce7', '#fdcb6e'];
 
+  // Dark-mode-aware tooltip styling so tooltips stay readable in both themes
+  const tooltipProps = {
+    contentStyle: {
+      backgroundColor: darkMode ? '#2c2f33' : '#fff',
+      border: `1px solid ${darkMode ? '#555' : '#ccc'}`,
+      borderRadius: 4,
+    },
+    labelStyle: { color: darkMode ? '#fff' : '#333' },
+    itemStyle: { color: darkMode ? '#fff' : '#333' },
+    cursor: { fill: darkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' },
+  };
+
   return (
     <div className={`${styles.chartsSection} ${darkMode ? styles.chartsSectionDark : ''}`}>
       <h3 className={styles.sectionTitle}>Comparative Charts</h3>
@@ -92,7 +104,7 @@ function ChartsSection() {
             <BarChart data={eventTypeStats}>
               <XAxis dataKey="eventType" stroke={darkMode ? '#fff' : '#333'} />
               <YAxis stroke={darkMode ? '#fff' : '#333'} />
-              <Tooltip />
+              <Tooltip {...tooltipProps} />
               <Bar dataKey="avgNoShow" fill="#FF6B6B" />
             </BarChart>
           </ResponsiveContainer>
@@ -105,7 +117,7 @@ function ChartsSection() {
             <BarChart data={eventTypeStats}>
               <XAxis dataKey="eventType" stroke={darkMode ? '#fff' : '#333'} />
               <YAxis stroke={darkMode ? '#fff' : '#333'} />
-              <Tooltip />
+              <Tooltip {...tooltipProps} />
               <Bar dataKey="avgDrop" fill="#4C89FF" />
             </BarChart>
           </ResponsiveContainer>
@@ -119,7 +131,7 @@ function ChartsSection() {
           <LineChart data={trendData}>
             <XAxis dataKey="month" stroke={darkMode ? '#fff' : '#333'} />
             <YAxis stroke={darkMode ? '#fff' : '#333'} />
-            <Tooltip />
+            <Tooltip {...tooltipProps} />
             <Line type="monotone" dataKey="avgNoShow" stroke="#FF6B6B" strokeWidth={2} />
           </LineChart>
         </ResponsiveContainer>
@@ -135,6 +147,7 @@ function ChartsSection() {
                 <Cell key={entry.name} fill={pieColors[index % pieColors.length]} />
               ))}
             </Pie>
+            <Tooltip {...tooltipProps} />
             <Legend />
           </PieChart>
         </ResponsiveContainer>

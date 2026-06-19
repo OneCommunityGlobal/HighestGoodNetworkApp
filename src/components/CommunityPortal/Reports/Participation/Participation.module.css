@@ -9,16 +9,20 @@
 }
 
 .participationLandingPage {
-  max-width: 90%;
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
+  padding: 0 5%;
   background: white;
+  box-sizing: border-box;
 }
 
 .participationLandingPageDark {
-  max-width: 90%;
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
+  padding: 0 5%;
   background-color: #1b2a41;
   color: #fff;
+  box-sizing: border-box;
 }
 
 /* ---------- Page Header ---------- */
@@ -338,14 +342,26 @@
   display: inline-block;
 }
 
+/* Color the value text itself (not just inner spans) so bare text like "+5%"
+   isn't left dark by a global p color rule in dark mode */
+.trackingRateDark .trackingRateValue,
+.trackingRateDark .trackingRateSubheading {
+  color: #fff;
+}
+
 .trackingRate .trackingRateValue span.trackingRateValuePositive,
 .trackingRateDark .trackingRateValue span.trackingRateValuePositive {
   color: #f44336 !important;
+  font-weight: bold !important;
 }
 
-.trackingRate .trackingRateValue span.trackingRateValueNegative,
-.trackingRateDark .trackingRateValue span.trackingRateValueNegative {
+.trackingRate .trackingRateValue span.trackingRateValueNegative {
   color: #008000 !important;
+}
+
+/* Brighter green for dark mode — #008000 is too dark on the dark panel */
+.trackingRateDark .trackingRateValue span.trackingRateValueNegative {
+  color: #4ade80 !important;
 }
 
 /* Tables */
@@ -414,11 +430,19 @@
 
 .trackingRateGreen {
   color: green !important;
+}
+
+
+/* Brighter green for dark mode — plain green is too dark on the dark table */
+.trackingTableDark .trackingRateGreen {
+  color: #4ade80 !important;
   font-weight: bold;
 }
 
-.trackingRateRed {
-  color: red !important;
+/* Darker red for the drop-off rate in dark mode */
+.trackingTableDark .trackingRateRed {
+  color: #f92a2a !important;
+  font-weight: bold;
 }
 
 /* ---------- Insights Section ---------- */
@@ -432,6 +456,13 @@
 
 .trackingTableDark td,
 .trackingTableDark th  {
+  color: #fff;
+}
+
+/* Keep row hover dark in dark mode (overrides global table hover) */
+.trackingTableDark tbody tr:hover,
+.trackingTableDark tbody tr:hover td {
+  background-color: #253055;
   color: #fff;
 }
 
@@ -953,10 +984,6 @@
     color: #9b59b6 !important;
   }
 
-  .trackingRateGreen {
-    color: green !important;
-    font-weight: bold !important;
-  }
 
   .trackingRateRed {
     color: red !important;
@@ -1227,8 +1254,8 @@
 .demographicsPage {
   padding: 20px;
   background: #fff;
-  border-radius: 10px;
-  margin-top: 20px;
+  min-height: 100vh;
+  box-sizing: border-box;
 }
 
 .demographicsPageDark {
@@ -1261,7 +1288,8 @@
   color: #555;
 }
 
-.demographicsPageDark .placeholderBox {
+.demographicsPageDark .placeholderBox,
+.demographicsPageDark .placeholderBox p {
   border-color: #888;
   color: #ddd;
 }
@@ -1296,12 +1324,40 @@
   background: #3a4b66;
 }
 
+.backBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  margin-bottom: 16px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: #f1f1f1;
+  cursor: pointer;
+  font-weight: 500;
+  color: #333;
+}
+
+.backBtn:hover {
+  background: #e1e1e1;
+}
+
+.backBtnDark {
+  background: #2b3a55;
+  border-color: #666;
+  color: #fff;
+}
+
+.backBtnDark:hover {
+  background: #3a4b66;
+}
+
 /* ---------- Personalization Page ---------- */
 .personalizationPage {
   padding: 20px;
   background: #fff;
-  border-radius: 10px;
-  margin-top: 20px;
+  min-height: 100vh;
+  box-sizing: border-box;
 }
 
 .personalizationPageDark {
@@ -1325,7 +1381,8 @@
   justify-content: center;
 }
 
-.personalizationPageDark .placeholderBox {
+.personalizationPageDark .placeholderBox,
+.personalizationPageDark .placeholderBox p {
   border-color: #888;
   color: #ddd;
 }

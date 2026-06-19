@@ -752,3 +752,181 @@
     color: #9b59b6 !important;
   }
 }
+
+/* ============================================================
+   Selected-day events list (below the calendar)
+   ============================================================ */
+.calendarEventsList {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.calendarEventsTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1c2541;
+  margin: 0 0 4px;
+}
+
+.myCasesPageDark .calendarEventsTitle {
+  color: #fff;
+}
+
+.calendarEventsEmpty {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.myCasesPageDark .calendarEventsEmpty {
+  color: #9aa7b8;
+}
+
+.calendarEventItem {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 14px;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid #003c8f;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.calendarEventItemDark {
+  background: #1c2541;
+  border-color: #2b3a55;
+  border-left-color: #4a78c2;
+}
+
+.calendarEventItemHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.calendarEventName {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1c2541;
+}
+
+.myCasesPageDark .calendarEventName {
+  color: #fff;
+}
+
+.calendarEventType {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: #e8f1ff;
+  color: #003c8f;
+  white-space: nowrap;
+}
+
+.myCasesPageDark .calendarEventType {
+  background: #244879;
+  color: #fff;
+}
+
+.calendarEventMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  font-size: 13px;
+  color: #4b5563;
+}
+
+.myCasesPageDark .calendarEventMeta {
+  color: #c3ccda;
+}
+
+.calendarEventMeta span {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* ============================================================
+   Small mobile (≤480px, e.g. 375px) — relieve cramped layout
+   ============================================================ */
+@media (width <= 480px) {
+  .myCasesPage,
+  .myCasesPageDark {
+    padding: 12px;
+  }
+
+  .sectionTitle,
+  .sectionTitleDark {
+    font-size: 20px;
+    text-align: center;
+  }
+
+  /* View switcher fills the row with equal-width buttons */
+  .viewSwitcher,
+  .viewSwitcherDarkMode {
+    width: 100%;
+    gap: 8px;
+  }
+
+  .viewSwitcher button,
+  .viewSwitcherDarkMode button {
+    flex: 1;
+    padding: 8px 4px;
+    font-size: 13px;
+  }
+
+  /* Header controls stretch full width so they aren't squeezed */
+  .filterWrapper,
+  .createNew,
+  .createNewDarkMode,
+  .moreBtn {
+    width: 100%;
+  }
+
+  .moreBtn {
+    text-align: center;
+  }
+
+  /* Cards stack into a single column */
+  .caseCards {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  /* List rows go from 4 columns to a compact 2-column layout */
+  .caseListItem,
+  .caseListItemDark {
+    grid-template-columns: 1fr auto;
+    gap: 4px 10px;
+    padding: 12px;
+  }
+
+  .caseListItem span,
+  .caseListItemDark span {
+    margin-right: 0;
+  }
+
+  /* Calendar: trim padding and tile height so it isn't squeezed */
+  .calendarView,
+  .calendarViewDark {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  .calendarCell {
+    min-height: 64px;
+    padding: 4px;
+  }
+
+  /* Selected-day event cards: type badge wraps below the name */
+  .calendarEventItemHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+}
