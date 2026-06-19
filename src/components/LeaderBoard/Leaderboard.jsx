@@ -842,6 +842,26 @@ function LeaderBoard({
                     <tr
                       key={item.personId}
                       className={darkMode ? 'dark-leaderboard-row' : 'light-leaderboard-row'}
+                      onMouseEnter={
+                        darkMode
+                          ? e => {
+                              e.currentTarget.querySelectorAll('td, th, span, p, a').forEach(el => {
+                                el.style.color = '#000';
+                                el.style.backgroundColor = '#fff';
+                              });
+                            }
+                          : undefined
+                      }
+                      onMouseLeave={
+                        darkMode
+                          ? e => {
+                              e.currentTarget.querySelectorAll('td, th, span, p, a').forEach(el => {
+                                el.style.color = '';
+                                el.style.backgroundColor = '';
+                              });
+                            }
+                          : undefined
+                      }
                     >
                       <td className="align-middle">
                         <div>
