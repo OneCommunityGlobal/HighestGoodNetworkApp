@@ -6,7 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { connect, useSelector } from 'react-redux';
 import { addNewWBS, fetchAllWBS } from '../../../actions/wbs';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { NavItem } from 'reactstrap';
 import AddWBS from './AddWBS';
 import WBSItem from './WBSItem/WBSItem';
@@ -17,6 +17,9 @@ const WBS = props => {
   const darkMode = props.state.theme.darkMode;
   const projectId = props.match.params.projectId;
   const projectName = useSelector(state => state.projectById?.projectName || '');
+  const location = useLocation();
+  const taskSelectionMode = location.state?.taskSelectionMode || false;
+  const taskSelectionReturnPath = location.state?.returnPath || '/bmdashboard/AddNewTeam';
   const [sortOrder, setSortOrder] = useState('recent'); // 'recent' | 'asc' | 'desc'
   const [sortedWBSItems, setSortedWBSItems] = useState([]);
 
@@ -58,6 +61,11 @@ const WBS = props => {
           <div className="w-100 text-center font-weight-bold my-3" style={{fontSize: "1.5rem"}}>
             Project Name: {projectName}
           </div>
+          {taskSelectionMode && (
+            <div className="alert alert-info mb-2" role="alert">
+              <strong>Task Selection Mode:</strong> Click a WBS name to browse its tasks and pick one.
+            </div>
+          )}
 
           <AddWBS 
             projectId={projectId} 
@@ -99,6 +107,8 @@ const WBS = props => {
                       projectId={projectId}
                       name={item.wbsName}
                       darkMode={darkMode}
+                      taskSelectionMode={taskSelectionMode}
+                      taskSelectionReturnPath={taskSelectionReturnPath}
                     />
                   ) : null,
                 )}
