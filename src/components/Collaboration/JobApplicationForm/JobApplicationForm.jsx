@@ -145,6 +145,8 @@ function JobApplicationForm() {
   const [companyPosition, setCompanyPosition] = useState('');
   const [websiteSocial, setWebsiteSocial] = useState('');
   const [resumeFile, setResumeFile] = useState(null);
+  const [resumeStatus, setResumeStatus] = useState('idle');
+  // idle | uploading | success | error
   const resumeInputRef = useRef(null);
   /** Shown in the page title — the role the user clicked, not only the matched DB form name. */
   const [bannerJobTitle, setBannerJobTitle] = useState('');
@@ -300,7 +302,37 @@ function JobApplicationForm() {
 
   const handleResumeChange = e => {
     const f = e.target.files?.[0] || null;
+
+    if (!f) {
+      setResumeFile(null);
+      setResumeStatus('idle');
+      return;
+    }
+
+    // Basic validation (optional but recommended)
+    const allowedTypes = [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    ];
+
+    if (!allowedTypes.includes(f.type)) {
+      setResumeStatus('error');
+      setResumeFile(null);
+      toast.error('Invalid file type. Please upload PDF or DOC/DOCX.');
+      return;
+    }
+
     setResumeFile(f);
+    setResumeStatus('success');
+
+    toast.success(`Resume selected: ${f.name}`);
+  };
+
+  const handleRemoveResume = () => {
+    setResumeFile(null);
+    setResumeStatus('idle');
+    if (resumeInputRef.current) resumeInputRef.current.value = '';
   };
 
   const validateBeforeSubmit = () => {
@@ -361,9 +393,18 @@ function JobApplicationForm() {
     setCompanyPosition('');
     setWebsiteSocial('');
     setResumeFile(null);
+    setResumeStatus('idle');
     if (resumeInputRef.current) resumeInputRef.current.value = '';
     setAnswers(new Array(visibleQuestions.length).fill(''));
   };
+
+  let resumeStatusClass = '';
+
+  if (resumeStatus === 'success') {
+    resumeStatusClass = styles.success;
+  } else if (resumeStatus === 'error') {
+    resumeStatusClass = styles.error;
+  }
 
   return (
     <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
@@ -506,15 +547,32 @@ function JobApplicationForm() {
                   value={websiteSocial}
                   onChange={e => setWebsiteSocial(e.target.value)}
                 />
-                <label className={styles.resumeLabel}>
-                  Upload Resume (optional)
-                  <input
-                    ref={resumeInputRef}
-                    type="file"
-                    accept=".pdf,.doc,.docx"
-                    onChange={handleResumeChange}
-                  />
-                </label>
+                <div className={styles.resumeWrapper}>
+                  <label className={`${styles.resumeLabel} ${resumeStatusClass}`}>
+                    {resumeFile ? (
+                      <span className={styles.fileName}>📄 {resumeFile.name}</span>
+                    ) : (
+                      'Upload Resume (optional)'
+                    )}
+
+                    <input
+                      ref={resumeInputRef}
+                      type="file"
+                      accept=".pdf,.doc,.docx"
+                      onChange={handleResumeChange}
+                    />
+                  </label>
+
+                  {resumeFile && (
+                    <button
+                      type="button"
+                      className={styles.removeResumeBtn}
+                      onClick={handleRemoveResume}
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
               </div>
               {visibleQuestions.map((q, idx) => {
                 const qt = getQuestionType(q);
