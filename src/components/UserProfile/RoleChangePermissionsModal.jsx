@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader, Input } from 'reactstrap';
-import { useSelector, connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { ENDPOINTS } from '~/utils/URL';
@@ -245,7 +245,7 @@ function RoleChangePermissionsModal(props) {
   );
 }
 
-RoleChangePermissionsModal.PropTypes = {
+RoleChangePermissionsModal.propTypes = {
   isOpen: PropTypes.bool,
   onClose: PropTypes.func.isRequired,
   roles: PropTypes.arrayOf(
@@ -259,7 +259,7 @@ RoleChangePermissionsModal.PropTypes = {
       frontPermissions: PropTypes.array,
       removedDefaultPermissions: PropTypes.array,
     }),
-    _id: PropTypes.number,
+    _id: PropTypes.string,
   }).isRequired,
   loadUserProfile: PropTypes.func.isRequired,
   authUser: PropTypes.shape({
