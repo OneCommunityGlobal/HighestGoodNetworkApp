@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { connect, useSelector } from 'react-redux';
-import { useState, useCallback } from 'react';
-import { useHistory, Link } from 'react-router-dom';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import Navbar from 'react-bootstrap/Navbar';
 import Container from 'react-bootstrap/Container';
@@ -12,8 +12,6 @@ import { IoNotificationsOutline } from 'react-icons/io5';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 
-import { FIXED_VILLAGES } from './Home/data.jsx';
-import { formatVillageLabel } from './Home/homeFormatUtils';
 import itemStyles from './WishList/ItemOverview.module.css';
 import ThemeIconToggle from './ThemeIconToggle';
 
@@ -21,20 +19,11 @@ const cx = (base, darkClass, darkMode) => `${base} ${darkMode ? darkClass : ''}`
 
 const getUserProfilePath = authUser => (authUser?.userid ? `/userprofile/${authUser.userid}` : '/');
 
-function LBDashboardHeader({ notifications, authUser }) {
+function LBDashboardHeader({ notifications, authUser, villages, onVillageChange }) {
   const [selectedVillage, setSelectedVillage] = useState('');
   const [showNotifications, setShowNotifications] = useState(false);
   const notificationCount = notifications && notifications.length ? notifications.length : 0;
-
   const darkMode = useSelector(state => state.theme.darkMode);
-  const history = useHistory();
-
-  const selectorWrapperStyle = darkMode
-    ? {
-        backgroundColor: '#1c2541',
-        border: '1px solid #2f3b59',
-      }
-    : undefined;
 
   const selectorStyle = darkMode
     ? {
@@ -50,10 +39,9 @@ function LBDashboardHeader({ notifications, authUser }) {
       }
     : undefined;
 
-  const handleGoClick = useCallback(() => {
-    const qs = selectedVillage ? `?village=${encodeURIComponent(selectedVillage)}` : '';
-    history.push(`/lbdashboard/listingshome${qs}`);
-  }, [history, selectedVillage]);
+  const handleGoClick = () => {
+    onVillageChange(selectedVillage);
+  };
 
   return (
     <>
@@ -64,21 +52,26 @@ function LBDashboardHeader({ notifications, authUser }) {
         <Container fluid className={itemStyles.item__navbarContainer}>
           <div className={itemStyles.item__navbarToolbar}>
             <div className={itemStyles['item__navbar-left']}>
-              <div className={itemStyles.item__selector} style={selectorWrapperStyle}>
+              <div
+                className={`${itemStyles.item__selector} ${
+                  darkMode ? itemStyles['item__selector--dark'] : ''
+                }`}
+              >
                 <select
                   value={selectedVillage}
                   onChange={e => setSelectedVillage(e.target.value)}
                   style={selectorStyle}
                   aria-label="Filter by village"
                 >
-                  <option value="">Select village</option>
-                  {FIXED_VILLAGES.map(v => (
-                    <option key={v} value={v}>
-                      {formatVillageLabel(v)}
+                  <option value="">All Villages</option>
+                  {villages.map(village => (
+                    <option key={village} value={village}>
+                      {village}
                     </option>
                   ))}
                 </select>
               </div>
+
               <button
                 type="button"
                 className={itemStyles.item__button}
@@ -190,11 +183,15 @@ LBDashboardHeader.propTypes = {
       message: PropTypes.string,
     }),
   ),
+  villages: PropTypes.arrayOf(PropTypes.string),
+  onVillageChange: PropTypes.func,
 };
 
 LBDashboardHeader.defaultProps = {
   authUser: null,
   notifications: [],
+  villages: [],
+  onVillageChange: () => {},
 };
 
 const mapStateToProps = state => ({
