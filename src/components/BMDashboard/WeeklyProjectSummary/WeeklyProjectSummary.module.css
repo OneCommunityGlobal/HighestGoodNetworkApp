@@ -191,9 +191,10 @@
 
 /* ---------------- GRID ---------------- */
 .weeklyProjectSummaryDashboardGrid {
-  display: grid;
+  display: flex;
   grid-template-columns: repeat(4, 1fr);
   gap: 15px;
+  flex-direction: column;
 }
 
 /* .weeklyProjectSummaryDashboardSection options */
