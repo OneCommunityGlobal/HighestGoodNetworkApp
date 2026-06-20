@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import ActualVsPlannedCost from '../ActualVsPlannedCost/ActualVsPlannedCost';
+import CostPredictionChart from '../CostPredictionChart';
 import FinancialsTrackingCard from './FinancialsTrackingCard';
 import SingleExpenditureCard from './SingleExpenditureCard';
-import CostPredictionChart from '../CostPredictionChart';
 import styles from './FinancialsTrackingSection.module.css';
 
 /**
