@@ -5,8 +5,9 @@ import {
   SUBMIT_BID_SUCCESS,
   SUBMIT_BID_REQUEST,
   SUBMIT_BID_FAILURE,
+  NOTIFICATION_SUCCESS,
   NOTIFICATION_FAILURE,
-} from '../../constants/lbdashboard/bidOverviewConstants';
+} from '../../constants/lbDashboard/bidOverviewConstants';
 
 const initialState = {
   loading: false,
@@ -30,7 +31,7 @@ const bidOverviewReducer = (state = initialState, action) => {
       return { ...state, loading: false, bidResponse: action.payload };
     case SUBMIT_BID_FAILURE:
       return { ...state, loading: false, error: action.payload };
-    case 'NOTIFICATION_SUCCESS':
+    case NOTIFICATION_SUCCESS:
       return {
         ...state,
         notifications: Array.isArray(action.payload) ? action.payload : [action.payload],
