@@ -1,4 +1,5 @@
 import { ImageIcon, XIcon } from 'lucide-react';
+import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Button } from '../../components/ui/button';
@@ -84,7 +85,10 @@ export const DescriptionSection = ({
         try {
           URL.revokeObjectURL(removedMedia.url);
         } catch (e) {
-          // ignore
+          if (process.env.NODE_ENV === 'development') {
+            // eslint-disable-next-line no-console
+            console.error('revokeObjectURL failed', e);
+          }
         }
       }
       return updatedMedia;
@@ -96,10 +100,12 @@ export const DescriptionSection = ({
     return () => {
       selectedMedia.forEach(media => {
         try {
-          // some URLs may be blob URLs created locally
           URL.revokeObjectURL(media.url);
         } catch (e) {
-          /* ignore */
+          if (process.env.NODE_ENV === 'development') {
+            // eslint-disable-next-line no-console
+            console.error('revokeObjectURL cleanup failed', e);
+          }
         }
       });
     };
@@ -162,4 +168,11 @@ export const DescriptionSection = ({
       </div>
     </section>
   );
+};
+
+DescriptionSection.propTypes = {
+  activityId: PropTypes.string,
+  initialDescription: PropTypes.string,
+  onSaveDescription: PropTypes.func,
+  uploadMediaFn: PropTypes.func,
 };

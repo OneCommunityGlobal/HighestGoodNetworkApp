@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import * as React from 'react';
 import { cn } from '../../lib/utils';
 
@@ -38,5 +39,13 @@ const CardFooter = React.forwardRef(({ className, ...props }, ref) => (
   <div ref={ref} className={cn('flex items-center p-6 pt-0', className)} {...props} />
 ));
 CardFooter.displayName = 'CardFooter';
+
+const classNameProp = { className: PropTypes.string };
+Card.propTypes = classNameProp;
+CardHeader.propTypes = classNameProp;
+CardTitle.propTypes = classNameProp;
+CardDescription.propTypes = classNameProp;
+CardContent.propTypes = classNameProp;
+CardFooter.propTypes = classNameProp;
 
 export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent };

@@ -1,4 +1,5 @@
 // TeamMemberTasks.jsx
+import PropTypes from 'prop-types';
 import { faClock } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
@@ -826,6 +827,31 @@ const TeamMemberTasks = React.memo(props => {
     </div>
   );
 });
+
+const userShape = PropTypes.shape({
+  _id: PropTypes.string,
+  role: PropTypes.string,
+  userid: PropTypes.string,
+  permissions: PropTypes.shape({
+    frontPermissions: PropTypes.arrayOf(PropTypes.string),
+  }),
+});
+
+TeamMemberTasks.propTypes = {
+  authUser: userShape,
+  displayUser: userShape,
+  usersWithTasks: PropTypes.arrayOf(PropTypes.object),
+  usersWithTimeEntries: PropTypes.arrayOf(PropTypes.object),
+  darkMode: PropTypes.bool,
+  filteredUserTeamIds: PropTypes.arrayOf(PropTypes.string),
+  auth: PropTypes.shape({
+    user: PropTypes.shape({
+      permissions: PropTypes.shape({
+        frontPermissions: PropTypes.arrayOf(PropTypes.string),
+      }),
+    }),
+  }),
+};
 
 const mapStateToProps = state => ({
   authUser: state.auth.user,

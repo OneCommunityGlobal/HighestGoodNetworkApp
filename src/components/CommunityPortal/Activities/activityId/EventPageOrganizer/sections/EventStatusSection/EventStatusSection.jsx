@@ -19,8 +19,8 @@ export const EventStatusSection = () => {
 
       <nav className={styles.nav}>
         <ul className={styles.navList}>
-          {navigationItems.map((item, index) => (
-            <li key={index}>
+          {navigationItems.map(item => (
+            <li key={item.label}>
               <Button
                 variant="ghost"
                 className="h-auto p-0 [font-family:'Inter',Helvetica] font-normal text-white text-sm tracking-[0] leading-[normal] hover:bg-transparent hover:text-white/80 transition-colors"

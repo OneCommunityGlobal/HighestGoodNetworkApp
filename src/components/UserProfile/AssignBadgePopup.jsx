@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { useState, useEffect, useMemo } from 'react';
 import { Table, Button, UncontrolledTooltip , Spinner } from 'reactstrap';
 import { connect } from 'react-redux';
@@ -76,12 +77,10 @@ function AssignBadgePopup(props) {
   }, [badgeList, searchedName]);
 
   const addExistBadges = () => {
-    if (props.userProfile && props.userProfile.badgeCollection) {
-      // store raw badge IDs, not "assign-badge-..."
-      const existBadges = props.userProfile.badgeCollection
+    if (props.userProfile?.badgeCollection) {
+      return props.userProfile.badgeCollection
         .filter(b => b.badge !== null)
         .map(b => b.badge._id);
-      return existBadges;
     }
     return [];
   };
@@ -170,6 +169,26 @@ function AssignBadgePopup(props) {
     </div>
   );
 }
+
+AssignBadgePopup.propTypes = {
+  darkMode: PropTypes.bool,
+  isRecordBelongsToJaeAndUneditable: PropTypes.bool,
+  isTableOpen: PropTypes.bool,
+  assignBadgesByUserID: PropTypes.func,
+  clearNameAndSelected: PropTypes.func,
+  handleSubmit: PropTypes.func,
+  close: PropTypes.func,
+  setUserProfile: PropTypes.func,
+  selectedBadges: PropTypes.arrayOf(PropTypes.string),
+  userProfile: PropTypes.shape({
+    _id: PropTypes.string,
+    badgeCollection: PropTypes.arrayOf(
+      PropTypes.shape({
+        badge: PropTypes.shape({ _id: PropTypes.string }),
+      }),
+    ),
+  }),
+};
 
 const mapStateToProps = state => ({
   selectedBadges: state.badge.selectedBadges,

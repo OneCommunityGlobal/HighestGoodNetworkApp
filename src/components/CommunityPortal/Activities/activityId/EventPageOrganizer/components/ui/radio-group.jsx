@@ -1,5 +1,6 @@
 import * as RadioGroupPrimitive from '@radix-ui/react-radio-group';
 import { CircleIcon } from 'lucide-react';
+import PropTypes from 'prop-types';
 import * as React from 'react';
 import { cn } from '../../lib/utils';
 
@@ -25,5 +26,8 @@ const RadioGroupItem = React.forwardRef(({ className, ...props }, ref) => {
   );
 });
 RadioGroupItem.displayName = RadioGroupPrimitive.Item.displayName;
+
+RadioGroup.propTypes = { className: PropTypes.string };
+RadioGroupItem.propTypes = { className: PropTypes.string };
 
 export { RadioGroup, RadioGroupItem };

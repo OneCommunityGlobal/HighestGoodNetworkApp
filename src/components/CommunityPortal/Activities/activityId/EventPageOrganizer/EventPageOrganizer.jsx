@@ -4,15 +4,7 @@ import { useSelector } from 'react-redux';
 import { Avatar, AvatarFallback, AvatarImage } from './components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
 import { DescriptionSection } from './sections/DescriptionSection';
-import {
-  getEvent,
-  updateDescription,
-  uploadMedia,
-  updateStatus,
-  updateRating,
-  updateSelectedDate,
-  incrementView,
-} from '../../../../../api/events';
+import { getEvent, updateDescription, uploadMedia } from '../../../../../api/events';
 import { EventStatusSection } from './sections/EventStatusSection';
 import { ScheduleSection } from './sections/ScheduleSection';
 import styles from './EventPageOrganizer.module.css';
@@ -20,7 +12,7 @@ import styles from './EventPageOrganizer.module.css';
 export const EventPageOrganizer = () => {
   const activityId = 'test-event';
   const [evt, setEvt] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
   const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
@@ -167,7 +159,7 @@ export const EventPageOrganizer = () => {
               <div className={styles.attendeesRow}>
                 {(evt?.attendees ?? []).map((attendee, index) => (
                   <Avatar
-                    key={index}
+                    key={attendee.name ?? index}
                     className={`${styles.avatar} ${index > 0 ? styles.avatarOverlap : ''}`}
                   >
                     <AvatarImage

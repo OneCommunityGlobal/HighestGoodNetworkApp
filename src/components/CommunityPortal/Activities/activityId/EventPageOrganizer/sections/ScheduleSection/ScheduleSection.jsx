@@ -71,13 +71,16 @@ export const ScheduleSection = () => {
             <div className={styles.calendarWrapper}>
               <div className={styles.calendarGrid}>
                 {weekDays.map((day, index) => (
-                  <div key={`weekday-${index}`} className={styles.weekDay}>
+                  <div key={`weekday-${day}-${index}`} className={styles.weekDay}>
                     {day}
                   </div>
                 ))}
 
                 {calendarDates.map((date, index) => (
-                  <div key={`date-${index}`} className={styles.dateCell}>
+                  <div
+                    key={`date-${date.isCurrentMonth ? 'cur' : 'prev'}-${date.day}-${index}`}
+                    className={styles.dateCell}
+                  >
                     {date.isHighlighted && (
                       <div className={styles.dateHighlight}>
                         <div className={styles.highlightCircle} />

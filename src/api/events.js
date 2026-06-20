@@ -9,7 +9,7 @@ const wait = (ms = 300) => new Promise(r => setTimeout(r, ms));
 const NS = 'hgn_event_mock_v1:'; // storage namespace version
 
 const todayISO = () => new Date().toISOString();
-const clone = x => JSON.parse(JSON.stringify(x));
+const clone = x => structuredClone(x);
 
 function keyFor(id) {
   return `${NS}${id}`;
@@ -203,7 +203,11 @@ export async function upsertScheduleSlot(activityId, date, slot /* {id?,start,en
   const evt = ensure(activityId);
   const next = clone(evt);
   const list = next.scheduleByDate[date] ?? [];
-  if (!slot.id) {
+  if (slot.id) {
+    const idx = list.findIndex(s => s.id === slot.id);
+    if (idx >= 0) list[idx] = { ...list[idx], ...slot };
+    else list.push(slot);
+  } else {
     slot.id = crypto?.randomUUID
       ? crypto.randomUUID()
       : (() => {
@@ -212,10 +216,6 @@ export async function upsertScheduleSlot(activityId, date, slot /* {id?,start,en
           return `slot_${[...a].map(x => x.toString(16).padStart(8, '0')).join('')}`;
         })();
     list.push(slot);
-  } else {
-    const idx = list.findIndex(s => s.id === slot.id);
-    if (idx >= 0) list[idx] = { ...list[idx], ...slot };
-    else list.push(slot);
   }
   next.scheduleByDate[date] = list;
   writeStore(activityId, next);
@@ -282,7 +282,11 @@ export async function upsertResource(activityId, res /* {id?,type,title,url,size
   const evt = ensure(activityId);
   const next = clone(evt);
   const list = next.resources ?? [];
-  if (!res.id) {
+  if (res.id) {
+    const idx = list.findIndex(r => r.id === res.id);
+    if (idx >= 0) list[idx] = { ...list[idx], ...res };
+    else list.push(res);
+  } else {
     res.id = crypto?.randomUUID
       ? crypto.randomUUID()
       : (() => {
@@ -291,10 +295,6 @@ export async function upsertResource(activityId, res /* {id?,type,title,url,size
           return `res_${[...a].map(x => x.toString(16).padStart(8, '0')).join('')}`;
         })();
     list.push(res);
-  } else {
-    const idx = list.findIndex(r => r.id === res.id);
-    if (idx >= 0) list[idx] = { ...list[idx], ...res };
-    else list.push(res);
   }
   next.resources = list;
   writeStore(activityId, next);

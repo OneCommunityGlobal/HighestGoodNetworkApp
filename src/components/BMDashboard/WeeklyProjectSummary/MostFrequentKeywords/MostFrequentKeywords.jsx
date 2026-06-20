@@ -10,6 +10,19 @@ import PropTypes from 'prop-types';
 
 const calculateDistance = (x1, y1, x2, y2) => Math.hypot(x1 - x2, y1 - y2);
 
+function deduplicateByTag(sorted, maxItems) {
+  const latestItems = [];
+  const usedTags = new Set();
+  for (const item of sorted) {
+    if (!usedTags.has(item.tag)) {
+      latestItems.push(item);
+      usedTags.add(item.tag);
+      if (latestItems.length >= maxItems) break;
+    }
+  }
+  return latestItems;
+}
+
 function checkDateInRange(itemDate, startDate, endDate) {
   if (startDate && endDate) {
     const start = new Date(startDate);
@@ -59,7 +72,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
   const [tooltip, setTooltip] = useState({ visible: false, text: '', x: 0, y: 0 });
   const API_BASE = process.env.REACT_APP_APIENDPOINT;
   const reduxDarkMode = useSelector(state => state.theme.darkMode);
-  const darkMode = propDarkMode !== undefined ? propDarkMode : reduxDarkMode;
+  const darkMode = propDarkMode === undefined ? reduxDarkMode : propDarkMode;
   const palette = darkMode
     ? {
         controlBg: '#243447',
@@ -306,25 +319,9 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
   const getLatestData = useCallback(
     data => {
       if (!data || data.length === 0) return [];
-
       const sorted = [...data].sort((a, b) => new Date(b.date) - new Date(a.date));
       const maxItems = isMobile ? 6 : 8;
-
-      if (sorted.length >= maxItems) {
-        const latestItems = [];
-        const usedTags = new Set();
-
-        for (const item of sorted) {
-          if (!usedTags.has(item.tag)) {
-            latestItems.push(item);
-            usedTags.add(item.tag);
-            if (latestItems.length >= maxItems) break;
-          }
-        }
-
-        return latestItems;
-      }
-
+      if (sorted.length >= maxItems) return deduplicateByTag(sorted, maxItems);
       return sorted;
     },
     [isMobile],
