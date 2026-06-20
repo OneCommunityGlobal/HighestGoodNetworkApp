@@ -1,10 +1,14 @@
-.tab-buttons {
+.eventTabs {
+  margin-top: 10px;
+}
+
+.tabButtons {
   display: flex;
   gap: 10px;
   margin-bottom: 15px;
 }
 
-.tab-btn {
+.tabBtn {
   padding: 10px 15px;
   border: none;
   background-color: transparent;
@@ -12,28 +16,24 @@
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   font-weight: normal;
-  /* Default font weight */
 }
 
-.tab-btn:hover {
+.tabBtn:hover {
   font-weight: bold;
-  /* Bold on hover */
 }
 
-.tab-btn.active {
+.tabBtn.active {
   font-weight: bold;
-  /* Keep bold when active */
   border-bottom: 2px solid black;
-  /* Optional: Underline active tab */
 }
 
-.engagement-sections {
+.engagementSections {
   display: flex;
   gap: 10px;
   margin-bottom: 10px;
 }
 
-.section-btn {
+.sectionBtn {
   padding: 8px 12px;
   border: none;
   background-color: lightgray;
@@ -41,8 +41,19 @@
   transition: all 0.2s ease-in-out;
 }
 
-.section-btn.active {
+.sectionBtn.active {
   font-weight: bold;
-  background-color: gray;
+  background-color: #595959;
   color: white;
+}
+
+.contentBox {
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
+.mainContent {
+  margin-top: 10px;
 }

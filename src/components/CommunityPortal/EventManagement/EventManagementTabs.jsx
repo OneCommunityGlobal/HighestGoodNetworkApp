@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
-import './EventManagementTabs.css';
+import styles from './EventManagementTabs.module.css';
 
 const dummyEvents = [
   { id: '1', name: 'Tech Conference 2025', date: '2025-05-15', location: 'San Francisco' },
@@ -44,28 +44,28 @@ function EventManagementTabs() {
   };
 
   const renderContent = () => {
-    if (!event) return <div className="content-box">Event details below</div>;
+    if (!event) return <div className={styles.contentBox}>Event details below</div>;
 
     if (activeTab === 'engagement') {
       return (
         <div>
-          <div className="engagement-sections">
+          <div className={styles.engagementSections}>
             {engagementSections.map(sec => (
               <button
                 type="button"
                 key={sec}
                 onClick={() => handleEngagementSectionClick(sec)}
-                className={`section-btn ${activeSection === sec ? 'active' : ''}`}
+                className={`${styles.sectionBtn} ${activeSection === sec ? styles.active : ''}`}
               >
                 {sec.toUpperCase()}
               </button>
             ))}
           </div>
-          <div className="content-box">
+          <div className={styles.contentBox}>
             {activeSection === 'feedback' ? (
-              <div>Feedback·section</div>
+              <div>Feedback section</div>
             ) : (
-              <div>Comments·Section</div>
+              <div>Comments Section</div>
             )}
           </div>
         </div>
@@ -74,13 +74,13 @@ function EventManagementTabs() {
 
     switch (activeTab) {
       case 'analysis':
-        return <div className="content-box">Analysis for {event.name}</div>;
+        return <div className={styles.contentBox}>Analysis for {event.name}</div>;
       case 'resources':
-        return <div className="content-box">Resources for {event.name}</div>;
+        return <div className={styles.contentBox}>Resources for {event.name}</div>;
       case 'description':
       default:
         return (
-          <div className="content-box">
+          <div className={styles.contentBox}>
             <p>This is a detailed description of the event.</p>
           </div>
         );
@@ -88,21 +88,21 @@ function EventManagementTabs() {
   };
 
   return (
-    <div className="event-tabs">
-      <div className="tab-buttons">
+    <div className={styles.eventTabs}>
+      <div className={styles.tabButtons}>
         {tabs.map(({ key, label }) => (
           <button
             type="button"
             key={key}
             onClick={() => handleTabClick(key)}
-            className={`tab-btn ${activeTab === key ? 'active' : ''}`}
+            className={`${styles.tabBtn} ${activeTab === key ? styles.active : ''}`}
           >
             {label}
           </button>
         ))}
       </div>
 
-      <div className="main-content">{renderContent()}</div>
+      <div className={styles.mainContent}>{renderContent()}</div>
     </div>
   );
 }

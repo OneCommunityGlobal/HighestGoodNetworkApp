@@ -5,7 +5,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { useSelector } from 'react-redux';
-import './EventPage.css';
+import styles from './EventPage.module.css';
 import EventManagementTabs from './EventManagementTabs';
 
 function EventPage() {
@@ -13,7 +13,6 @@ function EventPage() {
   const { activityid } = useParams();
   const history = useHistory();
 
-  // Event State
   const [eventName, setEventName] = useState('Event Name');
   const [eventType, setEventType] = useState('In-person');
   const [location, setLocation] = useState('San Francisco, CA 94108');
@@ -27,7 +26,6 @@ function EventPage() {
   const [media, setMedia] = useState(null);
   const [description, setDescription] = useState('');
 
-  // Media Upload Handler
   const handleMediaUpload = event => {
     const file = event.target.files[0];
     if (file) {
@@ -39,17 +37,15 @@ function EventPage() {
     }
   };
 
-  // Star Rating Display
   const renderStars = () => {
     const stars = ['one', 'two', 'three', 'four', 'five'];
     return stars.map((id, i) => (
-      <span key={id} className={`star ${i < rating ? 'filled' : ''}`}>
+      <span key={id} className={`${styles.star} ${i < rating ? styles.filled : ''}`}>
         ⭐
       </span>
     ));
   };
 
-  // Date Selection Validation (Prevent Past Dates)
   const handleDateChange = dates => {
     const [start, end] = dates;
     const today = new Date();
@@ -61,36 +57,33 @@ function EventPage() {
   };
 
   return (
-    <div className={`event-page ${darkMode ? 'event-page-dark' : ''}`}>
-      {/* Top Section */}
-      <div className="event-card">
-        {/* Left Section: Event Image */}
-        <div className="event-card__left">
-          <div className="event-card__image">
+    <div className={`${styles.eventPage} ${darkMode ? styles.eventPageDark : ''}`}>
+      <div className={styles.eventCard}>
+        <div className={styles.eventCardLeft}>
+          <div className={styles.eventCardImage}>
             {media ? <img src={media} alt="Event Media" /> : <span>No Media</span>}
           </div>
           <input
             type="file"
             accept="image/*"
             onChange={handleMediaUpload}
-            className="event-card__media-upload"
+            className={styles.eventCardMediaUpload}
           />
         </div>
 
-        {/* Middle Section: Event Details */}
-        <div className="event-card__middle">
+        <div className={styles.eventCardMiddle}>
           <input
             type="text"
-            className={`event-card__title ${darkMode ? 'input-dark' : ''}`}
+            className={`${styles.eventCardTitle} ${darkMode ? styles.inputDark : ''}`}
             value={eventName}
             onChange={e => setEventName(e.target.value)}
           />
-          <p className="event-card__type">
-            Type:
+          <p className={styles.eventCardType}>
+            Type:{' '}
             <select
               value={eventType}
               onChange={e => setEventType(e.target.value)}
-              className={darkMode ? 'status-dropdown-dark' : 'status-dropdown'}
+              className={darkMode ? styles.statusDropdownDark : styles.statusDropdown}
             >
               <option>In-person</option>
               <option>Virtual</option>
@@ -102,13 +95,12 @@ function EventPage() {
               type="text"
               value={location}
               onChange={e => setLocation(e.target.value)}
-              className={darkMode ? 'input-dark' : ''}
+              className={darkMode ? styles.inputDark : ''}
             />
           </p>
-          <div className={`event-card_12 ${darkMode ? 'event-card_12-dark' : ''}`}>
-            {/* First Row */}
-            <div className={`event-card__info ${darkMode ? 'event-card__info-dark' : ''}`}>
-              <div className="info-item">
+          <div className={`${styles.eventCard12} ${darkMode ? styles.eventCard12Dark : ''}`}>
+            <div className={`${styles.eventCardInfo} ${darkMode ? styles.eventCardInfoDark : ''}`}>
+              <div className={styles.infoItem}>
                 <p>
                   📅 Date: <br />
                 </p>
@@ -121,7 +113,7 @@ function EventPage() {
                   endDate={endDate}
                 />
               </div>
-              <div className="info-item">
+              <div className={styles.infoItem}>
                 <p>
                   ⏰ Time: <br />
                 </p>{' '}
@@ -129,10 +121,10 @@ function EventPage() {
                   type="text"
                   value={time}
                   onChange={e => setTime(e.target.value)}
-                  className={darkMode ? 'input-dark' : ''}
+                  className={darkMode ? styles.inputDark : ''}
                 />
               </div>
-              <div className="info-item">
+              <div className={styles.infoItem}>
                 <p>
                   👤 Organizer: <br />
                 </p>{' '}
@@ -140,14 +132,15 @@ function EventPage() {
                   type="text"
                   value={organizer}
                   onChange={e => setOrganizer(e.target.value)}
-                  className={darkMode ? 'input-dark' : ''}
+                  className={darkMode ? styles.inputDark : ''}
                 />
               </div>
             </div>
 
-            {/* Second Row */}
-            <div className={`event-card__extra ${darkMode ? 'event-card__extra-dark' : ''}`}>
-              <div className="extra-item">
+            <div
+              className={`${styles.eventCardExtra} ${darkMode ? styles.eventCardExtraDark : ''}`}
+            >
+              <div className={styles.extraItem}>
                 {' '}
                 <p>
                   👥 Capacity:
@@ -156,17 +149,17 @@ function EventPage() {
                     type="text"
                     value={capacity}
                     onChange={e => setCapacity(e.target.value)}
-                    className={darkMode ? 'input-dark' : ''}
+                    className={darkMode ? styles.inputDark : ''}
                   />
                 </p>
               </div>
-              <div className="extra-item">
+              <div className={styles.extraItem}>
                 {' '}
                 <p>
                   ⭐ Overall Rating: <br /> {renderStars()}
                 </p>
               </div>
-              <div className="extra-item">
+              <div className={styles.extraItem}>
                 {' '}
                 <p>
                   Status:
@@ -174,7 +167,9 @@ function EventPage() {
                   <select
                     value={status}
                     onChange={e => setStatus(e.target.value)}
-                    className={`status-dropdown ${darkMode ? 'status-dropdown-dark' : ''}`}
+                    className={`${styles.statusDropdown} ${
+                      darkMode ? styles.statusDropdownDark : ''
+                    }`}
                   >
                     <option>Active</option>
                     <option>Finished</option>
@@ -186,21 +181,19 @@ function EventPage() {
           </div>
         </div>
 
-        {/* Right Section: Calendar */}
-        <div className={`event-card__right ${darkMode ? 'event-card__right-dark' : ''}`}>
+        <div className={`${styles.eventCardRight} ${darkMode ? styles.eventCardRightDark : ''}`}>
           <Calendar
-            className={darkMode ? 'react-calendar dark-mode' : 'react-calendar'}
             onChange={date => {
               if (date >= new Date().setHours(0, 0, 0, 0)) {
                 setStartDate(date);
-                setEndDate(date); // Update endDate dynamically
+                setEndDate(date);
               }
             }}
             value={startDate}
-            minDate={new Date()} // Prevent past date selection
+            minDate={new Date()}
             tileClassName={({ date, view }) => {
               if (view === 'month' && date < new Date().setHours(0, 0, 0, 0)) {
-                return 'react-calendar__tile--disabled';
+                return styles.calendarTileDisabled;
               }
               return null;
             }}
@@ -208,27 +201,28 @@ function EventPage() {
         </div>
       </div>
 
-      {/* Bottom Section - Tabs */}
-      <div className="event-tabs">
+      <div className={styles.eventTabs}>
         <EventManagementTabs activityid={activityid} history={history} />
       </div>
 
-      {/* Description Section */}
-      <div className="event-description">
+      <div className={styles.eventDescription}>
         <textarea
-          className="textarea"
+          className={styles.textarea}
           value={description}
           onChange={e => setDescription(e.target.value)}
           placeholder="Enter event description..."
         />
-        <div className="media-upload-container">
+        <div className={styles.mediaUploadContainer}>
           <input
             type="file"
             accept="image/*"
             onChange={handleMediaUpload}
-            className="description-media-upload"
+            className={styles.descriptionMediaUpload}
           />
-          <button type="button" className={`post-btn ${darkMode ? 'post-btn-dark' : ''}`}>
+          <button
+            type="button"
+            className={`${styles.postBtn} ${darkMode ? styles.postBtnDark : ''}`}
+          >
             Post Description
           </button>
         </div>
