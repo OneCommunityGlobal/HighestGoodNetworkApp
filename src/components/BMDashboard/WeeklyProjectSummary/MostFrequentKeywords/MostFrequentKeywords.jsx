@@ -193,6 +193,42 @@ function buildPalette(darkMode) {
   };
 }
 
+function applyDarkCalendarStyles() {
+  const poppers = Array.from(document.querySelectorAll('.react-datepicker-popper'));
+  const activePopper = poppers.find(popper => popper.offsetParent !== null) || poppers.at(-1);
+  if (!activePopper) return;
+
+  const datepicker = activePopper.querySelector('.react-datepicker');
+  const monthContainer = activePopper.querySelector('.react-datepicker__month-container');
+  const header = activePopper.querySelector('.react-datepicker__header');
+  const currentMonth = activePopper.querySelector('.react-datepicker__current-month');
+  const dayNames = activePopper.querySelectorAll('.react-datepicker__day-name');
+  const days = activePopper.querySelectorAll('.react-datepicker__day');
+
+  if (datepicker) {
+    datepicker.style.backgroundColor = '#0f172a';
+    datepicker.style.borderColor = '#334155';
+  }
+  if (monthContainer) monthContainer.style.backgroundColor = '#0f172a';
+  if (header) {
+    header.style.backgroundColor = '#1e293b';
+    header.style.borderBottomColor = '#334155';
+  }
+  if (currentMonth) currentMonth.style.color = '#f8fafc';
+
+  dayNames.forEach(dayName => {
+    dayName.style.color = '#e2e8f0';
+    dayName.style.backgroundColor = 'transparent';
+  });
+
+  days.forEach(day => {
+    if (!day.classList.contains('react-datepicker__day--selected')) {
+      day.style.color = '#f8fafc';
+      day.style.backgroundColor = 'transparent';
+    }
+  });
+}
+
 const DropdownIndicator = props => (
   <selectComponents.DropdownIndicator {...props}>
     <span className={styles.mfkChevron}>▾</span>
@@ -1041,48 +1077,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
   const selectStyles = buildSelectStyles(palette, isMobile);
 
   const applyDarkCalendarTheme = useCallback(() => {
-    requestAnimationFrame(() => {
-      const poppers = Array.from(document.querySelectorAll('.react-datepicker-popper'));
-      const activePopper = poppers.find(popper => popper.offsetParent !== null) || poppers.at(-1);
-      if (!activePopper) return;
-
-      const datepicker = activePopper.querySelector('.react-datepicker');
-      const monthContainer = activePopper.querySelector('.react-datepicker__month-container');
-      const header = activePopper.querySelector('.react-datepicker__header');
-      const currentMonth = activePopper.querySelector('.react-datepicker__current-month');
-      const dayNames = activePopper.querySelectorAll('.react-datepicker__day-name');
-      const days = activePopper.querySelectorAll('.react-datepicker__day');
-
-      if (datepicker) {
-        datepicker.style.backgroundColor = '#0f172a';
-        datepicker.style.borderColor = '#334155';
-      }
-
-      if (monthContainer) {
-        monthContainer.style.backgroundColor = '#0f172a';
-      }
-
-      if (header) {
-        header.style.backgroundColor = '#1e293b';
-        header.style.borderBottomColor = '#334155';
-      }
-
-      if (currentMonth) {
-        currentMonth.style.color = '#f8fafc';
-      }
-
-      dayNames.forEach(dayName => {
-        dayName.style.color = '#e2e8f0';
-        dayName.style.backgroundColor = 'transparent';
-      });
-
-      days.forEach(day => {
-        if (!day.classList.contains('react-datepicker__day--selected')) {
-          day.style.color = '#f8fafc';
-          day.style.backgroundColor = 'transparent';
-        }
-      });
-    });
+    requestAnimationFrame(applyDarkCalendarStyles);
   }, []);
 
   const renderCalendarContainer = useCallback(
