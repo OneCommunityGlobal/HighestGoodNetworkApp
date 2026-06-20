@@ -126,18 +126,19 @@ function buildSelectStyles(palette, isMobile) {
       boxShadow: palette.shadow,
     }),
     menuList: base => ({ ...base, backgroundColor: palette.menuBg }),
-    option: (base, state) => ({
-      ...base,
-      backgroundColor: state.isSelected
-        ? palette.optionSelectedBg
-        : state.isFocused
-        ? palette.optionHoverBg
-        : palette.optionBg,
-      color: palette.text,
-      fontSize: isMobile ? '10px' : '11px',
-      padding: isMobile ? '3px 5px' : '4px 8px',
-      ':active': { backgroundColor: palette.optionHoverBg },
-    }),
+    option: (base, state) => {
+      let optionBg = palette.optionBg;
+      if (state.isSelected) optionBg = palette.optionSelectedBg;
+      else if (state.isFocused) optionBg = palette.optionHoverBg;
+      return {
+        ...base,
+        backgroundColor: optionBg,
+        color: palette.text,
+        fontSize: isMobile ? '10px' : '11px',
+        padding: isMobile ? '3px 5px' : '4px 8px',
+        ':active': { backgroundColor: palette.optionHoverBg },
+      };
+    },
     groupHeading: base => ({
       ...base,
       color: palette.groupHeading,
@@ -156,6 +157,39 @@ function buildSelectStyles(palette, isMobile) {
       color: palette.mutedText,
       backgroundColor: palette.menuBg,
     }),
+  };
+}
+
+function buildPalette(darkMode) {
+  if (darkMode) {
+    return {
+      controlBg: '#243447',
+      controlBorder: '#475569',
+      controlBorderHover: '#64748b',
+      text: '#f8fafc',
+      mutedText: '#cbd5e1',
+      indicator: '#e2e8f0',
+      menuBg: '#243447',
+      optionBg: '#243447',
+      optionHoverBg: '#31465f',
+      optionSelectedBg: '#3b82f6',
+      groupHeading: '#94a3b8',
+      shadow: '0 10px 24px rgba(2, 6, 23, 0.45)',
+    };
+  }
+  return {
+    controlBg: '#ffffff',
+    controlBorder: '#d1d5db',
+    controlBorderHover: '#3b82f6',
+    text: '#0f172a',
+    mutedText: '#64748b',
+    indicator: '#475569',
+    menuBg: '#ffffff',
+    optionBg: '#ffffff',
+    optionHoverBg: '#e2e8f0',
+    optionSelectedBg: '#dbeafe',
+    groupHeading: '#475569',
+    shadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
   };
 }
 
@@ -182,35 +216,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
   const API_BASE = process.env.REACT_APP_APIENDPOINT;
   const reduxDarkMode = useSelector(state => state.theme.darkMode);
   const darkMode = propDarkMode === undefined ? reduxDarkMode : propDarkMode;
-  const palette = darkMode
-    ? {
-        controlBg: '#243447',
-        controlBorder: '#475569',
-        controlBorderHover: '#64748b',
-        text: '#f8fafc',
-        mutedText: '#cbd5e1',
-        indicator: '#e2e8f0',
-        menuBg: '#243447',
-        optionBg: '#243447',
-        optionHoverBg: '#31465f',
-        optionSelectedBg: '#3b82f6',
-        groupHeading: '#94a3b8',
-        shadow: '0 10px 24px rgba(2, 6, 23, 0.45)',
-      }
-    : {
-        controlBg: '#ffffff',
-        controlBorder: '#d1d5db',
-        controlBorderHover: '#3b82f6',
-        text: '#0f172a',
-        mutedText: '#64748b',
-        indicator: '#475569',
-        menuBg: '#ffffff',
-        optionBg: '#ffffff',
-        optionHoverBg: '#e2e8f0',
-        optionSelectedBg: '#dbeafe',
-        groupHeading: '#475569',
-        shadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-      };
+  const palette = buildPalette(darkMode);
 
   // Get today's date for max date restriction
   const today = new Date();
