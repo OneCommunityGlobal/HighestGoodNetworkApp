@@ -86,6 +86,7 @@ function AssignBadgePopup(props) {
     return [];
   };
   let existBadges = addExistBadges();
+  const showBadgeTable = !isLoadingBadge && (props.isTableOpen ?? filteredBadges.length > 0);
 
   return (
     <div data-testid="test-assignbadgepopup">
@@ -99,7 +100,7 @@ function AssignBadgePopup(props) {
         }}
       />
       <div style={{ overflowY: 'scroll', height: '75vh' }}>
-        {!isLoadingBadge && (props.isTableOpen ?? filteredBadges.length > 0) ? (
+        {showBadgeTable ? (
           <Table data-testid="test-badgeResults" className={darkMode ? 'text-light' : ''}>
             <thead
               style={

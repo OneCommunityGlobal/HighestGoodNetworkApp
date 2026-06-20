@@ -8,6 +8,29 @@ import styles from './MostFrequentKeywords.module.css';
 import Select, { components as selectComponents } from 'react-select';
 import PropTypes from 'prop-types';
 
+const calculateDistance = (x1, y1, x2, y2) => Math.hypot(x1 - x2, y1 - y2);
+
+function checkDateInRange(itemDate, startDate, endDate) {
+  if (startDate && endDate) {
+    const start = new Date(startDate);
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+    return itemDate >= start && itemDate <= end;
+  }
+  if (startDate) {
+    const start = new Date(startDate);
+    start.setHours(0, 0, 0, 0);
+    return itemDate >= start;
+  }
+  if (endDate) {
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+    return itemDate <= end;
+  }
+  return true;
+}
+
 const formatCalendarMonth = date =>
   date.toLocaleString('en-US', {
     month: 'long',
@@ -318,26 +341,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
       const filtered = tagsToFilter.filter(item => {
         const itemDate = new Date(item.date);
         itemDate.setHours(0, 0, 0, 0);
-
-        if (startDate && endDate) {
-          const start = new Date(startDate);
-          start.setHours(0, 0, 0, 0);
-          const end = new Date(endDate);
-          end.setHours(23, 59, 59, 999);
-          return itemDate >= start && itemDate <= end;
-        }
-        if (startDate) {
-          const start = new Date(startDate);
-          start.setHours(0, 0, 0, 0);
-          return itemDate >= start;
-        }
-        if (endDate) {
-          const end = new Date(endDate);
-          end.setHours(23, 59, 59, 999);
-          return itemDate <= end;
-        }
-
-        return true;
+        return checkDateInRange(itemDate, startDate, endDate);
       });
 
       const sorted = [...filtered].sort((a, b) => b.count - a.count);
@@ -406,11 +410,6 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
     if (tag.length <= maxLength) return tag;
     return `${tag.substring(0, maxLength - 2)}…`;
   }, []);
-
-  // Helper function to calculate distance
-  const calculateDistance = (x1, y1, x2, y2) => {
-    return Math.hypot(x1 - x2, y1 - y2);
-  };
 
   // Simple, reliable position calculation
   const getPositions = useCallback(

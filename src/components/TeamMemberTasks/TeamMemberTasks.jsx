@@ -723,12 +723,7 @@ const TeamMemberTasks = React.memo(props => {
           </thead>
 
           <tbody className={darkMode ? styles.darkTbody : ''}>
-            {teamList.length === 0 || !selectionsLoaded ? (
-              <SkeletonLoading
-                template="TeamMemberTasks"
-                data-testid="skeleton-loading-team-member-tasks-row"
-              />
-            ) : (
+            {selectionsLoaded && teamList.length > 0 ? (
               teamList
                 .filter(user => filterByUserFeatures(user))
                 .map(user => {
@@ -819,6 +814,11 @@ const TeamMemberTasks = React.memo(props => {
                     </Fragment>
                   );
                 })
+            ) : (
+              <SkeletonLoading
+                template="TeamMemberTasks"
+                data-testid="skeleton-loading-team-member-tasks-row"
+              />
             )}
           </tbody>
         </Table>
