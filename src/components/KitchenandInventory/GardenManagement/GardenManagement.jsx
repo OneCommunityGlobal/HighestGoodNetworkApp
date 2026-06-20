@@ -119,13 +119,14 @@ const calendarSections = [
 
 // --- Add Event Modal ---
 
-const eventShape = PropTypes.shape({
-  crop: PropTypes.string,
-  dateRange: PropTypes.string,
-  location: PropTypes.string,
-  yield: PropTypes.string,
-  status: PropTypes.string,
-});
+const formatDateDisplay = dateStr => {
+  if (!dateStr) return '';
+  const [year, month, day] = dateStr.split('-').map(Number);
+  return new Date(year, month - 1, day).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+  });
+};
 
 function AddEventModal({ sectionTitle, newEvent, setNewEvent, darkMode, onClose, onAdd }) {
   const dm = darkMode ? styles.dark : '';
@@ -145,15 +146,29 @@ function AddEventModal({ sectionTitle, newEvent, setNewEvent, darkMode, onClose,
           placeholder="e.g. Tomatoes"
         />
 
-        <label htmlFor="gm-dateRange" className={`${styles.modalLabel} ${dm}`}>
-          Date Range *
+        <label htmlFor="gm-fromDate" className={`${styles.modalLabel} ${dm}`}>
+          Start Date *
         </label>
         <input
-          id="gm-dateRange"
+          id="gm-fromDate"
+          type="date"
           className={`${styles.modalInput} ${dm}`}
-          value={newEvent.dateRange}
-          onChange={e => setNewEvent({ ...newEvent, dateRange: e.target.value })}
-          placeholder="e.g. Jun 1 - Jun 15"
+          value={newEvent.fromDate}
+          onChange={e => setNewEvent({ ...newEvent, fromDate: e.target.value })}
+          style={darkMode ? { colorScheme: 'dark' } : {}}
+        />
+
+        <label htmlFor="gm-toDate" className={`${styles.modalLabel} ${dm}`}>
+          End Date *
+        </label>
+        <input
+          id="gm-toDate"
+          type="date"
+          className={`${styles.modalInput} ${dm}`}
+          value={newEvent.toDate}
+          min={newEvent.fromDate || undefined}
+          onChange={e => setNewEvent({ ...newEvent, toDate: e.target.value })}
+          style={darkMode ? { colorScheme: 'dark' } : {}}
         />
 
         <label htmlFor="gm-location" className={`${styles.modalLabel} ${dm}`}>
@@ -168,14 +183,17 @@ function AddEventModal({ sectionTitle, newEvent, setNewEvent, darkMode, onClose,
         />
 
         <label htmlFor="gm-yield" className={`${styles.modalLabel} ${dm}`}>
-          Est. Yield
+          Est. Yield (kg)
         </label>
         <input
           id="gm-yield"
+          type="number"
+          min="0"
+          step="0.1"
           className={`${styles.modalInput} ${dm}`}
-          value={newEvent.yield}
-          onChange={e => setNewEvent({ ...newEvent, yield: e.target.value })}
-          placeholder="e.g. Est. 40 kg"
+          value={newEvent.yieldKg}
+          onChange={e => setNewEvent({ ...newEvent, yieldKg: e.target.value })}
+          placeholder="e.g. 40"
         />
 
         <label htmlFor="gm-status" className={`${styles.modalLabel} ${dm}`}>
@@ -206,7 +224,14 @@ function AddEventModal({ sectionTitle, newEvent, setNewEvent, darkMode, onClose,
 
 AddEventModal.propTypes = {
   sectionTitle: PropTypes.string,
-  newEvent: eventShape.isRequired,
+  newEvent: PropTypes.shape({
+    crop: PropTypes.string,
+    fromDate: PropTypes.string,
+    toDate: PropTypes.string,
+    location: PropTypes.string,
+    yieldKg: PropTypes.string,
+    status: PropTypes.string,
+  }).isRequired,
   setNewEvent: PropTypes.func.isRequired,
   darkMode: PropTypes.bool,
   onClose: PropTypes.func.isRequired,
@@ -215,7 +240,14 @@ AddEventModal.propTypes = {
 
 // --- Main Component ---
 
-const emptyEvent = { crop: '', dateRange: '', location: '', yield: '', status: 'upcoming' };
+const emptyEvent = {
+  crop: '',
+  fromDate: '',
+  toDate: '',
+  location: '',
+  yieldKg: '',
+  status: 'upcoming',
+};
 
 function GardenManagement() {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -232,11 +264,27 @@ function GardenManagement() {
   const closeModal = () => setAddModal(null);
 
   const handleAddEvent = () => {
-    if (!newEvent.crop || !newEvent.dateRange || !newEvent.location) return;
+    if (!newEvent.crop || !newEvent.fromDate || !newEvent.toDate || !newEvent.location) return;
+    const from = formatDateDisplay(newEvent.fromDate);
+    const to = formatDateDisplay(newEvent.toDate);
+    const yieldDisplay = newEvent.yieldKg ? `Est. ${newEvent.yieldKg} kg` : '';
     setSections(prev =>
       prev.map(s => {
         if (s.id !== addModal) return s;
-        return { ...s, events: [...s.events, { ...newEvent, id: Date.now() }] };
+        return {
+          ...s,
+          events: [
+            ...s.events,
+            {
+              id: Date.now(),
+              crop: newEvent.crop,
+              dateRange: `${from} – ${to}`,
+              location: newEvent.location,
+              yield: yieldDisplay,
+              status: newEvent.status,
+            },
+          ],
+        };
       }),
     );
     closeModal();
