@@ -4,6 +4,7 @@ import { BiPencil } from 'react-icons/bi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSortDown, faSort, faSortUp } from '@fortawesome/free-solid-svg-icons';
 import RecordsModal from './RecordsModal';
+import styles from './ItemListView.module.css';
 
 const rowsPerPageOptions = [25, 50, 100];
 
@@ -40,6 +41,7 @@ export default function ItemsTable({
   endRow,
   onPageChange,
   onRowsPerPageChange,
+  itemType,
 }) {
   const [modal, setModal] = useState(false);
   const [record, setRecord] = useState(null);

@@ -263,6 +263,7 @@ export function ItemListView({
             endRow={endRow}
             onPageChange={setCurrentPage}
             onRowsPerPageChange={setRowsPerPage}
+            itemType={itemType}
           />
         )}
       </section>
