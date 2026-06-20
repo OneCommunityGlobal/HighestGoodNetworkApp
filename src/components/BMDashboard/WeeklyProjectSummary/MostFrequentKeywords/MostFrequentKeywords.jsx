@@ -229,6 +229,90 @@ function applyDarkCalendarStyles() {
   });
 }
 
+const TEST_DATASETS = {
+  sustainability: {
+    label: 'Sustainability',
+    type: 'test',
+    data: [
+      { tag: 'Solar Panels', count: 98, date: '2023-03-15' },
+      { tag: 'Wind Energy', count: 87, date: '2023-07-22' },
+      { tag: 'Recycled Materials', count: 76, date: '2023-11-08' },
+      { tag: 'Green Roof', count: 65, date: '2024-02-14' },
+      { tag: 'Rainwater Harvest', count: 54, date: '2024-05-19' },
+      { tag: 'LED Lighting', count: 92, date: '2024-08-25' },
+      { tag: 'HVAC Efficiency', count: 84, date: '2024-10-30' },
+      { tag: 'Smart Meter', count: 71, date: '2025-01-12' },
+    ],
+  },
+  construction: {
+    label: 'Construction',
+    type: 'test',
+    data: [
+      { tag: 'Modular Design', count: 82, date: '2023-04-10' },
+      { tag: 'Prefabrication', count: 73, date: '2023-08-17' },
+      { tag: 'Green Concrete', count: 68, date: '2023-12-03' },
+      { tag: 'Bamboo Floor', count: 54, date: '2024-03-22' },
+      { tag: 'Reclaimed Wood', count: 77, date: '2024-11-11' },
+      { tag: 'Steel Recycling', count: 69, date: '2025-02-05' },
+      { tag: 'Solar Tiles', count: 88, date: '2025-07-15' },
+      { tag: 'Passive House', count: 81, date: '2026-07-31' },
+    ],
+  },
+  energy: {
+    label: 'Energy',
+    type: 'test',
+    data: [
+      { tag: 'Photovoltaic', count: 95, date: '2023-05-25' },
+      { tag: 'Wind Turbine', count: 78, date: '2023-09-12' },
+      { tag: 'Geothermal', count: 62, date: '2024-01-08' },
+      { tag: 'Biomass', count: 51, date: '2024-04-30' },
+      { tag: 'Hydro Power', count: 43, date: '2024-07-17' },
+      { tag: 'Smart Grid', count: 83, date: '2025-03-06' },
+      { tag: 'Energy Storage', count: 91, date: '2025-08-14' },
+      { tag: 'Microgrid', count: 74, date: '2025-11-09' },
+    ],
+  },
+  materials: {
+    label: 'Materials',
+    type: 'test',
+    data: [
+      { tag: 'Recycled Steel', count: 79, date: '2023-06-07' },
+      { tag: 'Sustainable Timber', count: 88, date: '2023-10-28' },
+      { tag: 'Low Carbon Concrete', count: 82, date: '2024-02-11' },
+      { tag: 'Bamboo', count: 61, date: '2024-05-24' },
+      { tag: 'Hempcrete', count: 53, date: '2024-08-19' },
+      { tag: 'Reclaimed Wood', count: 71, date: '2025-03-17' },
+      { tag: 'Green Insulation', count: 64, date: '2025-09-01' },
+      { tag: 'Natural Stone', count: 58, date: '2026-06-21' },
+    ],
+  },
+};
+
+function generateProjectSpecificData(projectName) {
+  if (projectName.toLowerCase().includes('duplicable city center')) {
+    return [
+      { tag: 'Modular Design', count: 85, date: '2025-03-15' },
+      { tag: 'Prefabrication', count: 78, date: '2025-04-22' },
+      { tag: 'Replicable Units', count: 72, date: '2025-05-10' },
+      { tag: 'Standard Parts', count: 64, date: '2025-06-18' },
+      { tag: 'Urban Planning', count: 81, date: '2025-08-30' },
+      { tag: 'Smart City Tech', count: 69, date: '2025-10-05' },
+      { tag: 'Energy Efficiency', count: 76, date: '2026-01-19' },
+      { tag: 'Mixed Use', count: 68, date: '2026-05-08' },
+    ];
+  }
+  return [
+    { tag: 'Site Planning', count: 72, date: '2024-03-15' },
+    { tag: 'Foundation', count: 65, date: '2024-06-22' },
+    { tag: 'Framing', count: 58, date: '2024-09-10' },
+    { tag: 'Electrical', count: 62, date: '2025-01-18' },
+    { tag: 'Plumbing', count: 54, date: '2025-04-25' },
+    { tag: 'HVAC', count: 67, date: '2025-07-30' },
+    { tag: 'Finishing', count: 59, date: '2025-11-14' },
+    { tag: 'Landscaping', count: 51, date: '2026-02-05' },
+  ];
+}
+
 const DropdownIndicator = props => (
   <selectComponents.DropdownIndicator {...props}>
     <span className={styles.mfkChevron}>▾</span>
@@ -258,66 +342,6 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  // Clean datasets with reasonable text lengths
-  const testDatasets = {
-    sustainability: {
-      label: 'Sustainability',
-      type: 'test',
-      data: [
-        { tag: 'Solar Panels', count: 98, date: '2023-03-15' },
-        { tag: 'Wind Energy', count: 87, date: '2023-07-22' },
-        { tag: 'Recycled Materials', count: 76, date: '2023-11-08' },
-        { tag: 'Green Roof', count: 65, date: '2024-02-14' },
-        { tag: 'Rainwater Harvest', count: 54, date: '2024-05-19' },
-        { tag: 'LED Lighting', count: 92, date: '2024-08-25' },
-        { tag: 'HVAC Efficiency', count: 84, date: '2024-10-30' },
-        { tag: 'Smart Meter', count: 71, date: '2025-01-12' },
-      ],
-    },
-    construction: {
-      label: 'Construction',
-      type: 'test',
-      data: [
-        { tag: 'Modular Design', count: 82, date: '2023-04-10' },
-        { tag: 'Prefabrication', count: 73, date: '2023-08-17' },
-        { tag: 'Green Concrete', count: 68, date: '2023-12-03' },
-        { tag: 'Bamboo Floor', count: 54, date: '2024-03-22' },
-        { tag: 'Reclaimed Wood', count: 77, date: '2024-11-11' },
-        { tag: 'Steel Recycling', count: 69, date: '2025-02-05' },
-        { tag: 'Solar Tiles', count: 88, date: '2025-07-15' },
-        { tag: 'Passive House', count: 81, date: '2026-07-31' },
-      ],
-    },
-    energy: {
-      label: 'Energy',
-      type: 'test',
-      data: [
-        { tag: 'Photovoltaic', count: 95, date: '2023-05-25' },
-        { tag: 'Wind Turbine', count: 78, date: '2023-09-12' },
-        { tag: 'Geothermal', count: 62, date: '2024-01-08' },
-        { tag: 'Biomass', count: 51, date: '2024-04-30' },
-        { tag: 'Hydro Power', count: 43, date: '2024-07-17' },
-        { tag: 'Smart Grid', count: 83, date: '2025-03-06' },
-        { tag: 'Energy Storage', count: 91, date: '2025-08-14' },
-        { tag: 'Microgrid', count: 74, date: '2025-11-09' },
-      ],
-    },
-    materials: {
-      label: 'Materials',
-      type: 'test',
-      data: [
-        { tag: 'Recycled Steel', count: 79, date: '2023-06-07' },
-        { tag: 'Sustainable Timber', count: 88, date: '2023-10-28' },
-        { tag: 'Low Carbon Concrete', count: 82, date: '2024-02-11' },
-        { tag: 'Bamboo', count: 61, date: '2024-05-24' },
-        { tag: 'Hempcrete', count: 53, date: '2024-08-19' },
-        { tag: 'Reclaimed Wood', count: 71, date: '2025-03-17' },
-        { tag: 'Green Insulation', count: 64, date: '2025-09-01' },
-        { tag: 'Natural Stone', count: 58, date: '2026-06-21' },
-      ],
-    },
-  };
-
   const fetchProjects = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -330,35 +354,6 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
         console.error('Failed to fetch projects', err);
       }
     }
-  };
-
-  // Generate clean data for any project
-  const generateProjectSpecificData = projectName => {
-    const isDuplicableCityCenter = projectName.toLowerCase().includes('duplicable city center');
-
-    if (isDuplicableCityCenter) {
-      return [
-        { tag: 'Modular Design', count: 85, date: '2025-03-15' },
-        { tag: 'Prefabrication', count: 78, date: '2025-04-22' },
-        { tag: 'Replicable Units', count: 72, date: '2025-05-10' },
-        { tag: 'Standard Parts', count: 64, date: '2025-06-18' },
-        { tag: 'Urban Planning', count: 81, date: '2025-08-30' },
-        { tag: 'Smart City Tech', count: 69, date: '2025-10-05' },
-        { tag: 'Energy Efficiency', count: 76, date: '2026-01-19' },
-        { tag: 'Mixed Use', count: 68, date: '2026-05-08' },
-      ];
-    }
-
-    return [
-      { tag: 'Site Planning', count: 72, date: '2024-03-15' },
-      { tag: 'Foundation', count: 65, date: '2024-06-22' },
-      { tag: 'Framing', count: 58, date: '2024-09-10' },
-      { tag: 'Electrical', count: 62, date: '2025-01-18' },
-      { tag: 'Plumbing', count: 54, date: '2025-04-25' },
-      { tag: 'HVAC', count: 67, date: '2025-07-30' },
-      { tag: 'Finishing', count: 59, date: '2025-11-14' },
-      { tag: 'Landscaping', count: 51, date: '2026-02-05' },
-    ];
   };
 
   const fetchProjectData = async (projectId, projectName) => {
@@ -417,7 +412,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
     }
 
     if (selected.type === 'test') {
-      setAllTags(testDatasets[selected.value].data);
+      setAllTags(TEST_DATASETS[selected.value].data);
     } else if (selected.type === 'project') {
       const project = projects.find(p => p._id === selected.value);
       if (project) {
@@ -1037,7 +1032,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
 
     options.push({
       label: '📊 TEST DATASETS',
-      options: Object.entries(testDatasets).map(([key, dataset]) => ({
+      options: Object.entries(TEST_DATASETS).map(([key, dataset]) => ({
         label: dataset.label,
         value: key,
         type: 'test',
