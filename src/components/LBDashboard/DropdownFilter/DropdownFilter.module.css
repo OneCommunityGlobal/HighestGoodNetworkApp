@@ -1,14 +1,31 @@
 .selectorContainer {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  margin-top: 40px;
 }
 
 .select {
-  padding: 8px 12px;
-  font-size: 1rem;
-  margin-top: 10px;
+  padding: 6px 10px;
+  font-size: 0.88rem;
   border-radius: 6px;
   border: 1px solid #ccc;
+  background-color: #fff;
+  color: #222;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.select:focus {
+  border-color: #4f6fdc;
+}
+
+.selectDark {
+  background-color: transparent;
+  color: #fff;
+  border-color: #89a2ff;
+  color-scheme: dark;
+}
+
+.selectDark:focus {
+  border-color: #a8bfff;
 }

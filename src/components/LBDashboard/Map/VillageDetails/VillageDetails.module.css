@@ -27,7 +27,7 @@
   border: 1px solid #ccc;
   border-radius: 8px;
   width: 85%;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
 }
 
 .containerTop {
@@ -133,8 +133,45 @@
   font-weight: bold;
 }
 
+/* Dark mode */
+.mainContainer.dark {
+  background-color: #1a1c2e;
+}
+
+.contentContainer.dark {
+  background-color: #1e2235;
+  border-color: #2f3a5e;
+}
+
+.containerMain.dark {
+  background-color: #252840;
+}
+
+.infoSection.dark {
+  background-color: #1e2a3a;
+  color: #e0ddd8;
+}
+
+.infoSection.dark h2 {
+  color: #c8d8f0;
+}
+
+.infoSection.dark h3 {
+  color: #a8bcdc;
+}
+
+.infoSection.dark li {
+  color: #c0cce0;
+}
+
+.propertyCard.dark {
+  background: #2a3550;
+  border-color: #3a4a6a;
+  color: #c0cce0;
+}
+
 /* Responsive */
-@media (max-width: 990px) {
+@media (width <= 990px) {
   .detailsContainer {
     flex-direction: column;
   }

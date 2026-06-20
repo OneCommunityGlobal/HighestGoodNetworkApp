@@ -342,7 +342,7 @@ function BiddingHomepage() {
   };
 
   return (
-    <div className={`${styles.biddingBg} ${darkMode ? 'dark-mode' : ''}`}>
+    <div className={`${styles.biddingBg} ${darkMode ? styles['dark-mode'] : ''}`}>
       <div className={styles.logoContainer}>
         <img
           src={logo}
@@ -350,9 +350,9 @@ function BiddingHomepage() {
           className={styles.mainLogo}
         />
       </div>
-      <Container fluid className={`bidding-homepage-container ${darkMode ? 'dark-mode' : ''}`}>
+      <Container fluid className={styles.biddingHomepageContainer}>
         <Header />
-        <div className={`navigation-tabs ${darkMode ? 'dark-mode' : ''}`}>
+        <div className={styles.navigationTabs}>
           <div className="filter-by-date d-flex align-items-center gap-3">
             <Dropdown
               isOpen={dateFilterDropdownOpen}
@@ -437,7 +437,9 @@ function BiddingHomepage() {
           {currentProperties.length > 0 ? (
             currentProperties.map(property => (
               <Col md={4} key={property.id} className={styles.propertyCardCol}>
-                <div className={`${styles.propertyCardGray} ${darkMode ? 'dark-mode' : ''}`}>
+                <div
+                  className={`${styles.propertyCardGray} ${darkMode ? styles['dark-mode'] : ''}`}
+                >
                   <div className={styles.propertyImage}>
                     <img src={property.image} alt={property.title} />
                   </div>
@@ -468,7 +470,9 @@ function BiddingHomepage() {
         {filteredProperties.length > ITEMS_PER_PAGE && (
           <Row className="justify-content-center mb-4">
             <Col xs="auto">
-              <Pagination className={`${styles.customPagination} ${darkMode ? 'dark-mode' : ''}`}>
+              <Pagination
+                className={`${styles.customPagination} ${darkMode ? styles['dark-mode'] : ''}`}
+              >
                 <PaginationItem disabled={currentPage === 1}>
                   <PaginationLink onClick={handlePrevPage} aria-label="Previous page">
                     <FaChevronLeft />

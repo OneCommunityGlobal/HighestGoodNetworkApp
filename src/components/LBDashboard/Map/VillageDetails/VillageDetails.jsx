@@ -15,6 +15,7 @@ function shouldFetchVillage(village, villageId) {
 export default function VillageDetails() {
   const location = useLocation();
   const dispatch = useDispatch();
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const villageId = useMemo(() => new URLSearchParams(location.search).get('id'), [
     location.search,
@@ -30,14 +31,16 @@ export default function VillageDetails() {
 
   if (!village) return <h2 style={NOT_FOUND_STYLE}>Village not found</h2>;
 
+  const dm = darkMode ? styles.dark : '';
+
   return (
-    <div className={styles.mainContainer}>
+    <div className={`${styles.mainContainer} ${dm}`}>
       <div className={styles.logoContainer}>
         <img src={logo} alt="One Community Logo" />
       </div>
-      <div className={styles.contentContainer}>
+      <div className={`${styles.contentContainer} ${dm}`}>
         <div className={styles.containerTop} />
-        <div className={styles.containerMain}>
+        <div className={`${styles.containerMain} ${dm}`}>
           <div className={styles.villageDetailsPage}>
             <div className={styles.detailsContainer}>
               {village.villageMapLink && (
@@ -49,11 +52,11 @@ export default function VillageDetails() {
                   />
                 </div>
               )}
-              <div className={styles.infoSection}>
-                <h2>{village.name}</h2>
+              <div className={`${styles.infoSection} ${dm}`}>
+                <h2 className={dm}>{village.name}</h2>
                 {village.amenities?.length > 0 && (
                   <>
-                    <h3>Amenities</h3>
+                    <h3 className={dm}>Amenities</h3>
                     <ul>
                       {village.amenities.map(amenity => (
                         <li key={amenity}>{amenity}</li>
@@ -63,10 +66,10 @@ export default function VillageDetails() {
                 )}
                 {village.properties?.length > 0 && (
                   <>
-                    <h3>Properties</h3>
+                    <h3 className={dm}>Properties</h3>
                     <div className={styles.propertiesGrid}>
                       {village.properties.map(p => (
-                        <div key={p._id || p.unit} className={styles.propertyCard}>
+                        <div key={p._id || p.unit} className={`${styles.propertyCard} ${dm}`}>
                           <p>Unit: {p.unit}</p>
                         </div>
                       ))}
