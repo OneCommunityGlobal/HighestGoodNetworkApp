@@ -1,5 +1,5 @@
 :global(body) {
-  font-family: 'Poppins', sans-serif;
+  font-family: Poppins, sans-serif;
   background: #fff;
   margin: 0;
   padding: 0;
@@ -11,9 +11,9 @@
 .dashboard-container {
   padding: 40px 10px;
   margin: 0 auto;
-  background: #ffffff;
+  background: #fff;
   border-radius: 16px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 20px rgb(0 0 0 /10%);
   font-size: 16px;
   line-height: 1.6;
   letter-spacing: 0.2px;
@@ -22,7 +22,7 @@
 
 .dashboard-container-dark {
   background: #1b2a41;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 6px 20px rgb(0 0 0 /30%);
 }
 
 /* ======================================
@@ -34,14 +34,14 @@
   align-items: center;
   margin-bottom: 30px;
   padding: 16px 24px;
-  background: linear-gradient(120deg, #ffffff, #f8f9fa);
+  background: linear-gradient(120deg, #fff, #f8f9fa);
   border-radius: 12px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 3px 10px rgb(0 0 0 /10%);
 }
 
 .dashboard-header-dark {
   background: linear-gradient(120deg, #2b3e59, #22304a);
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 3px 10px rgb(0 0 0 /30%);
 }
 
 .dashboard-header h1 {
@@ -52,7 +52,7 @@
 }
 
 .dashboard-title-dark {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 /* ======================================
@@ -64,8 +64,8 @@
   align-items: center;
   border-radius: 999px;
   overflow: hidden;
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
-  background: #ffffff;
+  box-shadow: 0 0 4px rgb(0 0 0 /10%);
+  background: #fff;
 }
 
 .dashboard-search-input {
@@ -74,14 +74,14 @@
   border: 2px solid #1b3c55;
   min-width: 260px;
   outline: none;
-  background: #ffffff;
+  background: #fff;
   color: #2c3e50;
 }
 
 .dashboard-search-input-dark {
   border-color: #4a5a77;
   background: #3a506b;
-  color: #ffffff;
+  color: #fff;
 }
 
 .dashboard-search-input-dark::placeholder {
@@ -90,13 +90,13 @@
 
 .dashboard-search-input:focus {
   border-color: #34495e;
-  box-shadow: 0 0 8px rgba(52, 73, 94, 0.3);
+  box-shadow: 0 0 8px rgb(52 73 94 /30%);
   outline: none;
 }
 
 .dashboard-search-input-dark:focus {
   border-color: #e8a71c;
-  box-shadow: 0 0 8px rgba(232, 167, 28, 0.3);
+  box-shadow: 0 0 8px rgb(232 167 28 /30%);
 }
 
 .dashboard-clear-btn {
@@ -116,7 +116,7 @@
 }
 
 .dashboard-clear-btn-dark {
-  color: #ffffff;
+  color: #fff;
 }
 
 .dashboard-search-icon-btn {
@@ -139,7 +139,7 @@
 }
 
 .dashboard-search-icon-btn-dark {
-  color: #ffffff;
+  color: #fff;
 }
 
 /* Hide browser's built-in clear icon for search inputs */
@@ -147,8 +147,8 @@
 .dashboard-search-input::-webkit-search-decoration,
 .dashboard-search-input::-webkit-search-results-button,
 .dashboard-search-input::-webkit-search-results-decoration {
-  -webkit-appearance: none;
   appearance: none;
+  display: none;
 }
 
 /* ======================================
@@ -180,28 +180,28 @@
 .filter-section {
   width: 100%;
   padding: 24px;
-  background: #ffffff;
+  background: #fff;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgb(0 0 0 /10%);
   overflow: visible;
   box-sizing: border-box;
 }
 
 .filter-section-dark {
   background: #2b3e59;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 12px rgb(0 0 0 /30%);
 }
 
 .filter-section h4 {
   font-size: 1.5rem;
   color: #2c3e50;
   font-weight: 600;
-  margin: 0 0 24px 0;
+  margin: 0 0 24px;
   padding: 0;
 }
 
 .filter-section-title-dark {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .filter-section-divider {
@@ -221,16 +221,16 @@
   font-size: 1rem;
   font-weight: 500;
   color: #2c3e50;
-  margin: 0 0 8px 0;
+  margin: 0 0 8px;
   display: block;
   width: 100%;
 }
 
 .filter-label-dark {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
-.filter-item input:not([type="checkbox"]):not([type="radio"]),
+.filter-item input:not([type="checkbox"], [type="radio"]),
 .filter-item select {
   padding: 10px 14px;
   margin: 0;
@@ -240,15 +240,15 @@
   font-size: 1rem;
   transition: all 0.3s ease;
   border: 1px solid #ddd;
-  background: #ffffff;
+  background: #fff;
   color: #2c3e50;
   box-sizing: border-box;
 }
 
-.filter-item input:not([type="checkbox"]):not([type="radio"]):focus,
+.filter-item input:not([type="checkbox"], [type="radio"]):focus,
 .filter-item select:focus {
   border-color: #2c3e50;
-  box-shadow: 0 0 5px rgba(44, 62, 80, 0.4);
+  box-shadow: 0 0 5px rgb(44 62 80 /40%);
   outline: none;
 }
 
@@ -256,18 +256,18 @@
 .date-filter-dark {
   border-color: #4a5a77 !important;
   background: #3a506b !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .filter-select-dark:focus,
 .date-filter-dark:focus {
   border-color: #e8a71c !important;
-  box-shadow: 0 0 5px rgba(232, 167, 28, 0.4) !important;
+  box-shadow: 0 0 5px rgb(232 167 28 /40%) !important;
 }
 
 .filter-select-dark option {
   background: #3a506b !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 /* Global dark mode styles for reactstrap Input components */
@@ -276,7 +276,7 @@
 :global(.date-filter-dark.form-control) {
   border-color: #4a5a77 !important;
   background-color: #3a506b !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 :global(.filter-select-dark.form-control:focus),
@@ -284,8 +284,8 @@
 :global(.date-filter-dark.form-control:focus) {
   border-color: #e8a71c !important;
   background-color: #3a506b !important;
-  color: #ffffff !important;
-  box-shadow: 0 0 5px rgba(232, 167, 28, 0.4) !important;
+  color: #fff !important;
+  box-shadow: 0 0 5px rgb(232 167 28 /40%) !important;
 }
 
 /* Radio and Checkbox Styling */
@@ -325,7 +325,6 @@
   flex-shrink: 0;
   position: relative;
   appearance: auto;
-  -webkit-appearance: auto;
   box-sizing: border-box;
 }
 
@@ -370,10 +369,7 @@
 /* Override any reactstrap default styles that might clip content */
 :global(.radio-label .form-check-input),
 :global(.checkbox-label .form-check-input) {
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-  margin-top: 0 !important;
-  margin-bottom: 0 !important;
+  margin: 0 !important;
   position: static !important;
 }
 
@@ -387,7 +383,7 @@
 }
 
 .filter-option-text-dark {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .date-filter {
@@ -402,13 +398,13 @@
 .section-title {
   font-size: 2.2rem;
   color: #2c3e50;
-  margin: 0 0 24px 0;
+  margin: 0 0 24px;
   font-weight: bold;
   text-align: center;
 }
 
 .section-title-dark {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 /* ======================================
@@ -424,19 +420,19 @@
   flex-direction: column;
   width: 100%;
   aspect-ratio: 1 / 1;
-  background: #ffffff;
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  background: #fff;
+  box-shadow: 0 6px 15px rgb(0 0 0 /10%);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .event-card-dark {
   background: #2b3e59;
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 6px 15px rgb(0 0 0 /30%);
 }
 
 .event-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 20px rgb(0 0 0 /20%);
 }
 
 .event-card-col {
@@ -478,7 +474,7 @@
 }
 
 .event-card-dark:hover {
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 20px rgb(0 0 0 /50%);
 }
 
 .event-card-body-dark {
@@ -495,7 +491,7 @@
 }
 
 .event-title-dark {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .event-date,
@@ -507,10 +503,6 @@
   align-items: center;
   gap: 8px;
   margin: 4px 0;
-}
-
-.event-text-dark {
-  color: #d1d5db !important;
 }
 
 .event-text-dark {
@@ -561,7 +553,7 @@
 
 .dashboard-actions button {
   background-color: #2c3e50;
-  color: #ffffff;
+  color: #fff;
   border: none;
   padding: 12px 25px;
   font-size: 1rem;
@@ -573,14 +565,14 @@
 
 .dashboard-actions button:hover {
   background-color: #34495e;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px rgb(0 0 0 /20%);
 }
 
 /* ======================================
    LOADING & ERROR STATES
    ====================================== */
 .loading-text-dark {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .error-text {
@@ -597,9 +589,9 @@
 /* ======================================
    RESPONSIVE
    ====================================== */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .dashboard-main {
-    padding: 24px 0 0 0;
+    padding: 24px 0 0;
   }
 
   .filter-section {
