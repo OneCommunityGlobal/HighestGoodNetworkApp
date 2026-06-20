@@ -383,6 +383,33 @@ function MFKDatePickers({
   );
 }
 
+const mfkStylesShape = PropTypes.shape({
+  controlGroup: PropTypes.string,
+  mfkLabel: PropTypes.string,
+  mfkDatepicker: PropTypes.string,
+  mfkDatepickerDark: PropTypes.string,
+  clearButton: PropTypes.string,
+  mfkChartContainer: PropTypes.string,
+  mfkLoading: PropTypes.string,
+  mfkError: PropTypes.string,
+  mfkEmpty: PropTypes.string,
+});
+
+MFKDatePickers.propTypes = {
+  darkMode: PropTypes.bool,
+  isMobile: PropTypes.bool,
+  startDate: PropTypes.instanceOf(Date),
+  endDate: PropTypes.instanceOf(Date),
+  today: PropTypes.instanceOf(Date),
+  handleStartDateChange: PropTypes.func,
+  handleEndDateChange: PropTypes.func,
+  handleClearDates: PropTypes.func,
+  renderCalendarContainer: PropTypes.func,
+  applyDarkCalendarTheme: PropTypes.func,
+  renderCalendarHeader: PropTypes.func,
+  mfkStyles: mfkStylesShape,
+};
+
 function MFKChartArea({ isLoading, error, tags, selectedOption, svgRef, containerRef, mfkStyles }) {
   return (
     <div ref={containerRef} className={mfkStyles.mfkChartContainer}>
@@ -397,6 +424,19 @@ function MFKChartArea({ isLoading, error, tags, selectedOption, svgRef, containe
     </div>
   );
 }
+
+MFKChartArea.propTypes = {
+  isLoading: PropTypes.bool,
+  error: PropTypes.string,
+  tags: PropTypes.arrayOf(PropTypes.shape({ tag: PropTypes.string, count: PropTypes.number })),
+  selectedOption: PropTypes.shape({ value: PropTypes.string, type: PropTypes.string }),
+  svgRef: PropTypes.oneOfType([PropTypes.func, PropTypes.shape({ current: PropTypes.object })]),
+  containerRef: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.shape({ current: PropTypes.object }),
+  ]),
+  mfkStyles: mfkStylesShape,
+};
 
 const DropdownIndicator = props => (
   <selectComponents.DropdownIndicator {...props}>
