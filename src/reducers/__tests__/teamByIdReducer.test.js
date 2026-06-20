@@ -1,7 +1,6 @@
 import { teamByIdReducer } from '../teamByIdReducer';
 import { GET_TEAM_BY_ID } from '../../constants/team';
 
-
 describe('teamByIdReducer', () => {
   it('should return the initial state when state is undefined', () => {
     const initialState = null;

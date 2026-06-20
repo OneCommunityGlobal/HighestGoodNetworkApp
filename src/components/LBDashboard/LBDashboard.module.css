@@ -1,0 +1,923 @@
+/* stylelint-disable  */
+body {
+  font-family: Poppins, sans-serif;
+  background: #fff;
+  margin: 0;
+  padding: 0;
+}
+
+.dashboardContainer {
+  background: #faf9fb;
+  margin: 0;
+  padding-top: 20px;
+}
+
+.darkContainer {
+  background: #1b2a41;
+  color: #fff;
+}
+
+.dashboardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding: 0 15px;
+}
+
+.chartRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.chartCol {
+  flex: 1 1 350px;
+  min-width: 350px;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.fullWidthChartCol {
+  flex: 1 1 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font-size: 26px;
+  font-weight: 700;
+  margin: 0;
+  color: #000;
+}
+
+.darkMode .title {
+  color: #e1e1e1;
+}
+
+.backBtn {
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+}
+
+.filterBar {
+  background: #fff;
+  border: 1px solid #ece7f4;
+  border-radius: 14px;
+  padding: 16px;
+  margin: 0 15px 18px;
+}
+
+.filterGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.metricSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-top: 12px;
+  border-top: 1px solid #ece7f4;
+}
+
+.darkFilterBar .metricSection {
+  border-top-color: #34495E;
+}
+
+@media (max-width: 640px) {
+  .filterBar {
+    grid-template-columns: 1fr;
+  }
+
+  .currentMetric {
+    justify-self: start;
+  }
+}
+
+.filterLabel {
+  font-size: 12px;
+  color: #4a4a4a;
+  font-weight: 600;
+}
+
+.darkFilterLabel {
+  color: #b0b0b0;
+}
+
+.dateInput,
+.selectInput {
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  background: #fff;
+}
+
+.dateInput:focus,
+.selectInput:focus {
+  outline: none;
+  border-color: #6a4ff7;
+}
+
+.darkDateInput,
+.darkSelectInput {
+  background: #34495E;
+  border-color: #4A5F7F;
+  color: #fff;
+}
+
+.darkSelectInput option {
+  background: #34495E;
+  color: #fff;
+}
+
+.selectInput {
+  appearance: none;
+  background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"12\" height=\"12\" viewBox=\"0 0 12 12\"><path fill=\"%23333\" d=\"M6 9L1 4h10z\"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 32px;
+}
+
+.darkSelectInput {
+  background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"12\" height=\"12\" viewBox=\"0 0 12 12\"><path fill=\"%23fff\" d=\"M6 9L1 4h10z\"/></svg>');
+}
+
+.categoryGroup {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filterBtn {
+  background: #5cb85c !important;
+  border-color: #5cb85c !important;
+  color: #fff !important;
+  border-radius: 16px;
+  padding: 6px 14px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.filterBtn:hover {
+  background: #4cae4c !important;
+  border-color: #4cae4c !important;
+  color: #fff !important;
+}
+
+.filterBtn:focus {
+  outline: none;
+  box-shadow: none !important;
+}
+
+.active {
+  background: #000 !important;
+  border-color: #000 !important;
+  color: #fff !important;
+}
+
+.darkFilterBtn {
+  background: #5cb85c !important;
+  border-color: #5cb85c !important;
+}
+
+.darkFilterBtn:hover {
+  background: #4cae4c !important;
+  border-color: #4cae4c !important;
+}
+
+.darkFilterBtn.active {
+  background: #1e7e34 !important;
+  border-color: #1e7e34 !important;
+}
+
+.dd :global(.dropdown-toggle) {
+  background: #5cb85c !important;
+  border-color: #5cb85c !important;
+  color: #fff !important;
+  border-radius: 16px !important;
+  padding: 6px 10px;
+}
+
+.dd :global(.dropdown-toggle:hover) {
+  background: #4cae4c !important;
+  border-color: #4cae4c !important;
+  color: #fff !important;
+}
+
+/* Dropdown menu + items */
+.dropdownMenu {
+  border-radius: 10px;
+  padding: 4px 0;
+  background: #fff;
+}
+
+.darkDropdownMenu {
+  background: #1c2541 !important;
+  border-color: #225163 !important;
+}
+
+.dropdownItem {
+  font-size: 14px;
+  padding: 6px 14px;
+  color: #333;
+  background: #fff;
+}
+
+.dropdownItem:hover {
+  background: #eae4fb !important;
+  color: #6a4ff7 !important;
+}
+
+.dropdownActive {
+  background: #000 !important;
+  color: #fff !important;
+}
+
+/* Dedicated active-button classes — used instead of compound selectors */
+.activeFilterBtn {
+  background: #115b22 !important;
+  border-color: #0a4b18 !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+}
+
+.darkActiveFilterBtn {
+  background: #115b22 !important;
+  border-color: #0a4b18 !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.25) !important;
+}
+
+.ddActive :global(.dropdown-toggle) {
+  background: #115b22 !important;
+  border-color: #0a4b18 !important;
+  color: #fff !important;
+}
+
+.ddActive :global(.dropdown-toggle:hover) {
+  background: #0d4720 !important;
+  border-color: #0d4720 !important;
+  color: #fff !important;
+}
+
+.currentMetric {
+  margin-left: auto;
+  font-size: 14px;
+}
+
+.section {
+  margin: 0 15px 14px;
+}
+
+.sectionSummary {
+  list-style: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 18px;
+  padding: 10px 6px;
+}
+
+.sectionSummary::before {
+  content: '▾';
+  font-size: 18px;
+  margin-right: 8px;
+}
+
+.sectionBody {
+  background: #fff;
+  border: 1px solid #ece7f4;
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.graphCard {
+  border: 1px solid #eee;
+  border-radius: 12px;
+  min-height: 220px;
+}
+
+.graphCardBody {
+  padding: 14px 22px 20px 6px;
+}
+
+.graphTitle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.graphCanvas {
+  margin-left: -18px;
+  margin-right: -8px;
+  width: calc(100% + 26px);
+}
+
+.metricPill {
+  font-size: 12px;
+  border: 1px solid #e2e2e2;
+  border-radius: 999px;
+  padding: 2px 8px;
+  background: #f6f6f8;
+}
+
+.darkMetricPill {
+  background: #3a506b;
+  border-color: #225163;
+  color: #fff;
+}
+
+.graphPlaceholder {
+  height: 160px;
+  border: 1px dashed #c9c9d4;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+}
+
+.placeholderText {
+  font-size: 13px;
+  color: #999;
+}
+
+.wordcloudCard {
+  border: 1px solid #eee;
+  border-radius: 12px;
+  min-height: 240px;
+}
+
+.wordcloudBody {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.wordcloudTitle {
+  font-weight: 600;
+}
+
+.wordcloudPlaceholder {
+  flex: 1;
+  border: 1px dashed #c9c9d4;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  color: #999;
+}
+
+/* Comparing Villages Chart Filters */
+.comparingChart {
+  width: 100%;
+}
+
+/* Allow pie chart outer labels to overflow SVG/container bounds without clipping */
+.comparingChart :global(.recharts-responsive-container),
+.comparingChart :global(.recharts-wrapper),
+.comparingChart :global(.recharts-surface) {
+  overflow: visible !important;
+}
+
+.datePickerWrapper {
+  width: 100% !important;
+  display: block;
+  position: relative;
+}
+
+.datePickerInnerWrapper {
+  width: 100% !important;
+  display: block;
+}
+
+.datePickerInput {
+  padding-right: 2rem !important;
+  cursor: pointer;
+}
+
+.datePickerChevron {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  width: 16px;
+  height: 12px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23555555' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 16px 12px;
+}
+
+.datePickerChevronDark {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E");
+}
+
+.filtersContainer {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.filtersLegend {
+  font-size: 14px;
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 12px;
+  padding: 0 8px;
+}
+
+.darkFilters {
+  background: #1C2541;
+  border-color: #225163;
+}
+
+.toggleBtn {
+  background: #fff;
+  border: 1px solid #dee2e6;
+  color: #495057;
+  font-size: 12px;
+  padding: 4px 12px;
+  border-radius: 4px;
+  margin-right: 4px;
+}
+
+.toggleBtn.active {
+  background: #007bff;
+  border-color: #007bff;
+  color: #fff;
+}
+
+.darkToggleBtn {
+  background: #2C3E50;
+  border-color: #34495E;
+  color: #fff;
+}
+
+.darkToggleBtn.active {
+  background: #3498DB;
+  border-color: #3498DB;
+}
+
+.dateRangeDisplay {
+  background: #e9ecef;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+.darkText .dateRangeDisplay {
+  background: #2C3E50;
+  color: #fff;
+}
+
+.warningMessage {
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  color: #856404;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-top: 8px;
+}
+
+.darkWarning {
+  background: #8B4513;
+  border-color: #A0522D;
+  color: #FFE4B5;
+}
+
+.chartContainer {
+  margin-top: 16px;
+}
+
+/* Loading and Error States */
+.loadingIndicator {
+  font-size: 12px;
+  color: #6c757d;
+  margin-left: 8px;
+}
+
+.errorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+}
+
+.darkError {
+  background: #2C3E50;
+  border-color: #34495E;
+}
+
+.errorMessage {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #dc3545;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.retryBtn {
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.retryBtn:hover {
+  background: #0056b3;
+}
+
+.darkRetryBtn {
+  background: #3498DB;
+}
+
+.darkRetryBtn:hover {
+  background: #2980B9;
+}
+
+/* Loading Skeleton */
+.loadingSkeleton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  height: 300px;
+}
+
+.darkSkeleton {
+  background: #1C2541;
+}
+
+.skeletonChart {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, #f0f0f0 25%, transparent 37%, #f0f0f0 63%);
+  background-size: 400% 100%;
+  animation: skeleton-loading 1.4s ease-in-out infinite;
+}
+
+.darkSkeleton .skeletonChart {
+  background: linear-gradient(90deg, #3A506B 25%, transparent 37%, #3A506B 63%);
+  background-size: 400% 100%;
+}
+
+.skeletonLegend {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skeletonLegendItem {
+  width: 150px;
+  height: 16px;
+  background: linear-gradient(90deg, #f0f0f0 25%, transparent 37%, #f0f0f0 63%);
+  background-size: 400% 100%;
+  animation: skeleton-loading 1.4s ease-in-out infinite;
+  border-radius: 4px;
+}
+
+.darkSkeleton .skeletonLegendItem {
+  background: linear-gradient(90deg, #3A506B 25%, transparent 37%, #3A506B 63%);
+  background-size: 400% 100%;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .filtersContainer {
+    padding: 12px;
+  }
+  
+  .toggleBtn {
+    font-size: 11px;
+    padding: 6px 8px;
+    margin-bottom: 4px;
+    width: 48%;
+  }
+  
+  .filterLabel {
+    font-size: 12px;
+    margin-bottom: 2px;
+  }
+  
+  .dateRangeDisplay {
+    font-size: 11px;
+    padding: 6px 8px;
+  }
+  
+  .graphTitle {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .metricPill {
+    align-self: flex-start;
+  }
+  
+  .errorContainer {
+    height: 250px;
+    padding: 16px;
+  }
+  
+  .skeletonChart {
+    width: 150px;
+    height: 150px;
+  }
+}
+
+@media (max-width: 576px) {
+  .filtersContainer {
+    padding: 8px;
+  }
+  
+  .toggleBtn {
+    width: 100%;
+    margin-bottom: 4px;
+  }
+  
+  .dateRangeDisplay {
+    text-align: center;
+  }
+  
+  .warningMessage {
+    text-align: center;
+  }
+}
+
+.darkMode {
+  background: #1b2a41;
+  color: #e1e1e1;
+}
+
+.darkHeader {
+  color: #e1e1e1;
+}
+
+.darkBackBtn {
+  background: #225163;
+  color: #fff;
+  box-shadow: 0 2px 8px #1c2541;
+}
+
+.darkFilterBar {
+  background: #1c2541;
+  border-color: #3a506b;
+  color: #e1e1e1;
+  box-shadow: 0 2px 8px #1c1c1c;
+}
+
+.darkFilterBtn {
+  background: #5cb85c !important;
+  border-color: #5cb85c !important;
+  color: #fff !important;
+}
+
+.active.darkFilterBtn {
+  background: #1e7e34 !important;
+  border-color: #1e7e34 !important;
+  color: #fff !important;
+}
+
+.darkDropdown {
+  background: #1c2541;
+  border-color: #3a506b;
+  color: #e1e1e1;
+}
+
+.darkDropdownItem {
+  color: #e1e1e1 !important;
+  background: #1c2541 !important;
+}
+
+.darkDropdownItem:hover {
+  background: #3a506b !important;
+  color: #fff !important;
+}
+
+.darkDropdownItem.dropdownActive {
+  background: #6a4ff7 !important;
+  color: #fff !important;
+}
+
+.darkText {
+  color: #e1e1e1 !important;
+}
+
+.darkSection {
+  color: #e1e1e1;
+}
+
+.darkSectionBody {
+  background: #1c2541;
+  border-color: #1b2a41;
+  box-shadow: 0 2px 8px #1c1c1c;
+}
+
+.darkCard {
+  background: #1c2541 !important;
+  border-color: #3a506b;
+  box-shadow: 0 4px 16px #1c1c1c;
+  color: #e1e1e1;
+}
+
+.darkCardBody {
+  color: #e1e1e1;
+}
+
+.darkPlaceholder {
+  border-color: #6c757d;
+  color: #e1e1e1;
+  background: #3a506b;
+}
+
+.darkChartCard {
+  background: #1c2541;
+  border-color: #3a506b;
+  box-shadow: 0 4px 16px #1c1c1c;
+}
+
+.darkChartTitle {
+  color: #e1e1e1 !important;
+}
+
+.chartCard,
+.darkChartCard {
+  box-shadow: 0 4px 16px rgb(28 37 65 / 25%);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .filterGrid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .metricSection {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .categoryGroup {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .filterBtn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .currentMetric {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .dashboardHeader {
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .title {
+    font-size: 20px;
+  }
+}
+
+/* Dark mode select dropdowns - remove double arrows and style properly */
+.darkSelect {
+  background-color: #2C3E50 !important;
+  color: #fff !important;
+  border-color: #34495E !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 0.75rem center !important;
+  background-size: 16px 12px !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  padding-right: 2.5rem !important;
+}
+
+.darkSelect:focus {
+  background-color: #34495E !important;
+  border-color: #3498DB !important;
+  color: #fff !important;
+  box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25) !important;
+}
+
+/* Dark mode date picker input */
+.darkDatePicker {
+  background-color: #2C3E50 !important;
+  color: #fff !important;
+  border-color: #34495E !important;
+}
+
+.darkDatePicker:focus {
+  background-color: #34495E !important;
+  border-color: #3498DB !important;
+  color: #fff !important;
+  box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25) !important;
+}
+
+/* DatePicker Calendar - Dark Mode */
+.datePickerCalendarDark {
+  background-color: #2C3E50 !important;
+  border-color: #34495E !important;
+}
+
+.datePickerCalendarDark :global(.react-datepicker__header) {
+  background-color: #1C2541 !important;
+  border-bottom-color: #34495E !important;
+}
+
+.datePickerCalendarDark :global(.react-datepicker__current-month),
+.datePickerCalendarDark :global(.react-datepicker__day-name) {
+  color: #fff !important;
+}
+
+.datePickerCalendarDark :global(.react-datepicker__day) {
+  color: #e1e1e1 !important;
+}
+
+.datePickerCalendarDark :global(.react-datepicker__day:hover) {
+  background-color: #3498DB !important;
+  color: #fff !important;
+}
+
+.datePickerCalendarDark :global(.react-datepicker__day--selected),
+.datePickerCalendarDark :global(.react-datepicker__day--keyboard-selected) {
+  background-color: #3498DB !important;
+  color: #fff !important;
+}
+
+.datePickerCalendarDark :global(.react-datepicker__day--outside-month) {
+  color: #6c757d !important;
+}
+
+.datePickerCalendarDark :global(.react-datepicker__day--disabled) {
+  color: #495057 !important;
+}
+
+/* DatePicker navigation arrows - ensure visibility in light mode */
+.comparingChart :global(.react-datepicker__navigation-icon::before) {
+  border-color: #333 !important;
+  border-width: 2px 2px 0 0 !important;
+}
+
+.datePickerCalendarDark :global(.react-datepicker__navigation-icon::before) {
+  border-color: #fff !important;
+  border-width: 2px 2px 0 0 !important;
+}
+
+.comparingChart :global(.react-datepicker__navigation:hover *::before) {
+  border-color: #000 !important;
+}
+
+.datePickerCalendarDark :global(.react-datepicker__navigation:hover *::before) {
+  border-color: #3498DB !important;
+}

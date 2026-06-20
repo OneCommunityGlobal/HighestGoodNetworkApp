@@ -1,7 +1,7 @@
 import { allUserProfilesReducer } from '../allUserProfilesReducer';
 import * as types from '../../constants/userManagement';
 
-const fetched = (data) => {
+const fetched = data => {
   return {
     ...data,
     fetching: false,

@@ -1,11 +1,12 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Bar } from 'react-chartjs-2';
+import 'chart.js/auto';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import DatePicker from 'react-datepicker';
+import Select from 'react-select';
 import styles from './IssueCharts.module.css';
 
-// Import Redux actions
 import {
   fetchLongestOpenIssues,
   fetchMostExpensiveIssues,
@@ -15,48 +16,32 @@ function IssuesCharts({ bmProjects = [] }) {
   const dispatch = useDispatch();
 
   const [graphType, setGraphType] = useState('Longest Open');
-  const [selectedProject, setSelectedProject] = useState('all');
-  const [dateRange, setDateRange] = useState({ start: '', end: '' });
+  const [selectedProjects, setSelectedProjects] = useState([]);
+  const [dateRange, setDateRange] = useState({ start: null, end: null });
 
   const { longestOpenIssues = [], mostExpensiveIssues = [] } = useSelector(
     state => state.issue || {},
   );
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const formatFilters = ({ projectIds, startDate, endDate }) => {
-    const formatted = {};
-    if (
-      (typeof projectIds === 'string' && projectIds.trim() !== '') ||
-      (Array.isArray(projectIds) && projectIds.length > 0)
-    ) {
-      formatted.projectIds = Array.isArray(projectIds) ? projectIds.join(',') : projectIds.trim();
-    }
-    if (startDate !== undefined && startDate !== '') {
-      formatted.startDate = startDate;
-    }
-    if (endDate !== undefined && endDate !== '') {
-      formatted.endDate = endDate;
-    }
-    return formatted;
-  };
   useEffect(() => {
-    const params = formatFilters({
-      projectIds: selectedProject === 'all' ? undefined : selectedProject,
-      startDate: dateRange.start,
-      endDate: dateRange.end,
-    });
+    const params = {
+      projectIds: selectedProjects.length > 0 ? selectedProjects : undefined,
+      startDate: dateRange.start || undefined,
+      endDate: dateRange.end || undefined,
+    };
 
     if (graphType === 'Longest Open') {
       dispatch(fetchLongestOpenIssues(params));
     } else {
       dispatch(fetchMostExpensiveIssues(params));
     }
-  }, [graphType, selectedProject, dateRange.start, dateRange.end, dispatch, darkMode]);
+  }, [graphType, selectedProjects, dateRange.start, dateRange.end, dispatch]);
 
   const chartData = graphType === 'Longest Open' ? longestOpenIssues : mostExpensiveIssues;
 
   const data = {
-    labels: chartData.map(issue => issue.title || issue.IssueId),
+    labels: chartData.map(issue => issue.title || issue.issueId),
     datasets: [
       {
         label: graphType === 'Longest Open' ? 'Days Open' : 'Total Cost ($)',
@@ -89,17 +74,9 @@ function IssuesCharts({ bmProjects = [] }) {
           display: true,
           text:
             graphType === 'Longest Open'
-              ? `Longest Open Issues${
-                  selectedProject !== 'all'
-                    ? ` (${bmProjects.find(p => p._id === selectedProject)?.name || ''})`
-                    : ''
-                }`
-              : `Most Expensive Issues${
-                  selectedProject !== 'all'
-                    ? ` (${bmProjects.find(p => p._id === selectedProject)?.name || ''})`
-                    : ''
-                }`,
-          font: { size: 12 },
+              ? 'Top 5 Longest Open Issues'
+              : 'Most Expensive Issues by Time Open',
+          font: { size: 14, weight: 'bold' },
           color: darkMode ? '#fff' : '#000',
         },
       },
@@ -111,9 +88,7 @@ function IssuesCharts({ bmProjects = [] }) {
             font: { size: 12 },
             color: darkMode ? '#fff' : '#000',
           },
-          ticks: {
-            color: darkMode ? '#ccc' : '#333',
-          },
+          ticks: { color: darkMode ? '#ccc' : '#333' },
         },
         y: {
           title: {
@@ -122,68 +97,67 @@ function IssuesCharts({ bmProjects = [] }) {
             font: { size: 12 },
             color: darkMode ? '#fff' : '#000',
           },
-          ticks: {
-            color: darkMode ? '#ccc' : '#333',
-          },
+          ticks: { color: darkMode ? '#ccc' : '#333' },
         },
       },
       elements: {
-        bar: {
-          borderRadius: 4,
-          borderSkipped: false,
-        },
+        bar: { borderRadius: 4, borderSkipped: false },
       },
     }),
-    [graphType, selectedProject, darkMode, bmProjects],
+    [graphType, darkMode],
   );
 
-  const handleDateChange = (dateName, dateValue) => {
-    setDateRange({ ...dateRange, [dateName]: dateValue });
-  };
+  const projectOptions = bmProjects.map(p => ({ value: p._id, label: p.name }));
+  const selectedProjectOptions = projectOptions.filter(opt =>
+    selectedProjects.includes(opt.value),
+  );
+
+  const darkSelectStyles = darkMode
+    ? {
+        control: base => ({ ...base, background: '#2b3e59', borderColor: '#4a5a72', color: '#fff' }),
+        menu: base => ({ ...base, background: '#2b3e59' }),
+        option: (base, { isFocused }) => ({
+          ...base,
+          background: isFocused ? '#4a5a72' : '#2b3e59',
+          color: '#fff',
+        }),
+        multiValue: base => ({ ...base, background: '#4a5a72' }),
+        multiValueLabel: base => ({ ...base, color: '#fff' }),
+        singleValue: base => ({ ...base, color: '#fff' }),
+        input: base => ({ ...base, color: '#fff' }),
+        placeholder: base => ({ ...base, color: '#aaa' }),
+      }
+    : {};
 
   return (
     <div className={darkMode ? styles.dark : ''}>
-      <h2>Issue Chart</h2>
       <div className={styles.container}>
         <div className={styles.dateInputs}>
-          <div className={styles.inputGroup}>
-            {/* <label htmlFor="startDate">Start:</label> */}
-
-            <DatePicker
-              selected={dateRange.start}
-              onChange={value => handleDateChange('start', value)}
-              className={darkMode ? styles.dateDark : ''}
-            />
-          </div>
-          to
-          <div className={styles.inputGroup}>
-            {/* <label htmlFor="endDate">End:</label> */}
-
-            <DatePicker
-              selected={dateRange.end}
-              onChange={value => handleDateChange('end', value)}
-              className={darkMode ? styles.dateDark : ''}
-            />
-          </div>
+          <DatePicker
+            selected={dateRange.start}
+            onChange={value => setDateRange(prev => ({ ...prev, start: value }))}
+            placeholderText="Start date"
+            className={darkMode ? styles.dateDark : ''}
+          />
+          <span>to</span>
+          <DatePicker
+            selected={dateRange.end}
+            onChange={value => setDateRange(prev => ({ ...prev, end: value }))}
+            placeholderText="End date"
+            className={darkMode ? styles.dateDark : ''}
+          />
+        </div>
+        <div className={styles.multiSelectWrapper}>
+          <Select
+            isMulti
+            options={projectOptions}
+            value={selectedProjectOptions}
+            onChange={selected => setSelectedProjects(selected.map(s => s.value))}
+            placeholder="All Projects"
+            styles={darkSelectStyles}
+          />
         </div>
         <div className={styles.inputGroup}>
-          {/* <label htmlFor="project">Project:</label> */}
-          <select
-            id="project"
-            value={selectedProject}
-            onChange={e => setSelectedProject(e.target.value)}
-            className={darkMode ? styles.selectDark : styles.select}
-          >
-            <option value="all">All Projects</option>
-            {bmProjects.map(project => (
-              <option key={project._id} value={project._id}>
-                {project.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className={styles.inputGroup}>
-          {/* <label htmlFor="type">Type:</label> */}
           <select
             id="type"
             value={graphType}
@@ -198,7 +172,7 @@ function IssuesCharts({ bmProjects = [] }) {
       <div className={styles.chartContainer}>
         {chartData.length > 0 ? (
           <Bar
-            key={`${graphType}-${selectedProject}-${dateRange.start}-${dateRange.end}`}
+            key={`${graphType}-${selectedProjects.join(',')}-${dateRange.start}-${dateRange.end}`}
             data={data}
             options={options}
             plugins={[ChartDataLabels]}

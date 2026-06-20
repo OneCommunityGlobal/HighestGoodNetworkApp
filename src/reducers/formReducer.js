@@ -8,7 +8,7 @@ import {
   DELETE_QUESTION,
   RESET_FORM_STATE,
   DELETE_OPTION,
-} from 'constants/form';
+} from '~/constants/form';
 
 const initialState = {
   id: uuid4(),
