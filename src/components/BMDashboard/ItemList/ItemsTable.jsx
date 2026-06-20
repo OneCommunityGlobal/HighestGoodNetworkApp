@@ -3,6 +3,7 @@ import { Table, Button } from 'reactstrap';
 import { BiPencil } from 'react-icons/bi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSortDown, faSort, faSortUp } from '@fortawesome/free-solid-svg-icons';
+import PropTypes from 'prop-types';
 import RecordsModal from './RecordsModal';
 import styles from './ItemListView.module.css';
 
@@ -264,3 +265,54 @@ export default function ItemsTable({
     </>
   );
 }
+
+ItemsTable.propTypes = {
+  selectedProject: PropTypes.string,
+  selectedItem: PropTypes.string,
+  filteredItems: PropTypes.arrayOf(
+    PropTypes.shape({
+      _id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      itemType: PropTypes.shape({
+        name: PropTypes.string,
+        unit: PropTypes.string,
+      }),
+      project: PropTypes.shape({
+        _id: PropTypes.string,
+        name: PropTypes.string,
+      }),
+    }),
+  ).isRequired,
+  UpdateItemModal: PropTypes.elementType.isRequired,
+  dynamicColumns: PropTypes.arrayOf(
+    PropTypes.shape({
+      label: PropTypes.string.isRequired,
+      key: PropTypes.string.isRequired,
+    }),
+  ).isRequired,
+  darkMode: PropTypes.bool,
+  sortConfig: PropTypes.shape({
+    key: PropTypes.string,
+    direction: PropTypes.oneOf(['asc', 'desc']),
+  }),
+  onSort: PropTypes.func.isRequired,
+  totalItems: PropTypes.number,
+  currentPage: PropTypes.number.isRequired,
+  totalPages: PropTypes.number.isRequired,
+  rowsPerPage: PropTypes.number.isRequired,
+  startRow: PropTypes.number,
+  endRow: PropTypes.number,
+  onPageChange: PropTypes.func.isRequired,
+  onRowsPerPageChange: PropTypes.func.isRequired,
+  itemType: PropTypes.string,
+};
+
+ItemsTable.defaultProps = {
+  selectedProject: '',
+  selectedItem: '',
+  darkMode: false,
+  sortConfig: { key: null, direction: 'asc' },
+  totalItems: 0,
+  startRow: 0,
+  endRow: 0,
+  itemType: '',
+};
