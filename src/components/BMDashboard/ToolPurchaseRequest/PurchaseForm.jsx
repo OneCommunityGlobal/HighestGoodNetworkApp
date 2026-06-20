@@ -7,8 +7,6 @@ import Joi from 'joi';
 
 import { boxStyle } from '~/styles';
 import { purchaseTools } from '~/actions/bmdashboard/toolActions';
-import BMCharacterLimitHint from '../shared/BMCharacterLimitHint';
-
 import styles from './PurchaseForm.module.css';
 
 const PRIORITY_ORDER = { Low: 1, Medium: 2, High: 3 };
@@ -92,14 +90,12 @@ function getSuggestedPriority(records, availabilitySummary) {
 export default function PurchaseForm() {
   const bmProjects = useSelector(state => state.bmProjects);
   const tools = useSelector(state => state.bmInvTypes.list);
-  const toolInventory = useSelector(state => state.bmTools.toolslist || []);
   const history = useHistory();
 
   const [projectId, setProjectId] = useState('');
   const [toolId, setToolId] = useState('');
   const [quantity, setQty] = useState('');
   const [priority, setPriority] = useState('Low');
-  const [priorityTouched, setPriorityTouched] = useState(false);
   const [makeModel, setMakeModel] = useState('');
   const [estTime, setEstTime] = useState('');
   const [desc, setDesc] = useState('');
@@ -130,12 +126,6 @@ export default function PurchaseForm() {
     makeModel: Joi.string().allow(''),
   });
 
-  const validateField = (name, value) => {
-    const fieldSchema = Joi.object({ [name]: schema.extract(name) });
-    const { error } = fieldSchema.validate({ [name]: value });
-    return error ? error.details[0].message : null;
-  };
-
   useEffect(() => {
     const formData = {
       projectId,
@@ -149,14 +139,14 @@ export default function PurchaseForm() {
 
     const { error } = schema.validate(formData, { abortEarly: false });
 
-    if (!error) {
-      setErrors({});
-    } else {
+    if (error) {
       const fieldErrors = {};
       error.details.forEach(d => {
         fieldErrors[d.path[0]] = d.message;
       });
       setErrors(fieldErrors);
+    } else {
+      setErrors({});
     }
   }, [projectId, toolId, quantity, priority, estTime, desc, makeModel]);
 

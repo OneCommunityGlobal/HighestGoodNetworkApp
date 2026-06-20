@@ -7,7 +7,6 @@ import AssignTableRow from '../Badge/AssignTableRow';
 import {
   assignBadgesByUserID,
   clearNameAndSelected,
-  addSelectBadge,
 } from '../../actions/badgeManagement';
 import { ENDPOINTS } from '~/utils/URL';
 import { boxStyle, boxStyleDark } from '../../styles';
@@ -139,7 +138,7 @@ function AssignBadgePopup(props) {
             </thead>
             <tbody>
               {filteredBadges.map((value, index) => (
-                <AssignTableRow badge={value} index={index} key={index} existBadges={existBadges} />
+                <AssignTableRow badge={value} index={index} key={value._id ?? index} existBadges={existBadges} />
               ))}
             </tbody>
           </Table>
@@ -193,7 +192,6 @@ AssignBadgePopup.propTypes = {
   close: PropTypes.func,
   assignBadgesByUserID: PropTypes.func,
   clearNameAndSelected: PropTypes.func,
-  addSelectBadge: PropTypes.func,
 };
 
 const mapStateToProps = state => ({
@@ -206,7 +204,6 @@ const mapDispatchToProps = dispatch => {
     assignBadgesByUserID: (userId, selectedBadge) =>
       assignBadgesByUserID(userId, selectedBadge)(dispatch),
     clearNameAndSelected: () => dispatch(clearNameAndSelected()),
-    addSelectBadge: badgeId => dispatch(addSelectBadge(badgeId)),
   };
 };
 
