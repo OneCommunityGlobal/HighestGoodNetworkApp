@@ -12,7 +12,7 @@ import styles from './EventPageOrganizer.module.css';
 export const EventPageOrganizer = () => {
   const activityId = 'test-event';
   const [evt, setEvt] = useState(null);
-  const [, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
@@ -45,6 +45,8 @@ export const EventPageOrganizer = () => {
   const placeholderPanelClassName = `${styles.placeholderPanel} ${
     darkMode ? styles.placeholderPanelDark : ''
   }`;
+
+  if (loading && !evt) return null;
 
   return (
     <div className={containerClassName} data-model-id="3572:7958">

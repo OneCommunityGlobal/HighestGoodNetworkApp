@@ -134,7 +134,7 @@ function AssignBadgePopup(props) {
             </thead>
             <tbody>
               {filteredBadges.map((value, index) => (
-                <AssignTableRow badge={value} index={index} key={index} existBadges={existBadges} />
+                <AssignTableRow badge={value} index={index} key={value._id ?? index} existBadges={existBadges} />
               ))}
             </tbody>
           </Table>

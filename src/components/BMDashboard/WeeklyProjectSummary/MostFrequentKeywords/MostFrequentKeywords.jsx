@@ -50,6 +50,115 @@ const formatCalendarMonth = date =>
     year: 'numeric',
   });
 
+function buildSelectStyles(palette, isMobile) {
+  return {
+    control: (base, state) => ({
+      ...base,
+      backgroundColor: palette.controlBg,
+      borderColor: state.isFocused ? '#60a5fa' : palette.controlBorder,
+      minHeight: '40px',
+      height: '40px',
+      fontSize: isMobile ? '11px' : '12px',
+      borderRadius: '12px',
+      boxShadow: state.isFocused ? 'inset 0 0 0 1px #60a5fa' : 'none',
+      overflow: 'hidden',
+      alignItems: 'stretch',
+      '&:hover': {
+        borderColor: state.isFocused ? '#60a5fa' : palette.controlBorderHover,
+      },
+    }),
+    valueContainer: base => ({
+      ...base,
+      color: palette.text,
+      backgroundColor: palette.controlBg,
+      minHeight: '40px',
+      height: '40px',
+      padding: '0 14px',
+      borderRadius: '12px 0 0 12px',
+      display: 'flex',
+      alignItems: 'center',
+    }),
+    input: base => ({ ...base, color: palette.text }),
+    placeholder: base => ({ ...base, color: palette.mutedText }),
+    singleValue: base => ({ ...base, color: palette.text }),
+    indicatorSeparator: base => ({ ...base, backgroundColor: 'transparent', width: 0 }),
+    indicatorsContainer: base => ({
+      ...base,
+      backgroundColor: palette.controlBg,
+      minHeight: '40px',
+      height: '40px',
+      width: '44px',
+      minWidth: '44px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderRadius: '0 12px 12px 0',
+      flexShrink: 0,
+    }),
+    dropdownIndicator: base => ({
+      ...base,
+      color: palette.indicator,
+      backgroundColor: 'transparent',
+      padding: 0,
+      width: '44px',
+      height: '40px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      '&:hover': { color: palette.text, backgroundColor: 'transparent' },
+    }),
+    clearIndicator: base => ({
+      ...base,
+      color: palette.indicator,
+      backgroundColor: 'transparent',
+      padding: 0,
+      width: '44px',
+      height: '40px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      '&:hover': { color: palette.text, backgroundColor: 'transparent' },
+    }),
+    menu: base => ({
+      ...base,
+      backgroundColor: palette.menuBg,
+      border: `1px solid ${palette.controlBorder}`,
+      boxShadow: palette.shadow,
+    }),
+    menuList: base => ({ ...base, backgroundColor: palette.menuBg }),
+    option: (base, state) => ({
+      ...base,
+      backgroundColor: state.isSelected
+        ? palette.optionSelectedBg
+        : state.isFocused
+        ? palette.optionHoverBg
+        : palette.optionBg,
+      color: palette.text,
+      fontSize: isMobile ? '10px' : '11px',
+      padding: isMobile ? '3px 5px' : '4px 8px',
+      ':active': { backgroundColor: palette.optionHoverBg },
+    }),
+    groupHeading: base => ({
+      ...base,
+      color: palette.groupHeading,
+      backgroundColor: palette.menuBg,
+      fontSize: isMobile ? '8px' : '9px',
+      fontWeight: '600',
+      padding: isMobile ? '2px 5px' : '3px 8px',
+    }),
+    noOptionsMessage: base => ({
+      ...base,
+      color: palette.mutedText,
+      backgroundColor: palette.menuBg,
+    }),
+    loadingMessage: base => ({
+      ...base,
+      color: palette.mutedText,
+      backgroundColor: palette.menuBg,
+    }),
+  };
+}
+
 const DropdownIndicator = props => (
   <selectComponents.DropdownIndicator {...props}>
     <span className={styles.mfkChevron}>▾</span>
@@ -923,133 +1032,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
     setError('');
   };
 
-  // Helper function to get control styles
-  const getControlStyles = (base, state) => ({
-    ...base,
-    backgroundColor: palette.controlBg,
-    borderColor: state.isFocused ? '#60a5fa' : palette.controlBorder,
-    minHeight: '40px',
-    height: '40px',
-    fontSize: isMobile ? '11px' : '12px',
-    borderRadius: '12px',
-    boxShadow: state.isFocused ? 'inset 0 0 0 1px #60a5fa' : 'none',
-    overflow: 'hidden',
-    alignItems: 'stretch',
-    '&:hover': {
-      borderColor: state.isFocused ? '#60a5fa' : palette.controlBorderHover,
-    },
-  });
-
-  const getValueContainerStyles = base => ({
-    ...base,
-    color: palette.text,
-    backgroundColor: palette.controlBg,
-    minHeight: '40px',
-    height: '40px',
-    padding: '0 14px',
-    borderRadius: '12px 0 0 12px',
-    display: 'flex',
-    alignItems: 'center',
-  });
-
-  const getInputStyles = base => ({
-    ...base,
-    color: palette.text,
-  });
-
-  const getPlaceholderStyles = base => ({
-    ...base,
-    color: palette.mutedText,
-  });
-
-  const getSingleValueStyles = base => ({
-    ...base,
-    color: palette.text,
-  });
-
-  const getIndicatorSeparatorStyles = base => ({
-    ...base,
-    backgroundColor: 'transparent',
-    width: 0,
-  });
-
-  const getIndicatorsContainerStyles = base => ({
-    ...base,
-    backgroundColor: palette.controlBg,
-    minHeight: '40px',
-    height: '40px',
-    width: '44px',
-    minWidth: '44px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: '0 12px 12px 0',
-    flexShrink: 0,
-  });
-
-  const getIndicatorStyles = base => ({
-    ...base,
-    color: palette.indicator,
-    backgroundColor: 'transparent',
-    padding: 0,
-    width: '44px',
-    height: '40px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    '&:hover': {
-      color: palette.text,
-      backgroundColor: 'transparent',
-    },
-  });
-
-  const getMenuStyles = base => ({
-    ...base,
-    backgroundColor: palette.menuBg,
-    border: `1px solid ${palette.controlBorder}`,
-    boxShadow: palette.shadow,
-  });
-
-  const getMenuListStyles = base => ({
-    ...base,
-    backgroundColor: palette.menuBg,
-  });
-
-  const getOptionStyles = (base, state) => {
-    let backgroundColor = palette.optionBg;
-
-    if (state.isSelected) {
-      backgroundColor = palette.optionSelectedBg;
-    } else if (state.isFocused) {
-      backgroundColor = palette.optionHoverBg;
-    }
-
-    return {
-      ...base,
-      backgroundColor,
-      color: palette.text,
-      fontSize: isMobile ? '10px' : '11px',
-      padding: isMobile ? '3px 5px' : '4px 8px',
-      ':active': {
-        backgroundColor: palette.optionHoverBg,
-      },
-    };
-  };
-
-  const getGroupHeadingStyles = base => ({
-    ...base,
-    color: palette.groupHeading,
-    backgroundColor: palette.menuBg,
-    fontSize: isMobile ? '8px' : '9px',
-    fontWeight: '600',
-    padding: isMobile ? '2px 5px' : '3px 8px',
-  });
-
-  const getNoOptionsMessageStyles = base => ({
-    ...base,
-    color: palette.mutedText,
-    backgroundColor: palette.menuBg,
-  });
+  const selectStyles = buildSelectStyles(palette, isMobile);
 
   const applyDarkCalendarTheme = useCallback(() => {
     requestAnimationFrame(() => {
@@ -1155,23 +1138,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
             isClearable
             isSearchable
             components={{ DropdownIndicator }}
-            styles={{
-              control: getControlStyles,
-              valueContainer: getValueContainerStyles,
-              input: getInputStyles,
-              placeholder: getPlaceholderStyles,
-              singleValue: getSingleValueStyles,
-              indicatorSeparator: getIndicatorSeparatorStyles,
-              indicatorsContainer: getIndicatorsContainerStyles,
-              dropdownIndicator: getIndicatorStyles,
-              clearIndicator: getIndicatorStyles,
-              menu: getMenuStyles,
-              menuList: getMenuListStyles,
-              option: getOptionStyles,
-              groupHeading: getGroupHeadingStyles,
-              noOptionsMessage: getNoOptionsMessageStyles,
-              loadingMessage: getNoOptionsMessageStyles,
-            }}
+            styles={selectStyles}
           />
         </div>
         <div className={styles.controlGroup}>
@@ -1215,7 +1182,12 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
           />
         </div>
         {(startDate || endDate) && (
-          <button className={styles.clearButton} onClick={handleClearDates} title="Clear">
+          <button
+            type="button"
+            className={styles.clearButton}
+            onClick={handleClearDates}
+            title="Clear"
+          >
             ✕
           </button>
         )}
