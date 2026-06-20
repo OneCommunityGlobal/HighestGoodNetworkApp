@@ -3,19 +3,20 @@
  * Author: Henry Ng - 08/01/20
  * Display member of the members list
  ********************************************************************************/
+import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { connect, useSelector } from 'react-redux';
 import ModalDelete from './../../../common/Modal';
 import { deleteWbs } from './../../../../actions/wbs';
 import { getPopupById } from './../../../../actions/popupEditorAction';
 import { WBS_DELETE_POPUP_ID } from './../../../../constants/popupId';
-import hasPermission from 'utils/permissions';
-import { boxStyle } from 'styles';
+import hasPermission from '~/utils/permissions';
+import { boxStyle } from '~/styles';
 import { Link } from 'react-router-dom';
 import { NavItem } from 'reactstrap';
 
 
-const WBSItem = ({ darkMode, index, name, wbsId, projectId, getPopupById, deleteWbs, hasPermission, popupEditor }) => {
+const WBSItem = ({ darkMode, index, name, wbsId, projectId, getPopupById, deleteWbs, hasPermission, popupEditor, taskSelectionMode, taskSelectionReturnPath }) => {
 
   const [showModalDelete, setShowModalDelete] = useState(false);
 
@@ -34,16 +35,21 @@ const WBSItem = ({ darkMode, index, name, wbsId, projectId, getPopupById, delete
   return (
     <React.Fragment>
       <tr>
-        <th scope="row">
-          <div>{index}</div>
+        <th scope="row" style={{ maxWidth: '150px', textAlign: 'center' }}>
+          {index}
         </th>
-        <td className="members__name">
-          <NavItem tag={Link} to={`/wbs/tasks/${wbsId}/${projectId}/${name}`} className={darkMode ? 'text-azure' : ''}>
+        <td style={{ textAlign: 'left' }}>
+          <NavItem tag={Link} to={{
+            pathname: `/wbs/tasks/${wbsId}/${projectId}/${name}`,
+            state: taskSelectionMode
+              ? { taskSelectionMode: true, returnPath: taskSelectionReturnPath }
+              : undefined,
+          }} className={darkMode ? 'text-azure' : ''}>
             {name}
           </NavItem>
         </td>
-        {canDeleteWBS ? (
-          <td className="members__assign">
+        <td style={{ width: '50px', textAlign: 'center' }}>
+          {canDeleteWBS ? (
             <button
               className="btn btn-outline-danger btn-sm"
               type="button"
@@ -52,8 +58,8 @@ const WBSItem = ({ darkMode, index, name, wbsId, projectId, getPopupById, delete
             >
               <i className="fa fa-minus" aria-hidden="true"></i>
             </button>
-          </td>
-        ) : null}
+          ) : null}
+        </td>
       </tr>
 
       <ModalDelete
@@ -67,6 +73,39 @@ const WBSItem = ({ darkMode, index, name, wbsId, projectId, getPopupById, delete
     </React.Fragment>
   );
 };
+
+WBSItem.propTypes = {
+  darkMode: PropTypes.bool,
+  index: PropTypes.number,
+  name: PropTypes.string,
+  wbsId: PropTypes.string,
+  projectId: PropTypes.string,
+  getPopupById: PropTypes.func,
+  deleteWbs: PropTypes.func,
+  hasPermission: PropTypes.func,
+  popupEditor: PropTypes.shape({
+    currPopup: PropTypes.shape({
+      popupContent: PropTypes.string,
+    }),
+  }),
+  taskSelectionMode: PropTypes.bool,
+  taskSelectionReturnPath: PropTypes.string,
+};
+
+WBSItem.defaultProps = {
+  darkMode: false,
+  index: 0,
+  name: '',
+  wbsId: '',
+  projectId: '',
+  getPopupById: () => {},
+  deleteWbs: () => {},
+  hasPermission: () => false,
+  popupEditor: { currPopup: { popupContent: '' } },
+  taskSelectionMode: false,
+  taskSelectionReturnPath: '',
+};
+
 const mapStateToProps = (state) => state;
 export default connect(mapStateToProps, {
   deleteWbs,

@@ -1,10 +1,11 @@
-import * as types from './../constants/followUpConstants';
+import * as types from '../constants/followUpConstants';
 
 const initialState = {
   followUps: {},
   error: null,
 };
 
+// eslint-disable-next-line default-param-last
 export const followUpReducer = (state = initialState, action) => {
   switch (action.type) {
     case types.FETCH_ALL_FOLLOWUPS:
@@ -28,3 +29,5 @@ export const followUpReducer = (state = initialState, action) => {
       return state;
   }
 };
+
+export default followUpReducer;

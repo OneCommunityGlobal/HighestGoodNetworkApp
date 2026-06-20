@@ -1,14 +1,17 @@
-const initialState = null
+const initialState = null;
 
-export const weeklySummariesAIPromptReducer = (dashboardData = initialState, action) => {
+// eslint-disable-next-line default-param-last
+const weeklySummariesAIPromptReducer = (dashboardData = initialState, action) => {
   switch (action.type) {
     case 'GET_AI_PROMPT_TEXT':
-      return action.payload
+      return action.payload;
 
     case 'UPDATE_AI_PROMPT_TEXT':
-      return dashboardData
+      return dashboardData;
 
     default:
-      return dashboardData
+      return dashboardData;
   }
 };
+
+export default weeklySummariesAIPromptReducer;

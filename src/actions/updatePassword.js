@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { GET_ERRORS } from '../constants/errors';
-import { ENDPOINTS } from '../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
 export const updatePassword = (userId, newpasswordData) => {
   const url = ENDPOINTS.UPDATE_PASSWORD(userId);

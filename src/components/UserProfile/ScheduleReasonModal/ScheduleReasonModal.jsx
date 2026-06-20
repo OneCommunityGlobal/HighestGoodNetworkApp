@@ -1,18 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import { Container, Row, Col, Modal as NestedModal, ModalBody, ModalFooter } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import Form from 'react-bootstrap/Form';
 import moment from 'moment-timezone';
 import DatePicker from 'react-datepicker';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import ScheduleReasonModalCard from './ScheduleReasonModalCard';
 import {
   addTimeOffRequestThunk,
   deleteTimeOffRequestThunk,
+  updateTimeOffRequestThunk,
 } from '../../../actions/timeOffRequestAction';
 import 'react-datepicker/dist/react-datepicker.css';
-import './ScheduleReasonModal.css';
+import './ScheduleReasonModal.module.css';
 
 const ScheduleReasonModal = ({
   handleClose,
@@ -22,18 +23,32 @@ const ScheduleReasonModal = ({
   canManageTimeOffRequests,
   checkIfUserCanScheduleTimeOff,
   darkMode,
+  selectedRequest,
 }) => {
   const dispatch = useDispatch();
   const allRequests = useSelector(state => state.timeOffRequests.requests);
 
-  const nextSundayStr = moment()
-    .isoWeekday(7)
-    .startOf('day');
-  const nextSunday = new Date(nextSundayStr.year(), nextSundayStr.month(), nextSundayStr.date());
+  const today = moment().startOf('day');
+
+  const currSundayStr = today.clone().startOf('week');
+  const currSunday = new Date(
+    currSundayStr.year(),
+    currSundayStr.month(),
+    currSundayStr.date()
+  );
+
+  const nextSundayStr = currSundayStr.clone().add(1, 'week');
+  const nextSunday = new Date(
+    nextSundayStr.year(),
+    nextSundayStr.month(),
+    nextSundayStr.date()
+  );
+  
   const initialRequestData = {
     dateOfLeave: nextSunday,
     numberOfWeeks: 1,
     reasonForLeave: '',
+    reasonType: 'vacationTime',
   };
 
   const initialRequestDataErrors = {
@@ -57,6 +72,23 @@ const ScheduleReasonModal = ({
   const [allowedDurationModal, setAllowedDurationModal] = useState(false);
   const [allowedDurationData, setAllowedDurationData] = useState({});
   const [requestTodelete, setRequestTodelete] = useState('');
+  const [showStartWeekModal, setShowStartWeekModal] = useState(false);
+  const [editingRequest, setEditingRequest] = useState(null);
+
+  useEffect(() => {
+    if (selectedRequest) {
+      setEditingRequest(selectedRequest);
+      setRequestData({
+        dateOfLeave: new Date(selectedRequest.startingDate),
+        numberOfWeeks: Number(selectedRequest.duration),
+        reasonForLeave: selectedRequest.reason || '',
+      });
+    } else {
+      setEditingRequest(null);
+      setRequestData(initialRequestData);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedRequest]);
 
   const ContainerMaxHeight = checkIfUserCanScheduleTimeOff() ? '160px' : '600px';
 
@@ -69,6 +101,10 @@ const ScheduleReasonModal = ({
     allRequests[userId]?.forEach(element => {
       scheduledVacation += Number(element.duration);
     });
+
+    if (editingRequest) {
+      scheduledVacation -= Number(editingRequest.duration);
+    }
 
     const infringementsAndScheduledTimeOff = scheduledVacation + blueSquares;
     const hasRolePermission = user.role === 'Administrator' || user.role === 'Owner';
@@ -147,6 +183,7 @@ const ScheduleReasonModal = ({
 
     if (allRequests[userId]?.length > 0) {
       const isAnyOverlapingRequests = allRequests[userId].some(request => {
+        if (editingRequest && request._id === editingRequest._id) return false;
         const requestStartingDate = moment(request.startingDate.split('T')[0]).startOf('day');
         const requestEndingDate = moment(request.endingDate.split('T')[0]).startOf('day');
 
@@ -221,6 +258,14 @@ const ScheduleReasonModal = ({
     setAllowedDurationModal(prev => !prev);
   };
 
+  const toggleStartWeekConfirmationModal = () => {
+    setShowStartWeekModal(prev => !prev);
+  };
+
+  const handleStartWeekConfirmationModal = () => {
+    setShowStartWeekModal(false);
+  };
+
   const getWeekIntervals = data => {
     const dateOfLeaveStr = getDateWithoutTimeZone(data.dateOfLeave);
     const intervals = [];
@@ -239,6 +284,28 @@ const ScheduleReasonModal = ({
     return day === 0;
   };
 
+  const handleSave = ( data = requestData ) => {
+    const { intervals, startDate } = getWeekIntervals(data);
+    setConfirmationModalData({
+      offTimeWeeks: intervals,
+      returnDate: startDate.format('MM-DD-YYYY'),
+      reasonForLeave: data.reasonForLeave,
+    });
+    toggleConfirmationModal();
+  }
+
+  const handleWeekStart = (selectedSunday) => {
+    setRequestData(prev => {
+      const newData = {
+      ...prev,
+      dateOfLeave: selectedSunday,
+      }
+      handleSave(newData);
+      return newData;
+    })
+    
+  }
+
   const handleSaveReason = e => {
     e.preventDefault();
     setRequestDataErrors(initialRequestDataErrors);
@@ -249,23 +316,34 @@ const ScheduleReasonModal = ({
     if (!validateNumberOfWeeks(requestData)) return;
     if (!validateReasonForLeave(requestData)) return;
 
-    const { intervals, startDate } = getWeekIntervals(requestData);
-    setConfirmationModalData({
-      offTimeWeeks: intervals,
-      returnDate: startDate.format('MM-DD-YYYY'),
-      reasonForLeave: requestData.reasonForLeave,
-    });
-    toggleConfirmationModal();
+    if(nextSunday.getTime() === requestData.dateOfLeave.getTime()){
+      toggleStartWeekConfirmationModal();
+    }
+    else{
+      handleSave();
+    }
   };
 
-  const handelConfirmReason = () => {
+  const handleConfirmReason = () => {
     const data = {
       requestFor: userId,
       reason: requestData.reasonForLeave,
+      reasonType: requestData.reasonType,
       startingDate: getDateWithoutTimeZone(requestData.dateOfLeave),
       duration: requestData.numberOfWeeks,
     };
-    dispatch(addTimeOffRequestThunk(data));
+
+    if (editingRequest) {
+      const updateData = {
+        reason: data.reason,
+        startingDate: data.startingDate,
+        duration: data.duration,
+      };
+      dispatch(updateTimeOffRequestThunk(editingRequest._id, updateData));
+    } else {
+      dispatch(addTimeOffRequestThunk(data));
+    }
+
     setRequestData(initialRequestData);
     toggleConfirmationModal();
   };
@@ -275,7 +353,7 @@ const ScheduleReasonModal = ({
     setRequestTodelete(id);
   };
 
-  const handelDeleteConfirmReason = () => {
+  const handleDeleteConfirmReason = () => {
     dispatch(deleteTimeOffRequestThunk(requestTodelete));
     setRequestTodelete('');
     toggleDeleteConfirmationModal();
@@ -285,6 +363,16 @@ const ScheduleReasonModal = ({
     const momentA = moment(a.startingDate, 'YYYY-MM-DD');
     const momentB = moment(b.startingDate, 'YYYY-MM-DD');
     return momentA - momentB;
+  };
+
+  const onEditRequest = (request) => {
+    setEditingRequest(request);
+    setRequestData({
+      dateOfLeave: new Date(request.startingDate),
+      numberOfWeeks: Number(request.duration),
+      reasonForLeave: request.reason || '',
+      reasonType: request.reasonType || '',
+    });
   };
 
   const durationExplanationText = data => {
@@ -323,19 +411,19 @@ const ScheduleReasonModal = ({
         <>
           <Modal.Header closeButton={true} className={darkMode ? 'bg-space-cadet' : ''}>
             <Modal.Title className="centered-container">
-              <div className="centered-text mt-0 p1">Choose to Use a Blue Square</div>
+              <div className="centered-text mt-0 p1">{editingRequest ? 'Edit Scheduled Time Off' : 'Choose to Use a Blue Square'}</div>
             </Modal.Title>
           </Modal.Header>
           <Form onSubmit={handleSaveReason}>
             <Modal.Body className={darkMode ? 'bg-yinmn-blue' : ''}>
               <Form.Group className="mb-0" controlId="exampleForm.ControlTextarea1">
-                <Form.Label className={`mb-3 ${darkMode ? 'text-light' : ''}`}>
+                <Form.Label className={`mb-3 ${darkMode ? 'text-light' : 'text-dark bg-white'}`}>
                   {` Need to take time off for an emergency or vacation? That's no problem. The system
                   will still issue you a blue square but scheduling here will note this reason on it
                   so it's clear you chose to use one (vs receiving one for missing something) and
                   let us know in advance. Blue squares are meant for situations like this and we allow the use and scheduling of 4 a year.`}
                 </Form.Label>
-                <Form.Label className={darkMode ? 'text-light' : ''}>
+                <Form.Label className={darkMode ? 'text-light' : 'text-dark bg-white'}>
                   {`Select the Sunday of the week you'll be leaving (If you'll be absent this week,
                   choose the Sunday of current week):`}
                 </Form.Label>
@@ -357,7 +445,7 @@ const ScheduleReasonModal = ({
                 <Form.Text className="text-danger pl-1">
                   {requestDataErrors.dateOfLeaveError}
                 </Form.Text>
-                <Form.Label className={darkMode ? 'text-light' : ''}>
+                <Form.Label className={darkMode ? 'text-light' : 'text-dark bg-white'}>
                   Enter the duration of your absence (In Weeks):
                 </Form.Label>
                 <Form.Control
@@ -374,18 +462,31 @@ const ScheduleReasonModal = ({
                     }
                   }}
                 />
+                <Form.Label className={`mt-1 ${darkMode ? 'text-light' : 'text-dark bg-white'}`}>
+                    Select the type of your absence:
+                </Form.Label>
+                <Form.Control
+                  as="select"
+                  name="reasonType"
+                  value={requestData.reasonType}
+                  onChange={e => handleAddRequestDataChange(e)}
+                  className={darkMode ? 'bg-darkmode-liblack text-light' : ''}
+                >
+                  <option value="vacationTime">Vacation Time</option>
+                  <option value="other">Other</option>
+                </Form.Control>
                 <Form.Text className="text-danger pl-1">
                   {requestDataErrors.numberOfWeeksError}
                 </Form.Text>
-                <Form.Label className={`mt-1 ${darkMode ? 'text-light' : ''}`}>
+                <Form.Label className={`mt-1 ${darkMode ? 'text-light' : 'text-dark bg-white'}`}>
                   What is your reason for requesting this time off?
                 </Form.Label>
+                <span className="red-asterisk">* </span>
                 <Form.Control
                   as="textarea"
                   rows={2}
                   name="reasonForLeave"
                   className="w-100 user-time-off-scheduler-reason-input"
-                  // controlId=""
                   placeholder="Please be detailed in describing your reason and, if it is different than your scheduled Sunday, include the expected date you’ll return to work."
                   value={requestData.reasonForLeave}
                   onChange={e => handleAddRequestDataChange(e)}
@@ -421,7 +522,7 @@ const ScheduleReasonModal = ({
                   <Container>
                     <Row>
                       <Col className="mb-1">
-                        The time off will be scheduled for the following
+                        The time off will be {editingRequest ? 'updated to cover' : 'scheduled for the following'}
                         {confirmationModalData.offTimeWeeks?.length > 1 ? ` weeks:` : ` week:`}
                       </Col>
                     </Row>
@@ -468,7 +569,11 @@ const ScheduleReasonModal = ({
                   </Container>
                 </ModalBody>
                 <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-                  <Button variant="primary" onClick={handelConfirmReason}>
+                  <Button variant="primary" onClick={()=>{
+                    handleStartWeekConfirmationModal()
+                    handleConfirmReason()
+                    handleClose()
+                  }}>
                     Confirm
                   </Button>
                   <Button variant="secondary" onClick={toggleConfirmationModal}>
@@ -489,6 +594,34 @@ const ScheduleReasonModal = ({
                 <ModalFooter className={darkMode ? 'text-light' : ''}>
                   <Button variant="secondary" onClick={toggleDurationInfoModal}>
                     Close
+                  </Button>
+                </ModalFooter>
+              </NestedModal>
+              <NestedModal isOpen={showStartWeekModal} toggle={toggleStartWeekConfirmationModal} className={darkMode ? 'text-light dark-mode' : ''}>
+                <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+                  <Container>
+                    <Row>You are about to schedule time off starting next week. Please confirm this is what you want to do.</Row>
+                  </Container>
+                </ModalBody>
+                <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+                  <Button
+                      variant="primary"
+                      onClick={()=>handleWeekStart(nextSunday)}
+                      className="w-100"
+                      size="md"
+                      style={darkMode ? boxStyleDark : boxStyle}
+                    >
+                      Yes, NEXT WEEK is when I want my time off to start! 
+                  </Button>
+                  <Button
+                      variant="primary"
+                      onClick={()=>handleWeekStart(currSunday)}
+                      className="w-100"
+                      size="md"
+                      style={darkMode ? boxStyleDark : boxStyle}
+                    >
+                      No, I meant to start my time off THIS WEEK.
+                      Please adjust this request to start this week instead. 
                   </Button>
                 </ModalFooter>
               </NestedModal>
@@ -525,6 +658,7 @@ const ScheduleReasonModal = ({
                     key={request._id}
                     request={request}
                     handleDeleteRequest={handleDeleteRequest}
+                    handleEditRequest={onEditRequest}
                   />
                 ))}
             </Container>
@@ -546,7 +680,7 @@ const ScheduleReasonModal = ({
                 </Container>
               </ModalBody>
               <ModalFooter>
-                <Button variant="primary" onClick={handelDeleteConfirmReason}>
+                <Button variant="primary" onClick={handleDeleteConfirmReason}>
                   Confirm
                 </Button>
                 <Button variant="secondary" onClick={toggleDeleteConfirmationModal}>

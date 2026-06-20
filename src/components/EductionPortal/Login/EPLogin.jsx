@@ -4,7 +4,7 @@ import { Redirect } from 'react-router-dom';
 import { Form, FormGroup, FormText, Input, Label, Button, FormFeedback } from 'reactstrap';
 import Joi from 'joi';
 
-import { loginBMUser } from 'actions/authActions';
+import { loginBMUser } from '~/actions/authActions';
 
 function EPLogin(props) {
   const { dispatch, auth, history, location } = props;
@@ -64,20 +64,19 @@ function EPLogin(props) {
     }
     const res = await dispatch(loginBMUser({ email: enteredEmail, password: enterPassword }));
     // server side error validation
-    if (res.statusText !== 'OK') {
-      if (res.status === 422) {
+    if (!res || res.status !== 200) {
+      if (res && res.status === 422) {
         return setValidationError({
           label: res.data.label,
           message: res.data.message,
         });
       }
-      // TODO: add additional error handling
       return setValidationError({
-        label: '',
-        message: '',
+        label: 'form',
+        message: 'Login failed. Please check your credentials and try again.',
       });
     }
-    // initiate push to BM Dashboard if validated (ie received token)
+    // initiate push to EP if validated (ie received token)
     return setHasAccess(!!res.data.token);
   };
 
@@ -91,6 +90,7 @@ function EPLogin(props) {
       <h2>Log In To Good Education Portal</h2>
       <Form onSubmit={handleSubmit}>
         <FormText>Enter your current user credentials to access the Good Education Portal</FormText>
+        <p>Note: You must use your Production/Main credentials for this login.</p>
         <FormGroup>
           <Label for="email">Email</Label>
           <Input
@@ -117,6 +117,9 @@ function EPLogin(props) {
             <FormFeedback>{validationError.message}</FormFeedback>
           )}
         </FormGroup>
+        {validationError && validationError.label === 'form' && (
+          <p style={{ color: 'red', marginTop: '0.5rem' }}>{validationError.message}</p>
+        )}
         <Button disabled={!enteredEmail || !enterPassword}>Submit</Button>
       </Form>
     </div>

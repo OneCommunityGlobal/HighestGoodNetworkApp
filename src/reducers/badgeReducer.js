@@ -27,10 +27,14 @@ const badgeInitial = {
   activeTab: '1',
 };
 
+// eslint-disable-next-line default-param-last
 export const badgeReducer = (state = badgeInitial, action) => {
   switch (action.type) {
     case GET_ALL_BADGE_DATA:
-      return { ...state, allBadgeData: action.allBadges };
+      return {
+        ...state,
+        allBadgeData: action.allBadges || [],
+      };
     case ADD_SELECT_BADGE:
       return {
         ...state,
@@ -72,3 +76,5 @@ export const badgeReducer = (state = badgeInitial, action) => {
       return state;
   }
 };
+
+export default badgeReducer;

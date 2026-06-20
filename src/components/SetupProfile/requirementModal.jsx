@@ -1,9 +1,8 @@
-import React from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Label, Input } from 'reactstrap';
 
-const RequirementModal = ({ isOpen, toggle, handleCheckbox, isChecked }) => {
+function RequirementModal({ isOpen, toggle, handleCheckbox, isChecked }) {
   return (
-    <Modal isOpen={isOpen} toggle={toggle} id='requirement-modal'>
+    <Modal isOpen={isOpen} toggle={toggle} id="requirement-modal">
       <ModalHeader toggle={toggle}>Requirements</ModalHeader>
       <ModalBody>
         Please only choose this option if you were born and lived for a fair amount of time (10+
@@ -20,6 +19,6 @@ const RequirementModal = ({ isOpen, toggle, handleCheckbox, isChecked }) => {
       </ModalFooter>
     </Modal>
   );
-};
+}
 
 export default RequirementModal;

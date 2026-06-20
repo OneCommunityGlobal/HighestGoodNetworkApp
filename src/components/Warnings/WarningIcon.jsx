@@ -7,26 +7,36 @@ import { faCircle } from '@fortawesome/free-solid-svg-icons';
 import moment from 'moment';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
+import styles from './Warnings.module.css';
+import { useSelector } from 'react-redux';
 
-const colors = {
-  blue: 'blue',
-  red: 'red',
-  yellow: '#ffc107',
-};
-function WarningIcon(props) {
-  const {
-    id,
-    color,
-    date: dateAssigned,
-    warningText,
-    handleModalTriggered,
-    numberOfWarnings,
-  } = props;
+function WarningIcon({
+  userProfileModal,
+  id,
+  color,
+  date: dateAssigned,
+  warningText,
+  handleShowWarningModal,
+  numberOfWarnings,
+  canIssueTrackingWarnings,
+  handleWarningIconClicked,
+}) {
+  // const {
+  //   id,
+  //   color,
+  //   date: dateAssigned,
+  //   warningText,
+  //   handleModalTriggered,
+  //   numberOfWarnings,
+  // } = props;
 
-  const btnColor = color ? colors[color] : 'white';
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   // eslint-disable-next-line no-shadow
   const handleIssueWarning = id => {
+    if (!canIssueTrackingWarnings) {
+      return;
+    }
     const today = moment().format('MM/DD/YYYY HH:mm:ss a');
     const [todaysDate, todaysTime, todaysTimeOfDay] = today.split(' ');
 
@@ -34,42 +44,57 @@ function WarningIcon(props) {
     const warningDetails = { todaysDate, id, colorAssigned, warningText };
 
     if (color === 'blue' || color === 'red' || color === 'yellow') {
-      handleModalTriggered({ id, deleteWarning: true });
+      handleShowWarningModal({ id, deleteWarning: true, warningDetails });
       return;
     }
     if (numberOfWarnings >= 2) {
-      handleModalTriggered({ id, deleteWarning: false, displayModal: true, warningDetails });
+      handleShowWarningModal({ id, deleteWarning: false, displayModal: true, warningDetails });
       return;
     }
 
-    props.handleWarningIconClicked({ id, colorAssigned, todaysDate, warningText });
+    handleWarningIconClicked({ id, colorAssigned, todaysDate, warningText });
   };
 
   const popover = (
-    <Popover id="popover-basic">
+    <Popover id="popover-basic" className={darkMode ? styles.popoverDarkMode : ''}>
       <Popover.Title as="h4">Date Assigned</Popover.Title>
-      <Popover.Content>{dateAssigned}</Popover.Content>
+      <Popover.Content className={styles['popover-body']}>{dateAssigned}</Popover.Content>
     </Popover>
   );
 
+  const warningColor = () => {
+    if (color === 'red') {
+      return styles.warningColorRed;
+    } else if (color === 'blue') {
+      return styles.warningColorBlue;
+    } else if (color === 'yellow') {
+      return styles.warningColorYellow;
+    }
+    return '';
+  };
+
+  const renderIcon = (
+    <FontAwesomeIcon
+      style={{
+        cursor: userProfileModal ? 'not-allowed' : 'pointer',
+      }}
+      className={`${styles.icon} ${warningColor()}`}
+      id={id}
+      onClick={userProfileModal ? null : () => handleIssueWarning(id)}
+      icon={faCircle}
+      data-testid="icon"
+    />
+  );
+
   return (
-    <div className="warning-icon">
-      <OverlayTrigger placement="top" delay={{ show: 100, hide: 250 }} overlay={popover}>
-        <FontAwesomeIcon
-          style={{
-            color: btnColor,
-            border: '1px solid black',
-            borderRadius: '50%',
-            width: '10px',
-            height: '10px',
-            margin: '0em 0.175em',
-          }}
-          id={id}
-          onClick={() => handleIssueWarning(id)}
-          icon={faCircle}
-          data-testid="icon"
-        />
-      </OverlayTrigger>
+    <div className={`${styles['warning-icon']}`}>
+      {dateAssigned ? (
+        <OverlayTrigger placement="top" delay={{ show: 100, hide: 250 }} overlay={popover}>
+          {renderIcon}
+        </OverlayTrigger>
+      ) : (
+        renderIcon
+      )}
     </div>
   );
 }

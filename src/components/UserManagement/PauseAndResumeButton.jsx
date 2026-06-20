@@ -1,12 +1,13 @@
+import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Button } from 'reactstrap';
 import { toast } from 'react-toastify';
-import { PAUSE, RESUME } from '../../languages/en/ui';
+import { PAUSE, RESUME, PROCESSING } from '../../languages/en/ui';
 import { UserStatus } from '../../utils/enums';
 import ActivationDatePopup from './ActivationDatePopup';
-import { updateUserStatus } from '../../actions/userManagement';
 import { boxStyle, boxStyleDark } from '../../styles';
+import { updateUserPauseStatus } from '../../actions/userManagement';
 
 /**
  * @param {*} props
@@ -18,6 +19,7 @@ function PauseAndResumeButton(props) {
   const { darkMode } = props;
   const [activationDateOpen, setActivationDateOpen] = useState(false);
   const [isActive, setIsActive] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   const activationDatePopupClose = () => {
     setActivationDateOpen(false);
@@ -33,13 +35,20 @@ function PauseAndResumeButton(props) {
    * Call back on Pause confirmation button click to trigger the action to update user status
    */
   const pauseUser = async reActivationDate => {
-    await updateUserStatus(props.userProfile, UserStatus.InActive, reActivationDate)(dispatch);
-    setIsActive(false);
-    setActivationDateOpen(false);
-    setTimeout(async () => {
-      await props.loadUserProfile();
+    setIsLoading(true);
+    try {
+      await dispatch(updateUserPauseStatus(props.userProfile, UserStatus.Inactive, reActivationDate));
+      setIsActive(false);
+      setActivationDateOpen(false);
       toast.success('Your Changes were saved successfully.');
-    }, 1000);
+    } catch (error) {
+      toast.error('Failed to update the user status.');
+      // eslint-disable-next-line no-console
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+      await props.loadUserProfile();
+    }
   };
 
   /**
@@ -47,12 +56,19 @@ function PauseAndResumeButton(props) {
    */
   const onPauseResumeClick = async (user, status) => {
     if (status === UserStatus.Active) {
-      await updateUserStatus(user, status, Date.now())(dispatch);
-      setIsActive(status);
-      setTimeout(async () => {
-        await props.loadUserProfile();
+      setIsLoading(true);
+      try {
+        await dispatch(updateUserPauseStatus(props.userProfile, UserStatus.Active, Date.now()));
+        setIsActive(true);
         toast.success('Your Changes were saved successfully.');
-      }, 1000);
+      } catch (error) {
+        toast.error('Failed to update the user status.');
+        // eslint-disable-next-line no-console
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+        await props.loadUserProfile();
+      }
     } else {
       setActivationDateOpen(true);
     }
@@ -67,18 +83,32 @@ function PauseAndResumeButton(props) {
       <Button
         outline={!darkMode}
         color={isActive ? 'warning' : 'success'}
+        disabled={isLoading} // Disable the button while loading
         className={`btn ${darkMode ? '' : `btn-outline-${isActive ? 'warning' : 'success'}`} ${
           props.isBigBtn ? '' : 'btn-sm'
         }  mr-1`}
         onClick={() => {
-          onPauseResumeClick(props.userProfile, isActive ? UserStatus.InActive : UserStatus.Active);
+          onPauseResumeClick(props.userProfile, isActive ? UserStatus.Inactive : UserStatus.Active);
         }}
         style={darkMode ? boxStyleDark : boxStyle}
         data-testid="pause-resume-button"
       >
-        {isActive ? PAUSE : RESUME}
+        {/* eslint-disable-next-line no-nested-ternary */}
+        {isLoading ? PROCESSING : isActive ? PAUSE : RESUME} {/* Show loading state */}
+        
       </Button>
     </>
   );
 }
+
+PauseAndResumeButton.propTypes = {
+  darkMode: PropTypes.bool,
+  isBigBtn: PropTypes.bool,
+  loadUserProfile: PropTypes.func.isRequired,
+  userProfile: PropTypes.shape({
+    _id: PropTypes.string,
+    isActive: PropTypes.bool,
+  }).isRequired,
+};
+
 export default PauseAndResumeButton;

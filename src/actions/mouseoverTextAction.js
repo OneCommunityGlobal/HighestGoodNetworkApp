@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { ENDPOINTS } from '../utils/URL';
-
-import * as types from './../constants/mouseoverTextConstants';
+import { toast } from 'react-toastify';
+import { ENDPOINTS } from '~/utils/URL';
+import * as types from '../constants/mouseoverTextConstants';
 
 export const getMouseoverTextAction = payload => {
   return {
@@ -16,7 +16,8 @@ export const getMouseoverText = () => async dispatch => {
     // console.log('Fetched mouseoverText data:', data); // Verify the fetched data
     return dispatch(getMouseoverTextAction(data));
   } catch (error) {
-    console.log('Error fetching mouseoverText:', error);
+    toast.info('Error fetching mouseoverText:', error);
+    return null;
   }
 };
 

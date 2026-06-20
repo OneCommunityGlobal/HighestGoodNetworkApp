@@ -4,7 +4,7 @@ import { Redirect } from 'react-router-dom';
 import { Form, FormGroup, FormText, Input, Label, Button, FormFeedback } from 'reactstrap';
 import Joi from 'joi';
 
-import { loginBMUser } from 'actions/authActions';
+import { loginBMUser } from '~/actions/authActions';
 
 function BMLogin(props) {
   const { dispatch, auth, history, location } = props;
@@ -93,6 +93,7 @@ function BMLogin(props) {
         <FormText>
           Enter your current user credentials to access the Building Management Dashboard
         </FormText>
+        <p>Note: You must use your Production/Main credentials for this login.</p>
         <FormGroup>
           <Label for="email">Email</Label>
           <Input

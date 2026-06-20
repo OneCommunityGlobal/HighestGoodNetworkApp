@@ -1,26 +1,30 @@
 import configureMockStore from 'redux-mock-store'; // Import mock store configuration
 import thunk from 'redux-thunk'; // Import thunk middleware
+import jwtDecode from 'jwt-decode'; // Import jwtDecode
+import axios from 'axios'; // Import axios
+
+
 import httpService from '../../services/httpService'; // Import httpService
 import {
   loginUser, // Import loginUser action
   loginBMUser, // Import loginBMUser action
-  getHeaderData, // Import getHeaderData action
   logoutUser, // Import logoutUser action
   refreshToken as refreshUserToken, // Import refreshToken action and rename it to avoid conflict
   setCurrentUser, // Import setCurrentUser action
   setHeaderData, // Import setHeaderData action
 } from '../authActions'; // Import actions from authActions
-import { SET_CURRENT_USER, GET_ERRORS, SET_HEADER_DATA } from '../../constants/auth'; // Import constants
-import jwtDecode from 'jwt-decode'; // Import jwtDecode
-import axios from 'axios'; // Import axios
+import { SET_CURRENT_USER, SET_HEADER_DATA, STOP_FORCE_LOGOUT } from '../../constants/auth'; // Import constants
+
 
 const middlewares = [thunk]; // Define middlewares
 const mockStore = configureMockStore(middlewares); // Create mock store with middlewares
 
-jest.mock('jwt-decode', () => jest.fn()); // Mock jwtDecode
+vi.mock('jwt-decode', () => ({
+  default: vi.fn(),
+}));
 
-jest.mock('../../services/httpService'); // Mock httpService
-jest.mock('axios'); // Mock axios
+vi.mock('../../services/httpService'); // Mock httpService
+vi.mock('axios'); // Mock axios
 
 describe('authActions', () => {
   it('creates SET_CURRENT_USER when loginUser is successful', async () => {
@@ -31,7 +35,10 @@ describe('authActions', () => {
     httpService.post.mockResolvedValue({ data: { token } }); // Mock the httpService post method
     jwtDecode.mockReturnValue(decodedToken); // Mock the jwtDecode function
 
-    const expectedActions = [{ type: SET_CURRENT_USER, payload: decodedToken }]; // Define expected actions
+    const expectedActions = [
+      { type: STOP_FORCE_LOGOUT }, // Ensure any existing timers are cleared
+      { type: SET_CURRENT_USER, payload: decodedToken },
+    ]; // Define expected actions
 
     await store.dispatch(loginUser(credentials)); // Dispatch the loginUser action
     expect(store.getActions()).toEqual(expectedActions); // Assert the actions
@@ -64,7 +71,10 @@ describe('authActions', () => {
 
   it('creates SET_CURRENT_USER with null when logoutUser is called', () => {
     const store = mockStore({}); // Create a mock store
-    const expectedActions = [{ type: SET_CURRENT_USER, payload: null }]; // Define expected actions
+    const expectedActions = [
+      { type: STOP_FORCE_LOGOUT }, // Clear any active force-logout timer
+      { type: SET_CURRENT_USER, payload: null },
+    ]; // Define expected actions
 
     store.dispatch(logoutUser()); // Dispatch the logoutUser action
     expect(store.getActions()).toEqual(expectedActions); // Assert the actions
@@ -106,5 +116,4 @@ describe('authActions', () => {
 
     expect(setHeaderData(data)).toEqual(expectedAction); // Assert the action
   });
-
 });
