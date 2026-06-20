@@ -172,6 +172,7 @@ function ActualVsPlannedCost() {
               />
               <YAxis tick={{ fill: 'var(--text-color)', fontSize: '12px' }} />
               <Tooltip
+                cursor={false}
                 contentStyle={{
                   backgroundColor: 'var(--card-bg)',
                   borderColor: 'var(--button-hover)',
