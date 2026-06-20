@@ -1,4 +1,4 @@
-import './TriStateToggleSwitch.css';
+import styles from './TriStateToggleSwitch.module.css';
 import React, { useState, useEffect } from 'react';
 
 const getBgColor = pos => {
