@@ -1,5 +1,5 @@
-/* eslint-disable no-alert */
 import React, { useState, useEffect } from 'react';
+import Select from 'react-select';
 import { useSelector } from 'react-redux';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import styles from './DistributionLaborHours.module.css';
@@ -30,6 +30,7 @@ const CustomTooltip = ({ active, payload, total, darkMode }) => {
 
 export default function DistributionLaborHours() {
   const darkMode = useSelector(state => state.theme.darkMode);
+
   const [originalData, setOriginalData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [dateRange, setDateRange] = useState({ from: '', to: '' });
@@ -64,13 +65,25 @@ export default function DistributionLaborHours() {
 
   const totalHours = filteredData.reduce((sum, item) => sum + item.value, 0);
 
+  const projectOptions = [
+    { value: '', label: 'ALL' },
+    { value: 'Project A', label: 'Project A' },
+    { value: 'Project B', label: 'Project B' },
+  ];
+
+  const memberOptions = [
+    { value: '', label: 'ALL' },
+    { value: 'Member 1', label: 'Member 1' },
+    { value: 'Member 2', label: 'Member 2' },
+  ];
+
   return (
-    <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
+    <div className={styles.container}>
       <h3 className={styles.title}>Distribution of Labor Hours</h3>
 
       {/* Filters */}
       <div className={styles.filters}>
-        <label style={{ color: darkMode ? '#ffffff' : '#000000' }}>
+        <label>
           From:
           <input
             type="date"
@@ -78,7 +91,7 @@ export default function DistributionLaborHours() {
             onChange={e => setDateRange({ ...dateRange, from: e.target.value })}
           />
         </label>
-        <label style={{ color: darkMode ? '#ffffff' : '#000000' }}>
+        <label>
           To:
           <input
             type="date"
@@ -86,23 +99,32 @@ export default function DistributionLaborHours() {
             onChange={e => setDateRange({ ...dateRange, to: e.target.value })}
           />
         </label>
-        <label style={{ color: darkMode ? '#ffffff' : '#000000' }}>
+        <label htmlFor="project-filter">
           Project:
-          <select onChange={e => setProjectFilter(e.target.value)} value={projectFilter}>
-            <option value="">All</option>
-            <option value="Project A">Project A</option>
-            <option value="Project B">Project B</option>
-          </select>
+          <Select
+            options={projectOptions}
+            value={projectOptions.find(opt => opt.value === projectFilter)}
+            onChange={opt => setProjectFilter(opt.value)}
+            className="react-select-container"
+            classNamePrefix="react-select"
+          />
         </label>
-        <label style={{ color: darkMode ? '#ffffff' : '#000000' }}>
+        <label htmlFor="member-filter">
           Member:
-          <select onChange={e => setMemberFilter(e.target.value)} value={memberFilter}>
-            <option value="">All</option>
-            <option value="Member 1">Member 1</option>
-            <option value="Member 2">Member 2</option>
-          </select>
+          <Select
+            options={memberOptions}
+            value={memberOptions.find(opt => opt.value === memberFilter)}
+            onChange={opt => setMemberFilter(opt.value)}
+            className="react-select-container"
+            classNamePrefix="react-select"
+          />
         </label>
-        <button className={styles.button}>Submit</button>
+
+        <div className={styles.buttonContainer}>
+          <button className={styles.button} type="button">
+            Submit
+          </button>
+        </div>
       </div>
 
       {/* Chart + Legend */}
@@ -132,7 +154,19 @@ export default function DistributionLaborHours() {
                 cy="50%"
                 outerRadius={100}
                 labelLine={false}
-                label={({ value }) => `${((value / totalHours) * 100).toFixed(1)}%`}
+                label={({ x, y, value }) => (
+                  <text
+                    x={x}
+                    y={y}
+                    fill={darkMode ? '#ffffff' : '#1f2937'}
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                    fontSize={12}
+                    fontWeight="600"
+                  >
+                    {`${((value / totalHours) * 100).toFixed(1)}%`}
+                  </text>
+                )}
               >
                 {filteredData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />

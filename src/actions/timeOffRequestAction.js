@@ -209,7 +209,7 @@ export const addTimeOffRequestThunk = request => async dispatch => {
     const AddedRequest = response.data;
     dispatch(addTimeOffRequest(AddedRequest));
   } catch (error) {
-    toast.info(error);
+    toast.info(error?.message || String(error));
   }
 };
 
@@ -220,7 +220,7 @@ export const updateTimeOffRequestThunk = (id, data) => async dispatch => {
     const updatedRequest = response.data;
     dispatch(updateTimeOffRequest(updatedRequest));
   } catch (error) {
-    toast.info(error);
+    toast.info(error?.message || String(error));
   }
 };
 
@@ -230,6 +230,6 @@ export const deleteTimeOffRequestThunk = id => async dispatch => {
     const deletedRequest = response.data;
     dispatch(deleteTimeOffRequest(deletedRequest));
   } catch (error) {
-    toast.info(error);
+    toast.info(error?.message || String(error));
   }
 };

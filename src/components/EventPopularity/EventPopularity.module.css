@@ -1,0 +1,404 @@
+.dashboardContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  transition: all 0.3s ease;
+
+  /* default (light) tokens scoped to this component */
+  --ep-text-color: #111827;
+  --ep-muted-text: #666;
+  --ep-card-bg: #fff;
+  --ep-card-alt-bg: #f5f5f5;
+  --ep-primary: #4A90E2;
+  --ep-primary-2: #82B7FF;
+  --ep-card-shadow: 0 2px 4px rgb(0 0 0 / 10%);
+  --ep-grid-stroke: #e0e0e0;
+  --ep-chart-tick: #222;
+}
+
+/* dark variant applied via module class */
+.dark {
+  --ep-text-color: #e5e7eb;
+  --ep-muted-text: #b5bac5;
+  --ep-card-bg: #0f1724;
+  --ep-card-alt-bg: #111827;
+  --ep-primary: #4A90E2;
+  --ep-primary-2: #82B7FF;
+  --ep-card-shadow: none;
+  --ep-grid-stroke: #2f4157;
+  --ep-chart-tick: #fff;
+}
+
+.headerSection {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.epheader {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.pageTitle {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #1e293b;
+}
+
+.timePeriod {
+  font-size: 14px;
+  color: #64748b;
+  margin-bottom: 5px;
+}
+
+.subHeader {
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.dashboardGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+/* Light Mode Default */
+.chartCard {
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
+  border: 1px solid transparent;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.cardTitle {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 8px 0 0;
+  color: #1e293b;
+}
+
+.infoIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #1565c0;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: help;
+}
+
+.smallInfoIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #cbd5e1;
+  color: #334155;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: help;
+}
+
+.eventList {
+  margin-bottom: 20px;
+}
+
+.tableHeader {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #94a3b8;
+}
+
+.eventRow {
+  display: flex;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.eventName {
+  width: 140px;
+  margin-right: 10px;
+  font-size: 13px;
+  color: #334155;
+  font-weight: 500;
+}
+
+.progressBarBackground {
+  flex-grow: 1;
+  height: 10px;
+  background: #e2e8f0;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.progressBarFill {
+  height: 100%;
+  background: #4a90e2;
+}
+
+.eventCount {
+  margin-left: 12px;
+  min-width: 35px;
+  text-align: right;
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.statCard {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+}
+
+.primaryStatTitle {
+  margin: 0 0 4px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #4a90e2;
+}
+
+.statTitle {
+  margin: 0 0 4px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.statSubtitle {
+  margin: 0;
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.chartWrapper {
+  margin-bottom: 20px;
+}
+
+.participationGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.participationCard {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.participationHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 6px;
+}
+
+.participationTitle {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #334155;
+}
+
+.participationSubtitle {
+  margin: 0 0 6px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #94a3b8;
+}
+
+.participantCount {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.positiveTrend {
+  margin: 6px 0 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: #22c55e;
+}
+
+.negativeTrend {
+  margin: 6px 0 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: #ef4444;
+}
+
+/* --- DARK MODE FIXES --- */
+
+:global(.dark-mode) .dashboardContainer {
+  background: #0f172a;
+}
+
+:global(.dark-mode) .pageTitle {
+  color: #f8fafc !important;
+}
+
+:global(.dark-mode) .chartCard {
+  background-color: #1e293b !important;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 40%) !important;
+  border-color: #334155 !important;
+}
+
+:global(.dark-mode) .cardTitle,
+:global(.dark-mode) .eventName,
+:global(.dark-mode) .eventCount,
+:global(.dark-mode) .statTitle,
+:global(.dark-mode) .participationTitle {
+  color: #f1f5f9 !important;
+}
+
+:global(.dark-mode) .statCard,
+:global(.dark-mode) .participationCard {
+  background-color: #334155 !important;
+  border-color: #475569 !important;
+}
+
+:global(.dark-mode) .progressBarBackground {
+  background-color: #475569 !important;
+}
+
+:global(.dark-mode) .smallInfoIcon {
+  background-color: #475569 !important;
+  color: #e2e8f0 !important;
+}
+
+/* --- RECHARTS FIXES FOR DARK MODE --- */
+:global(.dark-mode) :global(.recharts-text) {
+  fill: #94a3b8 !important;
+}
+
+:global(.dark-mode) :global(.recharts-cartesian-grid-horizontal line),
+:global(.dark-mode) :global(.recharts-cartesian-grid-vertical line) {
+  stroke: #334155 !important;
+}
+
+:global(.dark-mode) :global(.recharts-legend-item-text) {
+  color: #94a3b8 !important;
+}
+
+/* Tooltip and Tooltip Hover */
+.infotooltipHover {
+  position: relative;
+  display: inline-flex;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.infotooltipheading {
+  position: absolute;
+  bottom: 130%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1e293b;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  white-space: nowrap;
+  z-index: 1000;
+  font-size: 12px;
+}
+
+:global(.dark-mode) .infotooltipheading {
+  background: #334155;
+  color: #f8fafc;
+  border: 1px solid #475569;
+}
+
+/* Recharts Tooltip Fix */
+.tooltipBox {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: #334155;
+  font-size: 12px;
+}
+
+:global(.dark-mode) .tooltipBox {
+  background: #1e293b !important;
+  border-color: #475569 !important;
+  color: #f1f5f9 !important;
+}
+
+/* --- RESPONSIVE --- */
+@media (width <= 1024px) {
+  .participationGrid { grid-template-columns: repeat(2, 1fr); }
+  .statsGrid { grid-template-columns: 1fr; }
+}
+
+@media (width <= 768px) {
+  .dashboardGrid { 
+    grid-template-columns: 1fr; 
+  }
+
+  .participationGrid { 
+    grid-template-columns: 1fr; 
+  }
+
+  .eventRow { 
+    flex-direction: column; 
+    align-items: flex-start; 
+    gap: 8px; 
+  }
+
+  .eventName { 
+    width: 100%; 
+  }
+
+  .progressBarBackground { 
+    width: 100%; 
+  }
+
+  .eventCount { 
+    margin-left: 0; 
+  }
+  
+}
+
+.recharts-wrapper {
+  overflow: visible !important;
+}
+
+:global(.dark-mode) .positiveTrend {
+  color: #4ade80 !important;
+}
+
+:global(.dark-mode) .negativeTrend {
+  color: #f87171 !important;
+}
