@@ -313,6 +313,91 @@ function generateProjectSpecificData(projectName) {
   ];
 }
 
+function MFKDatePickers({
+  darkMode,
+  isMobile,
+  startDate,
+  endDate,
+  today,
+  handleStartDateChange,
+  handleEndDateChange,
+  handleClearDates,
+  renderCalendarContainer,
+  applyDarkCalendarTheme,
+  renderCalendarHeader,
+  mfkStyles,
+}) {
+  return (
+    <>
+      <div className={mfkStyles.controlGroup}>
+        <label htmlFor="start-date" className={mfkStyles.mfkLabel}>
+          From
+        </label>
+        <DatePicker
+          id="start-date"
+          selected={startDate}
+          onChange={handleStartDateChange}
+          className={`${mfkStyles.mfkDatepicker} ${darkMode ? mfkStyles.mfkDatepickerDark : ''}`}
+          calendarClassName={darkMode ? 'mfk-dark-calendar' : ''}
+          popperClassName={darkMode ? 'mfk-dark-popper' : ''}
+          placeholderText="Start"
+          dateFormat={isMobile ? 'MM/dd/yyyy' : 'MM/dd/yy'}
+          maxDate={endDate || today}
+          minDate={new Date('2023-01-01')}
+          calendarContainer={renderCalendarContainer}
+          onCalendarOpen={applyDarkCalendarTheme}
+          renderCustomHeader={darkMode ? renderCalendarHeader : undefined}
+        />
+      </div>
+      <div className={mfkStyles.controlGroup}>
+        <label htmlFor="end-date" className={mfkStyles.mfkLabel}>
+          To
+        </label>
+        <DatePicker
+          id="end-date"
+          selected={endDate}
+          onChange={handleEndDateChange}
+          className={`${mfkStyles.mfkDatepicker} ${darkMode ? mfkStyles.mfkDatepickerDark : ''}`}
+          calendarClassName={darkMode ? 'mfk-dark-calendar' : ''}
+          popperClassName={darkMode ? 'mfk-dark-popper' : ''}
+          placeholderText="End"
+          dateFormat={isMobile ? 'MM/dd/yyyy' : 'MM/dd/yy'}
+          minDate={startDate || new Date('2023-01-01')}
+          maxDate={today}
+          calendarContainer={renderCalendarContainer}
+          onCalendarOpen={applyDarkCalendarTheme}
+          renderCustomHeader={darkMode ? renderCalendarHeader : undefined}
+        />
+      </div>
+      {(startDate || endDate) && (
+        <button
+          type="button"
+          className={mfkStyles.clearButton}
+          onClick={handleClearDates}
+          title="Clear"
+        >
+          ✕
+        </button>
+      )}
+    </>
+  );
+}
+
+function MFKChartArea({ isLoading, error, tags, selectedOption, svgRef, containerRef, mfkStyles }) {
+  return (
+    <div ref={containerRef} className={mfkStyles.mfkChartContainer}>
+      {isLoading && <div className={mfkStyles.mfkLoading}>Loading...</div>}
+      {!isLoading && error && <div className={mfkStyles.mfkError}>{error}</div>}
+      {!isLoading && !error && tags.length === 0 && (
+        <div className={mfkStyles.mfkEmpty}>{selectedOption ? 'No data' : 'Select source'}</div>
+      )}
+      {!isLoading && !error && tags.length > 0 && (
+        <svg ref={svgRef} style={{ width: '100%', height: '100%' }} />
+      )}
+    </div>
+  );
+}
+
 const DropdownIndicator = props => (
   <selectComponents.DropdownIndicator {...props}>
     <span className={styles.mfkChevron}>▾</span>
@@ -335,7 +420,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
   const [tooltip, setTooltip] = useState({ visible: false, text: '', x: 0, y: 0 });
   const API_BASE = process.env.REACT_APP_APIENDPOINT;
   const reduxDarkMode = useSelector(state => state.theme.darkMode);
-  const darkMode = propDarkMode === undefined ? reduxDarkMode : propDarkMode;
+  const darkMode = propDarkMode ?? reduxDarkMode;
   const palette = buildPalette(darkMode);
 
   // Get today's date for max date restriction
@@ -1137,68 +1222,31 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
             styles={selectStyles}
           />
         </div>
-        <div className={styles.controlGroup}>
-          <label htmlFor="start-date" className={styles.mfkLabel}>
-            From
-          </label>
-          <DatePicker
-            id="start-date"
-            selected={startDate}
-            onChange={handleStartDateChange}
-            className={`${styles.mfkDatepicker} ${darkMode ? styles.mfkDatepickerDark : ''}`}
-            calendarClassName={darkMode ? 'mfk-dark-calendar' : ''}
-            popperClassName={darkMode ? 'mfk-dark-popper' : ''}
-            placeholderText="Start"
-            dateFormat={isMobile ? 'MM/dd/yyyy' : 'MM/dd/yy'}
-            maxDate={endDate || today}
-            minDate={new Date('2023-01-01')}
-            calendarContainer={renderCalendarContainer}
-            onCalendarOpen={applyDarkCalendarTheme}
-            renderCustomHeader={darkMode ? renderCalendarHeader : undefined}
-          />
-        </div>
-        <div className={styles.controlGroup}>
-          <label htmlFor="end-date" className={styles.mfkLabel}>
-            To
-          </label>
-          <DatePicker
-            id="end-date"
-            selected={endDate}
-            onChange={handleEndDateChange}
-            className={`${styles.mfkDatepicker} ${darkMode ? styles.mfkDatepickerDark : ''}`}
-            calendarClassName={darkMode ? 'mfk-dark-calendar' : ''}
-            popperClassName={darkMode ? 'mfk-dark-popper' : ''}
-            placeholderText="End"
-            dateFormat={isMobile ? 'MM/dd/yyyy' : 'MM/dd/yy'}
-            minDate={startDate || new Date('2023-01-01')}
-            maxDate={today}
-            calendarContainer={renderCalendarContainer}
-            onCalendarOpen={applyDarkCalendarTheme}
-            renderCustomHeader={darkMode ? renderCalendarHeader : undefined}
-          />
-        </div>
-        {(startDate || endDate) && (
-          <button
-            type="button"
-            className={styles.clearButton}
-            onClick={handleClearDates}
-            title="Clear"
-          >
-            ✕
-          </button>
-        )}
+        <MFKDatePickers
+          darkMode={darkMode}
+          isMobile={isMobile}
+          startDate={startDate}
+          endDate={endDate}
+          today={today}
+          handleStartDateChange={handleStartDateChange}
+          handleEndDateChange={handleEndDateChange}
+          handleClearDates={handleClearDates}
+          renderCalendarContainer={renderCalendarContainer}
+          applyDarkCalendarTheme={applyDarkCalendarTheme}
+          renderCalendarHeader={renderCalendarHeader}
+          mfkStyles={styles}
+        />
       </div>
 
-      <div ref={containerRef} className={styles.mfkChartContainer}>
-        {isLoading && <div className={styles.mfkLoading}>Loading...</div>}
-        {!isLoading && error && <div className={styles.mfkError}>{error}</div>}
-        {!isLoading && !error && tags.length === 0 && (
-          <div className={styles.mfkEmpty}>{selectedOption ? 'No data' : 'Select source'}</div>
-        )}
-        {!isLoading && !error && tags.length > 0 && (
-          <svg ref={svgRef} style={{ width: '100%', height: '100%' }} />
-        )}
-      </div>
+      <MFKChartArea
+        isLoading={isLoading}
+        error={error}
+        tags={tags}
+        selectedOption={selectedOption}
+        svgRef={svgRef}
+        containerRef={containerRef}
+        mfkStyles={styles}
+      />
     </div>
   );
 }
