@@ -1,5 +1,6 @@
 // Universal Custom Tooltip with dark mode support and all values
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const formatNumber = value => {
   if (!Number.isFinite(value)) return '0';
@@ -36,10 +37,10 @@ const getTooltipData = (payload, label) => {
   };
 };
 
-function CustomTooltip({ active, payload, label, tooltipType }) {
+function CustomTooltip({ active, payload, label, tooltipType, darkMode = false }) {
   if (!active || !payload || !payload.length) return null;
 
-  const isDarkMode = getIsDarkMode();
+  const isDarkMode = darkMode;
   const { name, percentage, hoursValue, totalHours, change } = getTooltipData(payload, label);
   const textColor = isDarkMode ? '#fff' : '#222';
 
@@ -88,5 +89,21 @@ function CustomTooltip({ active, payload, label, tooltipType }) {
     </div>
   );
 }
+
+CustomTooltip.propTypes = {
+  active: PropTypes.bool,
+  payload: PropTypes.arrayOf(PropTypes.object),
+  label: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  tooltipType: PropTypes.string,
+  darkMode: PropTypes.bool,
+};
+
+CustomTooltip.defaultProps = {
+  active: false,
+  payload: null,
+  label: '',
+  tooltipType: undefined,
+  darkMode: false,
+};
 
 export default CustomTooltip;

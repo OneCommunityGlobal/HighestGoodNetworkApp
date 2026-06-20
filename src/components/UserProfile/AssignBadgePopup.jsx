@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import PropTypes from 'prop-types';
 import { Table, Button, UncontrolledTooltip , Spinner } from 'reactstrap';
 import { connect } from 'react-redux';
 import axios from 'axios';
@@ -60,7 +61,11 @@ function AssignBadgePopup(props) {
       const response = await axios.get(ENDPOINTS.BADGE());
       setBadgeList(response.data);
       setisLoadingBadge(false);
-    } catch (error) {}
+    } catch (error) {
+      if (process.env.NODE_ENV !== 'production') {
+        console.error('Failed to load badges', error);
+      }
+    }
   };
 
   const filterBadges = (allBadges = []) => {
@@ -76,16 +81,16 @@ function AssignBadgePopup(props) {
   }, [badgeList, searchedName]);
 
   const addExistBadges = () => {
-    if (props.userProfile && props.userProfile.badgeCollection) {
-      // store raw badge IDs, not "assign-badge-..."
-      const existBadges = props.userProfile.badgeCollection
+    if (props.userProfile?.badgeCollection) {
+      return props.userProfile.badgeCollection
         .filter(b => b.badge !== null)
         .map(b => b.badge._id);
-      return existBadges;
     }
     return [];
   };
   let existBadges = addExistBadges();
+
+  const showBadgeTable = !isLoadingBadge && (props.isTableOpen ?? filteredBadges.length > 0);
 
   return (
     <div data-testid="test-assignbadgepopup">
@@ -99,7 +104,7 @@ function AssignBadgePopup(props) {
         }}
       />
       <div style={{ overflowY: 'scroll', height: '75vh' }}>
-        {!isLoadingBadge && (props.isTableOpen ?? filteredBadges.length > 0) ? (
+        {showBadgeTable ? (
           <Table data-testid="test-badgeResults" className={darkMode ? 'text-light' : ''}>
             <thead
               style={
@@ -169,6 +174,27 @@ function AssignBadgePopup(props) {
     </div>
   );
 }
+
+AssignBadgePopup.propTypes = {
+  darkMode: PropTypes.bool,
+  isRecordBelongsToJaeAndUneditable: PropTypes.bool,
+  isTableOpen: PropTypes.bool,
+  userProfile: PropTypes.shape({
+    _id: PropTypes.string,
+    badgeCollection: PropTypes.arrayOf(
+      PropTypes.shape({
+        badge: PropTypes.shape({ _id: PropTypes.string }),
+      }),
+    ),
+  }),
+  selectedBadges: PropTypes.arrayOf(PropTypes.object),
+  setUserProfile: PropTypes.func,
+  handleSubmit: PropTypes.func,
+  close: PropTypes.func,
+  assignBadgesByUserID: PropTypes.func,
+  clearNameAndSelected: PropTypes.func,
+  addSelectBadge: PropTypes.func,
+};
 
 const mapStateToProps = state => ({
   selectedBadges: state.badge.selectedBadges,

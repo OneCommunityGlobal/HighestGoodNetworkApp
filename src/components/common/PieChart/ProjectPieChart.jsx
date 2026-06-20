@@ -189,7 +189,7 @@ export default function UserProjectD3PieChart({ projectsData, darkMode }) {
           className={`${styles['data-total-value']} ${darkMode ? styles['text-light'] : ''}`}
           style={{ marginTop: 8, color: darkMode ? '#f5f5f5' : 'inherit' }}
         >
-          <strong className={`strong-text ${darkMode ? styles['text-light'] : ''}`}>
+          <strong className={`${styles['strong-text']} ${darkMode ? styles['text-light'] : ''}`}>
             Total Hours:
           </strong>{' '}
           {total.toFixed(2)}

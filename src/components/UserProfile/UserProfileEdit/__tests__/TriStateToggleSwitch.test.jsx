@@ -32,24 +32,22 @@ describe('TriStateToggleSwitch Component', () => {
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
     const wrapper = container.querySelector('.toggle-switch');
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-    const options = container.querySelectorAll('.knob-area div');
+    const options = container.querySelectorAll('.knob-area button');
 
-    
+
     fireEvent.click(options[0]);
     expect(handleChange).toHaveBeenCalledWith('posted');
     expect(wrapper).toHaveClass('bg-blue');
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
     expect(container.querySelector('.knob')).toHaveClass('posted');
 
-    
-    handleChange.mockClear();
+     handleChange.mockClear();
     fireEvent.click(options[1]);
     expect(handleChange).toHaveBeenCalledWith('default');
     expect(wrapper).toHaveClass('bg-darkgray');
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
     expect(container.querySelector('.knob')).toHaveClass('default');
 
-   
     handleChange.mockClear();
     fireEvent.click(options[2]);
     expect(handleChange).toHaveBeenCalledWith('requested');
@@ -61,7 +59,7 @@ describe('TriStateToggleSwitch Component', () => {
   it('does not throw if onChange is not provided', () => {
     const { container } = render(<TriStateToggleSwitch pos="default" />);
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-    const options = container.querySelectorAll('.knob-area div');
+    const options = container.querySelectorAll('.knob-area button');
 
     expect(() => fireEvent.click(options[0])).not.toThrow();
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
@@ -86,7 +84,7 @@ describe('TriStateToggleSwitch Component', () => {
   it('renders exactly three clickable areas for each state option', () => {
     const { container } = render(<TriStateToggleSwitch pos="requested" />);
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-    const options = container.querySelectorAll('.knob-area div');
+    const options = container.querySelectorAll('.knob-area button');
     expect(options.length).toBe(3);
   });
 
@@ -121,7 +119,7 @@ describe('TriStateToggleSwitch Component', () => {
     const handleChange = vi.fn();
     const { container } = render(<TriStateToggleSwitch pos="default" onChange={handleChange} />);
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-    const options = container.querySelectorAll('.knob-area div');
+    const options = container.querySelectorAll('.knob-area button');
 
     options.forEach((option, idx) => {
       fireEvent.click(option);
