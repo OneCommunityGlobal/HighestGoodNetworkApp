@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import PropTypes from 'prop-types';
 import { Bar } from 'react-chartjs-2';
 import 'chart.js/auto';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -11,6 +12,8 @@ import {
   fetchLongestOpenIssues,
   fetchMostExpensiveIssues,
 } from '../../../actions/bmdashboard/issueChartActions';
+
+const truncateLabel = str => (str.length > 28 ? `${str.substring(0, 28)}…` : str);
 
 function IssuesCharts({ bmProjects = [] }) {
   const dispatch = useDispatch();
@@ -41,7 +44,7 @@ function IssuesCharts({ bmProjects = [] }) {
   const chartData = graphType === 'Longest Open' ? longestOpenIssues : mostExpensiveIssues;
 
   const data = {
-    labels: chartData.map(issue => issue.title || 'Untitled Issue'),
+    labels: chartData.map(issue => truncateLabel(issue.title || 'Untitled Issue')),
     datasets: [
       {
         label: graphType === 'Longest Open' ? 'Days Open' : 'Total Cost ($)',
@@ -114,10 +117,6 @@ function IssuesCharts({ bmProjects = [] }) {
             color: darkMode ? '#ccc' : '#333',
             maxRotation: 0,
             autoSkip: false,
-            callback(value, index) {
-              const label = this.getLabelForValue(index);
-              return label.length > 28 ? `${label.substring(0, 28)}…` : label;
-            },
           },
         },
       },
@@ -209,5 +208,9 @@ function IssuesCharts({ bmProjects = [] }) {
     </div>
   );
 }
+
+IssuesCharts.propTypes = {
+  bmProjects: PropTypes.arrayOf(PropTypes.shape({ _id: PropTypes.string, name: PropTypes.string })),
+};
 
 export default IssuesCharts;

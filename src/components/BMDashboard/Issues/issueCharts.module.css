@@ -100,13 +100,13 @@ Issue Charts Module CSS
 
 .darkCalendar :global(.react-datepicker__day--selected),
 .darkCalendar :global(.react-datepicker__day--selected:hover) {
-  background-color: #3b82f6 !important;
+  background-color: #1e40af !important;
   color: #fff !important;
 }
 
 .darkCalendar :global(.react-datepicker__day--today) {
-  background-color: #2d4a7a !important;
-  color: #60a5fa !important;
+  background-color: #1e3a5f !important;
+  color: #fff !important;
   font-weight: bold !important;
 }
 
@@ -203,9 +203,9 @@ Issue Charts Module CSS
 
 .chartButtonActive,
 .chartButtonActiveDark {
-  background-color: #4caf50;
+  background-color: #276228;
   color: #fff;
-  border-color: #4caf50;
+  border-color: #276228;
 }
 
 /* ----- Chart Wrapper ----- */
