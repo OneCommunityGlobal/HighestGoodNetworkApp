@@ -1,7 +1,7 @@
 import { render, screen} from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import thunk from 'redux-thunk';
-import { configureStore } from 'redux-mock-store';
+import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import axios from 'axios';
 import { themeMock } from '__tests__/mockStates';
@@ -48,7 +48,7 @@ describe('ProjectReport component', () => {
         <ProjectReport />
       </Provider>,
     );
-  }, 15000); // Increased timeout to 15 seconds
+  });
 
   it('should render the project name three times', async () => {
     axios.get.mockResolvedValue({

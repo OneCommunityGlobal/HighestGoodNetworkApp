@@ -1,7 +1,6 @@
 // eslint-disable-next-line no-unused-vars
-import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { fireEvent, render, screen } from '@testing-library/react';
 import Countdown from '../Countdown';
 
 describe('Countdown Component', () => {
@@ -33,8 +32,8 @@ describe('Countdown Component', () => {
   it('renders the countdown component with the correct initial values', () => {
     // eslint-disable-next-line react/jsx-props-no-spreading
     render(<Countdown {...defaultProps} />);
-    expect(screen.getByText('Goal: 1:00:00')).toBeInTheDocument();
-    expect(screen.getByText('Elapsed: 0:30:00')).toBeInTheDocument();
+    expect(screen.getByText('Goal: 01:00:00')).toBeInTheDocument();
+    expect(screen.getByText('Elapsed: 00:30:00')).toBeInTheDocument();
     expect(screen.getByText('Time Remaining')).toBeInTheDocument();
     expect(screen.getAllByText('00')).toHaveLength(2);
     expect(screen.getByText('30')).toBeInTheDocument();
@@ -46,7 +45,7 @@ describe('Countdown Component', () => {
   it('calls toggleTimer when the close button is clicked', () => {
     // eslint-disable-next-line react/jsx-props-no-spreading
     render(<Countdown {...defaultProps} />);
-    const closeButton = screen.getByTitle('close timer dropdown');
+    const closeButton = screen.getByLabelText('Close timer dropdown');
     fireEvent.click(closeButton);
     expect(defaultProps.toggleTimer).toHaveBeenCalled();
   });

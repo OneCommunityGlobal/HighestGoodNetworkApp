@@ -1,50 +1,128 @@
-.dashboardContainer {
-  padding: 40px 20px;
-  max-width: 1400px;
+:global(body) {
+  font-family: 'Poppins', sans-serif;
+  background: #fff;
+  margin: 0;
+  padding: 0;
+}
+
+/* ======================================
+   DASHBOARD CONTAINER
+   ====================================== */
+.dashboard-container {
+  padding: 40px 10px;
   margin: 0 auto;
   background: #ffffff;
   border-radius: 16px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  font-size: 16px;
+  line-height: 1.6;
+  letter-spacing: 0.2px;
+  width: 100%;
 }
 
-.dashboardHeader {
+.dashboard-container-dark {
+  background: #1b2a41;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* ======================================
+   HEADER
+   ====================================== */
+.dashboard-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
-  padding: 20px;
+  padding: 16px 24px;
   background: linear-gradient(120deg, #ffffff, #f8f9fa);
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
 }
 
-.dashboardHeader h1 {
+.dashboard-header-dark {
+  background: linear-gradient(120deg, #2b3e59, #22304a);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+}
+
+.dashboard-header h1 {
   font-size: 2.5rem;
   font-weight: bold;
   color: #2c3e50;
   margin: 0;
 }
 
-.darkHeader {
-  background: #1b2a41;
+.dashboard-title-dark {
+  color: #ffffff !important;
 }
 
-.dashboardClearBtn {
+/* ======================================
+   SEARCH
+   ====================================== */
+.dashboard-search-container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  overflow: hidden;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+  background: #ffffff;
+}
+
+.dashboard-search-input {
+  padding: 8px 90px 8px 16px;
+  border-radius: 999px;
+  border: 2px solid #1b3c55;
+  min-width: 260px;
+  outline: none;
+  background: #ffffff;
+  color: #2c3e50;
+}
+
+.dashboard-search-input-dark {
+  border-color: #4a5a77;
+  background: #3a506b;
+  color: #ffffff;
+}
+
+.dashboard-search-input-dark::placeholder {
+  color: #b0b8c4;
+}
+
+.dashboard-search-input:focus {
+  border-color: #34495e;
+  box-shadow: 0 0 8px rgba(52, 73, 94, 0.3);
+  outline: none;
+}
+
+.dashboard-search-input-dark:focus {
+  border-color: #e8a71c;
+  box-shadow: 0 0 8px rgba(232, 167, 28, 0.3);
+}
+
+.dashboard-clear-btn {
   position: absolute;
   right: 35px;
-  top: 45%;
+  top: 50%;
   transform: translateY(-50%);
   border: none;
   background: transparent;
   cursor: pointer;
   font-size: 0.9rem;
   color: #1b3c55;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.dashboardSearchIconBtn {
+.dashboard-clear-btn-dark {
+  color: #ffffff;
+}
+
+.dashboard-search-icon-btn {
   position: absolute;
-  right: 1%;
-  top: 48%;
+  right: 8px;
+  top: 50%;
   transform: translateY(-50%);
   width: 34px;
   height: 34px;
@@ -56,296 +134,343 @@
   justify-content: center;
   color: #1b3c55;
   font-size: 0.9rem;
-}
-
-.dashboardSearchContainer {
-  position: relative;
-  width: 400px;
-  border-radius: 999px;
-  overflow: hidden;
-  border: 2px solid #1b3c55;
-  background: #ffffff;
-}
-
-.darkHeader .dashboardSearchContainer {
-  border-color: #ffffff;
-  background: #1b2a41;
-}
-
-.dashboardSearchInput {
-  width: 100%;
-  border-radius: 999px;
   border: none;
-  background: transparent;
-  box-sizing: border-box;
+  padding: 0;
 }
 
-.dashboardSearchTextarea {
-  width: 100%;
-  resize: none;
-  border: none;
-  outline: none;
-  background: transparent;
-  font-size: 1rem;
-  line-height: 1.5;
-  padding: 10px 96px 10px 18px;
-  min-height: 36px;
-  max-height: 120px;
-  box-sizing: border-box;
-  overflow-y: auto;
-  overflow-x: hidden;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  word-break: break-word;
-}
-
-@media (max-width: 850px) {
-  .dashboardSearchContainer {
-    width: 250px;
-  }
-}
-
-.darkHeader .dashboardSearchTextarea {
+.dashboard-search-icon-btn-dark {
   color: #ffffff;
 }
 
-.darkHeader .dashboardSearchTextarea::placeholder {
-  color: #cbd5e1;
+/* Hide browser's built-in clear icon for search inputs */
+.dashboard-search-input::-webkit-search-cancel-button,
+.dashboard-search-input::-webkit-search-decoration,
+.dashboard-search-input::-webkit-search-results-button,
+.dashboard-search-input::-webkit-search-results-decoration {
+  -webkit-appearance: none;
+  appearance: none;
 }
 
-.charCountWarning {
-  position: absolute;
-  top: 100%;
-  transform: translateY(4px);
-  background-color: #e4b348 !important;
-  color: #333333 !important;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 0.85rem;
-  white-space: nowrap;
+/* ======================================
+   LAYOUT
+   ====================================== */
+.dashboard-row {
+  align-items: flex-start;
 }
 
-.dashboardSearchButtons {
-  position: absolute;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%);
+.dashboard-sidebar {
+  padding: 0;
   display: flex;
-  align-items: center;
-  gap: 6px;
+  justify-content: flex-start;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  align-items: flex-start;
 }
 
-.dashboardSearchContainer input {
-  outline: none;
-}
-
-.dashboardSearchContainer input:focus,
-.dashboardSearchContainer input:focus-visible {
-  outline: none;
+.dashboard-main {
+  padding: 0 0 0 24px;
+  border-radius: 0;
   box-shadow: none;
 }
 
-.dashboardSearchContainer:focus-within {
-  border-color: #4da3ff;
-  box-shadow: none;
-}
-
-.dashboardSearchContainer:focus-within:not(:focus-visible) {
-  outline: none;
-}
-
-.dashboardSearchContainer,
-.dashboardSearchContainer:focus,
-.dashboardSearchContainer:focus-visible {
-  outline: none;
-}
-
-.dashboardSearchContainer input,
-.dashboardSearchContainer input:focus,
-.dashboardSearchContainer input:focus-visible {
-  outline: none;
-  box-shadow: none;
-}
-
-.dashboardSidebar {
-  padding: 30px;
-  background: #f9f9f9;
+/* ======================================
+   FILTER SECTION
+   ====================================== */
+.filter-section {
+  width: 100%;
+  padding: 24px;
+  background: #ffffff;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow: visible;
+  box-sizing: border-box;
 }
 
-.darkSidebar {
-  background: #1b2a41;
+.filter-section-dark {
+  background: #2b3e59;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-.darkSidebar .filterItem input:not([type='checkbox']):not([type='radio']),
-.darkSidebar .filterItem select {
-  background-color: #34495e;
-  color: #fff;
-  border: 1px solid #4a6572;
-}
-
-.darkSidebar .filterItem label {
-  color: #ecf0f1;
-}
-
-.darkSidebar input[type="date"] {
-  color-scheme: dark;
-}
-
-.filterSection h4 {
-  font-size: 1.8rem;
+.filter-section h4 {
+  font-size: 1.5rem;
   color: #2c3e50;
-  margin-bottom: 20px;
   font-weight: 600;
+  margin: 0 0 24px 0;
+  padding: 0;
 }
 
-.filterSectionDivider {
-  margin-top: 20px;
+.filter-section-title-dark {
+  color: #ffffff !important;
+}
+
+.filter-section-divider {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
 }
 
-.radioRow {
+.filter-item {
   display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  margin-top: 10px;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
 }
 
-.radioGroup {
-  margin-right: 8px;
+.filter-item > label:first-of-type {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #2c3e50;
+  margin: 0 0 8px 0;
+  display: block;
+  width: 100%;
 }
 
-.radioInput {
-  margin-right: 6px;
+.filter-label-dark {
+  color: #ffffff !important;
 }
 
-.radioLabel {
-  margin-bottom: 0;
-  vertical-align: middle;
-}
-
-.filterItem input:not([type="checkbox"]):not([type="radio"]),
-.filterItem select {
-  padding: 12px 15px;
-  border: 1px solid #ddd;
+.filter-item input:not([type="checkbox"]):not([type="radio"]),
+.filter-item select {
+  padding: 10px 14px;
+  margin: 0;
   border-radius: 8px;
   width: 100%;
+  height: auto;
   font-size: 1rem;
-  background: #ffffff;
   transition: all 0.3s ease;
-  margin-bottom: 20px;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-  background-repeat: no-repeat;
-  background-position: right 1rem center;
-  background-size: 1em;
-}
-
-.filterItem label {
-  display: block;
-  font-weight: 600;
-  color: #34495e;
-  margin-bottom: 8px;
-}
-
-.dateFilter {
-  margin-top: 10px;
-}
-
-.dateFilter:focus {
-  border-color: #2c3e50;
-  box-shadow: 0 0 5px rgba(44, 62, 80, 0.4);
-  outline: none;
-}
-
-.filterItem input:focus,
-.filterItem select:focus {
-  border-color: #2c3e50;
-  box-shadow: 0 0 5px rgba(44, 62, 80, 0.4);
-  outline: none;
-}
-
-.dashboardMain {
-  padding: 30px;
+  border: 1px solid #ddd;
   background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  color: #2c3e50;
+  box-sizing: border-box;
 }
 
-.darkMain {
-  background: #2b3e59;
+.filter-item input:not([type="checkbox"]):not([type="radio"]):focus,
+.filter-item select:focus {
+  border-color: #2c3e50;
+  box-shadow: 0 0 5px rgba(44, 62, 80, 0.4);
+  outline: none;
 }
 
-.eventsHeader {
+.filter-select-dark,
+.date-filter-dark {
+  border-color: #4a5a77 !important;
+  background: #3a506b !important;
+  color: #ffffff !important;
+}
+
+.filter-select-dark:focus,
+.date-filter-dark:focus {
+  border-color: #e8a71c !important;
+  box-shadow: 0 0 5px rgba(232, 167, 28, 0.4) !important;
+}
+
+.filter-select-dark option {
+  background: #3a506b !important;
+  color: #ffffff !important;
+}
+
+/* Global dark mode styles for reactstrap Input components */
+:global(.filter-select-dark.form-control),
+:global(.filter-select-dark.form-select),
+:global(.date-filter-dark.form-control) {
+  border-color: #4a5a77 !important;
+  background-color: #3a506b !important;
+  color: #ffffff !important;
+}
+
+:global(.filter-select-dark.form-control:focus),
+:global(.filter-select-dark.form-select:focus),
+:global(.date-filter-dark.form-control:focus) {
+  border-color: #e8a71c !important;
+  background-color: #3a506b !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 5px rgba(232, 167, 28, 0.4) !important;
+}
+
+/* Radio and Checkbox Styling */
+.filter-options-horizontal {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
   width: 100%;
+  box-sizing: border-box;
 }
 
-.sectionTitle {
+.radio-label,
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  margin: 0;
+  padding: 4px 0;
+  width: 100%;
+  position: relative;
+  box-sizing: border-box;
+  min-height: 26px;
+}
+
+.filter-item input[type="radio"],
+.filter-item input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  min-height: 18px;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+  flex-shrink: 0;
+  position: relative;
+  appearance: auto;
+  -webkit-appearance: auto;
+  box-sizing: border-box;
+}
+
+.filter-radio-dark,
+.filter-checkbox-dark {
+  accent-color: #e8a71c;
+}
+
+/* Global styles for reactstrap radio and checkbox in dark mode */
+:global(.filter-radio-dark.form-check-input),
+:global(.filter-checkbox-dark.form-check-input) {
+  accent-color: #e8a71c;
+  border-color: #4a5a77;
+  background-color: #3a506b;
+  width: 18px !important;
+  height: 18px !important;
+  margin: 0 !important;
+  flex-shrink: 0;
+}
+
+:global(.filter-radio-dark.form-check-input:checked),
+:global(.filter-checkbox-dark.form-check-input:checked) {
+  background-color: #e8a71c;
+  border-color: #e8a71c;
+}
+
+/* Ensure reactstrap Input components don't have default margins */
+:global(.filter-item .form-check-input),
+:global(.filter-item .form-control),
+:global(.filter-item .form-select) {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+/* Fix for reactstrap Input wrapper that might add padding */
+:global(.filter-item .form-check) {
+  padding-left: 0 !important;
+  margin-bottom: 0 !important;
+  margin-top: 0 !important;
+}
+
+/* Override any reactstrap default styles that might clip content */
+:global(.radio-label .form-check-input),
+:global(.checkbox-label .form-check-input) {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  position: static !important;
+}
+
+/* Ensure labels don't clip content */
+.radio-label span,
+.checkbox-label span {
+  display: inline-block;
+  flex: 1;
+  min-width: 0;
+  line-height: 1.5;
+}
+
+.filter-option-text-dark {
+  color: #ffffff !important;
+}
+
+.date-filter {
+  margin-top: 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ======================================
+   MAIN CONTENT
+   ====================================== */
+.section-title {
   font-size: 2.2rem;
   color: #2c3e50;
-  margin-bottom: 0;
+  margin: 0 0 24px 0;
   font-weight: bold;
-  text-align: left;
+  text-align: center;
 }
 
-.eventCardCol {
-  display: flex;
-  margin-bottom: 20px;
+.section-title-dark {
+  color: #ffffff !important;
 }
 
-.eventCard {
-  width: 100%;
+/* ======================================
+   EVENT CARDS
+   ====================================== */
+.event-card {
   margin-bottom: 20px;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: none;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  border: none;
-  background: #ffffff;
 }
 
-.eventCard:hover {
-  transform: scale(1.05);
+.event-card-dark {
+  background: #2b3e59;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+.event-card:hover {
+  transform: translateY(-4px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
-.eventCardImgContainer {
-  width: 100%;
-  height: 220px;
-  overflow: hidden;
-  background-color: #f0f0f0;
-  position: relative;
+.event-card-dark:hover {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
 }
 
-.eventCardImgContainer img {
+.event-card-col {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.event-card-img-container img {
   width: 100%;
   height: auto;
   border-bottom: 3px solid #34495e;
+  display: block;
 }
 
-.eventTitle {
+.event-card-body-dark {
+  background: #2b3e59 !important;
+}
+
+.event-title {
   text-align: center;
   color: #2c3e50;
-  margin: 0 0 15px 0;
+  margin: 10px 0;
   font-weight: bold;
-  font-size: 1.3rem;
-  line-height: 1.4;
+  font-size: 1.5rem;
 }
 
-.eventDate,
-.eventLocation,
-.eventOrganizer {
+.event-title-dark {
+  color: #ffffff !important;
+}
+
+.event-date,
+.event-location,
+.event-organizer {
   font-size: 1rem;
   color: #555;
   display: flex;
@@ -354,31 +479,53 @@
   margin: 5px 0;
 }
 
-.organizerLogo {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  object-fit: cover;
-  flex-shrink: 0;
-  background-color: #f0f0f0;
-  border: 1px solid #e0e0e0;
+.event-text-dark {
+  color: #d1d5db !important;
 }
 
-.eventIcon {
-  color: #2c3e50;
-  margin-top: 2px;
+.event-icon {
   flex-shrink: 0;
-  font-size: 1rem;
 }
 
-.noEvents {
+/* ======================================
+   NO EVENTS
+   ====================================== */
+.no-events {
   text-align: center;
   padding: 40px;
-  color: #888;
+  color: #555;
   font-size: 1.2rem;
 }
 
-.showPastEventsBtn {
+.no-events-dark {
+  color: #d1d5db !important;
+}
+
+/* ======================================
+   PAGINATION
+   ====================================== */
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin: 30px 0;
+}
+
+.pagination-info {
+  font-size: 1rem;
+  color: #2c3e50;
+}
+
+/* ======================================
+   ACTIONS
+   ====================================== */
+.dashboard-actions {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.dashboard-actions button {
   background-color: #2c3e50;
   color: #ffffff;
   border: none;
@@ -388,43 +535,50 @@
   cursor: pointer;
   transition: all 0.3s ease;
   font-weight: bold;
-  white-space: nowrap;
 }
 
-.showPastEventsBtn:hover {
+.dashboard-actions button:hover {
   background-color: #34495e;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.paginationContainer {
-  margin-top: 20px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
+/* ======================================
+   LOADING & ERROR STATES
+   ====================================== */
+.loading-text-dark {
+  color: #ffffff !important;
 }
 
-.dashboardSearchInput::-webkit-search-cancel-button,
-.dashboardSearchInput::-webkit-search-decoration,
-.dashboardSearchInput::-webkit-search-results-button,
-.dashboardSearchInput::-webkit-search-results-decoration {
-  -webkit-appearance: none;
-  appearance: none;
+.error-text {
+  color: #dc3545;
+  text-align: center;
+  padding: 20px;
+  font-size: 1.1rem;
 }
 
-.darkSearchContainer {
-  background: #1b2a41;
-  border-color: #4da3ff;
+.error-text-dark {
+  color: #ff6b6b !important;
 }
 
-.darkSearchTextarea {
-  color: #ffffff;
-}
+/* ======================================
+   RESPONSIVE
+   ====================================== */
+@media (max-width: 768px) {
+  .dashboard-main {
+    padding: 24px 0 0 0;
+  }
 
-.darkSearchTextarea::placeholder {
-  color: rgba(255, 255, 255, 0.7);
-}
+  .filter-section {
+    padding: 20px;
+  }
 
-.darkSearchContainer .dashboardClearBtn,
-.darkSearchContainer .dashboardSearchIconBtn {
-  color: #ffffff;
+  .dashboard-header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .dashboard-header h1 {
+    font-size: 2rem;
+  }
 }

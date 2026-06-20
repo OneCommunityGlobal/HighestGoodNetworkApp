@@ -2,11 +2,12 @@ import { useState, useEffect } from 'react';
 import { Form, FormGroup, Label, Input, Button } from 'reactstrap';
 import DragAndDrop from '~/components/common/DragAndDrop/DragAndDrop';
 import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
 import { toast } from 'react-toastify';
 
 import { useDispatch, useSelector } from 'react-redux';
-import Joi from 'joi-browser';
-import { boxStyle } from '~/styles';
+import Joi from 'joi';
+import { boxStyle, boxStyleDark } from '~/styles';
 import styles from './AddToolForm.module.css';
 
 import {
@@ -35,15 +36,76 @@ const initialFormState = {
   description: '',
 };
 
+const calculateTotalPrice = (price, qty) => price * qty;
+const calculateTotalTax = (taxPct, total) => (taxPct * total) / 100;
+
+function getPhoneBorderStyle(phoneInvalid, isDarkMode) {
+  if (phoneInvalid) return '1px solid #dc3545';
+  return isDarkMode ? '1px solid #555' : '1px solid #ccc';
+}
+
+const toolSchema = Joi.object({
+  name: Joi.string()
+    .min(3)
+    .max(15)
+    .required(),
+  description: Joi.string()
+    .min(5)
+    .max(500)
+    .required(),
+  invoice: Joi.string().required(),
+  quantity: Joi.number()
+    .min(1)
+    .max(999)
+    .integer()
+    .required(),
+  unitPrice: Joi.number()
+    .min(1)
+    .required(),
+  fromDate: Joi.date().required(),
+  phoneNumber: Joi.string()
+    .pattern(/^\d{6,15}$/)
+    .allow('')
+    .optional()
+    .messages({
+      'string.pattern.base': 'Phone number must be 6-15 digits.',
+    }),
+  toDate: Joi.date()
+    .when('purchaseRental', {
+      is: 'rental',
+      then: Joi.date()
+        .greater(Joi.ref('fromDate'))
+        .required(),
+    })
+    .when('purchaseRental', {
+      is: 'purchase',
+      then: Joi.date().allow(''),
+    }),
+}).unknown();
+
+function validateToolForm(data) {
+  const result = toolSchema.validate(data, { abortEarly: false });
+  if (!result.error) return null;
+  const errorMessages = {};
+  result.error.details.forEach(detail => {
+    errorMessages[detail.path[0]] = detail.message;
+  });
+  return errorMessages;
+}
+
 export default function AddToolForm() {
   const [formData, setFormData] = useState(initialFormState);
   const [isPurchased, setIsPurchased] = useState(true);
   const [areaCode, setAreaCode] = useState('1');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [isPhoneValid, setIsPhoneValid] = useState(true);
+  const [phoneErrorMsg, setPhoneErrorMsg] = useState('');
   const [uploadedFiles, setUploadedFiles] = useState([]); // log here for correct state snapshot (will show each render)
   const [errors, setErrors] = useState({});
   const dispatch = useDispatch();
   const postBuildingInventoryResult = useSelector(state => state.bmInvTypes.postedResult);
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const phoneHasError = !isPhoneValid;
 
   useEffect(() => {
     if (postBuildingInventoryResult?.error === true) {
@@ -59,51 +121,6 @@ export default function AddToolForm() {
     }
   }, [postBuildingInventoryResult]);
 
-  const validationObj = {
-    name: Joi.string()
-      .min(3)
-      .max(15)
-      .required(),
-    description: Joi.string()
-      .min(5)
-      .max(500)
-      .required(),
-    invoice: Joi.string().required(),
-    quantity: Joi.number()
-      .min(1)
-      .max(999)
-      .integer()
-      .required(),
-    unitPrice: Joi.number()
-      .min(1)
-      .required(),
-    fromDate: Joi.date().required(),
-    toDate: Joi.date()
-      .when('purchaseRental', {
-        is: 'rental',
-        then: Joi.date()
-          .greater(Joi.ref('fromDate'))
-          .required(),
-      })
-      .when('purchaseRental', {
-        is: 'purchase',
-        then: Joi.date().allow(''),
-      }),
-  };
-
-  const schema = Joi.object(validationObj).unknown();
-
-  const validate = data => {
-    const result = schema.validate(data, { abortEarly: false });
-    if (!result.error) return null;
-
-    const errorMessages = {};
-    result.error.details.forEach(detail => {
-      errorMessages[detail.path[0]] = detail.message;
-    });
-    return errorMessages;
-  };
-
   const handleInputChange = (name, value) => {
     setFormData(prevData => ({
       ...prevData,
@@ -113,55 +130,74 @@ export default function AddToolForm() {
 
   const handlePurchaseRentalChange = event => {
     const selectedOption = event.target.value;
-    if (selectedOption === 'purchase') {
-      setIsPurchased(true);
-    } else {
-      setIsPurchased(false);
-    }
+    setIsPurchased(selectedOption === 'purchase');
     handleInputChange('purchaseRental', selectedOption);
   };
 
   const { unitPrice, quantity, taxes, shippingFee } = formData;
 
-  const calculateTotalPrice = (price, totalQuantity) => price * totalQuantity;
-  const calculateTotalTax = (taxPercentage, totalPrice) => (taxPercentage * totalPrice) / 100;
-
   const totalPrice = calculateTotalPrice(unitPrice, quantity);
   const totalTax = calculateTotalTax(Number(taxes), totalPrice);
   const totalPriceWithShipping = (totalPrice + totalTax + Number(shippingFee)).toFixed(2);
 
-  const phoneChange = (name, phone) => {
+  const phoneChange = (name, phone, country) => {
     setFormData(prevData => ({
       ...prevData,
       [name]: phone,
     }));
+    const dialCodeLen = country?.dialCode?.length || 1;
+    const userDigits = phone.length - dialCodeLen;
+    // Count dots in format mask (e.g. "+. (...) ...-....") to get exact expected total digits
+    const expectedTotal = (country?.format?.match(/\./g) || []).length;
+    const expectedUserDigits = expectedTotal > 0 ? expectedTotal - dialCodeLen : null;
+    if (userDigits <= 0) {
+      setPhoneErrorMsg('Please enter a phone number.');
+      setIsPhoneValid(false);
+      return;
+    }
+    const isValid =
+      expectedTotal > 0 ? phone.length === expectedTotal : userDigits >= 6 && userDigits <= 15;
+    if (isValid) {
+      setPhoneErrorMsg('');
+    } else {
+      const msg =
+        expectedUserDigits === null
+          ? 'Phone number length is invalid for the selected country.'
+          : `Phone number must be exactly ${expectedUserDigits} digits for the selected country.`;
+      setPhoneErrorMsg(msg);
+    }
+    setIsPhoneValid(isValid);
   };
 
   const handleSubmit = async event => {
     event.preventDefault();
-    const validationErrors = validate(formData);
+    const validationErrors = validateToolForm(formData);
     setErrors(validationErrors || {});
 
-    if (validationErrors) {
+    // Also catch empty phone that was never touched (isPhoneValid stays true by default)
+    const phoneVal = formData.phoneNumber || '';
+    if (phoneVal.length > 0 && isPhoneValid) {
+      if (validationErrors) {
+        return;
+      }
+      const imageURL = uploadedFiles.map(file => URL.createObjectURL(file));
+      const updatedFormData = {
+        ...formData,
+        category: 'Tool',
+        images: imageURL[0],
+        areaCode,
+        phoneNumber,
+        totalPriceWithShipping,
+      };
+      dispatch(postBuildingToolType(updatedFormData));
+      setFormData(initialFormState);
+      setUploadedFiles([]);
+      setAreaCode(1);
+      setPhoneNumber('');
       return;
     }
-    const imageURL = uploadedFiles.map(file => URL.createObjectURL(file));
-    const updatedFormData = {
-      ...formData,
-      category: 'Tool',
-      images: imageURL[0],
-      areaCode,
-      phoneNumber,
-      totalPriceWithShipping,
-    };
-    dispatch(postBuildingToolType(updatedFormData));
-    setFormData(initialFormState);
-    setUploadedFiles([]);
-    setAreaCode(1);
-    setPhoneNumber('');
-    // }
-    // TODO: validate form data
-    // TODO: submit data to API
+    if (phoneVal.length === 0) setPhoneErrorMsg('Please enter a phone number.');
+    setIsPhoneValid(false);
   };
 
   const handleCancelClick = () => {
@@ -169,6 +205,8 @@ export default function AddToolForm() {
     setUploadedFiles([]);
     setAreaCode(1);
     setPhoneNumber('');
+    setIsPhoneValid(true);
+    setPhoneErrorMsg('');
   };
 
   const handleRemoveFile = index => {
@@ -176,7 +214,10 @@ export default function AddToolForm() {
   };
 
   return (
-    <Form className={`${styles.addToolForm} container`} onSubmit={handleSubmit}>
+    <Form
+      className={`${styles.addToolForm} ${darkMode ? styles.addToolFormDark : ''} container`}
+      onSubmit={handleSubmit}
+    >
       <FormGroup>
         <Label for="tool">
           Tool name <span className={`${styles.fieldRequired}`}>*</span>
@@ -190,8 +231,7 @@ export default function AddToolForm() {
           onChange={event => handleInputChange('name', event.target.value)}
         />
         {errors.name && (
-          <Label for="toolNameErr" sm={12} className={`${styles.toolFormError}`}>
-            {/* Tool &quot;name&quot; length must be at least 4 characters that are not space. */}
+          <Label for="toolNameErr" sm={12} className={`${styles.toolFormError} bm-error-red`}>
             {errors.name}
           </Label>
         )}
@@ -209,7 +249,7 @@ export default function AddToolForm() {
           onChange={event => handleInputChange('invoice', event.target.value)}
         />
         {errors.invoice && (
-          <Label for="toolInvoiceErr" sm={12} className={`${styles.toolFormError}`}>
+          <Label for="toolInvoiceErr" sm={12} className={`${styles.toolFormError} bm-error-red`}>
             {errors.invoice}
           </Label>
         )}
@@ -227,7 +267,11 @@ export default function AddToolForm() {
             onChange={event => handleInputChange('unitPrice', event.target.value)}
           />
           {errors.unitPrice && (
-            <Label for="toolUnitPriceErr" sm={12} className={`${styles.toolFormError}`}>
+            <Label
+              for="toolUnitPriceErr"
+              sm={12}
+              className={`${styles.toolFormError} bm-error-red`}
+            >
               {errors.unitPrice}
             </Label>
           )}
@@ -258,7 +302,7 @@ export default function AddToolForm() {
             onChange={event => handleInputChange('quantity', event.target.value)}
           />
           {errors.quantity && (
-            <Label for="toolQuantityErr" sm={12} className={`${styles.toolFormError}`}>
+            <Label for="toolQuantityErr" sm={12} className={`${styles.toolFormError} bm-error-red`}>
               {errors.quantity}
             </Label>
           )}
@@ -303,9 +347,10 @@ export default function AddToolForm() {
             name="from-date"
             value={formData.fromDate}
             onChange={event => handleInputChange('fromDate', event.target.value)}
+            style={{ colorScheme: darkMode ? 'dark' : 'light' }}
           />
           {errors.fromDate && (
-            <Label for="fromDateErr" sm={12} className={`${styles.toolFormError}`}>
+            <Label for="fromDateErr" sm={12} className={`${styles.toolFormError} bm-error-red`}>
               Enter Date
             </Label>
           )}
@@ -319,9 +364,10 @@ export default function AddToolForm() {
             value={formData.toDate}
             onChange={event => handleInputChange('toDate', event.target.value)}
             disabled={isPurchased}
+            style={{ colorScheme: darkMode ? 'dark' : 'light' }}
           />
           {errors.toDate && (
-            <Label for="toDateErr" sm={12} className={`${styles.toolFormError}`}>
+            <Label for="toDateErr" sm={12} className={`${styles.toolFormError} bm-error-red`}>
               Return Date must be after Rental Date
             </Label>
           )}
@@ -352,14 +398,42 @@ export default function AddToolForm() {
         </FormGroup>
       </div>
 
-      <PhoneInput
-        country="US"
-        regions={['america', 'europe', 'asia', 'oceania', 'africa']}
-        limitMaxLength="true"
-        value={formData.phoneNumber}
-        onChange={phone => phoneChange('phoneNumber', phone)}
-        inputStyle={{ height: 'auto', width: '40%', fontSize: 'inherit' }}
-      />
+      <FormGroup>
+        <Label for="phone-number">
+          Contact Phone Number <span style={{ color: '#dc3545' }}>*</span>
+        </Label>
+        <PhoneInput
+          country="us"
+          regions={['america', 'europe', 'asia', 'oceania', 'africa']}
+          limitMaxLength
+          value={formData.phoneNumber}
+          onChange={(phone, country) => phoneChange('phoneNumber', phone, country)}
+          inputStyle={{
+            height: 'auto',
+            width: 'calc(100% - 52px)',
+            fontSize: 'inherit',
+            backgroundColor: darkMode ? '#1a1a2e' : '#fff',
+            color: darkMode ? '#fff' : '#000',
+            border: getPhoneBorderStyle(phoneHasError, darkMode),
+          }}
+          buttonStyle={{
+            backgroundColor: darkMode ? '#1a1a2e' : '#fff',
+            border: getPhoneBorderStyle(phoneHasError, darkMode),
+          }}
+          dropdownStyle={{
+            backgroundColor: darkMode ? '#1a1a2e' : '#fff',
+            color: darkMode ? '#fff' : '#000',
+          }}
+        />
+        {phoneHasError && (
+          <Label className={`${styles.toolFormError} bm-error-red`}>
+            {phoneErrorMsg || 'Please enter a valid phone number for the selected country.'}
+          </Label>
+        )}
+        {errors.phoneNumber && (
+          <Label className={`${styles.toolFormError} bm-error-red`}>{errors.phoneNumber}</Label>
+        )}
+      </FormGroup>
       <FormGroup>
         <Label for="imageUpload">Upload Tool/Equipment Picture</Label>
         <DragAndDrop
@@ -407,13 +481,18 @@ export default function AddToolForm() {
           onChange={event => handleInputChange('description', event.target.value)}
         />
         {errors.description && (
-          <Label for="toolDescriptionErr" sm={12} className={`${styles.toolFormError}`}>
-            {/* Tool &quot;description&quot; length must be at least 4 characters that are not space. */}
+          <Label
+            for="toolDescriptionErr"
+            sm={12}
+            className={`${styles.toolFormError} bm-error-red`}
+          >
             {errors.description}
           </Label>
         )}
       </FormGroup>
-      <div className={`${styles.addToolTotalPrice}`}>
+      <div
+        className={`${styles.addToolTotalPrice} ${darkMode ? styles.addToolTotalPriceDark : ''}`}
+      >
         <div>Total Price</div>
         <div className={`${styles.totalPriceCalculated}`}>
           {totalPriceWithShipping} {formData.currency}
@@ -427,13 +506,13 @@ export default function AddToolForm() {
           errors.unitPrice ||
           errors.toDate ||
           errors.fromDate) && (
-          <div className={`${styles.toolFormError}`}> Missing Required Field </div>
+          <div className={`${styles.toolFormError} bm-error-red`}> Missing Required Field </div>
         )}
       <div className={`${styles.addToolButtons}`}>
-        <Button outline style={boxStyle} onClick={handleCancelClick}>
+        <Button outline style={darkMode ? boxStyleDark : boxStyle} onClick={handleCancelClick}>
           Cancel
         </Button>
-        <Button id="submit-button" style={boxStyle}>
+        <Button id="submit-button" style={darkMode ? boxStyleDark : boxStyle}>
           Submit
         </Button>
       </div>
