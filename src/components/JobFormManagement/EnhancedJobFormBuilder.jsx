@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { ENDPOINTS } from '~/utils/URL';
-import { hasPermissionSimple } from '~/utils/permissions';
+import hasPermission from '~/utils/permissions';
 import QuestionSetManager from './QuestionSetManager';
 import QuestionSetEditor from './QuestionSetEditor';
 import { JOB_FORM_POSITION_OPTIONS } from './jobFormPositions';
@@ -354,10 +354,12 @@ const EnhancedJobFormBuilder = () => {
   const [draftOption, setDraftOption] = useState('');
   const [draftOptions, setDraftOptions] = useState([]);
 
+  const dispatch = useDispatch();
   const { auth } = useSelector(state => state);
   const darkMode = useSelector(state => state.theme?.darkMode);
-  const userPermissions = auth?.user?.permissions?.frontPermissions || [];
   const userRole = auth?.user?.role;
+  const frontPermissions = auth?.user?.permissions?.frontPermissions;
+  const rolePermissions = useSelector(state => state.role?.roles);
 
   useEffect(() => {
     loadFirstAvailableForm();
@@ -389,11 +391,15 @@ const EnhancedJobFormBuilder = () => {
     }
   };
 
-  const canManageForms = () =>
-    hasPermissionSimple(userPermissions, 'manageJobForms') || userRole === 'Owner';
+  const canManageForms = useMemo(
+    () => userRole === 'Owner' || dispatch(hasPermission('manageJobForms')),
+    [dispatch, userRole, frontPermissions, rolePermissions],
+  );
 
-  const canCreateQuestionSets = () =>
-    hasPermissionSimple(userPermissions, 'createFormQuestions') || userRole === 'Owner';
+  const canCreateQuestionSets = useMemo(
+    () => userRole === 'Owner' || dispatch(hasPermission('createFormQuestions')),
+    [dispatch, userRole, frontPermissions, rolePermissions],
+  );
 
   const handleFormChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -443,7 +449,7 @@ const EnhancedJobFormBuilder = () => {
   };
 
   const handleSaveForm = async () => {
-    if (!canManageForms()) {
+    if (!canManageForms) {
       toast.error('You do not have permission to manage job forms');
       return;
     }
@@ -572,7 +578,7 @@ const EnhancedJobFormBuilder = () => {
               className={jb.jobformInput}
               value={formData.title}
               onChange={e => handleFormChange('title', e.target.value)}
-              disabled={!canManageForms()}
+              disabled={!canManageForms}
             />
             <button type="button" className={styles.goButton} onClick={scrollToProceed}>
               Go
@@ -586,7 +592,7 @@ const EnhancedJobFormBuilder = () => {
                 const v = e.target.value;
                 if (v) handleFormChange('title', v);
               }}
-              disabled={!canManageForms()}
+              disabled={!canManageForms}
             >
               <option value="">Select a Position</option>
               {JOB_FORM_POSITION_OPTIONS.map(pos => (
@@ -600,7 +606,7 @@ const EnhancedJobFormBuilder = () => {
 
         <h1 className={jb.jobformTitle}>FORM CREATION</h1>
 
-        {canManageForms() ? (
+        {canManageForms ? (
           <div className={jb.customForm}>
             <p className={jb.jobformDesc}>
               Fill the form with questions about a specific position you want to create an ad for.
@@ -620,7 +626,7 @@ const EnhancedJobFormBuilder = () => {
               >
                 Import from question sets
               </button>
-              {canCreateQuestionSets() && (
+              {canCreateQuestionSets && (
                 <button type="button" onClick={() => setShowQuestionSetEditor(true)}>
                   Create question set
                 </button>

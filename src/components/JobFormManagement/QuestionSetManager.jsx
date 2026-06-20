@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   Modal,
   ModalHeader,
@@ -22,7 +22,7 @@ import {
 } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { ENDPOINTS } from '~/utils/URL';
-import { hasPermissionSimple } from '~/utils/permissions';
+import hasPermission from '~/utils/permissions';
 
 function reportQuestionSetError(message, error) {
   console.error(message, error);
@@ -187,9 +187,11 @@ const QuestionSetManager = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const dispatch = useDispatch();
   const { auth } = useSelector(state => state);
-  const userPermissions = auth?.user?.permissions?.frontPermissions || [];
   const userRole = auth?.user?.role;
+  const frontPermissions = auth?.user?.permissions?.frontPermissions;
+  const rolePermissions = useSelector(state => state.role?.roles);
 
   const categories = [
     'All',
@@ -244,17 +246,20 @@ const QuestionSetManager = ({
     setFilteredQuestionSets(filtered);
   };
 
-  const canCreateQuestionSets = () => {
-    return hasPermissionSimple(userPermissions, 'createFormQuestions') || userRole === 'Owner';
-  };
+  const canCreateQuestionSets = useMemo(
+    () => userRole === 'Owner' || dispatch(hasPermission('createFormQuestions')),
+    [dispatch, userRole, frontPermissions, rolePermissions],
+  );
 
-  const canEditQuestionSets = () => {
-    return hasPermissionSimple(userPermissions, 'editFormQuestions') || userRole === 'Owner';
-  };
+  const canEditQuestionSets = useMemo(
+    () => userRole === 'Owner' || dispatch(hasPermission('editFormQuestions')),
+    [dispatch, userRole, frontPermissions, rolePermissions],
+  );
 
-  const canDeleteQuestionSets = () => {
-    return hasPermissionSimple(userPermissions, 'deleteFormQuestions') || userRole === 'Owner';
-  };
+  const canDeleteQuestionSets = useMemo(
+    () => userRole === 'Owner' || dispatch(hasPermission('deleteFormQuestions')),
+    [dispatch, userRole, frontPermissions, rolePermissions],
+  );
 
   const handleImportQuestions = async (selectedSet, selectedQuestions = null) => {
     if (!currentFormId) {
@@ -293,7 +298,7 @@ const QuestionSetManager = ({
   };
 
   const handleCloneQuestionSet = async selectedSet => {
-    if (!canCreateQuestionSets()) {
+    if (!canCreateQuestionSets) {
       toast.error('You do not have permission to clone question sets');
       return;
     }
@@ -316,7 +321,7 @@ const QuestionSetManager = ({
   };
 
   const handleDeleteQuestionSet = async selectedSet => {
-    if (!canDeleteQuestionSets()) {
+    if (!canDeleteQuestionSets) {
       toast.error('You do not have permission to delete question sets');
       return;
     }
@@ -404,7 +409,7 @@ const QuestionSetManager = ({
               {filteredQuestionSets.length === 0 ? (
                 <Alert color="info">
                   No question sets found.{' '}
-                  {canCreateQuestionSets() && 'Create your first question set to get started!'}
+                  {canCreateQuestionSets && 'Create your first question set to get started!'}
                 </Alert>
               ) : (
                 filteredQuestionSets.map(qs => (
@@ -412,9 +417,9 @@ const QuestionSetManager = ({
                     key={qs._id}
                     questionSet={qs}
                     currentFormId={currentFormId}
-                    canCreate={canCreateQuestionSets()}
-                    canEdit={canEditQuestionSets()}
-                    canDelete={canDeleteQuestionSets()}
+                    canCreate={canCreateQuestionSets}
+                    canEdit={canEditQuestionSets}
+                    canDelete={canDeleteQuestionSets}
                     onImport={handleImportQuestions}
                     onClone={handleCloneQuestionSet}
                     onEdit={handleEditQuestionSet}
@@ -426,7 +431,7 @@ const QuestionSetManager = ({
           )}
         </ModalBody>
         <ModalFooter>
-          {canCreateQuestionSets() && (
+          {canCreateQuestionSets && (
             <Button
               color="success"
               onClick={() => {

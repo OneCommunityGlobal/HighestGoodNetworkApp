@@ -1,12 +1,12 @@
 /* eslint-disable no-alert */
 /* eslint-disable no-console */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import styles from './JobFormBuilder.module.css';
 import { ENDPOINTS } from '~/utils/URL';
-import { hasPermissionSimple } from '~/utils/permissions';
+import hasPermission from '~/utils/permissions';
 import OneCommunityImage from './One-Community-Horizontal-Homepage-Header-980x140px-2.png';
 import QuestionSetManager from './QuestionSetManager';
 import QuestionFieldActions from './QuestionFieldActions';
@@ -25,13 +25,17 @@ import {
 } from './jobFormQuestionUtils';
 
 function JobFormBuilder() {
+  const dispatch = useDispatch();
   const { auth } = useSelector(state => state);
-  const userPermissions = auth?.user?.permissions?.frontPermissions || [];
   const userRole = auth?.user?.role;
+  const frontPermissions = auth?.user?.permissions?.frontPermissions;
+  const rolePermissions = useSelector(state => state.role?.roles);
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const canManageJobForms = () =>
-    hasPermissionSimple(userPermissions, 'manageJobForms') || userRole === 'Owner';
+  const canManageJobForms = useMemo(
+    () => userRole === 'Owner' || dispatch(hasPermission('manageJobForms')),
+    [dispatch, userRole, frontPermissions, rolePermissions],
+  );
 
   const getRequestor = () => buildJobFormRequestor(auth?.user);
   const [formFields, setFormFields] = useState([]);
@@ -402,7 +406,7 @@ function JobFormBuilder() {
           </div>
         </div>
         <h1 className={styles.jobformTitle}>FORM CREATION</h1>
-        {canManageJobForms() ? (
+        {canManageJobForms ? (
           <div className={styles.customForm}>
             <p className={styles.jobformDesc}>
               Fill the form with questions about a specific position you want to create an ad for.
