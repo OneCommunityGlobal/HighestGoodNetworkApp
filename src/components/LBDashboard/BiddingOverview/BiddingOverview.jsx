@@ -72,7 +72,7 @@ function BiddingOverview() {
     const bidData = {
       user_id: userId,
       property_id: listingId,
-      bid_amount: parseInt(biddingPrice, 10),
+      bid_amount: Number.parseInt(biddingPrice, 10),
       start_date: rentingFrom,
       end_date: rentingTo,
     };

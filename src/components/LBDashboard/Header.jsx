@@ -22,7 +22,7 @@ const getUserProfilePath = authUser => (authUser?.userid ? `/userprofile/${authU
 function LBDashboardHeader({ notifications, authUser, villages, onVillageChange }) {
   const [selectedVillage, setSelectedVillage] = useState('');
   const [showNotifications, setShowNotifications] = useState(false);
-  const notificationCount = notifications && notifications.length ? notifications.length : 0;
+  const notificationCount = notifications?.length ?? 0;
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const selectorStyle = darkMode

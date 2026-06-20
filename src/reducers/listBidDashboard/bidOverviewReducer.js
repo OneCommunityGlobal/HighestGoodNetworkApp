@@ -5,7 +5,6 @@ import {
   SUBMIT_BID_SUCCESS,
   SUBMIT_BID_REQUEST,
   SUBMIT_BID_FAILURE,
-  NOTIFICATION_SUCCESS,
   NOTIFICATION_FAILURE,
 } from '../../constants/lbdashboard/bidOverviewConstants';
 
