@@ -41,7 +41,7 @@ function IssuesCharts({ bmProjects = [] }) {
   const chartData = graphType === 'Longest Open' ? longestOpenIssues : mostExpensiveIssues;
 
   const data = {
-    labels: chartData.map(issue => issue.title || issue.issueId),
+    labels: chartData.map(issue => issue.title || 'Untitled Issue'),
     datasets: [
       {
         label: graphType === 'Longest Open' ? 'Days Open' : 'Total Cost ($)',
@@ -57,10 +57,15 @@ function IssuesCharts({ bmProjects = [] }) {
     ],
   };
 
-  const options = useMemo(
-    () => ({
+  const options = useMemo(() => {
+    const vals = chartData.map(d => (graphType === 'Longest Open' ? d.daysOpen : d.totalCost));
+    const dataMax = vals.length > 0 ? Math.max(...vals) : 600;
+    const xMax = Math.ceil((dataMax + 50) / 250) * 250;
+
+    return {
       indexAxis: 'y',
       responsive: true,
+      maintainAspectRatio: false,
       layout: {
         padding: { right: 80, left: 10 },
       },
@@ -86,15 +91,19 @@ function IssuesCharts({ bmProjects = [] }) {
       },
       scales: {
         x: {
+          max: xMax,
           title: {
             display: true,
             text: graphType === 'Longest Open' ? 'Days Open' : 'Total Cost ($)',
             font: { size: 12 },
             color: darkMode ? '#fff' : '#000',
           },
-          ticks: { color: darkMode ? '#ccc' : '#333' },
+          ticks: { stepSize: 250, color: darkMode ? '#ccc' : '#333' },
         },
         y: {
+          afterFit: scale => {
+            scale.width = 200;
+          },
           title: {
             display: true,
             text: 'Issue Title',
@@ -105,15 +114,18 @@ function IssuesCharts({ bmProjects = [] }) {
             color: darkMode ? '#ccc' : '#333',
             maxRotation: 0,
             autoSkip: false,
+            callback(value, index) {
+              const label = this.getLabelForValue(index);
+              return label.length > 28 ? `${label.substring(0, 28)}…` : label;
+            },
           },
         },
       },
       elements: {
         bar: { borderRadius: 4, borderSkipped: false },
       },
-    }),
-    [graphType, darkMode],
-  );
+    };
+  }, [graphType, darkMode, chartData]);
 
   const projectOptions = bmProjects.map(p => ({ value: p._id, label: p.name }));
   const selectedProjectOptions = projectOptions.filter(opt => selectedProjects.includes(opt.value));
@@ -148,9 +160,7 @@ function IssuesCharts({ bmProjects = [] }) {
             selected={dateRange.start}
             onChange={value => setDateRange(prev => ({ ...prev, start: value }))}
             placeholderText="Start date"
-            showYearDropdown
-            scrollableYearDropdown
-            yearDropdownItemNumber={10}
+            calendarClassName={darkMode ? styles.darkCalendar : ''}
             className={darkMode ? styles.dateDark : styles.dateInput}
           />
           <span>to</span>
@@ -158,9 +168,7 @@ function IssuesCharts({ bmProjects = [] }) {
             selected={dateRange.end}
             onChange={value => setDateRange(prev => ({ ...prev, end: value }))}
             placeholderText="End date"
-            showYearDropdown
-            scrollableYearDropdown
-            yearDropdownItemNumber={10}
+            calendarClassName={darkMode ? styles.darkCalendar : ''}
             className={darkMode ? styles.dateDark : styles.dateInput}
           />
         </div>
@@ -193,7 +201,6 @@ function IssuesCharts({ bmProjects = [] }) {
             data={data}
             options={options}
             plugins={[ChartDataLabels]}
-            height={300}
           />
         ) : (
           <p className={styles.noData}>No issues found.</p>

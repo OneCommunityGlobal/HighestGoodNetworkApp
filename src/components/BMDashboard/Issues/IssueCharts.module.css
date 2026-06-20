@@ -73,15 +73,49 @@ Issue Charts Module CSS
   border-color: #111 !important;
 }
 
-/* Year dropdown styling */
-:global(.react-datepicker__year-dropdown) {
-  background: #fff;
-  border: 1px solid #ced4da;
-  border-radius: 0.25rem;
+/* Dark mode datepicker — scoped via calendarClassName prop */
+.darkCalendar {
+  background-color: #1e2d42 !important;
+  border-color: #4a5a72 !important;
 }
 
-:global(.react-datepicker__year-option:hover) {
-  background: #e9ecef;
+.darkCalendar :global(.react-datepicker__header) {
+  background-color: #243450 !important;
+  border-bottom-color: #4a5a72 !important;
+}
+
+.darkCalendar :global(.react-datepicker__current-month),
+.darkCalendar :global(.react-datepicker__day-name) {
+  color: #e0e6f0 !important;
+}
+
+.darkCalendar :global(.react-datepicker__day) {
+  color: #ccd1dc !important;
+}
+
+.darkCalendar :global(.react-datepicker__day:hover) {
+  background-color: #4a5a72 !important;
+  color: #fff !important;
+}
+
+.darkCalendar :global(.react-datepicker__day--selected),
+.darkCalendar :global(.react-datepicker__day--selected:hover) {
+  background-color: #3b82f6 !important;
+  color: #fff !important;
+}
+
+.darkCalendar :global(.react-datepicker__day--today) {
+  background-color: #2d4a7a !important;
+  color: #60a5fa !important;
+  font-weight: bold !important;
+}
+
+.darkCalendar :global(.react-datepicker__day--outside-month) {
+  color: #6b7a8d !important;
+}
+
+.darkCalendar :global(.react-datepicker__navigation-icon::before) {
+  border-color: #ccc !important;
 }
 
 .select {
