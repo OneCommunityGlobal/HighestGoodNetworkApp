@@ -377,8 +377,10 @@ function collectMissingRequiredFields({
     const label = getQuestionLabel(q, idx);
     const requiredLabel = missingRequiredQuestionLabel(q, idx, answers, questionFiles);
     if (requiredLabel) missing.push(requiredLabel);
-    const hoursError = validateHoursPerWeekAnswer(label, answers[idx]);
-    if (hoursError) missing.push(hoursError);
+    if (isHoursPerWeekQuestion(label)) {
+      const hoursError = validateHoursPerWeekAnswer(label, answers[idx]);
+      if (hoursError) missing.push(hoursError);
+    }
   }
   return missing;
 }
