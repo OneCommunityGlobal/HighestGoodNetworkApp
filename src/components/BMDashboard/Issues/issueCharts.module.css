@@ -47,9 +47,41 @@ Issue Charts Module CSS
   font-style: italic;
 }
 
+.dateInput {
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}
+
 .dateDark {
   background: #2b3e59;
   color: white;
+  border: 1px solid #4a5a72;
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}
+
+/* Fix react-datepicker navigation arrow contrast */
+:global(.react-datepicker__navigation-icon::before) {
+  border-color: #555 !important;
+  border-width: 2px 2px 0 0 !important;
+}
+
+:global(.react-datepicker__navigation:hover .react-datepicker__navigation-icon::before) {
+  border-color: #111 !important;
+}
+
+/* Year dropdown styling */
+:global(.react-datepicker__year-dropdown) {
+  background: #fff;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+}
+
+:global(.react-datepicker__year-option:hover) {
+  background: #e9ecef;
 }
 
 .select {

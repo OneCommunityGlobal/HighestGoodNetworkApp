@@ -61,11 +61,15 @@ function IssuesCharts({ bmProjects = [] }) {
     () => ({
       indexAxis: 'y',
       responsive: true,
+      layout: {
+        padding: { right: 80, left: 10 },
+      },
       plugins: {
         legend: { display: false },
         datalabels: {
           anchor: 'end',
           align: 'right',
+          clip: false,
           formatter: value => (graphType === 'Longest Open' ? `${value} days` : `$${value}`),
           color: darkMode ? '#fff' : '#000',
           font: { weight: 'bold' },
@@ -97,7 +101,11 @@ function IssuesCharts({ bmProjects = [] }) {
             font: { size: 12 },
             color: darkMode ? '#fff' : '#000',
           },
-          ticks: { color: darkMode ? '#ccc' : '#333' },
+          ticks: {
+            color: darkMode ? '#ccc' : '#333',
+            maxRotation: 0,
+            autoSkip: false,
+          },
         },
       },
       elements: {
@@ -108,13 +116,16 @@ function IssuesCharts({ bmProjects = [] }) {
   );
 
   const projectOptions = bmProjects.map(p => ({ value: p._id, label: p.name }));
-  const selectedProjectOptions = projectOptions.filter(opt =>
-    selectedProjects.includes(opt.value),
-  );
+  const selectedProjectOptions = projectOptions.filter(opt => selectedProjects.includes(opt.value));
 
   const darkSelectStyles = darkMode
     ? {
-        control: base => ({ ...base, background: '#2b3e59', borderColor: '#4a5a72', color: '#fff' }),
+        control: base => ({
+          ...base,
+          background: '#2b3e59',
+          borderColor: '#4a5a72',
+          color: '#fff',
+        }),
         menu: base => ({ ...base, background: '#2b3e59' }),
         option: (base, { isFocused }) => ({
           ...base,
@@ -137,14 +148,20 @@ function IssuesCharts({ bmProjects = [] }) {
             selected={dateRange.start}
             onChange={value => setDateRange(prev => ({ ...prev, start: value }))}
             placeholderText="Start date"
-            className={darkMode ? styles.dateDark : ''}
+            showYearDropdown
+            scrollableYearDropdown
+            yearDropdownItemNumber={10}
+            className={darkMode ? styles.dateDark : styles.dateInput}
           />
           <span>to</span>
           <DatePicker
             selected={dateRange.end}
             onChange={value => setDateRange(prev => ({ ...prev, end: value }))}
             placeholderText="End date"
-            className={darkMode ? styles.dateDark : ''}
+            showYearDropdown
+            scrollableYearDropdown
+            yearDropdownItemNumber={10}
+            className={darkMode ? styles.dateDark : styles.dateInput}
           />
         </div>
         <div className={styles.multiSelectWrapper}>
