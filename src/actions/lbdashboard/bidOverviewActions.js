@@ -9,7 +9,7 @@ import {
   SUBMIT_BID_FAILURE,
   NOTIFICATION_SUCCESS,
   NOTIFICATION_FAILURE,
-} from '../../constants/lbDashboard/bidOverviewConstants';
+} from '../../constants/lbdashboard/bidOverviewConstants';
 
 export const fetchUnitDetails = listingId => async (dispatch) => {
   try {
