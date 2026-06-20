@@ -579,7 +579,7 @@ function CostPredictionPage({ projectId }) {
             classNamePrefix="custom-select"
             className={`${styles.dropdownItem} ${styles.multiSelect}`}
             menuPosition="fixed"
-            closeMenuOnSelect={false}
+            closeMenuOnSelect
             hideSelectedOptions={false}
             styles={getMultiSelectStyles(darkMode)}
           />
@@ -749,9 +749,11 @@ function CostPredictionPage({ projectId }) {
           {!loading && !error && data.length === 0 && (
             <div
               className={styles.costChartEmpty}
-              style={{ color: darkMode ? DARK.text : 'inherit' }}
+              style={{ color: darkMode ? '#ffffff' : '#000000' }}
             >
-              <p>{selectedProjectId ? 'No data available' : 'Please select a project'}</p>
+              <p style={{ color: 'inherit' }}>
+                {selectedProjectId ? 'No data available' : 'Please select a project'}
+              </p>
             </div>
           )}
         </div>
