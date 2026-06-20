@@ -308,3 +308,13 @@ body.dark-mode .text-light {
 body.dark-mode [style*="background"] {
   background-color: #1a1d23 !important;
 }
+
+tr.dark-leaderboard-row:hover,
+tr.dark-leaderboard-row:hover td,
+tr.dark-leaderboard-row:hover th,
+tr.dark-leaderboard-row:hover span,
+tr.dark-leaderboard-row:hover p,
+tr.dark-leaderboard-row:hover a {
+  background-color: #fff !important;
+  color: #000 !important;
+}
