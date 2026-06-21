@@ -150,7 +150,6 @@ import CPDashboard from './components/CommunityPortal';
 import ActivityList from './components/CommunityPortal/Activities/ActivityList';
 import FaqSection from './components/CommunityPortal/Activities/FaqSection';
 import ActivityAttendance from './components/CommunityPortal/Activities/ActivityAttendance';
-import Activity from './components/CommunityPortal/Activities/activityId/Activity';
 import ActivityComments from './components/CommunityPortal/Activities/activityId/ActivityComments';
 
 import Feedbackform from './components/CommunityPortal/Activities/Feedbackform';
@@ -207,21 +206,21 @@ const RequestResources = lazy(() => import('./components/SocialArchitecture/Requ
 const ReusableListView = lazy(() => import('./components/BMDashboard/ReusableList'));
 const ConsumableListView = lazy(() => import('./components/BMDashboard/ConsumableList'));
 const MaterialListView = lazy(() => import('./components/BMDashboard/MaterialList'));
-const PurchaseMaterials = lazy(
-  () => import('./components/BMDashboard/PurchaseRequests/MaterialPurchaseRequest'),
+const PurchaseMaterials = lazy(() =>
+  import('./components/BMDashboard/PurchaseRequests/MaterialPurchaseRequest'),
 );
-const PurchaseReusables = lazy(
-  () => import('./components/BMDashboard/PurchaseRequests/ReusablePurchaseRequest'),
+const PurchaseReusables = lazy(() =>
+  import('./components/BMDashboard/PurchaseRequests/ReusablePurchaseRequest'),
 );
 const BMTimeLogCard = lazy(() => import('./components/BMDashboard/BMTimeLogger/BMTimeLogCard'));
-const ProjectDetails = lazy(
-  () => import('./components/BMDashboard/Projects/ProjectDetails/ProjectDetails'),
+const ProjectDetails = lazy(() =>
+  import('./components/BMDashboard/Projects/ProjectDetails/ProjectDetails'),
 );
-const UpdateMaterialsBulk = lazy(
-  () => import('./components/BMDashboard/UpdateMaterials/UpdateMaterialsBulk/UpdateMaterialsBulk'),
+const UpdateMaterialsBulk = lazy(() =>
+  import('./components/BMDashboard/UpdateMaterials/UpdateMaterialsBulk/UpdateMaterialsBulk'),
 );
-const UpdateReusablesBulk = lazy(
-  () => import('./components/BMDashboard/UpdateReusables/UpdateReusablesBulk/UpdateReusablesBulk'),
+const UpdateReusablesBulk = lazy(() =>
+  import('./components/BMDashboard/UpdateReusables/UpdateReusablesBulk/UpdateReusablesBulk'),
 );
 const InjuryChart = lazy(() => import('./components/BMDashboard/InjuryChart/InjuryChart'));
 const PurchaseConsumable = lazy(() => import('./components/BMDashboard/ConsumablePurchaseRequest'));
@@ -230,8 +229,8 @@ const PurchaseTools = lazy(() => import('./components/BMDashboard/ToolPurchaseRe
 const PurchaseEquipment = lazy(() => import('./components/BMDashboard/EquipmentPurchaseRequest'));
 const AddMaterial = lazy(() => import('./components/BMDashboard/AddMaterial/AddMaterial'));
 const AddConsumable = lazy(() => import('./components/BMDashboard/AddConsumable/AddConsumable'));
-const InjuriesOverTimeChart = lazy(
-  () => import('./components/BMDashboard/InjuriesOverTime/InjuriesOverTimeChart'),
+const InjuriesOverTimeChart = lazy(() =>
+  import('./components/BMDashboard/InjuriesOverTime/InjuriesOverTimeChart'),
 );
 
 const Projects = lazy(() => import('./components/Projects'));
@@ -249,33 +248,33 @@ const SameFolderTasks = lazy(() => import('./components/Projects/WBS/SameFolderT
 const UserManagement = lazy(() => import('./components/UserManagement'));
 const UserProfile = lazy(() => import('./components/UserProfile'));
 const BadgeManagement = lazy(() => import('./components/Badge/BadgeManagement'));
-const PermissionsManagement = lazy(
-  () => import('./components/PermissionsManagement/PermissionsManagement'),
+const PermissionsManagement = lazy(() =>
+  import('./components/PermissionsManagement/PermissionsManagement'),
 );
 const UserRoleTab = lazy(() => import('./components/PermissionsManagement/UserRoleTab'));
-const BlueSquareEmailManagement = lazy(
-  () => import('./components/BlueSquareEmailManagement/BlueSquareEmailManagement'),
+const BlueSquareEmailManagement = lazy(() =>
+  import('./components/BlueSquareEmailManagement/BlueSquareEmailManagement'),
 );
 const Teams = lazy(() => import('./components/Teams/Teams'));
 const JobFormBuilder = lazy(() => import('./components/Collaboration/JobFormbuilder'));
-const PopularityTimelineChart = lazy(
-  () => import('./components/PopularityTimelineAnalytics/PopularityTimelineChart'),
+const PopularityTimelineChart = lazy(() =>
+  import('./components/PopularityTimelineAnalytics/PopularityTimelineChart'),
 );
-const MonthsPledgedChart = lazy(
-  () => import('./components/MonthsPledgedAnalytics/MonthsPledgedChart'),
+const MonthsPledgedChart = lazy(() =>
+  import('./components/MonthsPledgedAnalytics/MonthsPledgedChart'),
 );
-const EnhancedPopularityTimelineChart = lazy(
-  () => import('./components/EnhancedPopularityTimelineAnalytics/EnhancedPopularityTimelineChart'),
+const EnhancedPopularityTimelineChart = lazy(() =>
+  import('./components/EnhancedPopularityTimelineAnalytics/EnhancedPopularityTimelineChart'),
 );
-const JobAnalyticsPage = lazy(
-  () => import('./components/Reports/HitsAndApplicationRatio/JobAnalyticsPage'),
+const JobAnalyticsPage = lazy(() =>
+  import('./components/Reports/HitsAndApplicationRatio/JobAnalyticsPage'),
 );
 const SuggestedJobsListBuilder = lazy(() => import('./components/Collaboration/SuggestedJobsList'));
-const ProcessingLandingPage = lazy(
-  () => import('./components/KitchenInterfaces/Processing/ProcessingLandingPage'),
+const ProcessingLandingPage = lazy(() =>
+  import('./components/KitchenInterfaces/Processing/ProcessingLandingPage'),
 );
-const AnimalManagement = lazy(
-  () => import('./components/KitchenInterfaces/Production/AnimalManagement/AnimalManagement'),
+const AnimalManagement = lazy(() =>
+  import('./components/KitchenInterfaces/Production/AnimalManagement/AnimalManagement'),
 );
 
 export default (
@@ -380,7 +379,7 @@ export default (
         <ProtectedRoute
           path="/timelog/:userId"
           exact
-          render={(props) => {
+          render={props => {
             const { userId } = props.match.params;
             return <Timelog userId={userId} />;
           }}
