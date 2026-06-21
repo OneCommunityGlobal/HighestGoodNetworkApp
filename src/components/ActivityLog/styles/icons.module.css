@@ -38,5 +38,6 @@
 
 /* Dark mode variants */
 .tagSupportDark {
-  background-color: #854d0e;
+  background-color: #fef9c3;
+  color: #854d0e;
 }
