@@ -402,31 +402,31 @@ table td {
   border: 1px solid #3f5269 !important;
 }
 
-.darkDatePicker .react-datepicker__header {
-  background-color: #2f4157;
-  border-color: #3f5269;
+.darkDatePicker :global(.react-datepicker__header) {
+  background-color: #2f4157 !important;
+  border-color: #3f5269 !important;
 }
 
-.darkDatePicker .react-datepicker__time-header {
+.darkDatePicker :global(.react-datepicker__time-header),
+.darkDatePicker :global(.react-datepicker-time__header) {
   color: #f2f6ff !important;
   background-color: #2f4157 !important;
-  border-bottom: 1px solid #3f5269 !important;
 }
 
-.darkDatePicker .react-datepicker__current-month,
-.darkDatePicker .react-datepicker-year-header {
+.darkDatePicker :global(.react-datepicker__current-month),
+.darkDatePicker :global(.react-datepicker-year-header) {
   color: #f2f6ff !important;
 }
 
-.darkDatePicker .react-datepicker__day-name,
-.darkDatePicker .react-datepicker__day,
-.darkDatePicker .react-datepicker__time-name {
-  color: #e8edf4;
+.darkDatePicker :global(.react-datepicker__day-name),
+.darkDatePicker :global(.react-datepicker__day),
+.darkDatePicker :global(.react-datepicker__time-name) {
+  color: #e8edf4 !important;
 }
 
-.darkDatePicker .react-datepicker__day--selected,
-.darkDatePicker .react-datepicker__day--keyboard-selected,
-.darkDatePicker .react-datepicker__time-list-item--selected {
+.darkDatePicker :global(.react-datepicker__day--selected),
+.darkDatePicker :global(.react-datepicker__day--keyboard-selected),
+.darkDatePicker :global(.react-datepicker__time-list-item--selected) {
   background-color: #468ef9 !important;
   color: #fff !important;
   border-color: #468ef9 !important;
@@ -598,3 +598,8 @@ table td {
     min-width: 0;
   }
 }
+
+.inlineField {
+  margin-top: -9px;
+}
+

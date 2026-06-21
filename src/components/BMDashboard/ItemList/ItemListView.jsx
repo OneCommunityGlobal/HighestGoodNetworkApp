@@ -171,22 +171,26 @@ export function ItemListView({
         <span>
           {items && (
             <div className={`${styles.selectInput}`}>
-              <label htmlFor="itemListTime">Time:</label>
-              <DatePicker
-                selected={selectedTime}
-                onChange={date => setSelectedTime(date)}
-                showTimeSelect
-                timeFormat="HH:mm"
-                timeIntervals={15}
-                dateFormat="yyyy-MM-dd HH:mm:ss"
-                placeholderText="Select date and time"
-                inputId="itemListTime"
-                className={darkMode ? styles.darkDatePickerInput : styles.lightDatePickerInput}
-                calendarClassName={darkMode ? styles.darkDatePicker : styles.lightDatePicker}
-                popperClassName={
-                  darkMode ? styles.darkDatePickerPopper : styles.lightDatePickerPopper
-                }
-              />
+              <div className={styles.inlineField}>
+                <label htmlFor="itemListTime">Time:</label>
+                <div className={styles.datePickerCell}>
+                  <DatePicker
+                    selected={selectedTime}
+                    onChange={date => setSelectedTime(date)}
+                    showTimeSelect
+                    timeFormat="HH:mm"
+                    timeIntervals={15}
+                    dateFormat="yyyy-MM-dd HH:mm:ss"
+                    placeholderText="Select date and time"
+                    inputId="itemListTime"
+                    className={darkMode ? styles.darkDatePickerInput : styles.lightDatePickerInput}
+                    calendarClassName={darkMode ? styles.darkDatePicker : styles.lightDatePicker}
+                    popperClassName={
+                      darkMode ? styles.darkDatePickerPopper : styles.lightDatePickerPopper
+                    }
+                  />
+                </div>
+              </div>
 
               <SelectForm
                 items={items}

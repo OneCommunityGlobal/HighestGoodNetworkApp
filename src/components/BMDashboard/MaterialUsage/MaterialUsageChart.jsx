@@ -6,7 +6,6 @@ import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
 import styles from './MaterialUsageChart.module.css';
 
-// Constants
 const COLORS = ['#A74C4C', '#4C4C4C', '#C9B28A'];
 
 export default function MaterialUsageChart({ projectId, toggle, darkMode = false }) {
@@ -15,47 +14,62 @@ export default function MaterialUsageChart({ projectId, toggle, darkMode = false
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Calculate percentages for chart data
   const chartDataWithPercentages = useMemo(() => {
     if (!chartData.length) return [];
-
     const total = chartData.reduce((sum, item) => sum + item.value, 0);
     if (total === 0) return chartData.map(item => ({ ...item, percentage: '0.00' }));
-
     return chartData.map(item => ({
       ...item,
       percentage: total > 0 ? ((item.value / total) * 100).toFixed(2) : '0.00',
     }));
   }, [chartData]);
 
-  // Helper functions
   const formatIncrease = value => (value >= 0 ? `+${value}%` : `${value}%`);
-
   const isEmptyData = useMemo(() => chartData.every(item => item.value === 0), [chartData]);
 
-  // Center label component
   const CenterLabel = ({ increase }) => (
-    <div className={styles.centerLabel}>
-      <strong className={styles.centerLabelValue}>{formatIncrease(increase)}</strong>
-      <div className={styles.centerLabelSubtitle}>week over week</div>
+    <div
+      className={`${styles.centerLabel} ${
+        darkMode ? styles.centerLabelDark : styles.centerLabelLight
+      }`}
+    >
+      <strong
+        className={`${styles.centerLabelValue} ${darkMode ? styles.textDark : styles.textLight}`}
+      >
+        {formatIncrease(increase)}
+      </strong>
+      <div
+        className={`${styles.centerLabelSubtitle} ${
+          darkMode ? styles.subTextDark : styles.subTextLight
+        }`}
+      >
+        week over week
+      </div>
     </div>
   );
 
-  // Chart legend component
   const ChartLegend = ({ data }) => (
-    <div className={styles.chartLegend}>
+    <div
+      className={`${styles.chartLegend} ${
+        darkMode ? styles.legendAreaDark : styles.legendAreaLight
+      }`}
+    >
       {data.map((entry, index) => (
-        <div key={entry.name} className={styles.legendItem}>
+        <div
+          key={entry.name}
+          className={`${styles.legendItem} ${
+            darkMode ? styles.legendItemDark : styles.legendItemLight
+          }`}
+        >
           <div className={styles.legendColor} style={{ backgroundColor: COLORS[index] }} />
           <span className={styles.legendText}>
-            {entry.name}: {entry.percentage}%
+            {entry.name}: {entry.percentage}
           </span>
         </div>
       ))}
     </div>
   );
 
-  // Custom label component to show percentages and labels outside the chart
   const renderCustomizedLabel = ({
     cx,
     cy,
@@ -70,12 +84,14 @@ export default function MaterialUsageChart({ projectId, toggle, darkMode = false
     const x = cx + radius * Math.cos(-midAngle * RADIAN);
     const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
+    // Explicit Recharts SVG colors
+    const labelColor = darkMode ? '#e2e8f0' : '#495057';
     return (
       <g>
         <text
           x={x}
           y={y}
-          fill="#495057"
+          fill={labelColor}
           textAnchor={x > cx ? 'start' : 'end'}
           dominantBaseline="central"
           fontSize={12}
@@ -83,23 +99,20 @@ export default function MaterialUsageChart({ projectId, toggle, darkMode = false
         >
           {`${name}: ${percentage}%`}
         </text>
-        {/* Add a line connecting the segment to the label */}
         <line
           x1={cx + (outerRadius + 5) * Math.cos(-midAngle * RADIAN)}
           y1={cy + (outerRadius + 5) * Math.sin(-midAngle * RADIAN)}
           x2={cx + (outerRadius + 25) * Math.cos(-midAngle * RADIAN)}
           y2={cy + (outerRadius + 25) * Math.sin(-midAngle * RADIAN)}
-          stroke="#495057"
+          stroke={labelColor}
           strokeWidth={1}
         />
       </g>
     );
   };
 
-  // Data fetching
   useEffect(() => {
     if (!projectId) return;
-
     const fetchData = async () => {
       try {
         setLoading(true);
@@ -107,14 +120,12 @@ export default function MaterialUsageChart({ projectId, toggle, darkMode = false
         const { data } = await axios.get(`${ENDPOINTS.BM_MATERIALS}/${projectId}`, {
           timeout: 10000,
         });
-
         const {
           availableMaterials = 0,
           usedMaterials = 0,
           wastedMaterials = 0,
           increaseOverLastWeek = 0,
         } = data;
-
         setChartData([
           { name: 'Available', value: availableMaterials },
           { name: 'Used', value: usedMaterials },
@@ -127,47 +138,71 @@ export default function MaterialUsageChart({ projectId, toggle, darkMode = false
         setLoading(false);
       }
     };
-
     fetchData();
   }, [projectId]);
 
-  // Retry function
   const retryFetch = () => {
     setError('');
     setLoading(true);
   };
 
-  // Apply dark mode class if enabled
-  const modalClass = darkMode
-    ? `${styles.materialChartModal} ${styles.darkMode}`
-    : styles.materialChartModal;
+  // Matches the wrapper background to hide the pie gaps cleanly
+  const pieStrokeColor = darkMode ? '#2d3748' : '#fff';
 
   return (
-    <Modal isOpen={true} toggle={toggle} size="lg" centered className={modalClass}>
-      <ModalHeader toggle={toggle} className={styles.materialChartHeader}>
+    <Modal
+      isOpen={true}
+      toggle={toggle}
+      size="lg"
+      centered
+      className={styles.materialChartModal}
+      // Target the Reactstrap Modal-Content specifically
+      contentClassName={darkMode ? styles.modalContentDark : styles.modalContentLight}
+    >
+      <ModalHeader
+        toggle={toggle}
+        className={`${styles.materialChartHeader} ${
+          darkMode ? styles.headerDark : styles.headerLight
+        }`}
+      >
         Material Usage Proportion
       </ModalHeader>
 
-      <ModalBody className={styles.materialChartBody}>
+      <ModalBody
+        className={`${styles.materialChartBody} ${darkMode ? styles.bodyDark : styles.bodyLight}`}
+      >
         {loading ? (
-          <div className={styles.chartLoadingContainer}>
+          <div className={styles.statusContainer}>
             <Spinner color="primary" />
-            <div className={styles.chartLoadingText}>Loading material data...</div>
+            <div className={darkMode ? styles.subTextDark : styles.subTextLight}>
+              Loading material data...
+            </div>
           </div>
         ) : error ? (
-          <div className={styles.chartErrorContainer}>
-            <p className={styles.chartErrorText}>{error}</p>
-            <button className={styles.chartRetryButton} onClick={retryFetch} type="button">
+          <div className={styles.statusContainer}>
+            <p className={darkMode ? styles.errorTextDark : styles.errorTextLight}>{error}</p>
+            <button
+              className={`${styles.chartRetryButton} ${
+                darkMode ? styles.btnDark : styles.btnLight
+              }`}
+              onClick={retryFetch}
+            >
               Retry
             </button>
           </div>
         ) : isEmptyData ? (
-          <div className={styles.chartEmptyContainer}>
-            <p className={styles.chartEmptyText}>No material data available</p>
+          <div className={styles.statusContainer}>
+            <p className={darkMode ? styles.subTextDark : styles.subTextLight}>
+              No material data available
+            </p>
           </div>
         ) : (
           <div className={styles.chartMainContainer}>
-            <div className={styles.pieChartWrapper}>
+            <div
+              className={`${styles.pieChartWrapper} ${
+                darkMode ? styles.wrapperDark : styles.wrapperLight
+              }`}
+            >
               <ResponsiveContainer width="100%" height={400}>
                 <PieChart>
                   <Pie
@@ -186,7 +221,7 @@ export default function MaterialUsageChart({ projectId, toggle, darkMode = false
                       <Cell
                         key={`cell-${index}`}
                         fill={COLORS[index]}
-                        stroke="#fff"
+                        stroke={pieStrokeColor}
                         strokeWidth={2}
                       />
                     ))}
@@ -195,7 +230,6 @@ export default function MaterialUsageChart({ projectId, toggle, darkMode = false
               </ResponsiveContainer>
               <CenterLabel increase={increase} />
             </div>
-
             <ChartLegend data={chartDataWithPercentages} />
           </div>
         )}

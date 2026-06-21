@@ -115,7 +115,11 @@ export default function ItemsTable({
         itemType={itemType}
       />
       {showChartModal && chartProjectId && (
-        <MaterialUsageChart projectId={chartProjectId} toggle={() => setShowChartModal(false)} />
+        <MaterialUsageChart
+          projectId={chartProjectId}
+          toggle={() => setShowChartModal(false)}
+          darkMode={darkMode}
+        />
       )}
       {UpdateItemModal && (
         <UpdateItemModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
