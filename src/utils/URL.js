@@ -6,11 +6,15 @@ export const ENDPOINTS = {
   USER_PROFILE: userId => `${APIEndpoint}/userprofile/${userId}`,
   USER_PROFILE_FIXED: userId => `${APIEndpoint}/userProfile/${userId}`,
   USER_PROFILE_PROPERTY: userId => `${APIEndpoint}/userprofile/${userId}/property`,
+  USER_PAUSE: userId => `${APIEndpoint}/userProfile/${userId}/pause`,
   USER_PROFILES: `${APIEndpoint}/userprofile/`,
   UPDATE_REHIREABLE_STATUS: userId => `${APIEndpoint}/userprofile/${userId}/rehireable`,
   TOGGLE_VISIBILITY: userId => `${APIEndpoint}/userprofile/${userId}/toggleInvisibility`,
   USER_PROFILE_UPDATE: `${APIEndpoint}/userprofile/update`,
   ADD_BLUE_SQUARE: userId => `${APIEndpoint}/userprofile/${userId}/addInfringement`,
+
+  TASKS_TRENDS: () => `${APIEndpoint}/tasks/trends`,
+  TASKS_SUMMARY: () => `${APIEndpoint}/tasks/summary`,
 
   TOP_CONVERTED: (limit, startDate, endDate) => {
     const dateParams =
@@ -26,7 +30,6 @@ export const ENDPOINTS = {
         : '';
     return `${APIEndpoint}/job-analytics/least-converted?limit=${limit}${dateParams}`;
   },
-
   MODIFY_BLUE_SQUARE: (userId, blueSquareId) =>
     `${APIEndpoint}/userprofile/${userId}/infringements/${blueSquareId}`,
   
@@ -135,6 +138,7 @@ export const ENDPOINTS = {
   DELETE_WARNING_DESCRIPTION: warningId => `${APIEndpoint}/currentWarnings/${warningId}`,
   EDIT_WARNING_DESCRIPTION: () => `${APIEndpoint}/currentWarnings/edit`,
   GET_WARNINGS_BY_USER_ID: userId => `${APIEndpoint}/warnings/${userId}`,
+  GET_SPECIAL_WARNINGS: userId => `${APIEndpoint}/warnings/${userId}/special`,
   POST_WARNINGS_BY_USER_ID: userId => `${APIEndpoint}/warnings/${userId}`,
   DELETE_WARNINGS_BY_USER_ID: userId => `${APIEndpoint}/warnings/${userId}`,
   AUTHORIZE_WEEKLY_SUMMARY_REPORTS: () =>
@@ -216,6 +220,7 @@ export const ENDPOINTS = {
   // Student Tasks (Education Portal)
   STUDENT_TASKS: () => `${APIEndpoint}/student/tasks`,
   STUDENT_TASK_MARK_DONE: taskId => `${APIEndpoint}/student/tasks/${taskId}/mark-done`,
+  STUDENT_TASK_LOG_HOURS: taskId => `${APIEndpoint}/student/tasks/${taskId}/log-hours`,
 
   // Intermediate Tasks (Education Portal)
   INTERMEDIATE_TASKS: () => `${APIEndpoint}/educator/intermediate-tasks`,
@@ -376,6 +381,7 @@ export const ENDPOINTS = {
   BM_TOOLS_PURCHASE: `${APIEndpoint}/bm/tools/purchase`,
   POST_LESSON: `${APIEndpoint}/bm/lessons/new`,
   BM_LESSONS: `${APIEndpoint}/bm/lessons`,
+  BM_LESSONS_LEARNT: `${APIEndpoint}/bm/lessons-learnt`,
   BM_LESSON: `${APIEndpoint}/bm/lesson/`,
   BM_LESSON_LIKES: lessonId => `${APIEndpoint}/bm/lesson/${lessonId}/like`,
   BM_EXTERNAL_TEAM: `${APIEndpoint}/bm/externalTeam`,
@@ -385,6 +391,15 @@ export const ENDPOINTS = {
   BM_INVTYPE_BY_ID: typeId => `${APIEndpoint}/bm/invtypes/${typeId}`,
   BM_TOOLS: `${APIEndpoint}/bm/tools/`,
   BM_TOOL_BY_ID: singleToolId => `${APIEndpoint}/bm/tools/${singleToolId}`,
+  BM_TOOL_PROJECTS: `${APIEndpoint}/bm/tools-stoppage-reason/projects`,
+  BM_TOOLS_STOPPAGE_BY_PROJECT: (projectId, startDate, endDate) => {
+    let url = `${APIEndpoint}/bm/projects/${projectId}/tools-stoppage-reason`;
+    const params = [];
+    if (startDate) params.push(`startDate=${startDate}`);
+    if (endDate) params.push(`endDate=${endDate}`);
+    if (params.length > 0) url += `?${params.join('&')}`;
+    return url;
+  },
   BM_TOOL_AVAILABILITY: (toolId = '', projectId = '') =>
     `${APIEndpoint}/tools/availability?toolId=${toolId}&projectId=${projectId}`,
   BM_LOG_TOOLS: `${APIEndpoint}/bm/tools/log`,
@@ -419,6 +434,16 @@ export const ENDPOINTS = {
     return url;
   },
   TOOLS_AVAILABILITY_PROJECTS: `${APIEndpoint}/bm/tools-availability/projects`,
+  BM_COST_BREAKDOWN: (projectId, startDate, endDate, categoryDetail) => {
+    let url = `${APIEndpoint}/costs/breakdown`;
+    const params = [];
+    if (projectId) params.push(`projectId=${projectId}`);
+    if (startDate) params.push(`startDate=${startDate}`);
+    if (endDate) params.push(`endDate=${endDate}`);
+    if (categoryDetail) params.push('categoryDetail=true');
+    if (params.length > 0) url += `?${params.join('&')}`;
+    return url;
+  },
   TOOLS_AVAILABILITY_BY_PROJECT: (projectId, startDate, endDate) => {
     let url = `${APIEndpoint}/bm/projects/${projectId}/tools-availability`;
     const params = [];
@@ -481,6 +506,7 @@ export const ENDPOINTS = {
   USER_STATE_CATALOG_USAGE: key => `${APIEndpoint}/userstate/catalog/${key}/usage`,
 
   HGN_FORM_GET_TEAM_MEMBERS_BY_SKILL: skill => `${APIEndpoint}/userProfile/skills/${skill}`,
+  HGN_FORM_GET_TEAM_MEMBERS_BY_SKILL_FALLBACK: skill => `${APIEndpoint}/team-skills/${skill}`,
 
   CREATE_JOB_FORM: `${APIEndpoint}/jobforms`,
   UPDATE_JOB_FORM: `${APIEndpoint}/jobforms`,
@@ -501,6 +527,13 @@ export const ENDPOINTS = {
   UPDATE_TEMPLATE: id => `${APIEndpoint}/templates/${id}`,
   DELETE_TEMPLATE: id => `${APIEndpoint}/templates/${id}`,
 
+  // Email Template endpoints
+  EMAIL_TEMPLATES: `${APIEndpoint}/email-templates`,
+  EMAIL_TEMPLATE_BY_ID: id => `${APIEndpoint}/email-templates/${id}`,
+  EMAIL_TEMPLATE_PREVIEW: id => `${APIEndpoint}/email-templates/${id}/preview`,
+  EMAIL_TEMPLATE_VALIDATE: id => `${APIEndpoint}/email-templates/${id}/validate`,
+  // Removed: Template sending is handled by emailController endpoints after processing variables client-side
+
   JOB_NOTIFICATION_LIST: `${APIEndpoint}/job-notification-list/`,
 
   MESSAGING_SERVICE: new URL('/messaging-service', APIEndpoint.replace('http', 'ws')).toString(),
@@ -516,6 +549,7 @@ export const ENDPOINTS = {
   // event endpoint
   EVENTS: `${APIEndpoint}/events`,
   EVENTS_BY_ID: (activityId) => `${APIEndpoint}/events/${activityId}`,
+  REGISTER_FOR_EVENT: (activityId) => `${APIEndpoint}/events/${activityId}/register`,
   EVENT_TYPES: `${APIEndpoint}/events/types`,
   EVENT_LOCATIONS: `${APIEndpoint}/events/locations`,
   EVENT_ATTENDANCE_STATS: `${APIEndpoint}/events/attendance/stats`,
@@ -646,6 +680,9 @@ export const ENDPOINTS = {
   GET_SAVED: `${APIEndpoint}/education/student/saved-interests`,
   REMOVE_INTEREST: `${APIEndpoint}/education/student/saved-interests`,
   CHECK_IF_SAVED: `${APIEndpoint}/education/student/saved-interests/check`,
+  // Kitchen and Inventory
+  KITCHEN_PROCESSING_PROJECTS: `${APIEndpoint}/kitchenandinventory/processing`,
+
   EDUCATOR_REPORT_EXPORT: (type, format, params = {}) => {
     const { studentId, classId, startDate, endDate } = params;
     let url = `${APIEndpoint}/educator/reports/export?type=${type}&format=${format}`;
@@ -657,8 +694,10 @@ export const ENDPOINTS = {
   },
 
   HGN_FORM_RESPONSES: () => `${APIEndpoint}/hgnform`,
-  // Kitchen and Inventory Management endpoints
   KI_CALENDAR_EVENTS: (month, year) => `${APIEndpoint}/kitchenandinventory/calendar?month=${month}&year=${year}`,
+  KI_INVENTORY_ITEMS: `${APIEndpoint}/kitchenandinventory/inventory/items`,
+  KI_INVENTORY_STATS: `${APIEndpoint}/kitchenandinventory/inventory/items/stats`,
+  KI_INVENTORY_PRESERVED: `${APIEndpoint}/kitchenandinventory/inventory/items/ingredients/preserved`,
 
   // Help Request & Feedback Modal endpoints
   HGN_FORM_RANKED: `${APIEndpoint}/hgnform/ranked`,
