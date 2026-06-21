@@ -44,7 +44,7 @@ function IssuesCharts({ bmProjects = [] }) {
   const chartData = graphType === 'Longest Open' ? longestOpenIssues : mostExpensiveIssues;
 
   const data = {
-    labels: chartData.map(issue => truncateLabel(issue.title || 'Untitled Issue')),
+    labels: chartData.map(issue => truncateLabel(issue.title || String(issue.issueId))),
     datasets: [
       {
         label: graphType === 'Longest Open' ? 'Days Open' : 'Total Cost ($)',
