@@ -87,7 +87,7 @@ import TeamCard from './components/HGNHelpSkillsDashboard/TeamCard/TeamCard';
 import UserProfilePage from './components/HGNHelpSkillsDashboard/UserProfilePage';
 
 import ActivityAgenda from './components/CommunityPortal/Activities/ActivityAgenda';
-import ActivityAttendance from './components/CommunityPortal/Activities/ActivityAttendance';
+
 import ResourcesUsage from './components/CommunityPortal/Activities/activityId/ResourcesUsage';
 import EventNoShowChart from './components/CommunityPortal/Attendence/NoshowViz';
 import EventList from './components/CommunityPortal/Event/EventList/EventList';
@@ -109,6 +109,7 @@ import { JobAnalyticsCompetitiveRolesPage } from './components/Reports/JobAnalyt
 
 import InjurySeverityChart from './components/BMDashboard/Injuries/InjurySeverityChart';
 import LBProtectedRoute from './components/common/LBDashboard/LBProtectedRoute/LBProtectedRoute';
+
 import LBDashboard from './components/LBDashboard';
 import BiddingHomepage from './components/LBDashboard/BiddingHomepage/BiddingHomepage';
 import LBBidOverview from './components/LBDashboard/BiddingOverview/BiddingOverview';
@@ -146,16 +147,22 @@ import CreateNewTeam from './components/BMDashboard/Team/CreateNewTeam/CreateNew
 
 import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
 import CPDashboard from './components/CommunityPortal';
-import ActivityComments from './components/CommunityPortal/Activities/activityId/ActivityComments';
 import ActivityList from './components/CommunityPortal/Activities/ActivityList';
+import FaqSection from './components/CommunityPortal/Activities/FaqSection';
+import ActivityAttendance from './components/CommunityPortal/Activities/ActivityAttendance';
+import Activity from './components/CommunityPortal/Activities/activityId/Activity';
+import ActivityComments from './components/CommunityPortal/Activities/activityId/ActivityComments';
+
 import Feedbackform from './components/CommunityPortal/Activities/Feedbackform';
+
+import Register from './components/CommunityPortal/Activities/Register/Register';
+
 import CPLogin from './components/CommunityPortal/Login';
 import ActivitiesPage from './components/CommunityPortal/Activities/ActivitiesPage';
-import Register from './components/CommunityPortal/Activities/Register/Register';
 import EventStats from './components/CommunityPortal/EventPersonalization/EventStats';
 import CommunityCalendar from './components/CommunityPortal/Calendar/CommunityCalendar';
 import PRGradingDashboard from './components/PRGradingDashboard/PRGradingDashboard';
-
+import RegistrationPopup from './components/CommunityPortal/RegistrationConfirmation/Registration';
 import KICalendar from './components/KitchenandInventory/KICalendar/KICalendar';
 import KIDashboard from './components/KitchenandInventory/KIDashboard/KIDashboard';
 import KIINVENTORY from './components/KitchenandInventory/KIInventory/KIInventory';
@@ -200,21 +207,21 @@ const RequestResources = lazy(() => import('./components/SocialArchitecture/Requ
 const ReusableListView = lazy(() => import('./components/BMDashboard/ReusableList'));
 const ConsumableListView = lazy(() => import('./components/BMDashboard/ConsumableList'));
 const MaterialListView = lazy(() => import('./components/BMDashboard/MaterialList'));
-const PurchaseMaterials = lazy(() =>
-  import('./components/BMDashboard/PurchaseRequests/MaterialPurchaseRequest'),
+const PurchaseMaterials = lazy(
+  () => import('./components/BMDashboard/PurchaseRequests/MaterialPurchaseRequest'),
 );
-const PurchaseReusables = lazy(() =>
-  import('./components/BMDashboard/PurchaseRequests/ReusablePurchaseRequest'),
+const PurchaseReusables = lazy(
+  () => import('./components/BMDashboard/PurchaseRequests/ReusablePurchaseRequest'),
 );
 const BMTimeLogCard = lazy(() => import('./components/BMDashboard/BMTimeLogger/BMTimeLogCard'));
-const ProjectDetails = lazy(() =>
-  import('./components/BMDashboard/Projects/ProjectDetails/ProjectDetails'),
+const ProjectDetails = lazy(
+  () => import('./components/BMDashboard/Projects/ProjectDetails/ProjectDetails'),
 );
-const UpdateMaterialsBulk = lazy(() =>
-  import('./components/BMDashboard/UpdateMaterials/UpdateMaterialsBulk/UpdateMaterialsBulk'),
+const UpdateMaterialsBulk = lazy(
+  () => import('./components/BMDashboard/UpdateMaterials/UpdateMaterialsBulk/UpdateMaterialsBulk'),
 );
-const UpdateReusablesBulk = lazy(() =>
-  import('./components/BMDashboard/UpdateReusables/UpdateReusablesBulk/UpdateReusablesBulk'),
+const UpdateReusablesBulk = lazy(
+  () => import('./components/BMDashboard/UpdateReusables/UpdateReusablesBulk/UpdateReusablesBulk'),
 );
 const InjuryChart = lazy(() => import('./components/BMDashboard/InjuryChart/InjuryChart'));
 const PurchaseConsumable = lazy(() => import('./components/BMDashboard/ConsumablePurchaseRequest'));
@@ -223,8 +230,8 @@ const PurchaseTools = lazy(() => import('./components/BMDashboard/ToolPurchaseRe
 const PurchaseEquipment = lazy(() => import('./components/BMDashboard/EquipmentPurchaseRequest'));
 const AddMaterial = lazy(() => import('./components/BMDashboard/AddMaterial/AddMaterial'));
 const AddConsumable = lazy(() => import('./components/BMDashboard/AddConsumable/AddConsumable'));
-const InjuriesOverTimeChart = lazy(() =>
-  import('./components/BMDashboard/InjuriesOverTime/InjuriesOverTimeChart'),
+const InjuriesOverTimeChart = lazy(
+  () => import('./components/BMDashboard/InjuriesOverTime/InjuriesOverTimeChart'),
 );
 
 const Projects = lazy(() => import('./components/Projects'));
@@ -242,33 +249,33 @@ const SameFolderTasks = lazy(() => import('./components/Projects/WBS/SameFolderT
 const UserManagement = lazy(() => import('./components/UserManagement'));
 const UserProfile = lazy(() => import('./components/UserProfile'));
 const BadgeManagement = lazy(() => import('./components/Badge/BadgeManagement'));
-const PermissionsManagement = lazy(() =>
-  import('./components/PermissionsManagement/PermissionsManagement'),
+const PermissionsManagement = lazy(
+  () => import('./components/PermissionsManagement/PermissionsManagement'),
 );
 const UserRoleTab = lazy(() => import('./components/PermissionsManagement/UserRoleTab'));
-const BlueSquareEmailManagement = lazy(() =>
-  import('./components/BlueSquareEmailManagement/BlueSquareEmailManagement'),
+const BlueSquareEmailManagement = lazy(
+  () => import('./components/BlueSquareEmailManagement/BlueSquareEmailManagement'),
 );
 const Teams = lazy(() => import('./components/Teams/Teams'));
 const JobFormBuilder = lazy(() => import('./components/Collaboration/JobFormbuilder'));
-const PopularityTimelineChart = lazy(() =>
-  import('./components/PopularityTimelineAnalytics/PopularityTimelineChart'),
+const PopularityTimelineChart = lazy(
+  () => import('./components/PopularityTimelineAnalytics/PopularityTimelineChart'),
 );
-const MonthsPledgedChart = lazy(() =>
-  import('./components/MonthsPledgedAnalytics/MonthsPledgedChart'),
+const MonthsPledgedChart = lazy(
+  () => import('./components/MonthsPledgedAnalytics/MonthsPledgedChart'),
 );
-const EnhancedPopularityTimelineChart = lazy(() =>
-  import('./components/EnhancedPopularityTimelineAnalytics/EnhancedPopularityTimelineChart'),
+const EnhancedPopularityTimelineChart = lazy(
+  () => import('./components/EnhancedPopularityTimelineAnalytics/EnhancedPopularityTimelineChart'),
 );
-const JobAnalyticsPage = lazy(() =>
-  import('./components/Reports/HitsAndApplicationRatio/JobAnalyticsPage'),
+const JobAnalyticsPage = lazy(
+  () => import('./components/Reports/HitsAndApplicationRatio/JobAnalyticsPage'),
 );
 const SuggestedJobsListBuilder = lazy(() => import('./components/Collaboration/SuggestedJobsList'));
-const ProcessingLandingPage = lazy(() =>
-  import('./components/KitchenInterfaces/Processing/ProcessingLandingPage'),
+const ProcessingLandingPage = lazy(
+  () => import('./components/KitchenInterfaces/Processing/ProcessingLandingPage'),
 );
-const AnimalManagement = lazy(() =>
-  import('./components/KitchenInterfaces/Production/AnimalManagement/AnimalManagement'),
+const AnimalManagement = lazy(
+  () => import('./components/KitchenInterfaces/Production/AnimalManagement/AnimalManagement'),
 );
 
 export default (
@@ -302,6 +309,19 @@ export default (
         </>
       )}
     />
+
+    <LBProtectedRoute
+      exact
+      path="/lbdashboard/wishlist/:id/availability"
+      render={() => (
+        <>
+          <AutoUpdate />
+          <ToastContainer />
+          <WishListItem />
+        </>
+      )}
+    />
+
     <LBProtectedRoute
       exact
       path="/lbdashboard/wishlist/:id"
@@ -360,7 +380,7 @@ export default (
         <ProtectedRoute
           path="/timelog/:userId"
           exact
-          render={props => {
+          render={(props) => {
             const { userId } = props.match.params;
             return <Timelog userId={userId} />;
           }}
@@ -967,9 +987,17 @@ export default (
 
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
         <Route path="/communityportal/login" component={CPLogin} />
+        <CPProtectedRoute
+          path="/communityportal/activities/:activityid/faq"
+          exact
+          component={FaqSection}
+        />
+        <CPProtectedRoute path="/communityportal/activities" exact component={ActivityList} />
+        <CPProtectedRoute path="/communityportal/Activities" exact component={ActivityList} />
+        {/* ----- Community Calendar Routing ----- */}
         <CPProtectedRoute path="/communityportal/calendar" exact component={CommunityCalendar} />
         <CPProtectedRoute path="/communityportal/database/design" exact component={EventList} />
-        <CPProtectedRoute path="/communityportal/activities" exact component={ActivityList} />
+
         <CPProtectedRoute
           path="/communityportal/activity/:activityId/ActivityFeedback"
           exact
@@ -979,6 +1007,11 @@ export default (
           path="/communityportal/ActivityAttendance"
           exact
           component={ActivityAttendance}
+        />
+        <CPProtectedRoute
+          path="/communityportal/activities/registration"
+          exact
+          component={RegistrationPopup}
         />
         <CPProtectedRoute
           path="/communityportal/activities/Feedbackform/:eventId/:email"
