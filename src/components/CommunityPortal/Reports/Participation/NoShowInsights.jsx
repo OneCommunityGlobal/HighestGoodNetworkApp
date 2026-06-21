@@ -5,9 +5,11 @@ import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import mockEvents from './mockData';
 import styles from './Participation.module.css';
+import { filterEventsByDate } from './FilterByDate';
 
 function NoShowInsights() {
-  const [dateFilter, setDateFilter] = useState('All');
+  const [dateFilter, setDateFilter] = useState('This Week');
+  const [scopeFilter, setScopeFilter] = useState('My Event');
   const [activeTab, setActiveTab] = useState('Event type');
   const [sortOrder, setSortOrder] = useState('none');
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -15,31 +17,6 @@ function NoShowInsights() {
   const [isExportOpen, setIsExportOpen] = useState(false);
   const [exportError, setExportError] = useState('');
   const [isExporting, setIsExporting] = useState(false);
-
-  const filterByDate = events => {
-    const today = new Date();
-    return events.filter(event => {
-      const eventDate = new Date(event.eventDate);
-      switch (dateFilter) {
-        case 'Today':
-          return eventDate.toDateString() === today.toDateString();
-        case 'This Week': {
-          const startOfWeek = new Date(today);
-          startOfWeek.setDate(today.getDate() - today.getDay());
-          const endOfWeek = new Date(startOfWeek);
-          endOfWeek.setDate(startOfWeek.getDate() + 6);
-          return eventDate >= startOfWeek && eventDate <= endOfWeek;
-        }
-        case 'This Month':
-          return (
-            eventDate.getMonth() === today.getMonth() &&
-            eventDate.getFullYear() === today.getFullYear()
-          );
-        default:
-          return true;
-      }
-    });
-  };
 
   const handleSortClick = () => {
     setSortOrder(prev => {
@@ -79,7 +56,12 @@ function NoShowInsights() {
   };
 
   const renderStats = () => {
-    const filteredEvents = filterByDate(mockEvents);
+    const dateFilteredEvents = filterEventsByDate(mockEvents, dateFilter);
+    // Placeholder until real ownership/user context is wired in: treat even-id events as "mine".
+    const filteredEvents =
+      scopeFilter === 'My Event'
+        ? dateFilteredEvents.filter(event => event.id % 2 === 0)
+        : dateFilteredEvents;
     const stats = calculateStats(filteredEvents);
     const finalStats =
       sortOrder === 'none'
@@ -100,6 +82,7 @@ function NoShowInsights() {
           className={`${styles.insightsPercentage} ${
             darkMode ? styles.insightsPercentageDark : ''
           }`}
+          style={{ color: 'red' }}
         >
           {item.percentage}%
         </div>
@@ -152,7 +135,7 @@ function NoShowInsights() {
   const getPdfFilename = () => {
     const now = new Date();
     const localDate = now.toLocaleDateString('en-CA');
-    const filename = `no-show-insights_${dateFilter}_${activeTab}_${localDate}.pdf`;
+    const filename = `no-show-insights_${scopeFilter}_${dateFilter}_${activeTab}_${localDate}.pdf`;
     return filename.replace(/\s+/g, '_').toLowerCase();
   };
 
@@ -188,7 +171,7 @@ function NoShowInsights() {
 
       await navigator.share({
         title: 'No-show rate insights',
-        text: `Insights (${dateFilter}, ${activeTab})`,
+        text: `Insights (${scopeFilter}, ${dateFilter}, ${activeTab})`,
         files: [file],
       });
 
@@ -231,6 +214,9 @@ function NoShowInsights() {
 
             <div className={styles.modalBody}>
               <div className={styles.modalMeta}>
+                <div>
+                  <strong>Scope:</strong> {scopeFilter}
+                </div>
                 <div>
                   <strong>Filter:</strong> {dateFilter}
                 </div>
@@ -277,8 +263,12 @@ function NoShowInsights() {
           <div
             className={`${styles.insightsFilters} ${darkMode ? styles.insightsFiltersDark : ''}`}
           >
+            <select value={scopeFilter} onChange={e => setScopeFilter(e.target.value)}>
+              <option value="My Event">My Event</option>
+              <option value="All Events">All Events</option>
+            </select>
             <select value={dateFilter} onChange={e => setDateFilter(e.target.value)}>
-              <option value="All">All Time</option>
+              <option value="All Time">All Time</option>
               <option value="Today">Today</option>
               <option value="This Week">This Week</option>
               <option value="This Month">This Month</option>

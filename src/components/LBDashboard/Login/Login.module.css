@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .authPage {
   display: flex;
   flex-direction: column;
@@ -25,7 +26,7 @@
   border: 1px solid #ccc;
   border-radius: 8px;
   width: 66%;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px #000;
 }
 
 .formTop {
@@ -42,8 +43,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 20px 40px 30px 40px;
-  padding: 20px 0px 20px 0px;
+  margin: 20px 40px 30px;
+  padding: 20px 0;
   width: auto;
   min-height: 560px;
 }
@@ -60,7 +61,7 @@
   font-size: 14px;
   text-align: left;
   color: #202020;
-  margin: 0 10% 40px 10%;
+  margin: 0 10% 40px;
 }
 
 .formContent {
@@ -91,7 +92,7 @@
   width: 40%;
   max-width: 180px;
   min-width: 140px;
-  background-color: #28a745;
+  background-color: #28a745 !important;
   color: white;
   border: #202020 solid 1px;
   padding: 10px;
@@ -132,4 +133,52 @@
 
 .eyeIcon * {
   pointer-events: none;
+}
+
+.pswd{
+  float: right;
+}
+
+.capsMsg{
+  color: #ff7b00;
+  font-size: 12px;
+  float: right;
+}
+
+.darkPage{
+  background-color: #1b2a41;
+}
+
+.darkMain {
+  background-color: #203844 !important;
+}
+
+.darkPswd{
+  background-color: #1a1a1a !important ;
+  border-color:  #404040 !important;
+}
+
+:global(.dark-mode .btn.btn-secondary) {
+  background-color: #218838 !important;
+  border-color: #218838 !important;
+}
+
+:global(.dark-mode .btn.btn-secondary:hover) {
+  background-color: #218838 !important;
+  border-color: #218838 !important;
+}
+
+:global(body.dark-mode .error), :global(.dashboard-dark .error){
+  color: #dc3545 !important;
+}
+
+.darkMail:-webkit-autofill,
+.darkMail:-webkit-autofill:hover,
+.darkMail:-webkit-autofill:focus,
+.darkMail:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #1a1a1a inset !important;
+  -webkit-text-fill-color: #fff !important;
+  caret-color: #fff;
+  border: 1px solid #888 !important;
+  transition: background-color 5000s ease-in-out 0s;
 }
