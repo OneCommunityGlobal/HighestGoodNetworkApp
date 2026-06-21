@@ -158,7 +158,11 @@ export const TeamMembersPopup = React.memo(props => {
     const map = {};
     if (Array.isArray(teamsData) && teamsData.length > 0) {
       for (const m of teamsData[0]?.members || []) {
-        map[m.userId] = m.visible;
+        // Backend's getAllTeams aggregation returns each member object
+        // keyed by `_id` (the user's id), not `userId`. Using the wrong
+        // key here meant every lookup below resolved to `undefined`,
+        // which made the "See All" toggle appear to reset itself.
+        map[m._id] = m.visible;
       }
     }
     return map;
@@ -505,7 +509,7 @@ TeamMembersPopup.propTypes = {
     PropTypes.shape({
       members: PropTypes.arrayOf(
         PropTypes.shape({
-          userId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+          _id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
           visible: PropTypes.bool,
         }),
       ),

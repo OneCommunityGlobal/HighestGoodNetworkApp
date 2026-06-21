@@ -379,8 +379,12 @@ class Teams extends React.PureComponent {
 
   onUpdateTeamMemberVisibility = async (userId, visibility) => {
     await this.props.updateTeamMemeberVisibility(this.state.selectedTeamId, userId, visibility);
+    console.log('PAST updateTeamMemeberVisibility');
     const freshMembers = await this.props.getTeamMembers(this.state.selectedTeamId);
+    console.log('PAST getTeamMembers, about to call getAllUserTeams');
     this.setState({ selectedTeamMembers: freshMembers || [] });
+    await this.props.getAllUserTeams();
+    console.log('PAST getAllUserTeams');
   };
 
   // NOTE: Team component calls (id, name, code) and we open immediately
