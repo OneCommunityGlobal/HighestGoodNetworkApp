@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import RegistrationForm from './RegistrationForm';
 import ResourceMonitoring from './ResourceMonitoring';
 import LatestRegistration from './LatestRegistration';
@@ -24,6 +25,7 @@ function ActivitiesPage() {
           <MyEvent />
         </div>
       </div>
+      {showFeedback && <ActivityFeedbackModal onClose={() => setShowFeedback(false)} />}
     </div>
   );
 }
