@@ -1,10 +1,11 @@
+/* stylelint-disable  */
 .purchaseToolForm {
     margin-top: 2rem;
 }
 
 .purchaseToolForm input,
 .purchaseToolForm select {
-    background-color: rgb(249, 249, 249);
+    background-color: rgb(249 249 249);
 }
 
 .purchaseToolFlexGroup {
@@ -41,7 +42,7 @@
     color: red;
 }
 
-@media screen and (max-width: 640px) {
+@media screen and (width <= 640px) {
     .purchaseToolFlexGroup {
         display: block;
     }

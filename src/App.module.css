@@ -1,3 +1,4 @@
+/* stylelint-disable no-descending-specificity */
 html {
   overflow-x: hidden;
   height: 100%;
@@ -16,10 +17,19 @@ button {
 
 #root {
   height: 100%;
+  overflow: auto hidden;
 
   /* background-color: var(--background-color); */
   overflow: auto;
   background-color: #fff;
+}
+
+
+
+/* Dark mode override for #root */
+body.dark-mode #root,
+body.bm-dashboard-dark #root {
+  background-color: #1a1d23 !important;
 }
 
 .App {
@@ -55,6 +65,7 @@ button {
 }
 
 .accordion-toggle.collapsed::after {
+  /* symbol for down chevron */
   content: '\f078';
 }
 
@@ -64,22 +75,29 @@ button {
 }
 
 .hgn-leaderboard {
+  /* background-color:#FFCCBC */
   background-color: black;
 }
 
 .bg-super {
+  /* medium blue #0000CD */
   background-color: #00d !important;
 }
 
 .bg-awesome {
   background-color: #909 !important;
+
+  /*  violet */
 }
 
 .bg-super-awesome {
   background-color: #609 !important;
+
+  /*  purple */
 }
 
 .bg-orange {
+  /*  brighter orange */
   background-color: #fa5 !important;
 }
 
@@ -89,10 +107,14 @@ button {
 
 .bg-bright-red {
   background-color: #f30 !important;
+
+  /*  bright-red */
 }
 
 .bg-almost-red {
   background-color: #c36 !important;
+
+  /*  90%to100%-red */
 }
 
 .bg-oxford-blue {
@@ -144,6 +166,7 @@ button {
 }
 
 .text-custom-grey {
+  color: rgb(192 192 192) !important;
   color: #c0c0c0 !important;
 }
 
@@ -256,4 +279,30 @@ input[type='checkbox']:not([disabled]):hover {
   justify-content: center;
   gap: 24px;
   padding: 20px;
+}
+
+/* Global dark mode background fix - NUCLEAR OPTION */
+body.dark-mode #root {
+  background-color: #1a1d23 !important;
+}
+
+body.dark-mode .bg-oxford-blue,
+body.dark-mode div[class*="bg-oxford-blue"],
+body.dark-mode .text-light {
+  background-color: #1a1d23 !important;
+}
+
+/* Override ANY inline styles */
+body.dark-mode [style*="background"] {
+  background-color: #1a1d23 !important;
+}
+
+tr.dark-leaderboard-row:hover,
+tr.dark-leaderboard-row:hover td,
+tr.dark-leaderboard-row:hover th,
+tr.dark-leaderboard-row:hover span,
+tr.dark-leaderboard-row:hover p,
+tr.dark-leaderboard-row:hover a {
+  background-color: #fff !important;
+  color: #000 !important;
 }
