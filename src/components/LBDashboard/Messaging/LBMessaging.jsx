@@ -324,7 +324,12 @@ export default function LBMessaging() {
   };
 
   const renderContactButton = (key, user, onClick) => (
-    <button key={key} type="button" className={styles.lbMessagingContact} onClick={onClick}>
+    <button
+      key={key}
+      type="button"
+      className={styles.lbMessagingContact}
+      onClick={onClick}
+    >
       <img
         src={user.profilePic || '/pfp-default-header.png'}
         alt="User Profile"
@@ -425,6 +430,15 @@ export default function LBMessaging() {
                     {mobileHamMenu && (
                       <div className={styles.lbMobileHamMenu} ref={menuRef}>
                         <div className={styles.lbMobileHamMenuHeader}>
+                          <div className={styles.lbMobilePanelTopBar}>
+                            <button
+                              type="button"
+                              className={styles.lbMobileCloseBtn}
+                              onClick={() => setMobileHamMenu(false)}
+                            >
+                              ✕
+                            </button>
+                          </div>
                           {showContacts ? (
                             <div className={styles.lbMessagingContactsHeaderMobile}>
                               <input

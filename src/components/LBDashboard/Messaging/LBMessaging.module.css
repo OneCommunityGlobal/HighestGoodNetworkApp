@@ -135,14 +135,15 @@
 
 .lbMobileHamMenuHeader {
   display: flex;
-  position: absolute;
+  position: fixed;
   top: 0;
-  right: 0;
+  left: 0;
   flex-direction: column;
-  margin-top: 60px;
-  width: 220px;
+  width: 100vw;
+  height: 100vh;
   background-color: #e9e3e3;
-  z-index: 10;
+  z-index: 1000;
+  overflow-y: auto;
 }
 
 .black {
@@ -150,8 +151,7 @@
 }
 
 .lbMessagingContactsBody {
-  height: 87.5%;
-  max-height: 480px;
+  flex: 1;
   overflow-y: auto;
   display: none;
 }
@@ -591,6 +591,22 @@
   object-fit: cover;
 }
 
+.lbMobilePanelTopBar {
+  display: flex;
+  justify-content: flex-end;
+  padding: 12px 16px;
+  background-color: #d0caca;
+}
+
+.lbMobileCloseBtn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #333;
+  padding: 4px 8px;
+}
+
 .lbMessagingContactName {
   font-size: 15px;
   font-weight: 500;
@@ -602,6 +618,39 @@
     display: flex;
     height: 60px;
   }
+
+  .lbMessaingMessageWindowFooter {
+    padding: 8px 10px;
+    position: sticky;
+    bottom: 0;
+  }
+
+  .lbMessagingTextarea {
+    height: 36px;
+    font-size: 14px;
+  }
+
+  .containerMainMsg {
+    margin: 0;
+    min-height: 0;
+    flex: 1;
+  }
+
+  .lbMessagingMessageWindow {
+    width: 100%;
+  }
+}
+
+:global(.dark-mode) .lbMobileHamMenuHeader {
+  background-color: #1a1a1a;
+}
+
+:global(.dark-mode) .lbMobilePanelTopBar {
+  background-color: #2a2a2a;
+}
+
+:global(.dark-mode) .lbMobileCloseBtn {
+  color: #f1f1f1;
 }
 
 :global(.dark-mode) .lbMessagingContacts {
