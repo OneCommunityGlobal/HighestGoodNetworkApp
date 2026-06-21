@@ -45,6 +45,34 @@
   letter-spacing: 0.5px;
 }
 
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.organizerDropdown {
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  background-color: #fff;
+  color: #333;
+  font-size: 14px;
+  min-width: 180px;
+  cursor: pointer;
+}
+
+.organizerDropdown:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.organizerDropdownDark {
+  background-color: #1e293b;
+  color: #fff;
+  border: 1px solid #475569;
+}
+
 /* ---------- Save as PDF button ---------- */
 .savePdfBtn {
   font-size: 14px;
@@ -179,7 +207,6 @@
 }
 
 @media (width <= 1024px) {
-
   .analyticsSection {
     flex-direction: column;
     gap: 30px;
@@ -532,7 +559,6 @@
 
 .insightsDark .insightsTab {
   background-color: #3A506B;
-
   color: #fff;
   border-right: 1px solid #555;
 }
@@ -648,7 +674,6 @@
 
 .exportOptionsButtons,
 .exportOptionsButtonsDark {
-
   flex: 1;
   padding: 10px 12px;
   border-radius: 10px;
@@ -799,7 +824,6 @@
 
   :global(.case-card-global) {
     break-inside: avoid !important;
-
     height: auto !important;
   }
 
@@ -846,7 +870,6 @@
 
   :global(.tracking-table-global-dark) thead th {
     background: #1C2541 !important;
-
     color: #fff !important;
   }
 
@@ -876,46 +899,39 @@
   /* Dark mode styles for print */
   .participationLandingPageDark {
     background: #1B2A41 !important;
-
     color: #fff !important;
   }
 
   .participationLandingPageDark :global(.case-card-global) {
     background: #3A506B !important;
-
     color: #fff !important;
     border: 1px solid #555 !important;
   }
 
   .participationLandingPageDark .trackingContainerDark {
     background: #1C2541 !important;
-
     color: #fff !important;
     border: 1px solid #555 !important;
   }
 
   .participationLandingPageDark .insightsDark {
     background: #1C2541 !important;
-
     color: #fff !important;
     border: 1px solid #555 !important;
   }
 
   .participationLandingPageDark .trackingListContainerDark {
     background: #3A506B !important;
-
     color: #fff !important;
   }
 
   .participationLandingPageDark :global(.tracking-table-global-dark) thead th {
     background: #1C2541 !important;
-
     color: #fff !important;
   }
 
   .participationLandingPageDark .trackingRateDark {
     background: #3A506B !important;
-
     color: #fff !important;
   }
 
@@ -1133,3 +1149,34 @@
   border: 1px solid #3A506B;
 }
 
+.insightsDark .insightsTab {
+  background-color: #3A506B;
+  color: #fff;
+  border-right: 1px solid #555;
+}
+
+.insightsDark .insightsTab.activeTab {
+  background-color: #0056b3;
+  color: #fff;
+}
+
+/* ---------- Info Tooltip Icons ---------- */
+.infoIcon {
+  margin-left: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: #666;
+  vertical-align: middle;
+}
+
+.infoIcon:hover {
+  color: #000;
+}
+
+.trackingTableDark .infoIcon {
+  color: #ccc;
+}
+
+.trackingTableDark .infoIcon:hover {
+  color: #fff;
+}
