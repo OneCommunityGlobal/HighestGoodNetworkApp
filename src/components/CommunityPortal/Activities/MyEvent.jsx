@@ -90,12 +90,16 @@ function MyEvent() {
               {event.event}
               <div className={`${styles.eventTime}`}>{event.time}</div>
             </td>
-            <td className={`${styles.status} ${styles[event.status.toLowerCase()]}`}>
-              {event.status}
+            <td>
+              <span className={`${styles.status} ${styles[event.status.toLowerCase()]}`}>
+                {event.status}
+              </span>
             </td>
             <td>{event.registration}</td>
-            <td className={`${styles.resource} ${styles[event.resource.toLowerCase()]}`}>
-              {event.resource}
+            <td>
+              <span className={`${styles.resource} ${styles[event.resource.toLowerCase()]}`}>
+                {event.resource}
+              </span>
             </td>
             <td>{event.location}</td>
           </tr>
