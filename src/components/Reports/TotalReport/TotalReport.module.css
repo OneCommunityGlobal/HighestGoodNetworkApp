@@ -39,6 +39,61 @@
   font-weight: 400;
 }
 
+.comparisonControls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 12px 0 8px;
+}
+
+.comparisonToggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  margin: 0;
+}
+
+.comparePickers {
+  display: flex;
+  flex-flow: row wrap;
+  gap: 16px;
+}
+
+.comparePickerItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.comparisonGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.comparisonPanel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.panelTitle {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: steelblue;
+}
+
+@media screen and (width <= 700px) {
+  .comparisonGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .totalDetail {
   margin-top: 20px;
 }
@@ -102,6 +157,10 @@
 }
 
 :global(.dark-mode) .totalTitle {
+  color: #60a5fa;
+}
+
+:global(.dark-mode) .panelTitle {
   color: #60a5fa;
 }
 

@@ -3,8 +3,8 @@ import * as d3 from 'd3';
 import styles from './TotalReportBarGraph.module.css';
 import { useSelector } from 'react-redux';
 
-function TotalReportBarGraph({ barData, range }) {
-  const svgId = `svg-container-${range}`;
+function TotalReportBarGraph({ barData, range, idSuffix = '' }) {
+  const svgId = `svg-container-${range}${idSuffix}`;
   const darkMode = useSelector(state => state.theme.darkMode);
   const containerRef = useRef(null);
 
