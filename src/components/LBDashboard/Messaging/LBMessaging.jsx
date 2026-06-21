@@ -324,12 +324,7 @@ export default function LBMessaging() {
   };
 
   const renderContactButton = (key, user, onClick) => (
-    <button
-      key={key}
-      type="button"
-      className={styles.lbMessagingContact}
-      onClick={onClick}
-    >
+    <button key={key} type="button" className={styles.lbMessagingContact} onClick={onClick}>
       <img
         src={user.profilePic || '/pfp-default-header.png'}
         alt="User Profile"
