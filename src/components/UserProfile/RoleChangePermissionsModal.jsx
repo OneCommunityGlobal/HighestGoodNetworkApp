@@ -265,7 +265,9 @@ RoleChangePermissionsModal.propTypes = {
   authUser: PropTypes.shape({
     requestId: PropTypes.number,
     requestorRole: PropTypes.string
-  })
+  }),
+  desktopDisplay: PropTypes.bool,
+  canAddDeleteEditOwners: PropTypes.bool,
 }
 
 export default RoleChangePermissionsModal;
