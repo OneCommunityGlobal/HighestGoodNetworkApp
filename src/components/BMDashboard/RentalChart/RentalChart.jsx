@@ -4,7 +4,7 @@ import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL';
 import { Line } from 'react-chartjs-2';
 import DatePicker from 'react-datepicker';
-import './RentalChart.css';
+import styles from './RentalChart.module.css';
 import { toast } from 'react-toastify';
 import {
   Chart as ChartJS,
@@ -256,7 +256,7 @@ export default function RentalChart() {
         legend: {
           position: 'top',
           labels: {
-            color: darkMode ? '#1b2a41' : '#333333',
+            color: darkMode ? '#e0e0e0' : '#333333',
           },
         },
         title: {
@@ -357,17 +357,21 @@ export default function RentalChart() {
   const renderChartContent = () => {
     if (loading) {
       return (
-        <div className={`loading ${darkMode ? 'text-light' : ''}`}>Loading Chart Data....</div>
+        <div className={`${styles.loading} ${darkMode ? styles['text-light'] : ''}`}>
+          Loading Chart Data....
+        </div>
       );
     }
 
     if (error) {
-      return <div className={`error ${darkMode ? 'text-light' : ''}`}>{error}</div>;
+      return (
+        <div className={`${styles.error} ${darkMode ? styles['text-light'] : ''}`}>{error}</div>
+      );
     }
 
     if (chartData.datasets.length === 0) {
       return (
-        <div className={`no-data ${darkMode ? 'text-light' : ''}`}>
+        <div className={`${styles['no-data']} ${darkMode ? styles['text-light'] : ''}`}>
           No data available for the selected filters
         </div>
       );
@@ -377,46 +381,39 @@ export default function RentalChart() {
   };
 
   return (
-    <div
-      className={`rental-container ${darkMode ? 'dark-mode' : ''}`}
-      style={{
-        backgroundColor: darkMode ? '#1b2a41' : '#ffffff',
-        padding: '20px',
-        borderRadius: '8px',
-        minHeight: '100vh',
-        marginTop: '-20px',
-      }}
-    >
-      <h1 className={darkMode ? 'text-light' : ''}>Rental Cost Over Time</h1>
-      <div className="chart-filters" style={{ marginBottom: '20px' }}>
-        <div
-          className="filter-row top-filters"
-          style={{ display: 'flex', marginBottom: '10px', gap: '20px' }}
-        >
-          <div className="filter-group">
-            <label htmlFor="chart-type" className={darkMode ? 'text-light' : ''}>
+    <div className={`${styles['rental-container']} ${darkMode ? styles['dark-mode'] : ''}`}>
+      <h1 className={darkMode ? styles['text-light'] : ''}>Rental Cost Over Time</h1>
+
+      <div className={styles['chart-filters']}>
+        <div className={`${styles['filter-row']} ${styles['top-filters']}`}>
+          <div className={styles['filter-group']}>
+            <label htmlFor="chart-type" className={darkMode ? styles['text-light'] : ''}>
               Display:{' '}
             </label>
             <select
               id="chart-type"
               value={chartType}
               onChange={handleTypeChange}
-              className={darkMode ? 'rental-chart-select dark-select' : 'rental-chart-select'}
+              className={`${styles['rental-chart-select']} ${
+                darkMode ? styles['dark-select'] : ''
+              }`}
             >
               <option value="cost">Total Rental Cost</option>
               <option value="percentage">% of Materials Cost</option>
             </select>
           </div>
 
-          <div className="filter-group">
-            <label htmlFor="project-filter" className={darkMode ? 'text-light' : ''}>
+          <div className={styles['filter-group']}>
+            <label htmlFor="project-filter" className={darkMode ? styles['text-light'] : ''}>
               Project:{' '}
             </label>
             <select
               id="project-filter"
               value={selectedProject}
               onChange={handleProjectChange}
-              className={darkMode ? 'rental-chart-select dark-select' : 'rental-chart-select'}
+              className={`${styles['rental-chart-select']} ${
+                darkMode ? styles['dark-select'] : ''
+              }`}
             >
               <option value="All">All Projects</option>
               {availableProjects.map(projectId => (
@@ -427,8 +424,8 @@ export default function RentalChart() {
             </select>
           </div>
 
-          <div className="filter-group">
-            <label htmlFor="tool-filter" className={darkMode ? 'text-light' : ''}>
+          <div className={styles['filter-group']}>
+            <label htmlFor="tool-filter" className={darkMode ? styles['text-light'] : ''}>
               Tool:{' '}
             </label>
             <select
@@ -436,7 +433,9 @@ export default function RentalChart() {
               value={selectedTool}
               onChange={handleToolChange}
               disabled={groupBy === 'project' && selectedProject !== 'All'}
-              className={darkMode ? 'rental-chart-select dark-select' : 'rental-chart-select'}
+              className={`${styles['rental-chart-select']} ${
+                darkMode ? styles['dark-select'] : ''
+              }`}
             >
               <option value="All">All Tools</option>
               {availableTools.map(tool => (
@@ -448,9 +447,9 @@ export default function RentalChart() {
           </div>
         </div>
 
-        <div className="filter-row date-filters" style={{ display: 'flex', gap: '20px' }}>
-          <div className="filter-group">
-            <label style={{ marginRight: '8px' }} className={darkMode ? 'text-light' : ''}>
+        <div className={`${styles['filter-row']} ${styles['date-filters']}`}>
+          <div className={styles['filter-group']}>
+            <label className={`${darkMode ? styles['text-light'] : ''} ${styles['date-label']}`}>
               From:{' '}
             </label>
             <DatePicker
@@ -463,12 +462,12 @@ export default function RentalChart() {
               showYearDropdown
               showMonthDropdown
               dropdownMode="select"
-              className={`date-picker ${darkMode ? 'dark-date-picker' : ''}`}
+              className={`${styles['date-picker']} ${darkMode ? styles['dark-date-picker'] : ''}`}
             />
           </div>
 
-          <div className="filter-group" style={{ marginRight: '150px' }}>
-            <label label style={{ marginRight: '10px' }} className={darkMode ? 'text-light' : ''}>
+          <div className={`${styles['filter-group']} ${styles['date-to-group']}`}>
+            <label className={`${darkMode ? styles['text-light'] : ''} ${styles['date-label']}`}>
               To:{' '}
             </label>
             <DatePicker
@@ -482,22 +481,13 @@ export default function RentalChart() {
               showYearDropdown
               showMonthDropdown
               dropdownMode="select"
-              className={`date-picker ${darkMode ? 'dark-date-picker' : ''}`}
+              className={`${styles['date-picker']} ${darkMode ? styles['dark-date-picker'] : ''}`}
             />
           </div>
         </div>
       </div>
 
-      <div
-        className={`chart-wrapper ${darkMode ? 'dark-chart' : ''}`}
-        style={{
-          backgroundColor: darkMode ? '#1b2a41' : '#ffffff',
-          padding: '20px',
-          borderRadius: '8px',
-          border: darkMode ? '1px solid #333' : '1px solid #ddd',
-          minHeight: '600px',
-        }}
-      >
+      <div className={`${styles['chart-wrapper']} ${darkMode ? styles['dark-chart'] : ''}`}>
         {renderChartContent()}
       </div>
     </div>

@@ -76,10 +76,10 @@
   color: #ffffff;
 }
 
-/* ✅ FINAL ERROR STYLE — SAME FOR LIGHT & DARK */
+
 .returned-late-error {
   color: #ffffff !important;
-  background-color: #b3261e; /* consistent error red */
+  background-color: #b3261e;
   padding: 14px 16px;
   border-radius: 6px;
   margin: 20px 0;
@@ -103,20 +103,49 @@
 }
 
 /* Fix select dropdown readability in dark mode */
-.bg-oxford-blue select {
-  background-color: #ffffff;
-  color: #333333;
-  border: 1px solid #cccccc;
+.bg-oxford-blue .returned-late-project-select,
+.bg-oxford-blue .returned-late-date-picker {
+  background-color: #1b2a41;
+  color: #e0e0e0;
+  border: 1px solid #555;
 }
 
-/* Ensure option text is readable */
-.bg-oxford-blue select option {
-  color: #333333;
-  background-color: #ffffff;
+.bg-oxford-blue .returned-late-project-select option {
+  color: #e0e0e0;
+  background-color: #1b2a41;
 }
 
-/* Disabled / default-looking state fix */
-.bg-oxford-blue select:disabled {
-  color: #333333;
-  background-color: #f5f5f5;
+.bg-oxford-blue .returned-late-project-select:disabled {
+  color: #a0a0a0;
+  background-color: #0f1a2a;
+}
+
+
+.bg-oxford-blue :global(.rmsc .dropdown-heading) {
+  background-color: #1b2a41;
+  color: #e0e0e0;
+  border: 1px solid #555;
+}
+
+.bg-oxford-blue :global(.rmsc .dropdown-content) {
+  background-color: #1b2a41;
+  border: 1px solid #555;
+}
+
+.bg-oxford-blue :global(.rmsc .dropdown-content .select-item) {
+  background-color: #1b2a41 !important;
+  color: #ffffff !important;
+}
+
+.bg-oxford-blue :global(.rmsc .dropdown-content label) {
+  color: #ffffff !important;
+}
+
+.bg-oxford-blue :global(.rmsc .dropdown-content .select-item:hover) {
+  background-color: #2c3e50 !important;
+  color: #ffffff !important;
+}
+
+.bg-oxford-blue :global(.rmsc .dropdown-container) {
+  background-color: transparent;
 }

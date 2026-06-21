@@ -192,17 +192,16 @@ export default function ReturnedLateChart() {
       startDate: prev.startDate > date ? date : prev.startDate,
       endDate: date,
     }));
-  const isOxfordBlue = darkMode ? 'bg-oxford-blue' : '';
+  // 🚨 Hooked up to the 'styles' object!
+  const isOxfordBlue = darkMode ? styles['bg-oxford-blue'] : '';
 
   return (
     <div className={`${styles['returned-late-chart']} ${isOxfordBlue}`}>
-      <h1 className={darkMode ? 'text-white' : ''}>Percent of Tools Returned Late</h1>
+      <h1>Percent of Tools Returned Late</h1>
+
       <div className={styles['returned-late-filters']}>
         <div className={styles['returned-late-filter-group']}>
-          <label
-            htmlFor="project-select"
-            className={`${styles['returned-late-filter-label']} ${darkMode ? 'text-white' : ''}`}
-          >
+          <label htmlFor="project-select" className={styles['returned-late-filter-label']}>
             Project:
           </label>
           <select
@@ -219,11 +218,9 @@ export default function ReturnedLateChart() {
             ))}
           </select>
         </div>
+
         <div className={styles['returned-late-filter-group']}>
-          <label
-            htmlFor="tools-select"
-            className={`${styles['returned-late-filter-label']} ${darkMode ? 'text-white' : ''}`}
-          >
+          <label htmlFor="tools-select" className={styles['returned-late-filter-label']}>
             Tools:
           </label>
           <div id="tools-select" className={styles['returned-late-tools-select']}>
@@ -235,11 +232,9 @@ export default function ReturnedLateChart() {
             />
           </div>
         </div>
+
         <div className={styles['returned-late-filter-group']}>
-          <label
-            htmlFor="start-date-picker"
-            className={`${styles['returned-late-filter-label']} ${darkMode ? 'text-white' : ''}`}
-          >
+          <label htmlFor="start-date-picker" className={styles['returned-late-filter-label']}>
             From:
           </label>
           <DatePicker
@@ -249,36 +244,25 @@ export default function ReturnedLateChart() {
             className={styles['returned-late-date-picker']}
           />
         </div>
-        <div className={`${styles['returned-late-filter-group']}`}>
-          <label
-            htmlFor="end-date-picker"
-            className={`${styles['returned-late-filter-label']}${darkMode ? 'text-white' : ''}`}
-          >
+
+        <div className={styles['returned-late-filter-group']}>
+          <label htmlFor="end-date-picker" className={styles['returned-late-filter-label']}>
             To:
           </label>
           <DatePicker
             id="end-date-picker"
             selected={dateRange.endDate}
             onChange={handleEndDateChange}
-            className={`${styles['returned-late-date-picker']}${darkMode ? 'text-white' : ''}`}
+            className={styles['returned-late-date-picker']}
           />
         </div>
       </div>
-      <div className={`${styles['returned-late-chart-container']} text-white`}>
-        {loading && (
-          <div className={`${styles['returned-late-loading']} ${darkMode ? 'text-white' : ''}`}>
-            Loading...
-          </div>
-        )}
-        {error && (
-          <div className={`${styles['returned-late-error']} ${darkMode ? 'text-white' : ''}`}>
-            {error}
-          </div>
-        )}
+
+      <div className={styles['returned-late-chart-container']}>
+        {loading && <div className={styles['returned-late-loading']}>Loading...</div>}
+        {error && <div className={styles['returned-late-error']}>{error}</div>}
         {!loading && !error && chartData.labels.length === 0 && (
-          <div className={`${styles['returned-late-no-data']} ${darkMode ? 'text-white' : ''}`}>
-            No data for selected filters
-          </div>
+          <div className={styles['returned-late-no-data']}>No data for selected filters</div>
         )}
         {!loading && !error && chartData.labels.length > 0 && (
           <Bar ref={chartRef} data={chartData} options={options} />

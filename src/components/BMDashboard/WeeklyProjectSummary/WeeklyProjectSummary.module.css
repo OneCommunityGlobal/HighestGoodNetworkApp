@@ -128,6 +128,12 @@
   border-radius: 6px;
   text-align: center;
   box-shadow: 0 2px 5px var(--card-shadow);
+  flex: 1 1 250px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .darkMode .weeklyProjectSummaryCard {
@@ -182,7 +188,7 @@
 
 .normalCard {
   width: 100%;
-  min-height: 250px;
+  min-height: 200px;
 }
 
 .mapCard {
@@ -284,9 +290,12 @@
 
 /* First, set a max-height and make it scrollable */
 .quantityOfMaterialsUsedChartTooltip {
-  max-height: 80vh !important; /* Limit to 80% of viewport height */
-  overflow-y: auto !important; /* Enable vertical scrolling */
-  padding-right: 15px !important; /* Add some padding for the scrollbar */
+  max-height: 80vh !important;
+  /* Limit to 80% of viewport height */
+  overflow-y: auto !important;
+  /* Enable vertical scrolling */
+  padding-right: 15px !important;
+  /* Add some padding for the scrollbar */
   /* Support for Firefox */
   scrollbar-width: thin;
   scrollbar-color: rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.1);
@@ -319,6 +328,7 @@
 .darkMode .quantityOfMaterialsUsedChartTooltip {
   scrollbar-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.1);
 }
+
 /* ---------------- RESPONSIVE DESIGN ---------------- */
 
 /* Medium Screens - Wrap Items */
@@ -406,6 +416,7 @@
   max-width: 1600px;
   margin: auto;
 }
+
 /* .projectStatusGrid {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
