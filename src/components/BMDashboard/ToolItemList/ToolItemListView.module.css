@@ -9,6 +9,7 @@ table td {
   margin: 0 auto;
   padding: 1.5rem;
   transition: background-color 0.25s ease, color 0.25s ease;
+  min-height: 100vh;
 }
 
 .viewTitle {
