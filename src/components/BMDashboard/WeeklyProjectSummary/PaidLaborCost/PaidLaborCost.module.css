@@ -398,10 +398,33 @@
   background-color: #3a506b !important;
 }
 
-:global(.paid-labor-cost-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--disabled) {
-  color: #ccc !important;
-  background-color: transparent !important;
-  cursor: not-allowed !important;
+.darkMode .paidLaborCostFilterLabel {
+  color: #fff;
+  opacity: 1;
+}
+
+.darkMode .paidLaborCostFilterSelect {
+  background-color: #2b3a55 !important;
+  border: 1px solid #8fa1c7 !important;
+  color: #fff !important;
+}
+
+.darkMode .paidLaborCostFilterSelect:hover {
+  border-color: var(--button-bg) !important;
+}
+
+.darkMode .paidLaborCostFilterSelect:focus,
+.darkMode .paidLaborCostFilterSelect:focus-visible {
+  outline: 2px solid var(--button-bg) !important;
+  outline-offset: 2px;
+}
+
+.paid-labor-cost-input-wrapper {
+  position: relative;
+  width: 100%;
+  margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
 }
 
 :global(.paid-labor-cost-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--disabled:hover) {

@@ -308,6 +308,19 @@ export default (
         </>
       )}
     />
+
+    <LBProtectedRoute
+      exact
+      path="/lbdashboard/wishlist/:id/availability"
+      render={() => (
+        <>
+          <AutoUpdate />
+          <ToastContainer />
+          <WishListItem />
+        </>
+      )}
+    />
+
     <LBProtectedRoute
       exact
       path="/lbdashboard/wishlist/:id"
