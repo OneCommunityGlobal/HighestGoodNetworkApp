@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Alert, Input } from 'reactstrap';
 import AddProjectsAutoComplete from './AddProjectsAutoComplete';
 import { boxStyle, boxStyleDark } from '~/styles';
-import '../../Header/index.css';
+import '../../Header/index.module.css';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL';
@@ -139,7 +139,6 @@ const AddProjectPopup = React.memo((props) => {
       isOpen={open}
       toggle={close}
       centered
-      size="lg"
       className={darkMode ? 'text-light dark-mode' : ''}
     >
       <ModalHeader className={darkMode ? 'bg-space-cadet text-light' : ''} toggle={close}>

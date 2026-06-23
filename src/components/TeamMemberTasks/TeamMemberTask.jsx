@@ -8,7 +8,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Modal, ModalBody, ModalFooter, ModalHeader, Progress, Table } from 'reactstrap';
 import CopyToClipboard from '~/components/common/Clipboard/CopyToClipboard';
 import UserStateDisplay from '../UserState/UserStateDisplay';
@@ -46,9 +46,16 @@ const TeamMemberTask = React.memo(
     userId,
     updateTaskStatus,
     showWhoHasTimeOff,
+    showTrackers,
+    showTasks,
     onTimeOff,
     goingOnTimeOff,
     displayUser,
+    userStateCatalog = [],
+    onCatalogChange,
+    userStateSelection = [],
+    onSelectionChange,
+    expandAll = false,
   }) => {
     const darkMode = useSelector(state => state.theme.darkMode);
     const taskCounts = useSelector(state => state.dashboard?.taskCounts ?? {});
@@ -58,10 +65,12 @@ const TeamMemberTask = React.memo(
     const canSeeFollowUpCheckButton = userRole !== 'Volunteer';
 
     const [isDashboardModalOpen, setIsDashboardModalOpen] = useState(false);
-    const dashboardToggle = item => setIsDashboardOpen(item.personId);
     const manager = 'Manager';
     const adm = 'Administrator';
     const owner = 'Owner';
+    const isOwnerOrAdmin = ['Owner', 'Administrator'].includes(userRole);
+
+    useEffect(() => {}, [userStateSelection]);
 
     const handleDashboardAccess = () => {
       // null checks
@@ -127,6 +136,9 @@ const TeamMemberTask = React.memo(
 
     const canTruncate = activeTasks.length > NUM_TASKS_SHOW_TRUNCATE;
     const [isTruncated, setIsTruncated] = useState(canTruncate);
+    useEffect(() => {
+      if (canTruncate) setIsTruncated(!expandAll);
+    }, [expandAll, canTruncate]);
     const [isTimeOffContentOpen, setIsTimeOffContentOpen] = useState(
       showWhoHasTimeOff && (onTimeOff || goingOnTimeOff),
     );
@@ -148,7 +160,7 @@ const TeamMemberTask = React.memo(
     const canSeeReports =
       rolesAllowedToResolveTasks.includes(userRole) || dispatch(hasPermission('getReports'));
     const canUpdateTask = dispatch(hasPermission('updateTask'));
-    const canDeleteTask = dispatch(hasPermission('canDeleteTask'));
+    const canUnassignTask = dispatch(hasPermission('removeUserFromTask'));
     const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
 
     const colorsObjs = {
@@ -385,15 +397,23 @@ const TeamMemberTask = React.memo(
                       )}
                     </div>
                   </td>
-                  <td colSpan={2} className={`${darkMode ? 'bg-yinmn-blue' : ''}`}>
-                    <Table borderless className={styles['team-member-tasks-subtable']}>
+                  <td
+                    colSpan={2}
+                    className={`${darkMode ? 'bg-yinmn-blue' : ''}`}
+                    style={{ textAlign: 'center' }}
+                  >
+                    <Table
+                      borderless
+                      className={styles['team-member-tasks-subtable']}
+                      style={{ margin: '0 auto', width: '100%' }}
+                    >
                       <tbody>
-                        <tr
-                          style={{
-                            width: '500px',
-                          }}
-                        >
-                          <td className={styles['team-member-tasks-user-name']}>
+                        <tr style={{ width: '500px' }}>
+                          <td
+                            colSpan={2}
+                            className={styles['team-member-tasks-user-name']}
+                            style={{ textAlign: 'center' }}
+                          >
                             <Link
                               className={styles['team-member-tasks-user-name-link']}
                               to={`/userprofile/${user.personId}`}
@@ -499,33 +519,32 @@ const TeamMemberTask = React.memo(
                               userRole={userRole}
                               personId={user.personId}
                               displayUser={displayUser}
+                              showTrackers={showTrackers}
                             />
-                          </td>
-                          <td
-                            data-label="Time"
-                            style={{
-                              textAlign: 'center',
-                              verticalAlign: 'middle',
-                              width: '50%',
-                              whiteSpace: 'nowrap',
-                            }}
-                            className={`${styles['team-clocks']} ${darkMode ? 'text-light' : ''}`}
-                          >
-                            <div style={{ display: 'block' }}>
-                              <u className={darkMode ? styles['dashboard-team-clocks'] : ''}>
-                                {user.weeklycommittedHours ? user.weeklycommittedHours : 0}
-                              </u>{' '}
-                              /
-                              <font color="green">
-                                {' '}
-                                {thisWeekHours ? thisWeekHours.toFixed(1) : 0}
-                              </font>{' '}
-                              /<font color="red"> {totalHoursRemaining.toFixed(1)}</font>
-                            </div>
-                            <div style={{ display: 'block', marginTop: '4px' }}>
+                            <div
+                              style={{ textAlign: 'center', marginTop: '8px' }}
+                              className={`${styles['team-clocks']} ${darkMode ? 'text-light' : ''}`}
+                            >
+                              <div style={{ display: 'block', whiteSpace: 'nowrap' }}>
+                                <u className={darkMode ? styles['dashboard-team-clocks'] : ''}>
+                                  {user.weeklycommittedHours ? user.weeklycommittedHours : 0}
+                                </u>{' '}
+                                /
+                                <font color="green">
+                                  {' '}
+                                  {thisWeekHours ? thisWeekHours.toFixed(1) : 0}
+                                </font>{' '}
+                                /<font color="red"> {totalHoursRemaining.toFixed(1)}</font>
+                              </div>
                               <UserStateDisplay
                                 userId={user.personId}
-                                canEdit={dispatch(hasPermission('manage_user_state_indicator'))}
+                                userName={user.name}
+                                canEdit={displayUser?.email === 'jae@onecommunityglobal.org'}
+                                canManage={isOwnerOrAdmin}
+                                catalog={userStateCatalog}
+                                onCatalogChange={onCatalogChange}
+                                initialSelected={userStateSelection}
+                                onSelectionChange={onSelectionChange}
                               />
                             </div>
                           </td>
@@ -535,208 +554,236 @@ const TeamMemberTask = React.memo(
                   </td>
                   <td colSpan={3} className={`${darkMode ? 'bg-yinmn-blue' : ''}`}>
                     <div className={styles['grid-container']}>
-                      <Table borderless className={styles['team-member-tasks-subtable']}>
-                        <tbody>
-                          {user.tasks &&
-                            activeTasks.slice(0, numTasksToShow).map(task => {
-                              return (
-                                <tr
-                                  key={`${task._id}`}
-                                  className={`${styles['task-break']} ${
-                                    darkMode ? 'bg-yinmn-blue' : ''
-                                  }`}
-                                >
-                                  <td
-                                    data-label="Task(s)"
-                                    className={`${styles['task-align']} ${
-                                      darkMode ? 'bg-yinmn-blue text-light' : ''
+                      {showTasks !== false && (
+                        <Table borderless className={styles['team-member-tasks-subtable']}>
+                          <tbody>
+                            {user.tasks &&
+                              activeTasks.slice(0, numTasksToShow).map(task => {
+                                return (
+                                  <tr
+                                    key={`${task._id}`}
+                                    className={`${styles['task-break']} ${
+                                      darkMode ? 'bg-yinmn-blue' : ''
                                     }`}
                                   >
-                                    <div className={styles.taskColumnLayout}>
-                                      {/* Task title */}
-                                      <div className={styles['team-member-tasks-content']}>
-                                        <Link
-                                          className={styles['team-member-tasks-content-link']}
-                                          to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}
-                                          data-testid={`${task.taskName}`}
-                                          title={`Created by: ${getTaskCreatorName(task)}`}
-                                          style={{ color: darkMode ? '#339CFF' : undefined }}
-                                        >
-                                          <span className={styles.taskTitle}>
-                                            {`${task.num} ${task.taskName}`}
-                                          </span>
-                                        </Link>
+                                    <td
+                                      data-label="Task(s)"
+                                      className={`${styles['task-align']} ${
+                                        darkMode ? 'bg-yinmn-blue text-light' : ''
+                                      }`}
+                                    >
+                                      <div className={styles.taskColumnLayout}>
+                                        {/* Task title */}
+                                        <div className={styles['team-member-tasks-content']}>
+                                          <Link
+                                            className={styles['team-member-tasks-content-link']}
+                                            to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}
+                                            data-testid={`${task.taskName}`}
+                                            title={`Created by: ${getTaskCreatorName(task)}`}
+                                            style={{ color: darkMode ? '#339CFF' : undefined }}
+                                          >
+                                            <span className={styles.taskTitle}>
+                                              {`${task.num} ${task.taskName}`}
+                                            </span>
+                                          </Link>
 
-                                        <CopyToClipboard
-                                          writeText={task.taskName}
-                                          message="Task Copied!"
-                                        />
-                                      </div>
+                                          <CopyToClipboard
+                                            writeText={task.taskName}
+                                            message="Task Copied!"
+                                          />
+                                        </div>
 
-                                      {/* Icons UNDER task name */}
-                                      <div className={styles.taskIconsUnderName}>
-                                        {task.taskNotifications.length > 0 &&
-                                          task.taskNotifications.some(
-                                            notification =>
-                                              Object.prototype.hasOwnProperty.call(
-                                                notification,
-                                                'userId',
-                                              ) && notification.userId === user.personId,
-                                          ) && (
+                                        {/* Icons UNDER task name */}
+                                        <div className={styles.taskIconsUnderName}>
+                                          {task.taskNotifications.length > 0 &&
+                                            task.taskNotifications.some(
+                                              notification =>
+                                                Object.prototype.hasOwnProperty.call(
+                                                  notification,
+                                                  'userId',
+                                                ) && notification.userId === user.personId,
+                                            ) && (
+                                              <FontAwesomeIcon
+                                                className={styles['team-member-tasks-bell']}
+                                                title="Task Info Changes"
+                                                icon={faBell}
+                                                onClick={() => {
+                                                  const taskNotificationId = task.taskNotifications.filter(
+                                                    taskNotification =>
+                                                      taskNotification.userId === user.personId,
+                                                  );
+                                                  handleOpenTaskNotificationModal(
+                                                    user.personId,
+                                                    task,
+                                                    taskNotificationId,
+                                                  );
+                                                }}
+                                              />
+                                            )}
+
+                                          {isAllowedToResolveTasks && (
                                             <FontAwesomeIcon
-                                              className={styles['team-member-tasks-bell']}
-                                              title="Task Info Changes"
-                                              icon={faBell}
+                                              className={styles['team-member-tasks-done']}
+                                              icon={faCheckCircle}
+                                              title="Mark as Done"
                                               onClick={() => {
-                                                const taskNotificationId = task.taskNotifications.filter(
-                                                  taskNotification =>
-                                                    taskNotification.userId === user.personId,
-                                                );
-                                                handleOpenTaskNotificationModal(
-                                                  user.personId,
-                                                  task,
-                                                  taskNotificationId,
-                                                );
+                                                handleMarkAsDoneModal(user.personId, task);
+                                                handleTaskModalOption('Checkmark');
                                               }}
                                             />
                                           )}
 
-                                        {isAllowedToResolveTasks && (
-                                          <FontAwesomeIcon
-                                            className={styles['team-member-tasks-done']}
-                                            icon={faCheckCircle}
-                                            title="Mark as Done"
-                                            onClick={() => {
-                                              handleMarkAsDoneModal(user.personId, task);
-                                              handleTaskModalOption('Checkmark');
-                                            }}
-                                          />
-                                        )}
-
-                                        {(canUpdateTask || canDeleteTask) && (
-                                          <FontAwesomeIcon
-                                            className={styles['team-member-task-remove']}
-                                            icon={faTimesCircle}
-                                            title="Remove User from Task"
-                                            onClick={() => {
-                                              handleRemoveFromTaskModal(user.personId, task);
-                                              handleTaskModalOption('XMark');
-                                            }}
-                                          />
-                                        )}
-
-                                        <TeamMemberTaskIconsInfo />
-                                      </div>
-
-                                      {/* Review Button */}
-                                      <div className={styles['team-member-task-review-button']}>
-                                        <ReviewButton
-                                          user={user}
-                                          userId={userId}
-                                          task={task}
-                                          updateTask={updateTaskStatus}
-                                        />
-                                      </div>
-                                    </div>
-                                  </td>
-                                  {task.hoursLogged != null && task.estimatedHours != null && (
-                                    <td
-                                      data-label="Progress"
-                                      className={`${styles['team-task-progress']} ${
-                                        darkMode ? 'bg-yinmn-blue text-light' : ''
-                                      }`}
-                                    >
-                                      <div className={styles['progress-wrapper']}>
-                                        <div className={styles['team-task-progress-container']}>
-                                          <div
-                                            data-testid={`times-${task.taskName}`}
-                                            className={`${darkMode ? 'text-light ' : ''} ${
-                                              canSeeFollowUpCheckButton
-                                                ? styles['team-task-progress-time']
-                                                : styles['team-task-progress-time-volunteers']
-                                            }`}
-                                          >
-                                            <p
-                                              className={`${styles['progress-text']} ${
-                                                darkMode ? 'text-light' : ''
-                                              }`}
-                                            >
-                                              {`${parseFloat(
-                                                task.hoursLogged.toFixed(2),
-                                              )} of ${parseFloat(task.estimatedHours.toFixed(2))}`}
-                                            </p>
-                                          </div>
-                                          {canSeeFollowUpCheckButton && (
-                                            <div className={styles['task-followup-icon']}>
-                                              <FollowupCheckButton
-                                                moseoverText={followUpMouseoverText(task)}
-                                                user={user}
-                                                task={task}
-                                              />
-                                              <div className={styles['followup-info-override']}>
-                                                <FollowUpInfoModal />
-                                                {isAllowedToSeeDeadlineCount && (
-                                                  <span
-                                                    className={styles['deadlineCount']}
-                                                    title="Click to view task change history"
-                                                    data-testid={`deadline-${task.taskName}`}
-                                                    onClick={() => handleOpenTaskChangeLog(task)}
-                                                    onKeyDown={e => {
-                                                      if (e.key === 'Enter' || e.key === ' ') {
-                                                        e.preventDefault();
-                                                        handleOpenTaskChangeLog(task);
-                                                      }
-                                                    }}
-                                                    role="button"
-                                                    tabIndex={0}
-                                                    style={{ cursor: 'pointer' }}
-                                                  >
-                                                    {taskCounts[task._id] ??
-                                                      task.deadlineCount ??
-                                                      0}
-                                                  </span>
-                                                )}
-                                              </div>
-                                            </div>
+                                          {canUnassignTask && (
+                                            <FontAwesomeIcon
+                                              className={styles['team-member-task-remove']}
+                                              icon={faTimesCircle}
+                                              title="Remove User from Task"
+                                              onClick={() => {
+                                                handleRemoveFromTaskModal(user.personId, task);
+                                                handleTaskModalOption('XMark');
+                                              }}
+                                            />
                                           )}
+
+                                          <TeamMemberTaskIconsInfo />
                                         </div>
-                                        <Progress
-                                          color={getProgressColor(
-                                            task.hoursLogged,
-                                            task.estimatedHours,
-                                            true,
-                                          )}
-                                          value={getProgressValue(
-                                            task.hoursLogged,
-                                            task.estimatedHours,
-                                          )}
-                                          className={styles['team-task-progress-bar']}
-                                        />
+
+                                        {/* Review Button */}
+                                        <div
+                                          className={styles['team-member-task-review-button']}
+                                          style={
+                                            onTimeOff ? { opacity: 0.4, pointerEvents: 'none' } : {}
+                                          }
+                                        >
+                                          <ReviewButton
+                                            user={user}
+                                            userId={userId}
+                                            task={task}
+                                            updateTask={updateTaskStatus}
+                                          />
+                                        </div>
                                       </div>
                                     </td>
-                                  )}
-                                </tr>
-                              );
-                            })}
-                          {canTruncate && (
-                            <tr key="truncate-button-row" className={styles['task-break']}>
-                              <td className={styles['task-align']}>
-                                <button
-                                  type="button"
-                                  onClick={handleTruncateTasksButtonClick}
-                                  className={`${styles.truncateTasksBtn} ${
-                                    darkMode ? 'text-light' : ''
-                                  }`}
-                                >
-                                  {isTruncated
-                                    ? `Show All (${activeTasks.length}) Tasks`
-                                    : 'Truncate Tasks'}
-                                </button>
-                              </td>
-                            </tr>
-                          )}
-                        </tbody>
-                      </Table>
+                                    {task.hoursLogged != null && task.estimatedHours != null && (
+                                      <td
+                                        data-label="Progress"
+                                        className={`${styles['team-task-progress']} ${
+                                          darkMode ? 'bg-yinmn-blue text-light' : ''
+                                        }`}
+                                      >
+                                        <div className={styles['progress-wrapper']}>
+                                          <div className={styles['team-task-progress-container']}>
+                                            <div
+                                              data-testid={`times-${task.taskName}`}
+                                              className={`${darkMode ? 'text-light ' : ''} ${
+                                                canSeeFollowUpCheckButton
+                                                  ? styles['team-task-progress-time']
+                                                  : styles['team-task-progress-time-volunteers']
+                                              }`}
+                                            >
+                                              <p
+                                                className={`${styles['progress-text']} ${
+                                                  darkMode ? 'text-light' : ''
+                                                }`}
+                                              >
+                                                {`${Number.parseFloat(
+                                                  task.hoursLogged.toFixed(2),
+                                                )} of ${Number.parseFloat(
+                                                  task.estimatedHours.toFixed(2),
+                                                )}`}
+                                              </p>
+                                            </div>
+                                            {canSeeFollowUpCheckButton && (
+                                              <div className={styles['task-followup-icon']}>
+                                                <FollowupCheckButton
+                                                  moseoverText={followUpMouseoverText(task)}
+                                                  user={user}
+                                                  task={task}
+                                                />
+                                                <div className={styles['followup-info-override']}>
+                                                  <FollowUpInfoModal />
+                                                  {isAllowedToSeeDeadlineCount && (
+                                                    <span
+                                                      className={styles['deadlineCount']}
+                                                      title="Click to view task change history"
+                                                      data-testid={`deadline-${task.taskName}`}
+                                                      onClick={() => handleOpenTaskChangeLog(task)}
+                                                      onKeyDown={e => {
+                                                        if (e.key === 'Enter' || e.key === ' ') {
+                                                          e.preventDefault();
+                                                          handleOpenTaskChangeLog(task);
+                                                        }
+                                                      }}
+                                                      role="button"
+                                                      tabIndex={0}
+                                                      style={{ cursor: 'pointer' }}
+                                                    >
+                                                      {taskCounts[task._id] ??
+                                                        task.deadlineCount ??
+                                                        0}
+                                                    </span>
+                                                  )}
+                                                </div>
+                                              </div>
+                                            )}
+                                          </div>
+                                          <Progress
+                                            color={getProgressColor(
+                                              task.hoursLogged,
+                                              task.estimatedHours,
+                                              true,
+                                            )}
+                                            value={getProgressValue(
+                                              task.hoursLogged,
+                                              task.estimatedHours,
+                                            )}
+                                            className={styles['team-task-progress-bar']}
+                                          />
+                                          {task.createdDatetime &&
+                                            (() => {
+                                              const days = Math.floor(
+                                                (Date.now() - new Date(task.createdDatetime)) /
+                                                  (1000 * 60 * 60 * 24),
+                                              );
+                                              let ageClass = styles['task-age-badge'];
+                                              if (days <= 7)
+                                                ageClass += ` ${styles['task-age-badge-new']}`;
+                                              else if (days <= 30)
+                                                ageClass += ` ${styles['task-age-badge-recent']}`;
+                                              else if (days <= 90)
+                                                ageClass += ` ${styles['task-age-badge-old']}`;
+                                              else
+                                                ageClass += ` ${styles['task-age-badge-very-old']}`;
+                                              return (
+                                                <div className={ageClass}>{days} Days Old</div>
+                                              );
+                                            })()}
+                                        </div>
+                                      </td>
+                                    )}
+                                  </tr>
+                                );
+                              })}
+                            {canTruncate && (
+                              <tr key="truncate-button-row" className={styles['task-break']}>
+                                <td className={styles['task-align']}>
+                                  <button
+                                    type="button"
+                                    onClick={handleTruncateTasksButtonClick}
+                                    className={`${styles.truncateTasksBtn} ${
+                                      darkMode ? 'text-light' : ''
+                                    }`}
+                                  >
+                                    {isTruncated
+                                      ? `Show All (${activeTasks.length}) Tasks`
+                                      : 'Truncate Tasks'}
+                                  </button>
+                                </td>
+                              </tr>
+                            )}
+                          </tbody>
+                        </Table>
+                      )}
                       <Modal
                         isOpen={isDashboardModalOpen}
                         toggle={closeDashboardModal}
@@ -808,7 +855,15 @@ TeamMemberTask.propTypes = {
     timeOffTill: PropTypes.string,
   }).isRequired,
   userRole: PropTypes.string.isRequired,
+  showTrackers: PropTypes.bool,
+  showTasks: PropTypes.bool,
   userId: PropTypes.string.isRequired,
+  displayUser: PropTypes.object,
+  userStateCatalog: PropTypes.array,
+  onCatalogChange: PropTypes.func,
+  userStateSelection: PropTypes.array,
+  onSelectionChange: PropTypes.func,
+  expandAll: PropTypes.bool,
 };
 
 TeamMemberTask.displayName = 'TeamMemberTask';

@@ -2,7 +2,7 @@ import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import thunk from 'redux-thunk';
-import { configureStore } from 'redux-mock-store';
+import configureStore from 'redux-mock-store';
 import axios from 'axios';
 import { vi } from 'vitest';
 import { authMock, timeEntryMock, userProfileMock } from '../../../__tests__/mockStates';
