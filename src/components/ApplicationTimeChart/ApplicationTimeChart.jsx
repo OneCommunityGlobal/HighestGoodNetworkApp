@@ -142,7 +142,7 @@ function ApplicationTimeChart() {
       .map(item => ({
         role: item.role,
         avgTime: item.timeToApplyMinutes || (item.timeToApply ? item.timeToApply / 60 : 0),
-        count: item.totalApplications || 1,
+        count: item.totalApplications || 0,
         formattedTime:
           item.timeToApplyFormatted ||
           `${Math.round((item.timeToApplyMinutes || 0) * 10) / 10} min`,
