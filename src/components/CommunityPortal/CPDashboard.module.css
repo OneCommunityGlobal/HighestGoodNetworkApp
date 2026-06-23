@@ -6,6 +6,10 @@
   padding: 0;
 }
 
+:global(body.dark-mode-body) {
+  background: #1b2a41;
+}
+
 .dashboardContainer {
   padding: 40px 10px;
   margin: 0 auto;
@@ -470,6 +474,10 @@
   background: #2b3e59;
 }
 
+.darkMain .sectionTitle {
+  color: #f5f6f7;
+}
+
 .eventsHeader {
   display: flex;
   align-items: center;
@@ -540,6 +548,10 @@
 
 .darkEventCard {
   background: #1b2a41;
+}
+
+.darkEventCard .eventTitle {
+  color: #f5f6f7;
 }
 
 .eventCardImgContainer {

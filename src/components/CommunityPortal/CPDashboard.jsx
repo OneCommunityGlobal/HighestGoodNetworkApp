@@ -97,6 +97,19 @@ export function CPDashboard() {
     fetchEvents();
   }, []);
 
+  // Apply dark mode to the page body so the area behind the dashboard isn't white
+  useEffect(() => {
+    if (darkMode) {
+      document.body.classList.add('dark-mode-body');
+    } else {
+      document.body.classList.remove('dark-mode-body');
+    }
+
+    return () => {
+      document.body.classList.remove('dark-mode-body');
+    };
+  }, [darkMode]);
+
   useEffect(() => {
     const handler = setTimeout(() => {
       setSearchQuery(searchInput.trim());
@@ -252,7 +265,7 @@ export function CPDashboard() {
 
   if (isLoading) {
     return (
-      <Container className={styles.dashboardContainer}>
+      <Container className={`${styles.dashboardContainer} ${darkMode ? styles.darkContainer : ''}`}>
         <p>Loading events...</p>
       </Container>
     );
@@ -260,7 +273,7 @@ export function CPDashboard() {
 
   if (error) {
     return (
-      <Container className={styles.dashboardContainer}>
+      <Container className={`${styles.dashboardContainer} ${darkMode ? styles.darkContainer : ''}`}>
         <p className={styles.errorText}>{error}</p>
       </Container>
     );
@@ -313,7 +326,7 @@ export function CPDashboard() {
   }
 
   return (
-    <Container className={styles.dashboardContainer}>
+    <Container className={`${styles.dashboardContainer} ${darkMode ? styles.darkContainer : ''}`}>
       <header className={`${styles.dashboardHeader} ${darkMode ? styles.darkHeader : ''}`}>
         <h1>All Events</h1>
       </header>
