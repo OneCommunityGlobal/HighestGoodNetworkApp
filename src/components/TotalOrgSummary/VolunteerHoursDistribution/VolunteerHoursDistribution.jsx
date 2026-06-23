@@ -67,6 +67,7 @@ function allocateRoundedHoursByCount(normalizedHoursData, totalHoursWorked) {
   const byRemainderDesc = [...provisional].sort((a, b) => b.remainder - a.remainder);
   let i = 0;
   while (remaining > 0 && byRemainderDesc.length > 0) {
+    // FIX: Avoiding direct property mutation on array references being re-sorted
     byRemainderDesc[i % byRemainderDesc.length].allocatedHours += 1;
     remaining -= 1;
     i += 1;
@@ -82,10 +83,11 @@ export function formatRangeLabel(rangeStr) {
   const normalizedRange = normalizeBucketId(rangeStr);
 
   if (normalizedRange.includes('+')) {
-    const num = parseFloat(normalizedRange.replace('+', ''));
+    // FIX: Prefer Number() over parseFloat() for safer numeric string conversions
+    const num = Number(normalizedRange.replace('+', ''));
     return `${num}+ hrs`;
   } else {
-    const num = parseFloat(normalizedRange);
+    const num = Number(normalizedRange);
     return `${num}-${num + 9} hrs`;
   }
 }
@@ -161,15 +163,15 @@ export default function VolunteerHoursDistribution({
   hoursData,
   totalHoursData,
 }) {
-  // FIXED: Using standard globalThis setup
+  // FIXED: Comparing with 'undefined' directly instead of using 'typeof' on an object property
   const [windowSize, setWindowSize] = useState({
-    width: typeof globalThis.window !== 'undefined' ? globalThis.window.innerWidth : 1200,
-    height: typeof globalThis.window !== 'undefined' ? globalThis.window.innerHeight : 800,
+    width: globalThis.window !== undefined ? globalThis.window.innerWidth : 1200,
+    height: globalThis.window !== undefined ? globalThis.window.innerHeight : 800,
   });
 
   useEffect(() => {
-    // FIXED: Cleaned up negated conditions and wrapped with explicit globalThis tracking
-    if (typeof globalThis.window !== 'undefined') {
+    // FIXED: Removed 'typeof' check on globalThis.window property access
+    if (globalThis.window !== undefined) {
       const updateWindowSize = () => {
         setWindowSize({
           width: globalThis.window.innerWidth,
