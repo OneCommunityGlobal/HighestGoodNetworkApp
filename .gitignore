@@ -2,7 +2,6 @@
 
 # dependencies
 /node_modules
-package-lock.json
 # testing
 /coverage
 *.code-snippets
@@ -31,4 +30,6 @@ yarn-error.log*
 
 **\ **
 
-/public/tinymce/
+/public/tinymce/Community/
+Community/
+public/tinymce/

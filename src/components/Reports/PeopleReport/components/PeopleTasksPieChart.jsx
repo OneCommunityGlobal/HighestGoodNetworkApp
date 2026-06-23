@@ -14,7 +14,6 @@ export function PeopleTasksPieChart({ darkMode }) {
     showTasksPieChart,
     showProjectsPieChart,
     tasksLegend,
-    // showViewAllTasksButton,
     hoursLoggedToProjectsOnly,
   } = useSelector(peopleTasksPieChartViewData);
 
@@ -49,24 +48,23 @@ export function PeopleTasksPieChart({ darkMode }) {
     <div className={`${styles['people-pie-charts-wrapper']} ${darkMode ? styles['text-light'] : ''}`}>
       {hoursLoggedToProjectsOnly.length !== 0 && (
         <ReportPage.ReportBlock darkMode={darkMode} style={{ overflow: 'visible' }} className={styles['pie-no-scroll']}>
-        <h5 className={styles['people-pie-charts-header']}>Time Logged to Projects/Non-tasks</h5>
-        {/* <div style={{ width: '100%', minHeight: projectsHeight }}> */}
-        <div style={{ width: '100%' }}>
-        <div className={styles['people-report-pie-wrapper']}>
-          <UserProjectD3PieChart
-            pieChartId="projectsPieChart"
-            darkMode={darkMode}
-            projectsData={hoursLoggedToProjectsOnly}
-            tasksData={tasksLegend}
-          />
+          <h5 className={styles['people-pie-charts-header']}>Time Logged to Projects/Non-tasks</h5>
+          <div style={{ width: '100%' }}>
+            <div className={styles['people-report-pie-wrapper']}>
+              <UserProjectD3PieChart
+                pieChartId="projectsPieChart"
+                darkMode={darkMode}
+                projectsData={hoursLoggedToProjectsOnly}
+                tasksData={tasksLegend}
+              />
+            </div>
           </div>
-        </div>
-      </ReportPage.ReportBlock>
+        </ReportPage.ReportBlock>
       )}
       {showTasksPieChart && (
         <ReportPage.ReportBlock darkMode={darkMode} style={{ overflow: 'visible' }} className={styles['pie-no-scroll']}>
-        <h5 className={styles['people-pie-charts-header']}>Tasks With Completed Hours</h5>
-        <div style={{ width: '100%', minHeight: tasksHeight }}>
+          <h5 className={styles['people-pie-charts-header']}>Tasks With Completed Hours</h5>
+          <div style={{ width: '100%', minHeight: tasksHeight }}>
           <PieChart
             pieChartId="tasksPieChart"
             darkMode={darkMode}
