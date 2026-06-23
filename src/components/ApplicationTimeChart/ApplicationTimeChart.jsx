@@ -1,6 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { v4 as uuidv4 } from 'uuid';
 import ReactTooltip from 'react-tooltip';
 import { ENDPOINTS } from '../../utils/URL';
 import httpService from '../../services/httpService';
@@ -262,7 +261,7 @@ function ApplicationTimeChart() {
                 <div className={styles.yAxis}>
                   {processedData.map(item => (
                     <div
-                      key={uuidv4()}
+                      key={item.role}
                       className={`${styles.yAxisItem} ${darkMode ? styles.darkMode : ''}`}
                       style={{ height: `${100 / processedData.length}%` }}
                     >
