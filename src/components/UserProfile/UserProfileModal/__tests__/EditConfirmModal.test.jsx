@@ -1,7 +1,7 @@
 import React from 'react';
 import { screen, render, fireEvent } from '@testing-library/react';
 import { userProfileMock } from '../../../../__tests__/mockStates';
-import { configureStore } from 'redux-mock-store';
+import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import EditConfirmModal from '../EditConfirmModal';
 

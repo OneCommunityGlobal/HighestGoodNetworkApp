@@ -436,9 +436,6 @@ export function CPDashboard() {
               {/* Branches Filter */}
               <div className={styles.filterItem}>
                 <label htmlFor="branches">Branches</label>
-                <select id="branches">
-                  <option>Select branches</option>
-                </select>
                 <Input
                   type="select"
                   id="branches"
@@ -452,9 +449,6 @@ export function CPDashboard() {
               {/* Themes Filter */}
               <div className={styles.filterItem}>
                 <label htmlFor="themes">Themes</label>
-                <select id="themes">
-                  <option>Select themes</option>
-                </select>
                 <Input
                   type="select"
                   id="themes"
@@ -468,9 +462,6 @@ export function CPDashboard() {
               {/* Categories Filter */}
               <div className={styles.filterItem}>
                 <label htmlFor="categories">Categories</label>
-                <select id="categories">
-                  <option>Select categories</option>
-                </select>
                 <Input
                   type="select"
                   id="categories"

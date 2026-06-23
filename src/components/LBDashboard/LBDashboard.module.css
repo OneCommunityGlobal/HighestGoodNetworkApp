@@ -69,12 +69,34 @@ body {
   background: #fff;
   border: 1px solid #ece7f4;
   border-radius: 14px;
-  padding: 14px 16px;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 12px 16px;
-  align-items: center;
+  padding: 16px;
   margin: 0 15px 18px;
+}
+
+.filterGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.metricSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-top: 12px;
+  border-top: 1px solid #ece7f4;
+}
+
+.darkFilterBar .metricSection {
+  border-top-color: #34495E;
 }
 
 @media (max-width: 640px) {
@@ -90,10 +112,51 @@ body {
 .filterLabel {
   font-size: 12px;
   color: #4a4a4a;
+  font-weight: 600;
 }
 
 .darkFilterLabel {
   color: #b0b0b0;
+}
+
+.dateInput,
+.selectInput {
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  background: #fff;
+}
+
+.dateInput:focus,
+.selectInput:focus {
+  outline: none;
+  border-color: #6a4ff7;
+}
+
+.darkDateInput,
+.darkSelectInput {
+  background: #34495E;
+  border-color: #4A5F7F;
+  color: #fff;
+}
+
+.darkSelectInput option {
+  background: #34495E;
+  color: #fff;
+}
+
+.selectInput {
+  appearance: none;
+  background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"12\" height=\"12\" viewBox=\"0 0 12 12\"><path fill=\"%23333\" d=\"M6 9L1 4h10z\"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 32px;
+}
+
+.darkSelectInput {
+  background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"12\" height=\"12\" viewBox=\"0 0 12 12\"><path fill=\"%23fff\" d=\"M6 9L1 4h10z\"/></svg>');
 }
 
 .categoryGroup {
@@ -104,8 +167,8 @@ body {
 }
 
 .filterBtn {
-  background: #6a4ff7 !important;
-  border-color: #6a4ff7 !important;
+  background: #5cb85c !important;
+  border-color: #5cb85c !important;
   color: #fff !important;
   border-radius: 16px;
   padding: 6px 14px;
@@ -114,6 +177,8 @@ body {
 }
 
 .filterBtn:hover {
+  background: #4cae4c !important;
+  border-color: #4cae4c !important;
   color: #fff !important;
 }
 
@@ -128,17 +193,32 @@ body {
   color: #fff !important;
 }
 
+.darkFilterBtn {
+  background: #5cb85c !important;
+  border-color: #5cb85c !important;
+}
+
+.darkFilterBtn:hover {
+  background: #4cae4c !important;
+  border-color: #4cae4c !important;
+}
+
+.darkFilterBtn.active {
+  background: #1e7e34 !important;
+  border-color: #1e7e34 !important;
+}
+
 .dd :global(.dropdown-toggle) {
-  background: #6a4ff7 !important;
-  border-color: #6a4ff7 !important;
+  background: #5cb85c !important;
+  border-color: #5cb85c !important;
   color: #fff !important;
   border-radius: 16px !important;
   padding: 6px 10px;
 }
 
 .dd :global(.dropdown-toggle:hover) {
-  background: #593dd8 !important;
-  border-color: #593dd8 !important;
+  background: #4cae4c !important;
+  border-color: #4cae4c !important;
   color: #fff !important;
 }
 
@@ -146,21 +226,24 @@ body {
 .dropdownMenu {
   border-radius: 10px;
   padding: 4px 0;
+  background: #fff;
 }
 
 .darkDropdownMenu {
-  background: #1c2541;
-  border-color: #225163;
+  background: #1c2541 !important;
+  border-color: #225163 !important;
 }
 
 .dropdownItem {
   font-size: 14px;
   padding: 6px 14px;
+  color: #333;
+  background: #fff;
 }
 
 .dropdownItem:hover {
-  background: #eae4fb;
-  color: #6a4ff7;
+  background: #eae4fb !important;
+  color: #6a4ff7 !important;
 }
 
 .dropdownActive {
@@ -168,8 +251,36 @@ body {
   color: #fff !important;
 }
 
+/* Dedicated active-button classes — used instead of compound selectors */
+.activeFilterBtn {
+  background: #115b22 !important;
+  border-color: #0a4b18 !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+}
+
+.darkActiveFilterBtn {
+  background: #115b22 !important;
+  border-color: #0a4b18 !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.25) !important;
+}
+
+.ddActive :global(.dropdown-toggle) {
+  background: #115b22 !important;
+  border-color: #0a4b18 !important;
+  color: #fff !important;
+}
+
+.ddActive :global(.dropdown-toggle:hover) {
+  background: #0d4720 !important;
+  border-color: #0d4720 !important;
+  color: #fff !important;
+}
+
 .currentMetric {
-  justify-self: end;
+  margin-left: auto;
   font-size: 14px;
 }
 
@@ -204,12 +315,23 @@ body {
   min-height: 220px;
 }
 
+.graphCardBody {
+  padding: 14px 22px 20px 6px;
+}
+
 .graphTitle {
   display: flex;
   align-items: center;
   justify-content: space-between;
   font-weight: 600;
+  font-size: 18px;
   margin-bottom: 8px;
+}
+
+.graphCanvas {
+  margin-left: -18px;
+  margin-right: -8px;
+  width: calc(100% + 26px);
 }
 
 .metricPill {
@@ -590,14 +712,15 @@ body {
 }
 
 .darkFilterBtn {
-  background: #3a506b !important;
-  border-color: #3a506b !important;
+  background: #5cb85c !important;
+  border-color: #5cb85c !important;
   color: #fff !important;
 }
 
 .active.darkFilterBtn {
-  background: #225163 !important;
-  border-color: #225163 !important;
+  background: #1e7e34 !important;
+  border-color: #1e7e34 !important;
+  color: #fff !important;
 }
 
 .darkDropdown {
@@ -607,12 +730,18 @@ body {
 }
 
 .darkDropdownItem {
-  color: #e1e1e1;
-  background: #1c2541;
+  color: #e1e1e1 !important;
+  background: #1c2541 !important;
 }
 
 .darkDropdownItem:hover {
-  background: #3a506b;
+  background: #3a506b !important;
+  color: #fff !important;
+}
+
+.darkDropdownItem.dropdownActive {
+  background: #6a4ff7 !important;
+  color: #fff !important;
 }
 
 .darkText {
@@ -659,6 +788,44 @@ body {
 .chartCard,
 .darkChartCard {
   box-shadow: 0 4px 16px rgb(28 37 65 / 25%);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .filterGrid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .metricSection {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .categoryGroup {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .filterBtn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .currentMetric {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .dashboardHeader {
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .title {
+    font-size: 20px;
+  }
 }
 
 /* Dark mode select dropdowns - remove double arrows and style properly */
