@@ -102,8 +102,6 @@ function buildChartData(hoursData, totalHoursData) {
   );
 
   const userData = hoursByBucket.map(range => {
-    // FALLBACK: If total hours is 0, visualizes chart layout by volunteer count
-    // so that the chart displays nicely instead of loading with empty 0 slices.
     const value = totalHoursWorked > 0 ? range.allocatedHours || 0 : range.count || 0;
     const denominator = totalHoursWorked > 0 ? totalAllocatedHours : totalVolunteers;
 
@@ -163,23 +161,25 @@ export default function VolunteerHoursDistribution({
   hoursData,
   totalHoursData,
 }) {
+  // FIXED: Using standard globalThis setup
   const [windowSize, setWindowSize] = useState({
-    width: typeof window !== 'undefined' ? window.innerWidth : 1200,
-    height: typeof window !== 'undefined' ? window.innerHeight : 800,
+    width: typeof globalThis.window !== 'undefined' ? globalThis.window.innerWidth : 1200,
+    height: typeof globalThis.window !== 'undefined' ? globalThis.window.innerHeight : 800,
   });
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    // FIXED: Cleaned up negated conditions and wrapped with explicit globalThis tracking
+    if (typeof globalThis.window !== 'undefined') {
+      const updateWindowSize = () => {
+        setWindowSize({
+          width: globalThis.window.innerWidth,
+          height: globalThis.window.innerHeight,
+        });
+      };
 
-    const updateWindowSize = () => {
-      setWindowSize({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
-    };
-
-    window.addEventListener('resize', updateWindowSize);
-    return () => window.removeEventListener('resize', updateWindowSize);
+      globalThis.window.addEventListener('resize', updateWindowSize);
+      return () => globalThis.window.removeEventListener('resize', updateWindowSize);
+    }
   }, []);
 
   if (isLoading) {
