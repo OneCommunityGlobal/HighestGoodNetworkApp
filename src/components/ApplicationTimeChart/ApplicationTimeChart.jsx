@@ -1,6 +1,7 @@
-import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
+import ReactTooltip from 'react-tooltip';
 import { ENDPOINTS } from '../../utils/URL';
 import httpService from '../../services/httpService';
 import { getAggregatedMockForChart } from './api';
@@ -26,16 +27,6 @@ function ApplicationTimeChart() {
   const [availableRoles, setAvailableRoles] = useState(['all']);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [tooltip, setTooltip] = useState({
-    visible: false,
-    x: 0,
-    y: 0,
-    role: '',
-    avgTime: 0,
-    count: 0,
-  });
-
-  const hideTimerRef = useRef(null);
 
   // Get dark mode state from Redux
   const darkMode = useSelector(state => state.theme?.darkMode || false);
@@ -164,47 +155,10 @@ function ApplicationTimeChart() {
 
   const maxTime = Math.max(...processedData.map(item => item.avgTime), 10);
 
-  // ── Tooltip handlers ──────────────────────────────────────────────────────
-  // Uses fixed positioning from clientX/Y so the tooltip is never clipped
-  // by overflow:visible parents or chart boundaries.
-
-  const handleMouseEnter = useCallback((e, item) => {
-    clearTimeout(hideTimerRef.current);
-    setTooltip({
-      visible: true,
-      x: e.clientX,
-      y: e.clientY,
-      role: item.role,
-      avgTime: Math.round(item.avgTime * 10) / 10,
-      count: item.count,
-    });
-  }, []);
-
-  const handleMouseMove = useCallback(e => {
-    setTooltip(prev => ({
-      ...prev,
-      x: e.clientX,
-      y: e.clientY,
-    }));
-  }, []);
-
-  const handleMouseLeave = useCallback(() => {
-    clearTimeout(hideTimerRef.current);
-    setTooltip(prev => ({ ...prev, visible: false }));
-  }, []);
-
-  // Tooltip position — keep inside viewport
-  const TOOLTIP_WIDTH = 200;
-  const TOOLTIP_HEIGHT = 90;
-  const OFFSET = 14;
-  const tooltipLeft =
-    tooltip.x + TOOLTIP_WIDTH + OFFSET > window.innerWidth
-      ? tooltip.x - TOOLTIP_WIDTH - OFFSET
-      : tooltip.x + OFFSET;
-  const tooltipTop = Math.min(
-    Math.max(tooltip.y - TOOLTIP_HEIGHT / 2, 8),
-    window.innerHeight - TOOLTIP_HEIGHT - 8,
-  );
+  useEffect(() => {
+    const t = setTimeout(() => ReactTooltip.rebuild(), 0);
+    return () => clearTimeout(t);
+  }, [processedData]);
 
   // ── Loading / Error states ────────────────────────────────────────────────
 
@@ -238,26 +192,52 @@ function ApplicationTimeChart() {
     );
   }
 
+  // Stable, unique id for this chart's tooltip (used for data-for on bars)
+  const tooltipId = 'application-time-chart-tooltip';
+
   return (
     <>
-      {/* ── Global tooltip — rendered via a portal-like fixed element ── */}
-      {tooltip.visible && (
-        <div
-          className={`${styles.tooltip} ${styles.tooltipVisible}`}
-          style={{ left: tooltipLeft, top: tooltipTop }}
-        >
-          <div className={styles.tooltipRole}>{tooltip.role}</div>
-          <div className={styles.tooltipDivider} />
-          <div className={styles.tooltipRow}>
-            <span className={styles.tooltipLabel}>Avg. Time</span>
-            <span className={styles.tooltipValue}>{tooltip.avgTime} min</span>
-          </div>
-          <div className={styles.tooltipRow}>
-            <span className={styles.tooltipLabel}>Applications</span>
-            <span className={styles.tooltipValue}>{tooltip.count}</span>
-          </div>
-        </div>
-      )}
+      <ReactTooltip
+        id={tooltipId}
+        type={darkMode ? 'dark' : 'light'}
+        effect="float"
+        border
+        borderColor={darkMode ? '#ffffff' : 'rgba(0, 0, 0, 0.12)'}
+        className={styles.tooltipOpaque}
+        getContent={dataTip => {
+          if (!dataTip) return null;
+          const { role, avgTime, count } = JSON.parse(dataTip) || {};
+          return (
+            <div className={styles.tooltipContent}>
+              <div className={styles.tooltipRole}>{role}</div>
+              <div
+                className={styles.tooltipDivider}
+                style={{
+                  backgroundColor: darkMode ? 'rgba(255, 255, 255, 0.18)' : 'rgba(0, 0, 0, 0.12)',
+                }}
+              />
+              <div className={styles.tooltipRow}>
+                <span
+                  className={styles.tooltipLabel}
+                  style={{ color: darkMode ? '#9ab0bb' : '#5f6368' }}
+                >
+                  Avg. Time
+                </span>
+                <span className={styles.tooltipValue}>{avgTime} min</span>
+              </div>
+              <div className={styles.tooltipRow}>
+                <span
+                  className={styles.tooltipLabel}
+                  style={{ color: darkMode ? '#9ab0bb' : '#5f6368' }}
+                >
+                  Total Applications
+                </span>
+                <span className={styles.tooltipValue}>{count}</span>
+              </div>
+            </div>
+          );
+        }}
+      />
 
       <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
         {/* Chart Container */}
@@ -267,7 +247,7 @@ function ApplicationTimeChart() {
           </h2>
 
           {/* Chart */}
-          <div className={styles.chartArea} onMouseLeave={handleMouseLeave}>
+          <div className={styles.chartArea}>
             {processedData.length > 0 ? (
               <>
                 {/* Grid Lines */}
@@ -319,25 +299,32 @@ function ApplicationTimeChart() {
 
                 {/* Bars */}
                 <div className={styles.bars}>
-                  {processedData.map(item => (
-                    <div
-                      key={uuidv4()}
-                      className={styles.barRow}
-                      style={{ height: `${100 / processedData.length}%` }}
-                    >
+                  {processedData.map(item => {
+                    const avgTimeRounded = Math.round(item.avgTime * 10) / 10;
+                    const tooltipContent = JSON.stringify({
+                      role: item.role,
+                      avgTime: avgTimeRounded,
+                      count: item.count,
+                    });
+                    return (
                       <div
-                        className={`${styles.bar} ${darkMode ? styles.darkMode : ''}`}
-                        style={{ width: `${(item.avgTime / maxTime) * 100}%` }}
-                        onMouseEnter={e => handleMouseEnter(e, item)}
-                        onMouseMove={handleMouseMove}
-                        onMouseLeave={handleMouseLeave}
+                        key={item.role}
+                        className={styles.barRow}
+                        style={{ height: `${100 / processedData.length}%` }}
+                        data-for={tooltipId}
+                        data-tip={tooltipContent}
                       >
-                        <div className={`${styles.dataLabel} ${darkMode ? styles.darkMode : ''}`}>
-                          {item.formattedTime || `${Math.round(item.avgTime * 10) / 10} min`}
+                        <div
+                          className={`${styles.bar} ${darkMode ? styles.darkMode : ''}`}
+                          style={{ width: `${(item.avgTime / maxTime) * 100}%` }}
+                        >
+                          <div className={`${styles.dataLabel} ${darkMode ? styles.darkMode : ''}`}>
+                            {item.formattedTime || `${avgTimeRounded} min`}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
 
                 {/* X-axis Label */}

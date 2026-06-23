@@ -574,43 +574,20 @@
   }
 }
 
-/* ── Tooltip ── */
-
-.tooltip {
-  position: fixed;
-  z-index: 9999;
-  background-color: #1e2730;
-  color: #fff;
-  border-radius: 8px;
-  padding: 10px 14px;
-  pointer-events: none;
-  min-width: 180px;
-  font-family: Arial, sans-serif;
+.tooltipContent {
   font-size: 13px;
-  border: 1px solid rgb(255 255 255 / 10%);
-  opacity: 0;
-  transform: translateY(6px);
-  transition:
-    opacity 0.18s ease,
-    transform 0.18s ease;
-}
-
-.tooltipVisible {
-  opacity: 1;
-  transform: translateY(0);
+  min-width: 180px;
 }
 
 .tooltipRole {
   font-size: 13px;
   font-weight: 700;
-  color: #fff;
   margin-bottom: 6px;
   white-space: nowrap;
 }
 
 .tooltipDivider {
   height: 1px;
-  background-color: rgb(255 255 255 / 18%);
   margin-bottom: 8px;
 }
 
@@ -628,13 +605,11 @@
 
 .tooltipLabel {
   font-size: 12px;
-  color: #9ab0bb;
   white-space: nowrap;
 }
 
 .tooltipValue {
   font-size: 13px;
   font-weight: 600;
-  color: #fff;
   white-space: nowrap;
 }
