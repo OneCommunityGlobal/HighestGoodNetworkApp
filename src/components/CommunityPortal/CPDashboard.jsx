@@ -337,7 +337,6 @@ function CPDashboard() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [failedLogos, setFailedLogos] = useState(new Set());
-  const darkMode = useSelector(state => state.theme.darkMode);
   const branchOptions = [{ value: '', label: 'Select branches', isDisabled: true }];
   const themeOptions = [{ value: '', label: 'Select themes', isDisabled: true }];
   const categoryOptions = [{ value: '', label: 'Select categories', isDisabled: true }];
