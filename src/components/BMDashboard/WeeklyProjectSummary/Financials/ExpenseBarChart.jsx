@@ -351,6 +351,14 @@ export default function ExpenseBarChart({ darkMode }) {
     boxSizing: 'border-box',
     colorScheme: darkMode ? 'dark' : 'light',
   };
+  // Reset all the filters
+  const resetFilters = () => {
+    setProjectId('');
+    setCategoryFilter('ALL');
+    setStartDate('');
+    setEndDate('');
+    setErrorMessage('');
+  };
 
   useEffect(() => {
     try {
@@ -434,6 +442,25 @@ export default function ExpenseBarChart({ darkMode }) {
             onChange={e => setEndDate(e.target.value)}
             style={inputStyle}
           />
+        </div>
+        {/* Reset Filters button */}
+        <div style={{ minWidth: '120px' }}>
+          <button
+            type="button"
+            onClick={resetFilters}
+            style={{
+              padding: '0.5rem 1.2em',
+              borderRadius: '6px',
+              border: '1px solid #d9d2d2ff',
+              background: '#dededeff',
+              cursor: 'pointer',
+              fontSize: '0.95rem',
+            }}
+            aria-label="Reset filters"
+            title="Reset filters"
+          >
+            Reset Filter
+          </button>
         </div>
       </div>
 
