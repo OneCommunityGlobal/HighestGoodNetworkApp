@@ -26,7 +26,7 @@ describe('VolunteerHoursDistribution wrapper', () => {
       { _id: '20', count: 3 },
     ];
     const totalHoursData = { current: 1234 };
-    
+
     render(
       <VolunteerHoursDistribution
         isLoading={false}
@@ -43,7 +43,7 @@ describe('VolunteerHoursDistribution wrapper', () => {
 
     // Verify computeDistribution now allocates hours to buckets so slices add up to total hours
     const computed = computeDistribution(hoursData, totalHoursData);
-    
+
     // FIXED: Assert that names in userData match the updated formatRangeLabel output
     expect(computed).toEqual({
       userData: [
