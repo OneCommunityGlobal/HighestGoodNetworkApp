@@ -26,26 +26,28 @@ import PropTypes from 'prop-types';
 
 // Helper component to render blue square metadata (manual assignment and edit history)
 const BlueSquareMetadata = ({ blueSquareData, fontColor, darkMode }) => {
-  const hasManualAssignment = blueSquareData?.manullyAssigned;
   const hasEditHistory = blueSquareData?.editedBy && blueSquareData.editedBy.length > 0;
-  
-  if (!hasManualAssignment && !hasEditHistory) return null;
+
+  // Determine who assigned the blue square
+  const getAssignedBy = () => {
+    if (blueSquareData?.manuallyAssigned && blueSquareData?.manuallyAssignedBy?.firstName) {
+      return `${blueSquareData.manuallyAssignedBy.firstName} ${blueSquareData.manuallyAssignedBy.lastName}`;
+    }
+    if (!blueSquareData?.manuallyAssigned) {
+      return 'HGN System';
+    }
+    return 'Admin User';
+  };
 
   return (
     <>
-      {hasManualAssignment && (
-        <FormGroup>
-          <Label className={fontColor} for="manullyAssigned">
-            <strong>Manual Assignment</strong>
-          </Label>
-          <div className={fontColor}>
-            {blueSquareData?.manullyAssignedBy?.firstName && blueSquareData?.manullyAssignedBy?.lastName
-              ? `${blueSquareData.manullyAssignedBy.firstName} ${blueSquareData.manullyAssignedBy.lastName}`
-              : 'Admin User'}
-          </div>
-        </FormGroup>
-      )}
-      
+      <FormGroup>
+        <Label className={fontColor}>
+          <strong>Assigned by:</strong>
+        </Label>
+        <div className={fontColor}>{getAssignedBy()}</div>
+      </FormGroup>
+
       {hasEditHistory && (
         <FormGroup>
           <div style={{ textAlign: 'right', fontSize: '0.9em', color: darkMode ? '#ccc' : '#666' }}>
@@ -67,8 +69,8 @@ const BlueSquareMetadata = ({ blueSquareData, fontColor, darkMode }) => {
 
 BlueSquareMetadata.propTypes = {
   blueSquareData: PropTypes.shape({
-    manullyAssigned: PropTypes.bool,
-    manullyAssignedBy: PropTypes.shape({
+    manuallyAssigned: PropTypes.bool,
+    manuallyAssignedBy: PropTypes.shape({
       firstName: PropTypes.string,
       lastName: PropTypes.string,
     }),

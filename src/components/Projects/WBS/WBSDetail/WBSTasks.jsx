@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { connect, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useHistory } from 'react-router-dom';
 import { NavItem, Button } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
 import hasPermission from '~/utils/permissions';
@@ -56,6 +56,24 @@ function WBSTasks(props) {
   const [pageLoadTime, setPageLoadTime] = useState(Date.now());
   const [copiedTask, setCopiedTask] = useState(null);
   const myRef = useRef(null);
+
+  const location = useLocation();
+  const history = useHistory();
+  const taskSelectionMode = location.state?.taskSelectionMode || false;
+  const selectionReturnPath = location.state?.returnPath || '/bmdashboard/AddNewTeam';
+
+  const handleSelectTask = task => {
+    history.push(selectionReturnPath, {
+      selectedTask: {
+        id: task._id,
+        name: task.taskName,
+        projectId,
+        projectName,
+        wbsId,
+        wbsName: decodeURIComponent(wbsName),
+      },
+    });
+  };
 
   // Pass projectId to the hook so it can watch for category changes
   const { tasks, isLoading, refresh } = useFetchWbsTasks(wbsId, projectId);
@@ -247,6 +265,11 @@ function WBSTasks(props) {
       <ReactTooltip delayShow={300} />
       <div className={`${styles['container-tasks']} m-0 p-4`}>
         {renderBreadcrumb()}
+        {taskSelectionMode && (
+          <div className="alert alert-success mb-2" role="alert">
+            <strong>Task Selection Mode:</strong> Click <strong>Select</strong> next to any task to add it to your team.
+          </div>
+        )}
         {renderButtonGroup()}
         <div className={`${styles['tasks-table']} mb-5`}>
           <table
@@ -300,6 +323,8 @@ function WBSTasks(props) {
                   pageLoadTime={pageLoadTime}
                   setIsLoading={() => {}}
                   darkMode={darkMode}
+                  taskSelectionMode={taskSelectionMode}
+                  onSelectTask={handleSelectTask}
                 />
               ))}
             </tbody>

@@ -135,6 +135,7 @@ export const ENDPOINTS = {
   GET_CURRENT_WARNINGS: () => `${APIEndpoint}/currentWarnings`,
   POST_NEW_WARNING: () => `${APIEndpoint}/currentWarnings`,
   UPDATE_WARNING_DESCRIPTION: warningId => `${APIEndpoint}/currentWarnings/${warningId}`,
+  REORDER_WARNING_DESCRIPTIONS: () => `${APIEndpoint}/currentWarnings`,
   DELETE_WARNING_DESCRIPTION: warningId => `${APIEndpoint}/currentWarnings/${warningId}`,
   EDIT_WARNING_DESCRIPTION: () => `${APIEndpoint}/currentWarnings/edit`,
   GET_WARNINGS_BY_USER_ID: userId => `${APIEndpoint}/warnings/${userId}`,
@@ -375,6 +376,8 @@ export const ENDPOINTS = {
   BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`,
   BM_UPDATE_MATERIAL_STATUS: `${APIEndpoint}/bm/updateMaterialStatus`,
   BM_MATERIAL_STOCK_OUT_RISK: `${APIEndpoint}/bm/materials/stock-out-risk`,
+  BM_EXPENDITURE_PROJECTS: `${APIEndpoint}/bm/expenditure/projects`,
+  BM_EXPENDITURE_PIE: projectId => `${APIEndpoint}/bm/expenditure/${projectId}/pie`,
   BM_UPDATE_REUSABLE: `${APIEndpoint}/bm/updateReusableRecord`,
   BM_UPDATE_REUSABLE_BULK: `${APIEndpoint}/bm/updateReusableRecordBulk`,
   BM_TOOL_TYPES: `${APIEndpoint}/bm/invtypes/tools`,
@@ -520,12 +523,27 @@ export const ENDPOINTS = {
   DELETE_QUESTION: (formId, questionIndex) =>
     `${APIEndpoint}/jobforms/${formId}/questions/${questionIndex}`,
   REORDER_QUESTIONS: formId => `${APIEndpoint}/jobforms/${formId}/questions/reorder`,
+  DELETE_JOB_FORM: formId => `${APIEndpoint}/jobforms/${formId}`,
+  IMPORT_QUESTIONS: formId => `${APIEndpoint}/jobforms/${formId}/import-questions`,
+
+  // Question Sets APIs
+  QUESTION_SETS: `${APIEndpoint}/question-sets`,
+  QUESTION_SET_BY_ID: id => `${APIEndpoint}/question-sets/${id}`,
+  QUESTION_SETS_BY_CATEGORY: category => `${APIEndpoint}/question-sets/category/${category}`,
+  CLONE_QUESTION_SET: id => `${APIEndpoint}/question-sets/${id}/clone`,
 
   GET_ALL_TEMPLATES: `${APIEndpoint}/templates`,
   CREATE_TEMPLATE: `${APIEndpoint}/templates`,
   GET_TEMPLATE_BY_ID: id => `${APIEndpoint}/templates/${id}`,
   UPDATE_TEMPLATE: id => `${APIEndpoint}/templates/${id}`,
   DELETE_TEMPLATE: id => `${APIEndpoint}/templates/${id}`,
+
+  // Email Template endpoints
+  EMAIL_TEMPLATES: `${APIEndpoint}/email-templates`,
+  EMAIL_TEMPLATE_BY_ID: id => `${APIEndpoint}/email-templates/${id}`,
+  EMAIL_TEMPLATE_PREVIEW: id => `${APIEndpoint}/email-templates/${id}/preview`,
+  EMAIL_TEMPLATE_VALIDATE: id => `${APIEndpoint}/email-templates/${id}/validate`,
+  // Removed: Template sending is handled by emailController endpoints after processing variables client-side
 
   JOB_NOTIFICATION_LIST: `${APIEndpoint}/job-notification-list/`,
 
