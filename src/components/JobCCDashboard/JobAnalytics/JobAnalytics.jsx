@@ -798,24 +798,24 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
   );
 
   return (
-    <div className={styles['page']}>
-      <header className={styles['header']}>
-        <h2 className={styles['title']}>
+    <div className={styles.page}>
+      <header className={styles.header}>
+        <h2 className={styles.title}>
           Job Analytics
           {selectedDevice && (
-            <span className={styles['device-badge']}>
+            <span className={styles.deviceBadge}>
               {React.createElement(DEVICE_ICONS[selectedDevice] || Monitor, { size: 16 })}
               {selectedDevice}
             </span>
           )}
         </h2>
         <button
-          className={`${styles['btn']} ${styles['btn-primary']}`}
+          className={styles.refreshButton}
           onClick={handleRefresh}
           disabled={loading}
           title="Refresh data and reset device filter"
         >
-          <RefreshCw className={loading ? styles['spin'] : ''} size={16} />
+          <RefreshCw className={loading ? styles.refreshLoader : ''} size={16} />
           <span>Refresh</span>
         </button>
       </header>

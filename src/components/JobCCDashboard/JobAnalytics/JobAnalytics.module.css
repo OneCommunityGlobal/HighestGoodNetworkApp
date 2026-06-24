@@ -1,16 +1,5 @@
 /* stylelint-disable */
 
-/* ======================== ROOT PAGE ======================== */
-.page {
-  min-height: 100vh;
-  padding: 24px;
-  padding-right: 32px;
-  background-color: #f9fafb;
-  color: #111827;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-/* Light Theme Defaults */
 :root {
   --bg: #f9fafb;
   --fg: #111827;
@@ -44,44 +33,92 @@
   --grid-stroke: #374151;
 }
 
-/* ======================== HEADER ======================== */
+.page {
+  min-height: 100vh;
+  padding-inline: 1.5rem;
+}
+
 .header {
-  max-width: 1600px;
-  margin: 0 auto 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 16px;
-  overflow: visible;
-  box-sizing: border-box;
   width: 100%;
+  margin-bottom: 1.5rem;
+
+  .title {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--fg);
+  }
+
+  .deviceBadge {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.7rem;
+    font-weight: 500;
+    background: var(--primary);
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 999px;
+  }
+
+  .refreshButton {
+    display: flex;
+    align-items: center;
+    column-gap: 0.5rem;
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--primary);
+    font-size: 0.8rem;
+    color: #fff;
+    box-shadow: 0 6px 14px rgb(59 130 246 / 25%);
+    box-shadow: 0 6px 14px rgb(59 130 246 / 25%);
+    transition: all 0.2s ease;
+  }
+
+  .refreshButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .refreshButton:hover:not(:disabled) {
+   transform: translateY(-1px);
+  }
+
+  .refreshLoader {
+    animation: spin 1s linear infinite;
+  }  
 }
 
+@media screen and (min-width: 768px) {
+  .header {
+    .title {
+      font-size: 1.8rem;
+    }
 
-.title {
-  font-size: 2rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 12px;
+    .deviceBadge {
+      font-size: 0.8rem;
+    }
+
+    .refreshButton {
+      font-size: 1rem;
+    }
+  }
 }
 
-/* Device badge next to title */
-.device-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  background: var(--primary);
-  color: #fff;
-  padding: 4px 12px;
-  border-radius: 999px;
-  letter-spacing: 0;
-  animation: badge-in 0.2s ease;
+/* spin animation for refresh button's icon */
+@keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
 }
+
+/* ======================== HEADER ======================== */
 
 @keyframes badge-in {
   from {
@@ -95,59 +132,7 @@
   }
 }
 
-/* Buttons / Inputs */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
-  border-radius: 8px;
-  justify-content: center;
-  font-size: 0.875rem;
-  font-weight: 600;
-  border: 1px solid transparent;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
 
-
-.btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.btn-primary {
-  background: var(--primary);
-  color: #fff;
-  box-shadow: 0 6px 14px rgb(59 130 246 / 25%);
-  box-shadow: 0 6px 14px rgb(59 130 246 / 25%);
-}
-
-.btn-primary:hover:not(:disabled) {
-  transform: translateY(-1px);
-}
-
-.btn-ghost {
-  background: var(--card);
-  color: var(--fg);
-  border: 1px solid var(--card-border);
-}
-
-.btn-ghost:hover:not(:disabled) {
-  box-shadow: 0 6px 14px rgb(0 0 0 / 8%);
-  transform: translateY(-1px);
-}
-
-.btn-link {
-  color: var(--danger);
-  border: none;
-  background: none;
-  padding: 0;
-}
-
-.darkMode .btnLink {
-  color: #f87171;
-}
 
 /* ======================== INPUTS ======================== */
 .input {
@@ -191,17 +176,6 @@
   align-items: center;
   justify-content: center;
   background-color: red!;
-}
-
-/* Spin animation for refresh icon */
-.spin {
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
 }
 
 /* Loading UI */
@@ -304,7 +278,6 @@
   display: flex;
   flex-direction: column;
 }
-
 
 .label {
   display: block;
