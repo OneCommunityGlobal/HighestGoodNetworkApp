@@ -179,6 +179,20 @@
   filter: invert(1);
 }
 
+.datePicker {
+  padding: 10px 14px;
+  border-radius: 8px;
+  color: #111827;
+  font-size: 0.875rem;
+}
+
+.react-datepicker__close-icon::after {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: red!;
+}
+
 /* Spin animation for refresh icon */
 .spin {
   animation: spin 1s linear infinite;
@@ -313,13 +327,14 @@
 
 .dates-row {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 8px;
 }
 
 
 .to {
   color: #6b7280;
+  margin-inline: 8px;
 }
 
 .darkMode .to {
@@ -672,3 +687,10 @@
 .grid-stroke line {
   stroke: var(--grid-stroke) !important;
 }
+
+/* .calendar {
+  .react-datepicker__navigation-icon {
+    background-color: red;
+    color: blue;
+  }
+} */

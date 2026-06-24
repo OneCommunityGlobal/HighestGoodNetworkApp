@@ -40,6 +40,8 @@ import {
 import styles from './JobAnalytics.module.css';
 import hasPermission from '../../../utils/permissions';
 import { ENDPOINTS } from '../../../utils/URL';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 const ROLE_OPTIONS = [
   'All Roles',
@@ -150,6 +152,8 @@ function useMediaQuery(query) {
   }, [query]);
   return matches;
 }
+
+const toIsoDate = d => d.toISOString().split('T')[0];
 
 // ======================== API SERVICE ========================
 // ======================== API SERVICE ========================
@@ -598,10 +602,48 @@ function DateRangeSelector({ dateRange, setDateRange, comparisonPeriod, setCompa
           </div>
         </div>
 
-        <div className={styles['selector-col']}>
+        <div className={''}>
           <label className={styles['label']}>Custom Date Range</label>
           <div className={styles['dates-row']}>
-            <input
+            <DatePicker
+              selected={dateRange?.start ? new Date(dateRange.start) : null}
+              onChange={date => {
+                setDateRange({
+                  ...dateRange,
+                  start: date ? toIsoDate(date) : '',
+                });
+                setActive(null);
+              }}
+              selectsStart
+              startDate={dateRange?.start || null}
+              dateFormat="yyyy-MM-dd"
+              isClearable
+              placeholderText="Start date"
+              className={styles.input}
+              // wrapperClassName={styles.datePicker}
+              // calendarClassName={styles.calendar}
+            />
+            <span className={styles['to']}>to</span>
+            <DatePicker
+              selected={dateRange?.end ? new Date(dateRange.end) : null}
+              onChange={date => {
+                setDateRange({
+                  ...dateRange,
+                  end: date ? toIsoDate(date) : '',
+                });
+                setActive(null);
+              }}
+              selectsEnd
+              endDate={dateRange?.end || null}
+              dateFormat="yyyy-MM-dd"
+              minDate={dateRange?.start ? new Date(dateRange.start) : undefined}
+              isClearable
+              placeholderText="End date"
+              className={styles.input}
+              // wrapperClassName={styles.datePicker}
+              // calendarClassName={styles.calendar}
+            />
+            {/* <input
               type="date"
               className={styles['input']}
               value={dateRange?.start || ''}
@@ -619,7 +661,7 @@ function DateRangeSelector({ dateRange, setDateRange, comparisonPeriod, setCompa
                 setDateRange({ ...dateRange, end: e.target.value });
                 setActive(null);
               }}
-            />
+            /> */}
           </div>
         </div>
 
