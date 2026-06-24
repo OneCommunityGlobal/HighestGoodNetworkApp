@@ -226,8 +226,6 @@ export default function ToolStatusDonutChart() {
   let innerRadius;
   let outerRadius;
   let chartHeight;
-  const isSmall = windowWidth <= 768;
-
   if (windowWidth <= 375) {
     // Small phones (iPhone SE, iPhone 12 mini)
     innerRadius = 30;
@@ -261,36 +259,6 @@ export default function ToolStatusDonutChart() {
   }
 
   const wrapperClass = `${styles.toolDonutWrapper} ${darkMode ? styles.toolDonutWrapperDark : ''}`;
-  // Gradient responsive margins scaling
-  const getChartMargins = () => {
-    if (windowWidth <= 375) {
-      return { top: 15, bottom: 15, left: 15, right: 15 };
-    } else if (windowWidth <= 428) {
-      return { top: 18, bottom: 18, left: 18, right: 18 };
-    } else if (windowWidth <= 480) {
-      return { top: 19, bottom: 19, left: 19, right: 19 };
-    } else if (windowWidth <= 768) {
-      return { top: 20, bottom: 20, left: 20, right: 20 };
-    } else if (windowWidth <= 1024) {
-      return { top: 25, bottom: 25, left: 30, right: 30 };
-    }
-    return { top: 30, bottom: 30, left: 40, right: 40 };
-  };
-
-  // Gradient responsive font size for center text scaling
-  const getCenterTextFontSize = () => {
-    if (windowWidth <= 375) {
-      return 8;
-    } else if (windowWidth <= 428) {
-      return 9;
-    } else if (windowWidth <= 480) {
-      return 9.5;
-    } else if (windowWidth <= 768) {
-      return 10;
-    } else if (windowWidth <= 1024) {
-      return 12;
-    }
-    return 14;
   };
 
   return (

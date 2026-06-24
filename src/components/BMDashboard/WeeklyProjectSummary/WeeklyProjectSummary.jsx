@@ -22,7 +22,6 @@ import CostVarianceTrendGraph from './Financials/CostVarianceTrendGraph';
 import CostBreakDown from './Financials/CostBreakDown/CostBreakDown';
 import FinancialsTrackingSection from './ExpenditureChart/FinancialsTrackingSection';
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
-import EmbedInteractiveMap from '../InteractiveMap/EmbedInteractiveMap';
 import InteractiveMap from '../InteractiveMap/InteractiveMap';
 import styles from './WeeklyProjectSummary.module.css';
 import LossTrackingLineChart from './Financials/LossTrackingLineCharts/LossTrackingLineChart';
