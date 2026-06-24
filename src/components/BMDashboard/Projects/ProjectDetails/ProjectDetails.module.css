@@ -82,18 +82,14 @@
 }
 
 /* Buttons list */
-.log-bar__section ul {
+.log-bar__section ul,
+.logBarSection ul {
   list-style-type: none;
   padding: 0;
 }
 
 .darkMode .logBarSection h2 {
   color: #f1f5f9;
-}
-
-.logBarSection ul {
-  list-style-type: none;
-  padding: 0;
 }
 
 /* Buttons */
@@ -114,9 +110,9 @@
 
 /* LIGHT MODE hover */
 .buttonBtn:hover {
-  color: #fff; /* prevent blue text */
+  color: #fff;
   text-decoration: none;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 45%); /* prevent underline */
+  box-shadow: 0 4px 12px rgb(0 0 0 / 45%);
 }
 
 /* Button colors */
@@ -131,7 +127,6 @@
 .button--indigo {
   background-color: #203844 !important;
 }
-
 
 /* =========================================
    RESPONSIVE LOG BAR
@@ -167,6 +162,7 @@
 }
 
 @media (width >= 550px) {
+  .log-bar,
   .logBar {
     flex-direction: column;
   }
@@ -184,11 +180,7 @@
 }
 
 @media (width >= 880px) {
-  .log-bar {
-    flex-flow: row wrap;
-    justify-content: center;
-  }
-
+  .log-bar,
   .logBar {
     flex-flow: row wrap;
     justify-content: center;
@@ -471,12 +463,7 @@
 
 @media (width <= 768px) {
   .project-log td,
-  .project-log th {
-    font-size: 0.6em;
-  }
-}
-
-@media (width <= 768px) {
+  .project-log th,
   .projectLog td,
   .projectLog th {
     font-size: 0.6em;
@@ -490,23 +477,24 @@ ul.log-bar__btn-group {
 
 ul.logBarBtnGroup {
   padding: 5px;
-} /* Row containing the RentedTools and Materials columns */
+}
+
+/* Row containing the RentedTools and Materials columns */
 
 /* Each column within the cardsRow */
 .cardsRow {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between; /* spread out columns */
+  justify-content: space-between;
   gap: 1.5em;
   margin-top: 2em;
 }
 
 .cardsCol {
-  flex: 1 1 45%; /* occupy roughly half of the row */
-  min-width: 350px; /* don't shrink too small */
+  flex: 1 1 45%;
+  min-width: 350px;
 }
 
-/* Optional wrapper for padding/background */
 .cardsCol > * {
   padding: 1em;
   border-radius: 8px;
@@ -520,7 +508,7 @@ ul.logBarBtnGroup {
 
 @media (width <= 992px) {
   .cardsCol {
-    flex: 1 1 100%; /* stack on smaller screens */
+    flex: 1 1 100%;
     min-width: unset;
   }
 }
