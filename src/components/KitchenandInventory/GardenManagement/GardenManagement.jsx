@@ -192,7 +192,11 @@ function AddEventModal({ sectionTitle, newEvent, setNewEvent, darkMode, onClose,
           step="0.1"
           className={`${styles.modalInput} ${dm}`}
           value={newEvent.yieldKg}
-          onChange={e => setNewEvent({ ...newEvent, yieldKg: e.target.value })}
+          onChange={e => {
+            if (e.target.value === '' || Number(e.target.value) >= 0) {
+              setNewEvent({ ...newEvent, yieldKg: e.target.value });
+            }
+          }}
           placeholder="e.g. 40"
         />
 
