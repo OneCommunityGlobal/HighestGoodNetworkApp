@@ -80,6 +80,25 @@ const CONFIG = {
   },
 };
 
+// Device multipliers for generating device-specific mock data
+const DEVICE_MULTIPLIERS = {
+  Desktop: { users: 0.45, pageViews: 0.5, sessions: 0.45, bounceRate: 0.85, avgDuration: 1.2 },
+  Mobile: { users: 0.38, pageViews: 0.35, sessions: 0.38, bounceRate: 1.15, avgDuration: 0.75 },
+  Tablet: { users: 0.17, pageViews: 0.15, sessions: 0.17, bounceRate: 1.0, avgDuration: 1.0 },
+};
+
+const DEVICE_ICONS = { Desktop: Monitor, Mobile: Smartphone, Tablet };
+
+const METRIC_TOOLTIPS = {
+  users: 'Total number of unique visitors who accessed the site in the selected period.',
+  pageViews: 'Total number of pages viewed. Repeated views of a single page are counted.',
+  sessions:
+    'A session is a group of user interactions within a given time frame (30 min idle = new session).',
+  bounceRate:
+    'Percentage of sessions where the user left without interacting further. Lower is better.',
+  avgEngagementTime: 'Average time (in seconds) a user actively engaged with the page per session.',
+};
+
 // ======================== SHARED CONSTANTS ========================
 const AXIS_TICK = { fontSize: 12 };
 
@@ -655,7 +674,7 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
   const { data: analyticsData, loading, error, refetch: originalRefetch } = useAnalyticsData(
     dateRange,
     comparisonPeriod,
-    selectedRole,
+    'All Roles',
   );
 
   const handleRefresh = useCallback(() => {
@@ -727,6 +746,14 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
 
   // Recharts injects inline styles into its tooltip, so CSS classes have no effect.
   // Pass these props to every <Tooltip> so it respects dark mode.
+  const handlePieClick = useCallback(
+    (_, index) => {
+      const clicked = analyticsData?.deviceBreakdown?.[index]?.name;
+      if (!clicked) return;
+      setSelectedDevice(prev => (prev === clicked ? null : clicked));
+    },
+    [analyticsData],
+  );
 
   return (
     <div className={styles['page']}>
@@ -865,7 +892,7 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
             <ChartCard title="Traffic Sources" icon={BarChart3}>
               <ResponsiveContainer width="100%" height={320}>
                 <BarChart
-                  data={filteredTrafficSources}
+                  data={analyticsData?.trafficSources ?? []}
                   margin={{ top: 10, right: 10, left: 0, bottom: 10 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" className={styles['grid-stroke']} />
@@ -906,7 +933,7 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
               <ResponsiveContainer width="100%" height={320}>
                 <PieChart>
                   <Pie
-                    data={filteredDeviceBreakdown}
+                    data={analyticsData?.deviceBreakdown ?? []}
                     cx="50%"
                     cy="50%"
                     outerRadius={110}
