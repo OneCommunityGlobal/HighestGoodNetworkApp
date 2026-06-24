@@ -259,7 +259,6 @@ export default function ToolStatusDonutChart() {
   }
 
   const wrapperClass = `${styles.toolDonutWrapper} ${darkMode ? styles.toolDonutWrapperDark : ''}`;
-  };
 
   return (
     <div className={wrapperClass}>
