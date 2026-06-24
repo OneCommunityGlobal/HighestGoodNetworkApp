@@ -46,7 +46,7 @@
 
 .chartCard {
   flex: 1;
-  border: 2px solid #4285f4;
+  border: 1px solid #dadce0;
   border-radius: 8px;
   background-color: #fff;
   padding: 20px;
@@ -56,7 +56,7 @@
 
 .chartCard.darkMode {
   background-color: #2c3e50;
-  border-color: #5dade2;
+  border-color: #5a6c7d;
 }
 
 .title {
@@ -153,7 +153,7 @@
 
 .yAxisItem {
   display: flex;
-  align-items: center;
+  align-items: center;    
   justify-content: flex-end;
   padding-right: 10px;
   font-size: 12px;
@@ -168,6 +168,13 @@
 }
 
 /* FIX: removed duplicate nested @media wrapper */
+@media (width <= 768px) {
+  .yAxisItem {
+    justify-content: flex-start;
+    
+  }
+}
+
 @media (width <= 480px) {
   .yAxisItem {
     font-size: 10px;
@@ -352,7 +359,7 @@
 /* ── Summary strip ── */
 
 .summary {
-  margin-top: 20px;
+  margin-top: 40px;
   padding: 15px;
   background-color: #f8f9fa;
   border-radius: 4px;
@@ -400,7 +407,7 @@
 
 .filterCard {
   border: 1px solid #dadce0;
-  border-radius: 4px;
+  border-radius: 8px;
   padding: 12px;
   /* FIX: removed duplicate background-color declaration */
   background-color: #fff;
