@@ -5,6 +5,27 @@ import './PeopleTableDetails.module.css';
 import NewModal from '../common/NewModal';
 import TableFilter from './TableFilter/TableFilter';
 
+function TaskModalTrigger({ value, windowWidth, renderMobileFilteredTask, renderFilteredTask }) {
+  return (
+    <>
+      {windowWidth <= 1020 ? renderMobileFilteredTask(value) : renderFilteredTask(value)}
+    </>
+  );
+}
+
+function TaskModalContent({ whyInfo, intentInfo, endstateInfo }) {
+  return (
+    <>
+      <div>Why This Task is important</div>
+      <textarea className="rectangle" type="text" value={whyInfo} readOnly />
+      <div>Design Intent</div>
+      <textarea className="rectangle" type="text" value={intentInfo} readOnly />
+      <div>End State</div>
+      <textarea className="rectangle" type="text" value={endstateInfo} readOnly />
+    </>
+  );
+}
+
 function PeopleTableDetails(props) {
   const [name, setName] = useState('');
   const [priority, setPriority] = useState('');
@@ -109,22 +130,19 @@ function PeopleTableDetails(props) {
           <div className="task-title people-report-task-name task-name-word-break">
             {value.taskName}
           </div>
-          <div className="task-status">{value.status}</div>
-        </div>
-        <div className="task-details">
-          <div className="task-info">
-            <div className="sub-head">Priority</div>
-            <div className="sub-details">{value.priority}</div>
-          </div>
-          <div className="task-info">
-            <div className="sub-head">Resources</div>
-            <div>
-              {value.resources?.map((res) =>
-                res.map((resource, index) => {
-                  if (index < 2) {
+          <div className='task-details'>
+            <div className='task-info'>
+              <div className='sub-head'>Priority</div>
+              <div className='sub-details'>{value.priority}</div>
+            </div>
+            <div className='task-info'>
+              <div className='sub-head'>Resources</div>
+              <div>{value.resources?.map((res, outerIndex) =>
+                res.map((resource, innerIndex) => {
+                  if (innerIndex < 2) {
                     return (
                       <img
-                        key={`${value._id}-${resource.name}`}
+                        key={`${outerIndex}-${innerIndex}`}
                         alt={resource.name}
                         src={resource.profilePic || '/pfp-default.png'}
                         className="img-circle"
@@ -160,6 +178,7 @@ function PeopleTableDetails(props) {
         </div>
       </div>
     </div>
+    </div>
   );
 
   const renderFilteredTask = (value) => {
@@ -172,12 +191,12 @@ function PeopleTableDetails(props) {
         <div>{value.priority}</div>
         <div>{value.status}</div>
         <div>
-          {value.resources?.map((res) =>
-            res.map((resource, index) => {
-              if (index < 2) {
+          {value.resources?.map((res, outerIndex) =>
+            res.map((resource, innerIndex) => {
+              if (innerIndex < 2) {
                 return (
                   <img
-                    key={`${value._id}-main-${index}`}
+                    key={`${outerIndex}-${innerIndex}`}
                     alt={resource.name}
                     src={resource.profilePic || '/pfp-default.png'}
                     className="img-circle"
@@ -188,10 +207,10 @@ function PeopleTableDetails(props) {
               return null;
             }),
           )}
-          {value.resources?.map((res) =>
+          {value.resources?.map((res, outerIndex) =>
             res.length > 2 ? (
               <button
-                key={`${value._id}-toggle-btn`}
+                key={`button-${outerIndex}`}
                 type="button"
                 className="name resourceMoreToggle"
                 onClick={(e) => {
@@ -211,21 +230,19 @@ function PeopleTableDetails(props) {
             style={{ display: isExpanded ? 'table-cell' : 'none' }}
           >
             <div className="extra1">
-              {value.resources?.map((res) =>
-                res.map((resource, index) => {
-                  if (index >= 2) {
-                    return (
-                      <img
-                        key={`${value._id}-extra-${index}`}
-                        alt={resource.name}
-                        src={resource.profilePic || '/pfp-default.png'}
-                        className="img-circle"
-                        title={resource.name}
-                      />
-                    );
-                  }
-                  return null;
-                }),
+              {value.resources?.map((res, outerIndex) =>
+                // eslint-disable-next-line array-callback-return,consistent-return
+                res
+                .filter((_, index) => index >= 2)
+                .map((resource, innerIndex) => (
+                  <img
+                    key={`${outerIndex}-${innerIndex}`}
+                    alt={resource.name}
+                    src={resource.profilePic || '/pfp-default.png'}
+                    className="img-circle"
+                    title={resource.name}
+                  />
+                )),
               )}
             </div>
           </div>
@@ -285,36 +302,41 @@ function PeopleTableDetails(props) {
           Clear Filters
         </button>
       </div>
-      {windowWidth > 1020 ? (
-        <>
-          <div className={`people-table-row reports-table-head ${darkMode ? 'bg-space-cadet' : ''}`}>
-            <div data-testid="task">Task</div>
-            <div data-testid="priority">Priority</div>
-            <div data-testid="status">Status</div>
-            <div data-testid="resources" className="people-table-center-cell">Resources</div>
-            <div data-testid="active" className="people-table-center-cell">Active</div>
-            <div data-testid="assign" className="people-table-center-cell">Assign</div>
-            <div data-testid="eh" className="people-table-end-cell">Estimated Hours</div>
-            <div data-testid="sd" className="people-table-end-cell">Start Date</div>
-            <div data-testid="ed" className="people-table-end-cell">End Date</div>
-          </div>
-          <div className="people-table people-table-scrollable">
-            {filteredTasks.map((value) => (
-              <NewModal key={value._id} header="Task info" trigger={() => renderFilteredTask(value)} darkMode={darkMode}>
-                {renderModalContent(value)}
-              </NewModal>
-            ))}
-          </div>
-        </>
-      ) : (
-        <div className="people-table">
-          {filteredTasks.map((value) => (
-            <NewModal key={value._id} header="Task info" trigger={() => renderMobileFilteredTask(value)} darkMode={darkMode}>
-              {renderModalContent(value)}
-            </NewModal>
-          ))}
-        </div>
-      )}
+      <div className={`people-table-row reports-table-head ${darkMode ? 'bg-space-cadet' : ''}`}>
+        <div data-testid="task">Task</div>
+        <div data-testid="priority">Priority</div>
+        <div data-testid="status">Status</div>
+        <div data-testid="resources" className="people-table-center-cell">Resources</div>
+        <div data-testid="active" className="people-table-center-cell">Active</div>
+        <div data-testid="assign" className="people-table-center-cell">Assign</div>
+        <div data-testid="eh" className="people-table-end-cell">Estimated Hours</div>
+        <div data-testid="sd" className="people-table-end-cell">Start Date</div>
+        <div data-testid="ed" className="people-table-end-cell">End Date</div>
+      </div>
+      <div className="people-table">
+        {filteredTasks.map(value => (
+
+          // eslint-disable-next-line react/no-unstable-nested-components
+          <NewModal
+            key={value._id}
+            header="Task info"
+            trigger={
+              <TaskModalTrigger
+                value={value}
+                windowWidth={windowWidth}
+                renderMobileFilteredTask={renderMobileFilteredTask}
+                renderFilteredTask={renderFilteredTask}
+              />
+            }
+          >
+            <TaskModalContent
+              whyInfo={value.whyInfo}
+              intentInfo={value.intentInfo}
+              endstateInfo={value.endstateInfo}
+            />
+          </NewModal>
+        ))}
+      </div>
     </Container>
   );
 }
