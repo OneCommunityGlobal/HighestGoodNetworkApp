@@ -194,11 +194,8 @@
 
 /* Collapsed nav — hidden on wide screens */
 .navCollapse {
-  display: none;
-}
-
-.navCollapseHidden {
-  display: none;
+  display: flex;
+  align-items: center;
 }
 
 /* max-width: 1700px */
@@ -243,7 +240,7 @@
   }
 
   .navCollapseHidden {
-    display: none;
+    display: none !important;
   }
 
   .navCollapseOpen {
