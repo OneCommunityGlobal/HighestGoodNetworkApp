@@ -444,7 +444,14 @@ export default function ExpenseBarChart({ darkMode }) {
           />
         </div>
         {/* Reset Filters button */}
-        <div style={{ minWidth: '120px' }}>
+        <div
+          style={{
+            gridColumn: '1 / -1',
+            display: 'flex',
+            justifyContent: 'center',
+            marginTop: '0.5rem',
+          }}
+        >
           <button
             type="button"
             onClick={resetFilters}
