@@ -80,24 +80,29 @@ const CONFIG = {
   },
 };
 
-// Device multipliers for generating device-specific mock data
-const DEVICE_MULTIPLIERS = {
-  Desktop: { users: 0.45, pageViews: 0.5, sessions: 0.45, bounceRate: 0.85, avgDuration: 1.2 },
-  Mobile: { users: 0.38, pageViews: 0.35, sessions: 0.38, bounceRate: 1.15, avgDuration: 0.75 },
-  Tablet: { users: 0.17, pageViews: 0.15, sessions: 0.17, bounceRate: 1.0, avgDuration: 1.0 },
+// ======================== SHARED CONSTANTS ========================
+const AXIS_TICK = { fontSize: 12 };
+
+const CHART_MARGIN = { top: 10, right: 10, left: 0, bottom: 10 };
+
+const GRID_PROPS = {
+  strokeDasharray: '3 3',
 };
 
-const DEVICE_ICONS = { Desktop: Monitor, Mobile: Smartphone, Tablet };
+const getTooltipStyles = darkMode => ({
+  contentStyle: {
+    backgroundColor: darkMode ? '#1f2937' : '#ffffff',
+    borderColor: darkMode ? '#374151' : '#e5e7eb',
+    color: darkMode ? '#f9fafb' : '#111827',
+  },
+  itemStyle: {
+    color: darkMode ? '#f9fafb' : '#111827',
+  },
+});
 
-const METRIC_TOOLTIPS = {
-  users: 'Total number of unique visitors who accessed the site in the selected period.',
-  pageViews: 'Total number of pages viewed. Repeated views of a single page are counted.',
-  sessions:
-    'A session is a group of user interactions within a given time frame (30 min idle = new session).',
-  bounceRate:
-    'Percentage of sessions where the user left without interacting further. Lower is better.',
-  avgEngagementTime: 'Average time (in seconds) a user actively engaged with the page per session.',
-};
+const getCursorStyle = darkMode => ({
+  fill: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
+});
 
 // ======================== UTILITIES ========================
 const calculatePercentageChange = (current, previous) => {
@@ -140,6 +145,11 @@ class AnalyticsService {
 
   static async fetchData(dateRange, comparisonPeriod, role) {
     try {
+      // Replace with real API when ready
+      // const response = await fetch(`${CONFIG.API.ENDPOINTS.ANALYTICS}`, { ... });
+      // if (!response.ok) throw new Error('Failed to fetch analytics data');
+      // return await response.json();
+
       await this.simulateApiDelay();
       return this.generateMockAnalyticsData(dateRange, comparisonPeriod, role);
     } catch (err) {
@@ -614,11 +624,27 @@ function DateRangeSelector({ dateRange, setDateRange, comparisonPeriod, setCompa
 // ======================== MAIN ========================
 function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light');
+    const root = document.documentElement;
+    const body = document.body;
+
+    root.dataset.theme = darkMode ? 'dark' : 'light';
+
+    if (darkMode) {
+      body.classList.add('dark-mode', 'bm-dashboard-dark');
+    } else {
+      body.classList.remove('dark-mode', 'bm-dashboard-dark');
+    }
+
+    return () => {
+      body.classList.remove('dark-mode', 'bm-dashboard-dark');
+    };
   }, [darkMode]);
 
   const canViewAnalytics = hasPerm('getJobReports');
-  if (!canViewAnalytics) return <AccessDenied />;
+
+  if (!canViewAnalytics) {
+    return <AccessDenied />;
+  }
 
   const isMobile = useMediaQuery('(max-width: 640px)');
 
@@ -699,14 +725,8 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
 
   const colors = darkMode ? CONFIG.CHART_COLORS.dark : CONFIG.CHART_COLORS;
 
-  const handlePieClick = useCallback(
-    (_, index) => {
-      const clicked = analyticsData?.deviceBreakdown?.[index]?.name;
-      if (!clicked) return;
-      setSelectedDevice(prev => (prev === clicked ? null : clicked));
-    },
-    [analyticsData],
-  );
+  // Recharts injects inline styles into its tooltip, so CSS classes have no effect.
+  // Pass these props to every <Tooltip> so it respects dark mode.
 
   return (
     <div className={styles['page']}>
@@ -784,11 +804,11 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
           <section className={styles['charts-grid']} data-mobile={isMobile ? '1' : '0'}>
             <ChartCard title="User Trend Comparison" icon={TrendingUp}>
               <ResponsiveContainer width="100%" height={320}>
-                <LineChart data={mergedData} margin={{ top: 10, right: 10, left: 0, bottom: 10 }}>
-                  <CartesianGrid strokeDasharray="3 3" className={styles['grid-stroke']} />
-                  <XAxis dataKey="displayDate" tick={{ fontSize: 12 }} />
-                  <YAxis tick={{ fontSize: 12 }} domain={['dataMin - 100', 'dataMax + 100']} />
-                  <Tooltip {...tooltipStyle} />
+                <LineChart data={mergedData} margin={CHART_MARGIN}>
+                  <CartesianGrid {...GRID_PROPS} className={styles.gridStroke} />
+                  <XAxis dataKey="displayDate" tick={AXIS_TICK} />
+                  <YAxis tick={AXIS_TICK} domain={['dataMin - 100', 'dataMax + 100']} />
+                  <Tooltip {...getTooltipStyles(darkMode)} />
                   <Legend />
                   <Line
                     type="monotone"
@@ -827,7 +847,7 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
                   <CartesianGrid strokeDasharray="3 3" className={styles['grid-stroke']} />
                   <XAxis dataKey="displayDate" tick={{ fontSize: 12 }} />
                   <YAxis tick={{ fontSize: 12 }} domain={['dataMin - 500', 'dataMax + 500']} />
-                  <Tooltip {...tooltipStyle} />
+                  <Tooltip {...getTooltipStyles(darkMode)} />
                   <Legend />
                   <Area
                     type="monotone"
@@ -857,7 +877,7 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
                     height={60}
                   />
                   <YAxis tick={{ fontSize: 12 }} domain={[0, 'dataMax + 500']} />
-                  <Tooltip {...tooltipStyle} />
+                  <Tooltip cursor={getCursorStyle(darkMode)} {...getTooltipStyles(darkMode)} />
                   <Legend />
                   <Bar
                     dataKey="current"
@@ -914,12 +934,7 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
                       );
                     })}
                   </Pie>
-                  <Tooltip
-                    formatter={(value, name, props) => [
-                      `${value}% (${formatNumber(props.payload.sessions)} sessions)`,
-                      props.payload.name,
-                    ]}
-                  />
+                  <Tooltip {...getTooltipStyles(darkMode)} />
                 </PieChart>
               </ResponsiveContainer>
               <p className={styles['pie-hint']}>
@@ -928,7 +943,6 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
                   : 'Click a slice to filter all charts by device type'}
               </p>
             </ChartCard>
-
 
             <ChartCard
               title={
@@ -957,7 +971,7 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
                     tick={{ fontSize: 12 }}
                     domain={[0, 100]}
                   />
-                  <Tooltip {...tooltipStyle} />
+                  <Tooltip {...getTooltipStyles(darkMode)} />
                   <Legend />
                   <Line
                     yAxisId="left"
