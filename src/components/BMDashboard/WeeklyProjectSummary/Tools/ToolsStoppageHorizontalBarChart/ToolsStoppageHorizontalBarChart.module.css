@@ -369,10 +369,6 @@
   }
 }
 
-  :global(.tools-horizontal-chart-container) {
-    padding: 0;
-  }
-
 /* Tablet adjustments */
 @media (width >= 769px) and (width <= 1024px) {
   :global(.tools-availability-page) {
