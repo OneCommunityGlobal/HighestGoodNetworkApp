@@ -766,8 +766,8 @@ setUpdatedTasks(prev => {
           date: dateStamp,
           description: summary,
           createdDate: moment().format('YYYY-MM-DD'),
-          manullyAssigned: true,
-          manullyAssignedBy: requestorId,
+          manuallyAssigned: true,
+          manuallyAssignedBy: requestorId,
         };
         setModalTitle('Blue Square');
         axios
