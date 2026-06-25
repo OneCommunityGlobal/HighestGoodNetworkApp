@@ -244,7 +244,12 @@
   box-sizing: border-box;
 }
 
-.filter-item input:not([type="checkbox"], [type="radio"]):focus,
+/* Square the search-filter dropdowns (date + selects) */
+.rectangular-dropdown {
+  border-radius: 0 !important;
+}
+
+.filter-item input:not([type="checkbox"]):not([type="radio"]):focus,
 .filter-item select:focus {
   border-color: #2c3e50;
   box-shadow: 0 0 5px rgb(44 62 80 / 40%);

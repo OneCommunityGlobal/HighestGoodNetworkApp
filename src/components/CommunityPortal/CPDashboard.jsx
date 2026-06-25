@@ -165,7 +165,7 @@ const FiltersSidebar = ({ darkMode }) => (
           id="date-filter-input"
           type="date"
           placeholder="Ending After"
-          className={cx('date-filter', darkMode)}
+          className={`${cx('date-filter', darkMode)} ${styles['rectangular-dropdown']}`}
         />
       </div>
 
@@ -191,7 +191,9 @@ const FiltersSidebar = ({ darkMode }) => (
           type="select"
           id="branches"
           name="branches"
-          className={darkMode ? styles['filter-select-dark'] : ''}
+          className={`${styles['rectangular-dropdown']} ${
+            darkMode ? styles['filter-select-dark'] : ''
+          }`}
         >
           <option>Select branches</option>
         </Input>
@@ -205,7 +207,9 @@ const FiltersSidebar = ({ darkMode }) => (
           type="select"
           id="themes"
           name="themes"
-          className={darkMode ? styles['filter-select-dark'] : ''}
+          className={`${styles['rectangular-dropdown']} ${
+            darkMode ? styles['filter-select-dark'] : ''
+          }`}
         >
           <option>Select themes</option>
         </Input>
@@ -219,7 +223,9 @@ const FiltersSidebar = ({ darkMode }) => (
           type="select"
           id="categories"
           name="categories"
-          className={darkMode ? styles['filter-select-dark'] : ''}
+          className={`${styles['rectangular-dropdown']} ${
+            darkMode ? styles['filter-select-dark'] : ''
+          }`}
         >
           <option>Select categories</option>
         </Input>
