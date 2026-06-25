@@ -2,7 +2,19 @@
 import { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
-import { Container, Row, Col, Card, CardBody, Button, Input, Label } from 'reactstrap';
+import {
+  Container,
+  Row,
+  Alert,
+  Col,
+  Card,
+  CardBody,
+  Button,
+  Input,
+  FormGroup,
+  Label,
+} from 'reactstrap';
+import Select from 'react-select';
 import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt, FaSearch, FaTimes } from 'react-icons/fa';
 import styles from './CPDashboard.module.css';
 import { ENDPOINTS } from '../../utils/URL';
@@ -373,7 +385,16 @@ function CPDashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [pagination, setPagination] = useState({ currentPage: 1, total: 0, limit: 6 });
+  const [failedLogos, setFailedLogos] = useState(new Set());
+  const branchOptions = [{ value: '', label: 'Select branches', isDisabled: true }];
+  const themeOptions = [{ value: '', label: 'Select themes', isDisabled: true }];
+  const categoryOptions = [{ value: '', label: 'Select categories', isDisabled: true }];
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 5,
+    total: 0,
+    limit: 6,
+  });
 
   const FALLBACK_IMG =
     'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=600&q=60';
@@ -457,9 +478,125 @@ function CPDashboard() {
         />
       </header>
 
-      <Row className={styles['dashboard-row']}>
-        <Col md={3} className={styles['dashboard-sidebar']}>
-          <FiltersSidebar darkMode={darkMode} />
+      <Row>
+        <Col md={3} className={`${styles.dashboardSidebar} ${darkMode ? styles.darkSidebar : ''}`}>
+          <div className={styles.filterSection}>
+            <h4>Search Filters</h4>
+            <div className={styles.filterSectionDivider}>
+              <div className={styles.filterItem}>
+                <label htmlFor="date-tomorrow"> Dates</label>
+                <div className={styles.radioRow}>
+                  <FormGroup check className={styles.radioGroup + ' d-flex align-items-center'}>
+                    <Input
+                      id="date-tomorrow"
+                      type="radio"
+                      name="dates"
+                      checked={dateFilter === 'tomorrow'}
+                      onChange={() => setDateFilter('tomorrow')}
+                      className={styles.radioInput}
+                    />
+                    <Label
+                      htmlFor="date-tomorrow"
+                      check
+                      className={styles.radioLabel + ' ms-2 mb-0'}
+                    >
+                      Tomorrow
+                    </Label>
+                  </FormGroup>
+                  <FormGroup check className={styles.radioGroup + ' d-flex align-items-center'}>
+                    <Input
+                      id="date-weekend"
+                      type="radio"
+                      name="dates"
+                      checked={dateFilter === 'weekend'}
+                      onChange={() => setDateFilter('weekend')}
+                      className={styles.radioInput}
+                    />
+                    <Label
+                      htmlFor="date-weekend"
+                      check
+                      className={styles.radioLabel + ' ms-2 mb-0'}
+                    >
+                      This Weekend
+                    </Label>
+                  </FormGroup>
+                </div>
+                <Button
+                  color="primary"
+                  size="sm"
+                  onClick={() => {
+                    setDateFilter('');
+                    setSelectedDate('');
+                  }}
+                >
+                  Clear date filter
+                </Button>
+                <Input
+                  type="date"
+                  placeholder="Select Date"
+                  className={styles.dateFilter}
+                  value={selectedDate}
+                  onChange={e => setSelectedDate(e.target.value)}
+                  style={{ marginTop: '10px' }}
+                />
+              </div>
+
+              <div className={styles.filterItem}>
+                <label htmlFor="online-only">Online</label>
+                <div>
+                  <Input
+                    type="checkbox"
+                    id="online-only"
+                    checked={onlineOnly}
+                    onChange={e => {
+                      setOnlineOnly(e.target.checked);
+                      setPagination(prev => ({ ...prev, currentPage: 1 }));
+                    }}
+                  />{' '}
+                  Online Only
+                </div>
+              </div>
+
+              <div className={styles.filterItem}>
+                <label htmlFor="branches">Branches</label>
+                <Select
+                  inputId="branches"
+                  classNamePrefix="cp-dashboard-filter"
+                  options={branchOptions}
+                  placeholder="Select branches"
+                  isSearchable={false}
+                  menuShouldBlockScroll={false}
+                  menuPlacement="auto"
+                />
+              </div>
+
+              <div className={styles.filterItem}>
+                <label htmlFor="themes">Themes</label>
+                <Select
+                  inputId="themes"
+                  classNamePrefix="cp-dashboard-filter"
+                  options={themeOptions}
+                  placeholder="Select themes"
+                  isSearchable={false}
+                  menuShouldBlockScroll={false}
+                  menuPlacement="auto"
+                />
+              </div>
+
+              <div className={styles.filterItem}>
+                <label htmlFor="categories">Categories</label>
+                <Select
+                  inputId="categories"
+                  classNamePrefix="cp-dashboard-filter"
+                  options={categoryOptions}
+                  placeholder="Select categories"
+                  isSearchable={false}
+                  menuShouldBlockScroll={false}
+                  menuPlacement="auto"
+                />
+              </div>
+            </div>
+          </div>
         </Col>
 
         <Col md={9} className={styles['dashboard-main']}>
