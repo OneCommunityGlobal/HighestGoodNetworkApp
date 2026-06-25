@@ -238,33 +238,76 @@ FiltersSidebar.propTypes = {
   darkMode: PropTypes.bool.isRequired,
 };
 
-const EventCard = ({ event, darkMode, fallback }) => (
-  <Col md={4} key={event.id} className={styles['event-card-col']}>
-    <Card
-      className={
-        darkMode ? `${styles['event-card']} ${styles['event-card-dark']}` : styles['event-card']
-      }
-    >
-      <div className={styles['event-card-img-container']}>
-        <FixedRatioImage src={event.image} alt={event.title} fallback={fallback} />
-      </div>
-      <CardBody className={darkMode ? styles['event-card-body-dark'] : ''}>
-        <h5 className={`${styles['event-title']} ${darkMode ? styles['event-title-dark'] : ''}`}>
-          {event.title}
-        </h5>
-        <p className={`${styles['event-date']} ${darkMode ? styles['event-text-dark'] : ''}`}>
-          <FaCalendarAlt className={styles['event-icon']} /> {formatDate(event.date)}
-        </p>
-        <p className={`${styles['event-location']} ${darkMode ? styles['event-text-dark'] : ''}`}>
-          <FaMapMarkerAlt className={styles['event-icon']} /> {event.location}
-        </p>
-        <p className={`${styles['event-organizer']} ${darkMode ? styles['event-text-dark'] : ''}`}>
-          <FaUserAlt className={styles['event-icon']} /> {event.organizer}
-        </p>
-      </CardBody>
-    </Card>
-  </Col>
-);
+// Figma-consistent typography for event cards.
+// Font properties apply in both modes; colors only in light mode so that
+// dark-mode text classes (event-title-dark / event-text-dark) still win.
+const EVENT_TITLE_FONT = {
+  textAlign: 'left',
+  margin: '0 0 8px',
+  fontWeight: 600,
+  fontSize: '1.1rem',
+  lineHeight: 1.3,
+};
+
+const EVENT_META_FONT = {
+  fontSize: '0.86rem',
+  gap: '6px',
+  margin: '4px 0',
+  lineHeight: 1.35,
+  fontWeight: 500,
+};
+
+const EVENT_ICON_FONT = {
+  marginTop: '1px',
+  fontSize: '0.78rem',
+};
+
+const EventCard = ({ event, darkMode, fallback }) => {
+  const titleStyle = darkMode ? EVENT_TITLE_FONT : { ...EVENT_TITLE_FONT, color: '#2f3f55' };
+  const metaStyle = darkMode ? EVENT_META_FONT : { ...EVENT_META_FONT, color: '#5c6b7a' };
+  const iconStyle = darkMode ? EVENT_ICON_FONT : { ...EVENT_ICON_FONT, color: '#6b7785' };
+
+  return (
+    <Col md={4} key={event.id} className={styles['event-card-col']}>
+      <Card
+        className={
+          darkMode ? `${styles['event-card']} ${styles['event-card-dark']}` : styles['event-card']
+        }
+      >
+        <div className={styles['event-card-img-container']}>
+          <FixedRatioImage src={event.image} alt={event.title} fallback={fallback} />
+        </div>
+        <CardBody className={darkMode ? styles['event-card-body-dark'] : ''}>
+          <h5
+            className={`${styles['event-title']} ${darkMode ? styles['event-title-dark'] : ''}`}
+            style={titleStyle}
+          >
+            {event.title}
+          </h5>
+          <p
+            className={`${styles['event-date']} ${darkMode ? styles['event-text-dark'] : ''}`}
+            style={metaStyle}
+          >
+            <FaCalendarAlt className={styles['event-icon']} style={iconStyle} />{' '}
+            {formatDate(event.date)}
+          </p>
+          <p
+            className={`${styles['event-location']} ${darkMode ? styles['event-text-dark'] : ''}`}
+            style={metaStyle}
+          >
+            <FaMapMarkerAlt className={styles['event-icon']} style={iconStyle} /> {event.location}
+          </p>
+          <p
+            className={`${styles['event-organizer']} ${darkMode ? styles['event-text-dark'] : ''}`}
+            style={metaStyle}
+          >
+            <FaUserAlt className={styles['event-icon']} style={iconStyle} /> {event.organizer}
+          </p>
+        </CardBody>
+      </Card>
+    </Col>
+  );
+};
 
 EventCard.propTypes = {
   event: eventShape.isRequired,
