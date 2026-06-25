@@ -452,6 +452,39 @@ body.bm-dashboard-dark .PageViewContainer {
   background-color: #0a0a0a;
 }
 
+/* ---------------------------------------------------------------------------
+   WORKING dark-mode overrides.
+   useTheme() adds `dark-mode` / `bm-dashboard-dark` to <body>. The bare
+   `body.dark-mode` / `body.bm-dashboard-dark` selectors above are SCOPED/HASHED
+   by the CSS-module pipeline (the `.dark-mode` part gets a hash appended), so
+   they never match the real body class and are DEAD. The `:global(...)`
+   selectors below keep the body class literal while still hashing the local
+   class names, so they actually apply.
+--------------------------------------------------------------------------- */
+
+/* Page heading "EQUIPMENTS" -> light text */
+:global(.dark-mode) .BuildingTitle,
+:global(.bm-dashboard-dark) .BuildingTitle {
+  color: #e8edf4;
+  border-bottom-color: #4dabf7;
+}
+
+/* reactstrap <Table> sets --bs-table-color (#212529) on cells, which overrides
+   the inherited light text and makes body rows dark-on-dark. Override the
+   Bootstrap table CSS vars so every cell renders light. */
+:global(.dark-mode) .tableWrapper table,
+:global(.bm-dashboard-dark) .tableWrapper table {
+  --bs-table-color: #e8edf4;
+  --bs-table-bg: transparent;
+  --bs-table-border-color: #2f4157;
+}
+
+/* Defensive explicit cell text color (header row stays styled by its own th rule) */
+:global(.dark-mode) .tableWrapper tbody td,
+:global(.bm-dashboard-dark) .tableWrapper tbody td {
+  color: #e8edf4;
+}
+
 /* Responsive Design */
 @media (width <= 768px) {
   .PageViewContainer {

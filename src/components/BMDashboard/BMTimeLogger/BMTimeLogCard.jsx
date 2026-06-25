@@ -5,8 +5,10 @@ import BMError from '../shared/BMError';
 import { fetchBMProjectMembers } from '../../../actions/bmdashboard/projectMemberAction';
 import BMTimeLogDisplayMember from './BMTimeLogDisplayMember';
 import BMTimeLogSummary from './BMTimeLogSummary';
+import styles from './BMTimeLogCard.module.css';
 
 function BMTimeLogCard(props) {
+  const darkMode = props.darkMode ?? false;
   const [isError, setIsError] = useState(false);
   const [memberList, setMemberList] = useState([]);
   const [isMemberFetched, setIsMemberFetched] = useState(false);
@@ -87,9 +89,9 @@ function BMTimeLogCard(props) {
   };
 
   return (
-    <Container fluid>
+    <Container fluid className={darkMode ? styles.darkMode : ''}>
       {/* Time Log Summary Section */}
-      <BMTimeLogSummary projectId={props.selectedProject} />
+      <BMTimeLogSummary projectId={props.selectedProject} darkMode={darkMode} />
 
       {isMemberFetched && (
         <>

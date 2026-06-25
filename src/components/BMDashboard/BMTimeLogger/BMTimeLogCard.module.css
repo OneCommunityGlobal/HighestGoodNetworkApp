@@ -213,3 +213,95 @@
 font-size: 0.875em;
 margin-top:3px;
 }
+
+/* Dark mode via Redux-driven conditional class on the card container */
+.darkMode {
+  background-color: #1b2a41;
+  color: #fff;
+}
+
+/* Search input inside the card in dark mode */
+.darkMode :global(input.form-control) {
+  background-color: #2a3f5f;
+  border-color: #3a506b;
+  color: #fff;
+}
+
+.darkMode :global(input.form-control)::placeholder {
+  color: #b7c4d4;
+}
+
+/* Muted helper text (e.g. "Found X out of Y members") on the dark container */
+.darkMode :global(.text-muted) {
+  color: #b7c4d4 !important;
+}
+
+/* Member card in dark mode (header keeps its role color; body goes dark) */
+.memberCardDark {
+  background-color: #2e5061;
+  color: #fff;
+}
+
+.memberCardDark :global(.card-body) {
+  background-color: #2e5061;
+  color: #fff;
+}
+
+/* "Start at:" time text (default gray) needs lightening on dark card */
+.memberCardDark .fontColorGray {
+  color: #cdd8e6;
+}
+
+/* Time Log Summary card + table in dark mode */
+.summaryCardDark {
+  background-color: #2e5061;
+  color: #fff;
+  border-color: #3a506b;
+}
+
+.summaryCardDark :global(.card-body) {
+  background-color: #2e5061;
+  color: #fff;
+}
+
+.summaryCardDark :global(table) {
+  color: #e0eaf5;
+}
+
+.summaryCardDark :global(table) th,
+.summaryCardDark :global(table) td {
+  color: #e0eaf5;
+  border-color: #3a506b;
+}
+
+/* Table header row: dark background + light text so the column labels
+   ("Member, Role, Start Time, ...") stay readable in dark mode.
+   Override bootstrap's --bs-table-color which otherwise forces dark header text. */
+.summaryCardDark :global(table) thead th {
+  background-color: #2f4157;
+  color: #e8edf4;
+  border-color: #3a506b;
+
+  --bs-table-color: #e8edf4;
+  --bs-table-bg: #2f4157;
+}
+
+/* Override bootstrap striped row background so rows stay dark */
+.summaryCardDark :global(.table-striped) > tbody > tr:nth-of-type(odd) > * {
+  background-color: #355a6e;
+  color: #e0eaf5;
+}
+
+.summaryCardDark :global(.table-striped) > tbody > tr:nth-of-type(even) > * {
+  background-color: #2e5061;
+  color: #e0eaf5;
+}
+
+.summaryCardDark :global(.table-hover) > tbody > tr:hover > * {
+  background-color: #3d6479;
+  color: #fff;
+}
+
+.summaryCardDark :global(.text-muted) {
+  color: #b7c4d4 !important;
+}

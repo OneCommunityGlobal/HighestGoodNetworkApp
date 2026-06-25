@@ -19,6 +19,7 @@ export default function EquipmentUpdateForm() {
   const [formData, setFormData] = useState(initialFormState);
   const [isFormValid, setIsFormValid] = useState(false);
   const dispatch = useDispatch();
+  const darkMode = useSelector(state => state.theme.darkMode);
   // Fetch dropdown data
   const projects = useSelector(state => state.bmProjects || []);
   const tools = useSelector(state => state.bmTools.toolslist || []);
@@ -99,7 +100,7 @@ export default function EquipmentUpdateForm() {
   };
 
   return (
-    <div className={styles.addToolForm}>
+    <div className={`${styles.addToolForm} ${darkMode ? styles.addToolFormDark : ''}`}>
       <Form onSubmit={handleSubmit}>
         <FormGroup>
           <Label for="project">

@@ -250,8 +250,20 @@ table td {
   padding-bottom: 2rem;
 }
 
+/* Bootstrap drives cell text via --bs-table-color (defaults to dark #212529),
+   which overrode the inherited light color and made rows unreadable in dark
+   mode. Override the table CSS variables so all cells render light. */
+.darkTable {
+  --bs-table-color: #e8edf4;
+  --bs-table-bg: transparent;
+  --bs-table-border-color: #2f4157;
+
+  color: #e8edf4;
+}
+
 .darkTable tbody td,
 .darkTable tbody th {
+  color: #e8edf4;
   border-color: #2f4157 !important;
 }
 

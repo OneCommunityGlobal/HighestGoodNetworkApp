@@ -60,6 +60,68 @@
   height: auto;
 }
 
+.logReusablePageDark {
+  background-color: #1b2a41;
+}
+
+.logReusableDark {
+  background-color: #2e5061;
+  color: #fff;
+}
+
+.logReusableDark .logReusableTitle {
+  color: #fff;
+}
+
+/* Outline "Cancel" button: bootstrap's grey text (#6c757d) is unreadable on the dark card */
+.logReusableDark :global(.logMButtons.btn-outline-secondary) {
+  color: #cdd8e6;
+  border-color: #5a7a9b;
+}
+
+/* Inputs row (Date / Project labels) */
+.logReusableDark :global(label) {
+  color: #fff;
+}
+
+/* Table text light, header bands darkened */
+.logReusableDark .logReusableTable {
+  color: #fff !important;
+}
+
+.logReusableDark .logReusableTable td,
+.logReusableDark .logReusableTable th {
+  color: #fff;
+}
+
+.logReusableDark .logMTableHeaderLine {
+  background-color: #14233a;
+  border-bottom-color: #3a506b;
+  border-top-color: #3a506b;
+}
+
+.logReusableDark .logReusableTable :global(.table-light),
+.logReusableDark .logReusableTable :global(.table-light) > th,
+.logReusableDark .logReusableTable :global(.table-light) > td {
+  background-color: #14233a;
+  color: #fff;
+}
+
+.logReusableDark .logMTableHead {
+  color: #4da8da;
+}
+
+/* Inputs/selects inside table & form */
+.logReusableDark :global(.form-control) {
+  background-color: #2a3f5f;
+  border-color: #3a506b;
+  color: #fff;
+}
+
+.logReusableDark :global(.form-control)::placeholder {
+  color: #b0b8c4;
+}
+
 
 .logReusableTable {
   color: #a2a5aa !important;

@@ -26,9 +26,13 @@ button {
 
 
 
-/* Dark mode override for #root */
-body.dark-mode #root,
-body.bm-dashboard-dark #root {
+/* Dark mode override for #root (wrapped in :global so the scoped CSS module
+   does not hash the body class / #root id and break the real-DOM match).
+   body is darkened too so no white shows below #root when content is short. */
+:global(body.dark-mode),
+:global(body.bm-dashboard-dark),
+:global(body.dark-mode #root),
+:global(body.bm-dashboard-dark #root) {
   background-color: #1a1d23 !important;
 }
 

@@ -4,3 +4,10 @@
   align-items: center;
   column-gap: 4px;
 }
+
+/* Dark mode: BMError text inherits bootstrap's dark default (#212529) and
+   becomes unreadable on the dark bmdashboard surfaces. Force a light color. */
+:global(body.bm-dashboard-dark) .bmError,
+:global(body.bm-dashboard-dark) .bmError p {
+  color: #e0eaf5;
+}

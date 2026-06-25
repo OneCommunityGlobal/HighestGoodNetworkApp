@@ -129,6 +129,19 @@
   font-weight: bold;
 }
 
+/* Dark mode: the default status colors are too dark on the dark modal surface. */
+:global(.bm-dashboard-dark) .statusApproved {
+  color: #4ade80;
+}
+
+:global(.bm-dashboard-dark) .statusRejected {
+  color: #f87171;
+}
+
+:global(.bm-dashboard-dark) .statusPending {
+  color: #fbbf24;
+}
+
 .darkTable .stickyThead th {
   background-color: #2f4157;
   border-bottom: 1px solid #3f5269;

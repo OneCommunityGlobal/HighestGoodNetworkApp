@@ -56,6 +56,7 @@ function ToolDetailPage() {
   const history = useHistory();
   const { toolId } = useParams();
 
+  const darkMode = useSelector(state => state.theme.darkMode);
   const tool = useSelector(state => state.tool);
 
   const dispatch = useDispatch();
@@ -164,7 +165,9 @@ function ToolDetailPage() {
 
   return (
     <Container
-      className={`${styles.toolDetailPage} justify-content-center align-items-center mw-80 px-4`}
+      className={`${styles.toolDetailPage} ${
+        darkMode ? styles.darkMode : ''
+      } justify-content-center align-items-center mw-80 px-4`}
     >
       <header className={`${styles.toolDetailPage_header}`}>
         <h1>Tool Detail Page</h1>

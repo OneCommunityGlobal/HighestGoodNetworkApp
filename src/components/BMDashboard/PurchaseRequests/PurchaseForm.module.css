@@ -113,9 +113,58 @@
   }
 }
 
-:global(body.dark-mode) .purchaseRequestContainer select,
-:global(body.bm-dashboard-dark) .purchaseRequestContainer select {
+/* Dark mode container/panel backgrounds */
+.darkMode.purchaseRequestContainer {
+  background-color: #1b2a41;
+  border-color: #3a506b;
+  color: #ffffff;
+}
+
+.darkMode .purchaseHeader h2,
+.darkMode .purchaseHeader p,
+.darkMode label {
+  color: #e0eaf5;
+}
+
+.darkMode .purchaseForm input,
+.darkMode .purchaseForm textarea,
+.darkMode .purchaseForm select {
+  background-color: #2a3f5f;
+  border-color: #3a506b;
+  color: #ffffff;
+}
+
+.darkMode .purchaseForm input::placeholder,
+.darkMode .purchaseForm textarea::placeholder {
+  color: #b8c5d1;
+}
+
+.darkMode .purchaseForm option {
+  background-color: #2a3f5f;
+  color: #ffffff;
+}
+
+.darkMode .purchaseForm select {
   appearance: none;
 }
 
+/* Success modal (rendered in a portal, styled via its className prop) */
+.darkModeModal :global(.modal-content) {
+  background-color: #2e5061;
+  border-color: #3a506b;
+  color: #e0eaf5;
+}
+
+.darkModeModal :global(.modal-header),
+.darkModeModal :global(.modal-body),
+.darkModeModal :global(.modal-footer) {
+  background-color: #2e5061;
+  border-color: #3a506b;
+  color: #e0eaf5;
+}
+
+.darkModeModal :global(.modal-header) :global(.close) {
+  color: #e0eaf5;
+  text-shadow: none;
+}
 

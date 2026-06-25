@@ -5,7 +5,7 @@ import moment from 'moment';
 import { getAllProjectTimeLogs } from '../../../actions/bmdashboard/timeLoggerActions';
 import styles from './BMTimeLogCard.module.css';
 
-function BMTimeLogSummary({ projectId }) {
+function BMTimeLogSummary({ projectId, darkMode = false }) {
   const dispatch = useDispatch();
   const allProjectTimeLogs = useSelector(
     state => state.bmTimeLogger?.allProjectTimeLogs?.[projectId] || [],
@@ -74,7 +74,7 @@ function BMTimeLogSummary({ projectId }) {
 
   if (completedTimeLogs.length === 0) {
     return (
-      <Card className="my-4">
+      <Card className={`my-4 ${darkMode ? styles.summaryCardDark : ''}`}>
         <CardHeader className="bg-primary text-white">
           <h5 className="mb-0">Time Log Summary</h5>
         </CardHeader>
@@ -88,7 +88,7 @@ function BMTimeLogSummary({ projectId }) {
   }
 
   return (
-    <Card className="my-4">
+    <Card className={`my-4 ${darkMode ? styles.summaryCardDark : ''}`}>
       <CardHeader className="bg-primary text-white">
         <h5 className="mb-0">Time Log Summary</h5>
       </CardHeader>

@@ -1,9 +1,11 @@
+import { useSelector } from 'react-redux';
 import { CardHeader, Card } from 'reactstrap';
 import BMTimeLogStopWatch from './BMTimeLogStopWatch';
 import styles from './BMTimeLogCard.module.css';
 
 // function BMTimeLogCard({ selectedProject }) {
 function BMTimeLogDisplayMember({ firstName, lastName, role, memberId, projectId }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const roleColors = {
     volunteer: '#78bdda', // light blue
     core: '#ecb16c', // light orange
@@ -19,7 +21,9 @@ function BMTimeLogDisplayMember({ firstName, lastName, role, memberId, projectId
   return (
     <div>
       <Card
-        className={`${styles.memberCard} rounded-8 mr-3 my-3`}
+        className={`${styles.memberCard} ${
+          darkMode ? styles.memberCardDark : ''
+        } rounded-8 mr-3 my-3`}
         style={{ border: borderProperty }}
       >
         <CardHeader className={`${styles.memberCardHeader}`} style={{ backgroundColor: cardColor }}>

@@ -140,47 +140,48 @@
   color: #a00;
 }
 
-/* Responsive Layouts */
-@media (width <= 768px) {
-/* ================= DARK MODE (AFTER BASE) ================= */
+/* ================= DARK MODE (AFTER BASE) =================
+   These rules were previously trapped inside an `@media (width <= 768px)`
+   block (so they only applied on mobile) AND `.darkCard` was never put on the
+   card in the JSX. The card body/footer therefore used var(--module-text)
+   which resolves dark -> dark-on-dark. Now applied via a conditional class on
+   all screen sizes. The light-blue brand header is intentionally left intact. */
 
 .darkCard {
-  background-color: #1e1e1e !important;
-  color: #f5f5f5 !important;
-  border-color: #333 !important;
-}
-
-.darkCard .lessonCardHeader {
-  background-color: #2a2a2a !important;
-  color: #fff !important;
-  border-bottom: 1px solid #333 !important;
+  background-color: #1b2a41 !important;
+  border-color: #3a506b !important;
 }
 
 .darkCard .scrollableCardBody {
-  background-color: #1e1e1e !important;
-  color: #e6e6e6 !important;
+  background-color: #1b2a41 !important;
+  color: #e8edf4 !important;
 }
 
-.darkCard span,
-.darkCard p,
-.darkCard div {
-  color: #e6e6e6 !important;
+.darkCard .scrollableCardBody span,
+.darkCard .scrollableCardBody p,
+.darkCard .scrollableCardBody div {
+  color: #e8edf4 !important;
 }
 
-.darkCard .tagItem {
-  color: #bfbfbf !important;
+.darkCard .scrollableCardBody .tagItem {
+  color: #b7c4d4 !important;
 }
 
 .darkCard .lessonCardFooter {
-  background-color: #2a2a2a !important;
-  color: #ccc !important;
-  border-top: 1px solid #333 !important;
+  background-color: #14233a !important;
+  color: #cdd8e6 !important;
+  border-top: 1px solid #3a506b !important;
+}
+
+.darkCard .lessonCardFooter span,
+.darkCard .lessonCardFooter button {
+  color: #cdd8e6 !important;
 }
 
 .darkCard textarea.editable-lesson-summary {
-  background-color: #2a2a2a !important;
+  background-color: #2a3f5f !important;
   color: #fff !important;
-  border: 1px solid #555 !important;
+  border: 1px solid #3a506b !important;
 }
 
 .darkExpandLessons {
@@ -206,6 +207,7 @@
     height: auto;
     flex-direction: column;
   }
+
   .lessonCardFooterItems {
     justify-content: flex-start;
   }
@@ -215,6 +217,7 @@
   .formSelectContainer {
     flex-direction: column;
   }
+
   .cardFooter {
     font-size: small;
   }
@@ -238,6 +241,7 @@
   .nav {
     height: auto;
   }
+
   .tagItem {
     display: block;
     margin-top: 5px;
@@ -249,6 +253,7 @@
     flex-direction: column;
     align-items: flex-start;
   }
+
   .footerItemsActions {
     justify-content: flex-start;
   }
@@ -287,5 +292,4 @@
     display: block;
     margin-top: 5px;
   }
-}
 }

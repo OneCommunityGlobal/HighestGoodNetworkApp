@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import Select from 'react-select';
 import { MdOutlinePersonAddAlt1 } from 'react-icons/md';
 import { toast } from 'react-toastify';
@@ -7,6 +8,7 @@ import { ENDPOINTS } from '~/utils/URL';
 import styles from './AddTeamMember.module.css';
 
 function AddTeamMember() {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const initialState = {
     firstName: '',
     lastName: '',
@@ -21,6 +23,42 @@ function AddTeamMember() {
   };
 
   const [formData, setFormData] = useState(initialState);
+
+  const darkSelectStyles = darkMode
+    ? {
+        control: base => ({
+          ...base,
+          backgroundColor: '#2a3f5f',
+          borderColor: '#3a506b',
+          color: '#fff',
+        }),
+        menu: base => ({
+          ...base,
+          backgroundColor: '#2a3f5f',
+        }),
+        menuList: base => ({
+          ...base,
+          backgroundColor: '#2a3f5f',
+        }),
+        option: (base, state) => ({
+          ...base,
+          backgroundColor: state.isSelected || state.isFocused ? '#3a506b' : '#2a3f5f',
+          color: '#fff',
+        }),
+        singleValue: base => ({
+          ...base,
+          color: '#fff',
+        }),
+        input: base => ({
+          ...base,
+          color: '#fff',
+        }),
+        placeholder: base => ({
+          ...base,
+          color: '#b0b8c4',
+        }),
+      }
+    : undefined;
 
   const optionsRole = [
     { value: 'carpenter', label: 'Carpenter' },
@@ -138,7 +176,7 @@ function AddTeamMember() {
   };
 
   return (
-    <div className={`${styles.containerAdd}`}>
+    <div className={`${styles.containerAdd} ${darkMode ? styles.containerAddDark : ''}`}>
       <div className={`${styles.iconAddPerson}`}>
         <MdOutlinePersonAddAlt1 size={90} />
         <h1 className={`${styles.titleMember}`}>Create new team member</h1>
@@ -192,6 +230,7 @@ function AddTeamMember() {
               value={formData.role}
               onChange={option => handleSelectChange(option, 'role')}
               className={formData.errors.role ? 'error' : ''}
+              styles={darkSelectStyles}
             />
             Roles
           </label>
@@ -231,6 +270,7 @@ function AddTeamMember() {
               value={formData.team}
               onChange={option => handleSelectChange(option, 'team')}
               className={formData.errors.team ? 'error' : ''}
+              styles={darkSelectStyles}
             />
             Teams
           </label>
@@ -280,6 +320,7 @@ function AddTeamMember() {
             value={countryCodes.find(code => code.value === formData.countryCode)}
             onChange={option => handleSelectChange(option, 'countryCode')}
             className={`${styles.countryCodeSelect}`}
+            styles={darkSelectStyles}
           />
           <input
             type="tel"

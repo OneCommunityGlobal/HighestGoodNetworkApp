@@ -29,6 +29,7 @@ function PurchaseForm({
 }) {
   const dispatch = useDispatch();
   const history = useHistory();
+  const darkMode = useSelector(state => state.theme.darkMode);
   const primaryData = useSelector(primaryDataSelector);
   const secondaryData = useSelector(secondaryDataSelector);
   const errors = useSelector(errorSelector);
@@ -233,7 +234,7 @@ function PurchaseForm({
   }
 
   return (
-    <main className={`${styles.purchaseRequestContainer}`}>
+    <main className={`${styles.purchaseRequestContainer} ${darkMode ? styles.darkMode : ''}`}>
       <header className={`${styles.purchaseHeader}`}>
         <h2>{formLabels.headerText}</h2>
         <p>{formLabels.headerSubText}</p>
@@ -406,7 +407,11 @@ function PurchaseForm({
       </Form>
 
       {/* Success Modal */}
-      <Modal isOpen={showSuccessModal} toggle={() => setShowSuccessModal(false)}>
+      <Modal
+        isOpen={showSuccessModal}
+        toggle={() => setShowSuccessModal(false)}
+        className={darkMode ? styles.darkModeModal : ''}
+      >
         <ModalHeader toggle={() => setShowSuccessModal(false)}>
           Request Submitted Successfully
         </ModalHeader>

@@ -118,6 +118,44 @@
   margin: 0.5rem 0 0;
 }
 
+/* Form labels/help text (global elements inside module form) in dark mode */
+:global(body.dark-mode) .purchaseToolForm :global(label),
+:global(body.dark-mode) .purchaseToolForm :global(.form-text),
+:global(body.bm-dashboard-dark) .purchaseToolForm :global(label),
+:global(body.bm-dashboard-dark) .purchaseToolForm :global(.form-text) {
+  color: #e0eaf5;
+}
+
+/* Form inputs/selects (module classes) in dark mode */
+:global(body.dark-mode) .purchaseToolForm input,
+:global(body.dark-mode) .purchaseToolForm textarea,
+:global(body.dark-mode) .purchaseToolForm select,
+:global(body.bm-dashboard-dark) .purchaseToolForm input,
+:global(body.bm-dashboard-dark) .purchaseToolForm textarea,
+:global(body.bm-dashboard-dark) .purchaseToolForm select {
+  background-color: #2a3f5f;
+  border-color: #3a506b;
+  color: #ffffff;
+}
+
+:global(body.dark-mode) .purchaseToolForm input::placeholder,
+:global(body.dark-mode) .purchaseToolForm textarea::placeholder,
+:global(body.bm-dashboard-dark) .purchaseToolForm input::placeholder,
+:global(body.bm-dashboard-dark) .purchaseToolForm textarea::placeholder {
+  color: #b8c5d1;
+}
+
+:global(body.dark-mode) .purchaseToolForm select,
+:global(body.bm-dashboard-dark) .purchaseToolForm select {
+  appearance: none;
+}
+
+:global(body.dark-mode) .purchaseToolForm option,
+:global(body.bm-dashboard-dark) .purchaseToolForm option {
+  background-color: #2a3f5f;
+  color: #ffffff;
+}
+
 :global(body.dark-mode) .toolInsightPanel,
 :global(body.bm-dashboard-dark) .toolInsightPanel {
   border-color: rgb(71 85 105);

@@ -38,8 +38,53 @@ button.descriptionItemButton:hover{
 }
 
 .toolDetailPage_dashedLine{
-  border-top: 1px dashed #000; 
+  border-top: 1px dashed #000;
   width: 50%;
   margin-top: 10px;
   margin-bottom: 10px;
+}
+
+/* Dark mode via Redux-driven conditional class on the root container */
+.darkMode {
+  background-color: #1b2a41;
+  color: #fff;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.darkMode .toolDetailPage_header h1 {
+  color: #fff;
+}
+
+.darkMode .toolDetailPage_dashedLine {
+  border-top-color: #5a6d7a;
+}
+
+.darkMode button.descriptionItemButton {
+  color: #74c0fc;
+}
+
+/* Content area becomes a readable card on the dark page */
+.darkMode :global(.ToolDetailPage__content) {
+  background-color: #2e5061;
+  border-radius: 8px;
+  padding: 1rem;
+  color: #fff;
+}
+
+.darkMode .toolDetailPage_detailItem {
+  color: #fff;
+}
+
+/* Span sits on the #2e5061 card; deepen it for contrast */
+.darkMode .toolDetailPage_span {
+  background-color: #14233a;
+  border-color: #3a506b;
+  color: #fff;
+}
+
+/* Back to List button readable on dark */
+.darkMode :global(.btn) {
+  color: #e0eaf5;
+  border-color: #e0eaf5;
 }

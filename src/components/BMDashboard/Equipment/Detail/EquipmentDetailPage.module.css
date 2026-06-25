@@ -246,3 +246,66 @@ button.descriptionItem_button:hover {
   color: #e0eaf5 !important;
   border-color: #e0eaf5 !important;
 }
+
+/* Dark mode via Redux-driven conditional class on the root container */
+.darkMode {
+  background-color: #1b2a41;
+  color: #e0eaf5;
+}
+
+.darkMode .equipmentDetailPageHeader h1 {
+  color: #fff;
+}
+
+.darkMode .equipmentDetailPageContent {
+  background-color: #2e5061;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.darkMode :global(.EquipmentDetailPage__detail_item) {
+  color: #e0eaf5;
+}
+
+.darkMode :global(.EquipmentDetailPage__span) {
+  background-color: #2a3f5f;
+  border-color: #3a506b;
+  color: #fff;
+}
+
+.darkMode :global(.EquipmentDetailPage__dashed_line) {
+  border-color: #5a6d7a;
+}
+
+.darkMode button.descriptionItem_button {
+  color: #74c0fc;
+}
+
+.darkMode .editableSection {
+  background-color: #14233a;
+  border-color: #3a506b;
+}
+
+.darkMode .editableFieldLabel,
+.darkMode .radioLabel {
+  color: #d0dbe8;
+}
+
+.darkMode .editableFieldInput,
+.darkMode .editableField select {
+  background-color: #2a3f5f;
+  border-color: #3a506b;
+  color: #e0eaf5;
+}
+
+.darkMode .editableField select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='%23e0eaf5'%3E%3Cpath d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+}
+
+.darkMode .backBtn {
+  color: #e0eaf5 !important;
+  border-color: #e0eaf5 !important;
+}

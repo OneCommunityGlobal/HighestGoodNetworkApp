@@ -5,6 +5,32 @@
   margin-top: 2em;
 }
 
+/* Dark mode via Redux-driven conditional class on the root container */
+.darkMode {
+  background-color: #1b2a41;
+  color: #fff;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.darkMode .bmTimelogger_header h1 {
+  color: #fff;
+}
+
+/* Plain text labels (e.g. "Date:", "Project:") that otherwise keep a dark color */
+.darkMode p,
+.darkMode :global(.col),
+.darkMode label {
+  color: #e8edf4;
+}
+
+/* Project select dropdown in dark mode */
+.darkMode :global(#projectSelect) {
+  background-color: #2a3f5f;
+  border-color: #3a506b;
+  color: #fff;
+}
+
 .bmDashboard_button.btn.btnSecondary {
   background-color: #2e5061;
 }
