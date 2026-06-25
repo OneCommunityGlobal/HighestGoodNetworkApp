@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import { Card, CardHeader, CardBody, Table } from 'reactstrap';
 import moment from 'moment';
@@ -127,5 +128,15 @@ function BMTimeLogSummary({ projectId, darkMode = false }) {
     </Card>
   );
 }
+
+BMTimeLogSummary.propTypes = {
+  projectId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  darkMode: PropTypes.bool,
+};
+
+BMTimeLogSummary.defaultProps = {
+  projectId: null,
+  darkMode: false,
+};
 
 export default BMTimeLogSummary;

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { Container, Row, Col, InputGroup, Input } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import BMError from '../shared/BMError';
@@ -145,5 +146,15 @@ function BMTimeLogCard(props) {
     </Container>
   );
 }
+
+BMTimeLogCard.propTypes = {
+  darkMode: PropTypes.bool,
+  selectedProject: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+};
+
+BMTimeLogCard.defaultProps = {
+  darkMode: false,
+  selectedProject: null,
+};
 
 export default BMTimeLogCard;
