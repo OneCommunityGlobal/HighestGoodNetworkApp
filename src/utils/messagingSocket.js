@@ -1,29 +1,46 @@
 import { store } from "../store";
 import { ENDPOINTS } from "./URL";
 import { handleMessageReceived, handleMessageStatusUpdated } from "../handlers/LBDashboard/messagingHandlers";
+import { getUnreadUserNotifications } from "../actions/notificationAction";
 
 let messagingSocket = null;
 let reconnectAttempts = 0;
 
 export const initMessagingSocket = (token) => {
-    if (messagingSocket && messagingSocket.readyState === WebSocket.OPEN) {
+    if (
+        messagingSocket &&
+        (messagingSocket.readyState === WebSocket.OPEN ||
+            messagingSocket.readyState === WebSocket.CONNECTING)
+    ) {
         return messagingSocket;
     }
 
     const webSocketURL = ENDPOINTS.MESSAGING_SERVICE;
 
-    messagingSocket = new WebSocket(webSocketURL, token);
+    try {
+        messagingSocket = new WebSocket(webSocketURL, token);
+    } catch (e) {
+        console.error('Failed to initialize messaging WebSocket:', e);
+        return null;
+    }
 
     messagingSocket.onopen = () => {
         reconnectAttempts = 0;
     };
 
     messagingSocket.onerror = (error) => {
-        console.error("❌ Messaging WebSocket error:", error);
+        // console.error("❌ Messaging WebSocket error:", error);
+        return error;
     };
 
     messagingSocket.onmessage = (message) => {
-        const data = JSON.parse(message.data);
+        let data;
+        try {
+            data = JSON.parse(message.data);
+        } catch (e) {
+            console.error('Failed to parse messaging socket message:', e);
+            return;
+        }
 
         if (data.action === "RECEIVE_MESSAGE") {
             store.dispatch(handleMessageReceived(data.payload));
@@ -36,6 +53,11 @@ export const initMessagingSocket = (token) => {
                 type: "NEW_NOTIFICATION",
                 payload: data.payload,
             });
+            const state = store.getState();
+            const userId = state?.auth?.user?.userid || state?.auth?.user?.userId || state?.auth?.user?._id;
+            if (userId) {
+                store.dispatch(getUnreadUserNotifications(userId));
+            }
         }
     };
 
@@ -47,9 +69,10 @@ export const initMessagingSocket = (token) => {
                 reconnectAttempts += 1;
                 initMessagingSocket(token);
             }, 2000);
-        } else {
-            console.error("❌ Maximum reconnection attempts reached");
-        }
+        } 
+        // else {
+        //     console.error("❌ Maximum reconnection attempts reached");
+        // }
     };
 
     return messagingSocket;

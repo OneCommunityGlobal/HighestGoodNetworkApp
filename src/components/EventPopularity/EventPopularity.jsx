@@ -1,333 +1,310 @@
 'use client';
 
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import {
   Bar,
   BarChart,
   CartesianGrid,
+  Legend,
   ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  Tooltip,
-  Legend,
 } from 'recharts';
+import PropTypes from 'prop-types';
+import styles from './EventPopularity.module.css';
 
-// Sample data
 const eventTypeData = [
-  { name: 'Event Type 1', registered: 75 },
-  { name: 'Event Type 2', registered: 60 },
-  { name: 'Event Type 3', registered: 55 },
-  { name: 'Event Type 4', registered: 50 },
-  { name: 'Event Type 5', registered: 45 },
-  { name: 'Event Type 6', registered: 40 },
+  { name: 'Community Volunteer Day', registered: 75 },
+  { name: 'Skill Development Workshop', registered: 60 },
+  { name: 'Networking Mixer', registered: 55 },
+  { name: 'Environmental Cleanup', registered: 50 },
+  { name: 'Youth Membership Program', registered: 45 },
+  { name: 'Cultural Exchange Event', registered: 40 },
 ];
 
 const timeData = [
-  { time: '9:00', registered: 8, attended: 12 },
-  { time: '11:00', registered: 15, attended: 18 },
-  { time: '13:00', registered: 20, attended: 25 },
-  { time: '15:00', registered: 25, attended: 30 },
-  { time: '17:00', registered: 18, attended: 20 },
-  { time: '19:00', registered: 10, attended: 15 },
-  { time: '21:00', registered: 5, attended: 8 },
+  { time: '9:00 AM', registered: 8, attended: 12 },
+  { time: '11:00 AM', registered: 15, attended: 18 },
+  { time: '1:00 PM', registered: 20, attended: 25 },
+  { time: '3:00 PM', registered: 25, attended: 30 },
+  { time: '5:00 PM', registered: 18, attended: 20 },
+  { time: '7:00 PM', registered: 10, attended: 15 },
+  { time: '9:00 PM', registered: 5, attended: 8 },
 ];
 
 const participationCards = [
   {
-    title: '5+',
-    subtitle: 'Repeated participation',
+    title: '5+ Events',
+    subtitle: 'Highly Engaged Members',
+    description: 'Users who attended 5 or more events',
     trend: '-10%',
     trendType: 'negative',
     participants: 3,
   },
   {
-    title: '2+',
-    subtitle: 'Repeated participation',
+    title: '2-4 Events',
+    subtitle: 'Regular Participants',
+    description: 'Users who attended 2 to 4 events',
     trend: '+25%',
     trendType: 'positive',
     participants: 3,
   },
   {
-    title: '<1',
-    subtitle: 'Repeated participation',
+    title: '1 Event',
+    subtitle: 'New/One-Time Attendees',
+    description: 'First-time or one-time participants',
     trend: '-5%',
     trendType: 'negative',
     participants: 3,
   },
   {
-    title: '420',
-    subtitle: 'Total Members',
+    title: '420 Users',
+    subtitle: 'Total Active Members',
+    description: 'Total users with at least one event attendance',
     trend: '+20%',
     trendType: 'positive',
   },
 ];
 
-export default function EventDashboard() {
+const CustomTooltip = ({ active, payload, label }) => {
+  if (!active || !payload?.length) {
+    return null;
+  }
+
   return (
-    <div
-      style={{
-        maxWidth: '1200px',
-        margin: '0 auto',
-        padding: '20px',
-        fontFamily: 'Arial, sans-serif',
-      }}
+    <div className={styles.tooltipBox}>
+      <div className={styles.tooltipTitle}>{label}</div>
+
+      {payload.map(item => (
+        <div key={item.dataKey} className={styles.tooltipRow}>
+          <span>{item.name}: </span>
+          <strong>{item.value} users</strong>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+CustomTooltip.propTypes = {
+  active: PropTypes.bool,
+  payload: PropTypes.arrayOf(
+    PropTypes.shape({
+      dataKey: PropTypes.string,
+      name: PropTypes.string,
+      value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    }),
+  ),
+  label: PropTypes.string,
+};
+
+const InfoTooltip = ({ text, children }) => {
+  const [showTooltip, setShowTooltip] = useState(false);
+
+  return (
+    <button
+      type="button"
+      className={styles.infotooltipHover}
+      onMouseEnter={() => setShowTooltip(true)}
+      onMouseLeave={() => setShowTooltip(false)}
+      onFocus={() => setShowTooltip(true)}
+      onBlur={() => setShowTooltip(false)}
     >
-      <h1
-        style={{
-          fontSize: '24px',
-          fontWeight: 'bold',
-          marginBottom: '20px',
-          textAlign: 'center',
-        }}
-      >
-        Event Attendance Trend
-      </h1>
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: '20px',
-        }}
-      >
-        {/* Event Registration Trend (Type) */}
-        <div
-          style={{
-            background: 'white',
-            borderRadius: '8px',
-            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-            padding: '20px',
-          }}
-        >
-          <h2
-            style={{
-              fontSize: '18px',
-              marginBottom: '15px',
-            }}
-          >
-            Event Registration Trend (Type)
-          </h2>
-          <div
-            style={{
-              marginBottom: '20px',
-            }}
-          >
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                fontSize: '14px',
-                color: '#666',
-                marginBottom: '10px',
-              }}
-            >
+      {children}
+
+      {showTooltip && <div className={styles.infotooltipheading}>{text}</div>}
+    </button>
+  );
+};
+
+InfoTooltip.propTypes = {
+  text: PropTypes.string.isRequired,
+  children: PropTypes.node.isRequired,
+};
+
+export default function EventDashboard() {
+  const darkMode = useSelector(state => state.theme?.darkMode);
+
+  const currentDate = new Date();
+
+  const thirtyDaysAgo = new Date(currentDate.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+  const dateRangeLabel = `${thirtyDaysAgo.toLocaleDateString()} - ${currentDate.toLocaleDateString()}`;
+
+  return (
+    <div className={`${styles.dashboardContainer} ${darkMode ? styles.dark : ''}`}>
+      <div className={styles.headerSection}>
+        <h1 className={styles.pageTitle}>Event Attendance Dashboard</h1>
+
+        <div className={styles.timePeriod}>
+          <strong>Time Period:</strong> Last 30 days ({dateRangeLabel})
+        </div>
+
+        <div className={styles.subHeader}>
+          All metrics below reflect data from the selected time period
+        </div>
+      </div>
+
+      <div className={styles.dashboardGrid}>
+        {/* Registration by Type */}
+        <div className={styles.chartCard}>
+          <div className={styles.cardHeader}>
+            <h2 className={styles.cardTitle}>Event Registration by Type</h2>
+
+            <InfoTooltip text="Total users who registered for each event type">
+              <span className={styles.infoIcon}>?</span>
+            </InfoTooltip>
+          </div>
+
+          <div className={styles.eventList}>
+            <div className={styles.tableHeader}>
               <span>Event Name</span>
-              <span>Registered Members</span>
+              <span>Registered Users</span>
             </div>
+
             {eventTypeData.map(event => (
-              <div
-                key={event.name}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  marginBottom: '10px',
-                }}
-              >
-                <span
-                  style={{
-                    width: '100px',
-                    marginRight: '10px',
-                    fontSize: '14px',
-                    color: '#666',
-                  }}
-                >
-                  {event.name}
-                </span>
-                <div
-                  style={{
-                    flexGrow: 1,
-                    height: '8px',
-                    background: '#e0e0e0',
-                    borderRadius: '4px',
-                    overflow: 'hidden',
-                  }}
-                >
+              <div key={event.name} className={styles.eventRow}>
+                <span className={styles.eventName}>{event.name}</span>
+
+                <div className={styles.progressBarBackground}>
                   <div
+                    className={styles.progressBarFill}
                     style={{
-                      height: '100%',
-                      background: '#4A90E2',
                       width: `${(event.registered / 75) * 100}%`,
                     }}
                   />
                 </div>
-                <span
-                  style={{
-                    marginLeft: '10px',
-                    fontSize: '14px',
-                    color: '#666',
-                  }}
-                >
-                  {event.registered}
-                </span>
+
+                <span className={styles.eventCount}>{event.registered} users</span>
               </div>
             ))}
           </div>
 
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(3, 1fr)',
-              gap: '10px',
-            }}
-          >
+          <div className={styles.statsGrid}>
             {[
-              { title: '325', subtitle: 'Total Registered Members', isPrimary: true },
-              { title: 'Event Type 1', subtitle: 'Most Popular Event Type' },
-              { title: 'Event Type 6', subtitle: 'Least Popular Event Type' },
+              {
+                title: '325 Users',
+                subtitle: 'Total Registrations',
+                isPrimary: true,
+              },
+              {
+                title: 'Community Volunteer Day',
+                subtitle: 'Most Popular',
+              },
+              {
+                title: 'Cultural Exchange Event',
+                subtitle: 'Least Popular',
+              },
             ].map(card => (
-              <div
-                key={card}
-                style={{
-                  background: '#f5f5f5',
-                  borderRadius: '4px',
-                  padding: '10px',
-                  textAlign: 'center',
-                }}
-              >
-                <h3 style={card.isPrimary ? { color: '#4A90E2' } : {}}>{card.title}</h3>
-                <p
-                  style={{
-                    fontSize: '12px',
-                    color: '#666',
-                  }}
-                >
-                  {card.subtitle}
-                </p>
+              <div key={card.title} className={styles.statCard}>
+                <h3 className={card.isPrimary ? styles.primaryStatTitle : styles.statTitle}>
+                  {card.title}
+                </h3>
+
+                <p className={styles.statSubtitle}>{card.subtitle}</p>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Event Registration Trend (Time) */}
-        <div
-          style={{
-            background: 'white',
-            borderRadius: '8px',
-            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-            padding: '20px',
-          }}
-        >
-          <h2
-            style={{
-              fontSize: '18px',
-              marginBottom: '15px',
-            }}
-          >
-            Event Registration Trend (Time)
-          </h2>
-          <div
-            style={{
-              marginBottom: '20px',
-            }}
-          >
-            <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={timeData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="time" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="registered" name="Registered Users" fill="#4A90E2" />
-                <Bar dataKey="attended" name="Attended Users" fill="#82B7FF" />
+        {/* Attendance by Time */}
+        <div className={styles.chartCard}>
+          <div className={styles.cardHeader}>
+            <h2 className={styles.cardTitle}>Event Attendance by Time Slot</h2>
+
+            <InfoTooltip text="Registered = sign-ups | Attended = actual participants">
+              <span className={styles.infoIcon}>?</span>
+            </InfoTooltip>
+          </div>
+
+          <div className={styles.chartWrapper}>
+            <ResponsiveContainer width="100%" height={250}>
+              <BarChart
+                data={timeData}
+                margin={{
+                  top: 20,
+                  right: 20,
+                  left: 80,
+                  bottom: 40,
+                }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--ep-grid-stroke, #d1d5db)" />
+
+                <XAxis
+                  dataKey="time"
+                  interval={0}
+                  angle={-35}
+                  textAnchor="end"
+                  height={60}
+                  stroke="var(--ep-chart-tick, #64748b)"
+                />
+
+                <YAxis
+                  width={80}
+                  tick={{ fontSize: 12 }}
+                  stroke="var(--ep-chart-tick, #64748b)"
+                  label={{
+                    value: 'Number of Users',
+                    angle: -90,
+                    position: 'insideLeft',
+                    dx: -25,
+                    style: {
+                      textAnchor: 'middle',
+                      fill: 'var(--ep-chart-tick, #64748b)',
+                      fontSize: 12,
+                    },
+                  }}
+                />
+
+                <Tooltip content={<CustomTooltip />} />
+
+                <Legend
+                  wrapperStyle={{
+                    paddingTop: '20px',
+                  }}
+                />
+
+                <Bar
+                  dataKey="registered"
+                  name="Registered Users"
+                  fill="var(--ep-primary, #4A90E2)"
+                />
+
+                <Bar dataKey="attended" name="Attended Users" fill="var(--ep-primary-2, #82B7FF)" />
               </BarChart>
             </ResponsiveContainer>
           </div>
 
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(4, 1fr)',
-              gap: '10px',
-            }}
-          >
+          <div className={styles.participationGrid}>
             {participationCards.map(card => (
-              <div
-                key={card}
-                style={{
-                  background: '#f5f5f5',
-                  borderRadius: '4px',
-                  padding: '10px',
-                }}
-              >
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: '5px',
-                  }}
-                >
-                  <h3
-                    style={{
-                      fontSize: '18px',
-                      margin: 0,
-                    }}
-                  >
-                    {card.title}
-                  </h3>
-                  <button
-                    type="button"
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      fontSize: '16px',
-                    }}
-                  >
-                    <span style={{ fontSize: '16px' }}>&#9654;</span>
-                  </button>
+              <div key={card.title} className={styles.participationCard}>
+                <div className={styles.participationHeader}>
+                  <h3 className={styles.participationTitle}>{card.title}</h3>
+
+                  <InfoTooltip text={card.description}>
+                    <span className={styles.smallInfoIcon}>?</span>
+                  </InfoTooltip>
                 </div>
-                <p
-                  style={{
-                    fontSize: '12px',
-                    color: '#666',
-                    margin: '5px 0',
-                  }}
-                >
-                  {card.subtitle}
-                </p>
-                {card.participants && (
-                  <div
-                    style={{
-                      fontSize: '12px',
-                      marginTop: '5px',
-                    }}
-                  >
-                    <span style={{ fontSize: '16px' }}>&#128101;</span> +{card.participants}
-                  </div>
+
+                <p className={styles.participationSubtitle}>{card.subtitle}</p>
+
+                {Boolean(card.participants) && (
+                  <div className={styles.participantCount}>👥 {card.participants} users</div>
                 )}
+
                 <p
-                  style={{
-                    fontSize: '12px',
-                    fontWeight: 'bold',
-                    color: card.trendType === 'positive' ? 'green' : 'red',
-                  }}
+                  className={
+                    card.trendType === 'positive' ? styles.positiveTrend : styles.negativeTrend
+                  }
                 >
-                  {card.trend} Monthly
+                  {card.trend} vs last month
                 </p>
               </div>
             ))}
           </div>
         </div>
       </div>
-      <style>{`
-        @media (max-width: 768px) {
-          div {
-            grid-template-columns: 1fr !important;
-          }
-          div > div:last-child > div:last-child {
-            grid-template-columns: repeat(2, 1fr) !important;
-          }
-        }
-      `}</style>
     </div>
   );
 }

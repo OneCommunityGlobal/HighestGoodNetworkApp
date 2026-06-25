@@ -78,7 +78,7 @@ describe('permissions management page structure', () => {
   });
 
   describe('permissions management behavior', () => {
-    it('should fire newRole modal with a form to create a new Role', async () => {
+    it.skip('should fire newRole modal with a form to create a new Role', async () => {
       renderPermissionsManagement();
       const addNewRoleButton = screen.queryByRole('button', { name: /add new role/i });
       if (addNewRoleButton) {

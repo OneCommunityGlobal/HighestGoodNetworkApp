@@ -66,11 +66,13 @@ const BlueSquareEmailCCPopup = React.memo(props => {
   e?.preventDefault?.();
 
   if (!addUser?.email || !addUser?.firstName) {
+    // eslint-disable-next-line no-alert
     alert('Pick a user from the list first.');
     return;
   }
 
   if (!userId) {
+    // eslint-disable-next-line no-alert
     alert('Missing target userId.');
     return;
   }
@@ -83,16 +85,14 @@ const BlueSquareEmailCCPopup = React.memo(props => {
   };
 
   try {
-    console.log("Adding CC email:", payload);
 
     // ✅ Get updated list directly from dispatch return
     const result = await dispatch(addCCEmail(userId, payload));
 
     if (result) {
-      console.log('Updated CC count after addition:', result.ccCount);
 
       // ✅ Notify parent immediately with latest count
-      onCcListUpdate?.(result.ccCount);
+      onCcListUpdate?.();
 
       // Optional: refresh profiles for global state consistency
       await dispatch(getAllUserProfile());
@@ -105,33 +105,33 @@ const BlueSquareEmailCCPopup = React.memo(props => {
     onClose?.();
 
   } catch (err) {
-    console.error('Error adding CC email:', err);
+    // eslint-disable-next-line no-alert
     alert(err?.response?.data?.error || 'Failed to add CC email.');
   }
 };
 
 const handleRemoveCC = async (email) => {
   if (!userId) {
+    // eslint-disable-next-line no-alert
     alert('Missing target userId.');
     return;
   }
 
   if (!email) {
+    // eslint-disable-next-line no-alert
     alert('Missing CC email to delete.');
     return;
   }
 
   try {
-    console.log('Removing CC email:', email);
 
     // ✅ Get updated list directly from dispatch return
     const result = await dispatch(deleteCCEmail(userId, email));
 
     if (result) {
-      console.log('Updated CC count after deletion:', result.ccCount);
 
       // ✅ Notify parent immediately
-      onCcListUpdate?.(result.ccCount);
+      onCcListUpdate?.();
 
       // Optional: refresh profiles for global state
       await dispatch(getAllUserProfile());
@@ -141,7 +141,7 @@ const handleRemoveCC = async (email) => {
     onClose?.();
 
   } catch (err) {
-    console.error('Error deleting CC email:', err);
+    // eslint-disable-next-line no-alert
     alert(err?.response?.data?.error || 'Failed to delete CC email.');
   }
 };
@@ -249,5 +249,7 @@ const handleRemoveCC = async (email) => {
     </Modal>
   );
 });
+
+BlueSquareEmailCCPopup.displayName = "BlueSquareEmailCCPopup";
 
 export default BlueSquareEmailCCPopup;

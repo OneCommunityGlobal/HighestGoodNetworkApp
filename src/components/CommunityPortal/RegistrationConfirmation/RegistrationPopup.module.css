@@ -1,0 +1,117 @@
+/* Popup overlay */
+.popupOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgb(0 0 0 / 50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* Popup container */
+.popup {
+  background: white;
+  padding: 20px;
+  width: 400px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgb(0 0 0 / 20%);
+  text-align: center;
+  position: relative;
+}
+
+.popupDark {
+  background: #3a506b;
+  color: white;
+  padding: 20px;
+  width: 400px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgb(0 0 0 / 20%);
+  text-align: center;
+  position: relative;
+}
+
+/* Popup header */
+.popupHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+/* Event details */
+.eventDetails {
+  color: blue;
+  cursor: pointer;
+  margin-bottom: 10px;
+  text-decoration: underline;
+}
+
+/* Event info */
+.eventInfo {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+}
+
+/* Buttons */
+.registerBtn,
+.calendarBtn,
+.emailBtn,
+.downloadBtn {
+  display: block;
+  margin: 10px auto;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.registerBtn {
+  background: #0056b3;
+  color: white;
+}
+
+.calendarBtn {
+  background: #1a7a32;
+  color: white;
+}
+
+.emailBtn {
+  background: #0d6b7a;
+  color: white;
+}
+
+.downloadBtn {
+  background: #7a5c00;
+  color: white;
+}
+
+.popupFooter {
+  display: flex;
+  justify-content: space-between;
+}
+
+:global(.darkMode) .eventDetails {
+  color: #90cdf4;
+}
+
+.userFullName {
+  /* Add any specific styles for user full name if needed */
+}
+
+.popupContent {
+  /* Add any specific styles for popup content if needed */
+}

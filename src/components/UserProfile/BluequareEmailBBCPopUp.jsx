@@ -58,29 +58,43 @@ const BluequareEmailAssignmentPopUp = React.memo(props => {
 
   const DEFAULT_RECIPIENT = {
     _id: '63feae337186de1898fa8f51',
-    email: 'jae@onecommunityglobal.org',
+    email: 'onecommunityhospitality@gmail.com',
     assignedTo: {
-      firstName: 'Jae',
+      firstName: 'Sara',
       lastName: 'Sabol',
-      role: 'Owner',
+      role: 'Administrator',
       isActive: true,
     },
     locked: true,
   };
 
   const assignmentsWithDefault = useMemo(() => {
-    const list = blueSquareEmailAssignments || [];
-    const hasDefault = list.some(
-    a => (a.email || '').toLowerCase() === DEFAULT_RECIPIENT.email.toLowerCase()
-  );
+  const list = blueSquareEmailAssignments || [];
+
   const withLockFlag = list.map(a => ({
     ...a,
     locked:
       a.locked ||
       (a.email || '').toLowerCase() === DEFAULT_RECIPIENT.email.toLowerCase(),
   }));
-  return hasDefault ? withLockFlag : [DEFAULT_RECIPIENT, ...withLockFlag];
-  }, [blueSquareEmailAssignments]);
+
+  const hasDefault = withLockFlag.some(
+    a => (a.email || '').toLowerCase() === DEFAULT_RECIPIENT.email.toLowerCase()
+  );
+
+  const combined = hasDefault
+    ? withLockFlag
+    : [DEFAULT_RECIPIENT, ...withLockFlag];
+
+  return combined.sort((a, b) =>
+    (a.email || '').toLowerCase() === DEFAULT_RECIPIENT.email.toLowerCase()
+      ? -1
+      : (b.email || '').toLowerCase() === DEFAULT_RECIPIENT.email.toLowerCase()
+      ? 1
+      : 0
+  );
+}, [blueSquareEmailAssignments]);
+
   
   
   const handleAddBCC = (e) =>{
