@@ -6,6 +6,8 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import axios from 'axios';
+import { Provider } from 'react-redux';
+import configureMockStore from 'redux-mock-store';
 import AddTeamMember from '../AddTeamMember/AddTeamMember';
 import { ENDPOINTS } from '../../../utils/URL';
 
@@ -37,6 +39,12 @@ vi.mock('react-toastify', () => ({
 
 const mockedAxios = axios;
 
+// AddTeamMember reads `state.theme.darkMode` via useSelector, so it must be
+// rendered inside a Redux Provider with a theme slice.
+const mockStore = configureMockStore([]);
+const renderWithStore = ui =>
+  render(<Provider store={mockStore({ theme: { darkMode: false } })}>{ui}</Provider>);
+
 describe('AddTeamMember Component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -46,35 +54,35 @@ describe('AddTeamMember Component', () => {
 
   describe('Component Rendering', () => {
     it('renders the person add icon', () => {
-      render(<AddTeamMember />);
+      renderWithStore(<AddTeamMember />);
       expect(screen.getByText('Create new team member')).toBeInTheDocument();
     });
   });
 
   describe('Form Input Changes', () => {
     it('updates first name field when typed', async () => {
-      render(<AddTeamMember />);
+      renderWithStore(<AddTeamMember />);
       const firstNameInput = screen.getByLabelText('First Name');
       await userEvent.type(firstNameInput, 'John');
       expect(firstNameInput).toHaveValue('John');
     });
 
     it('updates last name field when typed', async () => {
-      render(<AddTeamMember />);
+      renderWithStore(<AddTeamMember />);
       const lastNameInput = screen.getByLabelText('Last Name');
       await userEvent.type(lastNameInput, 'Doe');
       expect(lastNameInput).toHaveValue('Doe');
     });
 
     it('updates email field when typed', async () => {
-      render(<AddTeamMember />);
+      renderWithStore(<AddTeamMember />);
       const emailInput = screen.getByLabelText('Email Address');
       await userEvent.type(emailInput, 'john.doe@example.com');
       expect(emailInput).toHaveValue('john.doe@example.com');
     });
 
     it('updates teamSpecify field when typed', async () => {
-      render(<AddTeamMember />);
+      renderWithStore(<AddTeamMember />);
       // Assumes second empty input corresponds to teamSpecify in your UI
       const teamSpecifyInput = screen.getAllByDisplayValue('')[1];
       await userEvent.type(teamSpecifyInput, 'Custom Team');
@@ -84,21 +92,21 @@ describe('AddTeamMember Component', () => {
 
   describe('Phone Number Formatting', () => {
     it('formats phone number correctly as user types', async () => {
-      render(<AddTeamMember />);
+      renderWithStore(<AddTeamMember />);
       const phoneInput = screen.getByPlaceholderText('123-456-7890');
       await userEvent.type(phoneInput, '1234567890');
       expect(phoneInput).toHaveValue('123-456-7890');
     });
 
     it('formats partial phone numbers correctly', async () => {
-      render(<AddTeamMember />);
+      renderWithStore(<AddTeamMember />);
       const phoneInput = screen.getByPlaceholderText('123-456-7890');
       await userEvent.type(phoneInput, '123456');
       expect(phoneInput).toHaveValue('123-456');
     });
 
     it('handles short phone numbers correctly', async () => {
-      render(<AddTeamMember />);
+      renderWithStore(<AddTeamMember />);
       const phoneInput = screen.getByPlaceholderText('123-456-7890');
       await userEvent.type(phoneInput, '123');
       expect(phoneInput).toHaveValue('123');
@@ -107,7 +115,7 @@ describe('AddTeamMember Component', () => {
 
   describe('Form Validation', () => {
     it('shows validation errors for empty required fields', async () => {
-      render(<AddTeamMember />);
+      renderWithStore(<AddTeamMember />);
       await userEvent.click(screen.getByText('Submit'));
       await waitFor(() => {
         expect(screen.getByText('First name is required')).toBeInTheDocument();
@@ -119,14 +127,14 @@ describe('AddTeamMember Component', () => {
     });
 
     it('shows validation error for invalid email format', async () => {
-      render(<AddTeamMember />);
+      renderWithStore(<AddTeamMember />);
       await userEvent.type(screen.getByLabelText('Email Address'), 'invalid-email');
       await userEvent.click(screen.getByText('Submit'));
       expect(await screen.findByText('Please enter a valid email address')).toBeInTheDocument();
     });
 
     it('shows validation error for invalid phone number', async () => {
-      render(<AddTeamMember />);
+      renderWithStore(<AddTeamMember />);
       await userEvent.type(screen.getByPlaceholderText('123-456-7890'), '123');
       await userEvent.click(screen.getByText('Submit'));
       expect(
@@ -141,7 +149,7 @@ describe('AddTeamMember Component', () => {
       // you can specialize responses here. Otherwise, the default GET mock above is fine.
       mockedAxios.post.mockResolvedValue({ data: { success: true } });
 
-      render(<AddTeamMember />);
+      renderWithStore(<AddTeamMember />);
 
       // Fill required fields
       await userEvent.type(screen.getByLabelText('First Name'), 'John');
@@ -185,7 +193,7 @@ describe('AddTeamMember Component', () => {
 
     it('handles submission error correctly', async () => {
       mockedAxios.post.mockRejectedValue(new Error('Network error'));
-      render(<AddTeamMember />);
+      renderWithStore(<AddTeamMember />);
 
       await userEvent.type(screen.getByLabelText('First Name'), 'John');
       await userEvent.type(screen.getByLabelText('Last Name'), 'Doe');
@@ -210,7 +218,7 @@ describe('AddTeamMember Component', () => {
 
   describe('Cancel Functionality', () => {
     it('resets form when cancel button is clicked', async () => {
-      render(<AddTeamMember />);
+      renderWithStore(<AddTeamMember />);
       await userEvent.type(screen.getByLabelText('First Name'), 'John');
       await userEvent.type(screen.getByLabelText('Last Name'), 'Doe');
       await userEvent.type(screen.getByLabelText('Email Address'), 'john@example.com');
@@ -226,7 +234,7 @@ describe('AddTeamMember Component', () => {
   describe('Form Reset After Successful Submission', () => {
     it('resets form after successful submission', async () => {
       mockedAxios.post.mockResolvedValue({ data: { success: true } });
-      render(<AddTeamMember />);
+      renderWithStore(<AddTeamMember />);
 
       await userEvent.type(screen.getByLabelText('First Name'), 'John');
       await userEvent.type(screen.getByLabelText('Last Name'), 'Doe');
