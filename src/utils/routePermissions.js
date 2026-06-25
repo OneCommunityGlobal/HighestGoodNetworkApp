@@ -44,5 +44,11 @@ const RoutePermissions = {
   faq: [''],
   faqManagement: ['manageFAQs'],
   accessHgnSkillsDashboard: ['accessHgnSkillsDashboard'],
+  jobFormManagement: [
+    'manageJobForms',
+    'createFormQuestions',
+    'editFormQuestions',
+    'deleteFormQuestions',
+  ],
 };
 export default RoutePermissions;

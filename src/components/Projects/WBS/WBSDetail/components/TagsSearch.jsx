@@ -131,7 +131,7 @@ function TagsSearch(props) {
               >
                 <button
                   type="button"
-                  className="btn w-100 text-start p-0 text-dark"
+                  className="btn w-100 text-left p-1 text-dark"
                   onMouseDown={event => handleClick(event, member)}
                 >
                   {`${member.firstName || member.first} ${member.lastName || member.last}`}
