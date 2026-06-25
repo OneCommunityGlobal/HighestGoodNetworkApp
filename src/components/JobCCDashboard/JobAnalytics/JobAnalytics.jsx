@@ -42,6 +42,7 @@ import hasPermission from '../../../utils/permissions';
 import { ENDPOINTS } from '../../../utils/URL';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import clsx from 'clsx';
 
 const ROLE_OPTIONS = [
   'All Roles',
@@ -328,22 +329,21 @@ function useAnalyticsData(dateRange, comparisonPeriod, selectedRole) {
 }
 
 // ======================== SMALL REUSABLE UIs ========================
-// ======================== SMALL REUSABLE UIs ========================
 function LoadingSpinner({ message = 'Loading...' }) {
   return (
-    <div className={styles['loading']}>
-      <div className={styles['spinner']} />
-      <p className={styles['loading-text']}>{message}</p>
+    <div className={styles.loading}>
+      <div className={styles.spinner} />
+      <p className={styles.loadingText}>{message}</p>
     </div>
   );
 }
 
 function ErrorMessage({ error, onRetry }) {
   return (
-    <div className={styles['error-box']}>
-      <p className={styles['error-text']}>{error}</p>
+    <div className={styles.errorBox}>
+      <p className={styles.errorText}>{error}</p>
       {onRetry && (
-        <button className={`${styles['btn']} ${styles['btn-link']}`} onClick={onRetry}>
+        <button className={styles.buttonDanger} onClick={onRetry}>
           Try again
         </button>
       )}
@@ -353,11 +353,11 @@ function ErrorMessage({ error, onRetry }) {
 
 function AccessDenied() {
   return (
-    <div className={styles['access-wrapper']}>
-      <div className={styles['access-card']}>
-        <Lock className={styles['access-icon']} />
-        <h2 className={styles['accessTitle']}>Access Restricted</h2>
-        <p className={styles['accessMessage']}>
+    <div className={styles.accessWrapper}>
+      <div className={styles.accessCard}>
+        <Lock className={styles.accessIcon} />
+        <h2 className={styles.accessTitle}>Access Restricted</h2>
+        <p className={styles.accessMessage}>
           You don't have permission to view analytics. Only owners, administrators, and users with
           analytics permissions can access this page.
         </p>
@@ -369,14 +369,14 @@ function AccessDenied() {
 function MetricTooltip({ text }) {
   const [visible, setVisible] = useState(false);
   return (
-    <span className={styles['tooltip-wrap']}>
+    <span className={styles.tooltipWrap}>
       <Info
         size={13}
-        className={styles['tooltip-icon']}
+        className={styles.tooltipIcon}
         onMouseEnter={() => setVisible(true)}
         onMouseLeave={() => setVisible(false)}
       />
-      {visible && <span className={styles['tooltip-box']}>{text}</span>}
+      {visible && <span className={styles.tooltipBox}>{text}</span>}
     </span>
   );
 }
@@ -384,26 +384,22 @@ function MetricTooltip({ text }) {
 function MetricCard({ icon: Icon, title, value, change, tooltipText }) {
   const isPositive = change?.isPositive ?? false;
   return (
-    <div className={styles['metric-card']}>
-      <div className={styles['metric-top']}>
-        <div className={styles['metric-icon-wrap']}>
-          <Icon className={styles['metric-icon']} />
+    <div className={styles.metricCard}>
+      <div className={styles.metricTop}>
+        <div className={styles.metricIconWrap}>
+          <Icon className={styles.metricIcon} />
         </div>
         {change && change.formatted !== '0%' && (
-          <div
-            className={`${styles['change']} ${
-              isPositive ? styles['positive'] : styles['negative']
-            }`}
-          >
+          <div className={clsx(styles.change, isPositive ? styles.positive : styles.negative)}>
             {isPositive ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
             <span>{change.formatted}</span>
           </div>
         )}
       </div>
-      <div className={styles['metric-value']}>
+      <div className={styles.metricValue}>
         {typeof value === 'string' ? value : formatNumber(value)}
       </div>
-      <div className={styles['metric-title']}>
+      <div className={styles.metricTitle}>
         {title}
         {tooltipText && <MetricTooltip text={tooltipText} />}
       </div>
@@ -413,16 +409,16 @@ function MetricCard({ icon: Icon, title, value, change, tooltipText }) {
 
 function ChartCard({ title, icon: Icon, children, className }) {
   return (
-    <div className={`${styles['chart-card']} ${className || ''}`}>
-      <div className={styles['chart-header']}>
+    <div className={`${styles.chartCard} ${className || ''}`}>
+      <div className={styles.chartHeader}>
         {Icon && (
-          <div className={styles['chart-icon-wrap']}>
-            <Icon className={styles['chart-icon']} />
+          <div className={styles.chartIconWrap}>
+            <Icon className={styles.chartIcon} />
           </div>
         )}
-        <h3 className={styles['chart-title']}>{title}</h3>
+        <h3 className={styles.chartTitle}>{title}</h3>
       </div>
-      <div className={styles['chart-body']}>{children}</div>
+      <div className={styles.chartBody}>{children}</div>
     </div>
   );
 }
@@ -432,16 +428,12 @@ function DeviceFilterBanner({ selectedDevice, onClear }) {
   if (!selectedDevice) return null;
   const DevIcon = DEVICE_ICONS[selectedDevice] || Monitor;
   return (
-    <div className={styles['device-banner']}>
+    <div className={styles.deviceBanner}>
       <DevIcon size={16} />
-      <span>
-        Showing data for <strong>{selectedDevice}</strong> only
-      </span>
-      <button
-        className={styles['device-banner-clear']}
-        onClick={onClear}
-        title="Clear device filter"
-      >
+      <p className={styles.description}>
+        Showing data for <span>{selectedDevice}</span> only
+      </p>
+      <button className={styles.deviceBannerClear} onClick={onClear} title="Clear device filter">
         <X size={14} />
         Clear filter
       </button>
@@ -483,21 +475,21 @@ function DeviceEngagementPanel({ device, darkMode }) {
   ];
 
   return (
-    <div className={styles['engagement-panel']}>
-      <div className={styles['engagement-header']}>
-        <div className={styles['engagement-device-label']}>
+    <div className={styles.engagementPanel}>
+      <div className={styles.engagementHeader}>
+        <div className={styles.engagementDeviceLabel}>
           <DevIcon size={18} />
           <span>{device.name} Engagement</span>
         </div>
-        <span className={styles['engagement-subtitle']}>Detailed metrics for selected device</span>
+        <span className={styles.engagementSubtitle}>Detailed metrics for selected device</span>
       </div>
-      <div className={styles['engagement-grid']}>
+      <div className={styles.engagementGrid}>
         {engagementItems.map(item => (
-          <div key={item.label} className={styles['engagement-item']}>
-            <div className={styles['engagement-value']} style={{ color: item.color }}>
+          <div key={item.label} className={styles.engagementItem}>
+            <div className={styles.engagementValue} style={{ color: item.color }}>
               {item.value}
             </div>
-            <div className={styles['engagement-label']}>
+            <div className={styles.engagementLabel}>
               {item.label}
               <MetricTooltip text={item.tooltip} />
             </div>
@@ -580,17 +572,15 @@ function DateRangeSelector({ dateRange, setDateRange, comparisonPeriod, setCompa
   }, [dateRange, setDateRange]);
 
   return (
-    <div className={styles['selector-card']}>
-      <div className={styles['selector-row']}>
-        <div className={styles['selector-col']}>
-          <label className={styles['label']}>Quick Select</label>
-          <div className={styles['quick-row']}>
+    <div className={styles.filters}>
+      <div className={styles.filtersRow}>
+        <div>
+          <p className={styles.label}>Quick Select</p>
+          <div className={styles.quickSelectButtonList}>
             {Object.entries(DATE_RANGE_PRESETS).map(([key, preset]) => (
               <button
                 key={key}
-                className={`${styles['btn']} ${
-                  active === key ? styles['btn-primary'] : styles['btn-ghost']
-                }`}
+                className={clsx(styles.quickSelectButton, active === key && styles.active)}
                 onClick={() => {
                   setDateRange(preset.getValue());
                   setActive(key);
@@ -602,9 +592,9 @@ function DateRangeSelector({ dateRange, setDateRange, comparisonPeriod, setCompa
           </div>
         </div>
 
-        <div className={''}>
-          <label className={styles['label']}>Custom Date Range</label>
-          <div className={styles['dates-row']}>
+        <div>
+          <p className={styles.label}>Custom Date Range</p>
+          <div className={styles.dateRange}>
             <DatePicker
               selected={dateRange?.start ? new Date(dateRange.start) : null}
               onChange={date => {
@@ -623,7 +613,7 @@ function DateRangeSelector({ dateRange, setDateRange, comparisonPeriod, setCompa
               // wrapperClassName={styles.datePicker}
               // calendarClassName={styles.calendar}
             />
-            <span className={styles['to']}>to</span>
+            <span className={styles.to}>to</span>
             <DatePicker
               selected={dateRange?.end ? new Date(dateRange.end) : null}
               onChange={date => {
@@ -665,10 +655,10 @@ function DateRangeSelector({ dateRange, setDateRange, comparisonPeriod, setCompa
           </div>
         </div>
 
-        <div className={styles['selector-col-narrow']}>
-          <label className={styles['label']}>Compare with</label>
+        <div>
+          <p className={styles.label}>Compare with</p>
           <select
-            className={`${styles['input']} ${styles['select']}`}
+            className={clsx(styles.input)}
             value={comparisonPeriod}
             onChange={e => setComparisonPeriod(e.target.value)}
           >
@@ -839,7 +829,7 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
             <DeviceEngagementPanel device={selectedDeviceData} darkMode={darkMode} />
           )}
 
-          <section className={styles['metrics-grid']}>
+          <section className={styles.metricsGrid}>
             <MetricCard
               icon={Users}
               title="Total Users"
@@ -870,11 +860,11 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
             />
           </section>
 
-          <section className={styles['charts-grid']} data-mobile={isMobile ? '1' : '0'}>
+          <section className={styles.chartsGrid} data-mobile={isMobile ? '1' : '0'}>
             <ChartCard title="User Trend Comparison" icon={TrendingUp}>
               <ResponsiveContainer width="100%" height={320}>
                 <LineChart data={mergedData} margin={CHART_MARGIN}>
-                  <CartesianGrid {...GRID_PROPS} className={styles.gridStroke} />
+                  <CartesianGrid {...GRID_PROPS} />
                   <XAxis dataKey="displayDate" tick={AXIS_TICK} />
                   <YAxis tick={AXIS_TICK} domain={['dataMin - 100', 'dataMax + 100']} />
                   <Tooltip {...getTooltipStyles(darkMode)} />
@@ -913,7 +903,7 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
                       <stop offset="95%" stopColor={colors.success} stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" className={styles['grid-stroke']} />
+                  <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="displayDate" tick={{ fontSize: 12 }} />
                   <YAxis tick={{ fontSize: 12 }} domain={['dataMin - 500', 'dataMax + 500']} />
                   <Tooltip {...getTooltipStyles(darkMode)} />
@@ -937,7 +927,7 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
                   data={analyticsData?.trafficSources ?? []}
                   margin={{ top: 10, right: 10, left: 0, bottom: 10 }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" className={styles['grid-stroke']} />
+                  <CartesianGrid strokeDasharray="3 3" />
                   <XAxis
                     dataKey="source"
                     tick={{ fontSize: 12 }}
@@ -1006,7 +996,7 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
                   <Tooltip {...getTooltipStyles(darkMode)} />
                 </PieChart>
               </ResponsiveContainer>
-              <p className={styles['pie-hint']}>
+              <p className={styles.pieHint}>
                 {selectedDevice
                   ? `Click the ${selectedDevice} slice again or another slice to change filter`
                   : 'Click a slice to filter all charts by device type'}
@@ -1020,14 +1010,13 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
                   : 'Sessions & Bounce Rate Analysis'
               }
               icon={Activity}
-              className={styles['full-width']}
             >
               <ResponsiveContainer width="100%" height={380}>
                 <LineChart
                   data={filteredCurrentPeriod}
                   margin={{ top: 10, right: 10, left: 0, bottom: 10 }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" className={styles['grid-stroke']} />
+                  <CartesianGrid strokeDasharray="3 3" className={styles.gridStroke} />
                   <XAxis dataKey="displayDate" tick={{ fontSize: 12 }} />
                   <YAxis
                     yAxisId="left"
