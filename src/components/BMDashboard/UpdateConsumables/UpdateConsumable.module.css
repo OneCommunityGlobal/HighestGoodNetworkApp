@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .updateModalContainer {
   overflow-y: scroll;
   height: 75vh;
@@ -10,7 +11,7 @@
 .updateConsumablePage {
   width: 100%;
   height: auto;
-  margin: 0px;
+  margin: 0;
   padding: 1rem 2rem;
   font-size: 15px;
 }

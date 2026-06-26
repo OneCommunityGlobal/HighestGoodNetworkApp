@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, fireEvent, waitFor, screen } from '@testing-library/react';
 import Paging from '../Paging';
+import styles from '../Paging.module.css';
 
 // Dummy child component for tests
 function DummyChild() {
@@ -25,7 +26,7 @@ describe('Paging Component', () => {
       </Paging>,
     );
     fireEvent.click(screen.getByText('2'));
-    expect(screen.getByText('2')).toHaveClass('active-button');
+    expect(screen.getByText('2')).toHaveClass(styles.activeButton);
   });
 
   test('navigates to the previous page on prev arrow click', () => {
@@ -38,7 +39,7 @@ describe('Paging Component', () => {
     const paginationButtons = screen.getAllByRole('button');
     const leftArrow = paginationButtons[0];
     fireEvent.click(leftArrow);
-    expect(screen.getByText('2')).toHaveClass('active-button');
+    expect(screen.getByText('2')).toHaveClass(styles.activeButton);
   });
 
   test('navigates to the next page on next arrow click', () => {
@@ -51,7 +52,7 @@ describe('Paging Component', () => {
     const paginationButtons = screen.getAllByRole('button');
     const rightArrow = paginationButtons[paginationButtons.length - 1];
     fireEvent.click(rightArrow);
-    expect(screen.getByText('2')).toHaveClass('active-button');
+    expect(screen.getByText('2')).toHaveClass(styles.activeButton);
   });
 
   test('renders correct number of pages based on total elements', () => {
@@ -83,7 +84,7 @@ describe('Paging Component', () => {
     );
     fireEvent.click(screen.getByText('4'));
     await waitFor(() => {
-      expect(screen.getByText('4')).toHaveClass('active-button');
+      expect(screen.getByText('4')).toHaveClass(styles.activeButton);
     });
     expect(screen.getByText('3')).toBeInTheDocument();
     expect(screen.getByText('5')).toBeInTheDocument();
@@ -97,7 +98,7 @@ describe('Paging Component', () => {
     );
     fireEvent.click(screen.getByText('50'));
     await waitFor(() => {
-      expect(screen.getByText('50')).toHaveClass('active-button');
+      expect(screen.getByText('50')).toHaveClass(styles.activeButton);
     });
     for (let i = 46; i <= 50; i++) {
       expect(screen.getByText(i.toString())).toBeInTheDocument();

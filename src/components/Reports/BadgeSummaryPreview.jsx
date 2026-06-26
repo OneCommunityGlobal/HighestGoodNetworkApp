@@ -10,8 +10,8 @@ import {
 } from 'reactstrap';
 import BadgeImage from '~/components/Badge/BadgeImage';
 import { boxStyle, boxStyleDark } from '../../styles';
-import '../Badge/BadgeReport.css';
-import './BadgeSummaryPreview.css';
+import '../Badge/BadgeReport.module.css';
+import './BadgeSummaryPreview.module.css';
 
 function BadgeSummaryPreview({ badges, darkMode, personalBestMaxHrs }) {
   const [isOpen, setIsOpen] = useState(false);

@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-unused-vars
 import React from 'react';
 // eslint-disable-next-line no-unused-vars
-import { render, screen, fireEvent, waitFor, act, wait } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import thunk from 'redux-thunk';
 import mockAdminState from '__tests__/mockAdminState';

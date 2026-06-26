@@ -19,7 +19,21 @@ const userSkillsReducer = (state = initialState, action) => {
             ...state.profileData.skillInfo,
             followUp: {
               ...state.profileData.skillInfo.followUp,
-              ...action.payload, // This merges the updated fields
+              ...action.payload,
+            },
+          },
+        },
+      };
+    case 'UPDATE_USER_SKILLS_YEARS_OF_EXPERIENCE_SUCCESS':
+      return {
+        ...state,
+        profileData: {
+          ...state.profileData,
+          skillInfo: {
+            ...state.profileData.skillInfo,
+            general: {
+              ...state.profileData.skillInfo.general,
+              yearsOfExperience: action.payload.yearsOfExperience,
             },
           },
         },
@@ -29,14 +43,4 @@ const userSkillsReducer = (state = initialState, action) => {
   }
 };
 
-/*
-case 'UPDATE_ADDITIONAL_INFO':
-  return {
-    ...state,
-    profileData: {
-      ...state.profileData,
-      additionalInfo: action.payload,
-    },
-  };
-*/
 export default userSkillsReducer;
