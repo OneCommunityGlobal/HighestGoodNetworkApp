@@ -176,6 +176,7 @@ function WBSTasks(props) {
       
       <Button
         color="light"
+        outline={darkMode}
         size="sm"
         className="ml-2"
         onClick={() => setOpenAll(!openAll)}
@@ -184,8 +185,13 @@ function WBSTasks(props) {
       >
         {openAll ? 'Fold All' : 'Unfold All'}
       </Button>
-      
-      <FilterBar currentFilter={filterState} onChange={setFilterState} isLoading={isLoading} />
+
+      <FilterBar
+        currentFilter={filterState}
+        onChange={setFilterState}
+        isLoading={isLoading}
+        darkMode={darkMode}
+      />
     </div>
   );
 
