@@ -3,8 +3,8 @@
 // Wrapper script to start react-scripts with OpenSSL legacy provider
 // This patches child_process to ensure all node processes use the OpenSSL flag
 
-const path = require('path');
-const Module = require('module');
+const path = require('node:path');
+const Module = require('node:module');
 const originalRequire = Module.prototype.require;
 
 // Patch child_process.spawn and spawnSync to always include --openssl-legacy-provider
@@ -15,24 +15,22 @@ Module.prototype.require = function(...args) {
     const originalSpawn = mod.spawn;
     const originalSpawnSync = mod.spawnSync;
 
-    mod.spawn = function(command, args, options) {
+    mod.spawn = function(command, spawnArgs, options) {
       if (command === 'node' || command === process.execPath || command.endsWith('node')) {
-        // Prepend the OpenSSL flag if not already present
-        if (!args || args[0] !== '--openssl-legacy-provider') {
-          args = ['--openssl-legacy-provider', ...(args || [])];
+        if (!spawnArgs?.[0] !== '--openssl-legacy-provider') {
+          spawnArgs = ['--openssl-legacy-provider', ...(spawnArgs || [])];
         }
       }
-      return originalSpawn.call(this, command, args, options);
+      return originalSpawn.call(this, command, spawnArgs, options);
     };
 
-    mod.spawnSync = function(command, args, options) {
+    mod.spawnSync = function(command, spawnArgs, options) {
       if (command === 'node' || command === process.execPath || command.endsWith('node')) {
-        // Prepend the OpenSSL flag if not already present
-        if (!args || args[0] !== '--openssl-legacy-provider') {
-          args = ['--openssl-legacy-provider', ...(args || [])];
+        if (!spawnArgs?.[0] !== '--openssl-legacy-provider') {
+          spawnArgs = ['--openssl-legacy-provider', ...(spawnArgs || [])];
         }
       }
-      return originalSpawnSync.call(this, command, args, options);
+      return originalSpawnSync.call(this, command, spawnArgs, options);
     };
   }
 

@@ -26,7 +26,6 @@ export const fetchUserPreferences = (userId, selectedUserId = null) => async (di
 
     return data;
   } catch (error) {
-    Error("Error fetching user preferences:", error);
     dispatch({
       type: FETCH_USER_PREFERENCES_FAILURE,
       payload: error.response?.data?.message || error.message,
