@@ -379,12 +379,9 @@ class Teams extends React.PureComponent {
 
   onUpdateTeamMemberVisibility = async (userId, visibility) => {
     await this.props.updateTeamMemeberVisibility(this.state.selectedTeamId, userId, visibility);
-    console.log('PAST updateTeamMemeberVisibility');
     const freshMembers = await this.props.getTeamMembers(this.state.selectedTeamId);
-    console.log('PAST getTeamMembers, about to call getAllUserTeams');
     this.setState({ selectedTeamMembers: freshMembers || [] });
     await this.props.getAllUserTeams();
-    console.log('PAST getAllUserTeams');
   };
 
   // NOTE: Team component calls (id, name, code) and we open immediately
@@ -406,10 +403,14 @@ class Teams extends React.PureComponent {
 
   onTeamMembersPopupClose = () => {
     this.props.clearTeamMembers();
+    // Do NOT clear selectedTeamId here — setting it to undefined causes
+    // getTeamMembers(undefined) on the next toggle, which fires a 400 error
+    // and briefly wipes selectedTeamData, resetting all toggles to ON.
+    // selectedTeamId gets overwritten correctly when the next team is opened.
     this.setState({
-      selectedTeamId: undefined,
       selectedTeam: '',
       teamMembersPopupOpen: false,
+      selectedTeamMembers: [],
     });
   };
 

@@ -168,6 +168,19 @@ export const TeamMembersPopup = React.memo(props => {
     return map;
   }, [props.teamData]);
 
+  // Only render toggle rows once teamData AND its members are populated so that
+  // `choice` is never undefined on first mount — prevents the brief ON flash.
+  // props.teamData can exist with members: undefined on the first Redux update,
+  // so we must check members is a non-empty array too.
+  const isMemberVisibilityReady = useMemo(() => {
+    return (
+      Array.isArray(props.teamData) &&
+      props.teamData.length > 0 &&
+      Array.isArray(props.teamData[0]?.members) &&
+      props.teamData[0].members.length > 0
+    );
+  }, [props.teamData]);
+
   useEffect(() => {
     setIsValidUser(true);
     setDuplicateUserAlert(false);
@@ -307,7 +320,7 @@ export const TeamMembersPopup = React.memo(props => {
   };
 
   const renderBody = () => {
-    if (showTableSpinner) {
+    if (showTableSpinner || !isMemberVisibilityReady) {
       return (
         <tr>
           <td align="center" colSpan={canAssignTeamToUsers ? 6 : 5}>
