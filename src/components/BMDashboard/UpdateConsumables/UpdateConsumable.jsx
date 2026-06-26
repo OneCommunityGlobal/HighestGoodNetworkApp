@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { postConsumableUpdate } from '../../../actions/bmdashboard/consumableActions';
 import styles from './UpdateConsumable.module.css';
+import PropTypes from 'prop-types';
 
 const getInitialRecord = rest => ({
   date: moment(new Date()).format('YYYY-MM-DD'),
@@ -23,7 +24,7 @@ const getInitialValidations = () => ({
 });
 
 const toUnits = (qty, logUnit, stockAvailable) => {
-  const value = qty === '' ? 0 : parseFloat(qty);
+  const value = qty === '' ? 0 : Number.parseFloat(qty);
   return logUnit === 'percent' && stockAvailable > 0 ? value * stockAvailable / 100 : value;
 };
 
@@ -71,8 +72,8 @@ function UpdateConsumable({ record, setModal }) {
   }, [postConsumableUpdateResult, isSubmitting]);
 
   useEffect(() => {
-    const qtyUsedFloat = parseFloat(updateRecord.quantityUsed);
-    const qtyWastedFloat = parseFloat(updateRecord.quantityWasted);
+    const qtyUsedFloat = Number.parseFloat(updateRecord.quantityUsed);
+    const qtyWastedFloat = Number.parseFloat(updateRecord.quantityWasted);
     setChangeOccured(!!(qtyUsedFloat || qtyWastedFloat));
 
     const unitsUsed = toUnits(updateRecord.quantityUsed, updateRecord.qtyUsedLogUnit, stockAvailable);
@@ -80,7 +81,7 @@ function UpdateConsumable({ record, setModal }) {
 
     setValidations(computeValidations(unitsUsed, unitsWasted, stockAvailable));
 
-    const newAvailable = parseFloat((stockAvailable - (unitsUsed + unitsWasted)).toFixed(4));
+    const newAvailable = Number.parseFloat((stockAvailable - (unitsUsed + unitsWasted)).toFixed(4));
     setAvailableCount(newAvailable !== stockAvailable ? newAvailable : undefined);
   }, [updateRecord]);
 
@@ -92,14 +93,19 @@ function UpdateConsumable({ record, setModal }) {
 
   const submitHandler = () => {
     if (isSubmitting) return;
-    if (!isValid()) { toast.error('Invalid Data'); return; }
+    if (isValid()) {
+      setIsSubmitting(true);
+      dispatch(postConsumableUpdate({...}));
+    } else {
+      toast.error('Invalid Data');
+    }
 
     setIsSubmitting(true);
     dispatch(postConsumableUpdate({
       date: updateRecord.date,
       quantityUsed: updateRecord.quantityUsed === '' ? 0 : parseFloat(updateRecord.quantityUsed),
       qtyUsedLogUnit: updateRecord.qtyUsedLogUnit,
-      quantityWasted: updateRecord.quantityWasted === '' ? 0 : parseFloat(updateRecord.quantityWasted),
+      quantityWasted: updateRecord.quantityWasted === '' ? 0 : Number.parseFloat(updateRecord.quantityWasted),
       qtyWastedLogUnit: updateRecord.qtyWastedLogUnit,
       stockAvailable,
       consumable: updateRecord.consumable,
@@ -220,5 +226,17 @@ function UpdateConsumable({ record, setModal }) {
     </Container>
   );
 }
-
+UpdateConsumable.propTypes = {
+  record: PropTypes.shape({
+    itemType: PropTypes.shape({
+      name: PropTypes.string,
+      unit: PropTypes.string,
+    }),
+    project: PropTypes.shape({
+      name: PropTypes.string,
+    }),
+    stockAvailable: PropTypes.number,
+  }).isRequired,
+  setModal: PropTypes.func.isRequired,
+};
 export default UpdateConsumable;
