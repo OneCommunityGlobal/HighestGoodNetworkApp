@@ -38,6 +38,9 @@ describe('Warning Component', () => {
         },
       },
     },
+    theme: {
+      darkMode: false,
+    },
   };
   const mockPersonId = '123';
   const mockUsername = 'testuser';
