@@ -23,6 +23,7 @@ function IssueGraph() {
   const [graphData, setGraphData] = useState([]);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [validationError, setValidationError] = useState('');
 
   const today = new Date();
   const formattedDate = date => date.toISOString().split('T')[0];
@@ -48,14 +49,30 @@ function IssueGraph() {
     setWeeks(val);
     setStartDate('');
     setEndDate('');
+    setValidationError('');
   };
 
   const handleGoClick = () => {
-    if (!startDate || !endDate) return;
-    if (new Date(startDate) > new Date(endDate)) {
-      alert('Start date must be before end date');
+    if (!startDate || !endDate) {
+      setValidationError('Please select both a Start Date and an End Date.');
       return;
     }
+
+    // 2. Check if they are the exact same day
+    if (startDate === endDate) {
+      setValidationError('Start date and End date cannot be the same day. Please select a range.');
+      return;
+    }
+
+    // 3. Check if start date is after end date
+    if (new Date(startDate) > new Date(endDate)) {
+      setValidationError('Start date must be before the End date.');
+      return;
+    }
+
+    // Clear any existing errors if checks pass
+    setValidationError('');
+    setWeeks(''); // Clears the dropdown preset selection to match custom timeline
     dispatch(fetchIssueTrend({ start: startDate, end: endDate }));
     dispatch(fetchIssueSummary({ start: startDate, end: endDate }));
   };
@@ -70,7 +87,10 @@ function IssueGraph() {
               id="start-date"
               type="date"
               value={startDate}
-              onChange={e => setStartDate(e.target.value)}
+              onChange={e => {
+                setStartDate(e.target.value);
+                setValidationError(''); // Clear error when user alters input
+              }}
               min={minStartDate}
               max={maxStartDate}
             />
@@ -83,7 +103,10 @@ function IssueGraph() {
                 id="end-date"
                 type="date"
                 value={endDate}
-                onChange={e => setEndDate(e.target.value)}
+                onChange={e => {
+                  setEndDate(e.target.value);
+                  setValidationError(''); // Clears error when user starts changing custom dates
+                }}
                 min={minEndDate}
                 max={maxEndDate}
               />
@@ -96,6 +119,9 @@ function IssueGraph() {
           <div className={styles.filterGroup}>
             <label htmlFor="weeks-select">Weeks:</label>
             <select id="weeks-select" value={weeks} onChange={handleWeeksChange}>
+              <option value="" disabled hidden>
+                Select Range
+              </option>
               <option value={4}>Last 4 Weeks</option>
               <option value={8}>Last 8 Weeks</option>
               <option value={12}>Last 12 Weeks</option>
@@ -103,10 +129,11 @@ function IssueGraph() {
           </div>
         </div>
 
-        {startDate && endDate && new Date(startDate) > new Date(endDate) && (
-          <p style={{ color: 'red' }}>Start date cannot be after end date.</p>
-        )}
         {/* issue tiles */}
+        {validationError && (
+          <p style={{ color: 'red', margin: '10px 0', fontWeight: '500' }}>{validationError}</p>
+        )}
+
         {issueSummary && (
           <div className={styles.tileRow}>
             <div className={styles.tile}>
@@ -128,11 +155,13 @@ function IssueGraph() {
           </div>
         )}
         {/* charts */}
+
+        {/* charts */}
         <div className={styles.graphWrapper}>
           <h2>Issues Created vs. Resolved</h2>
           {loading && <p>Loading...</p>}
           {error && <p style={{ color: 'red' }}>{error}</p>}
-          {graphData.length > 0 && (
+          {graphData.length > 0 ? (
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={graphData} margin={{ top: 20, right: 20, left: 0, bottom: 30 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#3a4a5a' : '#e0e0e0'} />
@@ -185,6 +214,13 @@ function IssueGraph() {
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
+          ) : (
+            !loading &&
+            !error && (
+              <p className={styles.noDataMessage} style={{ color: 'red' }}>
+                No issue data found for the selected timeframe.
+              </p>
+            )
           )}
         </div>
       </div>
