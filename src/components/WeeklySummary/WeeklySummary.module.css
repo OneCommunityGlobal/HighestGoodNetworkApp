@@ -25,7 +25,7 @@
   background-color: #fff !important;
 }
 
-.btn:disabled {
+:global(.btn):disabled {
   cursor: not-allowed;
 }
 
@@ -101,11 +101,11 @@
   padding: 10px !important;
 }
 
-.nav-tabs .nav-link {
+:global(.nav-tabs) :global(.nav-link) {
   cursor: pointer;
 }
 
-.tab-content {
+:global(.tab-content) {
   background-color: #fff;
   border: 1px solid transparent;
   border-color: #fff #dee2e6 #dee2e6;
@@ -147,7 +147,7 @@
 }
 
 @media screen and (width >= 576px) and (width <= 992px) {
-  .modal-dialog.weekly-summary-modal {
+  :global(.modal-dialog).weekly-summary-modal {
     max-width: 85%;
   }
 }
