@@ -804,74 +804,46 @@ const TeamMemberTasks = React.memo(props => {
               teamList
                 .filter(user => filterByUserFeatures(user))
                 .map(user => {
+                  const taskNode = (
+                    <TeamMemberTask
+                      key={!isTimeFilterActive ? user.personId : undefined}
+                      user={user}
+                      userPermission={props?.auth?.user?.permissions?.frontPermissions?.includes(
+                        'putReviewStatus',
+                      )}
+                      teamRoles={
+                        user.teams !== undefined && user.teams.length > 0
+                          ? filteredTeamRoles(user.teams)
+                          : ''
+                      }
+                      handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
+                      handleMarkAsDoneModal={handleMarkAsDoneModal}
+                      handleRemoveFromTaskModal={handleRemoveFromTaskModal}
+                      handleTaskModalOption={handleTaskModalOption}
+                      userRole={displayUser.role}
+                      updateTaskStatus={updateTaskStatus}
+                      userId={displayUser._id}
+                      showWhoHasTimeOff={showWhoHasTimeOff}
+                      showTrackers={showTrackers}
+                      showTasks={showTasks}
+                      onTimeOff={userOnTimeOff[user.personId]}
+                      goingOnTimeOff={userGoingOnTimeOff[user.personId]}
+                      displayUser={displayUser}
+                      userStateCatalog={userStateCatalog}
+                      onCatalogChange={setUserStateCatalog}
+                      userStateSelection={userStateSelections[user.personId] || []}
+                      onSelectionChange={(uid, updated) =>
+                        setUserStateSelections(prev => ({ ...prev, [uid]: updated }))
+                      }
+                      expandAll={expandAll}
+                    />
+                  );
                   if (!isTimeFilterActive) {
-                    return (
-                      <TeamMemberTask
-                        key={user.personId}
-                        user={user}
-                        userPermission={props?.auth?.user?.permissions?.frontPermissions?.includes(
-                          'putReviewStatus',
-                        )}
-                        teamRoles={
-                          user.teams !== undefined && user.teams.length > 0
-                            ? filteredTeamRoles(user.teams)
-                            : ''
-                        }
-                        handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
-                        handleMarkAsDoneModal={handleMarkAsDoneModal}
-                        handleRemoveFromTaskModal={handleRemoveFromTaskModal}
-                        handleTaskModalOption={handleTaskModalOption}
-                        userRole={displayUser.role}
-                        updateTaskStatus={updateTaskStatus}
-                        userId={displayUser._id}
-                        showWhoHasTimeOff={showWhoHasTimeOff}
-                        showTrackers={showTrackers}
-                        showTasks={showTasks}
-                        onTimeOff={userOnTimeOff[user.personId]}
-                        goingOnTimeOff={userGoingOnTimeOff[user.personId]}
-                        displayUser={displayUser}
-                        userStateCatalog={userStateCatalog}
-                        onCatalogChange={setUserStateCatalog}
-                        userStateSelection={userStateSelections[user.personId] || []}
-                        onSelectionChange={(uid, updated) =>
-                          setUserStateSelections(prev => ({ ...prev, [uid]: updated }))
-                        }
-                        expandAll={expandAll}
-                      />
-                    );
+                    return taskNode;
                   }
                   return (
                     <Fragment key={user.personId}>
-                      <TeamMemberTask
-                        user={user}
-                        userPermission={props?.auth?.user?.permissions?.frontPermissions?.includes(
-                          'putReviewStatus',
-                        )}
-                        teamRoles={
-                          user.teams !== undefined && user.teams.length > 0
-                            ? filteredTeamRoles(user.teams)
-                            : ''
-                        }
-                        handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
-                        handleMarkAsDoneModal={handleMarkAsDoneModal}
-                        handleRemoveFromTaskModal={handleRemoveFromTaskModal}
-                        handleTaskModalOption={handleTaskModalOption}
-                        userRole={displayUser.role}
-                        updateTaskStatus={updateTaskStatus}
-                        userId={displayUser._id}
-                        showWhoHasTimeOff={showWhoHasTimeOff}
-                        showTrackers={showTrackers}
-                        showTasks={showTasks}
-                        onTimeOff={userOnTimeOff[user.personId]}
-                        goingOnTimeOff={userGoingOnTimeOff[user.personId]}
-                        userStateCatalog={userStateCatalog}
-                        onCatalogChange={setUserStateCatalog}
-                        userStateSelection={userStateSelections[user.personId] || []}
-                        onSelectionChange={(uid, updated) =>
-                          setUserStateSelections(prev => ({ ...prev, [uid]: updated }))
-                        }
-                        expandAll={expandAll}
-                      />
+                      {taskNode}
 
                       {timeEntriesList.length > 0 &&
                         timeEntriesList

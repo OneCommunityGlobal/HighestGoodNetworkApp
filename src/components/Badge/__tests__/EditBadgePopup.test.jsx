@@ -2,7 +2,7 @@ import React from 'react';
 import EditBadgePopup from '../EditBadgePopup';
 import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { configureStore } from 'redux-mock-store';
+import configureStore from 'redux-mock-store';
 import { themeMock } from '__tests__/mockStates';
 
 const mockStore = configureStore([]);
