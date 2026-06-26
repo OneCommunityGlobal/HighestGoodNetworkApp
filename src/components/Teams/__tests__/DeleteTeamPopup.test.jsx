@@ -1,6 +1,6 @@
 import React from 'react';
 import { screen, fireEvent } from '@testing-library/react';
-import { configureStore } from 'redux-mock-store';
+import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import DeleteTeamPopup from '~/components/Teams/DeleteTeamPopup';
 import { renderWithProvider } from '../../../__tests__/utils';
