@@ -93,8 +93,8 @@ function Collaboration() {
   useEffect(() => {
     if (!selectedJob) return;
     const esc = e => e.key === 'Escape' && setSelectedJob(null);
-    window.addEventListener('keydown', esc);
-    return () => window.removeEventListener('keydown', esc);
+    globalThis.addEventListener('keydown', esc);
+    return () => globalThis.removeEventListener('keydown', esc);
   }, [selectedJob]);
 
   /* ================= CLICK OUTSIDE DROPDOWN ================= */
@@ -121,6 +121,18 @@ function Collaboration() {
     setSearchTerm('');
     setQuery('');
     setCurrentPage(1);
+  };
+
+  const handleCategoryToggle = cat =>
+    setCategoriesSelected(prev =>
+      prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat],
+    );
+
+  const getListingText = () => {
+    if (searchTerm) return `Listing results for '${searchTerm}'`;
+    if (selectedPosition) return `Listing results for '${selectedPosition}'`;
+    if (categoriesSelected.length) return 'Listing results for selected categories';
+    return 'Listing all job ads.';
   };
 
   const handleShowSummaries = async () => {
@@ -220,11 +232,7 @@ function Collaboration() {
                     <input
                       type="checkbox"
                       checked={categoriesSelected.includes(cat)}
-                      onChange={() =>
-                        setCategoriesSelected(prev =>
-                          prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat],
-                        )
-                      }
+                      onChange={() => handleCategoryToggle(cat)}
                     />
                     {cat}
                   </label>
@@ -241,15 +249,7 @@ function Collaboration() {
 
         {/* QUERY TEXT */}
         <div className="job-queries">
-          <p>
-            {searchTerm
-              ? `Listing results for '${searchTerm}'`
-              : selectedPosition
-              ? `Listing results for '${selectedPosition}'`
-              : categoriesSelected.length
-              ? 'Listing results for selected categories'
-              : 'Listing all job ads.'}
-          </p>
+          <p>{getListingText()}</p>
           <button className="btn btn-secondary" onClick={handleShowSummaries}>
             Show Summaries
           </button>

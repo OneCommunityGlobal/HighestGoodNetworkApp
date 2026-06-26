@@ -246,20 +246,6 @@ const mockFeedbacks = [
 function ActivityComments() {
   const darkMode = useSelector(state => state.theme?.darkMode || false);
 
-  // Utility function to restore Date objects from localStorage
-  const restoreDates = items => {
-    return items.map(item => ({
-      ...item,
-      createdAt: new Date(item.createdAt),
-      replies: item.replies
-        ? item.replies.map(reply => ({
-            ...reply,
-            createdAt: new Date(reply.createdAt),
-          }))
-        : [],
-    }));
-  };
-
   const loadStoredFeedbacks = () => {
     try {
       const stored = localStorage.getItem('activityFeedbacks');
