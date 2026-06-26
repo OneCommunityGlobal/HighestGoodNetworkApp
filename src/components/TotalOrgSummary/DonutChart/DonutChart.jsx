@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart, ArcElement } from 'chart.js';
+import { clsx } from 'clsx';
 import externalLabelGuidesPlugin from '../VolunteerStatus/externalLabelGuidesPlugin';
 import styles from './DonutChart.module.css';
 
@@ -8,6 +9,10 @@ Chart.register(ArcElement);
 
 function DonutChart(props) {
   const { title, totalCount, percentageChange, data, colors, comparisonType, darkMode } = props;
+  const labelTextColor = darkMode ? '#e2e8f0' : '#334155';
+  const labelBoxBackground = darkMode ? 'rgba(15, 23, 42, 0.96)' : 'rgba(255, 255, 255, 0.96)';
+  const labelBoxBorder = darkMode ? 'rgba(148, 163, 184, 0.35)' : '#d0d0d0';
+  const chartSliceBorder = darkMode ? '#1c2541' : '#ffffff';
 
   const chartData = {
     labels: data.map(item => item.label),
@@ -15,6 +20,7 @@ function DonutChart(props) {
       {
         data: data.map(item => item.value),
         backgroundColor: colors,
+        borderColor: chartSliceBorder,
         borderWidth: 1,
       },
     ],
@@ -39,6 +45,9 @@ function DonutChart(props) {
         sideMap: { 0: -1, 1: -1, 2: -1, 3: -1, 4: -1 },
         allowSideMapOverride: true,
         total: totalCount,
+        lineColor: labelTextColor,
+        backgroundColor: labelBoxBackground,
+        borderColor: labelBoxBorder,
         formatter: ({ value, percentage }) => [`${value}`, `(${percentage}%)`],
       },
     },
@@ -52,15 +61,25 @@ function DonutChart(props) {
   const percentageChangeColor = percentageChange >= 0 ? 'var(--success)' : 'var(--danger)';
 
   return (
-    <div className={styles.donutContainer}>
+    <div className={clsx(styles.donutContainer, darkMode && styles.donutContainerDark)}>
       <div className={styles.donutScrollable}>
         <div className={styles.donutChart}>
           <Doughnut data={chartData} options={options} plugins={[externalLabelGuidesPlugin]} />
           <div className={styles.donutCenter}>
-            <h5 className="donut-heading" style={{ color: darkMode ? 'white' : 'black' }}>
+            <h5
+              className={clsx(
+                'donut-heading',
+                styles.donutHeading,
+                darkMode && styles.donutHeadingDark,
+              )}
+            >
               {title}
             </h5>
-            <h4 className="donut-count">{totalCount}</h4>
+            <h4
+              className={clsx('donut-count', styles.donutCount, darkMode && styles.donutCountDark)}
+            >
+              {totalCount}
+            </h4>
             {comparisonType !== 'No Comparison' && (
               <h6
                 className={styles.donutComparisonPercent}
@@ -101,6 +120,11 @@ DonutChart.propTypes = {
   ).isRequired,
   colors: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
   comparisonType: PropTypes.string.isRequired,
+  darkMode: PropTypes.bool,
+};
+
+DonutChart.defaultProps = {
+  darkMode: false,
 };
 
 export default DonutChart;
