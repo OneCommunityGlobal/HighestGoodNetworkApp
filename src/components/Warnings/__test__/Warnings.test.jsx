@@ -18,14 +18,23 @@ describe('Warning Component', () => {
   let store;
   const initialState = {
     role: {
-      roles: ['User'],
+      roles: [
+        {
+          roleName: 'Administrator',
+          permissions: [],
+        },
+        {
+          roleName: 'User',
+          permissions: [],
+        },
+      ],
     },
     auth: {
       user: {
         role: 'User',
         permissions: {
-          frontpermissions: [],
-          backpermissions: [],
+          frontPermissions: [],
+          backPermissions: [],
         },
       },
     },
