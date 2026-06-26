@@ -82,7 +82,7 @@ function UpdateConsumable({ record, setModal }) {
     setValidations(computeValidations(unitsUsed, unitsWasted, stockAvailable));
 
     const newAvailable = Number.parseFloat((stockAvailable - (unitsUsed + unitsWasted)).toFixed(4));
-    setAvailableCount(newAvailable !== stockAvailable ? newAvailable : undefined);
+    setAvailableCount(newAvailable === stockAvailable ? undefined : newAvailable);
   }, [updateRecord]);
 
   const isValid = () =>
