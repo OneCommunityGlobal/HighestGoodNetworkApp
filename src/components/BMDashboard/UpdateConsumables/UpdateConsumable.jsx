@@ -31,9 +31,11 @@ const toUnits = (qty, logUnit, stockAvailable) => {
 const computeValidations = (unitsUsed, unitsWasted, stockAvailable) => {
   const result = { quantityUsed: '', quantityWasted: '', quantityTogether: '' };
   if (unitsUsed > stockAvailable) result.quantityUsed = 'Quantity Used exceeds the available stock';
-  if (unitsWasted > stockAvailable) result.quantityWasted = 'Quantity Wasted exceeds the available stock';
+  if (unitsWasted > stockAvailable)
+    result.quantityWasted = 'Quantity Wasted exceeds the available stock';
   if (unitsUsed + unitsWasted > stockAvailable) {
-    result.quantityTogether = `Sum of Used and Wasted values exceeds available stock with a value of ${unitsUsed + unitsWasted}`;
+    result.quantityTogether = `Sum of Used and Wasted values exceeds available stock with a value of ${unitsUsed +
+      unitsWasted}`;
   }
   return result;
 };
@@ -76,8 +78,16 @@ function UpdateConsumable({ record, setModal }) {
     const qtyWastedFloat = Number.parseFloat(updateRecord.quantityWasted);
     setChangeOccured(!!(qtyUsedFloat || qtyWastedFloat));
 
-    const unitsUsed = toUnits(updateRecord.quantityUsed, updateRecord.qtyUsedLogUnit, stockAvailable);
-    const unitsWasted = toUnits(updateRecord.quantityWasted, updateRecord.qtyWastedLogUnit, stockAvailable);
+    const unitsUsed = toUnits(
+      updateRecord.quantityUsed,
+      updateRecord.qtyUsedLogUnit,
+      stockAvailable,
+    );
+    const unitsWasted = toUnits(
+      updateRecord.quantityWasted,
+      updateRecord.qtyWastedLogUnit,
+      stockAvailable,
+    );
 
     setValidations(computeValidations(unitsUsed, unitsWasted, stockAvailable));
 
@@ -95,15 +105,19 @@ function UpdateConsumable({ record, setModal }) {
     if (isSubmitting) return;
     if (isValid()) {
       setIsSubmitting(true);
-      dispatch(postConsumableUpdate({
-        date: updateRecord.date,
-        quantityUsed: updateRecord.quantityUsed === '' ? 0 : Number.parseFloat(updateRecord.quantityUsed),
-        qtyUsedLogUnit: updateRecord.qtyUsedLogUnit,
-        quantityWasted: updateRecord.quantityWasted === '' ? 0 : Number.parseFloat(updateRecord.quantityWasted),
-        qtyWastedLogUnit: updateRecord.qtyWastedLogUnit,
-        stockAvailable,
-        consumable: updateRecord.consumable,
-      }));
+      dispatch(
+        postConsumableUpdate({
+          date: updateRecord.date,
+          quantityUsed:
+            updateRecord.quantityUsed === '' ? 0 : Number.parseFloat(updateRecord.quantityUsed),
+          qtyUsedLogUnit: updateRecord.qtyUsedLogUnit,
+          quantityWasted:
+            updateRecord.quantityWasted === '' ? 0 : Number.parseFloat(updateRecord.quantityWasted),
+          qtyWastedLogUnit: updateRecord.qtyWastedLogUnit,
+          stockAvailable,
+          consumable: updateRecord.consumable,
+        }),
+      );
     } else {
       toast.error('Invalid Data');
     }
@@ -115,106 +129,212 @@ function UpdateConsumable({ record, setModal }) {
     setUpdateRecord(prev => ({ ...prev, [name]: value }));
   };
 
-  const labelClass = `${styles.consumableFormLabel} ${darkMode ? styles.consumableFormLabelDark : ''}`;
-  const valueClass = `${styles.consumableFormValue} ${darkMode ? styles.consumableFormValueDark : ''}`;
+  const labelClass = `${styles.consumableFormLabel} ${
+    darkMode ? styles.consumableFormLabelDark : ''
+  }`;
+  const valueClass = `${styles.consumableFormValue} ${
+    darkMode ? styles.consumableFormValueDark : ''
+  }`;
   const inputClass = darkMode ? 'bg-space-cadet text-light' : '';
   const inputStyle = darkMode ? { borderColor: '#3a506b' } : {};
 
   return (
     <Container fluid className={styles.updateConsumableContainer}>
-      <div className={`${styles.updateConsumablePage} ${darkMode ? styles.updateConsumablePageDark : ''}`}>
-        <div className={`${styles.updateConsumable} ${darkMode ? styles.updateConsumableDark : ''}`}>
+      <div
+        className={`${styles.updateConsumablePage} ${
+          darkMode ? styles.updateConsumablePageDark : ''
+        }`}
+      >
+        <div
+          className={`${styles.updateConsumable} ${darkMode ? styles.updateConsumableDark : ''}`}
+        >
           <Form>
             <FormGroup row className="align-items-center justify-content-start">
-              <Label for="updateConsumableName" sm={4} className={labelClass}>Consumable</Label>
-              <Col sm={6} className={valueClass}><b>{record?.itemType?.name}</b></Col>
+              <Label for="updateConsumableName" sm={4} className={labelClass}>
+                Consumable
+              </Label>
+              <Col sm={6} className={valueClass}>
+                <b>{record?.itemType?.name}</b>
+              </Col>
             </FormGroup>
 
             <FormGroup row className="align-items-center">
-              <Label for="updateConsumableProject" sm={4} className={labelClass}>Project Name</Label>
-              <Col sm={8} className={valueClass}>{record?.project.name}</Col>
-            </FormGroup>
-
-            <FormGroup row className="align-items-center justify-content-start">
-              <Label for="updateConsumableDate" sm={4} className={labelClass}>Date</Label>
-              <Col sm={6} className={valueClass}>
-                <Input id="updateConsumableDate" name="date" type="date" value={updateRecord.date} disabled className={inputClass} />
+              <Label for="updateConsumableProject" sm={4} className={labelClass}>
+                Project Name
+              </Label>
+              <Col sm={8} className={valueClass}>
+                {record?.project.name}
               </Col>
             </FormGroup>
 
             <FormGroup row className="align-items-center justify-content-start">
-              <Label for="updateConsumableUnit" sm={4} className={labelClass}>Available</Label>
-              <Col sm={6} className={valueClass}>{record?.stockAvailable}</Col>
+              <Label for="updateConsumableDate" sm={4} className={labelClass}>
+                Date
+              </Label>
+              <Col sm={6} className={valueClass}>
+                <Input
+                  id="updateConsumableDate"
+                  name="date"
+                  type="date"
+                  value={updateRecord.date}
+                  disabled
+                  className={inputClass}
+                />
+              </Col>
+            </FormGroup>
+
+            <FormGroup row className="align-items-center justify-content-start">
+              <Label for="updateConsumableUnit" sm={4} className={labelClass}>
+                Available
+              </Label>
+              <Col sm={6} className={valueClass}>
+                {record?.stockAvailable}
+              </Col>
             </FormGroup>
 
             {availableCount !== undefined && (
               <FormGroup row className="align-items-center justify-content-start">
-                <Label for="updateMaterialUnit" sm={4} className={labelClass}>New Available</Label>
+                <Label for="updateMaterialUnit" sm={4} className={labelClass}>
+                  New Available
+                </Label>
                 <Col sm={6} className={valueClass}>
-                  <span className={availableCount < 0 ? styles.consumableFormErrorClr : undefined}>{availableCount}</span>
+                  <span className={availableCount < 0 ? styles.consumableFormErrorClr : undefined}>
+                    {availableCount}
+                  </span>
                 </Col>
               </FormGroup>
             )}
 
             <FormGroup row>
-              <Label for="updateConsumableQuantityUsed" sm={4} className={labelClass}>Quantity Used</Label>
+              <Label for="updateConsumableQuantityUsed" sm={4} className={labelClass}>
+                Quantity Used
+              </Label>
               <Col sm={4} className={valueClass}>
                 <Input
-                  id="updateConsumableQuantityUsed" name="quantityUsed" placeholder="Used" type="number"
-                  value={updateRecord.quantityUsed} onChange={changeRecordHandler} min={0}
-                  className={inputClass} style={inputStyle}
-                  onKeyDown={e => { if (e.key === '+' || e.key === '-') e.preventDefault(); }}
-                  onInput={e => { e.target.value = e.target.value.replace(/[^\d.]/g, ''); }}
+                  id="updateConsumableQuantityUsed"
+                  name="quantityUsed"
+                  placeholder="Used"
+                  type="number"
+                  value={updateRecord.quantityUsed}
+                  onChange={changeRecordHandler}
+                  min={0}
+                  className={inputClass}
+                  style={inputStyle}
+                  onKeyDown={e => {
+                    if (e.key === '+' || e.key === '-') e.preventDefault();
+                  }}
+                  onInput={e => {
+                    e.target.value = e.target.value.replace(/[^\d.]/g, '');
+                  }}
                 />
               </Col>
               <Col sm={{ size: 4 }} className={valueClass}>
-                <Input id="updateConsumableQtyUsedLogUnitSelect" name="qtyUsedLogUnit" type="select"
-                  value={updateRecord.qtyUsedLogUnit} onChange={changeRecordHandler} className={inputClass} style={inputStyle}>
+                <Input
+                  id="updateConsumableQtyUsedLogUnitSelect"
+                  name="qtyUsedLogUnit"
+                  type="select"
+                  value={updateRecord.qtyUsedLogUnit}
+                  onChange={changeRecordHandler}
+                  className={inputClass}
+                  style={inputStyle}
+                >
                   <option value="unit">{record?.itemType?.unit}</option>
                   <option value="percent">%</option>
                 </Input>
               </Col>
               {validations.quantityUsed !== '' && (
-                <Label for="updateMaterialQuantityUsedError" sm={12} className={styles.consumableFormError}>{validations.quantityUsed}</Label>
+                <Label
+                  for="updateMaterialQuantityUsedError"
+                  sm={12}
+                  className={styles.consumableFormError}
+                >
+                  {validations.quantityUsed}
+                </Label>
               )}
             </FormGroup>
 
             <FormGroup row>
-              <Label for="updateConsumablequantityWasted" sm={4} className={labelClass}>Quantity Wasted</Label>
+              <Label for="updateConsumablequantityWasted" sm={4} className={labelClass}>
+                Quantity Wasted
+              </Label>
               <Col sm={4} className={valueClass}>
                 <Input
-                  id="updateConsumablequantityWasted" name="quantityWasted" type="number" placeholder="Wasted"
-                  value={updateRecord.quantityWasted} onChange={changeRecordHandler} min={0}
-                  className={inputClass} style={inputStyle}
-                  onKeyDown={e => { if (e.key === '+' || e.key === '-') e.preventDefault(); }}
-                  onInput={e => { e.target.value = e.target.value.replace(/[^\d.]/g, ''); }}
+                  id="updateConsumablequantityWasted"
+                  name="quantityWasted"
+                  type="number"
+                  placeholder="Wasted"
+                  value={updateRecord.quantityWasted}
+                  onChange={changeRecordHandler}
+                  min={0}
+                  className={inputClass}
+                  style={inputStyle}
+                  onKeyDown={e => {
+                    if (e.key === '+' || e.key === '-') e.preventDefault();
+                  }}
+                  onInput={e => {
+                    e.target.value = e.target.value.replace(/[^\d.]/g, '');
+                  }}
                 />
               </Col>
               <Col sm={{ size: 4 }} className={valueClass}>
-                <Input id="updateConsumableQtyWastedLogUnitSelect" name="qtyWastedLogUnit" type="select"
-                  value={updateRecord.qtyWastedLogUnit} onChange={changeRecordHandler} className={inputClass} style={inputStyle}>
+                <Input
+                  id="updateConsumableQtyWastedLogUnitSelect"
+                  name="qtyWastedLogUnit"
+                  type="select"
+                  value={updateRecord.qtyWastedLogUnit}
+                  onChange={changeRecordHandler}
+                  className={inputClass}
+                  style={inputStyle}
+                >
                   <option value="unit">{record?.itemType?.unit}</option>
                   <option value="percent">%</option>
                 </Input>
               </Col>
               {validations.quantityWasted !== '' && (
-                <Label for="updateConsumableQuantityWastedError" sm={12} className={styles.consumableFormError}>{validations.quantityWasted}</Label>
+                <Label
+                  for="updateConsumableQuantityWastedError"
+                  sm={12}
+                  className={styles.consumableFormError}
+                >
+                  {validations.quantityWasted}
+                </Label>
               )}
             </FormGroup>
 
-            {validations.quantityTogether !== '' && validations.quantityUsed === '' && validations.quantityWasted === '' && (
-              <FormGroup row>
-                <Label for="updateConsumableQuantityTogetherError" sm={12} className={styles.consumableFormError}>{validations.quantityTogether}</Label>
-              </FormGroup>
-            )}
+            {validations.quantityTogether !== '' &&
+              validations.quantityUsed === '' &&
+              validations.quantityWasted === '' && (
+                <FormGroup row>
+                  <Label
+                    for="updateConsumableQuantityTogetherError"
+                    sm={12}
+                    className={styles.consumableFormError}
+                  >
+                    {validations.quantityTogether}
+                  </Label>
+                </FormGroup>
+              )}
 
             <FormGroup row className="d-flex justify-content-right">
               <Button
-                disabled={isSubmitting || postConsumableUpdateResult.loading || availableCount < 0 || !changeOccured}
-                className={`${styles.consumableButtonBg} ${darkMode ? styles.consumableButtonBgDark : ''}`}
+                disabled={
+                  isSubmitting ||
+                  postConsumableUpdateResult.loading ||
+                  availableCount < 0 ||
+                  !changeOccured
+                }
+                className={`${styles.consumableButtonBg} ${
+                  darkMode ? styles.consumableButtonBgDark : ''
+                }`}
                 onClick={submitHandler}
               >
-                {isSubmitting ? <><Spinner size="sm" /> Updating...</> : 'Update Consumable'}
+                {isSubmitting ? (
+                  <>
+                    <Spinner size="sm" /> Updating...
+                  </>
+                ) : (
+                  'Update Consumable'
+                )}
               </Button>
             </FormGroup>
           </Form>
