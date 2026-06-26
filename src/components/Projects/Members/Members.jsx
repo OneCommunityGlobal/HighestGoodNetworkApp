@@ -25,6 +25,7 @@ import { getProjectDetail } from '~/actions/project';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL';
+import PropTypes from 'prop-types';
 
 const Members = props => {
   const darkMode = props.state.theme.darkMode;
@@ -363,6 +364,31 @@ const Members = props => {
       </div>
     </React.Fragment>
   );
+};
+
+Members.propTypes = {
+  state: PropTypes.shape({
+    theme: PropTypes.shape({
+      darkMode: PropTypes.bool,
+    }),
+    projectMembers: PropTypes.shape({
+      members: PropTypes.array,
+      foundUsers: PropTypes.array,
+    }),
+  }).isRequired,
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      projectId: PropTypes.string,
+    }),
+  }).isRequired,
+  fetchAllMembers: PropTypes.func.isRequired,
+  findProjectMembers: PropTypes.func.isRequired,
+  getAllUserProfiles: PropTypes.func.isRequired,
+  assignProject: PropTypes.func.isRequired,
+  getProjectDetail: PropTypes.func.isRequired,
+  hasPermission: PropTypes.func.isRequired,
+  clearFoundUsers: PropTypes.func,
+  dispatch: PropTypes.func,
 };
 
 const mapStateToProps = state => {
