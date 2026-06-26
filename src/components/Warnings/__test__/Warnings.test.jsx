@@ -23,6 +23,10 @@ describe('Warning Component', () => {
     auth: {
       user: {
         role: 'User',
+        permissions: {
+          frontpermissions: [],
+          backpermissions: [],
+        },
       },
     },
   };

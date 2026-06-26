@@ -119,7 +119,7 @@ describe("Projects component",()=>{
       infoCollections:infoCollections,
       role: {roles: rolesMock.role.roles}
     })
-    render(<Provider store={testStore}><Projects /></Provider>)
+    render(<MemoryRouter><Provider store={testStore}><Projects /></Provider></MemoryRouter>)
     expect(screen.getByTestId('loading')).toBeInTheDocument()
   })
   it('check if AddProject does not get displayed when postProject permission is not added',()=>{
@@ -157,7 +157,7 @@ describe("Projects component",()=>{
       role: {roles: rolesMock.role.roles}
     })
 
-    render(<Provider store={testStore}><Projects /></Provider>)
+    render(<MemoryRouter><Provider store={testStore}><Projects /></Provider></MemoryRouter>)
     // expect(screen.queryByText('Add new project')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /add new project/i })).toBeInTheDocument();
   })
