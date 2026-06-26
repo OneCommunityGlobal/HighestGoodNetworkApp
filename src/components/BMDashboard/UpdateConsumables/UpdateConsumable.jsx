@@ -1,11 +1,11 @@
 import moment from 'moment';
+import PropTypes from 'prop-types';
 import { Container, FormGroup, Input, Label, Form, Col, Button, Spinner } from 'reactstrap';
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { postConsumableUpdate } from '../../../actions/bmdashboard/consumableActions';
 import styles from './UpdateConsumable.module.css';
-import PropTypes from 'prop-types';
 
 const getInitialRecord = rest => ({
   date: moment(new Date()).format('YYYY-MM-DD'),
@@ -25,7 +25,7 @@ const getInitialValidations = () => ({
 
 const toUnits = (qty, logUnit, stockAvailable) => {
   const value = qty === '' ? 0 : Number.parseFloat(qty);
-  return logUnit === 'percent' && stockAvailable > 0 ? value * stockAvailable / 100 : value;
+  return logUnit === 'percent' && stockAvailable > 0 ? (value * stockAvailable) / 100 : value;
 };
 
 const computeValidations = (unitsUsed, unitsWasted, stockAvailable) => {
@@ -42,7 +42,7 @@ function UpdateConsumable({ record, setModal }) {
   const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme.darkMode);
   const postConsumableUpdateResult = useSelector(state => state.bmConsumables.updateConsumables);
-  const { purchaseRecord, stockAvailable, updateRecord: _, ...rest } = record;
+  const { stockAvailable, ...rest } = record;
 
   const [updateRecord, setUpdateRecord] = useState(getInitialRecord(rest));
   const [validations, setValidations] = useState(getInitialValidations());
@@ -107,18 +107,6 @@ function UpdateConsumable({ record, setModal }) {
     } else {
       toast.error('Invalid Data');
     }
-  };
-
-    setIsSubmitting(true);
-    dispatch(postConsumableUpdate({
-      date: updateRecord.date,
-      quantityUsed: updateRecord.quantityUsed === '' ? 0 : parseFloat(updateRecord.quantityUsed),
-      qtyUsedLogUnit: updateRecord.qtyUsedLogUnit,
-      quantityWasted: updateRecord.quantityWasted === '' ? 0 : Number.parseFloat(updateRecord.quantityWasted),
-      qtyWastedLogUnit: updateRecord.qtyWastedLogUnit,
-      stockAvailable,
-      consumable: updateRecord.consumable,
-    }));
   };
 
   const changeRecordHandler = e => {
@@ -235,6 +223,7 @@ function UpdateConsumable({ record, setModal }) {
     </Container>
   );
 }
+
 UpdateConsumable.propTypes = {
   record: PropTypes.shape({
     itemType: PropTypes.shape({
@@ -248,4 +237,5 @@ UpdateConsumable.propTypes = {
   }).isRequired,
   setModal: PropTypes.func.isRequired,
 };
+
 export default UpdateConsumable;
