@@ -129,6 +129,14 @@ function UpdateConsumable({ record, setModal }) {
     setUpdateRecord(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleKeyDown = e => {
+    if (e.key === '+' || e.key === '-') e.preventDefault();
+  };
+
+  const handleInput = e => {
+    e.target.value = e.target.value.replace(/[^\d.]/g, '');
+  };
+
   const labelClass = `${styles.consumableFormLabel} ${
     darkMode ? styles.consumableFormLabelDark : ''
   }`;
@@ -220,12 +228,8 @@ function UpdateConsumable({ record, setModal }) {
                   min={0}
                   className={inputClass}
                   style={inputStyle}
-                  onKeyDown={e => {
-                    if (e.key === '+' || e.key === '-') e.preventDefault();
-                  }}
-                  onInput={e => {
-                    e.target.value = e.target.value.replace(/[^\d.]/g, '');
-                  }}
+                  onKeyDown={handleKeyDown}
+                  onInput={handleInput}
                 />
               </Col>
               <Col sm={{ size: 4 }} className={valueClass}>
@@ -268,12 +272,8 @@ function UpdateConsumable({ record, setModal }) {
                   min={0}
                   className={inputClass}
                   style={inputStyle}
-                  onKeyDown={e => {
-                    if (e.key === '+' || e.key === '-') e.preventDefault();
-                  }}
-                  onInput={e => {
-                    e.target.value = e.target.value.replace(/[^\d.]/g, '');
-                  }}
+                  onKeyDown={handleKeyDown}
+                  onInput={handleInput}
                 />
               </Col>
               <Col sm={{ size: 4 }} className={valueClass}>
