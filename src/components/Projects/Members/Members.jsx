@@ -70,7 +70,7 @@ const Members = props => {
 
   const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers');
   const canUnassignUserInProject = props.hasPermission('unassignUserInProject');
-  const [allMembersProject, setAllProjectMembers] = useState([]);
+  const [allProjectMembers, setAllProjectMembers] = useState([]);
   const [isValid, setIsValid] = useState(true);
 
   const projectName = useSelector(state => state.projectById?.projectName || '');
@@ -129,7 +129,7 @@ const Members = props => {
     setQuery(currentValue);
     setSearchText(currentValue);
 
-    if(allMembersProject.filter(user => user.firstName.includes(currentValue)).length === 0) {
+    if(allProjectMembers.filter(user => user.firstName.includes(currentValue)).length === 0) {
       toast.error('No matching users found.');
     };
   
