@@ -1,8 +1,8 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable react/no-unescaped-entities */
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
-import { connect } from 'react-redux';
+import React, { useState, useMemo, useEffect, useCallback, useId } from 'react';
+import { connect, useSelector } from 'react-redux';
 import {
   LineChart,
   Line,
@@ -42,6 +42,7 @@ import hasPermission from '../../../utils/permissions';
 import { ENDPOINTS } from '../../../utils/URL';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import ReactTooltip from 'react-tooltip';
 import clsx from 'clsx';
 
 const ROLE_OPTIONS = [
@@ -368,25 +369,31 @@ function AccessDenied() {
 
 function MetricTooltip({ text }) {
   const [visible, setVisible] = useState(false);
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   return (
-    <span className={styles.tooltipWrap}>
+    <span className={clsx(styles.tooltipWrap, darkMode && styles.darkMode)}>
       <Info
         size={13}
         className={styles.tooltipIcon}
         onMouseEnter={() => setVisible(true)}
         onMouseLeave={() => setVisible(false)}
       />
-      {visible && <span className={styles.tooltipBox}>{text}</span>}
+      {visible && (
+        <span className={clsx(styles.tooltipBox, darkMode && styles.darkMode)}>{text}</span>
+      )}
     </span>
   );
 }
 
 function MetricCard({ icon: Icon, title, value, change, tooltipText }) {
   const isPositive = change?.isPositive ?? false;
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   return (
-    <div className={styles.metricCard}>
+    <div className={clsx(styles.metricCard, darkMode && styles.darkMode)}>
       <div className={styles.metricTop}>
-        <div className={styles.metricIconWrap}>
+        <div className={clsx(styles.metricIconWrap, darkMode && styles.darkMode)}>
           <Icon className={styles.metricIcon} />
         </div>
         {change && change.formatted !== '0%' && (
@@ -408,11 +415,13 @@ function MetricCard({ icon: Icon, title, value, change, tooltipText }) {
 }
 
 function ChartCard({ title, icon: Icon, children, className }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   return (
-    <div className={`${styles.chartCard} ${className || ''}`}>
+    <div className={clsx(styles.chartCard, darkMode && styles.darkMode)}>
       <div className={styles.chartHeader}>
         {Icon && (
-          <div className={styles.chartIconWrap}>
+          <div className={clsx(styles.chartIconWrap, darkMode && styles.darkMode)}>
             <Icon className={styles.chartIcon} />
           </div>
         )}
@@ -501,27 +510,34 @@ function DeviceEngagementPanel({ device, darkMode }) {
 }
 
 // ======================== CUSTOM PIE LABEL ========================
-const renderDeviceLabel = ({ cx, cy, midAngle, outerRadius, name, value, previousValue }) => {
+function DevicePieLabel({ cx, cy, midAngle, outerRadius, name, value, previousValue }) {
   const RADIAN = Math.PI / 180;
   const radius = outerRadius + 28;
   const x = cx + radius * Math.cos(-midAngle * RADIAN);
   const y = cy + radius * Math.sin(-midAngle * RADIAN);
   const change = calculatePercentageChange(value, previousValue);
+  const darkMode = useSelector(state => state.theme.darkMode);
+
+  const labelColor = darkMode ? '#f9fafb' : '#111827';
+  const positiveColor = darkMode ? '#34d399' : '#10b981';
+  const negativeColor = darkMode ? '#f87171' : '#ef4444';
+
   return (
     <text
       x={x}
       y={y}
+      fill={labelColor}
       textAnchor={x > cx ? 'start' : 'end'}
       dominantBaseline="central"
       fontSize={12}
     >
       {`${name}: ${value}%`}
-      <tspan fill={change.isPositive ? '#10b981' : '#ef4444'} fontSize={11}>
+      <tspan fill={change.isPositive ? positiveColor : negativeColor} fontSize={11}>
         {` (${change.formatted})`}
       </tspan>
     </text>
   );
-};
+}
 
 const DATE_RANGE_PRESETS = {
   last7Days: {
@@ -564,6 +580,7 @@ const DATE_RANGE_PRESETS = {
 
 function DateRangeSelector({ dateRange, setDateRange, comparisonPeriod, setComparisonPeriod }) {
   const [active, setActive] = useState('last30Days');
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
     if (!dateRange) {
@@ -572,7 +589,7 @@ function DateRangeSelector({ dateRange, setDateRange, comparisonPeriod, setCompa
   }, [dateRange, setDateRange]);
 
   return (
-    <div className={styles.filters}>
+    <div className={clsx(styles.filters, darkMode && styles.darkMode)}>
       <div className={styles.filtersRow}>
         <div>
           <p className={styles.label}>Quick Select</p>
@@ -788,8 +805,8 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
   );
 
   return (
-    <div className={styles.page}>
-      <header className={styles.header}>
+    <div className={clsx(styles.page, darkMode && styles.darkMode)}>
+      <header className={clsx(styles.header, darkMode && styles.darkMode)}>
         <h2 className={styles.title}>
           Job Analytics
           {selectedDevice && (
@@ -971,7 +988,7 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
                     outerRadius={110}
                     dataKey="value"
                     labelLine={false}
-                    label={renderDeviceLabel}
+                    label={<DevicePieLabel />}
                     onClick={handlePieClick}
                     cursor="pointer"
                   >

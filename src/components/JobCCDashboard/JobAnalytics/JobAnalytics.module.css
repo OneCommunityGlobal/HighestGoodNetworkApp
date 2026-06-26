@@ -36,7 +36,11 @@
 .page {
   min-height: 100vh;
   padding-inline: 1.5rem;
-  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+}
+
+.darkMode.page {
+  background-color: #1b2a41;
 }
 
 .header {
@@ -153,6 +157,7 @@
     border-radius: 0.5rem;
     padding: 0.5rem 1rem;
     font-size: 0.8rem;
+    color: var(--fg);
     border: 1px solid var(--card-border);
     transition: all 0.2s ease;
   }
@@ -185,6 +190,10 @@
   }
 }
 
+.darkMode.filters {
+    background-color: #1b2a41;
+}
+
 /* ======================== METRICS GRID ======================== */
 .metricsGrid {
   display: grid;
@@ -201,6 +210,10 @@
     transition: transform 0.15s ease;
   }
 
+  .darkMode.metricCard {
+    background-color: #1b2a41;
+  }
+
   .metricCard:hover {
     transform: translateY(-3px);
   }
@@ -213,13 +226,13 @@
   }
 
   .metricIconWrap {
-    background: rgb(0 0 0 / 5%);
+    background-color: rgb(0 0 0 / 5%);
     padding: 10px;
     border-radius: 10px;
   }
 
-  [data-theme='dark'] .metricIconWrap {
-    background: rgb(255 255 255 / 6%);
+  .darkMode.metricIconWrap {
+    background-color: rgb(255 255 255 / 6%);
   }
 
   .metricIcon {
@@ -250,6 +263,7 @@
   }
 
   .metricValue {
+    color: var(--fg);
     font-size: 2rem;
     font-weight: 700;
   }
@@ -269,46 +283,56 @@
   align-items: center;
   margin-left: 4px;
   vertical-align: middle;
-}
 
-.tooltipIcon {
-  color: var(--muted);
-  cursor: help;
-  flex-shrink: 0;
-}
+  .tooltipIcon {
+    color: var(--muted);
+    cursor: help;
+    flex-shrink: 0;
+  }
 
-.tooltipIcon:hover {
-  color: var(--primary);
-}
+  .tooltipIcon:hover {
+    color: var(--primary);
+  }
 
-.tooltipBox {
-  position: absolute;
-  bottom: calc(100% + 6px);
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--bg);
-  color: var(--fg);
-  font-size: 0.75rem;
-  line-height: 1.4;
-  padding: 7px 10px;
-  border: 1px solid var(--card-border);
-  border-radius: 7px;
-  white-space: normal;
-  width: 200px;
-  text-align: left;
-  z-index: 100;
-  pointer-events: none;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 7%);
-}
+  .tooltipIcon:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+    border-radius: 3px;
+  }
 
-.tooltipBox::after {
-  content: '';
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  border: 5px solid transparent;
-  border-top-color: var(--bg);
+  .tooltipBox {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg);
+    color: var(--fg);
+    font-size: 0.75rem;
+    line-height: 1.4;
+    padding: 7px 10px;
+    border: 1px solid var(--card-border);
+    border-radius: 7px;
+    white-space: normal;
+    width: 200px;
+    text-align: left;
+    z-index: 100;
+    pointer-events: none;
+    box-shadow: 0 4px 12px rgb(0 0 0 / 7%);
+  }
+
+  .darkMode.tooltipBox {
+    background-color: #1b2a41;
+  }
+
+  .tooltipBox::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 1px solid transparent;
+    border-top-color: var(--card-border);
+  }
 }
 
 /* ======================== CHART GRID ======================== */
@@ -362,7 +386,7 @@
     border-radius: 10px;
   }
 
-  [data-theme='dark'] .chartIconWrap {
+  .darkMode.chartIconWrap {
     background: rgb(255 255 255 / 6%);
   }
 
@@ -383,6 +407,14 @@
 
 .chartCard:hover {
   transform: translateY(-3px);
+}
+
+.darkMode.chartCard {
+  background-color: #1b2a41;
+
+  .pieChartLabel {
+    color: blue;
+  }
 }
 
 /* Pie chart hint text */
