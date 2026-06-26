@@ -36,6 +36,7 @@
 
 .dark .userCollaborationContainer {
   background-color: var(--bg-surface);
+  color: var(--text-primary);
 }
 
 /* ======================================================
