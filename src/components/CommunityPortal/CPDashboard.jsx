@@ -53,6 +53,13 @@ export function CPDashboard() {
   const [showPastEvents, setShowPastEvents] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
 
+  // Darken the page body in dark mode (app-wide pattern) so the area around the
+  // dashboard isn't left white.
+  useEffect(() => {
+    document.body.classList.toggle('dark-mode-body', darkMode);
+    return () => document.body.classList.remove('dark-mode-body');
+  }, [darkMode]);
+
   // Hide the global back-to-top button — not needed on this page
   useEffect(() => {
     const scrollBtn = document.querySelector('.back-to-top');
@@ -253,7 +260,7 @@ export function CPDashboard() {
 
   if (isLoading) {
     return (
-      <Container className={styles.dashboardContainer}>
+      <Container className={`${styles.dashboardContainer} ${darkMode ? styles.darkContainer : ''}`}>
         <p>Loading events...</p>
       </Container>
     );
@@ -261,7 +268,7 @@ export function CPDashboard() {
 
   if (error) {
     return (
-      <Container className={styles.dashboardContainer}>
+      <Container className={`${styles.dashboardContainer} ${darkMode ? styles.darkContainer : ''}`}>
         <p className={styles.errorText}>{error}</p>
       </Container>
     );
@@ -314,7 +321,7 @@ export function CPDashboard() {
   }
 
   return (
-    <Container className={styles.dashboardContainer}>
+    <Container className={`${styles.dashboardContainer} ${darkMode ? styles.darkContainer : ''}`}>
       <header className={`${styles.dashboardHeader} ${darkMode ? styles.darkHeader : ''}`}>
         <h1>All Events</h1>
       </header>

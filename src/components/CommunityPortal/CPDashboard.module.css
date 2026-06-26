@@ -6,6 +6,12 @@
   padding: 0;
 }
 
+/* In dark mode the page body is darkened (class toggled from the component) so
+   the area around the dashboard matches the app's dark theme instead of white. */
+:global(body.dark-mode-body) {
+  background: #1b2a41;
+}
+
 .dashboardContainer {
   padding: 40px 10px;
   margin: 0 auto;
@@ -21,6 +27,8 @@
 .darkContainer {
   background: #2b3e59 !important;
   color: #fff;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .dashboardHeader {
