@@ -8,11 +8,10 @@ import Warning from '../Warnings';
 import * as warningActions from '../../../actions/warnings';
 
 vi.mock('../../../actions/warnings', () => ({
-  getWarningsByUserId: vi.fn(() => () => Promise.resolve([])),
+  getWarningsByUserId: vi.fn(() => () => Promise.resolve([{ title: 'Warning 1', warnings: [] }])),
   postWarningByUserId: vi.fn(() => () => Promise.resolve([])),
   deleteWarningsById: vi.fn(() => () => Promise.resolve([])),
 }));
-
 const mockStore = configureMockStore([thunk]);
 
 describe('Warning Component', () => {
@@ -32,7 +31,6 @@ describe('Warning Component', () => {
 
   beforeEach(() => {
     store = mockStore(initialState);
-    vi.clearAllMocks();
   });
 
   test('renders nothing for non-admin users', () => {
@@ -56,10 +54,6 @@ describe('Warning Component', () => {
   });
 
   test('toggles warnings display on button click', async () => {
-    warningActions.getWarningsByUserId.mockImplementation(() => () =>
-      Promise.resolve([{ title: 'Warning 1', warnings: [] }]),
-    );
-
     render(
       <Provider store={store}>
         <Warning personId={mockPersonId} username={mockUsername} userRole="Administrator" />
