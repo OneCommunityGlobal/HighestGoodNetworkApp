@@ -71,16 +71,16 @@ describe('TriStateToggleSwitch Component', () => {
   it('wrapper has exactly two classes (toggle-switch and bg-color) for each state', () => {
     const { rerender } = render(<TriStateToggleSwitch pos="default" />);
 
-    expect(screen.getByTestId('toggle-switch').classList.length).toBe(2);
+    expect(screen.getByTestId('toggle-switch').classList).toHaveLength(2);
     expect(screen.getByTestId('toggle-switch').className).toMatch(/toggle-switch/);
     expect(screen.getByTestId('toggle-switch').className).toMatch(/bg-darkgray/);
 
     rerender(<TriStateToggleSwitch pos="posted" />);
-    expect(screen.getByTestId('toggle-switch').classList.length).toBe(2);
+    expect(screen.getByTestId('toggle-switch').classList).toHaveLength(2);
     expect(screen.getByTestId('toggle-switch').className).toMatch(/bg-blue/);
 
     rerender(<TriStateToggleSwitch pos="requested" />);
-    expect(screen.getByTestId('toggle-switch').classList.length).toBe(2);
+    expect(screen.getByTestId('toggle-switch').classList).toHaveLength(2);
     expect(screen.getByTestId('toggle-switch').className).toMatch(/bg-green/);
   });
 

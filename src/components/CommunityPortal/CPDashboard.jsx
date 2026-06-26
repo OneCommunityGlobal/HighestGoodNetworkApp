@@ -2,18 +2,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
-import {
-  Container,
-  Row,
-  Alert,
-  Col,
-  Card,
-  CardBody,
-  Button,
-  Input,
-  FormGroup,
-  Label,
-} from 'reactstrap';
+import { Container, Row, Col, Card, CardBody, Button, Input, FormGroup, Label } from 'reactstrap';
 import Select from 'react-select';
 import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt, FaSearch, FaTimes } from 'react-icons/fa';
 import styles from './CPDashboard.module.css';
@@ -385,7 +374,6 @@ function CPDashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [failedLogos, setFailedLogos] = useState(new Set());
   const branchOptions = [{ value: '', label: 'Select branches', isDisabled: true }];
   const themeOptions = [{ value: '', label: 'Select themes', isDisabled: true }];
   const categoryOptions = [{ value: '', label: 'Select categories', isDisabled: true }];

@@ -291,6 +291,7 @@
 .dark .jobAd {
   background-color: var(--bg-card);
   border: 1px solid var(--border);
+  color: var(--text-primary);
 }
 
 .dark .jobAd h3 {

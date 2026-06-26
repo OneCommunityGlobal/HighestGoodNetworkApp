@@ -20,15 +20,16 @@ function TriStateToggleSwitch({ pos, onChange }) {
     else setBgColor('green');
   }, [pos]);
 
+  const bgClass = styles[`bg-${bgColor}`];
+
     return (
-    <div data-testid="toggle-switch" className={`${styles['toggle-switch']} ${styles[`bg-${bgColor}`]}`}>
+    <div data-testid="toggle-switch" className={`${styles['toggle-switch']} ${bgClass}`}>
       <div data-testid="knob-area" className={styles['knob-area']} style={{ position: 'relative', zIndex: 1 }}>
         {['posted', 'default', 'requested'].map(p => (
-          <div
+          <button
+            type="button"
             key={p}
             data-testid={`option-${p}`}
-            role="button"
-            tabIndex={0}
             onClick={() => handleClick(p)}
             onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && handleClick(p)}
           />

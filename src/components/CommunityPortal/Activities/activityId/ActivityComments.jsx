@@ -260,20 +260,6 @@ function ActivityComments() {
     }));
   };
 
-  // Load data from localStorage or use mock data as fallback
-  const loadStoredComments = () => {
-    try {
-      const stored = localStorage.getItem('activityComments');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        return restoreDates(parsed);
-      }
-      return mockComments;
-    } catch (error) {
-      return mockComments;
-    }
-  };
-
   const loadStoredFeedbacks = () => {
     try {
       const stored = localStorage.getItem('activityFeedbacks');
