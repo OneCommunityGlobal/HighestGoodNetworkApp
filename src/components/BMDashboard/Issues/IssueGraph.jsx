@@ -14,6 +14,23 @@ import {
 } from 'recharts';
 import { fetchIssueSummary, fetchIssueTrend } from '../../../actions/bmdashboard/issueGraphActions';
 
+const formatDate = date => date.toISOString().split('T')[0];
+
+const getDateBounds = (startDate, endDate) => {
+  const today = new Date();
+  const twelveWeeksAgo = new Date(today.getTime() - 12 * 7 * 24 * 60 * 60 * 1000);
+
+  const maxEndDate = formatDate(today);
+  const minStartDate = formatDate(twelveWeeksAgo);
+
+  return {
+    maxEndDate,
+    minStartDate,
+    maxStartDate: endDate || maxEndDate,
+    minEndDate: startDate || minStartDate,
+  };
+};
+
 function IssueGraph() {
   const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -25,12 +42,7 @@ function IssueGraph() {
   const [endDate, setEndDate] = useState('');
   const [validationError, setValidationError] = useState('');
 
-  const today = new Date();
-  const formattedDate = date => date.toISOString().split('T')[0];
-  const maxEndDate = formattedDate(today);
-  const minStartDate = formattedDate(new Date(today.getTime() - 12 * 7 * 24 * 60 * 60 * 1000));
-  const maxStartDate = endDate ? endDate : maxEndDate;
-  const minEndDate = startDate ? startDate : minStartDate;
+  const { minStartDate, maxStartDate, minEndDate, maxEndDate } = getDateBounds(startDate, endDate);
 
   useEffect(() => {
     dispatch(fetchIssueSummary({ weeks }));
