@@ -28,6 +28,36 @@ const getMappedOption = (map, index, fallback) => {
   return fallback;
 };
 
+const clampValue = (value, min, max) => Math.min(Math.max(value, min), max);
+
+const clampLabelBoxY = (boxY, boxHeight, chartArea) => {
+  if (!chartArea) {
+    return boxY;
+  }
+
+  const minY = chartArea.top + 4;
+  const maxY = chartArea.bottom - boxHeight - 4;
+  return clampValue(boxY, minY, maxY);
+};
+
+const clampLabelBoxX = (boxX, boxWidth, chartArea, chartWidth, containmentPadding) => {
+  const paddingX = Math.max(0, containmentPadding || 0);
+
+  if (chartArea) {
+    const minX = chartArea.left + paddingX;
+    const maxX = chartArea.right - boxWidth - paddingX;
+    return minX <= maxX ? clampValue(boxX, minX, maxX) : boxX;
+  }
+
+  if (chartWidth) {
+    const minX = paddingX;
+    const maxX = chartWidth - boxWidth - paddingX;
+    return minX <= maxX ? clampValue(boxX, minX, maxX) : boxX;
+  }
+
+  return boxX;
+};
+
 /**
  * Check if two label boxes overlap
  * @param {Object} box1 - First label box {left, right, top, bottom}
@@ -289,28 +319,8 @@ const externalLabelGuidesPlugin = {
       let boxY =
         elbowY - boxHeight / 2 + (getMappedOption(options.verticalOffsetMap, index, 0) || 0);
 
-      // Ensure box stays within chart area vertically
-      if (chartArea) {
-        const minY = chartArea.top + 4;
-        const maxY = chartArea.bottom - boxHeight - 4;
-        boxY = Math.max(minY, Math.min(boxY, maxY));
-      }
-
-      // Keep labels inside the drawable canvas horizontally to avoid clipping
-      const paddingX = Math.max(0, options.containmentPadding || 0);
-      if (chartArea) {
-        const minX = chartArea.left + paddingX;
-        const maxX = chartArea.right - boxWidth - paddingX;
-        if (minX <= maxX) {
-          boxX = Math.min(Math.max(boxX, minX), maxX);
-        }
-      } else if (chart?.width) {
-        const minX = paddingX;
-        const maxX = chart.width - boxWidth - paddingX;
-        if (minX <= maxX) {
-          boxX = Math.min(Math.max(boxX, minX), maxX);
-        }
-      }
+      boxY = clampLabelBoxY(boxY, boxHeight, chartArea);
+      boxX = clampLabelBoxX(boxX, boxWidth, chartArea, chart?.width, options.containmentPadding);
 
       const isRightOfCenter = boxX + boxWidth / 2 >= x;
       const effectiveDirection = isRightOfCenter ? 1 : -1;
