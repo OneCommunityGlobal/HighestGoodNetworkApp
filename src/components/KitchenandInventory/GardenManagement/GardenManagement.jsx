@@ -129,7 +129,17 @@ const formatDateDisplay = dateStr => {
 };
 
 function AddEventModal({ sectionTitle, newEvent, setNewEvent, darkMode, onClose, onAdd }) {
+  const [yieldError, setYieldError] = useState('');
   const dm = darkMode ? styles.dark : '';
+
+  const handleAdd = () => {
+    if (newEvent.yieldKg !== '' && Number(newEvent.yieldKg) < 0) {
+      setYieldError('Est. Yield must be 0 or greater.');
+      return;
+    }
+    setYieldError('');
+    onAdd();
+  };
   return (
     <div className={styles.modalOverlay}>
       <div className={`${styles.modalBox} ${dm}`}>
@@ -154,7 +164,14 @@ function AddEventModal({ sectionTitle, newEvent, setNewEvent, darkMode, onClose,
           type="date"
           className={`${styles.modalInput} ${dm}`}
           value={newEvent.fromDate}
-          onChange={e => setNewEvent({ ...newEvent, fromDate: e.target.value })}
+          onChange={e => {
+            const newFrom = e.target.value;
+            setNewEvent(prev => ({
+              ...prev,
+              fromDate: newFrom,
+              toDate: prev.toDate && prev.toDate < newFrom ? '' : prev.toDate,
+            }));
+          }}
           style={darkMode ? { colorScheme: 'dark' } : {}}
         />
 
@@ -192,6 +209,9 @@ function AddEventModal({ sectionTitle, newEvent, setNewEvent, darkMode, onClose,
           step="0.1"
           className={`${styles.modalInput} ${dm}`}
           value={newEvent.yieldKg}
+          onKeyDown={e => {
+            if (e.key === '-') e.preventDefault();
+          }}
           onChange={e => {
             if (e.target.value === '' || Number(e.target.value) >= 0) {
               setNewEvent({ ...newEvent, yieldKg: e.target.value });
@@ -199,6 +219,7 @@ function AddEventModal({ sectionTitle, newEvent, setNewEvent, darkMode, onClose,
           }}
           placeholder="e.g. 40"
         />
+        {yieldError && <p className={styles.fieldError}>{yieldError}</p>}
 
         <label htmlFor="gm-status" className={`${styles.modalLabel} ${dm}`}>
           Status
@@ -217,7 +238,7 @@ function AddEventModal({ sectionTitle, newEvent, setNewEvent, darkMode, onClose,
           <button type="button" className={`${styles.modalCancelBtn} ${dm}`} onClick={onClose}>
             Cancel
           </button>
-          <button type="button" className={styles.modalAddBtn} onClick={onAdd}>
+          <button type="button" className={styles.modalAddBtn} onClick={handleAdd}>
             Add
           </button>
         </div>

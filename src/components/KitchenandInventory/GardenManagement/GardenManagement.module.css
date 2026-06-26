@@ -8,7 +8,7 @@
 .pageWrapper {
   min-height: 100vh;
   width: 100%;
-  background-color: #ffffff;
+  background-color: #fff;
 }
 
 .pageWrapper.dark {
@@ -441,6 +441,12 @@
 
 .modalInput.dark:focus {
   border-color: #5d8a52;
+}
+
+.fieldError {
+  color: #c0392b;
+  font-size: 12px;
+  margin: 2px 0 4px;
 }
 
 .modalBtns {
