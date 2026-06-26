@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { Container, Row, Alert, Col, Card, CardBody, Button, Input } from 'reactstrap';
 import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt, FaSearch, FaTimes } from 'react-icons/fa';
@@ -7,7 +8,7 @@ import { ENDPOINTS } from '../../utils/URL';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
-const FixedRatioImage = ({ src, alt, fallback }) => (
+const FixedRatioImage = ({ src = '', alt = '', fallback }) => (
   <div
     style={{
       width: '100%',
@@ -32,6 +33,12 @@ const FixedRatioImage = ({ src, alt, fallback }) => (
     />
   </div>
 );
+
+FixedRatioImage.propTypes = {
+  src: PropTypes.string,
+  alt: PropTypes.string,
+  fallback: PropTypes.string.isRequired,
+};
 
 // Default filter values
 const DEFAULT_FILTERS = {
@@ -274,13 +281,10 @@ export function CPDashboard() {
     );
   }
 
+  // isLoading and error are already handled by the early returns above.
   let eventsContent;
 
-  if (isLoading) {
-    eventsContent = <div className={styles.noEvents}>Loading events...</div>;
-  } else if (error) {
-    eventsContent = <div className={styles.noEvents}>{error}</div>;
-  } else if (displayedEvents.length > 0) {
+  if (displayedEvents.length > 0) {
     eventsContent = displayedEvents.map(event => (
       <Col md={4} key={event.id} className={`${styles.eventCardCol}`}>
         <Link

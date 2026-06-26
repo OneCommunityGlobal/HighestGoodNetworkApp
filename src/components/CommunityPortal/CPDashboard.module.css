@@ -642,12 +642,12 @@
 .noEvents {
   text-align: center;
   padding: 40px;
-  color: #888;
+  color: #595959; /* darker gray to meet AA contrast on the white background */
   font-size: 1.2rem;
 }
 
 .darkMain .noEvents {
-  color: #9ca3af;
+  color: #e4e6eb; /* lighter gray to meet AA contrast on the dark background */
 }
 
 .dashboardActions {
