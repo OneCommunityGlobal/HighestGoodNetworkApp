@@ -2,7 +2,11 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
 import { useDispatch, Provider } from 'react-redux';
 import thunk from 'redux-thunk';
+<<<<<<< HEAD
 import configureMockStore from 'redux-mock-store';
+=======
+import configureStore from 'redux-mock-store';
+>>>>>>> origin/development
 import { BrowserRouter as Router } from 'react-router-dom';
 import BMLogin from '../BMLogin';
 import { act } from 'react-dom/test-utils';
