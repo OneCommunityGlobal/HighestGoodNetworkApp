@@ -1,6 +1,6 @@
 /* eslint-disable react/destructuring-assignment */
 import styles from './Team.module.css';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect, useSelector, useDispatch } from 'react-redux';
 import { Button } from 'reactstrap';
@@ -77,22 +77,13 @@ export function Team({
   // string key for cache/DOM ids
   const teamIdKey = String(props.teamId ?? '');
 
+  // localMembers is only populated after the user opens the modal or hovers.
+  // On mount we do NOT pre-fetch — that was firing GET /api/team/:id/users
+  // for every single row on page load (thousands of requests = 30s load time).
+  // Member counts are computed from props.team.members which already comes
+  // from the getAllTeams aggregation, so no extra request is needed.
   const [localMembers, setLocalMembers] = useState(() => getCachedTeamMembers(teamIdKey) || null);
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const cached = getCachedTeamMembers(teamIdKey);
-    if (cached && !localMembers) setLocalMembers(cached);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [teamIdKey]);
-
-  useEffect(() => {
-    if (!getCachedTeamMembers(teamIdKey) && teamIdKey) {
-      fetchTeamMembersCached(dispatch, getTeamMembers, teamIdKey)
-        .then(setLocalMembers)
-        .catch(() => {});
-    }
-  }, [dispatch, teamIdKey]);
 
   const members = localMembers ?? props.team?.members ?? [];
   const { total, active: activeCount, inactive } = computeCounts(members, loading, localMembers);
