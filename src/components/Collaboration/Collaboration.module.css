@@ -39,6 +39,13 @@
   color: var(--text-primary);
 }
 
+.dark .userCollaborationContainer p,
+.dark .userCollaborationContainer h2,
+.dark .userCollaborationContainer h3,
+.dark .userCollaborationContainer h4 {
+  color: var(--text-primary);
+}
+
 /* ======================================================
    HEADER
    ====================================================== */
