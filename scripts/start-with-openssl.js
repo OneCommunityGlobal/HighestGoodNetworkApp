@@ -13,8 +13,8 @@ Module.prototype.require = function(...args) {
 
     mod.spawn = function(command, spawnArgs, options) {
       if (command === 'node' || command === process.execPath || command.endsWith('node')) {
-        if (!spawnArgs || spawnArgs[0] !== '--openssl-legacy-provider') {
-          spawnArgs = ['--openssl-legacy-provider', ...(spawnArgs || [])];
+        if (spawnArgs?.[0] !== '--openssl-legacy-provider') {
+          spawnArgs = ['--openssl-legacy-provider', ...(spawnArgs ?? [])];
         }
       }
       return originalSpawn.call(this, command, spawnArgs, options);
@@ -22,8 +22,8 @@ Module.prototype.require = function(...args) {
 
     mod.spawnSync = function(command, spawnArgs, options) {
       if (command === 'node' || command === process.execPath || command.endsWith('node')) {
-        if (!spawnArgs || spawnArgs[0] !== '--openssl-legacy-provider') {
-          spawnArgs = ['--openssl-legacy-provider', ...(spawnArgs || [])];
+        if (spawnArgs?.[0] !== '--openssl-legacy-provider') {
+          spawnArgs = ['--openssl-legacy-provider', ...(spawnArgs ?? [])];
         }
       }
       return originalSpawnSync.call(this, command, spawnArgs, options);
