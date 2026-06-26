@@ -95,10 +95,19 @@ function UpdateConsumable({ record, setModal }) {
     if (isSubmitting) return;
     if (isValid()) {
       setIsSubmitting(true);
-      dispatch(postConsumableUpdate({...}));
+      dispatch(postConsumableUpdate({
+        date: updateRecord.date,
+        quantityUsed: updateRecord.quantityUsed === '' ? 0 : Number.parseFloat(updateRecord.quantityUsed),
+        qtyUsedLogUnit: updateRecord.qtyUsedLogUnit,
+        quantityWasted: updateRecord.quantityWasted === '' ? 0 : Number.parseFloat(updateRecord.quantityWasted),
+        qtyWastedLogUnit: updateRecord.qtyWastedLogUnit,
+        stockAvailable,
+        consumable: updateRecord.consumable,
+      }));
     } else {
       toast.error('Invalid Data');
     }
+  };
 
     setIsSubmitting(true);
     dispatch(postConsumableUpdate({
