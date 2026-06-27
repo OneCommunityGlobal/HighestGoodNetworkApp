@@ -19,13 +19,14 @@ import styles from './InjurySeverityChart.module.css';
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
-const generateColors = n =>
-  Array.from({ length: n }, (_, i) => {
-    const hue = Math.round((i * 360) / n);
-    return `hsl(${hue}, 70%, 50%)`;
-  });
-
+const DEPARTMENT_COLOR_MAP = {
+  Welding: '#d62728',
+  Electrical: '#ff7f0e',
+  Plumbing: '#1f77b4',
+  Carpentry: '#2ca02c',
+};
 const SEVERITY_ORDER = ['Minor', 'Major', 'Critical'];
+const DEPARTMENT_ORDER = ['Welding', 'Electrical', 'Plumbing', 'Carpentry'];
 
 function CustomTooltip({ active, payload, label, darkMode }) {
   if (!active || !payload || payload.length === 0) return null;
@@ -127,8 +128,9 @@ function InjurySeverityDashboard(props) {
   }, [bmProjects, rawData, selProjects]);
 
   const visibleDepartments = useMemo(() => {
-    const depts = Array.from(new Set(rawData.map(r => r.department).filter(Boolean)));
-    return depts;
+    const departmentsWithData = new Set(rawData.map(r => r.department).filter(Boolean));
+
+    return DEPARTMENT_ORDER.filter(dept => departmentsWithData.has(dept));
   }, [rawData]);
 
   const chartData = useMemo(() => {
@@ -139,6 +141,7 @@ function InjurySeverityDashboard(props) {
         // Single department - show total injuries per project
         visibleProjects.forEach(project => {
           const rec = rawData.find(r => r.severity === sev && r.projectName === project.name);
+
           entry[project.name] = rec ? rec.totalInjuries : 0;
         });
       } else {
@@ -146,9 +149,11 @@ function InjurySeverityDashboard(props) {
         visibleProjects.forEach(project => {
           visibleDepartments.forEach(dept => {
             const key = `${project.name}_${dept}`;
+
             const rec = rawData.find(
               r => r.severity === sev && r.projectName === project.name && r.department === dept,
             );
+
             entry[key] = rec ? rec.totalInjuries : 0;
           });
         });
@@ -160,18 +165,16 @@ function InjurySeverityDashboard(props) {
 
   const chartBars = useMemo(() => {
     if (visibleDepartments.length <= 1) {
-      // Single department - one bar per project (these will be grouped)
-      const projectColors = generateColors(visibleProjects.length);
-      return visibleProjects.map((project, idx) => ({
+      const selectedDepartment = visibleDepartments[0];
+
+      return visibleProjects.map(project => ({
         key: project._id,
         dataKey: project.name,
         name: project.name,
-        fill: projectColors[idx],
+        fill: DEPARTMENT_COLOR_MAP[selectedDepartment] || '#1f77b4',
       }));
-      // eslint-disable-next-line no-else-return
     } else {
       // Multiple departments - create stacked bars per project
-      const departmentColors = generateColors(visibleDepartments.length);
       const bars = [];
 
       visibleDepartments.forEach((dept, deptIdx) => {
@@ -180,7 +183,7 @@ function InjurySeverityDashboard(props) {
             key: `${project._id}_${dept}`,
             dataKey: `${project.name}_${dept}`,
             name: `${project.name} - ${dept}`, // Keep full name for tooltip
-            fill: departmentColors[deptIdx],
+            fill: DEPARTMENT_COLOR_MAP[dept],
             stackId: project.name, // Stack departments within each project
             legendType: projectIdx === 0 ? 'rect' : 'none', // Only show first occurrence in legend
           });
@@ -197,8 +200,8 @@ function InjurySeverityDashboard(props) {
     minWidth: 180,
     overflow: 'hidden',
     textOverflow: 'ellipsis',
-    color: '#333333',
-    borderColor: '#d9d9d9',
+    color: darkMode ? '#f5f5f5' : '#333333',
+    borderColor: darkMode ? 'rgba(255, 255, 255, 0.35)' : '#d9d9d9',
   };
 
   return (
@@ -329,7 +332,7 @@ function InjurySeverityDashboard(props) {
                   ? visibleDepartments.map((dept, idx) => ({
                       value: dept,
                       type: 'rect',
-                      color: generateColors(visibleDepartments.length)[idx],
+                      color: DEPARTMENT_COLOR_MAP[dept],
                     }))
                   : undefined
               }
