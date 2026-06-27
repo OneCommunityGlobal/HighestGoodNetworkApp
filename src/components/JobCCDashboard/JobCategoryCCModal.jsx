@@ -4,14 +4,12 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL';
 import styles from './JobCCDashboard.module.css';
-import { useSelector } from 'react-redux';
 
-function JobCategoryCCModal({ categories, onClose, onRefresh }) {
+function JobCategoryCCModal({ categories, onClose, onRefresh, darkMode }) {
   const [email, setEmail] = useState('');
   const [filter, setFilter] = useState('');
   const [loading, setLoading] = useState(false);
   const handleFilterChange = e => setFilter(e.target.value);
-  const darkMode = useSelector(state => state.theme.darkMode);
 
   const handleAddEmail = async () => {
     if (!email) {

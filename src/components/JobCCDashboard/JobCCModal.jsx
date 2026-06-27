@@ -3,14 +3,12 @@ import { Modal, Form, FormGroup, Label, Input, Button, Table } from 'reactstrap'
 import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL';
 import { toast } from 'react-toastify';
-import { useSelector } from 'react-redux';
 import styles from './JobCCDashboard.module.css';
 
-function JobCCModal({ job, onClose, onRefresh }) {
+function JobCCModal({ job, onClose, onRefresh, darkMode }) {
   const [email, setEmail] = useState('');
   const [ccList, setCCList] = useState(job.ccList || []);
   const [loading, setLoading] = useState(false);
-  const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
     setCCList(job.ccList || []);
