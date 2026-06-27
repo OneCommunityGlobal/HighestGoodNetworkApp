@@ -53,11 +53,24 @@
 
 /* Title + Value */
 .resourceTitle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   text-align: left;
   font-size: 0.9rem;
   font-weight: 600;
   color: #6b7280;
   margin-bottom: 6px;
+}
+
+.resourceTitle button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.4rem;
+  color: #6b7280;
+  padding: 0;
+  line-height: 1;
 }
 
 .resourceValue {
@@ -467,6 +480,10 @@
   cursor: pointer;
 }
 
+.resourceTitle button:hover {
+  color: #111827;
+}
+
 .activeView {
   background-color: #111827;
   color: white;
@@ -507,6 +524,10 @@
 }
 
 .darkmode .resourceTitle {
+  color: #9ca3af;
+}
+
+.darkmode .resourceTitle button {
   color: #9ca3af;
 }
 
@@ -645,6 +666,10 @@
 
 .darkmode .viewToggle button:hover {
   background-color: #020617;
+  color: #f9fafb;
+}
+
+.darkmode .resourceTitle button:hover {
   color: #f9fafb;
 }
 
