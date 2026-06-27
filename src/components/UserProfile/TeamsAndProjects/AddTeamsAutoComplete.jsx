@@ -8,7 +8,7 @@ const TEAM_NAME_MAX_LENGTH = 100;
 
 // eslint-disable-next-line react/display-name
 const AddTeamsAutoComplete = React.memo((props) => {
-  const { teamsData, searchText, setSearchText, setInputs, onCreateNewTeam } = props;
+  const { teamsData, searchText, setSearchText, onDropDownSelect, onCreateNewTeam } = props;
   const [isOpen, setIsOpen] = React.useState(false);
   const darkMode = useSelector((state) => state.theme.darkMode);
   const inputRef = useRef(null);
@@ -33,7 +33,7 @@ const AddTeamsAutoComplete = React.memo((props) => {
   }, [allTeams, searchText]);
 
   const handlePick = (team) => {
-    props.onDropDownSelect(team);
+    onDropDownSelect(team);
     setSearchText(team.teamName);
     setIsOpen(false);
     };
