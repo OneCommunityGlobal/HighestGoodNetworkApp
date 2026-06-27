@@ -75,10 +75,14 @@ function LBRegister() {
     }
   };
 
+  const pageClassName = darkMode
+    ? `${styles.lbRegisterPage} ${styles.lbRegisterDark}`
+    : styles.lbRegisterPage;
+
   return (
     <>
       <HeaderRenderer />
-      <div className={`${styles.lbRegisterPage}${darkMode ? ` ${styles.lbRegisterDark}` : ''}`}>
+      <div className={pageClassName}>
         <div className={`${styles.lbRegisterLogo}`}>
           <img src={logo} alt="One Community Logo" />
         </div>
