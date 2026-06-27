@@ -91,11 +91,12 @@ const EditLinkModal = props => {
   }
 
   const addNewLink = (links, setLinks, newLink, clearInput) => {
-    const isDuplicate = isDuplicateLink([googleLink, mediaFolderLink, ...links], newLink);
+    const isDuplicateName = isDuplicateLink([googleLink, mediaFolderLink, ...links], newLink);
+    const isDuplicateUrl = links.some(link => link.Link.trim().toLowerCase() === newLink.Link.trim().toLowerCase());
     const hasInvalidUrl = !isValidUrl(newLink.Link);
 
-    if (isDuplicate) {
-      setDuplicateNameError(true);
+    if (isDuplicateName || isDuplicateUrl) {
+      setDuplicateNameError(true); 
       setIsValidLink(true);
     } else if (hasInvalidUrl) {
       setDuplicateNameError(false);
@@ -401,7 +402,7 @@ const EditLinkModal = props => {
                   )}
                   {duplicateNameError && (
                     <p data-testid='duplicate-name-warning'>
-                      A link with this name already exists.
+                      This link name or URL already exists.
                     </p>
                   )}
                 </div>
