@@ -20,7 +20,7 @@ function RegistrationForm() {
       return;
     }
     toast(
-      `Name of Register: ${name}, Event Type: ${eventType}, Location: ${location}, Event Date: ${eventDate}`,
+      `Name of Register: ${name}, Event Type: ${eventType}, Location: ${location.toUpperCase()}, Event Date: ${eventDate}`,
       {
         className: `${styles.registrationToast} ${darkMode ? styles.darkmode : ''}`,
         progressClassName: `${styles.registrationToastProgress} ${darkMode ? styles.darkmode : ''}`,
