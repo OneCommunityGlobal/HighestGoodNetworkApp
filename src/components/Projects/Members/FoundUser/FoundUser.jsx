@@ -17,24 +17,22 @@ const FoundUser = props => {
           <div>{props.index + 1}</div>
         </th>
         <td className="foundUsers__order">
-          <a href={`/userprofile/${props.uid}`} className={darkMode ? 'text-azure' : ''}>{props.firstName + ' ' + props.lastName}</a>
+          <a href={`/userprofile/${props.uid}`}>
+            {props.fullName}
+          </a>
         </td>
-        <td className="foundUsers__email">{props.email}</td>
+        <td className="foundUsers__email">
+          {props.email}
+        </td>
         <td className="foundUsers__assign">
-          {props.assigned ? null : (
+          {props.assigned ? (
+            <span className="text-success">Assigned</span>
+          ) : (
             <button
               className="btn btn-outline-primary btn-sm"
               type="button"
-              onClick={e =>
-                props.assignProject(
-                  props.projectId,
-                  props.uid,
-                  'Assign',
-                  props.firstName,
-                  props.lastName,
-                )
-              }
               style={darkMode ? {} : boxStyle}
+              onClick={() => props.assignProject(props.projectId, props.uid, 'Assign', props.firstName, props.lastName, 'true')}
             >
               <i className="fa fa-plus" aria-hidden="true"></i>
             </button>

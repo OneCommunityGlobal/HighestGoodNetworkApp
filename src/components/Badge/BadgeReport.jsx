@@ -1,36 +1,36 @@
 /* eslint-disable */
-import { useState, useEffect } from 'react';
-import {
-  Table,
-  Button,
-  ButtonGroup,
-  Input,
-  DropdownToggle,
-  Modal,
-  ModalBody,
-  ModalFooter,
-  FormGroup,
-  UncontrolledDropdown,
-  DropdownMenu,
-  DropdownItem,
-  UncontrolledTooltip,
-} from 'reactstrap';
-import pdfMake from 'pdfmake/build/pdfmake';
-import 'pdfmake/build/vfs_fonts';
 import htmlToPdfmake from 'html-to-pdfmake';
 import moment from 'moment';
 import 'moment-timezone';
+import pdfMake from 'pdfmake/build/pdfmake';
+import 'pdfmake/build/vfs_fonts';
+import PropTypes from 'prop-types';
+import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { toast } from 'react-toastify';
-import { ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
+import {
+  Button,
+  ButtonGroup,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+  FormGroup,
+  Input,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  Table,
+  UncontrolledDropdown,
+  UncontrolledTooltip,
+} from 'reactstrap';
 import { boxStyle, boxStyleDark } from '~/styles';
-import { formatDate } from '~/utils/formatDate';
-import hasPermission from '../../utils/permissions';
-import { changeBadgesByUserID } from '../../actions/badgeManagement';
-import './BadgeReport.css';
-import { getUserProfile } from '../../actions/userProfile';
 import { PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from '~/utils/constants';
+import { formatDate } from '~/utils/formatDate';
+import { changeBadgesByUserID } from '../../actions/badgeManagement';
+import { getUserProfile } from '../../actions/userProfile';
+import hasPermission from '../../utils/permissions';
 import BadgeImage from './BadgeImage';
+import './BadgeReport.module.css';
 
 function BadgeReport(props) {
   const [sortBadges, setSortBadges] = useState(JSON.parse(JSON.stringify(props.badges)) || []);
@@ -42,6 +42,8 @@ function BadgeReport(props) {
   const canDeleteBadges = props.hasPermission('deleteBadges');
   const canUpdateBadges = props.hasPermission('updateBadges');
   const darkMode = props.darkMode;
+  const canAssignBadges = props.hasPermission('assignBadges');
+  const canModifyBadgeAmount = props.hasPermission('modifyBadgeAmount');
 
   async function imageToUri(url, callback) {
     const canvas = document.createElement('canvas');
@@ -394,7 +396,7 @@ function BadgeReport(props) {
             <tbody>
               {sortBadges && sortBadges.length ? (
                 sortBadges.map((value, index) => (
-                  <tr key={index}>
+                  <tr key={value._id || index}>
                     <td className="badge_image_sm">
                       {' '}
                       <BadgeImage
@@ -402,7 +404,7 @@ function BadgeReport(props) {
                         count={value.count}
                         badgeData={value.badge}
                         index={index}
-                        key={index}
+                        key={value._id || index}
                         cssSuffix={'_report'}
                       />
                     </td>
@@ -426,9 +428,16 @@ function BadgeReport(props) {
                           >
                             Dates
                           </DropdownToggle>
-                          <DropdownMenu className="badge_dropdown">
+                          <DropdownMenu className={`badge_dropdown ${darkMode ? 'bg-dark' : ''}`}>
                             {value.earnedDate.map((date, i) => {
-                              return <DropdownItem key={i}>{date}</DropdownItem>;
+                              return (
+                                <DropdownItem
+                                  key={i}
+                                  className={darkMode ? 'text-light bg-dark' : ''}
+                                >
+                                  {date}
+                                </DropdownItem>
+                              );
                             })}
                           </DropdownMenu>
                         </UncontrolledDropdown>
@@ -452,7 +461,7 @@ function BadgeReport(props) {
                       </>
                     </td>
                     <td>
-                      {canUpdateBadges ? (
+                      {canUpdateBadges || canModifyBadgeAmount ? (
                         <Input
                           type="number"
                           value={Math.round(value.count)}
@@ -492,6 +501,7 @@ function BadgeReport(props) {
                           onChange={e => {
                             featuredChange(value, index, e);
                           }}
+                          disabled={canModifyBadgeAmount && !(canUpdateBadges || canAssignBadges)}
                         />
                       </FormGroup>
                     </td>
@@ -568,7 +578,7 @@ function BadgeReport(props) {
             <tbody>
               {sortBadges && sortBadges.length ? (
                 sortBadges.map((value, index) => (
-                  <tr key={index}>
+                  <tr key={value._id || index}>
                     <td className="badge_image_sm">
                       {' '}
                       <BadgeImage
@@ -576,7 +586,7 @@ function BadgeReport(props) {
                         count={value.count}
                         badgeData={value.badge}
                         index={index}
-                        key={index}
+                        key={value._id || index}
                         cssSuffix={'_report'}
                       />
                     </td>
@@ -777,5 +787,21 @@ const mapDispatchToProps = dispatch => ({
   getUserProfile: userId => dispatch(getUserProfile(userId)),
   hasPermission: permission => dispatch(hasPermission(permission)),
 });
+
+BadgeReport.propTypes = {
+  badges: PropTypes.array,
+  userId: PropTypes.string,
+  darkMode: PropTypes.bool,
+  role: PropTypes.string,
+  firstName: PropTypes.string,
+  lastName: PropTypes.string,
+  close: PropTypes.func,
+  setUserProfile: PropTypes.func,
+  setOriginalUserProfile: PropTypes.func,
+  handleSubmit: PropTypes.func,
+  isUserSelf: PropTypes.bool,
+  isRecordBelongsToJaeAndUneditable: PropTypes.bool,
+  personalBestMaxHrs: PropTypes.number,
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(BadgeReport);

@@ -2,7 +2,7 @@ import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { Provider } from 'react-redux';
-import { configureStore } from 'redux-mock-store';
+import configureStore from 'redux-mock-store';
 import TimeZoneDropDown from '../TimeZoneDropDown';
 
 describe('TimeZoneDropDown Component', () => {
@@ -32,7 +32,7 @@ describe('TimeZoneDropDown Component', () => {
   it('filters time zones based on filter prop', () => {
     render(<Provider store={store}><TimeZoneDropDown filter='London' onChange={mockOnChange} /></Provider>);
     expect(screen.queryByText(/America\/New_York/)).not.toBeInTheDocument();
-    expect(screen.queryByText(/Europe\/London/)).toBeInTheDocument();
+    expect(screen.getByText(/Europe\/London/)).toBeInTheDocument();
   });
 
   it('calls onChange when a different time zone is selected', () => {

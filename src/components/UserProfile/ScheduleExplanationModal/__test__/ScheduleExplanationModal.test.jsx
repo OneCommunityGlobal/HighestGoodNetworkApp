@@ -34,8 +34,10 @@ describe('SchedulerExplanationModal', () => {
     expect(
       screen.getByText(/Including your time already requested off, you have used the equivalent of/)
     ).toBeInTheDocument();
-    expect(screen.getByText('3')).toHaveStyle('color: rgb(255, 0, 0)'); 
-    expect(screen.getByText('2')).toHaveStyle('color: rgb(255, 0, 0)'); 
+    const color3 = window.getComputedStyle(screen.getByText('3')).color;
+    const color2 = window.getComputedStyle(screen.getByText('2')).color;
+    expect(['rgb(255, 0, 0)', 'red']).toContain(color3);
+    expect(['rgb(255, 0, 0)', 'red']).toContain(color2); 
     expect(screen.getByText('5 weeks')).toBeInTheDocument(); 
   });
 
@@ -51,7 +53,9 @@ describe('SchedulerExplanationModal', () => {
     );
     expect(screen.getByText('INFRINGEMENTS:')).toBeInTheDocument();
 
+    // eslint-disable-next-line testing-library/no-node-access, testing-library/no-container
     const infringementsSection = container.querySelector('.Schedule-explanation-modal-list-marker');
+    // eslint-disable-next-line testing-library/no-node-access, testing-library/no-container
     const boldText = infringementsSection.querySelectorAll('b');
     expect(boldText[0]).toHaveTextContent('Date:');
     expect(boldText[1]).toHaveTextContent('Reason:');
@@ -90,6 +94,7 @@ describe('SchedulerExplanationModal', () => {
       />
     );
     expect(screen.getByText(/Blue squares expire after 1 calendar year from their issuance date./i)).toBeInTheDocument();
+    // eslint-disable-next-line testing-library/no-node-access, testing-library/no-container
     const modalFooter = container.querySelector('.modal-footer');    
     const closeButton = within(modalFooter).getByRole('button', { name: /Close/i });
     await userEvent.click(closeButton);
