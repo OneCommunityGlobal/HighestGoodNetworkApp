@@ -83,25 +83,25 @@ export function Team({
   // Member counts are computed from props.team.members which already comes
   // from the getAllTeams aggregation, so no extra request is needed.
   const [localMembers, setLocalMembers] = useState(() => getCachedTeamMembers(teamIdKey) || null);
-  const [loading, setLoading] = useState(false);
 
   const members = localMembers ?? props.team?.members ?? [];
-  const { total, active: activeCount, inactive } = computeCounts(members, loading, localMembers);
+  const { total, active: activeCount, inactive } = computeCounts(members, false, localMembers);
 
-  // Fire callback immediately (keeps tests & UX snappy), then refresh members
+  // Fire callback immediately (keeps tests & UX snappy), then refresh members.
+  // We do NOT reset localMembers to null or set loading=true here — doing so
+  // caused the count to flash back to '…' on every click. Since props.team.members
+  // is always available as a fallback, the count stays stable while the fresh
+  // fetch completes in the background.
   const handleOpenMembers = () => {
     clearCachedTeamMembers(teamIdKey);
-    setLocalMembers(null); // reset stale local state
     if (typeof props.onMembersClick === 'function') {
       props.onMembersClick(teamIdRaw, props.name, props.teamCode); // don't pass localMembers
     }
-    setLoading(true);
     fetchTeamMembersCached(dispatch, getTeamMembers, teamIdKey)
       .then(fresh => {
         setLocalMembers(fresh);
       })
-      .catch(() => {})
-      .finally(() => setLoading(false));
+      .catch(() => {});
   };
 
   return (
@@ -156,9 +156,8 @@ export function Team({
           onClick={handleOpenMembers}
           data-testid="members-btn"
           aria-label="Users"
-          disabled={loading}
         >
-          {loading ? <i className="fa fa-spinner fa-spin" /> : <i className="fa fa-users" />}
+          <i className="fa fa-users" />
         </button>
       </td>
 
