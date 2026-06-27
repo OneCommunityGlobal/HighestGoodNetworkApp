@@ -3,7 +3,8 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
 import { ENDPOINTS } from '../../../utils/URL';
-import './LBRegister.css';
+import HeaderRenderer from '../../Header/HeaderRenderer';
+import styles from './LBRegister.module.css';
 import logo from '../../../assets/images/logo2.png';
 
 function LBRegister() {
@@ -75,21 +76,23 @@ function LBRegister() {
   };
 
   return (
-    <div className={`lb-register-page${darkMode ? ' lb-register-dark' : ''}`}>
-      <div className="lb-register-logo">
+    <>
+      <HeaderRenderer />
+    <div className={`${styles.lbRegisterPage}${darkMode ? ` ${styles.lbRegisterDark}` : ''}`}>
+      <div className={`${styles.lbRegisterLogo}`}>
         <img src={logo} alt="One Community Logo" />
       </div>
-      <div className="lb-register-container">
-        <div className="lb-register-top" />
-        <div className="lb-register-main">
+      <div className={`${styles.lbRegisterContainer}`}>
+        <div className={`${styles.lbRegisterTop}`} />
+        <div className={`${styles.lbRegisterMain}`}>
           <h2>Registration Page</h2>
           <p>
             Filling the details below will allow you to bid or rent a unit from a village of your
             choice in our property. Clicking the submit button will confirm all your details with us
             and will take you to our login page.
           </p>
-          <div className="lb-register-form-wrapper">
-            <form className="lb-register-form" onSubmit={handleSubmit}>
+          <div className={`${styles.lbRegisterFormWrapper}`}>
+            <form className={`${styles.lbRegisterForm}`} onSubmit={handleSubmit}>
               <input
                 type="text"
                 name="firstName"
@@ -98,7 +101,9 @@ function LBRegister() {
                 onChange={handleChange}
                 required
               />
-              {errors.firstName && <p className="lb-register-error">{errors.firstName}</p>}
+              {errors.firstName && (
+                <p className={`${styles.lbRegisterError}`}>{errors.firstName}</p>
+              )}
 
               <input
                 type="text"
@@ -108,7 +113,7 @@ function LBRegister() {
                 onChange={handleChange}
                 required
               />
-              {errors.lastName && <p className="lb-register-error">{errors.lastName}</p>}
+              {errors.lastName && <p className={`${styles.lbRegisterError}`}>{errors.lastName}</p>}
 
               <input
                 type="email"
@@ -118,7 +123,7 @@ function LBRegister() {
                 onChange={handleChange}
                 required
               />
-              {errors.email && <p className="lb-register-error">{errors.email}</p>}
+              {errors.email && <p className={`${styles.lbRegisterError}`}>{errors.email}</p>}
 
               <input
                 type="text"
@@ -128,7 +133,7 @@ function LBRegister() {
                 onChange={handleChange}
                 required
               />
-              {errors.phone && <p className="lb-register-error">{errors.phone}</p>}
+              {errors.phone && <p className={`${styles.lbRegisterError}`}>{errors.phone}</p>}
 
               <input
                 type="password"
@@ -138,7 +143,7 @@ function LBRegister() {
                 onChange={handleChange}
                 required
               />
-              {errors.password && <p className="lb-register-error">{errors.password}</p>}
+              {errors.password && <p className={`${styles.lbRegisterError}`}>{errors.password}</p>}
 
               <button type="submit">Click to Register</button>
             </form>
@@ -146,6 +151,7 @@ function LBRegister() {
         </div>
       </div>
     </div>
+    </>
   );
 }
 

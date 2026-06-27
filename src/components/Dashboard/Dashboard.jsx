@@ -1,23 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { Row, Col, Container } from 'reactstrap';
-import { connect, useSelector } from 'react-redux';
-import { cantUpdateDevAdminDetails } from '~/utils/permissions';
+import { useEffect, useState } from 'react';
+import { connect, useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
+import { Col, Container, Row } from 'reactstrap';
+import { updateSummaryBarData } from '~/actions/dashboardActions';
 import {
-  DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
   DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
+  DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
   PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
 } from '~/utils/constants';
-import { useDispatch } from 'react-redux';
-import { updateSummaryBarData } from '~/actions/dashboardActions';
+import { cantUpdateDevAdminDetails } from '~/utils/permissions';
+import '../../App.module.css';
 import Leaderboard from '../LeaderBoard';
-import WeeklySummary from '../WeeklySummary/WeeklySummary';
-import Badge from '../Badge';
-import Timelog from '../Timelog/Timelog';
 import SummaryBar from '../SummaryBar/SummaryBar';
-import styles from './Dashboard.module.css';
-import '../../App.css';
+import Timelog from '../Timelog/Timelog';
+import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import TimeOffRequestDetailModal from './TimeOffRequestDetailModal';
-import FeedbackModal from '../FeedbackModal/FeedbackModal';
 
 export function Dashboard(props) {
   const [popup, setPopup] = useState(false);
@@ -40,7 +37,7 @@ export function Dashboard(props) {
         viewingUser?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY
           ? DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY
           : PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE;
-      alert(warningMessage);
+      toast.warn(warningMessage);
       return;
     }
 
@@ -68,7 +65,6 @@ export function Dashboard(props) {
   }, []);
 
   useEffect(() => {
-    console.log(summaryBarData);
     dispatch(updateSummaryBarData({ summaryBarData }));
   }, [summaryBarData]);
 
@@ -83,8 +79,7 @@ export function Dashboard(props) {
         isNotAllowedToEdit={isNotAllowedToEdit}
       />
       <Row className="w-100 ml-1">
-        <Col lg={7}></Col>
-        <Col lg={5}>
+        <Col lg={5} className="order-lg-2 order-2">
           <div className="row justify-content-center">
             <div
               role="button"
@@ -104,10 +99,6 @@ export function Dashboard(props) {
               />
             </div>
           </div>
-        </Col>
-      </Row>
-      <Row className="w-100 ml-1">
-        <Col lg={5} className="order-lg-2 order-2">
           <Leaderboard
             displayUserId={displayUserId}
             isNotAllowedToEdit={isNotAllowedToEdit}

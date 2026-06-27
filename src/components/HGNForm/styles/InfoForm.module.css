@@ -3,19 +3,25 @@
   margin: 0 auto;
   border: 1px solid #c0c0c0;
   border-radius: 15px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 10px rgb(0 0 0 / 10%);
   background-color: #fff;
-  padding: 10px 10px;
+  padding: 10px;
+}
+
+.dark {
+  background-color: #1c2541;
+  border-color: #3a506b;
+  color: #fff;
 }
 
 .infoFormContainer label {
   text-align: left;
-  color:black;
-  
-  margin-right:88%;
-  margin-left: 10px;
-  margin-top: 20px;
-  margin-bottom: 20px;
+  color: black;
+  margin: 20px 88% 20px 10px;
+}
+
+.dark label {
+  color: #fff;
 }
 
 .formInputs {
@@ -37,10 +43,24 @@
   border-bottom: 2px solid #2e5163;
 }
 
+.infoInput.error {
+  border-color: #f00;
+}
+
+.dark .infoInput {
+  background-color: transparent;
+  color: #fff;
+  border-bottom-color: #8aa0b4;
+}
+
+.dark .infoInput::placeholder {
+  color: #b5bac5;
+}
+
 .buttonContainer {
   display: flex;
   justify-content: space-between;
-  margin:10px;
+  margin: 10px;
 }
 
 .buttonContainer button {
@@ -55,21 +75,22 @@
 
 .hgnReturnButton {
   color: white;
-  background-color:#2e5163 ;
+  background-color: #2e5163;
   border-radius: 10px;
   width: 20%;
-  margin-left:0;
+  margin-left: 0;
 }
 
 .hgnReturnButton:hover {
-  background-color:#4e748d;
-  border-color: #4e748d ;
+  background-color: #4e748d;
+  border-color: #4e748d;
 }
 
 .nextButton {
   background-color: #2e5163;
   border-radius: 10px;
   width: 20%;
+  color: #fff;
 }
 
 .nextButton:hover {
@@ -90,57 +111,49 @@
 
 .submitButton:hover {
   background-color: #21618a;
-  /* color: white; */
 }
 
-@media (max-width: 768px) {
-  .infoFormContainer {
-    width: 80%;
-  }
-
-  .infoInput {
-    width: 80%;
-  }
-
-  .buttonContainer button {
-    padding: 8px 16px;
-    font-size: small;
-    width: 40%;
-    margin: 10px;
-  }
+.dark .buttonContainer button {
+  border-color: #3a506b;
+  background-color: #2e5163;
+  color: #fff;
 }
 
-@media (max-width: 480px) {
-  .infoFormContainer {
-    width: 90%;
-  }
-
-  .infoInput {
-    width: 90%;
-  }
-
-  .buttonContainer button {
-    padding: 6px 12px;
-    font-size: x-small;
-    width: 45%;
-    margin: 5px;
-  }
+.dark .hgnReturnButton {
+  background-color: #2e5163;
+  color: #fff;
+  border-color: #3a506b;
 }
 
-.infoInput.error {
-  border-color: #ff0000;
+.dark .hgnReturnButton:hover {
+  background-color: #4e748d;
+  border-color: #4e748d;
 }
 
-.required {
-  color: #ff0000;
+.dark .nextButton {
+  background-color: #2e5163;
+  color: #fff;
+}
+
+.dark .nextButton:hover {
+  background-color: #4e748d;
+  border-color: #4e748d;
+}
+
+.slackConfirmLabel {
+  color: #2f5061;
+  margin: 0 5px;
+}
+
+.dark .slackConfirmLabel {
+  color: #78a5c4;
 }
 
 .errorMessage {
-  color: #ff0000;
+  color: #f00;
   font-size: 0.875rem;
-  margin-top: 4px;
-  padding:10px;
-  /* margin-left: 10px; */
+  margin: 20px;
+  padding: 10px;
   display: block;
   width: 50%;
 }
@@ -156,19 +169,34 @@
   padding: 0;
 }
 
-.formInputsSlack input{
+.formInputsSlack input {
   margin-bottom: 0;
 }
 
-.errorMessage {
-  color: #ff0000;
-  font-size: 0.875rem;
-  margin: 20px;
-  display: block;
-  width: 50%;
+.labelInline {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-right: 0;
+  white-space: nowrap;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
+  .infoFormContainer {
+    width: 80%;
+  }
+
+  .infoInput {
+    width: 80%;
+  }
+
+  .buttonContainer button {
+    padding: 8px 16px;
+    font-size: small;
+    width: 40%;
+    margin: 10px;
+  }
+
   .errorMessage {
     font-size: 0.75rem;
     width: 80%;
@@ -176,7 +204,22 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
+  .infoFormContainer {
+    width: 90%;
+  }
+
+  .infoInput {
+    width: 90%;
+  }
+
+  .buttonContainer button {
+    padding: 6px 12px;
+    font-size: x-small;
+    width: 45%;
+    margin: 5px;
+  }
+
   .errorMessage {
     font-size: 0.7rem;
     width: 90%;
