@@ -108,3 +108,32 @@
   margin-bottom: 10px;
   width: 100%;
 }
+
+/* ===== DARK MODE ===== */
+.lb-register-dark {
+  background-color: #0f172a;
+}
+
+.lb-register-dark .lb-register-container {
+  background-color: #1e293b;
+  border-color: #334155;
+}
+
+.lb-register-dark .lb-register-main {
+  background-color: #1e293b;
+}
+
+.lb-register-dark .lb-register-main h2,
+.lb-register-dark .lb-register-main p {
+  color: #e2e8f0;
+}
+
+.lb-register-dark .lb-register-form input {
+  background-color: #0f172a;
+  color: #e2e8f0;
+  border-color: #475569;
+}
+
+.lb-register-dark .lb-register-form input::placeholder {
+  color: #94a3b8;
+}

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { useSelector } from 'react-redux';
 import { ENDPOINTS } from '../../../utils/URL';
 import './LBRegister.css';
 import logo from '../../../assets/images/logo2.png';
@@ -15,6 +16,7 @@ function LBRegister() {
   });
 
   const [errors, setErrors] = useState({});
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const regex = {
     firstName: /^[A-Za-z]{2,}$/,
@@ -73,7 +75,7 @@ function LBRegister() {
   };
 
   return (
-    <div className="lb-register-page">
+    <div className={`lb-register-page${darkMode ? ' lb-register-dark' : ''}`}>
       <div className="lb-register-logo">
         <img src={logo} alt="One Community Logo" />
       </div>

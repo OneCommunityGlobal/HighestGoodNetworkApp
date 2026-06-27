@@ -1,6 +1,5 @@
 import FormEditor from '~/components/Forms/FormEditor';
 import FormViewer from '~/components/Forms/FormViewer';
-import register from './components/LBDashboard/Register/LBRegister.jsx';
 import { lazy } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import SetupProfile from '~/components/SetupProfile/SetupProfile';
@@ -207,18 +206,7 @@ const JobFormBuilder = lazy(() => import('./components/Collaboration/JobFormbuil
 export default (
   <Switch>
     {/* ----- LB Dashboard Routing ----- */}
-    {/* If it's possible incorporate this route with others without the header, please do */}
     <Route path="/EventPopularity" component={EventPopularity} />
-    <Route
-      path="/lbdashboard/register"
-      render={() => (
-        <>
-          <AutoUpdate />
-          <ToastContainer />
-          <LBRegister />
-        </>
-      )}
-    />
     <Route
       path="/lbdashboard/login"
       render={() => (
@@ -607,7 +595,6 @@ export default (
 
         {/* Community Portal Routes */}
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
-        <Route path="/ldashboard/register" component={register} />
         <Route path="/communityportal/login" component={CPLogin} />
         <CPProtectedRoute path="/communityportal/activities" exact component={ActivityList} />
         <CPProtectedRoute
