@@ -189,6 +189,7 @@ import TaskDetails from './components/EductionPortal/StudentTasks/TaskDetails';
 import PRReviewTeamAnalytics from './components/HGNPRDashboard/PRReviewTeamAnalytics';
 import PRPromotionsPage from './components/PRPromotions/PRPromotionsPage';
 import SimpleToolChart from './components/BMDashboard/Tools/SimpleToolChart';
+import ActivityLogs from './components/ActivityLog/DailyLogPage';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import IntermediateTaskList from './components/EductionPortal/IntermediateTasks/IntermediateTaskList';
 import WriteTaskUpload from './components/EductionPortal/Tasks/WriteTaskUpload';
@@ -804,6 +805,7 @@ export default (
           fallback
           allowedRoles={[UserRole.Owner]}
         />
+        <Route path="/ActivityLogs/DailyLog" component={ActivityLogs} />
         <ProtectedRoute path="/job-application" exact component={JobApplicationForm} />
         <ProtectedRoute path="/popularity" component={PopularityTimelineChart} fallback />
         <ProtectedRoute
