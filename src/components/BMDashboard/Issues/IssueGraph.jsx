@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './IssueGraph.module.css';
 import {
@@ -14,25 +14,19 @@ import {
 } from 'recharts';
 import { fetchIssueSummary, fetchIssueTrend } from '../../../actions/bmdashboard/issueGraphActions';
 
-const formatDate = date => date.toISOString().split('T')[0];
+// Constants and Static Helpers
+const TWELVE_WEEKS_IN_MS = 12 * 7 * 24 * 60 * 60 * 1000;
+const today = new Date();
+const formattedDate = date => date.toISOString().split('T')[0];
+const maxEndDate = formattedDate(today);
+const minStartDate = formattedDate(new Date(today.getTime() - TWELVE_WEEKS_IN_MS));
 
-const getDateBounds = (startDate, endDate) => {
-  const today = new Date();
-  const twelveWeeksAgo = new Date(today.getTime() - 12 * 7 * 24 * 60 * 60 * 1000);
+const ERROR_STYLE = { color: 'red', margin: '10px 0', fontWeight: '500' };
+const NO_DATA_STYLE = { color: 'red' };
+const CHART_MARGIN = { top: 20, right: 20, left: 0, bottom: 30 };
 
-  const maxEndDate = formatDate(today);
-  const minStartDate = formatDate(twelveWeeksAgo);
-
-  return {
-    maxEndDate,
-    minStartDate,
-    maxStartDate: endDate || maxEndDate,
-    minEndDate: startDate || minStartDate,
-  };
-};
-
-// Place this outside of the IssueGraph function component
-const validateDates = (startDate, endDate) => {
+// Isolated Validation Helper to reduce Cognitive Complexity below 15
+const getDatesValidationError = (startDate, endDate) => {
   if (!startDate || !endDate) {
     return 'Please select both a Start Date and an End Date.';
   }
@@ -56,55 +50,63 @@ function IssueGraph() {
   const [endDate, setEndDate] = useState('');
   const [validationError, setValidationError] = useState('');
 
-  const { minStartDate, maxStartDate, minEndDate, maxEndDate } = getDateBounds(startDate, endDate);
+  const maxStartDate = endDate ? endDate : maxEndDate;
+  const minEndDate = startDate ? startDate : minStartDate;
+
+  const chartTheme = useMemo(
+    () => ({
+      gridStroke: darkMode ? '#3a4a5a' : '#e0e0e0',
+      tickColor: darkMode ? '#ffffff' : '#666',
+      cursorFill: darkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.05)',
+      tooltipContent: {
+        backgroundColor: darkMode ? '#253342' : '#fff',
+        border: '1px solid #555',
+        color: darkMode ? '#fff' : '#000',
+      },
+      tooltipText: { color: darkMode ? '#fff' : '#000' },
+      createdBarFill: darkMode ? '#4fc3f7' : '#007bff',
+      resolvedBarFill: darkMode ? '#81c784' : '#28a745',
+      labelFill: darkMode ? '#ffffff' : '#000000',
+    }),
+    [darkMode],
+  );
 
   useEffect(() => {
-    dispatch(fetchIssueSummary({ weeks }));
-    dispatch(fetchIssueTrend({ weeks }));
+    if (weeks) {
+      dispatch(fetchIssueSummary({ weeks }));
+      dispatch(fetchIssueTrend({ weeks }));
+    }
   }, [dispatch, weeks]);
 
   useEffect(() => {
-    if (issueTrend && Array.isArray(issueTrend)) {
-      const sortedData = [...issueTrend].sort((a, b) => new Date(a.week) - new Date(b.week));
+    if (Array.isArray(issueTrend)) {
+      const sortedData = [...issueTrend].sort(
+        (a, b) => new Date(a.week).getTime() - new Date(b.week).getTime(),
+      );
       setGraphData(sortedData);
     }
   }, [issueTrend]);
 
   const handleWeeksChange = e => {
-    const val = Number(e.target.value);
-    setWeeks(val);
+    const val = parseInt(e.target.value, 10);
+    setWeeks(isNaN(val) ? '' : val);
     setStartDate('');
     setEndDate('');
     setValidationError('');
   };
 
-  // const handleGoClick = () => {
-  //   if (!startDate || !endDate) {
-  //     setValidationError('Please select both a Start Date and an End Date.');
-  //     return;
-  //   }
+  const handleStartDateChange = e => {
+    setStartDate(e.target.value);
+    setValidationError('');
+  };
 
-  //   // 2. Check if they are the exact same day
-  //   if (startDate === endDate) {
-  //     setValidationError('Start date and End date cannot be the same day. Please select a range.');
-  //     return;
-  //   }
-
-  //   // 3. Check if start date is after end date
-  //   if (new Date(startDate) > new Date(endDate)) {
-  //     setValidationError('Start date must be before the End date.');
-  //     return;
-  //   }
-
-  //   // Clear any existing errors if checks pass
-  //   setValidationError('');
-  //   setWeeks(''); // Clears the dropdown preset selection to match custom timeline
-  //   dispatch(fetchIssueTrend({ start: startDate, end: endDate }));
-  //   dispatch(fetchIssueSummary({ start: startDate, end: endDate }));
-  // };
+  const handleEndDateChange = e => {
+    setEndDate(e.target.value);
+    setValidationError('');
+  };
 
   const handleGoClick = () => {
-    const errorMsg = validateDates(startDate, endDate);
+    const errorMsg = getDatesValidationError(startDate, endDate);
     if (errorMsg) {
       setValidationError(errorMsg);
       return;
@@ -115,6 +117,7 @@ function IssueGraph() {
     dispatch(fetchIssueTrend({ start: startDate, end: endDate }));
     dispatch(fetchIssueSummary({ start: startDate, end: endDate }));
   };
+
   return (
     <div className={`${styles.issueGraphPage} ${darkMode ? styles.darkMode : ''}`}>
       <div className={styles.issueGraphEventContainer}>
@@ -125,10 +128,7 @@ function IssueGraph() {
               id="start-date"
               type="date"
               value={startDate}
-              onChange={e => {
-                setStartDate(e.target.value);
-                setValidationError(''); // Clear error when user alters input
-              }}
+              onChange={handleStartDateChange}
               min={minStartDate}
               max={maxStartDate}
             />
@@ -141,10 +141,7 @@ function IssueGraph() {
                 id="end-date"
                 type="date"
                 value={endDate}
-                onChange={e => {
-                  setEndDate(e.target.value);
-                  setValidationError(''); // Clears error when user starts changing custom dates
-                }}
+                onChange={handleEndDateChange}
                 min={minEndDate}
                 max={maxEndDate}
               />
@@ -167,10 +164,7 @@ function IssueGraph() {
           </div>
         </div>
 
-        {/* issue tiles */}
-        {validationError && (
-          <p style={{ color: 'red', margin: '10px 0', fontWeight: '500' }}>{validationError}</p>
-        )}
+        {validationError && <p style={ERROR_STYLE}>{validationError}</p>}
 
         {issueSummary && (
           <div className={styles.tileRow}>
@@ -192,70 +186,36 @@ function IssueGraph() {
             </div>
           </div>
         )}
-        {/* charts */}
 
-        {/* charts */}
         <div className={styles.graphWrapper}>
           <h2>Issues Created vs. Resolved</h2>
           {loading && <p>Loading...</p>}
-          {error && <p style={{ color: 'red' }}>{error}</p>}
+          {error && <p style={NO_DATA_STYLE}>{error}</p>}
           {graphData.length > 0 ? (
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={graphData} margin={{ top: 20, right: 20, left: 0, bottom: 30 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#3a4a5a' : '#e0e0e0'} />
-
-                <XAxis dataKey="week" tick={{ fill: darkMode ? '#ffffff' : '#666' }} />
-
-                <YAxis tick={{ fill: darkMode ? '#ffffff' : '#666' }} />
-
+              <BarChart data={graphData} margin={CHART_MARGIN}>
+                <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.gridStroke} />
+                <XAxis dataKey="week" tick={{ fill: chartTheme.tickColor }} />
+                <YAxis tick={{ fill: chartTheme.tickColor }} />
                 <Tooltip
-                  cursor={{
-                    fill: darkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.05)',
-                  }}
-                  contentStyle={{
-                    backgroundColor: darkMode ? '#253342' : '#fff',
-                    border: '1px solid #555',
-                    color: darkMode ? '#fff' : '#000',
-                  }}
-                  labelStyle={{
-                    color: darkMode ? '#fff' : '#000',
-                  }}
-                  itemStyle={{
-                    color: darkMode ? '#fff' : '#000',
-                  }}
+                  cursor={{ fill: chartTheme.cursorFill }}
+                  contentStyle={chartTheme.tooltipContent}
+                  labelStyle={chartTheme.tooltipText}
+                  itemStyle={chartTheme.tooltipText}
                 />
-
                 <Legend verticalAlign="bottom" height={36} />
-
-                <Bar
-                  dataKey="created"
-                  fill={darkMode ? '#4fc3f7' : '#007bff'}
-                  name="Created Issues"
-                >
-                  <LabelList
-                    dataKey="created"
-                    position="top"
-                    fill={darkMode ? '#ffffff' : '#000000'}
-                  />
+                <Bar dataKey="created" fill={chartTheme.createdBarFill} name="Created Issues">
+                  <LabelList dataKey="created" position="top" fill={chartTheme.labelFill} />
                 </Bar>
-
-                <Bar
-                  dataKey="resolved"
-                  fill={darkMode ? '#81c784' : '#28a745'}
-                  name="Resolved Issues"
-                >
-                  <LabelList
-                    dataKey="resolved"
-                    position="top"
-                    fill={darkMode ? '#ffffff' : '#000000'}
-                  />
+                <Bar dataKey="resolved" fill={chartTheme.resolvedBarFill} name="Resolved Issues">
+                  <LabelList dataKey="resolved" position="top" fill={chartTheme.labelFill} />
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
           ) : (
             !loading &&
             !error && (
-              <p className={styles.noDataMessage} style={{ color: 'red' }}>
+              <p className={styles.noDataMessage} style={NO_DATA_STYLE}>
                 No issue data found for the selected timeframe.
               </p>
             )
