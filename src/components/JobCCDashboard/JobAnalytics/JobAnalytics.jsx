@@ -42,7 +42,6 @@ import hasPermission from '../../../utils/permissions';
 import { ENDPOINTS } from '../../../utils/URL';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import ReactTooltip from 'react-tooltip';
 import clsx from 'clsx';
 
 const ROLE_OPTIONS = [
@@ -237,14 +236,15 @@ class AnalyticsService {
       return data;
     };
 
-    const { start, end } =
-      dateRange ??
-      (() => {
-        const e = new Date();
-        const s = new Date();
-        s.setDate(e.getDate() - 30);
-        return { start: s.toISOString().split('T')[0], end: e.toISOString().split('T')[0] };
-      })();
+    const isValidRange = dateRange && dateRange.start && dateRange.end;
+    const { start, end } = isValidRange
+      ? dateRange
+      : (() => {
+          const e = new Date();
+          const s = new Date();
+          s.setDate(e.getDate() - 30);
+          return { start: s.toISOString().split('T')[0], end: e.toISOString().split('T')[0] };
+        })();
 
     return {
       currentPeriod: genSeries(start, end, 100),
@@ -312,7 +312,14 @@ function useAnalyticsData(dateRange, comparisonPeriod, selectedRole) {
     setLoading(true);
     setError(null);
     try {
-      const res = await AnalyticsService.fetchData(dateRange, comparisonPeriod, selectedRole);
+      const apiDateRange =
+        dateRange && (dateRange.start || dateRange.end)
+          ? {
+              start: dateRange.start ? toIsoDate(dateRange.start) : '',
+              end: dateRange.end ? toIsoDate(dateRange.end) : '',
+            }
+          : dateRange;
+      const res = await AnalyticsService.fetchData(apiDateRange, comparisonPeriod, selectedRole);
       setData(res);
     } catch (e) {
       setError(e.message || 'Failed to load analytics');
@@ -617,18 +624,21 @@ function DateRangeSelector({ dateRange, setDateRange, comparisonPeriod, setCompa
               onChange={date => {
                 setDateRange({
                   ...dateRange,
-                  start: date ? toIsoDate(date) : '',
+                  start: date,
                 });
                 setActive(null);
               }}
               selectsStart
-              startDate={dateRange?.start || null}
+              startDate={dateRange.start}
+              endDate={dateRange.end}
               dateFormat="yyyy-MM-dd"
               isClearable
               placeholderText="Start date"
               className={styles.input}
-              // wrapperClassName={styles.datePicker}
-              // calendarClassName={styles.calendar}
+              calendarClassName={clsx(
+                'job-analytics-datepicker',
+                darkMode ? 'job-analytics-datepicker-dark' : 'job-analytics-datepicker-light',
+              )}
             />
             <span className={styles.to}>to</span>
             <DatePicker
@@ -636,39 +646,23 @@ function DateRangeSelector({ dateRange, setDateRange, comparisonPeriod, setCompa
               onChange={date => {
                 setDateRange({
                   ...dateRange,
-                  end: date ? toIsoDate(date) : '',
+                  end: date,
                 });
                 setActive(null);
               }}
               selectsEnd
-              endDate={dateRange?.end || null}
+              startDate={dateRange.start}
+              endDate={dateRange.end}
               dateFormat="yyyy-MM-dd"
               minDate={dateRange?.start ? new Date(dateRange.start) : undefined}
               isClearable
               placeholderText="End date"
               className={styles.input}
-              // wrapperClassName={styles.datePicker}
-              // calendarClassName={styles.calendar}
+              calendarClassName={clsx(
+                'job-analytics-datepicker',
+                darkMode ? 'job-analytics-datepicker-dark' : 'job-analytics-datepicker-light',
+              )}
             />
-            {/* <input
-              type="date"
-              className={styles['input']}
-              value={dateRange?.start || ''}
-              onChange={e => {
-                setDateRange({ ...dateRange, start: e.target.value });
-                setActive(null);
-              }}
-            />
-            <span className={styles['to']}>to</span>
-            <input
-              type="date"
-              className={styles['input']}
-              value={dateRange?.end || ''}
-              onChange={e => {
-                setDateRange({ ...dateRange, end: e.target.value });
-                setActive(null);
-              }}
-            /> */}
           </div>
         </div>
 
@@ -716,7 +710,10 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
 
   const isMobile = useMediaQuery('(max-width: 640px)');
 
-  const [dateRange, setDateRange] = useState(null);
+  const [dateRange, setDateRange] = useState({
+    start: null,
+    end: null,
+  });
   const [comparisonPeriod, setComparisonPeriod] = useState('previous-month');
   const [selectedDevice, setSelectedDevice] = useState(null);
 
