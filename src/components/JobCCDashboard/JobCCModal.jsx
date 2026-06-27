@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Modal, Form, FormGroup, Label, Input, Button, Table } from 'reactstrap';
 import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL';
@@ -11,6 +11,10 @@ function JobCCModal({ job, onClose, onRefresh }) {
   const [ccList, setCCList] = useState(job.ccList || []);
   const [loading, setLoading] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
+
+  useEffect(() => {
+    setCCList(job.ccList || []);
+  }, [job.ccList]);
 
   const handleAddEmail = async () => {
     if (!email) {
@@ -25,10 +29,8 @@ function JobCCModal({ job, onClose, onRefresh }) {
         jobId: job._id,
       });
 
-      // Add to local list for immediate UI feedback
-      setCCList(prevList => [...prevList, { email }]);
       setEmail('');
-      onRefresh(); // Refresh parent data
+      onRefresh();
     } catch (error) {
       toast.error('Failed to add email. Please try again.');
     } finally {

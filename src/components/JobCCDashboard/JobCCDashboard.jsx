@@ -33,6 +33,13 @@ function JobCCDashboard() {
   }, []);
 
   useEffect(() => {
+    if (selectedJob) {
+      const updated = jobs.find(j => j._id === selectedJob._id);
+      if (updated) setSelectedJob(updated);
+    }
+  }, [jobs]);
+
+  useEffect(() => {
     const uniqueCategories = [
       ...new Set(jobs.map(job => job.category).filter(Boolean)),
     ].sort((a, b) => a.localeCompare(b));
