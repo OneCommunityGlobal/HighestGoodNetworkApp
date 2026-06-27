@@ -77,6 +77,8 @@ function Feedback({
   // Filtering & sorting for host view
   const filteredFeedback = feedbackList
     .filter(fb => {
+      // exclude suggestions from reviews tab
+      if (fb.visibility === 'suggestion' && visibilityFilter !== 'suggestion') return false;
       // visibility filter
       if (visibilityFilter !== 'all' && fb.visibility !== visibilityFilter) return false;
       // search match
@@ -268,7 +270,7 @@ function Feedback({
                 )}
               </div>
             )}
-            {visibleCount < feedbackList.length && (
+            {!showSuggestionsOnly && visibleCount < filteredFeedback.length && (
               <div className={`${styles.loadMore}`}>
                 <button
                   className={`${styles.loadMoreBtn}`}
