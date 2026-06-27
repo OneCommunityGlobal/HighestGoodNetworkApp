@@ -78,79 +78,83 @@ function LBRegister() {
   return (
     <>
       <HeaderRenderer />
-    <div className={`${styles.lbRegisterPage}${darkMode ? ` ${styles.lbRegisterDark}` : ''}`}>
-      <div className={`${styles.lbRegisterLogo}`}>
-        <img src={logo} alt="One Community Logo" />
-      </div>
-      <div className={`${styles.lbRegisterContainer}`}>
-        <div className={`${styles.lbRegisterTop}`} />
-        <div className={`${styles.lbRegisterMain}`}>
-          <h2>Registration Page</h2>
-          <p>
-            Filling the details below will allow you to bid or rent a unit from a village of your
-            choice in our property. Clicking the submit button will confirm all your details with us
-            and will take you to our login page.
-          </p>
-          <div className={`${styles.lbRegisterFormWrapper}`}>
-            <form className={`${styles.lbRegisterForm}`} onSubmit={handleSubmit}>
-              <input
-                type="text"
-                name="firstName"
-                placeholder="First Name"
-                value={formData.firstName}
-                onChange={handleChange}
-                required
-              />
-              {errors.firstName && (
-                <p className={`${styles.lbRegisterError}`}>{errors.firstName}</p>
-              )}
+      <div className={`${styles.lbRegisterPage}${darkMode ? ` ${styles.lbRegisterDark}` : ''}`}>
+        <div className={`${styles.lbRegisterLogo}`}>
+          <img src={logo} alt="One Community Logo" />
+        </div>
+        <div className={`${styles.lbRegisterContainer}`}>
+          <div className={`${styles.lbRegisterTop}`} />
+          <div className={`${styles.lbRegisterMain}`}>
+            <h2>Registration Page</h2>
+            <p>
+              Filling the details below will allow you to bid or rent a unit from a village of your
+              choice in our property. Clicking the submit button will confirm all your details with
+              us and will take you to our login page.
+            </p>
+            <div className={`${styles.lbRegisterFormWrapper}`}>
+              <form className={`${styles.lbRegisterForm}`} onSubmit={handleSubmit}>
+                <input
+                  type="text"
+                  name="firstName"
+                  placeholder="First Name"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  required
+                />
+                {errors.firstName && (
+                  <p className={`${styles.lbRegisterError}`}>{errors.firstName}</p>
+                )}
 
-              <input
-                type="text"
-                name="lastName"
-                placeholder="Last Name"
-                value={formData.lastName}
-                onChange={handleChange}
-                required
-              />
-              {errors.lastName && <p className={`${styles.lbRegisterError}`}>{errors.lastName}</p>}
+                <input
+                  type="text"
+                  name="lastName"
+                  placeholder="Last Name"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  required
+                />
+                {errors.lastName && (
+                  <p className={`${styles.lbRegisterError}`}>{errors.lastName}</p>
+                )}
 
-              <input
-                type="email"
-                name="email"
-                placeholder="Email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-              />
-              {errors.email && <p className={`${styles.lbRegisterError}`}>{errors.email}</p>}
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                />
+                {errors.email && <p className={`${styles.lbRegisterError}`}>{errors.email}</p>}
 
-              <input
-                type="text"
-                name="phone"
-                placeholder="Phone Number"
-                value={formData.phone}
-                onChange={handleChange}
-                required
-              />
-              {errors.phone && <p className={`${styles.lbRegisterError}`}>{errors.phone}</p>}
+                <input
+                  type="text"
+                  name="phone"
+                  placeholder="Phone Number"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  required
+                />
+                {errors.phone && <p className={`${styles.lbRegisterError}`}>{errors.phone}</p>}
 
-              <input
-                type="password"
-                name="password"
-                placeholder="New Password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-              />
-              {errors.password && <p className={`${styles.lbRegisterError}`}>{errors.password}</p>}
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="New Password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                />
+                {errors.password && (
+                  <p className={`${styles.lbRegisterError}`}>{errors.password}</p>
+                )}
 
-              <button type="submit">Click to Register</button>
-            </form>
+                <button type="submit">Click to Register</button>
+              </form>
+            </div>
           </div>
         </div>
       </div>
-    </div>
     </>
   );
 }
