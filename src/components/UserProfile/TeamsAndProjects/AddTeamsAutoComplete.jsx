@@ -129,7 +129,7 @@ AddTeamsAutoComplete.propTypes = {
   ]),
   searchText: PropTypes.string,
   setSearchText: PropTypes.func.isRequired,
-  setInputs: PropTypes.func.isRequired,
+  onDropDownSelect: PropTypes.func.isRequired,
   onCreateNewTeam: PropTypes.func,
 };
 
