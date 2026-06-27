@@ -9,7 +9,7 @@
 
 .customTooltip.dark {
   background-color: #1c2541;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid333 rgba(255, 255, 255, 0.2);
 }
 
 /* Filters – Light mode */
@@ -115,14 +115,11 @@
   color: #ffffff !important;
 }
 
-.oxideDark .filterSelect.ant-picker {
-
-  .oxideDark :global(.ant-picker-panel-container),
-  .oxideDark :global(.ant-picker-panels),
-  .oxideDark :global(.ant-picker-panel) {
-    background-color: #1c2541 !important;
-    border-color: rgb(255 255 255 / 20%) !important;
-  }
+.oxideDark :global(.ant-picker-panel-container),
+.oxideDark :global(.ant-picker-panels),
+.oxideDark :global(.ant-picker-panel) {
+  background-color: #1c2541 !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
 }
 
 .oxideDark .filterSelect.ant-picker .ant-picker-input>input,
@@ -153,12 +150,40 @@
 }
 
 
+.oxideDark :global(.ant-picker-cell-range-hover::before),
+.oxideDark :global(.ant-picker-cell-range-hover-start::before),
+.oxideDark :global(.ant-picker-cell-range-hover-end::before) {
+  background-color: #3b5068 !important;
+}
+
+.oxideDark :global(.ant-picker-cell-range-hover .ant-picker-cell-inner) {
+  color: #ffffff !important;
+}
+
+.oxideDark :global(.ant-picker-content th) {
+  background-color: #1c2541 !important;
+  color: #a0a0a0 !important;
+}
+
+
+.oxideDark :global(.ant-picker-header) {
+  color: #f5f5f5 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* 4. The month/year text and the little arrow buttons */
+.oxideDark :global(.ant-picker-header-view),
+.oxideDark :global(.ant-picker-header button) {
+  color: #f5f5f5 !important;
+}
+
+
 .oxideDark :global(.ant-picker-cell-in-range::before) {
   background-color: #3b5068 !important;
 }
 
 .oxideDark .filterSelect:global(.ant-picker) {
-  background-color: #ffffff !important;
+  /* background-color: #ffffff !important; */
   border: 1px solid rgba(255, 255, 255, 0.2) !important;
 }
 
@@ -182,7 +207,14 @@
 
 }
 
-/* Recharts dark mode */
+.oxideDark:global(.ant-picker-dropdown) :global(.ant-picker-cell:hover:not(.ant-picker-cell-selected):not(.ant-picker-cell-in-view) .ant-picker-cell-inner) {
+  background-color: #2c3e50 !important;
+}
+
+.oxideDark:global(.ant-picker-dropdown) :global(.ant-picker-cell-in-range::before) {
+  background-color: #3b5068 !important;
+}
+
 .oxideDark .recharts-text,
 .oxideDark .recharts-cartesian-axis-tick-value,
 .oxideDark .recharts-legend-item-text {
@@ -196,7 +228,7 @@
   stroke: rgb(255 255 255 / 20%) !important;
 }
 
-/* Animation */
+
 @keyframes placeholderPulse {
   0% {
     opacity: 0.35;
