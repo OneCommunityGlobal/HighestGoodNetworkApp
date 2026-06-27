@@ -462,16 +462,16 @@
 }
 
 .darkMode .badgePublic {
-  background: rgb(59 130 246 / 35%);
-  color: #93c5fd;
+  background: #1e40af;
+  color: #bfdbfe;
 }
 
 .darkMode .badgePrivate {
-  background: rgb(248 113 113 / 35%);
+  background: #991b1b;
   color: #fecaca;
 }
 
 .darkMode .badgeSuggestion {
-  background: rgb(245 158 11 / 35%);
+  background: #92400e;
   color: #fde68a;
 }
