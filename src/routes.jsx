@@ -81,6 +81,7 @@ import TopCommunityMembers from './components/HGNForm/TopCommunityMembers';
 import HelpPage from './components/LandingPage/HelpPage';
 import CommunityMembersPage from './components/HGNHelpSkillsDashboard/CommunityMembersPage';
 import FeedbackModal from './components/HGNHelpSkillsDashboard/FeedbackModal';
+import ActivityFeedback from './components/CommunityPortal/Activities/activityId/ActivityFeedback';
 import SkillsOverviewPage from './components/HGNHelpSkillsDashboard/SkillsOverviewPage';
 import TeamCard from './components/HGNHelpSkillsDashboard/TeamCard/TeamCard';
 import UserProfilePage from './components/HGNHelpSkillsDashboard/UserProfilePage';
@@ -149,7 +150,6 @@ import CPDashboard from './components/CommunityPortal';
 import ActivityList from './components/CommunityPortal/Activities/ActivityList';
 import FaqSection from './components/CommunityPortal/Activities/FaqSection';
 import ActivityAttendance from './components/CommunityPortal/Activities/ActivityAttendance';
-import Activity from './components/CommunityPortal/Activities/activityId/Activity';
 import ActivityComments from './components/CommunityPortal/Activities/activityId/ActivityComments';
 
 import Feedbackform from './components/CommunityPortal/Activities/Feedbackform';
@@ -1000,6 +1000,11 @@ export default (
         <CPProtectedRoute path="/communityportal/database/design" exact component={EventList} />
 
         <CPProtectedRoute
+          path="/communityportal/activity/:activityId/ActivityFeedback"
+          exact
+          component={ActivityFeedback}
+        />
+        <CPProtectedRoute
           path="/communityportal/ActivityAttendance"
           exact
           component={ActivityAttendance}
@@ -1016,7 +1021,7 @@ export default (
         <CPProtectedRoute
           path="/communityportal/activities/:activityid"
           exact
-          component={Activity}
+          component={ActivityFeedback}
         />
         <CPProtectedRoute
           path="/communityportal/activities/TestEventReg"
