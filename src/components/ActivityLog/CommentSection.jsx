@@ -49,7 +49,7 @@ const CommentSection = ({ logId, comments, userRole, handleCommentSubmit }) => {
             onClick={onSubmit}
             disabled={!newComment.trim()}
             className={`${styles.commentSubmitBtn} ${
-              !newComment.trim() ? styles.commentSubmitDisabled : ''
+              newComment.trim() ? '' : styles.commentSubmitDisabled
             }`}
           >
             <MessageSquare className={`${styles.submitIcon}`} />
