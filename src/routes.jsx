@@ -200,7 +200,7 @@ import { UserRole } from './utils/enums';
 import JobApplicationForm from './components/Collaboration/JobApplicationForm/JobApplicationForm';
 import ReviewsInsight from './components/PRAnalyticsDashboard/ReviewsInsight/ReviewsInsight';
 import ProjectsGlobalDistribution from './components/ProjectsGlobalDistribution/ProjectsGlobalDistribution';
-
+import ProjectStatus from './components/ProjectStatus/ProjectStatus';
 const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
 const RequestResources = lazy(() => import('./components/SocialArchitecture/RequestResources'));
 const ReusableListView = lazy(() => import('./components/BMDashboard/ReusableList'));
