@@ -441,12 +441,13 @@ function ChartCard({ title, icon: Icon, children, className }) {
 
 // ======================== DEVICE FILTER BANNER ========================
 function DeviceFilterBanner({ selectedDevice, onClear }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
   if (!selectedDevice) return null;
   const DevIcon = DEVICE_ICONS[selectedDevice] || Monitor;
   return (
-    <div className={styles.deviceBanner}>
+    <div className={clsx(styles.deviceBanner, darkMode && styles.darkMode)}>
       <DevIcon size={16} />
-      <p className={styles.description}>
+      <p className={clsx(styles.description, darkMode && styles.darkMode)}>
         Showing data for <span>{selectedDevice}</span> only
       </p>
       <button className={styles.deviceBannerClear} onClick={onClear} title="Clear device filter">
@@ -491,7 +492,7 @@ function DeviceEngagementPanel({ device, darkMode }) {
   ];
 
   return (
-    <div className={styles.engagementPanel}>
+    <div className={clsx(styles.engagementPanel, darkMode && styles.darkMode)}>
       <div className={styles.engagementHeader}>
         <div className={styles.engagementDeviceLabel}>
           <DevIcon size={18} />
@@ -501,7 +502,10 @@ function DeviceEngagementPanel({ device, darkMode }) {
       </div>
       <div className={styles.engagementGrid}>
         {engagementItems.map(item => (
-          <div key={item.label} className={styles.engagementItem}>
+          <div
+            key={item.label}
+            className={clsx(styles.engagementItem, darkMode && styles.darkMode)}
+          >
             <div className={styles.engagementValue} style={{ color: item.color }}>
               {item.value}
             </div>

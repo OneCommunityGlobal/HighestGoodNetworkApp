@@ -558,10 +558,27 @@
     margin-bottom: 0;
   }
 
+  .darkMode.description {
+    color: #ffffff !important;
+}
+
   span {
     font-weight: 700;
   }
 }
+
+.darkMode.deviceBanner {
+  background: color-mix(in srgb, var(--primary) 18%, #1b2a41);
+  border-color: color-mix(in srgb, var(--primary) 45%, #1b2a41);
+  color: #f9fafb;
+}
+
+.darkMode .deviceBannerClear {
+  background-color: transparent;
+  color: #f87171;
+  border-color: #f87171;
+}
+
 
 @keyframes banner-in {
   from {
@@ -667,6 +684,28 @@
   display: flex;
   align-items: center;
   gap: 4px;
+}
+
+.darkMode.engagementPanel {
+  background-color: #1b2a41;
+  border-color: #374151;
+}
+
+.darkMode .engagementDeviceLabel {
+  color: #f9fafb;
+}
+
+.darkMode .engagementSubtitle {
+  color: #9ca3af;
+}
+
+.darkMode.engagementItem {
+  background-color: hsl(216, 41%, 23%);
+  border-color: #374151;
+}
+
+.darkMode .engagementLabel {
+  color: #9ca3af;
 }
 
 @media screen and (min-width: 768px) {
