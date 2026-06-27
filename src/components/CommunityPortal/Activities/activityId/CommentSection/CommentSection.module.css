@@ -30,7 +30,9 @@
   background-color: #f4f4f4;
   padding: 10px;
   border-radius: 6px;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
 .activityIcon {
@@ -56,7 +58,7 @@
   background-color: #36f;
 }
 
-@media (max-width: 800px) {
+@media (width <= 800px) {
   .activityComment {
     flex-direction: column;
     gap: 5px;
@@ -82,5 +84,5 @@
 
 .darkMode .activityCommentText {
   background-color: #3a506b;
-  color: #ffffff;
+  color: #fff;
 }

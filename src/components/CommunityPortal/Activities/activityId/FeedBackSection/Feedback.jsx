@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import styles from './Feedback.module.css';
 import { FaSearch } from 'react-icons/fa';
-import { MdArrowUpward, MdArrowDownward } from 'react-icons/md';
+
 import { AiFillStar, AiOutlineStar } from 'react-icons/ai';
 import FeedbackModal from './FeedbackModal';
 
@@ -31,6 +31,19 @@ const FeedbackCard = ({ feedback, renderStars, getVisibilityBadge }) => (
   </div>
 );
 
+FeedbackCard.propTypes = {
+  feedback: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    name: PropTypes.string.isRequired,
+    rating: PropTypes.number,
+    comment: PropTypes.string,
+    date: PropTypes.string,
+    visibility: PropTypes.string,
+  }).isRequired,
+  renderStars: PropTypes.func.isRequired,
+  getVisibilityBadge: PropTypes.func.isRequired,
+};
+
 function Feedback({
   reviewsEnabled = true,
   suggestionsOnly = false,
@@ -44,7 +57,7 @@ function Feedback({
   // local list (in real app you'd fetch)
   const [searchTerm, setSearchTerm] = useState('');
   const [filterBy, setFilterBy] = useState('date');
-  const [sortOrder, setSortOrder] = useState('desc');
+  const [sortOrder] = useState('desc');
   const [visibilityFilter, setVisibilityFilter] = useState('all');
   const [showSuggestionsOnly, setShowSuggestionsOnly] = useState(false);
 
@@ -88,8 +101,6 @@ function Feedback({
 
   const handleSearch = e => setSearchTerm(e.target.value);
   const handleFilterChange = e => setFilterBy(e.target.value);
-  const handleSortChange = () => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-
   const renderStars = feedback =>
     Array.from({ length: 5 }, (_, i) => (
       <span key={`star-${feedback.id}-${i}`} className={`${styles.star}`}>
@@ -174,7 +185,6 @@ function Feedback({
     (suggestionsOnly && !modalSuggestionText) ||
     (!reviewsEnabled && !suggestionsOnly);
 
-  const sortIcon = sortOrder === 'asc' ? <MdArrowUpward /> : <MdArrowDownward />;
   const buttonLabel = suggestionsOnly ? 'Share a suggestion' : 'Leave feedback';
   const modalTitle = suggestionsOnly ? 'Share Your Ideas' : 'Leave Feedback';
   const disabledTooltip = !reviewsEnabled && !suggestionsOnly ? 'Reviews disabled' : '';
