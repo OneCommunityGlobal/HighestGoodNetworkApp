@@ -5,7 +5,7 @@
   background-color: #fef3c7;
   border-radius: 16px;
   border: 1px solid #fde68a;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 6px rgb(0 0 0 / 5%);
 }
 
 .feedbackFormTitle {
@@ -42,7 +42,7 @@
   padding: 12px;
   border-radius: 12px;
   border: 1px solid #fcd34d;
-  background-color: #ffffff;
+  background-color: #fff;
   color: #111827;
   font-size: 0.875rem;
   transition: all 0.15s ease-in-out;
@@ -62,21 +62,21 @@
   font-weight: 700;
   padding: 12px;
   border-radius: 12px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
   margin-top: 12px;
-  background-color: #d97706;
+  background-color: #b45309;
   color: #fff;
   cursor: pointer;
   transition: background-color 0.2s ease-in-out;
 }
 
 .feedbackSubmitBtn:hover {
-  background-color: #b45309;
+  background-color: #92400e;
 }
 
 .feedbackSubmitDisabled {
   background-color: #9ca3af;
-  color: #374151;
+  color: #111827;
   cursor: not-allowed;
 }
 
@@ -87,7 +87,7 @@
 
 /* Dark Mode */
 .darkMode .feedbackFormContainer {
-  background-color: rgba(202, 138, 4, 0.2); /* yellow-900/30 */
+  background-color: rgb(202 138 4 / 20%); /* yellow-900/30 */
   border-color: #78350f; /* dark yellow border */
 }
 
@@ -96,8 +96,8 @@
 }
 
 .darkMode .successAlert {
-  color: #86efac;
-  background-color: rgba(22, 163, 74, 0.2);
+  color: #fff;
+  background-color: rgb(22 163 74 / 40%);
 }
 
 .darkMode .feedbackTextarea {
@@ -107,17 +107,17 @@
 }
 
 .darkMode .feedbackSubmitBtn {
-  background-color: #d97706;
-  color: #f3f4f6;
+  background-color: #b45309;
+  color: #fff;
 }
 
 .darkMode .feedbackSubmitBtn:hover {
-  background-color: #b45309;
+  background-color: #92400e;
 }
 
 .darkMode .feedbackSubmitDisabled {
   background-color: #4b5563;
-  color: #d1d5db;
+  color: #fff;
 }
 
 .darkMode .submitIcon {

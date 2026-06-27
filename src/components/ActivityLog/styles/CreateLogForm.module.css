@@ -1,9 +1,9 @@
 .formContainer {
   padding: 24px;
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 12px;
   border: 1px solid #e5e7eb;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 8px rgb(0 0 0 / 5%);
 }
 
 .title {
@@ -125,9 +125,9 @@
   font-weight: 700;
   padding: 12px;
   border-radius: 12px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
   background-color: #4f46e5;
-  color: #ffffff;
+  color: #fff;
   cursor: pointer;
   transition: background-color 0.2s ease-in-out;
   margin-top: 16px;
@@ -139,7 +139,7 @@
 
 .disabledBtn {
   background-color: #9ca3af;
-  color: #374151;
+  color: #111827;
   cursor: not-allowed;
 }
 
@@ -180,7 +180,7 @@
 
 .darkMode .disabledBtn {
   background-color: #4b5563;
-  color: #d1d5db;
+  color: #fff;
 }
 
 .darkMode .icon {

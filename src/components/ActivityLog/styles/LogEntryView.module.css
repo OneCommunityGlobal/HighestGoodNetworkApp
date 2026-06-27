@@ -89,7 +89,7 @@
 }
 
 .markAssistedBtn {
-  background-color: #16a34a;
+  background-color: #15803d;
   color: #fff;
   font-weight: 600;
   padding: 8px 16px;
@@ -99,7 +99,7 @@
 }
 
 .markAssistedBtn:hover {
-  background-color: #15803d;
+  background-color: #14532d;
 }
 
 .removeAssistedBtn {
@@ -178,8 +178,8 @@
 }
 
 .darkMode .markAssistedBtn {
-  background-color: #16a34a;
-  color: #f3f4f6;
+  background-color: #15803d;
+  color: #fff;
 }
 
 .darkMode .markAssistedBtn:hover {
@@ -188,7 +188,7 @@
 
 .darkMode .removeAssistedBtn {
   background-color: #dc2626;
-  color: #f3f4f6;
+  color: #fff;
 }
 
 .darkMode .removeAssistedBtn:hover {
@@ -201,6 +201,6 @@
 }
 
 .darkMode .assistedTag {
-  background-color: #991b1b;
-  color: #fca5a5;
+  background-color: #7f1d1d;
+  color: #fff;
 }

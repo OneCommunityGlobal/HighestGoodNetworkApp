@@ -16,7 +16,7 @@
   padding: 16px;
   background-color: #fff;
   border-radius: 16px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 6px rgb(0 0 0 / 5%);
   border-bottom: 1px solid #f3f4f6;
 }
 
@@ -116,7 +116,7 @@
   padding: 40px;
   background-color: #fff;
   border-radius: 16px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 6px rgb(0 0 0 / 5%);
   color: #6b7280;
 }
 
@@ -129,7 +129,7 @@
 .darkMode .header {
   background-color: #374151;
   border-bottom: 1px solid #4b5563;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 6px rgb(0 0 0 / 50%);
 }
 
 .darkMode .title {
@@ -137,8 +137,8 @@
 }
 
 .darkMode .createButton {
-  background-color: #6366f1;
-  color: #f9fafb;
+  background-color: #4f46e5;
+  color: #fff;
 }
 
 .darkMode .createButton:hover {
@@ -146,8 +146,8 @@
 }
 
 .darkMode .viewButton {
-  background-color: #6b7280;
-  color: #f3f4f6;
+  background-color: #4b5563;
+  color: #fff;
 }
 
 .darkMode .viewButton:hover {
@@ -178,5 +178,5 @@
 .darkMode .noLogs {
   background-color: #374151;
   color: #d1d5db;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 6px rgb(0 0 0 / 50%);
 }
