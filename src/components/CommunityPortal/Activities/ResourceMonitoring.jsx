@@ -52,11 +52,6 @@ function ResourceMonitoring() {
     'New Members': 'purple',
   };
 
-  const labelMap = {
-    Attendance: 'Healthy',
-    'New Members': 'Good',
-  };
-
   const [clickedArrow, setClickedArrow] = useState(null);
 
   const handleArrowClick = index => {
@@ -69,7 +64,6 @@ function ResourceMonitoring() {
       <div className={`${styles.resourceGrid}`}>
         {resources.map((resource, index) => {
           const progress = (resource.value / resource.max) * 100;
-          const arrowColor = resource.direction === 'up' ? 'green' : 'red';
 
           return (
             <div className={`${styles.resourceCard}`} key={resource.title}>
