@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Row } from 'reactstrap';
+import { Row, Col } from 'reactstrap';
 import Select from 'react-select';
 import ProjectSummary from './ProjectSummary';
 import styles from '../BMDashboard.module.css';
@@ -103,35 +103,38 @@ function ProjectsList() {
   return (
     <Row
       className="ml-0 text-center mt-5"
-      style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
+      style={{ width: '100%', display: 'flex', justifyContent: 'center', flexDirection: 'column' }}
     >
-      <Select
-        isMulti
-        options={projectOptions}
-        onChange={handleSelectChange}
-        className="mb-3"
-        placeholder="Select Projects"
-        styles={selectStyles}
-        classNamePrefix="react-select"
-      />
-      {filteredProjects.length ? (
-        <ul
-          className={`${styles.projectsList} ${
-            darkMode ? styles.darkProjectsList : styles.lightProjectsList
-          }`}
-        >
-          {filteredProjects.map(project => (
-            <li
-              className={`${darkMode ? styles.darkProjectSummary : styles.projectSummary}`}
-              key={project._id}
-            >
-              <ProjectSummary project={project} />
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className={darkMode ? 'text-light' : ''}>No projects data</p>
-      )}
+      <Col md="8" lg="6" className="mb-3" style={{ margin: '0 auto' }}>
+        <Select
+          isMulti
+          options={projectOptions}
+          onChange={handleSelectChange}
+          placeholder="Select Projects"
+          styles={selectStyles}
+          classNamePrefix="react-select"
+        />
+      </Col>
+      <Col xs="12">
+        {filteredProjects.length ? (
+          <ul
+            className={`${styles.projectsList} ${
+              darkMode ? styles.darkProjectsList : styles.lightProjectsList
+            }`}
+          >
+            {filteredProjects.map(project => (
+              <li
+                className={`${darkMode ? styles.darkProjectSummary : styles.projectSummary}`}
+                key={project._id}
+              >
+                <ProjectSummary project={project} />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className={darkMode ? 'text-light' : ''}>No projects data</p>
+        )}
+      </Col>
     </Row>
   );
 }

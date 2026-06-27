@@ -6,6 +6,8 @@ export default function SearchProjectByPerson({
   suggestions,
   onSelectSuggestion,
   searchMode,
+  handleFetchArchivedProjects,
+  showArchived,
 }) {
   const [inputValue, setInputValue] = useState(''); // Keep track of input value
   const [showSuggestions, setShowSuggestions] = useState(false); // Control whether suggestions are shown
@@ -36,14 +38,16 @@ export default function SearchProjectByPerson({
       <form className="input-group mb-2" onSubmit={e => e.preventDefault()}>
         <div className="input-group-prepend">
           <span
-            className={`input-group-text search-field-container ${darkMode ? 'bg-light-grey' : ''}`}
+            className={`input-group-text search-field-container ${
+              darkMode ? 'bg-yinmn-blue text-light' : ''
+            }`}
           >
             Search
           </span>
         </div>
         <input
           type="text"
-          className={`form-control ${darkMode ? 'bg-white' : ''}`}
+          className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
           placeholder={searchMode === 'person' ? 'Search by Person Name' : 'Search by Project Name'}
           value={inputValue}
           onChange={handleInputChange} // Trigger input change
