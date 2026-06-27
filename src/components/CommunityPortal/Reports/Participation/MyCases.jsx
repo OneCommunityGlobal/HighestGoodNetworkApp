@@ -1,65 +1,82 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import './MyCases.css';
+import styles from './MyCases.module.css';
 import mockEvents from './mockData';
+import CreateEventModal from './CreateEventModal';
+import { filterEventsByDate } from './FilterByDate';
 
 function MyCases() {
   const [view, setView] = useState('card');
-  const [filter, setFilter] = useState('all');
+  const [filter, setFilter] = useState('All Time');
+  const [expanded, setExpanded] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
-  const filterEvents = events => {
-    const now = new Date();
-    if (filter === 'today') {
-      return events.filter(event => {
-        const eventDate = new Date(event.eventTime);
-        return (
-          eventDate.getDate() === now.getDate() &&
-          eventDate.getMonth() === now.getMonth() &&
-          eventDate.getFullYear() === now.getFullYear()
-        );
-      });
-    }
-    if (filter === 'thisWeek') {
-      const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
-      const endOfWeek = new Date(startOfWeek);
-      endOfWeek.setDate(endOfWeek.getDate() + 6);
-      return events.filter(event => {
-        const eventDate = new Date(event.eventTime);
-        return eventDate >= startOfWeek && eventDate <= endOfWeek;
-      });
-    }
-    if (filter === 'thisMonth') {
-      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-      const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-      return events.filter(event => {
-        const eventDate = new Date(event.eventTime);
-        return eventDate >= startOfMonth && eventDate <= endOfMonth;
-      });
-    }
-    return events;
-  };
+  const isExporting =
+    typeof document !== 'undefined' && document.documentElement?.dataset?.exporting === 'true';
 
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const filteredEvents = filterEvents(mockEvents);
+  const filteredEvents = filterEventsByDate(mockEvents, filter);
+
+  const filteredEventsByEventType = filteredEvents.filter(event => {
+    if (event.eventType === 'all') {
+      return true;
+    }
+    return event.eventType === filter;
+  });
+
+  let visibleEvents = filteredEventsByEventType;
+
+  if (!isExporting) {
+    visibleEvents = expanded ? filteredEventsByEventType : filteredEventsByEventType.slice(0, 10);
+  }
+
+  const placeholderAvatar = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+
+  const isEventToday = dateString => {
+    const eventDate = new Date(dateString);
+    const now = new Date();
+    return (
+      eventDate.getDate() === now.getDate() &&
+      eventDate.getMonth() === now.getMonth() &&
+      eventDate.getFullYear() === now.getFullYear()
+    );
+  };
 
   const renderCardView = () => (
-    <div className="case-cards">
-      {filteredEvents.map(event => (
-        <div className={`case-card ${darkMode ? 'case-card-dark' : ''}`} key={event.id}>
-          <span className="event-badge">{event.eventType}</span>
-          <span className={`event-time ${darkMode ? 'event-time-dark' : ''}`}>
+    <div
+      className={`case-cards-global ${styles.caseCards} ${
+        expanded || isExporting ? styles.expanded : ''
+      }`}
+    >
+      {visibleEvents?.map(event => (
+        <div
+          className={`case-card-global ${styles.caseCard} ${darkMode ? styles.caseCardDark : ''}`}
+          key={event.id}
+        >
+          <span className={styles.eventBadge} data-type={event.eventType}>
+            {event.eventType}
+          </span>
+          <span className={`${styles.eventTime} ${darkMode ? styles.eventTimeDark : ''}`}>
             {event.eventTime}
           </span>
-          <span className={`event-name ${darkMode ? 'event-name-dark' : ''}`}>
+          <span className={`${styles.eventName} ${darkMode ? styles.eventNameDark : ''}`}>
+            {isEventToday(event.eventDate) ? "Today's " : ''}
             {event.eventName}
           </span>
-          <div className={`attendees-info ${darkMode ? 'attendees-info-dark' : ''}`}>
-            <div className="avatars">
-              <img alt="profile img" />
+          <div className={`${styles.attendeesInfo} ${darkMode ? styles.attendeesInfoDark : ''}`}>
+            <div className={styles.avatars}>
+              <img
+                alt="profile img"
+                src={placeholderAvatar}
+                width="24"
+                height="24"
+                crossOrigin="anonymous"
+                loading="lazy"
+              />
             </div>
             <span
-              className={`attendees-count ${darkMode ? 'attendees-count-dark' : ''}`}
+              className={`${styles.attendeesCount} ${darkMode ? styles.attendeesCountDark : ''}`}
             >{`+${event.attendees}`}</span>
           </div>
         </div>
@@ -68,74 +85,108 @@ function MyCases() {
   );
 
   const renderListView = () => (
-    <ul className="case-list">
-      {filteredEvents.map(event => (
-        <li className={`case-list-item ${darkMode ? 'case-list-item-dark' : ''}`} key={event.id}>
-          <span className="event-type">{event.eventType}</span>
-          <span className="event-time">{event.eventTime}</span>
-          <span className="event-name">{event.eventName}</span>
-          <span className="attendees-count">{`+${event.attendees}`}</span>
+    <ul
+      className={`case-list-global ${styles.caseList} ${
+        expanded || isExporting ? styles.expanded : ''
+      }`}
+    >
+      {visibleEvents?.map(event => (
+        <li
+          className={`case-list-item-global ${styles.caseListItem} ${
+            darkMode ? styles.caseListItemDark : ''
+          }`}
+          key={event.id}
+        >
+          <span className={styles.eventType}>{event.eventType}</span>
+          <span className={styles.eventTime}>{event.eventTime}</span>
+          <span className={styles.eventName}>{event.eventName}</span>
+          <span className={styles.attendeesCount}>{`+${event.attendees}`}</span>
         </li>
       ))}
     </ul>
   );
 
   const renderCalendarView = () => (
-    <div className={`calendar-view ${darkMode ? 'calendar-view-dark' : ''}`}>
+    <div className={`${styles.calendarView} ${darkMode ? styles.calendarViewDark : ''}`}>
       <p>Calendar View is under construction...</p>
     </div>
   );
 
   return (
-    <div className={`my-cases-page ${darkMode ? 'my-cases-page-dark' : ''}`}>
-      <header className="header">
-        <h2 className={`section-title ${darkMode ? 'section-title-dark' : ''}`}>My Cases</h2>
-        <div className="header-actions">
-          <div className="view-switcher">
+    <div
+      className={`my-cases-global ${styles.myCasesPage} ${darkMode ? styles.myCasesPageDark : ''}`}
+    >
+      <header className={styles.header}>
+        <h2 className={`${styles.sectionTitle} ${darkMode ? styles.sectionTitleDark : ''}`}>
+          Upcoming Events
+        </h2>
+        <div className={styles.headerActions}>
+          <div className={`${styles.viewSwitcher} ${darkMode ? styles.viewSwitcherDarkMode : ''}`}>
             <button
               type="button"
-              className={view === 'calendar' ? 'active' : ''}
+              className={view === 'calendar' ? styles.active : ''}
               onClick={() => setView('calendar')}
             >
               Calendar
             </button>
             <button
               type="button"
-              className={view === 'card' ? 'active' : ''}
+              className={view === 'card' ? styles.active : ''}
               onClick={() => setView('card')}
             >
               Card
             </button>
             <button
               type="button"
-              className={view === 'list' ? 'active' : ''}
+              className={view === 'list' ? styles.active : ''}
               onClick={() => setView('list')}
             >
               List
             </button>
           </div>
-          <div className="filter-wrapper">
+
+          <div className={`filter-wrapper-global ${styles.filterWrapper}`}>
             <select
-              className="filter-dropdown"
+              className={`${styles.filterDropdown} ${
+                darkMode ? styles.filterDropdownDarkMode : ''
+              }`}
               value={filter}
               onChange={e => setFilter(e.target.value)}
             >
-              <option value="all">All Time</option>
-              <option value="today">Today</option>
-              <option value="thisWeek">This Week</option>
-              <option value="thisMonth">This Month</option>
+              <option value="All Time">All Time</option>
+              <option value="Today">Today</option>
+              <option value="This Week">This Week</option>
+              <option value="This Month">This Month</option>
             </select>
           </div>
-          <button type="button" className="create-new">
+
+          <button
+            type="button"
+            className={`${styles.createNew} ${darkMode ? styles.createNewDarkMode : ''}`}
+            onClick={() => setIsCreateModalOpen(true)}
+          >
             + Create New
           </button>
+          {filteredEventsByEventType.length > 10 && !isExporting && (
+            <button
+              type="button"
+              className={`more-btn-global ${styles.moreBtn}`}
+              onClick={() => setExpanded(!expanded)}
+            >
+              {expanded ? 'Show Less' : 'More'}
+            </button>
+          )}
         </div>
       </header>
-      <main className="content">
+      <main className={`${styles.content}`}>
         {view === 'card' && renderCardView()}
         {view === 'list' && renderListView()}
         {view === 'calendar' && renderCalendarView()}
       </main>
+      <CreateEventModal
+        isOpen={isCreateModalOpen}
+        toggle={() => setIsCreateModalOpen(!isCreateModalOpen)}
+      />
     </div>
   );
 }

@@ -1,4 +1,5 @@
-import { useSelector } from 'react-redux';
+
+import modalStyles from './QuickSetupModal.module.css';
 
 function QuickSetupCodes({
   titles,
@@ -11,7 +12,7 @@ function QuickSetupCodes({
 }) {
 
   return (
-    <div className="blueSquares mt-3" id="qsc-outer-wrapper">
+    <div className="mt-3" id="qsc-outer-wrapper" style={{display: 'flex', flexWrap: 'wrap', gap: '6px', padding: '4px'}}>
       {titles.map(title => {
         const isTeamCodeInList = teamCodes.some(code => code.value === title.teamCode);
         return (
@@ -20,7 +21,7 @@ function QuickSetupCodes({
             key={title._id}
             role="button"
             id="wrapper"
-            className={`role-button ${isTeamCodeInList ? 'bg-warning' : 'bg-danger'}`}
+            className={`${modalStyles['role-button']} ${isTeamCodeInList ? 'bg-warning' : 'bg-danger'}`}
             onClick={() => {
               if (editMode) {
                 setShowAddTitle(true);
@@ -32,8 +33,8 @@ function QuickSetupCodes({
             value={title.titleName}
           >
             {title?.titleCode ? title.titleCode : title?.titleName?.substring(0, 7)}
-            <div className="title">
-              <span className="setup-title-name">{title?.titleName}</span>
+            <div style={{display: 'none'}}>
+              <span className={modalStyles['setup-title-name']}>{title?.titleName}</span>
             </div>
           </div>
         );
