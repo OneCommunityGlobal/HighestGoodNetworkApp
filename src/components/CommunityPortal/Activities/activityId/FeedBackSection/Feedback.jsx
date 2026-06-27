@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
+import PropTypes from 'prop-types';
 import styles from './Feedback.module.css';
 import { FaSearch } from 'react-icons/fa';
 import { MdArrowUpward, MdArrowDownward } from 'react-icons/md';
@@ -74,41 +75,38 @@ function Feedback({
       </span>
     ));
 
+  const matchesSearch = (fb, term) => {
+    if (!term) return true;
+    return (
+      (fb.comment || '').toLowerCase().includes(term) ||
+      (fb.name || '').toLowerCase().includes(term) ||
+      (fb.rating !== null && String(fb.rating).includes(term))
+    );
+  };
+
+  const matchesVisibilityFilter = fb => {
+    if (fb.visibility === 'suggestion' && visibilityFilter !== 'suggestion') return false;
+    if (visibilityFilter !== 'all' && fb.visibility !== visibilityFilter) return false;
+    return true;
+  };
+
+  const compareFeedback = (a, b) => {
+    const dir = sortOrder === 'asc' ? 1 : -1;
+    if (filterBy === 'date') return dir * (new Date(a.date) - new Date(b.date));
+    if (filterBy === 'rating') return dir * ((a.rating || 0) - (b.rating || 0));
+    return 0;
+  };
+
   // Filtering & sorting for host view
   const filteredFeedback = feedbackList
-    .filter(fb => {
-      // exclude suggestions from reviews tab
-      if (fb.visibility === 'suggestion' && visibilityFilter !== 'suggestion') return false;
-      // visibility filter
-      if (visibilityFilter !== 'all' && fb.visibility !== visibilityFilter) return false;
-      // search match
-      const q = searchTerm.trim().toLowerCase();
-      if (!q) return true;
-      return (
-        (fb.comment || '').toLowerCase().includes(q) ||
-        (fb.name || '').toLowerCase().includes(q) ||
-        (fb.rating !== null && String(fb.rating).includes(q))
-      );
-    })
-    .sort((a, b) => {
-      if (filterBy === 'date') {
-        return sortOrder === 'asc'
-          ? new Date(a.date) - new Date(b.date)
-          : new Date(b.date) - new Date(a.date);
-      }
-      if (filterBy === 'rating') {
-        return sortOrder === 'asc'
-          ? (a.rating || 0) - (b.rating || 0)
-          : (b.rating || 0) - (a.rating || 0);
-      }
-      return 0;
-    });
+    .filter(fb => matchesVisibilityFilter(fb) && matchesSearch(fb, searchTerm.trim().toLowerCase()))
+    .sort(compareFeedback);
 
   // Participant submit handlers (local only)
   const handleSubmitFeedback = () => {
     if (!reviewsEnabled && !suggestionsOnly) return; // can't submit
     const isSuggestion = suggestionsOnly;
-    const visibility = eventWithinFirstMonth ? 'host-only' : modalPrivate ? 'host-only' : 'public';
+    const visibility = eventWithinFirstMonth || modalPrivate ? 'host-only' : 'public';
     const newItem = {
       id: feedbackList.length + 1,
       name: 'You',
@@ -134,6 +132,33 @@ function Feedback({
 
   // Host-only and suggestion lists
   const suggestionList = feedbackList.filter(fb => fb.visibility === 'suggestion');
+
+  const getVisibilityBadge = visibility => {
+    const config = {
+      'host-only': {
+        className: styles.badgePrivate,
+        label: 'Private',
+        title: 'Private: Visible to host only',
+      },
+      suggestion: { className: styles.badgeSuggestion, label: 'Suggestion', title: 'Suggestion' },
+    };
+    return (
+      config[visibility] || { className: styles.badgePublic, label: 'Public', title: 'Public' }
+    );
+  };
+
+  const isSubmitDisabled =
+    (!suggestionsOnly && !modalComment && !modalRating) ||
+    (suggestionsOnly && !modalSuggestionText) ||
+    (!reviewsEnabled && !suggestionsOnly);
+
+  const sortIcon = sortOrder === 'asc' ? <MdArrowUpward /> : <MdArrowDownward />;
+  const buttonLabel = suggestionsOnly ? 'Share a suggestion' : 'Leave feedback';
+  const modalTitle = suggestionsOnly ? 'Share Your Ideas' : 'Leave Feedback';
+  const disabledTooltip = !reviewsEnabled && !suggestionsOnly ? 'Reviews disabled' : '';
+  const importantLabel = eventWithinFirstMonth
+    ? 'Your feedback is only visible to the host for the first month.'
+    : null;
 
   return (
     <div className={`${darkMode ? styles.darkMode : ''}`}>
@@ -180,7 +205,7 @@ function Feedback({
                 </label>
 
                 <button type="button" className={`${styles.sortBtn}`} onClick={handleSortChange}>
-                  Sort {sortOrder === 'asc' ? <MdArrowUpward /> : <MdArrowDownward />}
+                  Sort {sortIcon}
                 </button>
               </div>
             </div>
@@ -188,7 +213,7 @@ function Feedback({
             <div className={`${styles.hostViewToggles}`}>
               <button
                 type="button"
-                className={`${showSuggestionsOnly ? '' : styles.toggleActive}`}
+                className={`${!showSuggestionsOnly ? styles.toggleActive : ''}`}
                 onClick={() => setShowSuggestionsOnly(false)}
               >
                 Reviews
@@ -234,28 +259,14 @@ function Feedback({
                           <strong>{feedback.name}</strong>
                           <span className={`${styles.feedbackDate}`}>{feedback.date}</span>
                           {/* Visibility badge */}
-                          <span
-                            className={
-                              feedback.visibility === 'host-only'
-                                ? styles.badgePrivate
-                                : feedback.visibility === 'suggestion'
-                                ? styles.badgeSuggestion
-                                : styles.badgePublic
-                            }
-                            title={
-                              feedback.visibility === 'host-only'
-                                ? 'Private: Visible to host only'
-                                : feedback.visibility === 'suggestion'
-                                ? 'Suggestion'
-                                : 'Public'
-                            }
-                          >
-                            {feedback.visibility === 'host-only'
-                              ? 'Private'
-                              : feedback.visibility === 'suggestion'
-                              ? 'Suggestion'
-                              : 'Public'}
-                          </span>
+                          {(() => {
+                            const badge = getVisibilityBadge(feedback.visibility);
+                            return (
+                              <span className={badge.className} title={badge.title}>
+                                {badge.label}
+                              </span>
+                            );
+                          })()}
                         </div>
 
                         {/* rating */}
@@ -301,9 +312,9 @@ function Feedback({
                   className={`${styles.participateFeedbackBtn}`}
                   onClick={handleOpenModal}
                   disabled={!reviewsEnabled && !suggestionsOnly}
-                  title={!reviewsEnabled && !suggestionsOnly ? 'Reviews disabled' : ''}
+                  title={disabledTooltip}
                 >
-                  {suggestionsOnly ? 'Share a suggestion' : 'Leave feedback'}
+                  {buttonLabel}
                 </button>
               </div>
             )}
@@ -311,23 +322,15 @@ function Feedback({
             {/* Modal-like simple panel (replace with your modal component if you have one) */}
             {modalOpen && (
               <FeedbackModal
-                title={suggestionsOnly ? 'Share Your Ideas' : 'Leave Feedback'}
+                title={modalTitle}
                 onClose={() => {
                   setModalOpen(false);
                   if (setShowModal) setShowModal(false);
                 }}
                 onSubmit={handleSubmitFeedback}
                 show={modalOpen}
-                importantLabel={
-                  eventWithinFirstMonth
-                    ? 'Your feedback is only visible to the host for the first month.'
-                    : null
-                }
-                disableSubmit={
-                  (!suggestionsOnly && !modalComment && !modalRating) ||
-                  (suggestionsOnly && !modalSuggestionText) ||
-                  (!reviewsEnabled && !suggestionsOnly)
-                }
+                importantLabel={importantLabel}
+                disableSubmit={isSubmitDisabled}
               >
                 {suggestionsOnly ? (
                   <div className={`${styles.formGroup}`}>
@@ -405,3 +408,32 @@ function Feedback({
 }
 
 export default Feedback;
+
+Feedback.propTypes = {
+  reviewsEnabled: PropTypes.bool,
+  suggestionsOnly: PropTypes.bool,
+  isHost: PropTypes.bool,
+  eventCreatedAt: PropTypes.string,
+  showModal: PropTypes.bool,
+  setShowModal: PropTypes.func,
+  feedbackList: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      name: PropTypes.string.isRequired,
+      rating: PropTypes.number,
+      comment: PropTypes.string,
+      date: PropTypes.string,
+      visibility: PropTypes.string,
+    }),
+  ).isRequired,
+  setFeedbackList: PropTypes.func.isRequired,
+};
+
+Feedback.defaultProps = {
+  reviewsEnabled: true,
+  suggestionsOnly: false,
+  isHost: false,
+  eventCreatedAt: null,
+  showModal: false,
+  setShowModal: null,
+};

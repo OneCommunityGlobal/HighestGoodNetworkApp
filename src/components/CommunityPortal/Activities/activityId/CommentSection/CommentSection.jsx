@@ -1,17 +1,16 @@
 import styles from './CommentSection.module.css';
 import { useSelector } from 'react-redux';
 
-const getAvatarColorClass = (name = '', index = 0, stylesRef) => {
+const getAvatarColorClass = (stylesRef, name = '', index = 0) => {
   let hash = 0;
   for (let i = 0; i < name.length; i += 1) {
-    hash = (hash << 5) - hash + name.charCodeAt(i);
-    hash |= 0;
+    hash = Math.trunc((hash << 5) - hash + name.codePointAt(i));
   }
   const isPurple = (hash + index) % 2 === 0;
   return isPurple ? stylesRef.purple : stylesRef.blue;
 };
 
-function CommentSection({ comments }) {
+function CommentSection({ comments = [] }) {
   const darkMode = useSelector(state => state.theme?.darkMode);
   return (
     <div className={darkMode ? styles.darkMode : ''}>
@@ -21,9 +20,9 @@ function CommentSection({ comments }) {
             <div className={styles.activityCommentUser}>
               <span
                 className={`${styles.activityIcon} ${getAvatarColorClass(
+                  styles,
                   comment.name,
                   index,
-                  styles,
                 )}`}
               >
                 {comment.name[0]}

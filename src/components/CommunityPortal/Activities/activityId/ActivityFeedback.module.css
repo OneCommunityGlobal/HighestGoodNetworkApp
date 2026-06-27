@@ -7,7 +7,9 @@
   color: #0f172a;
   min-height: 100vh;
   box-sizing: border-box;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
 .activityEventCard {
@@ -15,11 +17,14 @@
   border-radius: 16px;
   padding: 20px;
   font-family: Arial, sans-serif;
-  background-color: #ffffff;
+  background-color: #fff;
   max-width: 1100px;
   width: 100%;
-  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  box-shadow: 0 14px 30px rgb(15 23 42 / 8%);
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease;
 }
 
 .activityEventHeader {
@@ -145,7 +150,10 @@
   background-color: #f1f5f9;
   color: #1e293b;
   cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .contactBtn:hover {
@@ -194,9 +202,9 @@
 }
 
 .activityActiveDate {
-  background-color: #f472b6;
+  background-color: #ec4899;
   border-radius: 50%;
-  color: #ffffff;
+  color: #fff;
   font-weight: 700;
 }
 
@@ -215,7 +223,10 @@
   border-radius: 999px;
   background: transparent;
   color: #475569;
-  transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease;
 }
 
 .activityTab:hover {
@@ -236,7 +247,7 @@
   background: #f1f5f9;
   border-color: #c7d6ea;
   color: #1e3a8a;
-  box-shadow: 0 6px 12px rgba(30, 58, 138, 0.12);
+  box-shadow: 0 6px 12px rgb(30 58 138 / 12%);
 }
 
 .activityParticipatesSection {
@@ -301,7 +312,7 @@
   background-color: #2563eb;
 }
 
-@media (max-width: 800px) {
+@media (width < 800px) {
   .activityEventCard {
     max-width: 98vw;
     padding: 12px;
@@ -354,7 +365,7 @@
   }
 }
 
-@media (max-width: 500px) {
+@media (width < 500px) {
   .activityEventCard {
     padding: 8px;
     font-size: 14px;
@@ -394,7 +405,7 @@
   }
 
   .activityTab {
-    padding: 6px 6px;
+    padding: 6px;
   }
 }
 
@@ -411,7 +422,7 @@
 .darkMode .activityEventCard {
   border: 1px solid #2f425d;
   background-color: #1f3048;
-  box-shadow: 0 18px 40px rgba(2, 8, 18, 0.5);
+  box-shadow: 0 18px 40px rgb(2 8 18 / 50%);
 }
 
 .darkMode .activityEventImage {
@@ -512,7 +523,7 @@
   background: #243853;
   border-color: #4b637f;
   color: #f8fafc;
-  box-shadow: 0 10px 18px rgba(8, 18, 32, 0.35);
+  box-shadow: 0 10px 18px rgb(8 18 32 / 35%);
 }
 
 .darkMode .activityParticipatesSection {

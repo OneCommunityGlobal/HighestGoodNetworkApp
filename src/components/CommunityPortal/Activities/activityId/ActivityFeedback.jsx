@@ -52,11 +52,10 @@ const data = {
   ],
 };
 
-const getAvatarColorClass = (name = '', index = 0, stylesRef) => {
+const getAvatarColorClass = (stylesRef, name = '', index = 0) => {
   let hash = 0;
   for (let i = 0; i < name.length; i += 1) {
-    hash = (hash << 5) - hash + name.charCodeAt(i);
-    hash |= 0;
+    hash = Math.trunc((hash << 5) - hash + name.codePointAt(i));
   }
   const isPurple = (hash + index) % 2 === 0;
   return isPurple ? stylesRef.purple : stylesRef.blue;
@@ -215,7 +214,7 @@ function ActivityFeedback() {
                       {Array.from({ length: 7 }).map((_, col) => {
                         const day = row * 7 + col + 1;
                         return (
-                          <td key={col} className={day === 2 ? styles.activityActiveDate : ''}>
+                          <td key={day} className={day === 2 ? styles.activityActiveDate : ''}>
                             {day <= 31 ? day : ''}
                           </td>
                         );
@@ -249,9 +248,9 @@ function ActivityFeedback() {
           {tab === 'Participates' && (
             <div className={`${styles.activityParticipatesSection}`}>
               {event.eventParticipates.map((p, i) => (
-                <div key={i} className={`${styles.activityParticipant}`}>
+                <div key={p.name} className={`${styles.activityParticipant}`}>
                   <span
-                    className={`${styles.activityIcon} ${getAvatarColorClass(p.name, i, styles)}`}
+                    className={`${styles.activityIcon} ${getAvatarColorClass(styles, p.name, i)}`}
                   >
                     {p.name[0]}
                   </span>
