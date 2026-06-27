@@ -50,8 +50,8 @@ function IssueGraph() {
   const [endDate, setEndDate] = useState('');
   const [validationError, setValidationError] = useState('');
 
-  const maxStartDate = endDate ? endDate : maxEndDate;
-  const minEndDate = startDate ? startDate : minStartDate;
+  const maxStartDate = endDate || maxEndDate;
+  const minEndDate = startDate || minStartDate;
 
   const chartTheme = useMemo(
     () => ({
@@ -88,8 +88,8 @@ function IssueGraph() {
   }, [issueTrend]);
 
   const handleWeeksChange = e => {
-    const val = parseInt(e.target.value, 10);
-    setWeeks(isNaN(val) ? '' : val);
+    const val = Number.parseInt(e.target.value, 10);
+    setWeeks(Number.isNaN(val) ? '' : val);
     setStartDate('');
     setEndDate('');
     setValidationError('');
