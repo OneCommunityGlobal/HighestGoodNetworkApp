@@ -1,5 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+import PropTypes from 'prop-types';
 import styles from './FeedbackModal.module.css';
 
 const FeedbackModal = ({
@@ -55,3 +56,24 @@ const FeedbackModal = ({
 };
 
 export default FeedbackModal;
+
+FeedbackModal.propTypes = {
+  title: PropTypes.string.isRequired,
+  children: PropTypes.node.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func.isRequired,
+  show: PropTypes.bool.isRequired,
+  showSubmit: PropTypes.bool,
+  submitLabel: PropTypes.string,
+  cancelLabel: PropTypes.string,
+  disableSubmit: PropTypes.bool,
+  importantLabel: PropTypes.string,
+};
+
+FeedbackModal.defaultProps = {
+  showSubmit: true,
+  submitLabel: 'Submit',
+  cancelLabel: 'Cancel',
+  disableSubmit: false,
+  importantLabel: null,
+};

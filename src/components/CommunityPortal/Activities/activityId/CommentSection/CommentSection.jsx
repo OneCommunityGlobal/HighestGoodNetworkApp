@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import styles from './CommentSection.module.css';
 import { useSelector } from 'react-redux';
 
@@ -43,3 +44,18 @@ function CommentSection({ comments = [] }) {
 }
 
 export default CommentSection;
+
+CommentSection.propTypes = {
+  comments: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      name: PropTypes.string.isRequired,
+      comment: PropTypes.string.isRequired,
+      time: PropTypes.string.isRequired,
+    }),
+  ),
+};
+
+CommentSection.defaultProps = {
+  comments: [],
+};
