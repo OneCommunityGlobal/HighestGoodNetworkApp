@@ -1,4 +1,5 @@
 import { Modal, Button, Form, FormGroup, Label, Input } from 'reactstrap';
+import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import axios from 'axios';
@@ -127,5 +128,12 @@ function JobCategoryCCModal({ categories, onClose, onRefresh, darkMode }) {
     </Modal>
   );
 }
+
+JobCategoryCCModal.propTypes = {
+  categories: PropTypes.arrayOf(PropTypes.string).isRequired,
+  onClose: PropTypes.func.isRequired,
+  onRefresh: PropTypes.func.isRequired,
+  darkMode: PropTypes.bool.isRequired,
+};
 
 export default JobCategoryCCModal;

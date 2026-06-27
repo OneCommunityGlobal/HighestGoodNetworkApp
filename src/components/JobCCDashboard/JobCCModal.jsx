@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { Modal, Form, FormGroup, Label, Input, Button, Table } from 'reactstrap';
 import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL';
@@ -133,5 +134,21 @@ function JobCCModal({ job, onClose, onRefresh, darkMode }) {
     </Modal>
   );
 }
+
+JobCCModal.propTypes = {
+  job: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    ccList: PropTypes.arrayOf(
+      PropTypes.shape({
+        _id: PropTypes.string,
+        email: PropTypes.string.isRequired,
+      }),
+    ),
+  }).isRequired,
+  onClose: PropTypes.func.isRequired,
+  onRefresh: PropTypes.func.isRequired,
+  darkMode: PropTypes.bool.isRequired,
+};
 
 export default JobCCModal;
