@@ -21,112 +21,140 @@ function mergeRoleOptions(prev, rows) {
 
 function ApplicationTimeChart() {
   const [dateFilter, setDateFilter] = useState('all');
-  const [selectedRole, setSelectedRole] = useState('all');
+  const [selectedRole, setSelectedRole] = useState({ label: 'All', value: 'All' });
   const [data, setData] = useState([]);
-  const [availableRoles, setAvailableRoles] = useState(['all']);
+  const [availableRoles, setAvailableRoles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   // Get dark mode state from Redux
   const darkMode = useSelector(state => state.theme?.darkMode || false);
 
-  // Fetch available roles from backend
+  const handleRoleChange = e => {
+    const role = availableRoles.find(role => role.value === e.target.value);
+    if (role) setSelectedRole(role);
+  };
+
   useEffect(() => {
     const fetchRoles = async () => {
       try {
-        const baseUrl = ENDPOINTS.APPLICATION_TIME_DATA('', '', []);
-        const rolesUrl = baseUrl.split('?')[0] + '/roles';
-        const response = await httpService.get(rolesUrl);
-        if (response.data && response.data.data && Array.isArray(response.data.data)) {
-          const apiRoles = response.data.data.filter(Boolean).sort((a, b) => a.localeCompare(b));
-          setAvailableRoles(['all', ...apiRoles]);
-        } else if (response.data && response.data.success && Array.isArray(response.data.data)) {
-          const apiRoles = response.data.data.filter(Boolean).sort((a, b) => a.localeCompare(b));
-          setAvailableRoles(['all', ...apiRoles]);
-        } else {
-          setAvailableRoles(mergeRoleOptions(['all'], getAggregatedMockForChart()));
-        }
-      } catch (err) {
-        console.error('Error fetching available roles:', err);
-        setAvailableRoles(mergeRoleOptions(['all'], getAggregatedMockForChart()));
+        setLoading(true);
+        // TODO: move this endpoint later
+        const response = await httpService.get(ENDPOINTS.APPLICATION_TIME_DATA_ROLES);
+
+        const options = response.data.data
+          .sort((a, b) => a.localeCompare(b))
+          .map(role => ({ label: role, value: role }));
+
+        setAvailableRoles([{ label: 'All', value: 'All' }, ...options]);
+      } catch (error) {
+        // TODO: display toast
+        console.error(`Error fetching roles: ${roles}`);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchRoles();
   }, []);
 
+  // Fetch available roles from backend
+  // useEffect(() => {
+  //   const fetchRoles = async () => {
+  //     try {
+  // const baseUrl = ENDPOINTS.APPLICATION_TIME_DATA('', '', []);
+  //       const rolesUrl = baseUrl.split('?')[0] + '/roles';
+  //       const response = await httpService.get(rolesUrl);
+  //       if (response.data && response.data.data && Array.isArray(response.data.data)) {
+  //         const apiRoles = response.data.data.filter(Boolean).sort((a, b) => a.localeCompare(b));
+  //         setAvailableRoles(['all', ...apiRoles]);
+  //       } else if (response.data && response.data.success && Array.isArray(response.data.data)) {
+  //         const apiRoles = response.data.data.filter(Boolean).sort((a, b) => a.localeCompare(b));
+  //         setAvailableRoles(['all', ...apiRoles]);
+  //       } else {
+  //         setAvailableRoles(mergeRoleOptions(['all'], getAggregatedMockForChart()));
+  //       }
+  //     } catch (err) {
+  //       console.error('Error fetching available roles:', err);
+  //       setAvailableRoles(mergeRoleOptions(['all'], getAggregatedMockForChart()));
+  //     }
+  //   };
+
+  //   fetchRoles();
+  // }, []);
+
   // Fetch data from backend
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        setError(null);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       setLoading(true);
+  //       setError(null);
 
-        let startDate = null;
-        let endDate = null;
+  //       let startDate = null;
+  //       let endDate = null;
 
-        if (dateFilter !== 'all') {
-          const now = new Date();
+  //       if (dateFilter !== 'all') {
+  //         const now = new Date();
 
-          switch (dateFilter) {
-            case 'weekly':
-              startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-              break;
-            case 'monthly':
-              startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-              break;
-            case 'yearly':
-              startDate = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
-              break;
-            default:
-              break;
-          }
+  //         switch (dateFilter) {
+  //           case 'weekly':
+  //             startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  //             break;
+  //           case 'monthly':
+  //             startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+  //             break;
+  //           case 'yearly':
+  //             startDate = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+  //             break;
+  //           default:
+  //             break;
+  //         }
 
-          if (startDate) {
-            endDate = now;
-          }
-        }
+  //         if (startDate) {
+  //           endDate = now;
+  //         }
+  //       }
 
-        const url = ENDPOINTS.APPLICATION_TIME_DATA(
-          startDate ? startDate.toISOString() : null,
-          endDate ? endDate.toISOString() : null,
-          selectedRole !== 'all' ? [selectedRole] : [],
-        );
+  //       const url = ENDPOINTS.APPLICATION_TIME_DATA(
+  //         startDate ? startDate.toISOString() : null,
+  //         endDate ? endDate.toISOString() : null,
+  //         selectedRole !== 'all' ? [selectedRole] : [],
+  //       );
 
-        const response = await httpService.get(url);
+  //       const response = await httpService.get(url);
 
-        if (response.data && response.data.data && Array.isArray(response.data.data)) {
-          const rows = response.data.data;
-          setData(rows);
-          setAvailableRoles(prev => mergeRoleOptions(prev, rows));
-        } else if (response.data && Array.isArray(response.data)) {
-          const rows = response.data;
-          setData(rows);
-          setAvailableRoles(prev => mergeRoleOptions(prev, rows));
-        } else {
-          console.error('Backend returned unexpected data format:', response.data);
-          setError('Unexpected data format from server');
-          setData([]);
-        }
-      } catch (err) {
-        console.error('Error fetching application time data:', err);
-        const status = err?.response?.status;
-        if (status === 404) {
-          const rows = getAggregatedMockForChart();
-          setData(rows);
-          setAvailableRoles(prev => mergeRoleOptions(prev, rows));
-          setError(null);
-        } else {
-          setError(err.message || 'Failed to fetch data from server');
-          setData([]);
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
+  //       if (response.data && response.data.data && Array.isArray(response.data.data)) {
+  //         const rows = response.data.data;
+  //         setData(rows);
+  //         setAvailableRoles(prev => mergeRoleOptions(prev, rows));
+  //       } else if (response.data && Array.isArray(response.data)) {
+  //         const rows = response.data;
+  //         setData(rows);
+  //         setAvailableRoles(prev => mergeRoleOptions(prev, rows));
+  //       } else {
+  //         console.error('Backend returned unexpected data format:', response.data);
+  //         setError('Unexpected data format from server');
+  //         setData([]);
+  //       }
+  //     } catch (err) {
+  //       console.error('Error fetching application time data:', err);
+  //       const status = err?.response?.status;
+  //       if (status === 404) {
+  //         const rows = getAggregatedMockForChart();
+  //         setData(rows);
+  //         setAvailableRoles(prev => mergeRoleOptions(prev, rows));
+  //         setError(null);
+  //       } else {
+  //         setError(err.message || 'Failed to fetch data from server');
+  //         setData([]);
+  //       }
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
 
-    fetchData();
-  }, [dateFilter, selectedRole]);
+  //   fetchData();
+  // }, [dateFilter, selectedRole]);
 
   const processedData = useMemo(() => {
     if (!Array.isArray(data) || data.length === 0) {
@@ -376,13 +404,13 @@ function ApplicationTimeChart() {
           <div className={`${styles.filterCard} ${darkMode ? styles.darkMode : ''}`}>
             <div className={`${styles.filterTitle} ${darkMode ? styles.darkMode : ''}`}>Role</div>
             <select
-              value={selectedRole}
-              onChange={e => setSelectedRole(e.target.value)}
+              value={selectedRole.label}
+              onChange={handleRoleChange}
               className={`${styles.select} ${darkMode ? styles.darkMode : ''}`}
             >
               {availableRoles.map(role => (
-                <option key={role} value={role}>
-                  {role === 'all' ? 'ALL' : role}
+                <option key={role.value} value={role.value}>
+                  {role.label}
                 </option>
               ))}
             </select>

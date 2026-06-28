@@ -723,6 +723,7 @@ export const ENDPOINTS = {
     if (roles && roles.length > 0) url += `roles=${encodeURIComponent(roles.join(','))}&`;
     return url.slice(0, -1);
   },
+  APPLICATION_TIME_DATA_ROLES: `${APIEndpoint}/analytics/application-time/roles`,
 };
 
 export const ApiEndpoint = APIEndpoint;
