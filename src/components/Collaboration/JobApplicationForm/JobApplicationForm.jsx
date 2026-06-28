@@ -190,9 +190,10 @@ function isResumeQuestion(q) {
   return /\b(resume|résumé|curriculum\s*vitae|cv)\b/.test(label);
 }
 
-/** Resume/CV prompts are collected in the profile section — skip duplicates in the numbered list. */
+/** Resume/CV and built-in profile prompts are collected above — skip duplicates in the list. */
 function shouldHideQuestionFromApplicantList(q) {
   if (isResumeQuestion(q)) return true;
+  if (isStandardProfileFieldQuestion(q)) return true;
   const raw = (q.label || q.questionText || '').trim();
   return /^(19|20)[.)\s]/.test(raw) || /^question\s*(19|20)\b/i.test(raw);
 }
@@ -241,11 +242,50 @@ function stripLeadingQuestionEnumeration(raw) {
   return s;
 }
 
+function getQuestionLabelText(q) {
+  const raw = (q?.label || q?.questionText || '').trim();
+  if (!raw) return '';
+  return stripLeadingQuestionEnumeration(raw) || raw;
+}
+
 function getQuestionLabel(q, idx) {
-  const raw = (q.label || q.questionText || '').trim();
-  if (!raw) return `Question ${idx + 1}`;
-  const cleaned = stripLeadingQuestionEnumeration(raw);
-  return cleaned || raw;
+  const cleaned = getQuestionLabelText(q);
+  if (!cleaned) return `Question ${idx + 1}`;
+  return cleaned;
+}
+
+/** Profile fields rendered once at the top of the application form. */
+const STANDARD_PROFILE_LABEL_KEYS = new Set([
+  'name',
+  'your name',
+  'full name',
+  'applicant name',
+  'email',
+  'your email',
+  'email address',
+  'your email address',
+  'phone',
+  'phone number',
+  'your phone',
+  'your phone number',
+  'mobile',
+  'mobile number',
+  'location timezone',
+  'location and timezone',
+  'your location timezone',
+  'company position',
+  'company and position',
+  'your company position',
+  'primary website social',
+  'primary website and social',
+  'website social',
+  'website or social',
+]);
+
+function isStandardProfileFieldQuestion(q) {
+  const normalized = normalizeTitleKey(getQuestionLabelText(q));
+  if (!normalized || normalized.length > 48) return false;
+  return STANDARD_PROFILE_LABEL_KEYS.has(normalized);
 }
 
 function isQuestionRequired(q) {
@@ -340,9 +380,17 @@ function missingRequiredQuestionLabel(q, idx, answers, questionFiles) {
 }
 
 function isHoursPerWeekQuestion(label) {
-  const labelLower = String(label || '').toLowerCase();
+  const text = String(label || '').toLowerCase();
+
+  // Schedule / availability prompts mention hours but expect text answers.
+  if (/\b(availability|available)\b/.test(text)) return false;
+  if (/\bweekly\s+deadline\b/.test(text)) return false;
+
   return (
-    labelLower.includes('hour') && (labelLower.includes('week') || labelLower.includes('weekly'))
+    /hours?\s*(per|a|\/)\s*week\b/.test(text) ||
+    /\bhow\s+many\s+hours\b/.test(text) ||
+    /\bvolunteer\s+hours?\b/.test(text) ||
+    (/\bcommit\b/.test(text) && /\bhours?\b/.test(text))
   );
 }
 
