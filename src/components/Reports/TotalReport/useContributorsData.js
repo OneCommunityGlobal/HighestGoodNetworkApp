@@ -73,7 +73,6 @@ const summaryOfTimeRange = (entries, timeRange) => {
  */
 export default function useContributorsData({ startDate, endDate, userProfiles, enabled = true }) {
   const [loading, setLoading] = useState(true);
-  const [timeEntries, setTimeEntries] = useState([]);
   const [contributors, setContributors] = useState([]);
   const [showMonthly, setShowMonthly] = useState(false);
   const [showYearly, setShowYearly] = useState(false);
@@ -84,6 +83,60 @@ export default function useContributorsData({ startDate, endDate, userProfiles, 
   const toDate = useMemo(() => endDate.toLocaleDateString('en-CA'), [endDate]);
   const userList = useMemo(() => userProfiles?.map(({ _id }) => _id) || [], [userProfiles]);
 
+  const resetReportData = useCallback(() => {
+    setContributors([]);
+    setShowMonthly(false);
+    setShowYearly(false);
+    setContributorsInMonth([]);
+    setContributorsInYear([]);
+  }, []);
+
+  const processTimeEntries = useCallback(
+    entries => {
+      if (entries.length === 0) {
+        resetReportData();
+        return;
+      }
+
+      const groupedUsers = Object.values(sumByUser(entries));
+      setContributors(filterContributors(groupedUsers));
+
+      const diffDate = endDate - startDate;
+      let monthly = false;
+      let yearly = false;
+      let monthData = [];
+      let yearData = [];
+      if (diffDate > ONE_MONTH) {
+        monthData = generateBarDataUtil(
+          summaryOfTimeRange(entries, 'month'),
+          false,
+          startDate,
+          endDate,
+          'usersOfTime',
+        );
+        yearData = generateBarDataUtil(
+          summaryOfTimeRange(entries, 'year'),
+          true,
+          startDate,
+          endDate,
+          'usersOfTime',
+        );
+        if (diffDate <= ONE_MONTH * 12) {
+          monthly = true;
+        }
+        if (startDate.getFullYear() !== endDate.getFullYear()) {
+          yearly = true;
+        }
+      }
+
+      setShowMonthly(monthly);
+      setShowYearly(yearly);
+      setContributorsInMonth(monthData);
+      setContributorsInYear(yearData);
+    },
+    [endDate, resetReportData, startDate],
+  );
+
   // Fetch time entries for the selected period
   const loadTimeEntriesForPeriod = useCallback(
     async controller => {
@@ -93,7 +146,7 @@ export default function useContributorsData({ startDate, endDate, userProfiles, 
       }
 
       if (!validateUserList(userList, userProfiles, REPORT_NAME)) {
-        setTimeEntries([]);
+        resetReportData();
         setLoading(false);
         return;
       }
@@ -101,7 +154,7 @@ export default function useContributorsData({ startDate, endDate, userProfiles, 
       const cacheKey = `${REPORT_NAME}_${fromDate}_${toDate}`;
       const cached = getCachedData(cacheKey, REPORT_NAME);
       if (cached.data) {
-        setTimeEntries(cached.data);
+        processTimeEntries(cached.data);
         setLoading(false);
         return;
       }
@@ -130,18 +183,18 @@ export default function useContributorsData({ startDate, endDate, userProfiles, 
           date: entry.dateOfWork,
         }));
 
-        setTimeEntries(mappedTimeEntries);
+        processTimeEntries(mappedTimeEntries);
         setCachedData(cacheKey, mappedTimeEntries, REPORT_NAME);
       } catch (error) {
         // eslint-disable-next-line import/no-named-as-default-member
         if (!axios.isCancel(error)) {
           // eslint-disable-next-line no-console
           console.error(`${REPORT_NAME} API Error:`, error);
-          setTimeEntries([]);
+          resetReportData();
         }
       }
     },
-    [fromDate, toDate, userList, userProfiles],
+    [fromDate, processTimeEntries, resetReportData, toDate, userList, userProfiles],
   );
 
   // Load data when the date range changes
@@ -161,57 +214,6 @@ export default function useContributorsData({ startDate, endDate, userProfiles, 
     });
     return () => controller.abort();
   }, [enabled, loadTimeEntriesForPeriod, userList]);
-
-  // Process data when time entries are loaded
-  useEffect(() => {
-    if (!enabled || loading) {
-      return;
-    }
-
-    if (timeEntries.length === 0) {
-      setContributors([]);
-      setShowMonthly(false);
-      setShowYearly(false);
-      setContributorsInMonth([]);
-      setContributorsInYear([]);
-      return;
-    }
-
-    const groupedUsers = Object.values(sumByUser(timeEntries));
-    setContributors(filterContributors(groupedUsers));
-
-    const diffDate = endDate - startDate;
-    let monthly = false;
-    let yearly = false;
-    let monthData = [];
-    let yearData = [];
-    if (diffDate > ONE_MONTH) {
-      monthData = generateBarDataUtil(
-        summaryOfTimeRange(timeEntries, 'month'),
-        false,
-        startDate,
-        endDate,
-        'usersOfTime',
-      );
-      yearData = generateBarDataUtil(
-        summaryOfTimeRange(timeEntries, 'year'),
-        true,
-        startDate,
-        endDate,
-        'usersOfTime',
-      );
-      if (diffDate <= ONE_MONTH * 12) {
-        monthly = true;
-      }
-      if (startDate.getFullYear() !== endDate.getFullYear()) {
-        yearly = true;
-      }
-    }
-    setShowMonthly(monthly);
-    setShowYearly(yearly);
-    setContributorsInMonth(monthData);
-    setContributorsInYear(yearData);
-  }, [enabled, loading, timeEntries, startDate, endDate]);
 
   const totalTangibleTime = contributors.reduce((acc, obj) => acc + Number(obj.tangibleTime), 0);
 
