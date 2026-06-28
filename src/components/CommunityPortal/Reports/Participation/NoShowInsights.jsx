@@ -303,6 +303,9 @@ function NoShowInsights() {
               <option value="Today">Today</option>
               <option value="This Week">This Week</option>
               <option value="This Month">This Month</option>
+              <option value="Last 3 Months">Last 3 Months</option>
+              <option value="Last 6 Months">Last 6 Months</option>
+              <option value="Last 12 Months">Last 12 Months</option>
             </select>
           </div>
         </div>
