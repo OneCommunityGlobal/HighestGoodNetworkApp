@@ -21,6 +21,14 @@
   color: #fff;
 }
 
+/* The landing page is only 90% wide and centered, so in dark mode the page
+   body shows through the side/top gutters as white. Paint the body dark
+   whenever the dark landing page is present (reverts automatically when
+   navigating away). */
+:global(body):has(.participationLandingPageDark) {
+  background-color: #1b2a41;
+}
+
 /* ---------- Page Header ---------- */
 .landingPageHeaderContainer {
   display: flex;
@@ -258,15 +266,17 @@
 }
 
 .trackingHeader h3 {
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   color: #333;
   margin: 0;
+  white-space: nowrap;
 }
 
 .trackingHeaderDark h3 {
   color: #fff;
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   margin: 0;
+  white-space: nowrap;
 }
 
 .trackingFilters {
@@ -410,6 +420,26 @@
 .trackingTable tbody td {
   padding: 5px;
   border-bottom: 1px solid #eee;
+}
+
+/* Phone view: with table-layout: fixed each column is ~25% wide, but the
+   nowrap headers ("No-show rate", "Drop-off rate") are wider than that and
+   overflow into the neighbouring columns. Let headers wrap and tighten the
+   cell spacing so the columns fit. */
+@media (width <= 768px) {
+  .sortableHeader {
+    white-space: normal;
+  }
+
+  .sortableHeaderContent {
+    flex-wrap: wrap;
+  }
+
+  .trackingTable thead th,
+  .trackingTable tbody td {
+    padding: 6px 4px;
+    font-size: 0.8rem;
+  }
 }
 
 .trackingRateGreen {
