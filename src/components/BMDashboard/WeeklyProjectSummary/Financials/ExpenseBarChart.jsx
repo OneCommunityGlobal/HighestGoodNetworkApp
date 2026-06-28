@@ -214,6 +214,10 @@ const getTheme = darkMode => {
     tooltipHeaderColor: { dark: '#94a3b8', light: '#64748b' }[mode],
     overBudget: { dark: '#ff4444', light: '#e74c3c' }[mode],
     underBudget: { dark: '#4ade80', light: '#2ecc71' }[mode],
+    buttonBg: { dark: '#374151', light: '#dededeff' }[mode],
+    buttonText: { dark: '#f8fafc', light: '#0f172a' }[mode],
+    buttonBorder: { dark: '1px solid #4b5563', light: '1px solid #d9d2d2ff' }[mode],
+    buttonHoverBg: { dark: '#4b5563', light: '#d1d5db' }[mode],
   };
 };
 
@@ -456,12 +460,21 @@ export default function ExpenseBarChart({ darkMode }) {
             type="button"
             onClick={resetFilters}
             style={{
-              padding: '0.5rem 1.2em',
+              padding: '0.5rem 1.2rem',
               borderRadius: '6px',
-              border: '1px solid #d9d2d2ff',
-              background: '#dededeff',
+              border: darkMode ? '1px solid #475569' : '1px solid #cbd5e1',
+              backgroundColor: darkMode ? '#334155' : '#f1f5f9',
+              color: darkMode ? '#f8fafc' : '#0f172a',
               cursor: 'pointer',
               fontSize: '0.95rem',
+              fontWeight: '600',
+              transition: 'all 0.2s ease',
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.backgroundColor = darkMode ? '#475569' : '#e2e8f0';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.backgroundColor = darkMode ? '#334155' : '#f1f5f9';
             }}
             aria-label="Reset filters"
             title="Reset filters"
