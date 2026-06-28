@@ -13,6 +13,8 @@ const MIN_DATE = new Date('01/01/2010');
 const formatDate = date =>
   date.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
 
+const getDateRangeLabel = (startDate, endDate) => `${formatDate(startDate)} to ${formatDate(endDate)}`;
+
 // Renders the summary stats and charts for a single period.
 function ContributorsPeriodPanel({ startDate, endDate, data, idSuffix, title }) {
   const {
@@ -23,27 +25,48 @@ function ContributorsPeriodPanel({ startDate, endDate, data, idSuffix, title }) 
     contributorsInMonth,
     contributorsInYear,
   } = data;
+  const dateRangeLabel = getDateRangeLabel(startDate, endDate);
 
   return (
     <div className={styles.comparisonPanel}>
       {title && <div className={styles.panelTitle}>{title}</div>}
-      <div className={styles.totalPeriod}>
-        In the period from {formatDate(startDate)} to {formatDate(endDate)}:
+      <div className={`${styles.totalPeriod} ${styles.contributorPeriodLabel}`}>
+        In the period from {dateRangeLabel}:
       </div>
-      <div className={styles.totalItem}>
-        <div className={styles.totalNumber}>{contributors.length}</div>
-        <div className={styles.totalText}>members have contributed more than 10 hours.</div>
-      </div>
-      <div className={styles.totalItem}>
-        <div className={styles.totalNumber}>{totalTangibleTime.toFixed(2)}</div>
-        <div className={styles.totalText}>hours of tangible time have been logged.</div>
+      <div className={styles.contributorSummaryMetrics}>
+        <div className={`${styles.totalItem} ${styles.contributorSummaryItem}`}>
+          <div className={`${styles.totalNumber} ${styles.contributorSummaryNumber}`}>
+            {contributors.length}
+          </div>
+          <div className={`${styles.totalText} ${styles.contributorSummaryText}`}>
+            Members have contributed more than 10 Hours.
+          </div>
+        </div>
+        <div className={`${styles.totalItem} ${styles.contributorSummaryItem}`}>
+          <div className={`${styles.totalNumber} ${styles.contributorSummaryNumber}`}>
+            {totalTangibleTime.toFixed(2)}
+          </div>
+          <div className={`${styles.totalText} ${styles.contributorSummaryText}`}>
+            Hours of tangible time have been logged.
+          </div>
+        </div>
       </div>
       <div>
         {showMonthly && contributorsInMonth.length > 0 && (
-          <TotalReportBarGraph barData={contributorsInMonth} range="month" idSuffix={idSuffix} />
+          <TotalReportBarGraph
+            barData={contributorsInMonth}
+            range="month"
+            idSuffix={idSuffix}
+            fallbackLabel={dateRangeLabel}
+          />
         )}
         {showYearly && contributorsInYear.length > 0 && (
-          <TotalReportBarGraph barData={contributorsInYear} range="year" idSuffix={idSuffix} />
+          <TotalReportBarGraph
+            barData={contributorsInYear}
+            range="year"
+            idSuffix={idSuffix}
+            fallbackLabel={dateRangeLabel}
+          />
         )}
       </div>
     </div>
@@ -88,7 +111,6 @@ function TotalContributorsReport({ startDate, endDate, userProfiles, darkMode, u
     userProfiles,
     enabled: comparisonEnabled,
   });
-
   const onToggleComparison = e => {
     const enabled = e.target.checked;
     if (enabled) {
@@ -131,7 +153,7 @@ function TotalContributorsReport({ startDate, endDate, userProfiles, darkMode, u
           areaTitle="Contributors Report"
           role={userRole}
           fontSize={15}
-          defaultText="Click this to see only people who logged/contributed a minimum of 10 tangible hours..."
+          defaultText="This report only shows Team Members who have contributed more than 10 Hours."
           isPermissionPage
           darkMode={darkMode}
         />

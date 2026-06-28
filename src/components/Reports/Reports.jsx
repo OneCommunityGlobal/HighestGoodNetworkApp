@@ -708,7 +708,7 @@ endDate: moment()
                           fontSize={15}
                           isPermissionPage
                           darkMode={darkMode}
-                          defaultText="Click this to see only people who logged/contributed a minimum of 10 tangible hours. This is used for identifying actual contributors vs. people who never started, were immediately terminated, etc."
+                          defaultText="This report only shows Team Members who have contributed more than 10 Hours."
                         />
                       </div>
                     </div>
