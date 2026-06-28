@@ -505,10 +505,9 @@ export default function ReturnedLateChart() {
             value={selectedTools}
             onChange={setSelectedTools}
             labelledBy="tools-select"
-            className={styles['returned-late-tools-select']}  
+            className={styles['returned-late-tools-select']}
           />
         </div>
-
 
         <div className={styles['returned-late-filter-group']}>
           <label
@@ -521,7 +520,7 @@ export default function ReturnedLateChart() {
           <select
             id="returned-late-sort"
             value={sortOption}
-            onChange={e => setSortOption(e.target.value)} 
+            onChange={e => setSortOption(e.target.value)}
             className={styles['returned-late-project-select']}
           >
             <option value="DESC">Highest % Late</option>
