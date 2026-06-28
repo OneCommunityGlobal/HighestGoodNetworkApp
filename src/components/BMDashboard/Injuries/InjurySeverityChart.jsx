@@ -213,8 +213,6 @@ function InjurySeverityDashboard(props) {
     minWidth: 180,
     overflow: 'hidden',
     textOverflow: 'ellipsis',
-    color: darkMode ? '#f5f5f5' : '#333333',
-    borderColor: '#d9d9d9',
   };
 
   return (
