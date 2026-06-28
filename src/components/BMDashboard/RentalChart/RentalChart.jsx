@@ -44,6 +44,15 @@ const MONTHS = [
   'December',
 ];
 
+const CHART_COLORS = {
+  darkBg: '#1b2a41',
+  lightBg: '#ffffff',
+  darkText: '#e0e0e0',
+  lightText: '#333333',
+};
+
+const FILTER_ALL = 'All';
+
 /* ---------- helper functions to keep processChartData simple ---------- */
 
 const filterRentalData = (data, selectedProject, selectedTool, dateRange) =>
@@ -136,6 +145,49 @@ const buildDatasetsFromGroupMap = (groupMap, groupBy) =>
     };
   });
 
+const getDatalabelAnchor = ctx => {
+  if (ctx.datasetIndex === 0) return 'end'; // right
+  if (ctx.datasetIndex === 1) return 'start'; // left
+  return 'center'; // 3rd stays centered if any
+};
+
+const getDatalabelAlign = ctx => {
+  if (ctx.datasetIndex === 0) return 'bottom'; // slightly below
+  if (ctx.datasetIndex === 1) return 'top'; // slightly above
+  return 'top';
+};
+
+const getDatalabelFormatter = (value, chartType) => {
+  if (value == null || Number.isNaN(value)) return '';
+  if (chartType === 'percentage') {
+    return `${value.toFixed(0)}%`;
+  }
+  return `$${value.toFixed(2)}`;
+};
+
+const formatDate = date => `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
+
+const buildChartTitle = (groupBy, selectedProject, selectedTool, dateRange) => {
+  let title = 'Rental Costs';
+
+  if (groupBy === 'project') {
+    title += ' by Project';
+    if (selectedProject !== 'All') {
+      // (Or use FILTER_ALL if you added that constant!)
+      title = `Rental Costs for Project ${selectedProject.substring(0, 8)}...`;
+    }
+  } else {
+    title += ' by Tool Type';
+    if (selectedTool !== 'All') {
+      // (Or use FILTER_ALL here too)
+      title = `Rental Costs for ${selectedTool}`;
+    }
+  }
+
+  title += ` (${formatDate(dateRange.startDate)} - ${formatDate(dateRange.endDate)})`;
+  return title;
+};
+
 /* ---------------------------------------------------------------------- */
 
 export default function RentalChart() {
@@ -147,8 +199,8 @@ export default function RentalChart() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [chartType, setChartType] = useState('cost');
-  const [selectedProject, setSelectedProject] = useState('All');
-  const [selectedTool, setSelectedTool] = useState('All');
+  const [selectedProject, setSelectedProject] = useState(FILTER_ALL);
+  const [selectedTool, setSelectedTool] = useState(FILTER_ALL);
   const [groupBy] = useState('project');
   const darkMode = useSelector(state => state.theme.darkMode);
 
@@ -209,28 +261,6 @@ export default function RentalChart() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  function generateChartTitle() {
-    let title = 'Rental Costs';
-
-    if (groupBy === 'project') {
-      title += ' by Project';
-      if (selectedProject !== 'All') {
-        title = `Rental Costs for Project ${selectedProject.substring(0, 8)}...`;
-      }
-    } else {
-      title += ' by Tool Type';
-      if (selectedTool !== 'All') {
-        title = `Rental Costs for ${selectedTool}`;
-      }
-    }
-
-    const formatDate = date => `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
-
-    title += ` (${formatDate(dateRange.startDate)} - ${formatDate(dateRange.endDate)})`;
-
-    return title;
-  }
-
   useEffect(() => {
     if (rawData.length > 0) {
       processChartData(rawData);
@@ -242,22 +272,21 @@ export default function RentalChart() {
     () => ({
       responsive: true,
       maintainAspectRatio: false,
-      backgroundColor: darkMode ? '#1b2a41' : '#ffffff',
+      backgroundColor: darkMode ? CHART_COLORS.darkBg : CHART_COLORS.lightBg,
       plugins: {
         legend: {
           position: 'top',
           labels: {
             color: darkMode ? '#e0e0e0' : '#333333',
-            color: darkMode ? '#e0e0e0' : '#333333',
           },
         },
         title: {
           display: true,
-          text: generateChartTitle(),
+          text: buildChartTitle(groupBy, selectedProject, selectedTool, dateRange),
           font: {
             size: 14,
           },
-          color: darkMode ? '#ffffff' : '#1b2a41',
+          color: darkMode ? CHART_COLORS.lightBg : CHART_COLORS.darkBg,
           padding: {
             bottom: 20,
           },
@@ -286,36 +315,14 @@ export default function RentalChart() {
         },
         datalabels: {
           color: darkMode ? '#e0e0e0' : '#333333',
-          // move each dataset to a slightly different side of the point
-          anchor: ctx => {
-            // horizontal side of the point
-            if (ctx.datasetIndex === 0) return 'end'; // right
-            if (ctx.datasetIndex === 1) return 'start'; // left
-            return 'center'; // 3rd stays centered if any
-          },
-
-          align: ctx => {
-            // vertical side of the anchor
-            if (ctx.datasetIndex === 0) return 'bottom'; // slightly below
-            if (ctx.datasetIndex === 1) return 'top'; // slightly above
-            return 'top';
-          },
-          offset: 8, // distance in px away from the point (same for all is fine)
+          anchor: getDatalabelAnchor,
+          align: getDatalabelAlign,
+          offset: 8,
           font: {
             size: 12,
           },
 
-          formatter: value => {
-            if (value == null || Number.isNaN(value)) return '';
-
-            // percentage mode → whole-number percent
-            if (chartType === 'percentage') {
-              return `${value.toFixed(0)}%`; // e.g., 348%
-            }
-
-            // cost mode → dollars (you can use 0 or 2 decimals as you like)
-            return `$${value.toFixed(2)}`; // e.g., $175.00
-          },
+          formatter: value => getDatalabelFormatter(value, chartType),
         },
       },
       scales: {
