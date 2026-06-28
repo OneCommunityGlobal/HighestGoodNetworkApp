@@ -6,21 +6,28 @@ import httpService from '../../services/httpService';
 import { getAggregatedMockForChart } from './api';
 import styles from './ApplicationTimeChart.module.css';
 
-function uniqueRolesFromRows(rows) {
-  return [...new Set((rows || []).map(r => r?.role).filter(Boolean))].sort((a, b) =>
-    a.localeCompare(b),
-  );
-}
+// function uniqueRolesFromRows(rows) {
+//   return [...new Set((rows || []).map(r => r?.role).filter(Boolean))].sort((a, b) =>
+//     a.localeCompare(b),
+//   );
+// }
 
-function mergeRoleOptions(prev, rows) {
-  const fromData = uniqueRolesFromRows(rows);
-  const fromPrev = prev.filter(r => r !== 'all');
-  const combined = new Set([...fromPrev, ...fromData]);
-  return ['all', ...Array.from(combined).sort((a, b) => a.localeCompare(b))];
-}
+// function mergeRoleOptions(prev, rows) {
+//   const fromData = uniqueRolesFromRows(rows);
+//   const fromPrev = prev.filter(r => r !== 'all');
+//   const combined = new Set([...fromPrev, ...fromData]);
+//   return ['all', ...Array.from(combined).sort((a, b) => a.localeCompare(b))];
+// }
+
+const DATE_FILTER_OPTIONS = [
+  { value: 'All', label: 'All' },
+  { value: 'Weekly', label: 'Last 7 Days' },
+  { value: 'Monthly', label: 'Last 30 Days' },
+  { value: 'Yearly', label: 'Last Year' },
+];
 
 function ApplicationTimeChart() {
-  const [dateFilter, setDateFilter] = useState('all');
+  const [selectedDate, setSelectedDate] = useState({ label: 'All', value: 'All' });
   const [selectedRole, setSelectedRole] = useState({ label: 'All', value: 'All' });
   const [data, setData] = useState([]);
   const [availableRoles, setAvailableRoles] = useState([]);
@@ -29,6 +36,11 @@ function ApplicationTimeChart() {
 
   // Get dark mode state from Redux
   const darkMode = useSelector(state => state.theme?.darkMode || false);
+
+  const handleDateChange = e => {
+    const option = DATE_FILTER_OPTIONS.find(option => option.value === e.target.value);
+    if (option) setSelectedDate(option);
+  };
 
   const handleRoleChange = e => {
     const role = availableRoles.find(role => role.value === e.target.value);
@@ -387,16 +399,17 @@ function ApplicationTimeChart() {
         <div className={styles.filters}>
           {/* Dates Filter */}
           <div className={`${styles.filterCard} ${darkMode ? styles.darkMode : ''}`}>
-            <div className={`${styles.filterTitle} ${darkMode ? styles.darkMode : ''}`}>Dates</div>
+            <div className={`${styles.filterTitle} ${darkMode ? styles.darkMode : ''}`}>Date</div>
             <select
-              value={dateFilter}
-              onChange={e => setDateFilter(e.target.value)}
+              value={selectedDate.value}
+              onChange={handleDateChange}
               className={`${styles.select} ${darkMode ? styles.darkMode : ''}`}
             >
-              <option value="all">ALL</option>
-              <option value="weekly">Last 7 Days</option>
-              <option value="monthly">Last 30 Days</option>
-              <option value="yearly">Last Year</option>
+              {DATE_FILTER_OPTIONS.map(option => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -404,7 +417,7 @@ function ApplicationTimeChart() {
           <div className={`${styles.filterCard} ${darkMode ? styles.darkMode : ''}`}>
             <div className={`${styles.filterTitle} ${darkMode ? styles.darkMode : ''}`}>Role</div>
             <select
-              value={selectedRole.label}
+              value={selectedRole.value}
               onChange={handleRoleChange}
               className={`${styles.select} ${darkMode ? styles.darkMode : ''}`}
             >
