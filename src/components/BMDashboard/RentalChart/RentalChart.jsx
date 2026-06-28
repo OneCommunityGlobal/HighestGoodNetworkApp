@@ -268,17 +268,23 @@ export default function RentalChart() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chartType, selectedProject, selectedTool, dateRange, groupBy, rawData]);
 
-  const options = useMemo(
-    () => ({
+  const options = useMemo(() => {
+    const textColor = darkMode ? '#ffffff' : '#000000';
+    const bgColor = darkMode ? '#1b2a41' : '#ffffff';
+    const tooltipBorder = darkMode ? '#ffffff' : '#000000';
+    const tooltipBg = darkMode ? '#343a40' : '#f8f9fa';
+    const titleColor = darkMode ? '#ffffff' : '#000000';
+    const gridXColor = darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+    const gridYColor = darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+
+    return {
       responsive: true,
       maintainAspectRatio: false,
       backgroundColor: darkMode ? CHART_COLORS.darkBg : CHART_COLORS.lightBg,
       plugins: {
         legend: {
           position: 'top',
-          labels: {
-            color: darkMode ? '#e0e0e0' : '#333333',
-          },
+          labels: { color: textColor, font: { size: 16 } },
         },
         title: {
           display: true,
@@ -293,25 +299,21 @@ export default function RentalChart() {
         },
         tooltip: {
           callbacks: {
-            label(context) {
-              let label = context.dataset.label || '';
-              if (label) {
-                label += ': ';
-              }
-              if (context.parsed.y !== null) {
-                label +=
-                  chartType === 'percentage'
-                    ? `${context.parsed.y.toFixed(1)}%`
-                    : `$${context.parsed.y.toFixed(2)}`;
+            label({ dataset, parsed }) {
+              let label = dataset.label ? `${dataset.label}: ` : '';
+              if (parsed.y !== null) {
+                label += chartType === 'percentage' ? `${parsed.y}%` : `$${parsed.y.toFixed(2)}`;
               }
               return label;
             },
           },
-          backgroundColor: darkMode ? '#1b2a41' : 'rgba(255,255,255,0.8)',
-          titleColor: darkMode ? '#ffffff' : '#1b2a41',
-          bodyColor: darkMode ? '#ffffff' : '#333333',
-          borderColor: darkMode ? 'rgba(255,255,255, 0.2)' : '#1b2a41',
-          borderWidth: 1,
+          backgroundColor: tooltipBg,
+          titleColor,
+          bodyColor: textColor,
+          borderColor: tooltipBorder,
+          borderWidth: 2,
+          titleFont: { size: 18 },
+          bodyFont: { size: 16 },
         },
         datalabels: {
           color: darkMode ? '#e0e0e0' : '#333333',
@@ -327,17 +329,9 @@ export default function RentalChart() {
       },
       scales: {
         x: {
-          title: {
-            display: true,
-            text: 'Month/Year',
-            color: darkMode ? '#e0e0e0' : '#333333',
-          },
-          ticks: {
-            color: darkMode ? '#e0e0e0' : '#333333',
-          },
-          grid: {
-            color: darkMode ? '#e0e0e0' : '#333333',
-          },
+          title: { display: true, text: 'Month/Year', color: textColor, font: { size: 18 } },
+          ticks: { color: textColor },
+          grid: { color: gridXColor },
         },
         y: {
           beginAtZero: true,
@@ -347,22 +341,18 @@ export default function RentalChart() {
               chartType === 'percentage'
                 ? 'Percentage of Total Materials Cost (%)'
                 : 'Total Rental Cost ($)',
-            color: darkMode ? '#e0e0e0' : '#333333',
+            color: textColor,
+            font: { size: 18 },
           },
           ticks: {
-            callback(value) {
-              return chartType === 'percentage' ? `${value}%` : `$${value}`;
-            },
-            color: darkMode ? '#e0e0e0' : '#333333',
+            callback: value => (chartType === 'percentage' ? `${value}%` : `$${value}`),
+            color: textColor,
           },
-          grid: {
-            color: darkMode ? 'rgba(255,255,255,0.1)' : '#1b2a41',
-          },
+          grid: { color: gridYColor },
         },
       },
-    }),
-    [darkMode, chartType, dateRange, selectedProject, selectedTool],
-  );
+    };
+  }, [darkMode, chartType, dateRange, selectedProject, selectedTool]);
 
   const handleTypeChange = e => {
     setChartType(e.target.value);

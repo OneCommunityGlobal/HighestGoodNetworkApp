@@ -147,6 +147,12 @@
   transition: background 0.2s ease-in-out;
 }
 
+/* Bootstrap .btn can add vertical offset; align with selects */
+.weeklySummaryHeaderControls :global(button.btn) {
+  margin: 0 !important;
+  vertical-align: middle;
+}
+
 .darkMode .weeklySummaryShareBtn {
   background-color: var(--button-bg) !important;
 }
@@ -161,10 +167,8 @@
   cursor: not-allowed;
 }
 
-/* Bootstrap .btn can add vertical offset; align with selects */
-.weeklySummaryHeaderControls :global(button.btn) {
-  margin: 0 !important;
-  vertical-align: middle;
+.darkMode .weeklySummaryShareBtn:hover {
+  background-color: var(--button-hover) !important;
 }
 
 .weeklySummaryShareBtn:hover:not(:disabled) {
@@ -504,10 +508,6 @@
 .darkMode .weeklySummaryHeaderContainer {
   background: var(--section-bg);
   color: var(--text-color);
-}
-
-.darkMode .weeklySummaryShareBtn:hover {
-  background-color: var(--button-hover) !important;
 }
 
 /* ---------------- STATUS CARD (base) ---------------- */
