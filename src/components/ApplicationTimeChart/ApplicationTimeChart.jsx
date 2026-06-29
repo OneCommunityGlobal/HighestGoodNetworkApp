@@ -407,10 +407,11 @@ function ApplicationTimeChart() {
               </div>
               <div>
                 <strong>Fastest:</strong> {processedData[processedData.length - 1]?.role} (
-                {processedData[processedData.length - 1]?.avgTime} min)
+                {processedData[processedData.length - 1]?.formattedTime})
               </div>
               <div>
-                <strong>Slowest:</strong> {processedData[0]?.role} ({processedData[0]?.avgTime} min)
+                <strong>Slowest:</strong> {processedData[0]?.role} (
+                {processedData[0]?.formattedTime})
               </div>
             </div>
           )}
