@@ -26,6 +26,20 @@ const DATE_FILTER_OPTIONS = [
   { value: 'Yearly', label: 'Last Year' },
 ];
 
+function getStartDate(selectedValue, now = new Date()) {
+  const DAY_IN_MS = 24 * 60 * 60 * 1000;
+  switch (selectedValue) {
+    case 'Weekly':
+      return new Date(now.getTime() - 7 * DAY_IN_MS).toISOString();
+    case 'Monthly':
+      return new Date(now.getTime() - 30 * DAY_IN_MS).toISOString();
+    case 'Yearly':
+      return new Date(now.getTime() - 365 * DAY_IN_MS).toISOString();
+    default:
+      return null;
+  }
+}
+
 function ApplicationTimeChart() {
   const [selectedDate, setSelectedDate] = useState({ label: 'All', value: 'All' });
   const [selectedRole, setSelectedRole] = useState({ label: 'All', value: 'All' });
@@ -51,7 +65,6 @@ function ApplicationTimeChart() {
     const fetchRoles = async () => {
       try {
         setLoading(true);
-        // TODO: move this endpoint later
         const response = await httpService.get(ENDPOINTS.APPLICATION_TIME_DATA_ROLES);
 
         const options = response.data.data
@@ -70,30 +83,27 @@ function ApplicationTimeChart() {
     fetchRoles();
   }, []);
 
-  // Fetch available roles from backend
-  // useEffect(() => {
-  //   const fetchRoles = async () => {
-  //     try {
-  // const baseUrl = ENDPOINTS.APPLICATION_TIME_DATA('', '', []);
-  //       const rolesUrl = baseUrl.split('?')[0] + '/roles';
-  //       const response = await httpService.get(rolesUrl);
-  //       if (response.data && response.data.data && Array.isArray(response.data.data)) {
-  //         const apiRoles = response.data.data.filter(Boolean).sort((a, b) => a.localeCompare(b));
-  //         setAvailableRoles(['all', ...apiRoles]);
-  //       } else if (response.data && response.data.success && Array.isArray(response.data.data)) {
-  //         const apiRoles = response.data.data.filter(Boolean).sort((a, b) => a.localeCompare(b));
-  //         setAvailableRoles(['all', ...apiRoles]);
-  //       } else {
-  //         setAvailableRoles(mergeRoleOptions(['all'], getAggregatedMockForChart()));
-  //       }
-  //     } catch (err) {
-  //       console.error('Error fetching available roles:', err);
-  //       setAvailableRoles(mergeRoleOptions(['all'], getAggregatedMockForChart()));
-  //     }
-  //   };
+  useEffect(() => {
+    const fetchApplicationTimes = async () => {
+      try {
+        setLoading(true);
 
-  //   fetchRoles();
-  // }, []);
+        const startDate = getStartDate(selectedDate.value);
+        const url = ENDPOINTS.APPLICATION_TIME_DATA(
+          startDate,
+          selectedRole.value !== 'All' ? [selectedRole.value] : [],
+        );
+        const response = await httpService.get(url);
+        setData(response.data.data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchApplicationTimes();
+  }, [selectedRole, selectedDate]);
 
   // Fetch data from backend
   // useEffect(() => {
@@ -173,23 +183,34 @@ function ApplicationTimeChart() {
       return [];
     }
 
-    let rows = data;
-    if (selectedRole !== 'all') {
-      rows = data.filter(item => item && item.role === selectedRole);
+    const rows =
+      selectedRole.value !== 'All'
+        ? data.filter(item => item && item.role === selectedRole.value)
+        : data;
+
+    // Group data by role
+    const grouped = new Map();
+    for (const item of rows) {
+      const role = item.role;
+      const minutes = item.timeTaken / 60;
+      const existing = grouped.get(role);
+      if (existing) {
+        existing.totalMinutes += minutes;
+        existing.count += 1;
+      } else {
+        grouped.set(role, { totalMinutes: minutes, count: 1 });
+      }
     }
 
-    const chartData = rows
-      .map(item => ({
-        role: item.role,
-        avgTime: item.timeToApplyMinutes || (item.timeToApply ? item.timeToApply / 60 : 0),
-        count: item.totalApplications || 0,
-        formattedTime:
-          item.timeToApplyFormatted ||
-          `${Math.round((item.timeToApplyMinutes || 0) * 10) / 10} min`,
-      }))
-      .sort((a, b) => b.avgTime - a.avgTime);
-
-    return chartData;
+    return Array.from(grouped, ([role, { totalMinutes, count }]) => {
+      const avgTime = totalMinutes / count;
+      return {
+        role,
+        avgTime,
+        count,
+        formattedTime: `${Math.round(avgTime * 10) / 10} min`,
+      };
+    }).sort((a, b) => b.avgTime - a.avgTime);
   }, [data, selectedRole]);
 
   const maxTime = Math.max(...processedData.map(item => item.avgTime), 10);
