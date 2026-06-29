@@ -8,6 +8,7 @@ import { boxStyle, boxStyleDark } from '~/styles';
 import { permissionLabelKeyMappingObj } from '../PermissionsManagement/PermissionsConst';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
 import PropTypes from 'prop-types';
+import styles from './BasicInformationTab/BasicInformationTab.module.css';
 
 /**
  * RoleChangePermissionsModal
@@ -142,15 +143,21 @@ function RoleChangePermissionsModal(props) {
           {userCustomPermissions
             .some(perms => {
               return !roleDefaults.includes(perms)
-            }).length > 0
-            && <h4>Added Permissions:</h4>}
+            })
+            && 
+            <div>
+              <br></br>
+              <h4>Added Permissions:</h4>
+              <span>These pemissions are NOT normally part of this new role, and <strong>will remain added</strong> if you check the boxes and click confirm</span>
+            </div>
+          }
           {userCustomPermissions
             .filter(perms => {
               return !roleDefaults.includes(perms)
             })
             .map(perm => {
               return(
-                <p key={perm} style={{marginLeft: '16px'}}>
+                <p key={perm} style={{marginLeft: '16px', marginTop: '5px'}} className={darkMode ? styles.darkModeText : ''}>
                 <input 
                   type='checkbox' 
                   checked={keptFrontPermissions.includes(perm)} 
@@ -162,15 +169,21 @@ function RoleChangePermissionsModal(props) {
           {removedDefaults
             .some(perms => {
               return roleDefaults.includes(perms)
-            }).length > 0 
-            && <h4>Removed Permissions:</h4>}
+            })
+            &&
+            <div>
+              <br></br>
+              <h4>Removed Permissions:</h4>
+              <span>These pemissions ARE normally part of the new role, and <strong>will remain removed</strong> if you check the boxes and click confirm</span>
+            </div>
+          }
           {removedDefaults
             .filter(perms => {
               return roleDefaults.includes(perms)
             })
             .map(perm => {
               return(
-                <p key={perm} style={{marginLeft: '16px'}}>
+                <p key={perm} style={{marginLeft: '16px', marginTop: '5px'}} className={darkMode ? styles.darkModeText : ''}>
                 <input 
                   type='checkbox' 
                   checked={keptRemovedPermissions.includes(perm)} 

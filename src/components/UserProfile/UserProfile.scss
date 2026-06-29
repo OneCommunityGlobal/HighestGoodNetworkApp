@@ -468,6 +468,10 @@ button.btn.btn-outline-primary {
   background-color: transparent;
 }
 
+.modal-title {
+  filter: none !important;
+}
+
 /* Mobile & Tablet Layout */
 @media (width <= 767px) {
 @media (width <= 767px) {
