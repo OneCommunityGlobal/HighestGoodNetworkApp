@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
+import Select, { components } from 'react-select';
 import { ENDPOINTS } from '../../utils/URL';
 import httpService from '../../services/httpService';
 import { getAggregatedMockForChart } from './api';
@@ -42,10 +43,10 @@ function getStartDate(selectedValue, now = new Date()) {
 
 function ApplicationTimeChart() {
   const [selectedDate, setSelectedDate] = useState({ label: 'All', value: 'All' });
-  const [selectedRole, setSelectedRole] = useState({ label: 'All', value: 'All' });
+  const [selectedRoles, setSelectedRoles] = useState([]);
   const [data, setData] = useState([]);
   const [availableRoles, setAvailableRoles] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [error, setError] = useState(null);
 
   // Get dark mode state from Redux
@@ -56,27 +57,23 @@ function ApplicationTimeChart() {
     if (option) setSelectedDate(option);
   };
 
-  const handleRoleChange = e => {
-    const role = availableRoles.find(role => role.value === e.target.value);
-    if (role) setSelectedRole(role);
+  const handleRoleChange = selectedOptions => {
+    setSelectedRoles(selectedOptions || []);
   };
 
   useEffect(() => {
     const fetchRoles = async () => {
       try {
-        setLoading(true);
         const response = await httpService.get(ENDPOINTS.APPLICATION_TIME_DATA_ROLES);
 
         const options = response.data.data
           .sort((a, b) => a.localeCompare(b))
           .map(role => ({ label: role, value: role }));
 
-        setAvailableRoles([{ label: 'All', value: 'All' }, ...options]);
+        setAvailableRoles(options);
       } catch (error) {
         // TODO: display toast
-        console.error(`Error fetching roles: ${roles}`);
-      } finally {
-        setLoading(false);
+        console.error(`Error fetching roles: ${error}`);
       }
     };
 
@@ -86,24 +83,37 @@ function ApplicationTimeChart() {
   useEffect(() => {
     const fetchApplicationTimes = async () => {
       try {
-        setLoading(true);
+        // If every role is selected, treat it as no filter (URL helper
+        // omits `roles=` when the array is empty).
+        const allRoleValues = availableRoles.map(r => r.value);
+        const selectedValues = selectedRoles.map(r => r.value);
+        const everySelected =
+          allRoleValues.length > 0 &&
+          selectedValues.length === allRoleValues.length &&
+          allRoleValues.every(v => selectedValues.includes(v));
+        const rolesToSend = everySelected ? [] : selectedValues;
 
         const startDate = getStartDate(selectedDate.value);
-        const url = ENDPOINTS.APPLICATION_TIME_DATA(
-          startDate,
-          selectedRole.value !== 'All' ? [selectedRole.value] : [],
-        );
+        const url = ENDPOINTS.APPLICATION_TIME_DATA(startDate, rolesToSend);
         const response = await httpService.get(url);
-        setData(response.data.data);
+        setData(response.data.data || []);
       } catch (error) {
         console.error(error);
       } finally {
-        setLoading(false);
+        // Only flip off the "Initial loading…" overlay on the very first
+        // successful load. Subsequent refetches must NOT unmount the chart
+        // because the unmount/remount cycle was closing the multi-select
+        // dropdown mid-interaction.
+        setInitialLoading(false);
       }
     };
 
-    fetchApplicationTimes();
-  }, [selectedRole, selectedDate]);
+    // Run only after roles have loaded; otherwise we'd fire two requests
+    // on first mount (one with [], another when availableRoles resolves).
+    if (availableRoles.length > 0) {
+      fetchApplicationTimes();
+    }
+  }, [selectedRoles, selectedDate, availableRoles]);
 
   // Fetch data from backend
   // useEffect(() => {
@@ -183,10 +193,11 @@ function ApplicationTimeChart() {
       return [];
     }
 
+    const selectedRoleValues = selectedRoles.map(r => r.value);
     const rows =
-      selectedRole.value !== 'All'
-        ? data.filter(item => item && item.role === selectedRole.value)
-        : data;
+      selectedRoleValues.length === 0
+        ? data
+        : data.filter(item => item && selectedRoleValues.includes(item.role));
 
     // Group data by role
     const grouped = new Map();
@@ -211,7 +222,7 @@ function ApplicationTimeChart() {
         formattedTime: `${Math.round(avgTime * 10) / 10} min`,
       };
     }).sort((a, b) => b.avgTime - a.avgTime);
-  }, [data, selectedRole]);
+  }, [data, selectedRoles]);
 
   const maxTime = Math.max(...processedData.map(item => item.avgTime), 10);
 
@@ -222,7 +233,7 @@ function ApplicationTimeChart() {
 
   // ── Loading / Error states ────────────────────────────────────────────────
 
-  if (loading) {
+  if (initialLoading) {
     return (
       <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
         <div className={`${styles.chartCard} ${darkMode ? styles.darkMode : ''}`}>
@@ -300,6 +311,71 @@ function ApplicationTimeChart() {
       />
 
       <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
+        {/* Filters Panel */}
+        <div className={`${styles.filters} ${darkMode ? styles.darkMode : ''}`}>
+          {/* Dates Filter */}
+          <div className={`${styles.dateFilter} ${darkMode ? styles.darkMode : ''}`}>
+            <div className={`${styles.filterTitle} ${darkMode ? styles.darkMode : ''}`}>Date</div>
+            <select
+              value={selectedDate.value}
+              onChange={handleDateChange}
+              className={`${styles.dateSelect} ${darkMode ? styles.darkMode : ''}`}
+            >
+              {DATE_FILTER_OPTIONS.map(option => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Role Filter */}
+          <div className={`${styles.roleFilter} ${darkMode ? styles.darkMode : ''}`}>
+            <div className={`${styles.filterTitle} ${darkMode ? styles.darkMode : ''}`}>Role</div>
+            <Select
+              isMulti
+              options={availableRoles}
+              value={selectedRoles}
+              onChange={handleRoleChange}
+              placeholder="Select roles…"
+              className={`${styles.applicationTimesRoleMultiSelect} ${
+                darkMode ? styles.selectDark : ''
+              }`}
+              classNamePrefix="application-times-multi-select"
+              isDisabled={availableRoles.length === 0}
+              closeMenuOnSelect={false}
+              hideSelectedOptions={false}
+              components={{
+                MultiValue: props => {
+                  const { index, getValue, children, ...rest } = props;
+                  const allSelected = getValue();
+                  const isOverflowPill = index === 1 && allSelected.length > 1;
+                  if (!isOverflowPill && index > 0) return null;
+                  const pillClasses = `${styles.selectedPill}`;
+                  if (isOverflowPill) {
+                    const overflowCount = allSelected.length - 1;
+                    return (
+                      <div className={pillClasses}>
+                        + {overflowCount} role{overflowCount === 1 ? '' : 's'} selected
+                      </div>
+                    );
+                  }
+                  return (
+                    <div className={pillClasses} {...rest}>
+                      {children}
+                    </div>
+                  );
+                },
+                MultiValueRemove: props => {
+                  const { index, getValue } = props;
+                  if (index === 0 && getValue().length > 1) return null;
+                  return <components.MultiValueRemove {...props} />;
+                },
+              }}
+            />
+          </div>
+        </div>
+
         {/* Chart Container */}
         <div className={`${styles.chartCard} ${darkMode ? styles.darkMode : ''}`}>
           <h2 className={`${styles.title} ${darkMode ? styles.darkMode : ''}`}>
@@ -415,41 +491,6 @@ function ApplicationTimeChart() {
               </div>
             </div>
           )}
-        </div>
-
-        {/* Filters Panel */}
-        <div className={styles.filters}>
-          {/* Dates Filter */}
-          <div className={`${styles.filterCard} ${darkMode ? styles.darkMode : ''}`}>
-            <div className={`${styles.filterTitle} ${darkMode ? styles.darkMode : ''}`}>Date</div>
-            <select
-              value={selectedDate.value}
-              onChange={handleDateChange}
-              className={`${styles.select} ${darkMode ? styles.darkMode : ''}`}
-            >
-              {DATE_FILTER_OPTIONS.map(option => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Role Filter */}
-          <div className={`${styles.filterCard} ${darkMode ? styles.darkMode : ''}`}>
-            <div className={`${styles.filterTitle} ${darkMode ? styles.darkMode : ''}`}>Role</div>
-            <select
-              value={selectedRole.value}
-              onChange={handleRoleChange}
-              className={`${styles.select} ${darkMode ? styles.darkMode : ''}`}
-            >
-              {availableRoles.map(role => (
-                <option key={role.value} value={role.value}>
-                  {role.label}
-                </option>
-              ))}
-            </select>
-          </div>
         </div>
       </div>
     </>

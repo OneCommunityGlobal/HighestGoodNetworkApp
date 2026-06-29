@@ -15,12 +15,11 @@
 
 .container {
   display: flex;
-  align-items: flex-start;
-  gap: 20px;
+  flex-direction: column;
+  row-gap: 1rem;
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -386,43 +385,26 @@
 .filters {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 1rem;
   min-width: 150px;
-}
-
-/* FIX: removed duplicate nested @media wrapper */
-@media (width <= 768px) {
-  .filters {
-    min-width: 120px;
-    gap: 15px;
-  }
-}
-
-@media (width <= 480px) {
-  .filters {
-    min-width: 100px;
-    gap: 10px;
-  }
-}
-
-.filterCard {
-  border: 1px solid #dadce0;
-  border-radius: 8px;
-  padding: 12px;
-  /* FIX: removed duplicate background-color declaration */
   background-color: #fff;
-  transition: background-color 0.3s ease, border-color 0.3s ease;
+  border: 1px solid #dadce0;
+  border-radius: 0.5rem;
+  padding: 0.7rem;
 }
 
-.filterCard.darkMode {
+.filters.darkMode {
   background-color: #2c3e50;
   border-color: #5a6c7d;
 }
 
-/* FIX: removed duplicate nested @media wrapper */
-@media (width <= 480px) {
-  .filterCard {
-    padding: 8px;
+@media screen and (min-width: 768px) {
+  .filters {
+    flex-direction: row;
+  }
+
+  .roleFilter {
+    width: 350px;
   }
 }
 
@@ -446,40 +428,19 @@
   }
 }
 
-.select {
+.dateSelect {
   width: 100%;
-  padding: 4px 8px;
-  border: 1px solid #dadce0;
-  border-radius: 4px;
-  font-size: 14px;
-  /* FIX: removed duplicate background-color declaration */
-  background-color: #fff;
-  color: #3c4043;
-  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+  height: 38px;
+  font-size: 0.8rem;
+  padding-inline: 0.5rem;
 }
 
-.select.darkMode {
-  background-color: #34495e;
-  border-color: #5a6c7d;
-  color: #e0e0e0;
-}
-
-.select option {
-  /* FIX: removed duplicate background-color declaration */
-  background-color: #fff;
-  color: #3c4043;
-}
-
-.select.darkMode option {
-  background-color: #1e293b;
-  color: #f1f5f9;
-}
-
-/* FIX: removed duplicate nested @media wrapper */
-@media (width <= 480px) {
-  .select {
-    font-size: 12px;
-    padding: 3px 6px;
+.multiSelect {
+  width: 100%;
+  font-size: 0.8rem;
+  
+  .react-select__value-container {
+    border: 1px solid #dadce0;
   }
 }
 
@@ -509,19 +470,6 @@
     font-size: 18px;
     margin-bottom: 20px;
   }
-
-  .filters {
-    order: 2;
-    flex-direction: row;
-    justify-content: space-between;
-    min-width: auto;
-    width: 100%;
-    gap: 15px;
-  }
-
-  .filterCard {
-    flex: 1;
-  }
 }
 
 @media (width <= 480px) {
@@ -538,14 +486,14 @@
     margin-bottom: 15px;
   }
 
-  .filters {
+  /* .filters {
     flex-direction: column;
     gap: 10px;
-  }
+  } */
 
-  .filterCard {
+  /* .filterCard {
     width: 100%;
-  }
+  } */
 }
 
 /* FIX: removed duplicate nested @media wrapper */
@@ -619,4 +567,52 @@
   font-size: 13px;
   font-weight: 600;
   white-space: nowrap;
+}
+
+/* Multi-select component */
+
+.selectedPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 6px;
+  font-size: 13px;
+  line-height: 1.2;
+  white-space: nowrap;
+  border-radius: 0.3rem;
+  background-color: #007bff;
+  color: #ffffff;
+}
+
+.applicationTimesRoleMultiSelect :global(.application-times-multi-select__value-container--has-value) {
+  display: flex;
+  column-gap: 0.2rem;
+}
+
+.applicationTimesRoleMultiSelect :global(.application-times-multi-select__option--is-focused.application-times-multi-select__option--is-selected) {
+  background-color: #007bff;
+}
+
+:global(.dark-mode) .applicationTimesRoleMultiSelect :global(.application-times-multi-select__control) {
+  background-color: #1f2937;
+  border-color: #5a6c7d;
+  border-radius: 0.5rem;
+}
+
+:global(.dark-mode) .applicationTimesRoleMultiSelect :global(.application-times-multi-select__input) {
+  color: #ffffff !important;
+}
+
+:global(.dark-mode) .applicationTimesRoleMultiSelect :global(.application-times-multi-select__menu) {
+  background-color: #1f2937;
+  border-color: #5a6c7d;
+  color: #ffffff;
+}
+
+:global(.dark-mode) .applicationTimesRoleMultiSelect :global(.application-times-multi-select__option--is-focused) {
+    background-color: #374151;
+}
+
+:global(.dark-mode) .applicationTimesRoleMultiSelect :global(.application-times-multi-select__option--is-focused.application-times-multi-select__option--is-selected) {
+  background-color: #007bff;
 }
