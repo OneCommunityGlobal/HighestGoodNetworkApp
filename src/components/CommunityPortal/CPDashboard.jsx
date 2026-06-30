@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
-import { Container, Row, Alert, Col, Card, CardBody, Button, Input } from 'reactstrap';
+import { Container, Row, Alert, Col, Card, CardBody, Button, Input, Label } from 'reactstrap';
 import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt, FaSearch, FaTimes } from 'react-icons/fa';
 import styles from './CPDashboard.module.css';
 import { ENDPOINTS } from '../../utils/URL';
@@ -133,7 +133,7 @@ const FiltersSidebar = ({ darkMode }) => (
           Dates
         </label>
         <div className={styles['filter-options-horizontal']}>
-          <label className={styles['radio-label']}>
+          <Label className={styles['radio-label']}>
             <Input
               type="radio"
               name="dates"
@@ -141,8 +141,8 @@ const FiltersSidebar = ({ darkMode }) => (
               className={darkMode ? styles['filter-radio-dark'] : ''}
             />
             <span className={darkMode ? styles['filter-option-text-dark'] : ''}>Tomorrow</span>
-          </label>
-          <label className={styles['radio-label']}>
+          </Label>
+          <Label className={styles['radio-label']}>
             <Input
               type="radio"
               name="dates"
@@ -150,7 +150,7 @@ const FiltersSidebar = ({ darkMode }) => (
               className={darkMode ? styles['filter-radio-dark'] : ''}
             />
             <span className={darkMode ? styles['filter-option-text-dark'] : ''}>This Weekend</span>
-          </label>
+          </Label>
         </div>
         <Input
           id="date-filter-input"
@@ -164,14 +164,14 @@ const FiltersSidebar = ({ darkMode }) => (
         <label htmlFor="online-only" className={darkMode ? styles['filter-label-dark'] : ''}>
           Online
         </label>
-        <label className={styles['checkbox-label']}>
+        <Label className={styles['checkbox-label']}>
           <Input
             type="checkbox"
             id="online-only"
             className={darkMode ? styles['filter-checkbox-dark'] : ''}
           />
           <span className={darkMode ? styles['filter-option-text-dark'] : ''}>Online Only</span>
-        </label>
+        </Label>
       </div>
 
       <div className={`${styles['filter-item']} ${styles['compact-dropdown-filter']}`}>
@@ -367,7 +367,6 @@ function CPDashboard() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showPastEvents, setShowPastEvents] = useState(false);
-  const darkMode = useSelector(state => state.theme.darkMode);
 
   // Darken the page body in dark mode (app-wide pattern) so the area around the
   // dashboard isn't left white.
