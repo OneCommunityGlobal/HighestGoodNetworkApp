@@ -167,7 +167,9 @@ export default function EquipmentUpdateForm() {
             value={formData.toolOrEquipment}
             onChange={handleChange}
           >
-            <option value="" disabled>Select Tool/Equipment</option>
+            <option value="" disabled>
+              Select Tool/Equipment
+            </option>
             <option value="Tool">Tool</option>
             <option value="Equipment">Equipment</option>
           </Input>
