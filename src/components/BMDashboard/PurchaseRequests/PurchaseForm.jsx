@@ -413,7 +413,9 @@ function PurchaseForm({
         className={darkMode ? styles.darkModeModal : ''}
       >
         <ModalHeader toggle={() => setShowSuccessModal(false)}>
-          Request Submitted Successfully
+          <span style={darkMode ? { color: '#f1f5f9' } : undefined}>
+            Request Submitted Successfully
+          </span>
         </ModalHeader>
         <ModalBody>
           {submittedData && (

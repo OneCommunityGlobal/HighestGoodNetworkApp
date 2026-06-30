@@ -63,7 +63,7 @@ export default function RecordsModal({ modal, setModal, record, setRecord, recor
         contentClassName={darkMode ? 'dark-oxford-modal' : ''}
       >
         <ModalHeader className={darkMode ? 'dark-modal-header bg-space-cadet text-white' : ''}>
-          {recordType} Record
+          {recordType === 'UsageRecord' ? 'Usage' : recordType} Record
         </ModalHeader>
 
         <ModalBody className={darkMode ? 'dark-modal-body bg-yinmn-blue text-light' : ''}>
@@ -160,7 +160,7 @@ export function Record({ record, recordType, setRecord, itemType }) {
     }
   };
 
-  if (recordType === 'Update') {
+  if (recordType === 'Update' || recordType === 'UsageRecord') {
     return (
       <>
         <thead className={darkMode ? 'dark-thead bg-space-cadet text-white' : ''}>

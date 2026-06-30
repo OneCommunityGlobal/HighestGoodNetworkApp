@@ -168,3 +168,27 @@
   text-shadow: none;
 }
 
+/* Force light text throughout the success popup so the body copy isn't dark-on-dark */
+.darkModeModal :global(.modal-body),
+.darkModeModal :global(.modal-body) p,
+.darkModeModal :global(.modal-body) strong {
+  color: #f1f5f9 !important;
+}
+
+/* The title is an <h5>; the global theme's `body.bm-dashboard-dark h5` rule
+   (with !important + a text-shadow) outranks a plain .modal-title selector and
+   left the heading dim/blurred. Scope through .modal-header to win on
+   specificity and drop the shadow so it matches the body text. */
+.darkModeModal :global(.modal-header) :global(.modal-title) {
+  color: #f1f5f9 !important;
+  text-shadow: none !important;
+}
+
+/* Pure red (#dc3545) is hard to read on the dark navy surface; brighten the
+   required-asterisk and error text in dark mode for adequate contrast. */
+.darkMode .requiredIndicator,
+.darkMode .fieldError,
+.darkMode .purchaseErrorMessage {
+  color: #f87171;
+}
+

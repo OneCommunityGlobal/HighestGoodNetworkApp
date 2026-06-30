@@ -19,9 +19,13 @@ margin-left: 1em;
 
 .toolDetailPage_image{
   border: 1px solid #e5e5e6;
-  border-radius: 5px; 
+  border-radius: 5px;
   width: 150px;
   height: auto;
+  /* Bound the rendered size so tall/large source images can't blow up the layout */
+  max-width: 150px;
+  max-height: 150px;
+  object-fit: contain;
 }
 
 .toolDetailPage_detailItem{

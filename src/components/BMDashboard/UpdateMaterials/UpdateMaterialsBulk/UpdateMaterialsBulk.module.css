@@ -94,6 +94,20 @@
   color: #fff;
 }
 
+/* Bootstrap's row hover uses a light background; with white cell text that made
+   the hovered row unreadable. Force a dark highlight in dark mode. */
+.logMaterialDark .logMaterialTable {
+  --bs-table-hover-bg: #14233a;
+  --bs-table-hover-color: #fff;
+}
+
+.logMaterialDark .logMaterialTable tbody tr:hover > td,
+.logMaterialDark .logMaterialTable tbody tr:hover > th,
+.logMaterialDark .logMaterialTable tbody tr:focus-within > td {
+  background-color: #14233a !important;
+  color: #fff !important;
+}
+
 .logMaterialDark .logMTableHeaderLine {
   background-color: #14233a;
   border-bottom-color: #3a506b;
