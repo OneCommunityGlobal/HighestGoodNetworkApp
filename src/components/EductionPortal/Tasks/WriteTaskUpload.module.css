@@ -297,8 +297,7 @@
 
 /* Progress (right) */
 .progressPane {
-  position: sticky;
-  top: 90px;
+  position: static;
   align-self: start;
 }
 

@@ -29,14 +29,14 @@
   resize: vertical;
   min-height: 100px;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  background-color: #ffffff;
+  background-color: #fff;
   color: #111827;
 }
 
 .commentInput:focus {
   outline: none;
   border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 10%);
 }
 
 .commentInput:disabled {
@@ -53,7 +53,7 @@
 
 .commentInputDark:focus {
   border-color: #60a5fa;
-  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+  box-shadow: 0 0 0 3px rgb(96 165 250 / 10%);
 }
 
 .commentInputDark:disabled {
@@ -65,12 +65,12 @@
 }
 
 .inputError:focus {
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+  box-shadow: 0 0 0 3px rgb(239 68 68 / 10%) !important;
 }
 
 .errorMessage {
   margin-top: 0.5rem;
-  color: #ef4444;
+  color: #ef4444 !important;
   font-size: 0.875rem;
   font-weight: 500;
 }
@@ -98,7 +98,7 @@
 .submitButton {
   padding: 0.625rem 1.25rem;
   background-color: #2563eb;
-  color: #ffffff;
+  color: #fff;
   border: none;
   border-radius: 6px;
   font-size: 0.938rem;
@@ -117,7 +117,7 @@
 
 .submitButton:disabled {
   background-color: #6b7280;
-  color: #ffffff;
+  color: #fff;
   cursor: not-allowed;
   opacity: 0.8;
 }
@@ -135,7 +135,7 @@
   color: #e0e0e0;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .commentInput {
     font-size: 1rem;
     min-height: 120px;
