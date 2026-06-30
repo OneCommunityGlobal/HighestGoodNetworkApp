@@ -49,6 +49,20 @@ const DEFAULT_FILTERS = {
   categories: '',
 };
 
+// Shared shape for a community event
+const eventShape = PropTypes.shape({
+  id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  image: PropTypes.string,
+  title: PropTypes.string,
+  date: PropTypes.string,
+  location: PropTypes.string,
+  organizer: PropTypes.string,
+});
+
+// Helper: combine base and dark variant class names
+const cx = (base, darkMode) =>
+  darkMode ? `${styles[base]} ${styles[`${base}-dark`]}` : styles[base];
+
 const formatDate = dateStr => {
   if (!dateStr) return 'Date TBD';
   const date = new Date(dateStr);
