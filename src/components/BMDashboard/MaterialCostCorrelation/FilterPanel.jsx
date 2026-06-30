@@ -80,16 +80,18 @@ function FilterPanel({
       return;
     }
 
-    // Filter out "all" option and extract IDs
-    const projectIds = selected
-      .filter(option => option.value !== 'all')
-      .map(option => option.value);
+    const hasAll = selected.some(option => option.value === 'all');
+    const realSelections = selected.filter(option => option.value !== 'all');
 
-    // If "all" is selected, clear the filter
-    if (selected.some(option => option.value === 'all')) {
+    // If the user just picked "All Projects" alongside existing real selections,
+    // treat it as resetting to "all" (clear filter). If they picked a real
+    // project while "all" was already selected, drop "all" and keep the real one.
+    if (hasAll && realSelections.length === selected.length - 1 && realSelections.length > 0) {
+      onProjectChange(realSelections.map(option => option.value));
+    } else if (hasAll) {
       onProjectChange([]);
     } else {
-      onProjectChange(projectIds);
+      onProjectChange(realSelections.map(option => option.value));
     }
   };
 
@@ -99,14 +101,15 @@ function FilterPanel({
       return;
     }
 
-    const materialTypeIds = selected
-      .filter(option => option.value !== 'all')
-      .map(option => option.value);
+    const hasAll = selected.some(option => option.value === 'all');
+    const realSelections = selected.filter(option => option.value !== 'all');
 
-    if (selected.some(option => option.value === 'all')) {
+    if (hasAll && realSelections.length === selected.length - 1 && realSelections.length > 0) {
+      onMaterialTypeChange(realSelections.map(option => option.value));
+    } else if (hasAll) {
       onMaterialTypeChange([]);
     } else {
-      onMaterialTypeChange(materialTypeIds);
+      onMaterialTypeChange(realSelections.map(option => option.value));
     }
   };
 

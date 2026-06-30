@@ -58,7 +58,7 @@ function CustomTooltip({ active, payload, darkMode }) {
       )}
       {quantityPayload && (
         <div className={styles.tooltipRow}>
-          <strong>Quantity Used:</strong> {quantityPayload.value.toFixed(2)}
+          <strong>Quantity Used:</strong> {Math.round(quantityPayload.value)}
         </div>
       )}
       <div className={styles.tooltipHint}>
