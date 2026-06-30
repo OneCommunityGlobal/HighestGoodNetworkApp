@@ -115,7 +115,7 @@ function RoleChangePermissionsModal(props) {
   const boxStyling = darkMode ? boxStyleDark : boxStyle;
 
   const updateSelectedRole = (newRole) => {
-    const selectedRole2 = roles.find(r => r.roleName === newRole)
+    const selectedRole2 = roles.some(r => r.roleName === newRole)
     if(!selectedRole2) return
     const roleDefaults = roleNameToDefaults[newRole] || [];
 
