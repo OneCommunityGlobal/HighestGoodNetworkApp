@@ -260,9 +260,9 @@ function EventPerformance() {
         </div>
       </div>
 
-      <div className={`${styles.eventsTable} ${darkMode ? styles.eventsTableDark : ''}`}>
+      <div className={`${styles.eventsTable} ${darkMode ? styles.eventsTableDark : ''} `}>
         <h3>Event Performance Details</h3>
-        <div className={styles.tableContainer}>
+        <div className={styles.tableContainer} style={{ overflowX: 'auto' }}>
           <table>
             <thead>
               <tr>
@@ -282,9 +282,11 @@ function EventPerformance() {
                   <td className={styles.eventName}>{event.name}</td>
                   <td className={styles.eventType}>{event.type}</td>
                   <td className={styles.eventDate}>{event.date}</td>
-                  <td className={styles.attendance}>
-                    {event.attendance}/{event.capacity}
-                    <div className={styles.attendanceBar}>
+                  <td>
+                    <span>
+                      {event.attendance}/{event.capacity}
+                    </span>
+                    <div className={styles.attendanceBarContainer}>
                       <div
                         className={styles.attendanceFill}
                         style={{
@@ -294,16 +296,16 @@ function EventPerformance() {
                       />
                     </div>
                   </td>
-                  <td className={styles.rating}>
+                  <td>
                     <span className={styles.ratingValue}>{event.rating}</span>
                     <span className={styles.ratingStars}>
                       {'★'.repeat(Math.floor(event.rating))}
                       {'☆'.repeat(5 - Math.floor(event.rating))}
                     </span>
                   </td>
-                  <td className={styles.engagement}>
+                  <td>
                     {event.engagement}%
-                    <div className={styles.engagementBar}>
+                    <div className={styles.engagementBarContainer}>
                       <div
                         className={styles.engagementFill}
                         style={{

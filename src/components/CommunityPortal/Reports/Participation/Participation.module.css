@@ -272,6 +272,8 @@
     padding: 6px 4px;
     font-size: 0.8rem;
   }
+}
+
 /* Table row hover states */
 .trackingTable tbody tr:hover {
   background: #f5f7fa;
