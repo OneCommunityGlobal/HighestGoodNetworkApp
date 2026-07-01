@@ -17,3 +17,42 @@
         width: 95%;
     }
 }
+
+/* Dark mode container/header backgrounds */
+.darkMode.purchaseConsumableContainer {
+    background-color: #1b2a41;
+    border-color: #3a506b;
+    color: #ffffff;
+}
+
+.darkMode .purchaseConsumableHeader {
+    background-color: #1b2a41;
+    color: #ffffff;
+}
+
+.darkMode .purchaseConsumableHeader h2,
+.darkMode :global(.inv-form-info),
+.darkMode :global(label) {
+    color: #e0eaf5;
+}
+
+/* Inner PurchaseForm uses global/bootstrap classes (no module classes),
+   so reach its controls via descendant :global selectors. */
+.darkMode :global(.form-control) {
+    background-color: #2a3f5f;
+    border-color: #3a506b;
+    color: #ffffff;
+}
+
+.darkMode :global(.form-control)::placeholder {
+    color: #b8c5d1;
+}
+
+.darkMode :global(select.form-control) {
+    appearance: none;
+}
+
+.darkMode :global(option) {
+    background-color: #2a3f5f;
+    color: #ffffff;
+}

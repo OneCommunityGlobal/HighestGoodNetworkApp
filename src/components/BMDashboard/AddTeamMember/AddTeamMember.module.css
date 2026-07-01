@@ -164,3 +164,34 @@
     font-size: 12px;
     margin-top: 5px;
 }
+
+/* Dark Mode */
+.containerAddDark {
+    background-color: #1b2a41;
+    color: #fff;
+}
+
+.containerAddDark .iconAddPerson,
+.containerAddDark label,
+.containerAddDark .inputName label,
+.containerAddDark .roleInput label,
+.containerAddDark .teamInput label,
+.containerAddDark .contactInfo label {
+    color: #fff;
+}
+
+.containerAddDark input {
+    background-color: #2a3f5f;
+    border: 1px solid #3a506b;
+    color: #fff;
+}
+
+.containerAddDark input::placeholder {
+    color: #b0b8c4;
+}
+
+.containerAddDark .cancelButton {
+    background-color: #2e5061;
+    border-color: #3a506b;
+    color: #fff;
+}

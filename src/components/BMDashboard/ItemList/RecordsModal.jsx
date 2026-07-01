@@ -36,6 +36,23 @@ export default function RecordsModal({ modal, setModal, record, setRecord, recor
               color: #ffffff !important;
               border-color: rgba(255,255,255,0.08) !important;
             }
+            .dark-oxford-modal .modal-title {
+              color: #ffffff !important;
+              /* Neutralize the global theme's "body.bm-dashboard-dark .modal-title
+                 { filter: invert(1) }" which would flip this white title to black. */
+              filter: none !important;
+            }
+            .dark-oxford-modal .close {
+              color: #ffffff !important;
+              opacity: 1 !important;
+            }
+            .dark-oxford-modal,
+            .dark-oxford-modal table,
+            .dark-oxford-modal th,
+            .dark-oxford-modal td,
+            .dark-oxford-modal a:not(.btn) {
+              color: #ffffff !important;
+            }
           `}
         </style>
       )}
@@ -46,7 +63,7 @@ export default function RecordsModal({ modal, setModal, record, setRecord, recor
         contentClassName={darkMode ? 'dark-oxford-modal' : ''}
       >
         <ModalHeader className={darkMode ? 'dark-modal-header bg-space-cadet text-white' : ''}>
-          {recordType} Record
+          {recordType === 'UsageRecord' ? 'Usage' : recordType} Record
         </ModalHeader>
 
         <ModalBody className={darkMode ? 'dark-modal-body bg-yinmn-blue text-light' : ''}>
@@ -143,7 +160,7 @@ export function Record({ record, recordType, setRecord, itemType }) {
     }
   };
 
-  if (recordType === 'Update') {
+  if (recordType === 'Update' || recordType === 'UsageRecord') {
     return (
       <>
         <thead className={darkMode ? 'dark-thead bg-space-cadet text-white' : ''}>

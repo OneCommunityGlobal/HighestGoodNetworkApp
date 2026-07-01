@@ -150,9 +150,12 @@ function AddConsumable({ toggle }) {
   }
 
   return (
-    <Container fluid className={`${styles.consumableContainer}`}>
+    <Container
+      fluid
+      className={`${styles.consumableContainer} ${darkMode ? styles.consumableContainerDark : ''}`}
+    >
       <div className={`${styles.consumablePage} ${darkMode ? styles.darkBg : ''}`}>
-        <div className={`${styles.consumable} ${darkMode ? styles.lightBg : ''}`}>
+        <div className={`${styles.consumable} ${darkMode ? styles.consumableCardDark : ''}`}>
           <div className={`${styles.consumableTitle}`}>ADD CONSUMABLES FORM</div>
           <Card>
             <CardBody>

@@ -8,6 +8,16 @@
   border-radius: 20px;
 }
 
+.addToolContainerDark {
+  border-color: #3a506b;
+  background-color: #1b2a41;
+  color: #fff;
+}
+
+.addToolContainerDark h2 {
+  color: #fff;
+}
+
 .addToolHeader h2{
  font-size: clamp(1.5rem, 2.5vw, 2.5rem);
  margin-left: 1rem;

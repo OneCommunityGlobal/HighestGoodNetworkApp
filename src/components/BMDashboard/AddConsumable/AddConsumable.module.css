@@ -62,11 +62,53 @@
 }
 
 .darkBg{
-  background-color: #2E5061;
+  background-color: #1b2a41;
 }
 
 .lightBg{
   background-color: #607D8B;
+}
+
+.consumableContainerDark {
+  background-color: #1b2a41;
+}
+
+.consumableCardDark {
+  background-color: #2e5061;
+  color: #fff;
+}
+
+.consumableCardDark .consumableTitle {
+  color: #fff;
+}
+
+.consumableCardDark :global(.card) {
+  background-color: #2e5061;
+  border-color: #3a506b;
+}
+
+.consumableCardDark :global(.card-body) {
+  background-color: #2e5061;
+  color: #fff;
+}
+
+.consumableCardDark :global(.form-control) {
+  background-color: #2a3f5f;
+  border-color: #3a506b;
+  color: #fff;
+}
+
+.consumableCardDark :global(.form-control):disabled {
+  background-color: #14233a;
+  color: #b0b8c4;
+}
+
+.consumableCardDark :global(.form-control)::placeholder {
+  color: #b0b8c4;
+}
+
+.consumableCardDark :global(.form-check-label) {
+  color: #fff;
 }
 
 .select :global(.rs__control) {

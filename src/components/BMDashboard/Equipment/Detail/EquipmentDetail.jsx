@@ -112,6 +112,7 @@ function EquipmentDetail() {
   const { equipmentId } = useParams();
   const dispatch = useDispatch();
 
+  const darkMode = useSelector(state => state.theme.darkMode);
   const equipment = useSelector(state => state.bmEquipments.singleEquipment);
   const { loading: updateLoading } = useSelector(state => state.bmEquipments.updateEquipment);
   const projects = useSelector(state => state.bmProjects);
@@ -430,7 +431,9 @@ function EquipmentDetail() {
 
   return (
     <Container
-      className={`${styles.equipmentDetailPage} justify-content-center align-items-center mw-80 px-4`}
+      className={`${styles.equipmentDetailPage} ${
+        darkMode ? styles.darkMode : ''
+      } justify-content-center align-items-center mw-80 px-4`}
     >
       <header className={styles.equipmentDetailPageHeader}>
         <h1>Equipment Detail Page</h1>

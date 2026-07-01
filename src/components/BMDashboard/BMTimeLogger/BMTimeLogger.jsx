@@ -13,6 +13,7 @@ function BMTimeLogger() {
   const [selectedProject, setselectedProject] = useState(null);
 
   const dispatch = useDispatch();
+  const darkMode = useSelector(state => state.theme.darkMode);
   const errors = useSelector(state => state.errors);
   const projects = useSelector(state => state.bmProjects);
   // fetch projects data on pageload
@@ -28,7 +29,7 @@ function BMTimeLogger() {
   }, [errors]);
 
   return (
-    <Container className="justify-content-center">
+    <Container className={`justify-content-center ${darkMode ? styles.darkMode : ''}`}>
       <header className={`${styles.bmTimelogger_header}`}>
         <Row className="mx-auto">
           <h1>Member Group Check In</h1>
@@ -62,7 +63,7 @@ function BMTimeLogger() {
         </Col>
       </Row>
 
-      {selectedProject && <BMTimeLogCard selectedProject={selectedProject} />}
+      {selectedProject && <BMTimeLogCard selectedProject={selectedProject} darkMode={darkMode} />}
       {isError && <BMError errors={errors} />}
     </Container>
   );

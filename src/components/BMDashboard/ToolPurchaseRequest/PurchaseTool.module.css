@@ -17,3 +17,20 @@
       width: 95%;
     }
   }
+
+  /* Dark mode container/header backgrounds */
+  .darkMode.purchaseToolContainer {
+    background-color: #1b2a41;
+    border-color: #3a506b;
+    color: #ffffff;
+  }
+
+  .darkMode .purchaseToolHeader {
+    background-color: #1b2a41;
+    color: #ffffff;
+  }
+
+  .darkMode .purchaseToolHeader h2,
+  .darkMode :global(.inv-form-info) {
+    color: #e0eaf5;
+  }

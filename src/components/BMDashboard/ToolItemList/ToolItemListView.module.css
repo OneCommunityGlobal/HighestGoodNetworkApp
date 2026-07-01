@@ -237,6 +237,19 @@
 /* DARK theme table */
 .darkTheme .itemsTableContainer {
   border: 1px solid #374151;
+
+  /* reactstrap <Table> sets --bs-table-color (#212529) on cells, which overrides
+     the inherited light text. Override the Bootstrap table CSS vars so all
+     body/header cell text is light and readable in dark mode. */
+  --bs-table-color: #e8edf4;
+  --bs-table-bg: transparent;
+  --bs-table-border-color: #374151;
+}
+
+/* Ensure cell text itself is light (defensive against --bs-table-color cascade) */
+.darkTheme .itemsTableContainer tbody td,
+.darkTheme .itemsTableContainer thead th {
+  color: #e8edf4;
 }
 
 .darkTheme .itemsTableContainer thead th {

@@ -7,7 +7,53 @@
 }
 
 .darkModeIssueFormContainer{
+  margin: 0 auto;
+  width: 100%;
+  padding: 5px;
+  background-color: #1b2a41;
   color: white;
+}
+
+.darkModeIssueFormContainer .subTitleText {
+  color: #9fc3d6;
+}
+
+.darkModeIssueFormContainer .issueTitleText {
+  color: #fff;
+}
+
+/* Form controls (select, date, textarea, text inputs) in dark mode */
+.darkModeIssueFormContainer .issueFormOverrideCss {
+  background-color: #2a3f5f;
+  border-color: #3a506b;
+  color: #fff;
+}
+
+.darkModeIssueFormContainer .issueFormOverrideCss::placeholder {
+  color: #b7c4d4;
+}
+
+/* Brighten native date-picker indicator so it is visible on dark input */
+.darkModeIssueFormContainer .issueDateInput::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
+/* Disabled "Other" textarea stays legible */
+.darkModeIssueFormContainer .issueFormOverrideCss:disabled {
+  background-color: #22344f;
+  color: #8fa3bd;
+}
+
+/* Character counter readable on dark background */
+.darkModeIssueFormContainer .characterCounterText {
+  color: #b7c4d4;
+}
+
+/* Cancel button: dark surface with light text in dark mode */
+.darkModeIssueFormContainer button.issueFormButtonCancel {
+  background-color: #14233a !important;
+  color: #9fc3d6 !important;
+  border-color: #9fc3d6 !important;
 }
 
 .redText {

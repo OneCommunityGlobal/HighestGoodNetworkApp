@@ -9,6 +9,7 @@ import AddTypeForm from './AddTypeForm';
 
 export default function AddEquipmentType() {
   const errors = useSelector(state => state.errors);
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [isError, setIsError] = useState(false);
   const [modal, setModal] = useState(false);
 
@@ -32,7 +33,10 @@ export default function AddEquipmentType() {
       <CheckTypesModal modal={modal} setModal={setModal} type="Equipments" />
       <header>
         <h2>Add Type: Equipment</h2>
-        <div className={`${styles.invFormInfo}`}>
+        <div
+          className={`${styles.invFormInfo}`}
+          style={darkMode ? { color: '#b7c4d4' } : undefined}
+        >
           <BsInfoCircle />
           Add a new type of equipment so it can be purchased and used in projects
         </div>

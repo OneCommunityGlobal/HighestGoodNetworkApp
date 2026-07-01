@@ -13,7 +13,7 @@ import styles from './BMError.module.css';
 
 export default function BMError({ errors }) {
   return (
-    <section>
+    <section className={`${styles.bmError}`}>
       <p className={`${styles.errorText}`}>
         <BiErrorCircle />
         There was an error processing your request:{' '}

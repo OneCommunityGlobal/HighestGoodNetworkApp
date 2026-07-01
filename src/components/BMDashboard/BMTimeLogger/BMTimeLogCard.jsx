@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { Container, Row, Col, InputGroup, Input } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import BMError from '../shared/BMError';
 import { fetchBMProjectMembers } from '../../../actions/bmdashboard/projectMemberAction';
 import BMTimeLogDisplayMember from './BMTimeLogDisplayMember';
 import BMTimeLogSummary from './BMTimeLogSummary';
+import styles from './BMTimeLogCard.module.css';
 
 function BMTimeLogCard(props) {
+  const darkMode = props.darkMode ?? false;
   const [isError, setIsError] = useState(false);
   const [memberList, setMemberList] = useState([]);
   const [isMemberFetched, setIsMemberFetched] = useState(false);
@@ -87,9 +90,9 @@ function BMTimeLogCard(props) {
   };
 
   return (
-    <Container fluid>
+    <Container fluid className={darkMode ? styles.darkMode : ''}>
       {/* Time Log Summary Section */}
-      <BMTimeLogSummary projectId={props.selectedProject} />
+      <BMTimeLogSummary projectId={props.selectedProject} darkMode={darkMode} />
 
       {isMemberFetched && (
         <>
@@ -143,5 +146,15 @@ function BMTimeLogCard(props) {
     </Container>
   );
 }
+
+BMTimeLogCard.propTypes = {
+  darkMode: PropTypes.bool,
+  selectedProject: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+};
+
+BMTimeLogCard.defaultProps = {
+  darkMode: false,
+  selectedProject: null,
+};
 
 export default BMTimeLogCard;

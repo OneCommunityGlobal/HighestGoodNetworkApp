@@ -60,6 +60,82 @@
   height: auto;
 }
 
+.logMaterialPageDark {
+  background-color: #1b2a41;
+}
+
+.logMaterialDark {
+  background-color: #2e5061;
+  color: #fff;
+}
+
+.logMaterialDark .logMaterialTitle {
+  color: #fff;
+}
+
+/* Outline "Cancel" button: bootstrap's grey text (#6c757d) is unreadable on the dark card */
+.logMaterialDark :global(.logMButtons.btn-outline-secondary) {
+  color: #cdd8e6;
+  border-color: #5a7a9b;
+}
+
+/* Inputs row (Date / Project labels) */
+.logMaterialDark :global(label) {
+  color: #fff;
+}
+
+/* Table text light, header bands darkened */
+.logMaterialDark .logMaterialTable {
+  color: #fff !important;
+}
+
+.logMaterialDark .logMaterialTable td,
+.logMaterialDark .logMaterialTable th {
+  color: #fff;
+}
+
+/* Bootstrap's row hover uses a light background; with white cell text that made
+   the hovered row unreadable. Force a dark highlight in dark mode. */
+.logMaterialDark .logMaterialTable {
+  --bs-table-hover-bg: #14233a;
+  --bs-table-hover-color: #fff;
+}
+
+.logMaterialDark .logMaterialTable tbody tr:hover > td,
+.logMaterialDark .logMaterialTable tbody tr:hover > th,
+.logMaterialDark .logMaterialTable tbody tr:focus-within > td {
+  background-color: #14233a !important;
+  color: #fff !important;
+}
+
+.logMaterialDark .logMTableHeaderLine {
+  background-color: #14233a;
+  border-bottom-color: #3a506b;
+  border-top-color: #3a506b;
+}
+
+.logMaterialDark .logMaterialTable :global(.table-light),
+.logMaterialDark .logMaterialTable :global(.table-light) > th,
+.logMaterialDark .logMaterialTable :global(.table-light) > td {
+  background-color: #14233a;
+  color: #fff;
+}
+
+.logMaterialDark .logMTableHead {
+  color: #4da8da;
+}
+
+/* Inputs/selects inside table & form */
+.logMaterialDark :global(.form-control) {
+  background-color: #2a3f5f;
+  border-color: #3a506b;
+  color: #fff;
+}
+
+.logMaterialDark :global(.form-control)::placeholder {
+  color: #b0b8c4;
+}
+
 
 .logMaterialTable {
   color: #a2a5aa !important;

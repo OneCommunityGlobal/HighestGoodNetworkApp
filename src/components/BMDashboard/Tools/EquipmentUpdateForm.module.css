@@ -13,6 +13,11 @@
   margin-bottom: 0.5rem;
 }
 
+.addToolFormDark {
+  background-color: #2e5061;
+  border-radius: 10px;
+}
+
 .addToolButtons {
   display: flex;
   justify-content: space-between;

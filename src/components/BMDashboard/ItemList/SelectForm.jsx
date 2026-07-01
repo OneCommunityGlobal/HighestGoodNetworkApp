@@ -4,6 +4,15 @@ import { useSelector } from 'react-redux';
 export default function SelectForm({ items, setSelectedProject, setSelectedItem }) {
   const darkMode = useSelector(state => state.theme.darkMode);
 
+  // In dark mode the native <select>/<option> default to a white background, which
+  // left the white option text invisible. Give them an explicit dark surface.
+  const darkControlStyle = darkMode
+    ? { color: 'white', backgroundColor: '#1e2632' }
+    : { color: 'inherit' };
+  const darkOptionStyle = darkMode
+    ? { color: 'white', backgroundColor: '#1e2632' }
+    : { color: 'inherit' };
+
   let projectsSet = [];
   if (items.length) {
     projectsSet = [...new Set(items.map(el => el.project?.name))];
@@ -26,21 +35,21 @@ export default function SelectForm({ items, setSelectedProject, setSelectedItem 
           type="select"
           onChange={handleChange}
           disabled={!items.length}
-          style={{ color: darkMode ? 'white' : 'inherit' }}
+          style={darkControlStyle}
         >
           {items.length ? (
             <>
-              <option value="all" style={{ color: darkMode ? 'white' : 'inherit' }}>
+              <option value="all" style={darkOptionStyle}>
                 All
               </option>
               {projectsSet.map(name => (
-                <option key={name} value={name} style={{ color: darkMode ? 'white' : 'inherit' }}>
+                <option key={name} value={name} style={darkOptionStyle}>
                   {name}
                 </option>
               ))}
             </>
           ) : (
-            <option style={{ color: darkMode ? 'white' : 'inherit' }}>No data</option>
+            <option style={darkOptionStyle}>No data</option>
           )}
         </Input>
       </FormGroup>
