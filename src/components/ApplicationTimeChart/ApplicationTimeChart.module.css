@@ -435,10 +435,22 @@
   padding-inline: 0.5rem;
 }
 
+.dateFilter {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+@media screen and (min-width: 768px) {
+  .dateFilter {
+    width: 200px;
+  }
+}
+
 .multiSelect {
   width: 100%;
   font-size: 0.8rem;
-  
+
   .react-select__value-container {
     border: 1px solid #dadce0;
   }
@@ -618,5 +630,155 @@
 }
 
 :global(.dark-mode) .applicationTimesRoleMultiSelect :global(.application-times-multi-select__clear-indicator:hover), :global(.dark-mode) .applicationTimesRoleMultiSelect :global(.application-times-multi-select__dropdown-indicator:hover) {
+  color: #ffffff;
+}
+
+
+/* Date filter*/
+
+.applicationTimesDateSelect :global(.application-times-date-select__control) {
+  min-height: 38px;
+  border: 1px solid #dadce0;
+  border-radius: 0.5rem;
+  background-color: #ffffff;
+  font-size: 0.8rem;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.applicationTimesDateSelect :global(.application-times-date-select__control:hover) {
+  border-color: #b0b8c1;
+}
+
+.applicationTimesDateSelect :global(.application-times-date-select__control--is-focused) {
+  border-color: #007bff;
+  box-shadow: 0 0 0 1px #007bff;
+}
+
+.applicationTimesDateSelect :global(.application-times-date-select__value-container) {
+  padding: 2px 8px;
+  color: #3c4043;
+}
+
+.applicationTimesDateSelect :global(.application-times-date-select__placeholder) {
+  color: #5f6368;
+}
+
+.applicationTimesDateSelect :global(.application-times-date-select__single-value) {
+  color: #3c4043;
+}
+
+.applicationTimesDateSelect :global(.application-times-date-select__indicator-separator) {
+  background-color: #dadce0;
+}
+
+.applicationTimesDateSelect :global(.application-times-date-select__dropdown-indicator) {
+  color: #5f6368;
+  transition: color 0.3s ease;
+}
+
+.applicationTimesDateSelect :global(.application-times-date-select__dropdown-indicator:hover) {
+  color: #007bff;
+}
+
+.applicationTimesDateSelect :global(.application-times-date-select__menu) {
+  background-color: #ffffff;
+  border: 1px solid #dadce0;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 8%);
+  color: #3c4043;
+  z-index: 10;
+}
+
+.applicationTimesDateSelect :global(.application-times-date-select__option) {
+  background-color: #ffffff;
+  color: #3c4043;
+  cursor: pointer;
+}
+
+.applicationTimesDateSelect :global(.application-times-date-select__option--is-focused) {
+  background-color: #f1f3f4;
+}
+
+.applicationTimesDateSelect :global(.application-times-date-select__option--is-selected) {
+  background-color: #007bff;
+  color: #ffffff;
+}
+
+.applicationTimesDateSelect :global(.application-times-date-select__option--is-focused.application-times-date-select__option--is-selected) {
+  background-color: #007bff;
+  color: #ffffff;
+}
+
+/* Date filter's Dark mode*/
+
+:global(.dark-mode) .applicationTimesDateSelect :global(.application-times-date-select__control) {
+  background-color: #1f2937;
+  border-color: #5a6c7d;
+  border-radius: 0.5rem;
+}
+
+:global(.dark-mode) .applicationTimesDateSelect :global(.application-times-date-select__control:hover) {
+  border-color: #7b8a9a;
+}
+
+:global(.dark-mode) .applicationTimesDateSelect :global(.application-times-date-select__control--is-focused) {
+  border-color: #007bff;
+  box-shadow: 0 0 0 1px #007bff;
+}
+
+:global(.dark-mode) .applicationTimesDateSelect :global(.application-times-date-select__value-container) {
+  color: #e0e0e0;
+}
+
+:global(.dark-mode) .applicationTimesDateSelect :global(.application-times-date-select__placeholder) {
+  color: #9ab0bb;
+}
+
+:global(.dark-mode) .applicationTimesDateSelect :global(.application-times-date-select__single-value) {
+  color: #ffffff;
+}
+
+:global(.dark-mode) .applicationTimesDateSelect :global(.application-times-date-select__input) {
+  color: #ffffff !important;
+}
+
+:global(.dark-mode) .applicationTimesDateSelect :global(.application-times-date-select__indicator-separator) {
+  background-color: #5a6c7d;
+}
+
+:global(.dark-mode) .applicationTimesDateSelect :global(.application-times-date-select__dropdown-indicator) {
+  color: #9ab0bb;
+}
+
+:global(.dark-mode) .applicationTimesDateSelect :global(.application-times-date-select__dropdown-indicator:hover) {
+  color: #ffffff;
+}
+
+:global(.dark-mode) .applicationTimesDateSelect :global(.application-times-date-select__menu) {
+  background-color: #1f2937;
+  border-color: #5a6c7d;
+  color: #ffffff;
+}
+
+:global(.dark-mode) .applicationTimesDateSelect :global(.application-times-date-select__option) {
+  background-color: #1f2937;
+  color: #e0e0e0;
+}
+
+:global(.dark-mode) .applicationTimesDateSelect :global(.application-times-date-select__option--is-focused) {
+  background-color: #374151;
+  color: #ffffff;
+}
+
+:global(.dark-mode) .applicationTimesDateSelect :global(.application-times-date-select__option--is-selected) {
+  background-color: #007bff;
+  color: #ffffff;
+}
+
+:global(.dark-mode) .applicationTimesDateSelect :global(.application-times-date-select__option--is-focused.application-times-date-select__option--is-selected) {
+  background-color: #007bff;
   color: #ffffff;
 }

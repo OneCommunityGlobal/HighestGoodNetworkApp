@@ -38,9 +38,8 @@ function ApplicationTimeChart() {
   // Get dark mode state from Redux
   const darkMode = useSelector(state => state.theme?.darkMode || false);
 
-  const handleDateChange = e => {
-    const option = DATE_FILTER_OPTIONS.find(option => option.value === e.target.value);
-    if (option) setSelectedDate(option);
+  const handleDateChange = selectedOption => {
+    if (selectedOption) setSelectedDate(selectedOption);
   };
 
   const handleRoleChange = selectedOptions => {
@@ -215,17 +214,17 @@ function ApplicationTimeChart() {
           {/* Dates Filter */}
           <div className={`${styles.dateFilter} ${darkMode ? styles.darkMode : ''}`}>
             <div className={`${styles.filterTitle} ${darkMode ? styles.darkMode : ''}`}>Date</div>
-            <select
-              value={selectedDate.value}
+            <Select
+              options={DATE_FILTER_OPTIONS}
+              value={selectedDate}
               onChange={handleDateChange}
-              className={`${styles.dateSelect} ${darkMode ? styles.darkMode : ''}`}
-            >
-              {DATE_FILTER_OPTIONS.map(option => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+              placeholder="Select date range…"
+              className={`${styles.applicationTimesDateSelect} ${
+                darkMode ? styles.selectDark : ''
+              }`}
+              classNamePrefix="application-times-date-select"
+              isSearchable={false}
+            />
           </div>
 
           {/* Role Filter */}
