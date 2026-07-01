@@ -552,6 +552,10 @@
   color: #d1d5db;
 }
 
+.darkMode .table th {
+  background-color: #1f2937;
+}
+
 .darkMode .tabsRow,
 .darkMode .heroMetaGrid,
 .darkMode .table th,
@@ -571,6 +575,16 @@
 
 .darkMode .heroPoster {
   background: #4b5563;
+}
+
+.darkMode .barTag {
+  background: #374151;
+  border-color: #4b5563;
+  color: #f9fafb;
+}
+
+.darkMode .metricCenterLabel {
+  color: #f9fafb;
 }
 
 @media (width <= 1100px) {

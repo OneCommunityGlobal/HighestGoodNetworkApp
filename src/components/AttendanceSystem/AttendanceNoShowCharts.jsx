@@ -146,8 +146,8 @@ function AttendanceNoShowCharts() {
   const attendanceRate = calculatePercentageValue(insights.totalAttended, insights.totalRegistered);
 
   const participationRate = calculatePercentageValue(
-    selectedEvent.completed || insights.totalAttended,
-    insights.totalRegistered,
+    selectedEvent.completed,
+    selectedEvent.registrations,
   );
 
   const popularityRate = calculatePercentageValue(
@@ -217,7 +217,21 @@ function AttendanceNoShowCharts() {
                 <Cell key={`${title}-${entry.name}`} fill={colors[index]} />
               ))}
             </Pie>
-            <Tooltip />
+            <Tooltip
+              offset={200}
+              contentStyle={{
+                backgroundColor: darkMode ? '#1f2937' : '#ffffff',
+                border: darkMode ? '1px solid #4b5563' : '1px solid #e5e7eb',
+                borderRadius: '6px',
+                color: darkMode ? '#f9fafb' : '#111827',
+              }}
+              itemStyle={{
+                color: darkMode ? '#f9fafb' : '#111827',
+              }}
+              labelStyle={{
+                color: darkMode ? '#f9fafb' : '#111827',
+              }}
+            />
           </PieChart>
         </ResponsiveContainer>
         <div className={styles.metricCenterLabel}>{title}</div>
