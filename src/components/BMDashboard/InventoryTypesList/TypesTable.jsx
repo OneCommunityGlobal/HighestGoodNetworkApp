@@ -1,5 +1,5 @@
-import { Table, Button, Modal, Form, Form } from 'react-bootstrap';
-import { connect, useDispatch } from 'react-redux';
+import { Table, Button, Modal, Form } from 'react-bootstrap';
+import { connect } from 'react-redux';
 import React, { useState } from 'react';
 import { addInvType } from '../../../actions/bmdashboard/invTypeActions';
 import TypeRow from './TypeRow';
@@ -9,7 +9,6 @@ import { toast } from 'react-toastify';
 
 export function TypesTable(props) {
   const { itemTypes, category, dispatch } = props;
-  const dispatch = useDispatch();
   const [modalState, setModalState] = useState({
     type: '',
     visible: false,
@@ -133,15 +132,11 @@ export function TypesTable(props) {
         <tbody>
           {itemTypes?.map((type, index) => (
             <TypeRow
-             
               key={type._id}
-             
               itemType={type}
-             
               id={index + 1}
               category={category}
               requiresUnit={requiresUnit}
-           
               onEdit={() => handleOpenEdit(type)}
               onDelete={() => handleOpenDelete(type)}
             />

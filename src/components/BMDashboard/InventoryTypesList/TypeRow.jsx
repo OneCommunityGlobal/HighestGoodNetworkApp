@@ -124,12 +124,12 @@ function TypeRow(props) {
       {requiresUnit && <td>{itemType.unit || '-'}</td>}
       {category === 'Equipments' && <td>{itemType.fuelType || '-'}</td>}
       <td>
-        <Button size="sm" className={styles.btnTypes} onClick={onEdit}>
+        <Button size="sm" className={styles.btnTypes} onClick={handleEdit}>
           Edit
         </Button>
       </td>
       <td>
-        <Button size="sm" className={styles.btnTypes} onClick={onDelete}>
+        <Button size="sm" className={styles.btnTypes} onClick={handleDelete}>
           Delete
         </Button>
       </td>
