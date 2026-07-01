@@ -401,7 +401,6 @@ const EditLinkModal = props => {
                     </p>
                   )}
                   {duplicateNameError && (
-                    
                     <p data-testid='duplicate-name-warning'
                       className={styles['invalid-help-context']}
                       >
