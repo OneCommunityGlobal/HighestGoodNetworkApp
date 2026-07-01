@@ -56,8 +56,11 @@ function ApplicationTimeChart() {
           .map(role => ({ label: role, value: role }));
 
         setAvailableRoles(options);
+        setError(null);
       } catch (error) {
-        console.error(`Error fetching roles: ${error}`);
+        setError('Failed to fetch roles');
+      } finally {
+        setInitialLoading(false);
       }
     };
 
@@ -73,8 +76,9 @@ function ApplicationTimeChart() {
         const url = ENDPOINTS.APPLICATION_TIME_DATA(startDate, roles);
         const response = await httpService.get(url);
         setData(response.data.data || []);
+        setError(null);
       } catch (error) {
-        console.error(error);
+        setError('Failed to fetch application times data');
       } finally {
         setInitialLoading(false);
       }
