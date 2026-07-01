@@ -720,7 +720,7 @@ export const ENDPOINTS = {
     let url = `${APIEndpoint}/analytics/application-time?`;
     if (startDate) url += `startDate=${encodeURIComponent(startDate)}&`;
     if (roles && roles.length > 0) url += `roles=${encodeURIComponent(roles.join(','))}`;
-    return url.slice(0, -1);
+    return url.slice(0);
   },
   APPLICATION_TIME_DATA_ROLES: `${APIEndpoint}/analytics/application-time/roles`,
 };
