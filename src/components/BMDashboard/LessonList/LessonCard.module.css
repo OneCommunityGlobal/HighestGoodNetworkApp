@@ -1,9 +1,148 @@
+/* Card Container */
 .lessonCard {
-  border: 2px solid #78bdda !important;
-  background-color: #fbfbfb !important;
+  border: 2px solid var(--border-color, #78bdda) !important;
+  background-color: var(--module-bg) !important;
   margin-bottom: 2rem;
   overflow: hidden;
 }
+
+/* Card Header */
+.lessonCardHeader {
+  background-color: var(--primary-bg, #78bdda) !important;
+  padding: 0.3rem 1.25rem !important;
+  color: var(--primary-text) !important;
+}
+
+/* Main Body */
+.lessonCardBody {
+  min-height: 20vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Expanded Scrollable Section */
+.scrollableCardBody {
+  max-height: 400px;
+  overflow-y: auto;
+  background-color: var(--module-bg) !important;
+  color: var(--module-text) !important;
+}
+
+/* Lesson Tags & File Text */
+.cardTagAndFile {
+  font-size: small;
+  color: var(--primary-text) !important;
+}
+
+.cardTagAndFile .tagItem {
+  display: inline-block;
+  margin-right: 5px;
+}
+
+/* Footer */
+.lessonCardFooter {
+  background-color: var(--module-bg) !important;
+  color: var(--module-text) !important;
+  display: flex;
+  justify-content: space-between;
+  font-size: small;
+  padding: 0.3rem 0.625rem !important;
+  border-top: unset !important;
+}
+
+.lessonCardFooterItems {
+  display: flex;
+  align-items: center;
+}
+
+.lessonCardFooterItems button {
+  padding: 5px;
+}
+
+/* Nav Section */
+.lessonCardNav {
+  display: flex;
+  color: var(--primary-text) !important;
+  height: 50px;
+  flex-direction: column;
+}
+
+.lessonCardNavItem {
+  font-size: small;
+}
+
+.navItemTitle {
+  font-weight: bold;
+  font-size: small;
+}
+
+.navTitleAndDate {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Editable Summary Buttons */
+.lessonSummary button {
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  background-color: var(--primary-bg);
+  color: var(--primary-text);
+  width: 80px;
+  margin-right: 5px;
+  font-size: 14px;
+}
+
+.lessonSummary textarea {
+  height: 10rem;
+  background-color: var(--module-bg);
+  color: var(--module-text);
+  border: 1px solid var(--border-color);
+}
+
+/* Scrollbar Styling */
+.scrollableCardBody::-webkit-scrollbar {
+  width: 4px;
+}
+
+.scrollableCardBody::-webkit-scrollbar-thumb {
+  background-color: var(--primary-bg);
+}
+
+/* Expand/Collapse Buttons */
+.expandLessons {
+  background-color: var(--module-bg) !important;
+  color: var(--module-text) !important;
+  padding: 5px;
+  font-size: small;
+  margin-bottom: 5px;
+  margin-right: 5px;
+  border-radius: 5px;
+  border: 1px solid var(--border-color);
+  transition: all 0.2s ease-in-out;
+}
+
+.expandLessons:hover {
+  background-color: #e2e2e2 !important;
+  color: #212529;
+}
+
+.validationError {
+  color: red;
+  font-size: small;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.editableLessonSummary.error {
+  border: 1px solid red;
+  background-color: #fff0f0;
+  color: #a00;
+}
+
+/* Responsive Layouts */
+@media (width <= 768px) {
+/* ================= DARK MODE (AFTER BASE) ================= */
 
 .darkCard {
   background-color: #1e1e1e !important;
@@ -13,7 +152,7 @@
 
 .darkCard .lessonCardHeader {
   background-color: #2a2a2a !important;
-  color: #ffffff !important;
+  color: #fff !important;
   border-bottom: 1px solid #333 !important;
 }
 
@@ -34,167 +173,30 @@
 
 .darkCard .lessonCardFooter {
   background-color: #2a2a2a !important;
-  color: #cccccc !important;
+  color: #ccc !important;
   border-top: 1px solid #333 !important;
 }
 
 .darkCard textarea.editable-lesson-summary {
   background-color: #2a2a2a !important;
-  color: #ffffff !important;
+  color: #fff !important;
   border: 1px solid #555 !important;
 }
 
-.lessonCardHeader {
-  background-color: #78bdda !important;
-  padding: 0.3rem 1.25rem !important;
+.darkExpandLessons {
+  background-color: #2c3e50 !important;
+  color: #e9ecef !important;
+  border: 1px solid #495057 !important;
 }
 
-.lessonCardBody {
-  min-height: 20vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+.darkExpandLessons:hover {
+  background-color: #34495e !important;
+  color: #f8f9fa !important;
 }
 
-.cardTagAndFile {
-  font-size: small;
-  color: #78bdda;
-}
+/* ================= RESPONSIVE ================= */
 
-.cardTagAndFile .tagItem {
-  display: inline-block;
-  margin-right: 5px;
-}
-
-.lessonCardHeader:first-child {
-  border-radius: 0 !important;
-}
-
-.lessonCardFooter {
-  background-color: #e8f4f9 !important;
-  display: flex;
-  justify-content: space-between;
-  font-size: small;
-  padding: 0.3rem 0.625rem !important;
-  border-top: unset !important;
-}
-
-.lessonCardFooter:last-child {
-  border-radius: 0 !important;
-}
-
-.lessonCardTag {
-  display: flex;
-  flex-direction: row;
-  margin-top: 10px;
-  max-height: 25px;
-  max-width: 1200px;
-  overflow-x: auto;
-}
-
-.scrollableCardBody {
-  max-height: 400px;
-  overflow-y: auto;
-}
-
-.footerItemsAuthorAndFrom {
-  margin-right: 5px;
-}
-
-.lessonCardFooterItems {
-  display: flex;
-  align-items: center;
-}
-
-.lessonCardFooterItems button {
-  padding: 5px;
-}
-
-.lessonCardNav {
-  display: flex;
-  color: white;
-  height: 50px;
-  flex-direction: column;
-}
-
-.lessonCardNavItem {
-  font-size: small;
-}
-
-.navItemTitle {
-  font-weight: bold;
-  font-size: small;
-}
-
-.navTitleAndDate {
-  display: flex;
-  justify-content: space-between;
-}
-
-.cardScrollable {
-  max-height: 300px;
-  overflow-y: auto;
-}
-
-.tagItem {
-  font-size: small;
-  white-space: nowrap;
-}
-
-.lessonFile {
-  font-size: small;
-}
-
-.lessonSummary button {
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  background-color: #e8f4f9;
-  width: 80px;
-  margin-right: 5px;
-  font-size: 14px;
-}
-
-.lessonSummary textarea {
-  height: 10rem;
-}
-
-.scrollableCardBody::-webkit-scrollbar {
-  width: 4px;
-}
-
-.scrollableCardBody::-webkit-scrollbar-thumb {
-  background-color: #ccc;
-  border-radius: 5px;
-}
-
-.cardTag::-webkit-scrollbar-horizontal {
-  width: 4px;
-}
-
-.expandLessons {
-  background-color: #f2f2f266 !important;
-  padding: 5px;
-  font-size: small;
-  margin-bottom: 5px;
-  color: #495057;
-  margin-right: 5px;
-  border-radius: 5px;
-}
-
-.validationError {
-  color: red;
-  font-size: small;
-  display: block;
-  margin-bottom: 10px;
-}
-
-.editableLessonSummary.error {
-  border: 1px solid red;
-  background-color: #fff0f0;
-  color: #a00;
-}
-
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .lessonCardFooter {
     flex-direction: column;
     align-items: flex-start;
@@ -202,16 +204,57 @@
 
   .lessonCardNav {
     height: auto;
-    display: flex;
     flex-direction: column;
   }
-
   .lessonCardFooterItems {
     justify-content: flex-start;
   }
 }
 
-@media (max-width: 570px) {
+@media (width <= 570px) {
+  .formSelectContainer {
+    flex-direction: column;
+  }
+  .cardFooter {
+    font-size: small;
+  }
+}
+
+@media (width <= 767px) {
+  .cardText {
+    padding: 10px;
+    font-size: small;
+  }
+}
+
+@media (width <= 859px) {
+  .navTitleAndDate {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media only screen and (width <= 600px) {
+  .nav {
+    height: auto;
+  }
+  .tagItem {
+    display: block;
+    margin-top: 5px;
+  }
+}
+
+@media (width <= 768px) {
+  .lessonFooter {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .footerItemsActions {
+    justify-content: flex-start;
+  }
+}
+
+@media (width <= 570px) {
   .formSelectContainer {
     flex-direction: column;
   }
@@ -221,21 +264,21 @@
   }
 }
 
-@media (max-width: 767px) {
+@media (width <= 767px) {
   .cardText {
     padding: 10px;
     font-size: small;
   }
 }
 
-@media (max-width: 859px) {
+@media (width <= 859px) {
   .navTitleAndDate {
     flex-direction: column;
     align-items: flex-start;
   }
 }
 
-@media only screen and (max-width: 600px) {
+@media (width <= 600px) {
   .nav {
     height: auto;
   }
@@ -245,14 +288,4 @@
     margin-top: 5px;
   }
 }
-
-@media (max-width: 768px) {
-  .lessonFooter {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .footerItemsActions {
-    justify-content: flex-start;
-  }
 }
