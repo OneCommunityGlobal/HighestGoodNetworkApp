@@ -159,16 +159,18 @@ function IssuesCharts({ bmProjects = [] }) {
             selected={dateRange.start}
             onChange={value => setDateRange(prev => ({ ...prev, start: value }))}
             placeholderText="Start date"
-            calendarClassName={darkMode ? styles.darkCalendar : ''}
+            calendarClassName={darkMode ? styles.darkCalendar : styles.lightCalendar}
             className={darkMode ? styles.dateDark : styles.dateInput}
+            isClearable
           />
           <span>to</span>
           <DatePicker
             selected={dateRange.end}
             onChange={value => setDateRange(prev => ({ ...prev, end: value }))}
             placeholderText="End date"
-            calendarClassName={darkMode ? styles.darkCalendar : ''}
+            calendarClassName={darkMode ? styles.darkCalendar : styles.lightCalendar}
             className={darkMode ? styles.dateDark : styles.dateInput}
+            isClearable
           />
         </div>
         <div className={styles.multiSelectWrapper}>

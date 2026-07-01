@@ -63,14 +63,16 @@ Issue Charts Module CSS
   font-size: 0.875rem;
 }
 
-/* Fix react-datepicker navigation arrow contrast */
-:global(.react-datepicker__navigation-icon::before) {
-  border-color: #555 !important;
-  border-width: 2px 2px 0 0 !important;
+/* Fix react-datepicker navigation arrow contrast — scoped via calendarClassName
+   so it isn't overridden by other components' global datepicker overrides
+   (the calendar renders in a portal, outside this module's DOM scope) */
+.lightCalendar :global(.react-datepicker__navigation-icon::before) {
+  border-color: #333 !important;
+  border-width: 3px 3px 0 0 !important;
 }
 
-:global(.react-datepicker__navigation:hover .react-datepicker__navigation-icon::before) {
-  border-color: #111 !important;
+.lightCalendar :global(.react-datepicker__navigation:hover .react-datepicker__navigation-icon::before) {
+  border-color: #000 !important;
 }
 
 /* Dark mode datepicker — scoped via calendarClassName prop */
