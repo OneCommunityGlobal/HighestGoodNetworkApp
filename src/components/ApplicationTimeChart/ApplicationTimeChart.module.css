@@ -616,3 +616,7 @@
 :global(.dark-mode) .applicationTimesRoleMultiSelect :global(.application-times-multi-select__option--is-focused.application-times-multi-select__option--is-selected) {
   background-color: #007bff;
 }
+
+:global(.dark-mode) .applicationTimesRoleMultiSelect :global(.application-times-multi-select__clear-indicator:hover), :global(.dark-mode) .applicationTimesRoleMultiSelect :global(.application-times-multi-select__dropdown-indicator:hover) {
+  color: #ffffff;
+}

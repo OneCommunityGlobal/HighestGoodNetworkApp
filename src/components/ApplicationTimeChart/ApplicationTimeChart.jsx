@@ -85,31 +85,28 @@ function ApplicationTimeChart() {
       try {
         // If every role is selected, treat it as no filter (URL helper
         // omits `roles=` when the array is empty).
-        const allRoleValues = availableRoles.map(r => r.value);
-        const selectedValues = selectedRoles.map(r => r.value);
-        const everySelected =
-          allRoleValues.length > 0 &&
-          selectedValues.length === allRoleValues.length &&
-          allRoleValues.every(v => selectedValues.includes(v));
-        const rolesToSend = everySelected ? [] : selectedValues;
+        // const allRoleValues = availableRoles.map(r => r.value);
+        // const selectedValues = selectedRoles.map(r => r.value);
+        // const everySelected =
+        //   allRoleValues.length > 0 &&
+        //   selectedValues.length === allRoleValues.length &&
+        //   allRoleValues.every(v => selectedValues.includes(v));
+        // const rolesToSend = everySelected ? [] : selectedValues;
+
+        const roles = selectedRoles.length > 0 ? selectedRoles.map(role => role.value) : [];
 
         const startDate = getStartDate(selectedDate.value);
-        const url = ENDPOINTS.APPLICATION_TIME_DATA(startDate, rolesToSend);
+        const url = ENDPOINTS.APPLICATION_TIME_DATA(startDate, roles);
         const response = await httpService.get(url);
         setData(response.data.data || []);
       } catch (error) {
         console.error(error);
       } finally {
-        // Only flip off the "Initial loading…" overlay on the very first
-        // successful load. Subsequent refetches must NOT unmount the chart
-        // because the unmount/remount cycle was closing the multi-select
-        // dropdown mid-interaction.
         setInitialLoading(false);
       }
     };
 
-    // Run only after roles have loaded; otherwise we'd fire two requests
-    // on first mount (one with [], another when availableRoles resolves).
+    // Run only after roles have loaded
     if (availableRoles.length > 0) {
       fetchApplicationTimes();
     }
