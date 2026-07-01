@@ -4,22 +4,41 @@ import SubmissionCard from './SubmissionCard';
 import styles from './TaskSubmissionsPage.module.css';
 import { FiChevronDown, FiChevronUp, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 
+const isLateSubmission = sub => {
+  const { submittedAt, dueAt } = sub;
+  return (
+    submittedAt &&
+    dueAt &&
+    !Number.isNaN(new Date(submittedAt).getTime()) &&
+    !Number.isNaN(new Date(dueAt).getTime()) &&
+    new Date(submittedAt) > new Date(dueAt)
+  );
+};
+
 const TaskSubmissionsPage = () => {
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeClassId, setActiveClassId] = useState('');
-  const [filterStatus, setFilterStatus] = useState('all');
+  const [filterStatus, setFilterStatus] = useState('submissions');
   const [expandedTasks, setExpandedTasks] = useState({});
 
   useEffect(() => {
     const fetchSubmissions = async () => {
       try {
         setLoading(true);
+        const params = (() => {
+          if (filterStatus === 'pending_submissions') return { status: 'pending submissions' };
+          if (filterStatus === 'graded') return { status: 'graded' };
+          return {};
+        })();
         const res = await axios.get(
           `${process.env.REACT_APP_APIENDPOINT}/educationportal/educator/task-submissions`,
+          { params },
         );
-        const fetchedSubmissions = res.data || [];
+        const rawSubmissions = res.data || [];
+        const fetchedSubmissions =
+          filterStatus === 'late' ? rawSubmissions.filter(isLateSubmission) : rawSubmissions;
         setSubmissions(fetchedSubmissions);
 
         if (fetchedSubmissions.length > 0) {
@@ -36,6 +55,9 @@ const TaskSubmissionsPage = () => {
           if (firstClassTasks.length > 0) {
             setExpandedTasks({ [firstClassTasks[0].taskName]: true });
           }
+        } else {
+          setActiveClassId('');
+          setExpandedTasks({});
         }
       } catch (err) {
         setError('Failed to load submissions. Please try again.');
@@ -44,7 +66,7 @@ const TaskSubmissionsPage = () => {
       }
     };
     fetchSubmissions();
-  }, []);
+  }, [filterStatus]);
 
   const groupedData = useMemo(() => {
     const data = {};
@@ -68,24 +90,6 @@ const TaskSubmissionsPage = () => {
   const activeClassTasks = useMemo(() => {
     return activeClassId ? groupedData[activeClassId]?.tasks || {} : {};
   }, [activeClassId, groupedData]);
-
-  const filteredTasks = useMemo(() => {
-    const filtered = {};
-    Object.entries(activeClassTasks).forEach(([taskName, subs]) => {
-      const filteredSubs = subs.filter(sub => {
-        const status = sub.status?.toLowerCase();
-        if (filterStatus === 'all') return true;
-        if (filterStatus === 'pending_review') return status === 'pending review';
-        if (filterStatus === 'graded') return status === 'graded';
-        return false;
-      });
-
-      if (filteredSubs.length > 0) {
-        filtered[taskName] = filteredSubs;
-      }
-    });
-    return filtered;
-  }, [activeClassTasks, filterStatus]);
 
   const handleExpand = taskName => {
     setExpandedTasks(prev => ({
@@ -148,9 +152,10 @@ const TaskSubmissionsPage = () => {
             className={styles.filterSelect}
             aria-label="Filter Submissions"
           >
-            <option value="all">All Submissions</option>
-            <option value="pending_review">Submissions Pending</option>
-            <option value="graded">Submissions Received</option>
+            <option value="submissions">Submissions</option>
+            <option value="pending_submissions">Pending submissions</option>
+            <option value="graded">Graded</option>
+            <option value="late">Late Submissions</option>
           </select>
           <FiChevronDown className={styles.filterIcon} />
         </div>
@@ -190,12 +195,12 @@ const TaskSubmissionsPage = () => {
       </div>
 
       <div className={styles.content}>
-        {Object.keys(filteredTasks).length === 0 ? (
+        {Object.keys(activeClassTasks).length === 0 ? (
           <div className={styles.noData}>
             <p>No submissions match the current filter.</p>
           </div>
         ) : (
-          Object.entries(filteredTasks).map(([taskName, subs]) => (
+          Object.entries(activeClassTasks).map(([taskName, subs]) => (
             <div key={taskName} className={styles.taskSection}>
               <div
                 className={styles.sectionHeader}

@@ -7,7 +7,7 @@
   position: relative;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
-  height: 150px;
+  min-height: 150px;
   display: flex;
   flex-direction: column;
   overflow: visible;
@@ -258,7 +258,7 @@
 
 @media (max-width: 1024px) {
   .card {
-    height: 145px;
+    min-height: 145px;
     padding: 16px;
   }
 

@@ -51,8 +51,9 @@ const SubmissionCard = ({ submission }) => {
         showBadge: true,
         badgeText: 'Graded',
         badgeClass: styles.gradedBadge,
-        cardClass: styles.gradedCard,
+        cardClass: isLate ? styles.lateCard : styles.gradedCard,
         icon: <FiCheck size={14} strokeWidth={3} />,
+        showLateSection: isLate,
       };
     }
 
@@ -60,26 +61,6 @@ const SubmissionCard = ({ submission }) => {
       return {
         showLateSection: true,
         cardClass: styles.lateCard,
-        showInfoIcon: true,
-        tooltipContent: (
-          <>
-            <span className={styles.tooltipTitle}>Late Submission</span>
-            <span className={styles.tooltipText}>
-              Submitted{' '}
-              {new Date(submittedAt).toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric',
-              })}{' '}
-              at{' '}
-              {new Date(submittedAt).toLocaleTimeString('en-US', {
-                hour: 'numeric',
-                minute: '2-digit',
-                hour12: true,
-              })}
-            </span>
-          </>
-        ),
       };
     }
 
