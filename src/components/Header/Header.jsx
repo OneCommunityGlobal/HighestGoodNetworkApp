@@ -55,7 +55,7 @@ import {
   SCHEDULE_MEETINGS,
 } from '../../languages/en/ui';
 import Logout from '../Logout/Logout';
-import '../../App.css';
+import '../../App.module.css';
 import './Header.css';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import {

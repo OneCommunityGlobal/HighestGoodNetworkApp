@@ -6,15 +6,26 @@ import Header from './Header';
 import { getHeaderData } from '../../actions/authActions';
 import { getAllRoles } from '../../actions/role';
 import hasPermission from '../../utils/permissions';
+import KIHeader from '../KitchenandInventory/KIHeader/KIHeader';
 
 export function HeaderRenderer(props) {
   const location = useLocation();
+  const isKitchenAndInventory = location.pathname.startsWith('/kitchenandinventory');
   const isCommunityPortal = location.pathname.startsWith('/communityportal');
-  
+  const isEducationEvaluation = location.pathname.startsWith('/educationportal/evaluation-results');
+
+  if (isEducationEvaluation) {
+    return null;
+  }
+
+  if (isKitchenAndInventory) {
+    // eslint-disable-next-line react/jsx-props-no-spreading
+    return <KIHeader {...props} />;
+  }
+
   // Header is already Redux-connected; CPHeader still needs props from this wrapper.
   return isCommunityPortal ? <CPHeader {...props} /> : <Header />;
 }
-
 
 const mapStateToProps = state => ({
   auth: state.auth,

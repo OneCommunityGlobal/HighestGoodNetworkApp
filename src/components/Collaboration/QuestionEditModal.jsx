@@ -2,15 +2,31 @@
 /* eslint-disable no-console */
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import './QuestionEditModal.css';
-import { v4 as uuidv4 } from 'uuid';
+import styles from './QuestionEditModal.module.css';
 
-function QuestionEditModal({ question, onSave, onCancel }) {
+let optionRowIdCounter = 0;
+
+const createOptionId = () => {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+  optionRowIdCounter += 1;
+  return `opt-${optionRowIdCounter}-${Date.now()}`;
+};
+
+const toOptionRows = options =>
+  (options || []).map(value => ({
+    id: createOptionId(),
+    value: value ?? '',
+  }));
+
+function QuestionEditModal({ question, onSave, onCancel, darkMode = false }) {
   const [editedQuestion, setEditedQuestion] = useState({
     ...question,
-
+    required: question.required || question.isRequired || false,
     options: question.options || [],
   });
+  const [optionRows, setOptionRows] = useState(() => toOptionRows(question.options));
 
   useEffect(() => {
     console.log('Current editedQuestion state:', editedQuestion);
@@ -20,9 +36,10 @@ function QuestionEditModal({ question, onSave, onCancel }) {
     // Update state when the question prop changes
     setEditedQuestion({
       ...question,
-
+      required: question.required || question.isRequired || false,
       options: question.options || [],
     });
+    setOptionRows(toOptionRows(question.options));
   }, [question]);
 
   const handleInputChange = e => {
@@ -40,6 +57,9 @@ function QuestionEditModal({ question, onSave, onCancel }) {
           editedQuestion.options && editedQuestion.options.length > 0
             ? editedQuestion.options
             : [''];
+        setOptionRows(toOptionRows(newOptions));
+      } else {
+        setOptionRows([]);
       }
 
       setEditedQuestion({
@@ -55,34 +75,25 @@ function QuestionEditModal({ question, onSave, onCancel }) {
     }
   };
 
-  const handleOptionsChange = (index, value) => {
-    // Always work with a copy of the options array
-    const newOptions = [...(editedQuestion.options || [])];
-    newOptions[index] = value;
+  const applyOptionRows = rows => {
+    setOptionRows(rows);
+    setEditedQuestion(prev => ({
+      ...prev,
+      options: rows.map(row => row.value),
+    }));
+  };
 
-    setEditedQuestion({
-      ...editedQuestion,
-      options: newOptions,
-    });
+  const handleOptionsChange = (optionId, value) => {
+    const next = optionRows.map(row => (row.id === optionId ? { ...row, value } : row));
+    applyOptionRows(next);
   };
 
   const addOption = () => {
-    // Always work with a copy of the options array
-    setEditedQuestion({
-      ...editedQuestion,
-      options: [...(editedQuestion.options || []), ''],
-    });
+    applyOptionRows([...optionRows, { id: createOptionId(), value: '' }]);
   };
 
-  const removeOption = index => {
-    // Always work with a copy of the options array
-    const newOptions = [...(editedQuestion.options || [])];
-    newOptions.splice(index, 1);
-
-    setEditedQuestion({
-      ...editedQuestion,
-      options: newOptions,
-    });
+  const removeOption = optionId => {
+    applyOptionRows(optionRows.filter(row => row.id !== optionId));
   };
 
   const handleSave = () => {
@@ -100,15 +111,20 @@ function QuestionEditModal({ question, onSave, onCancel }) {
       return;
     }
 
-    onSave(editedQuestion);
+    onSave({
+      ...editedQuestion,
+      required: Boolean(editedQuestion.required),
+      isRequired: Boolean(editedQuestion.required),
+      options: optionRows.map(row => row.value),
+    });
   };
 
   return (
-    <div className="question-edit-modal-overlay">
-      <div className="question-edit-modal">
+    <div className={`${styles.questionEditModalOverlay} ${darkMode ? styles.darkMode : ''}`}>
+      <div className={`${styles.questionEditModal} ${darkMode ? styles.darkMode : ''}`}>
         <h3>Edit Question</h3>
-        <div className="edit-form">
-          <div className="form-group">
+        <div className={`${styles.editForm}`}>
+          <div className={`${styles.formGroup}`}>
             <label htmlFor="label">Question Label:</label>
             <input
               type="text"
@@ -120,7 +136,7 @@ function QuestionEditModal({ question, onSave, onCancel }) {
             />
           </div>
 
-          <div className="form-group">
+          <div className={`${styles.formGroup}`}>
             <label htmlFor="type">Input Type:</label>
             <select
               id="type"
@@ -129,6 +145,7 @@ function QuestionEditModal({ question, onSave, onCancel }) {
               onChange={handleInputChange}
             >
               <option value="textbox">Text</option>
+              <option value="email">Email</option>
               <option value="textarea">Text Area</option>
               <option value="date">Date</option>
               <option value="dropdown">Dropdown</option>
@@ -137,7 +154,7 @@ function QuestionEditModal({ question, onSave, onCancel }) {
             </select>
           </div>
 
-          <div className="form-group">
+          <div className={`${styles.formGroup}`}>
             <label htmlFor="placeholder">Placeholder:</label>
             <input
               type="text"
@@ -148,7 +165,7 @@ function QuestionEditModal({ question, onSave, onCancel }) {
             />
           </div>
 
-          <div className="form-group">
+          <div className={`${styles.formGroup}`}>
             <label>
               <input
                 type="checkbox"
@@ -167,36 +184,36 @@ function QuestionEditModal({ question, onSave, onCancel }) {
 
           {/* Options for dropdown, radio, and checkbox types */}
           {['dropdown', 'radio', 'checkbox'].includes(editedQuestion.type) && (
-            <div className="form-group options-group">
-              <p className="options-label">Options:</p>
-              {(editedQuestion.options || []).map((option, index) => (
-                <div key={uuidv4()} className="option-row">
+            <div className={styles.optionsGroup}>
+              <p className={styles.optionsLabel}>Options:</p>
+              {optionRows.map((row, index) => (
+                <div key={row.id} className={styles.optionRow}>
                   <input
                     type="text"
-                    value={option}
-                    onChange={e => handleOptionsChange(index, e.target.value)}
+                    value={row.value}
+                    onChange={e => handleOptionsChange(row.id, e.target.value)}
                     placeholder={`Option ${index + 1}`}
                   />
                   <button
                     type="button"
-                    onClick={() => removeOption(index)}
-                    className="remove-option-button"
+                    onClick={() => removeOption(row.id)}
+                    className={`${styles.removeOptionButton}`}
                   >
                     ×
                   </button>
                 </div>
               ))}
-              <button type="button" onClick={addOption} className="add-option-button">
+              <button type="button" onClick={addOption} className={`${styles.addOptionButton}`}>
                 Add Option
               </button>
             </div>
           )}
 
-          <div className="modal-buttons">
-            <button type="button" onClick={handleSave} className="save-button">
+          <div className={styles.modalButtons}>
+            <button type="button" onClick={handleSave} className={styles.saveButton}>
               Save Changes
             </button>
-            <button type="button" onClick={onCancel} className="cancel-button">
+            <button type="button" onClick={onCancel} className={styles.cancelButton}>
               Cancel
             </button>
           </div>
@@ -212,10 +229,12 @@ QuestionEditModal.propTypes = {
     type: PropTypes.string,
     options: PropTypes.arrayOf(PropTypes.string),
     required: PropTypes.bool,
+    isRequired: PropTypes.bool,
     placeholder: PropTypes.string,
   }).isRequired,
   onSave: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired,
+  darkMode: PropTypes.bool,
 };
 
 export default QuestionEditModal;

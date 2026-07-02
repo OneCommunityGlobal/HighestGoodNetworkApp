@@ -1,5 +1,5 @@
-import Loading from '~/components/common/Loading';
-import './PopUpBar.css';
+import Loading from '../common/Loading';
+import styles from './PopUpBar.module.css';
 
 function PopUpBar({
   firstName = window.viewingUser?.firstName,
@@ -17,21 +17,27 @@ function PopUpBar({
 
   const displayText = message ?? defaultTemplate;
 
+  const containerClass = [
+    styles.popupContainer,
+    textColor === 'black_text' ? styles.blackText : '',
+    isMeetingNotification ? styles.meetingNotification : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+
   return (
     <div
-      className={`popup_container${textColor === 'black_text' ? ' black_text' : ''}${
-        isMeetingNotification ? ' meeting_notification' : ''
-      }`}
+      className={containerClass}
       data-testid="test-popup"
       style={textColor === 'black_text' ? undefined : { color: textColor }}
     >
       {isLoading ? (
         <Loading />
       ) : (
-        <p className="popup_message" dangerouslySetInnerHTML={{ __html: displayText }}></p>
+        <p className={styles.popupMessage} dangerouslySetInnerHTML={{ __html: displayText }} />
       )}
       {button && (
-        <button type="button" className="close_button" onClick={onClickClose}>
+        <button type="button" className={styles.closeButton} onClick={onClickClose}>
           X
         </button>
       )}

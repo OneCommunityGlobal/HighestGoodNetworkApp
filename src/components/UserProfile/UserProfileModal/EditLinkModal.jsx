@@ -11,13 +11,14 @@ import {
 } from 'reactstrap';
 import PropTypes from 'prop-types';
 import hasPermission from '../../../utils/permissions';
-import './EditLinkModal.css';
+import styles from './EditLinkModal.module.css';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { connect, useSelector } from 'react-redux';
 import { isValidGoogleDocsUrl, isValidMediaUrl } from '~/utils/checkValidURL';
+import { toast } from 'react-toastify';
 
 const EditLinkModal = props => {
-  const darkMode = useSelector(state => state.theme.darkMode)
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const { isOpen, closeModal, updateLink, userProfile, handleSubmit } = props;
   const canManageAdminLinks = props.hasPermission('manageAdminLinks');
@@ -44,8 +45,8 @@ const EditLinkModal = props => {
   const [adminLinks, setAdminLinks] = useState(
     userProfile.adminLinks
       ? userProfile.adminLinks
-        .filter(link => link.Name !== 'Google Doc')
-        .filter(link => link.Name !== 'Media Folder')
+          .filter(link => link.Name !== 'Google Doc')
+          .filter(link => link.Name !== 'Media Folder')
       : [],
   );
   const [personalLinks, setPersonalLinks] = useState(
@@ -72,22 +73,22 @@ const EditLinkModal = props => {
     setIsChanged(true);
   };
 
-  const handleMediaFolderLinkChanges = (e) => {
+  const handleMediaFolderLinkChanges = e => {
     if (!mediaFolderLink.Link) {
       // Prevent warning popup appear if empty media folder link
       setIsMediaFolderLinkChanged(true);
       setMediaFolderLink({ ...mediaFolderLink, Link: e.target.value.trim() });
       setIsChanged(true);
-    }
-    else {
+    } else {
       setMediaFolderLink({ ...mediaFolderLink, Link: e.target.value.trim() });
       setIsChanged(true);
-      if (!isMediaFolderLinkChanged && !isWarningPopupOpen) { // First time media folder link is changed
+      if (!isMediaFolderLinkChanged && !isWarningPopupOpen) {
+        // First time media folder link is changed
         setIsMediaFolderLinkChanged(true);
         setIsWarningPopupOpen(true);
       }
     }
-  }
+  };
 
   const addNewLink = (links, setLinks, newLink, clearInput) => {
     if (
@@ -140,6 +141,7 @@ const EditLinkModal = props => {
       const pattern = /^(?:https?:\/\/)?[\w.-]+\.[a-zA-Z]{2,}(?:\/\S*)?$/;
       return pattern.test(url);
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.log(err);
       return false;
     }
@@ -157,11 +159,11 @@ const EditLinkModal = props => {
       setIsValidLink(true);
       setIsChanged(false);
       closeModal();
+      toast.success('Link added successfully');
     } else {
       setIsValidLink(false);
     }
   };
-
 
   useEffect(() => {
     isDifferentMediaUrl();
@@ -170,12 +172,11 @@ const EditLinkModal = props => {
   useEffect(() => {
     if (userProfile.adminLinks) {
       setGoogleLink(
-        userProfile.adminLinks.find(link => link.Name === 'Google Doc')
-        || initialAdminLinkState[0],
+        userProfile.adminLinks.find(link => link.Name === 'Google Doc') || initialAdminLinkState[0],
       );
       setMediaFolderLink(
-        userProfile.adminLinks.find(link => link.Name === 'Media Folder')
-        || initialAdminLinkState[1],
+        userProfile.adminLinks.find(link => link.Name === 'Media Folder') ||
+          initialAdminLinkState[1],
       );
       setAdminLinks(
         userProfile.adminLinks
@@ -188,15 +189,25 @@ const EditLinkModal = props => {
   return (
     <React.Fragment>
       <Modal isOpen={isOpen} toggle={closeModal} className={darkMode ? 'text-light dark-mode' : ''}>
-        <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closeModal}>Edit Links</ModalHeader>
+        <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closeModal}>
+          Edit Links
+        </ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           <div>
             {canManageAdminLinks && (
               <CardBody>
                 <Card style={{ padding: '16px' }} className={darkMode ? 'bg-yinmn-blue' : ''}>
-                  <Label style={{ display: 'flex', margin: '5px' }} className={darkMode ? 'text-light' : ''}>Admin Links:</Label>
+                  <Label
+                    style={{ display: 'flex', margin: '5px' }}
+                    className={darkMode ? 'text-light' : ''}
+                  >
+                    Admin Links:
+                  </Label>
                   {mediaFolderDiffWarning && (
-                    <span className="warning-help-context" data-testid="diff-media-url-warning" >
+                    <span
+                      className={`${styles['warning-help-context']}`}
+                      data-testid="diff-media-url-warning"
+                    >
                       <strong>Media Folder link must be a working DropBox link</strong>
                       <p>
                         Current Media URL: <a href={userProfile.mediaUrl}>{userProfile.mediaUrl}</a>
@@ -204,11 +215,19 @@ const EditLinkModal = props => {
                     </span>
                   )}
                   <div>
-                    <div style={{ display: 'flex', margin: '5px' }} className="link-fields">
-                      <label className={`custom-label ${darkMode ? 'text-light' : ''}`} htmlFor='google-doc-link' >Google Doc</label>
+                    <div
+                      style={{ display: 'flex', margin: '5px' }}
+                      className={`${styles['link-fields']}`}
+                    >
+                      <label
+                        className={`${styles['custom-label']} ${darkMode ? 'text-light' : ''}`}
+                        htmlFor="google-doc-link"
+                      >
+                        Google Doc
+                      </label>
                       <input
-                        id='google-doc-link'
-                        className="customEdit"
+                        id="google-doc-link"
+                        className={styles.customEdit}
                         placeholder="Enter Google Doc link"
                         value={googleLink.Link}
                         onChange={e => {
@@ -217,15 +236,24 @@ const EditLinkModal = props => {
                         }}
                       />
                     </div>
-                    <div style={{ display: 'flex', margin: '5px' }} className="link-fields">
-
-                      <label className={`custom-label ${darkMode ? 'text-light' : ''}`} htmlFor='media-folder-link' >Media Folder</label>
+                    <div
+                      style={{ display: 'flex', margin: '5px' }}
+                      className={`${styles['link-fields']}`}
+                    >
+                      <label
+                        className={`${styles['custom-label']} ${darkMode ? 'text-light' : ''}`}
+                        htmlFor="media-folder-link"
+                      >
+                        Media Folder
+                      </label>
                       <input
-                        className="customEdit"
+                        className={styles.customEdit}
                         id="media-folder-link"
                         placeholder="Enter Dropbox link"
                         value={mediaFolderLink.Link}
-                        onChange={e => { handleMediaFolderLinkChanges(e) }}
+                        onChange={e => {
+                          handleMediaFolderLinkChanges(e);
+                        }}
                       />
                     </div>
                     {adminLinks?.map((link, index) => {
@@ -233,23 +261,23 @@ const EditLinkModal = props => {
                         <div
                           key={index}
                           style={{ display: 'flex', margin: '5px' }}
-                          className="link-fields"
+                          className={`${styles['link-fields']}`}
                         >
                           <input
-                            className="customInput"
+                            className={styles.customInput}
                             value={link.Name}
                             onChange={e => handleNameChanges(e, adminLinks, index, setAdminLinks)}
                             placeholder="Link Name"
                           />
                           <input
-                            className="customInput"
+                            className={styles.customInput}
                             value={link.Link}
                             onChange={e => handleLinkChanges(e, adminLinks, index, setAdminLinks)}
                             placeholder="Link URL"
                           />
                           <button
                             type="button"
-                            className="closeButton"
+                            className={styles.closeButton}
                             color="danger"
                             onClick={() =>
                               removeLink(adminLinks, setAdminLinks, {
@@ -264,12 +292,15 @@ const EditLinkModal = props => {
                       );
                     })}
                     <div style={{ display: 'flex', margin: '5px' }}>
-                      <div className="customTitle">+ ADD LINK:</div>
+                      <div className={styles.customTitle}>+ ADD LINK:</div>
                     </div>
 
-                    <div style={{ display: 'flex', margin: '5px' }} className="link-fields new-admin-links">
+                    <div
+                      style={{ display: 'flex', margin: '5px' }}
+                      className={`${styles['link-fields']} new-admin-links`}
+                    >
                       <input
-                        className="customEdit"
+                        className={styles.customEdit}
                         id="linkName"
                         placeholder="enter name"
                         value={newAdminLink.Name}
@@ -279,7 +310,7 @@ const EditLinkModal = props => {
                         }}
                       />
                       <input
-                        className="customEdit"
+                        className={styles.customEdit}
                         id="linkURL"
                         placeholder="enter link"
                         value={newAdminLink.Link}
@@ -291,8 +322,8 @@ const EditLinkModal = props => {
 
                       <button
                         type="button"
-                        className="addButton"
-                        aria-label='add-admin-link-button'
+                        className={styles.addButton}
+                        aria-label="add-admin-link-button"
                         onClick={() => {
                           addNewLink(adminLinks, setAdminLinks, newAdminLink, () =>
                             setNewAdminLink(emptyLink),
@@ -308,29 +339,34 @@ const EditLinkModal = props => {
             )}
             <CardBody>
               <Card style={{ padding: '16px' }} className={darkMode ? 'bg-yinmn-blue' : ''}>
-                <Label style={{ display: 'flex', margin: '5px' }} className={darkMode ? 'text-light' : ''}>Personal Links:</Label>
+                <Label
+                  style={{ display: 'flex', margin: '5px' }}
+                  className={darkMode ? 'text-light' : ''}
+                >
+                  Personal Links:
+                </Label>
                 <div>
                   {personalLinks.map((link, index) => (
                     <div
                       key={index}
                       style={{ display: 'flex', margin: '5px' }}
-                      className="link-fields"
+                      className={`${styles['link-fields']}`}
                     >
                       <input
-                        className="customInput"
+                        className={styles.customInput}
                         value={link.Name}
                         onChange={e => handleNameChanges(e, personalLinks, index, setPersonalLinks)}
                       />
                       <input
-                        className="customInput"
+                        className={styles.customInput}
                         value={link.Link}
                         onChange={e => handleLinkChanges(e, personalLinks, index, setPersonalLinks)}
                       />
                       <button
                         type="button"
-                        className="closeButton"
+                        className={styles.closeButton}
                         color="danger"
-                        aria-label='add-personal-link-button'
+                        aria-label="add-personal-link-button"
                         onClick={() =>
                           removeLink(personalLinks, setPersonalLinks, {
                             name: link.Name,
@@ -344,12 +380,15 @@ const EditLinkModal = props => {
                   ))}
 
                   <div style={{ display: 'flex', margin: '5px' }}>
-                    <div className="customTitle">+ ADD LINK:</div>
+                    <div className={styles.customTitle}>+ ADD LINK:</div>
                   </div>
 
-                  <div style={{ display: 'flex', margin: '5px' }} className="link-fields">
+                  <div
+                    style={{ display: 'flex', margin: '5px' }}
+                    className={`${styles['link-fields']}`}
+                  >
                     <input
-                      className="customEdit me-3"
+                      className={`${styles['customEdit']} me-3`}
                       placeholder="enter name"
                       value={newPersonalLink.Name}
                       onChange={e => {
@@ -359,7 +398,7 @@ const EditLinkModal = props => {
                       }}
                     />
                     <input
-                      className="customEdit"
+                      className={styles.customEdit}
                       placeholder="enter link"
                       value={newPersonalLink.Link}
                       onChange={e => {
@@ -370,7 +409,7 @@ const EditLinkModal = props => {
                     />
                     <button
                       type="button"
-                      className="addButton"
+                      className={styles.addButton}
                       onClick={() => {
                         addNewLink(personalLinks, setPersonalLinks, newPersonalLink, () =>
                           setNewPersonalLink(emptyLink),
@@ -383,7 +422,10 @@ const EditLinkModal = props => {
                 </div>
               </Card>
               {!isValidLink && (
-                <p className='invalid-help-context' data-testid='invalid-url-warning' >
+                <p
+                  className={`${styles['invalid-help-context']}`}
+                  data-testid="invalid-url-warning"
+                >
                   Please enter valid URLs for each link.
                 </p>
               )}
@@ -407,32 +449,47 @@ const EditLinkModal = props => {
               setIsMediaFolderLinkChanged(false);
               setMediaFolderLink({ ...mediaFolderLink, Link: originalMediaFolderLink.current });
               closeModal();
-            }
-            }
-            style={darkMode ? boxStyleDark : boxStyle}>
+            }}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
             Cancel
           </Button>
         </ModalFooter>
 
-        <Modal data-testid='popup-warning' isOpen={isWarningPopupOpen} toggle={() => setIsWarningPopupOpen(!isWarningPopupOpen)} className={darkMode ? 'text-light dark-mode' : ''}>
+        <Modal
+          data-testid="popup-warning"
+          isOpen={isWarningPopupOpen}
+          toggle={() => setIsWarningPopupOpen(!isWarningPopupOpen)}
+          className={darkMode ? 'text-light dark-mode' : ''}
+        >
           <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>Warning!</ModalHeader>
           <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-            Whoa Tiger, don’t do this! This link was added by an Admin when you were set up in the system. It is used by the Admin Team and your Manager(s) for reviewing your work. You should only change it if you are ABSOLUTELY SURE the one you are changing it to is more correct than the one here already.
+            Whoa Tiger, don’t do this! This link was added by an Admin when you were set up in the
+            system. It is used by the Admin Team and your Manager(s) for reviewing your work. You
+            should only change it if you are ABSOLUTELY SURE the one you are changing it to is more
+            correct than the one here already.
           </ModalBody>
           <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-            <Button color='primary' onClick={() => { setIsWarningPopupOpen(!isWarningPopupOpen) }}>Confirm</Button>
+            <Button
+              color="primary"
+              onClick={() => {
+                setIsWarningPopupOpen(!isWarningPopupOpen);
+              }}
+            >
+              Confirm
+            </Button>
             {/* Cancel button put original Media Folder link into the input */}
-            <Button onClick={() => {
-              setIsWarningPopupOpen(!isWarningPopupOpen);
-              setIsMediaFolderLinkChanged(false);
-              setMediaFolderLink({ ...mediaFolderLink, Link: originalMediaFolderLink.current });
-            }}
+            <Button
+              onClick={() => {
+                setIsWarningPopupOpen(!isWarningPopupOpen);
+                setIsMediaFolderLinkChanged(false);
+                setMediaFolderLink({ ...mediaFolderLink, Link: originalMediaFolderLink.current });
+              }}
             >
               Cancel
             </Button>
           </ModalFooter>
         </Modal>
-
       </Modal>
     </React.Fragment>
   );

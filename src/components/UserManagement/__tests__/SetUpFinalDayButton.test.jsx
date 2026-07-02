@@ -1,150 +1,88 @@
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
-import { toast } from 'react-toastify';
-import '@testing-library/jest-dom/extend-expect';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { configureStore } from 'redux-mock-store';
 import { Provider } from 'react-redux';
-import axios from 'axios';
-import { themeMock } from '../../../__tests__/mockStates';
+import { vi } from 'vitest';
+
 import SetUpFinalDayButton from '../SetUpFinalDayButton';
 import { SET_FINAL_DAY, CANCEL } from '../../../languages/en/ui';
-// import { updateUserFinalDayStatus } from '../../../actions/userManagement.js';
+import { themeMock } from '../../../__tests__/mockStates';
 
-vi.mock('axios');
+import {
+  activateUserAction,
+  scheduleDeactivationAction,
+} from '../../../actions/userLifecycleActions';
 
-const mockToastSuccess = vi.fn();
-
-beforeAll(() => {
-  vi.spyOn(toast, 'success').mockImplementation(mockToastSuccess);
-});
+vi.mock('../../../actions/userLifecycleActions', () => ({
+  activateUserAction: vi.fn(),
+  scheduleDeactivationAction: vi.fn(),
+}));
 
 const mockStore = configureStore();
 
-// const userProfileUrl = ENDPOINTS.USER_PROFILE(mockState.auth.user.userid);
-
 describe('SetUpFinalDayButton', () => {
-  const store = mockStore({
-    theme: themeMock,
+  let store;
+  const loadUserProfile = vi.fn();
+
+  beforeEach(() => {
+    store = mockStore({});
+    vi.clearAllMocks();
   });
-  const renderSetUpFinalDayButton = ({ userProfile, loadUserProfile, isBigBtn, darkMode }) => {
+
+  const renderComponent = (props) =>
     render(
       <Provider store={store}>
-        <SetUpFinalDayButton
-          userProfile={userProfile}
-          loadUserProfile={loadUserProfile}
-          isBigBtn={isBigBtn}
-          darkMode={darkMode}
-        />
+        <SetUpFinalDayButton {...props} />
       </Provider>
     );
-  };
-  
 
-  describe('useEffect tests', () => {
-    let props;
-
-    it(`If user profile end date is not set, then button text is ${SET_FINAL_DAY}`, () => {
-      props.userProfile.endDate = undefined;
-      renderSetUpFinalDayButton(props);
-
-      // Renders with SET_FINAL_DAY text
-      expect(screen.getByText(SET_FINAL_DAY)).toBeInTheDocument();
+  it(`shows "${SET_FINAL_DAY}" when hasFinalDay is false`, () => {
+    renderComponent({
+      userProfile: { _id: '1' },
+      loadUserProfile,
+      hasFinalDay: false,
+      darkMode: themeMock.darkMode,
     });
 
-    it(`If user profile end date is set, then button text is ${CANCEL}`, () => {
-      renderSetUpFinalDayButton(props);
-
-      // Renders with CANCEL text
-      expect(screen.getByText(CANCEL)).toBeInTheDocument();
-    });
-
-    beforeEach(() => {
-      props = {
-        userProfile: {
-          endDate: 'mockEndDate',
-        },
-        loadUserProfile: vi.fn(),
-        isBigBtn: true,
-        darkMode: themeMock.darkMode,
-      };
-    });
+    expect(screen.getByText(SET_FINAL_DAY)).toBeInTheDocument();
   });
 
-  describe('onFinalDayClick tests ', () => {
-    let props;
-
-    const finalDayDeletedMessage = "This user's final day has been deleted.";
-    it(`If isSet is true, then an alert will appear with message: ${finalDayDeletedMessage}`, async () => {
-      renderSetUpFinalDayButton(props);
-      const mockedResponse = { data: { status: 200 } };
-      axios.patch.mockResolvedValue(mockedResponse);
-
-      const cancelFinalDayButton = screen.getByText(CANCEL);
-      fireEvent.click(cancelFinalDayButton);
-
-      // Clicking CANCEL button calls final day deleted toast
-      waitFor(() => {
-        expect(mockToastSuccess).toHaveBeenCalledWith(finalDayDeletedMessage);
-      });
+  it(`shows "${CANCEL}" when hasFinalDay is true`, () => {
+    renderComponent({
+      userProfile: { _id: '1' },
+      loadUserProfile,
+      hasFinalDay: true,
+      darkMode: themeMock.darkMode,
     });
 
-    it('If isSet is false then SetUpFinalDayPopUp will be present', async () => {
-      props.userProfile.endDate = undefined;
+    expect(screen.getByText(CANCEL)).toBeInTheDocument();
+  });
 
-      renderSetUpFinalDayButton(props);
-      fireEvent.click(screen.getByText(SET_FINAL_DAY));
-      const setYourFinalDayElement = await screen.findByText('Set Your Final Day');
-
-      // Clicking SET_FINAL_DAY button causes popup to appear
-      await waitFor(() => expect(setYourFinalDayElement).toBeInTheDocument());
+  it('opens SetUpFinalDayPopUp when clicking SET_FINAL_DAY', async () => {
+    renderComponent({
+      userProfile: { _id: '1' },
+      loadUserProfile,
+      hasFinalDay: false,
+      darkMode: themeMock.darkMode,
     });
 
-    it('setUpFinalDayPopupClose should close SetUpFinalDayPopUp', async () => {
-      props.userProfile.endDate = undefined;
+    await userEvent.click(screen.getByText(SET_FINAL_DAY));
 
-      renderSetUpFinalDayButton(props);
-      fireEvent.click(screen.getByText(SET_FINAL_DAY));
-      const setYourFinalDayElement = await screen.findByText('Set Your Final Day');
-      // Popup is open
-      await waitFor(() => expect(setYourFinalDayElement).toBeInTheDocument());
+    expect(
+      screen.getByText(/set user's final day/i)
+    ).toBeInTheDocument();
+  });
 
-      const closeFinalDayPopup = screen.getByText('Close');
-      fireEvent.click(closeFinalDayPopup);
-
-      // Clicking close on popup closes it (popup uses function defined in button element)
-      await waitFor(() => expect(setYourFinalDayElement).not.toBeInTheDocument());
+  it('calls activateUserAction when clicking CANCEL', async () => {
+    renderComponent({
+      userProfile: { _id: '1' },
+      loadUserProfile,
+      hasFinalDay: true,
+      darkMode: themeMock.darkMode,
     });
 
-    const finalDaySetMessage = "This user's final day has been set.";
-    it(`When deactiveUser is called by child component, popup should close and alert will appear with following text: ${finalDaySetMessage}`, async () => {
-      props.userProfile.endDate = undefined;
+    await userEvent.click(screen.getByText(CANCEL));
 
-      renderSetUpFinalDayButton(props);
-      fireEvent.click(screen.getByText(SET_FINAL_DAY));
-      // Popup is open
-      const setYourFinalDayElement = await screen.findByText('Set Your Final Day');
-      await waitFor(() => expect(setYourFinalDayElement).toBeInTheDocument());
-
-      const dateInput = screen.getByTestId('date-input');
-      fireEvent.change(dateInput, { target: { value: '12-07-2019' } });
-      const saveFinalDayPopup = screen.getByText('Save');
-      fireEvent.click(saveFinalDayPopup);
-
-      // When final day is set, expect toast to be called with appropriate message
-      waitFor(() => {
-        expect(mockToastSuccess).toHaveBeenCalledWith(finalDaySetMessage);
-      });
-    });
-
-    beforeEach(() => {
-      props = {
-        userProfile: {
-          endDate: '20210311',
-          _id: '1',
-        },
-        loadUserProfile: vi.fn().mockReturnValueOnce(200),
-        isBigBtn: true,
-        darkMode: themeMock.darkMode,
-      };
-    });
+    expect(activateUserAction).toHaveBeenCalledTimes(1);
   });
 });

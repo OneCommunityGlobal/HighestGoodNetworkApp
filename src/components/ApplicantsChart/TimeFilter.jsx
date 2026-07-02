@@ -1,40 +1,46 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import styles from './ApplicationChart.module.css';
 
-function TimeFilter({ onFilterChange }) {
+function TimeFilter({ onFilterChange, darkMode }) {
   const [selectedOption, setSelectedOption] = useState('weekly');
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [error, setError] = useState('');
+  const prevOptionRef = useRef(selectedOption); // To track previous selected filter option
 
   useEffect(() => {
-    onFilterChange({ selectedOption, startDate, endDate });
+    if (selectedOption === 'custom' && prevOptionRef.current !== 'custom') {
+      // Reset custom dates when switching to custom
+      setStartDate(null);
+      setEndDate(null);
+    }
+
+    if (selectedOption === 'custom' && startDate && endDate) {
+      if (startDate > endDate) {
+        setError('Start date cannot be after end date.');
+      } else {
+        setError('');
+      }
+    } else {
+      setError('');
+    }
+
+    // Updated parent with current filter state
+    onFilterChange({ selectedOption, startDate, endDate, error: '' });
+
+    prevOptionRef.current = selectedOption; // Updatse previous option
   }, [selectedOption, startDate, endDate]);
+  // Removed onFilterChange from dependencies
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        gap: '16px',
-        margin: '20px auto',
-        flexWrap: 'wrap',
-      }}
-    >
-      <label htmlFor="timeFilterSelect" style={{ fontWeight: 500 }}>
-        Time Filter:
-      </label>
+    <div className={`${styles.TimeFilter}`}>
+      <label htmlFor="timeFilterSelect">Time Filter:</label>
       <select
         id="timeFilterSelect"
         value={selectedOption}
         onChange={e => setSelectedOption(e.target.value)}
-        style={{
-          padding: '6px 12px',
-          borderRadius: '4px',
-          border: '1px solid #ccc',
-          fontSize: '14px',
-        }}
       >
         <option value="weekly">Weekly</option>
         <option value="monthly">Monthly</option>
@@ -49,7 +55,6 @@ function TimeFilter({ onFilterChange }) {
             onChange={date => setStartDate(date)}
             placeholderText="Start Date"
             dateFormat="yyyy/MM/dd"
-            style={{ marginRight: '10px' }}
           />
           <span>to</span>
           <DatePicker
@@ -60,6 +65,8 @@ function TimeFilter({ onFilterChange }) {
           />
         </>
       )}
+
+      {error && <p className={styles.error}>{error}</p>}
     </div>
   );
 }

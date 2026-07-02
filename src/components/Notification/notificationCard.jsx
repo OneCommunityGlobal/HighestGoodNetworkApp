@@ -9,6 +9,7 @@ import {
 } from '../../actions/meetingNotificationAction';
 
 import { convertDateFormatToMMMDDYY } from '../../utils/formatDate';
+import styles from './notificationCard.module.css';
 
 // Mock data
 // const URL_TO_BLUE_SQUARE_PAGE = 'https://google.com';
@@ -76,13 +77,12 @@ function NotificationCard({ notification }) {
   };
 
   return (
-    <Container fluid>
+    <Container fluid className={styles.notificationContainer}>
       <Card
         color="primary"
-        className={fade ? 'fade' : ''}
+        className={`${styles.notificationCard} ${fade ? styles.fade : ''}`}
         onAnimationEnd={() => setFade(false)}
         inverse
-        style={{ marginRight: '15px', marginBottom: '5px' }}
       >
         <CardBody>
           <CardTitle tag="h5">
@@ -93,7 +93,7 @@ function NotificationCard({ notification }) {
           </CardTitle>
           <CardText>{parse(styledHtmlString)}</CardText>
           <CardText>Date: {convertDateFormatToMMMDDYY(createdTimeStamps)}</CardText>
-          <Button onClick={onClickMarkAsRead}> Mark as Read </Button>
+          <Button onClick={onClickMarkAsRead}>Mark as Read</Button>
         </CardBody>
       </Card>
     </Container>
