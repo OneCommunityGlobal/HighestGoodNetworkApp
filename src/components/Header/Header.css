@@ -1,7 +1,13 @@
 /* General Styling */
 .header-wrapper {
   height: fit-content;
-  width: clamp(100vw, 0.1rem + 1vw, 100%);
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+.header-wrapper .navbar .dropdown-menu {
+  z-index: 1100;
 }
 .close-button {
   position: absolute;
@@ -175,6 +181,60 @@
 .header-margin-light {
   height: 20px;
   background-color: #fff;
+}
+
+.meeting-notification-modal-body {
+  line-height: 1.75;
+}
+
+.meeting-notification-modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.text-light .meeting-notification-modal-actions {
+  border-top-color: rgba(255, 255, 255, 0.2);
+}
+
+.meeting-calendar-link {
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.meeting-notification-queue-note {
+  margin-top: 1rem;
+  margin-bottom: 0;
+  font-size: 0.9rem;
+  opacity: 0.85;
+}
+
+.meeting-notification-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.meeting-notification-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-right: auto;
+}
+
+.meeting-notification-nav-count {
+  min-width: 3.5rem;
+  text-align: center;
+  font-weight: 600;
+}
+
+.meeting-notification-close-btn {
+  margin-left: auto;
 }
 
 @media print {

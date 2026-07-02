@@ -9,7 +9,12 @@ import {
 } from '../../actions/lbdashboard/messagingActions';
 import { ENDPOINTS } from '../../utils/URL';
 
-export default function BellNotification({ userId }) {
+export default function BellNotification({
+  userId,
+  hasMeetingNotification = false,
+  meetingNotificationCount = 0,
+  onMeetingNotificationClick,
+}) {
   // State variables to manage notifications and UI state
   const [hasNotification, setHasNotification] = useState(false);
   const [isDataReady, setIsDataReady] = useState(false);
@@ -194,6 +199,14 @@ export default function BellNotification({ userId }) {
     };
   }, [messageNotifications]);
 
+  const handleBellClick = async () => {
+    if (hasMeetingNotification && onMeetingNotificationClick) {
+      onMeetingNotificationClick();
+      return;
+    }
+    await handleMessageNotificationClick();
+  };
+
   const handleMessageNotificationClick = async () => {
     setShowNotification(prev => !prev);
 
@@ -254,30 +267,35 @@ export default function BellNotification({ userId }) {
       {isDataReady && (
         <button
           type="button"
-          onClick={handleMessageNotificationClick}
+          onClick={handleBellClick}
           className={`fa fa-bell i-large ${
-            hasNotification || hasMessageNotification ? 'has-notification' : ''
+            hasNotification || hasMessageNotification || hasMeetingNotification
+              ? 'has-notification'
+              : ''
           }`}
           style={{
             position: 'relative',
             cursor: 'pointer',
             background: 'none',
             border: 'none',
-            color: hasNotification || hasMessageNotification ? 'white' : 'rgba(255, 255, 255, .5)',
+            color:
+              hasNotification || hasMessageNotification || hasMeetingNotification
+                ? 'white'
+                : 'rgba(255, 255, 255, .5)',
             padding: 0,
           }}
           aria-label={
-            hasNotification || hasMessageNotification
+            hasNotification || hasMessageNotification || hasMeetingNotification
               ? 'You have new notifications'
               : 'No new notifications'
           }
           title={
-            hasNotification || hasMessageNotification
+            hasNotification || hasMessageNotification || hasMeetingNotification
               ? 'You have new notifications'
               : 'No new notifications'
           }
         >
-          {(hasNotification || hasMessageNotification) && (
+          {(hasNotification || hasMessageNotification || hasMeetingNotification) && (
             <span
               style={{
                 position: 'absolute',
@@ -285,12 +303,25 @@ export default function BellNotification({ userId }) {
                 right: '0px',
                 transform: 'translateX(50%) translateY(-50%)',
                 backgroundColor: 'red',
-                borderRadius: '50%',
-                width: '10px',
-                height: '10px',
+                borderRadius: meetingNotificationCount > 1 ? '10px' : '50%',
+                minWidth: meetingNotificationCount > 1 ? '18px' : '10px',
+                height: meetingNotificationCount > 1 ? '18px' : '10px',
+                width: meetingNotificationCount > 1 ? 'auto' : '10px',
+                padding: meetingNotificationCount > 1 ? '0 4px' : 0,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '10px',
+                fontWeight: 700,
+                lineHeight: 1,
+                color: '#fff',
                 pointerEvents: 'none',
               }}
-            />
+            >
+              {hasMeetingNotification && meetingNotificationCount > 1
+                ? meetingNotificationCount
+                : null}
+            </span>
           )}
         </button>
       )}

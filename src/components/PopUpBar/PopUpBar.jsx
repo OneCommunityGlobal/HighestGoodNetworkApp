@@ -9,6 +9,7 @@ function PopUpBar({
   textColor = '#000',
   isLoading = false,
   button = true,
+  isMeetingNotification = false,
 }) {
   const defaultTemplate =
     `You are currently functioning as ${firstName} ${lastName}, ` +
@@ -17,7 +18,13 @@ function PopUpBar({
   const displayText = message ?? defaultTemplate;
 
   return (
-    <div className="popup_container" data-testid="test-popup" style={{ color: textColor }}>
+    <div
+      className={`popup_container${textColor === 'black_text' ? ' black_text' : ''}${
+        isMeetingNotification ? ' meeting_notification' : ''
+      }`}
+      data-testid="test-popup"
+      style={textColor === 'black_text' ? undefined : { color: textColor }}
+    >
       {isLoading ? (
         <Loading />
       ) : (

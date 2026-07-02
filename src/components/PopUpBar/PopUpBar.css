@@ -1,38 +1,98 @@
 .popup_container {
   position: sticky;
-  width: 100%;
   top: 0;
-  left: 0%;
+  left: 0;
+  width: 100%;
+  max-width: 100%;
   margin: 0;
-  text-align: center;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
   background-color: #ffcc00;
   color: #fff;
   z-index: 2;
-  opacity: 0.8;
 }
-.popup_container.black_text{
-  color: #000000
+
+.popup_container.meeting_notification {
+  /* Below navbar (100) and dropdown menus (1000+) so profile menu is not covered */
+  z-index: 90;
+  opacity: 1;
+  padding: 0.3rem 1.25rem 0.3rem 0.75rem;
+  min-height: 2rem;
+  isolation: isolate;
+}
+
+.popup_container.meeting_notification + .popup_container.meeting_notification {
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.popup_container.black_text {
+  color: #000000;
+}
+
+.popup_message {
+  flex: 1;
+  margin: 0;
+  min-width: 0;
+  word-break: break-word;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.popup_container.meeting_notification .popup_message {
+  font-size: 0.85rem;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.popup_container.meeting_notification .popup_message a {
+  color: #0d47a1;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.popup_container.meeting_notification .meeting-popup-action-separator {
+  color: #333;
 }
 
 .close_button {
+  flex-shrink: 0;
   background: none;
   border: none;
-  font-size: 18px;
+  font-size: 16px;
+  line-height: 1;
   color: #000000;
   cursor: pointer;
-  position: absolute;
-  top: 50%;
-  right: 30px;
-  transform: translateY(-50%);
+  padding: 0.2rem 0.4rem;
+  min-width: 1.75rem;
+  min-height: 1.75rem;
 }
 
-.close_button.btn_padding{
-  @media (max-width: 768px) { 
-    top: 70%;
+.popup_container.meeting_notification .close_button {
+  background-color: #ffcc00;
+  border-radius: 4px;
+  position: relative;
+  z-index: 2;
+  margin-top: 0;
+}
+
+.close_button.btn_padding {
+  @media (max-width: 768px) {
+    align-self: flex-end;
   }
 }
 
 .close_button > .container-fluid {
   padding: 0px;
 }
-  
+
+@media (max-width: 768px) {
+  .popup_container.meeting_notification .popup_message {
+    font-size: 0.8rem;
+  }
+}

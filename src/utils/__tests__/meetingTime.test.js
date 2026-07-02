@@ -1,0 +1,41 @@
+import moment from 'moment-timezone';
+import {
+  buildMeetingMoment,
+  formatMeetingDateTimeShort,
+  getParticipantLocalTime,
+  resolveUserTimeZone,
+} from '../meetingTime';
+
+describe('meetingTime utils', () => {
+  const formValues = {
+    dateOfMeeting: '2026-07-03',
+    startHour: '01',
+    startMinute: '00',
+    startTimePeriod: 'PM',
+    timeZone: 'America/Los_Angeles',
+  };
+
+  it('builds a meeting moment in the selected time zone', () => {
+    const meetingMoment = buildMeetingMoment(formValues);
+    expect(meetingMoment.isValid()).toBe(true);
+    expect(meetingMoment.format('z')).toBe('PDT');
+  });
+
+  it('formats meeting time for a viewer time zone', () => {
+    const iso = buildMeetingMoment(formValues).toISOString();
+    const formatted = formatMeetingDateTimeShort(iso, 'Asia/Kolkata');
+    expect(formatted).toContain('2026');
+    expect(formatted).toContain('IST');
+  });
+
+  it('shows participant local time different from organizer time zone', () => {
+    const pacificTime = getParticipantLocalTime(formValues, 'America/Los_Angeles');
+    const indiaTime = getParticipantLocalTime(formValues, 'Asia/Kolkata');
+    expect(pacificTime).not.toEqual(indiaTime);
+  });
+
+  it('falls back to browser time zone when profile time zone is missing', () => {
+    const browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    expect(resolveUserTimeZone('')).toBe(browserTimeZone);
+  });
+});

@@ -1,12 +1,16 @@
 import httpService from '../services/httpService';
-import { ApiEndpoint, ENDPOINTS } from '../utils/URL';
+import { ENDPOINTS } from '../utils/URL';
 import * as meetingActions from '../constants/meetings';
-import axios from 'axios';
-
-const APIEndpoint = ApiEndpoint;
+import { formatMeetingDateTimeShort, resolveUserTimeZone } from '../utils/meetingTime';
 
 const constructErrorPayload = error => {
   const { response } = error;
+  if (!response) {
+    return {
+      status: 0,
+      message: error.message || 'Network error. Please try again later.',
+    };
+  }
   let message = 'Unexpected Error';
   switch (response.status) {
     case 401:
@@ -32,10 +36,21 @@ const constructErrorPayload = error => {
 };
 
 // get all the unread meetings within a time range
-export function getUnreadMeetingNotification(){
-  return async dispatch => {
-    dispatch({ type: meetingActions.FETCH_UNREAD_UPCOMING_MEETING_BEGIN});
+export function getUnreadMeetingNotification(explicitUserId) {
+  return async (dispatch, getState) => {
+    dispatch({ type: meetingActions.FETCH_UNREAD_UPCOMING_MEETING_BEGIN });
     try {
+      const userId = explicitUserId || getState().auth?.user?.userid;
+      const viewerTimeZone = resolveUserTimeZone(getState().userProfile?.timeZone);
+
+      if (!userId || !localStorage.getItem('token')) {
+        await dispatch({
+          type: meetingActions.FETCH_UNREAD_UPCOMING_MEETING_SUCCESS,
+          payload: [],
+        });
+        return;
+      }
+
       const currentTime = new Date();
       const endTime = new Date(currentTime);
       endTime.setDate(currentTime.getDate() + 3);
@@ -43,25 +58,27 @@ export function getUnreadMeetingNotification(){
       const encodedCurrentTime = encodeURIComponent(currentTime.toISOString());
       const encodedEndTime = encodeURIComponent(endTime.toISOString());
 
-      // Fetch all meetings within 3 days from now
       const url = ENDPOINTS.MEETING_GET(encodedCurrentTime, encodedEndTime);
-      const response = await axios.get(url);
+      const response = await httpService.get(url);
+      const meetings = Array.isArray(response.data) ? response.data : [];
 
-      // Convert fetched meetings to notifications
-      const meetingNotifications = response.data
+      const meetingNotifications = meetings
         .filter(meeting => meeting.isRead === false)
+        .filter(meeting => String(meeting.recipient) === String(userId))
         .map(meeting => ({
-          meetingId: meeting._id,
+          meetingId: String(meeting._id),
           eventType: 'Meeting scheduled',
-          message: `Upcoming meeting: ${new Date(meeting.dateTime).toLocaleString()}`,
-          sender: meeting.organizer, 
-          recipient: meeting.recipient,
+          message: `Upcoming meeting: ${formatMeetingDateTimeShort(meeting.dateTime, viewerTimeZone)}`,
+          sender: String(meeting.organizer),
+          recipient: String(meeting.recipient),
           isSystemGenerated: false,
           isRead: meeting.isRead,
           dateTime: meeting.dateTime,
+          timeZone: meeting.timeZone || viewerTimeZone,
           location: meeting.location,
           notes: meeting.notes,
         }));
+
       await dispatch({
         type: meetingActions.FETCH_UNREAD_UPCOMING_MEETING_SUCCESS,
         payload: meetingNotifications,
@@ -73,7 +90,7 @@ export function getUnreadMeetingNotification(){
         payload: errorPayload,
       });
     }
-  }
+  };
 }
 
 // mark a specific meeting and recipient pair as read
@@ -82,7 +99,7 @@ export function markMeetingNotificationAsRead(notification){
     await dispatch({ type: meetingActions.MARK_MEETING_AS_READ_REQUEST});
     try{
       const url = ENDPOINTS.MEETING_MARK_READ(notification.meetingId, notification.recipient);
-      const response = await axios.post(url);
+      await httpService.post(url);
 
       await dispatch({
         type: meetingActions.MARK_MEETING_AS_READ_SUCCESS,

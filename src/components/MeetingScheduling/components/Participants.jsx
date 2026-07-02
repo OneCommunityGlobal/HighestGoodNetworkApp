@@ -2,6 +2,11 @@ import { useState } from 'react';
 import './Participants.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
+import {
+  getParticipantLocalTime,
+  hasValidMeetingSchedule,
+  resolveUserTimeZone,
+} from '../../../utils/meetingTime';
 
 function Participants({
   userProfiles,
@@ -10,9 +15,11 @@ function Participants({
   removeParticipant,
   authUserId,
   darkMode,
+  formValues,
 }) {
   const [filteredData, setFilteredData] = useState([]);
   const [isFocused, setIsFocused] = useState(false);
+  const showLocalTimes = hasValidMeetingSchedule(formValues);
 
   const sortByStartingWith = keyword => {
     const newFilterList = userProfiles.filter(
@@ -27,7 +34,6 @@ function Participants({
     );
 
     const finalList = newFilterList.sort((a, b) => {
-      // check if the first name starts with the input letter
       const aStarts = `${a.firstName}`.toLowerCase().startsWith(keyword.toLowerCase());
       const bStarts = `${b.firstName}`.toLowerCase().startsWith(keyword.toLowerCase());
       if (aStarts && bStarts)
@@ -35,7 +41,6 @@ function Participants({
       if (aStarts && !bStarts) return -1;
       if (!aStarts && bStarts) return 1;
       if (!aStarts && !bStarts) {
-        // if the first name does not start with input letter, check if the last name starts with the input letter
         const aLastName = `${a.lastName}`.toLowerCase().startsWith(keyword.toLowerCase());
         const bLastName = `${b.lastName}`.toLowerCase().startsWith(keyword.toLowerCase());
         if (aLastName && bLastName)
@@ -74,11 +79,23 @@ function Participants({
     setFilteredData([]);
   };
 
+  const getLocalTimeLabel = participant => {
+    if (!showLocalTimes) return null;
+    const profile = userProfiles.find(user => user._id === participant.userProfileId);
+    const localTime = getParticipantLocalTime(formValues, profile?.timeZone);
+    const timeZoneLabel = resolveUserTimeZone(profile?.timeZone);
+    if (!localTime) {
+      return `Local time unavailable (${timeZoneLabel})`;
+    }
+    return localTime;
+  };
+
   return (
-    <div>
-      <div className="position-relative">
+    <div className={`participants-field${darkMode ? ' participants-field--dark' : ''}`}>
+      <div className="participants-search-wrap">
         <input
           type="text"
+          className="participants-search-input"
           placeholder="Add participants"
           onChange={handleFilter}
           onFocus={handleFocus}
@@ -86,12 +103,12 @@ function Participants({
         />
         {filteredData.length !== 0 && isFocused && (
           <ul
-            className={`filter-userprofiles custom-dropdown-menu position-absolute ${
-              darkMode ? 'text-light bg-dark' : 'text-dark bg-light'
+            className={`filter-userprofiles custom-dropdown-menu ${
+              darkMode ? 'text-light' : 'text-dark'
             }`}
           >
             {filteredData.map(userProfile => (
-              <li>
+              <li key={userProfile._id}>
                 <button
                   type="button"
                   onClick={event => handleClick(event, userProfile)}
@@ -107,9 +124,9 @@ function Participants({
           </ul>
         )}
       </div>
-      <div>
+      <div className="participants-list">
         {participantList?.map(participant => (
-          <ul key={`${participant.userProfileId}`}>
+          <div key={participant.userProfileId} className="participant-chip-wrap">
             <button
               type="button"
               className="rounded-pill badge bg-primary text-wrap text-white p-2 m-1 fs-5"
@@ -121,9 +138,14 @@ function Participants({
               }}
             >
               <span className="fs-6 me-2 fw-semibold">{participant.name}</span>
-              <FontAwesomeIcon icon={faTimesCircle} className='m-1' />
+              <FontAwesomeIcon icon={faTimesCircle} className="m-1" />
             </button>
-          </ul>
+            {showLocalTimes && (
+              <div className={`participant-local-time ${darkMode ? '' : 'text-muted'}`}>
+                <small>Their local time: {getLocalTimeLabel(participant)}</small>
+              </div>
+            )}
+          </div>
         ))}
       </div>
     </div>

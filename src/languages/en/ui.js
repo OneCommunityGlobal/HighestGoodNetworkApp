@@ -88,5 +88,5 @@ export const EVENT_PERSONALIZATION = "Event Personalization";
 export const REGISTRATION = "Registration";
 
 export const SEND_EMAILS = 'Send Emails';
-export const SCHEDULE_MEETINGS = 'Schedule Meetings';
+export const SCHEDULE_MEETINGS = 'Schedule Meeting';
 

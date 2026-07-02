@@ -2,7 +2,7 @@ import { CPHeader } from '~/components/CommunityPortal';
 import { useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { getWeeklySummaries } from '~/actions/weeklySummaries';
-import { Header } from './Header';
+import Header from './Header';
 import { getHeaderData } from '../../actions/authActions';
 import { getAllRoles } from '../../actions/role';
 import hasPermission from '../../utils/permissions';
@@ -11,8 +11,8 @@ export function HeaderRenderer(props) {
   const location = useLocation();
   const isCommunityPortal = location.pathname.startsWith('/communityportal');
   
-// eslint-disable-next-line react/jsx-props-no-spreading
-  return isCommunityPortal ? <CPHeader {...props} /> : <Header {...props}/>;
+  // Header is already Redux-connected; CPHeader still needs props from this wrapper.
+  return isCommunityPortal ? <CPHeader {...props} /> : <Header />;
 }
 
 

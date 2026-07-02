@@ -209,6 +209,8 @@ export const ENDPOINTS = {
     `${APIEndpoint}/meetings?startTime=${startTime}&endTime=${endTime}`,
   MEETING_MARK_READ: (meetingId, recipient) =>
     `${APIEndpoint}/meetings/markRead/${meetingId}/${recipient}`,
+  MEETING_GET_BY_PARTICIPANT: userId => `${APIEndpoint}/meetings/participant/${userId}`,
+  MEETING_CALENDAR: meetingId => `${APIEndpoint}/meeting/${meetingId}/calendar`,
 
   FAQS: `${APIEndpoint}/faqs`,
   FAQ_BY_ID: faqId => `${APIEndpoint}/faqs/${faqId}`,
