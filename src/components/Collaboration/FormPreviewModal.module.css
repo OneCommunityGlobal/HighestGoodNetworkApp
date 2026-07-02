@@ -1,6 +1,4 @@
 /* stylelint-disable  */
-@import url('./jobFormTheme.module.css');
-
 /* FormPreviewModal.module.css - Modal styling for form preview */
 
 /* Modal Overlay */
@@ -30,13 +28,13 @@
 
 /* Modal Header */
 .modalHeader {
-  background-color: var(--jfb-lime);
-  color: var(--jfb-white);
+  background-color: #97ca02;
+  color: white;
   padding: 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 2px solid var(--jfb-lime-hover);
+  border-bottom: 2px solid #7ab000;
 }
 
 .modalTitle {
@@ -103,27 +101,6 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
-}
-
-.previewStandardSection {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid #e0e0e0;
-}
-
-.previewStandardNote {
-  margin: 0;
-  font-size: 13px;
-  font-weight: 600;
-  color: #666;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-}
-
-.previewRequiredMark {
-  color: #c62828;
 }
 
 /* Individual Field */
@@ -233,13 +210,13 @@
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s;
-  background-color: var(--jfb-blue);
-  color: var(--jfb-white);
+  transition: all 0.3s;
+  background-color: #97ca02;
+  color: white;
 }
 
 .modalActionBtn:hover {
-  background-color: var(--jfb-blue-hover);
+  background-color: #7ab000;
 }
 
 /* Dark Mode Support */
@@ -283,18 +260,6 @@
   color: #f1f1f1;
 }
 
-.darkMode .previewStandardSection {
-  border-bottom-color: #555;
-}
-
-.darkMode .previewStandardNote {
-  color: #bbb;
-}
-
-.darkMode .previewRequiredMark {
-  color: #ff8a80;
-}
-
 .darkMode .modalFooter {
   background-color: #2a2a2a;
   border-top-color: #444;
@@ -302,15 +267,6 @@
 
 .darkMode .modalFooterNote {
   color: #bbb;
-}
-
-.darkMode .modalActionBtn {
-  background-color: var(--jfb-blue-hover);
-  color: var(--jfb-white);
-}
-
-.darkMode .modalActionBtn:hover {
-  background-color: var(--jfb-blue);
 }
 
 /* Responsive Design */

@@ -25,7 +25,6 @@ import { CompareBarGraph } from './BarGraphs/CompareGraphs';
 import { ComparePropertiesRatings } from './BarGraphs/ComparePropertiesRatings';
 
 import styles from './LBDashboard.module.css';
-import UserManagementSection from './UserManagement/UserManagement';
 import ConversionFunnel from './LbAnalytics/ConversionFunnel/ConversionFunnel';
 import { randomInt } from './lbUtils';
 
@@ -604,8 +603,8 @@ export function LBDashboard() {
 
       {compareType === 'villages' && (
         <AnalysisSection title="By Village" darkMode={darkMode}>
-          <Row xs="1" lg="3" className="g-3">
-            <Col lg="4" md="12">
+          <Row xs="1" md="3" className="g-3">
+            <Col>
               <DemandOverTime
                 compareType="villages"
                 metric={mappedMetric}
@@ -615,7 +614,7 @@ export function LBDashboard() {
               />
             </Col>
 
-            <Col lg="4" md="12">
+            <Col>
               {loadingVillages && (
                 <div className={getClassNames('', styles.darkText, darkMode)}>
                   Loading villages…
@@ -637,10 +636,10 @@ export function LBDashboard() {
                   showYAxisTitle={true}
                   yTickFormatter={stripVillageWord}
                   yCategoryWidth={120}
-                  margins={{ top: 40, right: 40, bottom: 50, left: 40 }}
+                  margins={{ top: 60, right: 110, bottom: 50, left: 20 }}
                   barSize={24}
                   maxBars={6}
-                  height={420}
+                  height={480}
                   valueFormatter={valueFormatter}
                   darkMode={darkMode}
                   headerChips={[
@@ -711,9 +710,6 @@ export function LBDashboard() {
             <ReviewWordCloud darkMode={darkMode} />
           </div>
         </div>
-      </AnalysisSection>
-      <AnalysisSection title="User Management" darkMode={darkMode}>
-        <UserManagementSection darkMode={darkMode} />
       </AnalysisSection>
     </Container>
   );

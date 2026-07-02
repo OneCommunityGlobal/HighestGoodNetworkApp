@@ -5,7 +5,6 @@ import { useHistory, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
 import styles from './Issue.module.css';
-import { useSelector } from 'react-redux';
 
 function Issue() {
   const ISSUE_FORM_HEADER = 'ISSUE LOG';
@@ -41,8 +40,6 @@ function Issue() {
   const weatherCheckboxOptions = ['Require Reorder of MET', 'Schedule Delay', 'Other'];
 
   const otherOption = ['Other'];
-
-  const darkMode = useSelector(state => state.theme.darkMode);
 
   const [formData, setFormData] = useState({
     issueDate: '',
@@ -225,9 +222,7 @@ function Issue() {
   }, []);
 
   return (
-    <div
-      className={darkMode ? `${styles.darkModeIssueFormContainer}` : `${styles.issueFormContainer}`}
-    >
+    <div className={`${styles.issueFormContainer}`}>
       <h4 className={`${styles.issueTitleText}`}>{ISSUE_FORM_HEADER}</h4>
       <Form>
         <FormGroup>

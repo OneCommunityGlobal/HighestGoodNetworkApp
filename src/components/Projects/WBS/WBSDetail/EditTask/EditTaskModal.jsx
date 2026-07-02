@@ -203,14 +203,22 @@ function EditTaskModal(props) {
     setAssigned(true);
   };
 
-  // Recompute the derived estimate (and the best <= most <= worst warning) from the
-  // current field values only. Editing one hours field must NOT overwrite the others.
-  const calHoursEstimate = () => {
-    const currHoursBest = parseInt(hoursBest, 10);
-    const currHoursMost = parseInt(hoursMost, 10);
-    const currHoursWorst = parseInt(hoursWorst, 10);
+  const calHoursEstimate = (isOn = null) => {
+    let currHoursMost = parseInt(hoursMost);
+    let currHoursWorst = parseInt(hoursWorst);
+    const currHoursBest = parseInt(hoursBest);
+    if (isOn !== 'hoursMost') {
+      currHoursMost = Math.round((currHoursWorst - currHoursBest) / 2 + currHoursBest);
+      setHoursMost(currHoursMost);
+      if (isOn !== 'hoursWorst') {
+        currHoursWorst = Math.round(currHoursBest * 2);
+        setHoursWorst(currHoursWorst);
+        currHoursMost = Math.round((currHoursWorst - currHoursBest) / 2 + currHoursBest);
+        setHoursMost(currHoursMost);
+      }
+    }
 
-    setHoursEstimate(parseInt((currHoursMost + currHoursBest + currHoursWorst) / 3, 10));
+    setHoursEstimate(parseInt((currHoursMost + currHoursBest + currHoursWorst) / 3));
 
     if (!(currHoursBest <= currHoursMost && currHoursMost <= currHoursWorst)) {
       setHoursWarning(true);
@@ -775,7 +783,7 @@ function EditTaskModal(props) {
                         max="500"
                         value={hoursWorst}
                         onChange={e => setHoursWorst(Math.abs(e.target.value))}
-                        onBlur={() => calHoursEstimate()}
+                        onBlur={() => calHoursEstimate('hoursWorst')}
                         className={`m-auto ${
                           darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
                         }`}
@@ -804,7 +812,7 @@ function EditTaskModal(props) {
                         max="500"
                         value={hoursMost}
                         onChange={e => setHoursMost(Math.abs(e.target.value))}
-                        onBlur={() => calHoursEstimate()}
+                        onBlur={() => calHoursEstimate('hoursMost')}
                         className={`m-auto ${
                           darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
                         }`}

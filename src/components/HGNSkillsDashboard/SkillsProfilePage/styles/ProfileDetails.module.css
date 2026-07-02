@@ -41,10 +41,10 @@
   color: #111827;
   display: inline-block;
   font-family: Arial, sans-serif;
-  font-weight: bold;
 }
 
 strong {
+  /* color: #fffdfd; */
   font-weight: 600;
   font-size: 1rem;
 }
@@ -54,6 +54,19 @@ strong {
   color: #0f2f4a;
 }
 
+.value {
+  color: #111827;
+  display: inline-block;
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+}
+
+strong {
+  /* color: #fffdfd; */
+  font-weight: 600;
+  font-size: 1rem;
+}
+
 .githubLink {
   color: #1a73e8;
   text-decoration: none;
@@ -61,41 +74,13 @@ strong {
   font-size: 1rem;
   padding: 2px;
   border-radius: 10px;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease; /* Smooth hover effect */
 }
 
 .githubLink:hover {
   background-color: #f0f4f8;
   color: #1557b0;
   text-decoration: underline;
-}
-
-.editButton {
-background-color: #0056b3;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 6px 16px;
-  font-size: 14px;
-  cursor: pointer;
-  margin-left: 10px;
-}
-
-.editButton:hover {
-background-color: #004494;
-}
-
-.editButtons {
-  display: inline-flex;
-  gap: 8px;
-}
-
-.yearsInput {
-  width: 100px;
-  padding: 4px 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 14px;
 }
 
 /* Responsive adjustments */
@@ -117,7 +102,6 @@ background-color: #004494;
   }
 }
 
-/* Dark mode */
 :global(.dark-mode) .profileDetails h3 {
   color: #fff;
 }
@@ -151,18 +135,4 @@ background-color: #004494;
 :global(.dark-mode) .githubLink:hover {
   background-color: #333;
   color: #adc8ff;
-}
-
-:global(.dark-mode) .editButton {
-  background-color: #2563eb;
-}
-
-:global(.dark-mode) .editButton:hover {
-  background-color: #1d4ed8;
-}
-
-:global(.dark-mode) .yearsInput {
-  background-color: #2a3a5c;
-  color: #fff;
-  border-color: #3a506b;
 }

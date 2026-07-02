@@ -32,41 +32,27 @@
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
-  gap: 0.75rem;
+  gap: 1rem;
   flex: 0 0 auto;
   flex-shrink: 0;
   min-width: 0;
-  position: relative;
-  z-index: 10;
 }
 
 .item__selector{
   display: flex;
-  align-items: stretch;
+  align-items: center;
   box-sizing: border-box;
   position: relative;
-  z-index: 20;
-  height: 38px;
+  z-index: 2;
+  min-height: 38px;
   width: 200px;
   max-width: min(220px, calc(100vw - 8rem));
   background-color: #fff;
   border-radius: 5px;
   margin-right: 0;
-  padding: 0;
+  padding: 0.25rem 0.5rem;
   cursor: pointer;
   flex-shrink: 0;
-  overflow: visible;
-}
-
-.item__selector--dark {
-  background-color: #1c2541;
-  border: 1px solid #2f3b59;
-}
-
-.item__selector--dark select,
-.item__selector--dark option {
-  background-color: #1c2541;
-  color: #fff;
 }
 
 .item__selector:focus-within {
@@ -75,16 +61,12 @@
 
 .item__selector select{
   width: 100%;
-  height: 100%;
   border: none;
-  color: inherit;
-  appearance: none;
   outline: none;
   font-size: 14px;
   line-height: 1.25;
   cursor: pointer;
   background: transparent;
-  padding: 0 0.5rem;
 }
 
 .item__button{
@@ -103,6 +85,7 @@
 
 .item__button:hover{
   background-color: black;
+  padding: 0.2rem 0.5rem;
   border-radius: 5px;
   border: 1px solid black;
   cursor: pointer;

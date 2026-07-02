@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { Container, Row, Alert, Col, Card, CardBody, Button, Input } from 'reactstrap';
 import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt, FaSearch, FaTimes } from 'react-icons/fa';
@@ -8,7 +7,7 @@ import { ENDPOINTS } from '../../utils/URL';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
-const FixedRatioImage = ({ src = '', alt = '', fallback }) => (
+const FixedRatioImage = ({ src, alt, fallback }) => (
   <div
     style={{
       width: '100%',
@@ -34,12 +33,6 @@ const FixedRatioImage = ({ src = '', alt = '', fallback }) => (
   </div>
 );
 
-FixedRatioImage.propTypes = {
-  src: PropTypes.string,
-  alt: PropTypes.string,
-  fallback: PropTypes.string.isRequired,
-};
-
 // Default filter values
 const DEFAULT_FILTERS = {
   dateFilter: '',
@@ -59,13 +52,6 @@ export function CPDashboard() {
   const [error, setError] = useState(null);
   const [showPastEvents, setShowPastEvents] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
-
-  // Darken the page body in dark mode (app-wide pattern) so the area around the
-  // dashboard isn't left white.
-  useEffect(() => {
-    document.body.classList.toggle('dark-mode-body', darkMode);
-    return () => document.body.classList.remove('dark-mode-body');
-  }, [darkMode]);
 
   // Hide the global back-to-top button — not needed on this page
   useEffect(() => {
@@ -156,7 +142,6 @@ export function CPDashboard() {
       weekday: 'long',
       month: 'long',
       day: 'numeric',
-      year: 'numeric',
       hour: 'numeric',
       minute: '2-digit',
     });
@@ -193,15 +178,6 @@ export function CPDashboard() {
     }));
   };
 
-  // Toggle the date radio: clicking the active option clears it; clicking another switches.
-  // Applies immediately (bypasses the Apply Filters button) so the user sees instant feedback.
-  const handleDateToggle = value => {
-    const next = appliedFilters.dateFilter === value ? '' : value;
-    setPendingFilters(prev => ({ ...prev, dateFilter: next }));
-    setAppliedFilters(prev => ({ ...prev, dateFilter: next }));
-    setPagination(prev => ({ ...prev, currentPage: 1 }));
-  };
-
   // Apply all pending filters
   const handleApplyFilters = () => {
     setAppliedFilters(pendingFilters);
@@ -212,15 +188,21 @@ export function CPDashboard() {
   const handleClearFilters = () => {
     setPendingFilters(DEFAULT_FILTERS);
     setAppliedFilters(DEFAULT_FILTERS);
+    setSelectedDate('');
     setPagination(prev => ({ ...prev, currentPage: 1 }));
   };
-
-  const now = new Date();
 
   const isPastEvent = event => {
     const ref = event.startTime || event.date;
     if (!ref) return false;
-    return new Date(ref) < now;
+
+    const eventDate = new Date(ref);
+    const today = new Date();
+
+    today.setHours(0, 0, 0, 0);
+    eventDate.setHours(0, 0, 0, 0);
+
+    return eventDate < today;
   };
   // Filter events based on applied filters
   const filteredEvents = events.filter(event => {
@@ -231,11 +213,19 @@ export function CPDashboard() {
       if (!isOnlineEvent) return false;
     }
 
+    // Filter by specific date if one is selected
+    if (selectedDate) {
+      const eventDate = new Date(event.date);
+      const normalizedEventDate = eventDate.toISOString().split('T')[0];
+
+      if (normalizedEventDate !== selectedDate) return false;
+    }
+
     // Filter by date
     if (appliedFilters.dateFilter === 'tomorrow') {
-      return isTomorrow(event.date);
+      if (!isTomorrow(event.date)) return false;
     } else if (appliedFilters.dateFilter === 'weekend') {
-      return isComingWeekend(event.date);
+      if (!isComingWeekend(event.date)) return false;
     }
 
     // Filter by search query
@@ -267,7 +257,7 @@ export function CPDashboard() {
 
   if (isLoading) {
     return (
-      <Container className={`${styles.dashboardContainer} ${darkMode ? styles.darkContainer : ''}`}>
+      <Container className={styles.dashboardContainer}>
         <p>Loading events...</p>
       </Container>
     );
@@ -275,16 +265,19 @@ export function CPDashboard() {
 
   if (error) {
     return (
-      <Container className={`${styles.dashboardContainer} ${darkMode ? styles.darkContainer : ''}`}>
+      <Container className={styles.dashboardContainer}>
         <p className={styles.errorText}>{error}</p>
       </Container>
     );
   }
 
-  // isLoading and error are already handled by the early returns above.
   let eventsContent;
 
-  if (displayedEvents.length > 0) {
+  if (isLoading) {
+    eventsContent = <div className={styles.noEvents}>Loading events...</div>;
+  } else if (error) {
+    eventsContent = <div className={styles.noEvents}>{error}</div>;
+  } else if (displayedEvents.length > 0) {
     eventsContent = displayedEvents.map(event => (
       <Col md={4} key={event.id} className={`${styles.eventCardCol}`}>
         <Link
@@ -298,7 +291,9 @@ export function CPDashboard() {
               <FixedRatioImage src={event.coverImage} alt={event.title} fallback={FALLBACK_IMG} />
             </div>
             <CardBody className={`${styles.eventCardBody} ${darkMode ? styles.darkEventCard : ''}`}>
-              <h5 className={styles.eventTitle}>{event.title}</h5>
+              <h5 className={styles.eventTitle} data-event-title={event.title || 'Untitled event'}>
+                <span className={styles.eventTitleText}>{event.title}</span>
+              </h5>
               <p className={styles.eventDate}>
                 <FaCalendarAlt
                   className={`${darkMode ? styles.eventIconDark : styles.eventIcon}`}
@@ -325,7 +320,7 @@ export function CPDashboard() {
   }
 
   return (
-    <Container className={`${styles.dashboardContainer} ${darkMode ? styles.darkContainer : ''}`}>
+    <Container className={styles.dashboardContainer}>
       <header className={`${styles.dashboardHeader} ${darkMode ? styles.darkHeader : ''}`}>
         <h1>All Events</h1>
       </header>
@@ -392,57 +387,63 @@ export function CPDashboard() {
               <div className={styles.filterItem}>
                 <label htmlFor="date-tomorrow">Dates</label>
                 <div className={styles.radioRow}>
-                  <label className={styles.radioOption} htmlFor="date-tomorrow">
+                  <div className={styles.radioGroup}>
                     <input
                       id="date-tomorrow"
                       type="radio"
                       name="dates"
-                      checked={appliedFilters.dateFilter === 'tomorrow'}
-                      onChange={() => {}}
-                      onClick={() => handleDateToggle('tomorrow')}
+                      checked={pendingFilters.dateFilter === 'tomorrow'}
+                      onChange={() => handleFilterChange('dateFilter', 'tomorrow')}
                       className={styles.radioInput}
                     />
-                    <span>Tomorrow</span>
-                  </label>
-                  <label className={styles.radioOption} htmlFor="date-weekend">
+                    <label htmlFor="date-tomorrow" className={styles.radioLabel}>
+                      Tomorrow
+                    </label>
+                  </div>
+                  <div className={styles.radioGroup}>
                     <input
                       id="date-weekend"
                       type="radio"
                       name="dates"
-                      checked={appliedFilters.dateFilter === 'weekend'}
-                      onChange={() => {}}
-                      onClick={() => handleDateToggle('weekend')}
+                      checked={pendingFilters.dateFilter === 'weekend'}
+                      onChange={() => handleFilterChange('dateFilter', 'weekend')}
                       className={styles.radioInput}
                     />
-                    <span>This Weekend</span>
-                  </label>
+                    <label htmlFor="date-weekend" className={styles.radioLabel}>
+                      This Weekend
+                    </label>
+                  </div>
                 </div>
 
                 <Input
                   type="date"
-                  placeholder="Select Date"
-                  className={styles.dateFilter}
+                  placeholder="Ending After"
+                  className={`${styles.dateFilter} ${darkMode ? styles.darkDateFilter : ''}`}
                   value={selectedDate}
-                  onChange={e => setSelectedDate(e.target.value)}
-                  style={{ marginTop: '10px' }}
+                  onChange={e => {
+                    setSelectedDate(e.target.value);
+                    setPagination(prev => ({ ...prev, currentPage: 1 }));
+                  }}
                 />
               </div>
 
               {/* Online Only Filter */}
               <div className={styles.filterItem}>
                 <label htmlFor="online-only">Online</label>
-                <label className={styles.checkboxOption} htmlFor="online-only">
-                  <input
-                    id="online-only"
-                    type="checkbox"
-                    checked={onlineOnly}
-                    onChange={e => {
-                      setOnlineOnly(e.target.checked);
-                      setPagination(prev => ({ ...prev, currentPage: 1 }));
-                    }}
-                  />
-                  <span>Online Only</span>
-                </label>
+                <div className={styles.radioRow}>
+                  <div className={styles.radioGroup}>
+                    <input
+                      type="checkbox"
+                      id="online-only"
+                      checked={pendingFilters.onlineOnly}
+                      onChange={e => handleFilterChange('onlineOnly', e.target.checked)}
+                      className={styles.radioInput}
+                    />
+                    <label htmlFor="online-only" className={styles.radioLabel}>
+                      Online Only
+                    </label>
+                  </div>
+                </div>
               </div>
 
               {/* Branches Filter */}

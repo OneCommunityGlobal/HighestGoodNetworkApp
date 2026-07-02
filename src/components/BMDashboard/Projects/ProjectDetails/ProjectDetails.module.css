@@ -2,36 +2,28 @@
    PROJECT DETAILS MAIN LAYOUT
 ========================================= */
 
-.project-details {
+project-details {
   text-align: center;
   padding: 40px 3% 0; 
   font-weight: bold;
-  background-color: #f8f9fa;
-  color: #1a1a1a;
 }
 
 .project-details-dark {
   text-align: center;
-  padding: 40px 3% 0; 
+  padding: 40px 3% 0;
   font-weight: bold;
   background-color: #1c1e1c;
-  color: #fff;
 }
 
 /* Titles */
 .project-details-title {
   font-size: 1.5rem;
-  color: white;
-  text-align: center;
+  overflow: hidden;
 }
 
 .project-details-title-dark {
   font-size: 1.5rem;
   color: #fff;
-}
-
-.project-details h1 {
-    color: black;
 }
 
 /* =========================================
@@ -114,6 +106,10 @@
   background-color: #203844 !important;
 }
 
+.button--maroon {
+  background-color: #980101 !important;
+  margin-top: 2em;
+}
 
 /* =========================================
    RESPONSIVE LOG BAR
@@ -128,11 +124,14 @@
     margin-top: -0.5em;
     display: flex;
     justify-content: center;
-    gap:5px;
   }
 
   .button.btn {
     width: auto;
+  }
+
+  .button--maroon {
+    margin-top: auto;
   }
 }
 
@@ -147,6 +146,9 @@
     flex: auto;
   }
 
+  .button--maroon {
+    margin-left: 2em;
+  }
 }
 
 /* =========================================
@@ -426,7 +428,8 @@
   }
 }
 
-ul.log-bar__btn-group {
-  gap:5px;
-  padding: 0px;
+/* Prevent horizontal scroll */
+.project-details,
+.project-details-dark {
+  overflow-x: hidden;
 }

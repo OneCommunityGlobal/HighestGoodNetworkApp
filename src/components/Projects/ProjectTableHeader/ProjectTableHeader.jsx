@@ -18,7 +18,7 @@ import { faArrowUp, faArrowDown, faSortDown } from '@fortawesome/free-solid-svg-
 import { Dropdown,DropdownButton } from 'react-bootstrap';
 
 // import DropdownButton from 'react-bootstrap/DropdownButton';
-import { boxStyle, boxStyleDark } from '~/styles';
+import { boxStyle } from '~/styles';
 import { Button } from 'reactstrap';
 
 
@@ -65,7 +65,7 @@ const ProjectTableHeader = props => {
          {/* This span holds the header-name and a dropDown component */}
        <span className='d-flex justify-content-between align-middle mt-1'>
         {PROJECT_CATEGORY}
-        <DropdownButton id="" title="" size='sm'style={darkMode ? boxStyleDark : boxStyle} variant='info' value={props.selectedValue} onSelect={props.onChange} menuAlign="right">
+        <DropdownButton id="" title="" size='sm'style={darkMode ? {} : boxStyle} variant='info' value={props.selectedValue} onSelect={props.onChange} menuAlign="right">
           <Dropdown.Item default eventKey="" disabled={!props.selectedValue} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}>{props.selectedValue ? 'Clear filter' : 'Choose category'}</Dropdown.Item>
           <Dropdown.Divider />
           {categoryList.map((category, index) => 
@@ -77,7 +77,7 @@ const ProjectTableHeader = props => {
       <th scope="col" id="projects__active" className='align-middle'>
       <span className='d-flex justify-content-between align-middle mt-1'>
         {ACTIVE}
-        <DropdownButton className='ml-2 align-middle' id="" title="" size='sm'style={darkMode ? boxStyleDark : boxStyle} variant='info' value={props.showStatus} onSelect={props.selectStatus}  menuAlign="right" >
+        <DropdownButton className='ml-2 align-middle' id="" title="" size='sm'style={darkMode ? {} : boxStyle} variant='info' value={props.showStatus} onSelect={props.selectStatus}  menuAlign="right" >
         <Dropdown.Item default value="" disabled={!props.showStatus} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}>{props.showStatus ? 'Clear filter' : 'Choose Status'}</Dropdown.Item>
           {statusList.map((status, index) => 
             <Dropdown.Item key={index} eventKey={status} active={props.showStatus === status} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}>{status}</Dropdown.Item>

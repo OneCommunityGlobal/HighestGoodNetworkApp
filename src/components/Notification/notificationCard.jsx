@@ -3,11 +3,6 @@ import { Card, CardTitle, CardText, Button, CardBody, Container } from 'reactstr
 import parse from 'html-react-parser';
 import { useDispatch } from 'react-redux';
 import { markNotificationAsRead } from '../../actions/notificationAction';
-import {
-  getUnreadMeetingNotification,
-  markMeetingNotificationAsRead,
-} from '../../actions/meetingNotificationAction';
-
 import { convertDateFormatToMMMDDYY } from '../../utils/formatDate';
 import styles from './notificationCard.module.css';
 
@@ -68,12 +63,7 @@ function NotificationCard({ notification }) {
 
   const onClickMarkAsRead = () => {
     setFade(true);
-    if (notification.eventType === 'Meeting scheduled') {
-      dispatch(markMeetingNotificationAsRead(notification));
-    } else {
-      dispatch(markNotificationAsRead(_id));
-    }
-    dispatch(getUnreadMeetingNotification());
+    dispatch(markNotificationAsRead(_id));
   };
 
   return (

@@ -59,6 +59,7 @@ import FaqManagement from './components/Faq/FaqManagement';
 import FaqSearch from './components/Faq/FaqSearch';
 import UnansweredFaqs from './components/Faq/UnansweredFaqs';
 import ToolsAvailabilityPage from './components/BMDashboard/WeeklyProjectSummary/Tools/ToolsAvailabilityPage';
+import DatabaseDesign from './components/CommunityPortal/DatabaseDesign/DatabaseDesign';
 import ResourceUsage from './components/CommunityPortal/ResourceUsage/ResourceUsage';
 
 import Page1 from './components/HGNForm/pages/Page1';
@@ -80,13 +81,12 @@ import TopCommunityMembers from './components/HGNForm/TopCommunityMembers';
 import HelpPage from './components/LandingPage/HelpPage';
 import CommunityMembersPage from './components/HGNHelpSkillsDashboard/CommunityMembersPage';
 import FeedbackModal from './components/HGNHelpSkillsDashboard/FeedbackModal';
-import ActivityFeedback from './components/CommunityPortal/Activities/activityId/ActivityFeedback';
 import SkillsOverviewPage from './components/HGNHelpSkillsDashboard/SkillsOverviewPage';
 import TeamCard from './components/HGNHelpSkillsDashboard/TeamCard/TeamCard';
 import UserProfilePage from './components/HGNHelpSkillsDashboard/UserProfilePage';
 
 import ActivityAgenda from './components/CommunityPortal/Activities/ActivityAgenda';
-
+import ActivityAttendance from './components/CommunityPortal/Activities/ActivityAttendance';
 import ResourcesUsage from './components/CommunityPortal/Activities/activityId/ResourcesUsage';
 import EventNoShowChart from './components/CommunityPortal/Attendence/NoshowViz';
 import EventList from './components/CommunityPortal/Event/EventList/EventList';
@@ -108,7 +108,7 @@ import { JobAnalyticsCompetitiveRolesPage } from './components/Reports/JobAnalyt
 
 import InjurySeverityChart from './components/BMDashboard/Injuries/InjurySeverityChart';
 import LBProtectedRoute from './components/common/LBDashboard/LBProtectedRoute/LBProtectedRoute';
-
+import Activity from './components/CommunityPortal/Activities/activityId/Activity';
 import LBDashboard from './components/LBDashboard';
 import BiddingHomepage from './components/LBDashboard/BiddingHomepage/BiddingHomepage';
 import LBBidOverview from './components/LBDashboard/BiddingOverview/BiddingOverview';
@@ -146,28 +146,16 @@ import CreateNewTeam from './components/BMDashboard/Team/CreateNewTeam/CreateNew
 
 import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
 import CPDashboard from './components/CommunityPortal';
-import ActivityList from './components/CommunityPortal/Activities/ActivityList';
-import FaqSection from './components/CommunityPortal/Activities/FaqSection';
-import ActivityAttendance from './components/CommunityPortal/Activities/ActivityAttendance';
 import ActivityComments from './components/CommunityPortal/Activities/activityId/ActivityComments';
-
+import ActivityList from './components/CommunityPortal/Activities/ActivityList';
 import Feedbackform from './components/CommunityPortal/Activities/Feedbackform';
-
-import Register from './components/CommunityPortal/Activities/Register/Register';
-
 import CPLogin from './components/CommunityPortal/Login';
 import ActivitiesPage from './components/CommunityPortal/Activities/ActivitiesPage';
+import Register from './components/CommunityPortal/Activities/Register/Register';
 import EventStats from './components/CommunityPortal/EventPersonalization/EventStats';
-import VirtualVsInPerson from './components/CommunityPortal/Reports/Participation/VirtualVsInPerson';
-import EventValue from './components/CommunityPortal/Reports/Participation/EventValue';
-import ParticipationTrends from './components/CommunityPortal/Reports/Participation/ParticipationTrends';
-import EventPerformance from './components/CommunityPortal/Reports/Participation/EventPerformance';
-
-// Community Calendar
 import CommunityCalendar from './components/CommunityPortal/Calendar/CommunityCalendar';
-
 import PRGradingDashboard from './components/PRGradingDashboard/PRGradingDashboard';
-import RegistrationPopup from './components/CommunityPortal/RegistrationConfirmation/Registration';
+
 import KICalendar from './components/KitchenandInventory/KICalendar/KICalendar';
 import KIDashboard from './components/KitchenandInventory/KIDashboard/KIDashboard';
 import KIINVENTORY from './components/KitchenandInventory/KIInventory/KIInventory';
@@ -195,7 +183,6 @@ import TaskDetails from './components/EductionPortal/StudentTasks/TaskDetails';
 import PRReviewTeamAnalytics from './components/HGNPRDashboard/PRReviewTeamAnalytics';
 import PRPromotionsPage from './components/PRPromotions/PRPromotionsPage';
 import SimpleToolChart from './components/BMDashboard/Tools/SimpleToolChart';
-import ActivityLogs from './components/ActivityLog/DailyLogPage';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import IntermediateTaskList from './components/EductionPortal/IntermediateTasks/IntermediateTaskList';
 import WriteTaskUpload from './components/EductionPortal/Tasks/WriteTaskUpload';
@@ -243,7 +230,6 @@ const InjuriesOverTimeChart = lazy(() =>
 const Projects = lazy(() => import('./components/Projects'));
 const WeeklySummariesReport = lazy(() => import('./components/WeeklySummariesReport'));
 const TotalOrgSummary = lazy(() => import('./components/TotalOrgSummary'));
-const MeetingScheduling = lazy(() => import('./components/MeetingScheduling'));
 const Reports = lazy(() => import('./components/Reports'));
 const PeopleReport = lazy(() => import('./components/Reports/PeopleReport'));
 const ProjectReport = lazy(() => import('./components/Reports/ProjectReport'));
@@ -316,19 +302,6 @@ export default (
         </>
       )}
     />
-
-    <LBProtectedRoute
-      exact
-      path="/lbdashboard/wishlist/:id/availability"
-      render={() => (
-        <>
-          <AutoUpdate />
-          <ToastContainer />
-          <WishListItem />
-        </>
-      )}
-    />
-
     <LBProtectedRoute
       exact
       path="/lbdashboard/wishlist/:id"
@@ -799,7 +772,7 @@ export default (
           allowedRoles={[
             UserRole.Administrator,
             UserRole.Manager,
-            UserRoleTab.CoreTeam,
+            UserRole.CoreTeam,
             UserRole.Owner,
             UserRole.Mentor,
           ]}
@@ -812,7 +785,6 @@ export default (
           fallback
           allowedRoles={[UserRole.Owner]}
         />
-        <Route path="/ActivityLogs/DailyLog" component={ActivityLogs} />
         <ProtectedRoute path="/job-application" exact component={JobApplicationForm} />
         <ProtectedRoute path="/popularity" component={PopularityTimelineChart} fallback />
         <ProtectedRoute
@@ -866,21 +838,6 @@ export default (
           path="/analytics/roles-hits-and-applications"
           exact
           component={JobsHitsApplicationsChart}
-        />
-
-        <ProtectedRoute
-          path="/schedulemeetings"
-          exact
-          component={MeetingScheduling}
-          fallback
-          allowedRoles={[
-            UserRole.Administrator,
-            UserRole.Manager,
-            UserRoleTab.CoreTeam,
-            UserRole.Owner,
-            UserRole.Mentor,
-          ]}
-          routePermissions={RoutePermissions.meetings}
         />
 
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
@@ -1010,31 +967,13 @@ export default (
 
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
         <Route path="/communityportal/login" component={CPLogin} />
-        <CPProtectedRoute
-          path="/communityportal/activities/:activityid/faq"
-          exact
-          component={FaqSection}
-        />
-        <CPProtectedRoute path="/communityportal/activities" exact component={ActivityList} />
-        <CPProtectedRoute path="/communityportal/Activities" exact component={ActivityList} />
-        {/* ----- Community Calendar Routing ----- */}
         <CPProtectedRoute path="/communityportal/calendar" exact component={CommunityCalendar} />
         <CPProtectedRoute path="/communityportal/database/design" exact component={EventList} />
-
-        <CPProtectedRoute
-          path="/communityportal/activity/:activityId/ActivityFeedback"
-          exact
-          component={ActivityFeedback}
-        />
+        <CPProtectedRoute path="/communityportal/activities" exact component={ActivityList} />
         <CPProtectedRoute
           path="/communityportal/ActivityAttendance"
           exact
           component={ActivityAttendance}
-        />
-        <CPProtectedRoute
-          path="/communityportal/activities/registration"
-          exact
-          component={RegistrationPopup}
         />
         <CPProtectedRoute
           path="/communityportal/activities/Feedbackform/:eventId/:email"
@@ -1043,7 +982,7 @@ export default (
         <CPProtectedRoute
           path="/communityportal/activities/:activityid"
           exact
-          component={ActivityFeedback}
+          component={Activity}
         />
         <CPProtectedRoute
           path="/communityportal/activities/TestEventReg"
@@ -1094,24 +1033,14 @@ export default (
           component={ResourceUsage}
         />
         <CPProtectedRoute
-          path="/communityportal/reports/participation/virtual-vs-inperson"
+          path="/communityportal/activity/:activityid"
           exact
-          component={VirtualVsInPerson}
+          component={ActivityAgenda}
         />
         <CPProtectedRoute
-          path="/communityportal/reports/participation/event-value"
+          path="/communityportal/database/design"
           exact
-          component={EventValue}
-        />
-        <CPProtectedRoute
-          path="/communityportal/reports/participation/trends"
-          exact
-          component={ParticipationTrends}
-        />
-        <CPProtectedRoute
-          path="/communityportal/reports/participation/performance"
-          exact
-          component={EventPerformance}
+          component={DatabaseDesign}
         />
 
         <ProtectedRoute path="/kitchenandinventory" exact component={KIDashboard} />
@@ -1175,13 +1104,7 @@ export default (
         <Route path="/unsubscribe" component={UnsubscribePage} />
         <Route path="/collaboration" component={Collaboration} />
         <Route path="/suggestedjobslist" component={SuggestedJobsList} />
-        <ProtectedRoute
-          path="/jobformbuilder"
-          fallback
-          component={JobFormBuilder}
-          allowedRoles={[UserRole.Owner]}
-          routePermissions={RoutePermissions.jobFormManagement}
-        />
+        <ProtectedRoute path="/jobformbuilder" fallback component={JobFormBuilder} />
         <ProtectedRoute path="/infoCollections" component={EditableInfoModal} />
         <ProtectedRoute path="/userprofile/:userId" fallback component={UserProfile} />
         <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />

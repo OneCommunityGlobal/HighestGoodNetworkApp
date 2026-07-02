@@ -70,7 +70,7 @@ export const TeamButtons = ({ projectId }) => {
       <Btn to="/teams" color="indigo">
         Edit Existing Team
       </Btn>
-      <Btn to={`/bmdashboard/issues/add/${projectId}`} color="indigo">
+      <Btn to={`/bmdashboard/issues/add/${projectId}`} color="maroon">
         Log Issue
       </Btn>
       <Btn to="/bmdashboard/issues/" color="indigo">

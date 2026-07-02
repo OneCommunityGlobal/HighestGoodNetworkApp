@@ -1,8 +1,5 @@
-
-import httpService from '../services/httpService';
-import { ApiEndpoint, ENDPOINTS } from '../utils/URL';
-
 import axios from 'axios';
+import { ApiEndpoint } from '~/utils/URL';
 import * as actionTypes from '../constants/notification';
 
 const APIEndpoint = ApiEndpoint;

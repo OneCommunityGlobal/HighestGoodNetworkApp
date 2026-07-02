@@ -1,49 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaw, faShoppingCart, faBoxOpen, faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import { useSelector } from 'react-redux';
 import AnimalOrdersTab from './AnimalOrdersTab';
 import CullingCalendarTab from './CullingCalendarTab';
-import FeedManagementTab from './FeedManagementTab';
 import styles from './AnimalManagement.module.css';
 
 const AnimalManagement = () => {
   const darkMode = useSelector(state => state.theme?.darkMode || false);
   const [activeTab, setActiveTab] = useState('orders');
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const btn = document.querySelector('.back-to-top');
-      if (!btn) return;
-      if (window.scrollY > 300) {
-        btn.style.setProperty('display', 'flex', 'important');
-      } else {
-        btn.style.setProperty('display', 'none', 'important');
-      }
-    };
-
-    const handleBackToTopClick = e => {
-      e.preventDefault();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-
-    const btn = document.querySelector('.back-to-top');
-    if (btn) {
-      btn.addEventListener('click', handleBackToTopClick);
-    }
-    window.addEventListener('scroll', handleScroll);
-
-    // Initial check
-    handleScroll();
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      if (btn) {
-        btn.removeEventListener('click', handleBackToTopClick);
-        btn.style.display = '';
-      }
-    };
-  }, []);
 
   const [orders, setOrders] = useState([
     {
@@ -83,35 +48,8 @@ const AnimalManagement = () => {
     },
   ]);
 
-  const [feedOrders, setFeedOrders] = useState([
-    {
-      id: 'FO-001',
-      supplierName: 'Farm Supply Co.',
-      items: 'Layer Feed (100 lbs), Scratch Grains (50 lbs)',
-      orderedDate: '2024-10-15',
-      expectedDate: '2024-10-18',
-      status: 'delivered',
-    },
-    {
-      id: 'FO-002',
-      supplierName: 'Organic Feed Depot',
-      items: 'Goat Pellets (80 lbs), Hay Bales (10)',
-      orderedDate: '2024-10-22',
-      expectedDate: '2024-10-29',
-      status: 'shipped',
-    },
-  ]);
-
-  const [feedInventory, setFeedInventory] = useState([
-    { id: 'FI-1', name: 'Layer Feed', unit: 'lbs', stockLeft: 75, reorderThreshold: 25 },
-    { id: 'FI-2', name: 'Scratch Grains', unit: 'lbs', stockLeft: 30, reorderThreshold: 15 },
-    { id: 'FI-3', name: 'Goat Pellets', unit: 'lbs', stockLeft: 15, reorderThreshold: 20 },
-    { id: 'FI-4', name: 'Hay Bales', unit: 'bales', stockLeft: 18, reorderThreshold: 10 },
-  ]);
-
   const pendingOrdersCount = orders.filter(o => o.status !== 'delivered').length;
   const upcomingCullingCount = cullingEvents.filter(e => e.status === 'scheduled').length;
-  const pendingFeedOrdersCount = feedOrders.filter(o => o.status !== 'delivered').length;
 
   return (
     <div
@@ -148,7 +86,7 @@ const AnimalManagement = () => {
         <div className={styles['dashboard-card']}>
           <div className={styles['card-info']}>
             <span className={styles['card-title']}>Feed Orders</span>
-            <span className={styles['card-value']}>{pendingFeedOrdersCount}</span>
+            <span className={styles['card-value']}>2</span>
           </div>
           <div className={`${styles['card-icon']} ${styles['icon-feed']}`}>
             <FontAwesomeIcon icon={faBoxOpen} />
@@ -198,17 +136,14 @@ const AnimalManagement = () => {
         {activeTab === 'culling' && (
           <CullingCalendarTab events={cullingEvents} setEvents={setCullingEvents} />
         )}
-        {activeTab === 'feed' && (
-          <FeedManagementTab
-            feedOrders={feedOrders}
-            setFeedOrders={setFeedOrders}
-            feedInventory={feedInventory}
-            setFeedInventory={setFeedInventory}
-          />
-        )}
         {activeTab === 'inventory' && (
           <div className={styles['tab-content']}>
             <div className={styles['empty-state']}>Animal Inventory content coming soon.</div>
+          </div>
+        )}
+        {activeTab === 'feed' && (
+          <div className={styles['tab-content']}>
+            <div className={styles['empty-state']}>Feed Management content coming soon.</div>
           </div>
         )}
       </div>

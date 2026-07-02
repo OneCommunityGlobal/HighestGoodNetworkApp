@@ -11,10 +11,7 @@ export default function EquipmentUpdate() {
     >
       <main className={styles.equipmentUpdateContainer}>
         <header className={styles.equipmentUpdateHeader}>
-          <h2>Update Total Tool or Equipment Count</h2>
-          <p className={styles.updateSubText}>
-            Select the item below and enter the new total quantity to replace the current count.
-          </p>
+          <h2>Which Tool or Equipment to Update</h2>
         </header>
         <EquipmentUpdateForm />
       </main>

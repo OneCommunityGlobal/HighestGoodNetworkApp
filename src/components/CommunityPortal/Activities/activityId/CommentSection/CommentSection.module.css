@@ -1,41 +1,36 @@
-.activityCommentFooter {
-  font-size: 12px;
-  color: gray;
-  margin-top: 5px;
-  transition: color 0.3s ease;
-}
-
-.activityComment {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  transition: background-color 0.3s ease;
-}
-
-.activityCommentsSection {
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  transition: all 0.3s ease;
-}
-
-.activityCommentUser {
-  display: flex;
-  gap: 5px;
-}
-
-.activityCommentText {
+/* stylelint-disable  */
+.commentText {
   flex: 1;
   background-color: #f4f4f4;
   padding: 10px;
   border-radius: 6px;
-  transition:
-    background-color 0.3s ease,
-    color 0.3s ease;
 }
 
-.activityIcon {
+.commentFooter {
+  font-size: 12px;
+  color: gray;
+  margin-top: 5px;
+}
+
+.comment {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.commentsSection {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.commentUser {
+  display: flex;
+  gap: 5px;
+}
+
+.icon {
   width: 30px;
   height: 30px;
   border-radius: 50%;
@@ -43,11 +38,6 @@
   text-align: center;
   line-height: 30px;
   font-weight: bold;
-  transition: transform 0.2s ease;
-}
-
-.activityIcon:hover {
-  transform: scale(1.1);
 }
 
 .purple {
@@ -59,30 +49,32 @@
 }
 
 @media (width <= 800px) {
-  .activityComment {
+  .comment {
     flex-direction: column;
     gap: 5px;
   }
 
-  .activityCommentsSection {
+  .commentsSection {
     gap: 10px;
     padding: 15px;
   }
 }
 
-.darkMode .activityCommentFooter {
-  color: #aaa;
+/* Dark mode (body.dark-mode from theme) */
+:global(body.dark-mode) .commentsSection {
+  color: #e0e0e0;
 }
 
-.darkMode .activityComment {
-  background-color: transparent;
+:global(body.dark-mode) .commentText {
+  background-color: #2a3a57;
+  color: #e0e0e0;
+  border: 1px solid #3b4a66;
 }
 
-.darkMode .activityCommentsSection {
-  background-color: transparent;
+:global(body.dark-mode) .commentFooter {
+  color: #b0b0b0;
 }
 
-.darkMode .activityCommentText {
-  background-color: #3a506b;
-  color: #fff;
+:global(body.dark-mode) .commentFooter span {
+  color: #b0b0b0;
 }

@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import configureStore from 'redux-mock-store';
+import { configureStore } from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import ActiveInactiveConfirmationPopup from '../ActiveInactiveConfirmationPopup';
 import { renderWithProvider } from '../../../__tests__/utils';

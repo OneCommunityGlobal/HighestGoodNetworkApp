@@ -5,9 +5,6 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { ENDPOINTS } from '~/utils/URL.js';
 
-
-
-
 const projectWBSUrl = ENDPOINTS.WBS('5ad91ec3590b19002asacd26');
 const userProfileUrl = ENDPOINTS.USER_PROFILE(mockState.auth.user.userid);
 const leaderboardUrl = ENDPOINTS.LEADER_BOARD(mockState.auth.user.userid);

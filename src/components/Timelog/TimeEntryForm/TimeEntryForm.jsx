@@ -92,7 +92,6 @@ function TimeEntryForm(props) {
   const viewingUser = JSON.parse(sessionStorage.getItem('viewingUser') ?? '{}');
   const userTimeZone = userProfile?.timeZone || 'America/Los_Angeles';
   const [actualDate, setActualDate] = useState('');
-  const [editorKey, setEditorKey] = useState(0);
 
   const initialFormValues = {
     dateOfWork: moment()
@@ -654,7 +653,6 @@ function TimeEntryForm(props) {
 
   useEffect(() => {
     if (isOpen) {
-      setEditorKey(prev => prev + 1);
       setActualDate(null);
       getActualDate();
     }
@@ -828,7 +826,6 @@ function TimeEntryForm(props) {
                   }}
                 >
                   <Editor
-                    key={editorKey}
                     tinymceScriptSrc="/tinymce/tinymce.min.js"
                     init={TINY_MCE_INIT_OPTIONS}
                     id="notes"

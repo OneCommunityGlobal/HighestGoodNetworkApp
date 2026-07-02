@@ -35,16 +35,14 @@ export const filterButtons = [
  * @param {FilterBarProps} props
  * @returns {JSX.Element}
  */
-export function FilterBar({ currentFilter, onChange, isLoading, darkMode }) {
+export function FilterBar({ currentFilter, onChange, isLoading }) {
   return (
     <div aria-label="Task Filters">
       {filterButtons.map(({ value, label, variant }) => (
         <Button
           size="sm"
           key={value}
-          // The "light" variant is invisible on the dark background; use the
-          // outline-light equivalent in dark mode so the button stays visible.
-          variant={darkMode && variant === 'light' ? 'outline-light' : variant}
+          variant={variant}
           active={currentFilter === value}
           onClick={() => onChange(value)}
           disabled={isLoading}

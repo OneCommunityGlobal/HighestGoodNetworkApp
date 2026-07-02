@@ -303,7 +303,7 @@ function WishListItem(props) {
             >
               <h6>The Dates you picked are not available</h6>
               <Link
-                to={`/lbdashboard/wishlist/${currWishlistItem.id}/availability`}
+                to="/lbdashboard/listingshome"
                 className={getClassNames('', styles['item__error-link--dark'], darkMode)}
               >
                 Click here to see available dates
@@ -333,17 +333,20 @@ function WishListItem(props) {
                 </button>
               </div>
               <div className={styles['start__chat']}>
-                <Link
-                  to="/lbdashboard/messaging"
+                <button
+                  type="button"
                   className={getClassNames(
                     styles['start__chat-button'],
                     styles['start__chat-button--dark'],
                     darkMode,
                   )}
+                  onClick={e => {
+                    e.preventDefault();
+                  }}
                 >
                   <BsChat />
                   &nbsp;Chat with the Host
-                </Link>
+                </button>
               </div>
             </div>
           </div>

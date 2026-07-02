@@ -98,8 +98,7 @@ export const ACTIVITY_RESOURCE_USAGE = 'Activity Resource Usage';
 export const ACTIVITY_RESOURCE_MANGEMENT = 'Activity Resource Management';
 export const EVENT_DATABASE_DESIGN = 'Event Database Design';
 
-export const SEND_EMAILS = 'Send Emails';
-export const SCHEDULE_MEETINGS = 'Schedule Meeting';
+
 export const PRODUCTION = 'Production';
 export const GARDEN_MANAGEMENT = 'Garden Management';
 export const ORCHARD_MANAGEMENT = 'Orchard Management';
@@ -112,4 +111,8 @@ export const ORDERS = 'Orders';
 export const KI_CALENDAR = 'Calendar';
 export const KI_REPORTS = 'Reports';
 export const FOOD_BARS = 'Food Bars';
+
+export const SEND_EMAILS = 'Send Emails';
 export const BLUE_SQUARE_EMAIL_MANAGEMENT = 'Blue Square Email Management';
+
+ 

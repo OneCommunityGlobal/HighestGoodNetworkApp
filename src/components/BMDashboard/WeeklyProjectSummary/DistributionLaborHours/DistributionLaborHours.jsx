@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import Select from 'react-select';
 import { useSelector } from 'react-redux';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import styles from './DistributionLaborHours.module.css';
@@ -65,18 +64,6 @@ export default function DistributionLaborHours() {
 
   const totalHours = filteredData.reduce((sum, item) => sum + item.value, 0);
 
-  const projectOptions = [
-    { value: '', label: 'ALL' },
-    { value: 'Project A', label: 'Project A' },
-    { value: 'Project B', label: 'Project B' },
-  ];
-
-  const memberOptions = [
-    { value: '', label: 'ALL' },
-    { value: 'Member 1', label: 'Member 1' },
-    { value: 'Member 2', label: 'Member 2' },
-  ];
-
   return (
     <div className={styles.container}>
       <h3 className={styles.title}>Distribution of Labor Hours</h3>
@@ -99,32 +86,25 @@ export default function DistributionLaborHours() {
             onChange={e => setDateRange({ ...dateRange, to: e.target.value })}
           />
         </label>
-        <label htmlFor="project-filter">
+        <label>
           Project:
-          <Select
-            options={projectOptions}
-            value={projectOptions.find(opt => opt.value === projectFilter)}
-            onChange={opt => setProjectFilter(opt.value)}
-            className="react-select-container"
-            classNamePrefix="react-select"
-          />
+          <select onChange={e => setProjectFilter(e.target.value)} value={projectFilter}>
+            <option value="">All</option>
+            <option value="Project A">Project A</option>
+            <option value="Project B">Project B</option>
+          </select>
         </label>
-        <label htmlFor="member-filter">
+        <label>
           Member:
-          <Select
-            options={memberOptions}
-            value={memberOptions.find(opt => opt.value === memberFilter)}
-            onChange={opt => setMemberFilter(opt.value)}
-            className="react-select-container"
-            classNamePrefix="react-select"
-          />
+          <select onChange={e => setMemberFilter(e.target.value)} value={memberFilter}>
+            <option value="">All</option>
+            <option value="Member 1">Member 1</option>
+            <option value="Member 2">Member 2</option>
+          </select>
         </label>
-
-        <div className={styles.buttonContainer}>
-          <button className={styles.button} type="button">
-            Submit
-          </button>
-        </div>
+        <button className={styles.button} type="button">
+          Submit
+        </button>
       </div>
 
       {/* Chart + Legend */}

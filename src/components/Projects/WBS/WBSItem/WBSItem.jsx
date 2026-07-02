@@ -3,7 +3,6 @@
  * Author: Henry Ng - 08/01/20
  * Display member of the members list
  ********************************************************************************/
-import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { connect, useSelector } from 'react-redux';
 import ModalDelete from './../../../common/Modal';
@@ -16,7 +15,7 @@ import { Link } from 'react-router-dom';
 import { NavItem } from 'reactstrap';
 
 
-const WBSItem = ({ darkMode, index, name, wbsId, projectId, getPopupById, deleteWbs, hasPermission, popupEditor, taskSelectionMode, taskSelectionReturnPath }) => {
+const WBSItem = ({ darkMode, index, name, wbsId, projectId, getPopupById, deleteWbs, hasPermission, popupEditor }) => {
 
   const [showModalDelete, setShowModalDelete] = useState(false);
 
@@ -39,12 +38,7 @@ const WBSItem = ({ darkMode, index, name, wbsId, projectId, getPopupById, delete
           {index}
         </th>
         <td style={{ textAlign: 'left' }}>
-          <NavItem tag={Link} to={{
-            pathname: `/wbs/tasks/${wbsId}/${projectId}/${name}`,
-            state: taskSelectionMode
-              ? { taskSelectionMode: true, returnPath: taskSelectionReturnPath }
-              : undefined,
-          }} className={darkMode ? 'text-azure' : ''}>
+          <NavItem tag={Link} to={`/wbs/tasks/${wbsId}/${projectId}/${name}`} className={darkMode ? 'text-azure' : ''}>
             {name}
           </NavItem>
         </td>
@@ -73,39 +67,6 @@ const WBSItem = ({ darkMode, index, name, wbsId, projectId, getPopupById, delete
     </React.Fragment>
   );
 };
-
-WBSItem.propTypes = {
-  darkMode: PropTypes.bool,
-  index: PropTypes.number,
-  name: PropTypes.string,
-  wbsId: PropTypes.string,
-  projectId: PropTypes.string,
-  getPopupById: PropTypes.func,
-  deleteWbs: PropTypes.func,
-  hasPermission: PropTypes.func,
-  popupEditor: PropTypes.shape({
-    currPopup: PropTypes.shape({
-      popupContent: PropTypes.string,
-    }),
-  }),
-  taskSelectionMode: PropTypes.bool,
-  taskSelectionReturnPath: PropTypes.string,
-};
-
-WBSItem.defaultProps = {
-  darkMode: false,
-  index: 0,
-  name: '',
-  wbsId: '',
-  projectId: '',
-  getPopupById: () => {},
-  deleteWbs: () => {},
-  hasPermission: () => false,
-  popupEditor: { currPopup: { popupContent: '' } },
-  taskSelectionMode: false,
-  taskSelectionReturnPath: '',
-};
-
 const mapStateToProps = (state) => state;
 export default connect(mapStateToProps, {
   deleteWbs,

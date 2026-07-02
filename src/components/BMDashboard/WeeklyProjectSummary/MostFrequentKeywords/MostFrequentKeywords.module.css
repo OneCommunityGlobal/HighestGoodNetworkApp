@@ -1,18 +1,9 @@
 /* stylelint-disable  */
 .mfkContainer {
-  --bg-color: #ffffff;
-  --text-color: #000000;
-  --title-color: #1e3a8a;
-  --label-color: #374151;
-  --input-bg: #ffffff;
-  --border-color: #d1d5db;
-  --focus-border-color: #3b82f6;
-  --text-secondary: #6b7280;
-  --error-color: #dc2626;
   padding: 1rem;
   font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
-  background-color: var(--bg-color);
-  color: var(--text-color);
+  background-color: var(--bg-color, #fff);
+  color: var(--text-color, #000);
   height: 100%;
   min-height: 100%;
   display: flex;
@@ -59,16 +50,16 @@
   min-width: 120px;
 }
 
-/* Data source dropdown spans its own row so the date fields can align together */
+/* Make data source dropdown wider */
 .controlGroup:first-of-type {
-  flex: 1 1 100%;
+  flex: 2 1 200px;
   min-width: 180px;
 }
 
-/* Keep both date fields on the same line, sharing the row evenly */
+/* Make date fields smaller and just big enough */
 .controlGroup:nth-of-type(2),
 .controlGroup:nth-of-type(3) {
-  flex: 1 1 0;
+  flex: 0 1 110px;
   min-width: 100px;
 }
 
@@ -284,13 +275,13 @@
   }
 
   .controlGroup:first-of-type {
-    flex: 1 1 100%;
+    flex: 2 1 180px;
     min-width: 160px;
   }
 
   .controlGroup:nth-of-type(2),
   .controlGroup:nth-of-type(3) {
-    flex: 1 1 0;
+    flex: 0 1 100px;
     min-width: 90px;
   }
 
@@ -425,11 +416,6 @@
 
 :global(.mfk-dark-popper .react-datepicker__month-container),
 :global(.mfk-dark-calendar .react-datepicker__month-container) {
-  background-color: #0f172a !important;
-}
-
-:global(.mfk-dark-popper .react-datepicker__month),
-:global(.mfk-dark-calendar .react-datepicker__month) {
   background-color: #0f172a !important;
 }
 

@@ -1,11 +1,6 @@
 import React from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import styles from './FormPreviewModal.module.css';
-import {
-  normalizeQuestionType,
-  resolveInputType,
-  STANDARD_APPLICANT_FIELDS,
-  isFieldRequired,
-} from './jobFormQuestionUtils';
 
 /**
  * FormPreviewModal Component
@@ -25,29 +20,16 @@ function FormPreviewModal({ isOpen, onClose, formFields, jobTitle, darkMode }) {
   const visibleFields = formFields.filter(field => field.visible !== false);
 
   const renderField = (field, index) => {
-    const { questionText, options } = field;
-    const questionType = normalizeQuestionType(field);
-    const fieldKey = `preview-field-${index}-${questionText}`;
-    const requiredMark = isFieldRequired(field) ? (
-      <span className={styles.previewRequiredMark} aria-hidden="true">
-        {' '}
-        *
-      </span>
-    ) : null;
+    const { questionText, questionType, options } = field;
 
     switch (questionType) {
       case 'textbox':
         return (
-          <div key={fieldKey} className={styles.previewField}>
-            <label className={styles.previewLabel}>
-              {questionText}
-              {requiredMark}
-            </label>
+          <div key={uuidv4()} className={styles.previewField}>
+            <label className={styles.previewLabel}>{questionText}</label>
             <input
-              type={resolveInputType(field)}
-              placeholder={
-                resolveInputType(field) === 'email' ? 'Enter email address' : 'Enter text here'
-              }
+              type="text"
+              placeholder="Enter text here"
               disabled
               className={styles.previewInput}
             />
@@ -56,48 +38,28 @@ function FormPreviewModal({ isOpen, onClose, formFields, jobTitle, darkMode }) {
 
       case 'textarea':
         return (
-          <div key={fieldKey} className={styles.previewField}>
-            <label className={styles.previewLabel}>
-              {questionText}
-              {requiredMark}
-            </label>
+          <div key={uuidv4()} className={styles.previewField}>
+            <label className={styles.previewLabel}>{questionText}</label>
             <textarea placeholder="Enter text here" disabled className={styles.previewTextarea} />
           </div>
         );
 
       case 'date':
         return (
-          <div key={fieldKey} className={styles.previewField}>
-            <label className={styles.previewLabel}>
-              {questionText}
-              {requiredMark}
-            </label>
+          <div key={uuidv4()} className={styles.previewField}>
+            <label className={styles.previewLabel}>{questionText}</label>
             <input type="date" disabled className={styles.previewInput} />
-          </div>
-        );
-
-      case 'file':
-        return (
-          <div key={fieldKey} className={styles.previewField}>
-            <label className={styles.previewLabel}>
-              {questionText}
-              {requiredMark}
-            </label>
-            <input type="file" disabled className={styles.previewInput} />
           </div>
         );
 
       case 'checkbox':
         return (
-          <div key={fieldKey} className={styles.previewField}>
-            <label className={styles.previewLabel}>
-              {questionText}
-              {requiredMark}
-            </label>
+          <div key={uuidv4()} className={styles.previewField}>
+            <label className={styles.previewLabel}>{questionText}</label>
             <div className={styles.previewOptions}>
               {options &&
                 options.map((option, optIdx) => (
-                  <div key={`${fieldKey}-opt-${optIdx}`} className={styles.previewOptionItem}>
+                  <div key={uuidv4()} className={styles.previewOptionItem}>
                     <input
                       type="checkbox"
                       disabled
@@ -118,15 +80,12 @@ function FormPreviewModal({ isOpen, onClose, formFields, jobTitle, darkMode }) {
 
       case 'radio':
         return (
-          <div key={fieldKey} className={styles.previewField}>
-            <label className={styles.previewLabel}>
-              {questionText}
-              {requiredMark}
-            </label>
+          <div key={uuidv4()} className={styles.previewField}>
+            <label className={styles.previewLabel}>{questionText}</label>
             <div className={styles.previewOptions}>
               {options &&
                 options.map((option, optIdx) => (
-                  <div key={`${fieldKey}-opt-${optIdx}`} className={styles.previewOptionItem}>
+                  <div key={uuidv4()} className={styles.previewOptionItem}>
                     <input
                       type="radio"
                       disabled
@@ -148,16 +107,13 @@ function FormPreviewModal({ isOpen, onClose, formFields, jobTitle, darkMode }) {
 
       case 'dropdown':
         return (
-          <div key={fieldKey} className={styles.previewField}>
-            <label className={styles.previewLabel}>
-              {questionText}
-              {requiredMark}
-            </label>
+          <div key={uuidv4()} className={styles.previewField}>
+            <label className={styles.previewLabel}>{questionText}</label>
             <select disabled className={styles.previewSelect}>
               <option>Select an option</option>
               {options &&
                 options.map(option => (
-                  <option key={`${fieldKey}-${option}`} value={option}>
+                  <option key={uuidv4()} value={option}>
                     {option}
                   </option>
                 ))}
@@ -166,20 +122,7 @@ function FormPreviewModal({ isOpen, onClose, formFields, jobTitle, darkMode }) {
         );
 
       default:
-        return (
-          <div key={fieldKey} className={styles.previewField}>
-            <label className={styles.previewLabel}>
-              {questionText}
-              {requiredMark}
-            </label>
-            <input
-              type="text"
-              placeholder="Enter text here"
-              disabled
-              className={styles.previewInput}
-            />
-          </div>
-        );
+        return null;
     }
   };
 
@@ -243,43 +186,13 @@ function FormPreviewModal({ isOpen, onClose, formFields, jobTitle, darkMode }) {
 
             {visibleFields.length === 0 ? (
               <div className={styles.previewEmptyMessage}>
-                <p>
-                  No visible custom questions. Profile fields above are always shown to applicants.
-                </p>
+                <p>No visible fields to display. Please add and enable questions.</p>
               </div>
-            ) : null}
-
-            <div className={styles.previewFieldsContainer}>
-              <div className={styles.previewStandardSection}>
-                <p className={styles.previewStandardNote}>Standard applicant profile fields</p>
-                {STANDARD_APPLICANT_FIELDS.map(field => (
-                  <div key={field.label} className={styles.previewField}>
-                    <label className={styles.previewLabel}>
-                      {field.label}
-                      {field.required && (
-                        <span className={styles.previewRequiredMark} aria-hidden="true">
-                          {' '}
-                          *
-                        </span>
-                      )}
-                    </label>
-                    <input
-                      type={field.inputType}
-                      placeholder={
-                        field.inputType === 'email'
-                          ? 'Enter email address'
-                          : `Enter ${field.label.toLowerCase()}`
-                      }
-                      disabled
-                      className={styles.previewInput}
-                    />
-                  </div>
-                ))}
+            ) : (
+              <div className={styles.previewFieldsContainer}>
+                {visibleFields.map((field, index) => renderField(field, index))}
               </div>
-
-              {visibleFields.length > 0 &&
-                visibleFields.map((field, index) => renderField(field, index))}
-            </div>
+            )}
           </div>
         </div>
 

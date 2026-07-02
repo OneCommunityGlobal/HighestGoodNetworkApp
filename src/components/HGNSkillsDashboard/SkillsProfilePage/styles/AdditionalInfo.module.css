@@ -2,18 +2,14 @@
 .AdditionalInfoBox {
   display: flex;
   flex-direction: column;
-  border: 1px solid #c0c0c0;
+  border: 2px solid black;
   margin: 20px;
   padding: 20px;
-  background-color: #ffffff;
-  border-radius: 10px;
 }
 
 .workExpInfoBox {
   display: flex;
   flex-direction: row;
-  align-items: center;
-  gap: 10px;
 }
 
 .question-and-response-box {
@@ -31,9 +27,7 @@
 .question-and-response-box textarea {
   height: 150px;
   margin: 5px 10px;
-  background-color: #f5f7fa;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  background-color: #e6f5f3;
 }
 
 .question-and-response-box input[type='text'] {
@@ -42,7 +36,7 @@
   border: 1px solid #ccc;
   border-radius: 4px;
   margin: 5px 10px;
-  background-color: #f5f7fa;
+  background-color: #e6f5f3;
 }
 
 .question-and-response-box p {
@@ -69,20 +63,6 @@
   margin-right: 0;
 }
 
-.editButton {
-  background-color: #007bff;
-  color: #ffffff;
-  border: none;
-  border-radius: 6px;
-  padding: 6px 16px;
-  font-size: 14px;
-  cursor: pointer;
-}
-
-.editButton:hover {
-  background-color: #0056b3;
-}
-
 @media (width <= 768px) {
   .followup-questions {
     width: 80%;
@@ -96,32 +76,18 @@
   }
 }
 
-/* Dark mode */
-.AdditionalInfoBox:global(.dark-mode) {
-  background-color: #1c2541;
-  border-color: #3a506b;
-  color: #ffffff;
+:global(.dark-mode) .AdditionalInfoBox {
+  border-color: #fff;
+  color: #fff;
 }
 
-.AdditionalInfoBox:global(.dark-mode) .question-box {
-  color: #93c5fd;
+:global(.dark-mode) .question-box p {
+  color: #fff;
 }
 
-.AdditionalInfoBox:global(.dark-mode) .question-box p {
-  color: #ffffff;
-}
-
-.AdditionalInfoBox:global(.dark-mode) .question-and-response-box textarea,
-.AdditionalInfoBox:global(.dark-mode) .question-and-response-box input[type='text'] {
-  background-color: #2a3a5c;
-  color: #ffffff;
-  border-color: #3a506b;
-}
-
-.AdditionalInfoBox:global(.dark-mode) .editButton {
-  background-color: #2563eb;
-}
-
-.AdditionalInfoBox:global(.dark-mode) .editButton:hover {
-  background-color: #1d4ed8;
+:global(.dark-mode) .question-and-response-box textarea,
+:global(.dark-mode) .question-and-response-box input[type='text'] {
+  background-color: #333;
+  color: #fff;
+  border-color: #555;
 }

@@ -1,80 +1,74 @@
-import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { ENDPOINTS } from '../../utils/URL';
 import axios from 'axios';
-import httpService from '../../services/httpService';
-import { getWeeklySummaries } from '~/actions/weeklySummaries';
-import { Link, useLocation, useHistory } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { connect, useDispatch } from 'react-redux';
+import { Link, useHistory, useLocation } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import {
-  Collapse,
-  Navbar,
-  NavbarToggler,
-  Nav,
-  NavItem,
-  NavLink,
-  UncontrolledDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
   Button,
   Card,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  Nav,
+  Navbar,
+  NavbarToggler,
+  NavItem,
+  NavLink,
+  UncontrolledDropdown
 } from 'reactstrap';
-import DOMPurify from 'dompurify';
-import parse from 'html-react-parser';
-import PopUpBar from '../PopUpBar/PopUpBar';
-import { fetchTaskEditSuggestions } from '../TaskEditSuggestions/thunks';
-// 'components/TaskEditSuggestions/thunks';
-import { toast } from 'react-toastify';
-import { boxStyle, boxStyleDark } from '../../styles';
+import { getWeeklySummaries } from '~/actions/weeklySummaries';
+import PopUpBar from '~/components/PopUpBar';
+import { fetchTaskEditSuggestions } from '~/components/TaskEditSuggestions/thunks';
+import { ENDPOINTS } from '~/utils/URL';
 import { getHeaderData } from '../../actions/authActions';
-import { getAllRoles } from '../../actions/role';
-import Timer from '../Timer/Timer';
-import OwnerMessage from '../OwnerMessage/OwnerMessage';
-import {
-  DASHBOARD,
-  TIMELOG,
-  REPORTS,
-  WEEKLY_SUMMARIES_REPORT,
-  TEAM_LOCATIONS,
-  OTHER_LINKS,
-  USER_MANAGEMENT,
-  BADGE_MANAGEMENT,
-  PROJECTS,
-  TEAMS,
-  WELCOME,
-  VIEW_PROFILE,
-  UPDATE_PASSWORD,
-  LOGOUT,
-  PERMISSIONS_MANAGEMENT,
-  SEND_EMAILS,
-  TOTAL_ORG_SUMMARY,
-  SCHEDULE_MEETINGS,
-} from '../../languages/en/ui';
-import Logout from '../Logout/Logout';
-import '../../App.module.css';
-import './Header.css';
-import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import {
   getUnreadUserNotifications,
   resetNotificationError,
 } from '../../actions/notificationAction';
-import {
-  getUnreadMeetingNotification,
-  markMeetingNotificationAsRead,
-} from '../../actions/meetingNotificationAction';
-import NotificationCard from '../Notification/notificationCard';
-import DarkModeButton from './DarkModeButton';
+import { getAllRoles } from '../../actions/role';
 import { getUserProfile } from '../../actions/userProfile';
-import BellNotification from './BellNotification';
-import PermissionWatcher from '../Auth/PermissionWatcher';
+import '../../App.module.css';
 import {
-  formatMeetingDateTime,
-  resolveUserTimeZone,
-} from '../../utils/meetingTime';
+  ACTUAL_COST_BREAKDOWN,
+  BADGE_MANAGEMENT,
+  BLUE_SQUARE_EMAIL_MANAGEMENT,
+  DASHBOARD,
+  JOB_ANALYTICS_REPORT,
+  LOGOUT,
+  OTHER_LINKS,
+  PERMISSIONS_MANAGEMENT,
+  PR_PROMOTIONS,
+  PROJECTS,
+  REPORTS,
+  SEND_EMAILS,
+  TEAM_LOCATIONS,
+  TEAMS,
+  TIMELOG,
+  TOTAL_CONSTRUCTION_SUMMARY,
+  TOTAL_ORG_SUMMARY,
+  TOTAL_ORG_SUMMARY_EMAIL,
+  UPDATE_PASSWORD,
+  USER_MANAGEMENT,
+  VIEW_PROFILE,
+  WEEKLY_SUMMARIES_REPORT,
+  WELCOME,
+  BM_DASHBOARD
+} from '../../languages/en/ui';
+import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
+import PermissionWatcher from '../Auth/PermissionWatcher';
+import Logout from '../Logout/Logout';
+import NotificationCard from '../Notification/notificationCard';
+import OwnerMessage from '../OwnerMessage/OwnerMessage';
+import DisplayBox from '../PRPromotions/DisplayBox';
+import Timer from '../Timer/Timer';
+import BellNotification from './BellNotification';
+import DarkModeButton from './DarkModeButton';
+import styles from './Header.module.css';
 
 export function Header(props) {
   const location = useLocation();
@@ -87,282 +81,98 @@ export function Header(props) {
   const [displayUserId, setDisplayUserId] = useState(user.userid);
   const [popup, setPopup] = useState(false);
   const [isAuthUser, setIsAuthUser] = useState(true);
+  const collapseRef = useRef(null);
+  const toggleRef = useRef(null);
   const [isAckLoading, setIsAckLoading] = useState(false);
+  const [ showPromotionsPopup, setShowPromotionsPopup ] = useState(false);
 
   const ALLOWED_ROLES_TO_INTERACT = useMemo(() => ['Owner', 'Administrator'], []);
   const canInteractWithViewingUser = useMemo(
     () => ALLOWED_ROLES_TO_INTERACT.includes(props.auth.user.role),
     [ALLOWED_ROLES_TO_INTERACT, props.auth.user.role],
   );
+  const headerDisabled = isAuthUser ? false : !canInteractWithViewingUser;
 
   // Reports
   const canGetReports = props.hasPermission(
     'getReports',
-    !isAuthUser && canInteractWithViewingUser,
+    !isAuthUser ,
   );
   const canGetWeeklySummaries = props.hasPermission(
     'getWeeklySummaries',
-    !isAuthUser && canInteractWithViewingUser,
+    !isAuthUser,
   );
   const canGetWeeklyVolunteerSummary = props.hasPermission('getWeeklySummaries');
+  const canGetJobAnalytics = props.hasPermission('getJobReports');
 
   // Users
   const canAccessUserManagement =
-    props.hasPermission('postUserProfile', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('deleteUserProfile', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('changeUserStatus', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('getUserProfiles', !isAuthUser && canInteractWithViewingUser);
+    props.hasPermission('postUserProfile', !isAuthUser ) ||
+    props.hasPermission('deleteUserProfile', !isAuthUser ) ||
+    props.hasPermission('changeUserStatus', !isAuthUser ) ||
+    props.hasPermission('getUserProfiles', !isAuthUser ) ||
+    props.hasPermission('setFinalDay', !isAuthUser) ||
+    props.hasPermission('interactWithPauseUserButton', !isAuthUser);
 
   // Badges
   const canAccessBadgeManagement =
-    props.hasPermission('seeBadges', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('createBadges', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('updateBadges', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('deleteBadges', !isAuthUser && canInteractWithViewingUser);
+    props.hasPermission('seeBadges', !isAuthUser ) ||
+    props.hasPermission('createBadges', !isAuthUser ) ||
+    props.hasPermission('updateBadges', !isAuthUser) ||
+    props.hasPermission('deleteBadges', !isAuthUser );
   // Projects
   const canAccessProjects =
-    props.hasPermission('postProject', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('deleteProject', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('putProject', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('getProjectMembers', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('assignProjectToUsers', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('postWbs', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('deleteWbs', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('postTask', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('updateTask', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('deleteTask', !isAuthUser && canInteractWithViewingUser);
+    props.hasPermission('postProject', !isAuthUser ) ||
+    props.hasPermission('deleteProject', !isAuthUser ) ||
+    props.hasPermission('putProject', !isAuthUser ) ||
+    props.hasPermission('getProjectMembers', !isAuthUser ) ||
+    props.hasPermission('assignProjectToUsers', !isAuthUser ) ||
+    props.hasPermission('postWbs', !isAuthUser ) ||
+    props.hasPermission('deleteWbs', !isAuthUser ) ||
+    props.hasPermission('postTask', !isAuthUser ) ||
+    props.hasPermission('updateTask', !isAuthUser ) ||
+    props.hasPermission('deleteTask', !isAuthUser);
   // Tasks
   const canUpdateTask = props.hasPermission(
     'updateTask',
-    !isAuthUser && canInteractWithViewingUser,
+    !isAuthUser,
   );
   // Teams
   const canAccessTeams =
-    props.hasPermission('postTeam', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('putTeam', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('deleteTeam', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('assignTeamToUsers', !isAuthUser && canInteractWithViewingUser);
+    props.hasPermission('postTeam', !isAuthUser ) ||
+    props.hasPermission('putTeam', !isAuthUser) ||
+    props.hasPermission('deleteTeam', !isAuthUser ) ||
+    props.hasPermission('assignTeamToUsers', !isAuthUser);
   // Popups
   const canAccessPopups =
-    props.hasPermission('createPopup', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('updatePopup', !isAuthUser && canInteractWithViewingUser);
+    props.hasPermission('createPopup', !isAuthUser) ||
+    props.hasPermission('updatePopup', !isAuthUser );
   // SendEmails
   const canAccessSendEmails = props.hasPermission('sendEmails', !isAuthUser);
-  // ScheduleMeetings
-  const canAccessScheduleMeetings = props.hasPermission('scheduleMeetings', !isAuthUser);
-  // console.log("canAccessScheduleMeetings", canAccessScheduleMeetings);
   // Permissions
   const canAccessPermissionsManagement =
-    props.hasPermission('postRole', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('putRole', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('deleteRole', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('putUserProfilePermissions', !isAuthUser && canInteractWithViewingUser);
+    props.hasPermission('postRole', !isAuthUser ) ||
+    props.hasPermission('putRole', !isAuthUser ) ||
+    props.hasPermission('deleteRole', !isAuthUser ) ||
+    props.hasPermission('putUserProfilePermissions', !isAuthUser);
+
+  // Blue Square Email Management
+  const canAccessBlueSquareEmailManagement = props.hasPermission('resendBlueSquareAndSummaryEmails', !isAuthUser);
+  // PR Dashboard
+  const canAccessPRDashboard = props.hasPermission('accessPRTeamDashboard', !isAuthUser);
+
 
   const userId = user.userid;
-  const viewerTimeZone = resolveUserTimeZone(props.userProfile?.timeZone);
   const [isModalVisible, setModalVisible] = useState(false);
   const [modalContent, setModalContent] = useState('');
-  const [meetingContents, setMeetingContents] = useState([]);
-  const [meetingContentsNotification, setMeetingContentsNotification] = useState(false);
   const [userDashboardProfile, setUserDashboardProfile] = useState(undefined);
   const [hasProfileLoaded, setHasProfileLoaded] = useState(false);
   const dismissalKey = `lastDismissed_${userId}`;
   const [lastDismissed, setLastDismissed] = useState(localStorage.getItem(dismissalKey));
-  const [meetingModalOpen, setMeetingModalOpen] = useState(false);
-  const [meetingModalMessage, setMeetingModalMessage] = useState('');
-  const [activeMeetingModalIndex, setActiveMeetingModalIndex] = useState(0);
-  const [meetingCalendarLinks, setMeetingCalendarLinks] = useState(null);
-  const [meetingAudioUnlocked, setMeetingAudioUnlocked] = useState(
-    () => sessionStorage.getItem('meetingAudioUnlocked') === 'true',
-  );
-
-  const { allUserProfiles, unreadNotifications, unreadMeetingNotifications } = props;
-  const userUnreadMeetings = useMemo(
-    () =>
-      unreadMeetingNotifications?.filter(
-        meeting => String(meeting.recipient) === String(userId),
-      ) || [],
-    [unreadMeetingNotifications, userId],
-  );
+  const unreadNotifications = props.notification?.unreadNotifications; // List of unread notifications
   const dispatch = useDispatch();
   const history = useHistory();
-  const MeetingNotificationAudioRef = useRef(null);
-  const dismissedMeetingModalIdRef = useRef(null);
-  const preventMeetingModalAutoOpenRef = useRef(false);
-  const organizerNameCacheRef = useRef({});
-
-  const resolveOrganizerName = useCallback(
-    async organizerId => {
-      if (!organizerId) return 'Unknown';
-
-      const key = String(organizerId);
-      if (organizerNameCacheRef.current[key]) {
-        return organizerNameCacheRef.current[key];
-      }
-
-      const fromList = allUserProfiles?.find(profile => String(profile._id) === key);
-      if (fromList) {
-        const name = `${fromList.firstName} ${fromList.lastName}`.trim();
-        organizerNameCacheRef.current[key] = name;
-        return name;
-      }
-
-      try {
-        const { data } = await httpService.get(ENDPOINTS.USER_PROFILE(key));
-        const name = `${data.firstName || ''} ${data.lastName || ''}`.trim() || 'Unknown';
-        organizerNameCacheRef.current[key] = name;
-        return name;
-      } catch {
-        return 'Unknown';
-      }
-    },
-    [allUserProfiles],
-  );
-
-  const pauseMeetingAudio = useCallback(() => {
-    if (!MeetingNotificationAudioRef.current) return;
-    try {
-      MeetingNotificationAudioRef.current.pause();
-      MeetingNotificationAudioRef.current.currentTime = 0;
-    } catch {
-      // jsdom does not implement HTMLMediaElement.pause
-    }
-  }, []);
-
-  const playMeetingAudio = useCallback(() => {
-    if (!MeetingNotificationAudioRef.current) return;
-    MeetingNotificationAudioRef.current.play().catch(() => {});
-  }, []);
-
-  const getMeetingCountLabel = useCallback((totalMeetings, meetingIndex = 1) => {
-    if (totalMeetings <= 1) return '';
-    return ` (${meetingIndex} of ${totalMeetings})`;
-  }, []);
-
-  const clearMeetingCalendarLinks = useCallback(() => {
-    setMeetingCalendarLinks(prev => {
-      if (prev?.icsUrl) {
-        URL.revokeObjectURL(prev.icsUrl);
-      }
-      return null;
-    });
-  }, []);
-
-  const revokeMeetingBarUrls = useCallback(items => {
-    items.forEach(item => {
-      if (item?.icsUrl) {
-        URL.revokeObjectURL(item.icsUrl);
-      }
-    });
-  }, []);
-
-  const buildCompactBarMessage = useCallback(
-    (meeting, organizerName, calendarData) => {
-      const formattedDate = formatMeetingDateTime(meeting.dateTime, viewerTimeZone);
-      const locationPart = meeting.location ? ` · ${meeting.location}` : '';
-      const linksPart = calendarData
-        ? ` · <a href="${calendarData.googleCalendarLink}" target="_blank" rel="noreferrer">Google Calendar</a><span class="meeting-popup-action-separator"> · </span><a href="${calendarData.icsUrl}" download="meeting.ics">Download .ics</a>`
-        : '';
-
-      return `Upcoming meeting: <strong>${formattedDate}</strong> with ${organizerName}${locationPart}${linksPart}`;
-    },
-    [viewerTimeZone],
-  );
-
-  const syncAllMeetingPopupBars = useCallback(
-    async meetings => {
-      if (!meetings.length) {
-        setMeetingContents(prev => {
-          revokeMeetingBarUrls(prev);
-          return [];
-        });
-        setMeetingContentsNotification(false);
-        return;
-      }
-
-      const results = await Promise.all(
-        meetings.map(async meeting => {
-          const organizerName = await resolveOrganizerName(meeting.sender);
-          let calendarData = null;
-
-          try {
-            const { data } = await httpService.get(ENDPOINTS.MEETING_CALENDAR(meeting.meetingId));
-            const icsBlob = new Blob([data.icsContent], { type: 'text/calendar' });
-            calendarData = {
-              googleCalendarLink: data.googleCalendarLink,
-              icsUrl: URL.createObjectURL(icsBlob),
-            };
-          } catch {
-            // Calendar links are optional for the compact bar.
-          }
-
-          return {
-            msg: buildCompactBarMessage(meeting, organizerName, calendarData),
-            id: meeting.meetingId,
-            recipient: meeting.recipient,
-            icsUrl: calendarData?.icsUrl || null,
-          };
-        }),
-      );
-
-      setMeetingContents(prev => {
-        revokeMeetingBarUrls(prev);
-        return results;
-      });
-      setMeetingContentsNotification(true);
-    },
-    [buildCompactBarMessage, resolveOrganizerName, revokeMeetingBarUrls],
-  );
-
-  const loadMeetingCalendarLinks = useCallback(
-    async meetingId => {
-      if (!meetingId) {
-        clearMeetingCalendarLinks();
-        return;
-      }
-
-      try {
-        const { data } = await httpService.get(ENDPOINTS.MEETING_CALENDAR(meetingId));
-        const icsBlob = new Blob([data.icsContent], { type: 'text/calendar' });
-        const icsUrl = URL.createObjectURL(icsBlob);
-
-        clearMeetingCalendarLinks();
-        setMeetingCalendarLinks({
-          googleCalendarLink: data.googleCalendarLink,
-          icsUrl,
-        });
-      } catch {
-        clearMeetingCalendarLinks();
-      }
-    },
-    [clearMeetingCalendarLinks],
-  );
-
-  const dismissMeetingNotification = useCallback(
-    async (meetingId, recipient) => {
-      setMeetingContents(prev => {
-        const next = prev.filter(item => String(item.id) !== String(meetingId));
-        const removed = prev.find(item => String(item.id) === String(meetingId));
-        if (removed?.icsUrl) {
-          URL.revokeObjectURL(removed.icsUrl);
-        }
-        setMeetingContentsNotification(next.length > 0);
-        return next;
-      });
-
-      if (String(userUnreadMeetings[activeMeetingModalIndex]?.meetingId) === String(meetingId)) {
-        setMeetingModalOpen(false);
-        setMeetingModalMessage('');
-        clearMeetingCalendarLinks();
-        pauseMeetingAudio();
-      }
-
-      await dispatch(markMeetingNotificationAsRead({ meetingId, recipient }));
-      dispatch(getUnreadUserNotifications(recipient));
-      await dispatch(getUnreadMeetingNotification(userId));
-    },
-    [userUnreadMeetings, activeMeetingModalIndex, userId, dispatch, pauseMeetingAudio, clearMeetingCalendarLinks],
-  );
+  const [showProjectDropdown, setShowProjectDropdown] = useState(false);
 
   useEffect(() => {
     const handleStorageEvent = () => {
@@ -392,6 +202,44 @@ export function Header(props) {
     };
   }, [user.userid, props.auth.firstName]);
 
+  // Debugging Enhancement: Monitor window resize events for responsive testing
+  useEffect(() => {
+    const handleResize = () => {
+      const currentWidth = window.innerWidth;
+      // eslint-disable-next-line no-console
+      console.log(`[Header Debug] Window resized to: ${currentWidth}px`);
+
+      // Log breakpoint information for debugging
+      if (currentWidth >= 1728) {
+        // eslint-disable-next-line no-console
+        console.log(`[Header Debug] Breakpoint: Large screen (90%+) - Owner message below timer`);
+      } else if (currentWidth >= 1400) {
+        // eslint-disable-next-line no-console
+        console.log(`[Header Debug] Breakpoint: Desktop - Centered layout`);
+      } else if (currentWidth >= 1200) {
+        // eslint-disable-next-line no-console
+        console.log(`[Header Debug] Breakpoint: Medium desktop - Centered layout`);
+      } else if (currentWidth >= 768) {
+        // eslint-disable-next-line no-console
+        console.log(`[Header Debug] Breakpoint: Tablet - Stacked layout`);
+      } else {
+        // eslint-disable-next-line no-console
+        console.log(`[Header Debug] Breakpoint: Mobile - Compact vertical layout`);
+      }
+    };
+
+    // Log initial window size
+    handleResize();
+
+    // Add resize event listener
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup event listener on component unmount
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
   useEffect(() => {
     if (props.auth.isAuthenticated) {
       props.getHeaderData(props.auth.user.userid);
@@ -403,27 +251,15 @@ export function Header(props) {
   const roles = props.role?.roles;
 
   useEffect(() => {
-    if (roles?.length === 0 && isAuthenticated) {
+    if (roles.length === 0 && isAuthenticated) {
       props.getAllRoles();
     }
-  }, [roles?.length, isAuthenticated]);
-
-  useEffect(() => {
-    if (!isAuthenticated || !userId) return;
-
-    setMeetingContents([]);
-    setMeetingContentsNotification(false);
-    setMeetingModalOpen(false);
-    setMeetingModalMessage('');
-
-    dispatch(getUnreadUserNotifications(userId));
-    dispatch(getUnreadMeetingNotification(userId));
-  }, [isAuthenticated, userId, dispatch]);
-
-  useEffect(() => {
-    if (!isAuthenticated || !userId || !localStorage.getItem('token')) return;
-    dispatch(getUnreadMeetingNotification(userId));
-  }, [props.userProfile?.timeZone, isAuthenticated, userId, dispatch]);
+    // Fetch unread notification - always use the logged-in user's ID,
+    // not displayUserId, which may be a viewed user (causing a 403 error)
+    if (isAuthenticated && user.userid) {
+      dispatch(getUnreadUserNotifications(user.userid));
+    }
+  }, [isAuthenticated, user.userid, roles.length]);
 
   useEffect(() => {
     if (props.notification?.error) {
@@ -432,172 +268,12 @@ export function Header(props) {
     }
   }, [props.notification?.error]);
 
-  useEffect(() => {
-    if (props.meetingNotification?.error) {
-      toast.error(props.meetingNotification.error.message);
-    }
-  }, [props.meetingNotification?.error]);
-
-
-  const buildMeetingDetailsMessage = useCallback(
-    (currMeeting, organizerName, totalMeetings = 1, meetingIndex = 1) => {
-      const cleanNotes = currMeeting.notes
-        ?.replace(/<[^>]*>/g, '')
-        .replace(/&nbsp;/gi, ' ')
-        .replace(/\s+/g, ' ')
-        .trim();
-
-      const countLabel = getMeetingCountLabel(totalMeetings, meetingIndex);
-
-      return `Reminder: You have an upcoming meeting${countLabel}! Please check the details and be prepared.<br>
-        <strong>Time:</strong> ${formatMeetingDateTime(currMeeting.dateTime, viewerTimeZone)}<br>
-        <strong>Organizer:</strong> ${organizerName}<br>
-        ${currMeeting.location ? `<strong>Location:</strong> ${currMeeting.location}<br>` : ''}
-        ${cleanNotes ? `<strong>Notes:</strong> ${cleanNotes}<br>` : ''}`;
-    },
-    [viewerTimeZone, getMeetingCountLabel],
-  );
-
-  const showMeetingModalAtIndex = useCallback(
-    async (index, { playSound = false } = {}) => {
-      const meeting = userUnreadMeetings[index];
-      if (!meeting) return;
-
-      const organizerName = await resolveOrganizerName(meeting.sender);
-      const totalMeetings = userUnreadMeetings.length;
-      const meetingPosition = index + 1;
-
-      if (!meetingAudioUnlocked) {
-        setMeetingModalMessage(
-          `You have an upcoming meeting scheduled within the next 3 days${getMeetingCountLabel(totalMeetings, meetingPosition)}.<br>
-        Click "Enable Alerts &amp; View Meeting" to enable notification sounds and see meeting details.`,
-        );
-      } else {
-        setMeetingModalMessage(
-          buildMeetingDetailsMessage(meeting, organizerName, totalMeetings, meetingPosition),
-        );
-        await loadMeetingCalendarLinks(meeting.meetingId);
-        if (playSound) {
-          playMeetingAudio();
-        }
-      }
-
-      setActiveMeetingModalIndex(index);
-    },
-    [
-      userUnreadMeetings,
-      meetingAudioUnlocked,
-      resolveOrganizerName,
-      getMeetingCountLabel,
-      buildMeetingDetailsMessage,
-      loadMeetingCalendarLinks,
-      playMeetingAudio,
-    ],
-  );
-
-  useEffect(() => {
-    if (!userUnreadMeetings.length) {
-      dismissedMeetingModalIdRef.current = null;
-      preventMeetingModalAutoOpenRef.current = false;
-      setActiveMeetingModalIndex(0);
-      setMeetingModalOpen(false);
-      setMeetingModalMessage('');
-      setMeetingContents(prev => {
-        revokeMeetingBarUrls(prev);
-        return [];
-      });
-      setMeetingContentsNotification(false);
-      clearMeetingCalendarLinks();
-      pauseMeetingAudio();
-      return;
-    }
-
-    let cancelled = false;
-
-    const syncNotifications = async () => {
-      await syncAllMeetingPopupBars(userUnreadMeetings);
-      if (cancelled) return;
-
-      setActiveMeetingModalIndex(prev => Math.min(prev, userUnreadMeetings.length - 1));
-
-      const firstMeeting = userUnreadMeetings[0];
-      const shouldAutoOpen =
-        !preventMeetingModalAutoOpenRef.current &&
-        dismissedMeetingModalIdRef.current !== String(firstMeeting.meetingId);
-
-      if (shouldAutoOpen) {
-        await showMeetingModalAtIndex(0, { playSound: meetingAudioUnlocked });
-        if (!cancelled) {
-          setMeetingModalOpen(true);
-        }
-      }
-    };
-
-    syncNotifications();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [
-    userUnreadMeetings,
-    meetingAudioUnlocked,
-    showMeetingModalAtIndex,
-    syncAllMeetingPopupBars,
-    clearMeetingCalendarLinks,
-    revokeMeetingBarUrls,
-    pauseMeetingAudio,
-  ]);
-
-  const openMeetingNotification = useCallback(() => {
-    if (userUnreadMeetings.length > 0) {
-      preventMeetingModalAutoOpenRef.current = false;
-      dismissedMeetingModalIdRef.current = null;
-      const modalIndex = Math.min(activeMeetingModalIndex, userUnreadMeetings.length - 1);
-      setMeetingModalOpen(true);
-      showMeetingModalAtIndex(modalIndex);
-    }
-  }, [userUnreadMeetings, activeMeetingModalIndex, showMeetingModalAtIndex]);
-
-  const handleMeetingRead = async () => {
-    const activeMeeting = userUnreadMeetings[activeMeetingModalIndex];
-
-    if (userUnreadMeetings?.length > 0 && !meetingAudioUnlocked) {
-      sessionStorage.setItem('meetingAudioUnlocked', 'true');
-      setMeetingAudioUnlocked(true);
-      await showMeetingModalAtIndex(activeMeetingModalIndex, { playSound: true });
-      return;
-    }
-
-    if (activeMeeting) {
-      dismissedMeetingModalIdRef.current = String(activeMeeting.meetingId);
-      preventMeetingModalAutoOpenRef.current = true;
-    }
-
-    setMeetingModalOpen(false);
-    pauseMeetingAudio();
-  };
-
-  const goToPreviousMeeting = () => {
-    if (activeMeetingModalIndex > 0) {
-      showMeetingModalAtIndex(activeMeetingModalIndex - 1);
-    }
-  };
-
-  const goToNextMeeting = () => {
-    if (activeMeetingModalIndex < userUnreadMeetings.length - 1) {
-      showMeetingModalAtIndex(activeMeetingModalIndex + 1);
-    }
-  };
-
   const toggle = () => {
-    setIsOpen(prevIsOpen => !prevIsOpen);
-  };
+  setIsOpen(prevIsOpen => !prevIsOpen);
+};
 
   const openModal = () => {
     setLogoutPopup(true);
-  };
-  const CloseMeetingContentsNotification = async (meetingId, recipient) => {
-    await dismissMeetingNotification(meetingId, recipient);
   };
 
   const handlePermissionChangeAck = async () => {
@@ -703,165 +379,503 @@ export function Header(props) {
     }
   }, [lastDismissed, userId, userDashboardProfile]);
 
-  const fontColor = darkMode ? 'text-white dropdown-item-hover' : '';
+  useEffect(() => {
+    setShowProjectDropdown(location.pathname.startsWith('/bmdashboard/projects/'));
+  }, [location.pathname]);
+
+ useEffect(() => {
+  if (!isOpen) return;
+
+  const handleClickOutside = (event) => {
+    if (collapseRef.current?.contains(event.target)) return;
+    if (toggleRef.current?.contains(event.target)) return;
+    setIsOpen(false);
+  };
+
+  // Defer adding listener until after current click event finishes
+  const timer = setTimeout(() => {
+    document.addEventListener('click', handleClickOutside);
+  }, 0);
+
+  return () => {
+    clearTimeout(timer);
+    document.removeEventListener('click', handleClickOutside);
+  };
+}, [isOpen]);
+
+  const fontColor = darkMode ? `${styles.darkDropdownText} ${styles.darkDropdownItem}` : `${styles.mobileDropdownText} ${styles.mobileDropdownItem}`;
 
   if (location.pathname === '/login') return null;
 
   const viewingUser = JSON.parse(window.sessionStorage.getItem('viewingUser'));
+
+  const showBMDashboard = location.pathname.startsWith('/bmdashboard');
+
   return (
-    <div className={`header-wrapper${darkMode ? ' dark-mode' : ''}`} data-testid="header">
-      <Navbar className="py-3 navbar" color="dark" dark expand="md">
+    <div className={`${styles.headerWrapper}`} data-testid="header">
+      <Navbar className={`py-3 ${styles.navbar}`} color="dark" dark expand="xl">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
-        <div
-          className="timer-message-section"
-          style={user.role === 'Owner' ? { marginRight: '0.5rem' } : { marginRight: '1rem' }}
-        >
-          {isAuthenticated && <Timer darkMode={darkMode} />}
-          {isAuthenticated && (
-            <div className="owner-message">
-              <OwnerMessage />
+        {showPromotionsPopup && <DisplayBox onClose={() => setShowPromotionsPopup(false)} />}
+
+        <div className={styles.headerRow}>
+            <div className={styles.leftSection}>
+              {isAuthenticated && <Timer darkMode={darkMode} />}
             </div>
-          )}
-        </div>
-        <NavbarToggler onClick={toggle} />
-        {isAuthenticated && (
-          <Collapse isOpen={isOpen} navbar>
-            <Nav className="ml-auto nav-links d-flex" navbar>
-              <div
-                className="d-flex justify-content-center align-items-center"
-                style={{ width: '100%' }}
-              >
+
+            <div className={styles.centerSection}>
+              {isAuthenticated && <OwnerMessage />}
+            </div>
+            <div className={styles.rightSection}>
+            <NavbarToggler onClick={toggle} ref={toggleRef} className={styles.navbarToggler} />
+            <div
+              ref={collapseRef}
+              className={`${styles.navCollapse} ${isOpen ? styles.navCollapseOpen : ''}`}
+              role="menu"
+              tabIndex={-1}
+              onKeyDown={(e) => {
+                if (e.key === 'Escape') setIsOpen(false);
+              }}
+            >
+            <Nav className={`${styles.menuContainer} mr-3`} navbar>
+                <NavItem className={styles.showInMobile}>
+                  <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
+                    <img
+                      src={`${profilePic || '/pfp-default-header.png'}`}
+                      alt=""
+                      style={{ maxWidth: '60px', maxHeight: '60px' }}
+                      className="dashboardimg"
+                    />
+                  </NavLink>
+                </NavItem>
+
+                <UncontrolledDropdown nav inNavbar className={styles.showInMobile}>
+                  <DropdownToggle nav caret>
+                    <span>
+                      {WELCOME}, {firstName}
+                    </span>
+                  </DropdownToggle>
+                  <DropdownMenu
+                    className={`${styles.noMaxHeight} ${
+                      darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
+                    }`}
+                  >
+
+                    <DropdownItem
+                      tag={Link}
+                      to={`/userprofile/${displayUserId}`}
+                      className={fontColor}
+                    >
+                      {VIEW_PROFILE}
+                    </DropdownItem>
+
+                    {!cantUpdateDevAdminDetails(props.userProfile.email, props.userProfile.email) && (
+                      <DropdownItem
+                        tag={Link}
+                        to={`/updatepassword/${displayUserId}`}
+                        className={fontColor}
+                      >
+                        {UPDATE_PASSWORD}
+                      </DropdownItem>
+                    )}
+
+                    <DropdownItem className={fontColor}>
+                      <DarkModeButton />
+                    </DropdownItem>
+
+                    <DropdownItem onClick={openModal} className={fontColor}>
+                      {LOGOUT}
+                    </DropdownItem>
+                  </DropdownMenu>
+                </UncontrolledDropdown>
+
                 {canUpdateTask && (
-                  <NavItem className="responsive-spacing">
-                    <NavLink tag={Link} to="/taskeditsuggestions">
-                      <div className="redBackGroupHeader">
+                  <NavItem>
+                    <NavLink tag={Link} to="/taskeditsuggestions" disabled={headerDisabled}>
+                      <div className={`${styles.redBackGroupHeader} ${styles.hideInMobile}`}>
                         <span>{props.taskEditSuggestionCount}</span>
                       </div>
+                      <span className={styles.showInMobile}>
+                        Task Edit Suggestion ({props.taskEditSuggestionCount})
+                      </span>
                     </NavLink>
                   </NavItem>
                 )}
-                <NavItem className="responsive-spacing">
-                  <NavLink tag={Link} to="/dashboard">
-                    <span className="dashboard-text-link">{DASHBOARD}</span>
+
+                <NavItem>
+                  <NavLink tag={Link} to="/dashboard" disabled={headerDisabled}>
+                    <span>{DASHBOARD}</span>
                   </NavLink>
                 </NavItem>
-                <NavItem className="responsive-spacing">
-                  <NavLink tag={Link} to="/timelog">
-                    <span className="dashboard-text-link">{TIMELOG}</span>
+
+                {showBMDashboard && (<NavItem>
+                  <NavLink tag={Link} to="/bmdashboard" disabled={headerDisabled}>
+                    <span>{BM_DASHBOARD}</span>
                   </NavLink>
                 </NavItem>
-              </div>
-              <div className="d-flex align-items-center justify-content-center">
-                {canGetReports || canGetWeeklySummaries || canGetWeeklyVolunteerSummary ? (
-                  <UncontrolledDropdown nav inNavbar className="responsive-spacing">
-                    <DropdownToggle nav caret>
-                      <span className="dashboard-text-link">{REPORTS}</span>
+                )}
+  
+                <NavItem>
+                  <NavLink tag={Link} to="/timelog#currentWeek" disabled={headerDisabled}>
+                    <span>{TIMELOG}</span>
+                  </NavLink>
+                </NavItem>
+
+                {showProjectDropdown && (
+                  <UncontrolledDropdown nav inNavbar>
+                    <DropdownToggle nav caret disabled={headerDisabled}>
+                      <span>{PROJECTS}</span>
                     </DropdownToggle>
-                    <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
+                    <DropdownMenu
+                      className={`${styles.noMaxHeight} ${
+                        darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
+                      }`}
+                      disabled={headerDisabled}
+                    >
+                      <DropdownItem tag={Link} to="/bmdashboard/inventorytypes" className={fontColor}>
+                        All Inventory Types
+                      </DropdownItem>
+                      <DropdownItem tag={Link} to="/bmdashboard/materials/add" className={fontColor}>
+                        Add Material
+                      </DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/bmdashboard/logMaterial"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        Log Material
+                      </DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/bmdashboard/materials"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        Material List
+                      </DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/bmdashboard/equipment/add"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        Add Equipment
+                      </DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/bmdashboard/tools/add"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        Add Tool
+                      </DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/bmdashboard/equipment/:equipmentId"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        Log Equipment/Tool
+                      </DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/bmdashboard/tools/:equipmentId/update"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        Update Equipment/Tool
+                      </DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/bmdashboard/equipment"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        Equipment/Tool List
+                      </DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/bmdashboard/Issue"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        Issue
+                      </DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/bmdashboard/lessonform/"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        Lesson
+                      </DropdownItem>
+                      <DropdownItem tag={Link} to="/teams" className={fontColor}>
+                        Team
+                      </DropdownItem>
+                    </DropdownMenu>
+                  </UncontrolledDropdown>
+                )}
+
+                {canGetReports || canGetWeeklySummaries || canGetWeeklyVolunteerSummary ? (
+                  <UncontrolledDropdown nav inNavbar>
+                    <DropdownToggle nav caret>
+                      <span>{REPORTS}</span>
+                    </DropdownToggle>
+                    <DropdownMenu
+                      className={`${styles.noMaxHeight} ${
+                        darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
+                      }`}
+                    >
                       {canGetReports && (
-                        <DropdownItem tag={Link} to="/reports" className={`${fontColor}`}>
+                        <DropdownItem
+                          tag={Link}
+                          to="/reports"
+                          className={fontColor}
+                          disabled={headerDisabled}
+                        >
                           {REPORTS}
                         </DropdownItem>
                       )}
                       {canGetWeeklySummaries && (
-                        <DropdownItem tag={Link} to="/weeklysummariesreport" className={fontColor}>
+                        <DropdownItem
+                          tag={Link}
+                          to="/weeklysummariesreport"
+                          className={fontColor}
+                          disabled={headerDisabled}
+                        >
                           {WEEKLY_SUMMARIES_REPORT}
                         </DropdownItem>
                       )}
                       {canGetWeeklyVolunteerSummary && (
-                        <DropdownItem tag={Link} to="/totalorgsummary" className={fontColor}>
+                        <DropdownItem
+                          tag={Link}
+                          to="/totalorgsummary"
+                          className={fontColor}
+                          disabled={headerDisabled}
+                        >
                           {TOTAL_ORG_SUMMARY}
                         </DropdownItem>
                       )}
-                      <DropdownItem tag={Link} to="/teamlocations" className={fontColor}>
+                      <DropdownItem
+                        tag={Link}
+                        to="/actual-cost-breakdown"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        {ACTUAL_COST_BREAKDOWN}
+                      </DropdownItem>
+                      {canGetWeeklyVolunteerSummary && (
+                      <DropdownItem tag={Link} to="/TotalOrgSummaryEmail" className={fontColor}>
+                          {TOTAL_ORG_SUMMARY_EMAIL}
+                        </DropdownItem>
+                      )}
+                      {canGetJobAnalytics && (
+                        <DropdownItem
+                          tag={Link}
+                          to="/application/analytics"
+                          className={fontColor}
+                          disabled={headerDisabled}
+                        >
+                          {JOB_ANALYTICS_REPORT}
+                        </DropdownItem>
+                      )}
+                      <DropdownItem
+                        tag={Link}
+                        to="/teamlocations"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
                         {TEAM_LOCATIONS}
+                      </DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/bmdashboard/totalconstructionsummary"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        {TOTAL_CONSTRUCTION_SUMMARY}
+                      </DropdownItem>
+                      <DropdownItem
+                        onClick={() => setShowPromotionsPopup(true)}
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        {PR_PROMOTIONS}
                       </DropdownItem>
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 ) : (
-                  <NavItem className="responsive-spacing">
-                    <NavLink tag={Link} to="/teamlocations">
-                      {TEAM_LOCATIONS}
+                  <NavItem>
+                    <NavLink tag={Link} to="/teamlocations" disabled={headerDisabled}>
+                      <span>{TEAM_LOCATIONS}</span>
                     </NavLink>
                   </NavItem>
                 )}
-                <NavItem className="responsive-spacing">
-                  {/* <NavLink tag={Link} to={`/timelog/${displayUserId}`}> */}
-                  {/* <i className="fa fa-bell i-large">
-                      <i className="badge badge-pill badge-danger badge-notify">
-                        {/* Pull number of unread messages */}
-                  {/* </i>
-                      <span className="sr-only">unread messages</span>
-                    </i> */}
 
-                  {/* </NavLink> */}
-
-                  <BellNotification
-                    userId={displayUserId}
-                    hasMeetingNotification={userUnreadMeetings.length > 0}
-                    meetingNotificationCount={userUnreadMeetings.length}
-                    onMeetingNotificationClick={openMeetingNotification}
-                  />
-                </NavItem>
                 {(canAccessUserManagement ||
                   canAccessBadgeManagement ||
                   canAccessProjects ||
                   canAccessTeams ||
                   canAccessPopups ||
                   canAccessSendEmails ||
-                  canAccessScheduleMeetings ||
-                  canAccessPermissionsManagement) && (
-                  <UncontrolledDropdown nav inNavbar className="responsive-spacing">
+                  canAccessPermissionsManagement ||
+                  canAccessBlueSquareEmailManagement) && (
+                  <UncontrolledDropdown nav inNavbar>
                     <DropdownToggle nav caret>
-                      <span className="dashboard-text-link">{OTHER_LINKS}</span>
+                      <span>{OTHER_LINKS}</span>
                     </DropdownToggle>
-                    <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
+                    <DropdownMenu
+                      className={`${styles.noMaxHeight} ${
+                        darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
+                      }`}
+                    >
                       {canAccessUserManagement && (
-                        <DropdownItem tag={Link} to="/usermanagement" className={fontColor}>
+                        <DropdownItem
+                          tag={Link}
+                          to="/usermanagement"
+                          className={fontColor}
+                          disabled={headerDisabled}
+                        >
                           {USER_MANAGEMENT}
                         </DropdownItem>
                       )}
                       {canAccessBadgeManagement && (
-                        <DropdownItem tag={Link} to="/badgemanagement" className={fontColor}>
+                        <DropdownItem
+                          tag={Link}
+                          to="/badgemanagement"
+                          className={fontColor}
+                          disabled={headerDisabled}
+                        >
                           {BADGE_MANAGEMENT}
                         </DropdownItem>
                       )}
                       {canAccessProjects && (
-                        <DropdownItem tag={Link} to="/projects" className={fontColor}>
+                        <DropdownItem
+                          tag={Link}
+                          to="/projects"
+                          className={fontColor}
+                          disabled={headerDisabled}
+                        >
                           {PROJECTS}
                         </DropdownItem>
                       )}
                       {canAccessTeams && (
-                        <DropdownItem tag={Link} to="/teams" className={fontColor}>
+                        <DropdownItem
+                          tag={Link}
+                          to="/teams"
+                          className={fontColor}
+                          disabled={headerDisabled}
+                        >
                           {TEAMS}
                         </DropdownItem>
                       )}
                       {canAccessSendEmails && (
-                        <DropdownItem tag={Link} to="/announcements" className={fontColor}>
+                        <DropdownItem
+                          tag={Link}
+                          to="/announcements"
+                          className={fontColor}
+                          disabled={headerDisabled}
+                        >
                           {SEND_EMAILS}
-                        </DropdownItem>
-                      )}
-                      {canAccessScheduleMeetings && (
-                        <DropdownItem tag={Link} to="/schedulemeetings" className={fontColor}>
-                          {SCHEDULE_MEETINGS}
                         </DropdownItem>
                       )}
                       {canAccessPermissionsManagement && (
                         <>
-                          <DropdownItem divider />
+                          <DropdownItem divider className={styles.hideInMobile} />
                           <DropdownItem
                             tag={Link}
                             to="/permissionsmanagement"
                             className={fontColor}
+                            disabled={headerDisabled}
                           >
                             {PERMISSIONS_MANAGEMENT}
                           </DropdownItem>
                         </>
                       )}
+                      {canAccessBlueSquareEmailManagement && (
+                        <DropdownItem
+                          tag={Link}
+                          to="/bluesquare-email-management"
+                          className={fontColor}
+                          disabled={headerDisabled}
+                        >
+                          {BLUE_SQUARE_EMAIL_MANAGEMENT}
+                        </DropdownItem>
+                      )}
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 )}
-                <NavItem className="responsive-spacing">
+
+                {canAccessPRDashboard && (
+                  <UncontrolledDropdown nav inNavbar>
+                    <DropdownToggle nav caret>
+                      <span>PR Dashboard</span>
+                    </DropdownToggle>
+                    <DropdownMenu
+                      className={`${styles.noMaxHeight} ${
+                        darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
+                      }`}
+                    >
+                      <DropdownItem
+                        tag={Link}
+                        to="/pr-dashboard"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        PR Team Analysis Dashboard
+                      </DropdownItem>
+                      <DropdownItem divider />
+                      <DropdownItem
+                        tag={Link}
+                        to="/pr-dashboard/overview"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        PR Team Analytics
+                      </DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/pr-dashboard/analytics"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        PR Analytics
+                      </DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/pr-dashboard/promotion-eligibility"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        Promotion Eligibility
+                      </DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/pr-dashboard/top-reviewed-prs"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        Top Reviewed PRs
+                      </DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/pr-dashboard/details"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        PR Details
+                      </DropdownItem>
+                    </DropdownMenu>
+                  </UncontrolledDropdown>
+                )}
+
+                <NavItem className={styles.hideInMobile}>
+                  <BellNotification userId={displayUserId} />
+                </NavItem>
+
+
+
+                <NavItem className={styles.hideInMobile}>
                   <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
                     <div
                       style={{
@@ -878,14 +892,21 @@ export function Header(props) {
                     />
                   </NavLink>
                 </NavItem>
-                <UncontrolledDropdown nav className="responsive-spacing">
+                <UncontrolledDropdown nav className={styles.hideInMobile}>
                   <DropdownToggle nav caret>
-                    <span className="dashboard-text-link">
+                    <span>
                       {WELCOME}, {firstName}
                     </span>
                   </DropdownToggle>
-                  <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
-                    <DropdownItem header className={darkMode ? 'text-custom-grey' : ''}>
+                  <DropdownMenu
+                    className={`${styles.noMaxHeight} ${
+                      darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
+                    }`}
+                  >
+                    <DropdownItem
+                      header
+                      className={darkMode ? 'text-custom-grey' : styles.mobileDropdownText}
+                    >
                       Hello {firstName}
                     </DropdownItem>
                     <DropdownItem divider />
@@ -893,13 +914,12 @@ export function Header(props) {
                       tag={Link}
                       to={`/userprofile/${displayUserId}`}
                       className={fontColor}
+                      disabled={headerDisabled}
                     >
                       {VIEW_PROFILE}
                     </DropdownItem>
-                    {!cantUpdateDevAdminDetails(
-                      props.userProfile.email,
-                      props.userProfile.email,
-                    ) && (
+
+                    {!cantUpdateDevAdminDetails(props.userProfile.email, props.userProfile.email) && (
                       <DropdownItem
                         tag={Link}
                         to={`/updatepassword/${displayUserId}`}
@@ -912,15 +932,15 @@ export function Header(props) {
                       <DarkModeButton />
                     </DropdownItem>
                     <DropdownItem divider />
-                    <DropdownItem onClick={openModal} className={fontColor}>
+                    <DropdownItem onClick={openModal} className={fontColor} disabled={headerDisabled}>
                       {LOGOUT}
                     </DropdownItem>
                   </DropdownMenu>
                 </UncontrolledDropdown>
+              </Nav>
               </div>
-            </Nav>
-          </Collapse>
-        )}
+          </div>
+        </div>
       </Navbar>
       {!isAuthUser && (
         <PopUpBar
@@ -930,20 +950,7 @@ export function Header(props) {
           onClickClose={() => setPopup(prevPopup => !prevPopup)}
         />
       )}
-      {/* meeting notification */}
-      {meetingContentsNotification &&
-        meetingContents.map(item => (
-          <PopUpBar
-            key={item.id}
-            firstName={viewingUser?.firstName || firstName}
-            lastName={viewingUser?.lastName}
-            message={item.msg}
-            onClickClose={() => CloseMeetingContentsNotification(item.id, item.recipient)}
-            textColor="black_text"
-            isMeetingNotification
-          />
-        ))}
-
+      <PermissionWatcher props={props} />
       {props.auth.isAuthenticated && props.userProfile?.permissions?.isAcknowledged === false && (
         <PopUpBar
           firstName={viewingUser?.firstName || firstName}
@@ -973,113 +980,23 @@ export function Header(props) {
         </Modal>
       </div>
       {props.auth.isAuthenticated && isModalVisible && (
-        <Card color="primary">
-          <div className="close-button">
-            <Button close onClick={closeModal} />
-          </div>
-          <div className="card-content">{modalContent}</div>
-        </Card>
-      )}
-      {/* meeting notification */}
-      {/* <div>
-        {isModalVisible && (
-          <Card color="warning">
-        <div className={`${darkMode ? 'bg-oxford-blue' : ''} card-wrapper`}>
-          <Card color="primary" className="headerCard">
+        <div className={`${darkMode ? 'bg-oxford-blue' : ''} ${styles.cardWrapper}`}>
+          <Card color="primary" className={styles.headerCard}>
             <div className="close-button">
               <Button close onClick={closeModal} />
             </div>
-            <div className="card-contents">{modalContents}</div>
+            <div className={`${styles.cardContent}`}>{modalContent}</div>
           </Card>
-        )}
-      </div> */}
-      {/* Only render one unread message at a time */}
-      {props.auth.isAuthenticated && unreadNotifications?.length > 0 ? (
-        <NotificationCard
-          key={unreadNotifications[0]._id || 'default-key'}
-          notification={unreadNotifications[0]}
-        />
-      ) : null}
-      <audio
-        ref={MeetingNotificationAudioRef}
-        key="meetingNotificationAudio"
-        // loop
-        preload="auto"
-        src="https://bigsoundbank.com/UPLOAD/mp3/2554.mp3"
-      >
-        <track kind="captions" />
-      </audio>
-      <Modal
-        isOpen={meetingModalOpen}
-        toggle={handleMeetingRead}
-        className={darkMode ? 'text-light' : ''}
-      >
-        <ModalHeader toggle={handleMeetingRead} className={darkMode ? 'bg-space-cadet' : ''}>
-          Meeting Notification
-          {userUnreadMeetings.length > 1
-            ? ` (${userUnreadMeetings.length} upcoming)`
-            : ''}
-        </ModalHeader>
-        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-          <div className="meeting-notification-modal-body">
-            <p>{parse(DOMPurify.sanitize(meetingModalMessage))}</p>
-            {meetingCalendarLinks && (
-              <div className="meeting-notification-modal-actions">
-                <a
-                  href={meetingCalendarLinks.googleCalendarLink}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="meeting-calendar-link"
-                >
-                  Add to Google Calendar
-                </a>
-                <a
-                  href={meetingCalendarLinks.icsUrl}
-                  download="meeting.ics"
-                  className="meeting-calendar-link"
-                >
-                  Download .ics
-                </a>
-              </div>
-            )}
-          </div>
-        </ModalBody>
-        <ModalFooter className={`meeting-notification-modal-footer${darkMode ? ' bg-space-cadet' : ''}`}>
-          {userUnreadMeetings.length > 1 && meetingAudioUnlocked && (
-            <div className="meeting-notification-nav">
-              <Button
-                color="secondary"
-                onClick={goToPreviousMeeting}
-                disabled={activeMeetingModalIndex === 0}
-                aria-label="Previous meeting notification"
-              >
-                &lt;
-              </Button>
-              <span className="meeting-notification-nav-count">
-                {activeMeetingModalIndex + 1} / {userUnreadMeetings.length}
-              </span>
-              <Button
-                color="secondary"
-                onClick={goToNextMeeting}
-                disabled={activeMeetingModalIndex >= userUnreadMeetings.length - 1}
-                aria-label="Next meeting notification"
-              >
-                &gt;
-              </Button>
-            </div>
-          )}
-          <Button
-            color="primary"
-            onClick={handleMeetingRead}
-            style={darkMode ? boxStyleDark : boxStyle}
-            className="meeting-notification-close-btn"
-          >
-            {userUnreadMeetings?.length > 0 && !meetingAudioUnlocked
-              ? 'Enable Alerts & View Meeting'
-              : 'Close'}
-          </Button>
-        </ModalFooter>
-      </Modal>
+        </div>
+      )}
+      {props.auth.isAuthenticated && (
+        <div className={styles.notificationOverlay}>
+          {unreadNotifications?.length > 0 ? (
+            <NotificationCard notification={unreadNotifications[0]} />
+          ) : null}
+        </div>
+      )}
+      <div className={darkMode ? styles.headerMargin : styles.headerMarginLight} />
     </div>
   );
 }
@@ -1090,13 +1007,30 @@ const mapStateToProps = state => ({
   taskEditSuggestionCount: state.taskEditSuggestions.count,
   role: state.role,
   notification: state.notification,
-  unreadNotifications: state.notification.unreadNotifications,
-  unreadMeetingNotifications: state.meetingNotification.unreadMeetingNotifications,
-  meetingNotification: state.meetingNotification,
-  allUserProfiles: state.allUserProfiles.userProfiles,
   darkMode: state.theme.darkMode,
 });
-
+Header.propTypes = {
+  hasPermission: PropTypes.func.isRequired,
+  auth: PropTypes.shape({
+    isAuthenticated: PropTypes.bool,
+    user: PropTypes.shape({
+      userid: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      role: PropTypes.string
+    }),
+    firstName: PropTypes.string,
+    profilePic: PropTypes.string
+  }),
+  getHeaderData: PropTypes.func,
+  getAllRoles: PropTypes.func,
+  getWeeklySummaries: PropTypes.func,
+  role: PropTypes.shape({
+    roles: PropTypes.array
+  }),
+  notification: PropTypes.object,
+  userProfile: PropTypes.object,
+  darkMode: PropTypes.bool,
+  taskEditSuggestionCount: PropTypes.number,
+};
 export default connect(mapStateToProps, {
   getHeaderData,
   getAllRoles,

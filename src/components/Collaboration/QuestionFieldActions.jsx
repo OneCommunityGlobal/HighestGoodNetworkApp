@@ -11,10 +11,9 @@ function QuestionFieldActions({
   onEdit,
   visible,
   onVisibilityChange,
-  darkMode = false,
 }) {
   return (
-    <div className={`${styles.fieldControls} ${darkMode ? styles.darkControls : ''}`}>
+    <div className={`${styles.fieldControls}`}>
       <input
         type="checkbox"
         id={`form-div-checkbox-${index}`}
@@ -91,7 +90,6 @@ QuestionFieldActions.propTypes = {
   onEdit: PropTypes.func.isRequired,
   visible: PropTypes.bool.isRequired,
   onVisibilityChange: PropTypes.func.isRequired,
-  darkMode: PropTypes.bool,
 };
 
 export default QuestionFieldActions;

@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { connect } from 'react-redux';
 import { Modal, ModalBody, Button, ModalHeader } from 'reactstrap';
@@ -202,17 +201,6 @@ function Task(props) {
                 <span className="action-edit-btn">EDIT</span>
                 {controllerRow ? <BsFillCaretUpFill /> : <BsFillCaretDownFill />}
               </Button>
-              {props.taskSelectionMode && (
-                <Button
-                  color="success"
-                  size="sm"
-                  className="mt-1"
-                  onClick={() => props.onSelectTask({ _id: props.taskId, taskName: props.name })}
-                  style={darkMode ? boxStyleDark : boxStyle}
-                >
-                  Select
-                </Button>
-              )}
             </td>
             <td
               id={`r_${props.num}_${props.taskId}`}
@@ -476,8 +464,6 @@ function Task(props) {
               load={props.load}
               pageLoadTime={props.pageLoadTime}
               setIsLoading={props.setIsLoading}
-              taskSelectionMode={props.taskSelectionMode}
-              onSelectTask={props.onSelectTask}
             />
           ))
           : null
@@ -485,20 +471,6 @@ function Task(props) {
     </>
   );
 }
-
-Task.propTypes = {
-  taskSelectionMode: PropTypes.bool,
-  onSelectTask: PropTypes.func,
-  taskId: PropTypes.string,
-  name: PropTypes.string,
-};
-
-Task.defaultProps = {
-  taskSelectionMode: false,
-  onSelectTask: () => {},
-  taskId: '',
-  name: '',
-};
 
 const mapStateToProps = state => ({
   // tasks: state.tasks.taskItems,

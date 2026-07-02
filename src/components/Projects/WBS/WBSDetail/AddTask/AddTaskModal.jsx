@@ -957,7 +957,7 @@ useEffect(() => {
           className={`w-100 align-items-center ${darkMode ? 'bg-space-cadet' : ''}`}
         >
           <ReactTooltip delayShow={300} />
-          <p className={`fs-2 d-inline mr-3 ${fontColor}`}>Add New Task</p>
+          <p className="fs-2 d-inline mr-3">Add New Task</p>
           <button
             type="button"
             size="small"

@@ -29,7 +29,6 @@ import { infoCollectionsReducer } from './informationReducer';
 import { managingTeamsReducer } from './managingTeamsReducer';
 import { mouseoverTextReducer } from './mouseoverTextReducer';
 import notificationReducer from './notificationReducer';
-import meetingNotificationReducer from './meetingNotificationReducer';
 import { ownerMessageReducer } from './ownerMessageReducer';
 import { popupEditorReducer } from './popupEditorReducer';
 import { rolePresetReducer } from './rolePresetReducer';
@@ -145,12 +144,10 @@ const localReducers = {
   mouseoverText: mouseoverTextReducer,
   weeklySummaryRecipients: weeklySummaryRecipientsReducer,
   notification: notificationReducer,
-
-  meetingNotification: meetingNotificationReducer,
   userFollowUp: followUpReducer,
   userProjectsByUserNameReducer,
+  teamCodes: teamCodesReducer,
   blueSquareEmailAssignment: BlueSquareEmailAssignment,
-
   weeklySummaryEmailAssignment: WeeklySummaryEmailAssignment,
   totalOrgSummary: totalOrgSummaryReducer,
   allUsersTimeEntries: allUsersTimeEntriesReducer,

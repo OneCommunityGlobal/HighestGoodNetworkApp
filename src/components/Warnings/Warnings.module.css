@@ -201,10 +201,6 @@
   margin: 0.5em 0;
 }
 
-.popover .modal__information.darkMode {
-  color: black !important;
-}
-
 .alert__container {
   margin-top: 0.5em;
   text-align: center;
@@ -243,39 +239,6 @@ input[type='text'] {
 
 .warnings__tracker__modal {
   z-index: 1100 !important;
-}
-
-.warning__tracker__modal_save__changes__btns {
-  width: 20%;
-}
-
-.icon {
-  border: 1px solid black;
-  border-radius: 50%;
-  width: 10px;
-  height: 10px;
-  margin: 0 0.175em;
-  color: white;
-}
-
-.icon.warningColorRed {
-  color: red !important;
-}
-
-.icon.warningColorBlue {
-  color: blue !important;
-}
-
-.icon.warningColorYellow {
-  color: #ffc107 !important;
-}
-
-.icon path {
-  color: inherit !important;
-}
-
-.popoverDarkMode h4 {
-  background-color: rgb(109 109 109) !important;
 }
 
 /* Media query for screens smaller than 767px */

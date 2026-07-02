@@ -9,7 +9,6 @@ import {
   postNewWarning as postNewWarningAction,
   deleteWarningDescription as deleteWarningDescriptionAction,
   updateWarningDescription as updateWarningDescriptionAction,
-  reorderWarningDescriptions as reorderWarningDescriptionsAction,
   editWarningDescription as editWarningDescriptionAction,
 } from '../constants/warning';
 
@@ -157,21 +156,6 @@ export const updateWarningDescription = warningDescriptionId => {
     try {
       const res = await axios.put(url, { warningDescriptionId });
       const response = await dispatch(updateWarningDescriptionAction(res.data));
-
-      return response.payload;
-    } catch (error) {
-      return { error: error.message };
-    }
-  };
-};
-
-export const reorderWarningDescriptions = warningDescriptions => {
-  const url = ENDPOINTS.REORDER_WARNING_DESCRIPTIONS(warningDescriptions);
-
-  return async dispatch => {
-    try {
-      const res = await axios.put(url, { warningDescriptions });
-      const response = await dispatch(reorderWarningDescriptionsAction(res.data));
 
       return response.payload;
     } catch (error) {

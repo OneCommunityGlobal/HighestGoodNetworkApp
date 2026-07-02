@@ -649,13 +649,17 @@ const TeamMemberTask = React.memo(
                                         </div>
 
                                         {/* Review Button */}
-                                        <div className={styles['team-member-task-review-button']}>
+                                        <div
+                                          className={styles['team-member-task-review-button']}
+                                          style={
+                                            onTimeOff ? { opacity: 0.4, pointerEvents: 'none' } : {}
+                                          }
+                                        >
                                           <ReviewButton
                                             user={user}
                                             userId={userId}
                                             task={task}
                                             updateTask={updateTaskStatus}
-                                            onTimeOff={onTimeOff}
                                           />
                                         </div>
                                       </div>

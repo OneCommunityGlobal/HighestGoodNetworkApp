@@ -124,7 +124,7 @@ function ControllerRow(props) {
             <DropdownToggle caret color="primary" className={styles["controlBtn"]} size="sm" style={darkMode ? boxStyleDark : boxStyle}>
               Move
             </DropdownToggle>
-            <DropdownMenu className={darkMode ? styles.moveDropdownMenuDark : ''}>
+            <DropdownMenu>
               {props.siblings.map((item, i) => {
                 if (item.num !== props.num) {
                   return (

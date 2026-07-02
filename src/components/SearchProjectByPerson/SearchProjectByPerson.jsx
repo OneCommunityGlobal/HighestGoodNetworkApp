@@ -38,16 +38,14 @@ export default function SearchProjectByPerson({
       <form className="input-group mb-2" onSubmit={e => e.preventDefault()}>
         <div className="input-group-prepend">
           <span
-            className={`input-group-text search-field-container ${
-              darkMode ? 'bg-yinmn-blue text-light' : ''
-            }`}
+            className={`input-group-text search-field-container ${darkMode ? 'bg-light-grey' : ''}`}
           >
             Search
           </span>
         </div>
         <input
           type="text"
-          className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
+          className={`form-control ${darkMode ? 'bg-white' : ''}`}
           placeholder={searchMode === 'person' ? 'Search by Person Name' : 'Search by Project Name'}
           value={inputValue}
           onChange={handleInputChange} // Trigger input change

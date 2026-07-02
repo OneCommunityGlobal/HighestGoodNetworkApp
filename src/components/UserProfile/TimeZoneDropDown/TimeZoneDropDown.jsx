@@ -31,9 +31,9 @@ const TimeZoneDropDown = props => {
       data-testid="time_zone_dropdown"
       id={props.id || 'timeZone'}
       name={props.name || 'timeZone'}
-      className={`form-control ${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''} ${props.className || ''}`}
+      className={`form form-control ${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
       onChange={props.onChange}
-      value={props.selected || ''}
+      defaultValue={props.selected}
     >
       {Object.keys(timeZoneMap).map(timeZoneName => {
         const timeZoneString = `${timeZoneName} (UTC${timeZoneMap[timeZoneName].utcOffset})`;

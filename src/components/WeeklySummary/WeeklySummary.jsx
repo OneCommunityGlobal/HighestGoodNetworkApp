@@ -1,6 +1,3 @@
-import axios from 'axios';
-import { v4 as uuidv4 } from 'uuid';
-import { ENDPOINTS } from '~/utils/URL';
 import { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -125,7 +122,6 @@ export class WeeklySummary extends Component {
     movePopup: false,
     moveConfirm: false,
     isSavingMove: false,
-    gracePeriodModalOpen: false,
   };
 
   // Minimum word count of 50 (handle words that also use non-ASCII characters by counting whitespace rather than word character sequences).
@@ -627,7 +623,7 @@ export class WeeklySummary extends Component {
   };
 
   // Handler for success scenario after save
-  handleSaveSuccess = async (toastIdOnSave, shouldReload = true) => {
+  handleSaveSuccess = async toastIdOnSave => {
     const { displayUserId, currentUser } = this.props;
     toast.success('✔ The data was saved successfully!', {
       toastId: toastIdOnSave,
@@ -635,9 +631,7 @@ export class WeeklySummary extends Component {
       autoClose: 3000,
     });
     this.updateUserData(displayUserId || currentUser.userid);
-    if (shouldReload) {
-      globalThis.location.reload();
-    }
+    window.location.reload();
   };
 
   // Handler for error scenario after save
@@ -653,7 +647,8 @@ export class WeeklySummary extends Component {
   mainSaveHandler = async (closeAfterSave, isMove = false) => {
     const toastIdOnSave = 'toast-on-save';
     const errors = this.validate();
-    this.setState({ errors });
+
+    this.setState({ errors: errors });
     if (Object.keys(errors).length > 0) {
       this.setState({ moveConfirm: false });
       return false;
@@ -662,7 +657,7 @@ export class WeeklySummary extends Component {
     const result = await this.handleChangeInSummary(isMove);
 
     if (result === 200 || result?.status === 200) {
-      await this.handleSaveSuccess(toastIdOnSave, closeAfterSave); // ← pass closeAfterSave
+      await this.handleSaveSuccess(toastIdOnSave);
       if (closeAfterSave) {
         this.handleClose();
       }
@@ -700,94 +695,20 @@ export class WeeklySummary extends Component {
     });
   };
 
-  isGracePeriodWindow = () => {
-    const nowLA = moment().tz('America/Los_Angeles');
-    return nowLA.day() === 1 && nowLA.hour() < 17;
-  };
-
-  handleGracePeriodConfirm = async submitForLastWeek => {
-    this.setState({ gracePeriodModalOpen: false });
-
-    if (!submitForLastWeek) {
-      this.mainSaveHandler(true);
-      return;
-    }
-
-    const { formElements } = this.state;
-    const newFormElements = {
-      ...formElements,
-      summaryLastWeek: formElements.summary,
-      summary: '',
-    };
-
-    // Update state synchronously first
-    await new Promise(resolve =>
-      this.setState({ formElements: newFormElements, activeTab: '2' }, resolve),
-    );
-
-    // Now save
-    const result = await this.mainSaveHandler(false); // false = don't close/reload yet
-
-    if (!result) return;
-
-    const { currentUser, displayUserId } = this.props;
-    const userId = displayUserId || currentUser.userid;
-
-    try {
-      const profileRes = await axios.get(ENDPOINTS.USER_PROFILE(userId));
-      const infringements = profileRes.data.infringements || [];
-
-      const summaryOnlyInfringement = [...infringements]
-        .reverse()
-        .find(
-          inf =>
-            inf.description?.includes('not submitting a weekly summary') &&
-            !inf.description?.includes('not meeting weekly volunteer time commitment'),
-        );
-
-      if (summaryOnlyInfringement) {
-        await axios.post(ENDPOINTS.POST_WARNINGS_BY_USER_ID(userId), {
-          description: 'Blu Sq Rmvd - For No Summary',
-          color: 'blue',
-          iconId: uuidv4(),
-          date: moment().format('MM/DD/YYYY'),
-          warningsArray: null,
-          userId,
-          monitorData: {
-            firstName: currentUser.firstName,
-            lastName: currentUser.lastName,
-            email: currentUser.email,
-            userId: currentUser.userid,
-          },
-        });
-
-        await axios.delete(ENDPOINTS.MODIFY_BLUE_SQUARE(userId, summaryOnlyInfringement._id));
-      }
-    } catch (err) {
-      console.error('Failed to auto-remove blue square:', err);
-    }
-
-    // Reload after everything is done
-    globalThis.location.reload();
-  };
-
   handleSave = async event => {
     const { isNotAllowedToEdit, displayUserEmail } = this.props;
     if (isNotAllowedToEdit) {
       if (displayUserEmail === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
+        // eslint-disable-next-line no-alert, prettier/prettier
         alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
       } else {
+        // eslint-disable-next-line no-alert, prettier/prettier
         alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
       }
       return;
     }
     if (event) {
       event.preventDefault();
-    }
-    // Grace period: Monday midnight–5pm PT, This Week tab only
-    if (this.state.activeTab === '1' && this.isGracePeriodWindow()) {
-      this.setState({ gracePeriodModalOpen: true });
-      return;
     }
     this.mainSaveHandler(true);
   };
@@ -1245,32 +1166,6 @@ export class WeeklySummary extends Component {
             </Row>
           </TabContent>
         </Form>
-        {/* Grace Period Modal */}
-        <Modal isOpen={this.state.gracePeriodModalOpen}>
-          <ModalHeader className={headerBg}>Did you mean Last Week?</ModalHeader>
-          <ModalBody className={bodyBg}>
-            <p>
-              It looks like you&apos;re submitting a summary for <strong>This Week</strong>, but
-              it&apos;s Monday — did you mean to submit this for <strong>Last Week</strong>?
-            </p>
-            <p>
-              If you submit for Last Week and you received a blue square only for missing your
-              summary, it will be automatically removed.
-            </p>
-          </ModalBody>
-          <ModalFooter className={bodyBg}>
-            <Button
-              className="btn--dark-sea-green"
-              onClick={() => this.handleGracePeriodConfirm(true)}
-              style={boxStyling}
-            >
-              Yes, submit for Last Week
-            </Button>
-            <Button onClick={() => this.handleGracePeriodConfirm(false)} style={boxStyling}>
-              No, submit for This Week
-            </Button>
-          </ModalFooter>
-        </Modal>
       </Container>
     );
   }
@@ -1279,11 +1174,7 @@ export class WeeklySummary extends Component {
 WeeklySummary.propTypes = {
   currentUser: PropTypes.shape({
     userid: PropTypes.string.isRequired,
-    firstName: PropTypes.string,
-    lastName: PropTypes.string,
-    email: PropTypes.string,
   }).isRequired,
-  displayUserId: PropTypes.string,
   // eslint-disable-next-line react/forbid-prop-types, react/require-default-props
   fetchError: PropTypes.any,
   getWeeklySummaries: PropTypes.func.isRequired,

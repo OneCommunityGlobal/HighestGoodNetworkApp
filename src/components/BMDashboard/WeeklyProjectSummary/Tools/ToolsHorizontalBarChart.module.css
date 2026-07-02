@@ -20,8 +20,8 @@
 
 .tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode {
   background-color: var(--card-bg, #2b3e59);
-  color: var(--text-color, #fff);
-  box-shadow: 0 2px 8px rgb(0 0 0 / 40%);
+  color: var(--text-color, #ffffff);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 .tools-horizontal-bar-chart-title {

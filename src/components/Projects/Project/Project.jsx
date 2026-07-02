@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import { NavItem } from 'reactstrap';
 import { connect } from 'react-redux';
 import hasPermission from '~/utils/permissions';
-import { boxStyle, boxStyleDark } from '~/styles';
+import { boxStyle } from '~/styles';
 import { toast } from 'react-toastify';
 import { modifyProject } from '../../../actions/projects';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
@@ -127,7 +127,7 @@ const Project = props => {
               data-testid="projects__category--input" // added for unit test
               value={category}
               onChange={onUpdateProjectCategory}
-              className={`form-control ${darkMode ? 'bg-yinmn-blue border-0 text-light' : ''}`}
+              className={darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}
             >
               <option value="Unspecified">Unspecified</option>
               <option value="Food">Food</option>
@@ -167,7 +167,7 @@ const Project = props => {
             <button
               type="button"
               className="btn btn-outline-info"
-              style={darkMode ? boxStyleDark : boxStyle}
+              style={darkMode ? {} : boxStyle}
             >
               <i className="fa fa-archive" aria-hidden="true" />
             </button>
@@ -180,7 +180,7 @@ const Project = props => {
               <button
                 type="button"
                 className="btn btn-outline-info d-flex align-items-center project-member-btn"
-                style={darkMode ? boxStyleDark : boxStyle}
+                style={darkMode ? {} : boxStyle}
               >
                 <i className="fa fa-users" aria-hidden="true" />
               </button>
@@ -197,16 +197,11 @@ const Project = props => {
         </td>
 
         <td>
-          <NavItem tag={Link} to={{
-            pathname: `/project/wbs/${projectId}`,
-            state: props.taskSelectionMode
-              ? { taskSelectionMode: true, returnPath: props.taskSelectionReturnPath }
-              : undefined,
-          }}>
+          <NavItem tag={Link} to={`/project/wbs/${projectId}`}>
             <button
               type="button"
               className="btn btn-outline-info"
-              style={darkMode ? boxStyleDark : boxStyle}
+              style={darkMode ? {} : boxStyle}
             >
               <i className="fa fa-tasks" aria-hidden="true" />
             </button>
@@ -219,7 +214,7 @@ const Project = props => {
             data-testid="delete-button"
             type="button"
             className="btn btn-outline-danger"
-            style={darkMode ? boxStyleDark : boxStyle}
+            style={darkMode ? { borderColor: '#D2042D' } : boxStyle}
             onClick={onArchiveProject}
           >
             {projectData?.isArchived ? UNARCHIVE : ARCHIVE}
@@ -249,8 +244,6 @@ Project.propTypes = {
   onClickArchiveBtn: PropTypes.func,
   projectId: PropTypes.string,
   activeMemberCounts: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-  taskSelectionMode: PropTypes.bool,
-  taskSelectionReturnPath: PropTypes.string,
 };
 
 // Default props
@@ -264,8 +257,6 @@ Project.defaultProps = {
   onClickArchiveBtn: () => {},
   projectId: '',
   activeMemberCounts: '',
-  taskSelectionMode: false,
-  taskSelectionReturnPath: '',
 };
 
 const mapStateToProps = state => state;
