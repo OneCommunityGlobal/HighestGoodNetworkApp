@@ -17,18 +17,15 @@ function MyCases() {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const filteredEvents = filterEventsByDate(mockEvents, filter);
+  const now = new Date();
+  const upcomingEvents = filteredEvents.filter(
+    event => new Date(event.eventDate).getTime() >= now.getTime(),
+  );
 
-  const filteredEventsByEventType = filteredEvents.filter(event => {
-    if (event.eventType === 'all') {
-      return true;
-    }
-    return event.eventType === filter;
-  });
-
-  let visibleEvents = filteredEventsByEventType;
+  let visibleEvents = upcomingEvents;
 
   if (!isExporting) {
-    visibleEvents = expanded ? filteredEventsByEventType : filteredEventsByEventType.slice(0, 10);
+    visibleEvents = expanded ? upcomingEvents : upcomingEvents.slice(0, 10);
   }
 
   const placeholderAvatar = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
@@ -176,7 +173,7 @@ function MyCases() {
           >
             + Create New
           </button>
-          {filteredEventsByEventType.length > 10 && !isExporting && (
+          {upcomingEvents.length > 10 && !isExporting && (
             <button
               type="button"
               className={`more-btn-global ${styles.moreBtn}`}

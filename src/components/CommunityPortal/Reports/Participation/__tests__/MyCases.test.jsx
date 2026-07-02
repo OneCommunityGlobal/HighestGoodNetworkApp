@@ -43,4 +43,12 @@ describe('MyCases', () => {
     expect(screen.getByText(/event name/i)).toBeInTheDocument();
     expect(screen.getByText(/attendees/i)).toBeInTheDocument();
   });
+
+  it('renders upcoming event rows in list view', () => {
+    renderWithStore(<MyCases />);
+
+    fireEvent.click(screen.getByRole('button', { name: /list/i }));
+
+    expect(screen.getAllByText(/fitness bootcamp/i).length).toBeGreaterThan(0);
+  });
 });
