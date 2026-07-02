@@ -84,6 +84,22 @@ import {
   resolveUserTimeZone,
 } from '../../utils/meetingTime';
 
+function MeetingNotificationModalHeader({ children, onClose }) {
+  return (
+    <div className="meeting-notification-custom-header">
+      <h5 className="meeting-notification-custom-header__title">{children}</h5>
+      <button
+        type="button"
+        className="meeting-notification-custom-header__close"
+        onClick={onClose}
+        aria-label="Close"
+      >
+        <span aria-hidden="true">&#215;</span>
+      </button>
+    </div>
+  );
+}
+
 export function Header(props) {
   const location = useLocation();
   const { darkMode } = props;
@@ -1384,8 +1400,11 @@ export function Header(props) {
         />
       )}
       <div>
-        <Modal isOpen={popup} className={darkMode ? 'text-light' : ''}>
-          <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>
+        <Modal
+          isOpen={popup}
+          className={darkMode ? 'text-light hgn-themed-modal--dark' : 'hgn-themed-modal'}
+        >
+          <ModalHeader className={darkMode ? 'bg-space-cadet text-white' : ''}>
             Return to your Dashboard
           </ModalHeader>
           <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
@@ -1429,12 +1448,24 @@ export function Header(props) {
       <Modal
         isOpen={meetingModalOpen}
         toggle={handleMeetingRead}
-        className={darkMode ? 'text-light' : ''}
+        className={
+          darkMode
+            ? 'text-light meeting-notification-modal meeting-notification-modal--dark'
+            : 'meeting-notification-modal'
+        }
+        contentClassName={darkMode ? 'meeting-notification-modal-panel--dark' : ''}
       >
-        <ModalHeader toggle={handleMeetingRead} className={darkMode ? 'bg-space-cadet' : ''}>
-          Meeting Notification
-          {userUnreadMeetings.length > 1 ? ` (${userUnreadMeetings.length} upcoming)` : ''}
-        </ModalHeader>
+        {darkMode ? (
+          <MeetingNotificationModalHeader onClose={handleMeetingRead}>
+            Meeting Notification
+            {userUnreadMeetings.length > 1 ? ` (${userUnreadMeetings.length} upcoming)` : ''}
+          </MeetingNotificationModalHeader>
+        ) : (
+          <ModalHeader toggle={handleMeetingRead}>
+            Meeting Notification
+            {userUnreadMeetings.length > 1 ? ` (${userUnreadMeetings.length} upcoming)` : ''}
+          </ModalHeader>
+        )}
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           <div className="meeting-notification-modal-body">
             <p>{parse(DOMPurify.sanitize(meetingModalMessage))}</p>
@@ -1460,7 +1491,9 @@ export function Header(props) {
           </div>
         </ModalBody>
         <ModalFooter
-          className={`meeting-notification-modal-footer${darkMode ? ' bg-space-cadet' : ''}`}
+          className={`meeting-notification-modal-footer${
+            darkMode ? ' bg-yinmn-blue text-white' : ''
+          }`}
         >
           {userUnreadMeetings.length > 1 && meetingAudioUnlocked && (
             <div className="meeting-notification-nav">

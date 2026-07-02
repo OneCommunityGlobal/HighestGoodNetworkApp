@@ -106,6 +106,23 @@
   background-color: #1c1c1c !important;
   color: #f8f9fa !important;
   border: 1px solid #495057 !important;
+  color-scheme: dark;
+}
+
+.meeting-scheduling-page--dark
+  .meeting-scheduling-form
+  input[type='date']::-webkit-calendar-picker-indicator {
+  filter: brightness(0) invert(1);
+  opacity: 1;
+  cursor: pointer;
+}
+
+.meeting-scheduling-page--dark
+  .meeting-scheduling-form
+  input[type='date']::-moz-calendar-picker-indicator {
+  filter: brightness(0) invert(1);
+  opacity: 1;
+  cursor: pointer;
 }
 
 .meeting-scheduling-page--dark .meeting-scheduling-form select {
@@ -324,30 +341,85 @@
   border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
 
+/* Custom dark-mode header — avoids global .modal-header overrides */
+.meeting-scheduling-custom-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background-color: #1c2541;
+  border-bottom: 1px solid #3a506b;
+  color: #ffffff;
+}
+
+.meeting-scheduling-custom-header__title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 1.5;
+  color: #ffffff;
+}
+
+.meeting-scheduling-custom-header__close {
+  padding: 0.25rem 0.5rem;
+  margin: -0.25rem -0.5rem -0.25rem auto;
+  color: #ffffff;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+  opacity: 0.85;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.meeting-scheduling-custom-header__close:hover {
+  opacity: 1;
+}
+
 .meeting-scheduling-modal--dark .modal-content {
   background-color: #1b2a41;
   border: 1px solid #3a506b;
   color: #f8f9fa;
 }
 
-.meeting-scheduling-modal--dark .modal-header,
-.meeting-scheduling-modal--dark .modal-footer {
+/* contentClassName is on .modal-content — direct parent of header/body/footer */
+body.dark-mode .modal-content.meeting-scheduling-modal-panel--dark .modal-header,
+body.dark-mode .modal-dialog.meeting-scheduling-modal--dark .modal-header,
+.meeting-scheduling-modal--dark .modal-header {
   background-color: #1c2541 !important;
+  border-color: #3a506b !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .modal-content.meeting-scheduling-modal-panel--dark .modal-header .modal-title,
+body.dark-mode .modal-content.meeting-scheduling-modal-panel--dark .modal-header .close,
+body.dark-mode .modal-dialog.meeting-scheduling-modal--dark .modal-header .close,
+.meeting-scheduling-modal--dark .modal-header .close {
+  color: #ffffff !important;
+  text-shadow: none;
+  opacity: 0.9;
+}
+
+body.dark-mode .modal-content.meeting-scheduling-modal-panel--dark .modal-body,
+body.dark-mode .modal-content.meeting-scheduling-modal-panel--dark .modal-footer,
+body.dark-mode .modal-dialog.meeting-scheduling-modal--dark .modal-body,
+body.dark-mode .modal-dialog.meeting-scheduling-modal--dark .modal-footer,
+.meeting-scheduling-modal--dark .modal-footer {
+  background-color: #3a506b !important;
   border-color: #3a506b !important;
   color: #f8f9fa !important;
 }
 
+body.dark-mode .modal-content.meeting-scheduling-modal-panel--dark .modal-body,
+body.dark-mode .modal-dialog.meeting-scheduling-modal--dark .modal-body,
 .meeting-scheduling-modal--dark .modal-body {
-  background-color: #24344d !important;
+  background-color: #3a506b !important;
   color: #e9ecef !important;
 }
 
-.meeting-scheduling-modal--dark .modal-header .close {
-  color: #f8f9fa;
-  text-shadow: none;
-  opacity: 0.85;
-}
-
+body.dark-mode .modal-content.meeting-scheduling-modal-panel--dark .modal-header .close:hover,
+body.dark-mode .modal-dialog.meeting-scheduling-modal--dark .modal-header .close:hover,
 .meeting-scheduling-modal--dark .modal-header .close:hover {
   opacity: 1;
 }

@@ -27,6 +27,7 @@ import {
   hasValidMeetingSchedule,
   resolveUserTimeZone,
 } from '../../utils/meetingTime';
+import '../../App.module.css';
 import './MeetingScheduling.css';
 import { useHistory } from 'react-router-dom';
 
@@ -35,6 +36,22 @@ const customImageUploadHandler = () =>
     // eslint-disable-next-line prefer-promise-reject-errors
     reject({ message: 'Pictures are not allowed here!', remove: true });
   });
+
+function MeetingModalHeader({ children, onClose }) {
+  return (
+    <div className="meeting-scheduling-custom-header">
+      <h5 className="meeting-scheduling-custom-header__title">{children}</h5>
+      <button
+        type="button"
+        className="meeting-scheduling-custom-header__close"
+        onClick={onClose}
+        aria-label="Close"
+      >
+        <span aria-hidden="true">&#215;</span>
+      </button>
+    </div>
+  );
+}
 
 const TINY_MCE_INIT_OPTIONS = {
   license_key: 'gpl',
@@ -334,6 +351,15 @@ function MeetingScheduling(props) {
   const meetingModalClass = darkMode
     ? 'meeting-scheduling-modal meeting-scheduling-modal--dark'
     : 'meeting-scheduling-modal';
+  const meetingModalContentClass = darkMode ? 'meeting-scheduling-modal-panel--dark' : '';
+  const meetingModalSectionClass = darkMode ? 'bg-yinmn-blue text-white border-0' : '';
+
+  const renderModalHeader = (title, onClose) =>
+    darkMode ? (
+      <MeetingModalHeader onClose={onClose}>{title}</MeetingModalHeader>
+    ) : (
+      <ModalHeader toggle={onClose}>{title}</ModalHeader>
+    );
 
   const renderMeetingSummary = (details, introText) => (
     <div className="meeting-scheduling-modal-content">
@@ -653,11 +679,10 @@ function MeetingScheduling(props) {
             isOpen={confirmModalOpen}
             toggle={() => setConfirmModalOpen(false)}
             className={meetingModalClass}
+            contentClassName={meetingModalContentClass}
           >
-            <ModalHeader toggle={() => setConfirmModalOpen(false)}>
-              Confirm Meeting Schedule
-            </ModalHeader>
-            <ModalBody>
+            {renderModalHeader('Confirm Meeting Schedule', () => setConfirmModalOpen(false))}
+            <ModalBody className={meetingModalSectionClass}>
               {pendingMeetingDetails?.confirmationDetails && (
                 <>
                   {renderMeetingSummary(
@@ -678,7 +703,7 @@ function MeetingScheduling(props) {
                 </>
               )}
             </ModalBody>
-            <ModalFooter>
+            <ModalFooter className={meetingModalSectionClass}>
               <Button
                 color="secondary"
                 onClick={() => setConfirmModalOpen(false)}
@@ -697,9 +722,14 @@ function MeetingScheduling(props) {
               </Button>
             </ModalFooter>
           </Modal>
-          <Modal isOpen={modalOpen} toggle={toggleModal} className={meetingModalClass}>
-            <ModalHeader toggle={toggleModal}>{modalTitle}</ModalHeader>
-            <ModalBody>
+          <Modal
+            isOpen={modalOpen}
+            toggle={toggleModal}
+            className={meetingModalClass}
+            contentClassName={meetingModalContentClass}
+          >
+            {renderModalHeader(modalTitle, toggleModal)}
+            <ModalBody className={meetingModalSectionClass}>
               {isSuccessModal && modalMessage ? (
                 <>
                   {renderMeetingSummary(
@@ -724,7 +754,7 @@ function MeetingScheduling(props) {
                 </div>
               )}
             </ModalBody>
-            <ModalFooter>
+            <ModalFooter className={meetingModalSectionClass}>
               <Button
                 color="primary"
                 onClick={isSuccessModal ? toggleModal : () => setModalOpen(false)}
