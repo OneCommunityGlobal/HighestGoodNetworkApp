@@ -163,7 +163,7 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "@babel/core": "^7.28.0",
+    "@babel/core": "^7.29.6",
     "@babel/eslint-parser": "^7.28.0",
     "@babel/helper-validator-identifier": "^7.12.11",
     "@babel/plugin-transform-nullish-coalescing-operator": "^7.27.1",
