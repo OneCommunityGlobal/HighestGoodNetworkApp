@@ -89,6 +89,125 @@ function CalendarActivitySection({ selectedDate, events = [], onEventClick }) {
     });
   };
 
+  let eventsSummary = 'No events scheduled';
+
+  if (eventsForDate.length > 0) {
+    const eventLabel = eventsForDate.length === 1 ? 'event' : 'events';
+    eventsSummary = `${eventsForDate.length} ${eventLabel} scheduled`;
+  }
+
+  let activityContent;
+
+  if (!selectedDate) {
+    activityContent = (
+      <ul className={styles.calendarActivityList}>
+        {sortedActivities.map(activity => (
+          <li
+            key={activity.id}
+            className={`${styles.calendarActivityItem} ${
+              darkMode ? styles.calendarActivityItemDarkMode : ''
+            }`}
+          >
+            <p
+              className={`${styles.activityMessage} ${
+                darkMode ? styles.activityMessageDarkMode : ''
+              }`}
+            >
+              <strong>{activity.author}</strong>: {activity.message}
+            </p>
+
+            <small
+              className={`${styles.activityTime} ${darkMode ? styles.activityTimeDarkMode : ''}`}
+            >
+              {activity.time}
+            </small>
+          </li>
+        ))}
+      </ul>
+    );
+  } else if (eventsForDate.length === 0) {
+    activityContent = (
+      <div className={styles.activityNoEventsMessage}>
+        <p>No events found for this date.</p>
+      </div>
+    );
+  } else {
+    activityContent = (
+      <ul className={styles.calendarActivityList}>
+        {eventsForDate.map(event => {
+          const statusClass = STATUS_CLASS[event.status] || 'statusNew';
+
+          return (
+            <li
+              key={event.id}
+              className={`${styles.calendarActivityItem} ${
+                darkMode ? styles.calendarActivityItemDarkMode : ''
+              }`}
+            >
+              <button
+                type="button"
+                className={styles.activityEventBtn}
+                onClick={() => onEventClick?.(event)}
+                aria-label={`View details for ${event.title}`}
+              >
+                <div className={styles.activityEventTopRow}>
+                  <span
+                    className={`${styles.activityStatusBadge} ${
+                      darkMode ? styles.activityStatusBadgeDark : ''
+                    } ${styles[statusClass]}`}
+                  >
+                    {STATUS_ICON[event.status] || '⭐'}&nbsp;{event.status}
+                  </span>
+
+                  <span
+                    className={`${styles.activityEventTime} ${
+                      darkMode ? styles.activityEventTimeDark : ''
+                    }`}
+                  >
+                    <FontAwesomeIcon icon={faClock} className={styles.activityMetaIcon} />
+                    {event.time}
+                  </span>
+                </div>
+
+                <p
+                  className={`${styles.activityEventTitle} ${
+                    darkMode ? styles.activityEventTitleDark : ''
+                  }`}
+                >
+                  {event.title}
+                </p>
+
+                <small
+                  className={`${styles.activityTime} ${
+                    darkMode ? styles.activityTimeDarkMode : ''
+                  }`}
+                >
+                  {event.time} - {event.endTime}
+                </small>
+
+                <small
+                  className={`${styles.activityLocAndType} ${
+                    darkMode ? styles.activityTimeDarkMode : ''
+                  }`}
+                >
+                  <span>
+                    <FontAwesomeIcon icon={faLocationDot} className={styles.activityMetaIcon} />
+                    {event.location}
+                  </span>
+
+                  <span>
+                    <FontAwesomeIcon icon={faTag} className={styles.activityMetaIcon} />
+                    {event.type}
+                  </span>
+                </small>
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+    );
+  }
+
   return (
     <div
       className={`${styles.calendarActivitySection} ${
@@ -121,119 +240,11 @@ function CalendarActivitySection({ selectedDate, events = [], onEventClick }) {
             darkMode ? styles.activityDateSummaryDark : ''
           }`}
         >
-          {eventsForDate.length === 0
-            ? 'No events scheduled'
-            : `${eventsForDate.length} ${
-                eventsForDate.length === 1 ? 'event' : 'events'
-              } scheduled`}
+          {eventsSummary}
         </p>
       )}
 
-      {selectedDate ? (
-        eventsForDate.length > 0 ? (
-          <ul className={styles.calendarActivityList}>
-            {eventsForDate.map(event => {
-              const statusClass = STATUS_CLASS[event.status] || 'statusNew';
-
-              return (
-                <li
-                  key={event.id}
-                  className={`${styles.calendarActivityItem} ${
-                    darkMode ? styles.calendarActivityItemDarkMode : ''
-                  }`}
-                >
-                  <button
-                    type="button"
-                    className={styles.activityEventBtn}
-                    onClick={() => onEventClick && onEventClick(event)}
-                    aria-label={`View details for ${event.title}`}
-                  >
-                    <div className={styles.activityEventTopRow}>
-                      <span
-                        className={`${styles.activityStatusBadge} ${
-                          darkMode ? styles.activityStatusBadgeDark : ''
-                        } ${styles[statusClass]}`}
-                      >
-                        {STATUS_ICON[event.status] || '⭐'}&nbsp;{event.status}
-                      </span>
-
-                      <span
-                        className={`${styles.activityEventTime} ${
-                          darkMode ? styles.activityEventTimeDark : ''
-                        }`}
-                      >
-                        <FontAwesomeIcon icon={faClock} className={styles.activityMetaIcon} />
-                        {event.time}
-                      </span>
-                    </div>
-
-                    <p
-                      className={`${styles.activityEventTitle} ${
-                        darkMode ? styles.activityEventTitleDark : ''
-                      }`}
-                    >
-                      {event.title}
-                    </p>
-
-                    <small
-                      className={`${styles.activityTime} ${
-                        darkMode ? styles.activityTimeDarkMode : ''
-                      }`}
-                    >
-                      {event.time} - {event.endTime}
-                    </small>
-
-                    <small
-                      className={`${styles.activityLocAndType} ${
-                        darkMode ? styles.activityTimeDarkMode : ''
-                      }`}
-                    >
-                      <span>
-                        <FontAwesomeIcon icon={faLocationDot} className={styles.activityMetaIcon} />
-                        {event.location}
-                      </span>
-
-                      <span>
-                        <FontAwesomeIcon icon={faTag} className={styles.activityMetaIcon} />
-                        {event.type}
-                      </span>
-                    </small>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        ) : (
-          <div className={styles.activityNoEventsMessage}>
-            <p>No events found for this date.</p>
-          </div>
-        )
-      ) : (
-        <ul className={styles.calendarActivityList}>
-          {sortedActivities.map(activity => (
-            <li
-              key={activity.id}
-              className={`${styles.calendarActivityItem} ${
-                darkMode ? styles.calendarActivityItemDarkMode : ''
-              }`}
-            >
-              <p
-                className={`${styles.activityMessage} ${
-                  darkMode ? styles.activityMessageDarkMode : ''
-                }`}
-              >
-                <strong>{activity.author}</strong>: {activity.message}
-              </p>
-
-              <small
-                className={`${styles.activityTime} ${darkMode ? styles.activityTimeDarkMode : ''}`}
-              >
-                {activity.time}
-              </small>
-            </li>
-          ))}
-        </ul>
-      )}
+      {activityContent}
     </div>
   );
 }

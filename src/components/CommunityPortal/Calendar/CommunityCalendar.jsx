@@ -563,26 +563,29 @@ function CommunityCalendar() {
     );
   }
 
+  const getEventStatusKey = useCallback(status => {
+    return statusMap[status] || 'statusNew';
+  }, []);
+
+  const getHiddenCount = (eventsForDate, limit = 3) => Math.max(0, eventsForDate.length - limit);
+
+  const getVisibleEvents = (eventsForDate, limit = 3) => eventsForDate.slice(0, limit);
+
   // Render event tiles
   const tileContent = useCallback(
     ({ date, view }) => {
-      if (view !== 'month') {
-        return null;
-      }
+      if (view !== 'month') return null;
 
       const eventsForDate = getEventsForDate(date);
+      if (!eventsForDate.length) return null;
 
-      if (!eventsForDate.length) {
-        return null;
-      }
-
-      const visible = eventsForDate.slice(0, 3);
-      const hiddenCount = eventsForDate.length - 3;
+      const visible = getVisibleEvents(eventsForDate);
+      const hiddenCount = getHiddenCount(eventsForDate);
 
       return (
         <div className={styles.tileEvents}>
           {visible.map(e => {
-            const statusKey = statusMap[e.status] || 'statusNew';
+            const statusKey = getEventStatusKey(e.status);
 
             return (
               <button
@@ -598,37 +601,11 @@ function CommunityCalendar() {
                   setTooltip({ event: e, x: r.right + 8, y: r.top });
                 }}
                 onMouseLeave={() => setTooltip(null)}
-                aria-label={`Click to view details for ${e.title}`}
               >
                 <span className={styles.eventContent}>
-                  <span className={styles.eventIcon} aria-label={e.status} title={e.status}>
-                    {statusIconMap[e.status] || '⭐'}
-                  </span>
-
+                  <span className={styles.eventIcon}>{statusIconMap[e.status] || '⭐'}</span>
                   <span className={styles.eventTitleText}>{e.title}</span>
                 </span>
-
-                {hoveredEventId === e.id && (
-                  <div
-                    className={`${styles.eventTooltip} ${darkMode ? styles.eventTooltipDark : ''}`}
-                  >
-                    <strong>{e.title}</strong>
-
-                    <span className={styles.tooltipDetail}>
-                      <strong>Time:</strong> {e.time}
-                    </span>
-
-                    <span className={styles.tooltipDetail}>
-                      <strong>Location:</strong> {e.location}
-                    </span>
-
-                    <span className={styles.tooltipDetail}>
-                      <strong>Status:</strong> {e.status}
-                    </span>
-
-                    <small>Click for more details</small>
-                  </div>
-                )}
               </button>
             );
           })}
@@ -643,7 +620,6 @@ function CommunityCalendar() {
                 setOverflowDate({ date, x: r.right + 8, y: r.top });
                 handleDateSelect(date);
               }}
-              title="View all events for this day"
             >
               +{hiddenCount} more
             </button>
@@ -651,7 +627,7 @@ function CommunityCalendar() {
         </div>
       );
     },
-    [getEventsForDate, handleEventClick, darkMode, hoveredEventId, statusMap, statusIconMap],
+    [getEventsForDate, handleEventClick, handleDateSelect, statusIconMap],
   );
 
   const tileClassName = useCallback(
