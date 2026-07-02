@@ -16,7 +16,7 @@ import {
  
 import Member from './Member';
 import FoundUser from './FoundUser';
-import './members.module.css';
+import styles from './members.module.css';
 import hasPermission from '~/utils/permissions';
 import { boxStyle, boxStyleDark } from '~/styles';
 import ToggleSwitch from '~/components/UserProfile/UserProfileEdit/ToggleSwitch';
@@ -129,45 +129,36 @@ const Members = props => {
     const currentValue = event.target.value;
     setQuery(currentValue);
     setSearchText(currentValue);
-
-    if(allProjectMembers.filter(user => user.firstName.includes(currentValue)).length === 0) {
-      toast.error('No matching users found.');
-    };
-  
-    if (lastTimeoutId !== null) clearTimeout(lastTimeoutId);
-
-  
-    const timeoutId = setTimeout(() => {
-      // Only call findUserProfiles if there's actual search text
-      if (currentValue && currentValue.trim() !== '') {
-        props.findProjectMembers(projectId, currentValue.trim());
-        setShowFindUserList(true);
-      } else {
-        setShowFindUserList(false);
-      }
-    }, 300);
-  
-    setLastTimeoutId(timeoutId);
+    setShowFindUserList(false);
   };
+
   const handleFind = () => {
   const q = (searchText || '').trim();
     if (!q) {
       setShowFindUserList(false);
       return;
     }
+    setIsValid(false);
     props.findProjectMembers(projectId, q);
+    setTimeout(() => setIsValid(true), 0);
     setShowFindUserList(true);
     setFilterMode("find");
   };
   
-  useEffect(() => {
-    if(isValid && props.state.projectMembers.foundUsers.length > 0)  {
-      setAllProjectMembers(props.state.projectMembers.foundUsers);
-      setIsValid(false);
-    } 
-    
-  }, [props.state.projectMembers.foundUsers, isValid]);
-  
+useEffect(() => {
+  if (props.state.projectMembers.fetching || !isValid) return;
+  if (props.state.projectMembers.foundUsers.length > 0) {
+    setAllProjectMembers(props.state.projectMembers.foundUsers);
+  } else if (searchText.trim() !== '') {
+    toast.error('No matching users found.');
+  }
+  setIsValid(false);
+}, [
+  props.state.projectMembers.foundUsers,
+  props.state.projectMembers.fetching,
+  isValid,
+  searchText,
+]);
 
   return (
     <React.Fragment>
@@ -222,7 +213,8 @@ const Members = props => {
           {canAssignProjectToUsers ? (
             <div className="input-group" id="new_project">
               <div className="input-group-prepend">
-                <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>Find user</span>
+                {/* <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>Find user</span> */}
+                <span className={`input-group-text ${darkMode ? styles.searchLabelDark : ''}`}>Find user</span>
               </div>
 
               <input
@@ -231,7 +223,7 @@ const Members = props => {
                 type="text"
                 className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
                 aria-label="Search user"
-                placeholder="Name"
+                placeholder="Enter name to search.."
                 value={searchText}
                 onChange={handleInputChange}
                 onKeyDown={(e) => {
