@@ -1,5 +1,8 @@
 import { useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
+import { Tooltip } from 'reactstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { ArrowUpDown, ArrowUp, ArrowDown, SquareArrowOutUpRight } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
@@ -12,6 +15,7 @@ function NoShowInsights() {
   const [scopeFilter, setScopeFilter] = useState('My Event');
   const [activeTab, setActiveTab] = useState('Event type');
   const [sortOrder, setSortOrder] = useState('none');
+  const [tooltipOpen, setTooltipOpen] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
   const insightsRef = useRef(null);
   const [isExportOpen, setIsExportOpen] = useState(false);
@@ -26,6 +30,17 @@ function NoShowInsights() {
     });
   };
   const SortIcon = sortOrder === 'none' ? ArrowUpDown : sortOrder === 'asc' ? ArrowUp : ArrowDown;
+
+  const toggleTooltip = () => setTooltipOpen(!tooltipOpen);
+
+  const getTooltipContent = () => {
+    let categoryDescription;
+    if (activeTab === 'Event type') categoryDescription = 'event types';
+    else if (activeTab === 'Time') categoryDescription = 'time periods';
+    else categoryDescription = 'locations';
+
+    return `Percentages represent the average no-show rate for each ${categoryDescription} (${activeTab}), aggregated from all matching events within the selected time range. Higher percentages indicate a higher likelihood of participants not attending.`;
+  };
 
   const calculateStats = filteredEvents => {
     const statsMap = new Map();
@@ -259,7 +274,23 @@ function NoShowInsights() {
         className={`${styles.insights} ${darkMode ? styles.insightsDark : ''}`}
       >
         <div className={`${styles.insightsHeader} ${darkMode ? styles.insightsHeaderDark : ''}`}>
-          <h3>No-show rate insights</h3>
+          <div className={styles.insightsTitleWrapper}>
+            <h3>No-show rate insights</h3>
+            <span id="noShowInsightsTooltip" className={styles.infoIcon}>
+              <FontAwesomeIcon icon={faInfoCircle} />
+            </span>
+            <Tooltip
+              key={activeTab}
+              delay={{ show: 0, hide: 500 }}
+              autohide={false}
+              placement="right"
+              isOpen={tooltipOpen}
+              target="noShowInsightsTooltip"
+              toggle={toggleTooltip}
+            >
+              {getTooltipContent()}
+            </Tooltip>
+          </div>
           <div
             className={`${styles.insightsFilters} ${darkMode ? styles.insightsFiltersDark : ''}`}
           >
@@ -272,6 +303,9 @@ function NoShowInsights() {
               <option value="Today">Today</option>
               <option value="This Week">This Week</option>
               <option value="This Month">This Month</option>
+              <option value="Last 3 Months">Last 3 Months</option>
+              <option value="Last 6 Months">Last 6 Months</option>
+              <option value="Last 12 Months">Last 12 Months</option>
             </select>
           </div>
         </div>

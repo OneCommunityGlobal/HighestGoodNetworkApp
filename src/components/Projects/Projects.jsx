@@ -387,7 +387,7 @@ const Projects = function(props) {
           <div className="input-group" style={{ maxWidth: '260px', maxHeight: '38px' }}>
             <div className="input-group-prepend">
               <span
-              className={`input-group-text ${darkMode ? 'bg-light-grey' : ''}`}
+              className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
               >
                 Filter by
               </span>
@@ -395,7 +395,7 @@ const Projects = function(props) {
             <select
               value={searchMode}
               onChange={e => setSearchMode(e.target.value)}
-              className={`form-control ${darkMode ? 'bg-white' : ''}`}
+              className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
               aria-label="Filter by"
             >
               <option value="person">User Name</option>

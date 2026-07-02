@@ -626,25 +626,13 @@
   }
 }
 
-.myCasesPageDark .viewSwitcher button,
-.myCasesPageDark .createNew {
+.myCasesPageDark .moreBtn {
   background-color: #3A506B;
-  color: #ffffff;
-  border: 1px solid #3A506B;
+  border: 1px solid #5A6B7D;
+  color: #fff;
 }
 
-.myCasesPageDark .viewSwitcher button.active {
-  background-color: #0056b3;
-  color: #ffffff;
-}
-
-.myCasesPageDark .filterDropdown {
-  background-color: #3A506B;
-  color: #ffffff;
-  border: 1px solid #3A506B;
-}
-
-.myCasesPageDark .filterDropdown option {
-  background-color: #3A506B;
-  color: #ffffff;
+.myCasesPageDark .moreBtn:hover {
+  background-color: #5A6B7D;
+  color: #fff;
 }
