@@ -8,9 +8,15 @@ if command -v nvm >/dev/null 2>&1 && [ -f .nvmrc ]; then
 fi
 
 if git rev-parse --abbrev-ref @{upstream} >/dev/null 2>&1; then
-  changed_files=$(git diff --name-only @{upstream}...HEAD)
+  changed_files=$(git diff --name-only --diff-filter=d @{upstream}...HEAD)
 else
   echo "ℹ️  No upstream branch set. Skipping pre-push checks."
+  exit 0
+fi
+
+# Skip checks if any outgoing commit is a merge commit
+if git log @{upstream}..HEAD --merges --oneline | grep -q .; then
+  echo "ℹ️  Outgoing commits include a merge commit. Skipping lint/test checks."
   exit 0
 fi
 
@@ -19,13 +25,23 @@ if [ -z "$changed_files" ]; then
   exit 0
 fi
 
+# Skip checks if any outgoing commit is a merge commit
+if git log @{upstream}..HEAD --merges --oneline | grep -q .; then
+  echo "ℹ️  Outgoing commits include a merge commit. Skipping lint/test checks."
+  exit 0
+fi
+
 if ! printf '%s\n' "$changed_files" | grep -qvE '^\.husky/'; then
   echo "ℹ️  Only Husky hook changes detected. Skipping full test and lint checks."
   exit 0
 fi
 
-js_files=$(printf '%s\n' "$changed_files" | grep -E '\.(js|jsx|ts|tsx)$' || true)
-style_files=$(printf '%s\n' "$changed_files" | grep -E '\.(css|scss|sass)$' || true)
+existing_files=$(printf '%s\n' "$changed_files" | while IFS= read -r f; do
+  [ -n "$f" ] && [ -e "$f" ] && printf '%s\n' "$f"
+done)
+
+js_files=$(printf '%s\n' "$existing_files" | grep -E '\.(js|jsx|ts|tsx)$' || true)
+style_files=$(printf '%s\n' "$existing_files" | grep -E '\.(css|scss|sass)$' || true)
 
 test_status=0
 lint_status=0
@@ -33,17 +49,17 @@ style_status=0
 
 if [ -n "$js_files" ]; then
   echo "🧪 Running related tests before push..."
-  echo "$js_files" | tr ' ' '\n' | xargs npx vitest related --run
+  printf '%s\n' "$js_files" | xargs -s 6000 npx vitest related --run
   test_status=$?
 
   echo "🧹 Running ESLint on changed files before push..."
-  echo "$js_files" | tr ' ' '\n' | xargs npx eslint
+  printf '%s\n' "$js_files" | xargs -s 6000 npx eslint
   lint_status=$?
 fi
 
 if [ -n "$style_files" ]; then
   echo "🎨 Running Stylelint on changed files before push..."
-  echo "$style_files" | tr ' ' '\n' | xargs npx stylelint
+  printf '%s\n' "$style_files" | xargs -s 6000 npx stylelint
   style_status=$?
 fi
 

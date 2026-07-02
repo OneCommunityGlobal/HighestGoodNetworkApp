@@ -1,67 +1,122 @@
 /* stylelint-disable  */
+@import url('./jobFormTheme.module.css');
+
 .fieldControls {
   display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
 }
 
 .visibilityCheckbox {
   transform: scale(1.2);
   cursor: pointer;
+  align-self: flex-start;
+  accent-color: var(--jfb-lime);
 }
 
 .fieldActions {
-  display: flex;
-  gap: 5px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  width: 100%;
 }
 
 .cloneButton,
 .moveButton,
-.deleteButton {
-  padding: 3px 8px;
+.deleteButton,
+.editButton {
+  padding: 6px 8px;
   border: none;
-  border-radius: 3px;
+  border-radius: 5px;
   cursor: pointer;
-  font-size: 0.85rem;
-  transition: opacity 0.2s;
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.25;
+  min-height: 30px;
+  white-space: nowrap;
+  color: var(--jfb-white);
+  transition: background-color 0.2s, transform 0.15s;
+}
+
+.editButton {
+  grid-column: 1 / -1;
+  background-color: var(--jfb-blue);
+}
+
+.editButton:hover:not(:disabled) {
+  background-color: var(--jfb-blue-hover);
 }
 
 .cloneButton {
-  background-color: #9c27b0;
-  color: white;
+  background-color: var(--jfb-lime);
+}
+
+.cloneButton:hover:not(:disabled) {
+  background-color: var(--jfb-lime-hover);
 }
 
 .moveButton {
-  background-color: #ff9800;
-  color: white;
+  background-color: var(--jfb-white);
+  color: var(--jfb-text);
+  border: 1px solid #d0d0d0;
+}
+
+.moveButton:hover:not(:disabled) {
+  background-color: #f5f5f5;
+  border-color: #b8b8b8;
 }
 
 .deleteButton {
-  background-color: #f44336;
-  color: white;
+  grid-column: 1 / -1;
+  background-color: var(--jfb-white);
+  color: #b71c1c;
+  border: 1px solid #ef9a9a;
+}
+
+.deleteButton:hover:not(:disabled) {
+  background-color: #ffebee;
 }
 
 button:disabled {
-  opacity: 0.5;
+  opacity: 0.45;
   cursor: not-allowed;
 }
 
 button:not(:disabled):hover {
-  opacity: 0.8;
+  transform: translateY(-1px);
 }
 
-.editButton {
-  background-color: #2196f3;
-  color: white;
-  padding: 3px 8px;
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
-  font-size: 0.85rem;
-  transition: opacity 0.2s;
+.darkControls .editButton {
+  background-color: var(--jfb-blue-hover);
 }
 
-.editButton:hover {
-  opacity: 0.8;
+.darkControls .editButton:hover:not(:disabled) {
+  background-color: var(--jfb-blue);
+}
+
+.darkControls .cloneButton {
+  background-color: var(--jfb-lime-hover);
+}
+
+.darkControls .cloneButton:hover:not(:disabled) {
+  background-color: var(--jfb-lime);
+}
+
+.darkControls .moveButton {
+  background-color: #5a6a7a;
+}
+
+.darkControls .moveButton:hover:not(:disabled) {
+  background-color: #6a7a8a;
+}
+
+.darkControls .deleteButton {
+  background-color: #6a6a6a;
+}
+
+.darkControls .deleteButton:hover:not(:disabled) {
+  background-color: #7a7a7a;
 }

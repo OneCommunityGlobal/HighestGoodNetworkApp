@@ -1,20 +1,20 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
+import { useSelector } from 'react-redux';
 import {
   Bar,
   BarChart,
   CartesianGrid,
+  Legend,
   ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  Tooltip,
-  Legend,
 } from 'recharts';
-import styles from './EventPopularity.module.css';
 import PropTypes from 'prop-types';
+import styles from './EventPopularity.module.css';
 
-// Sample data
 const eventTypeData = [
   {
     name: 'Community Volunteer Day',
@@ -174,6 +174,61 @@ ChartTooltip.propTypes = {
   active: PropTypes.bool,
   payload: PropTypes.array,
   styles: PropTypes.object.isRequired,
+};
+
+const CustomTooltip = ({ active, payload, label }) => {
+  if (!active || !payload?.length) {
+    return null;
+  }
+
+  return (
+    <div className={styles.tooltipBox}>
+      <div className={styles.tooltipTitle}>{label}</div>
+
+      {payload.map(item => (
+        <div key={item.dataKey} className={styles.tooltipRow}>
+          <span>{item.name}: </span>
+          <strong>{item.value} users</strong>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+CustomTooltip.propTypes = {
+  active: PropTypes.bool,
+  payload: PropTypes.arrayOf(
+    PropTypes.shape({
+      dataKey: PropTypes.string,
+      name: PropTypes.string,
+      value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    }),
+  ),
+  label: PropTypes.string,
+};
+
+const InfoTooltip = ({ text, children }) => {
+  const [showTooltip, setShowTooltip] = useState(false);
+
+  return (
+    <button
+      type="button"
+      className={styles.infotooltipHover}
+      onMouseEnter={() => setShowTooltip(true)}
+      onMouseLeave={() => setShowTooltip(false)}
+      onFocus={() => setShowTooltip(true)}
+      onBlur={() => setShowTooltip(false)}
+    >
+      {children}
+
+      {showTooltip && <div className={styles.infotooltipheading}>{text}</div>}
+    </button>
+  );
+};
+
+InfoTooltip.propTypes = {
+  text: PropTypes.string.isRequired,
+  children: PropTypes.node.isRequired,
 };
 
 export default function EventDashboard() {
@@ -374,6 +429,12 @@ export default function EventDashboard() {
     detailTitle = `📅 Event Type Details: ${selectedEventTypeDetail}`;
   }
 
+  const currentDate = new Date();
+
+  const thirtyDaysAgo = new Date(currentDate.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+  const dateRangeLabel = `${thirtyDaysAgo.toLocaleDateString()} - ${currentDate.toLocaleDateString()}`;
+
   return (
     <div className={`${styles.eventpopularity}`}>
       {/* Header */}
@@ -491,7 +552,8 @@ export default function EventDashboard() {
           <div className={styles.epEventsList}>
             <div className={styles.epRowHeader}>
               <span>Event Name</span>
-              <span>Registered / Attended</span>
+              <div></div>
+              <div className="epEventStats">Registered / Attended</div>
             </div>
 
             {filteredEventTypeData.length > 0 ? (
@@ -648,7 +710,7 @@ export default function EventDashboard() {
                     card.trendType === 'positive' ? styles.trendPositive : styles.trendNegative
                   }`}
                 >
-                  {card.trend} Monthly
+                  {card.trend} vs last month
                 </p>
               </button>
             ))}
