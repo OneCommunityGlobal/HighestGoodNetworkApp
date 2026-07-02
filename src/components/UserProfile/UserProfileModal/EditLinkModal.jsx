@@ -203,7 +203,11 @@ const EditLinkModal = props => {
             {canManageAdminLinks && (
               <CardBody>
                 <Card style={{ padding: '16px' }} className={darkMode ? 'bg-yinmn-blue' : ''}>
-                  <Label style={{ display: 'flex', margin: '5px' }} className={darkMode ? 'text-light' : ''}>Admin Links:</Label>
+                  {/* <Label style={{ display: 'flex', margin: '5px' }} className={darkMode ? 'text-light' : ''}>Admin Links:</Label> */}
+
+                  <Label style={{ display: 'flex', margin: '5px' }} className={darkMode ? styles['modal-label-dark'] : ''}>Admin Links:</Label>
+
+
                   {mediaFolderDiffWarning && (
                     <span className={`${styles['warning-help-context']}`} data-testid="diff-media-url-warning" >
                       <strong>Media Folder link must be a working DropBox link</strong>
@@ -214,7 +218,7 @@ const EditLinkModal = props => {
                   )}
                   <div>
                     <div style={{ display: 'flex', margin: '5px' }} className={`${styles['link-fields']}`}>
-                      <label className={`${styles['custom-label']} ${darkMode ? 'text-light' : ''}`} htmlFor='google-doc-link' >Google Doc</label>
+                      <label className={`${styles['custom-label']} ${darkMode ? styles['modal-label-dark'] : ''}`} htmlFor='google-doc-link' >Google Doc</label>
                       <input
                         id='google-doc-link'
                         className={styles.customEdit}
@@ -228,7 +232,7 @@ const EditLinkModal = props => {
                     </div>
                     <div style={{ display: 'flex', margin: '5px' }} className={`${styles['link-fields']}`}>
 
-                      <label className={`${styles['custom-label']} ${darkMode ? 'text-light' : ''}`} htmlFor='media-folder-link' >Media Folder</label>
+                      <label className={`${styles['custom-label']} ${darkMode ? styles['modal-label-dark'] : ''}`} htmlFor='media-folder-link' >Media Folder</label>
                       <input
                         className={styles.customEdit}
                         id="media-folder-link"
@@ -318,7 +322,7 @@ const EditLinkModal = props => {
             )}
             <CardBody>
               <Card style={{ padding: '16px' }} className={darkMode ? 'bg-yinmn-blue' : ''}>
-                <Label style={{ display: 'flex', margin: '5px' }} className={darkMode ? 'text-light' : ''}>Personal Links:</Label>
+                <Label style={{ display: 'flex', margin: '5px' }} className={darkMode ? styles['modal-label-dark'] : ''}>Personal Links:</Label>
                 <div>
                   {personalLinks.map((link, index) => (
                     <div

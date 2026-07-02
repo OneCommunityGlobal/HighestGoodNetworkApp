@@ -13,7 +13,7 @@ const UserLinks = ({ links = [] }) => {
           if (item.Link.trim() !== '') {
             return (
               <React.Fragment key={item.Name}>
-                <a className={darkMode ? 'text-light' : ''} key={item.link} href={item.Link} target="_blank" rel="noreferrer" data-testid="testHyperLink">
+                <a className={darkMode ? 'text-dark' : ''} key={item.link} href={item.Link} target="_blank" rel="noreferrer" data-testid="testHyperLink">
                   {item.Name.toUpperCase()}
                 </a>
                 <br />
