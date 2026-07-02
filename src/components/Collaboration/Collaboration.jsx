@@ -1,10 +1,10 @@
 // src/pages/Collaboration/Collaboration.jsx
 import { useEffect, useState, useMemo, useRef } from 'react';
-import { useHistory } from 'react-router-dom';
 import styles from './Collaboration.module.css';
 import { toast } from 'react-toastify';
 import { ApiEndpoint } from '~/utils/URL';
 import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import OneCommunityImage from '../../assets/images/logo2.png';
 
 const ADS_PER_PAGE = 18;
@@ -13,6 +13,7 @@ function Collaboration() {
   const [query, setQuery] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [categoriesSelected, setCategoriesSelected] = useState([]);
+  const history = useHistory();
   const [currentPage, setCurrentPage] = useState(1);
   const [jobAds, setJobAds] = useState([]);
   const [allJobs, setAllJobs] = useState([]);
@@ -27,7 +28,6 @@ function Collaboration() {
   const categoryRef = useRef(null);
   const positionRef = useRef(null);
 
-  const history = useHistory();
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const slugify = s =>
@@ -168,6 +168,18 @@ function Collaboration() {
     });
   };
 
+  const resultLabel = filteredJobs.length === 1 ? 'result' : 'results';
+
+  let listingText = `Listing all ${filteredJobs.length} job ads.`;
+
+  if (searchTerm.trim()) {
+    listingText = `Listing ${filteredJobs.length} ${resultLabel} for '${searchTerm}'`;
+  } else if (selectedPosition) {
+    listingText = `Listing ${filteredJobs.length} ${resultLabel} for '${selectedPosition}' in '${selectedCategory}'`;
+  } else if (selectedCategory) {
+    listingText = `Listing ${filteredJobs.length} ${resultLabel} for '${selectedCategory}'`;
+  }
+
   /* ================= SUMMARIES VIEW ================= */
   if (summaries) {
     return (
@@ -306,15 +318,7 @@ function Collaboration() {
 
         {/* QUERY TEXT */}
         <div className="job-queries">
-          <p>
-            {searchTerm
-              ? `Listing results for '${searchTerm}'`
-              : selectedPosition
-              ? `Listing results for '${selectedPosition}' in '${selectedCategory}'`
-              : selectedCategory
-              ? `Listing results for '${selectedCategory}'`
-              : 'Listing all job ads.'}
-          </p>
+          <p>{listingText}</p>
           <button className="btn btn-secondary" onClick={handleShowSummaries}>
             Show Summaries
           </button>
@@ -333,23 +337,33 @@ function Collaboration() {
 
         {/* JOB GRID */}
         <div className={styles.jobList}>
-          {jobAds.map(ad => (
-            <button
-              key={ad._id}
-              type="button"
-              className={styles.jobAd}
-              onClick={() => handleJobClick(ad)}
-            >
-              <img
-                src={
-                  ad.imageUrl ||
-                  `/api/placeholder/640/480?text=${encodeURIComponent(ad.category || 'Job')}`
-                }
-                alt={ad.title}
-              />
-              <h3>{ad.title}</h3>
-            </button>
-          ))}
+          {jobAds.length > 0 ? (
+            jobAds.map(ad => (
+              <button
+                key={ad._id}
+                type="button"
+                className={styles.jobAd}
+                onClick={() => handleJobClick(ad)}
+              >
+                <img
+                  src={
+                    ad.imageUrl ||
+                    `/api/placeholder/640/480?text=${encodeURIComponent(ad.category || 'Job')}`
+                  }
+                  alt={ad.title}
+                />
+                <h3>{ad.title}</h3>
+              </button>
+            ))
+          ) : (
+            <div className={styles.emptyState}>
+              <p>No job listings found matching your criteria.</p>
+              <p>Try clearing filters or adjusting your search terms.</p>
+              <button className="btn btn-secondary" onClick={handleClearAllFilters}>
+                Clear All Filters
+              </button>
+            </div>
+          )}
         </div>
 
         {/* PAGINATION */}

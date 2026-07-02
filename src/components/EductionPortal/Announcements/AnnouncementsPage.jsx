@@ -1,8 +1,8 @@
 ﻿import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
-import AnnouncementsBoard from './AnnouncementsBoard';
 import AnnouncementModal from './AnnouncementModal';
+import AnnouncementsPageMainPanel from './AnnouncementsPageMainPanel';
 
 const EDUCATOR_ROLES = new Set(['Owner', 'Administrator', 'Mentor', 'Core Team']);
 
@@ -12,12 +12,6 @@ const getUserRole = authUser => {
     return 'educator';
   }
   return EDUCATOR_ROLES.has(authUser.role) ? 'educator' : 'student';
-};
-
-const getAudienceLabel = selectedAudience => {
-  if (selectedAudience === 'all') return 'All Audiences';
-  if (selectedAudience === 'students') return 'Students Only';
-  return 'Educators Only';
 };
 
 const getButtonStyle = (isActive, activeColor, darkMode) => {
@@ -273,107 +267,6 @@ FilterSidebar.defaultProps = {
   dateToFilter: '',
 };
 
-const ActiveFiltersBar = ({
-  darkMode,
-  searchQuery,
-  courseFilter,
-  dateFromFilter,
-  dateToFilter,
-  clearFilters,
-}) => {
-  const hasActiveFilters = searchQuery || courseFilter || dateFromFilter || dateToFilter;
-  if (!hasActiveFilters) return null;
-  return (
-    <span style={{ color: darkMode ? '#94a3b8' : '#666' }}>
-      | Filters:
-      {searchQuery && (
-        <span
-          style={{
-            marginLeft: '5px',
-            backgroundColor: '#e3f2fd',
-            padding: '2px 6px',
-            borderRadius: '3px',
-            fontSize: '11px',
-          }}
-        >
-          Search: &quot;{searchQuery}&quot;
-        </span>
-      )}
-      {courseFilter && (
-        <span
-          style={{
-            marginLeft: '5px',
-            backgroundColor: '#f3e5f5',
-            padding: '2px 6px',
-            borderRadius: '3px',
-            fontSize: '11px',
-          }}
-        >
-          Course: &quot;{courseFilter}&quot;
-        </span>
-      )}
-      {dateFromFilter && (
-        <span
-          style={{
-            marginLeft: '5px',
-            backgroundColor: '#e8f5e8',
-            padding: '2px 6px',
-            borderRadius: '3px',
-            fontSize: '11px',
-          }}
-        >
-          From: {dateFromFilter}
-        </span>
-      )}
-      {dateToFilter && (
-        <span
-          style={{
-            marginLeft: '5px',
-            backgroundColor: '#fff3e0',
-            padding: '2px 6px',
-            borderRadius: '3px',
-            fontSize: '11px',
-          }}
-        >
-          To: {dateToFilter}
-        </span>
-      )}
-      <button
-        onClick={clearFilters}
-        style={{
-          marginLeft: '8px',
-          padding: '2px 6px',
-          backgroundColor: '#ffebee',
-          border: '1px solid #f44336',
-          borderRadius: '3px',
-          fontSize: '10px',
-          color: '#f44336',
-          cursor: 'pointer',
-        }}
-      >
-        Clear All
-      </button>
-    </span>
-  );
-};
-
-ActiveFiltersBar.propTypes = {
-  darkMode: PropTypes.bool,
-  searchQuery: PropTypes.string,
-  courseFilter: PropTypes.string,
-  dateFromFilter: PropTypes.string,
-  dateToFilter: PropTypes.string,
-  clearFilters: PropTypes.func.isRequired,
-};
-
-ActiveFiltersBar.defaultProps = {
-  darkMode: false,
-  searchQuery: '',
-  courseFilter: '',
-  dateFromFilter: '',
-  dateToFilter: '',
-};
-
 const selectAuthUser = state => state.auth.user;
 const selectDarkMode = state => state.theme.darkMode;
 
@@ -511,179 +404,20 @@ const AnnouncementsPage = () => {
         dateToFilter={dateToFilter}
         setDateToFilter={setDateToFilter}
       />
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <div
-          style={{
-            backgroundColor: darkMode ? '#1b2a41' : 'white',
-            padding: '15px 30px',
-            borderBottom: `1px solid ${darkMode ? '#3A506B' : '#e0e0e0'}`,
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <h4 style={{ margin: 0, fontWeight: 'bold', color: darkMode ? '#e2e8f0' : '#333333' }}>
-            Announcements
-          </h4>
-          {userRole === 'educator' && (
-            <button
-              onClick={handleCreateAnnouncement}
-              style={{
-                padding: '8px 16px',
-                backgroundColor: '#333',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                fontSize: '14px',
-                cursor: 'pointer',
-              }}
-            >
-              + Create Announcement
-            </button>
-          )}
-        </div>
-        <div
-          style={{
-            backgroundColor: darkMode ? '#1b2a41' : 'white',
-            padding: '10px 30px',
-            borderBottom: `1px solid ${darkMode ? '#3A506B' : '#e0e0e0'}`,
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <div style={{ display: 'flex', gap: '15px' }}>
-            <span
-              style={{
-                color: '#007bff',
-                fontWeight: 'bold',
-                fontSize: '14px',
-                borderBottom: '2px solid #007bff',
-                paddingBottom: '5px',
-              }}
-            >
-              Board
-            </span>
-            <button
-              style={{
-                background: 'none',
-                border: 'none',
-                color: darkMode ? '#94a3b8' : '#666',
-                fontSize: '14px',
-                cursor: 'pointer',
-              }}
-            >
-              All
-            </button>
-            <button
-              style={{
-                background: 'none',
-                border: 'none',
-                color: darkMode ? '#94a3b8' : '#666',
-                fontSize: '14px',
-                cursor: 'pointer',
-              }}
-            >
-              Unread
-            </button>
-            <button
-              style={{
-                background: 'none',
-                border: 'none',
-                color: darkMode ? '#94a3b8' : '#666',
-                fontSize: '14px',
-                cursor: 'pointer',
-              }}
-            >
-              Scheduled
-            </button>
-          </div>
-          <input
-            type="text"
-            placeholder="Search Announcements..."
-            value={searchQuery}
-            onChange={handleSearchQueryChange}
-            style={{
-              padding: '6px 12px',
-              border: `1px solid ${darkMode ? '#3A506B' : '#ccc'}`,
-              borderRadius: '4px',
-              fontSize: '12px',
-              width: '200px',
-              backgroundColor: darkMode ? '#243B5A' : 'white',
-              color: darkMode ? '#e2e8f0' : '#333333',
-            }}
-          />
-        </div>
-        <div
-          style={{
-            backgroundColor: darkMode ? '#1b2a41' : 'white',
-            padding: '15px 30px',
-            borderBottom: `1px solid ${darkMode ? '#3A506B' : '#e0e0e0'}`,
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <h6
-            style={{
-              margin: 0,
-              fontWeight: 'bold',
-              fontSize: '14px',
-              color: darkMode ? '#e2e8f0' : '#333333',
-            }}
-          >
-            Latest
-          </h6>
-          <div style={{ fontSize: '12px', color: darkMode ? '#94a3b8' : '#666' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', flexWrap: 'wrap' }}>
-              <span>
-                Showing:{' '}
-                <strong style={{ color: '#007bff' }}>{getAudienceLabel(selectedAudience)}</strong>
-              </span>
-              <ActiveFiltersBar
-                darkMode={darkMode}
-                searchQuery={searchQuery}
-                courseFilter={courseFilter}
-                dateFromFilter={dateFromFilter}
-                dateToFilter={dateToFilter}
-                clearFilters={clearFilters}
-              />
-              {userRole === 'educator' && (
-                <span style={{ color: '#28a745' }}>
-                  {'\uD83D\uDC68\u200D\uD83C\uDFEB'} <strong>Educator Mode</strong> (Can
-                  create/edit)
-                </span>
-              )}
-              {userRole === 'student' && (
-                <span style={{ color: '#17a2b8' }}>
-                  {'\uD83D\uDC68\u200D\uD83C\uDF93'} <strong>Student Mode</strong> (View only)
-                </span>
-              )}
-            </div>
-          </div>
-        </div>
-        <div
-          style={{
-            flex: 1,
-            padding: '20px 30px',
-            backgroundColor: darkMode ? '#0d1b2a' : '#f8f9fa',
-          }}
-        >
-          <AnnouncementsBoard
-            userRole={userRole}
-            onCreateAnnouncement={handleCreateAnnouncement}
-            onEditAnnouncement={handleEditAnnouncement}
-            announcements={announcements}
-            selectedAudience={selectedAudience}
-            searchQuery={searchQuery}
-            courseFilter={courseFilter}
-            dateFromFilter={dateFromFilter}
-            dateToFilter={dateToFilter}
-            isEmbedded
-            darkMode={darkMode}
-          />
-        </div>
-      </div>
+      <AnnouncementsPageMainPanel
+        darkMode={darkMode}
+        userRole={userRole}
+        handleCreateAnnouncement={handleCreateAnnouncement}
+        searchQuery={searchQuery}
+        handleSearchQueryChange={handleSearchQueryChange}
+        selectedAudience={selectedAudience}
+        courseFilter={courseFilter}
+        dateFromFilter={dateFromFilter}
+        dateToFilter={dateToFilter}
+        clearFilters={clearFilters}
+        handleEditAnnouncement={handleEditAnnouncement}
+        announcements={announcements}
+      />
       <AnnouncementModal
         isOpen={isModalOpen}
         toggle={handleCloseModal}
