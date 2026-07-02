@@ -246,6 +246,7 @@ const PermissionsManagement = lazy(() =>
   import('./components/PermissionsManagement/PermissionsManagement'),
 );
 const UserRoleTab = lazy(() => import('./components/PermissionsManagement/UserRoleTab'));
+const MeetingScheduling = lazy(() => import('./components/MeetingScheduling'));
 const BlueSquareEmailManagement = lazy(() =>
   import('./components/BlueSquareEmailManagement/BlueSquareEmailManagement'),
 );
@@ -838,6 +839,21 @@ export default (
           path="/analytics/roles-hits-and-applications"
           exact
           component={JobsHitsApplicationsChart}
+        />
+
+        <ProtectedRoute
+          path="/schedulemeetings"
+          exact
+          component={MeetingScheduling}
+          fallback
+          allowedRoles={[
+            UserRole.Administrator,
+            UserRole.Manager,
+            UserRoleTab.CoreTeam,
+            UserRole.Owner,
+            UserRole.Mentor,
+          ]}
+          routePermissions={RoutePermissions.meetings}
         />
 
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />

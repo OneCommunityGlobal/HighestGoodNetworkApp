@@ -429,6 +429,17 @@
     ]
   },
   {
+    "label": "Meetings",
+    "description": "Category to arrange meetings",
+    "subperms": [
+      {
+        "label": "Schedule Meetings",
+        "key": "scheduleMeetings",
+        "description": "Gives the user permission to schedule a meeting with other users."
+      }
+    ]
+  },
+  {
     "label": "Announcements",
     "description": "Category to communicate",
     "subperms": [
