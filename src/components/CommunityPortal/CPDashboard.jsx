@@ -1,24 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
+import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
-import {
-  Container,
-  Row,
-  Alert,
-  Col,
-  Card,
-  CardBody,
-  Button,
-  Input,
-  FormGroup,
-  Label,
-} from 'reactstrap';
+import { Container, Row, Alert, Col, Card, CardBody, Button, Input } from 'reactstrap';
 import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt, FaSearch, FaTimes } from 'react-icons/fa';
 import styles from './CPDashboard.module.css';
 import { ENDPOINTS } from '../../utils/URL';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
-const FixedRatioImage = ({ src, alt, fallback }) => (
+const FixedRatioImage = ({ src = '', alt = '', fallback }) => (
   <div
     style={{
       width: '100%',
@@ -44,6 +34,12 @@ const FixedRatioImage = ({ src, alt, fallback }) => (
   </div>
 );
 
+FixedRatioImage.propTypes = {
+  src: PropTypes.string,
+  alt: PropTypes.string,
+  fallback: PropTypes.string.isRequired,
+};
+
 // Default filter values
 const DEFAULT_FILTERS = {
   dateFilter: '',
@@ -63,6 +59,13 @@ export function CPDashboard() {
   const [error, setError] = useState(null);
   const [showPastEvents, setShowPastEvents] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
+
+  // Darken the page body in dark mode (app-wide pattern) so the area around the
+  // dashboard isn't left white.
+  useEffect(() => {
+    document.body.classList.toggle('dark-mode-body', darkMode);
+    return () => document.body.classList.remove('dark-mode-body');
+  }, [darkMode]);
 
   // Hide the global back-to-top button — not needed on this page
   useEffect(() => {
@@ -153,6 +156,7 @@ export function CPDashboard() {
       weekday: 'long',
       month: 'long',
       day: 'numeric',
+      year: 'numeric',
       hour: 'numeric',
       minute: '2-digit',
     });
@@ -187,6 +191,15 @@ export function CPDashboard() {
       ...prev,
       [filterName]: value,
     }));
+  };
+
+  // Toggle the date radio: clicking the active option clears it; clicking another switches.
+  // Applies immediately (bypasses the Apply Filters button) so the user sees instant feedback.
+  const handleDateToggle = value => {
+    const next = appliedFilters.dateFilter === value ? '' : value;
+    setPendingFilters(prev => ({ ...prev, dateFilter: next }));
+    setAppliedFilters(prev => ({ ...prev, dateFilter: next }));
+    setPagination(prev => ({ ...prev, currentPage: 1 }));
   };
 
   // Apply all pending filters
@@ -254,7 +267,7 @@ export function CPDashboard() {
 
   if (isLoading) {
     return (
-      <Container className={styles.dashboardContainer}>
+      <Container className={`${styles.dashboardContainer} ${darkMode ? styles.darkContainer : ''}`}>
         <p>Loading events...</p>
       </Container>
     );
@@ -262,19 +275,16 @@ export function CPDashboard() {
 
   if (error) {
     return (
-      <Container className={styles.dashboardContainer}>
+      <Container className={`${styles.dashboardContainer} ${darkMode ? styles.darkContainer : ''}`}>
         <p className={styles.errorText}>{error}</p>
       </Container>
     );
   }
 
+  // isLoading and error are already handled by the early returns above.
   let eventsContent;
 
-  if (isLoading) {
-    eventsContent = <div className={styles.noEvents}>Loading events...</div>;
-  } else if (error) {
-    eventsContent = <div className={styles.noEvents}>{error}</div>;
-  } else if (displayedEvents.length > 0) {
+  if (displayedEvents.length > 0) {
     eventsContent = displayedEvents.map(event => (
       <Col md={4} key={event.id} className={`${styles.eventCardCol}`}>
         <Link
@@ -315,7 +325,7 @@ export function CPDashboard() {
   }
 
   return (
-    <Container className={styles.dashboardContainer}>
+    <Container className={`${styles.dashboardContainer} ${darkMode ? styles.darkContainer : ''}`}>
       <header className={`${styles.dashboardHeader} ${darkMode ? styles.darkHeader : ''}`}>
         <h1>All Events</h1>
       </header>
@@ -382,32 +392,30 @@ export function CPDashboard() {
               <div className={styles.filterItem}>
                 <label htmlFor="date-tomorrow">Dates</label>
                 <div className={styles.radioRow}>
-                  <div className={styles.radioGroup}>
+                  <label className={styles.radioOption} htmlFor="date-tomorrow">
                     <input
                       id="date-tomorrow"
                       type="radio"
                       name="dates"
-                      checked={pendingFilters.dateFilter === 'tomorrow'}
-                      onChange={() => handleFilterChange('dateFilter', 'tomorrow')}
+                      checked={appliedFilters.dateFilter === 'tomorrow'}
+                      onChange={() => {}}
+                      onClick={() => handleDateToggle('tomorrow')}
                       className={styles.radioInput}
                     />
-                    <label htmlFor="date-tomorrow" className={styles.radioLabel}>
-                      Tomorrow
-                    </label>
-                  </div>
-                  <div className={styles.radioGroup}>
+                    <span>Tomorrow</span>
+                  </label>
+                  <label className={styles.radioOption} htmlFor="date-weekend">
                     <input
                       id="date-weekend"
                       type="radio"
                       name="dates"
-                      checked={pendingFilters.dateFilter === 'weekend'}
-                      onChange={() => handleFilterChange('dateFilter', 'weekend')}
+                      checked={appliedFilters.dateFilter === 'weekend'}
+                      onChange={() => {}}
+                      onClick={() => handleDateToggle('weekend')}
                       className={styles.radioInput}
                     />
-                    <label htmlFor="date-weekend" className={styles.radioLabel}>
-                      This Weekend
-                    </label>
-                  </div>
+                    <span>This Weekend</span>
+                  </label>
                 </div>
 
                 <Input
@@ -423,20 +431,18 @@ export function CPDashboard() {
               {/* Online Only Filter */}
               <div className={styles.filterItem}>
                 <label htmlFor="online-only">Online</label>
-                <div className={styles.radioRow}>
-                  <div className={styles.radioGroup}>
-                    <input
-                      type="checkbox"
-                      id="online-only"
-                      checked={pendingFilters.onlineOnly}
-                      onChange={e => handleFilterChange('onlineOnly', e.target.checked)}
-                      className={styles.radioInput}
-                    />
-                    <label htmlFor="online-only" className={styles.radioLabel}>
-                      Online Only
-                    </label>
-                  </div>
-                </div>
+                <label className={styles.checkboxOption} htmlFor="online-only">
+                  <input
+                    id="online-only"
+                    type="checkbox"
+                    checked={onlineOnly}
+                    onChange={e => {
+                      setOnlineOnly(e.target.checked);
+                      setPagination(prev => ({ ...prev, currentPage: 1 }));
+                    }}
+                  />
+                  <span>Online Only</span>
+                </label>
               </div>
 
               {/* Branches Filter */}

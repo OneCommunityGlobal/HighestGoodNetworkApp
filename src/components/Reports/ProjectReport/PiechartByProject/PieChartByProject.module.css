@@ -96,14 +96,14 @@
   color: white;
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (width <= 768px) {
   .pieChartDescription {
     flex-direction: column;
     padding: 0 10px;
   }
 }
 
-@media screen and (max-width: 576px) {
+@media screen and (width <= 576px) {
   .pieChartTitle h4 {
     font-size: 18px;
   }
@@ -149,7 +149,7 @@
   }
 }
 
-@media screen and (max-width: 400px) {
+@media screen and (width <= 400px) {
   .pieChartTitle h4 {
     font-size: 16px;
   }
