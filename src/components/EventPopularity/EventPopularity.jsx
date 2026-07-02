@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
 import {
   Bar,
   BarChart,
@@ -432,8 +431,6 @@ export default function EventDashboard() {
   const currentDate = new Date();
 
   const thirtyDaysAgo = new Date(currentDate.getTime() - 30 * 24 * 60 * 60 * 1000);
-
-  const dateRangeLabel = `${thirtyDaysAgo.toLocaleDateString()} - ${currentDate.toLocaleDateString()}`;
 
   return (
     <div className={`${styles.eventpopularity}`}>
