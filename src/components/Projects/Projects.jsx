@@ -387,7 +387,7 @@ const Projects = function(props) {
           <div className="input-group" style={{ maxWidth: '260px', maxHeight: '38px' }}>
             <div className="input-group-prepend">
               <span
-                  className={`input-group-text ${darkMode ? `${styles.searchLabelDark} text-light` : ''}`}
+                  className={`input-group-text ${darkMode ? styles.searchLabelDark + ' text-light' : ''}`}
               >
                 Filter by
               </span>

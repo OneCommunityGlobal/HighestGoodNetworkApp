@@ -32,7 +32,6 @@ const Members = props => {
   const projectId = props.match.params.projectId;
   const [showFindUserList, setShowFindUserList] = useState(false);
   const [membersList, setMembersList] = useState(props.state.projectMembers.members);
-  const [lastTimeoutId, setLastTimeoutId] = useState(null);
   const [query, setQuery] = useState('');
   const [searchText, setSearchText] = useState('');
 
@@ -71,7 +70,7 @@ const Members = props => {
 
   const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers');
   const canUnassignUserInProject = props.hasPermission('unassignUserInProject');
-  const [allProjectMembers, setAllProjectMembers] = useState([]);
+  const [, setAllProjectMembers] = useState([]); 
   const [isValid, setIsValid] = useState(true);
 
   const projectName = useSelector(state => state.projectById?.projectName || '');
