@@ -49,7 +49,6 @@ function CommunityCalendar() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showEventModal, setShowEventModal] = useState(false);
-  const [hoveredEventId, setHoveredEventId] = useState(null);
   const [overflowDate, setOverflowDate] = useState(null);
 
   const popupRef = useRef(null);
@@ -563,6 +562,20 @@ function CommunityCalendar() {
     );
   }
 
+  const getEventLabel = useCallback(count => {
+    return count === 1 ? 'event' : 'events';
+  }, []);
+
+  const renderSelectedDateSummary = useCallback(() => {
+    const count = selectedDateEvents.length;
+
+    if (count === 0) {
+      return 'No events scheduled for this date';
+    }
+
+    return `${count} ${getEventLabel(count)} scheduled`;
+  }, [selectedDateEvents.length, getEventLabel]);
+
   const getEventStatusKey = useCallback(status => {
     return statusMap[status] || 'statusNew';
   }, []);
@@ -840,13 +853,7 @@ function CommunityCalendar() {
                 <div>
                   <h2>{formattedSelectedDate || 'Select a date'}</h2>
 
-                  <p className={styles.selectedDateSummary}>
-                    {selectedDateEvents.length === 0
-                      ? 'No events scheduled for this date'
-                      : `${selectedDateEvents.length} ${
-                          selectedDateEvents.length === 1 ? 'event' : 'events'
-                        } scheduled`}
-                  </p>
+                  <p className={styles.selectedDateSummary}>{renderSelectedDateSummary()}</p>
                 </div>
               </div>
 
