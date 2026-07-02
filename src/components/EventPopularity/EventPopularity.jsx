@@ -428,10 +428,6 @@ export default function EventDashboard() {
     detailTitle = `📅 Event Type Details: ${selectedEventTypeDetail}`;
   }
 
-  const currentDate = new Date();
-
-  const thirtyDaysAgo = new Date(currentDate.getTime() - 30 * 24 * 60 * 60 * 1000);
-
   return (
     <div className={`${styles.eventpopularity}`}>
       {/* Header */}
