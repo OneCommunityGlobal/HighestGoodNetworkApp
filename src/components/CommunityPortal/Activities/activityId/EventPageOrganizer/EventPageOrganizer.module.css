@@ -21,7 +21,7 @@
   flex-direction: column;
   gap: 2rem;
   transform: translateY(-1rem);
-  animation: fadeIn 1s ease forwards;
+  animation: fade-in 1s ease forwards;
   opacity: 0;
 }
 
@@ -30,10 +30,10 @@
   width: 100%;
   border-radius: 1rem;
   border: 1px solid #c9c9c9;
-  background-color: #ffffff;
+  background-color: #fff;
   padding: 2rem;
   transform: translateY(-1rem);
-  animation: fadeIn 1s 0.2s ease forwards;
+  animation: fade-in 1s 0.2s ease forwards;
   opacity: 0;
 }
 
@@ -71,7 +71,7 @@
 }
 
 .statusText {
-  font-family: 'Inter', Helvetica, sans-serif;
+  font-family: Inter, Helvetica, sans-serif;
   font-weight: 500;
   color: black;
   font-size: 2rem;
@@ -92,7 +92,7 @@
 }
 
 .eventType {
-  font-family: 'Inter', Helvetica, sans-serif;
+  font-family: Inter, Helvetica, sans-serif;
   font-weight: 400;
   color: black;
   font-size: 1rem;
@@ -100,7 +100,7 @@
 }
 
 .eventTitle {
-  font-family: 'Inter', Helvetica, sans-serif;
+  font-family: Inter, Helvetica, sans-serif;
   font-weight: 600;
   color: black;
   font-size: 39.7px;
@@ -120,7 +120,7 @@
 }
 
 .linkLabel {
-  font-family: 'Inter', Helvetica, sans-serif;
+  font-family: Inter, Helvetica, sans-serif;
   font-weight: 400;
   color: black;
   font-size: 15.9px;
@@ -128,7 +128,7 @@
 }
 
 .linkValue {
-  font-family: 'Inter', Helvetica, sans-serif;
+  font-family: Inter, Helvetica, sans-serif;
   font-weight: 400;
   color: #008dff;
   font-size: 15.9px;
@@ -164,7 +164,7 @@
 }
 
 .detailLabelText {
-  font-family: 'Inter', Helvetica, sans-serif;
+  font-family: Inter, Helvetica, sans-serif;
   font-weight: 400;
   color: black;
   font-size: 1rem;
@@ -172,7 +172,7 @@
 }
 
 .detailValue {
-  font-family: 'Inter', Helvetica, sans-serif;
+  font-family: Inter, Helvetica, sans-serif;
   font-weight: 600;
   color: black;
   font-size: 1rem;
@@ -180,7 +180,7 @@
 }
 
 .capacityValue {
-  font-family: 'Inter', Helvetica, sans-serif;
+  font-family: Inter, Helvetica, sans-serif;
   font-weight: 600;
   font-size: 1rem;
   line-height: 1.5rem;
@@ -226,7 +226,7 @@
 }
 
 .moreCountText {
-  font-family: 'Inter', Helvetica, sans-serif;
+  font-family: Inter, Helvetica, sans-serif;
   font-weight: 400;
   color: black;
   font-size: 10px;
@@ -275,7 +275,7 @@
 .tabsContainer {
   width: 100%;
   transform: translateY(-1rem);
-  animation: fadeIn 1s 0.4s ease forwards;
+  animation: fade-in 1s 0.4s ease forwards;
   opacity: 0;
 }
 
@@ -381,6 +381,10 @@
   background-color: #1f2937;
 }
 
+.containerDark .statusActive {
+  color: #58df88;
+}
+
 .tabTriggerDark {
   color: #9ca3af;
 }
@@ -390,11 +394,12 @@
   border-bottom-color: #7fb6ec;
 }
 
-@keyframes fadeIn {
+@keyframes fade-in {
   0% {
     opacity: 0;
     transform: translateY(-10px);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0);

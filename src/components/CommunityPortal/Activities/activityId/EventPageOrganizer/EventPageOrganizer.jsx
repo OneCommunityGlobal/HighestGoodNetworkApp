@@ -80,7 +80,18 @@ export const EventPageOrganizer = () => {
                 </div>
                 <div className={styles.linkRow}>
                   <span className={styles.linkLabel}>Link:</span>
-                  <span className={styles.linkValue}>{evt?.zoomLink ?? '—'}</span>
+                  {evt?.zoomLink ? (
+                    <a
+                      href={evt.zoomLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={styles.linkValue}
+                    >
+                      {evt.zoomLink}
+                    </a>
+                  ) : (
+                    <span className={styles.linkLabel}>—</span>
+                  )}
                 </div>
               </div>
 

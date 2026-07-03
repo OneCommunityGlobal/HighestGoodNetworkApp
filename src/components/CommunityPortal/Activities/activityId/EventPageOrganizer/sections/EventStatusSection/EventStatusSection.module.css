@@ -9,12 +9,13 @@
 }
 
 .logo {
-  font-family: 'Inter', Helvetica, sans-serif;
-  font-weight: 700;
-  color: white;
-  font-size: 0.875rem;
-  text-align: center;
-  line-height: normal;
+  display: flex;
+  align-items: center;
+}
+
+.logoImg {
+  height: 40px;
+  width: auto;
 }
 
 .nav {
@@ -44,7 +45,7 @@
 }
 
 .welcomeText {
-  font-family: 'Inter', Helvetica, sans-serif;
+  font-family: Inter, Helvetica, sans-serif;
   font-weight: 400;
   color: white;
   font-size: 0.875rem;

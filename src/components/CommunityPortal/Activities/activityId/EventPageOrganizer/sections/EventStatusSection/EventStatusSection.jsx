@@ -1,5 +1,6 @@
 import { UserCircleIcon } from 'lucide-react';
 import React from 'react';
+import logo from '../../../../../../../assets/images/logo2.png';
 import { Avatar, AvatarFallback, AvatarImage } from '../../components/ui/avatar';
 import { Button } from '../../components/ui/button';
 import styles from './EventStatusSection.module.css';
@@ -15,7 +16,9 @@ const navigationItems = [
 export const EventStatusSection = () => {
   return (
     <header className={styles.header}>
-      <div className={styles.logo}>HGN Logo</div>
+      <div className={styles.logo}>
+        <img src={logo} alt="One Community Logo" className={styles.logoImg} />
+      </div>
 
       <nav className={styles.nav}>
         <ul className={styles.navList}>

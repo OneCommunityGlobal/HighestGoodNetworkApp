@@ -1,50 +1,66 @@
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '../../components/ui/button';
 import { Card, CardContent } from '../../components/ui/card';
 import styles from './ScheduleSection.module.css';
 
 const weekDays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
-const calendarDates = [
-  { day: 1, isCurrentMonth: true, hasEvent: false },
-  { day: 2, isCurrentMonth: true, hasEvent: true, isHighlighted: true },
-  { day: 3, isCurrentMonth: true, hasEvent: false },
-  { day: 4, isCurrentMonth: true, hasEvent: false },
-  { day: 5, isCurrentMonth: true, hasEvent: false },
-  { day: 6, isCurrentMonth: true, hasEvent: false },
-  { day: 7, isCurrentMonth: true, hasEvent: false },
-  { day: 8, isCurrentMonth: true, hasEvent: false },
-  { day: 9, isCurrentMonth: true, hasEvent: false },
-  { day: 10, isCurrentMonth: true, hasEvent: false },
-  { day: 11, isCurrentMonth: true, hasEvent: true },
-  { day: 12, isCurrentMonth: true, hasEvent: false },
-  { day: 13, isCurrentMonth: true, hasEvent: false },
-  { day: 14, isCurrentMonth: true, hasEvent: false },
-  { day: 15, isCurrentMonth: true, hasEvent: false },
-  { day: 16, isCurrentMonth: true, hasEvent: false },
-  { day: 17, isCurrentMonth: true, hasEvent: false },
-  { day: 18, isCurrentMonth: true, hasEvent: true },
-  { day: 19, isCurrentMonth: true, hasEvent: false },
-  { day: 20, isCurrentMonth: true, hasEvent: false },
-  { day: 21, isCurrentMonth: true, hasEvent: false },
-  { day: 22, isCurrentMonth: true, hasEvent: false },
-  { day: 23, isCurrentMonth: true, hasEvent: false },
-  { day: 24, isCurrentMonth: true, hasEvent: false },
-  { day: 25, isCurrentMonth: true, hasEvent: false },
-  { day: 26, isCurrentMonth: true, hasEvent: true },
-  { day: 27, isCurrentMonth: true, hasEvent: false },
-  { day: 28, isCurrentMonth: true, hasEvent: false },
-  { day: 29, isCurrentMonth: true, hasEvent: false },
-  { day: 30, isCurrentMonth: true, hasEvent: false },
-  { day: 1, isCurrentMonth: false, hasEvent: false },
-  { day: 2, isCurrentMonth: false, hasEvent: false },
-  { day: 3, isCurrentMonth: false, hasEvent: false },
-  { day: 4, isCurrentMonth: false, hasEvent: false },
-  { day: 5, isCurrentMonth: false, hasEvent: false },
+const MONTH_NAMES = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
 ];
 
+function buildCalendarDates(year, month) {
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const daysInPrevMonth = new Date(year, month, 0).getDate();
+  const dates = [];
+
+  for (let i = firstDay - 1; i >= 0; i--) {
+    dates.push({ day: daysInPrevMonth - i, isCurrentMonth: false, hasEvent: false });
+  }
+  for (let d = 1; d <= daysInMonth; d++) {
+    dates.push({ day: d, isCurrentMonth: true, hasEvent: false });
+  }
+  const remaining = 42 - dates.length;
+  for (let d = 1; d <= remaining; d++) {
+    dates.push({ day: d, isCurrentMonth: false, hasEvent: false });
+  }
+  return dates;
+}
+
 export const ScheduleSection = () => {
+  const now = new Date();
+  const [year, setYear] = useState(now.getFullYear());
+  const [month, setMonth] = useState(now.getMonth());
+
+  const calendarDates = buildCalendarDates(year, month);
+
+  const handlePrev = () => {
+    if (month === 0) {
+      setMonth(11);
+      setYear(y => y - 1);
+    } else setMonth(m => m - 1);
+  };
+
+  const handleNext = () => {
+    if (month === 11) {
+      setMonth(0);
+      setYear(y => y + 1);
+    } else setMonth(m => m + 1);
+  };
+
   return (
     <section className={styles.container}>
       <Card className="bg-transparent border-0 shadow-none">
@@ -55,14 +71,20 @@ export const ScheduleSection = () => {
                 variant="ghost"
                 size="icon"
                 className="h-auto w-auto p-0 hover:bg-transparent"
+                onClick={handlePrev}
+                aria-label="Previous month"
               >
                 <ChevronLeftIcon className="w-2.5 h-[15px] text-black" />
               </Button>
-              <h2 className={styles.monthTitle}>September 2024</h2>
+              <h2 className={styles.monthTitle}>
+                {MONTH_NAMES[month]} {year}
+              </h2>
               <Button
                 variant="ghost"
                 size="icon"
                 className="h-auto w-auto p-0 hover:bg-transparent"
+                onClick={handleNext}
+                aria-label="Next month"
               >
                 <ChevronRightIcon className="w-2.5 h-[15px] text-black" />
               </Button>
@@ -78,7 +100,7 @@ export const ScheduleSection = () => {
 
                 {calendarDates.map((date, index) => (
                   <div
-                    key={`date-${date.isCurrentMonth ? 'cur' : 'prev'}-${date.day}-${index}`}
+                    key={`date-${date.isCurrentMonth ? 'cur' : 'other'}-${date.day}-${index}`}
                     className={styles.dateCell}
                   >
                     {date.isHighlighted && (

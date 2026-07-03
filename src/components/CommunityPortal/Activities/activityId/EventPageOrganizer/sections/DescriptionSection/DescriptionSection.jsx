@@ -160,9 +160,7 @@ export const DescriptionSection = ({
               }
             }}
           >
-            <span className="font-navigation font-[number:var(--navigation-font-weight)] text-[#f2f2f2] text-[length:var(--navigation-font-size)] tracking-[var(--navigation-letter-spacing)] leading-[var(--navigation-line-height)] [font-style:var(--navigation-font-style)]">
-              Post description
-            </span>
+            Post description
           </Button>
         </div>
       </div>
