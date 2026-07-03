@@ -669,3 +669,13 @@
   color: inherit; 
   border-radius: 4px;
 }
+.myCasesPageDark .moreBtn {
+  background-color: #3A506B;
+  border: 1px solid #5A6B7D;
+  color: #fff;
+}
+
+.myCasesPageDark .moreBtn:hover {
+  background-color: #5A6B7D;
+  color: #fff;
+}
