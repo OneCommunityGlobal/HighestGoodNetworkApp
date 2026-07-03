@@ -210,7 +210,7 @@ function AddEventModal({ sectionTitle, newEvent, setNewEvent, darkMode, onClose,
           className={`${styles.modalInput} ${dm}`}
           value={newEvent.yieldKg}
           onKeyDown={e => {
-            if (e.key === '-') e.preventDefault();
+            if (['-', 'e', 'E', '+'].includes(e.key)) e.preventDefault();
           }}
           onChange={e => {
             if (e.target.value === '' || Number(e.target.value) >= 0) {
