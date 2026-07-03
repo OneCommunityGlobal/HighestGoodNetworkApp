@@ -146,7 +146,8 @@ function MeetingScheduling(props) {
     syncPageScrollArea();
     window.addEventListener('resize', syncPageScrollArea);
 
-    const resizeObserver = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(syncPageScrollArea) : null;
+    const resizeObserver =
+      typeof ResizeObserver !== 'undefined' ? new ResizeObserver(syncPageScrollArea) : null;
     resizeObserver?.observe(headerEl);
 
     return () => {
@@ -414,9 +415,7 @@ function MeetingScheduling(props) {
   return (
     <div
       ref={pageRef}
-      className={`${styles.page}${
-        darkMode ? ` ${styles.pageDark} bg-oxford-blue text-light` : ''
-      }`}
+      className={`${styles.page}${darkMode ? ` ${styles.pageDark} bg-oxford-blue text-light` : ''}`}
     >
       <div className="meeting-scheduling-container">
         <div className="meeting-scheduling-form-card">

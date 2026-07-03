@@ -112,7 +112,7 @@ function Participants({
             aria-label="Participant suggestions"
           >
             {filteredData.map(userProfile => (
-              <li key={userProfile._id} role="option">
+              <li key={userProfile._id} role="option" aria-selected={false}>
                 <button
                   type="button"
                   className={styles.dropdownItem}
