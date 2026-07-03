@@ -482,18 +482,6 @@ class UserManagement extends React.PureComponent {
     });
   };
 
-  setActiveInactive = isActive => {
-    this.setState({
-      activeInactivePopupOpen: false,
-      selectedUser: undefined,
-    });
-
-    this.props.updateUserStatus(
-      this.state.selectedUser,
-      isActive ? UserStatus.Active : UserStatus.InActive,
-      undefined,
-    );
-  };
 
   activeInactivePopupClose = () => {
     this.setState({ activeInactivePopupOpen: false });
