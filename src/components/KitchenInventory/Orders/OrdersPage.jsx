@@ -48,6 +48,7 @@ const StatCard = ({ label, value, bgColor, icon }) => (
 const OrderCard = ({ order, onStatusChange, darkMode }) => {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmTarget, setConfirmTarget] = useState(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
 
   const handleConfirm = () => {
     if (confirmTarget) {
@@ -153,7 +154,12 @@ const OrderCard = ({ order, onStatusChange, darkMode }) => {
 
         <div className={styles.actions}>
           {getActionButton()}
-          <button className={`${styles.actionBtn} ${styles.actionView}`}>View Details</button>
+          <button
+            className={`${styles.actionBtn} ${styles.actionView}`}
+            onClick={() => setDetailsOpen(true)}
+          >
+            View Details
+          </button>
         </div>
       </div>
 
@@ -183,6 +189,100 @@ const OrderCard = ({ order, onStatusChange, darkMode }) => {
             style={darkMode ? boxStyleDark : boxStyle}
           >
             {confirmLabel}
+          </Button>
+        </ModalFooter>
+      </Modal>
+
+      <Modal
+        isOpen={detailsOpen}
+        toggle={() => setDetailsOpen(false)}
+        size="lg"
+        className={darkMode ? 'text-light dark-mode' : ''}
+      >
+        <ModalHeader
+          toggle={() => setDetailsOpen(false)}
+          className={darkMode ? 'bg-space-cadet' : ''}
+        >
+          Order Details — {order.orderNumber}
+        </ModalHeader>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+          <div className={styles.detailSection}>
+            <p className={styles.detailLabel}>Status</p>
+            <StatusBadge status={order.status} />
+          </div>
+          <div className={styles.detailSection}>
+            <p className={styles.detailLabel}>Supplier</p>
+            <p className={styles.detailValue}>{order.supplier}</p>
+          </div>
+          <div className={styles.detailRow}>
+            <div className={styles.detailSection}>
+              <p className={styles.detailLabel}>Order Date</p>
+              <p className={styles.detailValue}>{new Date(order.orderDate).toLocaleDateString()}</p>
+            </div>
+            <div className={styles.detailSection}>
+              <p className={styles.detailLabel}>Expected Delivery</p>
+              <p className={styles.detailValue}>
+                {new Date(order.expectedDelivery).toLocaleDateString()}
+              </p>
+            </div>
+            {order.deliveredDate && (
+              <div className={styles.detailSection}>
+                <p className={styles.detailLabel}>Delivered On</p>
+                <p className={styles.detailValue}>
+                  {new Date(order.deliveredDate).toLocaleDateString()}
+                </p>
+              </div>
+            )}
+          </div>
+
+          <div className={styles.detailItemsHeader}>Order Items</div>
+          <div className={styles.detailTableWrap}>
+            <table className={`${styles.detailTable} ${darkMode ? styles.detailTableDark : ''}`}>
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>Qty</th>
+                  <th>Unit</th>
+                  <th>Unit Price</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {order.items.map((item, idx) => (
+                  <tr key={idx}>
+                    <td>{item.name}</td>
+                    <td>{item.quantity}</td>
+                    <td>{item.unit}</td>
+                    <td>${item.unitPrice.toFixed(2)}</td>
+                    <td>${item.total.toFixed(2)}</td>
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colSpan="4" className={styles.detailTotalLabel}>
+                    Order Total
+                  </td>
+                  <td className={styles.detailTotalValue}>${order.total.toFixed(2)}</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+
+          {order.notes && (
+            <div className={styles.detailNotes}>
+              <p className={styles.detailLabel}>Notes</p>
+              <p className={styles.detailValue}>{order.notes}</p>
+            </div>
+          )}
+        </ModalBody>
+        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+          <Button
+            color="secondary"
+            onClick={() => setDetailsOpen(false)}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
+            Close
           </Button>
         </ModalFooter>
       </Modal>

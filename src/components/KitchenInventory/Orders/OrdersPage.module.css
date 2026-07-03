@@ -739,6 +739,133 @@
   cursor: not-allowed;
 }
 
+/* Detail Modal */
+.detailSection {
+  margin-bottom: 16px;
+}
+
+.detailLabel {
+  font-size: 12px;
+  color: #999;
+  margin: 0 0 4px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.detailValue {
+  font-size: 14px;
+  color: #333;
+  margin: 0;
+}
+
+:global(.dark-mode) .detailValue {
+  color: #e0e0e0;
+}
+
+.detailRow {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.detailItemsHeader {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin: 20px 0 8px 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #eee;
+}
+
+:global(.dark-mode) .detailItemsHeader {
+  color: #e0e0e0;
+  border-bottom-color: #3a3a5a;
+}
+
+.detailTableWrap {
+  overflow-x: auto;
+}
+
+.detailTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  table-layout: fixed;
+}
+
+.detailTable th {
+  text-align: left;
+  padding: 6px 8px;
+  border-bottom: 2px solid #eee;
+  color: #666;
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.detailTable th:nth-child(1) {
+  width: 40%;
+}
+
+.detailTable th:nth-child(2),
+.detailTable th:nth-child(3) {
+  width: 15%;
+}
+
+.detailTable th:nth-child(4),
+.detailTable th:nth-child(5) {
+  width: 15%;
+  text-align: right;
+}
+
+.detailTable td {
+  padding: 6px 8px;
+  border-bottom: 1px solid #f0f0f0;
+  color: #333;
+}
+
+.detailTable td:nth-child(4),
+.detailTable td:nth-child(5) {
+  text-align: right;
+}
+
+.detailTableDark th {
+  border-bottom-color: #3a3a5a;
+  color: #aaa;
+}
+
+.detailTableDark td {
+  border-bottom-color: #2a2a4a;
+  color: #e0e0e0;
+}
+
+.detailTotalLabel {
+  font-weight: 600;
+  text-align: right;
+  padding-right: 8px !important;
+}
+
+.detailTotalValue {
+  font-weight: 600;
+  color: #2e7d32;
+  font-size: 14px;
+  text-align: right;
+}
+
+.detailNotes {
+  margin-top: 16px;
+  padding: 12px;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+  border: 1px solid #eee;
+}
+
+:global(.dark-mode) .detailNotes {
+  background-color: #1c2541;
+  border-color: #3a3a5a;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .main {
