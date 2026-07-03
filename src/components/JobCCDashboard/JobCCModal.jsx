@@ -21,8 +21,13 @@ function JobCCModal({ job, onClose, onRefresh, darkMode }) {
       return;
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    const atIndex = email.indexOf('@');
+    if (atIndex <= 0 || atIndex >= email.length - 1) {
+      toast.error('Please enter a valid email address.');
+      return;
+    }
+    const dotIndex = email.lastIndexOf('.');
+    if (dotIndex <= atIndex + 1 || dotIndex >= email.length - 1) {
       toast.error('Please enter a valid email address.');
       return;
     }
