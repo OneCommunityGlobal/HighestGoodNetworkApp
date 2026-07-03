@@ -1,4 +1,5 @@
 import Loading from '../common/Loading';
+import PropTypes from 'prop-types';
 import styles from './PopUpBar.module.css';
 
 function PopUpBar({
@@ -44,5 +45,16 @@ function PopUpBar({
     </div>
   );
 }
+
+PopUpBar.propTypes = {
+  firstName: PropTypes.string,
+  lastName: PropTypes.string,
+  message: PropTypes.string,
+  onClickClose: PropTypes.func,
+  textColor: PropTypes.string,
+  isLoading: PropTypes.bool,
+  button: PropTypes.bool,
+  isMeetingNotification: PropTypes.bool,
+};
 
 export default PopUpBar;

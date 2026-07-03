@@ -407,3 +407,97 @@
     justify-content: center !important;
   }
 }
+
+/* Meeting notification modal (dark mode) */
+.meetingNotificationCustomHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background-color: #1c2541;
+  border-bottom: 1px solid #3a506b;
+  color: #ffffff;
+}
+
+.meetingNotificationCustomHeaderTitle {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 1.5;
+  color: #ffffff;
+}
+
+.meetingNotificationCustomHeaderClose {
+  padding: 0.25rem 0.5rem;
+  margin: -0.25rem -0.5rem -0.25rem auto;
+  color: #ffffff;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+  opacity: 0.85;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.meetingNotificationCustomHeaderClose:hover {
+  opacity: 1;
+}
+
+:global(body.dark-mode) :global(.modal-content.meeting-notification-modal-panel--dark) :global(.modal-body),
+:global(body.dark-mode) :global(.modal-content.meeting-notification-modal-panel--dark) :global(.modal-footer),
+:global(body.dark-mode) :global(.modal-dialog.hgn-themed-modal--dark) :global(.modal-body),
+:global(body.dark-mode) :global(.modal-dialog.hgn-themed-modal--dark) :global(.modal-footer),
+:global(body.dark-mode) :global(.modal-dialog.meeting-notification-modal--dark) :global(.modal-body),
+:global(body.dark-mode) :global(.modal-dialog.meeting-notification-modal--dark) :global(.modal-footer) {
+  background-color: #3a506b !important;
+  border-color: #3a506b !important;
+  color: #f8f9fa !important;
+}
+
+.meetingNotificationModalBody {
+  line-height: 1.75;
+}
+
+.meetingNotificationModalActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgb(0 0 0 / 12%);
+}
+
+:global(.text-light) .meetingNotificationModalActions {
+  border-top-color: rgb(255 255 255 / 20%);
+}
+
+.meetingCalendarLink {
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.meetingNotificationModalFooter {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.meetingNotificationNav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-right: auto;
+}
+
+.meetingNotificationNavCount {
+  min-width: 3.5rem;
+  text-align: center;
+  font-weight: 600;
+}
+
+.meetingNotificationCloseBtn {
+  margin-left: auto;
+}

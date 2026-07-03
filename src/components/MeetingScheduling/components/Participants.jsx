@@ -1,5 +1,6 @@
-import { useState } from 'react';
-import './Participants.css';
+import { useRef, useState } from 'react';
+import PropTypes from 'prop-types';
+import styles from './Participants.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import {
@@ -19,6 +20,7 @@ function Participants({
 }) {
   const [filteredData, setFilteredData] = useState([]);
   const [isFocused, setIsFocused] = useState(false);
+  const searchInputRef = useRef(null);
   const showLocalTimes = hasValidMeetingSchedule(formValues);
 
   const sortByStartingWith = keyword => {
@@ -70,11 +72,10 @@ function Participants({
     setTimeout(() => setIsFocused(false), 200);
   };
 
-  const handleClick = (event, userProfile) => {
+  const handleClick = userProfile => {
     addParticipant(userProfile._id, userProfile.firstName, userProfile.lastName);
-    const closestElement = event.target.closest('.filter-userprofiles');
-    if (closestElement && closestElement.previousElementSibling) {
-      closestElement.previousElementSibling.value = '';
+    if (searchInputRef.current) {
+      searchInputRef.current.value = '';
     }
     setFilteredData([]);
   };
@@ -90,32 +91,33 @@ function Participants({
     return localTime;
   };
 
+  const showDropdown = filteredData.length > 0 && isFocused;
+
   return (
-    <div className={`participants-field${darkMode ? ' participants-field--dark' : ''}`}>
-      <div className="participants-search-wrap">
+    <div className={`${styles.field}${darkMode ? ` ${styles.fieldDark}` : ''}`}>
+      <div className={styles.searchWrap}>
         <input
+          ref={searchInputRef}
           type="text"
-          className="participants-search-input"
+          className={styles.searchInput}
           placeholder="Add participants"
           onChange={handleFilter}
           onFocus={handleFocus}
           onBlur={handleBlur}
         />
-        {filteredData.length !== 0 && isFocused && (
+        {showDropdown && (
           <ul
-            className={`filter-userprofiles custom-dropdown-menu ${
-              darkMode ? 'text-light' : 'text-dark'
-            }`}
+            className={`${styles.dropdownMenu}${darkMode ? ` ${styles.dropdownMenuDark}` : ''}`}
+            role="listbox"
+            aria-label="Participant suggestions"
           >
             {filteredData.map(userProfile => (
-              <li key={userProfile._id}>
+              <li key={userProfile._id} role="option">
                 <button
                   type="button"
-                  onClick={event => handleClick(event, userProfile)}
-                  style={{
-                    all: 'unset',
-                    cursor: 'pointer',
-                  }}
+                  className={styles.dropdownItem}
+                  onMouseDown={event => event.preventDefault()}
+                  onClick={() => handleClick(userProfile)}
                 >
                   {`${userProfile.firstName} ${userProfile.lastName}`}
                 </button>
@@ -124,9 +126,9 @@ function Participants({
           </ul>
         )}
       </div>
-      <div className="participants-list">
+      <div className={styles.participantList}>
         {participantList?.map(participant => (
-          <div key={participant.userProfileId} className="participant-chip-wrap">
+          <div key={participant.userProfileId} className={styles.chipWrap}>
             <button
               type="button"
               className="rounded-pill badge bg-primary text-wrap text-white p-2 m-1 fs-5"
@@ -141,7 +143,7 @@ function Participants({
               <FontAwesomeIcon icon={faTimesCircle} className="m-1" />
             </button>
             {showLocalTimes && (
-              <div className={`participant-local-time ${darkMode ? '' : 'text-muted'}`}>
+              <div className={`${styles.localTime}${darkMode ? '' : ' text-muted'}`}>
                 <small>Their local time: {getLocalTimeLabel(participant)}</small>
               </div>
             )}
@@ -151,5 +153,20 @@ function Participants({
     </div>
   );
 }
+
+Participants.propTypes = {
+  userProfiles: PropTypes.arrayOf(PropTypes.object).isRequired,
+  participantList: PropTypes.arrayOf(
+    PropTypes.shape({
+      userProfileId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      name: PropTypes.string.isRequired,
+    }),
+  ).isRequired,
+  addParticipant: PropTypes.func.isRequired,
+  removeParticipant: PropTypes.func.isRequired,
+  authUserId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  darkMode: PropTypes.bool,
+  formValues: PropTypes.object.isRequired,
+};
 
 export default Participants;

@@ -51,6 +51,186 @@ const bucketForHoursPct = p => {
 
 import PropTypes from 'prop-types';
 
+const formatBellTime = (hours, minutes) => {
+  const hoursStr = `${hours} hour${hours !== 1 ? 's' : ''}`;
+  const minutesStr = minutes > 0 ? ` and ${minutes} minute${minutes !== 1 ? 's' : ''}` : '';
+  return `${hoursStr}${minutesStr}`;
+};
+
+const getProgressColor = percent => {
+  if (percent >= 90) return '#dc3545';
+  if (percent >= 75) return '#ffc107';
+  return '#28a745';
+};
+
+function BellMeetingBadge({ hasMeetingNotification, meetingNotificationCount }) {
+  if (!hasMeetingNotification) {
+    return null;
+  }
+
+  return (
+    <span
+      style={{
+        position: 'absolute',
+        top: '0px',
+        right: '0px',
+        transform: 'translateX(50%) translateY(-50%)',
+        backgroundColor: 'red',
+        borderRadius: meetingNotificationCount > 1 ? '10px' : '50%',
+        minWidth: meetingNotificationCount > 1 ? '18px' : '10px',
+        height: meetingNotificationCount > 1 ? '18px' : '10px',
+        width: meetingNotificationCount > 1 ? 'auto' : '10px',
+        padding: meetingNotificationCount > 1 ? '0 4px' : 0,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: '10px',
+        fontWeight: 700,
+        lineHeight: 1,
+        color: '#fff',
+        pointerEvents: 'none',
+      }}
+    >
+      {meetingNotificationCount > 1 ? meetingNotificationCount : null}
+    </span>
+  );
+}
+
+BellMeetingBadge.propTypes = {
+  hasMeetingNotification: PropTypes.bool.isRequired,
+  meetingNotificationCount: PropTypes.number.isRequired,
+};
+
+function BellNotificationPanel({
+  darkMode,
+  hasHoursAlert,
+  hasTaskAlerts,
+  hasMessageNotification,
+  getFormattedEffort,
+  weeklycommittedHours,
+  getFormattedLeftToWork,
+  hoursLeft,
+  handleNotificationClick,
+  taskHoursAlerts,
+  handleMarkTaskAlertsAsRead,
+  allNotifications,
+}) {
+  return (
+    <>
+      {hasHoursAlert && (
+        <div style={{ marginBottom: 12, borderBottom: '1px solid #e0e0e0', paddingBottom: 12 }}>
+          <div style={{ fontWeight: 600, marginBottom: 6 }}>⏰ Hours Reminder</div>
+          You&apos;ve completed {getFormattedEffort()} out of the {weeklycommittedHours} hours you
+          need. Only {getFormattedLeftToWork()} left to go.
+          {hoursLeft > 0 &&
+            ` There are ${hoursLeft} hour${hoursLeft !== 1 ? 's' : ''} left in this week.`}
+          <div style={{ marginTop: 8 }}>
+            <button
+              type="button"
+              onClick={handleNotificationClick}
+              className="btn btn-sm btn-primary"
+            >
+              Mark as read
+            </button>
+          </div>
+        </div>
+      )}
+
+      {hasTaskAlerts && (
+        <div style={{ marginBottom: 12, borderBottom: '1px solid #e0e0e0', paddingBottom: 12 }}>
+          <div style={{ fontWeight: 600, marginBottom: 6 }}>📊 Task Progress Alerts</div>
+          {taskHoursAlerts.map(a => (
+            <div
+              key={`${a.id}-${a.bucket}`}
+              style={{
+                marginBottom: 10,
+                padding: '8px',
+                backgroundColor: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
+                borderRadius: '4px',
+                border: `1px solid ${darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
+              }}
+            >
+              <div style={{ marginBottom: 6, fontSize: '14px' }}>
+                Hey! Your <strong>{a.name}</strong> is <strong>{a.bucket}%</strong> complete. How
+                are you doing? Please, communicate with your manager if you need more time. If you
+                do, be sure to include the specific reason why.
+              </div>
+              <div style={{ fontSize: '13px', marginBottom: 4 }}>
+                <strong>
+                  {a.task.num ? `${a.task.num} ` : ''}
+                  {a.name}
+                </strong>
+              </div>
+              <div style={{ fontSize: '12px', opacity: 0.8, marginBottom: 4 }}>
+                {a.logged.toFixed(2)} of {a.estimate.toFixed(2)} hours
+              </div>
+              <div
+                style={{
+                  height: '8px',
+                  borderRadius: '4px',
+                  backgroundColor: darkMode ? 'rgba(255,255,255,0.15)' : '#e9ecef',
+                  overflow: 'hidden',
+                  marginBottom: 4,
+                }}
+              >
+                <div
+                  style={{
+                    height: '100%',
+                    width: `${Math.min(a.percent, 100)}%`,
+                    backgroundColor: getProgressColor(a.percent),
+                    borderRadius: '4px',
+                  }}
+                />
+              </div>
+            </div>
+          ))}
+          <div style={{ marginTop: 8 }}>
+            <button
+              type="button"
+              onClick={handleMarkTaskAlertsAsRead}
+              className="btn btn-sm btn-primary"
+            >
+              Mark all as read
+            </button>
+          </div>
+        </div>
+      )}
+
+      {hasMessageNotification && (
+        <div>
+          <div style={{ fontWeight: 600, marginBottom: 6 }}>💬 New Messages</div>
+          {allNotifications.map((notification, index) => (
+            // eslint-disable-next-line react/no-array-index-key
+            <div key={notification._id || index}>{notification.message || notification}</div>
+          ))}
+        </div>
+      )}
+
+      {!hasHoursAlert && !hasTaskAlerts && !hasMessageNotification && (
+        <div style={{ padding: '10px', textAlign: 'center', opacity: 0.7 }}>
+          No new notifications.
+        </div>
+      )}
+    </>
+  );
+}
+
+BellNotificationPanel.propTypes = {
+  darkMode: PropTypes.bool.isRequired,
+  hasHoursAlert: PropTypes.bool.isRequired,
+  hasTaskAlerts: PropTypes.bool.isRequired,
+  hasMessageNotification: PropTypes.bool.isRequired,
+  getFormattedEffort: PropTypes.func.isRequired,
+  weeklycommittedHours: PropTypes.number.isRequired,
+  getFormattedLeftToWork: PropTypes.func.isRequired,
+  hoursLeft: PropTypes.number.isRequired,
+  handleNotificationClick: PropTypes.func.isRequired,
+  taskHoursAlerts: PropTypes.arrayOf(PropTypes.object).isRequired,
+  handleMarkTaskAlertsAsRead: PropTypes.func.isRequired,
+  allNotifications: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.object, PropTypes.string]))
+    .isRequired,
+};
+
 export default function BellNotification({
   userId,
   hasMeetingNotification = false,
@@ -338,29 +518,17 @@ export default function BellNotification({
   }, []);
 
   // formatting
-  const formatTime = (hours, minutes) => {
-    const hoursStr = `${hours} hour${hours !== 1 ? 's' : ''}`;
-    const minutesStr = minutes > 0 ? ` and ${minutes} minute${minutes !== 1 ? 's' : ''}` : '';
-    return `${hoursStr}${minutesStr}`;
-  };
-
   const getFormattedEffort = () => {
     const effortHours = Math.floor(totalEffort);
     const effortMinutes = Math.round((totalEffort % 1) * 60);
-    return formatTime(effortHours, effortMinutes);
+    return formatBellTime(effortHours, effortMinutes);
   };
 
   const getFormattedLeftToWork = () => {
     const left = Math.max(0, weeklycommittedHours - totalEffort);
     const leftHours = Math.floor(left);
     const leftMinutes = Math.round((left % 1) * 60);
-    return formatTime(leftHours, leftMinutes);
-  };
-
-  const getProgressColor = percent => {
-    if (percent >= 90) return '#dc3545';
-    if (percent >= 75) return '#ffc107';
-    return '#28a745';
+    return formatBellTime(leftHours, leftMinutes);
   };
 
   const bellHasDot =
@@ -395,32 +563,10 @@ export default function BellNotification({
           title={bellHasDot ? 'You have new notifications' : 'No new notifications'}
         >
           {bellHasDot && (
-            <span
-              style={{
-                position: 'absolute',
-                top: '0px',
-                right: '0px',
-                transform: 'translateX(50%) translateY(-50%)',
-                backgroundColor: 'red',
-                borderRadius: meetingNotificationCount > 1 ? '10px' : '50%',
-                minWidth: meetingNotificationCount > 1 ? '18px' : '10px',
-                height: meetingNotificationCount > 1 ? '18px' : '10px',
-                width: meetingNotificationCount > 1 ? 'auto' : '10px',
-                padding: meetingNotificationCount > 1 ? '0 4px' : 0,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '10px',
-                fontWeight: 700,
-                lineHeight: 1,
-                color: '#fff',
-                pointerEvents: 'none',
-              }}
-            >
-              {hasMeetingNotification && meetingNotificationCount > 1
-                ? meetingNotificationCount
-                : null}
-            </span>
+            <BellMeetingBadge
+              hasMeetingNotification={hasMeetingNotification}
+              meetingNotificationCount={meetingNotificationCount}
+            />
           )}
         </button>
       )}
@@ -448,96 +594,20 @@ export default function BellNotification({
             textAlign: 'left',
           }}
         >
-          {hasHoursAlert && (
-            <div style={{ marginBottom: 12, borderBottom: '1px solid #e0e0e0', paddingBottom: 12 }}>
-              <div style={{ fontWeight: 600, marginBottom: 6 }}>⏰ Hours Reminder</div>
-              You&apos;ve completed {getFormattedEffort()} out of the {weeklycommittedHours} hours
-              you need. Only {getFormattedLeftToWork()} left to go.
-              {hoursLeft > 0 &&
-                ` There are ${hoursLeft} hour${hoursLeft !== 1 ? 's' : ''} left in this week.`}
-              <div style={{ marginTop: 8 }}>
-                <button
-                  type="button"
-                  onClick={handleNotificationClick}
-                  className="btn btn-sm btn-primary"
-                >
-                  Mark as read
-                </button>
-              </div>
-            </div>
-          )}
-
-          {hasTaskAlerts && (
-            <div style={{ marginBottom: 12, borderBottom: '1px solid #e0e0e0', paddingBottom: 12 }}>
-              <div style={{ fontWeight: 600, marginBottom: 6 }}>📊 Task Progress Alerts</div>
-              {taskHoursAlerts.map(a => (
-                <div
-                  key={`${a.id}-${a.bucket}`}
-                  style={{
-                    marginBottom: 10,
-                    padding: '8px',
-                    backgroundColor: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
-                    borderRadius: '4px',
-                    border: `1px solid ${darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
-                  }}
-                >
-                  {/* Exact message per spec */}
-                  <div style={{ marginBottom: 6, fontSize: '14px' }}>
-                    Hey! Your <strong>{a.name}</strong> is <strong>{a.bucket}%</strong> complete.
-                    How are you doing? Please, communicate with your manager if you need more time.
-                    If you do, be sure to include the specific reason why.
-                  </div>
-                  {/* Task info mirroring Tasks tab: name, hours logged/estimated, progress bar */}
-                  <div style={{ fontSize: '13px', marginBottom: 4 }}>
-                    <strong>{a.task.num ? `${a.task.num} ` : ''}{a.name}</strong>
-                  </div>
-                  <div style={{ fontSize: '12px', opacity: 0.8, marginBottom: 4 }}>
-                    {a.logged.toFixed(2)} of {a.estimate.toFixed(2)} hours
-                  </div>
-                  <div style={{
-                    height: '8px',
-                    borderRadius: '4px',
-                    backgroundColor: darkMode ? 'rgba(255,255,255,0.15)' : '#e9ecef',
-                    overflow: 'hidden',
-                    marginBottom: 4,
-                  }}>
-                    <div style={{
-                      height: '100%',
-                      width: `${Math.min(a.percent, 100)}%`,
-                      // eslint-disable-next-line no-nested-ternary
-                      backgroundColor: getProgressColor(a.percent),
-                      borderRadius: '4px',
-                    }} />
-                  </div>
-                </div>
-              ))}
-              <div style={{ marginTop: 8 }}>
-                <button
-                  type="button"
-                  onClick={handleMarkTaskAlertsAsRead}
-                  className="btn btn-sm btn-primary"
-                >
-                  Mark all as read
-                </button>
-              </div>
-            </div>
-          )}
-
-          {hasMessageNotification && (
-            <div>
-              <div style={{ fontWeight: 600, marginBottom: 6 }}>💬 New Messages</div>
-              {allNotifications.map((notification, index) => (
-                // eslint-disable-next-line react/no-array-index-key
-                <div key={notification._id || index}>{notification.message || notification}</div>
-              ))}
-            </div>
-          )}
-
-          {!hasHoursAlert && !hasTaskAlerts && !hasMessageNotification && (
-            <div style={{ padding: '10px', textAlign: 'center', opacity: 0.7 }}>
-              No new notifications.
-            </div>
-          )}
+          <BellNotificationPanel
+            darkMode={darkMode}
+            hasHoursAlert={hasHoursAlert}
+            hasTaskAlerts={hasTaskAlerts}
+            hasMessageNotification={hasMessageNotification}
+            getFormattedEffort={getFormattedEffort}
+            weeklycommittedHours={weeklycommittedHours}
+            getFormattedLeftToWork={getFormattedLeftToWork}
+            hoursLeft={hoursLeft}
+            handleNotificationClick={handleNotificationClick}
+            taskHoursAlerts={taskHoursAlerts}
+            handleMarkTaskAlertsAsRead={handleMarkTaskAlertsAsRead}
+            allNotifications={allNotifications}
+          />
         </div>
       )}
     </>
@@ -545,6 +615,9 @@ export default function BellNotification({
 }
 BellNotification.propTypes = {
   userId: PropTypes.string.isRequired,
+  hasMeetingNotification: PropTypes.bool,
+  meetingNotificationCount: PropTypes.number,
+  onMeetingNotificationClick: PropTypes.func,
 };
 // ===== (Optional) Console test helpers =====
 // Keep your existing bellTest block if you like. You can also add helpers to clear per-task seen:

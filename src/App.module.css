@@ -16,11 +16,11 @@ button {
 }
 
 #root {
-  height: 100%;
-  overflow: auto hidden;
+  min-height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
 
   /* background-color: var(--background-color); */
-  overflow: auto;
   background-color: #fff;
 }
 

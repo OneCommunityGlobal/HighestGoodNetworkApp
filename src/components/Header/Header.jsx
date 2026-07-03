@@ -40,7 +40,6 @@ import {
 import { getAllRoles } from '../../actions/role';
 import { getUserProfile } from '../../actions/userProfile';
 import '../../App.module.css';
-import './Header.css';
 import { boxStyle, boxStyleDark } from '../../styles';
 import {
   ACTUAL_COST_BREAKDOWN,
@@ -86,11 +85,11 @@ import {
 
 function MeetingNotificationModalHeader({ children, onClose }) {
   return (
-    <div className="meeting-notification-custom-header">
-      <h5 className="meeting-notification-custom-header__title">{children}</h5>
+    <div className={styles.meetingNotificationCustomHeader}>
+      <h5 className={styles.meetingNotificationCustomHeaderTitle}>{children}</h5>
       <button
         type="button"
-        className="meeting-notification-custom-header__close"
+        className={styles.meetingNotificationCustomHeaderClose}
         onClick={onClose}
         aria-label="Close"
       >
@@ -99,6 +98,11 @@ function MeetingNotificationModalHeader({ children, onClose }) {
     </div>
   );
 }
+
+MeetingNotificationModalHeader.propTypes = {
+  children: PropTypes.node.isRequired,
+  onClose: PropTypes.func.isRequired,
+};
 
 export function Header(props) {
   const location = useLocation();
@@ -1467,22 +1471,22 @@ export function Header(props) {
           </ModalHeader>
         )}
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-          <div className="meeting-notification-modal-body">
+          <div className={styles.meetingNotificationModalBody}>
             <p>{parse(DOMPurify.sanitize(meetingModalMessage))}</p>
             {meetingCalendarLinks && (
-              <div className="meeting-notification-modal-actions">
+              <div className={styles.meetingNotificationModalActions}>
                 <a
                   href={meetingCalendarLinks.googleCalendarLink}
                   target="_blank"
                   rel="noreferrer"
-                  className="meeting-calendar-link"
+                  className={styles.meetingCalendarLink}
                 >
                   Add to Google Calendar
                 </a>
                 <a
                   href={meetingCalendarLinks.icsUrl}
                   download="meeting.ics"
-                  className="meeting-calendar-link"
+                  className={styles.meetingCalendarLink}
                 >
                   Download .ics
                 </a>
@@ -1491,12 +1495,12 @@ export function Header(props) {
           </div>
         </ModalBody>
         <ModalFooter
-          className={`meeting-notification-modal-footer${
+          className={`${styles.meetingNotificationModalFooter}${
             darkMode ? ' bg-yinmn-blue text-white' : ''
           }`}
         >
           {userUnreadMeetings.length > 1 && meetingAudioUnlocked && (
-            <div className="meeting-notification-nav">
+            <div className={styles.meetingNotificationNav}>
               <Button
                 color="secondary"
                 onClick={goToPreviousMeeting}
@@ -1505,7 +1509,7 @@ export function Header(props) {
               >
                 &lt;
               </Button>
-              <span className="meeting-notification-nav-count">
+              <span className={styles.meetingNotificationNavCount}>
                 {activeMeetingModalIndex + 1} / {userUnreadMeetings.length}
               </span>
               <Button
@@ -1522,7 +1526,7 @@ export function Header(props) {
             color="primary"
             onClick={handleMeetingRead}
             style={darkMode ? boxStyleDark : boxStyle}
-            className="meeting-notification-close-btn"
+            className={styles.meetingNotificationCloseBtn}
           >
             {userUnreadMeetings?.length > 0 && !meetingAudioUnlocked
               ? 'Enable Alerts & View Meeting'
@@ -1565,6 +1569,13 @@ Header.propTypes = {
     roles: PropTypes.array
   }),
   notification: PropTypes.object,
+  unreadMeetingNotifications: PropTypes.arrayOf(PropTypes.object),
+  meetingNotification: PropTypes.shape({
+    error: PropTypes.shape({
+      message: PropTypes.string,
+    }),
+  }),
+  allUserProfiles: PropTypes.arrayOf(PropTypes.object),
   userProfile: PropTypes.object,
   darkMode: PropTypes.bool,
   taskEditSuggestionCount: PropTypes.number,

@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import PropTypes from 'prop-types';
 import { useDispatch, connect } from 'react-redux';
 import {
   Form,
@@ -28,22 +29,19 @@ import {
   resolveUserTimeZone,
 } from '../../utils/meetingTime';
 import '../../App.module.css';
-import './MeetingScheduling.css';
+import styles from './MeetingScheduling.module.css';
 import { useHistory } from 'react-router-dom';
 
 const customImageUploadHandler = () =>
-  new Promise((_, reject) => {
-    // eslint-disable-next-line prefer-promise-reject-errors
-    reject({ message: 'Pictures are not allowed here!', remove: true });
-  });
+  Promise.reject({ message: 'Pictures are not allowed here!', remove: true });
 
 function MeetingModalHeader({ children, onClose }) {
   return (
-    <div className="meeting-scheduling-custom-header">
-      <h5 className="meeting-scheduling-custom-header__title">{children}</h5>
+    <div className={styles.customHeader}>
+      <h5 className={styles.customHeaderTitle}>{children}</h5>
       <button
         type="button"
-        className="meeting-scheduling-custom-header__close"
+        className={styles.customHeaderClose}
         onClick={onClose}
         aria-label="Close"
       >
@@ -52,6 +50,11 @@ function MeetingModalHeader({ children, onClose }) {
     </div>
   );
 }
+
+MeetingModalHeader.propTypes = {
+  children: PropTypes.node.isRequired,
+  onClose: PropTypes.func.isRequired,
+};
 
 const TINY_MCE_INIT_OPTIONS = {
   license_key: 'gpl',
@@ -124,9 +127,32 @@ function MeetingScheduling(props) {
   const [modalTitle, setModalTitle] = useState('');
   const [isSuccessModal, setIsSuccessModal] = useState(false);
   const history = useHistory();
+  const pageRef = useRef(null);
 
   useEffect(() => {
     props.getAllUserProfile();
+  }, []);
+
+  useEffect(() => {
+    const headerEl = document.querySelector('[data-testid="header"]');
+    const pageEl = pageRef.current;
+    if (!headerEl || !pageEl) return undefined;
+
+    const syncPageScrollArea = () => {
+      const headerHeight = headerEl.getBoundingClientRect().height;
+      pageEl.style.setProperty('--meeting-page-header-offset', `${Math.ceil(headerHeight)}px`);
+    };
+
+    syncPageScrollArea();
+    window.addEventListener('resize', syncPageScrollArea);
+
+    const resizeObserver = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(syncPageScrollArea) : null;
+    resizeObserver?.observe(headerEl);
+
+    return () => {
+      window.removeEventListener('resize', syncPageScrollArea);
+      resizeObserver?.disconnect();
+    };
   }, []);
 
   useEffect(() => {
@@ -387,12 +413,13 @@ function MeetingScheduling(props) {
 
   return (
     <div
-      className={`meeting-scheduling-page${
-        darkMode ? ' meeting-scheduling-page--dark bg-oxford-blue text-light' : ''
+      ref={pageRef}
+      className={`${styles.page}${
+        darkMode ? ` ${styles.pageDark} bg-oxford-blue text-light` : ''
       }`}
     >
       <div className="meeting-scheduling-container">
-        <div className="meeting-scheduling-form-card editor">
+        <div className="meeting-scheduling-form-card">
           <h3 className="meeting-scheduling-title">Schedule a New Meeting</h3>
           <div className="meeting-scheduling-info-box">
             <strong>What happens when you schedule:</strong>
@@ -781,5 +808,17 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   getAllUserProfile: () => dispatch(getAllUserProfile()),
 });
+
+MeetingScheduling.propTypes = {
+  authUser: PropTypes.shape({
+    userid: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  }),
+  userProfile: PropTypes.shape({
+    timeZone: PropTypes.string,
+  }),
+  allUserProfiles: PropTypes.arrayOf(PropTypes.object),
+  darkMode: PropTypes.bool,
+  getAllUserProfile: PropTypes.func.isRequired,
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(MeetingScheduling);
