@@ -18,7 +18,6 @@ class DropDownSearchBox extends React.PureComponent {
 
   render() {
 
-    console.log(this.props.placeholder);
 
     return (
       <select
