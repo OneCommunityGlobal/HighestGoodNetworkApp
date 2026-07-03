@@ -17,6 +17,13 @@ function JobCategoryCCModal({ categories, onClose, onRefresh, darkMode }) {
       toast.error('Please enter an email.');
       return;
     }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast.error('Please enter a valid email address.');
+      return;
+    }
+
     if (filter === '') {
       toast.error('Please select a category.');
       return;
