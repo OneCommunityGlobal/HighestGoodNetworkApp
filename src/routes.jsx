@@ -809,7 +809,7 @@ export default (
         <Route path="/subscribe" component={SubscribePage} />
         <Route path="/unsubscribe" component={UnsubscribePage} />
         <Route path="/collaboration" component={Collaboration} />
-        <Route path="/kitchenandinventory/orders" component={OrdersPage} />
+        <ProtectedRoute path="/kitchenandinventory/orders" component={OrdersPage} />
         <ProtectedRoute path="/jobformbuilder" fallback component={JobFormBuilder} />
         <Route path="/suggestedjobslist" component={SuggestedJobsList} />
         <ProtectedRoute path="/infoCollections" component={EditableInfoModal} />
