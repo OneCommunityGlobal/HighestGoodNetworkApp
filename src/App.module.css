@@ -2,12 +2,14 @@
 html {
   overflow-x: hidden;
   height: 100%;
+  background-color: #1a1d23 !important;
 }
 
 body {
   display: grid;
   grid-template-columns: auto 0;
   height: 100%;
+  background-color: #1a1d23 !important;
 }
 
 button {
@@ -17,19 +19,10 @@ button {
 
 #root {
   min-height: 100%;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: hidden auto;
 
   /* background-color: var(--background-color); */
   background-color: #fff;
-}
-
-html {
-  background-color: #1a1d23 !important;
-}
-
-body {
-  background-color: #1a1d23 !important;
 }
 
 /* Dark mode override for #root */

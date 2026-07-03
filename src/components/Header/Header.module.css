@@ -416,7 +416,7 @@
   padding: 1rem;
   background-color: #1c2541;
   border-bottom: 1px solid #3a506b;
-  color: #ffffff;
+  color: #fff;
 }
 
 .meetingNotificationCustomHeaderTitle {
@@ -424,13 +424,13 @@
   font-size: 1.25rem;
   font-weight: 500;
   line-height: 1.5;
-  color: #ffffff;
+  color: #fff;
 }
 
 .meetingNotificationCustomHeaderClose {
   padding: 0.25rem 0.5rem;
   margin: -0.25rem -0.5rem -0.25rem auto;
-  color: #ffffff;
+  color: #fff;
   font-size: 1.5rem;
   font-weight: 700;
   line-height: 1;
