@@ -45,6 +45,8 @@ function MasterPlan() {
   const history = useHistory();
   const dispatch = useDispatch();
   const villages = useSelector(state => state.villageDetails.villages || []);
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const dm = darkMode ? styles.dark : '';
 
   useEffect(() => {
     dispatch(getVillageDropdownFilterData());
@@ -83,7 +85,7 @@ function MasterPlan() {
 
   return (
     <div
-      className={styles.mainContainer}
+      className={`${styles.mainContainer} ${dm}`}
       onClick={handleOutsideClick}
       role="button"
       tabIndex={0}
@@ -93,7 +95,7 @@ function MasterPlan() {
         <img src={logo} alt="One Community Logo" />
       </div>
 
-      <div className={styles.contentContainer}>
+      <div className={`${styles.contentContainer} ${dm}`}>
         <div className={styles.containerTop} />
         <div className={styles.containerMain}>
           <div className={styles.containerMap}>
@@ -145,9 +147,9 @@ function MasterPlan() {
             </div>
           </div>
 
-          <div className={styles.villageDetails}>
+          <div className={`${styles.villageDetails} ${dm}`}>
             {selectedVillage && (
-              <div className="village-details-content">
+              <div className={`${styles.villageDetailsContent} ${dm}`}>
                 <h3>{selectedVillage.name}</h3>
                 <p>{selectedVillage.description}</p>
               </div>
