@@ -239,7 +239,7 @@ class UserManagement extends React.PureComponent {
         .map((user, index) => {
           return (
             <UserTableData
-              key={`user_${index}`}
+              key={user._id || `user_${index}`}
               index={index}
               isActive={user.isActive}
               isSet={user.isSet}
