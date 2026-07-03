@@ -621,7 +621,7 @@
 
 /* ---------- Dark Mode Hover ---------- */
 .attendeesCountDark:hover {
-  background-color: rgb(59 130 246 /25%); 
+  background-color: rgb(59 130 246 /45%); 
   color: #fff;
   font-weight: 500;
   border-radius: 4px;
