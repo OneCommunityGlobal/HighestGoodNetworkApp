@@ -8,6 +8,9 @@ import {
   KI_PRESERVED_ITEMS_REQUEST,
   KI_PRESERVED_ITEMS_SUCCESS,
   KI_PRESERVED_ITEMS_FAILURE,
+  KI_INVENTORY_ADD_REQUEST,
+  KI_INVENTORY_ADD_SUCCESS,
+  KI_INVENTORY_ADD_FAILURE,
 } from '../constants/KIInventoryConstants';
 
 const initialState = {
@@ -17,6 +20,8 @@ const initialState = {
   loading: false,
   statsLoading: false,
   preservedLoading: false,
+  addItemLoading: false,
+  addItemError: null,
   error: null,
 };
 
@@ -45,6 +50,14 @@ const KIInventoryReducer = (state = initialState, action) => {
       return { ...state, preservedLoading: false, preservedItems: action.payload };
     case KI_PRESERVED_ITEMS_FAILURE:
       return { ...state, preservedLoading: false };
+
+    // ── Add Item ──────────────────────────────────────────────────────────
+    case KI_INVENTORY_ADD_REQUEST:
+      return { ...state, addItemLoading: true, addItemError: null };
+    case KI_INVENTORY_ADD_SUCCESS:
+      return { ...state, addItemLoading: false, addItemError: null };
+    case KI_INVENTORY_ADD_FAILURE:
+      return { ...state, addItemLoading: false, addItemError: action.payload };
 
     default:
       return state;

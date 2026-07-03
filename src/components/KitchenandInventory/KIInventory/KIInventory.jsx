@@ -19,7 +19,9 @@ import {
 } from 'react-icons/fi';
 import { RiLeafLine } from 'react-icons/ri';
 import KIItemCard from './KIItemCard';
+import KIAddItemModal from './KIAddItemModal/KIAddItemModal';
 import {
+  addInventoryItem,
   fetchInventoryItems,
   fetchInventoryStats,
   fetchPreservedItems,
@@ -37,7 +39,9 @@ const CATEGORY_MAP = {
 const KIInventory = () => {
   const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme.darkMode);
-  const { items, preservedItems, stats, loading } = useSelector(state => state.kiInventory);
+  const { items, preservedItems, stats, loading, addItemLoading, addItemError } = useSelector(
+    state => state.kiInventory,
+  );
 
   const tabs = [
     'ingredients',
@@ -48,6 +52,7 @@ const KIInventory = () => {
   ];
   const [activeTab, setActiveTab] = useState(tabs[0]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [isAddItemModalOpen, setIsAddItemModalOpen] = useState(false);
 
   const toggleTab = tab => {
     if (activeTab !== tabs[tab]) {
@@ -81,6 +86,8 @@ const KIInventory = () => {
   const categoryItems = items.filter(i => i.category === activeCategory);
 
   const tabItems = filterItems(categoryItems);
+
+  const handleAddItem = payload => dispatch(addInventoryItem(payload));
 
   // Preserved items description for notification banner
   const preservedDesc =
@@ -216,7 +223,11 @@ const KIInventory = () => {
             )}
           </div>
           <div>
-            <button className={classnames(styles.button, styles.addItemButton)}>
+            <button
+              type="button"
+              className={classnames(styles.button, styles.addItemButton)}
+              onClick={() => setIsAddItemModalOpen(true)}
+            >
               {'+ Add Item'}
             </button>
             <button className={classnames(styles.button, styles.scanBarcodeButton)}>
@@ -270,6 +281,16 @@ const KIInventory = () => {
           </TabPane>
         ))}
       </TabContent>
+      <KIAddItemModal
+        isOpen={isAddItemModalOpen}
+        onClose={() => setIsAddItemModalOpen(false)}
+        onSubmit={handleAddItem}
+        categoryLabel={activeTab}
+        categoryValue={activeCategory}
+        isSubmitting={addItemLoading}
+        submitError={addItemError}
+        darkMode={darkMode}
+      />
     </div>
   );
 };
