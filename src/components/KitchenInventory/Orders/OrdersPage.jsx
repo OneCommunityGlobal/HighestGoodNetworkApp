@@ -147,8 +147,8 @@ const OrderCard = ({ order, onStatusChange, darkMode }) => {
         </div>
 
         {order.notes && (
-          <div className={styles.urgentBanner}>
-            <span>⚠️</span> {order.notes}
+          <div className={styles.notesBanner}>
+            <span>📝</span> {order.notes}
           </div>
         )}
 

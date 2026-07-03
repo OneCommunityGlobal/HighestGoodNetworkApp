@@ -18,10 +18,11 @@
 }
 
 .pageTitle {
-  font-size: 24px;
-  font-weight: 600;
+  font-size: 32px;
+  font-weight: 700;
   color: #333;
   margin: 0 0 4px 0;
+  text-align: center;
 }
 
 .containerDark .pageTitle {
@@ -32,6 +33,7 @@
   color: #666;
   margin: 0 0 24px 0;
   font-size: 14px;
+  text-align: center;
 }
 
 .containerDark .pageSubtitle {
@@ -110,7 +112,6 @@
   gap: 8px;
   border-bottom: 1px solid #e0e0e0;
   margin-bottom: 16px;
-  overflow-x: auto;
 }
 
 .containerDark .tabs {
@@ -474,23 +475,23 @@
 }
 
 /* Urgent Banner */
-.urgentBanner {
-  background-color: #fff8e1;
-  border: 1px solid #ffe082;
+.notesBanner {
+  background-color: #e3f2fd;
+  border: 1px solid #90caf9;
   border-radius: 6px;
   padding: 10px 12px;
   margin-top: 12px;
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #f57c00;
+  color: #1565c0;
   font-size: 13px;
 }
 
-.containerDark .urgentBanner {
-  background-color: #3d2c00;
-  border-color: #5c4400;
-  color: #ffb74d;
+.containerDark .notesBanner {
+  background-color: #0d2744;
+  border-color: #1a3a66;
+  color: #64b5f6;
 }
 
 /* Actions */
