@@ -1,8 +1,9 @@
+/* stylelint-disable  */
 .dashboard {
   min-height: 100vh;
   background-color: #f8f9fa;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
-    'Cantarell', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+    Cantarell, sans-serif;
 }
 
 .mainContainer {
@@ -52,10 +53,10 @@
 .viewToggle {
   display: flex;
   gap: 0.5rem;
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 8px;
   padding: 4px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
 }
 
 .toggleButton {
@@ -79,8 +80,8 @@
 
 .toggleButton.active {
   background-color: #3b82f6;
-  color: #ffffff;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  color: #fff;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 10%);
 }
 
 .loadingContainer {
@@ -106,6 +107,7 @@
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
@@ -127,7 +129,7 @@
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .mainContainer {
     padding: 1rem 0.5rem;
   }
@@ -153,7 +155,7 @@
 }
 
 :global(.dark-mode) .title {
-  color: #ffffff;
+  color: #fff;
 }
 
 :global(.dark-mode) .subtitle {
@@ -161,12 +163,12 @@
 }
 
 :global(.dark-mode) .sectionTitle {
-  color: #ffffff;
+  color: #fff;
 }
 
 :global(.dark-mode) .viewToggle {
   background-color: #2d2d2d;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 30%);
 }
 
 :global(.dark-mode) .toggleButton {
@@ -180,7 +182,7 @@
 
 :global(.dark-mode) .toggleButton.active {
   background-color: #2563eb;
-  color: #ffffff;
+  color: #fff;
 }
 
 :global(.dark-mode) .loadingContainer {

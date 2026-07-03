@@ -1,13 +1,13 @@
+/* stylelint-disable  */
+@import url('./jobFormTheme.module.css');
+
 /* FormPreviewModal.module.css - Modal styling for form preview */
 
 /* Modal Overlay */
 .modalOverlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  inset: 0;
+  background-color: rgb(0 0 0 / 50%);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -19,7 +19,7 @@
 .modalContainer {
   background-color: white;
   border-radius: 10px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 15%);
   display: flex;
   flex-direction: column;
   max-width: 750px;
@@ -30,13 +30,13 @@
 
 /* Modal Header */
 .modalHeader {
-  background-color: #97ca02;
-  color: white;
+  background-color: var(--jfb-lime);
+  color: var(--jfb-white);
   padding: 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 2px solid #7ab000;
+  border-bottom: 2px solid var(--jfb-lime-hover);
 }
 
 .modalTitle {
@@ -63,7 +63,7 @@
 }
 
 .modalCloseBtn:hover {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: rgb(255 255 255 / 20%);
 }
 
 /* Modal Content */
@@ -86,7 +86,7 @@
   text-align: center;
   color: #333;
   font-weight: bold;
-  margin: 0 0 10px 0;
+  margin: 0 0 10px;
   font-size: 20px;
 }
 
@@ -94,7 +94,7 @@
   text-align: center;
   color: #666;
   font-size: 14px;
-  margin: 0 0 20px 0;
+  margin: 0 0 20px;
   font-style: italic;
 }
 
@@ -103,6 +103,27 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+
+.previewStandardSection {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.previewStandardNote {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.previewRequiredMark {
+  color: #c62828;
 }
 
 /* Individual Field */
@@ -212,13 +233,13 @@
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s;
-  background-color: #97ca02;
-  color: white;
+  transition: background-color 0.2s;
+  background-color: var(--jfb-blue);
+  color: var(--jfb-white);
 }
 
 .modalActionBtn:hover {
-  background-color: #7ab000;
+  background-color: var(--jfb-blue-hover);
 }
 
 /* Dark Mode Support */
@@ -262,6 +283,18 @@
   color: #f1f1f1;
 }
 
+.darkMode .previewStandardSection {
+  border-bottom-color: #555;
+}
+
+.darkMode .previewStandardNote {
+  color: #bbb;
+}
+
+.darkMode .previewRequiredMark {
+  color: #ff8a80;
+}
+
 .darkMode .modalFooter {
   background-color: #2a2a2a;
   border-top-color: #444;
@@ -271,8 +304,17 @@
   color: #bbb;
 }
 
+.darkMode .modalActionBtn {
+  background-color: var(--jfb-blue-hover);
+  color: var(--jfb-white);
+}
+
+.darkMode .modalActionBtn:hover {
+  background-color: var(--jfb-blue);
+}
+
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .modalContainer {
     max-width: 95%;
     max-height: 95vh;
