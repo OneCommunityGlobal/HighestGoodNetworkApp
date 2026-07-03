@@ -59,7 +59,6 @@ import FaqManagement from './components/Faq/FaqManagement';
 import FaqSearch from './components/Faq/FaqSearch';
 import UnansweredFaqs from './components/Faq/UnansweredFaqs';
 import ToolsAvailabilityPage from './components/BMDashboard/WeeklyProjectSummary/Tools/ToolsAvailabilityPage';
-import DatabaseDesign from './components/CommunityPortal/DatabaseDesign/DatabaseDesign';
 import ResourceUsage from './components/CommunityPortal/ResourceUsage/ResourceUsage';
 
 import Page1 from './components/HGNForm/pages/Page1';
@@ -159,7 +158,14 @@ import Register from './components/CommunityPortal/Activities/Register/Register'
 import CPLogin from './components/CommunityPortal/Login';
 import ActivitiesPage from './components/CommunityPortal/Activities/ActivitiesPage';
 import EventStats from './components/CommunityPortal/EventPersonalization/EventStats';
+import VirtualVsInPerson from './components/CommunityPortal/Reports/Participation/VirtualVsInPerson';
+import EventValue from './components/CommunityPortal/Reports/Participation/EventValue';
+import ParticipationTrends from './components/CommunityPortal/Reports/Participation/ParticipationTrends';
+import EventPerformance from './components/CommunityPortal/Reports/Participation/EventPerformance';
+
+// Community Calendar
 import CommunityCalendar from './components/CommunityPortal/Calendar/CommunityCalendar';
+
 import PRGradingDashboard from './components/PRGradingDashboard/PRGradingDashboard';
 import RegistrationPopup from './components/CommunityPortal/RegistrationConfirmation/Registration';
 import KICalendar from './components/KitchenandInventory/KICalendar/KICalendar';
@@ -1072,14 +1078,24 @@ export default (
           component={ResourceUsage}
         />
         <CPProtectedRoute
-          path="/communityportal/activity/:activityid"
+          path="/communityportal/reports/participation/virtual-vs-inperson"
           exact
-          component={ActivityAgenda}
+          component={VirtualVsInPerson}
         />
         <CPProtectedRoute
-          path="/communityportal/database/design"
+          path="/communityportal/reports/participation/event-value"
           exact
-          component={DatabaseDesign}
+          component={EventValue}
+        />
+        <CPProtectedRoute
+          path="/communityportal/reports/participation/trends"
+          exact
+          component={ParticipationTrends}
+        />
+        <CPProtectedRoute
+          path="/communityportal/reports/participation/performance"
+          exact
+          component={EventPerformance}
         />
 
         <ProtectedRoute path="/kitchenandinventory" exact component={KIDashboard} />
