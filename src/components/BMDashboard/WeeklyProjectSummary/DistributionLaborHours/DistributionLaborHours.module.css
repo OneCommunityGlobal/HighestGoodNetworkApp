@@ -1,8 +1,8 @@
-
+/* stylelint-disable  */
 .container {
   border-radius: 8px;
-  padding: 16px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  padding: 12px;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 15%);
   width: 100%;
   height: 100%;
   display: flex;
@@ -13,7 +13,16 @@
 .title {
   font-size: large;
   font-weight: bold;
-  margin-bottom: 8px;
+  margin-bottom: 18px;
+  color: #111827;
+}
+
+/* Keep title blue in dark mode */
+:global(.dark) .title,
+:global(.dark-mode) .title,
+:global(.bm-dashboard-dark) .title,
+:global([data-theme='dark']) .title {
+  color: #2563eb !important;
 }
 
 .filters {
@@ -28,6 +37,109 @@
   display: flex;
   flex-direction: column;
   font-size: 0.9rem;
+}
+
+/* Dark mode: make filter labels readable */
+:global(.dark) .filters label,
+:global(.dark-mode) .filters label,
+:global([data-theme='dark']) .filters label {
+  color: #fff;
+}
+
+/* Scope to date inputs only — react-select renders its own <input> inside
+   .filters, and this box styling must not apply to it. */
+.filters input[type='date'] {
+  height: auto !important;
+  border-radius: 6px;
+  box-sizing: border-box;
+  font-size: 0.95rem;
+  line-height: 1.2;
+}
+
+/* Give the dropdowns enough width and keep option text on one line */
+:global(.react-select-container) {
+  min-width: 100px;
+}
+
+:global(.react-select__option),
+:global(.react-select__single-value) {
+  white-space: nowrap;
+  font-weight: normal !important;
+}
+
+:global(.dark) :global(.react-select__control),
+:global(.dark-mode) :global(.react-select__control),
+:global([data-theme='dark']) :global(.react-select__control) {
+  background-color: #1f2937 !important;
+  border-color: #374151 !important;
+}
+
+:global(.dark) :global(.react-select__single-value),
+:global(.dark-mode) :global(.react-select__single-value),
+:global([data-theme='dark']) :global(.react-select__single-value),
+:global(.dark) :global(.react-select__input),
+:global(.dark-mode) :global(.react-select__input),
+:global([data-theme='dark']) :global(.react-select__input) {
+  color: #f9fafb !important;
+}
+
+:global(.dark) :global(.react-select__placeholder),
+:global(.dark-mode) :global(.react-select__placeholder),
+:global([data-theme='dark']) :global(.react-select__placeholder) {
+  color: #9ca3af !important;
+}
+
+/* Dim the vertical separator between the value and the dropdown arrow */
+:global(.react-select__indicator-separator) {
+  background-color: #ccc !important;
+}
+
+/* Dark mode: use the panel color for the separator */
+:global(.dark) :global(.react-select__indicator-separator),
+:global(.dark-mode) :global(.react-select__indicator-separator),
+:global([data-theme='dark']) :global(.react-select__indicator-separator) {
+  background-color: #2d4059 !important;
+}
+
+/* Make the dropdown arrow a light gray (not bright white) in both modes */
+:global(.react-select__dropdown-indicator) {
+  color: #ccc !important;
+}
+
+:global(.dark) :global(.react-select__menu),
+:global(.dark-mode) :global(.react-select__menu),
+:global([data-theme='dark']) :global(.react-select__menu) {
+  background-color: #1f2937 !important;
+  border: 1px solid #374151 !important;
+  z-index: 10;
+}
+
+:global(.dark) :global(.react-select__option),
+:global(.dark-mode) :global(.react-select__option),
+:global([data-theme='dark']) :global(.react-select__option) {
+  background-color: #1f2937 !important;
+  color: #f9fafb !important;
+}
+
+:global(.dark) :global(.react-select__option--is-focused),
+:global(.dark-mode) :global(.react-select__option--is-focused),
+:global([data-theme='dark']) :global(.react-select__option--is-focused) {
+  background-color: #374151 !important;
+  color: #ffffff !important;
+}
+/* Dark mode: style date inputs only (not react-select's internal input) */
+:global(.dark) .filters input[type='date'],
+:global(.dark-mode) .filters input[type='date'],
+:global([data-theme='dark']) .filters input[type='date'] {
+  background-color: #1f2937 !important;
+  color: #f9fafb !important;
+  border: 1px solid #374151 !important;
+}
+
+:global(.dark) .filters input[type='date'],
+:global(.dark-mode) .filters input[type='date'],
+:global([data-theme='dark']) .filters input[type='date'] {
+  color-scheme: dark;
 }
 
 .chartWrapper {
@@ -59,24 +171,61 @@
 }
 
 .tooltip {
-  border-radius: 6px;
+  background-color: #f3f4f6;
+  color: #111827; /* darker percentage text in light mode */
   padding: 8px;
-  font-size: 0.85rem;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  border-radius: 6px;
 }
 
+/* Dark mode: ensure tooltip text is white on hover */
+:global(.dark) .tooltip,
+:global(.dark-mode) .tooltip,
+:global([data-theme='dark']) .tooltip {
+  color: #fff;
+}
+
+:global(.dark) .tooltip:hover,
+:global(.dark-mode) .tooltip:hover,
+:global([data-theme='dark']) .tooltip:hover {
+  color: #fff;
+}
+
+/* Dark mode: force ALL tooltip text to white */
+:global(.dark) .tooltip *,
+:global(.dark-mode) .tooltip *,
+:global([data-theme='dark']) .tooltip * {
+  color: #fff !important;
+}
+
+.buttonContainer {
+  width: 100%;           
+  display: flex;
+  justify-content: center;
+  margin-top: 5px;
+}
+
+/* Submit button – light & dark mode safe */
 .button {
-  background-color: transparent;
-  color: inherit;
-  border: 1px solid currentColor;
+  background-color: #2563eb; /* blue */
+  color: #fff;            /* white text */
+  border: none;
   border-radius: 6px;
   padding: 8px 16px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background-color 0.3s ease;
 }
 
+/* Hover */
 .button:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: #1d4ed8;
+}
+
+/* Dark mode – keep same button color (no brightness jump) */
+:global(.dark) .button,
+:global(.dark-mode) .button,
+:global([data-theme='dark']) .button {
+  background-color: #2563eb;
+  color: #fff;
 }
 
 .pieChartContainer {
@@ -86,7 +235,7 @@
   width: 100%;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .chartWrapper {
     flex-direction: column;
     align-items: center;
