@@ -297,6 +297,22 @@ const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, dar
   const [notes, setNotes] = useState('');
   const [items, setItems] = useState([{ name: '', quantity: '', unit: 'lbs', unitPrice: '' }]);
 
+  const today = new Date().toISOString().split('T')[0];
+
+  useEffect(() => {
+    if (isOpen) {
+      setOrderDate(today);
+      setDeliveryDate('');
+    }
+  }, [isOpen, today]);
+
+  const handleOrderDateChange = value => {
+    setOrderDate(value);
+    if (deliveryDate && value && deliveryDate <= value) {
+      setDeliveryDate('');
+    }
+  };
+
   const handleItemChange = (index, field, value) => {
     const updated = [...items];
     updated[index] = { ...updated[index], [field]: value };
@@ -315,6 +331,14 @@ const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, dar
   const handleSubmit = () => {
     if (!supplierId || !orderDate || !deliveryDate) {
       toast.error('Please fill in all required fields.');
+      return;
+    }
+    if (orderDate < today) {
+      toast.error('Order date cannot be in the past.');
+      return;
+    }
+    if (deliveryDate <= orderDate) {
+      toast.error('Expected delivery must be after the order date.');
       return;
     }
     const supplier = supplierList.find(s => s._id === supplierId);
@@ -342,7 +366,7 @@ const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, dar
     });
 
     setSupplierId('');
-    setOrderDate('');
+    setOrderDate(today);
     setDeliveryDate('');
     setNotes('');
     setItems([{ name: '', quantity: '', unit: 'lbs', unitPrice: '' }]);
@@ -383,7 +407,8 @@ const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, dar
               type="date"
               id="orderDate"
               value={orderDate}
-              onChange={e => setOrderDate(e.target.value)}
+              min={today}
+              onChange={e => handleOrderDateChange(e.target.value)}
             />
           </FormGroup>
           <FormGroup className={styles.formGroup}>
@@ -392,6 +417,8 @@ const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, dar
               type="date"
               id="deliveryDate"
               value={deliveryDate}
+              min={orderDate || today}
+              disabled={!orderDate}
               onChange={e => setDeliveryDate(e.target.value)}
             />
           </FormGroup>
