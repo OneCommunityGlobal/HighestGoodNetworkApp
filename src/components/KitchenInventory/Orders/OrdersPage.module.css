@@ -866,6 +866,68 @@
   border-color: #3a3a5a;
 }
 
+/* Supplier Card */
+.supplierCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.supplierCardName {
+  font-weight: 600;
+  font-size: 15px;
+  color: #333;
+}
+
+.containerDark .supplierCardName {
+  color: #e0e0e0;
+}
+
+.trustedBadge {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #a5d6a7;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.containerDark .trustedBadge {
+  background-color: #1b3a1b;
+  color: #81c784;
+  border-color: #2e5a2e;
+}
+
+.supplierCardGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.containerDark .supplierCardGrid {
+  border-top-color: #2a2a4a;
+}
+
+@media (max-width: 768px) {
+  .supplierCardGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .supplierCardGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.supplierCardField {
+  min-width: 0;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .main {

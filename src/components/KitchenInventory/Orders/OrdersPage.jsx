@@ -696,8 +696,45 @@ function OrdersPage() {
         )}
 
         {activeTab === 'suppliers' && (
-          <div className={`${styles.orderCard} ${styles.emptyState}`}>
-            Suppliers section — Coming soon
+          <div>
+            {supplierList.length > 0 ? (
+              supplierList.map(supplier => (
+                <div
+                  key={supplier._id}
+                  className={`${styles.orderCard} ${darkMode ? styles.cardDark : ''}`}
+                >
+                  <div className={styles.supplierCardHeader}>
+                    <div className={styles.supplierCardName}>
+                      <span role="img" aria-label="supplier">
+                        🏢
+                      </span>{' '}
+                      {supplier.name}
+                    </div>
+                    {supplier.trusted && <span className={styles.trustedBadge}>Trusted</span>}
+                  </div>
+                  <div className={styles.supplierCardGrid}>
+                    <div className={styles.supplierCardField}>
+                      <p className={styles.metaLabel}>Category</p>
+                      <p className={styles.metaValue}>{supplier.category}</p>
+                    </div>
+                    <div className={styles.supplierCardField}>
+                      <p className={styles.metaLabel}>Contact</p>
+                      <p className={styles.metaValue}>{supplier.contact}</p>
+                    </div>
+                    <div className={styles.supplierCardField}>
+                      <p className={styles.metaLabel}>Phone</p>
+                      <p className={styles.metaValue}>{supplier.phone}</p>
+                    </div>
+                    <div className={styles.supplierCardField}>
+                      <p className={styles.metaLabel}>Email</p>
+                      <p className={styles.metaValue}>{supplier.email}</p>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className={`${styles.orderCard} ${styles.emptyState}`}>No suppliers found.</div>
+            )}
           </div>
         )}
 
