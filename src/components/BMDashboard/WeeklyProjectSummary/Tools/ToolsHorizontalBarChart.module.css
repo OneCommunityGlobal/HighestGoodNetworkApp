@@ -18,6 +18,12 @@
   box-shadow: 0 4px 8px rgb(0 0 0 / 15%);
 }
 
+.tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode {
+  background-color: var(--card-bg, #2b3e59);
+  color: var(--text-color, #fff);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 40%);
+}
+
 .tools-horizontal-bar-chart-title {
   font-size: 16px;
   font-weight: 600;
@@ -131,7 +137,7 @@
   font-size: 12px;
   font-weight: 500;
   margin-bottom: 4px;
-  color: var(--label-color);
+  color: #555;
 }
 
 .tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode
@@ -141,6 +147,10 @@
 }
 
 .tools-horizontal-bar-chart-project-select {
+  max-width: 100%;
+}
+
+.tools-horizontal-bar-chart-tool-select {
   max-width: 100%;
 }
 
@@ -163,8 +173,8 @@
 
 .tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode
   .tools-horizontal-bar-chart-date-picker {
-  background-color: #2c3344;
-  border-color: #364156;
+  background-color: #253342;
+  border-color: #3a506b;
   color: #e0e0e0;
 }
 
@@ -204,15 +214,15 @@
 
 .tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode
   .tools-horizontal-bar-chart-clear-dates-btn {
-  background: #364156;
-  border-color: #4a5568;
+  background: #253342;
+  border-color: #3a506b;
   color: #e0e0e0;
 }
 
 .tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode
   .tools-horizontal-bar-chart-clear-dates-btn:hover {
-  background: #4a5568;
-  border-color: #5a6578;
+  background: #3a506b;
+  border-color: #4a6a8a;
 }
 
 /* Responsive adjustments */
