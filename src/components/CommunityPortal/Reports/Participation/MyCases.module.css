@@ -621,7 +621,7 @@
 
 /* ---------- Dark Mode Hover ---------- */
 .attendeesCountDark:hover {
-  background-color: rgb(59 130 246 /45%); 
+  background-color: #1e40af;
   color: #fff;
   font-weight: 500;
   border-radius: 4px;
@@ -669,6 +669,7 @@
   color: inherit; 
   border-radius: 4px;
 }
+
 .myCasesPageDark .moreBtn {
   background-color: #3A506B;
   border: 1px solid #5A6B7D;
