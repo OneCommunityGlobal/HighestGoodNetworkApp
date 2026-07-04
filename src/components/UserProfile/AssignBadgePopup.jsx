@@ -9,7 +9,6 @@ import { ENDPOINTS } from '~/utils/URL';
 import {
   assignBadgesByUserID,
   clearNameAndSelected,
-  addSelectBadge,
 } from '../../actions/badgeManagement';
 import { boxStyle, boxStyleDark } from '../../styles';
 import AssignTableRow from '../Badge/AssignTableRow';
