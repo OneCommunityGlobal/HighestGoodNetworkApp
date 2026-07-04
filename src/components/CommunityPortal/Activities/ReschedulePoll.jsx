@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import styles from './RescheduleEvent.module.css';
 import { ApiEndpoint } from '~/utils/URL';
@@ -27,9 +28,13 @@ function fmtHuman(opt, tz) {
 
 export default function ReschedulePoll() {
   const { search } = useLocation();
+  const darkMode = useSelector(state => state.theme?.darkMode);
   const params = new URLSearchParams(search);
   const emailToken = params.get('token') || '';
   const activityId = params.get('a') || '1';
+  const pageClassName = `${styles.reschedulePage} ${styles.pollPage} ${
+    darkMode ? styles.reschedulePageDark : ''
+  }`;
 
   const [loading, setLoading] = useState(true);
   const [poll, setPoll] = useState(null);
@@ -120,7 +125,7 @@ export default function ReschedulePoll() {
 
   if (!activityId) {
     return (
-      <div className={styles.reschedulePage}>
+      <div className={pageClassName}>
         <p>Missing activity.</p>
       </div>
     );
@@ -128,7 +133,7 @@ export default function ReschedulePoll() {
 
   if (loading) {
     return (
-      <div className={styles.reschedulePage}>
+      <div className={pageClassName}>
         <p>Loading poll…</p>
       </div>
     );
@@ -136,48 +141,38 @@ export default function ReschedulePoll() {
 
   if (!poll) {
     return (
-      <div className={styles.reschedulePage}>
+      <div className={pageClassName}>
         <p>{msg || 'No poll found.'}</p>
       </div>
     );
   }
 
   return (
-    <div className={styles.reschedulePage} style={{ maxWidth: 640, margin: '24px auto' }}>
-      <h2 style={{ marginBottom: 4 }}>{poll.activity.title}</h2>
-      <div className="muted" style={{ marginBottom: 16 }}>
-        {poll.activity.location}
-      </div>
+    <div className={pageClassName}>
+      <h2>{poll.activity.title}</h2>
+      <div className={styles.muted}>{poll.activity.location}</div>
       {poll.reason ? (
         <p>
           <strong>Reason:</strong> {poll.reason}
         </p>
       ) : null}
       <form onSubmit={onSubmit}>
-        <fieldset style={{ border: '1px solid #d0d7de', borderRadius: 8, padding: 12 }}>
-          <legend style={{ padding: '0 6px' }}>Choose one time</legend>
+        <fieldset>
+          <legend>Choose one time</legend>
           {poll.options.map((opt, idx) => (
-            <label
-              key={idx}
-              style={{
-                display: 'block',
-                margin: '8px 0',
-                cursor: 'pointer',
-              }}
-            >
+            <label className={styles.pollOption} key={`${opt.dateISO}-${opt.start}-${opt.end}`}>
               <input
                 type="radio"
                 name="opt"
                 value={idx}
                 checked={selected === idx}
                 onChange={() => setSelected(idx)}
-                style={{ marginRight: 8 }}
               />
               {fmtHuman(opt, poll.timezone)}
             </label>
           ))}
         </fieldset>
-        <div style={{ marginTop: 12 }}>
+        <div className={styles.pollActions}>
           <button
             type="submit"
             className={styles.primaryBtn}
@@ -187,7 +182,11 @@ export default function ReschedulePoll() {
           </button>
         </div>
       </form>
-      {msg && <p style={{ marginTop: 12 }}>{msg}</p>}
+      {msg && (
+        <p className={msg.startsWith('Error:') ? styles.errorMessage : styles.successMessage}>
+          {msg}
+        </p>
+      )}
     </div>
   );
 }

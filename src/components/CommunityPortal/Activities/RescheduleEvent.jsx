@@ -196,12 +196,12 @@ function RescheduleModal(props) {
   } = props;
 
   return (
-    <div className={`${styles.reschedulePage} ${darkMode ? 'bg-oxford-blue text-light' : ''}`}>
-      <div style={{ position: 'absolute', top: 16, left: 16, opacity: 0.9 }}>
+    <div className={`${styles.reschedulePage} ${darkMode ? styles.reschedulePageDark : ''}`}>
+      <div className={styles.eventSummary}>
         <div>
           <strong>{eventInfo.name || 'Event'}</strong>
         </div>
-        <div className="muted">{eventInfo.location}</div>
+        <div className={styles.muted}>{eventInfo.location}</div>
       </div>
 
       <div
@@ -234,64 +234,96 @@ function RescheduleModal(props) {
               </div>
 
               <div className={styles.modalBody}>
-                <label className={styles.fieldLabel} htmlFor="timeSelect">
-                  Time (for selected date)
-                </label>
+                <div className={styles.formPanel}>
+                  <label className={styles.fieldLabel} htmlFor="timeSelect">
+                    Time (for selected date)
+                  </label>
 
-                <select
-                  id="timeSelect"
-                  value={selectedTime}
-                  onChange={e => setSelectedTime(e.target.value)}
-                  className={`${styles.timeDropdown} ${darkMode ? styles.timeDropdownDark : ''}`}
-                >
-                  <option value="">Select time</option>
-                  {getTimeSlots(8, 24, 2).map(slot => (
-                    <option key={slot} value={slot}>
-                      {slot}
-                    </option>
-                  ))}
-                </select>
+                  <select
+                    id="timeSelect"
+                    value={selectedTime}
+                    onChange={e => setSelectedTime(e.target.value)}
+                    className={`${styles.timeDropdown} ${darkMode ? styles.timeDropdownDark : ''}`}
+                  >
+                    <option value="">Select time</option>
+                    {getTimeSlots(8, 24, 2).map(slot => (
+                      <option key={slot} value={slot}>
+                        {slot}
+                      </option>
+                    ))}
+                  </select>
 
-                <button type="button" className={styles.primaryBtn} onClick={addOption}>
-                  Add option
-                </button>
-
-                <textarea
-                  className={`${styles.textArea} ${darkMode ? styles.textAreaDark : ''}`}
-                  value={reason}
-                  onChange={e => setReason(e.target.value)}
-                />
-
-                <DatePicker
-                  selected={selectedDate}
-                  onChange={date => setSelectedDate(date)}
-                  inline
-                  minDate={new Date()}
-                  className={darkMode ? 'react-datepicker dark' : 'react-datepicker'}
-                />
-
-                {options.map((opt, idx) => (
-                  <button key={idx} onClick={() => removeOption(idx)}>
-                    {opt.dateLabel} • {opt.timeSlot}
+                  <button type="button" className={styles.primaryBtn} onClick={addOption}>
+                    Add option
                   </button>
-                ))}
+
+                  <label className={styles.fieldLabel} htmlFor="rescheduleReason">
+                    Reason
+                  </label>
+                  <textarea
+                    id="rescheduleReason"
+                    className={`${styles.textArea} ${darkMode ? styles.textAreaDark : ''}`}
+                    value={reason}
+                    onChange={e => setReason(e.target.value)}
+                    placeholder="Share why this event needs to be rescheduled."
+                  />
+                </div>
+
+                <div className={styles.datePanel}>
+                  <DatePicker
+                    selected={selectedDate}
+                    onChange={date => setSelectedDate(date)}
+                    inline
+                    minDate={new Date()}
+                    calendarClassName={darkMode ? styles.datepickerDark : styles.datepicker}
+                  />
+                </div>
+
+                <div className={styles.optionsList} aria-live="polite">
+                  {options.map((opt, idx) => (
+                    <button
+                      type="button"
+                      className={`${styles.optionButton} ${
+                        darkMode ? styles.optionButtonDark : ''
+                      }`}
+                      key={`${opt.dateISO}-${opt.timeSlot}`}
+                      onClick={() => removeOption(idx)}
+                    >
+                      {opt.dateLabel} • {opt.timeSlot}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               <div className={styles.modalFooter}>
-                <button type="button" onClick={() => setConfirmStep(true)}>
+                <button
+                  type="button"
+                  className={styles.primaryBtn}
+                  onClick={() => setConfirmStep(true)}
+                  disabled={options.length === 0}
+                >
                   Continue
                 </button>
-                <button type="button" onClick={closeModal}>
+                <button type="button" className={styles.secondaryBtn} onClick={closeModal}>
                   Cancel
                 </button>
               </div>
             </>
           ) : (
             <div className={styles.modalFooter}>
-              <button type="button" onClick={handleCreateAndNotify} disabled={loading}>
+              <button
+                type="button"
+                className={styles.primaryBtn}
+                onClick={handleCreateAndNotify}
+                disabled={loading}
+              >
                 {loading ? 'Sending…' : 'Create & Notify'}
               </button>
-              <button type="button" onClick={() => setConfirmStep(false)}>
+              <button
+                type="button"
+                className={styles.secondaryBtn}
+                onClick={() => setConfirmStep(false)}
+              >
                 Back
               </button>
             </div>
