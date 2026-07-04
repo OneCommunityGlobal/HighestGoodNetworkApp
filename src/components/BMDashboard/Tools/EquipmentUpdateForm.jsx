@@ -111,7 +111,7 @@ export default function EquipmentUpdateForm() {
   }, [formData.toolOrEquipment, formData.name, formData.project, toolList, equipmentList]);
 
   const currentCount = selectedItem?.count ?? 0;
-  const newCount = formData.number !== '' ? Number(formData.number) : null;
+  const newCount = formData.number === '' ? null : Number(formData.number);
 
   const handleSubmit = e => {
     e.preventDefault();
@@ -125,12 +125,12 @@ export default function EquipmentUpdateForm() {
     toast.success('Tool/Equipment updated successfully!');
   };
 
-  const filteredNames =
-    formData.toolOrEquipment === 'Tool'
-      ? uniqueToolList
-      : formData.toolOrEquipment === 'Equipment'
-      ? uniqueEquipmentList
-      : [];
+  let filteredNames = [];
+  if (formData.toolOrEquipment === 'Tool') {
+    filteredNames = uniqueToolList;
+  } else if (formData.toolOrEquipment === 'Equipment') {
+    filteredNames = uniqueEquipmentList;
+  }
 
   return (
     <div className={styles.addToolForm}>
@@ -228,7 +228,7 @@ export default function EquipmentUpdateForm() {
                   <td>{formData.toolOrEquipment}</td>
                   <td>{formData.name}</td>
                   <td>{currentCount}</td>
-                  <td>{newCount !== null ? newCount : '-'}</td>
+                  <td>{newCount === null ? '-' : newCount}</td>
                 </tr>
               </tbody>
             </Table>
