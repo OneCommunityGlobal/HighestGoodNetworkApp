@@ -3,7 +3,6 @@
 /* eslint-disable import/no-unresolved */
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { v4 as uuidv4 } from 'uuid';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { toast } from 'react-toastify';
@@ -130,65 +129,42 @@ const projectStatusButtons = [
   },
 ];
 
-export function WeeklyProjectSummaryContent() {
-  const dispatch = useDispatch();
-  const materials = useSelector(state => state.materials?.materialslist || []);
-  const [openSections, setOpenSections] = useState({});
-  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+const formatDate = date =>
+  date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: '2-digit',
+  });
 
-  const darkMode = useSelector(state => state.theme.darkMode);
-  const projectFilter = useSelector(state => state.weeklyProjectSummary?.projectFilter || '');
-  const dateRangeFilter = useSelector(state => state.weeklyProjectSummary?.dateRangeFilter || '');
+const getLatestCompletedWeekRange = () => {
+  const today = new Date();
+  const dayOfWeek = today.getDay();
 
-  const getColorScheme = percentage => {
-    if (percentage === '-') return 'neutral';
-    if (percentage > 0) return 'positive';
-    if (percentage < 0) return 'negative';
-    return 'neutral';
-  };
+  const endOfLastCompletedWeek = new Date(today);
+  endOfLastCompletedWeek.setDate(today.getDate() - dayOfWeek - 1);
 
-  const colorScheme = getColorScheme(monthOverMonth);
+  const startOfLastCompletedWeek = new Date(endOfLastCompletedWeek);
+  startOfLastCompletedWeek.setDate(endOfLastCompletedWeek.getDate() - 6);
 
-  const titleClass = title.replace(/\s+/g, '-').toLowerCase();
-
-  return (
-    <div
-      className={`financial-card ${colorScheme} custom-box-shadow financial-card-background-${titleClass}`}
-      onMouseEnter={() => setShowTooltip(true)}
-      onMouseLeave={() => setShowTooltip(false)}
-    >
-      <div className="financial-card-title">{title}</div>
-      <div className={`financial-card-ellipse financial-card-ellipse-${titleClass}`} />
-      <div className="financial-card-value">{value === '-' ? '-' : value.toLocaleString()}</div>
-      <div className={`financial-card-month-over-month ${colorScheme}`}>
-        {monthOverMonth === '-'
-          ? '-'
-          : `${monthOverMonth > 0 ? '+' : ''}${monthOverMonth}% month over month`}
-      </div>
-
-      {showTooltip && Object.keys(additionalInfo).length > 0 && (
-        <div className="financial-card-tooltip">
-          {Object.entries(additionalInfo).map(([key]) => (
-            <div key={key} className="financial-card-tooltip-item">
-              <span className="tooltip-key">{key}:</span>
-              <span className="tooltip-value">{value}</span>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
+  return `${formatDate(startOfLastCompletedWeek)} - ${formatDate(endOfLastCompletedWeek)}`;
+};
 
 function WeeklyProjectSummary() {
   const dispatch = useDispatch();
+  const containerRef = useRef(null);
+
   const materials = useSelector(state => state.materials?.materialslist || []);
-  const [openSections, setOpenSections] = useState({});
-  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
   const projectFilter = useSelector(state => state.weeklyProjectSummary?.projectFilter || '');
   const dateRangeFilter = useSelector(state => state.weeklyProjectSummary?.dateRangeFilter || '');
-  const containerRef = useRef(null);
+
+  const [openSections, setOpenSections] = useState({});
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [compareWithPreviousWeek, setCompareWithPreviousWeek] = useState(false);
+
+  const selectedProjectLabel = projectFilter || 'All Projects';
+  const selectedDateRangeLabel = dateRangeFilter || getLatestCompletedWeekRange();
 
   useEffect(() => {
     if (materials.length === 0) {
@@ -196,10 +172,20 @@ function WeeklyProjectSummary() {
     }
   }, [dispatch, materials.length]);
 
+  useEffect(() => {
+    setIsRefreshing(true);
+
+    const refreshTimer = setTimeout(() => {
+      setIsRefreshing(false);
+    }, 400);
+
+    return () => clearTimeout(refreshTimer);
+  }, [projectFilter, dateRangeFilter]);
+
   const quantityOfMaterialsUsedData = useMemo(() => {
     if (!materials.length) return [];
-    const uniqueMaterials = Array.from(new Map(materials.map(m => [m._id, m])).values());
-    return uniqueMaterials;
+
+    return Array.from(new Map(materials.map(material => [material._id, material])).values());
   }, [materials]);
 
   const toggleSection = category => {
@@ -209,41 +195,56 @@ function WeeklyProjectSummary() {
     }));
   };
 
+  const filterProps = useMemo(
+    () => ({
+      projectFilter,
+      dateRangeFilter,
+      selectedProjectLabel,
+      selectedDateRangeLabel,
+    }),
+    [projectFilter, dateRangeFilter, selectedProjectLabel, selectedDateRangeLabel],
+  );
+
   const sections = useMemo(
     () => [
       {
         title: 'Risk profile for projects',
         key: 'Risk profile for projects',
         className: 'full',
-        content: <ProjectRiskProfileOverview />,
+        badgeLabel: 'Risk',
+        hasData: true,
+        emptyMessage: 'No risk profile data for this week.',
+        comparisonText: 'Risk profile: No comparison data available yet.',
+        content: <ProjectRiskProfileOverview {...filterProps} />,
       },
       {
         title: 'Project Status',
         key: 'Project Status',
         className: 'full',
+        badgeLabel: `${projectStatusButtons.length}`,
+        hasData: projectStatusButtons.length > 0,
+        emptyMessage: 'No project status data for this week.',
+        comparisonText: 'Project status: Summary comparison data is not connected yet.',
         content: (
-          <div className={`${styles.projectStatusGrid}`}>
-            {projectStatusButtons.map(button => {
-              const uniqueId = uuidv4();
-              return (
+          <div className={styles.projectStatusGrid}>
+            {projectStatusButtons.map((button, index) => (
+              <div
+                key={`${button.title}-${index}`}
+                className={`${styles.weeklyProjectSummaryCard} ${styles.statusCard}`}
+                style={{ backgroundColor: button.bgColor }}
+              >
+                <div className={styles.weeklyCardTitle}>{button.title}</div>
                 <div
-                  key={uniqueId}
-                  className={`${styles.weeklyProjectSummaryCard} ${styles.statusCard}`}
-                  style={{ backgroundColor: button.bgColor }}
+                  className={styles.weeklyStatusButton}
+                  style={{ backgroundColor: button.buttonColor }}
                 >
-                  <div className={`${styles.weeklyCardTitle}`}>{button.title}</div>
-                  <div
-                    className={`${styles.weeklyStatusButton}`}
-                    style={{ backgroundColor: button.buttonColor }}
-                  >
-                    <span className={`${styles.weeklyStatusValue}`}>{button.value}</span>
-                  </div>
-                  <div className="weekly-status-change" style={{ color: button.textColor }}>
-                    {button.change}
-                  </div>
+                  <span className={styles.weeklyStatusValue}>{button.value}</span>
                 </div>
-              );
-            })}
+                <div className="weekly-status-change" style={{ color: button.textColor }}>
+                  {button.change}
+                </div>
+              </div>
+            ))}
           </div>
         ),
       },
@@ -251,9 +252,13 @@ function WeeklyProjectSummary() {
         title: 'Issues Breakdown',
         key: 'Issues Breakdown',
         className: 'full',
+        badgeLabel: 'Issues',
+        hasData: true,
+        emptyMessage: 'No issues found for this week.',
+        comparisonText: 'Issues: Week-over-week issue comparison is not connected yet.',
         content: (
           <div className={`${styles.weeklyProjectSummaryCard} ${styles.fullCard}`}>
-            <IssuesBreakdownChart />
+            <IssuesBreakdownChart {...filterProps} />
           </div>
         ),
       },
@@ -261,33 +266,42 @@ function WeeklyProjectSummary() {
         title: 'Material Consumption',
         key: 'Material Consumption',
         className: 'full',
-        content: [1, 2, 3].map((_, index) => {
-          let content;
-          if (index === 1) {
-            content = <QuantityOfMaterialsUsed data={quantityOfMaterialsUsedData} />;
-          } else if (index === 2) {
-            content = <TotalMaterialCostPerProject />;
-          } else {
-            content = <p>📊 Card</p>;
-          }
-          const uniqueId = uuidv4();
-          return (
-            <div
-              key={uniqueId}
-              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
-            >
-              {content}
-            </div>
-          );
-        }),
+        badgeLabel: `${quantityOfMaterialsUsedData.length}`,
+        hasData: quantityOfMaterialsUsedData.length > 0,
+        emptyMessage: 'No material consumption data for this week.',
+        comparisonText: 'Material consumption: Previous-week comparison is not connected yet.',
+        content: [
+          <div
+            key="material-placeholder-card"
+            className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+          >
+            <p>📊 Card</p>
+          </div>,
+          <div
+            key="quantity-of-materials-used"
+            className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+          >
+            <QuantityOfMaterialsUsed data={quantityOfMaterialsUsedData} {...filterProps} />
+          </div>,
+          <div
+            key="total-material-cost-per-project"
+            className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+          >
+            <TotalMaterialCostPerProject {...filterProps} />
+          </div>,
+        ],
       },
       {
         title: 'Issue Tracking',
         key: 'Issue Tracking',
         className: 'full',
+        badgeLabel: 'Open',
+        hasData: true,
+        emptyMessage: 'No issue tracking data for this week.',
+        comparisonText: 'Issue tracking: Open issue comparison is not connected yet.',
         content: (
           <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
-            <IssueCharts />
+            <IssueCharts {...filterProps} />
           </div>
         ),
       },
@@ -295,26 +309,29 @@ function WeeklyProjectSummary() {
         title: 'Tools and Equipment Tracking',
         key: 'Tools and Equipment Tracking',
         className: 'half',
+        badgeLabel: 'Tools',
+        hasData: true,
+        emptyMessage: 'No tools or equipment data for this week.',
+        comparisonText: 'Tools and equipment: Availability comparison is not connected yet.',
         content: (
           <>
-            {/* <div className="weekly-project-summary-card normal-card tools-tracking-layout"> */}
             <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
-              <ToolStatusDonutChart />
+              <ToolStatusDonutChart {...filterProps} />
             </div>
             <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
-              <ToolsHorizontalBarChart darkMode={darkMode} />
+              <ToolsHorizontalBarChart darkMode={darkMode} {...filterProps} />
             </div>
             <div
               className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
               style={{ minHeight: '300px', gridColumn: 'span 2' }}
             >
-              <SupplierPerformanceGraph />
+              <SupplierPerformanceGraph {...filterProps} />
             </div>
             <div
               className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
               style={{ minHeight: '300px', gridColumn: 'span 2' }}
             >
-              <ToolsStoppageHorizontalBarChart />
+              <ToolsStoppageHorizontalBarChart {...filterProps} />
             </div>
           </>
         ),
@@ -323,25 +340,29 @@ function WeeklyProjectSummary() {
         title: 'Lessons Learned',
         key: 'Lessons Learned',
         className: 'full',
+        badgeLabel: 'Lessons',
+        hasData: true,
+        emptyMessage: 'No lessons learned data for this week.',
+        comparisonText: 'Lessons learned: Previous-week comparison is not connected yet.',
         content: [
           <div
             key="frequent-tags-card"
             className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
             style={{ minHeight: '520px', height: 'auto', overflow: 'visible' }}
           >
-            <MostFrequentKeywords />
+            <MostFrequentKeywords darkMode={darkMode} {...filterProps} />
           </div>,
           <div
             key="injury-chart"
             className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
           >
-            <InjuryCategoryBarChart />
+            <InjuryCategoryBarChart {...filterProps} />
           </div>,
           <div
             key="lessons-learnt-chart"
             className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
           >
-            <LessonsLearntChart darkMode={darkMode} />
+            <LessonsLearntChart darkMode={darkMode} {...filterProps} />
           </div>,
         ],
       },
@@ -349,6 +370,10 @@ function WeeklyProjectSummary() {
         title: 'Financials',
         key: 'Financials',
         className: 'large',
+        badgeLabel: 'Costs',
+        hasData: true,
+        emptyMessage: 'No financial data for this week.',
+        comparisonText: 'Financials: Cost comparison is not connected yet.',
         content: (
           <div
             style={{
@@ -358,7 +383,6 @@ function WeeklyProjectSummary() {
               width: '100%',
             }}
           >
-            {/* Top Left: Planned vs Actual Cost */}
             <div
               className="weekly-project-summary-card financial-small financial-chart"
               style={{
@@ -368,10 +392,9 @@ function WeeklyProjectSummary() {
                 flexDirection: 'column',
               }}
             >
-              <ExpenseBarChart darkMode={darkMode} />
+              <ExpenseBarChart darkMode={darkMode} {...filterProps} />
             </div>
 
-            {/* Top Right: Cost Variance Trend */}
             <div
               className="weekly-project-summary-card financial-small financial-chart"
               style={{
@@ -381,15 +404,14 @@ function WeeklyProjectSummary() {
                 flexDirection: 'column',
               }}
             >
-              <CostVarianceTrendGraph darkMode={darkMode} />
+              <CostVarianceTrendGraph darkMode={darkMode} {...filterProps} />
             </div>
 
-            {/* Bottom: Cost Breakdown Pie Chart (Spans across both columns) */}
             <div
               className="weekly-project-summary-card financial-big"
               style={{ gridColumn: 'span 2', width: '100%', minHeight: '400px' }}
             >
-              <CostBreakDown />
+              <CostBreakDown {...filterProps} />
             </div>
           </div>
         ),
@@ -398,9 +420,13 @@ function WeeklyProjectSummary() {
         title: 'Loss Tracking',
         key: 'Loss Tracking',
         className: 'large',
+        badgeLabel: 'Loss',
+        hasData: true,
+        emptyMessage: 'No loss tracking data for this week.',
+        comparisonText: 'Loss tracking: Previous-week comparison is not connected yet.',
         content: (
           <div className="weekly-project-summary-card financial-big">
-            <LossTrackingLineChart />
+            <LossTrackingLineChart {...filterProps} />
           </div>
         ),
       },
@@ -408,12 +434,16 @@ function WeeklyProjectSummary() {
         title: 'Global Distribution and Project Status Overview',
         key: 'Global Distribution and Project Status',
         className: 'full',
+        badgeLabel: 'Map',
+        hasData: true,
+        emptyMessage: 'No global distribution data for this week.',
+        comparisonText: 'Global distribution: Project location comparison is not connected yet.',
         content: (
           <div
             className={`${styles.weeklyProjectSummaryCard} ${styles.mapCard}`}
             style={{ height: '500px', padding: '0' }}
           >
-            <InteractiveMap />
+            <InteractiveMap {...filterProps} />
           </div>
         ),
       },
@@ -421,6 +451,10 @@ function WeeklyProjectSummary() {
         title: 'Labor and Time Tracking',
         key: 'Labor and Time Tracking',
         className: 'full',
+        badgeLabel: 'Labor',
+        hasData: true,
+        emptyMessage: 'No labor or time tracking data for this week.',
+        comparisonText: 'Labor and time: Labor comparison is not connected yet.',
         content: (
           <div
             style={{
@@ -434,7 +468,7 @@ function WeeklyProjectSummary() {
               className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
               style={{ width: '100%', minHeight: '650px' }}
             >
-              <DistributionLaborHours />
+              <DistributionLaborHours {...filterProps} />
             </div>
             <div
               className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
@@ -445,7 +479,7 @@ function WeeklyProjectSummary() {
                 flexDirection: 'column',
               }}
             >
-              <PaidLaborCost />
+              <PaidLaborCost {...filterProps} />
             </div>
           </div>
         ),
@@ -454,18 +488,38 @@ function WeeklyProjectSummary() {
         title: 'Financials Tracking',
         key: 'Financials Tracking',
         className: 'full',
+        badgeLabel: 'Tracking',
+        hasData: true,
+        emptyMessage: 'No financial tracking data for this week.',
+        comparisonText:
+          'Financials tracking: Planned and actual cost comparison is not connected yet.',
         content: (
           <div style={{ gridColumn: '1 / -1', width: '100%' }}>
-            <FinancialsTrackingSection />
+            <FinancialsTrackingSection {...filterProps} />
           </div>
         ),
       },
     ],
-    [quantityOfMaterialsUsedData, darkMode],
+    [darkMode, filterProps, quantityOfMaterialsUsedData],
   );
 
+  const expandAllSections = () => {
+    const allSectionsOpen = {};
+
+    sections.forEach(section => {
+      allSectionsOpen[section.key] = true;
+    });
+
+    setOpenSections(allSectionsOpen);
+  };
+
+  const collapseAllSections = () => {
+    setOpenSections({});
+  };
+
+  const areAllSectionsOpen = sections.every(section => openSections[section.key]);
+
   const handleSaveAsPDF = async () => {
-    // Prevent multiple simultaneous PDF generations
     if (isGeneratingPDF) {
       return;
     }
@@ -473,7 +527,6 @@ function WeeklyProjectSummary() {
     const currentOpenSections = { ...openSections };
     setIsGeneratingPDF(true);
 
-    // Show loading toast
     const loadingToastId = toast.info('Generating PDF...', {
       position: 'top-right',
       autoClose: false,
@@ -482,29 +535,28 @@ function WeeklyProjectSummary() {
     });
 
     try {
-      // Open all sections for PDF export
       const allSectionsOpen = {};
+
       sections.forEach(section => {
         allSectionsOpen[section.key] = true;
       });
+
       setOpenSections(allSectionsOpen);
 
-      // Wait for sections to render
-      // eslint-disable-next-line no-promise-executor-return
       await new Promise(resolve => setTimeout(resolve, 500));
 
-      // Try to find the container using ref first, then fallback to querySelector
       const contentElement =
         containerRef.current || document.querySelector(`.${styles.weeklyProjectSummaryContainer}`);
+
       if (!contentElement) {
         throw new Error(
           'Weekly project summary container not found. Please refresh the page and try again.',
         );
       }
 
-      // Create PDF container
       const pdfContainer = document.createElement('div');
       pdfContainer.id = 'pdf-export-container';
+
       Object.assign(pdfContainer.style, {
         width: '420mm',
         padding: '10mm',
@@ -516,7 +568,6 @@ function WeeklyProjectSummary() {
         zIndex: '-1',
       });
 
-      // Clone the content
       const clonedContent = contentElement.cloneNode(true);
 
       clonedContent
@@ -527,7 +578,6 @@ function WeeklyProjectSummary() {
           el.remove();
         });
 
-      // Add styles for PDF
       const styleElem = document.createElement('style');
       styleElem.textContent = `
         img, svg {
@@ -544,11 +594,8 @@ function WeeklyProjectSummary() {
       pdfContainer.appendChild(clonedContent);
       document.body.appendChild(pdfContainer);
 
-      // Wait a bit for styles to apply
-      // eslint-disable-next-line no-promise-executor-return
       await new Promise(resolve => setTimeout(resolve, 300));
 
-      // Generate canvas from HTML
       const canvas = await html2canvas(pdfContainer, {
         scale: 2,
         useCORS: true,
@@ -569,11 +616,9 @@ function WeeklyProjectSummary() {
         throw new Error('Failed to generate image data. Please try again.');
       }
 
-      const pdfWidth = 210; // A4 width in mm
+      const pdfWidth = 210;
       const imgHeight = (canvas.height * pdfWidth) / canvas.width;
 
-      // Create PDF
-      // eslint-disable-next-line new-cap
       const pdf = new jsPDF({
         orientation: imgHeight > pdfWidth ? 'portrait' : 'landscape',
         unit: 'mm',
@@ -582,23 +627,16 @@ function WeeklyProjectSummary() {
 
       pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, imgHeight);
 
-      // Generate filename with project and date range
-      const now = new Date();
-      const dateStr = now.toISOString().slice(0, 10);
-      const projectName = projectFilter || 'All-Projects';
-      const dateRange = dateRangeFilter
-        ? dateRangeFilter.replace(/\s+/g, '-').replace(/,/g, '')
-        : dateStr;
+      const projectName = selectedProjectLabel.replace(/\s+/g, '-');
+      const dateRange = selectedDateRangeLabel.replace(/\s+/g, '-').replace(/,/g, '');
       const fileName = `weekly-project-summary-${projectName}-${dateRange}.pdf`;
 
       pdf.save(fileName);
 
-      // Clean up
       if (document.body.contains(pdfContainer)) {
         document.body.removeChild(pdfContainer);
       }
 
-      // Dismiss loading toast and show success
       toast.dismiss(loadingToastId);
       toast.success('PDF generated and downloaded successfully!', {
         position: 'top-right',
@@ -607,26 +645,20 @@ function WeeklyProjectSummary() {
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error('PDF generation failed:', err);
-      // eslint-disable-next-line no-alert
-      alert('Failed to generate PDF. Please try again.');
-      // Dismiss loading toast
+
       toast.dismiss(loadingToastId);
 
-      // Show error message
       const errorMessage =
         err?.message ||
         'Failed to generate PDF. Please try again or contact support if the issue persists.';
+
       toast.error(errorMessage, {
         position: 'top-right',
         autoClose: 5000,
       });
 
-      // Log error for debugging
-      // eslint-disable-next-line no-console
-      console.error('PDF generation failed:', err);
-
-      // Clean up PDF container if it exists
       const pdfContainer = document.getElementById('pdf-export-container');
+
       if (pdfContainer && document.body.contains(pdfContainer)) {
         document.body.removeChild(pdfContainer);
       }
@@ -648,27 +680,87 @@ function WeeklyProjectSummary() {
         handleSaveAsPDF={handleSaveAsPDF}
         isGeneratingPDF={isGeneratingPDF}
       />
-      <div className={`${styles.weeklyProjectSummaryDashboardContainer}`}>
-        <div className={`${styles.weeklyProjectSummaryDashboardGrid}`}>
-          {sections.map(({ title, key, className, content }) => (
-            <div
-              key={key}
-              className={`${styles.weeklyProjectSummaryDashboardSection} ${styles[className]}`}
-            >
-              <button
-                type="button"
-                className={styles.weeklyProjectSummaryDashboardCategoryTitle}
-                onClick={() => toggleSection(key)}
+
+      <div className={`${styles.weeklySummaryControls} no-print`}>
+        <div className={styles.activeSummaryBanner}>
+          <span className={styles.activeSummaryLabel}>Showing summary for:</span>
+          <span className={styles.activeSummaryValue}>
+            {selectedProjectLabel} | {selectedDateRangeLabel}
+          </span>
+        </div>
+
+        <div className={styles.weeklySummaryActionRow}>
+          <label className={styles.compareToggle}>
+            <input
+              type="checkbox"
+              checked={compareWithPreviousWeek}
+              onChange={event => setCompareWithPreviousWeek(event.target.checked)}
+            />
+            <span>Compare with Previous Week</span>
+          </label>
+
+          <div className={styles.expandCollapseControls}>
+            <button type="button" onClick={expandAllSections} disabled={areAllSectionsOpen}>
+              Expand All
+            </button>
+            <button type="button" onClick={collapseAllSections}>
+              Collapse All
+            </button>
+          </div>
+        </div>
+
+        {isRefreshing && <div className={styles.loadingBanner}>Updating weekly summary...</div>}
+      </div>
+
+      <div className={styles.weeklyProjectSummaryDashboardContainer}>
+        <div className={styles.weeklyProjectSummaryDashboardGrid}>
+          {sections.map(
+            ({
+              title,
+              key,
+              className,
+              content,
+              badgeLabel,
+              hasData,
+              emptyMessage,
+              comparisonText,
+            }) => (
+              <div
+                key={key}
+                className={`${styles.weeklyProjectSummaryDashboardSection} ${styles[className]}`}
               >
-                {title} <span>{openSections[key] ? '∧' : '∨'}</span>
-              </button>
-              {openSections[key] && (
-                <div className={`${styles.weeklyProjectSummaryDashboardCategoryContent}`}>
-                  {content}
-                </div>
-              )}
-            </div>
-          ))}
+                <button
+                  type="button"
+                  className={styles.weeklyProjectSummaryDashboardCategoryTitle}
+                  onClick={() => toggleSection(key)}
+                  aria-expanded={Boolean(openSections[key])}
+                >
+                  <span className={styles.sectionTitleText}>{title}</span>
+
+                  <span className={styles.sectionHeaderMeta}>
+                    {badgeLabel && <span className={styles.sectionBadge}>{badgeLabel}</span>}
+                    <span>{openSections[key] ? '∧' : '∨'}</span>
+                  </span>
+                </button>
+
+                {openSections[key] && (
+                  <div className={styles.weeklyProjectSummaryDashboardCategoryContent}>
+                    {compareWithPreviousWeek && comparisonText && (
+                      <div className={styles.comparisonBanner}>{comparisonText}</div>
+                    )}
+
+                    {hasData ? (
+                      content
+                    ) : (
+                      <div className={styles.emptySectionMessage}>
+                        {emptyMessage || 'No data for this week.'}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            ),
+          )}
         </div>
       </div>
     </div>

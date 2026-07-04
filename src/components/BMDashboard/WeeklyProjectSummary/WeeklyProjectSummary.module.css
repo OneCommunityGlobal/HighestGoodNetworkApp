@@ -65,7 +65,7 @@
   align-items: center;
   flex-wrap: nowrap;
   margin-left: auto;
-  min-width: 0; /* allow selects to shrink instead of crushing the button */
+  min-width: 0;
 }
 
 /* Reactstrap Input adds .form-control — match box model to the Share PDF button */
@@ -340,6 +340,8 @@
 }
 
 .weeklyProjectSummaryDashboardCategoryTitle {
+  width: 100%;
+  border: none;
   background: var(--section-title-bg);
   padding: 12px 16px;
   font-size: medium;
@@ -349,6 +351,7 @@
   justify-content: space-between;
   align-items: center;
   color: var(--text-color);
+  text-align: left;
 }
 
 .weeklyProjectSummaryDashboardCategoryTitle:hover {
@@ -621,13 +624,6 @@
   margin: auto;
 }
 
-/* .projectStatusGrid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  grid-template-rows: repeat(2, auto);
-  gap: 10px;
-} */
-
 /* ---------------- OVAL STATUS BUTTON ---------------- */
 .weeklyStatusButton {
   width: 130px;
@@ -647,7 +643,7 @@
   .lessonsLearnedGrid {
     min-height: 650px;
   }
-  
+
   .lessonsCard {
     min-height: 650px;
   }
@@ -657,7 +653,7 @@
   .lessonsLearnedGrid {
     min-height: 600px;
   }
-  
+
   .lessonsCard {
     min-height: 600px;
   }
@@ -668,7 +664,7 @@
     min-height: 550px;
     gap: 20px;
   }
-  
+
   .lessonsCard {
     min-height: 550px;
   }
@@ -679,7 +675,7 @@
     min-height: 500px;
     gap: 16px;
   }
-  
+
   .lessonsCard {
     min-height: 500px;
   }
@@ -740,15 +736,15 @@
   .projectStatusGrid {
     grid-template-columns: 1fr;
   }
-  
+
   .weeklyProjectSummaryDashboardSection.half .weeklyProjectSummaryDashboardCategoryContent {
     grid-template-columns: 1fr;
   }
-  
+
   .weeklyProjectSummaryCard :global(.chartContainer) {
     min-height: 240px;
   }
-  
+
   .normalCard {
     min-height: 280px;
   }
@@ -758,31 +754,31 @@
     gap: 16px;
     min-height: auto;
   }
-  
+
   .lessonsCard {
     min-height: 500px;
   }
-  
+
   .toolsTrackingLayout {
     grid-template-columns: 1fr;
   }
-  
+
   .toolsDonutWrap {
     grid-column: span 1;
   }
-  
+
   .financialsGrid {
     grid-template-columns: 1fr;
   }
-  
+
   .financialsGrid .financialBig {
     grid-column: span 1;
   }
-  
+
   .laborTimeGrid {
     grid-template-columns: 1fr;
   }
-  
+
   .financialsTrackingGrid {
     grid-template-columns: 1fr;
   }
@@ -793,15 +789,15 @@
   .lessonsCard {
     min-height: 450px;
   }
-  
+
   .weeklyProjectSummaryCard :global(.chartContainer) {
     min-height: 220px;
   }
-  
+
   .normalCard {
     min-height: 260px;
   }
-  
+
   .weeklySummaryHeaderTitle {
     font-size: large;
     flex-direction: column;
@@ -862,17 +858,236 @@
   box-shadow: 0 4px 6px rgb(0 0 0 / 30%);
 }
 
+/* ---------------- WEEKLY SUMMARY FILTER / ACTION CONTROLS ---------------- */
+
+.weeklySummaryControls {
+  width: 95%;
+  max-width: 1280px;
+  margin: 16px auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.activeSummaryBanner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: var(--section-title-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  box-shadow: 0 2px 4px var(--card-shadow);
+}
+
+.activeSummaryLabel {
+  font-weight: 700;
+}
+
+.activeSummaryValue {
+  font-weight: 600;
+}
+
+.weeklySummaryActionRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.compareToggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-color);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.compareToggle input {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.expandCollapseControls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.expandCollapseControls button {
+  height: 38px;
+  padding: 0 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background: var(--section-bg);
+  color: var(--text-color);
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.2s ease-in-out,
+    opacity 0.2s ease-in-out;
+}
+
+.darkMode .expandCollapseControls button {
+  background: var(--card-bg);
+  border-color: var(--border-color);
+  color: var(--text-color);
+}
+
+.expandCollapseControls button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.expandCollapseControls button:hover:not(:disabled) {
+  background: var(--section-title-hover);
+}
+
+.darkMode .expandCollapseControls button:hover:not(:disabled) {
+  background: var(--section-title-hover);
+}
+
+.loadingBanner {
+  padding: 10px 14px;
+  border-radius: 6px;
+  background: #fff8e1;
+  border: 1px solid #f0d98c;
+  color: #5f4700;
+  font-weight: 600;
+}
+
+/* ---------------- SECTION HEADER BADGES / COMPARISON / EMPTY STATES ---------------- */
+
+.sectionTitleText {
+  display: flex;
+  align-items: center;
+  text-align: left;
+}
+
+.sectionHeaderMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 12px;
+}
+
+.sectionBadge {
+  min-width: 28px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #e9eef8;
+  color: #24324b;
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.4;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.comparisonBanner {
+  grid-column: 1 / -1;
+  padding: 10px 14px;
+  margin-bottom: 4px;
+  border-radius: 6px;
+  background: #eef6ff;
+  border: 1px solid #b9d8f5;
+  color: #21496f;
+  font-weight: 600;
+  text-align: left;
+}
+
+.emptySectionMessage {
+  grid-column: 1 / -1;
+  padding: 24px;
+  text-align: center;
+  border: 1px dashed var(--border-color);
+  border-radius: 8px;
+  background: var(--section-title-bg);
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+/* ---------------- DARK MODE FOR NEW CONTROLS ---------------- */
+
+.darkMode .activeSummaryBanner {
+  background: var(--section-title-bg);
+  border-color: var(--border-color);
+  color: var(--text-color);
+}
+
+.darkMode .loadingBanner {
+  background: #3a3217;
+  border-color: #7c6417;
+  color: #f9fafb;
+}
+
+.darkMode .sectionBadge {
+  background: #374151;
+  color: #f9fafb;
+}
+
+.darkMode .comparisonBanner {
+  background: #172437;
+  border-color: #2f5f91;
+  color: #f9fafb;
+}
+
+.darkMode .emptySectionMessage {
+  background: #111827;
+  border-color: #4b5563;
+  color: #d1d5db;
+}
+
+/* ---------------- RESPONSIVE NEW CONTROLS ---------------- */
+
+@media (width <= 768px) {
+  .weeklySummaryControls {
+    width: 95%;
+  }
+
+  .weeklySummaryActionRow {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .expandCollapseControls {
+    width: 100%;
+  }
+
+  .expandCollapseControls button {
+    width: 100%;
+  }
+
+  .activeSummaryBanner {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .weeklyProjectSummaryDashboardCategoryTitle {
+    gap: 10px;
+  }
+
+  .sectionHeaderMeta {
+    margin-left: 0;
+  }
+}
+
 /* Print styles */
 @media print {
   .weeklyProjectSummaryCard {
     break-inside: avoid;
   }
-  
+
   .weeklyProjectSummaryCard :global(.container) {
     box-shadow: none;
     border: 1px solid #ddd;
   }
-  
+
   .lessonsLearnedGrid,
   .toolsTrackingLayout,
   .financialsGrid,
@@ -880,7 +1095,8 @@
   .financialsTrackingGrid {
     break-inside: avoid;
   }
-  
+
+  .weeklySummaryControls,
   .weeklySummaryShareBtn,
   .weeklySummaryHeaderControls select {
     display: none;
