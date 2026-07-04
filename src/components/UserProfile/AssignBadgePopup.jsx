@@ -9,6 +9,7 @@ import { ENDPOINTS } from '~/utils/URL';
 import {
   assignBadgesByUserID,
   clearNameAndSelected,
+  addSelectBadge,
 } from '../../actions/badgeManagement';
 import { boxStyle, boxStyleDark } from '../../styles';
 import AssignTableRow from '../Badge/AssignTableRow';
@@ -63,11 +64,18 @@ function AssignBadgePopup(props) {
     } catch (error) {}
   };
 
+ const formatSearchInput = text => {
+    return text
+      .toLowerCase()
+      .replace(/\s+/g, '')
+      .trim();
+  };
+
   const filterBadges = (allBadges = []) => {
     // guard against non-array inputs
     if (!Array.isArray(allBadges)) return [];
     return allBadges.filter(({ badgeName }) =>
-      badgeName.toLowerCase().includes(searchedName.toLowerCase()),
+      formatSearchInput(badgeName).includes(formatSearchInput(searchedName)),
     );
   };
 
@@ -88,6 +96,19 @@ function AssignBadgePopup(props) {
 
   return (
     <div data-testid="test-assignbadgepopup">
+      {/* Comprehensive dark mode hover style fix */}
+      {darkMode && (
+        <style>{`
+          .dark-mode-table tbody tr:hover,
+          .dark-mode-table tbody tr:hover td,
+          .dark-mode-table thead tr:hover,
+          .dark-mode-table thead tr:hover th,
+          .dark-mode-table thead tr:hover i {
+            background-color: #2b3553 !important;
+            color: #ffffff !important;
+          }
+        `}</style>
+      )}
       <input
         data-testid="test-searchBadgeName"
         type="text"
@@ -99,7 +120,10 @@ function AssignBadgePopup(props) {
       />
       <div style={{ overflowY: 'scroll', height: '75vh' }}>
         {!isLoadingBadge && (props.isTableOpen !== undefined ? props.isTableOpen : filteredBadges.length > 0) ? (
-          <Table data-testid="test-badgeResults" className={darkMode ? 'text-light' : ''}>
+          <Table 
+            data-testid="test-badgeResults" 
+            className={darkMode ? 'text-light dark-mode-table' : ''}
+          >
             <thead
               style={
                 darkMode
