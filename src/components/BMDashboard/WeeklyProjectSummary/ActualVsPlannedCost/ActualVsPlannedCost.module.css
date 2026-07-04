@@ -171,6 +171,14 @@
   border-color: rgba(160, 170, 190, 0.28);
 }
 
+/* Keep dashed grid lines visible in dark mode. Overrides the app-wide
+   `:global(.dark-mode) .recharts-cartesian-grid-* line` rule that leaks
+   from EventPopularity.module.css (stroke #334155 !important). */
+:global(.dark-mode) .darkMode :global(.recharts-cartesian-grid-horizontal) line,
+:global(.dark-mode) .darkMode :global(.recharts-cartesian-grid-vertical) line {
+  stroke: #aab4c2 !important;
+}
+
 .overBudgetWarning {
   text-align: center;
   font-size: 12px;

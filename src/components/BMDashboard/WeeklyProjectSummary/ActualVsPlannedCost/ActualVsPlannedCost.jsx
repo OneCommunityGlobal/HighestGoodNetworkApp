@@ -118,18 +118,14 @@ function buildChartContent({ loading, isFiltering, hasData, chartDataWithVarianc
             margin={{ top: 20, right: 5, left: 5, bottom: 0 }}
             barGap={20}
           >
-            <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#5b6675' : '#e0e0e0'} />
+            <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#e5e7eb' : '#e0e0e0'} />
             <XAxis
               dataKey="category"
               axisLine={false}
               tickLine={false}
               tick={{ fill: 'var(--text-color)' }}
             />
-            <YAxis
-              tick={{ fill: 'var(--text-color)', fontSize: '12px' }}
-              axisLine={{ stroke: darkMode ? '#ffffff' : '#9ca3af', strokeWidth: darkMode ? 3 : 1 }}
-              tickLine={{ stroke: darkMode ? '#ffffff' : '#9ca3af', strokeWidth: darkMode ? 3 : 1 }}
-            />
+            <YAxis tick={{ fill: 'var(--text-color)', fontSize: '12px' }} />
             <Tooltip
               cursor={{ fill: 'transparent' }}
               allowEscapeViewBox={{ x: true, y: true }}
@@ -156,7 +152,10 @@ function buildChartContent({ loading, isFiltering, hasData, chartDataWithVarianc
               barSize={40}
             >
               {chartDataWithVariance.map(entry => (
-                <Cell key={`actual-cell-${entry.category}`} fill={getActualBarColor(entry, darkMode)} />
+                <Cell
+                  key={`actual-cell-${entry.category}`}
+                  fill={getActualBarColor(entry, darkMode)}
+                />
               ))}
               <LabelList dataKey="actualCost" position="top" fill="var(--text-color)" />
             </Bar>
