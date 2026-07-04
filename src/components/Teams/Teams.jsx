@@ -458,10 +458,10 @@ class Teams extends React.PureComponent {
   };
 
   onCreateNewTeamFromSearch = () => {
-    this.setState({
+    this.setState(prevState => ({
       createNewTeamPopupOpen: true,
-      createNewTeamName: this.state.wildCardSearchText,
-    });
+      createNewTeamName: prevState.wildCardSearchText,
+    }));
   };
 
   onCreateNewTeamPopupClose = () => {
