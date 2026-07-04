@@ -12,6 +12,7 @@ import {
   Legend,
   CartesianGrid,
   LabelList,
+  Cell,
 } from 'recharts';
 import { Spinner } from 'reactstrap';
 import { fetchBMProjects } from '../../../../actions/bmdashboard/projectActions';
@@ -22,6 +23,14 @@ function getBudgetStatus(variance) {
   if (variance > 0) return 'Over Budget';
   if (variance < 0) return 'Under Budget';
   return 'On Budget';
+}
+
+// Dynamic bar color: flash red when actual exceeds planned
+function getActualBarColor(entry, darkMode) {
+  if (entry.plannedCost > 0 && entry.actualCost > entry.plannedCost) {
+    return '#dc2626'; // bright red for over-budget
+  }
+  return darkMode ? '#c0392b' : '#e74a3b';
 }
 
 function getVarianceCardClass(variance, cardStyles) {
@@ -109,14 +118,18 @@ function buildChartContent({ loading, isFiltering, hasData, chartDataWithVarianc
             margin={{ top: 20, right: 5, left: 5, bottom: 0 }}
             barGap={20}
           >
-            <CartesianGrid strokeDasharray="3 3" />
+            <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#5b6675' : '#e0e0e0'} />
             <XAxis
               dataKey="category"
               axisLine={false}
               tickLine={false}
               tick={{ fill: 'var(--text-color)' }}
             />
-            <YAxis tick={{ fill: 'var(--text-color)', fontSize: '12px' }} />
+            <YAxis
+              tick={{ fill: 'var(--text-color)', fontSize: '12px' }}
+              axisLine={{ stroke: darkMode ? '#ffffff' : '#9ca3af', strokeWidth: darkMode ? 3 : 1 }}
+              tickLine={{ stroke: darkMode ? '#ffffff' : '#9ca3af', strokeWidth: darkMode ? 3 : 1 }}
+            />
             <Tooltip
               cursor={{ fill: 'transparent' }}
               allowEscapeViewBox={{ x: true, y: true }}
@@ -142,6 +155,9 @@ function buildChartContent({ loading, isFiltering, hasData, chartDataWithVarianc
               fill={darkMode ? '#c0392b' : '#e74a3b'}
               barSize={40}
             >
+              {chartDataWithVariance.map(entry => (
+                <Cell key={`actual-cell-${entry.category}`} fill={getActualBarColor(entry, darkMode)} />
+              ))}
               <LabelList dataKey="actualCost" position="top" fill="var(--text-color)" />
             </Bar>
             <Bar

@@ -593,12 +593,7 @@ export function Header(props) {
                       >
                         Equipment/Tool List
                       </DropdownItem>
-                      <DropdownItem
-                        tag={Link}
-                        to="/bmdashboard/Issue"
-                        className={fontColor}
-                        disabled={headerDisabled}
-                      >
+                      <DropdownItem tag={Link} to="/bmdashboard/issues" className={fontColor}  disabled={headerDisabled}>
                         Issue
                       </DropdownItem>
                       <DropdownItem
